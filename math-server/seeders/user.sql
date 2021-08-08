@@ -1,0 +1,3 @@
+INSERT INTO public."User"(
+	id, name, "lastName", email, "imageUrl", password, token, "createdAt", "updatedAt")
+	VALUES (1, 'Hanan', null, 'hanantomer@gmail.com', null,'$2a$08$T5gZMI3UEZNE.ujkrJjeGuJOnz0AB3GP6J5BGtoOBoU/aksA.kxi6','eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImhhbmFudG9tZXJAZ21haWwuY29tIiwiaWF0IjoxNjI3MzIxNTk1LCJleHAiOjE2Mjk5MTM1OTV9.8Cb8QRSALemrXx7rgPzdfKPsdj-gYUghM-WgPDhUkB0', '2021-07-26 20:46:35.749+03', '2021-07-26 20:46:35.749+03');

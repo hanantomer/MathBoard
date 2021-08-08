@@ -1,0 +1,16 @@
+{
+  "folders": [
+    {
+      "path": "math-server"
+    },
+    {
+      "path": "math-ui"
+    },
+    {
+      "path": "feathers"
+    }
+  ],
+  "settings": {
+    "eslint.options": {}
+  }
+}
