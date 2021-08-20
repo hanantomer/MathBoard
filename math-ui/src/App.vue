@@ -7,7 +7,7 @@
         <v-spacer></v-spacer>
 
         <v-btn
-          v-if="!!user.name"
+          v-show="user != null && user.id != null"
           icon
           v-bind:to="{ path: '/exercises/' + user.id }"
         >
@@ -18,13 +18,14 @@
           <v-icon>mdi-magnify</v-icon>
         </v-btn>
 
-        <v-tooltip bottom>
+        <v-tooltip bottom hidden>
           <template v-slot:activator="{ on, attrs }">
             <v-btn
+              v-show="user != null && user.id != null"
               icon
               v-on="on"
               v-bind="attrs"
-              v-on:click="signOutFromGoogleAuth"
+              v-on:click="signOut"
             >
               <v-icon>mdi-logout</v-icon>
             </v-btn>
@@ -35,16 +36,20 @@
         <v-tooltip bottom hidden>
           <template v-slot:activator="{ on, attrs }">
             <v-avatar
-              v-if="!!user.imageUrl"
+              v-show="user != null && user.imageUrl != null"
               v-bind="attrs"
               v-on="on"
               size="36px"
-              ><img alt="user.name" v-bind:src="user.imageUrl"
+              ><img v-bind:src="user.imageUrl"
             /></v-avatar>
           </template>
-          <span v-if="!!user">{{ user.name }}</span>
+          <span v-show="user != null && user.name != null">{{
+            user.name
+          }}</span>
         </v-tooltip>
-        <v-card-text class="text-right" v-if="!!user.name && !user.imageUrl"
+        <v-card-text
+          class="text-right"
+          v-show="user != null && user.name != null && user.imageUrl == null"
           >Hello {{ user.name }}</v-card-text
         >
       </v-app-bar>
@@ -68,48 +73,73 @@ export default {
   methods: {
     ...mapGetters({ getUser: "getUser" }),
     ...mapActions({ authUser: "authUser", setUser: "setUser" }),
-    signOutFromGoogleAuth: () => {
-      gapi.auth2.getAuthInstance().signOut();
+    signedInWithGoogle: function () {
+      return gapi.auth2.getAuthInstance().currentUser.get().isSignedIn();
+    },
+    signOut: async function () {
+      if (this.signedInWithGoogle()) {
+        gapi.auth2.getAuthInstance().signOut();
+      } else {
+        this.$cookies.set("token", null);
+        await this.setUser(null);
+      }
+      this.$router.push("/login");
+    },
+    signInViaLocalCookie: async function () {
+      let token = this.$cookies.get("token");
+      if (!token || token == "undefined" || token == "null") {
+        this.$router.push("/login");
+        return;
+      }
+
+      this.authUser({ token: token })
+        .then(async (res) => {
+          if (!!res.data) {
+            await this.setUser({ ...res.data[0], isAuthenticated: true }); // TODO move this logic to data layer
+            return true;
+          }
+        })
+        .catch(() => {
+          this.$router.push("/login");
+        });
+    },
+
+    signInViaGoogleAuth: async function () {
+      await gapi.auth2.init().then(async (auth2) => {
+        let googleUser = {};
+        if (auth2.currentUser.get().isSignedIn()) {
+          let userProfile = auth2.currentUser.get().getBasicProfile();
+          googleUser.name = userProfile.getName();
+          googleUser.email = userProfile.getEmail();
+          googleUser.imageUrl = userProfile.getImageUrl();
+          googleUser.isAuthenticated = true;
+          if (!!googleUser) {
+            await this.setUser(googleUser);
+          }
+        }
+      });
+    },
+    loadGoogleAuth: async function () {
+      await new Promise((resolve) => {
+        gapi.load("client:auth2", resolve);
+      });
     },
   },
   computed: {
     user() {
-      return this.getUser(); // add watcher?
+      return this.getUser();
     },
+    //imageUrl() {
+    //  return this.$store.getters.getUser.imageUrl;
+    //},
   },
   mounted: async function () {
-    let token = this.$cookies.get("token");
-    if (!!token) {
-      this.authUser({ token: token }).then((res) => {
-        if (!!res.data) {
-          this.setUser({ ...res.data[0], isAuthenticated: true }); // TODO move this logic to data layer
-        } else {
-          this.$router.push("/login");
-        }
-      });
-    } else {
-      this.$router.push("/login");
+    await this.loadGoogleAuth();
+    await this.signInViaGoogleAuth();
+
+    if (!this.getUser()) {
+      this.signInViaLocalCookie();
     }
-
-    gapi.load("auth2", () => {
-      let user = null;
-
-      console.log("get user from google");
-      gapi.auth2.init().then((auth2) => {
-        let user = {};
-        if (auth2.currentUser.get().isSignedIn()) {
-          let userProfile = auth2.currentUser.get().getBasicProfile();
-          user.name = userProfile.getName();
-          user.email = userProfile.getEmail();
-          user.imageUrl = userProfile.getImageUrl();
-          user.isAuthenticated = true;
-          console.log("return user from google:" + user);
-        }
-        if (!!user) {
-          //this.setUser(user);
-        }
-      });
-    });
   },
 };
 </script>

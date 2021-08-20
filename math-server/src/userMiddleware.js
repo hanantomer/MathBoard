@@ -16,9 +16,14 @@ module.exports = {
                     return context.stop;
                 } else { //auth by password
                     let user = await db.User.findOne({ where: { email: req.query.email } })
-                    let passwordMatched =
-                        !!user && await bcryptjs.compare(req.query.password, user.password);
-                    res.status(passwordMatched ? 200 : 401).json({ name: user.name, id:user.id });
+                    if (!user) {
+                        res.status(401).json({});
+                    }
+                    else {
+                        let passwordMatched =
+                            !!user && await bcryptjs.compare(req.query.password, user.password);
+                        res.status(passwordMatched ? 200 : 401).json({ name: user.name, id: user.id });
+                    }
                     return context.stop;
                 } 
            }

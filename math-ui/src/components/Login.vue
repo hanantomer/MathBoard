@@ -46,7 +46,7 @@
                       color="#F44336"
                       readonly
                       outlined
-                      value="Invalid user or password"
+                      value="Invalid email or password"
                       prepend-inner-icon="mdi-error"
                     ></v-text-field>
                   </v-col>
@@ -66,12 +66,6 @@
                 </v-row>
               </v-form>
               <div class="g-signin2" id="google-signin-btn"></div>
-              <!-- <GoogleLogin
-                :params="googleLoginParams"
-                :renderParams="googleLoginRenderParams"
-                :onSuccess="OnGoogleAuthSuccess"
-                :onFailure="OnGoogleAuthFail"
-              ></GoogleLogin> -->
             </v-card-text>
           </v-card>
         </v-tab-item>
@@ -161,23 +155,15 @@ export default {
   mounted() {
     gapi.signin2.render("google-signin-btn", {
       scope: "email",
-      width: 250,
-      height: 50,
       longtitle: true,
       theme: "dark",
-      onsuccess: this.onSignIn,
+      onsuccess: this.googleOnSuccess,
     });
   },
   methods: {
-    onSignIn: function (googleUser) {
-      // call here the same method used in App.vue
-      // or... avoid populating user and redirect to app.vue
-
-      var profile = googleUser.getBasicProfile();
-      console.log("ID: " + profile.getId()); // Do not send to your backend! Use an ID token instead.
-      console.log("Name: " + profile.getName());
-      console.log("Image URL: " + profile.getImageUrl());
-      console.log("Email: " + profile.getEmail()); // This is null if the 'email' scope is not present.
+    googleOnSuccess: function (googleUser) {
+      this.dialog = false;
+      this.$router.push("/");
     },
     ...mapGetters({ getUser: "getUser" }),
     ...mapActions({
@@ -185,12 +171,6 @@ export default {
       setUser: "setUser",
       authUser: "authUser",
     }),
-    // OnGoogleAuthSuccess(idToken) {
-    //   console.log(idToken);
-    // },
-    // OnGoogleAuthFail(error) {
-    //   console.log(error);
-    // },
     validateRegister: async function () {
       if (this.$refs.registerForm.validate()) {
         let user = {};
@@ -202,7 +182,7 @@ export default {
         this.registerUser(user).then((user) => {
           this.$cookies.set("token", this.getUser().token);
         });
-        //this.$router.push("/");
+        this.$router.push("/");
       }
     },
     validateLogin: function () {
@@ -215,12 +195,12 @@ export default {
           .then((user) => {
             this.setUser(user.data).then(() => {
               this.loginFailed = false;
+              this.$cookies.set("token", this.getUser().token);
               this.$router.push("/");
             });
           })
           .catch((error) => {
             this.loginFailed = true;
-            this.$router.push("/login");
           });
       }
     },
@@ -236,19 +216,9 @@ export default {
     passwordMatch() {
       return () => this.password === this.verify || "Password must match";
     },
-    // googleLoginParams: function () {
-    //   return {
-    //     client_id: Vue.prototype.$client_id,
-    //   };
-    // },
   },
 
   data: () => ({
-    // googleLoginRenderParams: {
-    //   width: 250,
-    //   height: 50,
-    //   longtitle: true,
-    // },
     loginFailed: false,
     dialog: true,
     tab: 0,

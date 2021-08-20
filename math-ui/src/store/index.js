@@ -21,7 +21,7 @@ export default new Vuex.Store({
     dbSyncMixin,
   },
   state: {
-    user: {},
+    user: { id: null, imageUrl: null, name: null },
     exercises: [],
     notations: [],
     currentExercise: {},
@@ -53,7 +53,7 @@ export default new Vuex.Store({
       );
     },
     setUser(state, user) {
-      state.user = user;
+      Vue.set(state, "user", user);
     },
     addExercise(state, exercise) {
       state.exercises.push(exercise);
@@ -116,8 +116,11 @@ export default new Vuex.Store({
         context.commit("setUser", user);
       }
     },
-    setUser(context, payload) {
-      context.commit("setUser", payload);
+    async setUser(context, user) {
+      //if (!user.id) {
+      ////  user = await dbSyncMixin.methods.setUser(user);
+      ///}
+      context.commit("setUser", user);
     },
 
     loadNotations(context, exerciseId) {
