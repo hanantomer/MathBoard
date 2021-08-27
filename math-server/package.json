@@ -12,7 +12,7 @@
     "decompress-response": "^3.3.0",
     "express": "^4.17.1",
     "finale-rest": "^1.1.1",
-    "google-auth-library": "^6.1.5",
+    "google-auth-library": "^6.1.6",
     "jsonwebtoken": "^8.5.1",
     "make-dir": "^3.1.0",
     "mimic-response": "^1.0.1",

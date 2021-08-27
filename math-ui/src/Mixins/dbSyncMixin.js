@@ -34,21 +34,18 @@ export default {
   methods: {
     getUser: async function (user) {
       try {
-        return axiosInstnce.get("/users?" + buildQueryString(user));
+        let users = await axiosInstnce.get("/users?" + buildQueryString(user));
+        return userList ? users.data[0] : null;
       } catch (error) {
-        console.debug("401");
+        handleError(error);
       }
     },
     // 1. local login - validate password and return token
     // 2. local registration - submit user and return token
     setUser: async function (user) {
       try {
-        //user = await axiosInstnce.get("/users?" + buildQueryString(user));
-        //if (user.data.length === 0) {
         user = await axiosInstnce.post("/users", user);
         return user.data;
-        //}
-        //return user.data[0];
       } catch (error) {
         handleError(error);
       }

@@ -72,7 +72,12 @@ export default {
   name: "App",
   methods: {
     ...mapGetters({ getUser: "getUser" }),
-    ...mapActions({ authUser: "authUser", setUser: "setUser" }),
+    ...mapActions({
+      authUser: "authUser",
+      setUser: "setUser",
+      registerUser: "registerUser",
+    }),
+
     signedInWithGoogle: function () {
       return gapi.auth2.getAuthInstance().currentUser.get().isSignedIn();
     },
@@ -81,43 +86,38 @@ export default {
         gapi.auth2.getAuthInstance().signOut();
       } else {
         this.$cookies.set("token", null);
-        await this.setUser(null);
       }
+      await this.setUser(null);
       this.$router.push("/login");
     },
     signInViaLocalCookie: async function () {
       let token = this.$cookies.get("token");
-      if (!token || token == "undefined" || token == "null") {
-        this.$router.push("/login");
-        return;
-      }
-
-      this.authUser({ token: token })
-        .then(async (res) => {
-          if (!!res.data) {
-            await this.setUser({ ...res.data[0], isAuthenticated: true }); // TODO move this logic to data layer
-            return true;
-          }
-        })
-        .catch(() => {
-          this.$router.push("/login");
-        });
-    },
-
-    signInViaGoogleAuth: async function () {
-      await gapi.auth2.init().then(async (auth2) => {
-        let googleUser = {};
-        if (auth2.currentUser.get().isSignedIn()) {
-          let userProfile = auth2.currentUser.get().getBasicProfile();
-          googleUser.name = userProfile.getName();
-          googleUser.email = userProfile.getEmail();
-          googleUser.imageUrl = userProfile.getImageUrl();
-          googleUser.isAuthenticated = true;
-          if (!!googleUser) {
-            await this.setUser(googleUser);
-          }
+      if (!!token) {
+        let user = await this.authUser({ token: token });
+        if (!!user) {
+          return await this.setUser({ ...user, isAuthenticated: true });
         }
-      });
+      }
+    },
+    signInViaGoogleAuth: async function () {
+      let auth2 = await gapi.auth2.init();
+      let googleUser = {};
+      if (auth2.currentUser.get().isSignedIn()) {
+        let userProfile = auth2.currentUser.get().getBasicProfile();
+        googleUser.name = userProfile.getName();
+        googleUser.email = userProfile.getEmail();
+        googleUser.imageUrl = userProfile.getImageUrl();
+        googleUser.id_token = auth2.currentUser.get().id_token;
+        let user = await this.authUser(googleUser);
+        if (!!user) {
+          return await this.setUser({ ...user, isAuthenticated: true });
+        } else {
+          return await this.registerUser({
+            ...googleUser,
+            isAuthenticated: true,
+          });
+        }
+      }
     },
     loadGoogleAuth: async function () {
       await new Promise((resolve) => {
@@ -129,16 +129,15 @@ export default {
     user() {
       return this.getUser();
     },
-    //imageUrl() {
-    //  return this.$store.getters.getUser.imageUrl;
-    //},
   },
   mounted: async function () {
     await this.loadGoogleAuth();
-    await this.signInViaGoogleAuth();
-
-    if (!this.getUser()) {
-      this.signInViaLocalCookie();
+    let user = await this.signInViaGoogleAuth();
+    if (!user) {
+      user = await this.signInViaLocalCookie();
+    }
+    if (!user) {
+      this.$router.push("/login");
     }
   },
 };

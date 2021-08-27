@@ -106,8 +106,8 @@ export default new Vuex.Store({
     // },
   },
   actions: {
-    authUser(context, payload) {
-      return dbSyncMixin.methods.getUser(payload);
+    async authUser(context, payload) {
+      return await dbSyncMixin.methods.getUser(payload);
     },
     async registerUser(context, payload) {
       let user = await dbSyncMixin.methods.setUser(payload);
@@ -117,10 +117,8 @@ export default new Vuex.Store({
       }
     },
     async setUser(context, user) {
-      //if (!user.id) {
-      ////  user = await dbSyncMixin.methods.setUser(user);
-      ///}
-      context.commit("setUser", user);
+      context.commit("setUser", { ...user, isAuthenticated: true });
+      return user;
     },
 
     loadNotations(context, exerciseId) {
