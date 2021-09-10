@@ -51,30 +51,18 @@ module.exports = (sequelize, DataTypes) => {
     
   }, { sequelize, freezeTableName: true });
 
-  // authenticate user either by password or token
+  // ??? TODO - is this needed
   User.beforeFind(async (user, options) => {
-    console.debug("before find");
-    //if (!user.where.password && !user.where.token) {
-    //  throw new Error("find user must supply either password or token");
-    //}
-    if (!!user.where.password) {
-      delete user.where.password;//await bcryptjs.hash(user.where.password, 8);
-    }
-    
-    // if (user.token) {
-    //  
+      console.debug("before find");
+      if (!!user.where.password) {
+        delete user.where.password;
+      }
     }
   );
-
-  User.afterFind(async (user, options) => {
-    //user.password = null;
-  });
 
   User.beforeCreate(async (user, options) => {
     if (user.password) {
       user.password = await bcryptjs.hash(user.password, 8);
-      user.token =
-        jwt.sign({ email: user.email }, config.client_secret, {expiresIn: 86400*30 });
     }
   });
 

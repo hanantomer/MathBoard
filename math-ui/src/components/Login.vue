@@ -161,16 +161,26 @@ export default {
     });
   },
   methods: {
-    googleOnSuccess: function (googleUser) {
-      this.dialog = false;
-      this.$router.push("/");
-    },
     ...mapGetters({ getUser: "getUser" }),
     ...mapActions({
       registerUser: "registerUser",
       setUser: "setUser",
-      authUser: "authUser",
+      authLocalUserByPassword: "authLocalUserByPassword",
+      authGoogleUser: "authGoogleUser",
     }),
+    googleOnSuccess: async function (user) {
+      this.dialog = false;
+      let userProfile = user.getBasicProfile();
+      let googleUser = {
+        name: userProfile.getName(),
+        email: userProfile.getEmail(),
+        imageUrl: userProfile.getImageUrl(),
+        id_token: user.getAuthResponse().access_token,
+      };
+      this.registerUser(user).then((user) => {
+        this.$router.push("/");
+      });
+    },
     validateRegister: async function () {
       if (this.$refs.registerForm.validate()) {
         let user = {};
@@ -179,29 +189,23 @@ export default {
         user.familyName = this.familyName;
         user.email = this.email;
         user.isAuthenticated = true;
-        this.registerUser(user).then((user) => {
-          this.$cookies.set("token", this.getUser().token);
-        });
-        this.$router.push("/");
+        await this.registerUser(user);
+        this.tab = "Login";
       }
     },
-    validateLogin: function () {
+    validateLogin: async function () {
       if (this.$refs.loginForm.validate()) {
-        let user = {};
-        user.email = this.loginEmail;
-        user.password = this.loginPassword;
-
-        this.authUser(user)
-          .then((user) => {
-            this.setUser(user.data).then(() => {
-              this.loginFailed = false;
-              this.$cookies.set("token", this.getUser().token);
-              this.$router.push("/");
-            });
-          })
-          .catch((error) => {
-            this.loginFailed = true;
-          });
+        let user = { email: this.loginEmail, password: this.loginPassword };
+        let authenticatedUser = await this.authLocalUserByPassword(user);
+        if (!!authenticatedUser) {
+          await this.setUser(authenticatedUser);
+          this.loginFailed = false;
+          this.$cookies.set("token", this.getUser().token);
+          this.$cookies.set("email", this.getUser().email);
+          this.$router.push("/");
+        } else {
+          this.loginFailed = true;
+        }
       }
     },
     reset: function () {

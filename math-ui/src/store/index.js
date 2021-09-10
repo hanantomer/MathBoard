@@ -99,21 +99,38 @@ export default new Vuex.Store({
         }
       });
     },
-    // async addUser(state, user) {
-    //   return dbSyncMixin.methods.addUser(user).then((user) => {
-    //     return user;
-    //   });
-    // },
   },
   actions: {
-    async authUser(context, payload) {
-      return await dbSyncMixin.methods.getUser(payload);
+    async authLocalUserByToken(context, user) {
+      return await dbSyncMixin.methods.authLocalUserByToken(
+        user.email,
+        user.token
+      );
     },
-    async registerUser(context, payload) {
-      let user = await dbSyncMixin.methods.setUser(payload);
-      if (!!user) {
-        user = { ...payload, ...user, ...{ password: null } };
-        context.commit("setUser", user);
+    async authLocalUserByPassword(context, user) {
+      console.debug(`user.email:${user.email}, user.password:${user.password}`);
+      return await dbSyncMixin.methods.authLocalUserByPassword(
+        user.email,
+        user.password
+      );
+    },
+    async authGoogleUser(context, user) {
+      console.debug(`authGoogleUser:${user}`);
+      return await dbSyncMixin.methods.authGoogleUser(
+        user.email,
+        user.id_token
+      );
+    },
+    async registerUser(context, user) {
+      let registeredUser = await dbSyncMixin.methods.setUser(user);
+      if (!!registeredUser) {
+        registeredUser = {
+          ...registeredUser,
+          ...user,
+          ...{ password: null, isAuthenticated: true },
+        };
+        context.commit("setUser", registeredUser);
+        return registeredUser;
       }
     },
     async setUser(context, user) {

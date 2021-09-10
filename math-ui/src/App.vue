@@ -70,10 +70,18 @@
 import { mapGetters, mapActions } from "vuex";
 export default {
   name: "App",
+  watch: {
+    $route: function (to, from) {
+      if (to.path === "/") {
+        this.signIn();
+      }
+    },
+  },
   methods: {
     ...mapGetters({ getUser: "getUser" }),
     ...mapActions({
-      authUser: "authUser",
+      authLocalUserByToken: "authLocalUserByToken",
+      authGoogleUser: "authGoogleUser",
       setUser: "setUser",
       registerUser: "registerUser",
     }),
@@ -86,14 +94,29 @@ export default {
         gapi.auth2.getAuthInstance().signOut();
       } else {
         this.$cookies.set("token", null);
+        this.$cookies.set("email", null);
       }
       await this.setUser(null);
       this.$router.push("/login");
     },
+    signIn: async function () {
+      await this.loadGoogleAuth();
+      let user = await this.signInViaGoogleAuth();
+      if (!user) {
+        user = await this.signInViaLocalCookie();
+      }
+      if (!user) {
+        this.$router.push("/login");
+      }
+    },
     signInViaLocalCookie: async function () {
       let token = this.$cookies.get("token");
-      if (!!token) {
-        let user = await this.authUser({ token: token });
+      let email = this.$cookies.get("email");
+      if (!!token && !!email) {
+        let user = await this.authLocalUserByToken({
+          email: email,
+          token: token,
+        });
         if (!!user) {
           return await this.setUser({ ...user, isAuthenticated: true });
         }
@@ -107,10 +130,16 @@ export default {
         googleUser.name = userProfile.getName();
         googleUser.email = userProfile.getEmail();
         googleUser.imageUrl = userProfile.getImageUrl();
-        googleUser.id_token = auth2.currentUser.get().id_token;
-        let user = await this.authUser(googleUser);
+        googleUser.id_token = auth2.currentUser
+          .get()
+          .getAuthResponse().id_token;
+        let user = await this.authGoogleUser(googleUser);
         if (!!user) {
-          return await this.setUser({ ...user, isAuthenticated: true });
+          return await this.setUser({
+            ...user,
+            ...googleUser,
+            isAuthenticated: true,
+          });
         } else {
           return await this.registerUser({
             ...googleUser,
@@ -131,14 +160,7 @@ export default {
     },
   },
   mounted: async function () {
-    await this.loadGoogleAuth();
-    let user = await this.signInViaGoogleAuth();
-    if (!user) {
-      user = await this.signInViaLocalCookie();
-    }
-    if (!user) {
-      this.$router.push("/login");
-    }
+    this.signIn();
   },
 };
 </script>

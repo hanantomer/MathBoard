@@ -4,6 +4,12 @@ const axiosInstnce = axios.create({
   baseURL: "http://localhost:8081",
 });
 
+const authType = {
+  localToken: "localToken",
+  googleToken: "googleToken",
+  localPassword: "localPassword",
+};
+
 function handleError(error) {
   if (error.response) {
     // The request was made and the server responded with a status code
@@ -23,24 +29,55 @@ function handleError(error) {
   console.log(error.config);
 }
 
-function buildQueryString(user) {
-  return Object.keys(user)
-    .filter((key) => !!user[key])
-    .map((key) => key + "=" + encodeURIComponent(user[key]))
-    .join("&");
+function getRequestConfig(token, authType) {
+  console.debug(`getRequestConfig:${token},${authType}`);
+  return {
+    headers: {
+      "auth-type": authType,
+      authorization: token,
+    },
+  };
 }
 
 export default {
   methods: {
-    getUser: async function (user) {
+    authGoogleUser: async function (email, token) {
       try {
-        let users = await axiosInstnce.get("/users?" + buildQueryString(user));
-        return userList ? users.data[0] : null;
+        let res = await axiosInstnce.get(
+          `/users?email=${email}`,
+          getRequestConfig(token, authType.googleToken)
+        );
+        return !!res ? res.data : null;
       } catch (error) {
         handleError(error);
       }
     },
-    // 1. local login - validate password and return token
+    authLocalUserByToken: async function (email, token) {
+      console.debug(`email:${email}, token:${token}`);
+      try {
+        let res = await axiosInstnce.get(
+          `/users?email=${email}`,
+          getRequestConfig(token, authType.localToken)
+        );
+        return !!res ? res.data : null;
+      } catch (error) {
+        handleError(error);
+      }
+    },
+    authLocalUserByPassword: async function (email, password) {
+      console.debug(`email:${email}, password:${password}`);
+      try {
+        let res = await axiosInstnce.get(
+          `/users?email=${email}&password=${password}`,
+          getRequestConfig(null, authType.localPassword)
+        );
+        return !!res ? res.data : null;
+      } catch (error) {
+        handleError(error);
+      }
+    },
+
+    // 1. local login -     validate password and return token
     // 2. local registration - submit user and return token
     setUser: async function (user) {
       try {
