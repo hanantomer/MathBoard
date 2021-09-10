@@ -1,10 +1,4 @@
 'use strict';
-const bcryptjs = require("bcryptjs");
-const { errorMonitor } = require("events");
-const jwt = require('jsonwebtoken');
-const env = process.env.NODE_ENV || 'development';
-const config = require('../../server/config/config.json')[env];
-
 
 const {
   Model
@@ -47,24 +41,7 @@ module.exports = (sequelize, DataTypes) => {
     token: {
       type: DataTypes.STRING,
     },
-
-    
   }, { sequelize, freezeTableName: true });
-
-  // ??? TODO - is this needed
-  User.beforeFind(async (user, options) => {
-      console.debug("before find");
-      if (!!user.where.password) {
-        delete user.where.password;
-      }
-    }
-  );
-
-  User.beforeCreate(async (user, options) => {
-    if (user.password) {
-      user.password = await bcryptjs.hash(user.password, 8);
-    }
-  });
 
   return User;
 };

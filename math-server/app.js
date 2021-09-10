@@ -4,17 +4,10 @@ const Sequelize = require('sequelize')
 const finale = require('finale-rest')
 const db = require('./src/models/index.js');
 const userMiddleware = require('./src/userMiddleware.js');
-const bcryptjs = require("bcryptjs");
-//const Register = require("./src/register.js").default;
 
 let app = express()
 app.use(cors())
 app.use(express.json())
-
-//app.post("/register", (req, res) => {
-//  let reg = new Register();
-//  reg.registerUser(req, res);
-//})
 
 
 finale.initialize({
@@ -25,16 +18,7 @@ finale.initialize({
 let userResource = finale.resource({
   model: db.sequelize.models['User'],
   endpoints: ['/users', '/users/:id'],
-  // search: {
-  //     operator: Sequelize.Op.eq,
-  //     param: 'email',
-  //     attributes: [ 'email' ]
-  //   }
 }).use(userMiddleware);
-
-//userResource.list.fetch.before(async (req, res, context) => {
-//  
-//})
 
 finale.resource({
   model: db.sequelize.models['Exercise'],

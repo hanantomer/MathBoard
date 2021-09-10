@@ -16,26 +16,38 @@ const authType = {
 
 
 module.exports = {
-
+    create: {
+        write: {
+            before: async (req, res, context) => {
+                req.body.password = await bcryptjs.hash(req.body.password, 8);
+                return context.continue;
+            }
+        }
+    },
     list: {
         fetch : {
             before: async (req, res, context) => {
 
                 async function authByLocalPassword() {
                     let user = await db.User.findOne({ where: { email: req.query.email } });
-                     user.token =
-                        jwt.sign({ email: user.email }, config.client_secret, {expiresIn: 86400*30 });
                     if (!user) { // invalid user
                         res.status(401).json({});
                     }
                     else { // validate password
                         let passwordMatched = !!user && await bcryptjs.compare(req.query.password, user.password);
-                        res.status(passwordMatched ? 200 : 401).json({
-                            email: user.email,
-                            name: user.name,
-                            id: user.id,
-                            token: user.token
-                        });
+                        if (passwordMatched) {
+                            user.token =
+                                jwt.sign({ email: user.email }, config.client_secret, { expiresIn: 86400 * 30 });
+                            res.status(200).json({
+                                email: user.email,
+                                name: user.name,
+                                id: user.id,
+                                token: user.token
+                            })
+                        }
+                        else {
+                            res.status(401).json({});
+                        }
                     }
 
 
@@ -45,10 +57,10 @@ module.exports = {
                     let user = await db.User.findOne({ where: { email: req.query.email } });
                     let decodedToken = jwt.verify(req.headers.authorization, config.client_secret);
                     if (!!user && decodedToken.email === req.query.email) {
-                        res.status(401).json({});    
+                        res.status(200).json({ name: user.name, id: user.id });
                     }
                     else {
-                        res.status(200).json({ name: user.name, id: user.id });
+                        res.status(401).json({});    
                     }
                 }
 
