@@ -119,42 +119,42 @@ export default {
     };
   },
   mixins: [matrixOverlayMixin, positionMixin, cursorMixin, selectionMixin],
-  // computed: {
-  //   ...mapState({
-  //     notations: (state) => {
-  //       return state.notations;
-  //     },
-  //     cursorPosition: (state) => state.cursorPosition,
-  //   }),
-  //   selectionRectLeft: function () {
-  //     return (
-  //       Math.min(this.selectionPosition.x1, this.selectionPosition.x2) +
-  //       10 +
-  //       "px"
-  //     );
-  //   },
-  //   selectionRectTop: function () {
-  //     return (
-  //       Math.min(this.selectionPosition.y1, this.selectionPosition.y2) +
-  //       10 +
-  //       "px"
-  //     );
-  //   },
-  //   selectionRectWidth: function () {
-  //     return (
-  //       Math.max(this.selectionPosition.x1, this.selectionPosition.x2) -
-  //       Math.min(this.selectionPosition.x1, this.selectionPosition.x2) +
-  //       "px"
-  //     );
-  //   },
-  //   selectionRectHeight: function () {
-  //     return (
-  //       Math.max(this.selectionPosition.y1, this.selectionPosition.y2) -
-  //       Math.min(this.selectionPosition.y1, this.selectionPosition.y2) +
-  //       "px"
-  //     );
-  //   },
-  // },
+  computed: {
+    ...mapState({
+      notations: (state) => {
+        return state.notations;
+      },
+      cursorPosition: (state) => state.cursorPosition,
+    }),
+    selectionRectLeft: function () {
+      return (
+        Math.min(this.selectionPosition.x1, this.selectionPosition.x2) +
+        10 +
+        "px"
+      );
+    },
+    selectionRectTop: function () {
+      return (
+        Math.min(this.selectionPosition.y1, this.selectionPosition.y2) +
+        10 +
+        "px"
+      );
+    },
+    selectionRectWidth: function () {
+      return (
+        Math.max(this.selectionPosition.x1, this.selectionPosition.x2) -
+        Math.min(this.selectionPosition.x1, this.selectionPosition.x2) +
+        "px"
+      );
+    },
+    selectionRectHeight: function () {
+      return (
+        Math.max(this.selectionPosition.y1, this.selectionPosition.y2) -
+        Math.min(this.selectionPosition.y1, this.selectionPosition.y2) +
+        "px"
+      );
+    },
+  },
   watch: {
     cursorPosition: {
       handler(cursorPosition) {

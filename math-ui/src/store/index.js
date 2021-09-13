@@ -73,7 +73,9 @@ export default new Vuex.Store({
     removeAllNotation(state) {
       state.notations = [];
     },
-
+    removeAllExercises(state) {
+      state.exercises = [];
+    },
     selectNotation(state, id) {
       let notation = helper.findNotationById(state, id);
       delete notation.selected; // for reactivity
@@ -146,7 +148,8 @@ export default new Vuex.Store({
         });
       });
     },
-    loadExercises(context, payload) {
+    loadExercises(context) {
+      context.commit("removeAllExercises");
       return dbSyncMixin.methods
         .getAllExercises(context.getters.getUser.id)
         .then((exercises) => {

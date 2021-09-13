@@ -170,16 +170,7 @@ export default {
     }),
     googleOnSuccess: async function (user) {
       this.dialog = false;
-      let userProfile = user.getBasicProfile();
-      let googleUser = {
-        name: userProfile.getName(),
-        email: userProfile.getEmail(),
-        imageUrl: userProfile.getImageUrl(),
-        id_token: user.getAuthResponse().access_token,
-      };
-      this.registerUser(user).then((user) => {
-        this.$router.push("/");
-      });
+      this.$router.push("/");
     },
     validateRegister: async function () {
       if (this.$refs.registerForm.validate()) {
@@ -200,8 +191,8 @@ export default {
         if (!!authenticatedUser) {
           await this.setUser(authenticatedUser);
           this.loginFailed = false;
-          this.$cookies.set("token", this.getUser().token);
-          this.$cookies.set("email", this.getUser().email);
+          this.$cookies.set("token", authenticatedUser.token);
+          this.$cookies.set("email", authenticatedUser.email);
           this.$router.push("/");
         } else {
           this.loginFailed = true;
