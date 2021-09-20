@@ -150,8 +150,10 @@
 <script>
 import { mapActions } from "vuex";
 import { mapGetters } from "vuex";
+import constants from "../Mixins/constants";
 export default {
   name: "Login",
+  mixins: [constants],
   mounted() {
     gapi.signin2.render("google-signin-btn", {
       scope: "email",
@@ -179,16 +181,21 @@ export default {
         user.password = this.password;
         user.familyName = this.familyName;
         user.email = this.email;
-        user.isAuthenticated = true;
+        user.authType = this.authType.localToken;
         await this.registerUser(user);
         this.tab = "Login";
       }
     },
     validateLogin: async function () {
       if (this.$refs.loginForm.validate()) {
-        let user = { email: this.loginEmail, password: this.loginPassword };
+        let user = {
+          email: this.loginEmail,
+          password: this.loginPassword,
+          authType: this.authType.localPassword,
+        };
         let authenticatedUser = await this.authLocalUserByPassword(user);
         if (!!authenticatedUser) {
+          authenticatedUser.authType = user.authType;
           await this.setUser(authenticatedUser);
           this.loginFailed = false;
           this.$cookies.set("token", authenticatedUser.token);

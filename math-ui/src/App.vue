@@ -68,8 +68,10 @@
 
 <script>
 import { mapGetters, mapActions } from "vuex";
+import constants from "./Mixins/constants";
 export default {
   name: "App",
+  mixins: [constants],
   watch: {
     $route: function (to, from) {
       if (to.path === "/") {
@@ -116,9 +118,14 @@ export default {
         let user = await this.authLocalUserByToken({
           email: email,
           token: token,
+          authType: this.authType.localToken,
         });
         if (!!user) {
-          return await this.setUser({ ...user, isAuthenticated: true });
+          return await this.setUser({
+            ...user,
+            authType: this.authType.localToken,
+            token: token,
+          });
         }
       }
     },
@@ -138,12 +145,13 @@ export default {
           return await this.setUser({
             ...user,
             ...googleUser,
-            isAuthenticated: true,
+            authType: this.authType.googleToken,
+            token: googleUser.id_token,
           });
         } else {
           return await this.registerUser({
             ...googleUser,
-            isAuthenticated: true,
+            authType: this.authType.googleToken,
           });
         }
       }

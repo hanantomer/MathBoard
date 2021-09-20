@@ -104,17 +104,10 @@ export default new Vuex.Store({
   },
   actions: {
     async authLocalUserByToken(context, user) {
-      return await dbSyncMixin.methods.authLocalUserByToken(
-        user.email,
-        user.token
-      );
+      return await dbSyncMixin.methods.authLocalUserByToken(user);
     },
     async authLocalUserByPassword(context, user) {
-      console.debug(`user.email:${user.email}, user.password:${user.password}`);
-      return await dbSyncMixin.methods.authLocalUserByPassword(
-        user.email,
-        user.password
-      );
+      return await dbSyncMixin.methods.authLocalUserByPassword(user);
     },
     async authGoogleUser(context, user) {
       console.debug(`authGoogleUser:${user}`);
@@ -124,19 +117,19 @@ export default new Vuex.Store({
       );
     },
     async registerUser(context, user) {
-      let registeredUser = await dbSyncMixin.methods.setUser(user);
+      let registeredUser = await dbSyncMixin.methods.registerUser(user);
       if (!!registeredUser) {
         registeredUser = {
           ...registeredUser,
           ...user,
-          ...{ password: null, isAuthenticated: true },
+          ...{ password: null },
         };
         context.commit("setUser", registeredUser);
         return registeredUser;
       }
     },
     async setUser(context, user) {
-      context.commit("setUser", { ...user, isAuthenticated: true });
+      context.commit("setUser", { ...user });
       return user;
     },
 
@@ -150,14 +143,16 @@ export default new Vuex.Store({
     },
     loadExercises(context) {
       context.commit("removeAllExercises");
-      return dbSyncMixin.methods
-        .getAllExercises(context.getters.getUser.id)
-        .then((exercises) => {
-          exercises.data.forEach((e) => {
-            context.commit("addExercise", e);
-          });
-          return exercises.data.length > 0;
-        });
+      return dbSyncMixin.methods.getAllExercises(
+        (context.getters.getUser.token, context.getters.getUser.id).then(
+          (exercises) => {
+            exercises.data.forEach((e) => {
+              context.commit("addExercise", e);
+            });
+            return exercises.data.length > 0;
+          }
+        )
+      );
     },
     addExercise(context, payload) {
       const exercise = payload;

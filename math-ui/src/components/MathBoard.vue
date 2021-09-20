@@ -71,17 +71,17 @@ import socketio from "@feathersjs/socketio-client";
 
 export default {
   props: ["exerciseId"],
-  //destroyed: function () {
-  //  window.removeEventListener("click", this.onclick);
-  //},
+  destroyed: function () {
+    window.removeEventListener("click", this.onclick);
+  },
   mounted: function () {
     this.svg = d3.select("#svg");
 
-    //if (this.exerciseId) {
-    //  this.loadNotations().then(() => {
-    //    window.addEventListener("click", this.onclick);
-    //  });
-    //}
+    if (this.exerciseId) {
+      this.loadNotations().then(() => {
+        window.addEventListener("click", this.onclick);
+      });
+    }
   },
   data: function () {
     return {
