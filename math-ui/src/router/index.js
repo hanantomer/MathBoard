@@ -32,7 +32,7 @@ router.beforeEach((to, from, next) => {
   if (to.matched.some((record) => record.meta.requiresAuth)) {
     let user = store.getters.getUser;
     console.log(user);
-    if (!user.authType) {
+    if (!user.name) {
       next({
         path: "/login",
         params: { nextUrl: to.fullPath },

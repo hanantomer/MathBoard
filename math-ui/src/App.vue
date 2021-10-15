@@ -68,16 +68,16 @@
 
 <script>
 import { mapGetters, mapActions } from "vuex";
-import constants from "./Mixins/constants";
+import authMixin from "./Mixins/authMixin";
 export default {
   name: "App",
-  mixins: [constants],
+  mixins: [authMixin],
   watch: {
-    $route: function (to, from) {
-      if (to.path === "/") {
-        this.signIn();
-      }
-    },
+    //$route: function (to, from) {
+    //  if (to.path === "/") {
+    //    this.signIn();
+    //  }
+    //},
   },
   methods: {
     ...mapGetters({ getUser: "getUser" }),
@@ -87,79 +87,52 @@ export default {
       setUser: "setUser",
       registerUser: "registerUser",
     }),
+    signIn: async function () {
+      try {
+        console.debug("load gapi");
+        await gapi.load("client:auth2");
+        console.debug("set user");
+        await this.authMixin_setGoogleUser();
 
-    signedInWithGoogle: function () {
-      return gapi.auth2.getAuthInstance().currentUser.get().isSignedIn();
-    },
-    signOut: async function () {
-      if (this.signedInWithGoogle()) {
-        gapi.auth2.getAuthInstance().signOut();
-      } else {
-        this.$cookies.set("token", null);
-        this.$cookies.set("email", null);
+        //this.authMixin_setAuthorizationHeader();
+
+        let user = await this.signInViaGoogleAuth();
+        if (!user) {
+          user = await this.signInViaLocalCookie();
+        }
+        if (!user) {
+          this.$router.push("/login");
+        }
+      } catch (e) {
+        console.debug(e);
       }
-      await this.setUser(null);
+    },
+    signOut: function () {
+      this.authMixin_signOut();
       this.$router.push("/login");
     },
-    signIn: async function () {
-      await this.loadGoogleAuth();
-      let user = await this.signInViaGoogleAuth();
-      if (!user) {
-        user = await this.signInViaLocalCookie();
-      }
-      if (!user) {
-        this.$router.push("/login");
-      }
-    },
     signInViaLocalCookie: async function () {
-      let token = this.$cookies.get("token");
-      let email = this.$cookies.get("email");
-      if (!!token && !!email) {
-        let user = await this.authLocalUserByToken({
-          email: email,
-          token: token,
-          authType: this.authType.localToken,
-        });
+      if (this.authMixin_signedInLocally()) {
+        let user = await this.authLocalUserByToken({});
         if (!!user) {
           return await this.setUser({
-            ...user,
-            authType: this.authType.localToken,
-            token: token,
+            user,
           });
         }
       }
     },
     signInViaGoogleAuth: async function () {
-      let auth2 = await gapi.auth2.init();
-      let googleUser = {};
-      if (auth2.currentUser.get().isSignedIn()) {
-        let userProfile = auth2.currentUser.get().getBasicProfile();
-        googleUser.name = userProfile.getName();
-        googleUser.email = userProfile.getEmail();
-        googleUser.imageUrl = userProfile.getImageUrl();
-        googleUser.id_token = auth2.currentUser
-          .get()
-          .getAuthResponse().id_token;
-        let user = await this.authGoogleUser(googleUser);
-        if (!!user) {
-          return await this.setUser({
-            ...user,
-            ...googleUser,
-            authType: this.authType.googleToken,
-            token: googleUser.id_token,
-          });
-        } else {
-          return await this.registerUser({
-            ...googleUser,
-            authType: this.authType.googleToken,
-          });
-        }
+      let user = await this.authGoogleUser(this.googleUser);
+      if (!!user) {
+        return await this.setUser({
+          ...user,
+          ...this.googleUser,
+        });
+      } else {
+        return await this.registerUser({
+          ...this.googleUser,
+        });
       }
-    },
-    loadGoogleAuth: async function () {
-      await new Promise((resolve) => {
-        gapi.load("client:auth2", resolve);
-      });
     },
   },
   computed: {
@@ -168,7 +141,10 @@ export default {
     },
   },
   mounted: async function () {
-    this.signIn();
+    let that = this;
+    gapi.load("client:auth2", function () {
+      that.signIn();
+    });
   },
 };
 </script>

@@ -7,7 +7,13 @@
       "path": "math-ui"
     },
     {
-      "path": "feathers"
+      "path": "math-auth"
+    },
+    {
+      "path": "math-db"
+    },
+    {
+      "path": "math-messages"
     }
   ],
   "settings": {

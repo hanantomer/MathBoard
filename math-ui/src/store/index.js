@@ -1,6 +1,7 @@
 import Vue from "vue";
 import Vuex from "vuex";
 import dbSyncMixin from "../Mixins/dbSyncMixin";
+import positionMixin from "../Mixins/positionMixin";
 
 Vue.use(Vuex);
 
@@ -19,6 +20,7 @@ const helper = {
 export default new Vuex.Store({
   modules: {
     dbSyncMixin,
+    positionMixin,
   },
   state: {
     user: { id: null, imageUrl: null, name: null },
@@ -103,18 +105,17 @@ export default new Vuex.Store({
     },
   },
   actions: {
-    async authLocalUserByToken(context, user) {
-      return await dbSyncMixin.methods.authLocalUserByToken(user);
+    async authLocalUserByToken(context) {
+      return await dbSyncMixin.methods.authLocalUserByToken();
     },
     async authLocalUserByPassword(context, user) {
-      return await dbSyncMixin.methods.authLocalUserByPassword(user);
-    },
-    async authGoogleUser(context, user) {
-      console.debug(`authGoogleUser:${user}`);
-      return await dbSyncMixin.methods.authGoogleUser(
+      return await dbSyncMixin.methods.authLocalUserByPassword(
         user.email,
-        user.id_token
+        user.password
       );
+    },
+    async authGoogleUser(context) {
+      return await dbSyncMixin.methods.authGoogleUser();
     },
     async registerUser(context, user) {
       let registeredUser = await dbSyncMixin.methods.registerUser(user);
@@ -133,26 +134,26 @@ export default new Vuex.Store({
       return user;
     },
 
-    loadNotations(context, exerciseId) {
+    async loadNotations(context, exerciseId) {
       context.commit("removeAllNotation");
-      dbSyncMixin.methods.getAllNotations(exerciseId).then((notations) => {
+      let notations = dbSyncMixin.methods.getAllNotations(exerciseId);
+      if (notations.length > 0) {
         notations.forEach((n) => {
           context.commit("addNotation", n);
         });
-      });
+      }
     },
-    loadExercises(context) {
+    async loadExercises(context) {
       context.commit("removeAllExercises");
-      return dbSyncMixin.methods.getAllExercises(
-        (context.getters.getUser.token, context.getters.getUser.id).then(
-          (exercises) => {
-            exercises.data.forEach((e) => {
-              context.commit("addExercise", e);
-            });
-            return exercises.data.length > 0;
-          }
-        )
+      let exercises = await dbSyncMixin.methods.getAllExercises(
+        context.getters.getUser
       );
+      if (exercises.data.length > 0) {
+        exercises.data.forEach((e) => {
+          context.commit("addExercise", e);
+        });
+      }
+      return exercises.data.length > 0;
     },
     addExercise(context, payload) {
       const exercise = payload;
@@ -172,12 +173,21 @@ export default new Vuex.Store({
     removeExercise(context, payload) {
       context.commit("removeExercise", payload.id);
     },
-    addSymbol(context, payload) {
-      let symbol = Object.assign(payload, context.getters.getCursorPosition);
+    addSymbol(context, symbolValue) {
+      let nextPosition = positionMixin.methods.positionMixin_getNext(
+        symbolValue,
+        context.getters.getCursorPosition
+      );
+      context.commit("setCursorPosition", nextPosition);
+
+      let symbol = Object.assign(symbolValue, nextPosition);
 
       dbSyncMixin.methods.addSymbol(symbol).then((symbol) => {
         context.commit("addNotation", symbol);
       });
+    },
+    async syncIncomingNotaion(context, notation) {
+      context.commit("addNotation", notation);
     },
     async removeSelectedSymbols(context) {
       context.state.notations

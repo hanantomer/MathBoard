@@ -1,10 +1,10 @@
 const express = require("express");
 const cors = require("cors");
-const Sequelize = require("sequelize");
 const finale = require("finale-rest");
-const db = require("./src/models/index.js");
-const authMiddleware = require("./src/authMiddleware.js");
-const userMiddleware = require("./src/userMiddleware.js");
+const db = require("math-db/src/models/index");
+const authMiddleware = require("math-auth/src/authMiddleware");
+const userMiddleware = require("./userMiddleware");
+const notationMiddleware = require("./notationMiddleware");
 
 let app = express();
 app.use(cors());
@@ -29,10 +29,12 @@ finale
     })
     .use(authMiddleware);
 
-finale.resource({
-    model: db.sequelize.models["Symbol"],
-    endpoints: ["/symbols", "/symbols/:id"],
-});
+finale
+    .resource({
+        model: db.sequelize.models["Symbol"],
+        endpoints: ["/symbols", "/symbols/:id"],
+    })
+    .use(notationMiddleware);
 
 finale.resource({
     model: db.sequelize.models["SignSymbol"],

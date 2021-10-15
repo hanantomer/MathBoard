@@ -1,7 +1,28 @@
-import axios from "axios";
-
+const axios = require("axios");
+const authMixin = require("./authMixin");
 const axiosInstnce = axios.create({
   baseURL: "http://localhost:8081",
+});
+
+axiosInstnce.interceptors.request.use(function (config) {
+  const isOAuth =
+    gapi.auth2.getAuthInstance().currentUser != null &&
+    gapi.auth2.getAuthInstance().currentUser.get().isSignedIn();
+
+  const token = isOAuth
+    ? `Bearer ${
+        gapi.auth2.getAuthInstance().currentUser.get().getAuthResponse()
+          .id_token
+      }`
+    : this.$cookies.get("token") != null && this.$cookies.get("token") != "null"
+    ? this.$cookies.get("token")
+    : null;
+
+  if (token != null) {
+    config.headers.Authorization = token;
+  }
+
+  return config;
 });
 
 function handleError(error) {
@@ -23,44 +44,37 @@ function handleError(error) {
   console.log(error.config);
 }
 
-function getRequestConfig(token, authType) {
-  return {
-    headers: {
-      "auth-type": authType,
-      authorization: token,
-    },
-  };
-}
-
-export default {
+module.exports = {
   methods: {
-    authGoogleUser: async function (email, token) {
+    getUserByToken: async function () {
       try {
-        let res = await axiosInstnce.get(
-          `/users?email=${email}`,
-          getRequestConfig(token, "googleToken")
-        );
+        let res = await axiosInstnce.get("/users");
         return !!res ? res.data : null;
       } catch (error) {
         handleError(error);
       }
     },
-    authLocalUserByToken: async function (user) {
+    authGoogleUser: async function () {
       try {
-        let res = await axiosInstnce.get(
-          `/users?email=${user.email}`,
-          getRequestConfig(user.token, user.authType)
-        );
+        let res = await axiosInstnce.get("/users");
+        console.debug(res);
         return !!res ? res.data : null;
       } catch (error) {
         handleError(error);
       }
     },
-    authLocalUserByPassword: async function (user) {
+    authLocalUserByToken: async function () {
+      try {
+        let res = await axiosInstnce.get("/users");
+        return !!res ? res.data : null;
+      } catch (error) {
+        handleError(error);
+      }
+    },
+    authLocalUserByPassword: async function (email, password) {
       try {
         let res = await axiosInstnce.get(
-          `/users?email=${user.email}&password=${user.password}`,
-          getRequestConfig(null, user.authType)
+          `/users?email=${email}&password=${password}`
         );
         return !!res ? res.data : null;
       } catch (error) {
@@ -112,12 +126,10 @@ export default {
         handleError(error);
       }
     },
-    getAllExercises: async function (user, token) {
+    getAllExercises: async function (user) {
+      console.log(user);
       try {
-        return axiosInstnce.get(
-          "/exercises?UserId=" + user,
-          getRequestConfig(token, user.authType)
-        );
+        return axiosInstnce.get("/exercises?UserId=" + user.id);
       } catch (error) {
         handleError(error);
       }

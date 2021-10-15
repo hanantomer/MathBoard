@@ -1,0 +1,18 @@
+{
+  "name": "math-db",
+  "version": "1.0.0",
+  "description": "",
+  "dependencies": {
+    "eslint": "^7.32.0",
+    "eslint-config-prettier": "^8.3.0",
+    "eslint-plugin-prettier": "^4.0.0",
+    "pg": "^8.7.1",
+    "pg-hstore": "^2.3.4",
+    "prettier": "^2.4.0",
+    "sequelize": "^6.6.5"
+  },
+  "devDependencies": {},
+  "scripts": {},
+  "author": "",
+  "license": "ISC"
+}

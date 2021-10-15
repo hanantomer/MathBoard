@@ -1,14 +1,14 @@
-
 class NotationSyncService {
   constructor() {
     this.notations = [];
   }
   async find(params) {
-    return [];
+    return this.notations;
   }
-  async get(id, params) {}
+  async get(data, params) {}
   async create(data, params) {
-    this.notations.put(data.id);
+    console.debug(`notaion added:${data}`);
+    this.notations.put(data);
   }
   async update(id, data, params) {}
   async patch(id, data, params) {}

@@ -29,8 +29,10 @@
 import { mapActions } from "vuex";
 import { mapGetters } from "vuex";
 import ExerciseDialog from "./ExerciseDialog.vue";
+import notationSyncMixin from "../Mixins/notationSyncMixin";
 
 export default {
+  mixins: [notationSyncMixin],
   components: { ExerciseDialog },
   name: "Exercises",
   mounted() {
@@ -64,9 +66,10 @@ export default {
         });
       });
     },
-    exerciseSeletcted(id) {
+    exerciseSeletcted(exerciseId) {
+      this.syncIncomingNotation(exerciseId); ///TODO create mechnism to handle gaps between load and sync
       this.$router.push({
-        path: "/mathboard/" + id,
+        path: "/mathboard/" + exerciseId,
       });
     },
   },

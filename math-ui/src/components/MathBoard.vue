@@ -11,7 +11,7 @@
       >
       <v-btn
         icon
-        v-on:click="deleteselectedSymbols"
+        v-on:click="deleteSelectedSymbols"
         color="white"
         x-small
         fab
@@ -60,14 +60,6 @@ import matrixOverlayMixin from "../Mixins/matrixOverlayMixin";
 import positionMixin from "../Mixins/positionMixin";
 import cursorMixin from "../Mixins/cursorMixin";
 import selectionMixin from "../Mixins/selectionMixin";
-import io from "socket.io-client";
-import feathers from "@feathersjs/feathers";
-import socketio from "@feathersjs/socketio-client";
-
-//const socket = io("http://localhost:3030");
-//const client = feathers();
-//client.configure(socketio(socket));
-//const notaionSync = client.service("notaionSync");
 
 export default {
   props: ["exerciseId"],
@@ -84,6 +76,7 @@ export default {
     }
   },
   data: function () {
+    //TODO - move to methods
     return {
       ...mapGetters({
         getCursorPosition: "getCursorPosition",
@@ -215,7 +208,7 @@ export default {
     },
   },
   methods: {
-    deleteselectedSymbols: function () {
+    deleteSelectedSymbols: function () {
       this.$store.dispatch("removeSelectedSymbols");
     },
     loadNotations: function () {
@@ -223,7 +216,7 @@ export default {
     },
     addSymbol: function (context) {
       const symbolValue = context.currentTarget.innerText;
-      this.incrementPoistion(symbolValue);
+      //this.incrementPoistion(symbolValue);
       const symbol = {
         ExerciseId: this.exerciseId,
         value: symbolValue,
@@ -231,13 +224,13 @@ export default {
       };
       this.$store.dispatch("addSymbol", symbol);
     },
-    incrementPoistion: function (symbolValue) {
-      let nextPosition = this.positionMixin_getNext(
-        symbolValue,
-        this.getCursorPosition()
-      );
-      this.setCursorPosition(nextPosition);
-    },
+    // incrementPoistion: function (symbolValue) {
+    //   let nextPosition = this.positionMixin_getNext(
+    //     symbolValue,
+    //     this.getCursorPosition()
+    //   );
+    //   this.setCursorPosition(nextPosition);
+    // },
     onmousedown: function (e) {
       if (e.target.id === "svg") {
         const boundBox = e.target.getBoundingClientRect();
