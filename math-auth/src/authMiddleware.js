@@ -3,53 +3,34 @@
  */
 "use strict";
 const authUtil = require("./authUtil");
-
-async function auth(token, res, context, callback) {
-    let authResult = await callback(token, res);
-    if (!authResult) {
-        context.stop();
-        throw new Error("forebidden");
-    }
-    context.continue();
-    return authResult;
-}
+var ForbiddenError = require("finale-rest").Errors.ForbiddenError;
 
 module.exports = {
     list: {
         auth: async (req, res, context) => {
-            let user = null;
-            if (
+            let authorized = false;
+
+            if (!!req.query.password) {
+                context.token = await authUtil.authByLocalPassword(
+                    req.query.email,
+                    req.query.password,
+                    context
+                );
+                authorized = !!context.token;
+            } else if (
                 !!req.headers.authorization &&
                 req.headers.authorization.indexOf("Bearer") == 0
             ) {
-                user = await auth(
-                    req.headers.authorization,
-                    res,
-                    context,
-                    authUtil.authByGoogleToken
+                authorized = await authUtil.authByGoogleToken(
+                    req.headers.authorization
                 );
             } else if (!!req.headers.authorization) {
-                user = await auth(
-                    req.headers.authorization,
-                    res,
-                    context,
-                    authUtil.authByLocalToken
+                authorized = await authUtil.authByLocalToken(
+                    req.headers.authorization
                 );
-            } else if (!!req.query.password) {
-                user = await authUtil.authByLocalPassword(
-                    req.query.email,
-                    req.query.password,
-                    res,
-                    context
-                );
-            } else {
-                throw new Error("Unauthorized");
             }
-
-            if (!!user) {
-                res.json(user);
-            } else {
-                res.status(401).json({});
+            if (!authorized) {
+                throw new ForbiddenError();
             }
             return context.continue();
         },

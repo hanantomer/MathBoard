@@ -6,6 +6,7 @@ const axiosInstnce = axios.create({
 
 axiosInstnce.interceptors.request.use(function (config) {
   const isOAuth =
+    gapi.auth2.getAuthInstance() != null &&
     gapi.auth2.getAuthInstance().currentUser != null &&
     gapi.auth2.getAuthInstance().currentUser.get().isSignedIn();
 
@@ -14,7 +15,9 @@ axiosInstnce.interceptors.request.use(function (config) {
         gapi.auth2.getAuthInstance().currentUser.get().getAuthResponse()
           .id_token
       }`
-    : this.$cookies.get("token") != null && this.$cookies.get("token") != "null"
+    : this.$cookies.get("token") != null &&
+      this.$cookies.get("token") != "null" &&
+      this.$cookies.get("token") != "undefined"
     ? this.$cookies.get("token")
     : null;
 
@@ -46,10 +49,21 @@ function handleError(error) {
 
 module.exports = {
   methods: {
+    createAccessLink: async function (exerciseId, link) {
+      try {
+        let res = await axiosInstnce.post("/accessLink", {
+          ExerciseId: exerciseId,
+          link: link,
+        });
+        return res.data;
+      } catch (error) {
+        handleError(error);
+      }
+    },
     getUserByToken: async function () {
       try {
         let res = await axiosInstnce.get("/users");
-        return !!res ? res.data : null;
+        return !!res ? res.data[0] : null;
       } catch (error) {
         handleError(error);
       }
@@ -57,8 +71,7 @@ module.exports = {
     authGoogleUser: async function () {
       try {
         let res = await axiosInstnce.get("/users");
-        console.debug(res);
-        return !!res ? res.data : null;
+        return !!res ? res.data[0] : null;
       } catch (error) {
         handleError(error);
       }
@@ -66,7 +79,7 @@ module.exports = {
     authLocalUserByToken: async function () {
       try {
         let res = await axiosInstnce.get("/users");
-        return !!res ? res.data : null;
+        return !!res ? res.data[0] : null;
       } catch (error) {
         handleError(error);
       }
@@ -76,7 +89,7 @@ module.exports = {
         let res = await axiosInstnce.get(
           `/users?email=${email}&password=${password}`
         );
-        return !!res ? res.data : null;
+        return !!res ? res.data[0] : null;
       } catch (error) {
         handleError(error);
       }

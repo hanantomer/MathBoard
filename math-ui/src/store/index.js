@@ -23,7 +23,7 @@ export default new Vuex.Store({
     positionMixin,
   },
   state: {
-    user: { id: null, imageUrl: null, name: null },
+    user: {},
     exercises: [],
     notations: [],
     currentExercise: {},
@@ -105,6 +105,12 @@ export default new Vuex.Store({
     },
   },
   actions: {
+    async createAccessLink(context, accessLink) {
+      return await dbSyncMixin.methods.createAccessLink(
+        accessLink.exerciseId,
+        accessLink.link
+      );
+    },
     async authLocalUserByToken(context) {
       return await dbSyncMixin.methods.authLocalUserByToken();
     },
@@ -114,8 +120,10 @@ export default new Vuex.Store({
         user.password
       );
     },
-    async authGoogleUser(context) {
-      return await dbSyncMixin.methods.authGoogleUser();
+    async authGoogleUser(context, googleUser) {
+      let user = await dbSyncMixin.methods.authGoogleUser();
+      console.debug(user);
+      return user;
     },
     async registerUser(context, user) {
       let registeredUser = await dbSyncMixin.methods.registerUser(user);
@@ -130,7 +138,7 @@ export default new Vuex.Store({
       }
     },
     async setUser(context, user) {
-      context.commit("setUser", { ...user });
+      context.commit("setUser", user);
       return user;
     },
 

@@ -18,7 +18,20 @@
         dark
         ><v-icon>mdi-delete</v-icon></v-btn
       >
+      <v-btn
+        icon
+        @click.stop="isAccessLinkDialogOpen = true"
+        color="white"
+        x-small
+        fab
+        dark
+        ><v-icon>mdi-account-plus</v-icon></v-btn
+      >
     </v-toolbar>
+    <CreateAccessLinkDialog
+      v-model="isAccessLinkDialogOpen"
+      v-on="{ create: createAccessLink }"
+    ></CreateAccessLinkDialog>
     <v-card app>
       <v-container app fluid>
         <svg
@@ -60,8 +73,10 @@ import matrixOverlayMixin from "../Mixins/matrixOverlayMixin";
 import positionMixin from "../Mixins/positionMixin";
 import cursorMixin from "../Mixins/cursorMixin";
 import selectionMixin from "../Mixins/selectionMixin";
+import CreateAccessLinkDialog from "./CreateAccessLinkDialog.vue";
 
 export default {
+  components: { CreateAccessLinkDialog },
   props: ["exerciseId"],
   destroyed: function () {
     window.removeEventListener("click", this.onclick);
@@ -75,20 +90,10 @@ export default {
       });
     }
   },
-  data: function () {
+  data() {
     //TODO - move to methods
     return {
-      ...mapGetters({
-        getCursorPosition: "getCursorPosition",
-        isAnnotationSelected: "isAnnotationSelected",
-      }),
-      ...mapActions({
-        setCursorPosition: "setCursorPosition",
-        selectNotation: "selectNotation",
-        unselectAllNotations: "unselectAllNotations",
-        moveSelectedNotations: "moveSelectedNotations",
-        updateSelectedNotations: "updateSelectedNotations",
-      }),
+      isAccessLinkDialogOpen: false,
       svg: {},
       signs: [
         { sign: "1" },
@@ -208,6 +213,24 @@ export default {
     },
   },
   methods: {
+    ...mapGetters({
+      getCursorPosition: "getCursorPosition",
+      isAnnotationSelected: "isAnnotationSelected",
+    }),
+    ...mapActions({
+      setCursorPosition: "setCursorPosition",
+      selectNotation: "selectNotation",
+      unselectAllNotations: "unselectAllNotations",
+      moveSelectedNotations: "moveSelectedNotations",
+      updateSelectedNotations: "updateSelectedNotations",
+      createAccessLink: "createAccessLink",
+    }),
+    createAccessLink: function (link) {
+      this.$store.dispatch("createAccessLink", {
+        exerciseId: this.exerciseId,
+        link: link,
+      });
+    },
     deleteSelectedSymbols: function () {
       this.$store.dispatch("removeSelectedSymbols");
     },

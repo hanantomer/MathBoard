@@ -36,6 +36,7 @@
                       name="input-10-1"
                       label="Password"
                       hint="At least 8 characters"
+                      value="12345678"
                       counter
                       @click:append="show1 = !show1"
                     ></v-text-field>
@@ -171,7 +172,7 @@ export default {
     googleOnSuccess: async function (user) {
       this.dialog = false;
       this.$cookies.remove("token");
-      this.$router.push("/");
+      //this.$router.push("/");
     },
     validateRegister: async function () {
       if (this.$refs.registerForm.validate()) {
@@ -194,7 +195,6 @@ export default {
         if (!!authenticatedUser) {
           await this.setUser(authenticatedUser);
           this.loginFailed = false;
-          console.debug("token:" + authenticatedUser.token);
           this.$cookies.set("token", authenticatedUser.token);
           this.$router.push("/");
         } else {
@@ -230,8 +230,8 @@ export default {
     email: "",
     password: "",
     verify: "",
-    loginPassword: "",
-    loginEmail: "",
+    loginPassword: "12345678",
+    loginEmail: "hanantomer@gmail.com",
     loginEmailRules: [
       (v) => !!v || "Required",
       (v) => /.+@.+\..+/.test(v) || "E-mail must be valid",

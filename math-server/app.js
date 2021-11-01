@@ -45,10 +45,32 @@ finale.resource({
     model: db.sequelize.models["NumberSymbol"],
     endpoints: ["/numbersymbols", "/numbersymbols/:id"],
 });
+finale.resource({
+    model: db.sequelize.models["AccessLink"],
+    endpoints: ["/accessLink", "/accessLink/:id"],
+});
 
 // Resets the database and launches the express app on :8081
 db.sequelize.sync({ force: true }).then(() => {
     app.listen(8081, () => {
         console.log("listening to port localhost:8081");
+
+        var spawn = require("child_process").spawn;
+        var ls = spawn("cmd.exe", [
+            "/c",
+            "C:/dev/MathBoard/math-db/seeders/seed.bat",
+        ]);
+
+        ls.stdout.on("data", function (data) {
+            console.log("stdout: " + data);
+        });
+
+        ls.stderr.on("data", function (data) {
+            console.log("stderr: " + data);
+        });
+
+        ls.on("exit", function (code) {
+            console.log("child process exited with code " + code);
+        });
     });
 });

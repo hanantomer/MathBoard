@@ -10,6 +10,7 @@ const notaionSync = client.service("notationSync");
 module.exports = {
     create: {
         write: {
+            // send message to notation channel
             after: async (req, res, context) => {
                 notaionSync.create(req.notation);
                 return context.continue;

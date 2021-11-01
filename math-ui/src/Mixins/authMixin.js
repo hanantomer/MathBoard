@@ -1,15 +1,18 @@
 const axios = require("axios");
 
+function getCookie(name) {
+  const value = `; ${document.cookie}`;
+  const parts = value.split(`; ${name}=`);
+  if (parts.length === 2) return parts.pop().split(";").shift();
+}
+
 export default {
-  data: () => {
-    return {
-      googleUser: null,
-    };
-  },
+  // data: () => {
+  //   return {
+  //     googleUser: null,
+  //   };
+  // },
   methods: {
-    authMixin_loadGoogleAuth: async function (callbak) {
-      await gapi.load("client:auth2");
-    },
     authMixin_getToken: function () {
       const token = `${
         gapi.auth2.getAuthInstance().currentUser.get().isSignedIn()
@@ -31,12 +34,10 @@ export default {
       } else {
         this.$cookies.remove("token");
       }
-      await this.setUser(null);
+      await this.setUser({});
     },
-    authMixin_setGoogleUser: async function () {
-      console.debug("gapi init");
+    authMixin_getGoogleUser: async function () {
       let auth2 = await gapi.auth2.init();
-      console.debug("signed in?");
       if (!auth2.currentUser.get().isSignedIn()) {
         return;
       }
@@ -46,8 +47,8 @@ export default {
       googleUser.email = userProfile.getEmail();
       googleUser.imageUrl = userProfile.getImageUrl();
       googleUser.id_token = auth2.currentUser.get().getAuthResponse().id_token;
-      this.googleUser = googleUser;
-      console.debug("google user:" + googleUser.name);
+      //this.googleUser = googleUser;
+      return googleUser;
     },
   },
 };

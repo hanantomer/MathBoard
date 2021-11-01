@@ -1,9 +1,9 @@
-import Vue from "vue";
 import VueRouter from "vue-router";
 import Login from "../components/Login.vue";
 import Exercises from "../components/Exercises.vue";
 import MathBoard from "../components/MathBoard.vue";
 import store from "../store/index.js";
+import authMixin from "../Mixins/authMixin.js";
 
 const router = new VueRouter({
   mode: "history",
@@ -11,7 +11,11 @@ const router = new VueRouter({
     {
       path: "/login",
       component: Login,
-      meta: { guest: true },
+      meta: { requiresAuth: false },
+    },
+    {
+      path: "/",
+      meta: { requiresAuth: true },
     },
     {
       path: "/exercises/:userId",
@@ -28,26 +32,42 @@ const router = new VueRouter({
   ],
 });
 
-router.beforeEach((to, from, next) => {
+router.beforeEach(async (to, from, next) => {
   if (to.matched.some((record) => record.meta.requiresAuth)) {
     let user = store.getters.getUser;
-    console.log(user);
-    if (!user.name) {
+    if (!user.id) {
+      if (window.$cookies.get("token")) {
+        // local
+        user = await store.dispatch("authLocalUserByToken");
+        console.log(user);
+        if (!!user) {
+          await store.dispatch("setUser", user);
+        }
+      } else {
+        // google
+        let googleUser = await authMixin.methods.authMixin_getGoogleUser();
+        if (!!googleUser) {
+          user = await store.dispatch("authGoogleUser");
+          console.log(user);
+          if (!!user) {
+            await store.dispatch("setUser", { ...user, ...googleUser });
+          } else {
+            user = await store.dispatch("registerUser", googleUser);
+          }
+        }
+      }
+    }
+    if (!user.id) {
       next({
         path: "/login",
         params: { nextUrl: to.fullPath },
       });
     } else {
-      //let user = JSON.parse(Vue.get("user"));
       next();
     }
-  } //else if (to.matched.some((record) => record.meta.guest)) {
-  //if (Vue.cookie.get("token") == null) {
-  next();
-  //}
-  //} else {
-  //  next();
-  //}
+  } else {
+    next();
+  }
 });
 
 export default router;

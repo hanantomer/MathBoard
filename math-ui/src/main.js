@@ -14,11 +14,13 @@ Vue.use(VueRouter);
 Vue.use(LoaderPlugin, { client_id: Vue.prototype.$client_id });
 Vue.use(VueCookies);
 
-new Vue({
-  store,
-  vuetify,
-  router,
-  render: (createElement) => {
-    return createElement(App);
-  },
-}).$mount("#app");
+gapi.load("client:auth2", () => {
+  new Vue({
+    store,
+    vuetify,
+    router,
+    render: (createElement) => {
+      return createElement(App);
+    },
+  }).$mount("#app");
+});

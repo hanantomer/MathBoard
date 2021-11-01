@@ -14,4 +14,21 @@ module.exports = {
             },
         },
     },
+    list: {
+        fetch: {
+            before: function (req, res, context) {
+                if (!!req.query.password) {
+                    // to allow get user
+                    delete req.query.password;
+                }
+                return context.continue;
+            },
+            after: function (req, res, context) {
+                // embed token produced during authorization
+                context.instance[0].token = context.token;
+                delete context.instance[0].password;
+                return context.continue;
+            },
+        },
+    },
 };

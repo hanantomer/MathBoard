@@ -7,36 +7,25 @@ const clientSecretData = require("../client_secret.json");
 const oAuth2client = new OAuth2Client(clientSecretData.web.client_id);
 
 module.exports = {
-    authByLocalPassword: async function (email, password, res) {
+    authByLocalPassword: async function (email, password, context) {
         let user = await db.sequelize.models["User"].findOne({
             where: { email: email },
         });
         if (!user) {
-            // invalid user
-            //res.status(401).json({});
-            return;
-        } else {
-            // validate password
-            let passwordMatched =
-                !!user && (await bcryptjs.compare(password, user.password));
-            if (passwordMatched) {
-                user.token = jwt.sign(
-                    { email: user.email },
-                    clientSecretData.client_secret,
-                    { expiresIn: 86400 * 30 }
-                );
-                //res.json({
-                //    email: user.email,
-                //    name: user.name,
-                //    id: user.id,
-                //    token: user.token,
-                //});
-                return user;
-            } else {
-                return;
-                //res.status(401).json({});
-            }
+            return false;
         }
+        // validate password
+        let passwordMatched =
+            !!user && (await bcryptjs.compare(password, user.password));
+        if (passwordMatched) {
+            let token = jwt.sign(
+                { email: user.email },
+                clientSecretData.client_secret,
+                { expiresIn: 86400 * 30 }
+            );
+            return token;
+        }
+        return false;
     },
     authByLocalToken: async function (token) {
         let decodedToken = jwt.verify(token, clientSecretData.client_secret);
@@ -44,7 +33,7 @@ module.exports = {
         let user = await db.sequelize.models["User"].findOne({
             where: { email: decodedToken.email },
         });
-        return user;
+        return user != null;
     },
     authByGoogleToken: async function (token) {
         const ticket = await oAuth2client
@@ -57,7 +46,7 @@ module.exports = {
             let user = await db.sequelize.models["User"].findOne({
                 where: { email: ticket.payload.email },
             });
-            return user;
+            return user != null;
         }
     },
 };

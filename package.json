@@ -9,6 +9,7 @@
     "@feathersjs/socketio": "^4.5.11",
     "@feathersjs/socketio-client": "^4.5.11",
     "bcryptjs": "^2.4.3",
+    "finale-rest": "^1.1.1",
     "socket.io-client": "^2.4.0"
   },
   "devDependencies": {},
