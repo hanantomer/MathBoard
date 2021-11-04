@@ -8,30 +8,34 @@ var ForbiddenError = require("finale-rest").Errors.ForbiddenError;
 module.exports = {
     list: {
         auth: async (req, res, context) => {
-            let authorized = false;
+            let user = null;
 
             if (!!req.query.password) {
-                context.token = await authUtil.authByLocalPassword(
+                user = await authUtil.authByLocalPassword(
                     req.query.email,
                     req.query.password,
                     context
                 );
-                authorized = !!context.token;
             } else if (
                 !!req.headers.authorization &&
                 req.headers.authorization.indexOf("Bearer") == 0
             ) {
-                authorized = await authUtil.authByGoogleToken(
+                user = await authUtil.authByGoogleToken(
                     req.headers.authorization
                 );
+                // set email for upcoming find
+                req.query.email = user.email;
             } else if (!!req.headers.authorization) {
-                authorized = await authUtil.authByLocalToken(
+                user = await authUtil.authByLocalToken(
                     req.headers.authorization
                 );
+                // set email for upcoming find
+                req.query.email = user.email;
             }
-            if (!authorized) {
+            if (!user) {
                 throw new ForbiddenError();
             }
+            context.token = user.token;
             return context.continue();
         },
     },

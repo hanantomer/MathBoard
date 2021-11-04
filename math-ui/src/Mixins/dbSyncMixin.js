@@ -22,6 +22,7 @@ axiosInstnce.interceptors.request.use(function (config) {
     : null;
 
   if (token != null) {
+    console.debug(`sending token:${token}`);
     config.headers.Authorization = token;
   }
 
@@ -60,17 +61,10 @@ module.exports = {
         handleError(error);
       }
     },
-    getUserByToken: async function () {
-      try {
-        let res = await axiosInstnce.get("/users");
-        return !!res ? res.data[0] : null;
-      } catch (error) {
-        handleError(error);
-      }
-    },
     authGoogleUser: async function () {
       try {
         let res = await axiosInstnce.get("/users");
+        console.debug(`authGoogleUser:${JSON.stringify(res)}`);
         return !!res ? res.data[0] : null;
       } catch (error) {
         handleError(error);
@@ -79,6 +73,7 @@ module.exports = {
     authLocalUserByToken: async function () {
       try {
         let res = await axiosInstnce.get("/users");
+        console.debug(`authLocalUserByToken:${JSON.stringify(res)}`);
         return !!res ? res.data[0] : null;
       } catch (error) {
         handleError(error);
@@ -89,6 +84,7 @@ module.exports = {
         let res = await axiosInstnce.get(
           `/users?email=${email}&password=${password}`
         );
+        console.debug(`authLocalUserByPassword:${JSON.stringify(res)}`);
         return !!res ? res.data[0] : null;
       } catch (error) {
         handleError(error);
@@ -96,8 +92,8 @@ module.exports = {
     },
     registerUser: async function (user) {
       try {
-        user = await axiosInstnce.post("/users", user);
-        return user.data;
+        await axiosInstnce.post("/users", user);
+        console.debug(`registerUser:${JSON.stringify(user)}`);
       } catch (error) {
         handleError(error);
       }

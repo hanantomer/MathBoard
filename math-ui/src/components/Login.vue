@@ -177,9 +177,9 @@ export default {
     validateRegister: async function () {
       if (this.$refs.registerForm.validate()) {
         let user = {};
-        user.name = this.firstName;
+        user.firstName = this.firstName;
         user.password = this.password;
-        user.familyName = this.familyName;
+        user.lastName = this.familylastNameName;
         user.email = this.email;
         await this.registerUser(user);
         this.tab = "Login";
@@ -191,10 +191,13 @@ export default {
           email: this.loginEmail,
           password: this.loginPassword,
         };
+        console.debug(`authenticate user:${user.email}`);
         let authenticatedUser = await this.authLocalUserByPassword(user);
         if (!!authenticatedUser) {
-          await this.setUser(authenticatedUser);
           this.loginFailed = false;
+          console.debug(
+            `new token:${authenticatedUser.token}, for user:${user.email}`
+          );
           this.$cookies.set("token", authenticatedUser.token);
           this.$router.push("/");
         } else {

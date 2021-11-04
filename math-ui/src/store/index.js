@@ -55,6 +55,7 @@ export default new Vuex.Store({
       );
     },
     setUser(state, user) {
+      console.debug(`commit.setUser:${JSON.stringify(user)}`);
       Vue.set(state, "user", user);
     },
     addExercise(state, exercise) {
@@ -106,21 +107,21 @@ export default new Vuex.Store({
   },
   actions: {
     async createAccessLink(context, accessLink) {
-      return await dbSyncMixin.methods.createAccessLink(
+      return dbSyncMixin.methods.createAccessLink(
         accessLink.exerciseId,
         accessLink.link
       );
     },
     async authLocalUserByToken(context) {
-      return await dbSyncMixin.methods.authLocalUserByToken();
+      return dbSyncMixin.methods.authLocalUserByToken();
     },
     async authLocalUserByPassword(context, user) {
-      return await dbSyncMixin.methods.authLocalUserByPassword(
+      return dbSyncMixin.methods.authLocalUserByPassword(
         user.email,
         user.password
       );
     },
-    async authGoogleUser(context, googleUser) {
+    async authGoogleUser(context) {
       let user = await dbSyncMixin.methods.authGoogleUser();
       console.debug(user);
       return user;
@@ -128,12 +129,11 @@ export default new Vuex.Store({
     async registerUser(context, user) {
       let registeredUser = await dbSyncMixin.methods.registerUser(user);
       if (!!registeredUser) {
-        registeredUser = {
-          ...registeredUser,
-          ...user,
-          ...{ password: null },
-        };
-        context.commit("setUser", registeredUser);
+        // registeredUser = {
+        //   ...registeredUser,
+        //   ...user,
+        //   ...{ password: null },
+        // };
         return registeredUser;
       }
     },

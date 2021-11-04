@@ -18,7 +18,7 @@ module.exports = {
         fetch: {
             before: function (req, res, context) {
                 if (!!req.query.password) {
-                    // to allow get user
+                    // to allow get user without password in where clause
                     delete req.query.password;
                 }
                 return context.continue;

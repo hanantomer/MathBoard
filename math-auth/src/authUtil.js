@@ -12,7 +12,7 @@ module.exports = {
             where: { email: email },
         });
         if (!user) {
-            return false;
+            return null;
         }
         // validate password
         let passwordMatched =
@@ -23,9 +23,10 @@ module.exports = {
                 clientSecretData.client_secret,
                 { expiresIn: 86400 * 30 }
             );
-            return token;
+            user.token = token;
+            return user;
         }
-        return false;
+        return null;
     },
     authByLocalToken: async function (token) {
         let decodedToken = jwt.verify(token, clientSecretData.client_secret);
@@ -33,7 +34,7 @@ module.exports = {
         let user = await db.sequelize.models["User"].findOne({
             where: { email: decodedToken.email },
         });
-        return user != null;
+        return user;
     },
     authByGoogleToken: async function (token) {
         const ticket = await oAuth2client
@@ -46,7 +47,7 @@ module.exports = {
             let user = await db.sequelize.models["User"].findOne({
                 where: { email: ticket.payload.email },
             });
-            return user != null;
+            return user;
         }
     },
 };

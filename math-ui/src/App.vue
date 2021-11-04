@@ -39,10 +39,12 @@
               ><img v-bind:src="user.imageUrl"
             /></v-avatar>
           </template>
-          <span v-show="!!user.name">{{ user.name }}</span>
+          <span v-show="!!user.firstName">{{ user.firstName }}</span>
         </v-tooltip>
-        <v-card-text class="text-right" v-show="!!user.name && !user.imageUrl"
-          >Hello {{ user.name }}</v-card-text
+        <v-card-text
+          class="text-right"
+          v-show="!!user.firstName && !user.imageUrl"
+          >Hello {{ user.firstName }}</v-card-text
         >
       </v-app-bar>
       <!-- <v-divider></v-divider> -->

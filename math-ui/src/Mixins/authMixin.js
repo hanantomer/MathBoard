@@ -1,17 +1,4 @@
-const axios = require("axios");
-
-function getCookie(name) {
-  const value = `; ${document.cookie}`;
-  const parts = value.split(`; ${name}=`);
-  if (parts.length === 2) return parts.pop().split(";").shift();
-}
-
 export default {
-  // data: () => {
-  //   return {
-  //     googleUser: null,
-  //   };
-  // },
   methods: {
     authMixin_getToken: function () {
       const token = `${
@@ -34,7 +21,6 @@ export default {
       } else {
         this.$cookies.remove("token");
       }
-      await this.setUser({});
     },
     authMixin_getGoogleUser: async function () {
       let auth2 = await gapi.auth2.init();
