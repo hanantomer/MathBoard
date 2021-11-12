@@ -1,25 +1,25 @@
 export default {
   methods: {
     authMixin_getToken: function () {
-      const token = `${
+      const access_token = `${
         gapi.auth2.getAuthInstance().currentUser.get().isSignedIn()
           ? gapi.auth2.getAuthInstance().currentUser.get().getAuthResponse()
               .id_token
-          : this.$cookies.get("token")
+          : this.$cookies.get("access_token")
       }`;
-      return token;
+      return access_token;
     },
     authMixin_signedInWithGoogle: function () {
       return gapi.auth2.getAuthInstance().currentUser.get().isSignedIn();
     },
     authMixin_signedInLocally: function () {
-      return !!this.$cookies.get("token");
+      return !!this.$cookies.get("access_token");
     },
     authMixin_signOut: async function () {
       if (this.authMixin_signedInWithGoogle()) {
         gapi.auth2.getAuthInstance().signOut();
       } else {
-        this.$cookies.remove("token");
+        this.$cookies.remove("access_token");
       }
     },
     authMixin_getGoogleUser: async function () {

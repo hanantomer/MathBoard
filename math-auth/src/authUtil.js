@@ -18,31 +18,37 @@ module.exports = {
         let passwordMatched =
             !!user && (await bcryptjs.compare(password, user.password));
         if (passwordMatched) {
-            let token = jwt.sign(
+            let access_token = jwt.sign(
                 { email: user.email },
                 clientSecretData.client_secret,
                 { expiresIn: 86400 * 30 }
             );
-            user.token = token;
+            user.access_token = access_token;
             return user;
         }
         return null;
     },
-    authByLocalToken: async function (token) {
-        let decodedToken = jwt.verify(token, clientSecretData.client_secret);
+    authByLocalToken: async function (access_token) {
+        let decodedToken = jwt.verify(
+            access_token,
+            clientSecretData.client_secret
+        );
+        console.debug(`authByLocalToken decodedToken:${decodedToken}`);
         // TODO - check expiration
         let user = await db.sequelize.models["User"].findOne({
             where: { email: decodedToken.email },
         });
         return user;
     },
-    authByGoogleToken: async function (token) {
+    authByGoogleToken: async function (access_token) {
         const ticket = await oAuth2client
             .verifyIdToken({
-                idToken: token.replace("Bearer ", ""),
+                idToken: access_token.replace("Bearer ", ""),
                 audience: clientSecretData.web.client_id,
             })
-            .catch(console.error);
+            .catch(console.error); //TODO log error
+
+        console.debug(`authByGoogleToken ticket:${ticket}`);
         if (!!ticket) {
             let user = await db.sequelize.models["User"].findOne({
                 where: { email: ticket.payload.email },

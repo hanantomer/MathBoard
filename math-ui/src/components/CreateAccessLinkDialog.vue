@@ -53,20 +53,23 @@ export default {
   },
   data() {
     return {
-      site: "http://localhost:8080/mathBoard/",
+      site: "http://localhost:8080/symbols/",
       link: "",
-      linkPrefix: "l",
+      linkPrefix: "l_",
     };
   },
   methods: {
     copy: function () {
       navigator.clipboard.writeText(this.link);
       this.show = false;
-      this.$emit("create", { link: this.link });
+      this.$emit("create", this.link);
     },
   },
   created: function () {
-    this.link = this.site + this.link + Math.random().toString(36);
+    this.link =
+      this.site +
+      this.linkPrefix +
+      Math.random().toString(36).replace(".", "!");
   },
 };
 </script>

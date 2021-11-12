@@ -18,9 +18,8 @@ module.exports = (sequelize, DataTypes) => {
 
     AccessLink.init(
         {
-            name: {
+            link: {
                 type: DataTypes.STRING,
-                field: "link",
             },
         },
         { sequelize, freezeTableName: true }

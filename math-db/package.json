@@ -8,8 +8,7 @@
     "eslint-plugin-prettier": "^4.0.0",
     "pg": "^8.7.1",
     "pg-hstore": "^2.3.4",
-    "prettier": "^2.4.0",
-    "sequelize": "^6.6.5"
+    "prettier": "^2.4.0"
   },
   "devDependencies": {},
   "scripts": {},

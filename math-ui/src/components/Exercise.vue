@@ -73,6 +73,7 @@ import matrixOverlayMixin from "../Mixins/matrixOverlayMixin";
 import positionMixin from "../Mixins/positionMixin";
 import cursorMixin from "../Mixins/cursorMixin";
 import selectionMixin from "../Mixins/selectionMixin";
+import notationSyncMixin from "../Mixins/notationSyncMixin";
 import CreateAccessLinkDialog from "./CreateAccessLinkDialog.vue";
 
 export default {
@@ -83,12 +84,9 @@ export default {
   },
   mounted: function () {
     this.svg = d3.select("#svg");
-
-    if (this.exerciseId) {
-      this.loadNotations().then(() => {
-        window.addEventListener("click", this.onclick);
-      });
-    }
+    this.loadNotations().then(() => {
+      window.addEventListener("click", this.onclick);
+    });
   },
   data() {
     //TODO - move to methods
@@ -116,7 +114,13 @@ export default {
       ],
     };
   },
-  mixins: [matrixOverlayMixin, positionMixin, cursorMixin, selectionMixin],
+  mixins: [
+    matrixOverlayMixin,
+    positionMixin,
+    cursorMixin,
+    selectionMixin,
+    notationSyncMixin,
+  ],
   computed: {
     ...mapState({
       notations: (state) => {
@@ -154,6 +158,15 @@ export default {
     },
   },
   watch: {
+    $route: "loadNotations",
+    // $route(to, from) {
+    //   //if (this.exerciseId) {
+    //   this.loadNotations().then(() => {
+    //     window.addEventListener("click", this.onclick);
+    //   });
+    //   //}
+    //   this.syncIncomingNotation(this.exerciseId); ///TODO create mechnism to handle gaps between load and sync
+    // },
     cursorPosition: {
       handler(cursorPosition) {
         this.cursorMixin_blink(cursorPosition)();
@@ -226,6 +239,7 @@ export default {
       createAccessLink: "createAccessLink",
     }),
     createAccessLink: function (link) {
+      console.debug(`createAccessLink: ${link}`);
       this.$store.dispatch("createAccessLink", {
         exerciseId: this.exerciseId,
         link: link,
@@ -235,7 +249,9 @@ export default {
       this.$store.dispatch("removeSelectedSymbols");
     },
     loadNotations: function () {
-      return this.$store.dispatch("loadNotations", this.exerciseId);
+      return this.$store.dispatch("loadNotations", this.exerciseId).then(() => {
+        this.syncIncomingNotation(this.exerciseId); ///TODO create mechnism to handle gaps between load and sync
+      });
     },
     addSymbol: function (context) {
       const symbolValue = context.currentTarget.innerText;

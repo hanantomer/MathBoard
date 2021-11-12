@@ -1,5 +1,5 @@
 const axios = require("axios");
-const authMixin = require("./authMixin");
+//const authMixin = require("./authMixin");
 const axiosInstnce = axios.create({
   baseURL: "http://localhost:8081",
 });
@@ -10,21 +10,22 @@ axiosInstnce.interceptors.request.use(function (config) {
     gapi.auth2.getAuthInstance().currentUser != null &&
     gapi.auth2.getAuthInstance().currentUser.get().isSignedIn();
 
-  const token = isOAuth
+  const access_token = isOAuth
     ? `Bearer ${
         gapi.auth2.getAuthInstance().currentUser.get().getAuthResponse()
           .id_token
       }`
-    : this.$cookies.get("token") != null &&
-      this.$cookies.get("token") != "null" &&
-      this.$cookies.get("token") != "undefined"
-    ? this.$cookies.get("token")
+    : this.$cookies.get("access_token") != null &&
+      this.$cookies.get("access_token") != "null" &&
+      this.$cookies.get("access_token") != "undefined"
+    ? this.$cookies.get("access_token")
     : null;
 
-  if (token != null) {
-    console.debug(`sending token:${token}`);
-    config.headers.Authorization = token;
+  if (access_token != null) {
+    console.debug(`sending access_token:${access_token}`);
+    config.headers.Authorization = access_token;
   }
+  access_token;
 
   return config;
 });

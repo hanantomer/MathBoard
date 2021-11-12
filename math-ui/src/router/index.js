@@ -1,7 +1,7 @@
 import VueRouter from "vue-router";
 import Login from "../components/Login.vue";
 import Exercises from "../components/Exercises.vue";
-import MathBoard from "../components/MathBoard.vue";
+import Exercise from "../components/Exercise.vue";
 import store from "../store/index.js";
 import authMixin from "../Mixins/authMixin.js";
 
@@ -24,8 +24,8 @@ const router = new VueRouter({
       meta: { requiresAuth: true },
     },
     {
-      path: "/mathboard/:exerciseId",
-      component: MathBoard,
+      path: "/symbols/:exerciseId",
+      component: Exercise,
       props: true,
       meta: { requiresAuth: true },
     },
@@ -33,9 +33,13 @@ const router = new VueRouter({
 });
 
 router.beforeEach(async (to, from, next) => {
-  if (to.matched.some((record) => record.meta.requiresAuth)) {
+  console.debug(`beforeEach, getUser:${JSON.stringify(store.getters.getUser)}`);
+  if (
+    to.matched.some((record) => record.meta.requiresAuth) &&
+    !store.getters.getUser.id
+  ) {
     let user = await store.dispatch("setUser", {});
-    if (window.$cookies.get("token")) {
+    if (window.$cookies.get("access_token")) {
       // local
       user = await store.dispatch("authLocalUserByToken");
       if (!!user) {
@@ -46,16 +50,17 @@ router.beforeEach(async (to, from, next) => {
       let googleUser = await authMixin.methods.authMixin_getGoogleUser();
       if (!!googleUser) {
         user = await store.dispatch("authGoogleUser");
-        if (!!user) {
-          user = await store.dispatch("setUser", { ...user, ...googleUser });
-        } else {
+        if (!user) {
           user = await store.dispatch("registerUser", googleUser);
         }
+        user = await store.dispatch("setUser", { ...user, ...googleUser });
       }
     }
     if (!user || !user.id) {
+      const loginpath = window.location.pathname;
       next({
         path: "/login",
+        query: { from: loginpath },
         params: { nextUrl: to.fullPath },
       });
     } else {

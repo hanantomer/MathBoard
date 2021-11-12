@@ -12,7 +12,7 @@ module.exports = {
         write: {
             // send message to notation channel
             after: async (req, res, context) => {
-                notaionSync.create(req.notation);
+                notaionSync.create(req.body);
                 return context.continue;
             },
         },

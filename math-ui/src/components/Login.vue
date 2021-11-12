@@ -171,7 +171,7 @@ export default {
     }),
     googleOnSuccess: async function (user) {
       this.dialog = false;
-      this.$cookies.remove("token");
+      this.$cookies.remove("access_token");
       //this.$router.push("/");
     },
     validateRegister: async function () {
@@ -179,7 +179,7 @@ export default {
         let user = {};
         user.firstName = this.firstName;
         user.password = this.password;
-        user.lastName = this.familylastNameName;
+        user.lastName = this.lastNameName;
         user.email = this.email;
         await this.registerUser(user);
         this.tab = "Login";
@@ -196,10 +196,11 @@ export default {
         if (!!authenticatedUser) {
           this.loginFailed = false;
           console.debug(
-            `new token:${authenticatedUser.token}, for user:${user.email}`
+            `new access_token:${authenticatedUser.access_token}, for user:${user.email}`
           );
-          this.$cookies.set("token", authenticatedUser.token);
-          this.$router.push("/");
+          this.setUser(authenticatedUser);
+          this.$cookies.set("access_token", authenticatedUser.access_token);
+          this.$router.push(this.$route.query.from || "/");
         } else {
           this.loginFailed = true;
         }

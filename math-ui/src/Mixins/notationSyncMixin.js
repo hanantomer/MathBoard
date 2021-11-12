@@ -1,7 +1,7 @@
 import io from "socket.io-client";
 import feathers from "@feathersjs/feathers";
 import socketio from "@feathersjs/socketio-client";
-import { mapActions } from "vuex";
+import store from "../store/index.js";
 
 export default {
   methods: {
@@ -9,23 +9,28 @@ export default {
       return gapi.auth2.getAuthInstance().currentUser.get().isSignedIn();
     },
     syncIncomingNotation: function (exerciseId) {
-      const token = `${
-        this.signedInWithGoogle
+      const access_token = `${
+        this.signedInWithGoogle()
           ? gapi.auth2.getAuthInstance().currentUser.get().getAuthResponse()
               .id_token
-          : this.$cookies.get("token")
+          : this.$cookies.get("access_token")
       }`;
 
-      let socket = io("http://localhost:3030", {
-        query: { token: token },
-      });
+      let socket = io("http://localhost:3030");
       let client = feathers();
-      let notaionSync = {};
       //socket.close();
       client.configure(socketio(socket));
-      notaionSync = client.service("notationSync");
+
+      //access_token
+      let authenticationService = client.service("authentication");
+      authenticationService.find({
+        query: { access_token: access_token, exerciseId: exerciseId },
+      });
+
+      let _store = store;
+      let notaionSync = client.service("notationSync");
       notaionSync.on("created", (notation) => {
-        mapActions.syncIncomingNotaion(notation);
+        _store.dispatch("syncIncomingNotaion", notation);
       });
     },
   },

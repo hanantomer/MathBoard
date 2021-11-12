@@ -7,8 +7,9 @@ class NotationSyncService {
   }
   async get(data, params) {}
   async create(data, params) {
-    console.debug(`notaion added:${data}`);
-    this.notations.put(data);
+    console.debug(`notaion added:${JSON.stringify(data)}`);
+    //this.notations.push(data);
+    return data;
   }
   async update(id, data, params) {}
   async patch(id, data, params) {}

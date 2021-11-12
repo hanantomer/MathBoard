@@ -29,15 +29,14 @@
 import { mapActions } from "vuex";
 import { mapGetters } from "vuex";
 import ExerciseDialog from "./ExerciseDialog.vue";
-import notationSyncMixin from "../Mixins/notationSyncMixin";
 
 export default {
-  mixins: [notationSyncMixin],
   components: { ExerciseDialog },
   name: "Exercises",
   mounted() {
     // if no exercises , create a new and show it
     this.loadExercises().then((exercises) => {
+      console.debug(`loadExercises: ${JSON.stringify(exercises)}`);
       if (!exercises) {
         this.openExerciseDialog();
       }
@@ -62,14 +61,13 @@ export default {
     saveExercise(exercise) {
       this.addExercise(exercise).then((addedExercise) => {
         this.$router.push({
-          path: "/mathboard/" + addedExercise.id,
+          path: "/exercise/" + addedExercise.id,
         });
       });
     },
     exerciseSeletcted(exerciseId) {
-      this.syncIncomingNotation(exerciseId); ///TODO create mechnism to handle gaps between load and sync
       this.$router.push({
-        path: "/mathboard/" + exerciseId,
+        path: "/symbols/" + exerciseId,
       });
     },
   },

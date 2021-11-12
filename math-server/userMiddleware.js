@@ -25,7 +25,7 @@ module.exports = {
             },
             after: function (req, res, context) {
                 // embed token produced during authorization
-                context.instance[0].token = context.token;
+                context.instance[0].access_token = context.access_token;
                 delete context.instance[0].password;
                 return context.continue;
             },

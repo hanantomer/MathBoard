@@ -5,6 +5,7 @@ const db = require("math-db/src/models/index");
 const authMiddleware = require("math-auth/src/authMiddleware");
 const userMiddleware = require("./userMiddleware");
 const notationMiddleware = require("./notationMiddleware");
+const symbolMiddleware = require("./symbolMiddleware");
 
 let app = express();
 app.use(cors());
@@ -22,19 +23,19 @@ let userResource = finale.resource({
 userResource.use(userMiddleware);
 userResource.use(authMiddleware);
 
-finale
-    .resource({
-        model: db.sequelize.models["Exercise"],
-        endpoints: ["/exercises", "/exercises/:id"],
-    })
-    .use(authMiddleware);
+let exerciseResource = finale.resource({
+    model: db.sequelize.models["Exercise"],
+    endpoints: ["/exercises", "/exercises/:id"],
+});
+exerciseResource.use(authMiddleware);
 
-finale
-    .resource({
-        model: db.sequelize.models["Symbol"],
-        endpoints: ["/symbols", "/symbols/:id"],
-    })
-    .use(notationMiddleware);
+let symbolResource = finale.resource({
+    model: db.sequelize.models["Symbol"],
+    endpoints: ["/symbols", "/symbols/:id"],
+});
+symbolResource.use(authMiddleware);
+symbolResource.use(symbolMiddleware);
+symbolResource.use(notationMiddleware);
 
 finale.resource({
     model: db.sequelize.models["SignSymbol"],

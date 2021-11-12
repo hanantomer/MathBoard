@@ -127,15 +127,7 @@ export default new Vuex.Store({
       return user;
     },
     async registerUser(context, user) {
-      let registeredUser = await dbSyncMixin.methods.registerUser(user);
-      if (!!registeredUser) {
-        // registeredUser = {
-        //   ...registeredUser,
-        //   ...user,
-        //   ...{ password: null },
-        // };
-        return registeredUser;
-      }
+      return dbSyncMixin.methods.registerUser(user);
     },
     async setUser(context, user) {
       context.commit("setUser", user);
@@ -144,7 +136,7 @@ export default new Vuex.Store({
 
     async loadNotations(context, exerciseId) {
       context.commit("removeAllNotation");
-      let notations = dbSyncMixin.methods.getAllNotations(exerciseId);
+      let notations = await dbSyncMixin.methods.getAllNotations(exerciseId);
       if (notations.length > 0) {
         notations.forEach((n) => {
           context.commit("addNotation", n);
