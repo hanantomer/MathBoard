@@ -171,7 +171,7 @@ export default {
     }),
     googleOnSuccess: async function (user) {
       this.dialog = false;
-      this.$cookies.remove("access_token");
+      window.$cookies.remove("access_token");
       //this.$router.push("/");
     },
     validateRegister: async function () {
@@ -199,7 +199,7 @@ export default {
             `new access_token:${authenticatedUser.access_token}, for user:${user.email}`
           );
           this.setUser(authenticatedUser);
-          this.$cookies.set("access_token", authenticatedUser.access_token);
+          window.$cookies.set("access_token", authenticatedUser.access_token);
           this.$router.push(this.$route.query.from || "/");
         } else {
           this.loginFailed = true;

@@ -8,6 +8,7 @@ const oAuth2client = new OAuth2Client(clientSecretData.web.client_id);
 
 module.exports = {
     authByLocalPassword: async function (email, password, context) {
+        //TODO add caching
         let user = await db.sequelize.models["User"].findOne({
             where: { email: email },
         });
@@ -33,7 +34,9 @@ module.exports = {
             access_token,
             clientSecretData.client_secret
         );
-        console.debug(`authByLocalToken decodedToken:${decodedToken}`);
+        console.debug(
+            `authByLocalToken decodedToken:${JSON.stringify(decodedToken)}`
+        );
         // TODO - check expiration
         let user = await db.sequelize.models["User"].findOne({
             where: { email: decodedToken.email },

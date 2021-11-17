@@ -15,10 +15,10 @@ axiosInstnce.interceptors.request.use(function (config) {
         gapi.auth2.getAuthInstance().currentUser.get().getAuthResponse()
           .id_token
       }`
-    : this.$cookies.get("access_token") != null &&
-      this.$cookies.get("access_token") != "null" &&
-      this.$cookies.get("access_token") != "undefined"
-    ? this.$cookies.get("access_token")
+    : window.$cookies.get("access_token") != null &&
+      window.$cookies.get("access_token") != "null" &&
+      window.$cookies.get("access_token") != "undefined"
+    ? window.$cookies.get("access_token")
     : null;
 
   if (access_token != null) {

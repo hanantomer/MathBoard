@@ -1,14 +1,12 @@
+const dbUtil = require("math-db/src/dbUtil");
 class NotationSyncService {
-  constructor() {
-    this.notations = [];
-  }
   async find(params) {
     return this.notations;
   }
   async get(data, params) {}
   async create(data, params) {
+    data.ExerciseId = await dbUtil.parseExerciseId(data.ExerciseId);
     console.debug(`notaion added:${JSON.stringify(data)}`);
-    //this.notations.push(data);
     return data;
   }
   async update(id, data, params) {}

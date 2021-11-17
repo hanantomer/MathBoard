@@ -48,10 +48,10 @@ export default new Vuex.Store({
   },
   mutations: {
     setCursorPosition(state, cursorPosition) {
-      state.cursorPosition = Object.assign(
-        {},
-        state.cursorPosition,
-        cursorPosition
+      Vue.set(
+        state,
+        "cursorPosition",
+        Object.assign({}, state.cursorPosition, cursorPosition)
       );
     },
     setUser(state, user) {
@@ -216,6 +216,8 @@ export default new Vuex.Store({
     },
     setCursorPosition(context, payload) {
       context.commit("setCursorPosition", payload);
+      //      payload.userId = context.getters.getUser.id;
+      //      userOperationsSyncMixin.methods.syncOutgoingCursorPosition(payload);
     },
     setDimensions(context, payload) {
       context.commit("setNumberOfCols", payload.numberOfCols);

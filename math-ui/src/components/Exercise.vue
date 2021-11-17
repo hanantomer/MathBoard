@@ -73,7 +73,7 @@ import matrixOverlayMixin from "../Mixins/matrixOverlayMixin";
 import positionMixin from "../Mixins/positionMixin";
 import cursorMixin from "../Mixins/cursorMixin";
 import selectionMixin from "../Mixins/selectionMixin";
-import notationSyncMixin from "../Mixins/notationSyncMixin";
+import userOperationsSyncMixin from "../Mixins/userOperationsSyncMixin";
 import CreateAccessLinkDialog from "./CreateAccessLinkDialog.vue";
 
 export default {
@@ -119,7 +119,7 @@ export default {
     positionMixin,
     cursorMixin,
     selectionMixin,
-    notationSyncMixin,
+    userOperationsSyncMixin,
   ],
   computed: {
     ...mapState({
@@ -159,14 +159,6 @@ export default {
   },
   watch: {
     $route: "loadNotations",
-    // $route(to, from) {
-    //   //if (this.exerciseId) {
-    //   this.loadNotations().then(() => {
-    //     window.addEventListener("click", this.onclick);
-    //   });
-    //   //}
-    //   this.syncIncomingNotation(this.exerciseId); ///TODO create mechnism to handle gaps between load and sync
-    // },
     cursorPosition: {
       handler(cursorPosition) {
         this.cursorMixin_blink(cursorPosition)();
@@ -229,6 +221,7 @@ export default {
     ...mapGetters({
       getCursorPosition: "getCursorPosition",
       isAnnotationSelected: "isAnnotationSelected",
+      getUser: "getUser",
     }),
     ...mapActions({
       setCursorPosition: "setCursorPosition",
@@ -250,26 +243,19 @@ export default {
     },
     loadNotations: function () {
       return this.$store.dispatch("loadNotations", this.exerciseId).then(() => {
-        this.syncIncomingNotation(this.exerciseId); ///TODO create mechnism to handle gaps between load and sync
+        this.syncIncomingUserOperations(this.getUser().id, this.exerciseId); ///TODO create mechnism to handle gaps between load and sync
       });
     },
     addSymbol: function (context) {
       const symbolValue = context.currentTarget.innerText;
-      //this.incrementPoistion(symbolValue);
       const symbol = {
+        UserId: this.getUser().id,
         ExerciseId: this.exerciseId,
         value: symbolValue,
         isNumber: !isNaN(parseInt()),
       };
       this.$store.dispatch("addSymbol", symbol);
     },
-    // incrementPoistion: function (symbolValue) {
-    //   let nextPosition = this.positionMixin_getNext(
-    //     symbolValue,
-    //     this.getCursorPosition()
-    //   );
-    //   this.setCursorPosition(nextPosition);
-    // },
     onmousedown: function (e) {
       if (e.target.id === "svg") {
         const boundBox = e.target.getBoundingClientRect();
@@ -277,6 +263,11 @@ export default {
           { x: e.clientX - boundBox.left, y: e.clientY - boundBox.top }
         );
         this.setCursorPosition(normalizedClickedPosition);
+        normalizedClickedPosition.userId = this.getUser().id;
+        normalizedClickedPosition.exerciseId = this.exerciseId;
+        userOperationsSyncMixin.methods.syncOutgoingCursorPosition(
+          normalizedClickedPosition
+        );
       }
 
       if (this.isAnnotationSelected()) {
