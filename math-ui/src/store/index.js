@@ -1,7 +1,6 @@
 import Vue from "vue";
 import Vuex from "vuex";
 import dbSyncMixin from "../Mixins/dbSyncMixin";
-import positionMixin from "../Mixins/positionMixin";
 
 Vue.use(Vuex);
 
@@ -20,7 +19,6 @@ const helper = {
 export default new Vuex.Store({
   modules: {
     dbSyncMixin,
-    positionMixin,
   },
   state: {
     user: {},
@@ -48,11 +46,7 @@ export default new Vuex.Store({
   },
   mutations: {
     setCursorPosition(state, cursorPosition) {
-      Vue.set(
-        state,
-        "cursorPosition",
-        Object.assign({}, state.cursorPosition, cursorPosition)
-      );
+      Vue.set(state, "cursorPosition", cursorPosition);
     },
     setUser(state, user) {
       console.debug(`commit.setUser:${JSON.stringify(user)}`);
@@ -108,7 +102,7 @@ export default new Vuex.Store({
   actions: {
     async createAccessLink(context, accessLink) {
       return dbSyncMixin.methods.createAccessLink(
-        accessLink.exerciseId,
+        accessLink.ExerciseId,
         accessLink.link
       );
     },
@@ -173,17 +167,9 @@ export default new Vuex.Store({
     removeExercise(context, payload) {
       context.commit("removeExercise", payload.id);
     },
-    addSymbol(context, symbolValue) {
-      let nextPosition = positionMixin.methods.positionMixin_getNext(
-        symbolValue,
-        context.getters.getCursorPosition
-      );
-      context.commit("setCursorPosition", nextPosition);
-
-      let symbol = Object.assign(symbolValue, nextPosition);
-
-      dbSyncMixin.methods.addSymbol(symbol).then((symbol) => {
-        context.commit("addNotation", symbol);
+    addSymbol(context, notation) {
+      dbSyncMixin.methods.addSymbol(notation).then((notation) => {
+        context.commit("addNotation", notation);
       });
     },
     async syncIncomingNotaion(context, notation) {
@@ -217,7 +203,6 @@ export default new Vuex.Store({
     setCursorPosition(context, payload) {
       context.commit("setCursorPosition", payload);
       //      payload.userId = context.getters.getUser.id;
-      //      userOperationsSyncMixin.methods.syncOutgoingCursorPosition(payload);
     },
     setDimensions(context, payload) {
       context.commit("setNumberOfCols", payload.numberOfCols);

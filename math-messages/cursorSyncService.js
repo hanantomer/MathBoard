@@ -8,7 +8,7 @@ class CursorSyncService {
     console.debug(
       `cusrsor position changed data: ${JSON.stringify(
         data
-      )}, params: ${JSON.stringify(data)}`
+      )}, params: ${JSON.stringify(params)}`
     );
 
     let user = await this.app
@@ -16,9 +16,9 @@ class CursorSyncService {
       .authUserByToken(params.query.access_token);
 
     if (!!user) {
-      data.cursorPosition.userId = user.id;
-      data.cursorPosition.exerciseId = await dbUtil.parseExerciseId(
-        data.cursorPosition.exerciseId
+      data.cursorPosition.UserId = user.id;
+      data.cursorPosition.ExerciseId = await dbUtil.parseExerciseId(
+        data.cursorPosition.ExerciseId
       );
 
       console.debug(`cusrsor position changed: ${JSON.stringify(data)}`);

@@ -4,7 +4,7 @@ const finale = require("finale-rest");
 const db = require("math-db/src/models/index");
 const authMiddleware = require("math-auth/src/authMiddleware");
 const userMiddleware = require("./userMiddleware");
-const notationMiddleware = require("./notationMiddleware");
+//const notationMiddleware = require("./notationMiddleware");
 const symbolMiddleware = require("./symbolMiddleware");
 
 let app = express();
@@ -35,7 +35,7 @@ let symbolResource = finale.resource({
 });
 symbolResource.use(authMiddleware);
 symbolResource.use(symbolMiddleware);
-symbolResource.use(notationMiddleware);
+//symbolResource.use(notationMiddleware);
 
 finale.resource({
     model: db.sequelize.models["SignSymbol"],

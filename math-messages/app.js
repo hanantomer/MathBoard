@@ -11,24 +11,24 @@ app.configure(socketio(function (io) {}));
 
 app.use("authentication", new AuthenticationService(app));
 app.use("cursorSync", new CursorSyncService(app));
-app.use("notationSync", new NotationSyncService());
+app.use("notationSync", new NotationSyncService(app));
 
 app.service("notationSync").publish("created", (notation, ctx) => {
   console.debug(
     `publish notation created data: ${JSON.stringify(
       notation
-    )} to channel: ${ctx.data.ExerciseId.toString()}`
+    )} to channel: ${notation.ExerciseId.toString()}`
   );
-  return [app.channel(`channel${ctx.data.ExerciseId.toString()}`)];
+  return [app.channel(`channel${notation.ExerciseId.toString()}`)];
 });
 
 app.service("cursorSync").publish("updated", (cursorPosition, ctx) => {
   console.debug(
     `publish cursor updated data: ${JSON.stringify(
       cursorPosition
-    )} to channel: ${cursorPosition.exerciseId.toString()}`
+    )} to channel: ${cursorPosition.ExerciseId.toString()}`
   );
-  return [app.channel(`channel${cursorPosition.exerciseId.toString()}`)];
+  return [app.channel(`channel${cursorPosition.ExerciseId.toString()}`)];
 });
 
 const PORT = process.env.PORT || 3030;

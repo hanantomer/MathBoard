@@ -20,6 +20,7 @@ module.exports = (sequelize, DataTypes) => {
         {
             link: {
                 type: DataTypes.STRING,
+                allowNull: false,
             },
         },
         { sequelize, freezeTableName: true }

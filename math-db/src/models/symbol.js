@@ -8,8 +8,6 @@ module.exports = (sequelize, DataTypes) => {
                 onUpdate: "CASCADE",
                 foreignKey: { allowNull: false },
             });
-        }
-        static associate(models) {
             Symbol.belongsTo(models.User, {
                 onDelete: "CASCADE",
                 onUpdate: "CASCADE",
@@ -22,9 +20,11 @@ module.exports = (sequelize, DataTypes) => {
         {
             x: {
                 type: DataTypes.INTEGER,
+                allowNull: false,
             },
             y: {
                 type: DataTypes.INTEGER,
+                allowNull: false,
             },
             type: {
                 type: DataTypes.STRING,

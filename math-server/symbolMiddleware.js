@@ -27,7 +27,7 @@ module.exports = {
                 );
                 // replace link with actual exerciseId
                 if (!!req.query.exerciseId) {
-                    req.query.exerciseId = dbUtil.parseExerciseId(
+                    req.query.exerciseId = await dbUtil.parseExerciseId(
                         req.query.exerciseId
                     );
                 }

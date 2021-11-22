@@ -61,7 +61,7 @@ export default {
     saveExercise(exercise) {
       this.addExercise(exercise).then((addedExercise) => {
         this.$router.push({
-          path: "/exercise/" + addedExercise.id,
+          path: "/symbols/" + addedExercise.id,
         });
       });
     },

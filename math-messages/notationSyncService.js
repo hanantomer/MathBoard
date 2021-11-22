@@ -1,18 +1,24 @@
 const dbUtil = require("math-db/src/dbUtil");
 class NotationSyncService {
-  async find(params) {
-    return this.notations;
+  constructor(app) {
+    this.app = app;
   }
-  async get(data, params) {}
+
   async create(data, params) {
-    data.ExerciseId = await dbUtil.parseExerciseId(data.ExerciseId);
-    console.debug(`notaion added:${JSON.stringify(data)}`);
-    return data;
+    let user = await this.app
+      .service("authentication")
+      .authUserByToken(params.query.access_token);
+
+    if (!!user) {
+      data.notation.UserId = user.id;
+      data.notation.ExerciseId = await dbUtil.parseExerciseId(
+        data.notation.ExerciseId
+      );
+      console.debug(`notaion added:${JSON.stringify(data.notation)}`);
+    }
+
+    return data.notation;
   }
-  async update(id, data, params) {}
-  async patch(id, data, params) {}
-  async remove(id, params) {}
-  setup(app, path) {}
 }
 
 module.exports = NotationSyncService;

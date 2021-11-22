@@ -28,7 +28,7 @@ module.exports = {
         });
         if (!accessLink) {
             console.debug(
-                `symbolMiddleware, accessLink not found for:${req.query.exerciseId}`
+                `symbolMiddleware, accessLink not found for:${exerciseLink}`
             );
             return null;
         }

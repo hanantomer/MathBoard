@@ -161,6 +161,13 @@ export default {
     $route: "loadNotations",
     cursorPosition: {
       handler(cursorPosition) {
+        // publish only my initiated cursor change
+        //if (!cursorPosition.UserId) {
+        //   userOperationsSyncMixin.methods.syncOutgoingCursorPosition(
+        //     cursorPosition
+        //   );
+        // }
+
         this.cursorMixin_blink(cursorPosition)();
       },
     },
@@ -230,11 +237,12 @@ export default {
       moveSelectedNotations: "moveSelectedNotations",
       updateSelectedNotations: "updateSelectedNotations",
       createAccessLink: "createAccessLink",
+      addSymbolToStore: "addSymbol",
     }),
     createAccessLink: function (link) {
       console.debug(`createAccessLink: ${link}`);
       this.$store.dispatch("createAccessLink", {
-        exerciseId: this.exerciseId,
+        ExerciseId: this.exerciseId,
         link: link,
       });
     },
@@ -248,23 +256,41 @@ export default {
     },
     addSymbol: function (context) {
       const symbolValue = context.currentTarget.innerText;
-      const symbol = {
-        UserId: this.getUser().id,
+      let symbol = {
+        //UserId: this.getUser().id,
         ExerciseId: this.exerciseId,
         value: symbolValue,
         isNumber: !isNaN(parseInt()),
       };
-      this.$store.dispatch("addSymbol", symbol);
+      //this.$store.dispatch("addSymbol", symbol);
+
+      let nextPosition = positionMixin.methods.positionMixin_getNext(
+        symbolValue,
+        this.getCursorPosition()
+      );
+
+      symbol = Object.assign(symbol, nextPosition);
+
+      this.addSymbolToStore(symbol).then(() => {
+        userOperationsSyncMixin.methods.syncOutgoingSymbolAdding(symbol);
+        userOperationsSyncMixin.methods.syncOutgoingCursorPosition(
+          nextPosition
+        );
+      });
     },
     onmousedown: function (e) {
+      console.debug("mouse down");
       if (e.target.id === "svg") {
         const boundBox = e.target.getBoundingClientRect();
         let normalizedClickedPosition = this.positionMixin_getClickedNoramalizedPosition(
-          { x: e.clientX - boundBox.left, y: e.clientY - boundBox.top }
+          {
+            x: e.clientX - boundBox.left,
+            y: e.clientY - boundBox.top,
+          }
         );
-        this.setCursorPosition(normalizedClickedPosition);
-        normalizedClickedPosition.userId = this.getUser().id;
-        normalizedClickedPosition.exerciseId = this.exerciseId;
+        //normalizedClickedPosition.UserId = this.getUser().id;
+        normalizedClickedPosition.ExerciseId = this.exerciseId;
+        //this.setCursorPosition(normalizedClickedPosition);
         userOperationsSyncMixin.methods.syncOutgoingCursorPosition(
           normalizedClickedPosition
         );

@@ -7,7 +7,7 @@ const clientSecretData = require("../client_secret.json");
 const oAuth2client = new OAuth2Client(clientSecretData.web.client_id);
 
 module.exports = {
-    authByLocalPassword: async function (email, password, context) {
+    authByLocalPassword: async function (email, password) {
         //TODO add caching
         let user = await db.sequelize.models["User"].findOne({
             where: { email: email },
