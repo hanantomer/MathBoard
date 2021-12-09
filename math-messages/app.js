@@ -7,7 +7,7 @@ const CursorSyncService = require("./cursorSyncService.js");
 const app = feathers();
 app.configure(socketio());
 
-app.configure(socketio(function (io) {}));
+//app.configure(socketio(function (io) {}));
 
 app.use("authentication", new AuthenticationService(app));
 app.use("cursorSync", new CursorSyncService(app));
@@ -16,6 +16,24 @@ app.use("notationSync", new NotationSyncService(app));
 app.service("notationSync").publish("created", (notation, ctx) => {
   console.debug(
     `publish notation created data: ${JSON.stringify(
+      notation
+    )} to channel: ${notation.ExerciseId.toString()}`
+  );
+  return [app.channel(`channel${notation.ExerciseId.toString()}`)];
+});
+
+app.service("notationSync").publish("updated", (notation, ctx) => {
+  console.debug(
+    `publish notation updated data: ${JSON.stringify(
+      notation
+    )} to channel: ${notation.ExerciseId.toString()}`
+  );
+  return [app.channel(`channel${notation.ExerciseId.toString()}`)];
+});
+
+app.service("notationSync").publish("removed", (notation, ctx) => {
+  console.debug(
+    `publish notation removed data: ${JSON.stringify(
       notation
     )} to channel: ${notation.ExerciseId.toString()}`
   );

@@ -69,15 +69,15 @@ export default {
   methods: {
     ...mapGetters({ getUser: "getUser" }),
     signOut: function () {
-      this.authMixin_signOut();
+      this.mixin_signOut();
       this.$router.push("/login");
     },
     signInViaGoogleAuth: async function () {
-      let user = await this.authGoogleUser(this.googleUser);
+      let user = await this.mixin_authGoogleUser(this.googleUser);
       if (!!user) {
         return await this.setUser(user);
       } else {
-        return await this.registerUser(...this.googleUser);
+        return await this.mixin_registerUser(...this.googleUser);
       }
     },
   },

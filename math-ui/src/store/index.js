@@ -43,6 +43,9 @@ export default new Vuex.Store({
     isAnnotationSelected(state) {
       return state.notations.find((e) => e.selected === true);
     },
+    getSelectedNotations: (state) => {
+      return state.notations.filter((n) => !!n && n.selected == true);
+    },
   },
   mutations: {
     setCursorPosition(state, cursorPosition) {
@@ -62,10 +65,24 @@ export default new Vuex.Store({
       Vue.set(notation, "selected", false);
       state.notations.push(notation);
     },
-    removeSelectedSymbols(state, id) {
-      state.notations = state.notations.filter((n) => {
-        return n.selected == false;
-      });
+    updateNotationPosition(state, notation) {
+      let oldNotation = helper.findNotationById(state, notation.id);
+      delete oldNotation.x; // for reactivity
+      delete oldNotation.y;
+      Vue.set(oldNotation, "x", notation.x);
+      Vue.set(oldNotation, "y", notation.y);
+    },
+    removeNotation(state, notation) {
+      state.notations = state.notations.filter(
+        (n) => !(n.x === notation.x && n.y === notation.y)
+      );
+    },
+    updateSelectedNotations(state) {
+      state.notations
+        .filter((notation) => notation.selected === true)
+        .forEach(
+          async (notation) => await dbSyncMixin.methods.updateNotation(notation)
+        );
     },
     removeAllNotation(state) {
       state.notations = [];
@@ -87,16 +104,16 @@ export default new Vuex.Store({
         });
     },
     moveSelectedNotations(state, payload) {
-      state.notations.forEach((notation) => {
-        if (notation.selected === true) {
+      state.notations
+        .filter((notation) => !!notation.selected)
+        .forEach((notation) => {
           let x = notation.x;
           let y = notation.y;
           delete notation.x;
           delete notation.y;
           Vue.set(notation, "x", x + payload.deltaX);
           Vue.set(notation, "y", y + payload.deltaY);
-        }
-      });
+        });
     },
   },
   actions: {
@@ -130,12 +147,11 @@ export default new Vuex.Store({
 
     async loadNotations(context, exerciseId) {
       context.commit("removeAllNotation");
-      let notations = await dbSyncMixin.methods.getAllNotations(exerciseId);
-      if (notations.length > 0) {
-        notations.forEach((n) => {
-          context.commit("addNotation", n);
+      dbSyncMixin.methods.getAllNotations(exerciseId).then((notations) => {
+        notations.forEach((notation) => {
+          context.commit("addNotation", notation);
         });
-      }
+      });
     },
     async loadExercises(context) {
       context.commit("removeAllExercises");
@@ -168,23 +184,22 @@ export default new Vuex.Store({
       context.commit("removeExercise", payload.id);
     },
     addSymbol(context, notation) {
-      dbSyncMixin.methods.addSymbol(notation).then((notation) => {
-        context.commit("addNotation", notation);
-      });
+      return dbSyncMixin.methods.addSymbol(notation);
     },
-    async syncIncomingNotaion(context, notation) {
+    syncIncomingAddedNotaion(context, notation) {
       context.commit("addNotation", notation);
     },
-    async removeSelectedSymbols(context) {
-      context.state.notations
-        .filter((n) => {
-          return n.selected == true;
-        })
-        .forEach((n) => {
-          dbSyncMixin.methods.removeSymbol(n.id);
-        });
-
-      context.commit("removeSelectedSymbols");
+    syncIncomingDeletedNotaion(context, notation) {
+      context.commit("removeNotation", notation);
+    },
+    syncIncomingUpdatedNotaion(context, notation) {
+      context.commit("updateNotationPosition", notation);
+    },
+    removeSelectedSymbols(context) {
+      // commit is called by syncIncomingDeletedNotaion
+      dbSyncMixin.methods.removeSymbols(
+        context.getters.getSelectedNotations.map((s) => s.id).join(",")
+      );
     },
     selectNotation(context, id) {
       context.commit("selectNotation", id);
@@ -195,10 +210,8 @@ export default new Vuex.Store({
     moveSelectedNotations(context, payload) {
       context.commit("moveSelectedNotations", payload);
     },
-    updateSelectedNotations(context) {
-      context.state.notations
-        .filter((notation) => notation.selected === true)
-        .forEach((notation) => dbSyncMixin.methods.updateNotation(notation));
+    updateSelectedNotations(context, payload) {
+      context.commit("updateSelectedNotations", payload);
     },
     setCursorPosition(context, payload) {
       context.commit("setCursorPosition", payload);

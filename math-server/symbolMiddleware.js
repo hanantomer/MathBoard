@@ -6,6 +6,14 @@ function exerciseIdFromAccessLink(exerciseId) {
 }
 
 module.exports = {
+    delete: {
+        fetch: {
+            before: async (req, res, context) => {
+                await dbUtil.deleteMultipleSymbols(req.params.id);
+                return context.stop;
+            },
+        },
+    },
     create: {
         write: {
             before: async (req, res, context) => {

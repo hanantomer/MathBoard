@@ -15,24 +15,23 @@ export default {
     };
   },
   methods: {
-    updateSelection(e) {
-      this.cursorMixin_hide();
-      var p = this.positionMixin_getSVGCoordinates(e.clientX, e.clientY);
+    mixin_updateSelection(e) {
+      this.mixin_hideCursor();
+      var p = this.mixin_getSVGCoordinates(e.clientX, e.clientY);
       this.selectionPosition.x2 = p.x;
       this.selectionPosition.y2 = p.y;
     },
-    async moveSelection(e) {
-      var p = this.positionMixin_getSVGCoordinates(e.clientX, e.clientY);
-      console.log(p.x);
+    async mixin_moveSelection(e) {
+      var p = this.mixin_getSVGCoordinates(e.clientX, e.clientY);
       if (this.dragPostion.x === 0) {
         this.dragPostion.x = p.x;
         this.dragPostion.y = p.y;
       } else {
         const deltaX = p.x - this.dragPostion.x;
         const deltaY = p.y - this.dragPostion.y;
-        await this.moveSelectedNotations({
-          deltaX: deltaX,
-          deltaY: deltaY,
+        this.moveSelectedNotations({
+          deltaX,
+          deltaY,
         }).then(() => {
           this.selectionPosition.x1 += deltaX;
           this.selectionPosition.y1 += deltaY;
@@ -43,48 +42,44 @@ export default {
         });
       }
     },
-    selectionMixin_reset: function () {
+    mixin_resetSelection: function () {
       this.selectionPosition.x1 = this.selectionPosition.x2 = this.selectionPosition.y1 = this.selectionPosition.y2 = 0;
     },
-    selectionMixin_start: function (e) {
+    mixin_startSelection: function (e) {
       this.selectionActive = true;
-      var p = this.positionMixin_getSVGCoordinates(e.clientX, e.clientY);
+      var p = this.mixin_getSVGCoordinates(e.clientX, e.clientY);
       this.selectionPosition.x2 = this.selectionPosition.x1 = p.x;
       this.selectionPosition.y2 = this.selectionPosition.y1 = p.y;
     },
 
-    // selectionMixin_update(e) {
-    //   if (this.selectionActive && e.buttons === 1) {
-    //     this.cursorMixin_hide();
-    //     var p = this.positionMixin_getSVGCoordinates(e.clientX, e.clientY);
-    //     this.selectionPosition.x2 = p.x;
-    //     this.selectionPosition.y2 = p.y;
-    //   }
-    // },
-    async selectionMixin_move(e) {
+    mixin_mouseMove(e) {
       if (e.buttons !== 1) {
         return;
       }
 
-      if (this.isAnnotationSelected && this.selectionActive == false) {
-        this.moveSelection(e);
+      // has selection and not during selection TODO: check if both required
+      if (this.isAnnotationSelected && this.selectionActive === false) {
+        this.mixin_moveSelection(e);
       } else {
-        this.updateSelection(e);
+        this.mixin_updateSelection(e);
       }
     },
-    selectionMixin_mouseup(e) {
-      if (this.isAnnotationSelected && this.selectionActive == false) {
-        this.endMove(e);
+    mixin_mouseUp(e) {
+      if (this.isAnnotationSelected && this.selectionActive === false) {
+        this.mixin_endMove(e);
       } else {
-        this.endSelect(e);
+        this.mixin_endSelect(e);
       }
     },
-    endMove(e) {
+    mixin_endMove(e) {
       this.dragPostion.x = 0;
       this.dragPostion.y = 0;
-      this.updateSelectedNotations();
+      this.updateNotation;
+      this.updateSelectedNotations().then(() =>
+        this.mixin_syncOutgoingUpdateSelectedNotations()
+      );
     },
-    endSelect: function (e) {
+    mixin_endSelect: function (e) {
       if (
         this.selectionActive &&
         this.selectionPosition.x2 != this.selectionPosition.x1
@@ -92,6 +87,7 @@ export default {
         this.selectionActive = false;
         this.svg.selectAll("text").each((datum) => {
           if (
+            !!datum.id &&
             datum.x > this.selectionPosition.x1 &&
             datum.x < this.selectionPosition.x2 &&
             datum.y > this.selectionPosition.y1 &&

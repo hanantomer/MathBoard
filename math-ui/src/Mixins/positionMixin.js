@@ -10,7 +10,7 @@ function getHorizontalStep() {
 
 export default {
   methods: {
-    positionMixin_getSVGCoordinates: function (x, y) {
+    mixin_getSVGCoordinates: function (x, y) {
       var p = svg.createSVGPoint();
       p.x = x;
       p.y = y;
@@ -19,14 +19,14 @@ export default {
       return p;
     },
 
-    positionMixin_getClickedNoramalizedPosition: function (clickedPosition) {
+    mixin_getClickedNoramalizedPosition: function (clickedPosition) {
       let horizontalStep = getHorizontalStep();
       let xNormalized =
         Math.round(clickedPosition.x / horizontalStep) * horizontalStep;
       let yNormalized = Math.round(clickedPosition.y / rowHeight) * rowHeight;
       return { x: xNormalized, y: yNormalized };
     },
-    positionMixin_getNext: function (symbol, currentPosition) {
+    mixin_getNext: function (symbol, currentPosition) {
       if (!currentPosition.x) {
         currentPosition.x = 0;
         currentPosition.x = y;

@@ -32,7 +32,7 @@
 
 <script>
 export default {
-  name: "CreateAccessLinkDialog",
+  name: "createAccessLinkDialog",
 
   props: {
     value: Boolean,

@@ -4,14 +4,14 @@
       <v-btn
         v-for="s in signs"
         :key="s.sign"
-        v-on:click="addSymbol"
+        v-on:click="$addSymbol"
         x-small
         text
         ><span class="mr-1">{{ s.sign }}</span></v-btn
       >
       <v-btn
         icon
-        v-on:click="deleteSelectedSymbols"
+        v-on:click="$removeSelectedSymbols"
         color="white"
         x-small
         fab
@@ -28,10 +28,10 @@
         ><v-icon>mdi-account-plus</v-icon></v-btn
       >
     </v-toolbar>
-    <CreateAccessLinkDialog
+    <createAccessLinkDialog
       v-model="isAccessLinkDialogOpen"
-      v-on="{ create: createAccessLink }"
-    ></CreateAccessLinkDialog>
+      v-on="{ create: $createAccessLink }"
+    ></createAccessLinkDialog>
     <v-card app>
       <v-container app fluid>
         <svg
@@ -39,9 +39,9 @@
           width="960"
           height="600"
           style="border: 1px lightgray solid"
-          v-on:mousedown="onmousedown"
-          v-on:mousemove="selectionMixin_move"
-          v-on:mouseup="selectionMixin_mouseup"
+          v-on:mousedown="$onMouseDown"
+          v-on:mousemove="mixin_mouseMove"
+          v-on:mouseup="mixin_mouseUp"
         ></svg>
         <v-card
           v-if="this.selectionActive || this.isAnnotationSelected"
@@ -74,17 +74,17 @@ import positionMixin from "../Mixins/positionMixin";
 import cursorMixin from "../Mixins/cursorMixin";
 import selectionMixin from "../Mixins/selectionMixin";
 import userOperationsSyncMixin from "../Mixins/userOperationsSyncMixin";
-import CreateAccessLinkDialog from "./CreateAccessLinkDialog.vue";
+import createAccessLinkDialog from "./CreateAccessLinkDialog.vue";
 
 export default {
-  components: { CreateAccessLinkDialog },
+  components: { createAccessLinkDialog },
   props: ["exerciseId"],
   destroyed: function () {
     window.removeEventListener("click", this.onclick);
   },
   mounted: function () {
     this.svg = d3.select("#svg");
-    this.loadNotations().then(() => {
+    this.$loadNotations().then(() => {
       window.addEventListener("click", this.onclick);
     });
   },
@@ -161,14 +161,7 @@ export default {
     $route: "loadNotations",
     cursorPosition: {
       handler(cursorPosition) {
-        // publish only my initiated cursor change
-        //if (!cursorPosition.UserId) {
-        //   userOperationsSyncMixin.methods.syncOutgoingCursorPosition(
-        //     cursorPosition
-        //   );
-        // }
-
-        this.cursorMixin_blink(cursorPosition)();
+        this.mixin_blinkCursor(cursorPosition)();
       },
     },
     notations: {
@@ -228,6 +221,7 @@ export default {
     ...mapGetters({
       getCursorPosition: "getCursorPosition",
       isAnnotationSelected: "isAnnotationSelected",
+      getSelectedNotations: "getSelectedNotations",
       getUser: "getUser",
     }),
     ...mapActions({
@@ -235,72 +229,78 @@ export default {
       selectNotation: "selectNotation",
       unselectAllNotations: "unselectAllNotations",
       moveSelectedNotations: "moveSelectedNotations",
+      removeSelectedSymbols: "removeSelectedSymbols",
       updateSelectedNotations: "updateSelectedNotations",
-      createAccessLink: "createAccessLink",
-      addSymbolToStore: "addSymbol",
     }),
-    createAccessLink: function (link) {
-      console.debug(`createAccessLink: ${link}`);
+    $createAccessLink: function (link) {
       this.$store.dispatch("createAccessLink", {
         ExerciseId: this.exerciseId,
         link: link,
       });
     },
-    deleteSelectedSymbols: function () {
-      this.$store.dispatch("removeSelectedSymbols");
+    $removeSelectedSymbols: function () {
+      let selectedNotations = this.getSelectedNotations();
+      this.removeSelectedSymbols()
+        .then(() => {
+          this.mixin_resetSelection();
+          this.mixin_syncOutgoingSymbolsDeletion(selectedNotations);
+        })
+        .catch((e) => {
+          console.error(e);
+        });
     },
-    loadNotations: function () {
-      return this.$store.dispatch("loadNotations", this.exerciseId).then(() => {
-        this.syncIncomingUserOperations(this.getUser().id, this.exerciseId); ///TODO create mechnism to handle gaps between load and sync
-      });
+    $loadNotations: function () {
+      return this.$store
+        .dispatch("loadNotations", this.exerciseId)
+        .then((notations) => {
+          this.mixin_syncIncomingUserOperations(this.exerciseId); ///TODO create mechnism to handle gaps between load and sync
+          //notations.forEach((notation) => {
+          //  this.mixin_syncOutgoingSymbolAdding(notation);
+          //});
+        });
     },
-    addSymbol: function (context) {
-      const symbolValue = context.currentTarget.innerText;
+    $addSymbol: function (context) {
       let symbol = {
-        //UserId: this.getUser().id,
         ExerciseId: this.exerciseId,
-        value: symbolValue,
+        value: context.currentTarget.innerText,
         isNumber: !isNaN(parseInt()),
       };
-      //this.$store.dispatch("addSymbol", symbol);
 
-      let nextPosition = positionMixin.methods.positionMixin_getNext(
-        symbolValue,
+      let nextPosition = positionMixin.methods.mixin_getNext(
+        context.currentTarget.innerText,
         this.getCursorPosition()
       );
-
+      nextPosition.ExerciseId = this.exerciseId;
       symbol = Object.assign(symbol, nextPosition);
 
-      this.addSymbolToStore(symbol).then(() => {
-        userOperationsSyncMixin.methods.syncOutgoingSymbolAdding(symbol);
-        userOperationsSyncMixin.methods.syncOutgoingCursorPosition(
-          nextPosition
-        );
-      });
+      this.$store
+        .dispatch("addSymbol", symbol)
+        .then((symbol) => {
+          this.mixin_syncOutgoingSymbolAdding(symbol);
+          this.mixin_syncOutgoingCursorPosition(nextPosition);
+        })
+        .catch((e) => {
+          console.error(e);
+        });
     },
-    onmousedown: function (e) {
-      console.debug("mouse down");
+    $onMouseDown: function (e) {
       if (e.target.id === "svg") {
         const boundBox = e.target.getBoundingClientRect();
-        let normalizedClickedPosition = this.positionMixin_getClickedNoramalizedPosition(
+        let normalizedClickedPosition = this.mixin_getClickedNoramalizedPosition(
           {
             x: e.clientX - boundBox.left,
             y: e.clientY - boundBox.top,
           }
         );
-        //normalizedClickedPosition.UserId = this.getUser().id;
         normalizedClickedPosition.ExerciseId = this.exerciseId;
-        //this.setCursorPosition(normalizedClickedPosition);
-        userOperationsSyncMixin.methods.syncOutgoingCursorPosition(
-          normalizedClickedPosition
-        );
+        this.mixin_syncOutgoingCursorPosition(normalizedClickedPosition);
       }
 
       if (this.isAnnotationSelected()) {
         this.unselectAllNotations();
-        this.selectionMixin_reset();
+        this.mixin_resetSelection();
       } else {
-        this.selectionMixin_start(e);
+        this.mixin_startSelection(e);
       }
     },
   },

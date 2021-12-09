@@ -38,10 +38,9 @@ module.exports = {
             `authByLocalToken decodedToken:${JSON.stringify(decodedToken)}`
         );
         // TODO - check expiration
-        let user = await db.sequelize.models["User"].findOne({
+        return await db.sequelize.models["User"].findOne({
             where: { email: decodedToken.email },
         });
-        return user;
     },
     authByGoogleToken: async function (access_token) {
         const ticket = await oAuth2client

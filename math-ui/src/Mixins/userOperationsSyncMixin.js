@@ -6,6 +6,7 @@ import store from "../store/index.js";
 let socket = io("http://localhost:3030");
 let client = feathers();
 client.configure(socketio(socket));
+let notationCreateServcice = client.service("notationSync");
 
 export default {
   methods: {
@@ -23,7 +24,7 @@ export default {
           : window.$cookies.get("access_token")
       }`;
     },
-    syncOutgoingCursorPosition: async function (cursorPosition) {
+    mixin_syncOutgoingCursorPosition: async function (cursorPosition) {
       console.debug(`sync cursor position ${JSON.stringify(cursorPosition)}`);
       client.service("cursorSync").update(
         null,
@@ -35,9 +36,9 @@ export default {
         }
       );
     },
-    syncOutgoingSymbolAdding: async function (symbol) {
+    mixin_syncOutgoingSymbolAdding: async function (symbol) {
       console.debug(`sync adding symbol ${JSON.stringify(symbol)}`);
-      client.service("notationSync").create(
+      notationCreateServcice.create(
         { notation: symbol },
         {
           query: {
@@ -46,25 +47,46 @@ export default {
         }
       );
     },
-
-    syncIncomingUserOperations: async function (userId, exerciseId) {
+    mixin_syncOutgoingSymbolsDeletion: async function (symbols) {
+      console.debug(`sync deleting symbols ${JSON.stringify(symbols)}`);
+      client.service("notationSync").remove(
+        { notations: symbols },
+        {
+          query: {
+            access_token: this.getAccessToken(),
+          },
+        }
+      );
+    },
+    mixin_syncOutgoingUpdateSelectedNotations: async function () {
+      console.debug(`sync updating selected symbols`);
+      client.service("notationSync").update(
+        { notations: this.getSelectedNotations() },
+        {
+          query: {
+            access_token: this.getAccessToken(),
+          },
+        }
+      );
+    },
+    mixin_syncIncomingUserOperations: async function (exerciseId) {
+      // this will route events from feathers
       await client.service("authentication").create({
         query: { access_token: this.getAccessToken(), exerciseId: exerciseId },
       });
 
       let _store = store;
-      let _userId = userId;
       client.service("notationSync").on("created", (notation) => {
-        // don't sync self added notation
-        //if (notation.UserId != _userId) {
-        store.dispatch("syncIncomingNotaion", notation);
-        //}
+        _store.dispatch("syncIncomingAddedNotaion", notation);
+      });
+      client.service("notationSync").on("updated", (notation) => {
+        _store.dispatch("syncIncomingUpdatedNotaion", notation);
+      });
+      client.service("notationSync").on("removed", (notation) => {
+        _store.dispatch("syncIncomingDeletedNotaion", notation);
       });
       client.service("cursorSync").on("updated", (cursorPosition) => {
-        // don't sync self added notation
-        //if (cursorPosition.UserId != _userId) {
         _store.dispatch("setCursorPosition", cursorPosition);
-        //}
       });
     },
   },

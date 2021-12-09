@@ -172,7 +172,6 @@ export default {
     googleOnSuccess: async function (user) {
       this.dialog = false;
       window.$cookies.remove("access_token");
-      //this.$router.push("/");
     },
     validateRegister: async function () {
       if (this.$refs.registerForm.validate()) {
@@ -181,7 +180,7 @@ export default {
         user.password = this.password;
         user.lastName = this.lastNameName;
         user.email = this.email;
-        await this.registerUser(user);
+        await this.mixin_registerUser(user);
         this.tab = "Login";
       }
     },

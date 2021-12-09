@@ -6,14 +6,21 @@ module.exports = {
     parseExerciseId: async function (exerciseId) {
         //TODO use cahce
         if (this.exerciseIdFromAccessLink(exerciseId)) {
-            let accessLink = await this.getAccessLink(exerciseId);
+            let accessLink = null;
+            try {
+                accessLink = await this.getAccessLink(exerciseId);
+            } catch (e) {
+                console.debug(
+                    `error parsing exercise id ${exerciseId}, error:{e}`
+                );
+            }
             if (!accessLink) {
                 console.error(
                     `accessLink for suffix:${exerciseId} not found,exerciseId unknown`
                 );
                 return;
             }
-            exerciseId = accessLink.ExerciseId;
+            return accessLink.ExerciseId;
         }
         return exerciseId;
     },
@@ -34,5 +41,15 @@ module.exports = {
         }
 
         return accessLink;
+    },
+
+    deleteMultipleSymbols: function (ids) {
+        db.sequelize.models["Symbol"].destroy({
+            where: {
+                id: {
+                    [Op.in]: ids.split(","),
+                },
+            },
+        });
     },
 };

@@ -65,7 +65,7 @@ module.exports = {
     authGoogleUser: async function () {
       try {
         let res = await axiosInstnce.get("/users");
-        console.debug(`authGoogleUser:${JSON.stringify(res)}`);
+        console.debug(`mixin_authGoogleUser:${JSON.stringify(res)}`);
         return !!res ? res.data[0] : null;
       } catch (error) {
         handleError(error);
@@ -122,9 +122,9 @@ module.exports = {
 
       return Object.assign(newSymbolValue, newSymbol);
     },
-    removeSymbol: async function (symbolId) {
+    removeSymbols: async function (symbolIds) {
       try {
-        return axiosInstnce.delete("/symbols/" + symbolId);
+        axiosInstnce.delete("/symbols/" + symbolIds);
       } catch (error) {
         handleError(error);
       }

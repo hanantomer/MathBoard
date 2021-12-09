@@ -47,11 +47,11 @@ router.beforeEach(async (to, from, next) => {
       }
     } else {
       // google
-      let googleUser = await authMixin.methods.authMixin_getGoogleUser();
+      let googleUser = await authMixin.methods.mixin_getGoogleUser();
       if (!!googleUser) {
-        user = await store.dispatch("authGoogleUser");
+        user = await store.dispatch("mixin_authGoogleUser");
         if (!user) {
-          user = await store.dispatch("registerUser", googleUser);
+          user = await store.dispatch("mixin_registerUser", googleUser);
         }
         user = await store.dispatch("setUser", { ...user, ...googleUser });
       }

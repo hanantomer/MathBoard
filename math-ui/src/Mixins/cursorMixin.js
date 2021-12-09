@@ -1,11 +1,11 @@
 import * as d3 from "d3";
 export default {
   methods: {
-    cursorMixin_hide: function () {
+    mixin_hideCursor: function () {
       this.svg.selectAll("path").remove();
     },
-    cursorMixin_blink: function (nextPosition) {
-      this.cursorMixin_hide();
+    mixin_blinkCursor: function (nextPosition) {
+      this.mixin_hideCursor();
       const cursorLeftDistance = 10;
       const cursorHeight = 10;
       const linePoints = [
