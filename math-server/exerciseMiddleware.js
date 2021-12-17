@@ -31,7 +31,7 @@ module.exports = {
         fetch: {
             before: async (req, res, context) => {
                 console.debug(
-                    `symbolMiddleware, req.query:${JSON.stringify(req.query)}`
+                    `exerciseMiddleware, req.query:${JSON.stringify(req.query)}`
                 );
                 // replace link with actual exerciseId
                 if (!!req.query.exerciseId) {
@@ -39,6 +39,11 @@ module.exports = {
                         req.query.exerciseId
                     );
                 }
+                if (!!req.query.id) {
+                    // when comiongfrom getExercise
+                    req.query.id = await dbUtil.parseExerciseId(req.query.id);
+                }
+
                 return context.continue;
             },
         },

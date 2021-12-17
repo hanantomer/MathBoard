@@ -4,7 +4,7 @@
       :isOpen="isDialogOpen"
       v-on="{ save: saveExercise }"
     ></exercise-dialog>
-    <v-card class="mx-auto" max-width="900" elevation="10">
+    <v-card>
       <v-card-title>Exercises</v-card-title>
       <v-btn icon>
         <v-icon>mdi-plus-circle-outline</v-icon>
@@ -16,7 +16,7 @@
             <v-list-item-content>
               <v-list-item-title
                 v-text="item.name"
-                @click="exerciseSeletcted(item.id)"
+                @click="exerciseSeletcted(item)"
               ></v-list-item-title>
             </v-list-item-content>
           </v-list-item>
@@ -34,7 +34,6 @@ export default {
   components: { ExerciseDialog },
   name: "Exercises",
   mounted() {
-    // if no exercises , create a new and show it
     this.loadExercises().then((exercises) => {
       console.debug(`loadExercises: ${JSON.stringify(exercises)}`);
       if (!exercises) {
@@ -51,6 +50,7 @@ export default {
     ...mapActions({
       loadExercises: "loadExercises",
       addExercise: "addExercise",
+      setCurrentExercise: "setCurrentExercise",
     }),
     ...mapGetters({
       getExercises: "getExercises",
@@ -65,10 +65,12 @@ export default {
         });
       });
     },
-    exerciseSeletcted(exerciseId) {
-      this.$router.push({
-        path: "/symbols/" + exerciseId,
-      });
+    async exerciseSeletcted(exercise) {
+      this.setCurrentExercise(exercise).then(() =>
+        this.$router.push({
+          path: "/symbols/" + exercise.id,
+        })
+      );
     },
   },
   data() {

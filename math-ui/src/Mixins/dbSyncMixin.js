@@ -136,6 +136,15 @@ module.exports = {
         handleError(error);
       }
     },
+    getExercise: async function (exerciseId) {
+      try {
+        let res = await axiosInstnce.get("/exercises?id=" + exerciseId);
+        return !!res ? res.data[0] : null;
+      } catch (error) {
+        handleError(error);
+      }
+    },
+
     getAllExercises: async function (user) {
       console.log(user);
       try {

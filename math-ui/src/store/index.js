@@ -22,6 +22,7 @@ export default new Vuex.Store({
   },
   state: {
     user: {},
+    students: [],
     exercises: [],
     notations: [],
     currentExercise: {},
@@ -33,6 +34,9 @@ export default new Vuex.Store({
     },
     getExercises: (state) => {
       return state.exercises;
+    },
+    getCurrentExercise: (state) => {
+      return state.currentExercise;
     },
     getNotations: (state) => {
       return state.notations;
@@ -55,8 +59,17 @@ export default new Vuex.Store({
       console.debug(`commit.setUser:${JSON.stringify(user)}`);
       Vue.set(state, "user", user);
     },
+    setStudent(state, student) {
+      Vue.set(student, "updateTime", Date.now());
+      let existingStudent = state.students.find((s) => s.id === student.id);
+      if (!!existingStudent) existingStudent = student;
+      else state.students.push(student);
+    },
     addExercise(state, exercise) {
       state.exercises.push(exercise);
+    },
+    setCurrentExercise(state, exercise) {
+      state.currentExercise = exercise;
     },
     removeExercise(state, id) {
       state.exercises.splice(helper.find(state, id), 1);
@@ -117,6 +130,9 @@ export default new Vuex.Store({
     },
   },
   actions: {
+    updateUserHeartbeat(context, student) {
+      context.commit("setStudent", student);
+    },
     async createAccessLink(context, accessLink) {
       return dbSyncMixin.methods.createAccessLink(
         accessLink.ExerciseId,
@@ -153,6 +169,13 @@ export default new Vuex.Store({
         });
       });
     },
+    async loadExercise(context, exerciseId) {
+      let exercise = await dbSyncMixin.methods.getExercise(exerciseId);
+      if (!!exercise) {
+        context.commit("addExercise", exercise);
+        context.commit("setCurrentExercise", exercise);
+      }
+    },
     async loadExercises(context) {
       context.commit("removeAllExercises");
       let exercises = await dbSyncMixin.methods.getAllExercises(
@@ -179,6 +202,9 @@ export default new Vuex.Store({
             reject(error);
           });
       });
+    },
+    setCurrentExercise(context, payload) {
+      context.commit("setCurrentExercise", payload);
     },
     removeExercise(context, payload) {
       context.commit("removeExercise", payload.id);

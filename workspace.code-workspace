@@ -1,0 +1,22 @@
+{
+  "folders": [
+	{
+		"path": "math-server"
+	},
+	{
+		"path": "math-ui"
+	},
+	{
+		"path": "math-auth"
+	},
+	{
+		"path": "math-db"
+	},
+	{
+		"path": "math-messages"
+	}
+],
+  "settings": {
+    "eslint.options": {}
+  }
+}

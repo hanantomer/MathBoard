@@ -50,7 +50,7 @@
       <!-- <v-divider></v-divider> -->
       <v-main>
         <!-- Provides the application the proper gutter -->
-        <v-container fluid>
+        <v-container>
           <!-- If using vue-router -->
           <router-view></router-view>
         </v-container>

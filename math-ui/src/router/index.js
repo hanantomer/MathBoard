@@ -25,6 +25,7 @@ const router = new VueRouter({
     },
     {
       path: "/symbols/:exerciseId",
+      name: "symbols",
       component: Exercise,
       props: true,
       meta: { requiresAuth: true },

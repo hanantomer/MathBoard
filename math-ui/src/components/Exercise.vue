@@ -1,5 +1,5 @@
-<template>
-  <div>
+<template fill-height>
+  <div fill-height>
     <v-toolbar color="primary" dark>
       <v-btn
         v-for="s in signs"
@@ -32,35 +32,52 @@
       v-model="isAccessLinkDialogOpen"
       v-on="{ create: $createAccessLink }"
     ></createAccessLinkDialog>
-    <v-card app>
-      <v-container app fluid>
-        <svg
-          id="svg"
-          width="960"
-          height="600"
-          style="border: 1px lightgray solid"
-          v-on:mousedown="$onMouseDown"
-          v-on:mousemove="mixin_mouseMove"
-          v-on:mouseup="mixin_mouseUp"
-        ></svg>
-        <v-card
-          v-if="this.selectionActive || this.isAnnotationSelected"
-          class="grabbable"
-          v-bind:style="{
-            left: selectionRectLeft,
-            top: selectionRectTop,
-            width: selectionRectWidth,
-            height: selectionRectHeight,
-          }"
-          style="
-            position: absolute;
-            z-index: 99;
-            background: transparent;
-            border: 1, 1, 1, 1;
-          "
-        ></v-card>
-      </v-container>
-    </v-card>
+    <v-container app>
+      <v-row>
+        <v-col cols="sm 10">
+          <v-card class="pa-2 ma-0" outlined tile>
+            <svg
+              id="svg"
+              v-on:mousedown="$onMouseDown"
+              v-on:mousemove="mixin_mouseMove"
+              v-on:mouseup="mixin_mouseUp"
+            ></svg>
+          </v-card>
+          <v-card
+            v-if="this.selectionActive || this.isAnnotationSelected"
+            class="grabbable"
+            v-bind:style="{
+              left: selectionRectLeft,
+              top: selectionRectTop,
+              width: selectionRectWidth,
+              height: selectionRectHeight,
+            }"
+            style="
+              position: absolute;
+              z-index: 99;
+              background: transparent;
+              border: 1, 1, 1, 1;
+            "
+          ></v-card>
+        </v-col>
+        <v-col cols="2">
+          <v-card class="pa-2" outlined tile>
+            <v-list>
+              <v-list-item-group color="primary">
+                <v-list-item v-for="student in students" :key="student.id">
+                  <v-list-item-content>
+                    <v-list-item-title
+                      v-text="getDisplayName(student)"
+                      @click="toggelStudentAuthorization(student)"
+                    ></v-list-item-title>
+                  </v-list-item-content>
+                </v-list-item>
+              </v-list-item-group>
+            </v-list>
+          </v-card>
+        </v-col>
+      </v-row>
+    </v-container>
   </div>
 </template>
 
@@ -84,13 +101,15 @@ export default {
   },
   mounted: function () {
     this.svg = d3.select("#svg");
-    this.$loadNotations().then(() => {
+    this.$loadExercise().then(() => {
       window.addEventListener("click", this.onclick);
+      setInterval(this.mixin_sendHeartBeat, 5000, this.exerciseId);
     });
   },
   data() {
     //TODO - move to methods
     return {
+      isAdmin: false,
       isAccessLinkDialogOpen: false,
       svg: {},
       signs: [
@@ -123,6 +142,9 @@ export default {
   ],
   computed: {
     ...mapState({
+      students: (state) => {
+        return state.students;
+      },
       notations: (state) => {
         return state.notations;
       },
@@ -158,7 +180,7 @@ export default {
     },
   },
   watch: {
-    $route: "loadNotations",
+    $route: "$loadExercise",
     cursorPosition: {
       handler(cursorPosition) {
         this.mixin_blinkCursor(cursorPosition)();
@@ -222,9 +244,12 @@ export default {
       getCursorPosition: "getCursorPosition",
       isAnnotationSelected: "isAnnotationSelected",
       getSelectedNotations: "getSelectedNotations",
+      getCurrentExercise: "getCurrentExercise",
+      getExercises: "getExercises",
       getUser: "getUser",
     }),
     ...mapActions({
+      loadExercise: "loadExercise",
       setCursorPosition: "setCursorPosition",
       selectNotation: "selectNotation",
       unselectAllNotations: "unselectAllNotations",
@@ -232,6 +257,21 @@ export default {
       removeSelectedSymbols: "removeSelectedSymbols",
       updateSelectedNotations: "updateSelectedNotations",
     }),
+    getDisplayName(student) {
+      return student.firstName + " " + student.lastName;
+    },
+    $loadExercise: async function () {
+      if (!this.getCurrentExercise().hasOwnProperty()) {
+        await this.loadExercise(this.exerciseId);
+      }
+      this.isAdmin = this.getCurrentExercise().UserId === this.getUser().id;
+
+      return this.$store
+        .dispatch("loadNotations", this.exerciseId)
+        .then((notations) => {
+          this.mixin_syncIncomingUserOperations(this.exerciseId, this.isAdmin); ///TODO create mechnism to handle gaps between load and sync
+        });
+    },
     $createAccessLink: function (link) {
       this.$store.dispatch("createAccessLink", {
         ExerciseId: this.exerciseId,
@@ -247,16 +287,6 @@ export default {
         })
         .catch((e) => {
           console.error(e);
-        });
-    },
-    $loadNotations: function () {
-      return this.$store
-        .dispatch("loadNotations", this.exerciseId)
-        .then((notations) => {
-          this.mixin_syncIncomingUserOperations(this.exerciseId); ///TODO create mechnism to handle gaps between load and sync
-          //notations.forEach((notation) => {
-          //  this.mixin_syncOutgoingSymbolAdding(notation);
-          //});
         });
     },
     $addSymbol: function (context) {
@@ -308,6 +338,9 @@ export default {
 </script>
 
 <style>
+#svg {
+  width: 100%;
+}
 .hellow {
   padding: 5px;
   color: darkkhaki;

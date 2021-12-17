@@ -58,6 +58,16 @@ export default {
         }
       );
     },
+    mixin_sendHeartBeat: async function (exerciseId) {
+      client.service("heartbeat").update(
+        { ExerciseId: exerciseId },
+        {
+          query: {
+            access_token: this.getAccessToken(),
+          },
+        }
+      );
+    },
     mixin_syncOutgoingUpdateSelectedNotations: async function () {
       console.debug(`sync updating selected symbols`);
       client.service("notationSync").update(
@@ -69,7 +79,7 @@ export default {
         }
       );
     },
-    mixin_syncIncomingUserOperations: async function (exerciseId) {
+    mixin_syncIncomingUserOperations: async function (exerciseId, isAdmin) {
       // this will route events from feathers
       await client.service("authentication").create({
         query: { access_token: this.getAccessToken(), exerciseId: exerciseId },
@@ -88,6 +98,12 @@ export default {
       client.service("cursorSync").on("updated", (cursorPosition) => {
         _store.dispatch("setCursorPosition", cursorPosition);
       });
+
+      if (isAdmin) {
+        client.service("heartbeat").on("updated", (user) => {
+          _store.dispatch("updateUserHeartbeat", user);
+        });
+      }
     },
   },
 };

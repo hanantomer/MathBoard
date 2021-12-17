@@ -35,7 +35,7 @@ module.exports = {
         });
         if (!accessLink) {
             console.debug(
-                `symbolMiddleware, accessLink not found for:${exerciseLink}`
+                `exerciseMiddleware, accessLink not found for:${exerciseLink}`
             );
             return null;
         }
