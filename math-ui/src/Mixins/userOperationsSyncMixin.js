@@ -79,6 +79,30 @@ export default {
         }
       );
     },
+
+    mixin_syncOutgoingUserAthorization: async function (exerciseId, studentId) {
+      this.getStudent(studentId);
+      let student = this.getStudent(studentId);
+      client.service("authorizationSync").update(
+        {
+          authorization: {
+            exerciseId: exerciseId,
+            student: studentId,
+            authorized: student.authorized,
+          },
+        },
+        {
+          query: {
+            access_token: this.getAccessToken(),
+          },
+        }
+      );
+    },
+
+    mixin_syncIncomingAthorizationUpdate: async function (student) {
+      this.setAuthorization(student);
+    },
+
     mixin_syncIncomingUserOperations: async function (exerciseId, isAdmin) {
       // this will route events from feathers
       await client.service("authentication").create({
@@ -98,7 +122,9 @@ export default {
       client.service("cursorSync").on("updated", (cursorPosition) => {
         _store.dispatch("setCursorPosition", cursorPosition);
       });
-
+      client.service("authorizationSync").on("updated", (user) => {
+        _store.dispatch("setUser", user);
+      });
       if (isAdmin) {
         client.service("heartbeat").on("updated", (user) => {
           _store.dispatch("updateUserHeartbeat", user);

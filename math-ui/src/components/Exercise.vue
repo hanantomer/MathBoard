@@ -2,6 +2,7 @@
   <div fill-height>
     <v-toolbar color="primary" dark>
       <v-btn
+        :disabled="!authorized && !isAdmin"
         v-for="s in signs"
         :key="s.sign"
         v-on:click="$addSymbol"
@@ -11,6 +12,7 @@
       >
       <v-btn
         icon
+        :disabled="!authorized && !isAdmin"
         v-on:click="$removeSelectedSymbols"
         color="white"
         x-small
@@ -19,6 +21,7 @@
         ><v-icon>mdi-delete</v-icon></v-btn
       >
       <v-btn
+        v-if="isAdmin"
         icon
         @click.stop="isAccessLinkDialogOpen = true"
         color="white"
@@ -32,18 +35,19 @@
       v-model="isAccessLinkDialogOpen"
       v-on="{ create: $createAccessLink }"
     ></createAccessLinkDialog>
-    <v-container app>
+    <v-container app style="max-width: 1600px !important">
       <v-row>
         <v-col cols="sm 10">
           <v-card class="pa-2 ma-0" outlined tile>
             <svg
               id="svg"
+              v-on:mouseup="mixin_svgMouseUp"
               v-on:mousedown="$onMouseDown"
               v-on:mousemove="mixin_mouseMove"
-              v-on:mouseup="mixin_mouseUp"
             ></svg>
           </v-card>
           <v-card
+            v-on:mouseup="mixin_canvasMouseUp"
             v-if="this.selectionActive || this.isAnnotationSelected"
             class="grabbable"
             v-bind:style="{
@@ -60,21 +64,23 @@
             "
           ></v-card>
         </v-col>
-        <v-col cols="2">
-          <v-card class="pa-2" outlined tile>
-            <v-list>
-              <v-list-item-group color="primary">
-                <v-list-item v-for="student in students" :key="student.id">
-                  <v-list-item-content>
-                    <v-list-item-title
-                      v-text="getDisplayName(student)"
-                      @click="toggelStudentAuthorization(student)"
-                    ></v-list-item-title>
-                  </v-list-item-content>
-                </v-list-item>
-              </v-list-item-group>
-            </v-list>
-          </v-card>
+        <v-col cols="3" v-if="isAdmin">
+          <v-list>
+            <v-list-item v-for="student in students" :key="student.id">
+              <v-list-item-avatar>
+                <v-img :src="student.imageUrl"></v-img>
+              </v-list-item-avatar>
+              <v-list-item-content>
+                <v-list-item-title
+                  v-text="getDisplayName(student)"
+                  @click="toggeleStudentAuthorization(student)"
+                ></v-list-item-title>
+              </v-list-item-content>
+              <v-btn class="mx-2" fab dark x-small color="lightblue">
+                <v-icon dark> mdi-pencil </v-icon>
+              </v-btn>
+            </v-list-item>
+          </v-list>
         </v-col>
       </v-row>
     </v-container>
@@ -107,7 +113,6 @@ export default {
     });
   },
   data() {
-    //TODO - move to methods
     return {
       isAdmin: false,
       isAccessLinkDialogOpen: false,
@@ -149,18 +154,19 @@ export default {
         return state.notations;
       },
       cursorPosition: (state) => state.cursorPosition,
+      authorized: (state) => state.user.authorized,
     }),
     selectionRectLeft: function () {
       return (
         Math.min(this.selectionPosition.x1, this.selectionPosition.x2) +
-        10 +
+        5 +
         "px"
       );
     },
     selectionRectTop: function () {
       return (
         Math.min(this.selectionPosition.y1, this.selectionPosition.y2) +
-        10 +
+        5 +
         "px"
       );
     },
@@ -314,8 +320,8 @@ export default {
         });
     },
     $onMouseDown: function (e) {
+      const boundBox = e.target.getBoundingClientRect();
       if (e.target.id === "svg") {
-        const boundBox = e.target.getBoundingClientRect();
         let normalizedClickedPosition = this.mixin_getClickedNoramalizedPosition(
           {
             x: e.clientX - boundBox.left,
@@ -333,6 +339,11 @@ export default {
         this.mixin_startSelection(e);
       }
     },
+    toggelStudentAuthorization: function (student) {
+      this.toggeleStudentAuthorization(student.id).then(() => {
+        this.mixin_syncOutgoingUserAthorization(student.id);
+      });
+    },
   },
 };
 </script>
@@ -340,13 +351,14 @@ export default {
 <style>
 #svg {
   width: 100%;
+  min-height: 500px;
 }
 .hellow {
   padding: 5px;
   color: darkkhaki;
 }
 .grabbable {
-  cursor: move; /* fallback if grab cursor is unsupported */
+  cursor: move; /*fallback if grab cursor is unsupported */
   cursor: grab;
   cursor: -moz-grab;
   cursor: -webkit-grab;

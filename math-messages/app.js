@@ -4,10 +4,12 @@ const NotationSyncService = require("./notationSyncService.js");
 const AuthenticationService = require("./authenticationService");
 const CursorSyncService = require("./cursorSyncService.js");
 const HeartbeatService = require("./heartbeatService.js");
+const AuthorizationService = require("./authorizationService.js");
 
 const app = feathers();
 app.configure(socketio());
 
+app.use("authorization", new AuthorizationService(app));
 app.use("heartbeat", new HeartbeatService(app));
 app.use("authentication", new AuthenticationService(app));
 app.use("cursorSync", new CursorSyncService(app));
@@ -23,12 +25,21 @@ app.service("notationSync").publish("created", (notation, ctx) => {
 });
 
 app.service("heartbeat").publish("updated", (user, ctx) => {
+  /*console.debug(
+    `heartbeat: ${JSON.stringify(
+      user
+    )} to channel: ${user.ExerciseId.toString()}`
+  );*/
+  return [app.channel(`studentchannel${user.id.toString()}`)];
+});
+
+app.service("authorization").publish("updated", (user, ctx) => {
   console.debug(
     `heartbeat: ${JSON.stringify(
       user
     )} to channel: ${user.ExerciseId.toString()}`
   );
-  return [app.channel(`channel${user.ExerciseId.toString()}`)];
+  return [app.channel(`studentchannel${user.id.toString()}`)];
 });
 
 app.service("notationSync").publish("updated", (notation, ctx) => {

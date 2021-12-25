@@ -3,6 +3,7 @@ const numberOfCols = 100;
 const rowHeight = 20;
 const xStart = 10;
 const yStart = 10;
+var p;
 
 function getHorizontalStep() {
   return Math.round(width / numberOfCols);
@@ -11,14 +12,15 @@ function getHorizontalStep() {
 export default {
   methods: {
     mixin_getSVGCoordinates: function (x, y) {
-      var p = svg.createSVGPoint();
+      if (!p) {
+        p = svg.createSVGPoint();
+      }
       p.x = x;
       p.y = y;
       var ctm = this.svg.node().getScreenCTM().inverse();
       var p = p.matrixTransform(ctm);
       return p;
     },
-
     mixin_getClickedNoramalizedPosition: function (clickedPosition) {
       let horizontalStep = getHorizontalStep();
       let xNormalized =

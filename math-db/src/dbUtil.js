@@ -20,13 +20,14 @@ module.exports = {
                 );
                 return;
             }
-            return accessLink.ExerciseId;
+            return Number(accessLink.ExerciseId);
         }
-        return exerciseId;
+        return Number(exerciseId);
     },
     exerciseIdFromAccessLink: function (exerciseId) {
         return exerciseId.toString().indexOf("l_") === 0;
     },
+    //TODO use cahce
     getAccessLink: function (exerciseLink) {
         let accessLink = db.sequelize.models["AccessLink"].findOne({
             where: {
@@ -51,5 +52,15 @@ module.exports = {
                 },
             },
         });
+    },
+
+    isAdmin: async function (userId, exerciseId) {
+        let exercise = await db.sequelize.models["Exercise"].findOne({
+            where: {
+                id: exerciseId,
+            },
+        });
+
+        return !!exercise && exercise.UserId === userId;
     },
 };

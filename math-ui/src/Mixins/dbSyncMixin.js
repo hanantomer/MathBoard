@@ -1,5 +1,4 @@
 const axios = require("axios");
-//const authMixin = require("./authMixin");
 const axiosInstnce = axios.create({
   baseURL: "http://localhost:8081",
 });
@@ -23,7 +22,7 @@ axiosInstnce.interceptors.request.use(function (config) {
 
   if (access_token != null) {
     console.debug(`sending access_token:${access_token}`);
-    config.headers.Authorization = access_token;
+    config.headers.authentication = access_token;
   }
   access_token;
 

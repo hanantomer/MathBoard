@@ -11,11 +11,11 @@ module.exports = {
             console.debug(`auth start`);
             let user = null;
             if (
-                !!req.headers.authorization &&
-                req.headers.authorization.indexOf("Bearer") == 0
+                !!req.headers.authentication &&
+                req.headers.authentication.indexOf("Bearer") == 0
             ) {
                 user = await authBearer(req);
-            } else if (!!req.headers.authorization) {
+            } else if (!!req.headers.authentication) {
                 user = await authLocal(req);
             }
             if (!user) {
@@ -33,11 +33,11 @@ module.exports = {
             if (!!req.query.password) {
                 user = await authPassword(req);
             } else if (
-                !!req.headers.authorization &&
-                req.headers.authorization.indexOf("Bearer") == 0
+                !!req.headers.authentication &&
+                req.headers.authentication.indexOf("Bearer") == 0
             ) {
                 user = await authByBearer(req, user);
-            } else if (!!req.headers.authorization) {
+            } else if (!!req.headers.authentication) {
                 user = await authLocal(req);
             }
             if (!user) {
@@ -49,9 +49,9 @@ module.exports = {
     },
 };
 async function authLocal(req) {
-    console.debug(`auth headers.authorization:${req.headers.authorization}`);
-    let user = await authUtil.authByLocalToken(req.headers.authorization);
-    console.debug(`auth headers.authorization user:${user}`);
+    console.debug(`auth headers.authentication:${req.headers.authentication}`);
+    let user = await authUtil.authByLocalToken(req.headers.authentication);
+    console.debug(`auth headers.authentication user:${user}`);
     // set email for upcoming find
     req.query.email = user.email;
     return user;
@@ -59,9 +59,9 @@ async function authLocal(req) {
 
 async function authBearer(req) {
     console.debug(
-        `Bearer auth headers.authorization:${req.headers.authorization}`
+        `Bearer auth headers.authentication:${req.headers.authentication}`
     );
-    let user = await authUtil.authByGoogleToken(req.headers.authorization);
+    let user = await authUtil.authByGoogleToken(req.headers.authentication);
     // set email for upcoming find
     req.query.email = user.email;
     return user;

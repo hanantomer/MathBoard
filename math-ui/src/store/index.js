@@ -14,6 +14,9 @@ const helper = {
   findNotationById: function (state, id) {
     return state.notations.find((n) => n.id === id);
   },
+  findStusentById: function (state, id) {
+    return state.students.find((s) => s.id === id);
+  },
 };
 
 export default new Vuex.Store({
@@ -29,6 +32,9 @@ export default new Vuex.Store({
     cursorPosition: { x: 10, y: 20 },
   },
   getters: {
+    getStudent: function (studentId) {
+      return helper.findStusentById(studentId);
+    },
     getUser: function (state) {
       return state.user;
     },
@@ -63,7 +69,11 @@ export default new Vuex.Store({
       Vue.set(student, "updateTime", Date.now());
       let existingStudent = state.students.find((s) => s.id === student.id);
       if (!!existingStudent) existingStudent = student;
-      else state.students.push(student);
+      else {
+        if (!student.imageUrl)
+          student.imageUrl = "https://joeschmoe.io/api/v1/" + student.id;
+        state.students.push(student);
+      }
     },
     addExercise(state, exercise) {
       state.exercises.push(exercise);
@@ -128,9 +138,16 @@ export default new Vuex.Store({
           Vue.set(notation, "y", y + payload.deltaY);
         });
     },
+    toggeleStudentAuthorization(state, studentId) {
+      let student = helper.findStusentById(studentId);
+      student.authorized = !student.authorized;
+    },
   },
   actions: {
     updateUserHeartbeat(context, student) {
+      context.commit("setStudent", student);
+    },
+    setAuthorization(context, student) {
       context.commit("setStudent", student);
     },
     async createAccessLink(context, accessLink) {
@@ -241,11 +258,13 @@ export default new Vuex.Store({
     },
     setCursorPosition(context, payload) {
       context.commit("setCursorPosition", payload);
-      //      payload.userId = context.getters.getUser.id;
     },
     setDimensions(context, payload) {
       context.commit("setNumberOfCols", payload.numberOfCols);
       context.commit("setNumberOfRows", payload.numberOfRows);
+    },
+    toggeleStudentAuthorization(context, studentId) {
+      context.commit("toggelStudentAuthorization", studentId);
     },
   },
 });
