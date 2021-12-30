@@ -81,9 +81,8 @@ export default {
     },
 
     mixin_syncOutgoingUserAthorization: async function (exerciseId, studentId) {
-      this.getStudent(studentId);
-      let student = this.getStudent(studentId);
-      client.service("authorizationSync").update(
+      let student = this.getStudent()(studentId);
+      client.service("authorization").update(
         {
           authorization: {
             exerciseId: exerciseId,
@@ -99,9 +98,9 @@ export default {
       );
     },
 
-    mixin_syncIncomingAthorizationUpdate: async function (student) {
-      this.setAuthorization(student);
-    },
+    //mixin_syncIncomingAthorizationUpdate: async function (student) {
+    //  this.setAuthorization(student);
+    //},
 
     mixin_syncIncomingUserOperations: async function (exerciseId, isAdmin) {
       // this will route events from feathers
@@ -122,7 +121,7 @@ export default {
       client.service("cursorSync").on("updated", (cursorPosition) => {
         _store.dispatch("setCursorPosition", cursorPosition);
       });
-      client.service("authorizationSync").on("updated", (user) => {
+      client.service("authorization").on("updated", (user) => {
         _store.dispatch("setUser", user);
       });
       if (isAdmin) {

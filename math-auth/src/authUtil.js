@@ -6,6 +6,8 @@ const { OAuth2Client } = require("google-auth-library");
 const clientSecretData = require("../client_secret.json");
 const oAuth2client = new OAuth2Client(clientSecretData.web.client_id);
 
+const userCache = new Map();
+
 module.exports = {
     authByLocalPassword: async function (email, password) {
         //TODO add caching
@@ -34,13 +36,18 @@ module.exports = {
             access_token,
             clientSecretData.client_secret
         );
-        console.debug(
-            `authByLocalToken decodedToken:${JSON.stringify(decodedToken)}`
-        );
+        //        console.debug(
+        //            `authByLocalToken decodedToken:${JSON.stringify(decodedToken)}`
+        //        );
         // TODO - check expiration
-        return await db.sequelize.models["User"].findOne({
-            where: { email: decodedToken.email },
-        });
+        if (!userCache[decodedToken.email]) {
+            userCache[decodedToken.email] = await db.sequelize.models[
+                "User"
+            ].findOne({
+                where: { email: decodedToken.email },
+            });
+        }
+        return userCache[decodedToken.email];
     },
     authByGoogleToken: async function (access_token) {
         const ticket = await oAuth2client
@@ -50,7 +57,7 @@ module.exports = {
             })
             .catch(console.error); //TODO log error
 
-        console.debug(`authByGoogleToken ticket:${ticket}`);
+        //        console.debug(`authByGoogleToken ticket:${ticket}`);
         if (!!ticket) {
             let user = await db.sequelize.models["User"].findOne({
                 where: { email: ticket.payload.email },

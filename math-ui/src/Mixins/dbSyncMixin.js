@@ -64,7 +64,7 @@ module.exports = {
     authGoogleUser: async function () {
       try {
         let res = await axiosInstnce.get("/users");
-        console.debug(`mixin_authGoogleUser:${JSON.stringify(res)}`);
+        console.debug(`authGoogleUser:${JSON.stringify(res)}`);
         return !!res ? res.data[0] : null;
       } catch (error) {
         handleError(error);

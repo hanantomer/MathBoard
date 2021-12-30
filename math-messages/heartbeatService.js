@@ -10,8 +10,13 @@ class HeartbeatService {
       .authUserByToken(params.query.access_token);
 
     if (!!user) {
-      user.ExerciseId = await dbUtil.parseExerciseId(data.ExerciseId);
-      return user;
+      let exerciseId = await dbUtil.parseExerciseId(data.ExerciseId);
+      return {
+        exerciseId: exerciseId,
+        userId: user.id,
+        firstName: user.firstName,
+        lastName: user.lastName,
+      };
     }
   }
 }

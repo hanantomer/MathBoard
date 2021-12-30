@@ -73,10 +73,16 @@
               <v-list-item-content>
                 <v-list-item-title
                   v-text="getDisplayName(student)"
-                  @click="toggeleStudentAuthorization(student)"
                 ></v-list-item-title>
               </v-list-item-content>
-              <v-btn class="mx-2" fab dark x-small color="lightblue">
+              <v-btn
+                class="mx-2"
+                fab
+                dark
+                x-small
+                color="lightblue"
+                v-on:click="toggleStudentAuthorization(student)"
+              >
                 <v-icon dark> mdi-pencil </v-icon>
               </v-btn>
             </v-list-item>
@@ -109,7 +115,6 @@ export default {
     this.svg = d3.select("#svg");
     this.$loadExercise().then(() => {
       window.addEventListener("click", this.onclick);
-      setInterval(this.mixin_sendHeartBeat, 5000, this.exerciseId);
     });
   },
   data() {
@@ -253,6 +258,7 @@ export default {
       getCurrentExercise: "getCurrentExercise",
       getExercises: "getExercises",
       getUser: "getUser",
+      getStudent: "getStudent",
     }),
     ...mapActions({
       loadExercise: "loadExercise",
@@ -262,6 +268,7 @@ export default {
       moveSelectedNotations: "moveSelectedNotations",
       removeSelectedSymbols: "removeSelectedSymbols",
       updateSelectedNotations: "updateSelectedNotations",
+      toggleAuthorization: "toggleAuthorization",
     }),
     getDisplayName(student) {
       return student.firstName + " " + student.lastName;
@@ -271,6 +278,10 @@ export default {
         await this.loadExercise(this.exerciseId);
       }
       this.isAdmin = this.getCurrentExercise().UserId === this.getUser().id;
+
+      if (!this.isAdmin) {
+        setInterval(this.mixin_sendHeartBeat, 2000, this.exerciseId);
+      }
 
       return this.$store
         .dispatch("loadNotations", this.exerciseId)
@@ -339,9 +350,9 @@ export default {
         this.mixin_startSelection(e);
       }
     },
-    toggelStudentAuthorization: function (student) {
-      this.toggeleStudentAuthorization(student.id).then(() => {
-        this.mixin_syncOutgoingUserAthorization(student.id);
+    toggleStudentAuthorization: function (student) {
+      this.toggleAuthorization(student.userId).then((studentId) => {
+        this.mixin_syncOutgoingUserAthorization(this.exerciseId, studentId);
       });
     },
   },

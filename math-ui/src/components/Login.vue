@@ -180,7 +180,7 @@ export default {
         user.password = this.password;
         user.lastName = this.lastNameName;
         user.email = this.email;
-        await this.mixin_registerUser(user);
+        await this.registerUser(user);
         this.tab = "Login";
       }
     },

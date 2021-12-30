@@ -14,8 +14,8 @@ const helper = {
   findNotationById: function (state, id) {
     return state.notations.find((n) => n.id === id);
   },
-  findStusentById: function (state, id) {
-    return state.students.find((s) => s.id === id);
+  findStudentById: function (state, id) {
+    return state.students.find((s) => s.userId === id);
   },
 };
 
@@ -32,8 +32,10 @@ export default new Vuex.Store({
     cursorPosition: { x: 10, y: 20 },
   },
   getters: {
-    getStudent: function (studentId) {
-      return helper.findStusentById(studentId);
+    getStudent: function (state) {
+      return (studentId) => {
+        return helper.findStudentById(state, studentId);
+      };
     },
     getUser: function (state) {
       return state.user;
@@ -58,6 +60,10 @@ export default new Vuex.Store({
     },
   },
   mutations: {
+    toggleAuthorization(state, studentId) {
+      let student = helper.findStudentById(state, studentId);
+      student.authorized = student.authorized ? false : true;
+    },
     setCursorPosition(state, cursorPosition) {
       Vue.set(state, "cursorPosition", cursorPosition);
     },
@@ -68,7 +74,8 @@ export default new Vuex.Store({
     setStudent(state, student) {
       Vue.set(student, "updateTime", Date.now());
       let existingStudent = state.students.find((s) => s.id === student.id);
-      if (!!existingStudent) existingStudent = student;
+      if (!!existingStudent)
+        existingStudent = { ...student, ...existingStudent };
       else {
         if (!student.imageUrl)
           student.imageUrl = "https://joeschmoe.io/api/v1/" + student.id;
@@ -138,12 +145,12 @@ export default new Vuex.Store({
           Vue.set(notation, "y", y + payload.deltaY);
         });
     },
-    toggeleStudentAuthorization(state, studentId) {
-      let student = helper.findStusentById(studentId);
-      student.authorized = !student.authorized;
-    },
   },
   actions: {
+    toggleAuthorization(context, studentId) {
+      context.commit("toggleAuthorization", studentId);
+      return studentId;
+    },
     updateUserHeartbeat(context, student) {
       context.commit("setStudent", student);
     },

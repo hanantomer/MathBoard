@@ -5,6 +5,7 @@ const AuthenticationService = require("./authenticationService");
 const CursorSyncService = require("./cursorSyncService.js");
 const HeartbeatService = require("./heartbeatService.js");
 const AuthorizationService = require("./authorizationService.js");
+const constants = require("./constants");
 
 const app = feathers();
 app.configure(socketio());
@@ -15,31 +16,35 @@ app.use("authentication", new AuthenticationService(app));
 app.use("cursorSync", new CursorSyncService(app));
 app.use("notationSync", new NotationSyncService(app));
 
+app.service("heartbeat").publish("updated", (heartbeat, ctx) => {
+  return [
+    app.channel(
+      constants.EXERCISE_CHANNEL_PREFIX +
+        heartbeat.exerciseId +
+        constants.USER_CHANNEL_PREFIX +
+        heartbeat.userId
+    ),
+  ];
+});
+
+app.service("authorization").publish("updated", (authorization, ctx) => {
+  return [
+    app.channel(
+      constants.EXERCISE_CHANNEL_PREFIX +
+        authorization.exerciseId +
+        constants.USER_CHANNEL_PREFIX +
+        authorization.userId
+    ),
+  ];
+});
+
 app.service("notationSync").publish("created", (notation, ctx) => {
   console.debug(
     `publish notation created data: ${JSON.stringify(
       notation
     )} to channel: ${notation.ExerciseId.toString()}`
   );
-  return [app.channel(`channel${notation.ExerciseId.toString()}`)];
-});
-
-app.service("heartbeat").publish("updated", (user, ctx) => {
-  /*console.debug(
-    `heartbeat: ${JSON.stringify(
-      user
-    )} to channel: ${user.ExerciseId.toString()}`
-  );*/
-  return [app.channel(`studentchannel${user.id.toString()}`)];
-});
-
-app.service("authorization").publish("updated", (user, ctx) => {
-  console.debug(
-    `heartbeat: ${JSON.stringify(
-      user
-    )} to channel: ${user.ExerciseId.toString()}`
-  );
-  return [app.channel(`studentchannel${user.id.toString()}`)];
+  return [app.channel(constants.EXERCISE_CHANNEL_PREFIX + notation.ExerciseId)];
 });
 
 app.service("notationSync").publish("updated", (notation, ctx) => {
@@ -48,7 +53,7 @@ app.service("notationSync").publish("updated", (notation, ctx) => {
       notation
     )} to channel: ${notation.ExerciseId.toString()}`
   );
-  return [app.channel(`channel${notation.ExerciseId.toString()}`)];
+  return [app.channel(constants.EXERCISE_CHANNEL_PREFIX + notation.ExerciseId)];
 });
 
 app.service("notationSync").publish("removed", (notation, ctx) => {
@@ -57,7 +62,7 @@ app.service("notationSync").publish("removed", (notation, ctx) => {
       notation
     )} to channel: ${notation.ExerciseId.toString()}`
   );
-  return [app.channel(`channel${notation.ExerciseId.toString()}`)];
+  return [app.channel(constants.EXERCISE_CHANNEL_PREFIX + notation.ExerciseId)];
 });
 
 app.service("cursorSync").publish("updated", (cursorPosition, ctx) => {
@@ -66,7 +71,9 @@ app.service("cursorSync").publish("updated", (cursorPosition, ctx) => {
       cursorPosition
     )} to channel: ${cursorPosition.ExerciseId.toString()}`
   );
-  return [app.channel(`channel${cursorPosition.ExerciseId.toString()}`)];
+  return [
+    app.channel(constants.EXERCISE_CHANNEL_PREFIX + cursorPosition.ExerciseId),
+  ];
 });
 
 const PORT = process.env.PORT || 3030;

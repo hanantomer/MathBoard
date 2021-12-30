@@ -36,7 +36,6 @@ export default {
       googleUser.email = userProfile.getEmail();
       googleUser.imageUrl = userProfile.getImageUrl();
       googleUser.id_token = auth2.currentUser.get().getAuthResponse().id_token;
-      //this.googleUser = googleUser;
       return googleUser;
     },
   },

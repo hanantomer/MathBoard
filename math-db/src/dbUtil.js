@@ -2,13 +2,21 @@
 const db = require("./models/index");
 const { Op } = require("sequelize");
 
+const accessLinkCache = new Map();
+
 module.exports = {
     parseExerciseId: async function (exerciseId) {
         //TODO use cahce
         if (this.exerciseIdFromAccessLink(exerciseId)) {
             let accessLink = null;
             try {
-                accessLink = await this.getAccessLink(exerciseId);
+                if (!accessLinkCache.has(exerciseId)) {
+                    accessLinkCache.set(
+                        exerciseId,
+                        await this.getAccessLink(exerciseId)
+                    );
+                }
+                accessLink = accessLinkCache.get(exerciseId);
             } catch (e) {
                 console.debug(
                     `error parsing exercise id ${exerciseId}, error:{e}`

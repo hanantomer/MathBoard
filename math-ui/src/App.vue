@@ -73,11 +73,11 @@ export default {
       this.$router.push("/login");
     },
     signInViaGoogleAuth: async function () {
-      let user = await this.mixin_authGoogleUser(this.googleUser);
+      let user = await this.authGoogleUser(this.googleUser);
       if (!!user) {
         return await this.setUser(user);
       } else {
-        return await this.mixin_registerUser(...this.googleUser);
+        return await this.registerUser(...this.googleUser);
       }
     },
   },
