@@ -8,7 +8,10 @@ var ForbiddenError = require("finale-rest").Errors.ForbiddenError;
 module.exports = {
     create: {
         auth: async (req, res, context) => {
-            console.debug(`auth start`);
+            if (req.url === "/users") {
+                // allow registration
+                return context.continue();
+            }
             let user = null;
             if (
                 !!req.headers.authentication &&
@@ -27,7 +30,6 @@ module.exports = {
     },
     list: {
         auth: async (req, res, context) => {
-            console.debug(`auth start`);
             let user = null;
 
             if (!!req.query.password) {

@@ -72,13 +72,16 @@ export default new Vuex.Store({
       Vue.set(state, "user", user);
     },
     setStudent(state, student) {
-      Vue.set(student, "updateTime", Date.now());
-      let existingStudent = state.students.find((s) => s.id === student.id);
-      if (!!existingStudent)
-        existingStudent = { ...student, ...existingStudent };
-      else {
-        if (!student.imageUrl)
-          student.imageUrl = "https://joeschmoe.io/api/v1/" + student.id;
+      let existingStudent = state.students.find(
+        (s) => s.userId === student.userId
+      );
+      if (!!existingStudent) {
+        existingStudent.updateTime = Date.now();
+      } else {
+        if (!student.imageUrl) {
+          student.imageUrl = "https://joeschmoe.io/api/v1/" + student.userId;
+        }
+        student.updateTime = Date.now();
         state.students.push(student);
       }
     },

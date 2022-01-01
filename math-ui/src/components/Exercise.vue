@@ -72,16 +72,16 @@
               </v-list-item-avatar>
               <v-list-item-content>
                 <v-list-item-title
-                  v-text="getDisplayName(student)"
+                  v-text="getStudentDisplayName(student)"
                 ></v-list-item-title>
               </v-list-item-content>
               <v-btn
-                class="mx-2"
+                class="[mx-2]"
                 fab
                 dark
                 x-small
-                color="lightblue"
-                v-on:click="toggleStudentAuthorization(student)"
+                color="green"
+                v-on:click="toggleStudentAuthorization($event, student)"
               >
                 <v-icon dark> mdi-pencil </v-icon>
               </v-btn>
@@ -157,6 +157,9 @@ export default {
       },
       notations: (state) => {
         return state.notations;
+      },
+      students: (state) => {
+        return state.students;
       },
       cursorPosition: (state) => state.cursorPosition,
       authorized: (state) => state.user.authorized,
@@ -270,7 +273,7 @@ export default {
       updateSelectedNotations: "updateSelectedNotations",
       toggleAuthorization: "toggleAuthorization",
     }),
-    getDisplayName(student) {
+    getStudentDisplayName(student) {
       return student.firstName + " " + student.lastName;
     },
     $loadExercise: async function () {
@@ -350,7 +353,9 @@ export default {
         this.mixin_startSelection(e);
       }
     },
-    toggleStudentAuthorization: function (student) {
+    toggleStudentAuthorization: function (e, student) {
+      let color = e.target.style.color;
+      e.target.style.color = color == "" ? "blue" : "";
       this.toggleAuthorization(student.userId).then((studentId) => {
         this.mixin_syncOutgoingUserAthorization(this.exerciseId, studentId);
       });

@@ -178,7 +178,7 @@ export default {
         let user = {};
         user.firstName = this.firstName;
         user.password = this.password;
-        user.lastName = this.lastNameName;
+        user.lastName = this.lastName;
         user.email = this.email;
         await this.registerUser(user);
         this.tab = "Login";

@@ -72,14 +72,14 @@ export default {
       this.mixin_signOut();
       this.$router.push("/login");
     },
-    signInViaGoogleAuth: async function () {
-      let user = await this.authGoogleUser(this.googleUser);
-      if (!!user) {
-        return await this.setUser(user);
-      } else {
-        return await this.registerUser(...this.googleUser);
-      }
-    },
+    // signInViaGoogleAuth: async function () {
+    //   let user = await this.authGoogleUser(this.googleUser);
+    //   if (!!user) {
+    //     return await this.setUser(user);
+    //   } else {
+    //     return await this.registerUser(...this.googleUser);
+    //   }
+    // },
   },
   computed: {
     user: function () {
