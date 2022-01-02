@@ -62,6 +62,11 @@ export default new Vuex.Store({
   mutations: {
     toggleAuthorization(state, studentId) {
       let student = helper.findStudentById(state, studentId);
+      state.students
+        .filter((s) => s.userId != studentId)
+        .forEach((s) => {
+          if (!!s.authorized) s.authorized = false;
+        });
       student.authorized = student.authorized ? false : true;
     },
     setCursorPosition(state, cursorPosition) {
@@ -151,8 +156,30 @@ export default new Vuex.Store({
   },
   actions: {
     toggleAuthorization(context, studentId) {
+      let prevAuthorizedStudent = context.state.students.find(
+        (s) => !!s.authorized
+      );
       context.commit("toggleAuthorization", studentId);
-      return studentId;
+
+      let authorizedStudentId = !!helper.findStudentById(
+        context.state,
+        studentId
+      ).authorized
+        ? studentId
+        : null;
+
+      let revokedStudentId = null;
+      if (!authorizedStudentId) {
+        revokedStudentId = studentId;
+      }
+      if (!revokedStudentId && !!prevAuthorizedStudent) {
+        revokedStudentId = prevAuthorizedStudent.userId;
+      }
+
+      return {
+        authorizedStudentId: authorizedStudentId,
+        revokedStudentId: revokedStudentId,
+      };
     },
     updateUserHeartbeat(context, student) {
       context.commit("setStudent", student);

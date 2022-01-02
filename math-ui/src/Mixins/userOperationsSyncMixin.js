@@ -80,22 +80,41 @@ export default {
       );
     },
 
-    mixin_syncOutgoingUserAthorization: async function (exerciseId, studentId) {
-      let student = this.getStudent()(studentId);
-      client.service("authorization").update(
-        {
-          authorization: {
-            exerciseId: exerciseId,
-            student: studentId,
-            authorized: student.authorized,
+    mixin_syncOutgoingUserAthorization: async function (
+      exerciseId,
+      authorizedStudentId,
+      revokedStudentId
+    ) {
+      if (authorizedStudentId)
+        client.service("authorization").update(
+          {
+            authorization: {
+              exerciseId: exerciseId,
+              student: authorizedStudentId,
+              authorized: true,
+            },
           },
-        },
-        {
-          query: {
-            access_token: this.getAccessToken(),
+          {
+            query: {
+              access_token: this.getAccessToken(),
+            },
+          }
+        );
+      if (revokedStudentId)
+        client.service("authorization").update(
+          {
+            authorization: {
+              exerciseId: exerciseId,
+              student: revokedStudentId,
+              authorized: false,
+            },
           },
-        }
-      );
+          {
+            query: {
+              access_token: this.getAccessToken(),
+            },
+          }
+        );
     },
 
     //mixin_syncIncomingAthorizationUpdate: async function (student) {

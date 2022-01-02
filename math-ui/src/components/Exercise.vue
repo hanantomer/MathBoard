@@ -66,26 +66,28 @@
         </v-col>
         <v-col cols="3" v-if="isAdmin">
           <v-list>
-            <v-list-item v-for="student in students" :key="student.id">
-              <v-list-item-avatar>
-                <v-img :src="student.imageUrl"></v-img>
-              </v-list-item-avatar>
-              <v-list-item-content>
-                <v-list-item-title
-                  v-text="getStudentDisplayName(student)"
-                ></v-list-item-title>
-              </v-list-item-content>
-              <v-btn
-                class="[mx-2]"
-                fab
-                dark
-                x-small
-                color="green"
-                v-on:click="toggleStudentAuthorization($event, student)"
-              >
-                <v-icon dark> mdi-pencil </v-icon>
-              </v-btn>
-            </v-list-item>
+            <v-list-item-group active-class="activestudent" color="indigo">
+              <v-list-item v-for="student in students" :key="student.id">
+                <v-list-item-avatar>
+                  <v-img :src="student.imageUrl"></v-img>
+                </v-list-item-avatar>
+                <v-list-item-content>
+                  <v-list-item-title
+                    v-text="getStudentDisplayName(student)"
+                  ></v-list-item-title>
+                </v-list-item-content>
+                <v-btn
+                  class="[mx-2]"
+                  fab
+                  dark
+                  x-small
+                  color="green"
+                  v-on:click="toggleStudentAuthorization(student)"
+                >
+                  <v-icon dark> mdi-pencil </v-icon>
+                </v-btn>
+              </v-list-item>
+            </v-list-item-group>
           </v-list>
         </v-col>
       </v-row>
@@ -353,18 +355,23 @@ export default {
         this.mixin_startSelection(e);
       }
     },
-    toggleStudentAuthorization: function (e, student) {
-      let color = e.target.style.color;
-      e.target.style.color = color == "" ? "blue" : "";
-      this.toggleAuthorization(student.userId).then((studentId) => {
-        this.mixin_syncOutgoingUserAthorization(this.exerciseId, studentId);
+    toggleStudentAuthorization: function (student) {
+      this.toggleAuthorization(student.userId).then((authorization) => {
+        this.mixin_syncOutgoingUserAthorization(
+          this.exerciseId,
+          authorization.authorizedStudentId,
+          authorization.revokedStudentId
+        );
       });
     },
   },
 };
 </script>
 
-<style>
+<style scoped>
+.activestudent {
+  border: 2px dashed rgb(143, 26, 179);
+}
 #svg {
   width: 100%;
   min-height: 500px;
