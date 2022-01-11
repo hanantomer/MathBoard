@@ -5,7 +5,7 @@
         :disabled="!authorized && !isAdmin"
         v-for="s in signs"
         :key="s.sign"
-        v-on:click="$addSymbol"
+        v-on:click="$symbolIconClicked"
         x-small
         text
         ><span class="mr-1">{{ s.sign }}</span></v-btn
@@ -30,6 +30,16 @@
         dark
         ><v-icon>mdi-account-plus</v-icon></v-btn
       >
+      <v-btn
+        v-if="isAdmin"
+        @click="$toggleExerciseMatrix"
+        icon
+        color="white"
+        x-small
+        fab
+        dark
+        ><v-icon>mdi-grid</v-icon>
+      </v-btn>
     </v-toolbar>
     <createAccessLinkDialog
       v-model="isAccessLinkDialogOpen"
@@ -38,7 +48,7 @@
     <v-container app style="max-width: 1600px !important">
       <v-row>
         <v-col cols="sm 10">
-          <v-card class="pa-2 ma-0" outlined tile>
+          <v-card class="pa-2 ma-0 nopadding">
             <svg
               id="svg"
               v-on:mouseup="mixin_svgMouseUp"
@@ -73,7 +83,7 @@
                 </v-list-item-avatar>
                 <v-list-item-content>
                   <v-list-item-title
-                    v-text="getStudentDisplayName(student)"
+                    v-text="$getStudentDisplayName(student)"
                   ></v-list-item-title>
                 </v-list-item-content>
                 <v-btn
@@ -82,7 +92,7 @@
                   dark
                   x-small
                   color="green"
-                  v-on:click="toggleStudentAuthorization(student)"
+                  v-on:click="$toggleStudentAuthorization(student)"
                 >
                   <v-icon dark> mdi-pencil </v-icon>
                 </v-btn>
@@ -117,10 +127,19 @@ export default {
     this.svg = d3.select("#svg");
     this.$loadExercise().then(() => {
       window.addEventListener("click", this.onclick);
+      window.addEventListener("keyup", this.onkeyup);
     });
+    this.mixin_setMatrix();
+
+    var canvas = document.createElement("canvas");
+    document.body.append(canvas);
+    this.ctx = canvas.getContext("2d");
+    this.ctx.font = window.getComputedStyle(document.body).font;
   },
   data() {
     return {
+      ctx: null,
+      font: null,
       isAdmin: false,
       isAccessLinkDialogOpen: false,
       svg: {},
@@ -163,7 +182,7 @@ export default {
       students: (state) => {
         return state.students;
       },
-      cursorPosition: (state) => state.cursorPosition,
+      selectedRect: (state) => state.selectedRect,
       authorized: (state) => state.user.authorized,
     }),
     selectionRectLeft: function () {
@@ -197,15 +216,17 @@ export default {
   },
   watch: {
     $route: "$loadExercise",
-    cursorPosition: {
-      handler(cursorPosition) {
-        this.mixin_blinkCursor(cursorPosition)();
+    selectedRect: {
+      handler(selectedRect) {
+        this.mixin_selectRectByCoordinates(selectedRect);
       },
     },
     notations: {
       deep: true,
       handler(notations) {
-        var that = this;
+        let boundingClientRet = document
+          .getElementById("svg")
+          .getBoundingClientRect();
         this.svg
           .selectAll("text")
           .data(notations)
@@ -217,10 +238,13 @@ export default {
                   return n.id;
                 })
                 .attr("x", (n) => {
-                  return n.x;
+                  //console.debug(
+                  //  "text width:" + this.ctx.measureText(n.value).width
+                  //);
+                  return n.x - boundingClientRet.x - 5;
                 })
                 .attr("y", (n) => {
-                  return n.y;
+                  return n.y - boundingClientRet.y - 5;
                 })
                 .attr("dy", ".45em")
                 .text((n) => {
@@ -233,10 +257,10 @@ export default {
                   return datum.selected ? "red" : "black";
                 })
                 .attr("x", (n) => {
-                  return n.x;
+                  return n.x - boundingClientRet.x;
                 })
                 .attr("y", (n) => {
-                  return n.y;
+                  return n.y - boundingClientRet.y;
                 });
             },
             (exit) => {
@@ -257,7 +281,7 @@ export default {
   },
   methods: {
     ...mapGetters({
-      getCursorPosition: "getCursorPosition",
+      getSelectedRect: "getSelectedRect",
       isAnnotationSelected: "isAnnotationSelected",
       getSelectedNotations: "getSelectedNotations",
       getCurrentExercise: "getCurrentExercise",
@@ -267,7 +291,7 @@ export default {
     }),
     ...mapActions({
       loadExercise: "loadExercise",
-      setCursorPosition: "setCursorPosition",
+      setSelectedRect: "setSelectedRect",
       selectNotation: "selectNotation",
       unselectAllNotations: "unselectAllNotations",
       moveSelectedNotations: "moveSelectedNotations",
@@ -275,7 +299,10 @@ export default {
       updateSelectedNotations: "updateSelectedNotations",
       toggleAuthorization: "toggleAuthorization",
     }),
-    getStudentDisplayName(student) {
+    $toggleExerciseMatrix() {
+      this.mixin_toggleMatrixOverlay();
+    },
+    $getStudentDisplayName(student) {
       return student.firstName + " " + student.lastName;
     },
     $loadExercise: async function () {
@@ -311,41 +338,47 @@ export default {
           console.error(e);
         });
     },
-    $addSymbol: function (context) {
+    $addSymbol(s) {
       let symbol = {
         ExerciseId: this.exerciseId,
-        value: context.currentTarget.innerText,
-        isNumber: !isNaN(parseInt()),
+        value: s,
+        isNumber: !isNaN(parseInt(s)),
       };
 
-      let nextPosition = positionMixin.methods.mixin_getNext(
-        context.currentTarget.innerText,
-        this.getCursorPosition()
-      );
-      nextPosition.ExerciseId = this.exerciseId;
-      symbol = Object.assign(symbol, nextPosition);
+      symbol = Object.assign(symbol, this.getSelectedRect());
 
       this.$store
         .dispatch("addSymbol", symbol)
         .then((symbol) => {
           this.mixin_syncOutgoingSymbolAdding(symbol);
-          this.mixin_syncOutgoingCursorPosition(nextPosition);
+
+          let nextRect = this.mixin_selectNextRect();
+          if (!!nextRect) {
+            this.mixin_syncOutgoingSelectedRect(nextRect);
+          }
         })
         .catch((e) => {
           console.error(e);
         });
     },
+    $symbolIconClicked: function (context) {
+      this.$addSymbol(context.currentTarget.innerText);
+    },
+    onkeyup: function (e) {
+      this.$addSymbol(e.key);
+    },
     $onMouseDown: function (e) {
-      const boundBox = e.target.getBoundingClientRect();
-      if (e.target.id === "svg") {
+      if (e.target.nodeName === "rect") {
         let normalizedClickedPosition = this.mixin_getClickedNoramalizedPosition(
           {
-            x: e.clientX - boundBox.left,
-            y: e.clientY - boundBox.top,
+            x: e.clientX,
+            y: e.clientY,
           }
         );
-        normalizedClickedPosition.ExerciseId = this.exerciseId;
-        this.mixin_syncOutgoingCursorPosition(normalizedClickedPosition);
+        let selectedRect = this.mixin_selectRectByClickedPosition(
+          normalizedClickedPosition
+        );
+        this.mixin_syncOutgoingSelectedRect(selectedRect);
       }
 
       if (this.isAnnotationSelected()) {
@@ -355,7 +388,7 @@ export default {
         this.mixin_startSelection(e);
       }
     },
-    toggleStudentAuthorization: function (student) {
+    $toggleStudentAuthorization: function (student) {
       this.toggleAuthorization(student.userId).then((authorization) => {
         this.mixin_syncOutgoingUserAthorization(
           this.exerciseId,
@@ -392,5 +425,8 @@ export default {
   cursor: grabbing;
   cursor: -moz-grabbing;
   cursor: -webkit-grabbing;
+}
+.nopadding {
+  padding: 0 !important;
 }
 </style>

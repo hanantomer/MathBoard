@@ -29,7 +29,7 @@ export default new Vuex.Store({
     exercises: [],
     notations: [],
     currentExercise: {},
-    cursorPosition: { x: 10, y: 20 },
+    selectedRect: { x: 10, y: 20 },
   },
   getters: {
     getStudent: function (state) {
@@ -49,8 +49,8 @@ export default new Vuex.Store({
     getNotations: (state) => {
       return state.notations;
     },
-    getCursorPosition: (state) => {
-      return state.cursorPosition;
+    getSelectedRect: (state) => {
+      return state.selectedRect;
     },
     isAnnotationSelected(state) {
       return state.notations.find((e) => e.selected === true);
@@ -69,8 +69,8 @@ export default new Vuex.Store({
         });
       student.authorized = student.authorized ? false : true;
     },
-    setCursorPosition(state, cursorPosition) {
-      Vue.set(state, "cursorPosition", cursorPosition);
+    setSelectedRect(state, selectedRect) {
+      Vue.set(state, "selectedRect", selectedRect);
     },
     setUser(state, user) {
       console.debug(`commit.setUser:${JSON.stringify(user)}`);
@@ -293,8 +293,8 @@ export default new Vuex.Store({
     updateSelectedNotations(context, payload) {
       context.commit("updateSelectedNotations", payload);
     },
-    setCursorPosition(context, payload) {
-      context.commit("setCursorPosition", payload);
+    setSelectedRect(context, payload) {
+      context.commit("setSelectedRect", payload);
     },
     setDimensions(context, payload) {
       context.commit("setNumberOfCols", payload.numberOfCols);

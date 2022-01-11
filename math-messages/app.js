@@ -1,10 +1,10 @@
 const feathers = require("@feathersjs/feathers");
 const socketio = require("@feathersjs/socketio");
-const NotationSyncService = require("./notationSyncService.js");
+const NotationSyncService = require("./notationSyncService");
 const AuthenticationService = require("./authenticationService");
-const CursorSyncService = require("./cursorSyncService.js");
-const HeartbeatService = require("./heartbeatService.js");
-const AuthorizationService = require("./authorizationService.js");
+const SelectedRectSyncService = require("./selectedRectSyncService");
+const HeartbeatService = require("./heartbeatService");
+const AuthorizationService = require("./authorizationService");
 const constants = require("./constants");
 
 const app = feathers();
@@ -13,7 +13,7 @@ app.configure(socketio());
 app.use("authorization", new AuthorizationService(app));
 app.use("heartbeat", new HeartbeatService(app));
 app.use("authentication", new AuthenticationService(app));
-app.use("cursorSync", new CursorSyncService(app));
+app.use("selectedRectSync", new SelectedRectSyncService(app));
 app.use("notationSync", new NotationSyncService(app));
 
 app.service("heartbeat").publish("updated", (heartbeat, ctx) => {
@@ -65,15 +65,13 @@ app.service("notationSync").publish("removed", (notation, ctx) => {
   return [app.channel(constants.EXERCISE_CHANNEL_PREFIX + notation.ExerciseId)];
 });
 
-app.service("cursorSync").publish("updated", (cursorPosition, ctx) => {
+app.service("selectedRectSync").publish("updated", (rect, ctx) => {
   console.debug(
-    `publish cursor updated data: ${JSON.stringify(
-      cursorPosition
-    )} to channel: ${cursorPosition.ExerciseId.toString()}`
+    `publish selected rect updated data: ${JSON.stringify(
+      rect
+    )} to channel: ${rect.ExerciseId.toString()}`
   );
-  return [
-    app.channel(constants.EXERCISE_CHANNEL_PREFIX + cursorPosition.ExerciseId),
-  ];
+  return [app.channel(constants.EXERCISE_CHANNEL_PREFIX + rect.ExerciseId)];
 });
 
 const PORT = process.env.PORT || 3030;

@@ -24,11 +24,12 @@ export default {
           : window.$cookies.get("access_token")
       }`;
     },
-    mixin_syncOutgoingCursorPosition: async function (cursorPosition) {
-      console.debug(`sync cursor position ${JSON.stringify(cursorPosition)}`);
-      client.service("cursorSync").update(
+    mixin_syncOutgoingSelectedRect: async function (selectedRect) {
+      selectedRect.ExerciseId = this.exerciseId;
+      console.debug(`sync selected rect ${JSON.stringify(selectedRect)}`);
+      client.service("selectedRectSync").update(
         null,
-        { cursorPosition: cursorPosition },
+        { selectedRect: selectedRect },
         {
           query: {
             access_token: this.getAccessToken(),
@@ -117,10 +118,6 @@ export default {
         );
     },
 
-    //mixin_syncIncomingAthorizationUpdate: async function (student) {
-    //  this.setAuthorization(student);
-    //},
-
     mixin_syncIncomingUserOperations: async function (exerciseId, isAdmin) {
       // this will route events from feathers
       await client.service("authentication").create({
@@ -137,8 +134,8 @@ export default {
       client.service("notationSync").on("removed", (notation) => {
         _store.dispatch("syncIncomingDeletedNotaion", notation);
       });
-      client.service("cursorSync").on("updated", (cursorPosition) => {
-        _store.dispatch("setCursorPosition", cursorPosition);
+      client.service("selectedRectSync").on("updated", (selectedRect) => {
+        _store.dispatch("setSelectedRect", selectedRect);
       });
       client.service("authorization").on("updated", (user) => {
         _store.dispatch("setUser", user);
