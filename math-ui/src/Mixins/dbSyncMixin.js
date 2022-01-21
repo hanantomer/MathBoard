@@ -48,6 +48,15 @@ function handleError(error) {
   console.log(error.config);
 }
 
+async function getSymbolByCoordinates(row, col) {
+  try {
+    let res = await axiosInstnce.get("/symbols?row=" + row + "&col=" + col);
+    return !!res ? res.data[0] : null;
+  } catch (error) {
+    handleError(error);
+  }
+}
+
 module.exports = {
   methods: {
     createAccessLink: async function (exerciseId, link) {
@@ -105,36 +114,37 @@ module.exports = {
         handleError(error);
       }
     },
-    addSymbol: async function (symbol) {
-      let newSymbol = symbol;
-      newSymbol.type = "NUMBER";
-      newSymbol = (await axiosInstnce.post("/symbols", newSymbol)).data;
-
-      let newSymbolValue = newSymbol;
-      newSymbolValue.value = symbol.value;
-      newSymbolValue.SymbolId = newSymbol.id;
-      delete newSymbolValue.id; // to allow persisting
-
-      newSymbolValue = (
-        await axiosInstnce.post("/numbersymbols", newSymbolValue)
-      ).data;
-
-      return Object.assign(newSymbolValue, newSymbol);
+    updateSymbolCoordinates: async function (symbol) {
+      res = await axiosInstnce.put("/symbols/" + symbol.id, symbol);
+      return res ? res.data : null;
     },
-    removeSymbols: async function (symbolIds) {
+
+    upsertSymbol: async function (symbol) {
+      let symbolAtCoordinates = await getSymbolByCoordinates(
+        symbol.row,
+        symbol.col
+      );
+
+      let res = null;
+      if (!!symbolAtCoordinates) {
+        res = await axiosInstnce.put(
+          "/symbols/" + symbolAtCoordinates.id,
+          symbol
+        );
+      } else {
+        res = await axiosInstnce.post("/symbols", symbol);
+      }
+
+      return res ? res.data : null;
+    },
+    removeSymbols: async function (symbols) {
       try {
-        axiosInstnce.delete("/symbols/" + symbolIds);
+        axiosInstnce.delete("/symbols/" + symbols.map((s) => s.id).join(","));
       } catch (error) {
         handleError(error);
       }
     },
-    updateNotation: async function (notation) {
-      try {
-        return axiosInstnce.put("/symbols/" + notation.id, notation);
-      } catch (error) {
-        handleError(error);
-      }
-    },
+
     getExercise: async function (exerciseId) {
       try {
         let res = await axiosInstnce.get("/exercises?id=" + exerciseId);
@@ -152,37 +162,10 @@ module.exports = {
         handleError(error);
       }
     },
-    getAllNotations: async function (exerciseId) {
+    getAllSymbols: async function (exerciseId) {
       try {
-        let symbols = await axiosInstnce.get(
-          "/symbols?exerciseId=" + exerciseId
-        );
-
-        let notations = [];
-        let i = null;
-        for (i in symbols.data) {
-          let symbol = symbols.data[i];
-          let symbolValue = null;
-
-          switch (symbol.type) {
-            case "NUMBER": {
-              symbolValue = (
-                await axiosInstnce.get("/numberSymbols?SymbolId=" + symbol.id)
-              ).data[0];
-              break;
-            }
-            case "SIGN": {
-              symbolValue = (
-                await axiosInstnce.get("/signSymbols?SymbolId=" + symbol.id)
-              ).data[0];
-              break;
-            }
-          }
-          notations.push(Object.assign(symbolValue, symbol));
-        }
-        return notations.sort((a, b) => {
-          return a.position > b.position ? 1 : a.position < b.position ? -1 : 0;
-        });
+        let res = await axiosInstnce.get("/symbols?exerciseId=" + exerciseId);
+        return res.data;
       } catch (error) {
         handleError(error);
       }

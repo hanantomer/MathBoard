@@ -15,25 +15,31 @@ export default {
     };
   },
   methods: {
-    mixin_updateSelection(e) {
-      //const boundBox = e.target.getBoundingClientRect();
+    // extend or shrink selection area
+    updateSelectionArea(e) {
       this.mixin_hideCursor();
-      //var p = this.mixin_getSVGCoordinates(e.clientX, e.clientY);
       this.selectionPosition.x2 = e.clientX;
       this.selectionPosition.y2 = e.clientY - 50;
     },
+    //move selection area
     async mixin_moveSelection(e) {
-      //const boundBox = e.target.getBoundingClientRect();
-      //var p = this.mixin_getSVGCoordinates(e.clientX, e.clientY);
+      let rectSize = this.mixin_getRectSize();
       if (this.dragPostion.x === 0) {
         this.dragPostion.x = e.clientX;
         this.dragPostion.y = e.clientY;
       } else {
         const deltaX = e.clientX - this.dragPostion.x;
         const deltaY = e.clientY - this.dragPostion.y;
-        this.moveSelectedNotations({
+
+        // consider meaningfull move only
+        if (deltaX < rectSize && deltaY < rectSize) {
+          return;
+        }
+
+        this.moveSelectedSymbols({
           deltaX,
           deltaY,
+          rectSize,
         }).then(() => {
           this.selectionPosition.x1 += deltaX;
           this.selectionPosition.y1 += deltaY;
@@ -49,23 +55,20 @@ export default {
     },
     mixin_startSelection: function (e) {
       this.selectionActive = true;
-      const boundBox = e.target.getBoundingClientRect();
-      //var pSvg = this.mixin_getSVGCoordinates(e.clientX, e.clientY);
       this.selectionPosition.x2 = this.selectionPosition.x1 = e.clientX;
-      //this.selectionPosition.x2 += 10;
       this.selectionPosition.y2 = this.selectionPosition.y1 = e.clientY - 50;
-      //this.selectionPosition.y2 += 10;
     },
-
     mixin_mouseMove(e) {
       if (e.buttons !== 1) {
         return;
       }
-      // has selection and not during selection TODO: check if both required
-      if (this.isAnnotationSelected && this.selectionActive === false) {
+      // during move
+      if (this.isAnySymbolSelected && this.selectionActive === false) {
         this.mixin_moveSelection(e);
-      } else {
-        this.mixin_updateSelection(e);
+      }
+      // during selection
+      if (this.selectionActive === true) {
+        this.updateSelectionArea(e);
       }
     },
     mixin_canvasMouseUp(e) {
@@ -73,17 +76,11 @@ export default {
         this.mixin_endSelect(e);
       }
     },
-    mixin_svgMouseUp(e) {
-      if (this.isAnnotationSelected && this.selectionActive === false) {
-        this.mixin_endMove(e);
-      }
-    },
     mixin_endMove(e) {
       this.dragPostion.x = 0;
       this.dragPostion.y = 0;
-      this.updateNotation;
-      this.updateSelectedNotations().then(() =>
-        this.mixin_syncOutgoingUpdateSelectedNotations()
+      this.updateSelectedSymbolCoordinates().then(() =>
+        this.mixin_syncOutgoingUpdateSelectedSymbols()
       );
     },
     mixin_endSelect: function (e) {
@@ -104,12 +101,12 @@ export default {
         this.svg.selectAll("text").each((datum) => {
           if (
             !!datum.id &&
-            datum.x > p1.x &&
-            datum.x < p2.x &&
-            datum.y > p1.y + 50 &&
-            datum.y < p2.y + 50
+            this.$getXpos(datum.col) > p1.x &&
+            this.$getXpos(datum.col) < p2.x &&
+            this.$getYpos(datum.row) > p1.y + 50 &&
+            this.$getYpos(datum.row) < p2.y + 50
           ) {
-            this.selectNotation(datum.id);
+            this.selectSymbol(datum.id);
           }
         });
       }

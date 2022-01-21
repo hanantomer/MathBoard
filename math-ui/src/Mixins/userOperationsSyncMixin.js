@@ -6,7 +6,7 @@ import store from "../store/index.js";
 let socket = io("http://localhost:3030");
 let client = feathers();
 client.configure(socketio(socket));
-let notationCreateServcice = client.service("notationSync");
+let symbolCreateServcice = client.service("symbolSync");
 
 export default {
   methods: {
@@ -39,8 +39,8 @@ export default {
     },
     mixin_syncOutgoingSymbolAdding: async function (symbol) {
       console.debug(`sync adding symbol ${JSON.stringify(symbol)}`);
-      notationCreateServcice.create(
-        { notation: symbol },
+      symbolCreateServcice.create(
+        { symbol: symbol },
         {
           query: {
             access_token: this.getAccessToken(),
@@ -50,8 +50,8 @@ export default {
     },
     mixin_syncOutgoingSymbolsDeletion: async function (symbols) {
       console.debug(`sync deleting symbols ${JSON.stringify(symbols)}`);
-      client.service("notationSync").remove(
-        { notations: symbols },
+      client.service("symbolSync").remove(
+        { symbols: symbols },
         {
           query: {
             access_token: this.getAccessToken(),
@@ -69,10 +69,10 @@ export default {
         }
       );
     },
-    mixin_syncOutgoingUpdateSelectedNotations: async function () {
+    mixin_syncOutgoingUpdateSelectedSymbols: async function () {
       console.debug(`sync updating selected symbols`);
-      client.service("notationSync").update(
-        { notations: this.getSelectedNotations() },
+      client.service("symbolSync").update(
+        { symbols: this.getSelectedSymbols() },
         {
           query: {
             access_token: this.getAccessToken(),
@@ -125,14 +125,14 @@ export default {
       });
 
       let _store = store;
-      client.service("notationSync").on("created", (notation) => {
-        _store.dispatch("syncIncomingAddedNotaion", notation);
+      client.service("symbolSync").on("created", (symbol) => {
+        _store.dispatch("syncIncomingAddedNotaion", symbol);
       });
-      client.service("notationSync").on("updated", (notation) => {
-        _store.dispatch("syncIncomingUpdatedNotaion", notation);
+      client.service("symbolSync").on("updated", (symbol) => {
+        _store.dispatch("syncIncomingUpdatedNotaion", symbol);
       });
-      client.service("notationSync").on("removed", (notation) => {
-        _store.dispatch("syncIncomingDeletedNotaion", notation);
+      client.service("symbolSync").on("removed", (symbol) => {
+        _store.dispatch("syncIncomingDeletedNotaion", symbol);
       });
       client.service("selectedRectSync").on("updated", (selectedRect) => {
         _store.dispatch("setSelectedRect", selectedRect);

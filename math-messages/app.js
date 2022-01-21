@@ -1,6 +1,6 @@
 const feathers = require("@feathersjs/feathers");
 const socketio = require("@feathersjs/socketio");
-const NotationSyncService = require("./notationSyncService");
+const SymbolSyncService = require("./symbolSyncService");
 const AuthenticationService = require("./authenticationService");
 const SelectedRectSyncService = require("./selectedRectSyncService");
 const HeartbeatService = require("./heartbeatService");
@@ -14,7 +14,7 @@ app.use("authorization", new AuthorizationService(app));
 app.use("heartbeat", new HeartbeatService(app));
 app.use("authentication", new AuthenticationService(app));
 app.use("selectedRectSync", new SelectedRectSyncService(app));
-app.use("notationSync", new NotationSyncService(app));
+app.use("symbolSync", new SymbolSyncService(app));
 
 app.service("heartbeat").publish("updated", (heartbeat, ctx) => {
   return [
@@ -38,31 +38,31 @@ app.service("authorization").publish("updated", (authorization, ctx) => {
   ];
 });
 
-app.service("notationSync").publish("created", (notation, ctx) => {
+app.service("symbolSync").publish("created", (symbol, ctx) => {
   console.debug(
-    `publish notation created data: ${JSON.stringify(
-      notation
-    )} to channel: ${notation.ExerciseId.toString()}`
+    `publish symbol created data: ${JSON.stringify(
+      symbol
+    )} to channel: ${symbol.ExerciseId.toString()}`
   );
-  return [app.channel(constants.EXERCISE_CHANNEL_PREFIX + notation.ExerciseId)];
+  return [app.channel(constants.EXERCISE_CHANNEL_PREFIX + symbol.ExerciseId)];
 });
 
-app.service("notationSync").publish("updated", (notation, ctx) => {
+app.service("symbolSync").publish("updated", (symbol, ctx) => {
   console.debug(
-    `publish notation updated data: ${JSON.stringify(
-      notation
-    )} to channel: ${notation.ExerciseId.toString()}`
+    `publish symbol updated data: ${JSON.stringify(
+      symbol
+    )} to channel: ${symbol.ExerciseId.toString()}`
   );
-  return [app.channel(constants.EXERCISE_CHANNEL_PREFIX + notation.ExerciseId)];
+  return [app.channel(constants.EXERCISE_CHANNEL_PREFIX + symbol.ExerciseId)];
 });
 
-app.service("notationSync").publish("removed", (notation, ctx) => {
+app.service("symbolSync").publish("removed", (symbol, ctx) => {
   console.debug(
-    `publish notation removed data: ${JSON.stringify(
-      notation
-    )} to channel: ${notation.ExerciseId.toString()}`
+    `publish symbol removed data: ${JSON.stringify(
+      symbol
+    )} to channel: ${symbol.ExerciseId.toString()}`
   );
-  return [app.channel(constants.EXERCISE_CHANNEL_PREFIX + notation.ExerciseId)];
+  return [app.channel(constants.EXERCISE_CHANNEL_PREFIX + symbol.ExerciseId)];
 });
 
 app.service("selectedRectSync").publish("updated", (rect, ctx) => {

@@ -3,9 +3,9 @@ import * as d3 from "d3";
 /// TODO encapsulate in data
 var opacity = 1;
 var opacity;
-var colsNum = 60;
+var colsNum = 50;
 var rowsNum = 50;
-var squareSize = 20;
+var rectSize = 20;
 var matrix = [];
 var topLevelGroup;
 var selectedRect = null;
@@ -53,7 +53,7 @@ export default {
         })
         .lower()
         .attr("transform", (d, i) => {
-          return "translate(0, " + squareSize * i + ")";
+          return "translate(0, " + rectSize * i + ")";
         });
 
       topLevelGroup
@@ -68,13 +68,10 @@ export default {
           return i;
         })
         .attr("x", (d, i) => {
-          return i * squareSize;
+          return i * rectSize;
         })
-        .attr("id", (d, r, i, j) => {
-          return `rect_${d}_${i}`;
-        })
-        .attr("width", squareSize)
-        .attr("height", squareSize);
+        .attr("width", rectSize)
+        .attr("height", rectSize);
     },
     mixin_toggleMatrixOverlay: function () {
       if (opacity === 1) opacity = 0.1;
@@ -100,24 +97,30 @@ export default {
       toglleSelectedRect(rect);
     },
 
+    mixin_getRectSize() {
+      return rectSize;
+    },
+
     mixin_selectNextRect() {
-      let col = selectedRect.col;
-      if (col !== colsNum) {
+      let col = parseInt(selectedRect.attributes.col.value);
+      let row = parseInt(selectedRect.parentNode.attributes.row.value);
+      if (col != colsNum) {
         col += 1;
       } else {
-        if (selectedRect.row === rowsNum) {
+        if (row == rowsNum) {
           col = -1;
         }
       }
-      let row = selectedRect.row;
-      if (col === colsNum && row != rowsNum) {
+
+      if (col == colsNum && row != rowsNum) {
         row += 1;
+        col = 0;
       }
 
-      if (col > 0 && row > 0) {
+      if (col >= 0 && row >= 0) {
         return {
-          x: col,
-          y: row,
+          col: col,
+          row: row,
         };
       }
     },

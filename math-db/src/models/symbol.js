@@ -18,21 +18,35 @@ module.exports = (sequelize, DataTypes) => {
 
     Symbol.init(
         {
-            x: {
+            col: {
                 type: DataTypes.INTEGER,
                 allowNull: false,
             },
-            y: {
+            row: {
                 type: DataTypes.INTEGER,
                 allowNull: false,
             },
-            type: {
+            value: {
                 type: DataTypes.STRING,
-                allowNull: false,
-                isIn: [["NUMBER", "SIGN", "TRIANGLE"]],
             },
+
+            // type: {
+            //     type: DataTypes.STRING,
+            //     allowNull: false,
+            //     isIn: [["NUMBER", "SIGN", "TRIANGLE"]],
+            // },
         },
-        { sequelize, freezeTableName: true }
+
+        {
+            sequelize,
+            freezeTableName: true,
+            indexes: [
+                {
+                    unique: true,
+                    fields: ["row", "col"],
+                },
+            ],
+        }
     );
 
     return Symbol;

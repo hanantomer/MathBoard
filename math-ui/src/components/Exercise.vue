@@ -47,18 +47,18 @@
     ></createAccessLinkDialog>
     <v-container app style="max-width: 1600px !important">
       <v-row>
-        <v-col cols="sm 10">
+        <v-col cols="sm 10" style="overflow: auto">
           <v-card class="pa-2 ma-0 nopadding">
             <svg
               id="svg"
-              v-on:mouseup="mixin_svgMouseUp"
+              v-on:mouseup="$onMouseUp"
               v-on:mousedown="$onMouseDown"
               v-on:mousemove="mixin_mouseMove"
             ></svg>
           </v-card>
           <v-card
             v-on:mouseup="mixin_canvasMouseUp"
-            v-if="this.selectionActive || this.isAnnotationSelected"
+            v-if="this.selectionActive || this.isAnySymbolSelected"
             class="grabbable"
             v-bind:style="{
               left: selectionRectLeft,
@@ -125,6 +125,11 @@ export default {
   },
   mounted: function () {
     this.svg = d3.select("#svg");
+
+    this.boundingClientRet = document
+      .getElementById("svg")
+      .getBoundingClientRect();
+
     this.$loadExercise().then(() => {
       window.addEventListener("click", this.onclick);
       window.addEventListener("keyup", this.onkeyup);
@@ -138,6 +143,7 @@ export default {
   },
   data() {
     return {
+      boundingClientRet: null,
       ctx: null,
       font: null,
       isAdmin: false,
@@ -176,8 +182,8 @@ export default {
       students: (state) => {
         return state.students;
       },
-      notations: (state) => {
-        return state.notations;
+      symbols: (state) => {
+        return state.symbols;
       },
       students: (state) => {
         return state.students;
@@ -221,15 +227,12 @@ export default {
         this.mixin_selectRectByCoordinates(selectedRect);
       },
     },
-    notations: {
+    symbols: {
       deep: true,
-      handler(notations) {
-        let boundingClientRet = document
-          .getElementById("svg")
-          .getBoundingClientRect();
+      handler(symbols) {
         this.svg
           .selectAll("text")
-          .data(notations)
+          .data(symbols)
           .join(
             (enter) => {
               return enter
@@ -238,13 +241,10 @@ export default {
                   return n.id;
                 })
                 .attr("x", (n) => {
-                  //console.debug(
-                  //  "text width:" + this.ctx.measureText(n.value).width
-                  //);
-                  return n.x - boundingClientRet.x - 5;
+                  return this.$getXpos(n.col);
                 })
                 .attr("y", (n) => {
-                  return n.y - boundingClientRet.y - 5;
+                  return this.$getYpos(n.row);
                 })
                 .attr("dy", ".45em")
                 .text((n) => {
@@ -257,10 +257,13 @@ export default {
                   return datum.selected ? "red" : "black";
                 })
                 .attr("x", (n) => {
-                  return n.x - boundingClientRet.x;
+                  return this.$getXpos(n.col);
                 })
                 .attr("y", (n) => {
-                  return n.y - boundingClientRet.y;
+                  return this.$getYpos(n.row);
+                })
+                .text((n) => {
+                  return n.value;
                 });
             },
             (exit) => {
@@ -282,8 +285,8 @@ export default {
   methods: {
     ...mapGetters({
       getSelectedRect: "getSelectedRect",
-      isAnnotationSelected: "isAnnotationSelected",
-      getSelectedNotations: "getSelectedNotations",
+      isAnySymbolSelected: "isAnySymbolSelected",
+      getSelectedSymbols: "getSelectedSymbols",
       getCurrentExercise: "getCurrentExercise",
       getExercises: "getExercises",
       getUser: "getUser",
@@ -292,13 +295,20 @@ export default {
     ...mapActions({
       loadExercise: "loadExercise",
       setSelectedRect: "setSelectedRect",
-      selectNotation: "selectNotation",
-      unselectAllNotations: "unselectAllNotations",
-      moveSelectedNotations: "moveSelectedNotations",
+      selectSymbol: "selectSymbol",
+      unselectAllSymbols: "unselectAllSymbols",
+      moveSelectedSymbols: "moveSelectedSymbols",
       removeSelectedSymbols: "removeSelectedSymbols",
-      updateSelectedNotations: "updateSelectedNotations",
+      updateSelectedSymbolCoordinates: "updateSelectedSymbolCoordinates",
       toggleAuthorization: "toggleAuthorization",
     }),
+    $getXpos(col) {
+      return col * this.mixin_getRectSize() + 10; //- this.boundingClientRet.x - 5;
+    },
+    $getYpos(row) {
+      return row * this.mixin_getRectSize() + 10; //- this.boundingClientRet.y - 5;
+    },
+
     $toggleExerciseMatrix() {
       this.mixin_toggleMatrixOverlay();
     },
@@ -316,8 +326,8 @@ export default {
       }
 
       return this.$store
-        .dispatch("loadNotations", this.exerciseId)
-        .then((notations) => {
+        .dispatch("loadSymbols", this.exerciseId)
+        .then((symbols) => {
           this.mixin_syncIncomingUserOperations(this.exerciseId, this.isAdmin); ///TODO create mechnism to handle gaps between load and sync
         });
     },
@@ -328,11 +338,11 @@ export default {
       });
     },
     $removeSelectedSymbols: function () {
-      let selectedNotations = this.getSelectedNotations();
+      let selectedSymbols = this.getSelectedSymbols();
       this.removeSelectedSymbols()
         .then(() => {
           this.mixin_resetSelection();
-          this.mixin_syncOutgoingSymbolsDeletion(selectedNotations);
+          this.mixin_syncOutgoingSymbolsDeletion(selectedSymbols);
         })
         .catch((e) => {
           console.error(e);
@@ -348,7 +358,7 @@ export default {
       symbol = Object.assign(symbol, this.getSelectedRect());
 
       this.$store
-        .dispatch("addSymbol", symbol)
+        .dispatch("upsertSymbol", symbol)
         .then((symbol) => {
           this.mixin_syncOutgoingSymbolAdding(symbol);
 
@@ -365,27 +375,31 @@ export default {
       this.$addSymbol(context.currentTarget.innerText);
     },
     onkeyup: function (e) {
-      this.$addSymbol(e.key);
+      if (e.keyCode < 48) {
+        ///TODO - support special keys to move/delete
+      } else {
+        this.$addSymbol(e.key);
+      }
     },
     $onMouseDown: function (e) {
-      if (e.target.nodeName === "rect") {
-        let normalizedClickedPosition = this.mixin_getClickedNoramalizedPosition(
-          {
-            x: e.clientX,
-            y: e.clientY,
-          }
-        );
-        let selectedRect = this.mixin_selectRectByClickedPosition(
-          normalizedClickedPosition
-        );
-        this.mixin_syncOutgoingSelectedRect(selectedRect);
-      }
-
-      if (this.isAnnotationSelected()) {
-        this.unselectAllNotations();
+      if (this.isAnySymbolSelected()) {
+        this.unselectAllSymbols();
         this.mixin_resetSelection();
       } else {
         this.mixin_startSelection(e);
+      }
+    },
+    $onMouseUp: function (e) {
+      let normalizedClickedPosition = this.mixin_getClickedNoramalizedPosition({
+        x: e.clientX,
+        y: e.clientY,
+      });
+      let selectedRect = this.mixin_selectRectByClickedPosition(
+        normalizedClickedPosition
+      );
+      this.mixin_syncOutgoingSelectedRect(selectedRect);
+      if (this.isAnySymbolSelected && this.selectionActive === false) {
+        this.mixin_endMove(e);
       }
     },
     $toggleStudentAuthorization: function (student) {
@@ -406,8 +420,8 @@ export default {
   border: 2px dashed rgb(143, 26, 179);
 }
 #svg {
-  width: 100%;
-  min-height: 500px;
+  width: 700px;
+  height: 500px;
 }
 .hellow {
   padding: 5px;

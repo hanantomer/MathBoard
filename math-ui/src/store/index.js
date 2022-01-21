@@ -4,15 +4,14 @@ import dbSyncMixin from "../Mixins/dbSyncMixin";
 
 Vue.use(Vuex);
 
-const SymbolType = {
-  1: "Sign",
-  2: "Number",
-  3: "Triangle",
-};
-
 const helper = {
-  findNotationById: function (state, id) {
-    return state.notations.find((n) => n.id === id);
+  findSymbolById: function (state, id) {
+    return state.symbols.find((n) => n.id === id);
+  },
+  findSymbolByCoordinates: function (state, symbol) {
+    return state.symbols.find(
+      (n) => n.col == symbol.col && n.row == symbol.row
+    );
   },
   findStudentById: function (state, id) {
     return state.students.find((s) => s.userId === id);
@@ -27,7 +26,7 @@ export default new Vuex.Store({
     user: {},
     students: [],
     exercises: [],
-    notations: [],
+    symbols: [],
     currentExercise: {},
     selectedRect: { x: 10, y: 20 },
   },
@@ -46,20 +45,28 @@ export default new Vuex.Store({
     getCurrentExercise: (state) => {
       return state.currentExercise;
     },
-    getNotations: (state) => {
-      return state.notations;
+    getSymbols: (state) => {
+      return state.symbols;
     },
     getSelectedRect: (state) => {
       return state.selectedRect;
     },
-    isAnnotationSelected(state) {
-      return state.notations.find((e) => e.selected === true);
+    // at least one symbol is selected
+    isAnySymbolSelected(state) {
+      return state.symbols.find((e) => e.selected === true);
     },
-    getSelectedNotations: (state) => {
-      return state.notations.filter((n) => !!n && n.selected == true);
+    getSelectedSymbols: (state) => {
+      return state.symbols.filter((n) => !!n && n.selected == true);
     },
   },
   mutations: {
+    updateSymbol(state, symbol) {
+      let oldSymbol = helper.findSymbolById(state, notation.id);
+      delete oldSymbol.x; // for reactivity
+      delete oldSymbol.y;
+      Vue.set(oldSymbol, "x", symbol.x);
+      Vue.set(oldSymbol, "y", symbol.y);
+    },
     toggleAuthorization(state, studentId) {
       let student = helper.findStudentById(state, studentId);
       state.students
@@ -99,59 +106,68 @@ export default new Vuex.Store({
     removeExercise(state, id) {
       state.exercises.splice(helper.find(state, id), 1);
     },
-    addNotation(state, notation) {
-      Vue.set(notation, "selected", false);
-      state.notations.push(notation);
+    addSymbol(state, symbol) {
+      Vue.set(symbol, "selected", false);
+      let oldSymbol = helper.findSymbolByCoordinates(state, symbol);
+      if (!!oldSymbol) {
+        delete oldSymbol.value;
+        Vue.set(oldSymbol, "value", symbol.value);
+      } else {
+        state.symbols.push(symbol);
+      }
     },
-    updateNotationPosition(state, notation) {
-      let oldNotation = helper.findNotationById(state, notation.id);
-      delete oldNotation.x; // for reactivity
-      delete oldNotation.y;
-      Vue.set(oldNotation, "x", notation.x);
-      Vue.set(oldNotation, "y", notation.y);
-    },
-    removeNotation(state, notation) {
-      state.notations = state.notations.filter(
-        (n) => !(n.x === notation.x && n.y === notation.y)
+
+    removeSymbol(state, symbol) {
+      state.symbols = state.symbols.filter(
+        (n) => !(n.col === symbol.col && n.row === symbol.row)
       );
     },
-    updateSelectedNotations(state) {
-      state.notations
-        .filter((notation) => notation.selected === true)
+    updateSelectedSymbolCoordinates(state) {
+      state.symbols
+        .filter((symbol) => symbol.selected === true)
         .forEach(
-          async (notation) => await dbSyncMixin.methods.updateNotation(notation)
+          async (symbol) =>
+            await dbSyncMixin.methods.updateSymbolCoordinates(symbol)
         );
-    },
-    removeAllNotation(state) {
-      state.notations = [];
     },
     removeAllExercises(state) {
       state.exercises = [];
     },
-    selectNotation(state, id) {
-      let notation = helper.findNotationById(state, id);
-      delete notation.selected; // for reactivity
-      Vue.set(notation, "selected", true);
+    selectSymbol(state, id) {
+      let symbol = helper.findSymbolById(state, id);
+      delete symbol.selected; // for reactivity
+      Vue.set(symbol, "selected", true);
     },
-    unselectAllNotations(state) {
-      state.notations
+    unselectAllSymbols(state) {
+      state.symbols
         .filter((n) => n.selected === true)
         .forEach((n) => {
           delete n.selected; // for reactivity
           Vue.set(n, "selected", false);
         });
     },
-    moveSelectedNotations(state, payload) {
-      state.notations
-        .filter((notation) => !!notation.selected)
-        .forEach((notation) => {
-          let x = notation.x;
-          let y = notation.y;
-          delete notation.x;
-          delete notation.y;
-          Vue.set(notation, "x", x + payload.deltaX);
-          Vue.set(notation, "y", y + payload.deltaY);
+    moveSelectedSymbols(state, payload) {
+      state.symbols
+        .filter((symbol) => !!symbol.selected)
+        .forEach((symbol) => {
+          let col = symbol.col;
+          let row = symbol.row;
+          delete symbol.col;
+          delete symbol.row;
+          Vue.set(
+            symbol,
+            "col",
+            col + Math.round(payload.deltaX / payload.rectSize)
+          );
+          Vue.set(
+            symbol,
+            "row",
+            row + Math.round(payload.deltaY / payload.rectSize)
+          );
         });
+    },
+    removeAllSymbols(state, payload) {
+      state.symbols = [];
     },
   },
   actions: {
@@ -215,11 +231,11 @@ export default new Vuex.Store({
       return user;
     },
 
-    async loadNotations(context, exerciseId) {
-      context.commit("removeAllNotation");
-      dbSyncMixin.methods.getAllNotations(exerciseId).then((notations) => {
-        notations.forEach((notation) => {
-          context.commit("addNotation", notation);
+    async loadSymbols(context, exerciseId) {
+      context.commit("removeAllSymbols");
+      dbSyncMixin.methods.getAllSymbols(exerciseId).then((symbols) => {
+        symbols.forEach((symbol) => {
+          context.commit("addSymbol", symbol);
         });
       });
     },
@@ -263,35 +279,36 @@ export default new Vuex.Store({
     removeExercise(context, payload) {
       context.commit("removeExercise", payload.id);
     },
-    addSymbol(context, notation) {
-      return dbSyncMixin.methods.addSymbol(notation);
+    upsertSymbol(context, symbol) {
+      return dbSyncMixin.methods.upsertSymbol(symbol);
     },
-    syncIncomingAddedNotaion(context, notation) {
-      context.commit("addNotation", notation);
+    syncIncomingAddedNotaion(context, symbol) {
+      context.commit("addSymbol", symbol);
     },
-    syncIncomingDeletedNotaion(context, notation) {
-      context.commit("removeNotation", notation);
+    syncIncomingDeletedNotaion(context, symbol) {
+      context.commit("removeSymbol", symbol);
     },
-    syncIncomingUpdatedNotaion(context, notation) {
-      context.commit("updateNotationPosition", notation);
+    syncIncomingUpdatedNotaion(context, symbol) {
+      context.commit("upsertSymbol", symbol);
     },
     removeSelectedSymbols(context) {
       // commit is called by syncIncomingDeletedNotaion
       dbSyncMixin.methods.removeSymbols(
-        context.getters.getSelectedNotations.map((s) => s.id).join(",")
+        //context.getters.getSelectedSymbols.map((s) => s.id).join(",")
+        context.getters.getSelectedSymbols
       );
     },
-    selectNotation(context, id) {
-      context.commit("selectNotation", id);
+    selectSymbol(context, id) {
+      context.commit("selectSymbol", id);
     },
-    unselectAllNotations(context) {
-      context.commit("unselectAllNotations");
+    unselectAllSymbols(context) {
+      context.commit("unselectAllSymbols");
     },
-    moveSelectedNotations(context, payload) {
-      context.commit("moveSelectedNotations", payload);
+    moveSelectedSymbols(context, payload) {
+      context.commit("moveSelectedSymbols", payload);
     },
-    updateSelectedNotations(context, payload) {
-      context.commit("updateSelectedNotations", payload);
+    updateSelectedSymbolCoordinates(context, payload) {
+      context.commit("updateSelectedSymbolCoordinates", payload);
     },
     setSelectedRect(context, payload) {
       context.commit("setSelectedRect", payload);

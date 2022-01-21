@@ -4,7 +4,6 @@ const finale = require("finale-rest");
 const db = require("math-db/src/models/index");
 const authMiddleware = require("math-auth/src/authMiddleware");
 const userMiddleware = require("./userMiddleware");
-//const notationMiddleware = require("./notationMiddleware");
 const exerciseMiddleware = require("./exerciseMiddleware");
 
 let app = express();
@@ -37,15 +36,6 @@ let symbolResource = finale.resource({
 symbolResource.use(authMiddleware);
 symbolResource.use(exerciseMiddleware);
 
-finale.resource({
-    model: db.sequelize.models["SignSymbol"],
-    endpoints: ["/signsymbols", "/signymbols/:id"],
-});
-
-finale.resource({
-    model: db.sequelize.models["NumberSymbol"],
-    endpoints: ["/numbersymbols", "/numbersymbols/:id"],
-});
 finale.resource({
     model: db.sequelize.models["AccessLink"],
     endpoints: ["/accessLink", "/accessLink/:id"],
