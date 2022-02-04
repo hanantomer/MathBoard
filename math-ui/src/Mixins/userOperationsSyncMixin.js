@@ -48,10 +48,10 @@ export default {
         }
       );
     },
-    mixin_syncOutgoingSymbolsDeletion: async function (symbols) {
-      console.debug(`sync deleting symbols ${JSON.stringify(symbols)}`);
+    mixin_syncOutgoingSymbolsDeletion: async function (symbol) {
+      console.debug(`sync deleting symbol ${JSON.stringify(symbol)}`);
       client.service("symbolSync").remove(
-        { symbols: symbols },
+        { symbol: symbol },
         {
           query: {
             access_token: this.getAccessToken(),
@@ -142,7 +142,7 @@ export default {
       });
       if (isAdmin) {
         client.service("heartbeat").on("updated", (user) => {
-          _store.dispatch("updateUserHeartbeat", user);
+          _store.dispatch("updateStudentHeartbeat", user);
         });
       }
     },

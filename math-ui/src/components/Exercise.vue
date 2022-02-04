@@ -5,15 +5,16 @@
         :disabled="!authorized && !isAdmin"
         v-for="s in signs"
         :key="s.sign"
-        v-on:click="$symbolIconClicked"
+        v-on:click="editManager_symbolButtonPressed"
         x-small
         text
         ><span class="mr-1">{{ s.sign }}</span></v-btn
       >
+
       <v-btn
         icon
         :disabled="!authorized && !isAdmin"
-        v-on:click="$removeSelectedSymbols"
+        v-on:click="editManager_deleteButtonPressed"
         color="white"
         x-small
         fab
@@ -40,6 +41,9 @@
         dark
         ><v-icon>mdi-grid</v-icon>
       </v-btn>
+      <v-btn icon color="white" x-small fab dark>
+        <v-icon>minimize</v-icon>
+      </v-btn>
     </v-toolbar>
     <createAccessLinkDialog
       v-model="isAccessLinkDialogOpen"
@@ -51,14 +55,16 @@
           <v-card class="pa-2 ma-0 nopadding">
             <svg
               id="svg"
-              v-on:mouseup="$onMouseUp"
-              v-on:mousedown="$onMouseDown"
-              v-on:mousemove="mixin_mouseMove"
+              v-on:mouseup="editManager_svgMouseUp"
+              v-on:mousedown="editManager_mouseDown"
+              v-on:mousemove="editManager_mouseMove"
             ></svg>
           </v-card>
           <v-card
-            v-on:mouseup="mixin_canvasMouseUp"
-            v-if="this.selectionActive || this.isAnySymbolSelected"
+            id="selection"
+            v-on:mouseup="editManager_selectionMouseUp"
+            v-on:mousedown="editManager_selectionMouseDown"
+            v_-if="editManager_getCurrentMode === 'SELECT'"
             class="grabbable"
             v-bind:style="{
               left: selectionRectLeft,
@@ -114,6 +120,9 @@ import matrixOverlayMixin from "../Mixins/matrixOverlayMixin";
 import positionMixin from "../Mixins/positionMixin";
 import cursorMixin from "../Mixins/cursorMixin";
 import selectionMixin from "../Mixins/selectionMixin";
+//import lineDrawingMixin from "../Mixins/lineDrawingMixin";
+import editManager from "../Mixins/editManager";
+import symbolMixin from "../Mixins/symbolMixin";
 import userOperationsSyncMixin from "../Mixins/userOperationsSyncMixin";
 import createAccessLinkDialog from "./CreateAccessLinkDialog.vue";
 
@@ -134,18 +143,11 @@ export default {
       window.addEventListener("click", this.onclick);
       window.addEventListener("keyup", this.onkeyup);
     });
-    this.mixin_setMatrix();
-
-    var canvas = document.createElement("canvas");
-    document.body.append(canvas);
-    this.ctx = canvas.getContext("2d");
-    this.ctx.font = window.getComputedStyle(document.body).font;
+    this.matrixMixin_setMatrix();
   },
-  data() {
+  data: function () {
     return {
       boundingClientRet: null,
-      ctx: null,
-      font: null,
       isAdmin: false,
       isAccessLinkDialogOpen: false,
       svg: {},
@@ -176,55 +178,26 @@ export default {
     cursorMixin,
     selectionMixin,
     userOperationsSyncMixin,
+    symbolMixin,
+    editManager,
   ],
   computed: {
     ...mapState({
-      students: (state) => {
-        return state.students;
-      },
       symbols: (state) => {
-        return state.symbols;
+        return state.symbol.symbols;
       },
       students: (state) => {
-        return state.students;
+        return state.student.students;
       },
-      selectedRect: (state) => state.selectedRect,
-      authorized: (state) => state.user.authorized,
+      selectedRect: (state) => state.symbol.selectedRect,
+      authorized: (state) => state.user.loggedUser.authorized,
     }),
-    selectionRectLeft: function () {
-      return (
-        Math.min(this.selectionPosition.x1, this.selectionPosition.x2) +
-        5 +
-        "px"
-      );
-    },
-    selectionRectTop: function () {
-      return (
-        Math.min(this.selectionPosition.y1, this.selectionPosition.y2) +
-        5 +
-        "px"
-      );
-    },
-    selectionRectWidth: function () {
-      return (
-        Math.max(this.selectionPosition.x1, this.selectionPosition.x2) -
-        Math.min(this.selectionPosition.x1, this.selectionPosition.x2) +
-        "px"
-      );
-    },
-    selectionRectHeight: function () {
-      return (
-        Math.max(this.selectionPosition.y1, this.selectionPosition.y2) -
-        Math.min(this.selectionPosition.y1, this.selectionPosition.y2) +
-        "px"
-      );
-    },
   },
   watch: {
     $route: "$loadExercise",
     selectedRect: {
       handler(selectedRect) {
-        this.mixin_selectRectByCoordinates(selectedRect);
+        this.matrixMixin_selectRectByCoordinates(selectedRect);
       },
     },
     symbols: {
@@ -292,32 +265,21 @@ export default {
       getUser: "getUser",
       getStudent: "getStudent",
     }),
-    ...mapActions({
-      loadExercise: "loadExercise",
-      setSelectedRect: "setSelectedRect",
-      selectSymbol: "selectSymbol",
-      unselectAllSymbols: "unselectAllSymbols",
-      moveSelectedSymbols: "moveSelectedSymbols",
-      removeSelectedSymbols: "removeSelectedSymbols",
-      updateSelectedSymbolCoordinates: "updateSelectedSymbolCoordinates",
-      toggleAuthorization: "toggleAuthorization",
-    }),
     $getXpos(col) {
-      return col * this.mixin_getRectSize() + 10; //- this.boundingClientRet.x - 5;
+      return col * this.matrixMixin_getRectSize() + 10; //- this.boundingClientRet.x - 5;
     },
     $getYpos(row) {
-      return row * this.mixin_getRectSize() + 10; //- this.boundingClientRet.y - 5;
+      return row * this.matrixMixin_getRectSize() + 10; //- this.boundingClientRet.y - 5;
     },
-
     $toggleExerciseMatrix() {
-      this.mixin_toggleMatrixOverlay();
+      this.matrixMixin_toggleMatrixOverlay();
     },
     $getStudentDisplayName(student) {
       return student.firstName + " " + student.lastName;
     },
     $loadExercise: async function () {
       if (!this.getCurrentExercise().hasOwnProperty()) {
-        await this.loadExercise(this.exerciseId);
+        await this.$store.dispatch("loadExercise", this.exerciseId);
       }
       this.isAdmin = this.getCurrentExercise().UserId === this.getUser().id;
 
@@ -337,17 +299,6 @@ export default {
         link: link,
       });
     },
-    $removeSelectedSymbols: function () {
-      let selectedSymbols = this.getSelectedSymbols();
-      this.removeSelectedSymbols()
-        .then(() => {
-          this.mixin_resetSelection();
-          this.mixin_syncOutgoingSymbolsDeletion(selectedSymbols);
-        })
-        .catch((e) => {
-          console.error(e);
-        });
-    },
     $addSymbol(s) {
       let symbol = {
         ExerciseId: this.exerciseId,
@@ -362,7 +313,7 @@ export default {
         .then((symbol) => {
           this.mixin_syncOutgoingSymbolAdding(symbol);
 
-          let nextRect = this.mixin_selectNextRect();
+          let nextRect = this.matrixMixin_selectNextRect();
           if (!!nextRect) {
             this.mixin_syncOutgoingSelectedRect(nextRect);
           }
@@ -371,35 +322,14 @@ export default {
           console.error(e);
         });
     },
-    $symbolIconClicked: function (context) {
-      this.$addSymbol(context.currentTarget.innerText);
-    },
+    //$symbolIconClicked: function (context) {
+    //  this.$addSymbol(context.currentTarget.innerText);
+    //},
     onkeyup: function (e) {
       if (e.keyCode < 48) {
         ///TODO - support special keys to move/delete
       } else {
         this.$addSymbol(e.key);
-      }
-    },
-    $onMouseDown: function (e) {
-      if (this.isAnySymbolSelected()) {
-        this.unselectAllSymbols();
-        this.mixin_resetSelection();
-      } else {
-        this.mixin_startSelection(e);
-      }
-    },
-    $onMouseUp: function (e) {
-      let normalizedClickedPosition = this.mixin_getClickedNoramalizedPosition({
-        x: e.clientX,
-        y: e.clientY,
-      });
-      let selectedRect = this.mixin_selectRectByClickedPosition(
-        normalizedClickedPosition
-      );
-      this.mixin_syncOutgoingSelectedRect(selectedRect);
-      if (this.isAnySymbolSelected && this.selectionActive === false) {
-        this.mixin_endMove(e);
       }
     },
     $toggleStudentAuthorization: function (student) {

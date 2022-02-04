@@ -137,14 +137,20 @@ module.exports = {
 
       return res ? res.data : null;
     },
-    removeSymbols: async function (symbols) {
+    // removeSymbols: async function (symbols) {
+    //   try {
+    //     axiosInstnce.delete("/symbols/" + symbols.map((s) => s.id).join(","));
+    //   } catch (error) {
+    //     handleError(error);
+    //   }
+    // },
+    removeSymbol: async function (symbol) {
       try {
-        axiosInstnce.delete("/symbols/" + symbols.map((s) => s.id).join(","));
+        axiosInstnce.delete("/symbols/" + symbol.id);
       } catch (error) {
         handleError(error);
       }
     },
-
     getExercise: async function (exerciseId) {
       try {
         let res = await axiosInstnce.get("/exercises?id=" + exerciseId);

@@ -7,93 +7,105 @@ export default {
         x2: 0,
         y2: 0,
       },
-      selectionActive: false,
       dragPostion: {
         x: 0,
         y: 0,
       },
     };
   },
+  computed: {
+    selectionRectLeft: function () {
+      return (
+        Math.min(this.selectionPosition.x1, this.selectionPosition.x2) +
+        5 +
+        "px"
+      );
+    },
+    selectionRectTop: function () {
+      return (
+        Math.min(this.selectionPosition.y1, this.selectionPosition.y2) +
+        5 +
+        "px"
+      );
+    },
+    selectionRectWidth: function () {
+      return (
+        Math.max(this.selectionPosition.x1, this.selectionPosition.x2) -
+        Math.min(this.selectionPosition.x1, this.selectionPosition.x2) +
+        "px"
+      );
+    },
+    selectionRectHeight: function () {
+      return (
+        Math.max(this.selectionPosition.y1, this.selectionPosition.y2) -
+        Math.min(this.selectionPosition.y1, this.selectionPosition.y2) +
+        "px"
+      );
+    },
+  },
   methods: {
     // extend or shrink selection area
-    updateSelectionArea(e) {
+    selectionMixinUpdateSelectionArea: function (e) {
       this.mixin_hideCursor();
       this.selectionPosition.x2 = e.clientX;
       this.selectionPosition.y2 = e.clientY - 50;
     },
     //move selection area
-    async mixin_moveSelection(e) {
-      let rectSize = this.mixin_getRectSize();
+    selectionMixin_moveSelection: function (e) {
+      let rectSize = this.matrixMixin_getRectSize();
       if (this.dragPostion.x === 0) {
         this.dragPostion.x = e.clientX;
         this.dragPostion.y = e.clientY;
       } else {
-        const deltaX = e.clientX - this.dragPostion.x;
-        const deltaY = e.clientY - this.dragPostion.y;
+        const rectDeltaX = Math.round(
+          (e.clientX - this.dragPostion.x) / rectSize
+        );
+        const rectDeltaY = Math.round(
+          (e.clientY - this.dragPostion.y) / rectSize
+        );
 
         // consider meaningfull move only
-        if (deltaX < rectSize && deltaY < rectSize) {
-          return;
+        if (rectDeltaX != 0 || rectDeltaY != 0) {
+          this.$store
+            .dispatch("moveSelectedSymbols", {
+              rectDeltaX,
+              rectDeltaY,
+              rectSize,
+            })
+            .then(() => {
+              this.selectionPosition.x1 += rectDeltaX * rectSize;
+              this.selectionPosition.y1 += rectDeltaY * rectSize;
+              this.selectionPosition.x2 += rectDeltaX * rectSize;
+              this.selectionPosition.y2 += rectDeltaY * rectSize;
+              this.dragPostion.x = e.clientX;
+              this.dragPostion.y = e.clientY;
+            });
         }
-
-        this.moveSelectedSymbols({
-          deltaX,
-          deltaY,
-          rectSize,
-        }).then(() => {
-          this.selectionPosition.x1 += deltaX;
-          this.selectionPosition.y1 += deltaY;
-          this.selectionPosition.x2 += deltaX;
-          this.selectionPosition.y2 += deltaY;
-          this.dragPostion.x = e.clientX;
-          this.dragPostion.y = e.clientY;
-        });
       }
     },
-    mixin_resetSelection: function () {
+    selectionMixin_resetSelection: function () {
       this.selectionPosition.x1 = this.selectionPosition.x2 = this.selectionPosition.y1 = this.selectionPosition.y2 = 0;
     },
-    mixin_startSelection: function (e) {
-      this.selectionActive = true;
+    selectionMixin_startSelection: function (e) {
+      console.debug("start selection");
       this.selectionPosition.x2 = this.selectionPosition.x1 = e.clientX;
       this.selectionPosition.y2 = this.selectionPosition.y1 = e.clientY - 50;
+      this.$store.dispatch("unselectAllSymbols");
     },
-    mixin_mouseMove(e) {
-      if (e.buttons !== 1) {
-        return;
-      }
-      // during move
-      if (this.isAnySymbolSelected && this.selectionActive === false) {
-        this.mixin_moveSelection(e);
-      }
-      // during selection
-      if (this.selectionActive === true) {
-        this.updateSelectionArea(e);
-      }
-    },
-    mixin_canvasMouseUp(e) {
-      if (this.selectionActive) {
-        this.mixin_endSelect(e);
-      }
-    },
-    mixin_endMove(e) {
+    selectionMixin_endMoveSelection: function (e) {
       this.dragPostion.x = 0;
       this.dragPostion.y = 0;
-      this.updateSelectedSymbolCoordinates().then(() =>
-        this.mixin_syncOutgoingUpdateSelectedSymbols()
-      );
+      this.$store
+        .dispatch("updateSelectedSymbolCoordinates")
+        .then(() => this.mixin_syncOutgoingUpdateSelectedSymbols());
     },
-    mixin_endSelect: function (e) {
-      if (
-        this.selectionActive &&
-        this.selectionPosition.x2 != this.selectionPosition.x1
-      ) {
-        this.selectionActive = false;
-        var p1 = this.mixin_getSVGCoordinates(
+    selectionMixin_endSelect: function (e) {
+      if (this.selectionPosition.x2 != this.selectionPosition.x1) {
+        var p1 = this.positionMixin_getSVGCoordinates(
           this.selectionPosition.x1,
           this.selectionPosition.y1
         );
-        var p2 = this.mixin_getSVGCoordinates(
+        var p2 = this.positionMixin_getSVGCoordinates(
           this.selectionPosition.x2,
           this.selectionPosition.y2
         );
@@ -106,7 +118,7 @@ export default {
             this.$getYpos(datum.row) > p1.y + 50 &&
             this.$getYpos(datum.row) < p2.y + 50
           ) {
-            this.selectSymbol(datum.id);
+            this.$store.dispatch("selectSymbol", datum.id);
           }
         });
       }

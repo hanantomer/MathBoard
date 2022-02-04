@@ -41,15 +41,15 @@ class SymbolSyncService {
     let user = await this.getUser(params.query.access_token);
     let exerciseId = null;
     if (!!user) {
-      data.symbols.forEach(async (symbol) => {
-        symbol.UserId = user.id;
-        if (exerciseId == null)
-          exerciseId = await dbUtil.parseExerciseId(symbol.ExerciseId);
-        symbol.ExerciseId = exerciseId;
-        console.debug(`notaion deleted:${JSON.stringify(symbol)}`);
-      });
+      //data.symbols.forEach(async (symbol) => {
+      data.symbol.UserId = user.id;
+      if (exerciseId == null)
+        exerciseId = await dbUtil.parseExerciseId(data.symbol.ExerciseId);
+      data.symbol.ExerciseId = exerciseId;
+      console.debug(`symbol deleted:${JSON.stringify(data.symbol)}`);
+      //});
     }
-    return data.symbols;
+    return data.symbol;
   }
 }
 

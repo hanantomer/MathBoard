@@ -6,6 +6,7 @@ import store from "./store/index.js";
 import router from "./router/index.js";
 import { LoaderPlugin } from "vue-google-login";
 import VueCookies from "vue-cookies";
+import "material-design-icons-iconfont/dist/material-design-icons.css";
 
 Vue.prototype.$client_id =
   "468882561891-2becp92jqb5mgd26a788nl0tv6ajak63.apps.googleusercontent.com";

@@ -1,8 +1,8 @@
 const width = 1000;
 const numberOfCols = 100;
 const rowHeight = 20;
-const xStart = 10;
-const yStart = 10;
+//const xStart = 10;
+//const yStart = 10;
 var p;
 
 function getHorizontalStep() {
@@ -11,7 +11,7 @@ function getHorizontalStep() {
 
 export default {
   methods: {
-    mixin_getSVGCoordinates: function (x, y) {
+    positionMixin_getSVGCoordinates: function (x, y) {
       if (!p) {
         p = svg.createSVGPoint();
       }
@@ -21,42 +21,42 @@ export default {
       var p = p.matrixTransform(ctm);
       return p;
     },
-    mixin_getClickedNoramalizedPosition: function (clickedPosition) {
+    positionMixin_getClickedNoramalizedPosition: function (clickedPosition) {
       let horizontalStep = getHorizontalStep();
       let xNormalized =
         Math.round(clickedPosition.x / horizontalStep) * horizontalStep;
       let yNormalized = Math.round(clickedPosition.y / rowHeight) * rowHeight;
       return { x: xNormalized, y: yNormalized };
     },
-    mixin_getNext: function (symbol, currentPosition) {
-      if (!currentPosition.x) {
-        currentPosition.x = 0;
-        currentPosition.x = y;
-      }
-      let coeficient = 1;
-      switch (symbol) {
-        case ")" || "(": {
-          coeficient = 0.45;
-          break;
-        }
+    // mixin_getNext: function (symbol, currentPosition) {
+    //   if (!currentPosition.x) {
+    //     currentPosition.x = 0;
+    //     currentPosition.x = y;
+    //   }
+    //   let coeficient = 1;
+    //   switch (symbol) {
+    //     case ")" || "(": {
+    //       coeficient = 0.45;
+    //       break;
+    //     }
 
-        default: {
-          coeficient = 0.85;
-        }
-      }
-      let horizontalStep = getHorizontalStep() * coeficient;
+    //     default: {
+    //       coeficient = 0.85;
+    //     }
+    //   }
+    //   let horizontalStep = getHorizontalStep() * coeficient;
 
-      let nextPosition = currentPosition;
-      if (nextPosition.x + horizontalStep > width) {
-        nextPosition.y += rowHeight;
-        nextPosition.x = xStart;
-      } else {
-        nextPosition.x += Math.round(horizontalStep);
-      }
+    //   let nextPosition = currentPosition;
+    //   if (nextPosition.x + horizontalStep > width) {
+    //     nextPosition.y += rowHeight;
+    //     nextPosition.x = xStart;
+    //   } else {
+    //     nextPosition.x += Math.round(horizontalStep);
+    //   }
 
-      nextPosition.x = Math.max(xStart, nextPosition.x);
-      nextPosition.y = Math.max(yStart, nextPosition.y);
-      return nextPosition;
-    },
+    //   nextPosition.x = Math.max(xStart, nextPosition.x);
+    //   nextPosition.y = Math.max(yStart, nextPosition.y);
+    //   return nextPosition;
+    // },
   },
 };

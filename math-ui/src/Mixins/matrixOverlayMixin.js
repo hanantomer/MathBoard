@@ -18,26 +18,25 @@ function toglleSelectedRect(clickedRect) {
     clickedRect.style.fill == selectedRecColor ? "" : selectedRecColor;
 }
 
-//https://stackoverflow.com/questions/30755696/get-svg-object-s-at-given-coordinates
-function findRect(x, y) {
-  var elements = [],
-    current = document.elementFromPoint(x, y);
-  while (current && current.nearestViewportElement) {
-    elements.push(current);
-    // hide the element and look again
-    current.style.display = "none";
-    current = document.elementFromPoint(x, y);
-  }
-  // restore the display
-  elements.forEach(function (elm) {
-    elm.style.display = "";
-  });
-  return elements.find((e) => e.tagName == "rect");
-}
-
 export default {
   methods: {
-    mixin_setMatrix: function () {
+    //https://stackoverflow.com/questions/30755696/get-svg-object-s-at-given-coordinates
+    matrixMixin_findRect: function (x, y) {
+      var elements = [],
+        current = document.elementFromPoint(x, y);
+      while (current && current.nearestViewportElement) {
+        elements.push(current);
+        // hide the element and look again
+        current.style.display = "none";
+        current = document.elementFromPoint(x, y);
+      }
+      // restore the display
+      elements.forEach(function (elm) {
+        elm.style.display = "";
+      });
+      return elements.find((e) => e.tagName == "rect");
+    },
+    matrixMixin_setMatrix: function () {
       for (var row = 0; row < rowsNum; row++) {
         matrix.push(d3.range(colsNum));
       }
@@ -73,14 +72,14 @@ export default {
         .attr("width", rectSize)
         .attr("height", rectSize);
     },
-    mixin_toggleMatrixOverlay: function () {
+    matrixMixin_toggleMatrixOverlay: function () {
       if (opacity === 1) opacity = 0.1;
       else opacity = 1;
 
       topLevelGroup.selectAll("rect").attr("stroke-opacity", opacity);
     },
     mixin_selectRectByClickedPosition(position) {
-      let clickedRect = findRect(position.x, position.y);
+      let clickedRect = this.matrixMixin_findRect(position.x, position.y);
 
       toglleSelectedRect(clickedRect);
 
@@ -89,7 +88,7 @@ export default {
         row: selectedRect.parentNode.attributes.row.value,
       };
     },
-    mixin_selectRectByCoordinates(coordinates) {
+    matrixMixin_selectRectByCoordinates(coordinates) {
       let rect = document
         .querySelector(`g[row="${coordinates.row}"]`)
         .querySelector(`rect[col="${coordinates.col}"]`);
@@ -97,11 +96,11 @@ export default {
       toglleSelectedRect(rect);
     },
 
-    mixin_getRectSize() {
+    matrixMixin_getRectSize() {
       return rectSize;
     },
 
-    mixin_selectNextRect() {
+    matrixMixin_selectNextRect() {
       let col = parseInt(selectedRect.attributes.col.value);
       let row = parseInt(selectedRect.parentNode.attributes.row.value);
       if (col != colsNum) {
