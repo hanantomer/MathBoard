@@ -4,14 +4,18 @@ export default {
   },
   methods: {
     symbolMixin_setCurrentRect(e) {
-      let normalizedClickedPosition = this.positionMixin_getClickedNoramalizedPosition(
+      // let normalizedClickedPosition = this.positionMixin_getClickedNoramalizedPosition(
+      //   {
+      //     x: e.clientX,
+      //     y: e.clientY,
+      //   }
+      // );
+      let selectedRect = this.mixin_selectRectByClickedPosition(
+        //normalizedClickedPosition
         {
           x: e.clientX,
           y: e.clientY,
         }
-      );
-      let selectedRect = this.mixin_selectRectByClickedPosition(
-        normalizedClickedPosition
       );
       this.mixin_syncOutgoingSelectedRect(selectedRect);
     },
