@@ -16,8 +16,23 @@ module.exports = {
     editManager_getCurrentMode: function () {
       return this.currentMode;
     },
+    restoreEditMode: function () {
+      if (this.currentMode == EditMode.DELETE) {
+        let canvas = document.getElementById("svg");
+        this.currentMode = EditMode.EDIT;
+        this.toggleDeleteMode = 1;
+        canvas.classList.remove("deleteMode");
+      }
+    },
     editManager_deleteButtonPressed: function () {
-      this.currentMode = EditMode.DELETE;
+      let canvas = document.getElementById("svg");
+      if (this.currentMode == EditMode.DELETE) {
+        this.currentMode = EditMode.EDIT;
+        canvas.classList.remove("deleteMode");
+      } else {
+        this.currentMode = EditMode.DELETE;
+        canvas.classList.add("deleteMode");
+      }
     },
     editManager_fractionButtonPressed: function () {
       if (this.currentMode == EditMode.FRACTION) {
@@ -27,7 +42,7 @@ module.exports = {
       }
     },
     editManager_symbolButtonPressed: function (e) {
-      this.currentMode = EditMode.EDIT;
+      this.restoreEditMode();
       this.$addSymbol(e.currentTarget.innerText);
     },
     editManager_keyPressed: function (key) {

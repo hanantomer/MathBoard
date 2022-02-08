@@ -11,16 +11,19 @@
         ><span class="mr-1">{{ s.sign }}</span></v-btn
       >
 
-      <v-btn
-        icon
-        :disabled="!authorized && !isAdmin"
-        v-on:click="editManager_deleteButtonPressed"
-        color="white"
-        x-small
-        fab
-        dark
-        ><v-icon>mdi-delete</v-icon></v-btn
+      <v-btn-toggle
+        v-model="toggleDeleteMode"
+        background-color="transparent"
+        active-class="deleteActive"
       >
+        <v-btn
+          icon
+          :disabled="!authorized && !isAdmin"
+          v-on:click="editManager_deleteButtonPressed"
+          x-small
+          ><v-icon>mdi-delete</v-icon></v-btn
+        >
+      </v-btn-toggle>
       <v-btn
         v-if="isAdmin"
         icon
@@ -147,6 +150,7 @@ export default {
   },
   data: function () {
     return {
+      toggleDeleteMode: 1,
       boundingClientRet: null,
       isAdmin: false,
       isAccessLinkDialogOpen: false,
@@ -322,9 +326,6 @@ export default {
           console.error(e);
         });
     },
-    //$symbolIconClicked: function (context) {
-    //  this.$addSymbol(context.currentTarget.innerText);
-    //},
     onkeyup: function (e) {
       if (e.keyCode < 48) {
         ///TODO - support special keys to move/delete
@@ -372,5 +373,11 @@ export default {
 }
 .nopadding {
   padding: 0 !important;
+}
+.deleteActive {
+  background-color: dodgerblue;
+}
+.deleteMode {
+  cursor: URL("~@/assets/delete.jpg"), pointer;
 }
 </style>
