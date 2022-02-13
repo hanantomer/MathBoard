@@ -13,25 +13,34 @@ module.exports = {
     };
   },
   methods: {
+    hideDeleteCursor() {
+      Array.from(document.getElementsByTagName("svg")).forEach((e) =>
+        e.classList.remove("deleteMode")
+      );
+    },
+    showDeleteCursor() {
+      Array.from(document.getElementsByTagName("svg")).forEach((e) =>
+        e.classList.add("deleteMode")
+      );
+    },
+
     editManager_getCurrentMode: function () {
       return this.currentMode;
     },
     restoreEditMode: function () {
       if (this.currentMode == EditMode.DELETE) {
-        let canvas = document.getElementById("svg");
         this.currentMode = EditMode.EDIT;
         this.toggleDeleteMode = 1;
-        canvas.classList.remove("deleteMode");
+        this.hideDeleteCursor();
       }
     },
     editManager_deleteButtonPressed: function () {
-      let canvas = document.getElementById("svg");
       if (this.currentMode == EditMode.DELETE) {
         this.currentMode = EditMode.EDIT;
-        canvas.classList.remove("deleteMode");
+        this.hideDeleteCursor();
       } else {
         this.currentMode = EditMode.DELETE;
-        canvas.classList.add("deleteMode");
+        this.showDeleteCursor();
       }
     },
     editManager_fractionButtonPressed: function () {
@@ -43,22 +52,24 @@ module.exports = {
     },
     editManager_symbolButtonPressed: function (e) {
       this.restoreEditMode();
-      this.$addSymbol(e.currentTarget.innerText);
-    },
-    editManager_keyPressed: function (key) {
-      if ((this.currentMode = EditMode.EDIT)) {
-      }
+      this.symbolMixin_upsertSymbol(e.currentTarget.innerText);
     },
     editManager_mouseDown: function (e) {
       if (this.currentMode === EditMode.EDIT) {
-        this.symbolMixin_setCurrentRect(e);
+        this.setCurrentRect(e);
       } else if (this.currentMode === EditMode.DELETE) {
         this.symbolMixin_removeSymbol(e);
       } else if (this.currentMode === EditMode.FRACTION) {
-        //drawMixin_startDraw(e);
+        this.setCurrentFractionRect(e);
       }
-
       this.selectionMixin_resetSelection();
+    },
+    editManager_keyUp: function (e) {
+      if ((this.currentMode = EditMode.EDIT)) {
+        if (e.keyCode > 48 && !e.ctrlKey && !e.shiftKey && !e.altKey) {
+          this.symbolMixin_upsertSymbol(e.key);
+        }
+      }
     },
     editManager_selectionMouseDown(e) {
       this.currentMode = EditMode.MOVE;
@@ -96,6 +107,20 @@ module.exports = {
       else if (this.currentMode === EditMode.DRAW) {
         this.drawMixin_drawLine(e);
       }
+    },
+    setCurrentRect: function (e) {
+      let selectedRect = this.mixin_getRectByClickedPosition({
+        x: e.clientX,
+        y: e.clientY,
+      });
+      this.mixin_syncOutgoingSelectedRect(selectedRect);
+    },
+    setCurrentFractionRect: function (e) {
+      let selectedFractionRect = this.mixin_getFractionRectByClickedPosition({
+        x: e.clientX,
+        y: e.clientY,
+      });
+      this.mixin_syncOutgoingSelectedRect(selectedFractionRect);
     },
   },
 };

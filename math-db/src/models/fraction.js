@@ -1,14 +1,14 @@
 "use strict";
 const { Model } = require("sequelize");
 module.exports = (sequelize, DataTypes) => {
-    class FractionLine extends Model {
+    class Fraction extends Model {
         static associate(models) {
-            FractionLine.belongsTo(models.Exercise, {
+            Fraction.belongsTo(models.Exercise, {
                 onDelete: "CASCADE",
                 onUpdate: "CASCADE",
                 foreignKey: { allowNull: false },
             });
-            FractionLine.belongsTo(models.User, {
+            Fraction.belongsTo(models.User, {
                 onDelete: "CASCADE",
                 onUpdate: "CASCADE",
                 foreignKey: { allowNull: false },
@@ -16,13 +16,9 @@ module.exports = (sequelize, DataTypes) => {
         }
     }
 
-    FractionLine.init(
+    Fraction.init(
         {
-            colLeft: {
-                type: DataTypes.INTEGER,
-                allowNull: false,
-            },
-            colRight: {
+            col: {
                 type: DataTypes.INTEGER,
                 allowNull: false,
             },
@@ -30,19 +26,24 @@ module.exports = (sequelize, DataTypes) => {
                 type: DataTypes.INTEGER,
                 allowNull: false,
             },
+            nimnatorValue: {
+                type: DataTypes.STRING,
+            },
+            denimnatorValue: {
+                type: DataTypes.STRING,
+            },
         },
-
         {
             sequelize,
             freezeTableName: true,
             indexes: [
                 {
                     unique: true,
-                    fields: ["row", "colLeft"],
+                    fields: ["row", "col"],
                 },
             ],
         }
     );
 
-    return FractionLine;
+    return Fraction;
 };

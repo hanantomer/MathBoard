@@ -24,12 +24,22 @@ export default {
           : window.$cookies.get("access_token")
       }`;
     },
-    mixin_syncOutgoingSelectedRect: async function (selectedRect) {
-      selectedRect.ExerciseId = this.exerciseId;
-      console.debug(`sync selected rect ${JSON.stringify(selectedRect)}`);
-      client.service("selectedRectSync").update(
-        null,
-        { selectedRect: selectedRect },
+    // mixin_syncOutgoingSelectedRect: async function (selectedRect) {
+    //   selectedRect.ExerciseId = this.exerciseId;
+    //   console.debug(`sync selected rect ${JSON.stringify(selectedRect)}`);
+    //   client.service("selectedRectSync").update(
+    //     null,
+    //     { selectedRect: selectedRect },
+    //     {
+    //       query: {
+    //         access_token: this.getAccessToken(),
+    //       },
+    //     }
+    //   );
+    // },
+    mixin_syncOutgoingNotationUpsert: async function (notation) {
+      notationCreateServcice.create(
+        { notation: notation },
         {
           query: {
             access_token: this.getAccessToken(),
@@ -37,10 +47,9 @@ export default {
         }
       );
     },
-    mixin_syncOutgoingSymbolAdding: async function (symbol) {
-      console.debug(`sync adding symbol ${JSON.stringify(symbol)}`);
-      symbolCreateServcice.create(
-        { symbol: symbol },
+    mixin_syncOutgoingNotationDeletion: async function (notation) {
+      client.service("notationSync").remove(
+        { notation: notation },
         {
           query: {
             access_token: this.getAccessToken(),
@@ -48,10 +57,10 @@ export default {
         }
       );
     },
-    mixin_syncOutgoingSymbolsDeletion: async function (symbol) {
-      console.debug(`sync deleting symbol ${JSON.stringify(symbol)}`);
-      client.service("symbolSync").remove(
-        { symbol: symbol },
+
+    mixin_syncOutgoingUpdateSelectedSymbols: async function () {
+      client.service("symbolSync").update(
+        { symbols: this.getSelectedSymbols() },
         {
           query: {
             access_token: this.getAccessToken(),
@@ -59,20 +68,20 @@ export default {
         }
       );
     },
+    mixin_syncOutgoingUpdateSelectedFractions: async function () {
+      client.service("fractionSync").update(
+        { symbols: this.getSelectedFractions() },
+        {
+          query: {
+            access_token: this.getAccessToken(),
+          },
+        }
+      );
+    },
+
     mixin_sendHeartBeat: async function (exerciseId) {
       client.service("heartbeat").update(
         { ExerciseId: exerciseId },
-        {
-          query: {
-            access_token: this.getAccessToken(),
-          },
-        }
-      );
-    },
-    mixin_syncOutgoingUpdateSelectedSymbols: async function () {
-      console.debug(`sync updating selected symbols`);
-      client.service("symbolSync").update(
-        { symbols: this.getSelectedSymbols() },
         {
           query: {
             access_token: this.getAccessToken(),
@@ -134,9 +143,9 @@ export default {
       client.service("symbolSync").on("removed", (symbol) => {
         _store.dispatch("syncIncomingDeletedNotaion", symbol);
       });
-      client.service("selectedRectSync").on("updated", (selectedRect) => {
-        _store.dispatch("setSelectedRect", selectedRect);
-      });
+      // client.service("selectedRectSync").on("updated", (selectedRect) => {
+      //   _store.dispatch("setSelectedRect", selectedRect);
+      // });
       client.service("authorization").on("updated", (user) => {
         _store.dispatch("setUser", user);
       });

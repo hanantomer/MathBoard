@@ -42,10 +42,10 @@ export default {
     upsertSymbol(state, symbol) {
       let oldSymbol = helper.findSymbolById(state, symbol.id);
       if (!!oldSymbol) {
-        delete oldSymbol.x; // for reactivity
-        delete oldSymbol.y;
-        Vue.set(oldSymbol, "x", symbol.x);
-        Vue.set(oldSymbol, "y", symbol.y);
+        delete oldSymbol.col; // for reactivity
+        delete oldSymbol.row;
+        Vue.set(oldSymbol, "col", symbol.col);
+        Vue.set(oldSymbol, "row", symbol.row);
       } else {
         state.symbols.push(symbol);
       }
@@ -137,13 +137,13 @@ export default {
     upsertSymbol(context, symbol) {
       return dbSyncMixin.methods.upsertSymbol(symbol);
     },
-    syncIncomingAddedNotaion(context, symbol) {
+    syncIncomingAddedSymbol(context, symbol) {
       context.commit("addSymbol", symbol);
     },
-    syncIncomingDeletedNotaion(context, symbol) {
+    syncIncomingDeletedSymbol(context, symbol) {
       context.commit("removeSymbol", symbol);
     },
-    syncIncomingUpdatedNotaion(context, symbol) {
+    syncIncomingUpdatedSymbol(context, symbol) {
       context.commit("upsertSymbol", symbol);
     },
     removeSymbol(context, symbol) {

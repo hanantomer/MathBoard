@@ -1,2 +1,1 @@
-set PGPASSWORD=mermer
-"C:\Program Files\PostgreSQL\13\bin\psql" -U postgres -w -f C:\dev\MathBoard\math-db\seeders\user.sql math 
+C:\dev\MathBoard\math-db\seeders\sqlite3 c:\dev\MathBoard\math-server\math.db ".read C:\\dev\\MathBoard\\math-db\\seeders\\user.sql"

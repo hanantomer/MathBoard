@@ -1,6 +1,6 @@
 const dbUtil = require("math-db/src/dbUtil");
 
-class rectSyncService {
+class selectedRectSyncService {
   constructor(app) {
     this.app = app;
   }
@@ -22,4 +22,4 @@ class rectSyncService {
     }
   }
 }
-module.exports = rectSyncService;
+module.exports = selectedRectSyncService;

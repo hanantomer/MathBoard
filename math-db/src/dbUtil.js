@@ -60,6 +60,13 @@ module.exports = {
                 },
             },
         });
+        db.sequelize.models["Fraction"].destroy({
+            where: {
+                id: {
+                    [Op.in]: ids.split(","),
+                },
+            },
+        });
     },
 
     isAdmin: async function (userId, exerciseId) {

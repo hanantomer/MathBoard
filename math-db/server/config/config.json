@@ -1,10 +1,6 @@
 {
   "development": {
-    "username": "postgres",
-    "password": "mermer",
-    "database": "math",
-    "host": "127.0.0.1",
-    "port": "5432",
-    "dialect": "postgres"
+    "storage": "C:\\dev\\MathBoard\\math-server\\math.db",
+    "dialect": "sqlite"
   }
 }

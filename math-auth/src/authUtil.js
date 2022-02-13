@@ -36,9 +36,6 @@ module.exports = {
             access_token,
             clientSecretData.client_secret
         );
-        //        console.debug(
-        //            `authByLocalToken decodedToken:${JSON.stringify(decodedToken)}`
-        //        );
         // TODO - check expiration
         if (!userCache[decodedToken.email]) {
             userCache[decodedToken.email] = await db.sequelize.models[

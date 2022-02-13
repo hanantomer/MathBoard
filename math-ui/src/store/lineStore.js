@@ -63,7 +63,7 @@ export default {
       });
     },
     removeSelectedLines(context) {
-      // commit is called by syncIncomingDeletedNotaion
+      // commit is called by syncIncomingDeletedSymbol
       dbSyncMixin.methods.removeLines(context.getters.getSelectedLines);
     },
     selectLine(context, id) {

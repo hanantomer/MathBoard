@@ -78,15 +78,26 @@ export default {
 
       topLevelGroup.selectAll("rect").attr("stroke-opacity", opacity);
     },
-    mixin_selectRectByClickedPosition(position) {
+    mixin_getRectByClickedPosition(position) {
       let clickedRect = this.matrixMixin_findRect(position.x, position.y);
 
-      toglleSelectedRect(clickedRect);
-
-      return {
-        col: selectedRect.attributes.col.value,
-        row: selectedRect.parentNode.attributes.row.value,
-      };
+      if (clickedRect)
+        return {
+          col: clickedRect.attributes.col.value,
+          row: clickedRect.parentNode.attributes.row.value,
+        };
+    },
+    mixin_getFractionRectByClickedPosition(position) {
+      let clickedRect = this.matrixMixin_findRect(position.x, position.y);
+      let svgCoordinates = clickedRect.parentNode.parentNode.getBoundingClientRect();
+      let rectCoordinates = clickedRect.getBoundingClientRect();
+      if (clickedRect)
+        return {
+          isNonimnator:
+            position.y - rectCoordinates.y < rectCoordinates.height / 2,
+          col: clickedRect.attributes.col.value,
+          row: clickedRect.parentNode.attributes.row.value,
+        };
     },
     matrixMixin_selectRectByCoordinates(coordinates) {
       let rect = document

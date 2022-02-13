@@ -3,31 +3,39 @@ export default {
     return {};
   },
   methods: {
-    symbolMixin_setCurrentRect(e) {
-      // let normalizedClickedPosition = this.positionMixin_getClickedNoramalizedPosition(
-      //   {
-      //     x: e.clientX,
-      //     y: e.clientY,
-      //   }
-      // );
-      let selectedRect = this.mixin_selectRectByClickedPosition(
-        //normalizedClickedPosition
-        {
-          x: e.clientX,
-          y: e.clientY,
-        }
-      );
-      this.mixin_syncOutgoingSelectedRect(selectedRect);
+    symbolMixin_upsertSymbol(s) {
+      let symbol = {
+        ExerciseId: this.exerciseId,
+        value: s,
+        isNumber: !isNaN(parseInt(s)),
+      };
+
+      symbol = Object.assign(symbol, this.getSelectedRect());
+
+      this.$store
+        .dispatch("upsertSymbol", symbol)
+        .then((symbol) => {
+          this.mixin_syncOutgoingSymbolUpsert(symbol);
+
+          let nextRect = this.matrixMixin_selectNextRect();
+          if (!!nextRect) {
+            this.mixin_syncOutgoingSelectedRect(nextRect);
+          }
+        })
+        .catch((e) => {
+          console.error(e);
+        });
     },
+
     symbolMixin_removeSymbol: function (e) {
-      let rect = this.matrixMixin_findRect(e.clientX, e.clientY);
-      if (!rect) return;
+      let rectToremove = this.mixin_getRectByClickedPosition({
+        x: e.clientX,
+        y: e.clientY,
+      });
+      if (!rectToremove) return;
 
       let symbolAtRectPosition = this.$store.getters.getSymbolByRectCoordinates(
-        {
-          row: rect.parentNode.attributes.row.value,
-          col: rect.attributes.col.value,
-        }
+        rectToremove
       );
       if (!symbolAtRectPosition) return;
 

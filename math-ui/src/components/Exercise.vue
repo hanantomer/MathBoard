@@ -44,7 +44,14 @@
         dark
         ><v-icon>mdi-grid</v-icon>
       </v-btn>
-      <v-btn icon color="white" x-small fab dark>
+      <v-btn
+        icon
+        color="white"
+        x-small
+        fab
+        dark
+        @click="editManager_fractionButtonPressed"
+      >
         <v-icon>minimize</v-icon>
       </v-btn>
     </v-toolbar>
@@ -133,7 +140,7 @@ export default {
   components: { createAccessLinkDialog },
   props: ["exerciseId"],
   destroyed: function () {
-    window.removeEventListener("click", this.onclick);
+    //window.removeEventListener("click", this.onclick);
   },
   mounted: function () {
     this.svg = d3.select("#svg");
@@ -143,8 +150,8 @@ export default {
       .getBoundingClientRect();
 
     this.$loadExercise().then(() => {
-      window.addEventListener("click", this.onclick);
-      window.addEventListener("keyup", this.onkeyup);
+      //window.addEventListener("click", this.onclick);
+      window.addEventListener("keyup", this.editManager_keyUp);
     });
     this.matrixMixin_setMatrix();
   },
@@ -188,13 +195,16 @@ export default {
   computed: {
     ...mapState({
       symbols: (state) => {
-        return state.symbol.symbols;
+        return state.symbolStore.symbols;
+      },
+      fractions: (state) => {
+        return state.symbolStore.fractions;
       },
       students: (state) => {
-        return state.student.students;
+        return state.studentStore.students;
       },
-      selectedRect: (state) => state.symbol.selectedRect,
-      authorized: (state) => state.user.loggedUser.authorized,
+      selectedRect: (state) => state.symbolStore.selectedRect,
+      authorized: (state) => state.userStore.loggedUser.authorized,
     }),
   },
   watch: {
@@ -303,36 +313,6 @@ export default {
         link: link,
       });
     },
-    $addSymbol(s) {
-      let symbol = {
-        ExerciseId: this.exerciseId,
-        value: s,
-        isNumber: !isNaN(parseInt(s)),
-      };
-
-      symbol = Object.assign(symbol, this.getSelectedRect());
-
-      this.$store
-        .dispatch("upsertSymbol", symbol)
-        .then((symbol) => {
-          this.mixin_syncOutgoingSymbolAdding(symbol);
-
-          let nextRect = this.matrixMixin_selectNextRect();
-          if (!!nextRect) {
-            this.mixin_syncOutgoingSelectedRect(nextRect);
-          }
-        })
-        .catch((e) => {
-          console.error(e);
-        });
-    },
-    onkeyup: function (e) {
-      if (e.keyCode < 48) {
-        ///TODO - support special keys to move/delete
-      } else {
-        this.$addSymbol(e.key);
-      }
-    },
     $toggleStudentAuthorization: function (student) {
       this.toggleAuthorization(student.userId).then((authorization) => {
         this.mixin_syncOutgoingUserAthorization(
@@ -378,6 +358,6 @@ export default {
   background-color: dodgerblue;
 }
 .deleteMode {
-  cursor: URL("~@/assets/delete.jpg"), pointer;
+  cursor: URL("~@/assets/delete.jpg"), none !important;
 }
 </style>
