@@ -109,11 +109,8 @@ module.exports = {
       }
     },
     setCurrentRect: function (e) {
-      let selectedRect = this.mixin_getRectByClickedPosition({
-        x: e.clientX,
-        y: e.clientY,
-      });
-      this.mixin_syncOutgoingSelectedRect(selectedRect);
+      this.symbolMixin_setSelectedRect(e);
+      //this.mixin_syncOutgoingSelectedRect(selectedRect);
     },
     setCurrentFractionRect: function (e) {
       let selectedFractionRect = this.mixin_getFractionRectByClickedPosition({

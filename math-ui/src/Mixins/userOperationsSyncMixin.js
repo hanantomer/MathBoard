@@ -2,6 +2,7 @@ import io from "socket.io-client";
 import feathers from "@feathersjs/feathers";
 import socketio from "@feathersjs/socketio-client";
 import store from "../store/index.js";
+import { mapState } from "vuex";
 
 let socket = io("http://localhost:3030");
 let client = feathers();
@@ -9,6 +10,30 @@ client.configure(socketio(socket));
 let symbolCreateServcice = client.service("symbolSync");
 
 export default {
+  computed: {
+    ...mapState({
+      symbolsSync: (state) => {
+        return state.symbolStore.symbols;
+      },
+      fractionsSync: (state) => {
+        return state.symbolStore.fractions;
+      },
+      studentsSync: (state) => {
+        return state.studentStore.students;
+      },
+      selectedRectSync: (state) => state.symbolStore.selectedRect,
+      authorized: (state) => state.userStore.loggedUser.authorized,
+    }),
+  },
+  watch: {
+    handler(selectedRectSync) {
+      console.log("syn selected rect");
+    },
+    symbolsSync: (before, after) => {
+      if (before.length > after.length) {
+      }
+    },
+  },
   methods: {
     signedInWithGoogle: function () {
       return (

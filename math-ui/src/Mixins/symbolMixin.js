@@ -3,6 +3,13 @@ export default {
     return {};
   },
   methods: {
+    symbolMixin_setSelectedRect(e) {
+      let selectedRect = this.mixin_getRectByClickedPosition({
+        x: e.clientX,
+        y: e.clientY,
+      });
+      this.$store.dispatch("setSelectedRect", selectedRect);
+    },
     symbolMixin_upsertSymbol(s) {
       let symbol = {
         ExerciseId: this.exerciseId,
@@ -15,12 +22,13 @@ export default {
       this.$store
         .dispatch("upsertSymbol", symbol)
         .then((symbol) => {
-          this.mixin_syncOutgoingSymbolUpsert(symbol);
+          // TODO: sync via watcher
+          //this.mixin_syncOutgoingSymbolUpsert(symbol);
 
           let nextRect = this.matrixMixin_selectNextRect();
-          if (!!nextRect) {
-            this.mixin_syncOutgoingSelectedRect(nextRect);
-          }
+          //if (!!nextRect) {
+          //  this.mixin_syncOutgoingSelectedRect(nextRect);
+          //}
         })
         .catch((e) => {
           console.error(e);
