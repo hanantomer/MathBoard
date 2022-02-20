@@ -6,7 +6,7 @@ const helper = {
   //   return state.symbols.find((n) => n.id === id);
   // },
   findFractionByCoordinates: function (state, rect) {
-    return state.symbols.find((n) => n.col == rect.col && n.row == rect.row);
+    return state.fractions.find((n) => n.col == rect.col && n.row == rect.row);
   },
 };
 
@@ -31,26 +31,14 @@ export default {
     },
   },
   mutations: {
-    upsertFraction(state, fraction) {
-      ///TODO - remove fraction if all values are removed
-      let oldFraction = helper.findFractionById(state, fraction.id);
-      if (!!oldFraction) {
-        delete oldFraction.col; // for reactivity
-        delete oldFraction.row;
-        delete oldFraction.values;
-        Vue.set(oldFraction, "col", oldFraction.col);
-        Vue.set(oldFraction, "row", oldFraction.row);
-        Vue.set(oldFraction, "nominatorValues", oldFraction.nominatorValues);
-        Vue.set(
-          oldFraction,
-          "deNominatorValues",
-          oldFraction.deNominatorValues
-        );
-      } else {
+    saveFraction(state, fraction) {
+      let existingFraction = helper.findFractionByCoordinates(fraction);
+      if (!existingFraction) {
         state.fractions.push(fraction);
+      } else {
+        existingFraction = fraction;
       }
     },
-
     updateSelectedFractionCoordinates(state) {
       state.fractions
         .filter((fraction) => fraction.selected === true)
@@ -98,8 +86,31 @@ export default {
         });
       });
     },
-    upsertFraction(context, symbol) {
-      return dbSyncMixin.methods.upsertFraction(fraction);
+    saveFraction(context, symbol) {
+      let fraction = helper.findFractionByCoordinates(
+        context.state,
+        context.rootState.rectStore.selectedRect
+      );
+      if (!fraction) {
+        let value = { value: symbol };
+        fraction = { ...value, ...context.rootState.rectStore.selectedRect };
+      }
+      let fractionPart =
+        context.rootState.rectStore.selectedFractionPart.fractionPosition;
+
+      if (fraction.nominatorValue == null) fraction.nominatorValue = "";
+      if (fraction.denominatorValue == null) fraction.denominatorValue = "";
+
+      if (fractionPart == "TopLeft" || fractionPart == "TopRight") {
+        fraction.nominatorValue += symbol;
+      } else {
+        fraction.denominatorValue += symbol;
+      }
+
+      return dbSyncMixin.methods.saveFraction(fraction).then((fraction) => {
+        context.commit("saveFraction", fraction);
+        return fraction;
+      });
     },
     syncIncomingAddedFraction(context, fraction) {
       context.commit("addFraction", fraction);
@@ -108,7 +119,7 @@ export default {
       context.commit("removeFraction", fraction);
     },
     syncIncomingUpdatedFraction(context, fraction) {
-      context.commit("upsertFraction", fraction);
+      context.commit("saveFraction", fraction);
     },
     removeFraction(context, fraction) {
       dbSyncMixin.methods.removeSymbol(fraction);

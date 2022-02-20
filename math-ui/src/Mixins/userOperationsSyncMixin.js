@@ -2,38 +2,12 @@ import io from "socket.io-client";
 import feathers from "@feathersjs/feathers";
 import socketio from "@feathersjs/socketio-client";
 import store from "../store/index.js";
-import { mapState } from "vuex";
 
 let socket = io("http://localhost:3030");
 let client = feathers();
 client.configure(socketio(socket));
-let symbolCreateServcice = client.service("symbolSync");
 
 export default {
-  computed: {
-    ...mapState({
-      symbolsSync: (state) => {
-        return state.symbolStore.symbols;
-      },
-      fractionsSync: (state) => {
-        return state.symbolStore.fractions;
-      },
-      studentsSync: (state) => {
-        return state.studentStore.students;
-      },
-      selectedRectSync: (state) => state.symbolStore.selectedRect,
-      authorized: (state) => state.userStore.loggedUser.authorized,
-    }),
-  },
-  watch: {
-    handler(selectedRectSync) {
-      console.log("syn selected rect");
-    },
-    symbolsSync: (before, after) => {
-      if (before.length > after.length) {
-      }
-    },
-  },
   methods: {
     signedInWithGoogle: function () {
       return (
@@ -49,22 +23,12 @@ export default {
           : window.$cookies.get("access_token")
       }`;
     },
-    // mixin_syncOutgoingSelectedRect: async function (selectedRect) {
-    //   selectedRect.ExerciseId = this.exerciseId;
-    //   console.debug(`sync selected rect ${JSON.stringify(selectedRect)}`);
-    //   client.service("selectedRectSync").update(
-    //     null,
-    //     { selectedRect: selectedRect },
-    //     {
-    //       query: {
-    //         access_token: this.getAccessToken(),
-    //       },
-    //     }
-    //   );
-    // },
-    mixin_syncOutgoingNotationUpsert: async function (notation) {
-      notationCreateServcice.create(
-        { notation: notation },
+    mixin_syncOutgoingSelectedRect: async function (selectedRect) {
+      selectedRect.ExerciseId = this.exerciseId;
+      console.debug(`sync selected rect ${JSON.stringify(selectedRect)}`);
+      client.service("selectedRectSync").update(
+        null,
+        { selectedRect: selectedRect },
         {
           query: {
             access_token: this.getAccessToken(),
@@ -72,9 +36,9 @@ export default {
         }
       );
     },
-    mixin_syncOutgoingNotationDeletion: async function (notation) {
-      client.service("notationSync").remove(
-        { notation: notation },
+    mixin_syncOutgoingSymbolCreate: async function (symbol) {
+      client.service("symbolSync").create(
+        { symbol: symbol },
         {
           query: {
             access_token: this.getAccessToken(),
@@ -82,7 +46,16 @@ export default {
         }
       );
     },
-
+    mixin_syncOutgoingSymbolRemove: async function (symbol) {
+      client.service("symbolSync").remove(
+        { symbol: symbol },
+        {
+          query: {
+            access_token: this.getAccessToken(),
+          },
+        }
+      );
+    },
     mixin_syncOutgoingUpdateSelectedSymbols: async function () {
       client.service("symbolSync").update(
         { symbols: this.getSelectedSymbols() },
@@ -160,23 +133,33 @@ export default {
 
       let _store = store;
       client.service("symbolSync").on("created", (symbol) => {
-        _store.dispatch("syncIncomingAddedNotaion", symbol);
+        if (symbol.UserId !== this.getUser().id) {
+          _store.dispatch("syncIncomingAddedSymbol", symbol);
+        }
       });
       client.service("symbolSync").on("updated", (symbol) => {
-        _store.dispatch("syncIncomingUpdatedNotaion", symbol);
+        if (symbol.UserId !== this.getUser().id) {
+          _store.dispatch("syncIncomingUpdatedSymbol", symbol);
+        }
       });
       client.service("symbolSync").on("removed", (symbol) => {
-        _store.dispatch("syncIncomingDeletedNotaion", symbol);
+        if (symbol.UserId !== this.getUser().id) {
+          _store.dispatch("syncIncomingDeletedSymbol", symbol);
+        }
       });
-      // client.service("selectedRectSync").on("updated", (selectedRect) => {
-      //   _store.dispatch("setSelectedRect", selectedRect);
-      // });
+      client.service("selectedRectSync").on("updated", (selectedRect) => {
+        if (selectedRect.UserId !== this.getUser().id) {
+          _store.dispatch("setSelectedRect", selectedRect);
+        }
+      });
       client.service("authorization").on("updated", (user) => {
         _store.dispatch("setUser", user);
       });
       if (isAdmin) {
         client.service("heartbeat").on("updated", (user) => {
-          _store.dispatch("updateStudentHeartbeat", user);
+          if (symbol.UserId !== this.getUser().id) {
+            _store.dispatch("updateStudentHeartbeat", user);
+          }
         });
       }
     },

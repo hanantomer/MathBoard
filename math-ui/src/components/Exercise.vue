@@ -44,16 +44,22 @@
         dark
         ><v-icon>mdi-grid</v-icon>
       </v-btn>
-      <v-btn
-        icon
-        color="white"
-        x-small
-        fab
-        dark
-        @click="editManager_fractionButtonPressed"
+      <v-btn-toggle
+        v-model="togglefractionPosition"
+        background-color="transparent"
+        active-class="deleteActive"
       >
-        <v-icon>minimize</v-icon>
-      </v-btn>
+        <v-btn
+          icon
+          color="white"
+          x-small
+          fab
+          dark
+          @click="editManager_fractionButtonPressed"
+        >
+          <v-icon>mdi-fraction-one-half</v-icon>
+        </v-btn>
+      </v-btn-toggle>
     </v-toolbar>
     <createAccessLinkDialog
       v-model="isAccessLinkDialogOpen"
@@ -125,7 +131,6 @@
 import * as d3 from "d3";
 import { mapState } from "vuex";
 import { mapGetters } from "vuex";
-import { mapActions } from "vuex";
 import matrixOverlayMixin from "../Mixins/matrixOverlayMixin";
 import positionMixin from "../Mixins/positionMixin";
 import cursorMixin from "../Mixins/cursorMixin";
@@ -133,14 +138,16 @@ import selectionMixin from "../Mixins/selectionMixin";
 //import lineDrawingMixin from "../Mixins/lineDrawingMixin";
 import editManager from "../Mixins/editManager";
 import symbolMixin from "../Mixins/symbolMixin";
+import fractionMixin from "../Mixins/fractionMixin";
 import userOperationsSyncMixin from "../Mixins/userOperationsSyncMixin";
 import createAccessLinkDialog from "./CreateAccessLinkDialog.vue";
+import { mdiFractionOneHalf } from "@mdi/js";
 
 export default {
   components: { createAccessLinkDialog },
   props: ["exerciseId"],
   destroyed: function () {
-    //window.removeEventListener("click", this.onclick);
+    window.removeEventListener("keyup", this.editManager_keyUp);
   },
   mounted: function () {
     this.svg = d3.select("#svg");
@@ -158,6 +165,7 @@ export default {
   data: function () {
     return {
       toggleDeleteMode: 1,
+      togglefractionPosition: 1,
       boundingClientRet: null,
       isAdmin: false,
       isAccessLinkDialogOpen: false,
@@ -191,6 +199,7 @@ export default {
     userOperationsSyncMixin,
     symbolMixin,
     editManager,
+    fractionMixin,
   ],
   computed: {
     ...mapState({
@@ -203,75 +212,21 @@ export default {
       students: (state) => {
         return state.studentStore.students;
       },
-      selectedRect: (state) => state.symbolStore.selectedRect,
       authorized: (state) => state.userStore.loggedUser.authorized,
     }),
   },
   watch: {
     $route: "$loadExercise",
-    selectedRect: {
-      handler(selectedRect) {
-        this.matrixMixin_selectRectByCoordinates(selectedRect);
-      },
-    },
     symbols: {
       deep: true,
       handler(symbols) {
-        this.svg
-          .selectAll("text")
-          .data(symbols)
-          .join(
-            (enter) => {
-              return enter
-                .append("text")
-                .attr("id", (n) => {
-                  return n.id;
-                })
-                .attr("x", (n) => {
-                  return this.$getXpos(n.col);
-                })
-                .attr("y", (n) => {
-                  return this.$getYpos(n.row);
-                })
-                .attr("dy", ".45em")
-                .text((n) => {
-                  return n.value;
-                });
-            },
-            (update) => {
-              return update
-                .attr("fill", (datum, pos, elements) => {
-                  return datum.selected ? "red" : "black";
-                })
-                .attr("x", (n) => {
-                  return this.$getXpos(n.col);
-                })
-                .attr("y", (n) => {
-                  return this.$getYpos(n.row);
-                })
-                .text((n) => {
-                  return n.value;
-                });
-            },
-            (exit) => {
-              return exit
-                .transition()
-                .duration(10)
-                .attr("r", 0)
-                .style("opacity", 0)
-                .attr("cx", 1000)
-                .on("end", function () {
-                  d3.select(this).remove();
-                });
-            }
-          );
+        this.symbolMixin_refreshSymbols(symbols);
       },
       deep: false,
     },
   },
   methods: {
     ...mapGetters({
-      getSelectedRect: "getSelectedRect",
       isAnySymbolSelected: "isAnySymbolSelected",
       getSelectedSymbols: "getSelectedSymbols",
       getCurrentExercise: "getCurrentExercise",

@@ -3,25 +3,15 @@ export default {
     return {};
   },
   methods: {
-    fractionMixin_upsertFraction(f) {
-      let fraction = {
-        ExerciseId: this.exerciseId,
-        nominatorValues: f.nominatorValues,
-        deNominatorValues: f.deNominatorValues,
-      };
-
-      //TODO remov symbol type number or whatever
-
-      symbol = Object.assign(symbol, this.getSelectedRect());
-
+    fractionMixin_saveFraction(symbol) {
       this.$store
-        .dispatch("upsertFraction", symbol)
-        .then((symbol) => {
+        .dispatch("saveFraction", symbol)
+        .then((fraction) => {
           this.mixin_syncOutgoingFractionAdding(symbol);
 
-          let nextRect = this.matrixMixin_selectNextRect();
+          let nextRect = this.matrixMixin_selectNextFractionRect();
           if (!!nextRect) {
-            this.mixin_syncOutgoingSelectedRect(nextRect);
+            this.mixin_syncOutgoingSelectedFractionRect(nextRect);
           }
         })
         .catch((e) => {

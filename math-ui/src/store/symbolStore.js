@@ -16,14 +16,10 @@ export default {
   },
   state: {
     symbols: [],
-    selectedRect: { x: 10, y: 20 },
   },
   getters: {
     getSymbols: (state) => {
       return state.symbols;
-    },
-    getSelectedRect: (state) => {
-      return state.selectedRect;
     },
     // at least one symbol is selected
     isAnySymbolSelected(state) {
@@ -39,7 +35,7 @@ export default {
     },
   },
   mutations: {
-    upsertSymbol(state, symbol) {
+    saveSymbol(state, symbol) {
       let oldSymbol = helper.findSymbolById(state, symbol.id);
       if (!!oldSymbol) {
         delete oldSymbol.col; // for reactivity
@@ -50,11 +46,6 @@ export default {
         state.symbols.push(symbol);
       }
     },
-
-    setSelectedRect(state, selectedRect) {
-      Vue.set(state, "selectedRect", selectedRect);
-    },
-
     addSymbol(state, symbol) {
       Vue.set(symbol, "selected", false);
       let oldSymbol = helper.findSymbolByCoordinates(state, symbol);
@@ -134,8 +125,11 @@ export default {
         });
       });
     },
-    upsertSymbol(context, symbol) {
-      return dbSyncMixin.methods.upsertSymbol(symbol);
+    addSymbol(context, symbol) {
+      dbSyncMixin.methods.saveSymbol(symbol).then((symbol) => {
+        context.commit("addSymbol", symbol);
+        return symbol;
+      });
     },
     syncIncomingAddedSymbol(context, symbol) {
       context.commit("addSymbol", symbol);
@@ -144,10 +138,12 @@ export default {
       context.commit("removeSymbol", symbol);
     },
     syncIncomingUpdatedSymbol(context, symbol) {
-      context.commit("upsertSymbol", symbol);
+      context.commit("saveSymbol", symbol);
     },
     removeSymbol(context, symbol) {
-      dbSyncMixin.methods.removeSymbol(symbol);
+      dbSyncMixin.methods
+        .removeSymbol(symbol)
+        .then(() => context.commit("removeSymbol", symbol));
     },
     selectSymbol(context, id) {
       context.commit("selectSymbol", id);
@@ -160,13 +156,6 @@ export default {
     },
     updateSelectedSymbolCoordinates(context, payload) {
       context.commit("updateSelectedSymbolCoordinates", payload);
-    },
-    setSelectedRect(context, payload) {
-      context.commit("setSelectedRect", payload);
-    },
-    setDimensions(context, payload) {
-      context.commit("setNumberOfCols", payload.numberOfCols);
-      context.commit("setNumberOfRows", payload.numberOfRows);
     },
   },
 };

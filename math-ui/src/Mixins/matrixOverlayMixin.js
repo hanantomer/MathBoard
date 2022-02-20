@@ -2,20 +2,57 @@ import * as d3 from "d3";
 
 /// TODO encapsulate in data
 var opacity = 1;
-var opacity;
-var colsNum = 50;
-var rowsNum = 50;
-var rectSize = 20;
+var colsNum = 25;
+var rowsNum = 25;
+var rectSize = 40;
 var matrix = [];
 var topLevelGroup;
-var selectedRect = null;
+var prevSelectedRect = null;
+var SelectedFractionRectId = "SelectedFractionRectId";
 var selectedRecColor = "lightcyan";
+const svgns = "http://www.w3.org/2000/svg";
 
-function toglleSelectedRect(clickedRect) {
-  if (!!selectedRect) selectedRect.style.fill = "";
-  selectedRect = clickedRect;
+function toggleSelectedRect(clickedRect, coordinates) {
+  if (!!prevSelectedRect) prevSelectedRect.style.fill = "";
+  prevSelectedRect = clickedRect;
+
+  if (!!document.getElementById(SelectedFractionRectId))
+    document.getElementById(SelectedFractionRectId).remove();
+
   clickedRect.style.fill =
     clickedRect.style.fill == selectedRecColor ? "" : selectedRecColor;
+
+  if (!!coordinates.fractionPosition) {
+    document.remove;
+    let fractionRect = document.createElementNS(svgns, "rect");
+    fractionRect.setAttribute("id", SelectedFractionRectId);
+    fractionRect.setAttribute("width", rectSize / 2);
+    fractionRect.setAttribute("height", rectSize / 2);
+    fractionRect.setAttribute("stroke-opacity", opacity);
+    fractionRect.setAttribute("fill", "transparent");
+    fractionRect.style.stroke = "lightgray";
+
+    if (
+      coordinates.fractionPosition === "TopLeft" ||
+      coordinates.fractionPosition === "BottomLeft"
+    ) {
+      fractionRect.setAttribute("x", clickedRect.x.baseVal.value);
+    } else {
+      fractionRect.setAttribute(
+        "x",
+        clickedRect.x.baseVal.value + rectSize / 2
+      );
+    }
+
+    if (
+      coordinates.fractionPosition === "BottomLeft" ||
+      coordinates.fractionPosition === "BottomRight"
+    ) {
+      fractionRect.setAttribute("y", rectSize / 2);
+    }
+
+    clickedRect.parentNode.appendChild(fractionRect);
+  }
 }
 
 export default {
@@ -89,22 +126,32 @@ export default {
     },
     mixin_getFractionRectByClickedPosition(position) {
       let clickedRect = this.matrixMixin_findRect(position.x, position.y);
-      let svgCoordinates = clickedRect.parentNode.parentNode.getBoundingClientRect();
       let rectCoordinates = clickedRect.getBoundingClientRect();
-      if (clickedRect)
+      if (clickedRect) {
+        let isUpperPartClicked =
+          position.y - rectCoordinates.y < rectCoordinates.height / 2;
+        let isLeftPartClicked =
+          position.x - rectCoordinates.x < rectCoordinates.width / 2;
+
         return {
-          isNonimnator:
-            position.y - rectCoordinates.y < rectCoordinates.height / 2,
+          fractionPosition: isUpperPartClicked
+            ? isLeftPartClicked
+              ? "TopLeft"
+              : "TopRight"
+            : isLeftPartClicked
+            ? "BottomLeft"
+            : "BottomRight",
           col: clickedRect.attributes.col.value,
           row: clickedRect.parentNode.attributes.row.value,
         };
+      }
     },
     matrixMixin_selectRectByCoordinates(coordinates) {
       let rect = document
         .querySelector(`g[row="${coordinates.row}"]`)
         .querySelector(`rect[col="${coordinates.col}"]`);
 
-      toglleSelectedRect(rect);
+      toggleSelectedRect(rect, coordinates);
     },
 
     matrixMixin_getRectSize() {
@@ -112,8 +159,8 @@ export default {
     },
 
     matrixMixin_selectNextRect() {
-      let col = parseInt(selectedRect.attributes.col.value);
-      let row = parseInt(selectedRect.parentNode.attributes.row.value);
+      let col = parseInt(prevSelectedRect.attributes.col.value);
+      let row = parseInt(prevSelectedRect.parentNode.attributes.row.value);
       if (col != colsNum) {
         col += 1;
       } else {

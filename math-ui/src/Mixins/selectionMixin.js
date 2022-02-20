@@ -1,3 +1,5 @@
+import { mapGetters } from "vuex";
+import { mapState } from "vuex";
 export default {
   data: function () {
     return {
@@ -42,8 +44,47 @@ export default {
         "px"
       );
     },
+    ...mapState({
+      selectedRect: (state) => state.rectStore.selectedRect,
+    }),
+  },
+  watch: {
+    selectedRect: {
+      handler(selectedRect) {
+        this.matrixMixin_selectRectByCoordinates(selectedRect);
+      },
+    },
   },
   methods: {
+    ...mapGetters({
+      getSelectedRect: "getSelectedRect",
+    }),
+    setSelectedRect: function (rect) {
+      this.$store
+        .dispatch("setSelectedRect", rect)
+        .then((rect) => {
+          this.mixin_syncOutgoingSelectedRect(this.getSelectedRect());
+        })
+        .catch((e) => {
+          console.error(e);
+        });
+    },
+    selectionMixin_setSelectedRect(e) {
+      let selectedRect = this.mixin_getRectByClickedPosition({
+        x: e.clientX,
+        y: e.clientY,
+      });
+      this.setSelectedRect(selectedRect);
+    },
+
+    selectionMixin_setSelectedFractionRect(e) {
+      let selectedFractionRect = this.mixin_getFractionRectByClickedPosition({
+        x: e.clientX,
+        y: e.clientY,
+      });
+      this.setSelectedRect(selectedFractionRect);
+    },
+
     // extend or shrink selection area
     selectionMixinUpdateSelectionArea: function (e) {
       this.mixin_hideCursor();
@@ -95,9 +136,6 @@ export default {
     selectionMixin_endMoveSelection: function (e) {
       this.dragPostion.x = 0;
       this.dragPostion.y = 0;
-      this.$store
-        .dispatch("updateSelectedSymbolCoordinates")
-        .then(() => this.mixin_syncOutgoingUpdateSelectedSymbols());
     },
     selectionMixin_endSelect: function (e) {
       if (this.selectionPosition.x2 != this.selectionPosition.x1) {

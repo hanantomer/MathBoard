@@ -56,6 +56,14 @@ async function getSymbolByCoordinates(row, col) {
     handleError(error);
   }
 }
+async function getFractionByCoordinates(row, col) {
+  try {
+    let res = await axiosInstnce.get("/fraction?row=" + row + "&col=" + col);
+    return !!res ? res.data[0] : null;
+  } catch (error) {
+    handleError(error);
+  }
+}
 
 module.exports = {
   methods: {
@@ -118,8 +126,7 @@ module.exports = {
       res = await axiosInstnce.put("/symbols/" + symbol.id, symbol);
       return res ? res.data : null;
     },
-
-    upsertSymbol: async function (symbol) {
+    saveSymbol: async function (symbol) {
       let symbolAtCoordinates = await getSymbolByCoordinates(
         symbol.row,
         symbol.col
@@ -137,13 +144,6 @@ module.exports = {
 
       return res ? res.data : null;
     },
-    // removeSymbols: async function (symbols) {
-    //   try {
-    //     axiosInstnce.delete("/symbols/" + symbols.map((s) => s.id).join(","));
-    //   } catch (error) {
-    //     handleError(error);
-    //   }
-    // },
     removeSymbol: async function (symbol) {
       try {
         axiosInstnce.delete("/symbols/" + symbol.id);
@@ -175,6 +175,24 @@ module.exports = {
       } catch (error) {
         handleError(error);
       }
+    },
+    saveFraction: async function (fraction) {
+      let fractionAtCoordinates = await getFractionByCoordinates(
+        fraction.row,
+        fraction.col
+      );
+
+      let res = null;
+      if (!!fractionAtCoordinates) {
+        res = await axiosInstnce.put(
+          "/fractions/" + fractionAtCoordinates.id,
+          fraction
+        );
+      } else {
+        res = await axiosInstnce.post("/fractions", fraction);
+      }
+
+      return res ? res.data : null;
     },
   },
 };

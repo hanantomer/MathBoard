@@ -1,30 +1,21 @@
 const feathers = require("@feathersjs/feathers");
 const socketio = require("@feathersjs/socketio");
-const NotationSyncService = require("./notationSyncService");
-const AuthenticationService = require("./authenticationService");
-const HeartbeatService = require("./heartbeatService");
-const AuthorizationService = require("./authorizationService");
 const constants = require("./constants");
 
 const app = feathers();
 app.configure(socketio());
 
-app.use("authorization", new AuthorizationService(app));
-app.use("heartbeat", new HeartbeatService(app));
-app.use("authentication", new AuthenticationService(app));
-app.use("selectedRectSync", new SelectedRectSyncService(app));
-app.use("notationSync", new NotationSyncService(app));
+const AuthorizationService = require("./authorizationService");
+const AuthenticationService = require("./authenticationService");
+const HeartbeatService = require("./heartbeatService");
+const SelectedRectSyncService = require("./selectedRectSyncService");
+const SymbolSyncService = require("./symbolSyncService");
 
-app.service("heartbeat").publish("updated", (heartbeat, ctx) => {
-  return [
-    app.channel(
-      constants.EXERCISE_CHANNEL_PREFIX +
-        heartbeat.exerciseId +
-        constants.USER_CHANNEL_PREFIX +
-        heartbeat.userId
-    ),
-  ];
-});
+app.use("authorization", new AuthorizationService(app));
+app.use("authentication", new AuthenticationService(app));
+app.use("heartbeat", new HeartbeatService(app));
+app.use("selectedRectSync", new SelectedRectSyncService(app));
+app.use("symbolSync", new SymbolSyncService(app));
 
 app.service("authorization").publish("updated", (authorization, ctx) => {
   return [
@@ -37,41 +28,48 @@ app.service("authorization").publish("updated", (authorization, ctx) => {
   ];
 });
 
-app.service("notationSync").publish("created", (notation, ctx) => {
-  console.debug(
-    `publish notation created data: ${JSON.stringify(
-      notation
-    )} to channel: ${notation.ExerciseId.toString()}`
-  );
-  return [app.channel(constants.EXERCISE_CHANNEL_PREFIX + notation.ExerciseId)];
+app.service("authentication").publish("created", (authentication, ctx) => {
+  return [
+    app.channel(
+      constants.EXERCISE_CHANNEL_PREFIX +
+        authentication.exerciseId +
+        constants.USER_CHANNEL_PREFIX +
+        authentication.userId
+    ),
+  ];
 });
 
-app.service("notationSync").publish("updated", (notaion, ctx) => {
-  console.debug(
-    `publish symbol updated data: ${JSON.stringify(
-      notaion
-    )} to channel: ${notaion.ExerciseId.toString()}`
-  );
-  return [app.channel(constants.EXERCISE_CHANNEL_PREFIX + notaion.ExerciseId)];
+app.service("heartbeat").publish("updated", (heartbeat, ctx) => {
+  return [
+    app.channel(
+      constants.EXERCISE_CHANNEL_PREFIX +
+        heartbeat.exerciseId +
+        constants.USER_CHANNEL_PREFIX +
+        heartbeat.userId
+    ),
+  ];
 });
 
-app.service("notaionSync").publish("removed", (notaion, ctx) => {
+app.service("selectedRectSync").publish("updated", (rect, ctx) => {
   console.debug(
-    `publish symbol removed data: ${JSON.stringify(
-      notaion
-    )} to channel: ${notaion.ExerciseId.toString()}`
+    `publish selected rect updated data: ${JSON.stringify(
+      rect
+    )} to channel: ${rect.ExerciseId.toString()}`
   );
-  return [app.channel(constants.EXERCISE_CHANNEL_PREFIX + notaion.ExerciseId)];
+  return [app.channel(constants.EXERCISE_CHANNEL_PREFIX + rect.ExerciseId)];
 });
 
-// app.service("selectedRectSync").publish("updated", (rect, ctx) => {
-//   console.debug(
-//     `publish selected rect updated data: ${JSON.stringify(
-//       rect
-//     )} to channel: ${rect.ExerciseId.toString()}`
-//   );
-//   return [app.channel(constants.EXERCISE_CHANNEL_PREFIX + rect.ExerciseId)];
-// });
+app.service("symbolSync").publish("created", (symbol, ctx) => {
+  return [app.channel(constants.EXERCISE_CHANNEL_PREFIX + symbol.ExerciseId)];
+});
+
+app.service("symbolSync").publish("updated", (symbol, ctx) => {
+  return [app.channel(constants.EXERCISE_CHANNEL_PREFIX + symbol.ExerciseId)];
+});
+
+app.service("symbolSync").publish("removed", (symbol, ctx) => {
+  return [app.channel(constants.EXERCISE_CHANNEL_PREFIX + symbol.ExerciseId)];
+});
 
 const PORT = process.env.PORT || 3030;
 app

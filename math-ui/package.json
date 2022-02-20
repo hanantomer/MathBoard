@@ -10,6 +10,10 @@
   "dependencies": {
     "@feathersjs/feathers": "^4.5.11",
     "@feathersjs/socketio-client": "^4.5.11",
+    "@fortawesome/free-regular-svg-icons": "^6.0.0",
+    "@fortawesome/free-solid-svg-icons": "^6.0.0",
+    "@fortawesome/vue-fontawesome": "^2.0.6",
+    "@mdi/js": "^6.5.95",
     "axios": "^0.21.1",
     "core-js": "^3.6.5",
     "d3": "^6.3.0",
