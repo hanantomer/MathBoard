@@ -58,7 +58,7 @@ async function getSymbolByCoordinates(row, col) {
 }
 async function getFractionByCoordinates(row, col) {
   try {
-    let res = await axiosInstnce.get("/fraction?row=" + row + "&col=" + col);
+    let res = await axiosInstnce.get("/fractions?row=" + row + "&col=" + col);
     return !!res ? res.data[0] : null;
   } catch (error) {
     handleError(error);
@@ -176,6 +176,15 @@ module.exports = {
         handleError(error);
       }
     },
+    getAllFractions: async function (exerciseId) {
+      try {
+        let res = await axiosInstnce.get("/fractions?exerciseId=" + exerciseId);
+        return res.data;
+      } catch (error) {
+        handleError(error);
+      }
+    },
+
     saveFraction: async function (fraction) {
       let fractionAtCoordinates = await getFractionByCoordinates(
         fraction.row,

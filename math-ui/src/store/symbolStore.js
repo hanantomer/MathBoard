@@ -56,15 +56,6 @@ export default {
         state.symbols.push(symbol);
       }
     },
-
-    addLine(state, line) {
-      Vue.set(line, "selected", false);
-      let oldLine = helper.findLineByCoordinates(state, line);
-      if (!oldLine) {
-        state.lines.push(line);
-      }
-    },
-
     removeSymbol(state, symbol) {
       state.symbols = state.symbols.filter(
         (n) => !(n.col === symbol.col && n.row === symbol.row)
@@ -108,15 +99,6 @@ export default {
     },
   },
   actions: {
-    async loadSymbols(context, exerciseId) {
-      context.commit("removeAllLines");
-      dbSyncMixin.methods.getAllLines(exerciseId).then((liness) => {
-        symbols.forEach((line) => {
-          context.commit("addLine", line);
-        });
-      });
-    },
-
     async loadSymbols(context, exerciseId) {
       context.commit("removeAllSymbols");
       dbSyncMixin.methods.getAllSymbols(exerciseId).then((symbols) => {

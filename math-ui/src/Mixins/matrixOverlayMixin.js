@@ -1,64 +1,71 @@
 import * as d3 from "d3";
 
-/// TODO encapsulate in data
-var opacity = 1;
-var colsNum = 25;
-var rowsNum = 25;
-var rectSize = 40;
-var matrix = [];
-var topLevelGroup;
-var prevSelectedRect = null;
-var SelectedFractionRectId = "SelectedFractionRectId";
-var selectedRecColor = "lightcyan";
-const svgns = "http://www.w3.org/2000/svg";
-
-function toggleSelectedRect(clickedRect, coordinates) {
-  if (!!prevSelectedRect) prevSelectedRect.style.fill = "";
-  prevSelectedRect = clickedRect;
-
-  if (!!document.getElementById(SelectedFractionRectId))
-    document.getElementById(SelectedFractionRectId).remove();
-
-  clickedRect.style.fill =
-    clickedRect.style.fill == selectedRecColor ? "" : selectedRecColor;
-
-  if (!!coordinates.fractionPosition) {
-    document.remove;
-    let fractionRect = document.createElementNS(svgns, "rect");
-    fractionRect.setAttribute("id", SelectedFractionRectId);
-    fractionRect.setAttribute("width", rectSize / 2);
-    fractionRect.setAttribute("height", rectSize / 2);
-    fractionRect.setAttribute("stroke-opacity", opacity);
-    fractionRect.setAttribute("fill", "transparent");
-    fractionRect.style.stroke = "lightgray";
-
-    if (
-      coordinates.fractionPosition === "TopLeft" ||
-      coordinates.fractionPosition === "BottomLeft"
-    ) {
-      fractionRect.setAttribute("x", clickedRect.x.baseVal.value);
-    } else {
-      fractionRect.setAttribute(
-        "x",
-        clickedRect.x.baseVal.value + rectSize / 2
-      );
-    }
-
-    if (
-      coordinates.fractionPosition === "BottomLeft" ||
-      coordinates.fractionPosition === "BottomRight"
-    ) {
-      fractionRect.setAttribute("y", rectSize / 2);
-    }
-
-    clickedRect.parentNode.appendChild(fractionRect);
-  }
-}
-
 export default {
+  data: function () {
+    return {
+      opacity: 1,
+      colsNum: 25,
+      rowsNum: 25,
+      rectSize: 40,
+      matrix: [],
+      topLevelGroup: null,
+      prevSelectedRect: null,
+      prevFractionPosition: "TopLeft",
+      SelectedFractionRectId: "SelectedFractionRectId",
+      selectedRecColor: "lightcyan",
+      borderColor: "lightgray",
+      svgns: "http://www.w3.org/2000/svg",
+    };
+  },
   methods: {
+    createFractionRect(clickedCoordinates, clickedRect) {
+      let fractionRect = document.createElementNS(this.svgns, "rect");
+      fractionRect.setAttribute("id", this.SelectedFractionRectId);
+      fractionRect.setAttribute("width", this.rectSize / 2);
+      fractionRect.setAttribute("height", this.rectSize / 2);
+      fractionRect.setAttribute("stroke-opacity", this.opacity);
+      fractionRect.setAttribute("fill", "transparent");
+      fractionRect.style.stroke = this.borderColor;
+
+      if (
+        clickedCoordinates.fractionPosition === "TopLeft" ||
+        clickedCoordinates.fractionPosition === "BottomLeft"
+      ) {
+        fractionRect.setAttribute("x", clickedRect.x.baseVal.value);
+      } else {
+        fractionRect.setAttribute(
+          "x",
+          clickedRect.x.baseVal.value + this.rectSize / 2
+        );
+      }
+
+      if (
+        clickedCoordinates.fractionPosition === "BottomLeft" ||
+        clickedCoordinates.fractionPosition === "BottomRight"
+      ) {
+        fractionRect.setAttribute("y", this.rectSize / 2);
+      }
+
+      clickedRect.parentNode.appendChild(fractionRect);
+    },
+    toggleSelectedRect(clickedRect, clickedCoordinates) {
+      if (!!this.prevSelectedRect) this.prevSelectedRect.style.fill = "";
+      this.prevSelectedRect = clickedRect;
+
+      if (!!document.getElementById(this.SelectedFractionRectId))
+        document.getElementById(this.SelectedFractionRectId).remove();
+
+      clickedRect.style.fill =
+        clickedRect.style.fill == this.selectedRecColor
+          ? ""
+          : this.selectedRecColor;
+
+      if (!!clickedCoordinates.fractionPosition) {
+        this.createFractionRect(clickedCoordinates, clickedRect);
+      }
+    },
     //https://stackoverflow.com/questions/30755696/get-svg-object-s-at-given-coordinates
-    matrixMixin_findRect: function (x, y) {
+    matrixMixin_findRect(x, y) {
       var elements = [],
         current = document.elementFromPoint(x, y);
       while (current && current.nearestViewportElement) {
@@ -73,15 +80,15 @@ export default {
       });
       return elements.find((e) => e.tagName == "rect");
     },
-    matrixMixin_setMatrix: function () {
-      for (var row = 0; row < rowsNum; row++) {
-        matrix.push(d3.range(colsNum));
+    matrixMixin_setMatrix() {
+      for (var row = 0; row < this.rowsNum; row++) {
+        this.matrix.push(d3.range(this.colsNum));
       }
 
-      topLevelGroup = d3
+      this.topLevelGroup = d3
         .select("svg")
         .selectAll("g")
-        .data(matrix)
+        .data(this.matrix)
         .enter()
         .append("g")
         .attr("row", (d, i) => {
@@ -89,31 +96,31 @@ export default {
         })
         .lower()
         .attr("transform", (d, i) => {
-          return "translate(0, " + rectSize * i + ")";
+          return "translate(0, " + this.rectSize * i + ")";
         });
 
-      topLevelGroup
+      this.topLevelGroup
         .selectAll("rect")
-        .data(matrix)
+        .data(this.matrix)
         .enter()
         .append("rect")
         .attr("fill", "white")
-        .attr("stroke-opacity", opacity)
+        .attr("stroke-opacity", this.opacity)
         .style("stroke", "lightgray")
         .attr("col", (d, i) => {
           return i;
         })
         .attr("x", (d, i) => {
-          return i * rectSize;
+          return i * this.rectSize;
         })
-        .attr("width", rectSize)
-        .attr("height", rectSize);
+        .attr("width", this.rectSize)
+        .attr("height", this.rectSize);
     },
-    matrixMixin_toggleMatrixOverlay: function () {
-      if (opacity === 1) opacity = 0.1;
-      else opacity = 1;
+    matrixMixin_toggleMatrixOverlay() {
+      if (this.opacity === 1) this.opacity = 0.1;
+      else this.opacity = 1;
 
-      topLevelGroup.selectAll("rect").attr("stroke-opacity", opacity);
+      this.topLevelGroup.selectAll("rect").attr("stroke-opacity", this.opacity);
     },
     mixin_getRectByClickedPosition(position) {
       let clickedRect = this.matrixMixin_findRect(position.x, position.y);
@@ -124,7 +131,7 @@ export default {
           row: clickedRect.parentNode.attributes.row.value,
         };
     },
-    mixin_getFractionRectByClickedPosition(position) {
+    matrixMixin_getFractionRectByClickedPosition(position) {
       let clickedRect = this.matrixMixin_findRect(position.x, position.y);
       let rectCoordinates = clickedRect.getBoundingClientRect();
       if (clickedRect) {
@@ -146,30 +153,28 @@ export default {
         };
       }
     },
-    matrixMixin_selectRectByCoordinates(coordinates) {
+    matrixMixin_selectRectByCoordinates(clickedCoordinates) {
       let rect = document
-        .querySelector(`g[row="${coordinates.row}"]`)
-        .querySelector(`rect[col="${coordinates.col}"]`);
+        .querySelector(`g[row="${clickedCoordinates.row}"]`)
+        .querySelector(`rect[col="${clickedCoordinates.col}"]`);
 
-      toggleSelectedRect(rect, coordinates);
+      this.toggleSelectedRect(rect, clickedCoordinates);
     },
-
     matrixMixin_getRectSize() {
-      return rectSize;
+      return this.rectSize;
     },
-
-    matrixMixin_selectNextRect() {
-      let col = parseInt(prevSelectedRect.attributes.col.value);
-      let row = parseInt(prevSelectedRect.parentNode.attributes.row.value);
-      if (col != colsNum) {
+    matrixMixin_getNextRect() {
+      let col = parseInt(this.prevSelectedRect.attributes.col.value);
+      let row = parseInt(this.prevSelectedRect.parentNode.attributes.row.value);
+      if (col != this.colsNum) {
         col += 1;
       } else {
-        if (row == rowsNum) {
+        if (row == this.rowsNum) {
           col = -1;
         }
       }
 
-      if (col == colsNum && row != rowsNum) {
+      if (col == this.colsNum && row != this.rowsNum) {
         row += 1;
         col = 0;
       }
@@ -180,6 +185,30 @@ export default {
           row: row,
         };
       }
+    },
+    matrixMixin_getNextFractionRect() {
+      let col = parseInt(this.prevSelectedRect.attributes.col.value);
+      let row = parseInt(this.prevSelectedRect.parentNode.attributes.row.value);
+      let nextFractionPosition = {};
+      switch (this.prevFractionPosition) {
+        case "TopLeft":
+          nextFractionPosition = "TopRight";
+          break;
+        case "TopRight":
+          nextFractionPosition = "BottomLeft";
+          break;
+        case "BottomLeft":
+          nextFractionPosition = "BottomRight";
+          break;
+        case "BottomRight":
+          return this.matrixMixin_getNextRect();
+      }
+      this.prevFractionPosition = nextFractionPosition;
+      return {
+        col: col,
+        row: row,
+        fractionPosition: nextFractionPosition,
+      };
     },
   },
 };

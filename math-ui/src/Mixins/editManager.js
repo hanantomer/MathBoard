@@ -45,15 +45,15 @@ module.exports = {
       }
     },
     editManager_fractionButtonPressed: function () {
-      this.restoreEditMode();
       if (this.currentMode == EditMode.EDIT_FRACTION) {
+        this.restoreEditMode();
         this.currentMode = EditMode.ADD_SYMBOL;
       } else {
         this.currentMode = EditMode.EDIT_FRACTION;
       }
     },
     editManager_symbolButtonPressed: function (e) {
-      this.restoreEditMode();
+      //this.restoreEditMode();
       if (this.currentMode === EditMode.ADD_SYMBOL) {
         this.symbolMixin_createSymbol(e.currentTarget.innerText);
       } else if (this.currentMode === EditMode.EDIT_FRACTION) {

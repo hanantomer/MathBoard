@@ -63,7 +63,7 @@ export default {
       this.$store
         .dispatch("setSelectedRect", rect)
         .then((rect) => {
-          this.mixin_syncOutgoingSelectedRect(this.getSelectedRect());
+          this.mixin_syncOutgoingSelectRect(this.getSelectedRect());
         })
         .catch((e) => {
           console.error(e);
@@ -78,10 +78,12 @@ export default {
     },
 
     selectionMixin_setSelectedFractionRect(e) {
-      let selectedFractionRect = this.mixin_getFractionRectByClickedPosition({
-        x: e.clientX,
-        y: e.clientY,
-      });
+      let selectedFractionRect = this.matrixMixin_getFractionRectByClickedPosition(
+        {
+          x: e.clientX,
+          y: e.clientY,
+        }
+      );
       this.setSelectedRect(selectedFractionRect);
     },
 
@@ -151,10 +153,10 @@ export default {
         this.svg.selectAll("text").each((datum) => {
           if (
             !!datum.id &&
-            this.$getXpos(datum.col) > p1.x &&
-            this.$getXpos(datum.col) < p2.x &&
-            this.$getYpos(datum.row) > p1.y + 50 &&
-            this.$getYpos(datum.row) < p2.y + 50
+            this.getSymbolXposByCol(datum.col) > p1.x &&
+            this.getSymbolXposByCol(datum.col) < p2.x &&
+            this.getSymbolYposByRow(datum.row) > p1.y + 50 &&
+            this.getSymbolYposByRow(datum.row) < p2.y + 50
           ) {
             this.$store.dispatch("selectSymbol", datum.id);
           }

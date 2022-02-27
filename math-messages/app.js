@@ -9,13 +9,13 @@ const AuthorizationService = require("./authorizationService");
 const AuthenticationService = require("./authenticationService");
 const HeartbeatService = require("./heartbeatService");
 const SelectedRectSyncService = require("./selectedRectSyncService");
-const SymbolSyncService = require("./symbolSyncService");
+const NotationSyncService = require("./notationSyncService");
 
 app.use("authorization", new AuthorizationService(app));
 app.use("authentication", new AuthenticationService(app));
 app.use("heartbeat", new HeartbeatService(app));
 app.use("selectedRectSync", new SelectedRectSyncService(app));
-app.use("symbolSync", new SymbolSyncService(app));
+app.use("notationSync", new NotationSyncService(app));
 
 app.service("authorization").publish("updated", (authorization, ctx) => {
   return [
@@ -59,16 +59,16 @@ app.service("selectedRectSync").publish("updated", (rect, ctx) => {
   return [app.channel(constants.EXERCISE_CHANNEL_PREFIX + rect.ExerciseId)];
 });
 
-app.service("symbolSync").publish("created", (symbol, ctx) => {
-  return [app.channel(constants.EXERCISE_CHANNEL_PREFIX + symbol.ExerciseId)];
+app.service("notationSync").publish("created", (notation, ctx) => {
+  return [app.channel(constants.EXERCISE_CHANNEL_PREFIX + notation.ExerciseId)];
 });
 
-app.service("symbolSync").publish("updated", (symbol, ctx) => {
-  return [app.channel(constants.EXERCISE_CHANNEL_PREFIX + symbol.ExerciseId)];
+app.service("notationSync").publish("updated", (notation, ctx) => {
+  return [app.channel(constants.EXERCISE_CHANNEL_PREFIX + notation.ExerciseId)];
 });
 
-app.service("symbolSync").publish("removed", (symbol, ctx) => {
-  return [app.channel(constants.EXERCISE_CHANNEL_PREFIX + symbol.ExerciseId)];
+app.service("notationSync").publish("removed", (notation, ctx) => {
+  return [app.channel(constants.EXERCISE_CHANNEL_PREFIX + notation.ExerciseId)];
 });
 
 const PORT = process.env.PORT || 3030;

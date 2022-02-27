@@ -15,10 +15,10 @@ export default {
       this.$store
         .dispatch("addSymbol", symbol)
         .then(() => {
-          this.mixin_syncOutgoingSymbolCreate(symbol);
-          let nextRect = this.matrixMixin_selectNextRect();
+          this.mixin_syncOutgoingSaveNotation(symbol);
+          let nextRect = this.matrixMixin_getNextRect();
           if (!!nextRect) {
-            this.mixin_syncOutgoingSelectedRect(nextRect);
+            this.mixin_syncOutgoingSelectRect(nextRect);
           }
         })
         .catch((e) => {
@@ -29,7 +29,7 @@ export default {
       this.selectionMixin_endMoveSelection(e);
       this.$store
         .dispatch("updateSelectedSymbolCoordinates")
-        .then(() => this.mixin_syncOutgoingUpdateSelectedSymbols());
+        .then(() => this.mixin_syncOutgoingUpdateSelectedNotations());
     },
     symbolMixin_removeSymbol: function (e) {
       let rectToremove = this.mixin_getRectByClickedPosition({
@@ -46,12 +46,19 @@ export default {
       this.$store
         .dispatch("removeSymbol", symbolAtRectPosition)
         .then(() => {
-          this.mixin_syncOutgoingSymbolRemove(symbolAtRectPosition);
+          this.mixin_syncOutgoingRemoveNotation(symbolAtRectPosition);
         })
         .catch((e) => {
           console.error(e);
         });
     },
+    getSymbolXposByCol(col) {
+      return col * this.matrixMixin_getRectSize() + 10;
+    },
+    getSymbolYposByRow(row) {
+      return row * this.matrixMixin_getRectSize() + 10;
+    },
+
     symbolMixin_refreshSymbols(symbols) {
       let that = this;
       this.svg
@@ -65,10 +72,10 @@ export default {
                 return n.id;
               })
               .attr("x", (n) => {
-                return this.$getXpos(n.col);
+                return this.getSymbolXposByCol(n.col);
               })
               .attr("y", (n) => {
-                return this.$getYpos(n.row);
+                return this.getSymbolYposByRow(n.row);
               })
               .attr("dy", "0.65em")
               .attr("dx", "0.25em")
@@ -83,10 +90,10 @@ export default {
                 return datum.selected ? "red" : "black";
               })
               .attr("x", (n) => {
-                return this.$getXpos(n.col);
+                return this.getSymbolXposByCol(n.col);
               })
               .attr("y", (n) => {
-                return this.$getYpos(n.row);
+                return this.getSymbolYposByRow(n.row);
               })
               .text((n) => {
                 return n.value;

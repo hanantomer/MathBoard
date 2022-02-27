@@ -31,12 +31,14 @@ export default {
     },
   },
   mutations: {
-    saveFraction(state, fraction) {
-      let existingFraction = helper.findFractionByCoordinates(fraction);
-      if (!existingFraction) {
-        state.fractions.push(fraction);
+    addFraction(state, fraction) {
+      Vue.set(fraction, "selected", false);
+      let oldFraction = helper.findFractionByCoordinates(state, fraction);
+      if (!!oldFraction) {
+        delete oldFraction.value;
+        Vue.set(oldFraction, "value", fraction.value);
       } else {
-        existingFraction = fraction;
+        state.fractions.push(fraction);
       }
     },
     updateSelectedFractionCoordinates(state) {
@@ -81,7 +83,7 @@ export default {
     async loadFractions(context, exerciseId) {
       context.commit("removeAllFractions");
       dbSyncMixin.methods.getAllFractions(exerciseId).then((fractions) => {
-        symbols.forEach((fraction) => {
+        fractions.forEach((fraction) => {
           context.commit("addFraction", fraction);
         });
       });
@@ -96,7 +98,7 @@ export default {
         fraction = { ...value, ...context.rootState.rectStore.selectedRect };
       }
       let fractionPart =
-        context.rootState.rectStore.selectedFractionPart.fractionPosition;
+        context.rootState.rectStore.selectedRect.fractionPosition;
 
       if (fraction.nominatorValue == null) fraction.nominatorValue = "";
       if (fraction.denominatorValue == null) fraction.denominatorValue = "";
@@ -108,7 +110,7 @@ export default {
       }
 
       return dbSyncMixin.methods.saveFraction(fraction).then((fraction) => {
-        context.commit("saveFraction", fraction);
+        context.commit("addFraction", fraction);
         return fraction;
       });
     },

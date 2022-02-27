@@ -9,6 +9,42 @@ client.configure(socketio(socket));
 
 export default {
   methods: {
+    dispatchCreatedNotation(notation, store) {
+      switch (notation.type) {
+        case "Symbol": {
+          store.dispatch("syncIncomingAddedSymbol", notation);
+          break;
+        }
+        case "Fraction": {
+          store.dispatch("syncIncomingAddedFraction", notation);
+          break;
+        }
+      }
+    },
+    dispatchUpdatedNotation(notation, store) {
+      switch ((notation.type, store)) {
+        case "Symbol": {
+          store.dispatch("syncIncomingUpdatedSymbol", notation);
+          break;
+        }
+        case "Fraction": {
+          store.dispatch("syncIncomingUpdatedFraction", notation);
+          break;
+        }
+      }
+    },
+    dispatchRemoveNotation(notation, store) {
+      switch ((notation.type, store)) {
+        case "Symbol": {
+          store.dispatch("syncIncomingRemoveSymbol", notation);
+          break;
+        }
+        case "Fraction": {
+          store.dispatch("syncIncomingRemoveFraction", notation);
+          break;
+        }
+      }
+    },
     signedInWithGoogle: function () {
       return (
         gapi.auth2.getAuthInstance() &&
@@ -23,7 +59,7 @@ export default {
           : window.$cookies.get("access_token")
       }`;
     },
-    mixin_syncOutgoingSelectedRect: async function (selectedRect) {
+    mixin_syncOutgoingSelectRect: async function (selectedRect) {
       selectedRect.ExerciseId = this.exerciseId;
       console.debug(`sync selected rect ${JSON.stringify(selectedRect)}`);
       client.service("selectedRectSync").update(
@@ -36,9 +72,9 @@ export default {
         }
       );
     },
-    mixin_syncOutgoingSymbolCreate: async function (symbol) {
-      client.service("symbolSync").create(
-        { symbol: symbol },
+    mixin_syncOutgoingSaveNotation: async function (notation) {
+      client.service("notationSync").update(
+        { notations: [notation] },
         {
           query: {
             access_token: this.getAccessToken(),
@@ -46,9 +82,9 @@ export default {
         }
       );
     },
-    mixin_syncOutgoingSymbolRemove: async function (symbol) {
-      client.service("symbolSync").remove(
-        { symbol: symbol },
+    mixin_syncOutgoingRemoveNotation: async function (notation) {
+      client.service("notationSync").remove(
+        { notations: [notation] },
         {
           query: {
             access_token: this.getAccessToken(),
@@ -56,9 +92,9 @@ export default {
         }
       );
     },
-    mixin_syncOutgoingUpdateSelectedSymbols: async function () {
-      client.service("symbolSync").update(
-        { symbols: this.getSelectedSymbols() },
+    mixin_syncOutgoingUpdateSelectedNotations: async function () {
+      client.service("notationSync").update(
+        { notations: this.getSelectedSymbols() },
         {
           query: {
             access_token: this.getAccessToken(),
@@ -66,18 +102,7 @@ export default {
         }
       );
     },
-    mixin_syncOutgoingUpdateSelectedFractions: async function () {
-      client.service("fractionSync").update(
-        { symbols: this.getSelectedFractions() },
-        {
-          query: {
-            access_token: this.getAccessToken(),
-          },
-        }
-      );
-    },
-
-    mixin_sendHeartBeat: async function (exerciseId) {
+    mixin_syncOutgoingHeartBeat: async function (exerciseId) {
       client.service("heartbeat").update(
         { ExerciseId: exerciseId },
         {
@@ -88,7 +113,7 @@ export default {
       );
     },
 
-    mixin_syncOutgoingUserAthorization: async function (
+    mixin_syncOutgoingAuthUser: async function (
       exerciseId,
       authorizedStudentId,
       revokedStudentId
@@ -124,7 +149,6 @@ export default {
           }
         );
     },
-
     mixin_syncIncomingUserOperations: async function (exerciseId, isAdmin) {
       // this will route events from feathers
       await client.service("authentication").create({
@@ -132,19 +156,19 @@ export default {
       });
 
       let _store = store;
-      client.service("symbolSync").on("created", (symbol) => {
-        if (symbol.UserId !== this.getUser().id) {
-          _store.dispatch("syncIncomingAddedSymbol", symbol);
+      // client.service("notationSync").on("created", (notation) => {
+      //   if (notation.UserId !== this.getUser().id) {
+      //     this.dispatchCreatedNotation(notation);
+      //   }
+      // });
+      client.service("notationSync").on("updated", (notation) => {
+        if (notation.UserId !== this.getUser().id) {
+          this.dispatchUpdateNotation(notation);
         }
       });
-      client.service("symbolSync").on("updated", (symbol) => {
-        if (symbol.UserId !== this.getUser().id) {
-          _store.dispatch("syncIncomingUpdatedSymbol", symbol);
-        }
-      });
-      client.service("symbolSync").on("removed", (symbol) => {
-        if (symbol.UserId !== this.getUser().id) {
-          _store.dispatch("syncIncomingDeletedSymbol", symbol);
+      client.service("notationSync").on("removed", (notation) => {
+        if (notation.UserId !== this.getUser().id) {
+          this.dispatchRomoveNotation(notation);
         }
       });
       client.service("selectedRectSync").on("updated", (selectedRect) => {
@@ -157,7 +181,7 @@ export default {
       });
       if (isAdmin) {
         client.service("heartbeat").on("updated", (user) => {
-          if (symbol.UserId !== this.getUser().id) {
+          if (user.id !== this.getUser().id) {
             _store.dispatch("updateStudentHeartbeat", user);
           }
         });

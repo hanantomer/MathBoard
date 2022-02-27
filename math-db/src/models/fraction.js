@@ -26,10 +26,10 @@ module.exports = (sequelize, DataTypes) => {
                 type: DataTypes.INTEGER,
                 allowNull: false,
             },
-            nimnatorValue: {
+            nominatorValue: {
                 type: DataTypes.STRING,
             },
-            denimnatorValue: {
+            denominatorValue: {
                 type: DataTypes.STRING,
             },
         },

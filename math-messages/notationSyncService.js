@@ -1,5 +1,5 @@
 const dbUtil = require("math-db/src/dbUtil");
-class SymbolSyncService {
+class notationSyncService {
   constructor(app) {
     this.app = app;
   }
@@ -12,11 +12,11 @@ class SymbolSyncService {
     let user = await this.getUser(params.query.access_token);
 
     if (!!user) {
-      data.symbol.UserId = user.id;
-      data.symbol.ExerciseId = await dbUtil.parseExerciseId(
-        data.symbol.ExerciseId
+      data.notation.UserId = user.id;
+      data.notation.ExerciseId = await dbUtil.parseExerciseId(
+        data.notation.ExerciseId
       );
-      return data.symbol;
+      return data.notation;
     }
     return null;
   }
@@ -25,27 +25,27 @@ class SymbolSyncService {
     let user = await this.getUser(params.query.access_token);
     let exerciseId = null;
     if (!!user) {
-      data.symbols.forEach(async (symbol) => {
-        symbol.UserId = user.id;
+      data.notations.forEach(async (notation) => {
+        notation.UserId = user.id;
         if (exerciseId == null)
-          exerciseId = await dbUtil.parseExerciseId(symbol.ExerciseId);
-        symbol.ExerciseId = exerciseId;
+          exerciseId = await dbUtil.parseExerciseId(notation.ExerciseId);
+        notation.ExerciseId = exerciseId;
       });
     }
-    return data.symbols;
+    return data.notations;
   }
 
   async remove(data, params) {
     let user = await this.getUser(params.query.access_token);
     let exerciseId = null;
     if (!!user) {
-      data.symbol.UserId = user.id;
+      data.notation.UserId = user.id;
       if (exerciseId == null)
-        exerciseId = await dbUtil.parseExerciseId(data.symbol.ExerciseId);
-      data.symbol.ExerciseId = exerciseId;
+        exerciseId = await dbUtil.parseExerciseId(data.notation.ExerciseId);
+      data.notation.ExerciseId = exerciseId;
     }
-    return data.symbol;
+    return data.notation;
   }
 }
 
-module.exports = SymbolSyncService;
+module.exports = notationSyncService;

@@ -157,7 +157,6 @@ export default {
       .getBoundingClientRect();
 
     this.$loadExercise().then(() => {
-      //window.addEventListener("click", this.onclick);
       window.addEventListener("keyup", this.editManager_keyUp);
     });
     this.matrixMixin_setMatrix();
@@ -207,7 +206,7 @@ export default {
         return state.symbolStore.symbols;
       },
       fractions: (state) => {
-        return state.symbolStore.fractions;
+        return state.fractionStore.fractions;
       },
       students: (state) => {
         return state.studentStore.students;
@@ -222,7 +221,12 @@ export default {
       handler(symbols) {
         this.symbolMixin_refreshSymbols(symbols);
       },
-      deep: false,
+    },
+    fractions: {
+      deep: true,
+      handler(fractions) {
+        this.fractionMixin_refreshFractions(fractions);
+      },
     },
   },
   methods: {
@@ -234,12 +238,6 @@ export default {
       getUser: "getUser",
       getStudent: "getStudent",
     }),
-    $getXpos(col) {
-      return col * this.matrixMixin_getRectSize() + 10; //- this.boundingClientRet.x - 5;
-    },
-    $getYpos(row) {
-      return row * this.matrixMixin_getRectSize() + 10; //- this.boundingClientRet.y - 5;
-    },
     $toggleExerciseMatrix() {
       this.matrixMixin_toggleMatrixOverlay();
     },
@@ -256,11 +254,10 @@ export default {
         setInterval(this.mixin_sendHeartBeat, 2000, this.exerciseId);
       }
 
-      return this.$store
-        .dispatch("loadSymbols", this.exerciseId)
-        .then((symbols) => {
-          this.mixin_syncIncomingUserOperations(this.exerciseId, this.isAdmin); ///TODO create mechnism to handle gaps between load and sync
-        });
+      await this.$store.dispatch("loadSymbols", this.exerciseId);
+      await this.$store.dispatch("loadFractions", this.exerciseId);
+
+      this.mixin_syncIncomingUserOperations(this.exerciseId, this.isAdmin); ///TODO create mechnism to handle gaps between load and sync
     },
     $createAccessLink: function (link) {
       this.$store.dispatch("createAccessLink", {
@@ -270,7 +267,7 @@ export default {
     },
     $toggleStudentAuthorization: function (student) {
       this.toggleAuthorization(student.userId).then((authorization) => {
-        this.mixin_syncOutgoingUserAthorization(
+        this.mixin_syncOutgoingAuthUser(
           this.exerciseId,
           authorization.authorizedStudentId,
           authorization.revokedStudentId
