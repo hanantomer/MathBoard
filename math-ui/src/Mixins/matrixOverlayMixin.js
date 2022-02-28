@@ -210,5 +210,100 @@ export default {
         fractionPosition: nextFractionPosition,
       };
     },
+    // matrixMixin_refreshScreen() {
+    //   let data = this.getSymbols()
+    //     .concat(
+    //       this.getFractions()
+    //         .filter((f) => !!f.nominatorValue)
+    //         .map((f) => ({
+    //           col: f.col,
+    //           row: f.row,
+    //           value: f.nominatorValue,
+    //           isFraction: true,
+    //           isUpper: true,
+    //         }))
+    //     )
+    //     .concat(
+    //       this.getFractions()
+    //         .filter((f) => !!f.denominatorValue)
+    //         .map((f) => ({
+    //           col: f.col,
+    //           row: f.row,
+    //           value: f.denominatorValue,
+    //           isFraction: true,
+    //           isUpper: false,
+    //         }))
+    //     );
+    //   this.refreshSymbolsAndFractions(data);
+    // },
+    matrixMixin_refreshScreen(data) {
+      let that = this;
+      this.svg
+        .selectAll("text")
+        .data(data)
+        .join(
+          (enter) => {
+            return enter
+              .append("text")
+              .attr("id", (n) => {
+                return n.id;
+              })
+              .attr("x", (n, i) => {
+                return !!n.isFraction
+                  ? this.getFractionCharacterXpos(n.col, i)
+                  : this.getSymbolXposByCol(n.col);
+              })
+              .attr("y", (n) => {
+                return !!n.isFraction
+                  ? this.getSymbolYposByRow(n.row) -
+                      5 +
+                      (n.isUpper ? 0 : this.matrixMixin_getRectSize() / 2)
+                  : this.getSymbolYposByRow(n.row);
+              })
+              .attr("dy", "0.65em")
+              .attr("dx", "0.25em")
+              .attr("font-size", (n) => {
+                return !!n.isFraction
+                  ? that.symbolFontSize / 2
+                  : that.symbolFontSize;
+              })
+              .text((n) => {
+                return n.value;
+              });
+          },
+          (update) => {
+            return update
+              .attr("fill", (n) => {
+                return n.selected ? "red" : "black";
+              })
+              .attr("x", (n, i) => {
+                return !!n.isFraction
+                  ? this.getFractionCharacterXpos(n.col, i)
+                  : this.getSymbolXposByCol(n.col);
+              })
+              .attr("y", (n) => {
+                return !!n.isFraction
+                  ? this.getSymbolYposByRow(n.row) -
+                      5 +
+                      (n.isUpper ? 0 : this.matrixMixin_getRectSize() / 2)
+                  : this.getSymbolYposByRow(n.row);
+              })
+              .text((n) => {
+                return n.value;
+              });
+          },
+          (exit) => {
+            return exit
+              .transition()
+              .duration(10)
+              .attr("r", 0)
+              .style("opacity", 0)
+              .attr("cx", 1000)
+              .on("end", function () {
+                d3.select(this).remove();
+              });
+          }
+        );
+    },
   },
 };

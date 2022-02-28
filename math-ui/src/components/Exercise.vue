@@ -219,13 +219,13 @@ export default {
     symbols: {
       deep: true,
       handler(symbols) {
-        this.symbolMixin_refreshSymbols(symbols);
+        this.matrixMixin_refreshScreen();
       },
     },
     fractions: {
       deep: true,
       handler(fractions) {
-        this.fractionMixin_refreshFractions(fractions);
+        this.matrixMixin_refreshScreen();
       },
     },
   },
@@ -237,6 +237,8 @@ export default {
       getExercises: "getExercises",
       getUser: "getUser",
       getStudent: "getStudent",
+      getSymbols: "getSymbols",
+      getFractions: "getFractions",
     }),
     $toggleExerciseMatrix() {
       this.matrixMixin_toggleMatrixOverlay();
