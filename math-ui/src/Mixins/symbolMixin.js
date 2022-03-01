@@ -13,7 +13,7 @@ export default {
       symbol = Object.assign(symbol, this.getSelectedRect());
 
       this.$store
-        .dispatch("addNotation", symbol)
+        .dispatch("addSymbol", symbol)
         .then(() => {
           this.mixin_syncOutgoingSaveNotation(symbol);
           let nextRect = this.matrixMixin_getNextRect();

@@ -101,16 +101,27 @@ export default {
   actions: {
     async loadNotations(context, exerciseId) {
       context.commit("removeAllNotations");
-      dbSyncMixin.methods.getAllNotations(exerciseId).then((notations) => {
-        notations.forEach((notation) => {
-          context.commit("addNotation", notation);
+      dbSyncMixin.methods.getAllSymbols(exerciseId).then((symbols) => {
+        symbols.forEach((symbol) => {
+          context.commit("addNotation", symbol);
+        });
+      });
+      dbSyncMixin.methods.getAllFractions(exerciseId).then((fractions) => {
+        fractions.forEach((fraction) => {
+          context.commit("addNotation", fraction);
         });
       });
     },
-    addNotation(context, notation) {
-      dbSyncMixin.methods.saveNotation(notation).then((notation) => {
-        context.commit("addNotation", notation);
-        return notation;
+    addSymbol(context, symbol) {
+      dbSyncMixin.methods.saveSymbol(symbol).then((symbol) => {
+        context.commit("addNotation", symbol);
+        return symbol;
+      });
+    },
+    addFraction(context, fraction) {
+      dbSyncMixin.methods.saveFraction(fraction).then((fraction) => {
+        context.commit("addNotation", fraction);
+        return fraction;
       });
     },
     syncIncomingAddedNotation(context, notation) {

@@ -1,1 +1,8 @@
 node_modules
+math-server/math.db
+math-ui/yarn.lock
+math-ui/package-lock.json
+math-ui/yarn.lock
+math-ui/yarn.lock
+math-ui/package-lock.json
+math-server/math.db

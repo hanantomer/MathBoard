@@ -3,10 +3,10 @@ export default {
     return {};
   },
   methods: {
-    fractionMixin_saveFraction(symbol) {
+    fractionMixin_saveFraction(fraction) {
       symbol.isFraction = true;
       this.$store
-        .dispatch("addNotation", symbol)
+        .dispatch("addFraction", fraction)
         .then((fraction) => {
           this.mixin_syncOutgoingSaveNotation(fraction);
 

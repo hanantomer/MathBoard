@@ -202,11 +202,8 @@ export default {
   ],
   computed: {
     ...mapState({
-      symbols: (state) => {
-        return state.symbolStore.symbols;
-      },
-      fractions: (state) => {
-        return state.fractionStore.fractions;
+      notations: (state) => {
+        return state.notationStore.notations;
       },
       students: (state) => {
         return state.studentStore.students;
@@ -218,7 +215,7 @@ export default {
     $route: "$loadExercise",
     symbols: {
       deep: true,
-      handler(symbols) {
+      handler(notations) {
         this.matrixMixin_refreshScreen();
       },
     },
@@ -256,8 +253,8 @@ export default {
         setInterval(this.mixin_sendHeartBeat, 2000, this.exerciseId);
       }
 
-      await this.$store.dispatch("loadSymbols", this.exerciseId);
-      await this.$store.dispatch("loadFractions", this.exerciseId);
+      await this.$store.dispatch("loadNotations", this.exerciseId);
+      //await this.$store.dispatch("loadFractions", this.exerciseId);
 
       this.mixin_syncIncomingUserOperations(this.exerciseId, this.isAdmin); ///TODO create mechnism to handle gaps between load and sync
     },

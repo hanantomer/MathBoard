@@ -1,0 +1,1 @@
+to link libraries, run npm link at target directory and then npm link [lib1,lib2,,,]
