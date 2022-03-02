@@ -38,9 +38,6 @@ export default {
     value: Boolean,
   },
 
-  props: {
-    value: Boolean,
-  },
   computed: {
     show: {
       get() {

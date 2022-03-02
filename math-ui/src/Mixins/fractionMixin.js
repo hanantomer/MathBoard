@@ -4,7 +4,6 @@ export default {
   },
   methods: {
     fractionMixin_saveFraction(fraction) {
-      symbol.isFraction = true;
       this.$store
         .dispatch("addFraction", fraction)
         .then((fraction) => {
@@ -19,7 +18,7 @@ export default {
           console.error(e);
         });
     },
-    getFractionCharacterXpos(col, charPos) {
+    fractionMixin_getFractionCharacterXpos(col, charPos) {
       return (
         col * this.matrixMixin_getRectSize() +
         (charPos * this.matrixMixin_getRectSize()) / 2 +

@@ -210,32 +210,6 @@ export default {
         fractionPosition: nextFractionPosition,
       };
     },
-    // matrixMixin_refreshScreen() {
-    //   let data = this.getSymbols()
-    //     .concat(
-    //       this.getFractions()
-    //         .filter((f) => !!f.nominatorValue)
-    //         .map((f) => ({
-    //           col: f.col,
-    //           row: f.row,
-    //           value: f.nominatorValue,
-    //           isFraction: true,
-    //           isUpper: true,
-    //         }))
-    //     )
-    //     .concat(
-    //       this.getFractions()
-    //         .filter((f) => !!f.denominatorValue)
-    //         .map((f) => ({
-    //           col: f.col,
-    //           row: f.row,
-    //           value: f.denominatorValue,
-    //           isFraction: true,
-    //           isUpper: false,
-    //         }))
-    //     );
-    //   this.refreshSymbolsAndFractions(data);
-    // },
     matrixMixin_refreshScreen(data) {
       let that = this;
       this.svg
@@ -250,7 +224,7 @@ export default {
               })
               .attr("x", (n, i) => {
                 return !!n.isFraction
-                  ? this.getFractionCharacterXpos(n.col, i)
+                  ? this.fractionMixin_getFractionCharacterXpos(n.col, i)
                   : this.getSymbolXposByCol(n.col);
               })
               .attr("y", (n) => {
@@ -278,7 +252,7 @@ export default {
               })
               .attr("x", (n, i) => {
                 return !!n.isFraction
-                  ? this.getFractionCharacterXpos(n.col, i)
+                  ? this.fractionMixin_getFractionCharacterXpos(n.col, i)
                   : this.getSymbolXposByCol(n.col);
               })
               .attr("y", (n) => {

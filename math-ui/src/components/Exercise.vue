@@ -65,6 +65,10 @@
       v-model="isAccessLinkDialogOpen"
       v-on="{ create: $createAccessLink }"
     ></createAccessLinkDialog>
+    <fractionDialog
+      v-model="isFractionDialogOpen"
+      v-on="{ save: $fractionMixin_saveFraction }"
+    ></fractionDialog>
     <v-container app style="max-width: 1600px !important">
       <v-row>
         <v-col cols="sm 10" style="overflow: auto">
@@ -142,9 +146,10 @@ import fractionMixin from "../Mixins/fractionMixin";
 import userOperationsSyncMixin from "../Mixins/userOperationsSyncMixin";
 import createAccessLinkDialog from "./CreateAccessLinkDialog.vue";
 import { mdiFractionOneHalf } from "@mdi/js";
+import fractionDialog from "./fractionDialog.vue";
 
 export default {
-  components: { createAccessLinkDialog },
+  components: { createAccessLinkDialog, fractionDialog },
   props: ["exerciseId"],
   destroyed: function () {
     window.removeEventListener("keyup", this.editManager_keyUp);
@@ -213,16 +218,10 @@ export default {
   },
   watch: {
     $route: "$loadExercise",
-    symbols: {
+    notations: {
       deep: true,
       handler(notations) {
-        this.matrixMixin_refreshScreen();
-      },
-    },
-    fractions: {
-      deep: true,
-      handler(fractions) {
-        this.matrixMixin_refreshScreen();
+        this.matrixMixin_refreshScreen(notations);
       },
     },
   },

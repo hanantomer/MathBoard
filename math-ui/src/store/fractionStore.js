@@ -88,27 +88,14 @@ export default {
         });
       });
     },
-    saveFraction(context, symbol) {
-      let fraction = helper.findFractionByCoordinates(
+    saveFraction(context, fraction) {
+      let exsitingFraction = helper.findFractionByCoordinates(
         context.state,
         context.rootState.rectStore.selectedRect
       );
-      if (!fraction) {
-        let value = { value: symbol };
-        fraction = { ...value, ...context.rootState.rectStore.selectedRect };
+      if (!exsitingFraction) {
+        fraction = { ...fraction, ...context.rootState.rectStore.selectedRect };
       }
-      let fractionPart =
-        context.rootState.rectStore.selectedRect.fractionPosition;
-
-      if (fraction.nominatorValue == null) fraction.nominatorValue = "";
-      if (fraction.denominatorValue == null) fraction.denominatorValue = "";
-
-      if (fractionPart == "TopLeft" || fractionPart == "TopRight") {
-        fraction.nominatorValue += symbol;
-      } else {
-        fraction.denominatorValue += symbol;
-      }
-
       return dbSyncMixin.methods.saveFraction(fraction).then((fraction) => {
         context.commit("addFraction", fraction);
         return fraction;
