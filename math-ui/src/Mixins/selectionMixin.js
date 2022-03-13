@@ -45,13 +45,19 @@ export default {
       );
     },
     ...mapState({
-      selectedRect: (state) => state.rectStore.selectedRect,
+      selectedRect: (state) => state.selectedNotationStore.selectedRect,
+      selectedFraction: (state) => state.selectedNotationStore.selectedFraction,
     }),
   },
   watch: {
     selectedRect: {
       handler(selectedRect) {
         this.matrixMixin_selectRectByCoordinates(selectedRect);
+      },
+    },
+    selectedFraction: {
+      handler(selectedFraction) {
+        this.matrixMixin_selectFractionByCoordinates(selectedFraction);
       },
     },
   },
@@ -69,22 +75,32 @@ export default {
           console.error(e);
         });
     },
-    selectionMixin_setSelectedRect(e) {
-      let selectedRect = this.mixin_getRectByClickedPosition({
-        x: e.clientX,
-        y: e.clientY,
-      });
-      this.setSelectedRect(selectedRect);
-    },
-
-    selectionMixin_setSelectedFractionRect(e) {
-      let selectedFractionRect = this.matrixMixin_getFractionRectByClickedPosition(
+    selectionMixin_setSelectedNotation(e) {
+      let selectedRect = this.matrixMixin_findClickedObject(
         {
           x: e.clientX,
           y: e.clientY,
-        }
+        },
+        "rect"
       );
-      this.setSelectedRect(selectedFractionRect);
+      if (!!selectedRect)
+        return this.setSelectedRect({
+          col: selectedRect.attributes.col.value,
+          row: selectedRect.parentNode.attributes.row.value,
+        });
+
+      let selectedFraction = this.matrixMixin_findClickedObject(
+        {
+          x: e.clientX,
+          y: e.clientY,
+        },
+        "foreignObject"
+      );
+      if (!!selectedFraction)
+        return this.setSelectedFraction({
+          col: selectedFraction.attributes.col.value,
+          row: selectedFraction.attributes.row.value,
+        });
     },
 
     // extend or shrink selection area

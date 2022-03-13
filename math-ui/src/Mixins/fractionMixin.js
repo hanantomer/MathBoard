@@ -4,26 +4,29 @@ export default {
   },
   methods: {
     fractionMixin_saveFraction(fraction) {
+      fraction.exerciseId = this.exerciseId;
+      fraction.UserId = this.$store.getters.getUser.id;
+      fraction = Object.assign(fraction, this.getSelectedRect());
       this.$store
         .dispatch("addFraction", fraction)
         .then((fraction) => {
           this.mixin_syncOutgoingSaveNotation(fraction);
 
-          let nextRect = this.matrixMixin_getNextFractionRect();
+          /* let nextRect = this.matrixMixin_getNextFractionRect();
           if (!!nextRect) {
             this.mixin_syncOutgoingSelectRect(nextRect);
-          }
+          }*/
         })
         .catch((e) => {
           console.error(e);
         });
     },
-    fractionMixin_getFractionCharacterXpos(col, charPos) {
-      return (
-        col * this.matrixMixin_getRectSize() +
-        (charPos * this.matrixMixin_getRectSize()) / 2 +
-        5
-      );
-    },
+    // fractionMixin_getFractionCharacterXpos(col, charPos) {
+    //   return (
+    //     col * this.matrixMixin_getRectSize() +
+    //     (charPos * this.matrixMixin_getRectSize()) / 2 +
+    //     5
+    //   );
+    // },
   },
 };

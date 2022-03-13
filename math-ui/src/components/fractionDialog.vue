@@ -1,27 +1,18 @@
 <template>
   <v-row justify="center">
-    <v-dialog v-model="isOpen" persistent max-width="400px">
+    <v-dialog v-model="show" persistent max-width="400px">
       <v-card>
-        <v-card-title>
-          <span class="headline">Edit Fraction</span>
-        </v-card-title>
+        <v-card-title>Fraction Editor</v-card-title>
         <v-card-text>
-          <v-container>
-            <v-row>
-              <v-col cols="12">
-                <v-text-field v-model="nominatorValue" required></v-text-field>
-              </v-col>
-            </v-row>
-            <v-divider></v-divider>
-            <v-row>
-              <v-col cols="12">
-                <v-text-field
-                  v-model="denominatorValue"
-                  required
-                ></v-text-field>
-              </v-col>
-            </v-row>
-          </v-container>
+          <v-text-field
+            v-model="nominatorValue"
+            class="fraction-text"
+          ></v-text-field>
+          <v-divider></v-divider>
+          <v-text-field
+            v-model="denominatorValue"
+            class="fraction-text"
+          ></v-text-field>
         </v-card-text>
         <v-card-actions>
           <v-spacer></v-spacer>
@@ -35,7 +26,17 @@
 <script>
 export default {
   props: {
-    isOpen: false,
+    value: Boolean,
+  },
+  computed: {
+    show: {
+      get() {
+        return this.value;
+      },
+      set(value) {
+        this.$emit("input", value);
+      },
+    },
   },
   data() {
     return {
@@ -49,7 +50,32 @@ export default {
         nominatorValue: this.nominatorValue,
         denominatorValue: this.denominatorValue,
       });
+      this.show = false;
     },
   },
 };
 </script>
+<style scoped>
+.fraction-text >>> .v-input__slot::before {
+  border-style: none !important;
+}
+.fraction-text >>> .v-input__slot::after {
+  border-style: none !important;
+}
+.fraction-text >>> .v-text-field__details {
+  display: none;
+}
+.fraction-text >>> .v-text-field__slot {
+  background-color: lightblue;
+  color: black !important;
+  font-weight: bold;
+}
+
+.v-text-field {
+  padding-top: 6px !important;
+}
+
+hr {
+  border-width: 2px;
+}
+</style>

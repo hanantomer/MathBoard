@@ -9,76 +9,44 @@ export default {
       rectSize: 40,
       matrix: [],
       topLevelGroup: null,
-      prevSelectedRect: null,
-      prevFractionPosition: "TopLeft",
-      SelectedFractionRectId: "SelectedFractionRectId",
+      prevSelectedNotation: null,
       selectedRecColor: "lightcyan",
       borderColor: "lightgray",
       svgns: "http://www.w3.org/2000/svg",
     };
   },
   methods: {
-    createFractionRect(clickedCoordinates, clickedRect) {
-      let fractionRect = document.createElementNS(this.svgns, "rect");
-      fractionRect.setAttribute("id", this.SelectedFractionRectId);
-      fractionRect.setAttribute("width", this.rectSize / 2);
-      fractionRect.setAttribute("height", this.rectSize / 2);
-      fractionRect.setAttribute("stroke-opacity", this.opacity);
-      fractionRect.setAttribute("fill", "transparent");
-      fractionRect.style.stroke = this.borderColor;
+    toggleSelectedNotation(clickedNotation, clickedCoordinates) {
+      if (!!this.prevSelectedNotation)
+        this.prevSelectedNotation.style.fill = "";
+      this.prevSelectedNotation = clickedNotation;
 
-      if (
-        clickedCoordinates.fractionPosition === "TopLeft" ||
-        clickedCoordinates.fractionPosition === "BottomLeft"
-      ) {
-        fractionRect.setAttribute("x", clickedRect.x.baseVal.value);
-      } else {
-        fractionRect.setAttribute(
-          "x",
-          clickedRect.x.baseVal.value + this.rectSize / 2
-        );
-      }
-
-      if (
-        clickedCoordinates.fractionPosition === "BottomLeft" ||
-        clickedCoordinates.fractionPosition === "BottomRight"
-      ) {
-        fractionRect.setAttribute("y", this.rectSize / 2);
-      }
-
-      clickedRect.parentNode.appendChild(fractionRect);
-    },
-    toggleSelectedRect(clickedRect, clickedCoordinates) {
-      if (!!this.prevSelectedRect) this.prevSelectedRect.style.fill = "";
-      this.prevSelectedRect = clickedRect;
-
-      if (!!document.getElementById(this.SelectedFractionRectId))
-        document.getElementById(this.SelectedFractionRectId).remove();
-
-      clickedRect.style.fill =
-        clickedRect.style.fill == this.selectedRecColor
+      clickedNotation.style.fill =
+        clickedNotation.style.fill == this.selectedRecColor
           ? ""
           : this.selectedRecColor;
-
-      if (!!clickedCoordinates.fractionPosition) {
-        this.createFractionRect(clickedCoordinates, clickedRect);
-      }
     },
-    //https://stackoverflow.com/questions/30755696/get-svg-object-s-at-given-coordinates
-    matrixMixin_findRect(x, y) {
-      var elements = [],
-        current = document.elementFromPoint(x, y);
-      while (current && current.nearestViewportElement) {
-        elements.push(current);
-        // hide the element and look again
-        current.style.display = "none";
-        current = document.elementFromPoint(x, y);
+    //https://stackoverflow.com/questions/22428484/get-element-from-point-when-you-have-overlapping-elements
+    matrixMixin_findClickedObject(p, tagName) {
+      var elements = [];
+      var display = [];
+      var item = document.elementFromPoint(p.x, p.y);
+      while (
+        item &&
+        item !== document.body &&
+        item !== window &&
+        item !== document &&
+        item !== document.documentElement
+      ) {
+        elements.push(item);
+        display.push(item.style.display);
+        item.style.display = "none";
+        item = document.elementFromPoint(p.x, p.y);
       }
-      // restore the display
-      elements.forEach(function (elm) {
-        elm.style.display = "";
-      });
-      return elements.find((e) => e.tagName == "rect");
+      for (var i = 0; i < elements.length; i++) {
+        elements[i].style.display = display[i];
+      }
+      return elements.find((e) => e.tagName == tagName);
     },
     matrixMixin_setMatrix() {
       for (var row = 0; row < this.rowsNum; row++) {
@@ -158,8 +126,16 @@ export default {
         .querySelector(`g[row="${clickedCoordinates.row}"]`)
         .querySelector(`rect[col="${clickedCoordinates.col}"]`);
 
-      this.toggleSelectedRect(rect, clickedCoordinates);
+      this.toggleSelectedNotation(rect, clickedCoordinates);
     },
+    matrixMixin_selectFractionByCoordinates(clickedCoordinates) {
+      let rect = document.querySelector(
+        `foreignObject[row="${clickedCoordinates.row}", col="${clickedCoordinates.col}"]`
+      );
+
+      this.toggleSelectedNotation(rect, clickedCoordinates);
+    },
+
     matrixMixin_getRectSize() {
       return this.rectSize;
     },
@@ -186,30 +162,97 @@ export default {
         };
       }
     },
-    matrixMixin_getNextFractionRect() {
-      let col = parseInt(this.prevSelectedRect.attributes.col.value);
-      let row = parseInt(this.prevSelectedRect.parentNode.attributes.row.value);
-      let nextFractionPosition = {};
-      switch (this.prevFractionPosition) {
-        case "TopLeft":
-          nextFractionPosition = "TopRight";
-          break;
-        case "TopRight":
-          nextFractionPosition = "BottomLeft";
-          break;
-        case "BottomLeft":
-          nextFractionPosition = "BottomRight";
-          break;
-        case "BottomRight":
-          return this.matrixMixin_getNextRect();
-      }
-      this.prevFractionPosition = nextFractionPosition;
-      return {
-        col: col,
-        row: row,
-        fractionPosition: nextFractionPosition,
-      };
+    showSymbols: function (enter, that) {
+      return enter
+        .append("text")
+        .attr("id", (n) => {
+          return n.id;
+        })
+        .attr("x", (n, i) => {
+          return this.getSymbolXposByCol(n.col);
+        })
+        .attr("y", (n) => {
+          return this.getSymbolYposByRow(n.row);
+        })
+        .attr("dy", "0.65em")
+        .attr("dx", "0.25em")
+        .attr("font-size", (n) => {
+          return that.symbolFontSize;
+        })
+        .text((n) => {
+          return !!n.value ? n.value : "";
+        });
     },
+    updateSymbols: function (update) {
+      return update
+        .attr("fill", (n) => {
+          return n.selected ? "red" : "black";
+        })
+        .attr("x", (n, i) => {
+          return this.getSymbolXposByCol(n.col);
+        })
+        .attr("y", (n) => {
+          return this.getSymbolYposByRow(n.row);
+        })
+        .text((n) => {
+          return n.value;
+        });
+    },
+    removeSymbols: function (exit) {
+      return exit
+        .transition()
+        .duration(10)
+        .attr("r", 0)
+        .style("opacity", 0)
+        .attr("cx", 1000)
+        .on("end", function () {
+          d3.select(this).remove();
+        });
+    },
+    showFractions: function (enter, that) {
+      enter
+        .append("foreignObject")
+        .attr("col", (n) => {
+          return n.col;
+        })
+        .attr("row", (n) => {
+          return n.row;
+        })
+        .attr("x", (n, i) => {
+          return this.getSymbolXposByCol(n.col) - 5;
+        })
+        .attr("y", (n) => {
+          return this.getSymbolYposByRow(n.row) - 10;
+        })
+        .attr("width", (n) => {
+          return !!n.nominatorValue ? this.rectSize : 0;
+        })
+        .attr("height", this.rectSize)
+        .append("xhtml:div")
+        .style("font-weight", "bold")
+        .style("font-size", "0.85em")
+        .html((n) => {
+          if (!n.nominatorValue) {
+            return;
+          }
+          let textWidth = Math.max(
+            n.nominatorValue.length,
+            n.denominatorValue.length
+          );
+          return (
+            "<div style='text-align: center'>" +
+            n.nominatorValue +
+            "</div>" +
+            `<hr style='margin:auto;border: 1px solid black;width:${
+              textWidth * 8
+            }px'>` +
+            "<div style='text-align: center'>" +
+            n.denominatorValue +
+            "</div>"
+          );
+        });
+    },
+
     matrixMixin_refreshScreen(data) {
       let that = this;
       this.svg
@@ -217,65 +260,28 @@ export default {
         .data(data)
         .join(
           (enter) => {
-            return enter
-              .append("text")
-              .attr("id", (n) => {
-                return n.id;
-              })
-              .attr("x", (n, i) => {
-                return !!n.isFraction
-                  ? this.fractionMixin_getFractionCharacterXpos(n.col, i)
-                  : this.getSymbolXposByCol(n.col);
-              })
-              .attr("y", (n) => {
-                return !!n.isFraction
-                  ? this.getSymbolYposByRow(n.row) -
-                      5 +
-                      (n.isUpper ? 0 : this.matrixMixin_getRectSize() / 2)
-                  : this.getSymbolYposByRow(n.row);
-              })
-              .attr("dy", "0.65em")
-              .attr("dx", "0.25em")
-              .attr("font-size", (n) => {
-                return !!n.isFraction
-                  ? that.symbolFontSize / 2
-                  : that.symbolFontSize;
-              })
-              .text((n) => {
-                return n.value;
-              });
+            return this.showSymbols(enter, that);
           },
           (update) => {
-            return update
-              .attr("fill", (n) => {
-                return n.selected ? "red" : "black";
-              })
-              .attr("x", (n, i) => {
-                return !!n.isFraction
-                  ? this.fractionMixin_getFractionCharacterXpos(n.col, i)
-                  : this.getSymbolXposByCol(n.col);
-              })
-              .attr("y", (n) => {
-                return !!n.isFraction
-                  ? this.getSymbolYposByRow(n.row) -
-                      5 +
-                      (n.isUpper ? 0 : this.matrixMixin_getRectSize() / 2)
-                  : this.getSymbolYposByRow(n.row);
-              })
-              .text((n) => {
-                return n.value;
-              });
+            return this.updateSymbols(update);
           },
           (exit) => {
-            return exit
-              .transition()
-              .duration(10)
-              .attr("r", 0)
-              .style("opacity", 0)
-              .attr("cx", 1000)
-              .on("end", function () {
-                d3.select(this).remove();
-              });
+            return this.removeSymbols(exit);
+          }
+        );
+
+      this.svg
+        .selectAll("foreignObject")
+        .data(data)
+        .join(
+          (enter) => {
+            return this.showFractions(enter, that);
+          },
+          (update) => {
+            //return this.updateFractions(update);
+          },
+          (exit) => {
+            //return reomoveFractions(exit);
           }
         );
     },

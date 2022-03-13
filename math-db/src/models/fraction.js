@@ -29,7 +29,7 @@ module.exports = (sequelize, DataTypes) => {
             nominatorValue: {
                 type: DataTypes.STRING,
             },
-            deNominatorValue: {
+            denominatorValue: {
                 type: DataTypes.STRING,
             },
         },

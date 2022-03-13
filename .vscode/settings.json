@@ -1,5 +1,15 @@
 {
   "eslint.workingDirectories": [
     "./{PATH_TO_CLIENT}"
+  ],
+    "restoreTerminals.terminals": [
+    {
+      "splitTerminals": [
+        {
+          "name": "server",
+          "commands": ["cd math-server","npm run dev"]
+        },
+      ]
+    },
   ]
 }

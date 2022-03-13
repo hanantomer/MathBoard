@@ -44,22 +44,20 @@
         dark
         ><v-icon>mdi-grid</v-icon>
       </v-btn>
-      <v-btn-toggle
-        v-model="togglefractionPosition"
-        background-color="transparent"
-        active-class="deleteActive"
+
+      <v-btn
+        icon
+        color="white"
+        x-small
+        fab
+        dark
+        @click.stop="
+          isFractionDialogOpen = true;
+          editManager_startFractionMode();
+        "
       >
-        <v-btn
-          icon
-          color="white"
-          x-small
-          fab
-          dark
-          @click="editManager_fractionButtonPressed"
-        >
-          <v-icon>mdi-fraction-one-half</v-icon>
-        </v-btn>
-      </v-btn-toggle>
+        <v-icon>mdi-fraction-one-half</v-icon>
+      </v-btn>
     </v-toolbar>
     <createAccessLinkDialog
       v-model="isAccessLinkDialogOpen"
@@ -67,7 +65,9 @@
     ></createAccessLinkDialog>
     <fractionDialog
       v-model="isFractionDialogOpen"
-      v-on="{ save: $fractionMixin_saveFraction }"
+      v-on="{
+        save: $saveFraction,
+      }"
     ></fractionDialog>
     <v-container app style="max-width: 1600px !important">
       <v-row>
@@ -165,6 +165,7 @@ export default {
       window.addEventListener("keyup", this.editManager_keyUp);
     });
     this.matrixMixin_setMatrix();
+    //this.selectionMixin_setSelectedRect({ x: 1, y: 1 });
   },
   data: function () {
     return {
@@ -173,6 +174,7 @@ export default {
       boundingClientRet: null,
       isAdmin: false,
       isAccessLinkDialogOpen: false,
+      isFractionDialogOpen: false,
       svg: {},
       signs: [
         { sign: "1" },
@@ -236,6 +238,14 @@ export default {
       getSymbols: "getSymbols",
       getFractions: "getFractions",
     }),
+    $showFractionDialog() {
+      this.isFractionDialogOpen = true;
+      editManager_startFractionMode();
+    },
+    $saveFraction(fraction) {
+      this.editManager_endFractionMode();
+      this.fractionMixin_saveFraction(fraction);
+    },
     $toggleExerciseMatrix() {
       this.matrixMixin_toggleMatrixOverlay();
     },

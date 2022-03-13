@@ -7,5 +7,5 @@
   "editor.formatOnPaste": true,
   "editor.formatOnType": true,
   "editor.formatOnSave": false,
-  "files.eol": "auto"
+  "files.eol": "auto",
 }

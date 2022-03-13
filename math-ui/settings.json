@@ -1,0 +1,10 @@
+  "restoreTerminals.terminals": [
+    {
+      "splitTerminals": [
+        {
+          "name": "server",
+          "commands": ["npm run dev"]
+        },
+      ]
+    },
+  ]
