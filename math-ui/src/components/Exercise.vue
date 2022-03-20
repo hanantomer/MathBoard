@@ -1,5 +1,6 @@
 <template fill-height>
   <div fill-height>
+    <div>$$x = {-b \pm \sqrt{b^2-4ac} \over 2a}.$$</div>
     <v-toolbar color="primary" dark>
       <v-btn
         :disabled="!authorized && !isAdmin"
@@ -139,17 +140,18 @@ import matrixOverlayMixin from "../Mixins/matrixOverlayMixin";
 import positionMixin from "../Mixins/positionMixin";
 import cursorMixin from "../Mixins/cursorMixin";
 import selectionMixin from "../Mixins/selectionMixin";
-//import lineDrawingMixin from "../Mixins/lineDrawingMixin";
 import editManager from "../Mixins/editManager";
 import symbolMixin from "../Mixins/symbolMixin";
 import fractionMixin from "../Mixins/fractionMixin";
 import userOperationsSyncMixin from "../Mixins/userOperationsSyncMixin";
 import createAccessLinkDialog from "./CreateAccessLinkDialog.vue";
-import { mdiFractionOneHalf } from "@mdi/js";
 import fractionDialog from "./fractionDialog.vue";
 
 export default {
-  components: { createAccessLinkDialog, fractionDialog },
+  components: {
+    createAccessLinkDialog,
+    fractionDialog,
+  },
   props: ["exerciseId"],
   destroyed: function () {
     window.removeEventListener("keyup", this.editManager_keyUp);
@@ -165,12 +167,11 @@ export default {
       window.addEventListener("keyup", this.editManager_keyUp);
     });
     this.matrixMixin_setMatrix();
-    //this.selectionMixin_setSelectedRect({ x: 1, y: 1 });
+    this.reRenderMathJax();
   },
   data: function () {
     return {
       toggleDeleteMode: 1,
-      togglefractionPosition: 1,
       boundingClientRet: null,
       isAdmin: false,
       isAccessLinkDialogOpen: false,
