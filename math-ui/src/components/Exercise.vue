@@ -1,6 +1,6 @@
 <template fill-height>
   <div fill-height>
-    <div>$$x = {-b \pm \sqrt{b^2-4ac} \over 2a}.$$</div>
+    <!-- <div>$$x = {-b \pm \sqrt{b^2-4ac} \over 2a}.$$</div> -->
     <v-toolbar color="primary" dark>
       <v-btn
         :disabled="!authorized && !isAdmin"
@@ -225,6 +225,7 @@ export default {
       deep: true,
       handler(notations) {
         this.matrixMixin_refreshScreen(notations);
+        this.reRenderMathJax();
       },
     },
   },

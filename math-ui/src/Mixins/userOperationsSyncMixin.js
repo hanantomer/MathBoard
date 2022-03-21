@@ -59,12 +59,14 @@ export default {
           : window.$cookies.get("access_token")
       }`;
     },
-    mixin_syncOutgoingSelectRect: async function (selectedRect) {
-      selectedRect.ExerciseId = this.exerciseId;
-      console.debug(`sync selected rect ${JSON.stringify(selectedRect)}`);
-      client.service("selectedRectSync").update(
+    userOperationsMixin_syncOutgoingCurrentPosition: async function (
+      currentPosition
+    ) {
+      currentPosition.ExerciseId = this.exerciseId;
+      console.debug(`sync selected rect ${JSON.stringify(currentPosition)}`);
+      client.service("currentPosition").update(
         null,
-        { selectedRect: selectedRect },
+        { currentPosition: currentPosition },
         {
           query: {
             access_token: this.getAccessToken(),
@@ -72,7 +74,7 @@ export default {
         }
       );
     },
-    mixin_syncOutgoingSaveNotation: async function (notation) {
+    userOperationsMixin_syncOutgoingSaveNotation: async function (notation) {
       client.service("notationSync").update(
         { notations: [notation] },
         {
@@ -82,7 +84,7 @@ export default {
         }
       );
     },
-    mixin_syncOutgoingRemoveNotation: async function (notation) {
+    userOperationsMixin_syncOutgoingRemoveNotation: async function (notation) {
       client.service("notationSync").remove(
         { notations: [notation] },
         {
@@ -92,7 +94,7 @@ export default {
         }
       );
     },
-    mixin_syncOutgoingUpdateSelectedNotations: async function () {
+    userOperationsMixin_syncOutgoingUpdateSelectedNotations: async function () {
       client.service("notationSync").update(
         { notations: this.getSelectedSymbols() },
         {
@@ -102,7 +104,7 @@ export default {
         }
       );
     },
-    mixin_syncOutgoingHeartBeat: async function (exerciseId) {
+    userOperationsMixin_syncOutgoingHeartBeat: async function (exerciseId) {
       client.service("heartbeat").update(
         { ExerciseId: exerciseId },
         {
@@ -156,11 +158,7 @@ export default {
       });
 
       let _store = store;
-      // client.service("notationSync").on("created", (notation) => {
-      //   if (notation.UserId !== this.getUser().id) {
-      //     this.dispatchCreatedNotation(notation);
-      //   }
-      // });
+
       client.service("notationSync").on("updated", (notation) => {
         if (notation.UserId !== this.getUser().id) {
           this.dispatchUpdateNotation(notation);
@@ -171,10 +169,10 @@ export default {
           this.dispatchRomoveNotation(notation);
         }
       });
-      client.service("selectedRectSync").on("updated", (selectedRect) => {
-        if (selectedRect.UserId !== this.getUser().id) {
-          _store.dispatch("setSelectedRect", selectedRect);
-        }
+      client.service("currentPosition").on("updated", (currentPosition) => {
+        currentPosition.type === "rect"
+          ? _store.dispatch("setCurrentRect", currentPosition)
+          : _store.dispatch("setCurrentFraction", currentPosition);
       });
       client.service("authorization").on("updated", (user) => {
         _store.dispatch("setUser", user);

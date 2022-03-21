@@ -14,7 +14,7 @@ module.exports = {
   },
   methods: {
     //selectCurrentNotation(e) {
-    //  selectionMixin_setSelectedRect(e);
+    //  selectionMixin_setCurrentRect(e);
     //},
     hideDeleteCursor() {
       Array.from(document.getElementsByTagName("svg")).forEach((e) =>
@@ -43,7 +43,6 @@ module.exports = {
       }
     },
     editManager_deleteButtonPressed: function () {
-      this.togglefractionPosition = 1;
       if (this.currentMode == EditMode.DELETE) {
         this.currentMode = EditMode.ADD_SYMBOL;
         this.hideDeleteCursor();
@@ -53,11 +52,10 @@ module.exports = {
       }
     },
     editManager_symbolButtonPressed: function (e) {
-      this.symbolMixin_createSymbol(e.currentTarget.innerText);
+      this.symbolMixin_addSymbol(e.currentTarget.innerText);
     },
     editManager_mouseDown: function (e) {
       if (this.currentMode === EditMode.ADD_SYMBOL) {
-        //this.selectCurrentNotation(e); /// TODO select current object
         this.selectionMixin_setSelectedNotation(e);
       } else if (this.currentMode === EditMode.DELETE) {
         this.symbolMixin_removeSymbol(e);
@@ -67,7 +65,7 @@ module.exports = {
     editManager_keyUp: function (e) {
       if (this.currentMode === EditMode.ADD_SYMBOL) {
         if (e.keyCode > 48 && !e.ctrlKey && !e.shiftKey && !e.altKey) {
-          this.symbolMixin_createSymbol(e.key);
+          this.symbolMixin_addSymbol(e.key);
         }
       }
     },
@@ -108,9 +106,6 @@ module.exports = {
       else if (this.currentMode === EditMode.DRAW) {
         this.drawMixin_drawLine(e);
       }
-    },
-    setCurrentRect: function (e) {
-      this.selectionMixin_setSelectedRect(e);
     },
   },
 };

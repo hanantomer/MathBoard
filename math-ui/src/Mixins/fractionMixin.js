@@ -6,27 +6,20 @@ export default {
     fractionMixin_saveFraction(fraction) {
       fraction.exerciseId = this.exerciseId;
       fraction.UserId = this.$store.getters.getUser.id;
-      fraction = Object.assign(fraction, this.getSelectedRect());
+      fraction = Object.assign(fraction, this.getcurrentRect());
       this.$store
         .dispatch("addFraction", fraction)
         .then((fraction) => {
-          this.mixin_syncOutgoingSaveNotation(fraction);
-
-          /* let nextRect = this.matrixMixin_getNextFractionRect();
+          this.userOperationsMixin_syncOutgoingSaveNotation(fraction);
+          let nextRect = this.matrixMixin_getNextRect();
           if (!!nextRect) {
-            this.mixin_syncOutgoingSelectRect(nextRect);
-          }*/
+            nextRect.type = "rect";
+            this.userOperationsMixin_syncOutgoingCurrentPosition(nextRect);
+          }
         })
         .catch((e) => {
           console.error(e);
         });
     },
-    // fractionMixin_getFractionCharacterXpos(col, charPos) {
-    //   return (
-    //     col * this.matrixMixin_getRectSize() +
-    //     (charPos * this.matrixMixin_getRectSize()) / 2 +
-    //     5
-    //   );
-    // },
   },
 };

@@ -16,7 +16,11 @@ export default {
     };
   },
   methods: {
-    toggleSelectedNotation(clickedNotation, clickedCoordinates) {
+    reRenderMathJax() {
+      window.MathJax.typeset();
+    },
+    toggleSelectedNotation(clickedNotation) {
+      if (!clickedNotation) return;
       if (!!this.prevSelectedNotation)
         this.prevSelectedNotation.style.fill = "";
       this.prevSelectedNotation = clickedNotation;
@@ -99,49 +103,32 @@ export default {
           row: clickedRect.parentNode.attributes.row.value,
         };
     },
-    matrixMixin_getFractionRectByClickedPosition(position) {
-      let clickedRect = this.matrixMixin_findRect(position.x, position.y);
-      let rectCoordinates = clickedRect.getBoundingClientRect();
-      if (clickedRect) {
-        let isUpperPartClicked =
-          position.y - rectCoordinates.y < rectCoordinates.height / 2;
-        let isLeftPartClicked =
-          position.x - rectCoordinates.x < rectCoordinates.width / 2;
-
-        return {
-          fractionPosition: isUpperPartClicked
-            ? isLeftPartClicked
-              ? "TopLeft"
-              : "TopRight"
-            : isLeftPartClicked
-            ? "BottomLeft"
-            : "BottomRight",
-          col: clickedRect.attributes.col.value,
-          row: clickedRect.parentNode.attributes.row.value,
-        };
-      }
-    },
     matrixMixin_selectRectByCoordinates(clickedCoordinates) {
       let rect = document
         .querySelector(`g[row="${clickedCoordinates.row}"]`)
         .querySelector(`rect[col="${clickedCoordinates.col}"]`);
 
-      this.toggleSelectedNotation(rect, clickedCoordinates);
+      if (rect) this.toggleSelectedNotation(rect, clickedCoordinates);
     },
     matrixMixin_selectFractionByCoordinates(clickedCoordinates) {
-      let rect = document.querySelector(
-        `foreignObject[row="${clickedCoordinates.row}", col="${clickedCoordinates.col}"]`
+      let fraction = document.querySelector(
+        `foreignObject[row="${clickedCoordinates.row}"][col="${clickedCoordinates.col}"]`
       );
 
-      this.toggleSelectedNotation(rect, clickedCoordinates);
+      if (fraction) this.toggleSelectedNotation(fraction, clickedCoordinates);
     },
 
     matrixMixin_getRectSize() {
       return this.rectSize;
     },
     matrixMixin_getNextRect() {
-      let col = parseInt(this.prevSelectedRect.attributes.col.value);
-      let row = parseInt(this.prevSelectedRect.parentNode.attributes.row.value);
+      if (!this.prevSelectedNotation) {
+        return;
+      }
+      let col = parseInt(this.prevSelectedNotation.attributes.col.value);
+      let row = parseInt(
+        this.prevSelectedNotation.parentNode.attributes.row.value
+      );
       if (col != this.colsNum) {
         col += 1;
       } else {
@@ -164,23 +151,36 @@ export default {
     },
     showSymbols: function (enter, that) {
       return enter
-        .append("text")
+        .append("foreignObject")
         .attr("id", (n) => {
           return n.id;
         })
+        .attr("col", (n) => {
+          return n.col;
+        })
+        .attr("row", (n) => {
+          return n.row;
+        })
         .attr("x", (n, i) => {
-          return this.getSymbolXposByCol(n.col);
+          return this.getSymbolXposByCol(n.col) - 5;
         })
         .attr("y", (n) => {
-          return this.getSymbolYposByRow(n.row);
+          return this.getSymbolYposByRow(n.row) - 10;
         })
-        .attr("dy", "0.65em")
-        .attr("dx", "0.25em")
-        .attr("font-size", (n) => {
-          return that.symbolFontSize;
+        .attr("width", (n) => {
+          return this.rectSize;
         })
-        .text((n) => {
-          return !!n.value ? n.value : "";
+        .attr("height", this.rectSize)
+        .style("font-size", (n) => {
+          return !!n.nominatorValue && !!n.denominatorValue
+            ? "0.7em"
+            : "0.85em";
+        })
+        .html((n) => {
+          if (!!n.nominatorValue && !!n.denominatorValue) {
+            return `$$\{${n.nominatorValue}\\over${n.denominatorValue} }\$$`;
+          }
+          return !!n.value ? "$$" + n.value + "$$" : "";
         });
     },
     updateSymbols: function (update) {
@@ -209,50 +209,6 @@ export default {
           d3.select(this).remove();
         });
     },
-    showFractions: function (enter, that) {
-      enter
-        .append("foreignObject")
-        .attr("col", (n) => {
-          return n.col;
-        })
-        .attr("row", (n) => {
-          return n.row;
-        })
-        .attr("x", (n, i) => {
-          return this.getSymbolXposByCol(n.col) - 5;
-        })
-        .attr("y", (n) => {
-          return this.getSymbolYposByRow(n.row) - 10;
-        })
-        .attr("width", (n) => {
-          return !!n.nominatorValue ? this.rectSize : 0;
-        })
-        .attr("height", this.rectSize)
-        .append("xhtml:div")
-        .style("font-weight", "bold")
-        .style("font-size", "0.85em")
-        .html((n) => {
-          if (!n.nominatorValue) {
-            return;
-          }
-          let textWidth = Math.max(
-            n.nominatorValue.length,
-            n.denominatorValue.length
-          );
-          return (
-            "<div style='text-align: center'>" +
-            n.nominatorValue +
-            "</div>" +
-            `<hr style='margin:auto;border: 1px solid black;width:${
-              textWidth * 8
-            }px'>` +
-            "<div style='text-align: center'>" +
-            n.denominatorValue +
-            "</div>"
-          );
-        });
-    },
-
     matrixMixin_refreshScreen(data) {
       let that = this;
       this.svg
@@ -267,21 +223,6 @@ export default {
           },
           (exit) => {
             return this.removeSymbols(exit);
-          }
-        );
-
-      this.svg
-        .selectAll("foreignObject")
-        .data(data)
-        .join(
-          (enter) => {
-            return this.showFractions(enter, that);
-          },
-          (update) => {
-            //return this.updateFractions(update);
-          },
-          (exit) => {
-            //return reomoveFractions(exit);
           }
         );
     },

@@ -45,61 +45,59 @@ export default {
       );
     },
     ...mapState({
-      selectedRect: (state) => state.selectedNotationStore.selectedRect,
-      selectedFraction: (state) => state.selectedNotationStore.selectedFraction,
+      currentRect: (state) => state.currentPositionStore.currentRect,
+      currentFraction: (state) => state.currentPositionStore.currentFraction,
     }),
   },
   watch: {
-    selectedRect: {
-      handler(selectedRect) {
-        this.matrixMixin_selectRectByCoordinates(selectedRect);
+    currentRect: {
+      handler(currentRect) {
+        this.matrixMixin_selectRectByCoordinates(currentRect);
       },
     },
-    selectedFraction: {
-      handler(selectedFraction) {
-        this.matrixMixin_selectFractionByCoordinates(selectedFraction);
+    currentFraction: {
+      handler(currentFraction) {
+        this.matrixMixin_selectFractionByCoordinates(currentFraction);
       },
     },
   },
   methods: {
     ...mapGetters({
-      getSelectedRect: "getSelectedRect",
+      getcurrentRect: "getcurrentRect",
     }),
-    setSelectedRect: function (rect) {
-      this.$store
-        .dispatch("setSelectedRect", rect)
-        .then((rect) => {
-          this.mixin_syncOutgoingSelectRect(this.getSelectedRect());
-        })
-        .catch((e) => {
-          console.error(e);
-        });
-    },
     selectionMixin_setSelectedNotation(e) {
-      let selectedRect = this.matrixMixin_findClickedObject(
+      let currentRect = this.matrixMixin_findClickedObject(
         {
           x: e.clientX,
           y: e.clientY,
         },
         "rect"
       );
-      if (!!selectedRect)
-        return this.setSelectedRect({
-          col: selectedRect.attributes.col.value,
-          row: selectedRect.parentNode.attributes.row.value,
+      if (!!currentRect) {
+        return this.userOperationsMixin_syncOutgoingCurrentPosition({
+          col: currentRect.attributes.col.value,
+          row: currentRect.parentNode.attributes.row.value,
+          type: "rect",
         });
+      }
+      //        return this.setCurrentRect({
+      //          col: currentRect.attributes.col.value,
+      //          row: currentRect.parentNode.attributes.row.value,
+      //        });
 
-      let selectedFraction = this.matrixMixin_findClickedObject(
+      let currentFraction = this.matrixMixin_findClickedObject(
         {
           x: e.clientX,
           y: e.clientY,
+          type: "fraction",
         },
         "foreignObject"
       );
-      if (!!selectedFraction)
-        return this.setSelectedFraction({
-          col: selectedFraction.attributes.col.value,
-          row: selectedFraction.attributes.row.value,
+      if (!!currentFraction)
+        return this.userOperationsMixin_syncOutgoingCurrentPosition({
+          col: currentFraction.attributes.col.value,
+          row: currentFraction.attributes.row.value,
+          type: "fraction",
         });
     },
 
@@ -146,10 +144,9 @@ export default {
       this.selectionPosition.x1 = this.selectionPosition.x2 = this.selectionPosition.y1 = this.selectionPosition.y2 = 0;
     },
     selectionMixin_startSelection: function (e) {
-      console.debug("start selection");
       this.selectionPosition.x2 = this.selectionPosition.x1 = e.clientX;
       this.selectionPosition.y2 = this.selectionPosition.y1 = e.clientY - 50;
-      this.$store.dispatch("unselectAllSymbols");
+      this.$store.dispatch("unselectAllNotations");
     },
     selectionMixin_endMoveSelection: function (e) {
       this.dragPostion.x = 0;
@@ -174,7 +171,7 @@ export default {
             this.getSymbolYposByRow(datum.row) > p1.y + 50 &&
             this.getSymbolYposByRow(datum.row) < p2.y + 50
           ) {
-            this.$store.dispatch("selectSymbol", datum.id);
+            this.$store.dispatch("selectNotation", datum.id);
           }
         });
       }

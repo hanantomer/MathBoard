@@ -3,22 +3,23 @@ export default {
     return { symbolFontSize: "1.8em" };
   },
   methods: {
-    symbolMixin_createSymbol(s) {
+    symbolMixin_addSymbol(s) {
       let symbol = {
         ExerciseId: this.exerciseId,
         value: s,
         isNumber: !isNaN(parseInt(s)),
       };
 
-      symbol = Object.assign(symbol, this.getSelectedRect());
+      symbol = Object.assign(symbol, this.getcurrentRect());
 
       this.$store
         .dispatch("addSymbol", symbol)
         .then(() => {
-          this.mixin_syncOutgoingSaveNotation(symbol);
+          this.userOperationsMixin_syncOutgoingSaveNotation(symbol);
           let nextRect = this.matrixMixin_getNextRect();
           if (!!nextRect) {
-            this.mixin_syncOutgoingSelectRect(nextRect);
+            nextRect.type = "rect";
+            this.userOperationsMixin_syncOutgoingCurrentPosition(nextRect);
           }
         })
         .catch((e) => {
@@ -29,7 +30,9 @@ export default {
       this.selectionMixin_endMoveSelection(e);
       this.$store
         .dispatch("updateSelectedNotationCoordinates")
-        .then(() => this.mixin_syncOutgoingUpdateSelectedNotations());
+        .then(() =>
+          this.userOperationsMixin_syncOutgoingUpdateSelectedNotations()
+        );
     },
     symbolMixin_removeSymbol: function (e) {
       let rectToremove = this.mixin_getRectByClickedPosition({
@@ -46,7 +49,9 @@ export default {
       this.$store
         .dispatch("removeNotation", symbolAtRectPosition)
         .then(() => {
-          this.mixin_syncOutgoingRemoveNotation(symbolAtRectPosition);
+          this.userOperationsMixin_syncOutgoingRemoveNotation(
+            symbolAtRectPosition
+          );
         })
         .catch((e) => {
           console.error(e);

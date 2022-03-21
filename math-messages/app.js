@@ -8,13 +8,13 @@ app.configure(socketio());
 const AuthorizationService = require("./authorizationService");
 const AuthenticationService = require("./authenticationService");
 const HeartbeatService = require("./heartbeatService");
-const SelectedRectSyncService = require("./selectedRectSyncService");
+const currentPositionSyncService = require("./currentPositionSyncService");
 const NotationSyncService = require("./notationSyncService");
 
 app.use("authorization", new AuthorizationService(app));
 app.use("authentication", new AuthenticationService(app));
 app.use("heartbeat", new HeartbeatService(app));
-app.use("selectedRectSync", new SelectedRectSyncService(app));
+app.use("currentPosition", new currentPositionSyncService(app));
 app.use("notationSync", new NotationSyncService(app));
 
 app.service("authorization").publish("updated", (authorization, ctx) => {
@@ -50,13 +50,13 @@ app.service("heartbeat").publish("updated", (heartbeat, ctx) => {
   ];
 });
 
-app.service("selectedRectSync").publish("updated", (rect, ctx) => {
+app.service("currentPosition").publish("updated", (position, ctx) => {
   console.debug(
     `publish selected rect updated data: ${JSON.stringify(
-      rect
-    )} to channel: ${rect.ExerciseId.toString()}`
+      position
+    )} to channel: ${position.ExerciseId.toString()}`
   );
-  return [app.channel(constants.EXERCISE_CHANNEL_PREFIX + rect.ExerciseId)];
+  return [app.channel(constants.EXERCISE_CHANNEL_PREFIX + position.ExerciseId)];
 });
 
 app.service("notationSync").publish("created", (notation, ctx) => {
