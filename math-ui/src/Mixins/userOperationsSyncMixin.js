@@ -84,9 +84,9 @@ export default {
         }
       );
     },
-    userOperationsMixin_syncOutgoingRemoveNotation: async function (notation) {
+    userOperationsMixin_syncOutgoingRemoveNotation: async function (notations) {
       client.service("notationSync").remove(
-        { notations: [notation] },
+        { notations: [notations] },
         {
           query: {
             access_token: this.getAccessToken(),
@@ -114,7 +114,6 @@ export default {
         }
       );
     },
-
     mixin_syncOutgoingAuthUser: async function (
       exerciseId,
       authorizedStudentId,
@@ -164,10 +163,12 @@ export default {
           this.dispatchUpdateNotation(notation);
         }
       });
-      client.service("notationSync").on("removed", (notation) => {
-        if (notation.UserId !== this.getUser().id) {
-          this.dispatchRomoveNotation(notation);
-        }
+      client.service("notationSync").on("removed", (notations) => {
+        notations.forEach((notation) => {
+          if (notation.UserId !== this.getUser().id) {
+            this.dispatchRomoveNotation(notation);
+          }
+        });
       });
       client.service("currentPosition").on("updated", (currentPosition) => {
         currentPosition.type === "rect"

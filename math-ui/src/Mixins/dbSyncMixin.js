@@ -144,9 +144,13 @@ module.exports = {
 
       return res ? res.data : null;
     },
-    removeSymbol: async function (symbol) {
+    removeNotation: async function (notation) {
       try {
-        axiosInstnce.delete("/symbols/" + symbol.id);
+        if (notation.value) {
+          axiosInstnce.delete("/symbols/" + notation.id);
+        } else if (notation.nominatorValue) {
+          axiosInstnce.delete("/fractions/" + notation.id);
+        }
       } catch (error) {
         handleError(error);
       }

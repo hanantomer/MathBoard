@@ -37,14 +37,14 @@ class notationSyncService {
 
   async remove(data, params) {
     let user = await this.getUser(params.query.access_token);
-    let exerciseId = null;
     if (!!user) {
-      data.notation.UserId = user.id;
-      if (exerciseId == null)
-        exerciseId = await dbUtil.parseExerciseId(data.notation.ExerciseId);
-      data.notation.ExerciseId = exerciseId;
+      data.notations.forEach((notation) => {
+        notation.UserId = user.id;
+      });
+      //let exerciseId = await dbUtil.parseExerciseId(data.notation.ExerciseId);
+      //data.notation.ExerciseId = exerciseId;
     }
-    return data.notation;
+    return data.notations;
   }
 }
 

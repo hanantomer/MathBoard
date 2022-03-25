@@ -1,12 +1,20 @@
 import * as d3 from "d3";
 
 export default {
+  computed: {
+    fontSize: function () {
+      return `${this.rectSize / 20}em`;
+    },
+    fractionFontSize: function () {
+      return `${this.rectSize / 45}em`;
+    },
+  },
   data: function () {
     return {
       opacity: 1,
       colsNum: 25,
       rowsNum: 25,
-      rectSize: 40,
+      rectSize: 30,
       matrix: [],
       topLevelGroup: null,
       prevSelectedNotation: null,
@@ -94,15 +102,6 @@ export default {
 
       this.topLevelGroup.selectAll("rect").attr("stroke-opacity", this.opacity);
     },
-    mixin_getRectByClickedPosition(position) {
-      let clickedRect = this.matrixMixin_findRect(position.x, position.y);
-
-      if (clickedRect)
-        return {
-          col: clickedRect.attributes.col.value,
-          row: clickedRect.parentNode.attributes.row.value,
-        };
-    },
     matrixMixin_selectRectByCoordinates(clickedCoordinates) {
       let rect = document
         .querySelector(`g[row="${clickedCoordinates.row}"]`)
@@ -149,7 +148,17 @@ export default {
         };
       }
     },
-    showSymbols: function (enter, that) {
+    getFractionWidth: function (fraction) {
+      return (
+        Math.max(
+          fraction.nominatorValue.length,
+          fraction.denominatorValue.length
+        ) *
+        this.fractionFontSize.replace("em", "") *
+        16
+      );
+    },
+    showNotations: function (enter) {
       return enter
         .append("foreignObject")
         .attr("id", (n) => {
@@ -162,19 +171,22 @@ export default {
           return n.row;
         })
         .attr("x", (n, i) => {
-          return this.getSymbolXposByCol(n.col) - 5;
+          return this.getNotationXposByCol(n.col);
         })
         .attr("y", (n) => {
-          return this.getSymbolYposByRow(n.row) - 10;
+          return this.getNotationXposByCol(n.row);
         })
         .attr("width", (n) => {
+          if (!!n.nominatorValue && !!n.denominatorValue) {
+            return this.getFractionWidth(n);
+          }
           return this.rectSize;
         })
         .attr("height", this.rectSize)
         .style("font-size", (n) => {
           return !!n.nominatorValue && !!n.denominatorValue
-            ? "0.7em"
-            : "0.85em";
+            ? this.fractionFontSize
+            : this.fontSize;
         })
         .html((n) => {
           if (!!n.nominatorValue && !!n.denominatorValue) {
@@ -183,22 +195,19 @@ export default {
           return !!n.value ? "$$" + n.value + "$$" : "";
         });
     },
-    updateSymbols: function (update) {
+    updateNotations: function (update) {
       return update
-        .attr("fill", (n) => {
+        .style("color", (n) => {
           return n.selected ? "red" : "black";
         })
         .attr("x", (n, i) => {
-          return this.getSymbolXposByCol(n.col);
+          return this.getNotationXposByCol(n.col);
         })
         .attr("y", (n) => {
-          return this.getSymbolYposByRow(n.row);
-        })
-        .text((n) => {
-          return n.value;
+          return this.getNotationYposByRow(n.row);
         });
     },
-    removeSymbols: function (exit) {
+    removeNotations: function (exit) {
       return exit
         .transition()
         .duration(10)
@@ -210,19 +219,18 @@ export default {
         });
     },
     matrixMixin_refreshScreen(data) {
-      let that = this;
       this.svg
-        .selectAll("text")
+        .selectAll("foreignObject")
         .data(data)
         .join(
           (enter) => {
-            return this.showSymbols(enter, that);
+            return this.showNotations(enter);
           },
           (update) => {
-            return this.updateSymbols(update);
+            return this.updateNotations(update);
           },
           (exit) => {
-            return this.removeSymbols(exit);
+            return this.removeNotations(exit);
           }
         );
     },

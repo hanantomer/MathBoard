@@ -1,6 +1,6 @@
 <template>
   <v-row justify="center">
-    <v-dialog v-model="show" persistent max-width="400px">
+    <v-dialog v-model="show" persistent max-width="250px">
       <v-card>
         <v-card-title>Fraction Editor</v-card-title>
         <v-card-text>
@@ -66,9 +66,10 @@ export default {
   display: none;
 }
 .fraction-text >>> .v-text-field__slot {
-  background-color: lightblue;
+  background-color: rgb(235, 246, 250);
   color: black !important;
-  font-weight: bold;
+  font-weight: 500;
+  border: 0.02em solid rgb(191, 216, 197);
 }
 
 .v-text-field {

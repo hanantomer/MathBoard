@@ -11,11 +11,20 @@
         text
         ><span class="mr-1">{{ s.sign }}</span></v-btn
       >
+      <v-btn-toggle
+        v-model="toggleSelectionMode"
+        background-color="transparent"
+        active-class="iconActive"
+      >
+        <v-btn icon v-on:click="editManager_selectionButtonPressed" x-small
+          ><v-icon>mdi-selection</v-icon></v-btn
+        >
+      </v-btn-toggle>
 
       <v-btn-toggle
         v-model="toggleDeleteMode"
         background-color="transparent"
-        active-class="deleteActive"
+        active-class="iconActive"
       >
         <v-btn
           icon
@@ -143,9 +152,11 @@ import selectionMixin from "../Mixins/selectionMixin";
 import editManager from "../Mixins/editManager";
 import symbolMixin from "../Mixins/symbolMixin";
 import fractionMixin from "../Mixins/fractionMixin";
+import notationMixin from "../Mixins/notationMixin";
 import userOperationsSyncMixin from "../Mixins/userOperationsSyncMixin";
 import createAccessLinkDialog from "./CreateAccessLinkDialog.vue";
 import fractionDialog from "./fractionDialog.vue";
+import { mdiSelectionMarker } from "@mdi/js";
 
 export default {
   components: {
@@ -172,6 +183,7 @@ export default {
   data: function () {
     return {
       toggleDeleteMode: 1,
+      toggleSelectionMode: 1,
       boundingClientRet: null,
       isAdmin: false,
       isAccessLinkDialogOpen: false,
@@ -207,6 +219,7 @@ export default {
     symbolMixin,
     editManager,
     fractionMixin,
+    notationMixin,
   ],
   computed: {
     ...mapState({
@@ -288,7 +301,7 @@ export default {
 };
 </script>
 
-<style scoped>
+<style>
 .activestudent {
   border: 2px dashed rgb(143, 26, 179);
 }
@@ -316,10 +329,18 @@ export default {
 .nopadding {
   padding: 0 !important;
 }
-.deleteActive {
+.iconActive {
   background-color: dodgerblue;
 }
 .deleteMode {
   cursor: URL("~@/assets/delete.jpg"), none !important;
+}
+mjx-container[jax="CHTML"][display="true"] {
+  margin-top: 0.15em !important;
+  margin-bottom: 0.15em !important;
+}
+mjx-line {
+  margin-top: 0.05em !important;
+  margin-bottom: 0.05em !important;
 }
 </style>

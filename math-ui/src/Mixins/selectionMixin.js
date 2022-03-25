@@ -65,7 +65,7 @@ export default {
     ...mapGetters({
       getcurrentRect: "getcurrentRect",
     }),
-    selectionMixin_setSelectedNotation(e) {
+    selectionMixin_setCurrentPosition(e) {
       let currentRect = this.matrixMixin_findClickedObject(
         {
           x: e.clientX,
@@ -80,10 +80,6 @@ export default {
           type: "rect",
         });
       }
-      //        return this.setCurrentRect({
-      //          col: currentRect.attributes.col.value,
-      //          row: currentRect.parentNode.attributes.row.value,
-      //        });
 
       let currentFraction = this.matrixMixin_findClickedObject(
         {
@@ -124,7 +120,7 @@ export default {
         // consider meaningfull move only
         if (rectDeltaX != 0 || rectDeltaY != 0) {
           this.$store
-            .dispatch("moveSelectedSymbols", {
+            .dispatch("moveSelectedNotations", {
               rectDeltaX,
               rectDeltaY,
               rectSize,
@@ -163,13 +159,13 @@ export default {
           this.selectionPosition.y2
         );
 
-        this.svg.selectAll("text").each((datum) => {
+        this.svg.selectAll("foreignObject").each((datum) => {
           if (
             !!datum.id &&
-            this.getSymbolXposByCol(datum.col) > p1.x &&
-            this.getSymbolXposByCol(datum.col) < p2.x &&
-            this.getSymbolYposByRow(datum.row) > p1.y + 50 &&
-            this.getSymbolYposByRow(datum.row) < p2.y + 50
+            this.getNotationXposByCol(datum.col) > p1.x &&
+            this.getNotationXposByCol(datum.col) < p2.x &&
+            this.getNotationYposByRow(datum.row) > p1.y + 50 &&
+            this.getNotationYposByRow(datum.row) < p2.y + 50
           ) {
             this.$store.dispatch("selectNotation", datum.id);
           }
