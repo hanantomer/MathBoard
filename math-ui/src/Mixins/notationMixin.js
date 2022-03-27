@@ -4,7 +4,15 @@ export default {
       return col * this.matrixMixin_getRectSize();
     },
     getNotationYposByRow(row) {
-      return row * this.matrixMixin_getRectSize() + 2;
+      return row * this.matrixMixin_getRectSize();
+    },
+    notationMixin_moveSelection: function (e) {
+      this.selectionMixin_endMoveSelection(e);
+      this.$store
+        .dispatch("updateSelectedNotationCoordinates")
+        .then(() =>
+          this.userOperationsMixin_syncOutgoingUpdateSelectedNotations()
+        );
     },
     notationMixin_removeNotation: function (e) {
       let currentRect = this.matrixMixin_findClickedObject(

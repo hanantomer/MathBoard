@@ -85,7 +85,6 @@
           <v-card class="pa-2 ma-0 nopadding">
             <svg
               id="svg"
-              v-on:mouseup="editManager_svgMouseUp"
               v-on:mousedown="editManager_mouseDown"
               v-on:mousemove="editManager_mouseMove"
             ></svg>
@@ -207,6 +206,8 @@ export default {
         { sign: "^" },
         { sign: "√" },
         { sign: "=" },
+        { sign: "(" },
+        { sign: ")" },
       ],
     };
   },
@@ -244,8 +245,7 @@ export default {
   },
   methods: {
     ...mapGetters({
-      isAnySymbolSelected: "isAnySymbolSelected",
-      getSelectedSymbols: "getSelectedSymbols",
+      getSelectedNotations: "getSelectedNotations",
       getCurrentExercise: "getCurrentExercise",
       getExercises: "getExercises",
       getUser: "getUser",

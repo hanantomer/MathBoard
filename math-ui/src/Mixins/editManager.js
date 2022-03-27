@@ -75,7 +75,14 @@ module.exports = {
     },
     editManager_keyUp: function (e) {
       if (this.currentMode === EditMode.ADD_SYMBOL) {
-        if (e.keyCode > 48 && !e.ctrlKey && !e.shiftKey && !e.altKey) {
+        if (
+          e.code.startsWith("Digit") ||
+          e.code.startsWith("Key") ||
+          e.code.startsWith("Numpad") ||
+          e.code === "Minus" ||
+          e.code === "Plus" ||
+          e.code === "Equal"
+        ) {
           this.symbolMixin_addSymbol(e.key);
         }
       }
@@ -86,17 +93,17 @@ module.exports = {
     },
     // end selection
     editManager_selectionMouseUp(e) {
-      this.selectionMixin_endSelect(e);
+      if (this.currentMode === EditMode.MOVE) {
+        this.notationMixin_moveSelection(e);
+      } else if (this.currentMode === EditMode.SELECT) {
+        this.selectionMixin_endSelect(e);
+      }
 
       this.currentMode = EditMode.ADD_SYMBOL;
     },
     // end move
-    editManager_svgMouseUp(e) {
-      if (this.currentMode === EditMode.MOVE) {
-        this.symbolMixin_moveSelection(e);
-      }
-      this.currentMode = EditMode.ADD_SYMBOL;
-    },
+    //editManager_svgMouseUp(e) {
+    // },
     editManager_mouseMove: function (e) {
       // left button is pressed
       if (e.buttons !== 1) {

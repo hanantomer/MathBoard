@@ -75,8 +75,8 @@ export default {
       );
     },
     userOperationsMixin_syncOutgoingSaveNotation: async function (notation) {
-      client.service("notationSync").update(
-        { notations: [notation] },
+      client.service("notationSync").create(
+        { notation: notation },
         {
           query: {
             access_token: this.getAccessToken(),
@@ -96,7 +96,7 @@ export default {
     },
     userOperationsMixin_syncOutgoingUpdateSelectedNotations: async function () {
       client.service("notationSync").update(
-        { notations: this.getSelectedSymbols() },
+        { notations: this.getSelectedNotations() },
         {
           query: {
             access_token: this.getAccessToken(),

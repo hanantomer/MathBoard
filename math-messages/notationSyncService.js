@@ -16,9 +16,8 @@ class notationSyncService {
       data.notation.ExerciseId = await dbUtil.parseExerciseId(
         data.notation.ExerciseId
       );
-      return data.notation;
     }
-    return null;
+    return data.notation;
   }
 
   async update(data, params) {

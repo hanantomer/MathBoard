@@ -122,9 +122,12 @@ module.exports = {
         handleError(error);
       }
     },
-    updateSymbolCoordinates: async function (symbol) {
-      res = await axiosInstnce.put("/symbols/" + symbol.id, symbol);
-      return res ? res.data : null;
+    updateNotationCoordinates: async function (notation) {
+      if (notation.value) {
+        return axiosInstnce.put("/symbols/" + notation.id, notation);
+      } else if (notation.nominatorValue) {
+        return axiosInstnce.put("/fractions/" + notation.id, notation);
+      }
     },
     saveSymbol: async function (symbol) {
       let symbolAtCoordinates = await getSymbolByCoordinates(

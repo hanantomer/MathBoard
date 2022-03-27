@@ -23,13 +23,5 @@ export default {
           console.error(e);
         });
     },
-    symbolMixin_moveSelection: function (e) {
-      this.selectionMixin_endMoveSelection(e);
-      this.$store
-        .dispatch("updateSelectedNotationCoordinates")
-        .then(() =>
-          this.userOperationsMixin_syncOutgoingUpdateSelectedNotations()
-        );
-    },
   },
 };
