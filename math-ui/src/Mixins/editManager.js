@@ -13,9 +13,14 @@ module.exports = {
     };
   },
   methods: {
-    //selectCurrentNotation(e) {
-    //  selectionMixin_setCurrentRect(e);
-    //},
+    /*setCurrentMode(newMode) {
+      switch (this.currentMode) {
+        case EditMode.ADD_SYMBOL: {
+          
+        }
+      }
+      this.currentMode = newMode;
+    },*/
     hideDeleteCursor() {
       Array.from(document.getElementsByTagName("svg")).forEach((e) =>
         e.classList.remove("deleteMode")
@@ -97,6 +102,7 @@ module.exports = {
         this.notationMixin_moveSelection(e);
       } else if (this.currentMode === EditMode.SELECT) {
         this.selectionMixin_endSelect(e);
+        this.toggleSelectionMode = 1;
       }
 
       this.currentMode = EditMode.ADD_SYMBOL;

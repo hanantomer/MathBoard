@@ -119,7 +119,7 @@ export default {
       });
     },
     addFraction(context, fraction) {
-      dbSyncMixin.methods.saveFraction(fraction).then((fraction) => {
+      return dbSyncMixin.methods.saveFraction(fraction).then((fraction) => {
         context.commit("addNotation", fraction);
         return fraction;
       });
