@@ -107,9 +107,6 @@ module.exports = {
 
       this.currentMode = EditMode.ADD_SYMBOL;
     },
-    // end move
-    //editManager_svgMouseUp(e) {
-    // },
     editManager_mouseMove: function (e) {
       // left button is pressed
       if (e.buttons !== 1) {

@@ -99,7 +99,6 @@ export default {
 
     // extend or shrink selection area
     selectionMixinUpdateSelectionArea: function (e) {
-      this.mixin_hideCursor();
       this.selectionPosition.x2 = e.clientX;
       this.selectionPosition.y2 = e.clientY - 50;
     },
@@ -138,6 +137,7 @@ export default {
     },
     selectionMixin_resetSelection: function () {
       this.selectionPosition.x1 = this.selectionPosition.x2 = this.selectionPosition.y1 = this.selectionPosition.y2 = 0;
+      this.$store.dispatch("unselectAllNotations");
     },
     selectionMixin_startSelection: function (e) {
       this.selectionPosition.x2 = this.selectionPosition.x1 = e.clientX;
@@ -150,22 +150,36 @@ export default {
     },
     selectionMixin_endSelect: function (e) {
       if (this.selectionPosition.x2 != this.selectionPosition.x1) {
-        var p1 = this.positionMixin_getSVGCoordinates(
+        var p1 = {
+          x: this.selectionPosition.x1,
+          y: this.selectionPosition.y1,
+        }; /*this.positionMixin_getSVGCoordinates(
           this.selectionPosition.x1,
           this.selectionPosition.y1
-        );
-        var p2 = this.positionMixin_getSVGCoordinates(
+        );*/
+        var p2 = {
+          x: this.selectionPosition.x2,
+          y: this.selectionPosition.y2,
+        }; /*this.positionMixin_getSVGCoordinates(
           this.selectionPosition.x2,
           this.selectionPosition.y2
-        );
+        );*/
 
         this.svg.selectAll("foreignObject").each((datum) => {
           if (
             !!datum.id &&
-            this.getNotationXposByCol(datum.col) > p1.x &&
-            this.getNotationXposByCol(datum.col) < p2.x &&
-            this.getNotationYposByRow(datum.row) > p1.y + 50 &&
-            this.getNotationYposByRow(datum.row) < p2.y + 50
+            this.getNotationXposByCol(datum.col) +
+              this.svg.node().getBoundingClientRect().x >
+              p1.x &&
+            this.getNotationXposByCol(datum.col) +
+              this.svg.node().getBoundingClientRect().x <
+              p2.x &&
+            this.getNotationYposByRow(datum.row) +
+              this.svg.node().getBoundingClientRect().y >
+              p1.y &&
+            this.getNotationYposByRow(datum.row) +
+              this.svg.node().getBoundingClientRect().y <
+              p2.y + 50
           ) {
             this.$store.dispatch("selectNotation", datum.id);
           }

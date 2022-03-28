@@ -93,6 +93,7 @@
             id="selection"
             v-on:mouseup="editManager_selectionMouseUp"
             v-on:mousedown="editManager_selectionMouseDown"
+            v-on:mousemove="editManager_mouseMove"
             v_-if="editManager_getCurrentMode === 'SELECT'"
             class="grabbable"
             v-bind:style="{
@@ -146,7 +147,6 @@ import { mapState } from "vuex";
 import { mapGetters } from "vuex";
 import matrixOverlayMixin from "../Mixins/matrixOverlayMixin";
 import positionMixin from "../Mixins/positionMixin";
-import cursorMixin from "../Mixins/cursorMixin";
 import selectionMixin from "../Mixins/selectionMixin";
 import editManager from "../Mixins/editManager";
 import symbolMixin from "../Mixins/symbolMixin";
@@ -214,7 +214,6 @@ export default {
   mixins: [
     matrixOverlayMixin,
     positionMixin,
-    cursorMixin,
     selectionMixin,
     userOperationsSyncMixin,
     symbolMixin,
