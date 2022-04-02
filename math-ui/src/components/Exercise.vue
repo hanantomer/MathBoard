@@ -88,27 +88,27 @@
               v-on:mousedown="editManager_mouseDown"
               v-on:mousemove="editManager_mouseMove"
             ></svg>
+            <v-card
+              id="selection"
+              v-on:mouseup="editManager_selectionMouseUp"
+              v-on:mousedown="editManager_selectionMouseDown"
+              v-on:mousemove="editManager_mouseMove"
+              v_-if="editManager_getCurrentMode === 'SELECT'"
+              class="grabbable"
+              v-bind:style="{
+                left: selectionRectLeft,
+                top: selectionRectTop,
+                width: selectionRectWidth,
+                height: selectionRectHeight,
+              }"
+              style="
+                position: absolute;
+                z-index: 99;
+                background: transparent;
+                border: 1, 1, 1, 1;
+              "
+            ></v-card>
           </v-card>
-          <v-card
-            id="selection"
-            v-on:mouseup="editManager_selectionMouseUp"
-            v-on:mousedown="editManager_selectionMouseDown"
-            v-on:mousemove="editManager_mouseMove"
-            v_-if="editManager_getCurrentMode === 'SELECT'"
-            class="grabbable"
-            v-bind:style="{
-              left: selectionRectLeft,
-              top: selectionRectTop,
-              width: selectionRectWidth,
-              height: selectionRectHeight,
-            }"
-            style="
-              position: absolute;
-              z-index: 99;
-              background: transparent;
-              border: 1, 1, 1, 1;
-            "
-          ></v-card>
         </v-col>
         <v-col cols="3" v-if="isAdmin">
           <v-list>
@@ -235,11 +235,12 @@ export default {
   watch: {
     $route: "$loadExercise",
     notations: {
-      deep: true,
-      handler(notations) {
+      handler: function (notations) {
         this.matrixMixin_refreshScreen(notations);
         this.reRenderMathJax();
       },
+      //      deep: true,
+      //      immediate: true,
     },
   },
   methods: {
@@ -334,12 +335,17 @@ export default {
 .deleteMode {
   cursor: URL("~@/assets/delete.jpg"), none !important;
 }
-mjx-container[jax="CHTML"][display="true"] {
-  margin-top: 0.15em !important;
-  margin-bottom: 0.15em !important;
+/* mjx-container[jax="CHTML"][display="true"] {
+  padding: 0.2em;
+  margin-top: auto !important;
+  margin-bottom: auto !important;
+} */
+mjx-container[jax="SVG"][display="true"] {
+  margin: auto !important;
 }
+
 mjx-line {
   margin-top: 0.05em !important;
-  margin-bottom: 0.05em !important;
+  margin-bottom: 0.3em !important;
 }
 </style>

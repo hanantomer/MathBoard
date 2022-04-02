@@ -1,10 +1,12 @@
 export default {
   methods: {
-    symbolMixin_addSymbol(s) {
+    symbolMixin_addSymbol(value) {
       let symbol = {
         ExerciseId: this.exerciseId,
-        value: s,
-        isNumber: !isNaN(parseInt(s)),
+        UserId: this.$store.getters.getUser.id,
+        value: value,
+        //        isNumber: !isNaN(parseInt(value)),
+        type: "symbol",
       };
 
       symbol = Object.assign(symbol, this.getcurrentRect());

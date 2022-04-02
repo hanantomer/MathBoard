@@ -17,9 +17,9 @@ export default {
       }
       p.x = x;
       p.y = y;
-      var ctm = this.svg.node().getScreenCTM().inverse();
-      var p = p.matrixTransform(ctm);
-      return p;
+      let ctm = this.svg.node().getScreenCTM().inverse();
+      let psvg = p.matrixTransform(ctm);
+      return psvg;
     },
     positionMixin_getClickedNoramalizedPosition: function (clickedPosition) {
       let p = this.positionMixin_getSVGCoordinates(

@@ -74,7 +74,7 @@ module.exports = {
         this.selectionMixin_startSelection(e);
       } else if (this.currentMode === EditMode.DELETE) {
         this.notationMixin_removeNotation(e);
-      } else if (this.currentMode === EditMode.ADD_SYMBOL) {
+      } else {
         this.selectionMixin_setCurrentPosition(e);
       }
     },
@@ -119,10 +119,6 @@ module.exports = {
       // during move selected symbols
       else if (this.currentMode === EditMode.MOVE) {
         this.selectionMixin_moveSelection(e);
-      }
-      // during line drawing
-      else if (this.currentMode === EditMode.DRAW) {
-        this.drawMixin_drawLine(e);
       }
     },
   },

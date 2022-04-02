@@ -2,11 +2,15 @@ import Vue from "vue";
 import dbSyncMixin from "../Mixins/dbSyncMixin";
 
 const helper = {
-  findNotationById: function (state, id) {
-    return state.notations.find((n) => n.id === id);
+  findNotationByTypeAndId: function (state, type, id) {
+    return state.notations.keys.find((k) => k.id == type + id);
   },
-  findNotationByCoordinates: function (state, rect) {
-    return state.notations.find((n) => n.col == rect.col && n.row == rect.row);
+  findNotationByCoordinates: function (state, coordinates) {
+    return state.notations.keys.find(
+      (k) =>
+        state.notations[k].col == coordinates.col &&
+        state.notations[k].row == coordinates.row
+    );
   },
 };
 
@@ -15,7 +19,7 @@ export default {
     dbSyncMixin,
   },
   state: {
-    notations: [],
+    notations: {},
   },
   getters: {
     getNotations: (state) => {
@@ -23,63 +27,41 @@ export default {
     },
     // at least one notation is selected
     isAnyNotationSelected(state) {
-      return state.notations.find((e) => e.selected === true);
+      return state.notations.keys.find(
+        (k) => state.notations[k].selected === true
+      );
     },
     getSelectedNotations: (state) => {
-      return state.notations.filter((n) => !!n && n.selected == true);
+      return state.notations.keys.filter(
+        (k) => state.notations[k].selected === true
+      );
     },
     getNotationByRectCoordinates(state) {
-      return (rect) => {
-        return helper.findNotationByCoordinates(state, rect);
+      return (coordinates) => {
+        return helper.findNotationByCoordinates(state, coordinates);
       };
     },
   },
   mutations: {
-    saveNotation(state, notation) {
-      let oldNotation = helper.findNotationById(state, notation.id);
-      if (!!oldNotation) {
-        delete oldNotation.col; // for reactivity
-        delete oldNotation.row;
-        Vue.set(oldNotation, "col", notation.col);
-        Vue.set(oldNotation, "row", notation.row);
-      } else {
-        state.notations.push(notation);
-      }
-    },
     addNotation(state, notation) {
-      Vue.set(notation, "selected", false);
-      let oldNotation = helper.findNotationByCoordinates(state, notation);
-      if (!!oldNotation) {
-        delete oldNotation.value;
-        Vue.set(oldNotation, "value", notation.value);
-      } else {
-        state.notations.push(notation);
-      }
+      notation.selected = false;
+      Vue.set(state.notations, notation.type + notation.id, notation);
     },
     removeNotation(state, notation) {
-      state.notations = state.notations.filter(
-        (n) => !(n.col === notation.col && n.row === notation.row)
+      let indexToRemove = state.notations.findIndex(
+        (n) => n.col === notation.col && n.row === notation.row
       );
+      state.notations.splice(indexToRemove, 1);
     },
-    updateSelectedNotationCoordinates(state) {
-      state.notations
-        .filter((notation) => notation.selected === true)
-        .forEach(
-          async (notation) =>
-            await dbSyncMixin.methods.updateNotationCoordinates(notation)
-        );
-    },
-    selectNotation(state, id) {
-      let notation = helper.findNotationById(state, id);
-      delete notation.selected; // for reactivity
-      Vue.set(notation, "selected", true);
+    selectNotation(state, coordinates) {
+      let notation = helper.findNotationByCoordinates(state, coordinates);
+      notation.selected = true;
     },
     unselectAllNotations(state) {
       state.notations
         .filter((n) => n.selected === true)
         .forEach((n) => {
-          delete n.selected; // for reactivity
-          Vue.set(n, "selected", false);
+          n.selected = false;
         });
     },
     moveSelectedNotations(state, payload) {
@@ -94,7 +76,7 @@ export default {
           Vue.set(notation, "row", row + payload.rectDeltaY);
         });
     },
-    removeAllNotations(state, payload) {
+    removeAllNotations(state) {
       state.notations = [];
     },
   },
@@ -103,12 +85,12 @@ export default {
       context.commit("removeAllNotations");
       dbSyncMixin.methods.getAllSymbols(exerciseId).then((symbols) => {
         symbols.forEach((symbol) => {
-          context.commit("addNotation", symbol);
+          context.commit("addNotation", { ...symbol, type: "symbol" });
         });
       });
       dbSyncMixin.methods.getAllFractions(exerciseId).then((fractions) => {
         fractions.forEach((fraction) => {
-          context.commit("addNotation", fraction);
+          context.commit("addNotation", { ...fraction, type: "fraction" });
         });
       });
     },
@@ -131,24 +113,31 @@ export default {
       context.commit("removeNotation", notation);
     },
     syncIncomingUpdatedNotation(context, notation) {
-      context.commit("saveNotation", notation);
+      context.commit("addNotation", notation);
     },
     removeNotation(context, notation) {
       dbSyncMixin.methods
         .removeNotation(notation)
         .then(() => context.commit("removeNotation", notation));
     },
-    selectNotation(context, id) {
-      context.commit("selectNotation", id);
+    selectNotation(context, coordinates) {
+      context.commit("selectNotation", coordinates);
     },
     unselectAllNotations(context) {
       context.commit("unselectAllNotations");
     },
+    // move without persistence - called during  mouse move  - don't bother the database during move
     moveSelectedNotations(context, payload) {
       context.commit("moveSelectedNotations", payload);
     },
+    // move with persistence - called upon muose up
     updateSelectedNotationCoordinates(context, payload) {
-      context.commit("updateSelectedNotationCoordinates", payload);
+      context.state.notations
+        .filter((notation) => notation.selected === true)
+        .forEach(
+          async (notation) =>
+            await dbSyncMixin.methods.updateNotationCoordinates(notation)
+        );
     },
   },
 };

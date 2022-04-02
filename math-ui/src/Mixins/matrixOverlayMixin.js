@@ -3,10 +3,10 @@ import * as d3 from "d3";
 export default {
   computed: {
     fontSize: function () {
-      return `${this.rectSize / 20}em`;
+      return `${this.rectSize / 25}em`;
     },
     fractionFontSize: function () {
-      return `${this.rectSize / 45}em`;
+      return `${this.rectSize / 48}em`;
     },
   },
   data: function () {
@@ -14,7 +14,7 @@ export default {
       opacity: 1,
       colsNum: 25,
       rowsNum: 25,
-      rectSize: 30,
+      rectSize: 35,
       matrix: [],
       topLevelGroup: null,
       prevSelectedNotation: null,
@@ -158,68 +158,68 @@ export default {
         16
       );
     },
-    showNotations: function (enter) {
-      return enter
-        .append("foreignObject")
-        .attr("id", (n) => {
-          return n.id;
-        })
-        .attr("col", (n) => {
-          return n.col;
-        })
-        .attr("row", (n) => {
+    updateNotation: function (n) {
+      n.setAttribute("col", (n) => {
+        return n.col;
+      })
+        .setAttribute("row", (n) => {
           return n.row;
         })
-        .attr("x", (n, i) => {
+        .setAttribute("x", (n, i) => {
           return this.getNotationXposByCol(n.col);
         })
-        .attr("y", (n) => {
+        .setAttribute("y", (n) => {
           return this.getNotationXposByCol(n.row);
-        })
-        .attr("width", (n) => {
-          if (!!n.nominatorValue && !!n.denominatorValue) {
-            return this.getFractionWidth(n);
-          }
-          return this.rectSize;
-        })
-        .attr("height", this.rectSize)
-        .style("font-size", (n) => {
-          return !!n.nominatorValue && !!n.denominatorValue
-            ? this.fractionFontSize
-            : this.fontSize;
-        })
-        .html((n) => {
-          if (!!n.nominatorValue && !!n.denominatorValue) {
-            return `$$\{${n.nominatorValue}\\over${n.denominatorValue} }\$$`;
-          }
-          return !!n.value ? "$$" + n.value + "$$" : "";
         });
     },
-    updateNotations: function (update) {
-      return update
-        .style("color", (n) => {
-          return n.selected ? "red" : "black";
-        })
-        .attr("x", (n, i) => {
-          return this.getNotationXposByCol(n.col);
-        })
-        .attr("y", (n) => {
-          return this.getNotationYposByRow(n.row);
-        });
+    removeNotation: function (notation) {
+      document.getElementById(n.id + n.type).remove();
     },
-    removeNotations: function (exit) {
-      return exit
-        .transition()
-        .duration(10)
-        .attr("r", 0)
-        .style("opacity", 0)
-        .attr("cx", 1000)
-        .on("end", function () {
-          d3.select(this).remove();
-        });
-    },
-    matrixMixin_refreshScreen(data) {
+    addNotation(n) {
       this.svg
+        .appendChild("foreignObject")
+        .setAttribute("id", n.type + n.id)
+        .setAttribute("col", n.col)
+        .setAttribute("row", n.row)
+        .setAttribute("x", this.getNotationXposByCol(n.col))
+        .setAttribute("y", this.getNotationXposByCol(n.row))
+        .setAttribute(
+          "width",
+          !!n.nominatorValue && !!n.denominatorValue
+            ? this.getFractionWidth(n)
+            : this.rectSize
+        )
+        .setAttribute("height", this.rectSize)
+        .style(
+          "font-size",
+          !!n.nominatorValue && !!n.denominatorValue
+            ? this.fractionFontSize
+            : this.fontSize
+        )
+        .innerHtml(
+          n.type === "fraction"
+            ? `$$\{${n.nominatorValue}\\over${n.denominatorValue} }\$$`
+            : !!n.value
+            ? "$$" + n.value + "$$"
+            : ""
+        );
+    },
+    matrixMixin_refreshScreen(notations) {
+      // exists in dom but not in store -> delete from dom
+      [...document.getElementsByTagName("foreignObject")]
+        .filter((fo) => !notations.keys.contains(fo.id))
+        .forEach((fo) => fo.remove());
+
+      // exists in store but not in dom -> delete from dom
+      for (n in notations) {
+        if (!document.getElementById(notations[n].type + notations[n].id)) {
+          this.addNotation(n);
+        }
+      }
+
+      // update via timestamp comparison
+
+      /*this.svg
         .selectAll("foreignObject")
         .data(data)
         .join(
@@ -232,7 +232,7 @@ export default {
           (exit) => {
             return this.removeNotations(exit);
           }
-        );
+        );*/
     },
   },
 };

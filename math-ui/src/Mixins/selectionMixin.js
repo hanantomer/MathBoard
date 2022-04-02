@@ -3,6 +3,9 @@ import { mapState } from "vuex";
 export default {
   data: function () {
     return {
+      svgDimensions: () => {
+        return this.svg.node().getBoundingClientRect();
+      },
       selectionPosition: {
         x1: 0,
         y1: 0,
@@ -96,11 +99,17 @@ export default {
           type: "fraction",
         });
     },
-
+    selectionMixin_startSelection: function (e) {
+      let x = e.clientX - this.svgDimensions().left + 5;
+      let y = e.clientY - this.svgDimensions().top + 5;
+      this.selectionPosition.x2 = this.selectionPosition.x1 = x;
+      this.selectionPosition.y2 = this.selectionPosition.y1 = y;
+      this.$store.dispatch("unselectAllNotations");
+    },
     // extend or shrink selection area
     selectionMixinUpdateSelectionArea: function (e) {
-      this.selectionPosition.x2 = e.clientX;
-      this.selectionPosition.y2 = e.clientY - 50;
+      this.selectionPosition.x2 = e.clientX - this.svgDimensions().left + 5;
+      this.selectionPosition.y2 = e.clientY - this.svgDimensions().top + 5;
     },
     //move selection area
     selectionMixin_moveSelection: function (e) {
@@ -139,49 +148,28 @@ export default {
       this.selectionPosition.x1 = this.selectionPosition.x2 = this.selectionPosition.y1 = this.selectionPosition.y2 = 0;
       this.$store.dispatch("unselectAllNotations");
     },
-    selectionMixin_startSelection: function (e) {
-      this.selectionPosition.x2 = this.selectionPosition.x1 = e.clientX;
-      this.selectionPosition.y2 = this.selectionPosition.y1 = e.clientY - 50;
-      this.$store.dispatch("unselectAllNotations");
-    },
     selectionMixin_endMoveSelection: function (e) {
       this.dragPostion.x = 0;
       this.dragPostion.y = 0;
     },
     selectionMixin_endSelect: function (e) {
       if (this.selectionPosition.x2 != this.selectionPosition.x1) {
-        var p1 = {
-          x: this.selectionPosition.x1,
-          y: this.selectionPosition.y1,
-        }; /*this.positionMixin_getSVGCoordinates(
-          this.selectionPosition.x1,
-          this.selectionPosition.y1
-        );*/
-        var p2 = {
-          x: this.selectionPosition.x2,
-          y: this.selectionPosition.y2,
-        }; /*this.positionMixin_getSVGCoordinates(
-          this.selectionPosition.x2,
-          this.selectionPosition.y2
-        );*/
-
         this.svg.selectAll("foreignObject").each((datum) => {
           if (
-            !!datum.id &&
-            this.getNotationXposByCol(datum.col) +
-              this.svg.node().getBoundingClientRect().x >
-              p1.x &&
-            this.getNotationXposByCol(datum.col) +
-              this.svg.node().getBoundingClientRect().x <
-              p2.x &&
-            this.getNotationYposByRow(datum.row) +
-              this.svg.node().getBoundingClientRect().y >
-              p1.y &&
-            this.getNotationYposByRow(datum.row) +
-              this.svg.node().getBoundingClientRect().y <
-              p2.y + 50
+            !!datum.col &&
+            !!datum.row &&
+            this.getNotationXposByCol(datum.col) + 5 >
+              this.selectionPosition.x1 &&
+            this.getNotationXposByCol(datum.col) - 5 <
+              this.selectionPosition.x2 &&
+            this.getNotationYposByRow(datum.row) + 5 >
+              this.selectionPosition.y1 &&
+            this.getNotationYposByRow(datum.row) - 5 < this.selectionPosition.y2
           ) {
-            this.$store.dispatch("selectNotation", datum.id);
+            this.$store.dispatch("selectNotation", {
+              col: datum.col,
+              row: datum.row,
+            });
           }
         });
       }

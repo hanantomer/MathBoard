@@ -3,10 +3,17 @@ export default {
     return {};
   },
   methods: {
-    fractionMixin_saveFraction(fraction) {
-      fraction.exerciseId = this.exerciseId;
-      fraction.UserId = this.$store.getters.getUser.id;
+    fractionMixin_saveFraction(nimnatorValue, denominatorValue) {
+      let fraction = {
+        ExerciseId: this.exerciseId,
+        UserId: this.$store.getters.getUser.id,
+        nimnatorValue: nimnatorValue,
+        denominatorValue: denominatorValue,
+        type: "fraction",
+      };
+
       fraction = Object.assign(fraction, this.getcurrentRect());
+
       this.$store
         .dispatch("addFraction", fraction)
         .then((fraction) => {
