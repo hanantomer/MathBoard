@@ -5,11 +5,10 @@ export default {
         ExerciseId: this.exerciseId,
         UserId: this.$store.getters.getUser.id,
         value: value,
-        //        isNumber: !isNaN(parseInt(value)),
         type: "symbol",
       };
-
-      symbol = Object.assign(symbol, this.getcurrentRect());
+      symbol.col = this.getcurrentRect().col;
+      symbol.row = this.getcurrentRect().row;
 
       this.$store
         .dispatch("addSymbol", symbol)

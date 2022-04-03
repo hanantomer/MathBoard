@@ -206,22 +206,22 @@ export default {
     },
     matrixMixin_refreshScreen(notations) {
       // exists in dom but not in store -> delete from dom
-      [...document.getElementsByTagName("foreignObject")]
+      /*[...document.getElementsByTagName("foreignObject")]
         .filter((fo) => !notations.keys.contains(fo.id))
         .forEach((fo) => fo.remove());
 
       // exists in store but not in dom -> delete from dom
-      for (n in notations) {
-        if (!document.getElementById(notations[n].type + notations[n].id)) {
-          this.addNotation(n);
+      for (const n in notations) {
+        if (!document.getElementById(n)) {
+          this.addNotation(notations[n]);
         }
-      }
+      }*/
 
       // update via timestamp comparison
 
-      /*this.svg
+      this.svg
         .selectAll("foreignObject")
-        .data(data)
+        .data(Object.values(notations))
         .join(
           (enter) => {
             return this.showNotations(enter);
@@ -232,7 +232,67 @@ export default {
           (exit) => {
             return this.removeNotations(exit);
           }
-        );*/
+        );
+    },
+    showNotations: function (enter) {
+      return enter
+        .append("foreignObject")
+        .attr("id", (n) => {
+          return n.type + n.id;
+        })
+        .attr("col", (n) => {
+          return n.col;
+        })
+        .attr("row", (n) => {
+          return n.row;
+        })
+        .attr("x", (n, i) => {
+          return this.getNotationXposByCol(n.col);
+        })
+        .attr("y", (n) => {
+          return this.getNotationXposByCol(n.row);
+        })
+        .attr("width", (n) => {
+          if (!!n.nominatorValue && !!n.denominatorValue) {
+            return this.getFractionWidth(n);
+          }
+          return this.rectSize;
+        })
+        .attr("height", this.rectSize)
+        .style("font-size", (n) => {
+          return !!n.nominatorValue && !!n.denominatorValue
+            ? this.fractionFontSize
+            : this.fontSize;
+        })
+        .html((n) => {
+          if (!!n.nominatorValue && !!n.denominatorValue) {
+            return `$$\{${n.nominatorValue}\\over${n.denominatorValue} }\$$`;
+          }
+          return !!n.value ? "$$" + n.value + "$$" : "";
+        });
+    },
+    updateNotations: function (update) {
+      return update
+        .style("color", (n) => {
+          return n.selected ? "red" : "black";
+        })
+        .attr("x", (n, i) => {
+          return this.getNotationXposByCol(n.col);
+        })
+        .attr("y", (n) => {
+          return this.getNotationYposByRow(n.row);
+        });
+    },
+    removeNotations: function (exit) {
+      return exit
+        .transition()
+        .duration(10)
+        .attr("r", 0)
+        .style("opacity", 0)
+        .attr("cx", 1000)
+        .on("end", function () {
+          d3.select(this).remove();
+        });
     },
   },
 };

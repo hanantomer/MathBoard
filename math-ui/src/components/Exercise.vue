@@ -235,12 +235,12 @@ export default {
   watch: {
     $route: "$loadExercise",
     notations: {
+      //immediate: true,
+      deep: true,
       handler: function (notations) {
         this.matrixMixin_refreshScreen(notations);
         this.reRenderMathJax();
       },
-      //      deep: true,
-      //      immediate: true,
     },
   },
   methods: {

@@ -3,13 +3,11 @@ import dbSyncMixin from "../Mixins/dbSyncMixin";
 
 const helper = {
   findNotationByTypeAndId: function (state, type, id) {
-    return state.notations.keys.find((k) => k.id == type + id);
+    return Object.values(state.notations).find((v) => v.id == type + id);
   },
   findNotationByCoordinates: function (state, coordinates) {
-    return state.notations.keys.find(
-      (k) =>
-        state.notations[k].col == coordinates.col &&
-        state.notations[k].row == coordinates.row
+    return Object.entries(state.notations).find(
+      (e) => e[1].col == coordinates.col && e[1].row == coordinates.row
     );
   },
 };
@@ -55,29 +53,28 @@ export default {
     },
     selectNotation(state, coordinates) {
       let notation = helper.findNotationByCoordinates(state, coordinates);
-      notation.selected = true;
+      Vue.set(state.notations, notation[0], { ...notation[1], selected: true });
     },
     unselectAllNotations(state) {
-      state.notations
+      Object.entries(state.notations)
         .filter((n) => n.selected === true)
         .forEach((n) => {
           n.selected = false;
         });
     },
     moveSelectedNotations(state, payload) {
-      state.notations
-        .filter((notation) => !!notation.selected)
+      Object.entries(state.notations)
+        .filter((notation) => !!notation[1].selected)
         .forEach((notation) => {
-          let col = notation.col;
-          let row = notation.row;
-          delete notation.col;
-          delete notation.row;
-          Vue.set(notation, "col", col + payload.rectDeltaX);
-          Vue.set(notation, "row", row + payload.rectDeltaY);
+          Vue.set(state.notations, notation[0], {
+            ...notation[1],
+            col: notation[1].col + payload.rectDeltaX,
+            row: notation[1].row + payload.rectDeltaY,
+          });
         });
     },
     removeAllNotations(state) {
-      state.notations = [];
+      state.notations = {};
     },
   },
   actions: {

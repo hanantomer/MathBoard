@@ -145,7 +145,7 @@ module.exports = {
         res = await axiosInstnce.post("/symbols", symbol);
       }
 
-      return res ? res.data : null;
+      return res ? { ...res.data, type: symbol.type } : null;
     },
     removeNotation: async function (notation) {
       try {
