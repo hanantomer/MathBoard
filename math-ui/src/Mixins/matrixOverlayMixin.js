@@ -12,9 +12,9 @@ export default {
   data: function () {
     return {
       opacity: 1,
-      colsNum: 25,
-      rowsNum: 25,
-      rectSize: 35,
+      colsNum: 35,
+      rowsNum: 20,
+      rectSize: 30,
       matrix: [],
       topLevelGroup: null,
       prevSelectedNotation: null,
@@ -253,16 +253,17 @@ export default {
           return this.getNotationXposByCol(n.row);
         })
         .attr("width", (n) => {
-          if (!!n.nominatorValue && !!n.denominatorValue) {
+          if (n.type === "fraction") {
             return this.getFractionWidth(n);
           }
           return this.rectSize;
         })
         .attr("height", this.rectSize)
+        .style("padding-top", (n) => {
+          return n.type === "fraction" ? "0.4em" : "0em";
+        })
         .style("font-size", (n) => {
-          return !!n.nominatorValue && !!n.denominatorValue
-            ? this.fractionFontSize
-            : this.fontSize;
+          return n.type === "fraction" ? this.fractionFontSize : this.fontSize;
         })
         .html((n) => {
           if (!!n.nominatorValue && !!n.denominatorValue) {

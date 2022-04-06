@@ -34,10 +34,13 @@ export default {
       if (!notationAtRectPosition) return;
 
       this.$store
-        .dispatch("removeNotation", notationAtRectPosition)
+        .dispatch("removeNotation", {
+          col: notationAtRectPosition[1].col,
+          row: notationAtRectPosition[1].row,
+        })
         .then(() => {
           this.userOperationsMixin_syncOutgoingRemoveNotation([
-            notationAtRectPosition,
+            notationAtRectPosition[1],
           ]);
         })
         .catch((e) => {

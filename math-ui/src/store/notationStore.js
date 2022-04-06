@@ -23,19 +23,12 @@ export default {
     getNotations: (state) => {
       return state.notations;
     },
-    // at least one notation is selected
-    isAnyNotationSelected(state) {
-      return state.notations.keys.find(
-        (k) => state.notations[k].selected === true
-      );
-    },
     getSelectedNotations: (state) => {
-      return state.notations.keys.filter(
-        (k) => state.notations[k].selected === true
-      );
+      return Object.values(state.notations).filter((v) => v.selected === true);
     },
     getNotationByRectCoordinates(state) {
       return (coordinates) => {
+        // return function to allow argument
         return helper.findNotationByCoordinates(state, coordinates);
       };
     },
@@ -46,10 +39,7 @@ export default {
       Vue.set(state.notations, notation.type + notation.id, notation);
     },
     removeNotation(state, notation) {
-      let indexToRemove = state.notations.findIndex(
-        (n) => n.col === notation.col && n.row === notation.row
-      );
-      state.notations.splice(indexToRemove, 1);
+      Vue.delete(state.notations, notation);
     },
     selectNotation(state, coordinates) {
       let notation = helper.findNotationByCoordinates(state, coordinates);
@@ -57,9 +47,9 @@ export default {
     },
     unselectAllNotations(state) {
       Object.entries(state.notations)
-        .filter((n) => n.selected === true)
+        .filter((n) => n[1].selected === true)
         .forEach((n) => {
-          n.selected = false;
+          Vue.set(state.notations[n[0]], "selected", false);
         });
     },
     moveSelectedNotations(state, payload) {
@@ -112,10 +102,14 @@ export default {
     syncIncomingUpdatedNotation(context, notation) {
       context.commit("addNotation", notation);
     },
-    removeNotation(context, notation) {
+    removeNotation(context, coordinates) {
+      let notation = helper.findNotationByCoordinates(
+        context.state,
+        coordinates
+      );
       dbSyncMixin.methods
-        .removeNotation(notation)
-        .then(() => context.commit("removeNotation", notation));
+        .removeNotation(notation[1])
+        .then(() => context.commit("removeNotation", notation[0]));
     },
     selectNotation(context, coordinates) {
       context.commit("selectNotation", coordinates);
@@ -129,12 +123,10 @@ export default {
     },
     // move with persistence - called upon muose up
     updateSelectedNotationCoordinates(context, payload) {
-      context.state.notations
-        .filter((notation) => notation.selected === true)
-        .forEach(
-          async (notation) =>
-            await dbSyncMixin.methods.updateNotationCoordinates(notation)
-        );
+      context.getters.getSelectedNotations.forEach(async (notation) => {
+        dbSyncMixin.methods.updateNotationCoordinates(notation);
+      });
+      context.commit("unselectAllNotations");
     },
   },
 };

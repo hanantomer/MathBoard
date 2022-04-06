@@ -28,13 +28,8 @@ module.exports = (sequelize, DataTypes) => {
             },
             value: {
                 type: DataTypes.STRING,
+                allowNull: false,
             },
-
-            // type: {
-            //     type: DataTypes.STRING,
-            //     allowNull: false,
-            //     isIn: [["NUMBER", "SIGN", "TRIANGLE"]],
-            // },
         },
 
         {

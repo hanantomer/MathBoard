@@ -193,22 +193,26 @@ module.exports = {
     },
 
     saveFraction: async function (fraction) {
-      let fractionAtCoordinates = await getFractionByCoordinates(
-        fraction.row,
-        fraction.col
-      );
-
-      let res = null;
-      if (!!fractionAtCoordinates) {
-        res = await axiosInstnce.put(
-          "/fractions/" + fractionAtCoordinates.id,
-          fraction
+      try {
+        let fractionAtCoordinates = await getFractionByCoordinates(
+          fraction.row,
+          fraction.col
         );
-      } else {
-        res = await axiosInstnce.post("/fractions", fraction);
-      }
 
-      return res ? res.data : null;
+        let res = null;
+        if (!!fractionAtCoordinates) {
+          res = await axiosInstnce.put(
+            "/fractions/" + fractionAtCoordinates.id,
+            fraction
+          );
+        } else {
+          res = await axiosInstnce.post("/fractions", fraction);
+        }
+
+        return res ? res.data : null;
+      } catch (error) {
+        handleError(error);
+      }
     },
   },
 };

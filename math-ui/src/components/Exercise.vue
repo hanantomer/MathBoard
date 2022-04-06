@@ -1,5 +1,5 @@
-<template fill-height>
-  <div fill-height>
+<template>
+  <div style="height: 100%">
     <!-- <div>$$x = {-b \pm \sqrt{b^2-4ac} \over 2a}.$$</div> -->
     <v-toolbar color="primary" dark>
       <v-btn
@@ -12,7 +12,7 @@
         ><span class="mr-1">{{ s.sign }}</span></v-btn
       >
       <v-btn-toggle
-        v-model="toggleSelectionMode"
+        v-model="selectionButtonActive"
         background-color="transparent"
         active-class="iconActive"
       >
@@ -22,7 +22,7 @@
       </v-btn-toggle>
 
       <v-btn-toggle
-        v-model="toggleDeleteMode"
+        v-model="deleteButtonActive"
         background-color="transparent"
         active-class="iconActive"
       >
@@ -45,6 +45,16 @@
         ><v-icon>mdi-account-plus</v-icon></v-btn
       >
       <v-btn
+        icon
+        color="white"
+        x-small
+        fab
+        dark
+        @click.stop="$openFractionDialog"
+      >
+        <v-icon>mdi-fraction-one-half</v-icon>
+      </v-btn>
+      <v-btn
         v-if="isAdmin"
         @click="$toggleExerciseMatrix"
         icon
@@ -53,20 +63,6 @@
         fab
         dark
         ><v-icon>mdi-grid</v-icon>
-      </v-btn>
-
-      <v-btn
-        icon
-        color="white"
-        x-small
-        fab
-        dark
-        @click.stop="
-          isFractionDialogOpen = true;
-          editManager_startFractionMode();
-        "
-      >
-        <v-icon>mdi-fraction-one-half</v-icon>
       </v-btn>
     </v-toolbar>
     <createAccessLinkDialog
@@ -79,65 +75,63 @@
         save: $saveFraction,
       }"
     ></fractionDialog>
-    <v-container app style="max-width: 1600px !important">
-      <v-row>
-        <v-col cols="sm 10" style="overflow: auto">
-          <v-card class="pa-2 ma-0 nopadding">
-            <svg
-              id="svg"
-              v-on:mousedown="editManager_mouseDown"
-              v-on:mousemove="editManager_mouseMove"
-            ></svg>
-            <v-card
-              id="selection"
-              v-on:mouseup="editManager_selectionMouseUp"
-              v-on:mousedown="editManager_selectionMouseDown"
-              v-on:mousemove="editManager_mouseMove"
-              v_-if="editManager_getCurrentMode === 'SELECT'"
-              class="grabbable"
-              v-bind:style="{
-                left: selectionRectLeft,
-                top: selectionRectTop,
-                width: selectionRectWidth,
-                height: selectionRectHeight,
-              }"
-              style="
-                position: absolute;
-                z-index: 99;
-                background: transparent;
-                border: 1, 1, 1, 1;
-              "
-            ></v-card>
-          </v-card>
-        </v-col>
-        <v-col cols="3" v-if="isAdmin">
-          <v-list>
-            <v-list-item-group active-class="activestudent" color="indigo">
-              <v-list-item v-for="student in students" :key="student.id">
-                <v-list-item-avatar>
-                  <v-img :src="student.imageUrl"></v-img>
-                </v-list-item-avatar>
-                <v-list-item-content>
-                  <v-list-item-title
-                    v-text="$getStudentDisplayName(student)"
-                  ></v-list-item-title>
-                </v-list-item-content>
-                <v-btn
-                  class="[mx-2]"
-                  fab
-                  dark
-                  x-small
-                  color="green"
-                  v-on:click="$toggleStudentAuthorization(student)"
-                >
-                  <v-icon dark> mdi-pencil </v-icon>
-                </v-btn>
-              </v-list-item>
-            </v-list-item-group>
-          </v-list>
-        </v-col>
-      </v-row>
-    </v-container>
+    <v-card
+      id="selection"
+      v-on:mouseup="editManager_selectionMouseUp"
+      v-on:mousedown="editManager_selectionMouseDown"
+      v-on:mousemove="editManager_mouseMove"
+      v_-if="editManager_getCurrentMode === 'SELECT'"
+      class="grabbable"
+      v-bind:style="{
+        left: selectionRectLeft,
+        top: selectionRectTop,
+        width: selectionRectWidth,
+        height: selectionRectHeight,
+      }"
+      style="
+        position: absolute;
+        z-index: 99;
+        background: transparent;
+        border: 1, 1, 1, 1;
+      "
+    ></v-card>
+    <v-row style="min-height: 600px; min-width: 600px">
+      <v-col cols="sm 10">
+        <svg
+          id="svg"
+          style="height: 95%; width: 100%"
+          v-on:mousedown="editManager_mouseDown"
+          v-on:mousemove="editManager_mouseMove"
+          v-on:mouseup="editManager_mouseUp"
+        ></svg>
+      </v-col>
+      <v-col cols="3">
+        <v-list>
+          <v-list-item-group active-class="activestudent" color="indigo">
+            <v-list-item v-for="student in students" :key="student.id">
+              <v-list-item-avatar>
+                <v-img :src="student.imageUrl"></v-img>
+              </v-list-item-avatar>
+              <v-list-item-content>
+                <v-list-item-title
+                  v-text="$getStudentDisplayName(student)"
+                ></v-list-item-title>
+              </v-list-item-content>
+              <v-btn
+                class="[mx-2]"
+                fab
+                dark
+                x-small
+                color="green"
+                v-on:click="$toggleStudentAuthorization(student)"
+              >
+                <v-icon dark> mdi-pencil </v-icon>
+              </v-btn>
+            </v-list-item>
+          </v-list-item-group>
+        </v-list>
+      </v-col>
+    </v-row>
   </div>
 </template>
 
@@ -155,7 +149,6 @@ import notationMixin from "../Mixins/notationMixin";
 import userOperationsSyncMixin from "../Mixins/userOperationsSyncMixin";
 import createAccessLinkDialog from "./CreateAccessLinkDialog.vue";
 import fractionDialog from "./fractionDialog.vue";
-import { mdiSelectionMarker } from "@mdi/js";
 
 export default {
   components: {
@@ -181,8 +174,8 @@ export default {
   },
   data: function () {
     return {
-      toggleDeleteMode: 1,
-      toggleSelectionMode: 1,
+      deleteButtonActive: 1,
+      selectionButtonActive: 1,
       boundingClientRet: null,
       isAdmin: false,
       isAccessLinkDialogOpen: false,
@@ -246,6 +239,7 @@ export default {
   methods: {
     ...mapGetters({
       getSelectedNotations: "getSelectedNotations",
+      getNotationByRectCoordinates: "getNotationByRectCoordinates",
       getCurrentExercise: "getCurrentExercise",
       getExercises: "getExercises",
       getUser: "getUser",
@@ -253,13 +247,16 @@ export default {
       getSymbols: "getSymbols",
       getFractions: "getFractions",
     }),
-    $showFractionDialog() {
+    $openFractionDialog() {
       this.isFractionDialogOpen = true;
-      editManager_startFractionMode();
+      this.editManager_fractionDialogOpened();
     },
     $saveFraction(fraction) {
-      this.editManager_endFractionMode();
-      this.fractionMixin_saveFraction(fraction);
+      this.editManager_saveFractionClicked();
+      this.fractionMixin_saveFraction(
+        fraction.nominatorValue,
+        fraction.denominatorValue
+      );
     },
     $toggleExerciseMatrix() {
       this.matrixMixin_toggleMatrixOverlay();
@@ -305,10 +302,10 @@ export default {
 .activestudent {
   border: 2px dashed rgb(143, 26, 179);
 }
-#svg {
+/* #svg {
   width: 700px;
   height: 500px;
-}
+} */
 .hellow {
   padding: 5px;
   color: darkkhaki;
@@ -332,7 +329,7 @@ export default {
 .iconActive {
   background-color: dodgerblue;
 }
-.deleteMode {
+.deleteButtonActive {
   cursor: URL("~@/assets/delete.jpg"), none !important;
 }
 /* mjx-container[jax="CHTML"][display="true"] {
@@ -347,5 +344,8 @@ mjx-container[jax="SVG"][display="true"] {
 mjx-line {
   margin-top: 0.05em !important;
   margin-bottom: 0.3em !important;
+}
+.v-main {
+  height: 85%;
 }
 </style>

@@ -1,6 +1,6 @@
 <template>
   <v-app id="app">
-    <div>
+    <div class="fill-height">
       <v-app-bar color="deep-purple accent-4" dense dark>
         <v-app-bar-nav-icon></v-app-bar-nav-icon>
 
@@ -49,7 +49,6 @@
       </v-app-bar>
       <!-- <v-divider></v-divider> -->
       <v-main>
-        <!-- Provides the application the proper gutter -->
         <v-container>
           <!-- If using vue-router -->
           <router-view></router-view>

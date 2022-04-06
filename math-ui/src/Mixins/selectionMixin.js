@@ -100,16 +100,16 @@ export default {
         });
     },
     selectionMixin_startSelection: function (e) {
-      let x = e.clientX - this.svgDimensions().left + 5;
-      let y = e.clientY - this.svgDimensions().top + 5;
+      let x = e.clientX;
+      let y = e.clientY;
       this.selectionPosition.x2 = this.selectionPosition.x1 = x;
       this.selectionPosition.y2 = this.selectionPosition.y1 = y;
       this.$store.dispatch("unselectAllNotations");
     },
     // extend or shrink selection area
     selectionMixinUpdateSelectionArea: function (e) {
-      this.selectionPosition.x2 = e.clientX - this.svgDimensions().left + 5;
-      this.selectionPosition.y2 = e.clientY - this.svgDimensions().top + 5;
+      this.selectionPosition.x2 = e.clientX;
+      this.selectionPosition.y2 = e.clientY;
     },
     //move selection area
     selectionMixin_moveSelection: function (e) {
@@ -146,7 +146,6 @@ export default {
     },
     selectionMixin_resetSelection: function () {
       this.selectionPosition.x1 = this.selectionPosition.x2 = this.selectionPosition.y1 = this.selectionPosition.y2 = 0;
-      this.$store.dispatch("unselectAllNotations");
     },
     selectionMixin_endMoveSelection: function (e) {
       this.dragPostion.x = 0;

@@ -52,23 +52,6 @@ module.exports = {
         return accessLink;
     },
 
-    deleteMultipleSymbols: function (ids) {
-        db.sequelize.models["Symbol"].destroy({
-            where: {
-                id: {
-                    [Op.in]: ids.split(","),
-                },
-            },
-        });
-        db.sequelize.models["Fraction"].destroy({
-            where: {
-                id: {
-                    [Op.in]: ids.split(","),
-                },
-            },
-        });
-    },
-
     isAdmin: async function (userId, exerciseId) {
         let exercise = await db.sequelize.models["Exercise"].findOne({
             where: {

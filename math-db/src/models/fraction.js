@@ -28,9 +28,11 @@ module.exports = (sequelize, DataTypes) => {
             },
             nominatorValue: {
                 type: DataTypes.STRING,
+                allowNull: false,
             },
             denominatorValue: {
                 type: DataTypes.STRING,
+                allowNull: false,
             },
         },
         {

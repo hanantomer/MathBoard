@@ -13,72 +13,90 @@ module.exports = {
     };
   },
   methods: {
-    /*setCurrentMode(newMode) {
-      switch (this.currentMode) {
-        case EditMode.ADD_SYMBOL: {
-          
-        }
+    toggleSelectionMode() {
+      if (this.currentMode == EditMode.SELECT) {
+        this.endSelectionMode();
+      } else {
+        this.startSelectionMode();
       }
-      this.currentMode = newMode;
-    },*/
+    },
+    toggleDeleteMode() {
+      if (this.currentMode == EditMode.DELETE) {
+        this.endDeleteMode();
+      } else {
+        this.startDeleteMode();
+      }
+    },
     hideDeleteCursor() {
       Array.from(document.getElementsByTagName("svg")).forEach((e) =>
-        e.classList.remove("deleteMode")
+        e.classList.remove("deleteButtonActive")
       );
     },
     showDeleteCursor() {
       Array.from(document.getElementsByTagName("svg")).forEach((e) =>
-        e.classList.add("deleteMode")
+        e.classList.add("deleteButtonActive")
       );
+    },
+    startFractionMode() {
+      this.currentMode = EditMode.EDIT_FRACTION;
+    },
+    endFractionMode() {
+      this.currentMode = EditMode.ADD_SYMBOL;
+    },
+    startDeleteMode() {
+      this.deleteButtonActive = 0;
+      this.showDeleteCursor();
+      this.currentMode = EditMode.DELETE;
+    },
+    endDeleteMode() {
+      this.currentMode = EditMode.ADD_SYMBOL;
+      this.hideDeleteCursor();
+      this.deleteButtonActive = 1;
+    },
+    startSelectionMode() {
+      this.selectionButtonActive = 0;
+      this.currentMode = EditMode.SELECT;
+    },
+    endSelectionMode() {
+      this.selectionButtonActive = 1;
+      this.currentMode = EditMode.ADD_SYMBOL;
+    },
+    startMoveMode() {
+      this.currentMode = EditMode.MOVE;
+    },
+    endMoveMode() {
+      this.currentMode = EditMode.ADD_SYMBOL;
+      this.selectionMixin_resetSelection();
     },
     editManager_getCurrentMode: function () {
       return this.currentMode;
     },
-    editManager_startFractionMode: function () {
-      this.currentMode = EditMode.EDIT_FRACTION;
+    editManager_fractionDialogOpened() {
+      this.startFractionMode();
     },
-    editManager_endFractionMode: function () {
-      this.currentMode = EditMode.ADD_SYMBOL;
+    editManager_saveFractionClicked() {
+      this.endFractionMode();
     },
-    restoreEditMode: function () {
-      this.toggleDeleteMode = 1;
-      this.hideDeleteCursor();
-      if (this.currentMode == EditMode.DELETE) {
-        this.currentMode = EditMode.ADD_SYMBOL;
-      }
+    editManager_selectionButtonPressed() {
+      this.toggleSelectionMode();
     },
-    editManager_selectionButtonPressed: function () {
-      if (this.currentMode == EditMode.SELECT) {
-        this.currentMode = EditMode.ADD_SYMBOL;
-      } else {
-        this.currentMode = EditMode.SELECT;
-      }
+    editManager_deleteButtonPressed() {
+      this.toggleDeleteMode();
     },
-    editManager_deleteButtonPressed: function () {
-      if (this.currentMode == EditMode.DELETE) {
-        this.currentMode = EditMode.ADD_SYMBOL;
-        this.hideDeleteCursor();
-      } else {
-        this.currentMode = EditMode.DELETE;
-        this.showDeleteCursor();
-      }
-    },
-    editManager_symbolButtonPressed: function (e) {
+    editManager_symbolButtonPressed(e) {
       this.symbolMixin_addSymbol(e.currentTarget.innerText);
     },
-    editManager_mouseDown: function (e) {
+    editManager_mouseDown(e) {
       if (this.currentMode !== EditMode.SELECT) {
         this.selectionMixin_resetSelection();
       }
       if (this.currentMode === EditMode.SELECT) {
         this.selectionMixin_startSelection(e);
-      } else if (this.currentMode === EditMode.DELETE) {
-        this.notationMixin_removeNotation(e);
       } else {
         this.selectionMixin_setCurrentPosition(e);
       }
     },
-    editManager_keyUp: function (e) {
+    editManager_keyUp(e) {
       if (this.currentMode === EditMode.ADD_SYMBOL) {
         if (
           e.code.startsWith("Digit") ||
@@ -92,22 +110,31 @@ module.exports = {
         }
       }
     },
+    editManager_mouseUp(e) {
+      if (this.currentMode === EditMode.MOVE) {
+        this.endMoveMode();
+        this.notationMixin_moveSelection(e);
+      }
+      if (this.currentMode === EditMode.DELETE) {
+        this.endDeleteMode();
+      }
+    },
+
     // start moving selection
     editManager_selectionMouseDown(e) {
-      this.currentMode = EditMode.MOVE;
+      this.startMoveMode();
     },
     // end selection
     editManager_selectionMouseUp(e) {
       if (this.currentMode === EditMode.MOVE) {
+        this.endMoveMode();
         this.notationMixin_moveSelection(e);
       } else if (this.currentMode === EditMode.SELECT) {
+        this.endSelectionMode();
         this.selectionMixin_endSelect(e);
-        this.toggleSelectionMode = 1;
       }
-
-      this.currentMode = EditMode.ADD_SYMBOL;
     },
-    editManager_mouseMove: function (e) {
+    editManager_mouseMove(e) {
       // left button is pressed
       if (e.buttons !== 1) {
         return;
@@ -119,6 +146,8 @@ module.exports = {
       // during move selected symbols
       else if (this.currentMode === EditMode.MOVE) {
         this.selectionMixin_moveSelection(e);
+      } else if (this.currentMode === EditMode.DELETE) {
+        this.notationMixin_removeNotation(e);
       }
     },
   },

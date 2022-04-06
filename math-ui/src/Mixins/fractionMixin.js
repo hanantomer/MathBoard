@@ -3,11 +3,11 @@ export default {
     return {};
   },
   methods: {
-    fractionMixin_saveFraction(nimnatorValue, denominatorValue) {
+    fractionMixin_saveFraction(nominatorValue, denominatorValue) {
       let fraction = {
         ExerciseId: this.exerciseId,
         UserId: this.$store.getters.getUser.id,
-        nimnatorValue: nimnatorValue,
+        nominatorValue: nominatorValue,
         denominatorValue: denominatorValue,
         type: "fraction",
       };
