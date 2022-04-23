@@ -1,6 +1,6 @@
 <template>
   <v-row justify="center">
-    <v-dialog v-model="show" max-width="400px">
+    <v-dialog v-model="show" max-width="400px" @keydown.esc="show = false">
       <v-card>
         <v-card-title>
           <span class="headline">Exercise Access Link</span>
@@ -21,6 +21,9 @@
         </v-card-text>
         <v-card-actions>
           <v-spacer></v-spacer>
+          <v-btn color="blue darken-1" text @click="show = false">
+            Close
+          </v-btn>
           <v-btn color="blue darken-1" text @click="copy">
             Copy To Clipboard
           </v-btn>

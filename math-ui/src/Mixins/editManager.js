@@ -68,6 +68,14 @@ module.exports = {
       this.currentMode = EditMode.ADD_SYMBOL;
       this.selectionMixin_resetSelection();
     },
+    moveSelection(e) {
+      this.endMoveMode();
+      this.notationMixin_moveSelection(e);
+    },
+    setSelectedNotations(e) {
+      this.endSelectionMode();
+      this.selectionMixin_endSelect(e);
+    },
     editManager_getCurrentMode: function () {
       return this.currentMode;
     },
@@ -90,6 +98,7 @@ module.exports = {
       if (this.currentMode !== EditMode.SELECT) {
         this.selectionMixin_resetSelection();
       }
+
       if (this.currentMode === EditMode.SELECT) {
         this.selectionMixin_startSelection(e);
       } else {
@@ -104,18 +113,19 @@ module.exports = {
           e.code.startsWith("Numpad") ||
           e.code === "Minus" ||
           e.code === "Plus" ||
-          e.code === "Equal"
+          e.code === "Equal" ||
+          e.code === "Period"
         ) {
           this.symbolMixin_addSymbol(e.key);
         }
       }
     },
     editManager_mouseUp(e) {
-      if (this.currentMode === EditMode.MOVE) {
-        this.endMoveMode();
-        this.notationMixin_moveSelection(e);
-      }
-      if (this.currentMode === EditMode.DELETE) {
+      if (this.currentMode === EditMode.SELECT) {
+        this.setSelectedNotations(e);
+      } else if (this.currentMode === EditMode.MOVE) {
+        this.moveSelection(e);
+      } else if (this.currentMode === EditMode.DELETE) {
         this.endDeleteMode();
       }
     },
@@ -127,14 +137,14 @@ module.exports = {
     // end selection
     editManager_selectionMouseUp(e) {
       if (this.currentMode === EditMode.MOVE) {
-        this.endMoveMode();
-        this.notationMixin_moveSelection(e);
+        this.moveSelection(e);
       } else if (this.currentMode === EditMode.SELECT) {
-        this.endSelectionMode();
-        this.selectionMixin_endSelect(e);
+        this.setSelectedNotations(e);
       }
     },
     editManager_mouseMove(e) {
+      this.showFractionTooltip = false;
+      this.showAccessTooltip = false;
       // left button is pressed
       if (e.buttons !== 1) {
         return;

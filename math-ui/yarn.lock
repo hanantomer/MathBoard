@@ -10001,6 +10001,11 @@
   "resolved" "https://registry.npmjs.org/vue-hot-reload-api/-/vue-hot-reload-api-2.3.4.tgz"
   "version" "2.3.4"
 
+"vue-js-toolbar@^1.0.0":
+  "integrity" "sha1-W3LZDON3nieRuQQXv23oLJKOdG0="
+  "resolved" "https://registry.npmjs.org/vue-js-toolbar/-/vue-js-toolbar-1.0.0.tgz"
+  "version" "1.0.0"
+
 "vue-loader-v16@npm:vue-loader@^16.0.0-beta.7":
   "integrity" "sha512-TitGhqSQ61RJljMmhIGvfWzJ2zk9m1Qug049Ugml6QP3t0e95o0XJjk29roNEiPKJQBEi8Ord5hFuSuELzSp8Q=="
   "resolved" "https://registry.npmjs.org/vue-loader/-/vue-loader-16.2.0.tgz"

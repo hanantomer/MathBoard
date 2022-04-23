@@ -1,21 +1,33 @@
 <template>
   <v-row justify="center">
-    <v-dialog v-model="show" persistent max-width="250px">
+    <v-dialog
+      v-model="show"
+      persistent
+      max-width="250px"
+      @keydown.esc="show = false"
+    >
       <v-card>
         <v-card-title>Fraction Editor</v-card-title>
         <v-card-text>
           <v-text-field
             v-model="nominatorValue"
             class="fraction-text"
+            ref="nominatorValue"
+            placeholder="Nominator value"
           ></v-text-field>
           <v-divider></v-divider>
           <v-text-field
             v-model="denominatorValue"
             class="fraction-text"
+            ref="denominatorValue"
+            placeholder="Denominator value"
           ></v-text-field>
         </v-card-text>
         <v-card-actions>
           <v-spacer></v-spacer>
+          <v-btn color="blue darken-1" text @click="show = false">
+            Close
+          </v-btn>
           <v-btn color="blue darken-1" text @click="save"> Save </v-btn>
         </v-card-actions>
       </v-card>
@@ -31,6 +43,13 @@ export default {
   computed: {
     show: {
       get() {
+        setTimeout(() => {
+          // set focus to nominator after rendering
+          if (this.$refs.nominatorValue) {
+            this.$refs.nominatorValue.focus();
+          }
+        }, 250);
+
         return this.value;
       },
       set(value) {

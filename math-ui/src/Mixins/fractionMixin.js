@@ -10,9 +10,9 @@ export default {
         nominatorValue: nominatorValue,
         denominatorValue: denominatorValue,
         type: "fraction",
+        col: this.getcurrentRect().col,
+        row: this.getcurrentRect().row,
       };
-
-      fraction = Object.assign(fraction, this.getcurrentRect());
 
       this.$store
         .dispatch("addFraction", fraction)

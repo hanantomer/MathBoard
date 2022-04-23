@@ -21,16 +21,12 @@ export default {
   computed: {
     selectionRectLeft: function () {
       return (
-        Math.min(this.selectionPosition.x1, this.selectionPosition.x2) +
-        5 +
-        "px"
+        Math.min(this.selectionPosition.x1, this.selectionPosition.x2) + "px"
       );
     },
     selectionRectTop: function () {
       return (
-        Math.min(this.selectionPosition.y1, this.selectionPosition.y2) +
-        5 +
-        "px"
+        Math.min(this.selectionPosition.y1, this.selectionPosition.y2) + "px"
       );
     },
     selectionRectWidth: function () {
@@ -68,6 +64,17 @@ export default {
     ...mapGetters({
       getcurrentRect: "getcurrentRect",
     }),
+    getSvgOffset() {
+      const rect = document.getElementById("svg").getBoundingClientRect();
+      return {
+        left: rect.left + window.scrollX,
+        top: rect.top + window.scrollY,
+      };
+    },
+    getHeaderHeight() {
+      return document.getElementsByTagName("header")[0].getBoundingClientRect()
+        .height;
+    },
     selectionMixin_setCurrentPosition(e) {
       let currentRect = this.matrixMixin_findClickedObject(
         {
@@ -99,71 +106,37 @@ export default {
           type: "fraction",
         });
     },
-    selectionMixin_startSelection: function (e) {
+    selectionMixin_startSelection(e) {
       let x = e.clientX;
-      let y = e.clientY;
+      let y = e.clientY - this.getHeaderHeight();
       this.selectionPosition.x2 = this.selectionPosition.x1 = x;
       this.selectionPosition.y2 = this.selectionPosition.y1 = y;
       this.$store.dispatch("unselectAllNotations");
     },
     // extend or shrink selection area
-    selectionMixinUpdateSelectionArea: function (e) {
+    selectionMixinUpdateSelectionArea(e) {
       this.selectionPosition.x2 = e.clientX;
-      this.selectionPosition.y2 = e.clientY;
-    },
-    //move selection area
-    selectionMixin_moveSelection: function (e) {
-      let rectSize = this.matrixMixin_getRectSize();
-      if (this.dragPostion.x === 0) {
-        this.dragPostion.x = e.clientX;
-        this.dragPostion.y = e.clientY;
-      } else {
-        const rectDeltaX = Math.round(
-          (e.clientX - this.dragPostion.x) / rectSize
-        );
-        const rectDeltaY = Math.round(
-          (e.clientY - this.dragPostion.y) / rectSize
-        );
-
-        // consider meaningfull move only
-        if (rectDeltaX != 0 || rectDeltaY != 0) {
-          this.$store
-            .dispatch("moveSelectedNotations", {
-              rectDeltaX,
-              rectDeltaY,
-              rectSize,
-            })
-            .then(() => {
-              this.selectionPosition.x1 += rectDeltaX * rectSize;
-              this.selectionPosition.y1 += rectDeltaY * rectSize;
-              this.selectionPosition.x2 += rectDeltaX * rectSize;
-              this.selectionPosition.y2 += rectDeltaY * rectSize;
-              this.dragPostion.x = e.clientX;
-              this.dragPostion.y = e.clientY;
-            });
-        }
-      }
-    },
-    selectionMixin_resetSelection: function () {
-      this.selectionPosition.x1 = this.selectionPosition.x2 = this.selectionPosition.y1 = this.selectionPosition.y2 = 0;
-    },
-    selectionMixin_endMoveSelection: function (e) {
-      this.dragPostion.x = 0;
-      this.dragPostion.y = 0;
+      this.selectionPosition.y2 = e.clientY - this.getHeaderHeight();
     },
     selectionMixin_endSelect: function (e) {
+      let svgOffset = this.getSvgOffset();
       if (this.selectionPosition.x2 != this.selectionPosition.x1) {
         this.svg.selectAll("foreignObject").each((datum) => {
           if (
             !!datum.col &&
             !!datum.row &&
-            this.getNotationXposByCol(datum.col) + 5 >
+            this.getNotationXposByCol(datum.col) + svgOffset.left >
               this.selectionPosition.x1 &&
-            this.getNotationXposByCol(datum.col) - 5 <
+            this.getNotationXposByCol(datum.col) + svgOffset.left <
               this.selectionPosition.x2 &&
-            this.getNotationYposByRow(datum.row) + 5 >
+            this.getNotationYposByRow(datum.row) +
+              svgOffset.top -
+              this.getHeaderHeight() >
               this.selectionPosition.y1 &&
-            this.getNotationYposByRow(datum.row) - 5 < this.selectionPosition.y2
+            this.getNotationYposByRow(datum.row) +
+              svgOffset.top -
+              this.getHeaderHeight() <
+              this.selectionPosition.y2
           ) {
             this.$store.dispatch("selectNotation", {
               col: datum.col,
@@ -172,6 +145,47 @@ export default {
           }
         });
       }
+    },
+    //move selection area
+    selectionMixin_moveSelection(e) {
+      let rectSize = this.matrixMixin_getRectSize();
+      if (this.dragPostion.x === 0) {
+        this.dragPostion.x = e.clientX;
+        this.dragPostion.y = e.clientY;
+        return;
+      }
+
+      const rectDeltaX = Math.round(
+        (e.clientX - this.dragPostion.x) / rectSize
+      );
+      const rectDeltaY = Math.round(
+        (e.clientY - this.dragPostion.y) / rectSize
+      );
+
+      if (rectDeltaX != 0 || rectDeltaY != 0) {
+        this.$store
+          .dispatch("moveSelectedNotations", {
+            rectDeltaX,
+            rectDeltaY,
+            rectSize,
+          })
+          .then(() => {
+            this.selectionPosition.x1 += rectDeltaX * rectSize;
+            this.selectionPosition.y1 += rectDeltaY * rectSize;
+            this.selectionPosition.x2 += rectDeltaX * rectSize;
+            this.selectionPosition.y2 += rectDeltaY * rectSize;
+            this.dragPostion.x = e.clientX;
+            this.dragPostion.y = e.clientY;
+          });
+      }
+    },
+    selectionMixin_endMoveSelection(e) {
+      this.dragPostion.x = 0;
+      this.dragPostion.y = 0;
+    },
+    selectionMixin_resetSelection() {
+      this.selectionPosition.x1 = this.selectionPosition.x2 = this.selectionPosition.y1 = this.selectionPosition.y2 = 0;
+      this.$store.dispatch("unselectAllNotations");
     },
   },
 };

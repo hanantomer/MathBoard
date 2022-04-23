@@ -12,8 +12,8 @@ export default {
   data: function () {
     return {
       opacity: 1,
-      colsNum: 35,
-      rowsNum: 20,
+      colsNum: 60,
+      rowsNum: 24,
       rectSize: 30,
       matrix: [],
       topLevelGroup: null,
@@ -81,7 +81,7 @@ export default {
 
       this.topLevelGroup
         .selectAll("rect")
-        .data(this.matrix)
+        .data(this.matrix[0])
         .enter()
         .append("rect")
         .attr("fill", "white")
@@ -175,50 +175,7 @@ export default {
     removeNotation: function (notation) {
       document.getElementById(n.id + n.type).remove();
     },
-    addNotation(n) {
-      this.svg
-        .appendChild("foreignObject")
-        .setAttribute("id", n.type + n.id)
-        .setAttribute("col", n.col)
-        .setAttribute("row", n.row)
-        .setAttribute("x", this.getNotationXposByCol(n.col))
-        .setAttribute("y", this.getNotationXposByCol(n.row))
-        .setAttribute(
-          "width",
-          !!n.nominatorValue && !!n.denominatorValue
-            ? this.getFractionWidth(n)
-            : this.rectSize
-        )
-        .setAttribute("height", this.rectSize)
-        .style(
-          "font-size",
-          !!n.nominatorValue && !!n.denominatorValue
-            ? this.fractionFontSize
-            : this.fontSize
-        )
-        .innerHtml(
-          n.type === "fraction"
-            ? `$$\{${n.nominatorValue}\\over${n.denominatorValue} }\$$`
-            : !!n.value
-            ? "$$" + n.value + "$$"
-            : ""
-        );
-    },
     matrixMixin_refreshScreen(notations) {
-      // exists in dom but not in store -> delete from dom
-      /*[...document.getElementsByTagName("foreignObject")]
-        .filter((fo) => !notations.keys.contains(fo.id))
-        .forEach((fo) => fo.remove());
-
-      // exists in store but not in dom -> delete from dom
-      for (const n in notations) {
-        if (!document.getElementById(n)) {
-          this.addNotation(notations[n]);
-        }
-      }*/
-
-      // update via timestamp comparison
-
       this.svg
         .selectAll("foreignObject")
         .data(Object.values(notations))

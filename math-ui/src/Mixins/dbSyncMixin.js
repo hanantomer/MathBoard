@@ -209,7 +209,7 @@ module.exports = {
           res = await axiosInstnce.post("/fractions", fraction);
         }
 
-        return res ? res.data : null;
+        return res ? { ...res.data, type: fraction.type } : null;
       } catch (error) {
         handleError(error);
       }

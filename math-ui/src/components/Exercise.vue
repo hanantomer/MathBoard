@@ -1,70 +1,5 @@
 <template>
   <div style="height: 100%">
-    <!-- <div>$$x = {-b \pm \sqrt{b^2-4ac} \over 2a}.$$</div> -->
-    <v-toolbar color="primary" dark>
-      <v-btn
-        :disabled="!authorized && !isAdmin"
-        v-for="s in signs"
-        :key="s.sign"
-        v-on:click="editManager_symbolButtonPressed"
-        x-small
-        text
-        ><span class="mr-1">{{ s.sign }}</span></v-btn
-      >
-      <v-btn-toggle
-        v-model="selectionButtonActive"
-        background-color="transparent"
-        active-class="iconActive"
-      >
-        <v-btn icon v-on:click="editManager_selectionButtonPressed" x-small
-          ><v-icon>mdi-selection</v-icon></v-btn
-        >
-      </v-btn-toggle>
-
-      <v-btn-toggle
-        v-model="deleteButtonActive"
-        background-color="transparent"
-        active-class="iconActive"
-      >
-        <v-btn
-          icon
-          :disabled="!authorized && !isAdmin"
-          v-on:click="editManager_deleteButtonPressed"
-          x-small
-          ><v-icon>mdi-delete</v-icon></v-btn
-        >
-      </v-btn-toggle>
-      <v-btn
-        v-if="isAdmin"
-        icon
-        @click.stop="isAccessLinkDialogOpen = true"
-        color="white"
-        x-small
-        fab
-        dark
-        ><v-icon>mdi-account-plus</v-icon></v-btn
-      >
-      <v-btn
-        icon
-        color="white"
-        x-small
-        fab
-        dark
-        @click.stop="$openFractionDialog"
-      >
-        <v-icon>mdi-fraction-one-half</v-icon>
-      </v-btn>
-      <v-btn
-        v-if="isAdmin"
-        @click="$toggleExerciseMatrix"
-        icon
-        color="white"
-        x-small
-        fab
-        dark
-        ><v-icon>mdi-grid</v-icon>
-      </v-btn>
-    </v-toolbar>
     <createAccessLinkDialog
       v-model="isAccessLinkDialogOpen"
       v-on="{ create: $createAccessLink }"
@@ -75,6 +10,8 @@
         save: $saveFraction,
       }"
     ></fractionDialog>
+
+    <!-- selection rectangle -->
     <v-card
       id="selection"
       v-on:mouseup="editManager_selectionMouseUp"
@@ -95,11 +32,127 @@
         border: 1, 1, 1, 1;
       "
     ></v-card>
-    <v-row style="min-height: 600px; min-width: 600px">
-      <v-col cols="sm 10">
+
+    <v-row>
+      <v-col cols="1" sm="2" class="vertical-toolbar-column">
+        <v-toolbar color="primary" flat dark class="vertical-toolbar">
+          <!-- selection button -->
+          <v-tooltip top hidden>
+            <template v-slot:activator="{ on, attrs }">
+              <v-btn-toggle
+                v-model="selectionButtonActive"
+                background-color="transparent"
+                active-class="iconActive"
+              >
+                <v-btn
+                  color="yellow"
+                  icon
+                  v-on="on"
+                  v-bind="attrs"
+                  v-on:click="editManager_selectionButtonPressed"
+                  x-small
+                  ><v-icon>mdi-selection</v-icon></v-btn
+                >
+              </v-btn-toggle>
+            </template>
+            <span>Selection</span>
+          </v-tooltip>
+
+          <!-- eraser tool -->
+          <v-tooltip top hidden>
+            <template v-slot:activator="{ on, attrs }">
+              <v-btn-toggle
+                v-model="deleteButtonActive"
+                background-color="transparent"
+                active-class="iconActive"
+              >
+                <v-btn
+                  icon
+                  v-on="on"
+                  v-bind="attrs"
+                  :disabled="!authorized && !isAdmin"
+                  v-on:click="editManager_deleteButtonPressed"
+                  x-small
+                  ><v-icon>mdi-delete</v-icon></v-btn
+                >
+              </v-btn-toggle>
+            </template>
+            <span>Eraser</span>
+          </v-tooltip>
+
+          <!-- create access link -->
+          <v-tooltip top hidden v-if="isAdmin" v-model="showAccessTooltip">
+            <template v-slot:activator="{ on, attrs }">
+              <v-btn
+                icon
+                v-on="on"
+                v-bind="attrs"
+                @click.stop="isAccessLinkDialogOpen = true"
+                color="white"
+                x-small
+                fab
+                dark
+                ><v-icon>mdi-account-plus</v-icon></v-btn
+              >
+            </template>
+            <span>Create Access Link</span>
+          </v-tooltip>
+
+          <!-- fraction -->
+          <v-tooltip top hidden v-model="showFractionTooltip">
+            <template v-slot:activator="{ on, attrs }">
+              <v-btn
+                icon
+                color="white"
+                x-small
+                fab
+                dark
+                v-on="on"
+                v-bind="attrs"
+                :disabled="!authorized && !isAdmin"
+                @click.stop="$openFractionDialog"
+              >
+                <v-icon>mdi-fraction-one-half</v-icon>
+              </v-btn>
+            </template>
+            <span>Add Fraction</span>
+          </v-tooltip>
+
+          <!-- toggle mtrix rectangles -->
+          <v-tooltip top hidden>
+            <template v-slot:activator="{ on, attrs }">
+              <v-btn
+                v-if="isAdmin"
+                @click="$toggleExerciseMatrix"
+                icon
+                color="white"
+                x-small
+                fab
+                dark
+                v-on="on"
+                v-bind="attrs"
+                ><v-icon>mdi-grid</v-icon>
+              </v-btn>
+            </template>
+            <span>Toggle matrix rectangles</span>
+          </v-tooltip>
+
+          <v-btn
+            :disabled="!authorized && !isAdmin"
+            v-for="s in signs"
+            :key="s.sign"
+            v-on:click="editManager_symbolButtonPressed"
+            x-small
+            text
+            fab
+            ><span class="mr-1">{{ s.sign }}</span></v-btn
+          >
+        </v-toolbar>
+      </v-col>
+      <v-col cols="sm 8">
         <svg
           id="svg"
-          style="height: 95%; width: 100%"
+          style="height: 100%; width: -webkit-fill-available"
           v-on:mousedown="editManager_mouseDown"
           v-on:mousemove="editManager_mouseMove"
           v-on:mouseup="editManager_mouseUp"
@@ -180,6 +233,8 @@ export default {
       isAdmin: false,
       isAccessLinkDialogOpen: false,
       isFractionDialogOpen: false,
+      showFractionTooltip: false,
+      showAccessTooltip: false,
       svg: {},
       signs: [
         { sign: "1" },
@@ -195,9 +250,7 @@ export default {
         { sign: "+" },
         { sign: "-" },
         { sign: "*" },
-        { sign: "/" },
-        { sign: "^" },
-        { sign: "√" },
+        { sign: "." },
         { sign: "=" },
         { sign: "(" },
         { sign: ")" },
@@ -228,7 +281,6 @@ export default {
   watch: {
     $route: "$loadExercise",
     notations: {
-      //immediate: true,
       deep: true,
       handler: function (notations) {
         this.matrixMixin_refreshScreen(notations);
@@ -345,7 +397,22 @@ mjx-line {
   margin-top: 0.05em !important;
   margin-bottom: 0.3em !important;
 }
-.v-main {
-  height: 85%;
+._v-main {
+  height: fill-content;
+}
+.vertical-toolbar {
+  flex-flow: column wrap !important;
+  width: 45px !important;
+  height: max-content !important;
+  padding: 4px !important;
+}
+.vertical-toolbar .v-toolbar__content {
+  flex-flow: column wrap !important;
+  width: 35px !important;
+  height: max-content !important;
+  padding: 2px !important;
+}
+.vertical-toolbar-column {
+  flex-basis: content;
 }
 </style>
