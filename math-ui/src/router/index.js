@@ -1,7 +1,7 @@
 import VueRouter from "vue-router";
 import Login from "../components/Login.vue";
-import Exercises from "../components/Exercises.vue";
-import Exercise from "../components/Exercise.vue";
+import Lessons from "../components/Lessons.vue";
+import Lesson from "../components/Lesson.vue";
 import store from "../store/index.js";
 import authMixin from "../Mixins/authMixin.js";
 
@@ -18,15 +18,15 @@ const router = new VueRouter({
       meta: { requiresAuth: true },
     },
     {
-      path: "/exercises/:userId",
-      component: Exercises,
+      path: "/lessons/:userId",
+      component: Lessons,
       props: true,
       meta: { requiresAuth: true },
     },
     {
-      path: "/symbols/:exerciseId",
+      path: "/symbols/:lessonId",
       name: "symbols",
-      component: Exercise,
+      component: Lesson,
       props: true,
       meta: { requiresAuth: true },
     },

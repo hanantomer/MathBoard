@@ -1,10 +1,11 @@
 <template>
   <v-app id="app">
     <v-app-bar
-      style="align-items: flex-end"
+      style="align-items: flex-end; max-height: 55px"
       color="primary"
       dark
-      scroll-target="#scrolling-techniques-7"
+      dense
+      elevation="7"
     >
       <v-app-bar-nav-icon></v-app-bar-nav-icon>
 
@@ -14,7 +15,7 @@
       <v-btn
         v-show="!!user.id"
         icon
-        v-bind:to="{ path: '/exercises/' + (!!user ? user.id : '') }"
+        v-bind:to="{ path: '/lessons/' + (!!user ? user.id : '') }"
       >
         <v-icon>mdi-home</v-icon>
       </v-btn>
@@ -56,9 +57,7 @@
     </v-content>
     <v-footer inset width="auto" class="py-12">
       <v-col class="text-center footer" cols="12">
-        Online Elementary Math Teaching Platform © 2022 Copyright:<strong
-          class="copyright"
-        >
+        Math Teaching Platform © 2022 Copyright:<strong class="copyright">
           www.mathboard.com</strong
         >
       </v-col>
@@ -110,14 +109,11 @@ text {
   text-anchor: middle;
 }
 
-._v-toolbar__title {
-  width: -webkit-fill-available;
-}
 .footer {
   color: aliceblue;
   background-color: gray;
 }
 .copyright {
-  color: rgb(232, 232, 22);
+  color: rgb(249, 249, 253);
 }
 </style>

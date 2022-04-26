@@ -5,7 +5,7 @@ export default {
   methods: {
     fractionMixin_saveFraction(nominatorValue, denominatorValue) {
       let fraction = {
-        ExerciseId: this.exerciseId,
+        LessonId: this.lessonId,
         UserId: this.$store.getters.getUser.id,
         nominatorValue: nominatorValue,
         denominatorValue: denominatorValue,

@@ -13,8 +13,8 @@ class notationSyncService {
 
     if (!!user) {
       data.notation.UserId = user.id;
-      data.notation.ExerciseId = await dbUtil.parseExerciseId(
-        data.notation.ExerciseId
+      data.notation.LessonId = await dbUtil.parseLessonId(
+        data.notation.LessonId
       );
     }
     return data.notation;
@@ -22,13 +22,13 @@ class notationSyncService {
 
   async update(data, params) {
     let user = await this.getUser(params.query.access_token);
-    let exerciseId = null;
+    let lessonId = null;
     if (!!user) {
       data.notations.forEach(async (notation) => {
         notation.UserId = user.id;
-        if (exerciseId == null)
-          exerciseId = await dbUtil.parseExerciseId(notation.ExerciseId);
-        notation.ExerciseId = exerciseId;
+        if (lessonId == null)
+          lessonId = await dbUtil.parseLessonId(notation.LessonId);
+        notation.LessonId = lessonId;
       });
     }
     return data.notations;
@@ -40,8 +40,6 @@ class notationSyncService {
       data.notations.forEach((notation) => {
         notation.UserId = user.id;
       });
-      //let exerciseId = await dbUtil.parseExerciseId(data.notation.ExerciseId);
-      //data.notation.ExerciseId = exerciseId;
     }
     return data.notations;
   }

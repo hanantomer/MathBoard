@@ -5,46 +5,46 @@ const { Op } = require("sequelize");
 const accessLinkCache = new Map();
 
 module.exports = {
-    parseExerciseId: async function (exerciseId) {
+    parseLessonId: async function (lessonId) {
         //TODO use cahce
-        if (this.exerciseIdFromAccessLink(exerciseId)) {
+        if (this.lessonIdFromAccessLink(lessonId)) {
             let accessLink = null;
             try {
-                if (!accessLinkCache.has(exerciseId)) {
+                if (!accessLinkCache.has(lessonId)) {
                     accessLinkCache.set(
-                        exerciseId,
-                        await this.getAccessLink(exerciseId)
+                        lessonId,
+                        await this.getAccessLink(lessonId)
                     );
                 }
-                accessLink = accessLinkCache.get(exerciseId);
+                accessLink = accessLinkCache.get(lessonId);
             } catch (e) {
                 console.debug(
-                    `error parsing exercise id ${exerciseId}, error:{e}`
+                    `error parsing lesson id ${lessonId}, error:{e}`
                 );
             }
             if (!accessLink) {
                 console.error(
-                    `accessLink for suffix:${exerciseId} not found,exerciseId unknown`
+                    `accessLink for suffix:${lessonId} not found,lessonId unknown`
                 );
                 return;
             }
-            return Number(accessLink.ExerciseId);
+            return Number(accessLink.LessonId);
         }
-        return Number(exerciseId);
+        return Number(lessonId);
     },
-    exerciseIdFromAccessLink: function (exerciseId) {
-        return exerciseId.toString().indexOf("l_") === 0;
+    lessonIdFromAccessLink: function (lessonId) {
+        return lessonId.toString().indexOf("l_") === 0;
     },
     //TODO use cahce
-    getAccessLink: function (exerciseLink) {
+    getAccessLink: function (lessonLink) {
         let accessLink = db.sequelize.models["AccessLink"].findOne({
             where: {
-                link: { [Op.endsWith]: exerciseLink },
+                link: { [Op.endsWith]: lessonLink },
             },
         });
         if (!accessLink) {
             console.debug(
-                `exerciseMiddleware, accessLink not found for:${exerciseLink}`
+                `lessonMiddleware, accessLink not found for:${lessonLink}`
             );
             return null;
         }
@@ -52,13 +52,13 @@ module.exports = {
         return accessLink;
     },
 
-    isAdmin: async function (userId, exerciseId) {
-        let exercise = await db.sequelize.models["Exercise"].findOne({
+    isAdmin: async function (userId, lessonId) {
+        let lesson = await db.sequelize.models["Lesson"].findOne({
             where: {
-                id: exerciseId,
+                id: lessonId,
             },
         });
 
-        return !!exercise && exercise.UserId === userId;
+        return !!lesson && lesson.UserId === userId;
     },
 };

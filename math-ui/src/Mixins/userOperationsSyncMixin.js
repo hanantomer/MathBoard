@@ -62,7 +62,7 @@ export default {
     userOperationsMixin_syncOutgoingCurrentPosition: async function (
       currentPosition
     ) {
-      currentPosition.ExerciseId = this.exerciseId;
+      currentPosition.LessonId = this.lessonId;
       console.debug(`sync selected rect ${JSON.stringify(currentPosition)}`);
       client.service("currentPosition").update(
         null,
@@ -104,9 +104,9 @@ export default {
         }
       );
     },
-    userOperationsMixin_syncOutgoingHeartBeat: async function (exerciseId) {
+    userOperationsMixin_syncOutgoingHeartBeat: async function (lessonId) {
       client.service("heartbeat").update(
-        { ExerciseId: exerciseId },
+        { LessonId: lessonId },
         {
           query: {
             access_token: this.getAccessToken(),
@@ -115,7 +115,7 @@ export default {
       );
     },
     mixin_syncOutgoingAuthUser: async function (
-      exerciseId,
+      lessonId,
       authorizedStudentId,
       revokedStudentId
     ) {
@@ -123,7 +123,7 @@ export default {
         client.service("authorization").update(
           {
             authorization: {
-              exerciseId: exerciseId,
+              lessonId: lessonId,
               student: authorizedStudentId,
               authorized: true,
             },
@@ -138,7 +138,7 @@ export default {
         client.service("authorization").update(
           {
             authorization: {
-              exerciseId: exerciseId,
+              lessonId: lessonId,
               student: revokedStudentId,
               authorized: false,
             },
@@ -150,10 +150,10 @@ export default {
           }
         );
     },
-    mixin_syncIncomingUserOperations: async function (exerciseId, isAdmin) {
+    mixin_syncIncomingUserOperations: async function (lessonId, isAdmin) {
       // this will route events from feathers
       await client.service("authentication").create({
-        query: { access_token: this.getAccessToken(), exerciseId: exerciseId },
+        query: { access_token: this.getAccessToken(), lessonId: lessonId },
       });
 
       let _store = store;

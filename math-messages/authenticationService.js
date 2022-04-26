@@ -5,8 +5,8 @@ const constants = require("./constants");
 class AuthenticationService {
   constructor(app) {
     this.app = app;
-    this.exerciseAdminConnection = new Map(); // key exercise, value: userId/connection(1 only)
-    this.exerciseStudentConnection = new Map(); // key exercise, value: set where key:userId
+    this.lessonAdminConnection = new Map(); // key lesson, value: userId/connection(1 only)
+    this.lessonStudentConnection = new Map(); // key lesson, value: set where key:userId
   }
 
   async authUserByToken(access_token) {
@@ -22,34 +22,34 @@ class AuthenticationService {
     return user;
   }
 
-  // manage user login, join user to exercise or user channels
+  // manage user login, join user to lesson or user channels
   async create(data, params) {
     let user = await this.authUserByToken(data.query.access_token);
     if (!user) {
       return;
     }
 
-    let exerciseId = await dbUtil.parseExerciseId(data.query.exerciseId);
-    if (!exerciseId) {
+    let lessonId = await dbUtil.parseLessonId(data.query.lessonId);
+    if (!lessonId) {
       return;
     }
 
-    let isAdmin = await dbUtil.isAdmin(user.id, exerciseId);
+    let isAdmin = await dbUtil.isAdmin(user.id, lessonId);
 
     if (isAdmin) {
       // store admin connection when she logs on
-      this.exerciseAdminConnection.set(exerciseId, {
+      this.lessonAdminConnection.set(lessonId, {
         userId: user.id,
         connection: params.connection,
       });
       // join admin to existing student channels
-      if (this.exerciseStudentConnection.has(exerciseId)) {
-        this.exerciseStudentConnection.get(exerciseId).forEach((student) => {
+      if (this.lessonStudentConnection.has(lessonId)) {
+        this.lessonStudentConnection.get(lessonId).forEach((student) => {
           // join admin to all student channels
           this.app
             .channel(
-              constants.EXERCISE_CHANNEL_PREFIX +
-                exerciseId +
+              constants.LESSON_CHANNEL_PREFIX +
+                lessonId +
                 constants.USER_CHANNEL_PREFIX +
                 student
             )
@@ -60,43 +60,41 @@ class AuthenticationService {
         });
       }
     } else {
-      if (!this.exerciseStudentConnection.has(exerciseId)) {
-        this.exerciseStudentConnection.set(exerciseId, new Set());
+      if (!this.lessonStudentConnection.has(lessonId)) {
+        this.lessonStudentConnection.set(lessonId, new Set());
       }
-      this.exerciseStudentConnection.get(exerciseId).add(user.id);
+      this.lessonStudentConnection.get(lessonId).add(user.id);
 
       // join studnet to student channel
       this.app
         .channel(
-          constants.EXERCISE_CHANNEL_PREFIX +
-            exerciseId +
+          constants.LESSON_CHANNEL_PREFIX +
+            lessonId +
             constants.USER_CHANNEL_PREFIX +
             user.id
         )
         .join(params.connection);
-      console.log(
-        `subscribing student: ${user.email} to exercise: ${exerciseId}`
-      );
+      console.log(`subscribing student: ${user.email} to lesson: ${lessonId}`);
 
       // join admin to student channel
-      if (this.exerciseAdminConnection.has(exerciseId)) {
+      if (this.lessonAdminConnection.has(lessonId)) {
         console.log(`subscribing admin: ${user.email} to student: ${user.id}`);
         this.app
           .channel(
-            constants.EXERCISE_CHANNEL_PREFIX +
-              exerciseId +
+            constants.LESSON_CHANNEL_PREFIX +
+              lessonId +
               constants.USER_CHANNEL_PREFIX +
               user.id
           )
-          .join(this.exerciseAdminConnection.get(exerciseId).connection);
+          .join(this.lessonAdminConnection.get(lessonId).connection);
       }
     }
 
-    // either admin or student join exercise channel
+    // either admin or student join lesson channel
     this.app
-      .channel(constants.EXERCISE_CHANNEL_PREFIX + exerciseId)
+      .channel(constants.LESSON_CHANNEL_PREFIX + lessonId)
       .join(params.connection);
-    console.log(`subscribing user: ${user.email} to exercise: ${exerciseId}`);
+    console.log(`subscribing user: ${user.email} to lesson: ${lessonId}`);
   }
 }
 

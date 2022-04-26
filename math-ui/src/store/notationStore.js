@@ -68,14 +68,14 @@ export default {
     },
   },
   actions: {
-    async loadNotations(context, exerciseId) {
+    async loadNotations(context, lessonId) {
       context.commit("removeAllNotations");
-      dbSyncMixin.methods.getAllSymbols(exerciseId).then((symbols) => {
+      dbSyncMixin.methods.getAllSymbols(lessonId).then((symbols) => {
         symbols.forEach((symbol) => {
           context.commit("addNotation", { ...symbol, type: "symbol" });
         });
       });
-      dbSyncMixin.methods.getAllFractions(exerciseId).then((fractions) => {
+      dbSyncMixin.methods.getAllFractions(lessonId).then((fractions) => {
         fractions.forEach((fraction) => {
           context.commit("addNotation", { ...fraction, type: "fraction" });
         });

@@ -3,7 +3,7 @@
     <v-dialog v-model="show" max-width="400px" @keydown.esc="show = false">
       <v-card>
         <v-card-title>
-          <span class="headline">Exercise Access Link</span>
+          <span class="headline">Lesson Access Link</span>
         </v-card-title>
         <v-card-text>
           <v-container>

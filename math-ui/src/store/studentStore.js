@@ -77,7 +77,7 @@ export default {
     },
     async createAccessLink(context, accessLink) {
       return dbSyncMixin.methods.createAccessLink(
-        accessLink.ExerciseId,
+        accessLink.LessonId,
         accessLink.link
       );
     },

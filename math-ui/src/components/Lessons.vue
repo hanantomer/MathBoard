@@ -1,11 +1,11 @@
 <template>
   <v-container>
-    <exercise-dialog
+    <lesson-dialog
       :isOpen="isDialogOpen"
-      v-on="{ save: saveExercise }"
-    ></exercise-dialog>
+      v-on="{ save: saveLesson }"
+    ></lesson-dialog>
     <v-card>
-      <v-card-title>Exercises</v-card-title>
+      <v-card-title>Lessons</v-card-title>
       <v-btn icon>
         <v-icon>mdi-plus-circle-outline</v-icon>
       </v-btn>
@@ -16,7 +16,7 @@
             <v-list-item-content>
               <v-list-item-title
                 v-text="item.name"
-                @click="exerciseSeletcted(item)"
+                @click="lessonSeletcted(item)"
               ></v-list-item-title>
             </v-list-item-content>
           </v-list-item>
@@ -28,47 +28,47 @@
 <script>
 import { mapActions } from "vuex";
 import { mapGetters } from "vuex";
-import ExerciseDialog from "./ExerciseDialog.vue";
+import LessonDialog from "./LessonDialog.vue";
 
 export default {
-  components: { ExerciseDialog },
-  name: "Exercises",
+  components: { LessonDialog },
+  name: "Lessons",
   mounted() {
-    this.loadExercises().then((exercises) => {
-      console.debug(`loadExercises: ${JSON.stringify(exercises)}`);
-      if (!exercises) {
-        this.openExerciseDialog();
+    this.loadLessons().then((lessons) => {
+      console.debug(`loadLessons: ${JSON.stringify(lessons)}`);
+      if (!lessons) {
+        this.openLessonDialog();
       }
     });
   },
   computed: {
     items() {
-      return this.getExercises();
+      return this.getLessons();
     },
   },
   methods: {
     ...mapActions({
-      loadExercises: "loadExercises",
-      addExercise: "addExercise",
-      setCurrentExercise: "setCurrentExercise",
+      loadLessons: "loadLessons",
+      addLesson: "addLesson",
+      setCurrentLesson: "setCurrentLesson",
     }),
     ...mapGetters({
-      getExercises: "getExercises",
+      getLessons: "getLessons",
     }),
-    openExerciseDialog() {
+    openLessonDialog() {
       this.isDialogOpen = true;
     },
-    saveExercise(exercise) {
-      this.addExercise(exercise).then((addedExercise) => {
+    saveLesson(lesson) {
+      this.addLesson(lesson).then((addedLesson) => {
         this.$router.push({
-          path: "/symbols/" + addedExercise.id,
+          path: "/symbols/" + addedLesson.id,
         });
       });
     },
-    async exerciseSeletcted(exercise) {
-      this.setCurrentExercise(exercise).then(() =>
+    async lessonSeletcted(lesson) {
+      this.setCurrentLesson(lesson).then(() =>
         this.$router.push({
-          path: "/symbols/" + exercise.id,
+          path: "/symbols/" + lesson.id,
         })
       );
     },

@@ -123,7 +123,7 @@
             <template v-slot:activator="{ on, attrs }">
               <v-btn
                 v-if="isAdmin"
-                @click="$toggleExerciseMatrix"
+                @click="$toggleLessonMatrix"
                 icon
                 color="white"
                 x-small
@@ -149,10 +149,10 @@
           >
         </v-toolbar>
       </v-col>
-      <v-col cols="sm 8">
+      <v-col cols="sm 8" style="overflow-x: auto">
         <svg
           id="svg"
-          style="height: 100%; width: -webkit-fill-available"
+          style="height: 95%; width: 95%; min-width: 1200px"
           v-on:mousedown="editManager_mouseDown"
           v-on:mousemove="editManager_mouseMove"
           v-on:mouseup="editManager_mouseUp"
@@ -208,7 +208,7 @@ export default {
     createAccessLinkDialog,
     fractionDialog,
   },
-  props: ["exerciseId"],
+  props: ["lessonId"],
   destroyed: function () {
     window.removeEventListener("keyup", this.editManager_keyUp);
   },
@@ -219,7 +219,7 @@ export default {
       .getElementById("svg")
       .getBoundingClientRect();
 
-    this.$loadExercise().then(() => {
+    this.$loadLesson().then(() => {
       window.addEventListener("keyup", this.editManager_keyUp);
     });
     this.matrixMixin_setMatrix();
@@ -279,7 +279,7 @@ export default {
     }),
   },
   watch: {
-    $route: "$loadExercise",
+    $route: "$loadLesson",
     notations: {
       deep: true,
       handler: function (notations) {
@@ -292,8 +292,8 @@ export default {
     ...mapGetters({
       getSelectedNotations: "getSelectedNotations",
       getNotationByRectCoordinates: "getNotationByRectCoordinates",
-      getCurrentExercise: "getCurrentExercise",
-      getExercises: "getExercises",
+      getCurrentLesson: "getCurrentLesson",
+      getLessons: "getLessons",
       getUser: "getUser",
       getStudent: "getStudent",
       getSymbols: "getSymbols",
@@ -310,37 +310,37 @@ export default {
         fraction.denominatorValue
       );
     },
-    $toggleExerciseMatrix() {
+    $toggleLessonMatrix() {
       this.matrixMixin_toggleMatrixOverlay();
     },
     $getStudentDisplayName(student) {
       return student.firstName + " " + student.lastName;
     },
-    $loadExercise: async function () {
-      if (!this.getCurrentExercise().hasOwnProperty()) {
-        await this.$store.dispatch("loadExercise", this.exerciseId);
+    $loadLesson: async function () {
+      if (!this.getCurrentLesson().hasOwnProperty()) {
+        await this.$store.dispatch("loadLesson", this.lessonId);
       }
-      this.isAdmin = this.getCurrentExercise().UserId === this.getUser().id;
+      this.isAdmin = this.getCurrentLesson().UserId === this.getUser().id;
 
       if (!this.isAdmin) {
-        setInterval(this.mixin_sendHeartBeat, 2000, this.exerciseId);
+        setInterval(this.mixin_sendHeartBeat, 2000, this.lessonId);
       }
 
-      await this.$store.dispatch("loadNotations", this.exerciseId);
-      //await this.$store.dispatch("loadFractions", this.exerciseId);
+      await this.$store.dispatch("loadNotations", this.lessonId);
+      //await this.$store.dispatch("loadFractions", this.lessonId);
 
-      this.mixin_syncIncomingUserOperations(this.exerciseId, this.isAdmin); ///TODO create mechnism to handle gaps between load and sync
+      this.mixin_syncIncomingUserOperations(this.lessonId, this.isAdmin); ///TODO create mechnism to handle gaps between load and sync
     },
     $createAccessLink: function (link) {
       this.$store.dispatch("createAccessLink", {
-        ExerciseId: this.exerciseId,
+        LessonId: this.lessonId,
         link: link,
       });
     },
     $toggleStudentAuthorization: function (student) {
       this.toggleAuthorization(student.userId).then((authorization) => {
         this.mixin_syncOutgoingAuthUser(
-          this.exerciseId,
+          this.lessonId,
           authorization.authorizedStudentId,
           authorization.revokedStudentId
         );

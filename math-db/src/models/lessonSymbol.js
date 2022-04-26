@@ -1,14 +1,14 @@
 "use strict";
 const { Model } = require("sequelize");
 module.exports = (sequelize, DataTypes) => {
-    class Symbol extends Model {
+    class LessonSymbol extends Model {
         static associate(models) {
-            Symbol.belongsTo(models.Exercise, {
+            LessonSymbol.belongsTo(models.Lesson, {
                 onDelete: "CASCADE",
                 onUpdate: "CASCADE",
                 foreignKey: { allowNull: false },
             });
-            Symbol.belongsTo(models.User, {
+            LessonSymbol.belongsTo(models.User, {
                 onDelete: "CASCADE",
                 onUpdate: "CASCADE",
                 foreignKey: { allowNull: false },
@@ -16,7 +16,7 @@ module.exports = (sequelize, DataTypes) => {
         }
     }
 
-    Symbol.init(
+    LessonSymbol.init(
         {
             col: {
                 type: DataTypes.INTEGER,
@@ -44,5 +44,5 @@ module.exports = (sequelize, DataTypes) => {
         }
     );
 
-    return Symbol;
+    return LessonSymbol;
 };

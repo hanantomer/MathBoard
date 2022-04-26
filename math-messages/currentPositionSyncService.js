@@ -11,8 +11,8 @@ class currentPositionSyncService {
 
     if (!!user) {
       data.currentPosition.UserId = user.id;
-      data.currentPosition.ExerciseId = await dbUtil.parseExerciseId(
-        data.currentPosition.ExerciseId
+      data.currentPosition.LessonId = await dbUtil.parseLessonId(
+        data.currentPosition.LessonId
       );
 
       console.debug(

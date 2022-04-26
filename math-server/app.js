@@ -4,7 +4,7 @@ const finale = require("finale-rest");
 const db = require("math-db/src/models/index");
 const authMiddleware = require("math-auth/src/authMiddleware");
 const userMiddleware = require("./userMiddleware");
-const exerciseMiddleware = require("./exerciseMiddleware");
+const lessonMiddleware = require("./lessonMiddleware");
 
 let app = express();
 app.use(cors());
@@ -22,26 +22,26 @@ let userResource = finale.resource({
 userResource.use(userMiddleware);
 userResource.use(authMiddleware);
 
-let exerciseResource = finale.resource({
-    model: db.sequelize.models["Exercise"],
-    endpoints: ["/exercises", "/exercises/:id"],
+let lessonResource = finale.resource({
+    model: db.sequelize.models["Lesson"],
+    endpoints: ["/lessons", "/lessons/:id"],
 });
-exerciseResource.use(authMiddleware);
-exerciseResource.use(exerciseMiddleware);
+lessonResource.use(authMiddleware);
+lessonResource.use(lessonMiddleware);
 
 let symbolResource = finale.resource({
-    model: db.sequelize.models["Symbol"],
-    endpoints: ["/symbols", "/symbols/:id"],
+    model: db.sequelize.models["LessonSymbol"],
+    endpoints: ["/lessonymbols", "/lessonsymbols/:id"],
 });
 symbolResource.use(authMiddleware);
-symbolResource.use(exerciseMiddleware);
+symbolResource.use(lessonMiddleware);
 
 let fractionResource = finale.resource({
-    model: db.sequelize.models["Fraction"],
-    endpoints: ["/fractions", "/fractions/:id"],
+    model: db.sequelize.models["LessonFraction"],
+    endpoints: ["/lessonfractions", "/lessonfractions/:id"],
 });
 fractionResource.use(authMiddleware);
-fractionResource.use(exerciseMiddleware);
+fractionResource.use(lessonMiddleware);
 
 finale.resource({
     model: db.sequelize.models["AccessLink"],

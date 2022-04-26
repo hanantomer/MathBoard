@@ -50,7 +50,9 @@ function handleError(error) {
 
 async function getSymbolByCoordinates(row, col) {
   try {
-    let res = await axiosInstnce.get("/symbols?row=" + row + "&col=" + col);
+    let res = await axiosInstnce.get(
+      "/lessonsymbols?row=" + row + "&col=" + col
+    );
     return !!res ? res.data[0] : null;
   } catch (error) {
     handleError(error);
@@ -58,7 +60,9 @@ async function getSymbolByCoordinates(row, col) {
 }
 async function getFractionByCoordinates(row, col) {
   try {
-    let res = await axiosInstnce.get("/fractions?row=" + row + "&col=" + col);
+    let res = await axiosInstnce.get(
+      "/lessonfractions?row=" + row + "&col=" + col
+    );
     return !!res ? res.data[0] : null;
   } catch (error) {
     handleError(error);
@@ -67,10 +71,10 @@ async function getFractionByCoordinates(row, col) {
 
 module.exports = {
   methods: {
-    createAccessLink: async function (exerciseId, link) {
+    createAccessLink: async function (lessonId, link) {
       try {
         let res = await axiosInstnce.post("/accessLink", {
-          ExerciseId: exerciseId,
+          LessonId: lessonId,
           link: link,
         });
         return res.data;
@@ -115,18 +119,18 @@ module.exports = {
         handleError(error);
       }
     },
-    addExercise: async function (exercise) {
+    addLesson: async function (lesson) {
       try {
-        return axiosInstnce.post("/exercises", exercise);
+        return axiosInstnce.post("/lessons", lesson);
       } catch (error) {
         handleError(error);
       }
     },
     updateNotationCoordinates: async function (notation) {
       if (notation.value) {
-        return axiosInstnce.put("/symbols/" + notation.id, notation);
+        return axiosInstnce.put("/lessonsymbols/" + notation.id, notation);
       } else if (notation.nominatorValue) {
-        return axiosInstnce.put("/fractions/" + notation.id, notation);
+        return axiosInstnce.put("/lessonfractions/" + notation.id, notation);
       }
     },
     saveSymbol: async function (symbol) {
@@ -138,11 +142,11 @@ module.exports = {
       let res = null;
       if (!!symbolAtCoordinates) {
         res = await axiosInstnce.put(
-          "/symbols/" + symbolAtCoordinates.id,
+          "/lessonsymbols/" + symbolAtCoordinates.id,
           symbol
         );
       } else {
-        res = await axiosInstnce.post("/symbols", symbol);
+        res = await axiosInstnce.post("/lessonsymbols", symbol);
       }
 
       return res ? { ...res.data, type: symbol.type } : null;
@@ -150,42 +154,44 @@ module.exports = {
     removeNotation: async function (notation) {
       try {
         if (notation.value) {
-          axiosInstnce.delete("/symbols/" + notation.id);
+          axiosInstnce.delete("/lessonsymbols/" + notation.id);
         } else if (notation.nominatorValue) {
-          axiosInstnce.delete("/fractions/" + notation.id);
+          axiosInstnce.delete("/lessonfractions/" + notation.id);
         }
       } catch (error) {
         handleError(error);
       }
     },
-    getExercise: async function (exerciseId) {
+    getLesson: async function (lessonId) {
       try {
-        let res = await axiosInstnce.get("/exercises?id=" + exerciseId);
+        let res = await axiosInstnce.get("/lessons?id=" + lessonId);
         return !!res ? res.data[0] : null;
       } catch (error) {
         handleError(error);
       }
     },
 
-    getAllExercises: async function (user) {
+    getAllLessons: async function (user) {
       console.log(user);
       try {
-        return axiosInstnce.get("/exercises?UserId=" + user.id);
+        return axiosInstnce.get("/lessons?UserId=" + user.id);
       } catch (error) {
         handleError(error);
       }
     },
-    getAllSymbols: async function (exerciseId) {
+    getAllSymbols: async function (lessonId) {
       try {
-        let res = await axiosInstnce.get("/symbols?exerciseId=" + exerciseId);
+        let res = await axiosInstnce.get("/lessonsymbols?lessonId=" + lessonId);
         return res.data;
       } catch (error) {
         handleError(error);
       }
     },
-    getAllFractions: async function (exerciseId) {
+    getAllFractions: async function (lessonId) {
       try {
-        let res = await axiosInstnce.get("/fractions?exerciseId=" + exerciseId);
+        let res = await axiosInstnce.get(
+          "/lessonfractions?lessonId=" + lessonId
+        );
         return res.data;
       } catch (error) {
         handleError(error);
@@ -202,11 +208,11 @@ module.exports = {
         let res = null;
         if (!!fractionAtCoordinates) {
           res = await axiosInstnce.put(
-            "/fractions/" + fractionAtCoordinates.id,
+            "/lessonfractions/" + fractionAtCoordinates.id,
             fraction
           );
         } else {
-          res = await axiosInstnce.post("/fractions", fraction);
+          res = await axiosInstnce.post("/lessonfractions", fraction);
         }
 
         return res ? { ...res.data, type: fraction.type } : null;

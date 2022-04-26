@@ -3,7 +3,7 @@
     <v-dialog v-model="isOpen" persistent max-width="400px">
       <v-card>
         <v-card-title>
-          <span class="headline">Specify exercise name</span>
+          <span class="headline">Specify lesson name</span>
         </v-card-title>
         <v-card-text>
           <v-container>

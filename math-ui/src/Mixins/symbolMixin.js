@@ -2,7 +2,7 @@ export default {
   methods: {
     symbolMixin_addSymbol(value) {
       let symbol = {
-        ExerciseId: this.exerciseId,
+        LessonId: this.lessonId,
         UserId: this.$store.getters.getUser.id,
         value: value,
         type: "symbol",

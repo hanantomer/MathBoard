@@ -3,7 +3,7 @@ const dbUtil = require("math-db/src/dbUtil");
 class AuhorizationService {
   constructor(app) {
     this.app = app;
-    this.exerciseAuthorizedUsers = [];
+    this.lessonAuthorizedUsers = [];
   }
 
   async get(data, params) {
@@ -12,11 +12,11 @@ class AuhorizationService {
       .authUserByToken(params.query.access_token);
 
     if (!!user) {
-      user.exerciseId = await dbUtil.parseExerciseId(data.exerciseId);
+      user.lessonId = await dbUtil.parseLessonId(data.lessonId);
 
       return (
-        !!this.exerciseAuthorizedUsers[user.exerciseId] &&
-        this.exerciseAuthorizedUsers[user.exerciseId].indexOf(user.id) >= 0
+        !!this.lessonAuthorizedUsers[user.lessonId] &&
+        this.lessonAuthorizedUsers[user.lessonId].indexOf(user.id) >= 0
       );
     }
   }
@@ -27,17 +27,15 @@ class AuhorizationService {
       .authUserByToken(params.query.access_token);
 
     if (!!user) {
-      user.exerciseId = await dbUtil.parseExerciseId(
-        data.authorization.exerciseId
-      );
+      user.lessonId = await dbUtil.parseLessonId(data.authorization.lessonId);
     }
 
     let isOwner =
-      !!user && dbUtil.isAdmin(user.id, data.authorization.exerciseId);
+      !!user && dbUtil.isAdmin(user.id, data.authorization.lessonId);
     if (isOwner) {
       return {
         userId: data.authorization.student,
-        exerciseId: data.authorization.exerciseId,
+        lessonId: data.authorization.lessonId,
         authorized: data.authorization.authorized,
       };
     }
