@@ -4,13 +4,13 @@
       :isOpen="isDialogOpen"
       v-on="{ save: saveLesson }"
     ></lesson-dialog>
-    <v-card>
+    <v-card class="d-flex align-center justify-center">
       <v-card-title>Lessons</v-card-title>
-      <v-btn icon>
-        <v-icon>mdi-plus-circle-outline</v-icon>
-      </v-btn>
+
       <v-list>
-        <!-- <v-subheader>Ex</v-subheader> -->
+        <v-btn icon>
+          <v-icon>mdi-plus-circle-outline</v-icon>
+        </v-btn>
         <v-list-item-group v-model="selectedItem" color="primary">
           <v-list-item v-for="item in items" :key="item.id">
             <v-list-item-content>

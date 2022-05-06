@@ -12,7 +12,7 @@ export default {
   data: function () {
     return {
       opacity: 1,
-      colsNum: 60,
+      colsNum: 48,
       rowsNum: 24,
       rectSize: 30,
       matrix: [],

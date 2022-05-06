@@ -1,5 +1,6 @@
 import VueRouter from "vue-router";
-import Login from "../components/Login.vue";
+import Welcome from "../components/Welcome.vue";
+// import Login from "../components/Login.vue";
 import Lessons from "../components/Lessons.vue";
 import Lesson from "../components/Lesson.vue";
 import store from "../store/index.js";
@@ -9,13 +10,9 @@ const router = new VueRouter({
   mode: "history",
   routes: [
     {
-      path: "/login",
-      component: Login,
-      meta: { requiresAuth: false },
-    },
-    {
       path: "/",
-      meta: { requiresAuth: true },
+      component: Welcome,
+      meta: { requiresAuth: false },
     },
     {
       path: "/lessons/:userId",
@@ -34,7 +31,6 @@ const router = new VueRouter({
 });
 
 router.beforeEach(async (to, from, next) => {
-  console.debug(`beforeEach, getUser:${JSON.stringify(store.getters.getUser)}`);
   if (
     to.matched.some((record) => record.meta.requiresAuth) &&
     !store.getters.getUser.id
@@ -60,7 +56,7 @@ router.beforeEach(async (to, from, next) => {
     if (!user || !user.id) {
       const loginpath = window.location.pathname;
       next({
-        path: "/login",
+        path: "/",
         query: { from: loginpath },
         params: { nextUrl: to.fullPath },
       });

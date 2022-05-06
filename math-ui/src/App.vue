@@ -1,15 +1,32 @@
 <template>
   <v-app id="app">
+    <login :dialog="loginDialog"></login>
     <v-app-bar
-      style="align-items: flex-end; max-height: 55px"
+      style="max-height: 60px; padding-right: 10px"
+      class="float-end"
       color="primary"
       dark
       dense
-      elevation="7"
+      elevation="8"
     >
-      <v-app-bar-nav-icon></v-app-bar-nav-icon>
+      <v-img
+        class="mx-2"
+        :src="require('./assets/beta.png')"
+        max-height="35"
+        max-width="35"
+        contain
+      ></v-img>
 
-      <v-toolbar-title> <h4>Online Mathboard</h4></v-toolbar-title>
+      <v-img
+        class="mx-2"
+        :src="require('./assets/logo.png')"
+        max-height="65"
+        max-width="85"
+        contain
+      ></v-img>
+      <v-toolbar-title>
+        ONLINE <strong style="color: darkorange">MATHBOARD</strong>
+      </v-toolbar-title>
       <v-spacer></v-spacer>
 
       <v-btn
@@ -35,6 +52,18 @@
         <span>Sign Out</span>
       </v-tooltip>
 
+      <v-btn v-show="!user.id" icon v-on:click="openLoginDialog('Login')">
+        <v-icon>mdi-account</v-icon>
+        <span style="font-size: 0.7em">Sign In</span>
+      </v-btn>
+
+      <v-divider class="mx-6" vertical></v-divider>
+
+      <v-btn v-show="!user.id" icon v-on:click="openLoginDialog('Register')">
+        <v-icon>mdi-account-outline</v-icon>
+        <span style="font-size: 0.7em">Register</span>
+      </v-btn>
+
       <v-tooltip bottom hidden>
         <template v-slot:activator="{ on, attrs }">
           <v-avatar v-show="user.imageUrl" v-bind="attrs" v-on="on" size="36px"
@@ -48,31 +77,41 @@
         >Hello {{ user.firstName }}</span
       >
     </v-app-bar>
-    <v-content>
-      <v-main>
-        <v-container no-gutters fluid>
-          <router-view></router-view>
-        </v-container>
-      </v-main>
-    </v-content>
-    <v-footer inset width="auto" class="py-12">
-      <v-col class="text-center footer" cols="12">
-        Math Teaching Platform © 2022 Copyright:<strong class="copyright">
-          www.mathboard.com</strong
-        >
+    <v-main>
+      <v-container no-gutters fluid class="fill-height">
+        <router-view></router-view>
+      </v-container>
+    </v-main>
+    <v-footer color="primary" padless dense>
+      <v-col class="text-center" cols="12">
+        <p style="color: white">© Copyright 2022 www.mathboard.com</p>
       </v-col>
     </v-footer>
   </v-app>
 </template>
 
 <script>
+// import "./reset.scss";
+// import "./animations.scss";
+// import "./colors.scss";
+// import "./elevation.scss";
+// import "./transitions.scss";
+import Login from "./components/Login.vue";
 import { mapGetters } from "vuex";
 import authMixin from "./Mixins/authMixin";
 export default {
   name: "App",
+  components: { Login },
   mixins: [authMixin],
+  data: () => ({
+    loginDialog: null,
+  }),
   methods: {
     ...mapGetters({ getUser: "getUser" }),
+    openLoginDialog(tab) {
+      this.loginDialog = { show: true, tab: tab };
+    },
+
     signOut: function () {
       this.mixin_signOut();
       this.$router.push("/login");
@@ -94,6 +133,9 @@ export default {
 };
 </script>
 <style>
+html {
+  overflow-y: auto !important;
+}
 body {
   -webkit-touch-callout: none;
   -webkit-user-select: none;
@@ -107,13 +149,5 @@ text {
   text-anchor: start;
   cursor: pointer;
   text-anchor: middle;
-}
-
-.footer {
-  color: aliceblue;
-  background-color: gray;
-}
-.copyright {
-  color: rgb(249, 249, 253);
 }
 </style>

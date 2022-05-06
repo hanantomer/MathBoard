@@ -31,7 +31,7 @@ lessonResource.use(lessonMiddleware);
 
 let symbolResource = finale.resource({
     model: db.sequelize.models["LessonSymbol"],
-    endpoints: ["/lessonymbols", "/lessonsymbols/:id"],
+    endpoints: ["/lessonsymbols", "/lessonsymbols/:id"],
 });
 symbolResource.use(authMiddleware);
 symbolResource.use(lessonMiddleware);

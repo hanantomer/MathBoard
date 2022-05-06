@@ -1,5 +1,5 @@
 <template>
-  <div style="height: 100%">
+  <div class="fill-height" style="width: 100%">
     <createAccessLinkDialog
       v-model="isAccessLinkDialogOpen"
       v-on="{ create: $createAccessLink }"
@@ -33,9 +33,9 @@
       "
     ></v-card>
 
-    <v-row>
-      <v-col cols="1" sm="2" class="vertical-toolbar-column">
-        <v-toolbar color="primary" flat dark class="vertical-toolbar">
+    <v-row class="fill-height" fluid>
+      <v-col cols="2" class="vertical-toolbar-column">
+        <v-toolbar color="primary" dark class="vertical-toolbar">
           <!-- selection button -->
           <v-tooltip top hidden>
             <template v-slot:activator="{ on, attrs }">
@@ -149,16 +149,17 @@
           >
         </v-toolbar>
       </v-col>
-      <v-col cols="sm 8" style="overflow-x: auto">
+      <v-col cols="10" fluid style="overflow-x: auto; overflow-y: visible">
         <svg
           id="svg"
-          style="height: 95%; width: 95%; min-width: 1200px"
+          width="1450px"
+          height="97%"
           v-on:mousedown="editManager_mouseDown"
           v-on:mousemove="editManager_mouseMove"
           v-on:mouseup="editManager_mouseUp"
         ></svg>
       </v-col>
-      <v-col cols="3">
+      <!-- <v-col cols="3">
         <v-list>
           <v-list-item-group active-class="activestudent" color="indigo">
             <v-list-item v-for="student in students" :key="student.id">
@@ -183,7 +184,7 @@
             </v-list-item>
           </v-list-item-group>
         </v-list>
-      </v-col>
+      </v-col> -->
     </v-row>
   </div>
 </template>
@@ -317,18 +318,22 @@ export default {
       return student.firstName + " " + student.lastName;
     },
     $loadLesson: async function () {
+      this.isAdmin = this.getCurrentLesson().UserId === this.getUser().id;
+
+      // load from db to store
       if (!this.getCurrentLesson().hasOwnProperty()) {
         await this.$store.dispatch("loadLesson", this.lessonId);
       }
-      this.isAdmin = this.getCurrentLesson().UserId === this.getUser().id;
 
+      // student send heartbeat to teacher
       if (!this.isAdmin) {
         setInterval(this.mixin_sendHeartBeat, 2000, this.lessonId);
       }
 
+      // load to screen
       await this.$store.dispatch("loadNotations", this.lessonId);
-      //await this.$store.dispatch("loadFractions", this.lessonId);
 
+      // listen to changes
       this.mixin_syncIncomingUserOperations(this.lessonId, this.isAdmin); ///TODO create mechnism to handle gaps between load and sync
     },
     $createAccessLink: function (link) {

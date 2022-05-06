@@ -1,5 +1,5 @@
 <template>
-  <v-dialog v-model="dialog" persistent max-width="600px" min-width="360px">
+  <v-dialog v-model="show" max-width="600px" min-width="360px">
     <div>
       <v-tabs
         v-model="tab"
@@ -149,6 +149,7 @@
 </template>
 
 <script>
+import { thresholdFreedmanDiaconis } from "d3-array";
 import { mapActions } from "vuex";
 import { mapGetters } from "vuex";
 export default {
@@ -170,7 +171,7 @@ export default {
       authGoogleUser: "authGoogleUser",
     }),
     googleOnSuccess: async function (user) {
-      this.dialog = false;
+      this.isOpen = false;
       window.$cookies.remove("access_token");
     },
     validateRegister: async function () {
@@ -181,7 +182,7 @@ export default {
         user.lastName = this.lastName;
         user.email = this.email;
         await this.registerUser(user);
-        this.tab = "Login";
+        this.show = false;
       }
     },
     validateLogin: async function () {
@@ -199,7 +200,8 @@ export default {
           );
           this.setUser(authenticatedUser);
           window.$cookies.set("access_token", authenticatedUser.access_token);
-          this.$router.push(this.$route.query.from || "/");
+          this.$router.push(this.$route.query.from || "/?au");
+          this.show = false;
         } else {
           this.loginFailed = true;
         }
@@ -218,11 +220,19 @@ export default {
       return () => this.password === this.verify || "Password must match";
     },
   },
-
+  watch: {
+    dialog(val) {
+      this.show = val.show;
+      this.tab = val.tab === "Login" ? 0 : 1;
+    },
+  },
+  props: {
+    dialog: { show: false, tab: 0 },
+  },
   data: () => ({
     loginFailed: false,
-    dialog: true,
     tab: 0,
+    show: false,
     tabs: [
       { name: "Login", icon: "mdi-account" },
       { name: "Register", icon: "mdi-account-outline" },
