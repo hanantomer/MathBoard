@@ -195,13 +195,14 @@ export default {
         let authenticatedUser = await this.authLocalUserByPassword(user);
         if (!!authenticatedUser) {
           this.loginFailed = false;
-          console.debug(
-            `new access_token:${authenticatedUser.access_token}, for user:${user.email}`
-          );
+          this.show = false;
           this.setUser(authenticatedUser);
           window.$cookies.set("access_token", authenticatedUser.access_token);
-          this.$router.push(this.$route.query.from || "/?au");
-          this.show = false;
+          this.$router.push(
+            this.$route.query.from ||
+              this.$route.fullPath + "/lessons/" + authenticatedUser.id
+          );
+          this.$router.go();
         } else {
           this.loginFailed = true;
         }

@@ -1,23 +1,29 @@
 <template>
   <v-container>
-    <lesson-dialog
-      :isOpen="isDialogOpen"
+    <LessonDialog
+      :dialog="lessonDialog"
       v-on="{ save: saveLesson }"
-    ></lesson-dialog>
-    <v-card class="d-flex align-center justify-center">
-      <v-card-title>Lessons</v-card-title>
+    ></LessonDialog>
+    <v-card class="mx-auto" max-width="500">
+      <v-toolbar color="primary" dark>
+        <v-toolbar-title>My Lessons</v-toolbar-title>
 
-      <v-list>
-        <v-btn icon>
-          <v-icon>mdi-plus-circle-outline</v-icon>
+        <v-spacer></v-spacer>
+
+        <v-btn icon v-on:click="openLessonDialog">
+          <v-icon>mdi-plus</v-icon>
         </v-btn>
-        <v-list-item-group v-model="selectedItem" color="primary">
-          <v-list-item v-for="item in items" :key="item.id">
-            <v-list-item-content>
-              <v-list-item-title
-                v-text="item.name"
-                @click="lessonSeletcted(item)"
-              ></v-list-item-title>
+      </v-toolbar>
+
+      <v-list two-line>
+        <v-list-item-group active-class="primary--text">
+          <v-list-item
+            v-for="item in items"
+            :key="item.id"
+            @click="lessonSeletcted(item)"
+          >
+            <v-list-item-content class="lesson_title">
+              <v-list-item-title v-text="item.name"> </v-list-item-title>
             </v-list-item-content>
           </v-list-item>
         </v-list-item-group>
@@ -35,7 +41,6 @@ export default {
   name: "Lessons",
   mounted() {
     this.loadLessons().then((lessons) => {
-      console.debug(`loadLessons: ${JSON.stringify(lessons)}`);
       if (!lessons) {
         this.openLessonDialog();
       }
@@ -56,7 +61,7 @@ export default {
       getLessons: "getLessons",
     }),
     openLessonDialog() {
-      this.isDialogOpen = true;
+      this.lessonDialog = { show: true, name: "" };
     },
     saveLesson(lesson) {
       this.addLesson(lesson).then((addedLesson) => {
@@ -76,7 +81,7 @@ export default {
   data() {
     return {
       selectedItem: {},
-      isDialogOpen: false,
+      lessonDialog: { show: false, name: "" },
       menu: [
         { icon: "plus", title: "Add" },
         { icon: "remove", title: "Remove" },
@@ -86,4 +91,8 @@ export default {
 };
 </script>
 
-<style></style>
+<style>
+.lesson_title {
+  justify-content: left !important;
+}
+</style>

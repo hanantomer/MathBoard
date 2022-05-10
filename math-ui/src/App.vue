@@ -27,6 +27,7 @@
       <v-toolbar-title>
         ONLINE <strong style="color: darkorange">MATHBOARD</strong>
       </v-toolbar-title>
+
       <v-spacer></v-spacer>
 
       <v-btn
@@ -91,11 +92,6 @@
 </template>
 
 <script>
-// import "./reset.scss";
-// import "./animations.scss";
-// import "./colors.scss";
-// import "./elevation.scss";
-// import "./transitions.scss";
 import Login from "./components/Login.vue";
 import { mapGetters } from "vuex";
 import authMixin from "./Mixins/authMixin";

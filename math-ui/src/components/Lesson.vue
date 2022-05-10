@@ -32,7 +32,11 @@
         border: 1, 1, 1, 1;
       "
     ></v-card>
-
+    <v-row dense style="max-height: 25px">
+      <v-col cols="12" class="d-flex justify-center">
+        <h3>{{ lessonName }}</h3>
+      </v-col>
+    </v-row>
     <v-row class="fill-height" fluid>
       <v-col cols="2" class="vertical-toolbar-column">
         <v-toolbar color="primary" dark class="vertical-toolbar">
@@ -277,6 +281,9 @@ export default {
         return state.studentStore.students;
       },
       authorized: (state) => state.userStore.loggedUser.authorized,
+      lessonName: (state) => {
+        return state.lessonStore.currentLesson.name;
+      },
     }),
   },
   watch: {

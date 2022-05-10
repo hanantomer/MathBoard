@@ -181,7 +181,7 @@ module.exports = {
     },
     getAllSymbols: async function (lessonId) {
       try {
-        let res = await axiosInstnce.get("/lessonsymbols?lessonId=" + lessonId);
+        let res = await axiosInstnce.get("/lessonsymbols?LessonId=" + lessonId);
         return res.data;
       } catch (error) {
         handleError(error);
@@ -190,7 +190,7 @@ module.exports = {
     getAllFractions: async function (lessonId) {
       try {
         let res = await axiosInstnce.get(
-          "/lessonfractions?lessonId=" + lessonId
+          "/lessonfractions?LessonId=" + lessonId
         );
         return res.data;
       } catch (error) {

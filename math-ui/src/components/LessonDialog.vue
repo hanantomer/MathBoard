@@ -1,6 +1,6 @@
 <template>
   <v-row justify="center">
-    <v-dialog v-model="isOpen" persistent max-width="400px">
+    <v-dialog v-model="show" persistent max-width="400px" min-height="400x">
       <v-card>
         <v-card-title>
           <span class="headline">Specify lesson name</span>
@@ -31,11 +31,18 @@
 <script>
 export default {
   props: {
-    isOpen: false,
+    dialog: { show: false, name: "" },
+  },
+  watch: {
+    dialog(val) {
+      this.show = val.show;
+      this.name = val.name;
+    },
   },
   data() {
     return {
       name: "",
+      show: false,
     };
   },
   methods: {
