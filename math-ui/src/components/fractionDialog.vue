@@ -46,6 +46,8 @@ export default {
         setTimeout(() => {
           // set focus to nominator after rendering
           if (this.$refs.nominatorValue) {
+            this.nominatorValue = "";
+            this.denominatorValue = "";
             this.$refs.nominatorValue.focus();
           }
         }, 250);

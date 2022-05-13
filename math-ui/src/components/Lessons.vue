@@ -35,9 +35,10 @@
 import { mapActions } from "vuex";
 import { mapGetters } from "vuex";
 import LessonDialog from "./LessonDialog.vue";
+import LessonStudents from "./LessonStudents.vue";
 
 export default {
-  components: { LessonDialog },
+  components: { LessonDialog, LessonStudents },
   name: "Lessons",
   mounted() {
     this.loadLessons().then((lessons) => {

@@ -130,7 +130,7 @@ export default {
 </script>
 <style>
 html {
-  overflow-y: auto !important;
+  verflow-x: auto !important;
 }
 body {
   -webkit-touch-callout: none;

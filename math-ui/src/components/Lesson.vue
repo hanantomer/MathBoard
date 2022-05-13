@@ -10,8 +10,7 @@
         save: $saveFraction,
       }"
     ></fractionDialog>
-
-    <!-- selection rectangle -->
+    <!-- selection rectangle TODO:  make it component-->
     <v-card
       id="selection"
       v-on:mouseup="editManager_selectionMouseUp"
@@ -35,160 +34,33 @@
     <v-row dense style="max-height: 25px">
       <v-col cols="12" class="d-flex justify-center">
         <h3>{{ lessonName }}</h3>
+        <!-- TODO: better design for lesson title -->
       </v-col>
     </v-row>
-    <v-row class="fill-height" fluid>
-      <v-col cols="2" class="vertical-toolbar-column">
-        <v-toolbar color="primary" dark class="vertical-toolbar">
-          <!-- selection button -->
-          <v-tooltip top hidden>
-            <template v-slot:activator="{ on, attrs }">
-              <v-btn-toggle
-                v-model="selectionButtonActive"
-                background-color="transparent"
-                active-class="iconActive"
-              >
-                <v-btn
-                  color="yellow"
-                  icon
-                  v-on="on"
-                  v-bind="attrs"
-                  v-on:click="editManager_selectionButtonPressed"
-                  x-small
-                  ><v-icon>mdi-selection</v-icon></v-btn
-                >
-              </v-btn-toggle>
-            </template>
-            <span>Selection</span>
-          </v-tooltip>
-
-          <!-- eraser tool -->
-          <v-tooltip top hidden>
-            <template v-slot:activator="{ on, attrs }">
-              <v-btn-toggle
-                v-model="deleteButtonActive"
-                background-color="transparent"
-                active-class="iconActive"
-              >
-                <v-btn
-                  icon
-                  v-on="on"
-                  v-bind="attrs"
-                  :disabled="!authorized && !isAdmin"
-                  v-on:click="editManager_deleteButtonPressed"
-                  x-small
-                  ><v-icon>mdi-delete</v-icon></v-btn
-                >
-              </v-btn-toggle>
-            </template>
-            <span>Eraser</span>
-          </v-tooltip>
-
-          <!-- create access link -->
-          <v-tooltip top hidden v-if="isAdmin" v-model="showAccessTooltip">
-            <template v-slot:activator="{ on, attrs }">
-              <v-btn
-                icon
-                v-on="on"
-                v-bind="attrs"
-                @click.stop="isAccessLinkDialogOpen = true"
-                color="white"
-                x-small
-                fab
-                dark
-                ><v-icon>mdi-account-plus</v-icon></v-btn
-              >
-            </template>
-            <span>Create Access Link</span>
-          </v-tooltip>
-
-          <!-- fraction -->
-          <v-tooltip top hidden v-model="showFractionTooltip">
-            <template v-slot:activator="{ on, attrs }">
-              <v-btn
-                icon
-                color="white"
-                x-small
-                fab
-                dark
-                v-on="on"
-                v-bind="attrs"
-                :disabled="!authorized && !isAdmin"
-                @click.stop="$openFractionDialog"
-              >
-                <v-icon>mdi-fraction-one-half</v-icon>
-              </v-btn>
-            </template>
-            <span>Add Fraction</span>
-          </v-tooltip>
-
-          <!-- toggle mtrix rectangles -->
-          <v-tooltip top hidden>
-            <template v-slot:activator="{ on, attrs }">
-              <v-btn
-                v-if="isAdmin"
-                @click="$toggleLessonMatrix"
-                icon
-                color="white"
-                x-small
-                fab
-                dark
-                v-on="on"
-                v-bind="attrs"
-                ><v-icon>mdi-grid</v-icon>
-              </v-btn>
-            </template>
-            <span>Toggle matrix rectangles</span>
-          </v-tooltip>
-
-          <v-btn
-            :disabled="!authorized && !isAdmin"
-            v-for="s in signs"
-            :key="s.sign"
-            v-on:click="editManager_symbolButtonPressed"
-            x-small
-            text
-            fab
-            ><span class="mr-1">{{ s.sign }}</span></v-btn
-          >
-        </v-toolbar>
+    <v-row dense style="height: 98%">
+      <v-col cols="11" fluid style="overflow: auto">
+        <v-row dense>
+          <v-col colls="1">
+            <lesson-toolbar
+              isAdmin:isAdmin
+              authorized:authorized
+            ></lesson-toolbar>
+          </v-col>
+          <v-col cols="11">
+            <svg
+              id="svg"
+              width="1450px"
+              height="97%"
+              v-on:mousedown="editManager_mouseDown"
+              v-on:mousemove="editManager_mouseMove"
+              v-on:mouseup="editManager_mouseUp"
+            ></svg>
+          </v-col>
+        </v-row>
       </v-col>
-      <v-col cols="10" fluid style="overflow-x: auto; overflow-y: visible">
-        <svg
-          id="svg"
-          width="1450px"
-          height="97%"
-          v-on:mousedown="editManager_mouseDown"
-          v-on:mousemove="editManager_mouseMove"
-          v-on:mouseup="editManager_mouseUp"
-        ></svg>
+      <v-col cols="1" v-if="isAdmin">
+        <lesson-students></lesson-students>
       </v-col>
-      <!-- <v-col cols="3">
-        <v-list>
-          <v-list-item-group active-class="activestudent" color="indigo">
-            <v-list-item v-for="student in students" :key="student.id">
-              <v-list-item-avatar>
-                <v-img :src="student.imageUrl"></v-img>
-              </v-list-item-avatar>
-              <v-list-item-content>
-                <v-list-item-title
-                  v-text="$getStudentDisplayName(student)"
-                ></v-list-item-title>
-              </v-list-item-content>
-              <v-btn
-                class="[mx-2]"
-                fab
-                dark
-                x-small
-                color="green"
-                v-on:click="$toggleStudentAuthorization(student)"
-              >
-                <v-icon dark> mdi-pencil </v-icon>
-              </v-btn>
-            </v-list-item>
-          </v-list-item-group>
-        </v-list>
-      </v-col> -->
     </v-row>
   </div>
 </template>
@@ -207,11 +79,15 @@ import notationMixin from "../Mixins/notationMixin";
 import userOperationsSyncMixin from "../Mixins/userOperationsSyncMixin";
 import createAccessLinkDialog from "./CreateAccessLinkDialog.vue";
 import fractionDialog from "./fractionDialog.vue";
+import lessonStudents from "./LessonStudents.vue";
+import lessonToolbar from "./LessonToolbar.vue";
 
 export default {
   components: {
     createAccessLinkDialog,
     fractionDialog,
+    lessonStudents,
+    lessonToolbar,
   },
   props: ["lessonId"],
   destroyed: function () {
@@ -232,34 +108,11 @@ export default {
   },
   data: function () {
     return {
-      deleteButtonActive: 1,
-      selectionButtonActive: 1,
       boundingClientRet: null,
       isAdmin: false,
       isAccessLinkDialogOpen: false,
       isFractionDialogOpen: false,
-      showFractionTooltip: false,
-      showAccessTooltip: false,
       svg: {},
-      signs: [
-        { sign: "1" },
-        { sign: "2" },
-        { sign: "3" },
-        { sign: "4" },
-        { sign: "5" },
-        { sign: "6" },
-        { sign: "7" },
-        { sign: "8" },
-        { sign: "9" },
-        { sign: "0" },
-        { sign: "+" },
-        { sign: "-" },
-        { sign: "*" },
-        { sign: "." },
-        { sign: "=" },
-        { sign: "(" },
-        { sign: ")" },
-      ],
     };
   },
   mixins: [
@@ -276,9 +129,6 @@ export default {
     ...mapState({
       notations: (state) => {
         return state.notationStore.notations;
-      },
-      students: (state) => {
-        return state.studentStore.students;
       },
       authorized: (state) => state.userStore.loggedUser.authorized,
       lessonName: (state) => {
@@ -303,7 +153,6 @@ export default {
       getCurrentLesson: "getCurrentLesson",
       getLessons: "getLessons",
       getUser: "getUser",
-      getStudent: "getStudent",
       getSymbols: "getSymbols",
       getFractions: "getFractions",
     }),
@@ -321,20 +170,21 @@ export default {
     $toggleLessonMatrix() {
       this.matrixMixin_toggleMatrixOverlay();
     },
-    $getStudentDisplayName(student) {
-      return student.firstName + " " + student.lastName;
-    },
     $loadLesson: async function () {
-      this.isAdmin = this.getCurrentLesson().UserId === this.getUser().id;
-
       // load from db to store
       if (!this.getCurrentLesson().hasOwnProperty()) {
         await this.$store.dispatch("loadLesson", this.lessonId);
       }
 
+      this.isAdmin = this.getCurrentLesson().UserId === this.getUser().id;
+
       // student send heartbeat to teacher
       if (!this.isAdmin) {
-        setInterval(this.mixin_sendHeartBeat, 2000, this.lessonId);
+        setInterval(
+          this.userOperationsMixin_syncOutgoingHeartBeat,
+          2000,
+          this.lessonId
+        );
       }
 
       // load to screen
@@ -349,15 +199,6 @@ export default {
         link: link,
       });
     },
-    $toggleStudentAuthorization: function (student) {
-      this.toggleAuthorization(student.userId).then((authorization) => {
-        this.mixin_syncOutgoingAuthUser(
-          this.lessonId,
-          authorization.authorizedStudentId,
-          authorization.revokedStudentId
-        );
-      });
-    },
   },
 };
 </script>
@@ -366,10 +207,6 @@ export default {
 .activestudent {
   border: 2px dashed rgb(143, 26, 179);
 }
-/* #svg {
-  width: 700px;
-  height: 500px;
-} */
 .hellow {
   padding: 5px;
   color: darkkhaki;
@@ -408,23 +245,5 @@ mjx-container[jax="SVG"][display="true"] {
 mjx-line {
   margin-top: 0.05em !important;
   margin-bottom: 0.3em !important;
-}
-._v-main {
-  height: fill-content;
-}
-.vertical-toolbar {
-  flex-flow: column wrap !important;
-  width: 45px !important;
-  height: max-content !important;
-  padding: 4px !important;
-}
-.vertical-toolbar .v-toolbar__content {
-  flex-flow: column wrap !important;
-  width: 35px !important;
-  height: max-content !important;
-  padding: 2px !important;
-}
-.vertical-toolbar-column {
-  flex-basis: content;
 }
 </style>
