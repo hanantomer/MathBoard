@@ -1,22 +1,12 @@
 <template>
   <div class="fill-height" style="width: 100%">
-    <createAccessLinkDialog
-      v-model="isAccessLinkDialogOpen"
-      v-on="{ create: $createAccessLink }"
-    ></createAccessLinkDialog>
-    <fractionDialog
-      v-model="isFractionDialogOpen"
-      v-on="{
-        save: $saveFraction,
-      }"
-    ></fractionDialog>
-    <!-- selection rectangle TODO:  make it component-->
+    <!-- selection rectangle TODO:  make it a component-->
     <v-card
       id="selection"
       v-on:mouseup="editManager_selectionMouseUp"
       v-on:mousedown="editManager_selectionMouseDown"
       v-on:mousemove="editManager_mouseMove"
-      v_-if="editManager_getCurrentMode === 'SELECT'"
+      v-show="editManager_getCurrentMode === 'SELECT'"
       class="grabbable"
       v-bind:style="{
         left: selectionRectLeft,
@@ -33,33 +23,43 @@
     ></v-card>
     <v-row dense style="max-height: 25px">
       <v-col cols="12" class="d-flex justify-center">
-        <h3>{{ lessonName }}</h3>
+        <p>{{ lessonName }}</p>
         <!-- TODO: better design for lesson title -->
       </v-col>
     </v-row>
     <v-row dense style="height: 98%">
-      <v-col cols="11" fluid style="overflow: auto">
-        <v-row dense>
+      <v-col cols="10" fluid>
+        <v-row style="height: 100%">
           <v-col colls="1">
             <lesson-toolbar
-              isAdmin:isAdmin
-              authorized:authorized
+              ref="editoToolbar"
+              :_isAdmin="isAdmin"
+              :_authorized="authorized"
+              :lessonId="lessonId"
+              v-on="{
+                selectionButtonPressed: editManager_selectionButtonPressed,
+                deleteButtonPressed: editManager_deleteButtonPressed,
+                symbolButtonPressed: editManager_symbolButtonPressed,
+                drawlineButtonPressed: editManager_drawlineButtonPressed,
+              }"
             ></lesson-toolbar>
           </v-col>
           <v-col cols="11">
-            <svg
-              id="svg"
-              width="1450px"
-              height="97%"
-              v-on:mousedown="editManager_mouseDown"
-              v-on:mousemove="editManager_mouseMove"
-              v-on:mouseup="editManager_mouseUp"
-            ></svg>
+            <div style="overflow: auto; height: 100%">
+              <svg
+                id="svg"
+                width="1350px"
+                height="97%"
+                v-on:mousedown="editManager_mouseDown"
+                v-on:mousemove="editManager_mouseMove"
+                v-on:mouseup="editManager_mouseUp"
+              ></svg>
+            </div>
           </v-col>
         </v-row>
       </v-col>
-      <v-col cols="1" v-if="isAdmin">
-        <lesson-students></lesson-students>
+      <v-col cols="2" v-if="isAdmin">
+        <lesson-students :lessonId="lessonId"></lesson-students>
       </v-col>
     </v-row>
   </div>
@@ -74,18 +74,13 @@ import positionMixin from "../Mixins/positionMixin";
 import selectionMixin from "../Mixins/selectionMixin";
 import editManager from "../Mixins/editManager";
 import symbolMixin from "../Mixins/symbolMixin";
-import fractionMixin from "../Mixins/fractionMixin";
 import notationMixin from "../Mixins/notationMixin";
 import userOperationsSyncMixin from "../Mixins/userOperationsSyncMixin";
-import createAccessLinkDialog from "./CreateAccessLinkDialog.vue";
-import fractionDialog from "./fractionDialog.vue";
 import lessonStudents from "./LessonStudents.vue";
 import lessonToolbar from "./LessonToolbar.vue";
 
 export default {
   components: {
-    createAccessLinkDialog,
-    fractionDialog,
     lessonStudents,
     lessonToolbar,
   },
@@ -110,8 +105,6 @@ export default {
     return {
       boundingClientRet: null,
       isAdmin: false,
-      isAccessLinkDialogOpen: false,
-      isFractionDialogOpen: false,
       svg: {},
     };
   },
@@ -122,7 +115,6 @@ export default {
     userOperationsSyncMixin,
     symbolMixin,
     editManager,
-    fractionMixin,
     notationMixin,
   ],
   computed: {
@@ -154,22 +146,7 @@ export default {
       getLessons: "getLessons",
       getUser: "getUser",
       getSymbols: "getSymbols",
-      getFractions: "getFractions",
     }),
-    $openFractionDialog() {
-      this.isFractionDialogOpen = true;
-      this.editManager_fractionDialogOpened();
-    },
-    $saveFraction(fraction) {
-      this.editManager_saveFractionClicked();
-      this.fractionMixin_saveFraction(
-        fraction.nominatorValue,
-        fraction.denominatorValue
-      );
-    },
-    $toggleLessonMatrix() {
-      this.matrixMixin_toggleMatrixOverlay();
-    },
     $loadLesson: async function () {
       // load from db to store
       if (!this.getCurrentLesson().hasOwnProperty()) {
@@ -192,12 +169,6 @@ export default {
 
       // listen to changes
       this.mixin_syncIncomingUserOperations(this.lessonId, this.isAdmin); ///TODO create mechnism to handle gaps between load and sync
-    },
-    $createAccessLink: function (link) {
-      this.$store.dispatch("createAccessLink", {
-        LessonId: this.lessonId,
-        link: link,
-      });
     },
   },
 };

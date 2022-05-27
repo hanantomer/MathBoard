@@ -15,7 +15,7 @@ const router = new VueRouter({
       meta: { requiresAuth: false },
     },
     {
-      path: "/lessons/:userId",
+      path: "/lessons",
       component: Lessons,
       props: true,
       meta: { requiresAuth: true },

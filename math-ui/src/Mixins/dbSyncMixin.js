@@ -58,16 +58,6 @@ async function getSymbolByCoordinates(row, col) {
     handleError(error);
   }
 }
-async function getFractionByCoordinates(row, col) {
-  try {
-    let res = await axiosInstnce.get(
-      "/lessonfractions?row=" + row + "&col=" + col
-    );
-    return !!res ? res.data[0] : null;
-  } catch (error) {
-    handleError(error);
-  }
-}
 
 module.exports = {
   methods: {
@@ -126,13 +116,6 @@ module.exports = {
         handleError(error);
       }
     },
-    updateNotationCoordinates: async function (notation) {
-      if (notation.value) {
-        return axiosInstnce.put("/lessonsymbols/" + notation.id, notation);
-      } else if (notation.nominatorValue) {
-        return axiosInstnce.put("/lessonfractions/" + notation.id, notation);
-      }
-    },
     saveSymbol: async function (symbol) {
       let symbolAtCoordinates = await getSymbolByCoordinates(
         symbol.row,
@@ -153,11 +136,7 @@ module.exports = {
     },
     removeNotation: async function (notation) {
       try {
-        if (notation.value) {
-          axiosInstnce.delete("/lessonsymbols/" + notation.id);
-        } else if (notation.nominatorValue) {
-          axiosInstnce.delete("/lessonfractions/" + notation.id);
-        }
+        axiosInstnce.delete("/lessonsymbols/" + notation.id);
       } catch (error) {
         handleError(error);
       }
@@ -183,39 +162,6 @@ module.exports = {
       try {
         let res = await axiosInstnce.get("/lessonsymbols?LessonId=" + lessonId);
         return res.data;
-      } catch (error) {
-        handleError(error);
-      }
-    },
-    getAllFractions: async function (lessonId) {
-      try {
-        let res = await axiosInstnce.get(
-          "/lessonfractions?LessonId=" + lessonId
-        );
-        return res.data;
-      } catch (error) {
-        handleError(error);
-      }
-    },
-
-    saveFraction: async function (fraction) {
-      try {
-        let fractionAtCoordinates = await getFractionByCoordinates(
-          fraction.row,
-          fraction.col
-        );
-
-        let res = null;
-        if (!!fractionAtCoordinates) {
-          res = await axiosInstnce.put(
-            "/lessonfractions/" + fractionAtCoordinates.id,
-            fraction
-          );
-        } else {
-          res = await axiosInstnce.post("/lessonfractions", fraction);
-        }
-
-        return res ? { ...res.data, type: fraction.type } : null;
       } catch (error) {
         handleError(error);
       }

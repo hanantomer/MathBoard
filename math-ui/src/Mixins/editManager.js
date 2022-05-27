@@ -2,8 +2,8 @@ const EditMode = Object.freeze({
   ADD_SYMBOL: "ADD_SYMBOL",
   DELETE: "DELETE",
   SELECT: "SELECT",
+  DRAWLINE: "DRAWLINE",
   MOVE: "MOVE",
-  EDIT_FRACTION: "EDIT_FRACTION",
 });
 
 module.exports = {
@@ -12,12 +12,27 @@ module.exports = {
       currentMode: EditMode.ADD_SYMBOL,
     };
   },
+  computed: {
+    editManager_getCurrentMode: function () {
+      return this.currentMode;
+    },
+  },
   methods: {
+    setCurrentMode(newMode) {
+      this.currentMode = newMode;
+    },
     toggleSelectionMode() {
       if (this.currentMode == EditMode.SELECT) {
         this.endSelectionMode();
       } else {
         this.startSelectionMode();
+      }
+    },
+    toggleDrawlineMode() {
+      if (this.currentMode == EditMode.DRAWLINE) {
+        this.endDrawlineMode();
+      } else {
+        this.startDrawlineMode();
       }
     },
     toggleDeleteMode() {
@@ -37,36 +52,44 @@ module.exports = {
         e.classList.add("deleteButtonActive")
       );
     },
-    startFractionMode() {
-      this.currentMode = EditMode.EDIT_FRACTION;
+
+    reset() {
+      this.$refs.editoToolbar.resetToggleButtons();
+      this.hideDeleteCursor();
+      this.setCurrentMode(EditMode.ADD_SYMBOL);
+      this.selectionMixin_resetSelection();
     },
-    endFractionMode() {
-      this.currentMode = EditMode.ADD_SYMBOL;
-    },
+
     startDeleteMode() {
+      this.reset();
       this.deleteButtonActive = 0;
       this.showDeleteCursor();
-      this.currentMode = EditMode.DELETE;
+      this.setCurrentMode(EditMode.DELETE);
     },
     endDeleteMode() {
-      this.currentMode = EditMode.ADD_SYMBOL;
-      this.hideDeleteCursor();
-      this.deleteButtonActive = 1;
+      this.reset();
     },
     startSelectionMode() {
+      this.reset();
       this.selectionButtonActive = 0;
-      this.currentMode = EditMode.SELECT;
+      this.setCurrentMode(EditMode.SELECT);
     },
     endSelectionMode() {
-      this.selectionButtonActive = 1;
-      this.currentMode = EditMode.ADD_SYMBOL;
+      this.reset();
+    },
+    startDrawlineMode() {
+      this.reset();
+      this.drawlineButtonActive = 0;
+      this.setCurrentMode(EditMode.DRAWLINE);
+    },
+    endDrawlineMode() {
+      this.reset();
     },
     startMoveMode() {
-      this.currentMode = EditMode.MOVE;
+      this.setCurrentMode(EditMode.MOVE);
     },
     endMoveMode() {
-      this.currentMode = EditMode.ADD_SYMBOL;
-      this.selectionMixin_resetSelection();
+      this.reset();
     },
     moveSelection(e) {
       this.endMoveMode();
@@ -76,18 +99,13 @@ module.exports = {
       this.endSelectionMode();
       this.selectionMixin_endSelect(e);
     },
-    editManager_getCurrentMode: function () {
-      return this.currentMode;
-    },
-    editManager_fractionDialogOpened() {
-      this.startFractionMode();
-    },
-    editManager_saveFractionClicked() {
-      this.endFractionMode();
-    },
     editManager_selectionButtonPressed() {
       this.toggleSelectionMode();
     },
+    editManager_drawlineButtonPressed() {
+      this.toggleDrawlineMode();
+    },
+
     editManager_deleteButtonPressed() {
       this.toggleDeleteMode();
     },
@@ -143,7 +161,7 @@ module.exports = {
       }
     },
     editManager_mouseMove(e) {
-      this.showFractionTooltip = false;
+      this.showFractionLineTooltip = false;
       this.showAccessTooltip = false;
       // left button is pressed
       if (e.buttons !== 1) {

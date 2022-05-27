@@ -45,18 +45,12 @@ export default {
     },
     ...mapState({
       currentRect: (state) => state.currentPositionStore.currentRect,
-      currentFraction: (state) => state.currentPositionStore.currentFraction,
     }),
   },
   watch: {
     currentRect: {
       handler(currentRect) {
         this.matrixMixin_selectRectByCoordinates(currentRect);
-      },
-    },
-    currentFraction: {
-      handler(currentFraction) {
-        this.matrixMixin_selectFractionByCoordinates(currentFraction);
       },
     },
   },
@@ -84,27 +78,15 @@ export default {
         "rect"
       );
       if (!!currentRect) {
-        return this.userOperationsMixin_syncOutgoingCurrentPosition({
+        let currentPosition = {
           col: currentRect.attributes.col.value,
           row: currentRect.parentNode.attributes.row.value,
           type: "rect",
+        };
+        this.$store.dispatch("setCurrentRect", currentPosition).then(() => {
+          this.userOperationsMixin_syncOutgoingCurrentPosition(currentPosition);
         });
       }
-
-      let currentFraction = this.matrixMixin_findClickedObject(
-        {
-          x: e.clientX,
-          y: e.clientY,
-          type: "fraction",
-        },
-        "foreignObject"
-      );
-      if (!!currentFraction)
-        return this.userOperationsMixin_syncOutgoingCurrentPosition({
-          col: currentFraction.attributes.col.value,
-          row: currentFraction.attributes.row.value,
-          type: "fraction",
-        });
     },
     selectionMixin_startSelection(e) {
       let x = e.clientX;

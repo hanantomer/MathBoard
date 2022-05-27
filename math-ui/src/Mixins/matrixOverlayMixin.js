@@ -5,9 +5,6 @@ export default {
     fontSize: function () {
       return `${this.rectSize / 25}em`;
     },
-    fractionFontSize: function () {
-      return `${this.rectSize / 48}em`;
-    },
   },
   data: function () {
     return {
@@ -109,14 +106,6 @@ export default {
 
       if (rect) this.toggleSelectedNotation(rect, clickedCoordinates);
     },
-    matrixMixin_selectFractionByCoordinates(clickedCoordinates) {
-      let fraction = document.querySelector(
-        `foreignObject[row="${clickedCoordinates.row}"][col="${clickedCoordinates.col}"]`
-      );
-
-      if (fraction) this.toggleSelectedNotation(fraction, clickedCoordinates);
-    },
-
     matrixMixin_getRectSize() {
       return this.rectSize;
     },
@@ -147,16 +136,6 @@ export default {
           row: row,
         };
       }
-    },
-    getFractionWidth: function (fraction) {
-      return (
-        Math.max(
-          fraction.nominatorValue.length,
-          fraction.denominatorValue.length
-        ) *
-        this.fractionFontSize.replace("em", "") *
-        16
-      );
     },
     updateNotation: function (n) {
       n.setAttribute("col", (n) => {
@@ -210,21 +189,15 @@ export default {
           return this.getNotationXposByCol(n.row);
         })
         .attr("width", (n) => {
-          if (n.type === "fraction") {
-            return this.getFractionWidth(n);
-          }
           return this.rectSize;
         })
         .attr("height", this.rectSize)
-        .style("padding-top", (n) => {
-          return n.type === "fraction" ? "0.4em" : "0em";
-        })
         .style("font-size", (n) => {
-          return n.type === "fraction" ? this.fractionFontSize : this.fontSize;
+          return this.fontSize;
         })
         .html((n) => {
-          if (!!n.nominatorValue && !!n.denominatorValue) {
-            return `$$\{${n.nominatorValue}\\over${n.denominatorValue} }\$$`;
+          if (n.value === "_") {
+            return "<span style='margin-top: 25px'>___</span>";
           }
           return !!n.value ? "$$" + n.value + "$$" : "";
         });

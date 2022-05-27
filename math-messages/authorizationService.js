@@ -35,7 +35,7 @@ class AuhorizationService {
     if (isOwner) {
       return {
         userId: data.authorization.student,
-        lessonId: data.authorization.lessonId,
+        lessonId: user.lessonId,
         authorized: data.authorization.authorized,
       };
     }

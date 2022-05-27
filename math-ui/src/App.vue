@@ -30,14 +30,6 @@
 
       <v-spacer></v-spacer>
 
-      <v-btn
-        v-show="!!user.id"
-        icon
-        v-bind:to="{ path: '/lessons/' + (!!user ? user.id : '') }"
-      >
-        <v-icon>mdi-home</v-icon>
-      </v-btn>
-
       <v-tooltip bottom hidden>
         <template v-slot:activator="{ on, attrs }">
           <v-btn
@@ -45,12 +37,26 @@
             icon
             v-on="on"
             v-bind="attrs"
-            v-on:click="signOut"
+            v-on:click="navToLessons"
           >
-            <v-icon>mdi-logout</v-icon>
+            <v-icon>mdi-archive-edit-outline</v-icon>
           </v-btn>
         </template>
-        <span>Sign Out</span>
+        <span>Lessons</span>
+      </v-tooltip>
+
+      <v-tooltip bottom hidden>
+        <template v-slot:activator="{ on, attrs }">
+          <v-btn
+            v-show="!!user.id"
+            icon
+            v-on="on"
+            v-bind:to="{ path: '/lessons/' + (!!user ? user.id : '') }"
+          >
+            <v-icon>mdi-message-question-outline</v-icon>
+          </v-btn>
+        </template>
+        <span>Exercises</span>
       </v-tooltip>
 
       <v-btn v-show="!user.id" icon v-on:click="openLoginDialog('Login')">
@@ -77,6 +83,21 @@
       <span v-show="!!user.firstName && !user.imageUrl"
         >Hello {{ user.firstName }}</span
       >
+
+      <v-tooltip bottom hidden>
+        <template v-slot:activator="{ on, attrs }">
+          <v-btn
+            v-show="!!user.id"
+            icon
+            v-on="on"
+            v-bind="attrs"
+            v-on:click="signOut"
+          >
+            <v-icon>mdi-logout</v-icon>
+          </v-btn>
+        </template>
+        <span>Sign Out</span>
+      </v-tooltip>
     </v-app-bar>
     <v-main>
       <v-container no-gutters fluid class="fill-height">
@@ -112,6 +133,9 @@ export default {
       this.mixin_signOut();
       this.$router.push("/login");
     },
+    navToLessons: function () {
+      this.$router.push("/lessons");
+    },
     // signInViaGoogleAuth: async function () {
     //   let user = await this.authGoogleUser(this.googleUser);
     //   if (!!user) {
@@ -129,9 +153,6 @@ export default {
 };
 </script>
 <style>
-html {
-  verflow-x: auto !important;
-}
 body {
   -webkit-touch-callout: none;
   -webkit-user-select: none;

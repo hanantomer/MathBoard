@@ -75,11 +75,6 @@ export default {
           context.commit("addNotation", { ...symbol, type: "symbol" });
         });
       });
-      dbSyncMixin.methods.getAllFractions(lessonId).then((fractions) => {
-        fractions.forEach((fraction) => {
-          context.commit("addNotation", { ...fraction, type: "fraction" });
-        });
-      });
     },
     addSymbol(context, symbol) {
       dbSyncMixin.methods.saveSymbol(symbol).then((symbol) => {
@@ -87,16 +82,10 @@ export default {
         return symbol;
       });
     },
-    addFraction(context, fraction) {
-      return dbSyncMixin.methods.saveFraction(fraction).then((fraction) => {
-        context.commit("addNotation", fraction);
-        return fraction;
-      });
-    },
     syncIncomingAddedNotation(context, notation) {
       context.commit("addNotation", notation);
     },
-    syncIncomingDeletedNotation(context, notation) {
+    syncIncomingRemovedNotation(context, notation) {
       context.commit("removeNotation", notation);
     },
     syncIncomingUpdatedNotation(context, notation) {

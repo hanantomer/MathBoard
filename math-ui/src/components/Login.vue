@@ -198,11 +198,12 @@ export default {
           this.show = false;
           this.setUser(authenticatedUser);
           window.$cookies.set("access_token", authenticatedUser.access_token);
-          this.$router.push(
+          /*this.$router.push(
             this.$route.query.from ||
               this.$route.fullPath + "/lessons/" + authenticatedUser.id
           );
           this.$router.go();
+          */
         } else {
           this.loginFailed = true;
         }

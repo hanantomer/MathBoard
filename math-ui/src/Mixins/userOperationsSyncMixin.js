@@ -9,42 +9,6 @@ client.configure(socketio(socket));
 
 export default {
   methods: {
-    dispatchCreatedNotation(notation, store) {
-      switch (notation.type) {
-        case "Symbol": {
-          store.dispatch("syncIncomingAddedSymbol", notation);
-          break;
-        }
-        case "Fraction": {
-          store.dispatch("syncIncomingAddedFraction", notation);
-          break;
-        }
-      }
-    },
-    dispatchUpdatedNotation(notation, store) {
-      switch ((notation.type, store)) {
-        case "Symbol": {
-          store.dispatch("syncIncomingUpdatedSymbol", notation);
-          break;
-        }
-        case "Fraction": {
-          store.dispatch("syncIncomingUpdatedFraction", notation);
-          break;
-        }
-      }
-    },
-    dispatchRemoveNotation(notation, store) {
-      switch ((notation.type, store)) {
-        case "Symbol": {
-          store.dispatch("syncIncomingRemoveSymbol", notation);
-          break;
-        }
-        case "Fraction": {
-          store.dispatch("syncIncomingRemoveFraction", notation);
-          break;
-        }
-      }
-    },
     signedInWithGoogle: function () {
       return (
         gapi.auth2.getAuthInstance() &&
@@ -114,7 +78,7 @@ export default {
         }
       );
     },
-    mixin_syncOutgoingAuthUser: async function (
+    userOperationsMixin_syncOutgoingAuthUser: async function (
       lessonId,
       authorizedStudentId,
       revokedStudentId
@@ -160,20 +124,22 @@ export default {
 
       client.service("notationSync").on("updated", (notation) => {
         if (notation.UserId !== this.getUser().id) {
-          this.dispatchUpdateNotation(notation);
+          _store.dispatch("syncIncomingUpdatedNotation", notation);
+          //this.dispatchUpdateNotation(notation);
         }
       });
       client.service("notationSync").on("removed", (notations) => {
         notations.forEach((notation) => {
           if (notation.UserId !== this.getUser().id) {
-            this.dispatchRomoveNotation(notation);
+            _store.dispatch("syncIncomingRemovedNotation", notation);
+            //this.dispatchRomoveNotation(notation);
           }
         });
       });
       client.service("currentPosition").on("updated", (currentPosition) => {
-        currentPosition.type === "rect"
-          ? _store.dispatch("setCurrentRect", currentPosition)
-          : _store.dispatch("setCurrentFraction", currentPosition);
+        if (currentPosition.UserId !== this.getUser().id) {
+          _store.dispatch("setCurrentRect", currentPosition);
+        }
       });
       client.service("authorization").on("updated", (user) => {
         _store.dispatch("setUser", user);

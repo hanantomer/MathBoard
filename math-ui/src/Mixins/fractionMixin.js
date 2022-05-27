@@ -1,7 +1,4 @@
 export default {
-  data: function () {
-    return {};
-  },
   methods: {
     fractionMixin_saveFraction(nominatorValue, denominatorValue) {
       let fraction = {
