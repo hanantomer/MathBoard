@@ -1,14 +1,14 @@
 "use strict";
 const { Model } = require("sequelize");
 module.exports = (sequelize, DataTypes) => {
-    class LessonRoot extends Model {
+    class LessonFractionLine extends Model {
         static associate(models) {
-            LessonRoot.belongsTo(models.Lesson, {
+            LessonFractionLine.belongsTo(models.Lesson, {
                 onDelete: "CASCADE",
                 onUpdate: "CASCADE",
                 foreignKey: { allowNull: false },
             });
-            LessonRoot.belongsTo(models.User, {
+            LessonFractionLine.belongsTo(models.User, {
                 onDelete: "CASCADE",
                 onUpdate: "CASCADE",
                 foreignKey: { allowNull: false },
@@ -16,7 +16,7 @@ module.exports = (sequelize, DataTypes) => {
         }
     }
 
-    LessonRoot.init(
+    LessonFractionLine.init(
         {
             fromCol: {
                 type: DataTypes.INTEGER,
@@ -37,11 +37,11 @@ module.exports = (sequelize, DataTypes) => {
             indexes: [
                 {
                     unique: true,
-                    fields: ["LessonId", "row", "fromCol"],
+                    fields: ["lessonId", "row", "fromCol"],
                 },
             ],
         }
     );
 
-    return LessonRoot;
+    return LessonFractionLine;
 };

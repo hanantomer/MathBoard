@@ -38,7 +38,7 @@ module.exports = (sequelize, DataTypes) => {
             indexes: [
                 {
                     unique: false,
-                    fields: ["exerciseId", "symbolId"],
+                    fields: ["exerciseId"],
                 },
             ],
         }

@@ -177,41 +177,62 @@ export default {
           return n.type + n.id;
         })
         .attr("col", (n) => {
-          return n.col;
+          return n.type === "symbol" ? n.col : n.fromCol;
         })
         .attr("row", (n) => {
           return n.row;
         })
         .attr("x", (n, i) => {
-          return this.getNotationXposByCol(n.col);
+          return this.getNotationXposByCol(
+            n.type === "symbol" ? n.col : n.fromCol
+          );
         })
         .attr("y", (n) => {
-          return this.getNotationXposByCol(n.row);
+          return n.type === "symbol"
+            ? this.getNotationYposByRow(n.row)
+            : this.getNotationYposByRow(n.row - 1);
         })
         .attr("width", (n) => {
-          return this.rectSize;
+          return n.type === "symbol"
+            ? this.rectSize
+            : (n.toCol - n.fromCol) * this.rectSize;
         })
         .attr("height", this.rectSize)
         .style("font-size", (n) => {
           return this.fontSize;
         })
         .html((n) => {
-          if (n.value === "_") {
-            return "<span style='margin-top: 25px'>___</span>";
+          if (n.type === "fractionLine") {
+            return `<span style='display:inline-block;border-bottom: solid 2px;width:${
+              (n.toCol - n.fromCol) * this.rectSize
+            }px;margin-top:${this.rectSize - 1}px'></span>`;
           }
-          return !!n.value ? "$$" + n.value + "$$" : "";
+          return !!n.value ? "$$sqrt" + n.value + "$$" : "";
         });
     },
     updateNotations: function (update) {
+      ///TODO move common code to function
       return update
         .style("color", (n) => {
           return n.selected ? "red" : "black";
         })
         .attr("x", (n, i) => {
-          return this.getNotationXposByCol(n.col);
+          return this.getNotationXposByCol(
+            n.type === "symbol" ? n.col : n.fromCol
+          );
         })
         .attr("y", (n) => {
-          return this.getNotationYposByRow(n.row);
+          return n.type === "symbol"
+            ? this.getNotationYposByRow(n.row)
+            : this.getNotationYposByRow(n.row - 1);
+        })
+        .html((n) => {
+          if (n.type === "fractionLine") {
+            return `<span style='display:inline-block;border-bottom: solid 2px;width:${
+              (n.toCol - n.fromCol) * this.rectSize
+            }px;margin-top:${this.rectSize - 1}px'></span>`;
+          }
+          return !!n.value ? "$$" + n.value + "$$" : "";
         });
     },
     removeNotations: function (exit) {

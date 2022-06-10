@@ -2,8 +2,6 @@ export default {
   methods: {
     symbolMixin_addSymbol(value) {
       let symbol = {
-        LessonId: this.lessonId,
-        UserId: this.$store.getters.getUser.id,
         value: value,
         type: "symbol",
       };
@@ -11,12 +9,15 @@ export default {
       symbol.row = this.getcurrentRect().row;
 
       this.$store
-        .dispatch("addSymbol", symbol)
+        .dispatch("addNotation", symbol)
         .then(() => {
           this.userOperationsMixin_syncOutgoingSaveNotation(symbol);
+        })
+        .then(() => {
           let nextRect = this.matrixMixin_getNextRect();
           if (!!nextRect) {
             nextRect.type = "rect";
+            this.$store.dispatch("setCurrentRect", nextRect);
             this.userOperationsMixin_syncOutgoingCurrentPosition(nextRect);
           }
         })

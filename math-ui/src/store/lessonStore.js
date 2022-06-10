@@ -40,7 +40,7 @@ export default {
     },
     async loadLessons(context) {
       context.commit("removeAllLessons");
-      let lessons = await dbSyncMixin.methods.getAllLessons(
+      let lessons = await dbSyncMixin.methods.getLessons(
         context.getters.getUser
       );
       if (lessons.data.length > 0) {

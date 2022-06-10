@@ -36,6 +36,13 @@ let symbolResource = finale.resource({
 symbolResource.use(authMiddleware);
 symbolResource.use(lessonMiddleware);
 
+let fractionLineResource = finale.resource({
+    model: db.sequelize.models["LessonFractionLine"],
+    endpoints: ["/lessonfractionlines", "/lessonfractionlines/:id"],
+});
+fractionLineResource.use(authMiddleware);
+fractionLineResource.use(lessonMiddleware);
+
 finale.resource({
     model: db.sequelize.models["AccessLink"],
     endpoints: ["/accessLink", "/accessLink/:id"],

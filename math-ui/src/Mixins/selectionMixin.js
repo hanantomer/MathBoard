@@ -96,7 +96,7 @@ export default {
       this.$store.dispatch("unselectAllNotations");
     },
     // extend or shrink selection area
-    selectionMixinUpdateSelectionArea(e) {
+    selectionMixin_UpdateSelectionArea(e) {
       this.selectionPosition.x2 = e.clientX;
       this.selectionPosition.y2 = e.clientY - this.getHeaderHeight();
     },

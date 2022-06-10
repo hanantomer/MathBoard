@@ -29,38 +29,43 @@ axiosInstnce.interceptors.request.use(function (config) {
   return config;
 });
 
-function handleError(error) {
-  if (error.response) {
-    // The request was made and the server responded with a status code
-    // that falls out of the range of 2xx
-    console.log(error.response.data);
-    console.log(error.response.status);
-    console.log(error.response.headers);
-  } else if (error.request) {
-    // The request was made but no response was received
-    // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
-    // http.ClientRequest in node.js
-    console.log(error.request);
-  } else {
-    // Something happened in setting up the request that triggered an Error
-    console.log("Error", error.message);
-  }
-  console.log(error.config);
-}
-
-async function getSymbolByCoordinates(row, col) {
-  try {
-    let res = await axiosInstnce.get(
-      "/lessonsymbols?row=" + row + "&col=" + col
-    );
-    return !!res ? res.data[0] : null;
-  } catch (error) {
-    handleError(error);
-  }
-}
-
 module.exports = {
   methods: {
+    handleError: function (error) {
+      if (error.response) {
+        // The request was made and the server responded with a status code
+        // that falls out of the range of 2xx
+        console.log(error.response.data);
+        console.log(error.response.status);
+        console.log(error.response.headers);
+      } else if (error.request) {
+        // The request was made but no response was received
+        // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
+        // http.ClientRequest in node.js
+        console.log(error.request);
+      } else {
+        // Something happened in setting up the request that triggered an Error
+        console.log("Error", error.message);
+      }
+      console.log(error.config);
+    },
+    getNotationByCoordinates: async function (notation) {
+      let endpoint = `${notation.boardType}${notation.type}s`; // e.g lessonsymbols
+      let parentIdFieldName = `${notation.boardType.capitalize()}Id`; // e.g lessonId
+      let parentIdValue = notation[parentIdFieldName]; // e.g lessonId value
+      let row = notation.row;
+      let col = notation.type === "symbol" ? notation.col : notation.fromCol;
+      let colFieldName = notation.type === "symbol" ? "col" : "fromCol";
+
+      try {
+        let res = await axiosInstnce.get(
+          `/${endpoint.toLocaleLowerCase()}?${parentIdFieldName}=${parentIdValue}&row=${row}&${colFieldName}=${col}`
+        );
+        return !!res ? res.data[0] : null;
+      } catch (error) {
+        this.handleError(error);
+      }
+    },
     createAccessLink: async function (lessonId, link) {
       try {
         let res = await axiosInstnce.post("/accessLink", {
@@ -69,7 +74,7 @@ module.exports = {
         });
         return res.data;
       } catch (error) {
-        handleError(error);
+        this.handleError(error);
       }
     },
     authGoogleUser: async function () {
@@ -78,7 +83,7 @@ module.exports = {
         console.debug(`authGoogleUser:${JSON.stringify(res)}`);
         return !!res ? res.data[0] : null;
       } catch (error) {
-        handleError(error);
+        this.handleError(error);
       }
     },
     authLocalUserByToken: async function () {
@@ -87,7 +92,7 @@ module.exports = {
         console.debug(`authLocalUserByToken:${JSON.stringify(res)}`);
         return !!res ? res.data[0] : null;
       } catch (error) {
-        handleError(error);
+        this.handleError(error);
       }
     },
     authLocalUserByPassword: async function (email, password) {
@@ -98,7 +103,7 @@ module.exports = {
         console.debug(`authLocalUserByPassword:${JSON.stringify(res)}`);
         return !!res ? res.data[0] : null;
       } catch (error) {
-        handleError(error);
+        this.handleError(error);
       }
     },
     registerUser: async function (user) {
@@ -106,39 +111,43 @@ module.exports = {
         await axiosInstnce.post("/users", user);
         console.debug(`registerUser:${JSON.stringify(user)}`);
       } catch (error) {
-        handleError(error);
+        this.handleError(error);
       }
     },
     addLesson: async function (lesson) {
       try {
         return axiosInstnce.post("/lessons", lesson);
       } catch (error) {
-        handleError(error);
+        this.handleError(error);
       }
     },
-    saveSymbol: async function (symbol) {
-      let symbolAtCoordinates = await getSymbolByCoordinates(
-        symbol.row,
-        symbol.col
-      );
+    saveNotation: async function (notation) {
+      let notationAtCoordinates = await this.getNotationByCoordinates(notation);
 
       let res = null;
-      if (!!symbolAtCoordinates) {
+      if (!!notationAtCoordinates) {
         res = await axiosInstnce.put(
-          "/lessonsymbols/" + symbolAtCoordinates.id,
-          symbol
+          `/${notation.boardType}${notation.type.toLowerCase()}s${
+            notationAtCoordinates.id
+          }`,
+          notation
         );
       } else {
-        res = await axiosInstnce.post("/lessonsymbols", symbol);
+        res = await axiosInstnce.post(
+          `/${notation.boardType}${notation.type.toLowerCase()}s`,
+          notation
+        );
       }
 
-      return res ? { ...res.data, type: symbol.type } : null;
+      return res ? { ...res.data, type: notation.type } : null;
     },
     removeNotation: async function (notation) {
       try {
-        axiosInstnce.delete("/lessonsymbols/" + notation.id);
+        axiosInstnce.delete(
+          `${notation.BoardType}${notation.Type}s/${notation.id}`
+        ); // e.g lessonsymbols/1)
       } catch (error) {
-        handleError(error);
+        this.this.handleError(error);
       }
     },
     getLesson: async function (lessonId) {
@@ -146,24 +155,24 @@ module.exports = {
         let res = await axiosInstnce.get("/lessons?id=" + lessonId);
         return !!res ? res.data[0] : null;
       } catch (error) {
-        handleError(error);
+        this.this.handleError(error);
       }
     },
-
-    getAllLessons: async function (user) {
+    getLessons: async function (user) {
       console.log(user);
       try {
         return axiosInstnce.get("/lessons?UserId=" + user.id);
       } catch (error) {
-        handleError(error);
+        this.this.handleError(error);
       }
     },
-    getAllSymbols: async function (lessonId) {
+    getNotations: function (parent, notationType) {
       try {
-        let res = await axiosInstnce.get("/lessonsymbols?LessonId=" + lessonId);
-        return res.data;
+        return axiosInstnce.get(
+          `${parent.boardType}${notationType}s?${parent.boardType}id=${parent.id}` // e.g lessonsymbols?id=1
+        );
       } catch (error) {
-        handleError(error);
+        this.handleError(error);
       }
     },
   },

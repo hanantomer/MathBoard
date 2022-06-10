@@ -6,7 +6,10 @@
       v-on:mouseup="editManager_selectionMouseUp"
       v-on:mousedown="editManager_selectionMouseDown"
       v-on:mousemove="editManager_mouseMove"
-      v-show="editManager_getCurrentMode === 'SELECT'"
+      v-show="
+        editManager_getCurrentMode === 'SELECT' ||
+        editManager_getCurrentMode === 'MOVE'
+      "
       class="grabbable"
       v-bind:style="{
         left: selectionRectLeft,
@@ -21,6 +24,31 @@
         border: 1, 1, 1, 1;
       "
     ></v-card>
+    <v-divider
+      id="fractionLine"
+      v-on:mouseup="editManager_mouseUp"
+      v-show="editManager_getCurrentMode === 'DRAWLINE'"
+      v-bind:style="{
+        left: fractionLineLeft,
+        top: fractionLineTop,
+        width: fractionLineWidth,
+      }"
+      style="position: absolute; z-index: 99; border: solid 1px"
+    ></v-divider>
+
+    <p>\&\#221A</p>
+    <v-divider
+      id="sqrtLine"
+      v-on:mouseup="editManager_mouseUp"
+      v-show="editManager_getCurrentMode === 'DRAWSQRT'"
+      v-bind:style="{
+        left: sqrtLineLeft,
+        top: sqrtLineTop,
+        width: sqrtLineWidth,
+      }"
+      style="position: absolute; z-index: 99; border: solid 1px"
+    ></v-divider>
+
     <v-row dense style="max-height: 25px">
       <v-col cols="12" class="d-flex justify-center">
         <p>{{ lessonName }}</p>
@@ -72,6 +100,7 @@ import { mapGetters } from "vuex";
 import matrixOverlayMixin from "../Mixins/matrixOverlayMixin";
 import positionMixin from "../Mixins/positionMixin";
 import selectionMixin from "../Mixins/selectionMixin";
+import fractionLineMixin from "../Mixins/fractionLineMixin";
 import editManager from "../Mixins/editManager";
 import symbolMixin from "../Mixins/symbolMixin";
 import notationMixin from "../Mixins/notationMixin";
@@ -96,7 +125,7 @@ export default {
       .getBoundingClientRect();
 
     this.$loadLesson().then(() => {
-      window.addEventListener("keyup", this.editManager_keyUp);
+      window.addEventListener("keyup", this.editManager_keyUp); /// TODO check if still required
     });
     this.matrixMixin_setMatrix();
     this.reRenderMathJax();
@@ -112,6 +141,7 @@ export default {
     matrixOverlayMixin,
     positionMixin,
     selectionMixin,
+    fractionLineMixin,
     userOperationsSyncMixin,
     symbolMixin,
     editManager,
@@ -165,7 +195,7 @@ export default {
       }
 
       // load to screen
-      await this.$store.dispatch("loadNotations", this.lessonId);
+      await this.$store.dispatch("loadLessonNotations", this.lessonId);
 
       // listen to changes
       this.mixin_syncIncomingUserOperations(this.lessonId, this.isAdmin); ///TODO create mechnism to handle gaps between load and sync

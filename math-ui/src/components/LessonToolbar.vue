@@ -93,6 +93,32 @@
         <span>Draw fraction line</span>
       </v-tooltip>
 
+      <!-- fraction line-->
+      <v-tooltip top hidden v-model="showSquareRootTooltip">
+        <template v-slot:activator="{ on, attrs }">
+          <v-btn-toggle
+            v-model="squareRootButtonActive"
+            background-color="transparent"
+            active-class="iconActive"
+          >
+            <v-btn
+              icon
+              color="white"
+              x-small
+              fab
+              dark
+              v-on="on"
+              v-bind="attrs"
+              v-on:click="$emit('squrerootButtonPressed')"
+              :disabled="!authorized && !isAdmin"
+            >
+              <v-icon>mdi-square-root</v-icon>
+            </v-btn>
+          </v-btn-toggle>
+        </template>
+        <span>Draw fraction line</span>
+      </v-tooltip>
+
       <!-- toggle mtrix rectangles -->
       <v-tooltip top hidden>
         <template v-slot:activator="{ on, attrs }">
@@ -128,14 +154,13 @@
 
 <script>
 import matrixOverlayMixin from "../Mixins/matrixOverlayMixin";
-import fractionMixin from "../Mixins/fractionMixin";
 import createAccessLinkDialog from "./CreateAccessLinkDialog.vue";
 
 export default {
   components: {
     createAccessLinkDialog,
   },
-  mixins: [matrixOverlayMixin, fractionMixin],
+  mixins: [matrixOverlayMixin],
   props: {
     _isAdmin: { type: Boolean },
     _authorized: { type: Boolean },

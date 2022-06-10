@@ -58,6 +58,7 @@ module.exports = {
       this.hideDeleteCursor();
       this.setCurrentMode(EditMode.ADD_SYMBOL);
       this.selectionMixin_resetSelection();
+      this.fractionLine_reset();
     },
 
     startDeleteMode() {
@@ -75,7 +76,9 @@ module.exports = {
       this.setCurrentMode(EditMode.SELECT);
     },
     endSelectionMode() {
-      this.reset();
+      // don't fully reset here to allow moving selection
+      this.$refs.editoToolbar.resetToggleButtons();
+      this.setCurrentMode(EditMode.ADD_SYMBOL);
     },
     startDrawlineMode() {
       this.reset();
@@ -96,8 +99,11 @@ module.exports = {
       this.notationMixin_moveSelection(e);
     },
     setSelectedNotations(e) {
-      this.endSelectionMode();
       this.selectionMixin_endSelect(e);
+    },
+    setFractionLine(e) {
+      this.fractionLineMixin_endDrawLine(e);
+      this.reset();
     },
     editManager_selectionButtonPressed() {
       this.toggleSelectionMode();
@@ -119,6 +125,8 @@ module.exports = {
 
       if (this.currentMode === EditMode.SELECT) {
         this.selectionMixin_startSelection(e);
+      } else if (this.currentMode === EditMode.DRAWLINE) {
+        this.fractionLineMixin_startLineDrawing(e);
       } else {
         this.selectionMixin_setCurrentPosition(e);
       }
@@ -145,9 +153,10 @@ module.exports = {
         this.moveSelection(e);
       } else if (this.currentMode === EditMode.DELETE) {
         this.endDeleteMode();
+      } else if (this.currentMode === EditMode.DRAWLINE) {
+        this.setFractionLine();
       }
     },
-
     // start moving selection
     editManager_selectionMouseDown(e) {
       this.startMoveMode();
@@ -169,7 +178,9 @@ module.exports = {
       }
       // during symbols selection
       else if (this.currentMode === EditMode.SELECT) {
-        this.selectionMixinUpdateSelectionArea(e);
+        this.selectionMixin_UpdateSelectionArea(e);
+      } else if (this.currentMode === EditMode.DRAWLINE) {
+        this.fractionLineMixin_UpdateSelectionArea(e);
       }
       // during move selected symbols
       else if (this.currentMode === EditMode.MOVE) {

@@ -6,7 +6,6 @@ const accessLinkCache = new Map();
 
 module.exports = {
     parseLessonId: async function (lessonId) {
-        //TODO use cahce
         if (this.lessonIdFromAccessLink(lessonId)) {
             let accessLink = null;
             try {
