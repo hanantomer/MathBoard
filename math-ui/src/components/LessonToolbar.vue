@@ -18,7 +18,7 @@
               icon
               v-on="on"
               v-bind="attrs"
-              v-on:click="$emit('selectionButtonPressed')"
+              v-on:click="$selectionButtonPressed"
               x-small
               ><v-icon>mdi-selection</v-icon></v-btn
             >
@@ -40,7 +40,7 @@
               v-on="on"
               v-bind="attrs"
               :disabled="!authorized && !isAdmin"
-              v-on:click="$emit('deleteButtonPressed')"
+              v-on:click="$deleteButtonPressed"
               x-small
               ><v-icon>mdi-delete</v-icon></v-btn
             >
@@ -83,7 +83,7 @@
               dark
               v-on="on"
               v-bind="attrs"
-              v-on:click="$emit('drawlineButtonPressed')"
+              v-on:click="$drawFractionLineButtonPressed"
               :disabled="!authorized && !isAdmin"
             >
               <v-icon>mdi-tooltip-minus-outline</v-icon>
@@ -93,7 +93,7 @@
         <span>Draw fraction line</span>
       </v-tooltip>
 
-      <!-- fraction line-->
+      <!-- sqrt line-->
       <v-tooltip top hidden v-model="showSquareRootTooltip">
         <template v-slot:activator="{ on, attrs }">
           <v-btn-toggle
@@ -109,14 +109,40 @@
               dark
               v-on="on"
               v-bind="attrs"
-              v-on:click="$emit('squrerootButtonPressed')"
+              v-on:click="$drawSqrtLineButtonPressed"
               :disabled="!authorized && !isAdmin"
             >
               <v-icon>mdi-square-root</v-icon>
             </v-btn>
           </v-btn-toggle>
         </template>
-        <span>Draw fraction line</span>
+        <span>Draw sqrt line</span>
+      </v-tooltip>
+
+      <!-- power-->
+      <v-tooltip top hidden v-model="showPowerTooltip">
+        <template v-slot:activator="{ on, attrs }">
+          <v-btn-toggle
+            v-model="powerButtonActive"
+            background-color="transparent"
+            active-class="iconActive"
+          >
+            <v-btn
+              icon
+              color="white"
+              x-small
+              fab
+              dark
+              v-on="on"
+              v-bind="attrs"
+              v-on:click="$powerButtonPressed"
+              :disabled="!authorized && !isAdmin"
+            >
+              <v-icon>mdi-exponent</v-icon>
+            </v-btn>
+          </v-btn-toggle>
+        </template>
+        <span>Power</span>
       </v-tooltip>
 
       <!-- toggle mtrix rectangles -->
@@ -167,7 +193,32 @@ export default {
     lessonId: { type: String },
   },
   methods: {
+    $resetButtonsState() {
+      this.deleteButtonActive = this.selectionButtonActive = this.drawlineButtonActive = this.squareRootButtonActive = this.powerButtonActive = 1;
+    },
+    $powerButtonPressed() {
+      this.$resetButtonsState();
+      this.$emit("powerButtonPressed");
+    },
+    $deleteButtonPressed() {
+      this.$resetButtonsState();
+      this.$emit("deleterButtonPressed");
+    },
+    $drawSqrtLineButtonPressed() {
+      this.$resetButtonsState();
+      this.$emit("drawSqrtLineButtonPressed");
+    },
+    $drawFractionLineButtonPressed() {
+      this.$resetButtonsState();
+      this.$emit("drawFractionLineButtonPressed");
+    },
+    $selectionButtonPressed() {
+      this.$resetButtonsState();
+      this.$emit("selectionButtonPressed");
+    },
+
     $symbolButtonPressed(e) {
+      this.$resetButtonsState();
       this.$emit("symbolButtonPressed", e);
     },
     $toggleLessonMatrix() {
@@ -199,7 +250,11 @@ export default {
       deleteButtonActive: 1,
       selectionButtonActive: 1,
       drawlineButtonActive: 1,
+      squareRootButtonActive: 1,
+      powerButtonActive: 1,
       showFractionLineTooltip: false,
+      showSquareRootTooltip: false,
+      showPowerTooltip: false,
       showAccessTooltip: false,
       signs: [
         { sign: "1" },

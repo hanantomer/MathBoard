@@ -29,25 +29,22 @@
       v-on:mouseup="editManager_mouseUp"
       v-show="editManager_getCurrentMode === 'DRAWLINE'"
       v-bind:style="{
-        left: fractionLineLeft,
-        top: fractionLineTop,
-        width: fractionLineWidth,
+        left: drawLineLeft,
+        top: drawLineTop,
+        width: drawLineWidth,
       }"
       style="position: absolute; z-index: 99; border: solid 1px"
     ></v-divider>
-
-    <p>\&\#221A</p>
-    <v-divider
-      id="sqrtLine"
-      v-on:mouseup="editManager_mouseUp"
-      v-show="editManager_getCurrentMode === 'DRAWSQRT'"
+    <p
       v-bind:style="{
-        left: sqrtLineLeft,
-        top: sqrtLineTop,
-        width: sqrtLineWidth,
+        left: drawLineLeft,
+        top: drawLineTop,
       }"
       style="position: absolute; z-index: 99; border: solid 1px"
-    ></v-divider>
+      v-if="editManager_getCurrentDrawLineMode === 'SQRT'"
+    >
+      &#x221A;
+    </p>
 
     <v-row dense style="max-height: 25px">
       <v-col cols="12" class="d-flex justify-center">
@@ -68,7 +65,9 @@
                 selectionButtonPressed: editManager_selectionButtonPressed,
                 deleteButtonPressed: editManager_deleteButtonPressed,
                 symbolButtonPressed: editManager_symbolButtonPressed,
-                drawlineButtonPressed: editManager_drawlineButtonPressed,
+                drawSqrtLineButtonPressed: editManager_drawSqrtLineButtonPressed,
+                drawFractionLineButtonPressed: editManager_drawFractionLineButtonPressed,
+                powerButtonPressed: editManager_powerButtonPressed,
               }"
             ></lesson-toolbar>
           </v-col>
@@ -100,7 +99,7 @@ import { mapGetters } from "vuex";
 import matrixOverlayMixin from "../Mixins/matrixOverlayMixin";
 import positionMixin from "../Mixins/positionMixin";
 import selectionMixin from "../Mixins/selectionMixin";
-import fractionLineMixin from "../Mixins/fractionLineMixin";
+import drawLineMixin from "../Mixins/drawLineMixin";
 import editManager from "../Mixins/editManager";
 import symbolMixin from "../Mixins/symbolMixin";
 import notationMixin from "../Mixins/notationMixin";
@@ -141,7 +140,7 @@ export default {
     matrixOverlayMixin,
     positionMixin,
     selectionMixin,
-    fractionLineMixin,
+    drawLineMixin,
     userOperationsSyncMixin,
     symbolMixin,
     editManager,

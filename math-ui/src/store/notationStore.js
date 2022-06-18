@@ -16,13 +16,21 @@ const BoardType = Object.freeze({
 });
 
 const helper = {
-  findNotationByTypeAndId: function (state, type, id) {
-    return Object.values(state.notations).find((v) => v.id == type + id);
-  },
   findNotationByCoordinates: function (state, coordinates) {
     return Object.entries(state.notations).find(
       (e) => e[1].col == coordinates.col && e[1].row == coordinates.row
     );
+  },
+
+  loadNotationType(context, currentType) {
+    dbSyncMixin.methods
+      .getNotations(context.getters.getParent, currentType)
+      .then((notations) => {
+        notations.data.forEach((notation) => {
+          notation.type = currentType;
+          context.commit("addNotation", notation);
+        });
+      });
   },
 };
 
@@ -37,9 +45,6 @@ export default {
   getters: {
     getParent(state) {
       return state.parent;
-    },
-    getNotations: (state) => {
-      return state.notations;
     },
     getSelectedNotations: (state) => {
       return Object.values(state.notations).filter((v) => v.selected === true);
@@ -96,25 +101,10 @@ export default {
       });
       context.commit("removeAllNotations");
 
-      let currentType = "symbol"; ///TODO move to function
-      dbSyncMixin.methods
-        .getNotations(context.getters.getParent, currentType)
-        .then((notations) => {
-          notations.data.forEach((notation) => {
-            notation.type = "symbol";
-            context.commit("addNotation", notation);
-          });
-        });
-
-      currentType = "fractionLine";
-      dbSyncMixin.methods
-        .getNotations(context.getters.getParent, currentType)
-        .then((notations) => {
-          notations.data.forEach((notation) => {
-            notation.type = currentType;
-            context.commit("addNotation", notation);
-          });
-        });
+      helper.loadNotationType(context, "symbol");
+      helper.loadNotationType(context, "power");
+      helper.loadNotationType(context, "fractionLine");
+      helper.loadNotationType(context, "sqrtLine");
     },
 
     addNotation(context, notation) {

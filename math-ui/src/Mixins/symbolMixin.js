@@ -1,9 +1,9 @@
 export default {
   methods: {
-    symbolMixin_addSymbol(value) {
+    symbolMixin_addSymbol(value, type) {
       let symbol = {
         value: value,
-        type: "symbol",
+        type: type,
       };
       symbol.col = this.getcurrentRect().col;
       symbol.row = this.getcurrentRect().row;

@@ -36,12 +36,26 @@ let symbolResource = finale.resource({
 symbolResource.use(authMiddleware);
 symbolResource.use(lessonMiddleware);
 
+let powerResource = finale.resource({
+    model: db.sequelize.models["LessonPower"],
+    endpoints: ["/lessonpowers", "/lessonpowers/:id"],
+});
+powerResource.use(authMiddleware);
+powerResource.use(lessonMiddleware);
+
 let fractionLineResource = finale.resource({
     model: db.sequelize.models["LessonFractionLine"],
     endpoints: ["/lessonfractionlines", "/lessonfractionlines/:id"],
 });
 fractionLineResource.use(authMiddleware);
 fractionLineResource.use(lessonMiddleware);
+
+let sqrtLineResource = finale.resource({
+    model: db.sequelize.models["LessonSqrtLine"],
+    endpoints: ["/lessonsqrtlines", "/lessonsqrtlines/:id"],
+});
+sqrtLineResource.use(authMiddleware);
+sqrtLineResource.use(lessonMiddleware);
 
 finale.resource({
     model: db.sequelize.models["AccessLink"],

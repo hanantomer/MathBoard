@@ -5,6 +5,9 @@ export default {
     fontSize: function () {
       return `${this.rectSize / 25}em`;
     },
+    powerFontSize: function () {
+      return `${this.rectSize / 50}em`;
+    },
   },
   data: function () {
     return {
@@ -151,10 +154,28 @@ export default {
           return this.getNotationXposByCol(n.row);
         });
     },
-    removeNotation: function (notation) {
+    removeNotation: function (n) {
       document.getElementById(n.id + n.type).remove();
     },
+    enrichNotations: function (notations) {
+      let enrichedNotations = [];
+      for (const key in notations) {
+        if (Object.hasOwnProperty.call(notations, key)) {
+          const element = notations[key];
+          enrichedNotations.push(element);
+          if (element.type === "sqrtLine") {
+            let sqrtElement = { ...element };
+            sqrtElement.type = "sqrtSymbol";
+            enrichedNotations.push(sqrtElement);
+          }
+        }
+      }
+      return enrichedNotations;
+    },
     matrixMixin_refreshScreen(notations) {
+      try {
+        notations = this.enrichNotations(notations);
+      } catch {} // cant check if observer has properties
       this.svg
         .selectAll("foreignObject")
         .data(Object.values(notations))
@@ -177,63 +198,78 @@ export default {
           return n.type + n.id;
         })
         .attr("col", (n) => {
-          return n.type === "symbol" ? n.col : n.fromCol;
+          return n.type === "symbol" || n.type === "power" ? n.col : n.fromCol;
         })
         .attr("row", (n) => {
           return n.row;
         })
         .attr("x", (n, i) => {
-          return this.getNotationXposByCol(
-            n.type === "symbol" ? n.col : n.fromCol
-          );
+          let col =
+            n.type === "symbol" || n.type === "power" ? n.col : n.fromCol;
+
+          return n.type === "sqrtSymbol"
+            ? this.getNotationXposByCol(col) - Math.round(this.rectSize / 3)
+            : n.type === "power"
+            ? this.getNotationXposByCol(col) - this.rectSize / 3
+            : this.getNotationXposByCol(col);
         })
         .attr("y", (n) => {
           return n.type === "symbol"
             ? this.getNotationYposByRow(n.row)
+            : n.type === "power"
+            ? this.getNotationYposByRow(n.row)
+            : n.type === "sqrtSymbol"
+            ? this.getNotationYposByRow(n.row) - 4
             : this.getNotationYposByRow(n.row - 1);
         })
         .attr("width", (n) => {
-          return n.type === "symbol"
+          return n.type === "symbol" ||
+            n.type === "sqrtSymbol" ||
+            n.type === "power"
             ? this.rectSize
             : (n.toCol - n.fromCol) * this.rectSize;
         })
         .attr("height", this.rectSize)
         .style("font-size", (n) => {
-          return this.fontSize;
+          return n.type === "power" ? this.powerFontSize : this.fontSize;
         })
         .html((n) => {
-          if (n.type === "fractionLine") {
+          if (n.type === "fractionLine" || n.type === "sqrtLine") {
             return `<span style='display:inline-block;border-bottom: solid 2px;width:${
               (n.toCol - n.fromCol) * this.rectSize
             }px;margin-top:${this.rectSize - 1}px'></span>`;
           }
-          return !!n.value ? "$$sqrt" + n.value + "$$" : "";
+          if (n.type === "sqrtSymbol") {
+            return `<p>&#x221A;</p>`;
+          }
+
+          return !!n.value ? "$$" + n.value + "$$" : "";
         });
     },
     updateNotations: function (update) {
       ///TODO move common code to function
-      return update
-        .style("color", (n) => {
-          return n.selected ? "red" : "black";
-        })
-        .attr("x", (n, i) => {
-          return this.getNotationXposByCol(
-            n.type === "symbol" ? n.col : n.fromCol
-          );
-        })
-        .attr("y", (n) => {
-          return n.type === "symbol"
-            ? this.getNotationYposByRow(n.row)
-            : this.getNotationYposByRow(n.row - 1);
-        })
-        .html((n) => {
-          if (n.type === "fractionLine") {
-            return `<span style='display:inline-block;border-bottom: solid 2px;width:${
-              (n.toCol - n.fromCol) * this.rectSize
-            }px;margin-top:${this.rectSize - 1}px'></span>`;
-          }
-          return !!n.value ? "$$" + n.value + "$$" : "";
-        });
+      // return update
+      //   .style("color", (n) => {
+      //     return n.selected ? "red" : "black";
+      //   })
+      //   .attr("x", (n, i) => {
+      //     return this.getNotationXposByCol(
+      //       n.type === "symbol" ? n.col : n.fromCol
+      //     );
+      //   })
+      //   .attr("y", (n) => {
+      //     return n.type === "symbol"
+      //       ? this.getNotationYposByRow(n.row)
+      //       : this.getNotationYposByRow(n.row - 1);
+      //   })
+      //   .html((n) => {
+      //     if (n.type === "fractionLine") {
+      //       return `<span style='display:inline-block;border-bottom: solid 2px;width:${
+      //         (n.toCol - n.fromCol) * this.rectSize
+      //       }px;margin-top:${this.rectSize - 1}px'></span>`;
+      //     }
+      //     return !!n.value ? "$$" + n.value + "$$" : "";
+      //   });
     },
     removeNotations: function (exit) {
       return exit
