@@ -14,7 +14,7 @@ export default {
           this.userOperationsMixin_syncOutgoingUpdateSelectedNotations()
         );
     },
-    notationMixin_removeNotation: function (e) {
+    notationMixin_removeNotations: function (e) {
       let currentRect = this.matrixMixin_findClickedObject(
         {
           x: e.clientX,
@@ -25,23 +25,25 @@ export default {
 
       if (!currentRect) return;
 
-      let notationAtRectPosition = this.$store.getters.getNotationByRectCoordinates(
-        {
-          row: currentRect.parentNode.attributes.row.value,
-          col: currentRect.attributes.col.value,
-        }
-      );
-      if (!notationAtRectPosition) return;
+      // let notationAtRectPosition = this.$store.getters.getNotationByRectCoordinates(
+      //   {
+      //     row: currentRect.parentNode.attributes.row.value,
+      //     col: currentRect.attributes.col.value,
+      //   }
+      // );
+      // if (!notationAtRectPosition) return;
 
       this.$store
-        .dispatch("removeNotation", {
-          col: notationAtRectPosition[1].col,
-          row: notationAtRectPosition[1].row,
-        })
-        .then(() => {
-          this.userOperationsMixin_syncOutgoingRemoveNotation([
-            notationAtRectPosition[1],
-          ]);
+        .dispatch(
+          "removeNotations",
+          currentRect
+          //{
+          // col: notationAtRectPosition[1].col,
+          // row: notationAtRectPosition[1].row,
+          //}
+        )
+        .then((notations) => {
+          this.userOperationsMixin_syncOutgoingRemoveNotation([notations]);
         })
         .catch((e) => {
           console.error(e);

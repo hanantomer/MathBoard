@@ -16,9 +16,11 @@ const BoardType = Object.freeze({
 });
 
 const helper = {
-  findNotationByCoordinates: function (state, coordinates) {
-    return Object.entries(state.notations).find(
-      (e) => e[1].col == coordinates.col && e[1].row == coordinates.row
+  findNotationsByCoordinates: function (state, rect) {
+    return Object.entries(state.notations).filter(
+      (e) =>
+        (e[1].col === rect.col || e[1].fromCol === rect.col) &&
+        e[1].row === rect.row
     );
   },
 
@@ -49,12 +51,12 @@ export default {
     getSelectedNotations: (state) => {
       return Object.values(state.notations).filter((v) => v.selected === true);
     },
-    getNotationByRectCoordinates(state) {
-      return (coordinates) => {
-        // return function to allow argument
-        return helper.findNotationByCoordinates(state, coordinates);
-      };
-    },
+    // getNotationByRectCoordinates(state) {
+    //   return (coordinates) => {
+    //     // return function to allow argument
+    //     return helper.findNotationsByCoordinates(state, coordinates);
+    //   };
+    // },
   },
   mutations: {
     setParent(state, parent) {
@@ -62,14 +64,17 @@ export default {
     },
     addNotation(state, notation) {
       notation.selected = false;
+      notation.boardType = state.parent.boardType;
       Vue.set(state.notations, notation.type + notation.id, notation);
     },
     removeNotation(state, notation) {
       Vue.delete(state.notations, notation);
     },
     selectNotation(state, coordinates) {
-      let notation = helper.findNotationByCoordinates(state, coordinates);
-      Vue.set(state.notations, notation[0], { ...notation[1], selected: true });
+      let notations = helper.findNotationsByCoordinates(state, coordinates);
+      notations.forEach((n) => {
+        Vue.set(state.notations, n[0], { ...n[1], selected: true });
+      });
     },
     unselectAllNotations(state) {
       Object.entries(state.notations)
@@ -82,11 +87,20 @@ export default {
       Object.entries(state.notations)
         .filter((notation) => !!notation[1].selected)
         .forEach((notation) => {
-          Vue.set(state.notations, notation[0], {
-            ...notation[1],
-            col: notation[1].col + payload.rectDeltaX,
-            row: notation[1].row + payload.rectDeltaY,
-          });
+          if (notation[1].type === "symbol") {
+            Vue.set(state.notations, notation[0], {
+              ...notation[1],
+              col: notation[1].col + payload.rectDeltaX,
+              row: notation[1].row + payload.rectDeltaY,
+            });
+          } else {
+            // sqrt or fraction line
+            Vue.set(state.notations, notation[0], {
+              ...notation[1],
+              fromCol: notation[1].fromCol + payload.rectDeltaX,
+              row: notation[1].row + payload.rectDeltaY,
+            });
+          }
         });
     },
     removeAllNotations(state) {
@@ -126,16 +140,20 @@ export default {
     syncIncomingUpdatedNotation(context, notation) {
       context.commit("addNotation", notation);
     },
-    removeNotation(context, coordinates) {
-      let notationsAtCoordinates = helper.findNotationByCoordinates(
+    removeNotations(context, rect) {
+      let notationsAtCoordinates = helper.findNotationsByCoordinates(
         context.state,
-        coordinates
+        rect
       );
-      dbSyncMixin.methods
-        .removeNotation(notation[1])
-        .then(() =>
-          context.commit("removeNotation", notationsAtCoordinates[0])
-        );
+      if (!!notationsAtCoordinates) {
+        notationsAtCoordinates.array.forEach((n) => {
+          n[1].boardType = context.getters.getParent.boardType;
+          dbSyncMixin.methods
+            .removeNotation(n[1])
+            .then(() => context.commit("removeNotation", n[0]));
+        });
+      }
+      return notationsAtCoordinates;
     },
     selectNotation(context, coordinates) {
       context.commit("selectNotation", coordinates);
@@ -150,7 +168,7 @@ export default {
     // move with persistence - called upon muose up
     updateSelectedNotationCoordinates(context) {
       context.getters.getSelectedNotations.forEach(async (notation) => {
-        dbSyncMixin.methods.updateNotationCoordinates(notation);
+        dbSyncMixin.methods.saveNotation(notation);
       });
       context.commit("unselectAllNotations");
     },

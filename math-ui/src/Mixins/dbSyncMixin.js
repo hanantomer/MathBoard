@@ -144,7 +144,7 @@ module.exports = {
     removeNotation: async function (notation) {
       try {
         axiosInstnce.delete(
-          `${notation.BoardType}${notation.Type}s/${notation.id}`
+          `${notation.boardType}${notation.type}s/${notation.id}`
         ); // e.g lessonsymbols/1)
       } catch (error) {
         this.this.handleError(error);

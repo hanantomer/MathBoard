@@ -105,7 +105,9 @@ export default {
     matrixMixin_selectRectByCoordinates(clickedCoordinates) {
       let rect = document
         .querySelector(`g[row="${clickedCoordinates.row}"]`)
-        .querySelector(`rect[col="${clickedCoordinates.col}"]`);
+        .querySelector(
+          `rect[col="${clickedCoordinates.col ?? clickedCoordinates.fromCol}"]`
+        );
 
       if (rect) this.toggleSelectedNotation(rect, clickedCoordinates);
     },
@@ -148,7 +150,7 @@ export default {
           return n.row;
         })
         .setAttribute("x", (n, i) => {
-          return this.getNotationXposByCol(n.col);
+          return this.getNotationXposByCol(n.col ?? n.fromCol);
         })
         .setAttribute("y", (n) => {
           return this.getNotationXposByCol(n.row);
@@ -195,81 +197,97 @@ export default {
       return enter
         .append("foreignObject")
         .attr("id", (n) => {
-          return n.type + n.id;
+          return this.$id(n);
         })
         .attr("col", (n) => {
-          return n.type === "symbol" || n.type === "power" ? n.col : n.fromCol;
+          return this.$col(n);
         })
         .attr("row", (n) => {
-          return n.row;
+          return this.$row(n);
         })
-        .attr("x", (n, i) => {
-          let col =
-            n.type === "symbol" || n.type === "power" ? n.col : n.fromCol;
-
-          return n.type === "sqrtSymbol"
-            ? this.getNotationXposByCol(col) - Math.round(this.rectSize / 3)
-            : n.type === "power"
-            ? this.getNotationXposByCol(col) - this.rectSize / 3
-            : this.getNotationXposByCol(col);
+        .attr("x", (n) => {
+          return this.$x(n);
         })
         .attr("y", (n) => {
-          return n.type === "symbol"
-            ? this.getNotationYposByRow(n.row)
-            : n.type === "power"
-            ? this.getNotationYposByRow(n.row)
-            : n.type === "sqrtSymbol"
-            ? this.getNotationYposByRow(n.row) - 4
-            : this.getNotationYposByRow(n.row - 1);
+          return this.$y(n);
         })
         .attr("width", (n) => {
-          return n.type === "symbol" ||
-            n.type === "sqrtSymbol" ||
-            n.type === "power"
-            ? this.rectSize
-            : (n.toCol - n.fromCol) * this.rectSize;
+          return this.$width(n);
         })
         .attr("height", this.rectSize)
         .style("font-size", (n) => {
-          return n.type === "power" ? this.powerFontSize : this.fontSize;
+          return this.$fontSize(n);
+        })
+        .style("color", (n) => {
+          return this.$color(n);
         })
         .html((n) => {
-          if (n.type === "fractionLine" || n.type === "sqrtLine") {
-            return `<span style='display:inline-block;border-bottom: solid 2px;width:${
-              (n.toCol - n.fromCol) * this.rectSize
-            }px;margin-top:${this.rectSize - 1}px'></span>`;
-          }
-          if (n.type === "sqrtSymbol") {
-            return `<p>&#x221A;</p>`;
-          }
-
-          return !!n.value ? "$$" + n.value + "$$" : "";
+          return this.$html(n);
         });
     },
+    $id(n) {
+      return n.type + n.id;
+    },
+    $col(n) {
+      return n.type === "symbol" || n.type === "power" ? n.col : n.fromCol;
+    },
+    $row(n) {
+      return n.row;
+    },
+    $x(n) {
+      let col = n.type === "symbol" || n.type === "power" ? n.col : n.fromCol;
+
+      return n.type === "sqrtSymbol"
+        ? this.getNotationXposByCol(col) - Math.round(this.rectSize / 3)
+        : n.type === "power"
+        ? this.getNotationXposByCol(col) - this.rectSize / 3
+        : this.getNotationXposByCol(col);
+    },
+    $y(n) {
+      return n.type === "symbol"
+        ? this.getNotationYposByRow(n.row)
+        : n.type === "power"
+        ? this.getNotationYposByRow(n.row)
+        : n.type === "sqrtSymbol"
+        ? this.getNotationYposByRow(n.row) - 4
+        : this.getNotationYposByRow(n.row - 1);
+    },
+    $width(n) {
+      return n.type === "symbol" ||
+        n.type === "sqrtSymbol" ||
+        n.type === "power"
+        ? this.rectSize
+        : (n.toCol - n.fromCol) * this.rectSize;
+    },
+    $fontSize(n) {
+      return n.type === "power" ? this.powerFontSize : this.fontSize;
+    },
+    $color(n) {
+      return n.selected ? "red" : "black";
+    },
+    $html(n) {
+      if (n.type === "fractionLine" || n.type === "sqrtLine") {
+        return `<span style='display:inline-block;border-bottom: solid 2px;width:${
+          (n.toCol - n.fromCol) * this.rectSize
+        }px;margin-top:${this.rectSize - 1}px'></span>`;
+      }
+      if (n.type === "sqrtSymbol") {
+        return `<p>&#x221A;</p>`;
+      }
+
+      return !!n.value ? "$$" + n.value + "$$" : "";
+    },
     updateNotations: function (update) {
-      ///TODO move common code to function
-      // return update
-      //   .style("color", (n) => {
-      //     return n.selected ? "red" : "black";
-      //   })
-      //   .attr("x", (n, i) => {
-      //     return this.getNotationXposByCol(
-      //       n.type === "symbol" ? n.col : n.fromCol
-      //     );
-      //   })
-      //   .attr("y", (n) => {
-      //     return n.type === "symbol"
-      //       ? this.getNotationYposByRow(n.row)
-      //       : this.getNotationYposByRow(n.row - 1);
-      //   })
-      //   .html((n) => {
-      //     if (n.type === "fractionLine") {
-      //       return `<span style='display:inline-block;border-bottom: solid 2px;width:${
-      //         (n.toCol - n.fromCol) * this.rectSize
-      //       }px;margin-top:${this.rectSize - 1}px'></span>`;
-      //     }
-      //     return !!n.value ? "$$" + n.value + "$$" : "";
-      //   });
+      return update
+        .style("color", (n) => {
+          return this.$color(n);
+        })
+        .attr("x", (n, i) => {
+          return this.$x(n);
+        })
+        .attr("y", (n) => {
+          return this.$y(n);
+        });
     },
     removeNotations: function (exit) {
       return exit

@@ -104,25 +104,27 @@ export default {
       let svgOffset = this.getSvgOffset();
       if (this.selectionPosition.x2 != this.selectionPosition.x1) {
         this.svg.selectAll("foreignObject").each((datum) => {
+          let row = datum.row;
+          let col = datum.col ?? datum.fromCol;
           if (
-            !!datum.col &&
-            !!datum.row &&
-            this.getNotationXposByCol(datum.col) + svgOffset.left >
+            !!col &&
+            !!row &&
+            this.getNotationXposByCol(col) + svgOffset.left >
               this.selectionPosition.x1 &&
-            this.getNotationXposByCol(datum.col) + svgOffset.left <
+            this.getNotationXposByCol(col) + svgOffset.left <
               this.selectionPosition.x2 &&
-            this.getNotationYposByRow(datum.row) +
+            this.getNotationYposByRow(row) +
               svgOffset.top -
               this.getHeaderHeight() >
               this.selectionPosition.y1 &&
-            this.getNotationYposByRow(datum.row) +
+            this.getNotationYposByRow(row) +
               svgOffset.top -
               this.getHeaderHeight() <
               this.selectionPosition.y2
           ) {
             this.$store.dispatch("selectNotation", {
-              col: datum.col,
-              row: datum.row,
+              col: col,
+              row: row,
             });
           }
         });
@@ -131,9 +133,19 @@ export default {
     //move selection area
     selectionMixin_moveSelection(e) {
       let rectSize = this.matrixMixin_getRectSize();
+
+      // initial drag position
       if (this.dragPostion.x === 0) {
         this.dragPostion.x = e.clientX;
         this.dragPostion.y = e.clientY;
+        return;
+      }
+
+      // movement is still too small
+      if (
+        Math.abs(e.clientX - this.dragPostion.x) < rectSize &&
+        Math.abs(e.clientY - this.dragPostion.y) < rectSize
+      ) {
         return;
       }
 

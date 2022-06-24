@@ -202,7 +202,7 @@ export default {
     },
     $deleteButtonPressed() {
       this.$resetButtonsState();
-      this.$emit("deleterButtonPressed");
+      this.$emit("deleteButtonPressed");
     },
     $drawSqrtLineButtonPressed() {
       this.$resetButtonsState();

@@ -7,7 +7,7 @@
       v-on:mousedown="editManager_selectionMouseDown"
       v-on:mousemove="editManager_mouseMove"
       v-show="
-        editManager_getCurrentMode === 'SELECT' ||
+        editManager_getCurrentMode === 'SELECTING' ||
         editManager_getCurrentMode === 'MOVE'
       "
       class="grabbable"
@@ -170,7 +170,7 @@ export default {
   methods: {
     ...mapGetters({
       getSelectedNotations: "getSelectedNotations",
-      getNotationByRectCoordinates: "getNotationByRectCoordinates",
+      //      getNotationByRectCoordinates: "getNotationByRectCoordinates",
       getCurrentLesson: "getCurrentLesson",
       getLessons: "getLessons",
       getUser: "getUser",

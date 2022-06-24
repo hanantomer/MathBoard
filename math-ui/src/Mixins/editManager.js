@@ -1,8 +1,10 @@
 const EditMode = Object.freeze({
   ADD_SYMBOL: "ADD_SYMBOL",
   ADD_POWER: "ADD_POWER",
-  DELETE: "DELETE",
-  SELECT: "SELECT",
+  DELETE: "DELETE", // after delete button pressed
+  DELETING: "DELETING", // mouse clicked following delete button pressed
+  SELECT: "SELECT", //  after select button pressed
+  SELECTING: "SELECTING", // mouse clicked following select button pressed
   DRAWLINE: "DRAWLINE",
   MOVE: "MOVE",
 });
@@ -51,7 +53,7 @@ module.exports = {
       }
     },
     toggleDeleteMode() {
-      if (this.currentMode == EditMode.DELETE) {
+      if (this.currentMode == EditMode.DELETING) {
         this.endDeleteMode();
       } else {
         this.startDeleteMode();
@@ -80,7 +82,7 @@ module.exports = {
       this.hideDeleteCursor();
       this.setCurrentMode(EditMode.ADD_SYMBOL);
       this.setCurrentDrawLineMode(DrawLineMode.NONE);
-      this.selectionMixin_resetSelection();
+      // this.selectionMixin_resetSelection();
       this.drawLine_reset();
     },
     startDeleteMode() {
@@ -165,14 +167,16 @@ module.exports = {
       }
     },
     editManager_mouseDown(e) {
-      if (this.currentMode !== EditMode.SELECT) {
-        this.selectionMixin_resetSelection();
-      }
-
       if (this.currentMode === EditMode.SELECT) {
         this.selectionMixin_startSelection(e);
+        this.setCurrentMode(EditMode.SELECTING);
+      } else if (this.currentMode === EditMode.SELECTING) {
+        this.reset();
+        this.selectionMixin_resetSelection();
       } else if (this.currentMode === EditMode.DRAWLINE) {
         this.drawLineMixin_startLineDrawing(e);
+      } else if (this.currentMode === EditMode.DELETE) {
+        this.setCurrentMode(EditMode.DELETING);
       } else {
         this.selectionMixin_setCurrentPosition(e);
       }
@@ -202,11 +206,11 @@ module.exports = {
       }
     },
     editManager_mouseUp(e) {
-      if (this.currentMode === EditMode.SELECT) {
+      if (this.currentMode === EditMode.SELECTING) {
         this.setSelectedNotations(e);
       } else if (this.currentMode === EditMode.MOVE) {
         this.moveSelection(e);
-      } else if (this.currentMode === EditMode.DELETE) {
+      } else if (this.currentMode === EditMode.DELETING) {
         this.endDeleteMode();
       } else if (this.currentMode === EditMode.DRAWLINE) {
         if (this.currentDrawLineMode == DrawLineMode.FRACTION) {
@@ -224,7 +228,7 @@ module.exports = {
     editManager_selectionMouseUp(e) {
       if (this.currentMode === EditMode.MOVE) {
         this.moveSelection(e);
-      } else if (this.currentMode === EditMode.SELECT) {
+      } else if (this.currentMode === EditMode.SELECTING) {
         this.setSelectedNotations(e);
       }
     },
@@ -236,7 +240,7 @@ module.exports = {
         return;
       }
       // during symbols selection
-      else if (this.currentMode === EditMode.SELECT) {
+      else if (this.currentMode === EditMode.SELECTING) {
         this.selectionMixin_UpdateSelectionArea(e);
       } else if (this.currentMode === EditMode.DRAWLINE) {
         this.drawLineMixin_UpdateSelectionArea(e);
@@ -244,7 +248,7 @@ module.exports = {
       // during move selected symbols
       else if (this.currentMode === EditMode.MOVE) {
         this.selectionMixin_moveSelection(e);
-      } else if (this.currentMode === EditMode.DELETE) {
+      } else if (this.currentMode === EditMode.DELETING) {
         this.notationMixin_removeNotation(e);
       }
     },
