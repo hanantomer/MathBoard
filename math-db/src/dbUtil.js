@@ -32,7 +32,7 @@ module.exports = {
         return Number(lessonId);
     },
     lessonIdFromAccessLink: function (lessonId) {
-        return lessonId.toString().indexOf("l_") === 0;
+        return !!lessonId ? lessonId.toString().indexOf("l_") === 0 : null;
     },
     //TODO use cahce
     getAccessLink: function (lessonLink) {

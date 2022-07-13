@@ -97,13 +97,13 @@ import * as d3 from "d3";
 import { mapState } from "vuex";
 import { mapGetters } from "vuex";
 import matrixOverlayMixin from "../Mixins/matrixOverlayMixin";
-import positionMixin from "../Mixins/positionMixin";
 import selectionMixin from "../Mixins/selectionMixin";
 import drawLineMixin from "../Mixins/drawLineMixin";
 import editManager from "../Mixins/editManager";
 import symbolMixin from "../Mixins/symbolMixin";
 import notationMixin from "../Mixins/notationMixin";
-import userOperationsSyncMixin from "../Mixins/userOperationsSyncMixin";
+import userOperationsOutgoingSyncMixin from "../Mixins/userOutgoingOperationsSyncMixin";
+import userOperationsIncomingSyncMixin from "../Mixins/userIncomingOperationsSyncMixin";
 import lessonStudents from "./LessonStudents.vue";
 import lessonToolbar from "./LessonToolbar.vue";
 
@@ -138,10 +138,10 @@ export default {
   },
   mixins: [
     matrixOverlayMixin,
-    positionMixin,
     selectionMixin,
     drawLineMixin,
-    userOperationsSyncMixin,
+    userOperationsOutgoingSyncMixin,
+    userOperationsIncomingSyncMixin,
     symbolMixin,
     editManager,
     notationMixin,
@@ -188,7 +188,7 @@ export default {
       if (!this.isAdmin) {
         setInterval(
           this.userOperationsMixin_syncOutgoingHeartBeat,
-          2000,
+          1000,
           this.lessonId
         );
       }

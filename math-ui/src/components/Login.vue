@@ -149,7 +149,6 @@
 </template>
 
 <script>
-import { thresholdFreedmanDiaconis } from "d3-array";
 import { mapActions } from "vuex";
 import { mapGetters } from "vuex";
 export default {
@@ -182,7 +181,9 @@ export default {
         user.lastName = this.lastName;
         user.email = this.email;
         await this.registerUser(user);
-        this.show = false;
+        this.$refs.registerForm.reset();
+        this.$refs.loginForm.reset();
+        this.tab = 0; /*redirect to login*/
       }
     },
     validateLogin: async function () {
@@ -191,13 +192,21 @@ export default {
           email: this.loginEmail,
           password: this.loginPassword,
         };
-        console.debug(`authenticate user:${user.email}`);
         let authenticatedUser = await this.authLocalUserByPassword(user);
         if (!!authenticatedUser) {
           this.loginFailed = false;
           this.show = false;
           this.setUser(authenticatedUser);
           window.$cookies.set("access_token", authenticatedUser.access_token);
+          if (this.$refs.registerForm) {
+            this.$refs.registerForm.reset();
+          }
+          if (this.$refs.loginForm) {
+            this.$refs.loginForm.reset();
+          }
+          if (this.$route.query.from) {
+            this.$router.replace(this.$route.query.from);
+          }
           /*this.$router.push(
             this.$route.query.from ||
               this.$route.fullPath + "/lessons/" + authenticatedUser.id
@@ -209,12 +218,12 @@ export default {
         }
       }
     },
-    reset: function () {
-      this.$refs.form.reset();
-    },
-    resetValidation: function () {
-      this.$refs.form.resetValidation();
-    },
+    //reset: function () {
+    //  this.$refs.form.reset();
+    //},
+    //resetValidation: function () {
+    //  this.$refs.form.resetValidation();
+    //},
   },
 
   computed: {
@@ -227,9 +236,14 @@ export default {
       this.show = val.show;
       this.tab = val.tab === "Login" ? 0 : 1;
     },
+    $route(from, to) {
+      if (from.path === "/login") {
+        this.show = true;
+      }
+    },
   },
   props: {
-    dialog: { show: false, tab: 0 },
+    dialog: { tab: 0 },
   },
   data: () => ({
     loginFailed: false,

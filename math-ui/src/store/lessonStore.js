@@ -50,20 +50,11 @@ export default {
       }
       return lessons.data.length > 0;
     },
-    addLesson(context, payload) {
-      const lesson = payload;
+    async addLesson(context, lesson) {
       lesson.UserId = context.getters.getUser.id;
-      return new Promise((resolve, reject) => {
-        dbSyncMixin.methods
-          .addLesson(lesson)
-          .then((lesson) => {
-            context.commit("addLesson", lesson.data);
-            resolve(lesson.data);
-          })
-          .catch((error) => {
-            reject(error);
-          });
-      });
+      lesson = await dbSyncMixin.methods.addLesson(lesson);
+      context.commit("addLesson", lesson.data);
+      return lesson.data;
     },
     setCurrentLesson(context, payload) {
       context.commit("setCurrentLesson", payload);

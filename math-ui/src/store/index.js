@@ -1,6 +1,6 @@
 import Vue from "vue";
 import Vuex from "vuex";
-import currentPositionStore from "./currentPositionStore";
+import selectedPositionStore from "./selectedPositionStore";
 import notationStore from "./notationStore";
 import lessonStore from "./lessonStore";
 import userStore from "./userStore";
@@ -10,7 +10,7 @@ Vue.use(Vuex);
 
 export default new Vuex.Store({
   modules: {
-    currentPositionStore,
+    selectedPositionStore,
     notationStore,
     lessonStore,
     userStore,

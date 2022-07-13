@@ -5,20 +5,20 @@ export default {
         value: value,
         type: type,
       };
-      symbol.col = this.getcurrentRect().col;
-      symbol.row = this.getcurrentRect().row;
+      symbol.col = this.getSelctedRect().col;
+      symbol.row = this.getSelctedRect().row;
 
       this.$store
         .dispatch("addNotation", symbol)
-        .then(() => {
+        .then((symbol) => {
           this.userOperationsMixin_syncOutgoingSaveNotation(symbol);
         })
         .then(() => {
           let nextRect = this.matrixMixin_getNextRect();
           if (!!nextRect) {
             nextRect.type = "rect";
-            this.$store.dispatch("setCurrentRect", nextRect);
-            this.userOperationsMixin_syncOutgoingCurrentPosition(nextRect);
+            this.$store.dispatch("setSelectedRect", nextRect);
+            this.userOperationsMixin_syncOutgoingSelectedPosition(nextRect);
           }
         })
         .catch((e) => {

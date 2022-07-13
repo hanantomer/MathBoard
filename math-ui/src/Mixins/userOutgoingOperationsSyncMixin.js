@@ -23,14 +23,14 @@ export default {
           : window.$cookies.get("access_token")
       }`;
     },
-    userOperationsMixin_syncOutgoingCurrentPosition: async function (
-      currentPosition
+    userOperationsMixin_syncOutgoingSelectedPosition: async function (
+      selectedPosition
     ) {
-      currentPosition.LessonId = this.lessonId;
-      console.debug(`sync selected rect ${JSON.stringify(currentPosition)}`);
-      client.service("currentPosition").update(
+      selectedPosition.LessonId = this.lessonId;
+      console.debug(`sync selected rect ${JSON.stringify(selectedPosition)}`);
+      client.service("selectedPosition").update(
         null,
-        { currentPosition: currentPosition },
+        { selectedPosition: selectedPosition },
         {
           query: {
             access_token: this.getAccessToken(),
@@ -48,9 +48,9 @@ export default {
         }
       );
     },
-    userOperationsMixin_syncOutgoingRemoveNotation: async function (notations) {
+    userOperationsMixin_syncOutgoingRemoveNotation: async function (notation) {
       client.service("notationSync").remove(
-        { notations: [notations] },
+        { notation: notation },
         {
           query: {
             access_token: this.getAccessToken(),
@@ -58,9 +58,11 @@ export default {
         }
       );
     },
-    userOperationsMixin_syncOutgoingUpdateSelectedNotations: async function () {
+    userOperationsMixin_syncOutgoingUpdateSelectedNotation: async function (
+      selectedNotation
+    ) {
       client.service("notationSync").update(
-        { notations: this.getSelectedNotations() },
+        { notation: selectedNotation },
         {
           query: {
             access_token: this.getAccessToken(),
@@ -113,44 +115,6 @@ export default {
             },
           }
         );
-    },
-    mixin_syncIncomingUserOperations: async function (lessonId, isAdmin) {
-      // this will route events from feathers
-      await client.service("authentication").create({
-        query: { access_token: this.getAccessToken(), lessonId: lessonId },
-      });
-
-      let _store = store;
-
-      client.service("notationSync").on("updated", (notation) => {
-        if (notation.UserId !== this.getUser().id) {
-          _store.dispatch("syncIncomingUpdatedNotation", notation);
-          //this.dispatchUpdateNotation(notation);
-        }
-      });
-      client.service("notationSync").on("removed", (notations) => {
-        notations.forEach((notation) => {
-          if (notation.UserId !== this.getUser().id) {
-            _store.dispatch("syncIncomingRemovedNotation", notation);
-            //this.dispatchRomoveNotation(notation);
-          }
-        });
-      });
-      client.service("currentPosition").on("updated", (currentPosition) => {
-        if (currentPosition.UserId !== this.getUser().id) {
-          _store.dispatch("setCurrentRect", currentPosition);
-        }
-      });
-      client.service("authorization").on("updated", (user) => {
-        _store.dispatch("setUser", user);
-      });
-      if (isAdmin) {
-        client.service("heartbeat").on("updated", (user) => {
-          if (user.id !== this.getUser().id) {
-            _store.dispatch("updateStudentHeartbeat", user);
-          }
-        });
-      }
     },
   },
 };

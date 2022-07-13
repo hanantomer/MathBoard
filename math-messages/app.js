@@ -8,13 +8,13 @@ app.configure(socketio());
 const AuthorizationService = require("./authorizationService");
 const AuthenticationService = require("./authenticationService");
 const HeartbeatService = require("./heartbeatService");
-const currentPositionSyncService = require("./currentPositionSyncService");
+const selectedPositionSyncService = require("./selectedPositionSyncService");
 const NotationSyncService = require("./notationSyncService");
 
 app.use("authorization", new AuthorizationService(app));
 app.use("authentication", new AuthenticationService(app));
 app.use("heartbeat", new HeartbeatService(app));
-app.use("currentPosition", new currentPositionSyncService(app));
+app.use("selectedPosition", new selectedPositionSyncService(app));
 app.use("notationSync", new NotationSyncService(app));
 
 app.service("authorization").publish("updated", (authorization, ctx) => {
@@ -50,7 +50,7 @@ app.service("heartbeat").publish("updated", (heartbeat, ctx) => {
   ];
 });
 
-app.service("currentPosition").publish("updated", (position, ctx) => {
+app.service("selectedPosition").publish("updated", (position, ctx) => {
   console.debug(
     `publish selected rect updated data: ${JSON.stringify(
       position

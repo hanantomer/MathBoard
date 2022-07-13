@@ -1,6 +1,6 @@
 import VueRouter from "vue-router";
 import Welcome from "../components/Welcome.vue";
-// import Login from "../components/Login.vue";
+import Login from "../components/Login.vue";
 import Lessons from "../components/Lessons.vue";
 import Lesson from "../components/Lesson.vue";
 import store from "../store/index.js";
@@ -12,6 +12,11 @@ const router = new VueRouter({
     {
       path: "/",
       component: Welcome,
+      meta: { requiresAuth: false },
+    },
+    {
+      path: "/login",
+      component: Login,
       meta: { requiresAuth: false },
     },
     {
@@ -54,11 +59,11 @@ router.beforeEach(async (to, from, next) => {
       }
     }
     if (!user || !user.id) {
-      const loginpath = window.location.pathname;
+      const frompath = window.location.pathname;
       next({
-        path: "/",
-        query: { from: loginpath },
-        params: { nextUrl: to.fullPath },
+        path: "/login",
+        query: { from: frompath },
+        //params: { nextUrl: to.fullPath },
       });
     } else {
       next();

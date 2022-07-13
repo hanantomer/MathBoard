@@ -44,19 +44,19 @@ export default {
       );
     },
     ...mapState({
-      currentRect: (state) => state.currentPositionStore.currentRect,
+      selectedRect: (state) => state.selectedPositionStore.selectedRect,
     }),
   },
   watch: {
-    currentRect: {
-      handler(currentRect) {
-        this.matrixMixin_selectRectByCoordinates(currentRect);
+    selectedRect: {
+      handler(selectedRect) {
+        this.matrixMixin_selectRectByCoordinates(selectedRect);
       },
     },
   },
   methods: {
     ...mapGetters({
-      getcurrentRect: "getcurrentRect",
+      getSelctedRect: "getSelctedRect",
     }),
     getSvgOffset() {
       const rect = document.getElementById("svg").getBoundingClientRect();
@@ -69,22 +69,38 @@ export default {
       return document.getElementsByTagName("header")[0].getBoundingClientRect()
         .height;
     },
-    selectionMixin_setCurrentPosition(e) {
-      let currentRect = this.matrixMixin_findClickedObject(
+    // user clicked on a square
+    selectionMixin_setSelectedPosition(e) {
+      let selectedLine = this.matrixMixin_findClickedObject(
+        {
+          x: e.clientX,
+          y: e.clientY,
+        },
+        "foreignObject",
+        "fractionLine"
+      );
+
+      if (!!selectedLine) {
+        return;
+      }
+
+      let selectedRect = this.matrixMixin_findClickedObject(
         {
           x: e.clientX,
           y: e.clientY,
         },
         "rect"
       );
-      if (!!currentRect) {
-        let currentPosition = {
-          col: currentRect.attributes.col.value,
-          row: currentRect.parentNode.attributes.row.value,
+      if (!!selectedRect) {
+        let selectedPosition = {
+          col: selectedRect.attributes.col.value,
+          row: selectedRect.parentNode.attributes.row.value,
           type: "rect",
         };
-        this.$store.dispatch("setCurrentRect", currentPosition).then(() => {
-          this.userOperationsMixin_syncOutgoingCurrentPosition(currentPosition);
+        this.$store.dispatch("setSelectedRect", selectedPosition).then(() => {
+          this.userOperationsMixin_syncOutgoingSelectedPosition(
+            selectedPosition
+          );
         });
       }
     },

@@ -64,11 +64,10 @@ export default {
     openLessonDialog() {
       this.lessonDialog = { show: true, name: "" };
     },
-    saveLesson(lesson) {
-      this.addLesson(lesson).then((addedLesson) => {
-        this.$router.push({
-          path: "/symbols/" + addedLesson.id,
-        });
+    async saveLesson(lesson) {
+      let newLesson = await this.addLesson(lesson);
+      this.$router.push({
+        path: "/symbols/" + newLesson.id,
       });
     },
     async lessonSeletcted(lesson) {

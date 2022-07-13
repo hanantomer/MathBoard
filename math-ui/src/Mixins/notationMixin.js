@@ -8,46 +8,42 @@ export default {
     },
     notationMixin_moveSelection: function (e) {
       this.selectionMixin_endMoveSelection(e);
+      let selectedNotations = this.getSelectedNotations();
       this.$store
         .dispatch("updateSelectedNotationCoordinates")
         .then(() =>
-          this.userOperationsMixin_syncOutgoingUpdateSelectedNotations()
+          selectedNotations.forEach((n) =>
+            this.userOperationsMixin_syncOutgoingUpdateSelectedNotation(n)
+          )
         );
     },
-    notationMixin_removeNotations: function (e) {
-      let currentRect = this.matrixMixin_findClickedObject(
+    notationMixin_removeNotationsAtMousePosition: function (e) {
+      let rectAtMousePosition = this.matrixMixin_findClickedObject(
         {
           x: e.clientX,
           y: e.clientY,
         },
         "rect"
       );
-
-      if (!currentRect) return;
-
-      // let notationAtRectPosition = this.$store.getters.getNotationByRectCoordinates(
-      //   {
-      //     row: currentRect.parentNode.attributes.row.value,
-      //     col: currentRect.attributes.col.value,
-      //   }
-      // );
-      // if (!notationAtRectPosition) return;
-
-      this.$store
-        .dispatch(
-          "removeNotations",
-          currentRect
-          //{
-          // col: notationAtRectPosition[1].col,
-          // row: notationAtRectPosition[1].row,
-          //}
-        )
-        .then((notations) => {
-          this.userOperationsMixin_syncOutgoingRemoveNotation([notations]);
-        })
-        .catch((e) => {
-          console.error(e);
-        });
+      if (!rectAtMousePosition) return;
+      this.romoveNotations({
+        row: rectAtMousePosition.parentNode.attributes.row.value,
+        col: rectAtMousePosition.attributes.col.value,
+      });
+    },
+    notationMixin_removeNotationAtSeletedPosition() {
+      this.romoveNotations(this.getSelctedRect());
+    },
+    async romoveNotations(rect) {
+      let notationsToDelete = await this.$store.dispatch(
+        "removeNotations",
+        rect
+      );
+      if (!!notationsToDelete) {
+        notationsToDelete.forEach((notation) =>
+          this.userOperationsMixin_syncOutgoingRemoveNotation(notation)
+        );
+      }
     },
   },
 };

@@ -54,14 +54,20 @@ module.exports = {
       let parentIdFieldName = `${notation.boardType.capitalize()}Id`; // e.g lessonId
       let parentIdValue = notation[parentIdFieldName]; // e.g lessonId value
       let row = notation.row;
-      let col = notation.type === "symbol" ? notation.col : notation.fromCol;
-      let colFieldName = notation.type === "symbol" ? "col" : "fromCol";
+      let col =
+        notation.type === "symbol" || notation.type === "power"
+          ? notation.col
+          : notation.fromCol;
+      let colFieldName =
+        notation.type === "symbol" || notation.type === "power"
+          ? "col"
+          : "fromCol";
 
       try {
-        let res = await axiosInstnce.get(
-          `/${endpoint.toLocaleLowerCase()}?${parentIdFieldName}=${parentIdValue}&row=${row}&${colFieldName}=${col}`
-        );
-        return !!res ? res.data[0] : null;
+        let query = `/${endpoint.toLocaleLowerCase()}?${parentIdFieldName}=${parentIdValue}&row=${row}&${colFieldName}=${col}`;
+        let res = await axiosInstnce.get(query);
+        console.debug(res);
+        return res?.data?.length > 0 ? res.data[0] : null;
       } catch (error) {
         this.handleError(error);
       }
@@ -116,19 +122,20 @@ module.exports = {
     },
     addLesson: async function (lesson) {
       try {
-        return axiosInstnce.post("/lessons", lesson);
+        console.debug(`adding lesson:${lesson.name}`);
+        return await axiosInstnce.post("/lessons", lesson);
       } catch (error) {
         this.handleError(error);
       }
     },
     saveNotation: async function (notation) {
       let notationAtCoordinates = await this.getNotationByCoordinates(notation);
-
       let res = null;
       if (!!notationAtCoordinates) {
+        notation.id = notationAtCoordinates.id;
         res = await axiosInstnce.put(
-          `/${notation.boardType}${notation.type.toLowerCase()}s${
-            notationAtCoordinates.id
+          `/${notation.boardType}${notation.type.toLowerCase()}s/${
+            notation.id
           }`,
           notation
         );
@@ -140,6 +147,12 @@ module.exports = {
       }
 
       return res ? { ...res.data, type: notation.type } : null;
+    },
+    updateNotation: async function (notation) {
+      return await axiosInstnce.put(
+        `/${notation.boardType}${notation.type.toLowerCase()}s/${notation.id}`,
+        notation
+      );
     },
     removeNotation: async function (notation) {
       try {

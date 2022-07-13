@@ -37,10 +37,10 @@
 
 <script>
 import { mapState, mapActions } from "vuex";
-import userOperationsSyncMixin from "../Mixins/userOperationsSyncMixin";
+import userOperationsOutgoingSyncMixin from "../Mixins/userOutgoingOperationsSyncMixin";
 
 export default {
-  mixins: [userOperationsSyncMixin],
+  mixins: [userOperationsOutgoingSyncMixin],
   props: {
     lessonId: { type: String },
   },

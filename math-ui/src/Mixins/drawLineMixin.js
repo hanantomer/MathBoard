@@ -30,6 +30,7 @@ export default {
         clickedRow * this.matrixMixin_getRectSize() - this.getHeaderHeight() - 8
       );
     },
+    // either fraction or sqrt
     addLine: function (row, fromCol, toCol, lineType) {
       let line = {
         type: lineType,
@@ -40,9 +41,8 @@ export default {
 
       this.$store
         .dispatch("addNotation", line)
-        .then(() => {
-          //          this.userOperationsMixin_syncOutgoingSaveFractionLine(fractionLine);
-          ///TODO sync operation
+        .then((line) => {
+          this.userOperationsMixin_syncOutgoingSaveNotation(line);
         })
         .catch((e) => {
           console.error(e);
@@ -63,11 +63,10 @@ export default {
     drawLineMixin_endDrawLine: function (lineType) {
       let svgBoundingRec = this.getSvgBoundingRect();
       if (this.linePosition.x2 != this.linePosition.x1) {
-        let fromCol =
-          Math.floor(
-            (this.linePosition.x1 - svgBoundingRec.x) /
-              this.matrixMixin_getRectSize()
-          ) + 1;
+        let fromCol = Math.floor(
+          (this.linePosition.x1 - svgBoundingRec.x) /
+            this.matrixMixin_getRectSize()
+        );
         let toCol = Math.ceil(
           (this.linePosition.x2 - svgBoundingRec.x) /
             this.matrixMixin_getRectSize()

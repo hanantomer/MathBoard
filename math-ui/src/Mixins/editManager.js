@@ -178,26 +178,41 @@ module.exports = {
       } else if (this.currentMode === EditMode.DELETE) {
         this.setCurrentMode(EditMode.DELETING);
       } else {
-        this.selectionMixin_setCurrentPosition(e);
+        this.selectionMixin_setSelectedPosition(e);
       }
     },
     editManager_keyUp(e) {
+      if (e.ctrlKey || e.altKey) {
+        return;
+      }
+
       if (
+        // in power mode allow digits only
         this.currentMode === EditMode.ADD_POWER &&
         e.code.startsWith("Digit")
       ) {
         this.symbolMixin_addSymbol(e.key, "power");
+        return;
       }
 
       if (
-        !e.code.startsWith("Digit") &&
-        !e.code.startsWith("Key") &&
-        !e.code.startsWith("Numpad") &&
-        !e.code === "Minus" &&
-        !e.code === "Plus" &&
-        !e.code === "Equal" &&
-        !e.code === "Period"
+        !(
+          e.code.startsWith("Digit") ||
+          e.code.startsWith("Key") ||
+          e.code.startsWith("Numpad") ||
+          e.code === "Minus" ||
+          e.code === "Delete" ||
+          e.code === "Backspace" ||
+          e.code === "Plus" ||
+          e.code === "Equal" ||
+          e.code === "Period"
+        )
       ) {
+        return;
+      }
+
+      if (e.code === "Backspace" || e.code === "Delete") {
+        this.notationMixin_removeNotationAtSeletedPosition();
         return;
       }
 
@@ -249,7 +264,7 @@ module.exports = {
       else if (this.currentMode === EditMode.MOVE) {
         this.selectionMixin_moveSelection(e);
       } else if (this.currentMode === EditMode.DELETING) {
-        this.notationMixin_removeNotation(e);
+        this.notationMixin_removeNotationsAtMousePosition(e);
       }
     },
   },

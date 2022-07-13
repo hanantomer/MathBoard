@@ -16,12 +16,35 @@ const BoardType = Object.freeze({
 });
 
 const helper = {
-  findNotationsByCoordinates: function (state, rect) {
-    return Object.entries(state.notations).filter(
-      (e) =>
-        (e[1].col === rect.col || e[1].fromCol === rect.col) &&
-        e[1].row === rect.row
+  symbolAtCoordinates: function (coordinates, symbolCoordinates) {
+    return (
+      coordinates.col == symbolCoordinates.col &&
+      coordinates.row == symbolCoordinates.row
     );
+  },
+  lineAtCoordinates: function (coordinates, lineCoordinates) {
+    return (
+      coordinates.col >= lineCoordinates.fromCol &&
+      coordinates.col <= lineCoordinates.toCol &&
+      coordinates.row <= lineCoordinates.row + 1 &&
+      coordinates.row >= lineCoordinates.row - 1
+    );
+  },
+  findNotationsByCoordinates: function (state, coordinates) {
+    return Object.entries(state.notations)
+      .map((n) => n[1])
+      .filter((n) =>
+        n.type == "symbol" || n.type == "power"
+          ? helper.symbolAtCoordinates(coordinates, {
+              col: n.col,
+              row: n.row,
+            })
+          : helper.lineAtCoordinates(coordinates, {
+              fromCol: n.fromCol,
+              toCol: n.toCol,
+              row: n.row,
+            })
+      );
   },
 
   loadNotationType(context, currentType) {
@@ -30,7 +53,7 @@ const helper = {
       .then((notations) => {
         notations.data.forEach((notation) => {
           notation.type = currentType;
-          context.commit("addNotation", notation);
+          context.commit("setNotation", notation);
         });
       });
   },
@@ -51,18 +74,12 @@ export default {
     getSelectedNotations: (state) => {
       return Object.values(state.notations).filter((v) => v.selected === true);
     },
-    // getNotationByRectCoordinates(state) {
-    //   return (coordinates) => {
-    //     // return function to allow argument
-    //     return helper.findNotationsByCoordinates(state, coordinates);
-    //   };
-    // },
   },
   mutations: {
     setParent(state, parent) {
       state.parent = parent;
     },
-    addNotation(state, notation) {
+    setNotation(state, notation) {
       notation.selected = false;
       notation.boardType = state.parent.boardType;
       Vue.set(state.notations, notation.type + notation.id, notation);
@@ -73,7 +90,7 @@ export default {
     selectNotation(state, coordinates) {
       let notations = helper.findNotationsByCoordinates(state, coordinates);
       notations.forEach((n) => {
-        Vue.set(state.notations, n[0], { ...n[1], selected: true });
+        Vue.set(state.notations, n.type + n.id, { ...n, selected: true });
       });
     },
     unselectAllNotations(state) {
@@ -121,36 +138,36 @@ export default {
       helper.loadNotationType(context, "sqrtLine");
     },
 
-    addNotation(context, notation) {
+    async addNotation(context, notation) {
       notation.UserId = context.getters.getUser.id;
       notation.boardType = context.getters.getParent.boardType;
       notation[notation.boardType.capitalize() + "Id"] =
         context.getters.getParent.id;
-      dbSyncMixin.methods.saveNotation(notation).then((notation) => {
-        context.commit("addNotation", notation);
-        return notation;
-      });
+
+      notation = await dbSyncMixin.methods.saveNotation(notation);
+      context.commit("setNotation", notation);
+      return notation;
     },
     syncIncomingAddedNotation(context, notation) {
-      context.commit("addNotation", notation);
+      context.commit("setNotation", notation);
     },
     syncIncomingRemovedNotation(context, notation) {
-      context.commit("removeNotation", notation);
+      context.commit("removeNotation", notation.type + notation.id);
     },
     syncIncomingUpdatedNotation(context, notation) {
-      context.commit("addNotation", notation);
+      context.commit("setNotation", notation);
     },
-    removeNotations(context, rect) {
+    removeNotations(context, coordinates) {
       let notationsAtCoordinates = helper.findNotationsByCoordinates(
         context.state,
-        rect
+        coordinates
       );
       if (!!notationsAtCoordinates) {
-        notationsAtCoordinates.array.forEach((n) => {
-          n[1].boardType = context.getters.getParent.boardType;
-          dbSyncMixin.methods
-            .removeNotation(n[1])
-            .then(() => context.commit("removeNotation", n[0]));
+        notationsAtCoordinates.forEach(async (n) => {
+          n.boardType = context.getters.getParent.boardType;
+          await dbSyncMixin.methods
+            .removeNotation(n)
+            .then(() => context.commit("removeNotation", n.type + n.id));
         });
       }
       return notationsAtCoordinates;
@@ -168,7 +185,7 @@ export default {
     // move with persistence - called upon muose up
     updateSelectedNotationCoordinates(context) {
       context.getters.getSelectedNotations.forEach(async (notation) => {
-        dbSyncMixin.methods.saveNotation(notation);
+        await dbSyncMixin.methods.updateNotation(notation);
       });
       context.commit("unselectAllNotations");
     },

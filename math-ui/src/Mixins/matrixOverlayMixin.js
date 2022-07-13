@@ -8,6 +8,9 @@ export default {
     powerFontSize: function () {
       return `${this.rectSize / 50}em`;
     },
+    sqrtFontSize: function () {
+      return `${this.rectSize / 20}em`;
+    },
   },
   data: function () {
     return {
@@ -15,6 +18,7 @@ export default {
       colsNum: 48,
       rowsNum: 24,
       rectSize: 30,
+      handleSize: 5,
       matrix: [],
       topLevelGroup: null,
       prevSelectedNotation: null,
@@ -24,6 +28,15 @@ export default {
     };
   },
   methods: {
+    isLine(notationType) {
+      return (
+        notationType === "fractionLine" ||
+        notationType === "sqrtLine" ||
+        notationType === "sqrtSymbol" ||
+        notationType === "lineRightHandle" ||
+        notationType === "lineLeftHandle"
+      );
+    },
     reRenderMathJax() {
       window.MathJax.typeset();
     },
@@ -39,7 +52,7 @@ export default {
           : this.selectedRecColor;
     },
     //https://stackoverflow.com/questions/22428484/get-element-from-point-when-you-have-overlapping-elements
-    matrixMixin_findClickedObject(p, tagName) {
+    matrixMixin_findClickedObject(p, tagName, type) {
       var elements = [];
       var display = [];
       var item = document.elementFromPoint(p.x, p.y);
@@ -58,7 +71,11 @@ export default {
       for (var i = 0; i < elements.length; i++) {
         elements[i].style.display = display[i];
       }
-      return elements.find((e) => e.tagName == tagName);
+      return elements.find(
+        (e) =>
+          e.tagName == tagName &&
+          (!!type ? e.attributes.type.value == type : 1 == 1)
+      );
     },
     matrixMixin_setMatrix() {
       for (var row = 0; row < this.rowsNum; row++) {
@@ -170,6 +187,16 @@ export default {
             sqrtElement.type = "sqrtSymbol";
             enrichedNotations.push(sqrtElement);
           }
+
+          // if (element.type === "sqrtLine" || element.type === "fractionLine") {
+          //   let rightHandleElement = { ...element };
+          //   rightHandleElement.type = "lineRightHandle";
+          //   enrichedNotations.push(rightHandleElement);
+
+          //   let leftHandleElement = { ...element };
+          //   leftHandleElement.type = "lineLeftHandle";
+          //   enrichedNotations.push(leftHandleElement);
+          // }
         }
       }
       return enrichedNotations;
@@ -196,6 +223,9 @@ export default {
     showNotations: function (enter) {
       return enter
         .append("foreignObject")
+        .attr("type", (n) => {
+          return n.type;
+        })
         .attr("id", (n) => {
           return this.$id(n);
         })
@@ -228,36 +258,62 @@ export default {
     $id(n) {
       return n.type + n.id;
     },
+    $lineHandleId(n) {
+      return this.$id(n) + "lineHandle";
+    },
     $col(n) {
-      return n.type === "symbol" || n.type === "power" ? n.col : n.fromCol;
+      return this.isLine(n.type) ? n.fromCol : n.col;
     },
     $row(n) {
       return n.row;
     },
     $x(n) {
-      let col = n.type === "symbol" || n.type === "power" ? n.col : n.fromCol;
+      let col = this.$col(n);
 
-      return n.type === "sqrtSymbol"
-        ? this.getNotationXposByCol(col) - Math.round(this.rectSize / 3)
-        : n.type === "power"
-        ? this.getNotationXposByCol(col) - this.rectSize / 3
-        : this.getNotationXposByCol(col);
+      if (n.type === "sqrtSymbol") {
+        return this.getNotationXposByCol(col) - Math.round(this.rectSize / 3);
+      }
+
+      if (n.type === "power") {
+        return this.getNotationXposByCol(col) - this.rectSize / 3;
+      }
+
+      if (n.type === "lineRightHandle") {
+        return this.getNotationXposByCol(n.toCol);
+      }
+
+      if (n.type === "lineLeftHandle") {
+        return this.getNotationXposByCol(n.fromCol);
+      }
+
+      return this.getNotationXposByCol(col);
     },
     $y(n) {
-      return n.type === "symbol"
-        ? this.getNotationYposByRow(n.row)
-        : n.type === "power"
-        ? this.getNotationYposByRow(n.row)
-        : n.type === "sqrtSymbol"
-        ? this.getNotationYposByRow(n.row) - 4
-        : this.getNotationYposByRow(n.row - 1);
+      if (n.type === "symbol" || n.type === "power") {
+        return this.getNotationYposByRow(n.row);
+      }
+
+      if (n.type === "fractionLine" || n.type === "sqrtLine") {
+        return this.getNotationYposByRow(n.row - 1);
+      }
+
+      if (n.type === "sqrtSymbol" || n.type === "sqrtLine") {
+        return this.getNotationYposByRow(n.row) - 4;
+      }
+
+      if (n.type === "lineRightHandle" || n.type === "lineLeftHandle") {
+        return this.getNotationYposByRow(n.row) - 3;
+      }
     },
     $width(n) {
-      return n.type === "symbol" ||
-        n.type === "sqrtSymbol" ||
-        n.type === "power"
-        ? this.rectSize
-        : (n.toCol - n.fromCol) * this.rectSize;
+      if (n.type === "lineRightHandle" || n.type === "lineLeftHandle")
+        return this.handleSize;
+
+      if (n.type === "symbol" || n.type === "sqrtSymbol" || n.type === "power")
+        return this.rectSize;
+
+      if (n.type === "fractionLine" || n.type === "sqrtLine")
+        return (n.toCol - n.fromCol) * this.rectSize;
     },
     $fontSize(n) {
       return n.type === "power" ? this.powerFontSize : this.fontSize;
@@ -267,13 +323,17 @@ export default {
     },
     $html(n) {
       if (n.type === "fractionLine" || n.type === "sqrtLine") {
-        return `<span style='display:inline-block;border-bottom: solid 2px;width:${
+        return `<div style='position:relative; display:inline-block;border-bottom: solid 2px;width:${
           (n.toCol - n.fromCol) * this.rectSize
-        }px;margin-top:${this.rectSize - 1}px'></span>`;
+        }px;margin-top:${this.rectSize - 10}px;height:10px'></div>`;
       }
       if (n.type === "sqrtSymbol") {
-        return `<p>&#x221A;</p>`;
+        return `<p style='font-size:1.4em'>&#x221A;</p>`;
       }
+
+      //if (n.type === "lineRightHandle" || n.type === "lineLeftHandle") {
+      //  return `<div id="lineHandle${n.id}" style='display:none;width:6px;height:6px;border: 2px solid gray'></div>`;
+      // }
 
       return !!n.value ? "$$" + n.value + "$$" : "";
     },
@@ -287,6 +347,9 @@ export default {
         })
         .attr("y", (n) => {
           return this.$y(n);
+        })
+        .html((n) => {
+          return this.$html(n);
         });
     },
     removeNotations: function (exit) {
