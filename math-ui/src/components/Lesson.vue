@@ -1,51 +1,5 @@
 <template>
-  <div class="fill-height" style="width: 100%">
-    <!-- selection rectangle TODO:  make it a component-->
-    <v-card
-      id="selection"
-      v-on:mouseup="editManager_selectionMouseUp"
-      v-on:mousedown="editManager_selectionMouseDown"
-      v-on:mousemove="editManager_mouseMove"
-      v-show="
-        editManager_getCurrentMode === 'SELECTING' ||
-        editManager_getCurrentMode === 'MOVE'
-      "
-      class="grabbable"
-      v-bind:style="{
-        left: selectionRectLeft,
-        top: selectionRectTop,
-        width: selectionRectWidth,
-        height: selectionRectHeight,
-      }"
-      style="
-        position: absolute;
-        z-index: 99;
-        background: transparent;
-        border: 1, 1, 1, 1;
-      "
-    ></v-card>
-    <v-divider
-      id="fractionLine"
-      v-on:mouseup="editManager_mouseUp"
-      v-show="editManager_getCurrentMode === 'DRAWLINE'"
-      v-bind:style="{
-        left: drawLineLeft,
-        top: drawLineTop,
-        width: drawLineWidth,
-      }"
-      style="position: absolute; z-index: 99; border: solid 1px"
-    ></v-divider>
-    <p
-      v-bind:style="{
-        left: drawLineLeft,
-        top: drawLineTop,
-      }"
-      style="position: absolute; z-index: 99; border: solid 1px"
-      v-if="editManager_getCurrentDrawLineMode === 'SQRT'"
-    >
-      &#x221A;
-    </p>
-
+  <div class="fill-height" style="width: 100%; position: relative">
     <v-row dense style="max-height: 25px">
       <v-col cols="12" class="d-flex justify-center">
         <p>{{ lessonName }}</p>
@@ -62,25 +16,87 @@
               :_authorized="authorized"
               :lessonId="lessonId"
               v-on="{
-                selectionButtonPressed: editManager_selectionButtonPressed,
-                deleteButtonPressed: editManager_deleteButtonPressed,
-                symbolButtonPressed: editManager_symbolButtonPressed,
-                drawSqrtLineButtonPressed: editManager_drawSqrtLineButtonPressed,
-                drawFractionLineButtonPressed: editManager_drawFractionLineButtonPressed,
-                powerButtonPressed: editManager_powerButtonPressed,
+                selectionButtonPressed: eventManager_selectionButtonPressed,
+                deleteButtonPressed: eventManager_deleteButtonPressed,
+                symbolButtonPressed: eventManager_symbolButtonPressed,
+                drawSqrtLineButtonPressed: eventManager_drawSqrtLineButtonPressed,
+                drawFractionLineButtonPressed: eventManager_drawFractionLineButtonPressed,
+                powerButtonPressed: eventManager_powerButtonPressed,
               }"
             ></lesson-toolbar>
           </v-col>
           <v-col cols="11">
-            <div style="overflow: auto; height: 100%">
+            <div style="overflow: auto; height: 100%; position: relative">
               <svg
                 id="svg"
                 width="1350px"
                 height="97%"
-                v-on:mousedown="editManager_mouseDown"
-                v-on:mousemove="editManager_mouseMove"
-                v-on:mouseup="editManager_mouseUp"
+                v-on:mousedown="eventManager_mouseDown"
+                v-on:mousemove="eventManager_mouseMove"
+                v-on:mouseup="eventManager_mouseUp"
               ></svg>
+              <areaSelector
+                :svg="svg"
+                :initialPosition="selectionAreaAdapter.initialPosition"
+                :currentPosition="selectionAreaAdapter.currentPosition"
+                :currentMovePosition="selectionAreaAdapter.currentMovePosition"
+                :selectionEnded="selectionAreaAdapter.ended"
+                v-show="
+                  eventManager_getCurrentMode === 'SELECTING' ||
+                  eventManager_getCurrentMode === 'MOVESELECTION'
+                "
+              ></areaSelector>
+              <v-card
+                id="lineLeftHandle"
+                class="lineHandle"
+                v-on:mousedown="eventManager_lineHandleMouseDown"
+                v-show="
+                  eventManager_getCurrentMode === 'SELECTLINE' ||
+                  eventManager_getCurrentMode === 'DRAWLINE'
+                "
+                v-bind:style="{
+                  left: lineLeftHandleLeft,
+                  top: lineHandleTop,
+                }"
+              ></v-card>
+              <v-card
+                id="lineRightHandle"
+                class="lineHandle"
+                v-on:mousedown="eventManager_lineHandleMouseDown"
+                v-show="
+                  eventManager_getCurrentMode === 'SELECTLINE' ||
+                  eventManager_getCurrentMode === 'DRAWLINE'
+                "
+                v-bind:style="{
+                  left: lineRightHandleLeft,
+                  top: lineHandleTop,
+                }"
+              ></v-card>
+              <v-divider
+                id="line"
+                class="line"
+                v-on:mouseup="eventManager_mouseUp"
+                v-show="
+                  eventManager_getCurrentMode === 'DRAWLINE' ||
+                  eventManager_getCurrentMode === 'SELECTLINE' ||
+                  eventManager_getCurrentMode === 'DRAWLINE'
+                "
+                v-bind:style="{
+                  left: drawLineLeft,
+                  top: drawLineTop,
+                  width: drawLineWidth,
+                }"
+              ></v-divider>
+              <p
+                v-bind:style="{
+                  left: drawLineLeft,
+                  top: drawLineTop,
+                }"
+                style="position: absolute; z-index: 99; border: solid 1px"
+                v-if="eventManager_getCurrentDrawLineMode === 'SQRT'"
+              >
+                &#x221A;
+              </p>
             </div>
           </v-col>
         </v-row>
@@ -99,22 +115,24 @@ import { mapGetters } from "vuex";
 import matrixOverlayMixin from "../Mixins/matrixOverlayMixin";
 import selectionMixin from "../Mixins/selectionMixin";
 import drawLineMixin from "../Mixins/drawLineMixin";
-import editManager from "../Mixins/editManager";
+import eventManager from "../Mixins/eventManager";
 import symbolMixin from "../Mixins/symbolMixin";
 import notationMixin from "../Mixins/notationMixin";
 import userOperationsOutgoingSyncMixin from "../Mixins/userOutgoingOperationsSyncMixin";
 import userOperationsIncomingSyncMixin from "../Mixins/userIncomingOperationsSyncMixin";
 import lessonStudents from "./LessonStudents.vue";
 import lessonToolbar from "./LessonToolbar.vue";
+import areaSelector from "./SelectionArea.vue";
 
 export default {
   components: {
     lessonStudents,
     lessonToolbar,
+    areaSelector,
   },
   props: ["lessonId"],
   destroyed: function () {
-    window.removeEventListener("keyup", this.editManager_keyUp);
+    window.removeEventListener("keyup", this.eventManager_keyUp);
   },
   mounted: function () {
     this.svg = d3.select("#svg");
@@ -124,7 +142,7 @@ export default {
       .getBoundingClientRect();
 
     this.$loadLesson().then(() => {
-      window.addEventListener("keyup", this.editManager_keyUp); /// TODO check if still required
+      window.addEventListener("keyup", this.eventManager_keyUp); /// TODO check if still required
     });
     this.matrixMixin_setMatrix();
     this.reRenderMathJax();
@@ -143,7 +161,7 @@ export default {
     userOperationsOutgoingSyncMixin,
     userOperationsIncomingSyncMixin,
     symbolMixin,
-    editManager,
+    eventManager,
     notationMixin,
   ],
   computed: {
@@ -170,7 +188,7 @@ export default {
   methods: {
     ...mapGetters({
       getSelectedNotations: "getSelectedNotations",
-      //      getNotationByRectCoordinates: "getNotationByRectCoordinates",
+      getNotations: "getNotations",
       getCurrentLesson: "getCurrentLesson",
       getLessons: "getLessons",
       getUser: "getUser",
@@ -211,12 +229,6 @@ export default {
   padding: 5px;
   color: darkkhaki;
 }
-.grabbable {
-  cursor: move; /*fallback if grab cursor is unsupported */
-  cursor: grab;
-  cursor: -moz-grab;
-  cursor: -webkit-grab;
-}
 
 /* (Optional) Apply a "closed-hand" cursor during drag operation. */
 .grabbable:active {
@@ -233,11 +245,6 @@ export default {
 .deleteButtonActive {
   cursor: URL("~@/assets/delete.jpg"), none !important;
 }
-/* mjx-container[jax="CHTML"][display="true"] {
-  padding: 0.2em;
-  margin-top: auto !important;
-  margin-bottom: auto !important;
-} */
 mjx-container[jax="SVG"][display="true"] {
   margin: auto !important;
 }
@@ -245,5 +252,22 @@ mjx-container[jax="SVG"][display="true"] {
 mjx-line {
   margin-top: 0.05em !important;
   margin-bottom: 0.3em !important;
+}
+
+.line {
+  position: absolute;
+  display: block;
+  border-bottom: solid 1px;
+  border-top: solid 1px;
+  cursor: pointer;
+}
+
+.lineHandle {
+  cursor: col-resize;
+  position: absolute;
+  z-index: 999;
+  width: 10px;
+  height: 10px;
+  border: 1, 1, 1, 1;
 }
 </style>

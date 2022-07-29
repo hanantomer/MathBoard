@@ -18,7 +18,7 @@ export default {
       colsNum: 48,
       rowsNum: 24,
       rectSize: 30,
-      handleSize: 5,
+      lineHeight: 4,
       matrix: [],
       topLevelGroup: null,
       prevSelectedNotation: null,
@@ -56,8 +56,13 @@ export default {
       var elements = [];
       var display = [];
       var item = document.elementFromPoint(p.x, p.y);
+      var prevItem = null;
+      var idx = 0;
+
       while (
+        idx++ < 50 &&
         item &&
+        (!prevItem || item != prevItem) &&
         item !== document.body &&
         item !== window &&
         item !== document &&
@@ -66,15 +71,16 @@ export default {
         elements.push(item);
         display.push(item.style.display);
         item.style.display = "none";
+        prevItem = item;
         item = document.elementFromPoint(p.x, p.y);
       }
       for (var i = 0; i < elements.length; i++) {
         elements[i].style.display = display[i];
       }
       return elements.find(
-        (e) =>
-          e.tagName == tagName &&
-          (!!type ? e.attributes.type.value == type : 1 == 1)
+        (item) =>
+          item.tagName == tagName &&
+          (!type || type == item.attributes.type.value)
       );
     },
     matrixMixin_setMatrix() {
@@ -244,7 +250,9 @@ export default {
         .attr("width", (n) => {
           return this.$width(n);
         })
-        .attr("height", this.rectSize)
+        .attr("height", (n) => {
+          return this.$height(n);
+        })
         .style("font-size", (n) => {
           return this.$fontSize(n);
         })
@@ -257,9 +265,6 @@ export default {
     },
     $id(n) {
       return n.type + n.id;
-    },
-    $lineHandleId(n) {
-      return this.$id(n) + "lineHandle";
     },
     $col(n) {
       return this.isLine(n.type) ? n.fromCol : n.col;
@@ -277,15 +282,6 @@ export default {
       if (n.type === "power") {
         return this.getNotationXposByCol(col) - this.rectSize / 3;
       }
-
-      if (n.type === "lineRightHandle") {
-        return this.getNotationXposByCol(n.toCol);
-      }
-
-      if (n.type === "lineLeftHandle") {
-        return this.getNotationXposByCol(n.fromCol);
-      }
-
       return this.getNotationXposByCol(col);
     },
     $y(n) {
@@ -294,26 +290,26 @@ export default {
       }
 
       if (n.type === "fractionLine" || n.type === "sqrtLine") {
-        return this.getNotationYposByRow(n.row - 1);
+        return this.getNotationYposByRow(n.row);
       }
 
       if (n.type === "sqrtSymbol" || n.type === "sqrtLine") {
         return this.getNotationYposByRow(n.row) - 4;
       }
-
-      if (n.type === "lineRightHandle" || n.type === "lineLeftHandle") {
-        return this.getNotationYposByRow(n.row) - 3;
-      }
     },
     $width(n) {
-      if (n.type === "lineRightHandle" || n.type === "lineLeftHandle")
-        return this.handleSize;
-
       if (n.type === "symbol" || n.type === "sqrtSymbol" || n.type === "power")
         return this.rectSize;
 
       if (n.type === "fractionLine" || n.type === "sqrtLine")
         return (n.toCol - n.fromCol) * this.rectSize;
+    },
+    $height(n) {
+      if (n.type === "symbol" || n.type === "sqrtSymbol" || n.type === "power")
+        return this.rectSize;
+
+      if (n.type === "fractionLine" || n.type === "sqrtLine")
+        return this.lineHeight;
     },
     $fontSize(n) {
       return n.type === "power" ? this.powerFontSize : this.fontSize;
@@ -323,18 +319,13 @@ export default {
     },
     $html(n) {
       if (n.type === "fractionLine" || n.type === "sqrtLine") {
-        return `<div style='position:relative; display:inline-block;border-bottom: solid 2px;width:${
+        return `<span class=line style='width:${
           (n.toCol - n.fromCol) * this.rectSize
-        }px;margin-top:${this.rectSize - 10}px;height:10px'></div>`;
+        }px;'></span>`;
       }
       if (n.type === "sqrtSymbol") {
         return `<p style='font-size:1.4em'>&#x221A;</p>`;
       }
-
-      //if (n.type === "lineRightHandle" || n.type === "lineLeftHandle") {
-      //  return `<div id="lineHandle${n.id}" style='display:none;width:6px;height:6px;border: 2px solid gray'></div>`;
-      // }
-
       return !!n.value ? "$$" + n.value + "$$" : "";
     },
     updateNotations: function (update) {

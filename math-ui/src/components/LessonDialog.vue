@@ -11,6 +11,7 @@
               <v-row>
                 <v-col cols="12">
                   <v-text-field
+                    autofocus
                     v-model="name"
                     label="name*"
                     required

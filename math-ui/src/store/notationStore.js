@@ -74,6 +74,9 @@ export default {
     getSelectedNotations: (state) => {
       return Object.values(state.notations).filter((v) => v.selected === true);
     },
+    getNotations(state) {
+      return state.notations;
+    },
   },
   mutations: {
     setParent(state, parent) {

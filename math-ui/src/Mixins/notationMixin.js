@@ -7,7 +7,7 @@ export default {
       return row * this.matrixMixin_getRectSize();
     },
     notationMixin_moveSelection: function (e) {
-      this.selectionMixin_endMoveSelection(e);
+      //this.selectionMixin_endMoveSelection(e);
       let selectedNotations = this.getSelectedNotations();
       this.$store
         .dispatch("updateSelectedNotationCoordinates")
@@ -20,8 +20,8 @@ export default {
     notationMixin_removeNotationsAtMousePosition: function (e) {
       let rectAtMousePosition = this.matrixMixin_findClickedObject(
         {
-          x: e.clientX,
-          y: e.clientY,
+          x: e.offsetX,
+          y: e.offsetY,
         },
         "rect"
       );
