@@ -20,8 +20,8 @@ export default {
     notationMixin_removeNotationsAtMousePosition: function (e) {
       let rectAtMousePosition = this.matrixMixin_findClickedObject(
         {
-          x: e.offsetX,
-          y: e.offsetY,
+          x: e.clientX,
+          y: e.clientY,
         },
         "rect"
       );

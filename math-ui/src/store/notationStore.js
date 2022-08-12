@@ -1,18 +1,13 @@
 import Vue from "vue";
 import dbSyncMixin from "../Mixins/dbSyncMixin";
+import BoardType from "../Mixins/boardType";
+import NotationType from "../Mixins/notationType";
 
 Object.defineProperty(String.prototype, "capitalize", {
   value: function () {
     return this.charAt(0).toUpperCase() + this.slice(1);
   },
   enumerable: false,
-});
-
-const BoardType = Object.freeze({
-  LESSON: "lesson",
-  EXERCISE: "exercise",
-  ANSWER: "answer",
-  NONE: "none",
 });
 
 const helper = {
@@ -135,10 +130,10 @@ export default {
       });
       context.commit("removeAllNotations");
 
-      helper.loadNotationType(context, "symbol");
-      helper.loadNotationType(context, "power");
-      helper.loadNotationType(context, "fractionLine");
-      helper.loadNotationType(context, "sqrtLine");
+      helper.loadNotationType(context, NotationType.SYMBOL);
+      helper.loadNotationType(context, NotationType.POWER);
+      helper.loadNotationType(context, NotationType.FRACTION_LINE);
+      helper.loadNotationType(context, NotationType.SQRT_LINE);
     },
 
     async addNotation(context, notation) {

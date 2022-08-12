@@ -1,4 +1,5 @@
 import * as d3 from "d3";
+import NotationType from "./notationType";
 
 export default {
   computed: {
@@ -32,7 +33,7 @@ export default {
       return (
         notationType === "fractionLine" ||
         notationType === "sqrtLine" ||
-        notationType === "sqrtSymbol" ||
+        notationType === NotationType.SQRTSYMBOL ||
         notationType === "lineRightHandle" ||
         notationType === "lineLeftHandle"
       );
@@ -190,7 +191,7 @@ export default {
           enrichedNotations.push(element);
           if (element.type === "sqrtLine") {
             let sqrtElement = { ...element };
-            sqrtElement.type = "sqrtSymbol";
+            sqrtElement.type = NotationType.SQRTSYMBOL;
             enrichedNotations.push(sqrtElement);
           }
 
@@ -275,56 +276,80 @@ export default {
     $x(n) {
       let col = this.$col(n);
 
-      if (n.type === "sqrtSymbol") {
+      if (n.type === NotationType.SQRTSYMBOL) {
         return this.getNotationXposByCol(col) - Math.round(this.rectSize / 3);
       }
 
-      if (n.type === "power") {
+      if (n.type === NotationType.POWER) {
         return this.getNotationXposByCol(col) - this.rectSize / 3;
       }
       return this.getNotationXposByCol(col);
     },
     $y(n) {
-      if (n.type === "symbol" || n.type === "power") {
+      if (n.type === NotationType.SYMBOL) {
         return this.getNotationYposByRow(n.row);
       }
 
-      if (n.type === "fractionLine" || n.type === "sqrtLine") {
+      if (n.type === NotationType.POWER) {
+        return this.getNotationYposByRow(n.row) - 5;
+      }
+
+      if (
+        n.type === NotationType.FRACTION_LINE ||
+        n.type === NotationType.SQRT_LINE
+      ) {
         return this.getNotationYposByRow(n.row);
       }
 
-      if (n.type === "sqrtSymbol" || n.type === "sqrtLine") {
+      if (n.type === NotationType.SQRTSYMBOL || n.type === "sqrtLine") {
         return this.getNotationYposByRow(n.row) - 4;
       }
     },
     $width(n) {
-      if (n.type === "symbol" || n.type === "sqrtSymbol" || n.type === "power")
+      if (
+        n.type === NotationType.SYMBOL ||
+        n.type === NotationType.SQRTSYMBOL ||
+        n.type === NotationType.POWER
+      )
         return this.rectSize;
 
-      if (n.type === "fractionLine" || n.type === "sqrtLine")
+      if (
+        n.type === NotationType.FRACTION_LINE ||
+        n.type === NotationType.SQRT_LINE
+      )
         return (n.toCol - n.fromCol) * this.rectSize;
     },
     $height(n) {
-      if (n.type === "symbol" || n.type === "sqrtSymbol" || n.type === "power")
+      if (
+        n.type === NotationType.SYMBOL ||
+        n.type === NotationType.SQRTSYMBOL ||
+        n.type === NotationType.POWER
+      )
         return this.rectSize;
 
-      if (n.type === "fractionLine" || n.type === "sqrtLine")
+      if (
+        n.type === NotationType.FRACTION_LINE ||
+        n.type === NotationType.SQRT_LINE
+      )
         return this.lineHeight;
     },
     $fontSize(n) {
-      return n.type === "power" ? this.powerFontSize : this.fontSize;
+      return n.type === NotationType.POWER ? this.powerFontSize : this.fontSize;
     },
     $color(n) {
       return n.selected ? "red" : "black";
     },
     $html(n) {
-      if (n.type === "fractionLine" || n.type === "sqrtLine") {
+      if (
+        n.type === NotationType.FRACTION_LINE ||
+        n.type === NotationType.SQRT_LINE
+      ) {
         return `<span class=line style='width:${
           (n.toCol - n.fromCol) * this.rectSize
         }px;'></span>`;
       }
-      if (n.type === "sqrtSymbol") {
-        return `<p style='font-size:1.4em'>&#x221A;</p>`;
+      if (n.type === NotationType.SQRTSYMBOL) {
+        return `<p style='position:relative;left:-3px; font-size:1.4em'>&#x221A;</p>`;
       }
       return !!n.value ? "$$" + n.value + "$$" : "";
     },
@@ -338,6 +363,15 @@ export default {
         })
         .attr("y", (n) => {
           return this.$y(n);
+        })
+        .attr("col", (n) => {
+          return this.$col(n);
+        })
+        .attr("row", (n) => {
+          return this.$row(n);
+        })
+        .attr("width", (n) => {
+          return this.$width(n);
         })
         .html((n) => {
           return this.$html(n);

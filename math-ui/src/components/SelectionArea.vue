@@ -37,6 +37,7 @@ export default {
       y: 0,
     },
     selectionEnded: false,
+    moveEnded: false,
   },
   watch: {
     selectionEnded: {
@@ -47,10 +48,23 @@ export default {
         }
       },
     },
+    selectionMoveEnded: {
+      immediate: true,
+      handler: function (val) {
+        if (val) {
+          this.endMoveSelection();
+        }
+      },
+    },
+
     initialPosition: {
       immediate: true,
       handler: function (val) {
         this.currentMode = SelectionMode.SELECTING;
+
+        this.dragPosition.x = 0;
+        this.dragPosition.y = 0;
+
         this.selectionPosition.x1 = val.x;
         this.selectionPosition.x2 = val.x;
         this.selectionPosition.y1 = val.y;
@@ -177,20 +191,20 @@ export default {
     moveSelection(position) {
       let rectSize = this.matrixMixin_getRectSize();
 
-      console.debug("drag position x:" + this.dragPosition.x);
-      console.debug("drag position y:" + this.dragPosition.y);
-      console.debug("x:" + position.x);
-      console.debug("y:" + position.y);
+      //console.debug("drag position x:" + this.dragPosition.x);
+      //console.debug("drag position y:" + this.dragPosition.y);
+      //console.debug("x:" + position.x);
+      //console.debug("y:" + position.y);
 
       // initial drag position
       if (this.dragPosition.x === 0) {
-        console.debug("initial position");
+        //console.debug("initial position");
         this.dragPosition.x = position.x;
         this.dragPosition.y = position.y;
         return;
       }
 
-      console.debug("after initial");
+      //console.debug("after initial");
       // movement is still too small
       if (
         Math.abs(position.x - this.dragPosition.x) < rectSize &&
@@ -199,8 +213,8 @@ export default {
         return;
       }
 
-      console.debug("drag position x:" + this.dragPosition.x);
-      console.debug("drag position y:" + this.dragPosition.y);
+      ///console.debug("drag position x:" + this.dragPosition.x);
+      //console.debug("drag position y:" + this.dragPosition.y);
 
       const rectDeltaX = Math.round(
         (position.x - this.dragPosition.x) / rectSize
@@ -210,8 +224,8 @@ export default {
       );
 
       if (rectDeltaX != 0 || rectDeltaY != 0) {
-        console.debug("move deltax:" + rectDeltaX);
-        console.debug("move deltay:" + rectDeltaY);
+        //console.debug("move deltax:" + rectDeltaX);
+        //console.debug("move deltay:" + rectDeltaY);
         this.$store
           .dispatch("moveSelectedNotations", {
             rectDeltaX,
@@ -219,10 +233,10 @@ export default {
             rectSize,
           })
           .then(() => {
-            this.selectionPosition.x1 = rectDeltaX * rectSize;
-            this.selectionPosition.y1 = rectDeltaY * rectSize;
-            this.selectionPosition.x2 = rectDeltaX * rectSize;
-            this.selectionPosition.y2 = rectDeltaY * rectSize;
+            this.selectionPosition.x1 += rectDeltaX * rectSize;
+            this.selectionPosition.y1 += rectDeltaY * rectSize;
+            this.selectionPosition.x2 += rectDeltaX * rectSize;
+            this.selectionPosition.y2 += rectDeltaY * rectSize;
             this.dragPosition.x = position.x;
             this.dragPosition.y = position.y;
           });

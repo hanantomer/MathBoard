@@ -5,7 +5,7 @@
       <v-col class="text-center" cols="12">
         <v-card flat>
           <v-card-title primary-title class="justify-center">
-            <h3>Teach math online with Mathboard</h3>
+            <h3>Teach MATH online with Mathboard</h3>
           </v-card-title>
           <v-card-actions class="justify-center">
             <v-btn color="orange" v-on:click="openLoginDialog(1)"

@@ -1,30 +1,21 @@
-const EditMode = Object.freeze({
-  ADD_SYMBOL: "ADD_SYMBOL",
-  ADD_POWER: "ADD_POWER",
-  DRAWLINE: "DRAWLINE",
-  DELETE: "DELETE", // after delete button pressed
-  DELETING: "DELETING", // mouse clicked following delete button pressed
-  SELECT: "SELECT", //  after select button pressed
-  SELECTING: "SELECTING", // mouse clicked following select button pressed
-  SELECTLINE: "SELECTLINE",
-  MOVESELECTION: "MOVESELECTION",
-});
-
-const DrawLineMode = Object.freeze({
-  FRACTION: "FRACTION",
-  SQRT: "SQRT",
-  NONE: "NONE",
-});
-
-module.exports = {
+import LineType from "./lineType";
+import EditMode from "./editMode";
+export default {
   data: function () {
     return {
       currentMode: EditMode.ADD_SYMBOL,
-      currentDrawLineMode: DrawLineMode.NONE,
-      selectionAreaAdapter: {
+      selectionAreaRelay: {
         initialPosition: { x: 0, y: 0 },
         currentPosition: { x: 0, y: 0 },
         currentMovePosition: { x: 0, y: 0 },
+        ended: false,
+        moveEnded: false,
+      },
+      drawLineRelay: {
+        lineType: LineType.NONE,
+        startMousePosition: {},
+        currentMousePosition: {},
+        selectedLine: null,
         ended: false,
       },
     };
@@ -33,9 +24,6 @@ module.exports = {
     eventManager_getCurrentMode: function () {
       return this.currentMode;
     },
-    eventManager_getCurrentDrawLineMode: function () {
-      return this.currentDrawLineMode;
-    },
   },
   methods: {
     getSVGBoundingRect() {
@@ -43,9 +31,7 @@ module.exports = {
     },
     setCurrentMode(newMode) {
       this.currentMode = newMode;
-    },
-    setCurrentDrawLineMode(newMode) {
-      this.currentDrawLineMode = newMode;
+      console.debug("new mode:" + newMode);
     },
     toggleSelectionMode() {
       if (this.currentMode == EditMode.SELECT) {
@@ -54,14 +40,41 @@ module.exports = {
         this.startSelectionMode();
       }
     },
-    toggleDrawlineMode() {
-      if (this.currentMode == EditMode.DRAWLINE) {
-        this.endDrawlineMode();
-        this.setCurrentDrawLineMode(DrawLineMode.NONE);
-      } else {
-        this.startDrawlineMode();
-      }
+
+    startFractionMode() {
+      this.reset();
+      this.fractionButtonActive = 0;
+      this.setCurrentMode(EditMode.FRACTION);
+      this.drawLineRelay.lineType = LineType.FRACTION_LINE;
     },
+    startSqrtMode() {
+      this.reset();
+      this.squareRootButtonActive = 0;
+      this.setCurrentMode(EditMode.SQRT);
+      this.drawLineRelay.lineType = LineType.SQRT_LINE;
+    },
+    startFractionDrawing(e) {
+      this.drawLineRelay.lineType = LineType.FRACTION_LINE;
+      this.drawLineRelay.startMousePosition = {
+        x: e.clientX - this.getSVGBoundingRect().x,
+        y: e.clientY - this.getSVGBoundingRect().y,
+      };
+    },
+    startSqrtDrawing(e) {
+      this.drawLineRelay.lineType = LineType.SQRT_LINE;
+      this.drawLineRelay.startMousePosition = {
+        x: e.clientX - this.getSVGBoundingRect().x,
+        y: e.clientY - this.getSVGBoundingRect().y,
+      };
+    },
+
+    // emit event from component
+    eventManager_endDrawLine() {
+      this.reset();
+    },
+
+    /*draw line*/
+
     toggleDeleteMode() {
       if (this.currentMode == EditMode.DELETING) {
         this.endDeleteMode();
@@ -91,8 +104,7 @@ module.exports = {
       this.$refs.editoToolbar.resetToggleButtons();
       this.hideDeleteCursor();
       this.setCurrentMode(EditMode.ADD_SYMBOL);
-      this.setCurrentDrawLineMode(DrawLineMode.NONE);
-      this.drawLine_reset();
+      this.drawLineRelay.lineType = LineType.NONE;
     },
     startDeleteMode() {
       this.reset();
@@ -106,21 +118,19 @@ module.exports = {
     startSelectionMode() {
       this.reset();
       this.selectionButtonActive = 0;
+      this.selectionAreaRelay.ended = false;
+      this.selectionAreaRelay.moveEnded = false;
       this.setCurrentMode(EditMode.SELECT);
     },
     endSelectionMode() {
       // don't fully reset here to allow moving selection
       this.$refs.editoToolbar.resetToggleButtons();
       this.setCurrentMode(EditMode.MOVESELECTION);
-      this.selectionAreaAdapter.ended = true;
+      this.selectionAreaRelay.ended = true;
     },
-    startDrawlineMode() {
-      this.reset();
-      this.drawlineButtonActive = 0;
-      this.setCurrentMode(EditMode.DRAWLINE);
-    },
-    endDrawlineMode() {
-      this.reset();
+    endMoveSelectionMode() {
+      this.setCurrentMode(EditMode.ADD_SYMBOL);
+      this.selectionAreaRelay.moveEnded = true;
     },
     startPowerMode() {
       this.reset();
@@ -143,24 +153,14 @@ module.exports = {
     setSelectedNotations(e) {
       this.selectionMixin_endSelect(e);
     },
-    setFractionLine() {
-      this.drawLineMixin_endDrawLine("fractionLine");
-      this.reset();
-    },
-    setSqrtLine() {
-      this.drawLineMixin_endDrawLine("sqrtLine");
-      this.reset();
-    },
     eventManager_selectionButtonPressed() {
       this.toggleSelectionMode();
     },
     eventManager_drawFractionLineButtonPressed() {
-      this.toggleDrawlineMode();
-      this.setCurrentDrawLineMode(DrawLineMode.FRACTION);
+      this.startFractionMode();
     },
     eventManager_drawSqrtLineButtonPressed() {
-      this.toggleDrawlineMode();
-      this.setCurrentDrawLineMode(DrawLineMode.SQRT);
+      this.startSqrtMode();
     },
     eventManager_deleteButtonPressed() {
       this.toggleDeleteMode();
@@ -180,15 +180,20 @@ module.exports = {
       if (this.currentMode === EditMode.SELECT) {
         this.setCurrentMode(EditMode.SELECTING); //  show selectionArea component
 
-        this.selectionAreaAdapter.initialPosition = {
+        this.selectionAreaRelay.initialPosition = {
           x: e.clientX - this.getSVGBoundingRect().x,
           y: e.clientY - this.getSVGBoundingRect().y,
         };
         return;
       }
 
-      if (this.currentMode === EditMode.DRAWLINE) {
-        this.drawLineMixin_startLineDrawing(e);
+      if (this.currentMode === EditMode.FRACTION) {
+        this.startFractionDrawing(e);
+        return;
+      }
+
+      if (this.currentMode === EditMode.SQRT) {
+        this.startSqrtDrawing(e);
         return;
       }
 
@@ -206,22 +211,22 @@ module.exports = {
       }
 
       // first check if fraction line is clicked
-      let selectedLine = this.selectionMixin_findFractionLineAtClickedPosition(
+      let fractionLine = this.selectionMixin_findFractionLineAtClickedPosition(
         e
       );
-      if (!!selectedLine) {
+      if (!!fractionLine) {
         this.setCurrentMode(EditMode.SELECTLINE);
-        this.setCurrentDrawLineMode(DrawLineMode.FRACTION);
-        this.drawLineMixin_startLineEditing(selectedLine);
+        this.drawLineRelay.lineType = LineType.FRACTION_LINE;
+        this.drawLineRelay.selectedLineId = fractionLine.id;
         return;
       }
 
-      // check if sqrt line is clicked
-      selectedLine = this.selectionMixin_findSqrtLineAtClickedPosition(e);
-      if (!!selectedLine) {
+      // next check if sqrt line is clicked
+      let sqrtLine = this.selectionMixin_findSqrtLineAtClickedPosition(e);
+      if (!!sqrtLine) {
         this.setCurrentMode(EditMode.SELECTLINE);
-        this.setCurrentDrawLineMode(DrawLineMode.SQRT);
-        this.drawLineMixin_startLineEditing(selectedLine);
+        this.drawLineRelay.lineType = LineType.SQRT_LINE;
+        this.drawLineRelay.selectedLineId = sqrtLine.id;
         return;
       }
 
@@ -279,6 +284,7 @@ module.exports = {
 
       if (this.currentMode === EditMode.MOVESELECTION) {
         this.moveSelection(e);
+        this.endMoveSelectionMode();
         return;
       }
 
@@ -288,18 +294,10 @@ module.exports = {
       }
 
       if (
-        this.currentMode === EditMode.DRAWLINE &&
-        this.currentDrawLineMode == DrawLineMode.FRACTION
+        this.currentMode === EditMode.FRACTION ||
+        this.currentMode === EditMode.SQRT
       ) {
-        this.setFractionLine();
-        return;
-      }
-
-      if (
-        this.currentMode === EditMode.DRAWLINE &&
-        this.currentDrawLineMode == DrawLineMode.SQRT
-      ) {
-        this.setSqrtLine();
+        this.drawLineRelay.ended = !this.drawLineRelay.ended;
         return;
       }
     },
@@ -307,27 +305,20 @@ module.exports = {
     eventManager_selectionMouseDown(e) {
       this.startMoveMode();
     },
-    eventManager_lineHandleMouseDown(e) {
-      this.startDrawlineMode();
-    },
-    // end selection
-    // eventManager_selectionMouseUp(e) {
-    //   if (this.currentMode === EditMode.MOVE) {
-    //     this.moveSelection(e);
-    //   } else if (this.currentMode === EditMode.SELECTING) {
-    //     this.setSelectedNotations(e);
-    //   }
+    // eventManager_lineHandleMouseDown(e) {
+    //   this.startLineType();
     // },
     eventManager_mouseMove(e) {
       this.showFractionLineTooltip = false;
       this.showAccessTooltip = false;
+      // left button is pressed
       if (e.buttons !== 1) {
         return;
       }
-      // left button is pressed
+
       if (this.currentMode === EditMode.SELECTING) {
         // during symbols selection
-        this.selectionAreaAdapter.currentPosition = {
+        this.selectionAreaRelay.currentPosition = {
           x: e.clientX - this.getSVGBoundingRect().x,
           y: e.clientY - this.getSVGBoundingRect().y,
         };
@@ -335,14 +326,20 @@ module.exports = {
         return;
       }
 
-      if (this.currentMode === EditMode.DRAWLINE) {
-        this.drawLineMixin_UpdateLineWidth(e);
+      if (
+        this.currentMode === EditMode.FRACTION ||
+        this.currentMode === EditMode.SQRT
+      ) {
+        this.drawLineRelay.currentMousePosition = {
+          x: e.clientX - this.getSVGBoundingRect().x,
+          y: e.clientX - this.getSVGBoundingRect().y,
+        };
         return;
       }
 
       // during move selected symbols
       if (this.currentMode === EditMode.MOVESELECTION) {
-        this.selectionAreaAdapter.currentMovePosition = {
+        this.selectionAreaRelay.currentMovePosition = {
           x: e.clientX - this.getSVGBoundingRect().x,
           y: e.clientY - this.getSVGBoundingRect().y,
         };

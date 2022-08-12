@@ -71,7 +71,7 @@
       <v-tooltip top hidden v-model="showFractionLineTooltip">
         <template v-slot:activator="{ on, attrs }">
           <v-btn-toggle
-            v-model="drawlineButtonActive"
+            v-model="fractionButtonActive"
             background-color="transparent"
             active-class="iconActive"
           >
@@ -194,7 +194,7 @@ export default {
   },
   methods: {
     $resetButtonsState() {
-      this.deleteButtonActive = this.selectionButtonActive = this.drawlineButtonActive = this.squareRootButtonActive = this.powerButtonActive = 1;
+      this.deleteButtonActive = this.selectionButtonActive = this.fractionButtonActive = this.squareRootButtonActive = this.powerButtonActive = 1;
     },
     $powerButtonPressed() {
       this.$resetButtonsState();
@@ -231,7 +231,7 @@ export default {
       });
     },
     resetToggleButtons() {
-      this.deleteButtonActive = this.selectionButtonActive = this.drawlineButtonActive = 1;
+      this.deleteButtonActive = this.selectionButtonActive = this.fractionButtonActive = 1;
     },
   },
   watch: {
@@ -249,7 +249,7 @@ export default {
       isAccessLinkDialogOpen: false,
       deleteButtonActive: 1,
       selectionButtonActive: 1,
-      drawlineButtonActive: 1,
+      fractionButtonActive: 1,
       squareRootButtonActive: 1,
       powerButtonActive: 1,
       showFractionLineTooltip: false,

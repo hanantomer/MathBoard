@@ -37,66 +37,31 @@
               ></svg>
               <areaSelector
                 :svg="svg"
-                :initialPosition="selectionAreaAdapter.initialPosition"
-                :currentPosition="selectionAreaAdapter.currentPosition"
-                :currentMovePosition="selectionAreaAdapter.currentMovePosition"
-                :selectionEnded="selectionAreaAdapter.ended"
+                :initialPosition="selectionAreaRelay.initialPosition"
+                :currentPosition="selectionAreaRelay.currentPosition"
+                :currentMovePosition="selectionAreaRelay.currentMovePosition"
+                :selectionEnded="selectionAreaRelay.ended"
+                :selectionMoveEnded="selectionAreaRelay.moveEnded"
                 v-show="
                   eventManager_getCurrentMode === 'SELECTING' ||
                   eventManager_getCurrentMode === 'MOVESELECTION'
                 "
               ></areaSelector>
-              <v-card
-                id="lineLeftHandle"
-                class="lineHandle"
-                v-on:mousedown="eventManager_lineHandleMouseDown"
+              <lineDrawer
+                v-on="{
+                  ended: eventManager_endDrawLine,
+                }"
+                :editMode="currentMode"
+                :lineType="drawLineRelay.lineType"
+                :startMousePosition="drawLineRelay.startMousePosition"
+                :currentMousePosition="drawLineRelay.currentMousePosition"
+                :selectedLineId="drawLineRelay.selectedLineId"
+                :ended="drawLineRelay.ended"
                 v-show="
                   eventManager_getCurrentMode === 'SELECTLINE' ||
-                  eventManager_getCurrentMode === 'DRAWLINE'
+                  drawLineRelay.lineType != 'NONE'
                 "
-                v-bind:style="{
-                  left: lineLeftHandleLeft,
-                  top: lineHandleTop,
-                }"
-              ></v-card>
-              <v-card
-                id="lineRightHandle"
-                class="lineHandle"
-                v-on:mousedown="eventManager_lineHandleMouseDown"
-                v-show="
-                  eventManager_getCurrentMode === 'SELECTLINE' ||
-                  eventManager_getCurrentMode === 'DRAWLINE'
-                "
-                v-bind:style="{
-                  left: lineRightHandleLeft,
-                  top: lineHandleTop,
-                }"
-              ></v-card>
-              <v-divider
-                id="line"
-                class="line"
-                v-on:mouseup="eventManager_mouseUp"
-                v-show="
-                  eventManager_getCurrentMode === 'DRAWLINE' ||
-                  eventManager_getCurrentMode === 'SELECTLINE' ||
-                  eventManager_getCurrentMode === 'DRAWLINE'
-                "
-                v-bind:style="{
-                  left: drawLineLeft,
-                  top: drawLineTop,
-                  width: drawLineWidth,
-                }"
-              ></v-divider>
-              <p
-                v-bind:style="{
-                  left: drawLineLeft,
-                  top: drawLineTop,
-                }"
-                style="position: absolute; z-index: 99; border: solid 1px"
-                v-if="eventManager_getCurrentDrawLineMode === 'SQRT'"
-              >
-                &#x221A;
-              </p>
+              ></lineDrawer>
             </div>
           </v-col>
         </v-row>
@@ -114,7 +79,6 @@ import { mapState } from "vuex";
 import { mapGetters } from "vuex";
 import matrixOverlayMixin from "../Mixins/matrixOverlayMixin";
 import selectionMixin from "../Mixins/selectionMixin";
-import drawLineMixin from "../Mixins/drawLineMixin";
 import eventManager from "../Mixins/eventManager";
 import symbolMixin from "../Mixins/symbolMixin";
 import notationMixin from "../Mixins/notationMixin";
@@ -123,12 +87,14 @@ import userOperationsIncomingSyncMixin from "../Mixins/userIncomingOperationsSyn
 import lessonStudents from "./LessonStudents.vue";
 import lessonToolbar from "./LessonToolbar.vue";
 import areaSelector from "./SelectionArea.vue";
+import lineDrawer from "./LineDrawer.vue";
 
 export default {
   components: {
     lessonStudents,
     lessonToolbar,
     areaSelector,
+    lineDrawer,
   },
   props: ["lessonId"],
   destroyed: function () {
@@ -157,7 +123,6 @@ export default {
   mixins: [
     matrixOverlayMixin,
     selectionMixin,
-    drawLineMixin,
     userOperationsOutgoingSyncMixin,
     userOperationsIncomingSyncMixin,
     symbolMixin,
