@@ -14,12 +14,7 @@ export default {
           this.userOperationsMixin_syncOutgoingSaveNotation(symbol);
         })
         .then(() => {
-          let nextRect = this.matrixMixin_getNextRect();
-          if (!!nextRect) {
-            nextRect.type = "rect";
-            this.$store.dispatch("setSelectedRect", nextRect);
-            this.userOperationsMixin_syncOutgoingSelectedPosition(nextRect);
-          }
+          this.matrixMixin_setNextRect(1, 0);
         })
         .catch((e) => {
           console.error(e);

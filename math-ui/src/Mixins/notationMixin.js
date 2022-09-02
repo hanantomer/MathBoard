@@ -7,7 +7,6 @@ export default {
       return row * this.matrixMixin_getRectSize();
     },
     notationMixin_moveSelection: function (e) {
-      //this.selectionMixin_endMoveSelection(e);
       let selectedNotations = this.getSelectedNotations();
       this.$store
         .dispatch("updateSelectedNotationCoordinates")

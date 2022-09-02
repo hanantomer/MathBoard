@@ -132,8 +132,8 @@ export default {
 
       helper.loadNotationType(context, NotationType.SYMBOL);
       helper.loadNotationType(context, NotationType.POWER);
-      helper.loadNotationType(context, NotationType.FRACTION_LINE);
-      helper.loadNotationType(context, NotationType.SQRT_LINE);
+      helper.loadNotationType(context, NotationType.FRACTION);
+      helper.loadNotationType(context, NotationType.SQRT);
     },
 
     async addNotation(context, notation) {

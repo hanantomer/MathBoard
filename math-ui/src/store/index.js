@@ -3,6 +3,7 @@ import Vuex from "vuex";
 import selectedPositionStore from "./selectedPositionStore";
 import notationStore from "./notationStore";
 import lessonStore from "./lessonStore";
+import questionStore from "./questionStore";
 import userStore from "./userStore";
 import studentStore from "./studentStore";
 
@@ -13,6 +14,7 @@ export default new Vuex.Store({
     selectedPositionStore,
     notationStore,
     lessonStore,
+    questionStore,
     userStore,
     studentStore,
   },

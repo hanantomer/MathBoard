@@ -1,69 +1,76 @@
 <template>
   <div>
     <v-card
-      v-show="editMode === 'SELECTLINE'"
       id="lineLeftHandle"
       class="lineHandle"
-      v-on:mousedown="lineHandleMouseDown"
-      v-on:mousemove="leftLineHandleMouseMove"
+      v-on:mousemove="handleMouseMove"
       v-on:mouseup="endDrawLine"
       v-bind:style="{
-        left: lineLeftHandleLeft,
-        top: lineHandleTop,
+        left: lineLeft - 5 + 'px',
+        top: lineTop + 'px',
       }"
     ></v-card>
     <v-card
-      v-show="editMode === 'SELECTLINE'"
       id="lineRightHandle"
       class="lineHandle"
-      v-on:mousedown="lineHandleMouseDown"
-      v-on:mousemove="rightLineHandleMouseMove"
+      v-on:mousemove="handleMouseMove"
       v-on:mouseup="endDrawLine"
       v-bind:style="{
-        left: lineRightHandleLeft,
-        top: lineHandleTop,
+        left: lineRight + 'px',
+        top: lineTop + 'px',
       }"
     ></v-card>
     <v-divider
+      style="color: red; z-index: 9999; height: 10px"
       id="line"
       class="line"
       v-on:mouseup="lineMouseUp"
       v-bind:style="{
-        left: drawLineLeft,
-        top: drawLineTop,
-        width: drawLineWidth,
+        left: lineLeft + 'px',
+        top: lineTop + 'px',
+        width: lineRight - lineLeft + 'px',
       }"
     ></v-divider>
     <p
       style="left: -2px; position: relative; z-index: 99; border: solid 1px"
-      v-if="lineType === 'SQRT'"
+      v-if="notationType === 'SQRT'"
     >
       &#x221A;
     </p>
   </div>
 </template>
 <script>
-import EditMode from "../Mixins/editMode";
 import notationMixin from "../Mixins/notationMixin";
 import matrixOverlayMixin from "../Mixins/matrixOverlayMixin";
 import userOutgoingOperationsSyncMixin from "../Mixins/userOutgoingOperationsSyncMixin";
+import eventManagerMixin from "../Mixins/eventManager";
 import { mapGetters } from "vuex";
 export default {
-  mixins: [notationMixin, matrixOverlayMixin, userOutgoingOperationsSyncMixin],
+  mixins: [
+    notationMixin,
+    matrixOverlayMixin,
+    userOutgoingOperationsSyncMixin,
+    eventManagerMixin,
+  ],
   name: "LineDrawer",
   props: {
-    editMode: { type: String },
-    lineType: { type: String },
-    startMousePosition: { type: Object },
+    notationType: { type: String },
+    startMouseDrawingPosition: { type: Object },
     currentMousePosition: { type: Object },
     selectedLineId: { type: String },
     ended: { type: Boolean },
   },
   watch: {
-    startMousePosition: {
+    startMouseDrawingPosition: {
       immediate: true,
       handler: function (position) {
-        this.startLineDrawing(position);
+        if (
+          !!position &&
+          typeof position.x === "number" &&
+          isFinite(position.x)
+        ) {
+          this.startLineDrawing(position);
+        }
       },
     },
     currentMousePosition: {
@@ -74,14 +81,17 @@ export default {
           typeof position.x === "number" &&
           isFinite(position.x)
         ) {
-          this.updateLineRightPoistion(position.x);
+          console.debug("right pos from watch:" + position.x);
+          this.updateLine(position.x); ///TODO support update of left poistion too
         }
       },
     },
     ended: {
       immediate: true,
       handler: function () {
-        this.endDrawLine();
+        if (!this.drawLineRelay.selectedLineId) {
+          this.endDrawLine();
+        }
       },
     },
     selectedLineId: {
@@ -103,38 +113,49 @@ export default {
     };
   },
   computed: {
-    drawLineLeft: function () {
-      return Math.min(this.linePosition.x1, this.linePosition.x2) + "px";
+    lineLeft: function () {
+      // console.debug(
+      //   "line left:" + this.linePosition.x1 + "," + this.linePosition.x1
+      // );
+      return Math.min(this.linePosition.x1, this.linePosition.x2);
     },
-    drawLineLeftMinus5: function () {
-      return Math.min(this.linePosition.x1, this.linePosition.x2) - 15 + "px";
+    lineRight: function () {
+      // console.debug(
+      //   "line right:" + this.linePosition.x1 + "," + this.linePosition.x1
+      // );
+      return Math.max(this.linePosition.x1, this.linePosition.x2);
     },
-
-    lineLeftHandleLeft: function () {
-      return Math.min(this.linePosition.x1, this.linePosition.x2) - 5 + "px";
+    lineTop: function () {
+      return this.linePosition.y;
     },
-    lineRightHandleLeft: function () {
-      return Math.max(this.linePosition.x1, this.linePosition.x2) - 5 + "px";
-    },
-    drawLineWidth: function () {
-      return Math.abs(this.linePosition.x2 - this.linePosition.x1) + "px";
-    },
-    drawLineTop: function () {
-      return this.linePosition.y + "px";
-    },
-    lineHandleTop: function () {
-      return this.linePosition.y - 5 + "px";
-    },
+    // lineLeftHandleLeft: function () {
+    //   console.debug(
+    //     "lineLeftHandleLeft:" +
+    //       Math.min(this.linePosition.x1, this.linePosition.x2) +
+    //       "px"
+    //   );
+    //   return Math.min(this.linePosition.x1, this.linePosition.x2);
+    // },
+    // lineRightHandleLeft: function () {
+    //   console.debug(
+    //     "lineRightHandleLeft" +
+    //       Math.max(this.linePosition.x1, this.linePosition.x2) +
+    //       "px"
+    //   );
+    //   return Math.max(this.linePosition.x1, this.linePosition.x2) ;
+    // },
+    // lineHandleTop: function () {
+    //   console.debug(
+    //     "lineHandleTop:" + this.linePosition.y + this.getTabsHeight() - 5 + "px"
+    //   );
+    //   return this.linePosition.y + this.getTabsHeight() - 5 + "px";
+    // },
   },
   methods: {
     ...mapGetters({
       getNotations: "getNotations",
     }),
-    ///TODO move to global area
-    getSVGBoundingRect: function () {
-      return document.getElementById("svg").getBoundingClientRect();
-    },
-    lineHandleMouseDown: function () {},
+    /// TODO move to global
     getNearestRow: function (clickedYPos) {
       let clickedRow = Math.round(clickedYPos / this.matrixMixin_getRectSize());
       return clickedRow * this.matrixMixin_getRectSize();
@@ -142,7 +163,7 @@ export default {
     // either fraction or sqrt
     setLine: function (row, fromCol, toCol) {
       let line = {
-        type: this.lineType,
+        type: this.notationType,
         row: row,
         fromCol: fromCol,
         toCol: toCol,
@@ -157,9 +178,19 @@ export default {
           console.error(e);
         });
     },
+    startLineDrawing: function (position) {
+      let y = this.getNearestRow(position.y);
+      this.linePosition.x2 = this.linePosition.x1 = position.x;
+      this.linePosition.y = y;
+    },
     startLineEditing: function (selectedLineId) {
       let storedNotation = this.getNotations()[selectedLineId];
-      ///TODO handle null
+      if (!storedNotation) {
+        console.error(`selectedLineId: ${selectedLineId} not found `);
+        return;
+      }
+
+      console.log(`storedNotation: ${JSON.stringify(storedNotation)} `);
 
       this.linePosition.x1 = this.getNotationXposByCol(storedNotation.fromCol);
 
@@ -169,37 +200,33 @@ export default {
           this.matrixMixin_getRectSize();
 
       this.linePosition.y = this.getNotationYposByRow(storedNotation.row);
+      console.debug(
+        "startLineEditing: x1:" +
+          this.linePosition.x1 +
+          ",x2:" +
+          this.linePosition.x2 +
+          ",y:" +
+          this.linePosition.y
+      );
     },
-    startLineDrawing: function (position) {
-      let y = this.getNearestRow(position.y);
-      this.linePosition.x2 = this.linePosition.x1 = position.x;
-      this.linePosition.y = y;
-    },
-    updateLineRightPoistion: function (x) {
-      this.linePosition.x2 = x;
-    },
-    updateLineLeftPoistion: function (x) {
-      this.linePosition.x1 = x;
-    },
-    leftLineHandleMouseMove(e) {
-      // left button is pressed
-      if (e.buttons !== 1) {
-        return;
+    // updateLineRightPosition: function (x) {
+    //   console.debug("updateLineRightPosition:" + x);
+    //   this.linePosition.x2 = x;
+    // },
+    // updateLineLeftPosition: function (x) {
+    //   this.linePosition.x1 = x;
+    // },
+    updateLine: function (position) {
+      if (position < this.linePosition.x1) {
+        this.linePosition.x1 = position;
       }
-      this.updateLineLeftPoistion(e.clientX - this.getSVGBoundingRect().x);
-    },
-    rightLineHandleMouseMove(e) {
-      // left button is pressed
-      if (e.buttons !== 1) {
-        return;
+      if (position > this.linePosition.x1) {
+        this.linePosition.x2 = position;
       }
-      this.updateLineRightPoistion(e.clientX - this.getSVGBoundingRect().x);
     },
+
     lineMouseUp() {
-      if (
-        this.editMode === EditMode.FRACTION ||
-        this.editMode === EditMode.SQRT
-      ) {
+      if (!this.selectedLineId) {
         this.endDrawLine();
       }
     },
@@ -219,29 +246,49 @@ export default {
         let row = Math.round(
           this.linePosition.y / this.matrixMixin_getRectSize()
         );
-
+        console.log("endDrawLine");
         this.setLine(row, fromCol, toCol);
+        this.$emit("ended"); // signal parent
       }
-      this.$emit("ended"); // signal parent
     },
+    handleMouseMove(e) {
+      // left button is pressed
+      if (e.buttons !== 1) {
+        return;
+      }
+      //this.updateLine(e.clientX);
+    },
+    // rightLineHandleMouseMove(e) {
+    //   // left button is pressed
+    //   if (e.buttons !== 1) {
+    //     return;
+    //   }
+    //   console.debug("rightLineHandleMouseMove");
+    //   this.updateLine(e.clientX - this.getTabsLeft());
+    // },
   },
 };
 </script>
 
 <style>
+foreignObject[type="fraction"],
+foreignObject[type="sqrt"] {
+  height: 10px;
+  padding-top: 4px;
+  cursor: pointer;
+}
 .line {
   position: absolute;
   display: block;
   border-bottom: solid 1px;
   border-top: solid 1px;
-  cursor: pointer;
 }
-
 .lineHandle {
   cursor: col-resize;
+  display: block;
   position: absolute;
   z-index: 999;
-  width: 10px;
+  width: 6px;
   height: 6px;
   border: 1, 1, 1, 1;
 }

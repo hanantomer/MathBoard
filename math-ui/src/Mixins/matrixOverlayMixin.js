@@ -1,5 +1,5 @@
-import * as d3 from "d3";
 import NotationType from "./notationType";
+import * as d3 from "d3";
 
 export default {
   computed: {
@@ -16,11 +16,10 @@ export default {
   data: function () {
     return {
       opacity: 1,
-      colsNum: 48,
+      colsNum: 44,
       rowsNum: 24,
       rectSize: 30,
       lineHeight: 4,
-      matrix: [],
       topLevelGroup: null,
       prevSelectedNotation: null,
       selectedRecColor: "lightcyan",
@@ -31,11 +30,11 @@ export default {
   methods: {
     isLine(notationType) {
       return (
-        notationType === "fractionLine" ||
-        notationType === "sqrtLine" ||
+        notationType === NotationType.FRACTION ||
+        notationType === NotationType.SQRT ||
         notationType === NotationType.SQRTSYMBOL ||
-        notationType === "lineRightHandle" ||
-        notationType === "lineLeftHandle"
+        notationType === NotationType.LEFT_HANDLE ||
+        notationType === NotationType.RIGHT_HANDLE
       );
     },
     reRenderMathJax() {
@@ -53,10 +52,10 @@ export default {
           : this.selectedRecColor;
     },
     //https://stackoverflow.com/questions/22428484/get-element-from-point-when-you-have-overlapping-elements
-    matrixMixin_findClickedObject(p, tagName, type) {
+    matrixMixin_findClickedObject(point, tagName, notationType) {
       var elements = [];
       var display = [];
-      var item = document.elementFromPoint(p.x, p.y);
+      var item = document.elementFromPoint(point.x, point.y);
       var prevItem = null;
       var idx = 0;
 
@@ -73,7 +72,7 @@ export default {
         display.push(item.style.display);
         item.style.display = "none";
         prevItem = item;
-        item = document.elementFromPoint(p.x, p.y);
+        item = document.elementFromPoint(point.x, point.y);
       }
       for (var i = 0; i < elements.length; i++) {
         elements[i].style.display = display[i];
@@ -81,16 +80,16 @@ export default {
       return elements.find(
         (item) =>
           item.tagName == tagName &&
-          (!type || type == item.attributes.type.value)
+          (!notationType || notationType == item.attributes.type.value)
       );
     },
-    matrixMixin_setMatrix() {
+    matrixMixin_setMatrix(svgId) {
       for (var row = 0; row < this.rowsNum; row++) {
         this.matrix.push(d3.range(this.colsNum));
       }
 
       this.topLevelGroup = d3
-        .select("svg")
+        .select("#" + svgId)
         .selectAll("g")
         .data(this.matrix)
         .enter()
@@ -138,34 +137,51 @@ export default {
     matrixMixin_getRectSize() {
       return this.rectSize;
     },
-    matrixMixin_getNextRect() {
+    getNextRect(horizontalStep, verticalStep) {
       if (!this.prevSelectedNotation) {
         return;
       }
+
       let col = parseInt(this.prevSelectedNotation.attributes.col.value);
+      let nextCol = col;
+
       let row = parseInt(
         this.prevSelectedNotation.parentNode.attributes.row.value
       );
-      if (col != this.colsNum) {
-        col += 1;
-      } else {
-        if (row == this.rowsNum) {
-          col = -1;
-        }
+      let nextRow = row;
+
+      if (col + horizontalStep < this.colsNum && col + horizontalStep >= 0) {
+        nextCol += horizontalStep;
       }
 
-      if (col == this.colsNum && row != this.rowsNum) {
-        row += 1;
-        col = 0;
+      if (col + horizontalStep >= this.colsNum && row != this.rowsNum) {
+        nextRow += 1;
+        nextCol = 0;
       }
 
-      if (col >= 0 && row >= 0) {
-        return {
-          col: col,
-          row: row,
-        };
+      if (row + verticalStep < this.rowsNum && row + verticalStep >= 0) {
+        nextRow += verticalStep;
+      }
+
+      if (row + verticalStep >= this.rowsNum || row + verticalStep < 0) {
+        nextCol = 0;
+        nextRow = 0;
+      }
+
+      return {
+        col: nextCol,
+        row: nextRow,
+      };
+    },
+    matrixMixin_setNextRect(horizontalStep, verticalStep) {
+      let nextRect = this.getNextRect(horizontalStep, verticalStep);
+      if (!!nextRect) {
+        nextRect.type = "rect";
+        this.$store.dispatch("setSelectedRect", nextRect);
+        this.userOperationsMixin_syncOutgoingSelectedPosition(nextRect);
       }
     },
+
     updateNotation: function (n) {
       n.setAttribute("col", (n) => {
         return n.col;
@@ -189,30 +205,20 @@ export default {
         if (Object.hasOwnProperty.call(notations, key)) {
           const element = notations[key];
           enrichedNotations.push(element);
-          if (element.type === "sqrtLine") {
+          if (element.type === "sqrt") {
             let sqrtElement = { ...element };
             sqrtElement.type = NotationType.SQRTSYMBOL;
             enrichedNotations.push(sqrtElement);
           }
-
-          // if (element.type === "sqrtLine" || element.type === "fractionLine") {
-          //   let rightHandleElement = { ...element };
-          //   rightHandleElement.type = "lineRightHandle";
-          //   enrichedNotations.push(rightHandleElement);
-
-          //   let leftHandleElement = { ...element };
-          //   leftHandleElement.type = "lineLeftHandle";
-          //   enrichedNotations.push(leftHandleElement);
-          // }
         }
       }
       return enrichedNotations;
     },
-    matrixMixin_refreshScreen(notations) {
+    matrixMixin_refreshScreen(notations, svgId) {
       try {
         notations = this.enrichNotations(notations);
       } catch {} // cant check if observer has properties
-      this.svg
+      d3.select("#" + svgId)
         .selectAll("foreignObject")
         .data(Object.values(notations))
         .join(
@@ -294,14 +300,11 @@ export default {
         return this.getNotationYposByRow(n.row) - 5;
       }
 
-      if (
-        n.type === NotationType.FRACTION_LINE ||
-        n.type === NotationType.SQRT_LINE
-      ) {
-        return this.getNotationYposByRow(n.row);
+      if (n.type === NotationType.FRACTION || n.type === NotationType.SQRT) {
+        return this.getNotationYposByRow(n.row) - 4;
       }
 
-      if (n.type === NotationType.SQRTSYMBOL || n.type === "sqrtLine") {
+      if (n.type === NotationType.SQRTSYMBOL || n.type === "sqrt") {
         return this.getNotationYposByRow(n.row) - 4;
       }
     },
@@ -313,10 +316,7 @@ export default {
       )
         return this.rectSize;
 
-      if (
-        n.type === NotationType.FRACTION_LINE ||
-        n.type === NotationType.SQRT_LINE
-      )
+      if (n.type === NotationType.FRACTION || n.type === NotationType.SQRT)
         return (n.toCol - n.fromCol) * this.rectSize;
     },
     $height(n) {
@@ -327,10 +327,7 @@ export default {
       )
         return this.rectSize;
 
-      if (
-        n.type === NotationType.FRACTION_LINE ||
-        n.type === NotationType.SQRT_LINE
-      )
+      if (n.type === NotationType.FRACTION || n.type === NotationType.SQRT)
         return this.lineHeight;
     },
     $fontSize(n) {
@@ -340,10 +337,7 @@ export default {
       return n.selected ? "red" : "black";
     },
     $html(n) {
-      if (
-        n.type === NotationType.FRACTION_LINE ||
-        n.type === NotationType.SQRT_LINE
-      ) {
+      if (n.type === NotationType.FRACTION || n.type === NotationType.SQRT) {
         return `<span class=line style='width:${
           (n.toCol - n.fromCol) * this.rectSize
         }px;'></span>`;

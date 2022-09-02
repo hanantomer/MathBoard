@@ -27,41 +27,62 @@
           </v-col>
           <v-col cols="11">
             <div style="overflow: auto; height: 100%; position: relative">
-              <svg
-                id="svg"
-                width="1350px"
-                height="97%"
-                v-on:mousedown="eventManager_mouseDown"
-                v-on:mousemove="eventManager_mouseMove"
-                v-on:mouseup="eventManager_mouseUp"
-              ></svg>
+              <template>
+                <v-tabs
+                  id="tabs"
+                  v-model="tab"
+                  slider-color="transparent"
+                  active-class="active-tab"
+                >
+                  <v-tab> Lesson </v-tab>
+                  <v-tab> Questions </v-tab>
+                </v-tabs>
+              </template>
+
+              <v-tabs-items v-model="tab">
+                <v-tab-item :eager="true">
+                  <svg
+                    v-bind:id="svgId"
+                    width="1350px"
+                    height="600px"
+                    v-on:mousedown="eventManager_mouseDown"
+                    v-on:mousemove="eventManager_mouseMove"
+                    v-on:mouseup="eventManager_mouseUp"
+                  ></svg>
+                  <lineDrawer
+                    v-on="{
+                      ended: eventManager_endDrawLine,
+                    }"
+                    :notationType="drawLineRelay.notationType"
+                    :startMouseDrawingPosition="
+                      drawLineRelay.startMousePosition
+                    "
+                    :currentMousePosition="drawLineRelay.currentMousePosition"
+                    :ended="drawLineRelay.ended"
+                    :selectedLineId="drawLineRelay.selectedLineId"
+                    v-show="
+                      eventManager_getCurrentMode === 'FRACTION' ||
+                      eventManager_getCurrentMode === 'SQRT' ||
+                      eventManager_getCurrentMode === 'SELECT_FRACTION' ||
+                      eventManager_getCurrentMode === 'SELECT_SQRT'
+                    "
+                  ></lineDrawer>
+                </v-tab-item>
+                <v-tab-item> </v-tab-item>
+              </v-tabs-items>
+
               <areaSelector
-                :svg="svg"
+                :svg="svgId"
                 :initialPosition="selectionAreaRelay.initialPosition"
                 :currentPosition="selectionAreaRelay.currentPosition"
                 :currentMovePosition="selectionAreaRelay.currentMovePosition"
                 :selectionEnded="selectionAreaRelay.ended"
-                :selectionMoveEnded="selectionAreaRelay.moveEnded"
+                :moveEnded="selectionAreaRelay.moveEnded"
                 v-show="
                   eventManager_getCurrentMode === 'SELECTING' ||
                   eventManager_getCurrentMode === 'MOVESELECTION'
                 "
               ></areaSelector>
-              <lineDrawer
-                v-on="{
-                  ended: eventManager_endDrawLine,
-                }"
-                :editMode="currentMode"
-                :lineType="drawLineRelay.lineType"
-                :startMousePosition="drawLineRelay.startMousePosition"
-                :currentMousePosition="drawLineRelay.currentMousePosition"
-                :selectedLineId="drawLineRelay.selectedLineId"
-                :ended="drawLineRelay.ended"
-                v-show="
-                  eventManager_getCurrentMode === 'SELECTLINE' ||
-                  drawLineRelay.lineType != 'NONE'
-                "
-              ></lineDrawer>
             </div>
           </v-col>
         </v-row>
@@ -86,7 +107,7 @@ import userOperationsOutgoingSyncMixin from "../Mixins/userOutgoingOperationsSyn
 import userOperationsIncomingSyncMixin from "../Mixins/userIncomingOperationsSyncMixin";
 import lessonStudents from "./LessonStudents.vue";
 import lessonToolbar from "./LessonToolbar.vue";
-import areaSelector from "./SelectionArea.vue";
+import areaSelector from "./AreaSelector.vue";
 import lineDrawer from "./LineDrawer.vue";
 
 export default {
@@ -101,23 +122,18 @@ export default {
     window.removeEventListener("keyup", this.eventManager_keyUp);
   },
   mounted: function () {
-    this.svg = d3.select("#svg");
-
-    this.boundingClientRet = document
-      .getElementById("svg")
-      .getBoundingClientRect();
-
     this.$loadLesson().then(() => {
       window.addEventListener("keyup", this.eventManager_keyUp); /// TODO check if still required
     });
-    this.matrixMixin_setMatrix();
+    this.matrixMixin_setMatrix(this.svgId);
     this.reRenderMathJax();
   },
   data: function () {
     return {
-      boundingClientRet: null,
+      svgId: "lessonSvg",
       isAdmin: false,
-      svg: {},
+      tab: null,
+      matrix: [],
     };
   },
   mixins: [
@@ -145,7 +161,7 @@ export default {
     notations: {
       deep: true,
       handler: function (notations) {
-        this.matrixMixin_refreshScreen(notations);
+        this.matrixMixin_refreshScreen(notations, this.svgId);
         this.reRenderMathJax();
       },
     },
@@ -219,20 +235,11 @@ mjx-line {
   margin-bottom: 0.3em !important;
 }
 
-.line {
-  position: absolute;
-  display: block;
-  border-bottom: solid 1px;
-  border-top: solid 1px;
-  cursor: pointer;
+.tab-item-wrapper {
+  /* vuetify sets the v-tabs__container height to 48px */
+  height: calc(100vh - 48px) !important;
 }
-
-.lineHandle {
-  cursor: col-resize;
-  position: absolute;
-  z-index: 999;
-  width: 10px;
-  height: 10px;
-  border: 1, 1, 1, 1;
+.active-tab {
+  background-color: aliceblue;
 }
 </style>

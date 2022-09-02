@@ -43,19 +43,19 @@ let powerResource = finale.resource({
 powerResource.use(authMiddleware);
 powerResource.use(lessonMiddleware);
 
-let fractionLineResource = finale.resource({
-    model: db.sequelize.models["LessonFractionLine"],
-    endpoints: ["/lessonfractionlines", "/lessonfractionlines/:id"],
+let fractionResource = finale.resource({
+    model: db.sequelize.models["LessonFraction"],
+    endpoints: ["/lessonfractions", "/lessonfractions/:id"],
 });
-fractionLineResource.use(authMiddleware);
-fractionLineResource.use(lessonMiddleware);
+fractionResource.use(authMiddleware);
+fractionResource.use(lessonMiddleware);
 
-let sqrtLineResource = finale.resource({
-    model: db.sequelize.models["LessonSqrtLine"],
-    endpoints: ["/lessonsqrtlines", "/lessonsqrtlines/:id"],
+let sqrtResource = finale.resource({
+    model: db.sequelize.models["LessonSqrt"],
+    endpoints: ["/lessonsqrts", "/lessonsqrts/:id"],
 });
-sqrtLineResource.use(authMiddleware);
-sqrtLineResource.use(lessonMiddleware);
+sqrtResource.use(authMiddleware);
+sqrtResource.use(lessonMiddleware);
 
 finale.resource({
     model: db.sequelize.models["AccessLink"],

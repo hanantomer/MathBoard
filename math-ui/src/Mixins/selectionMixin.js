@@ -24,13 +24,6 @@ export default {
     ...mapGetters({
       getSelctedRect: "getSelctedRect",
     }),
-    getSvgOffset() {
-      const rect = document.getElementById("svg").getBoundingClientRect();
-      return {
-        left: rect.left + window.scrollX,
-        top: rect.top + window.scrollY,
-      };
-    },
     getHeaderHeight() {
       return document.getElementsByTagName("header")[0].getBoundingClientRect()
         .height;
@@ -42,7 +35,7 @@ export default {
           y: e.clientY,
         },
         "foreignObject",
-        "fractionLine"
+        "fraction"
       );
     },
     selectionMixin_findSqrtLineAtClickedPosition(e) {
@@ -52,7 +45,7 @@ export default {
           y: e.clientY,
         },
         "foreignObject",
-        "sqrtLine"
+        "sqrt"
       );
     },
 
@@ -74,6 +67,10 @@ export default {
       this.$store.dispatch("setSelectedRect", selectedPosition).then(() => {
         this.userOperationsMixin_syncOutgoingSelectedPosition(selectedPosition);
       });
+    },
+    selectionMixin_moveSelectionRight(numOfRects) {
+      let selectedRect = this.getSelectedRect();
+      if (!selectedRect) return;
     },
   },
 };

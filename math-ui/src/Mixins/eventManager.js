@@ -1,5 +1,5 @@
-import LineType from "./lineType";
 import EditMode from "./editMode";
+import notationType from "./notationType";
 export default {
   data: function () {
     return {
@@ -12,12 +12,18 @@ export default {
         moveEnded: false,
       },
       drawLineRelay: {
-        lineType: LineType.NONE,
+        notationType: "",
         startMousePosition: {},
         currentMousePosition: {},
-        selectedLine: null,
         ended: false,
+        reset() {
+          notationType: "";
+          this.startMousePosition = {};
+          this.currentMousePosition = {};
+        },
       },
+      tabsHeight: null,
+      tabsLeft: null,
     };
   },
   computed: {
@@ -26,8 +32,21 @@ export default {
     },
   },
   methods: {
-    getSVGBoundingRect() {
-      return document.getElementById("svg").getBoundingClientRect();
+    getTabsHeight: function () {
+      if (!this.tabsHeight && document.getElementById("tabs")) {
+        this.tabsHeight = document
+          .getElementById("tabs")
+          .getBoundingClientRect().height;
+      }
+      return this.tabsHeight;
+    },
+    getTabsLeft: function () {
+      if (!this.tabsLeft && document.getElementById("tabs")) {
+        this.tabsLeft = document
+          .getElementById("tabs")
+          .getBoundingClientRect().x;
+      }
+      return this.tabsHeight;
     },
     setCurrentMode(newMode) {
       this.currentMode = newMode;
@@ -40,41 +59,46 @@ export default {
         this.startSelectionMode();
       }
     },
-
     startFractionMode() {
       this.reset();
       this.fractionButtonActive = 0;
       this.setCurrentMode(EditMode.FRACTION);
-      this.drawLineRelay.lineType = LineType.FRACTION_LINE;
+      this.drawLineRelay.notationType = notationType.FRACTION;
     },
     startSqrtMode() {
       this.reset();
       this.squareRootButtonActive = 0;
       this.setCurrentMode(EditMode.SQRT);
-      this.drawLineRelay.lineType = LineType.SQRT_LINE;
+      this.drawLineRelay.notationType = notationType.SQRT;
     },
     startFractionDrawing(e) {
-      this.drawLineRelay.lineType = LineType.FRACTION_LINE;
-      this.drawLineRelay.startMousePosition = {
-        x: e.clientX - this.getSVGBoundingRect().x,
-        y: e.clientY - this.getSVGBoundingRect().y,
+      this.drawLineRelay.selectedLineId = null;
+      this.drawLineRelay.currentMousePosition = this.drawLineRelay.startMousePosition = {
+        x: e.offsetX,
+        y: e.offsetY,
       };
+    },
+    startFractionEditing(selectedFractionId) {
+      this.setCurrentMode(EditMode.SELECT_FRACTION);
+      this.drawLineRelay.selectedLineId = selectedFractionId;
+      this.drawLineRelay.notationType = notationType.FRACTION;
     },
     startSqrtDrawing(e) {
-      this.drawLineRelay.lineType = LineType.SQRT_LINE;
-      this.drawLineRelay.startMousePosition = {
-        x: e.clientX - this.getSVGBoundingRect().x,
-        y: e.clientY - this.getSVGBoundingRect().y,
+      this.drawLineRelay.selectedLineId = null;
+      this.drawLineRelay.currentMousePosition = this.drawLineRelay.startMousePosition = {
+        x: e.offsetX,
+        y: e.offsetY,
       };
     },
-
+    startSqrtEditing(selectedSqrtId) {
+      this.setCurrentMode(EditMode.SELECT_SQRT);
+      this.drawLineRelay.selectedLineId = selectedSqrtId;
+      this.drawLineRelay.notationType = notationType.SQRT;
+    },
     // emit event from component
     eventManager_endDrawLine() {
       this.reset();
     },
-
-    /*draw line*/
-
     toggleDeleteMode() {
       if (this.currentMode == EditMode.DELETING) {
         this.endDeleteMode();
@@ -90,21 +114,20 @@ export default {
       }
     },
     hideDeleteCursor() {
-      Array.from(document.getElementsByTagName("svg")).forEach((e) =>
+      Array.from(document.getElementById(this.svgId)).forEach((e) =>
         e.classList.remove("deleteButtonActive")
       );
     },
     showDeleteCursor() {
-      Array.from(document.getElementsByTagName("svg")).forEach((e) =>
+      Array.from(document.getElementById(this.svgId)).forEach((e) =>
         e.classList.add("deleteButtonActive")
       );
     },
-
     reset() {
       this.$refs.editoToolbar.resetToggleButtons();
       this.hideDeleteCursor();
       this.setCurrentMode(EditMode.ADD_SYMBOL);
-      this.drawLineRelay.lineType = LineType.NONE;
+      this.drawLineRelay.reset();
     },
     startDeleteMode() {
       this.reset();
@@ -168,7 +191,6 @@ export default {
     eventManager_powerButtonPressed() {
       this.togglePowerMode();
     },
-
     eventManager_symbolButtonPressed(e) {
       if (this.currentMode === EditMode.ADD_SYMBOL)
         this.symbolMixin_addSymbol(e.currentTarget.innerText, "symbol");
@@ -181,8 +203,8 @@ export default {
         this.setCurrentMode(EditMode.SELECTING); //  show selectionArea component
 
         this.selectionAreaRelay.initialPosition = {
-          x: e.clientX - this.getSVGBoundingRect().x,
-          y: e.clientY - this.getSVGBoundingRect().y,
+          x: e.oofsetX,
+          y: e.offsetY,
         };
         return;
       }
@@ -202,37 +224,24 @@ export default {
         return;
       }
 
-      if (
-        this.currentMode === EditMode.SELECTLINE ||
-        this.currentMode === EditMode.DRAWLINE
-      ) {
-        this.setCurrentMode(EditMode.ADD_SYMBOL);
+      // first check if fraction is clicked
+      let fraction = this.selectionMixin_findFractionLineAtClickedPosition(e);
+      if (!!fraction) {
+        this.startFractionEditing(fraction.id);
         return;
       }
 
-      // first check if fraction line is clicked
-      let fractionLine = this.selectionMixin_findFractionLineAtClickedPosition(
-        e
-      );
-      if (!!fractionLine) {
-        this.setCurrentMode(EditMode.SELECTLINE);
-        this.drawLineRelay.lineType = LineType.FRACTION_LINE;
-        this.drawLineRelay.selectedLineId = fractionLine.id;
+      // next check if sqrt is clicked
+      let sqrt = this.selectionMixin_findSqrtLineAtClickedPosition(e);
+      if (!!sqrt) {
+        this.startSqrtEditing(sqrt.id);
         return;
       }
 
-      // next check if sqrt line is clicked
-      let sqrtLine = this.selectionMixin_findSqrtLineAtClickedPosition(e);
-      if (!!sqrtLine) {
-        this.setCurrentMode(EditMode.SELECTLINE);
-        this.drawLineRelay.lineType = LineType.SQRT_LINE;
-        this.drawLineRelay.selectedLineId = sqrtLine.id;
-        return;
-      }
-
-      // if not a line then a rect
+      // if neither then a rect
       let selectedRect = this.selectionMixin_findRectAtClickedPosition(e);
       if (!!selectedRect) {
+        this.setCurrentMode(EditMode.ADD_SYMBOL);
         this.selectionMixin_selectRect(selectedRect);
         return;
       }
@@ -261,9 +270,33 @@ export default {
           e.code === "Backspace" ||
           e.code === "Plus" ||
           e.code === "Equal" ||
-          e.code === "Period"
+          e.code === "Period" ||
+          e.code === "ArrowLeft" ||
+          e.code === "ArrowRight" ||
+          e.code === "ArrowUp" ||
+          e.code === "ArrowDown"
         )
       ) {
+        return;
+      }
+
+      if (e.code === "ArrowLeft") {
+        this.matrixMixin_setNextRect(-1, 0);
+        return;
+      }
+
+      if (e.code === "ArrowRight") {
+        this.matrixMixin_setNextRect(1, 0);
+        return;
+      }
+
+      if (e.code === "ArrowUp") {
+        this.matrixMixin_setNextRect(0, -1);
+        return;
+      }
+
+      if (e.code === "ArrowDown") {
+        this.matrixMixin_setNextRect(0, 1);
         return;
       }
 
@@ -295,7 +328,9 @@ export default {
 
       if (
         this.currentMode === EditMode.FRACTION ||
-        this.currentMode === EditMode.SQRT
+        this.currentMode === EditMode.SELECT_FRACTION ||
+        this.currentMode === EditMode.SQRT ||
+        this.currentMode === EditMode.SELECT_SQRT
       ) {
         this.drawLineRelay.ended = !this.drawLineRelay.ended;
         return;
@@ -305,9 +340,6 @@ export default {
     eventManager_selectionMouseDown(e) {
       this.startMoveMode();
     },
-    // eventManager_lineHandleMouseDown(e) {
-    //   this.startLineType();
-    // },
     eventManager_mouseMove(e) {
       this.showFractionLineTooltip = false;
       this.showAccessTooltip = false;
@@ -316,14 +348,12 @@ export default {
         return;
       }
 
-      if (this.currentMode === EditMode.SELECTING) {
-        // during symbols selection
-        this.selectionAreaRelay.currentPosition = {
-          x: e.clientX - this.getSVGBoundingRect().x,
-          y: e.clientY - this.getSVGBoundingRect().y,
-        };
-        e.stopPropagation();
-        return;
+      if (this.currentMode === EditMode.SELECT_FRACTION) {
+        this.setCurrentMode(EditMode.FRACTION);
+      }
+
+      if (this.currentMode === EditMode.SELECT_SQRT) {
+        this.setCurrentMode(EditMode.SQRT);
       }
 
       if (
@@ -331,8 +361,17 @@ export default {
         this.currentMode === EditMode.SQRT
       ) {
         this.drawLineRelay.currentMousePosition = {
-          x: e.clientX - this.getSVGBoundingRect().x,
-          y: e.clientX - this.getSVGBoundingRect().y,
+          x: e.offsetX,
+          y: e.offsetY,
+        };
+        return;
+      }
+
+      // during selecting arae
+      if (this.currentMode === EditMode.SELECTING) {
+        this.selectionAreaRelay.currentPosition = {
+          x: e.offsetX,
+          y: e.offsetY,
         };
         return;
       }
@@ -340,10 +379,9 @@ export default {
       // during move selected symbols
       if (this.currentMode === EditMode.MOVESELECTION) {
         this.selectionAreaRelay.currentMovePosition = {
-          x: e.clientX - this.getSVGBoundingRect().x,
-          y: e.clientY - this.getSVGBoundingRect().y,
+          x: e.offsetX,
+          y: e.offsetY,
         };
-        e.stopPropagation();
         return;
       }
 

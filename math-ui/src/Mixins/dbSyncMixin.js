@@ -66,7 +66,6 @@ module.exports = {
       try {
         let query = `/${endpoint.toLocaleLowerCase()}?${parentIdFieldName}=${parentIdValue}&row=${row}&${colFieldName}=${col}`;
         let res = await axiosInstnce.get(query);
-        console.debug(res);
         return res?.data?.length > 0 ? res.data[0] : null;
       } catch (error) {
         this.handleError(error);
@@ -128,6 +127,14 @@ module.exports = {
         this.handleError(error);
       }
     },
+    addQuestion: async function (question) {
+      try {
+        return await axiosInstnce.post("/questions", question);
+      } catch (error) {
+        this.handleError(error);
+      }
+    },
+
     saveNotation: async function (notation) {
       let notationAtCoordinates = await this.getNotationByCoordinates(notation);
       let res = null;
@@ -171,10 +178,25 @@ module.exports = {
         this.this.handleError(error);
       }
     },
-    getLessons: async function (user) {
+    getQuestion: async function (questionId) {
+      try {
+        let res = await axiosInstnce.get("/question?id=" + questionId);
+        return !!res ? res.data[0] : null;
+      } catch (error) {
+        this.this.handleError(error);
+      }
+    },
+    getLessons: async function (userId) {
+      try {
+        return axiosInstnce.get("/lessons?UserId=" + userId);
+      } catch (error) {
+        this.this.handleError(error);
+      }
+    },
+    getQuestions: async function (lessonId) {
       console.log(user);
       try {
-        return axiosInstnce.get("/lessons?UserId=" + user.id);
+        return axiosInstnce.get("/questions?LessonId=" + lessonId);
       } catch (error) {
         this.this.handleError(error);
       }

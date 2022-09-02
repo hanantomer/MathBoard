@@ -23,7 +23,7 @@ const SelectionMode = Object.freeze({
 export default {
   name: "SelectionArea",
   props: {
-    svg: {},
+    svgId: "",
     initialPosition: {
       x: 0,
       y: 0,
@@ -48,7 +48,7 @@ export default {
         }
       },
     },
-    selectionMoveEnded: {
+    moveEnded: {
       immediate: true,
       handler: function (val) {
         if (val) {
@@ -131,9 +131,6 @@ export default {
   mixins: [matrixOverlayMixin, notationMixin],
 
   methods: {
-    getSVGBoundingRect() {
-      return document.getElementById("svg").getBoundingClientRect();
-    },
     mouseMove(e) {
       if (e.buttons !== 1) {
         return;
@@ -169,42 +166,38 @@ export default {
     endSelect() {
       this.currentMode = SelectionMode.MOVE;
       if (this.selectionPosition.x2 != this.selectionPosition.x1) {
-        this.svg.selectAll("foreignObject").each((datum) => {
-          let row = datum.row;
-          let col = datum.col ?? datum.fromCol;
-          if (
-            !!col &&
-            !!row &&
-            this.getNotationXposByCol(col) > this.selectionPosition.x1 &&
-            this.getNotationXposByCol(col) < this.selectionPosition.x2 &&
-            this.getNotationYposByRow(row) > this.selectionPosition.y1 &&
-            this.getNotationYposByRow(row) < this.selectionPosition.y2
-          ) {
-            this.$store.dispatch("selectNotation", {
-              col: col,
-              row: row,
-            });
-          }
-        });
+        documnet
+          .getElementById(this.svgId)
+          .selectAll("foreignObject")
+          .each((datum) => {
+            let row = datum.row;
+            let col = datum.col ?? datum.fromCol;
+            if (
+              !!col &&
+              !!row &&
+              this.getNotationXposByCol(col) > this.selectionPosition.x1 &&
+              this.getNotationXposByCol(col) < this.selectionPosition.x2 &&
+              this.getNotationYposByRow(row) > this.selectionPosition.y1 &&
+              this.getNotationYposByRow(row) < this.selectionPosition.y2
+            ) {
+              this.$store.dispatch("selectNotation", {
+                col: col,
+                row: row,
+              });
+            }
+          });
       }
     },
     moveSelection(position) {
       let rectSize = this.matrixMixin_getRectSize();
 
-      //console.debug("drag position x:" + this.dragPosition.x);
-      //console.debug("drag position y:" + this.dragPosition.y);
-      //console.debug("x:" + position.x);
-      //console.debug("y:" + position.y);
-
       // initial drag position
       if (this.dragPosition.x === 0) {
-        //console.debug("initial position");
         this.dragPosition.x = position.x;
         this.dragPosition.y = position.y;
         return;
       }
 
-      //console.debug("after initial");
       // movement is still too small
       if (
         Math.abs(position.x - this.dragPosition.x) < rectSize &&
@@ -212,9 +205,6 @@ export default {
       ) {
         return;
       }
-
-      ///console.debug("drag position x:" + this.dragPosition.x);
-      //console.debug("drag position y:" + this.dragPosition.y);
 
       const rectDeltaX = Math.round(
         (position.x - this.dragPosition.x) / rectSize
@@ -224,8 +214,6 @@ export default {
       );
 
       if (rectDeltaX != 0 || rectDeltaY != 0) {
-        //console.debug("move deltax:" + rectDeltaX);
-        //console.debug("move deltay:" + rectDeltaY);
         this.$store
           .dispatch("moveSelectedNotations", {
             rectDeltaX,
