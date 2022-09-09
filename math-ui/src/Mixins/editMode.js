@@ -3,8 +3,6 @@ export default {
   ADD_POWER: "ADD_POWER",
   FRACTION: "FRACTION",
   SQRT: "SQRT",
-  SELECT_FRACTION: "SELECT_FRACTION",
-  SELECT_SQRT: "SELECT_SQRT",
   DELETE: "DELETE", // after delete button pressed
   DELETING: "DELETING", // mouse clicked following delete button pressed
   SELECT: "SELECT", //  after select button pressed

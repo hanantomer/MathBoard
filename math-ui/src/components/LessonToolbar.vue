@@ -181,6 +181,7 @@
 <script>
 import matrixOverlayMixin from "../Mixins/matrixOverlayMixin";
 import createAccessLinkDialog from "./CreateAccessLinkDialog.vue";
+import { mapGetters } from "vuex";
 
 export default {
   components: {
@@ -188,11 +189,14 @@ export default {
   },
   mixins: [matrixOverlayMixin],
   props: {
-    _isAdmin: { type: Boolean },
-    _authorized: { type: Boolean },
     lessonId: { type: String },
   },
   methods: {
+    ...mapGetters({
+      getCurrentLesson: "getCurrentLesson",
+      getUser: "getUser",
+    }),
+
     $resetButtonsState() {
       this.deleteButtonActive = this.selectionButtonActive = this.fractionButtonActive = this.squareRootButtonActive = this.powerButtonActive = 1;
     },
@@ -234,18 +238,16 @@ export default {
       this.deleteButtonActive = this.selectionButtonActive = this.fractionButtonActive = 1;
     },
   },
-  watch: {
-    _isAdmin(newVal) {
-      this.isAdmin = newVal;
+  computed: {
+    isAdmin: function () {
+      return this.getCurrentLesson().UserId === this.getUser().id;
     },
-    _authorized(newVal) {
-      return (this.authorized = newVal);
+    authorized: function () {
+      return !!this.getUser().authorized;
     },
   },
   data: function () {
     return {
-      isAdmin: false,
-      authorized: false,
       isAccessLinkDialogOpen: false,
       deleteButtonActive: 1,
       selectionButtonActive: 1,

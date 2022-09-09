@@ -101,7 +101,7 @@ export default {
       return clickedRow * this.matrixMixin_getRectSize();
     },
     // either fraction or sqrt
-    setLine: function (row, fromCol, toCol) {
+    saveLine: function (row, fromCol, toCol) {
       let line = {
         type: this.notationType,
         row: row,
@@ -183,7 +183,7 @@ export default {
         console.log(
           "endEditLine, row:" + row + ",fromCol:" + fromCol + ",toCol:" + toCol
         );
-        this.setLine(row, fromCol, toCol);
+        this.saveLine(row, fromCol, toCol);
         this.$emit("ended"); // signal parent
       }
     },

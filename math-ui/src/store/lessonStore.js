@@ -7,8 +7,12 @@ export default {
   state: {
     lessons: [],
     currentLesson: {},
+    currentEditMode: "",
   },
   getters: {
+    getCurrentEditMode: (state) => {
+      return state.currentEditMode;
+    },
     getLessons: (state) => {
       return state.lessons;
     },
@@ -19,6 +23,7 @@ export default {
   mutations: {
     addLesson(state, lesson) {
       state.lessons.push(lesson);
+      state.currentLesson = lesson;
     },
     setCurrentLesson(state, lesson) {
       state.currentLesson = lesson;
@@ -28,6 +33,9 @@ export default {
     },
     removeAllLessons(state) {
       state.lessons = [];
+    },
+    setCurrentEditMode: function (state, editMode) {
+      state.currentEditMode = editMode;
     },
   },
   actions: {
@@ -59,6 +67,11 @@ export default {
     setCurrentLesson(context, payload) {
       context.commit("setCurrentLesson", payload);
     },
+    setCurrentEditMode(context, editMode) {
+      context.commit("setCurrentEditMode", editMode);
+      console.debug("new mode:" + editMode);
+    },
+
     removeLesson(context, payload) {
       context.commit("removeLesson", payload.id);
     },

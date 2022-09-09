@@ -3,33 +3,33 @@
     <v-card
       id="lineLeftHandle"
       class="lineHandle"
-      v-on:mousemove="handleMouseMove"
-      v-on:mouseup="endDrawLine"
       v-bind:style="{
         left: lineLeft - 5 + 'px',
         top: lineTop + 'px',
       }"
+      v-on:mousedown="leftHandleMouseDown"
+      v-on:mouseup="handleMouseUp"
     ></v-card>
     <v-card
       id="lineRightHandle"
       class="lineHandle"
-      v-on:mousemove="handleMouseMove"
-      v-on:mouseup="endDrawLine"
       v-bind:style="{
         left: lineRight + 'px',
         top: lineTop + 'px',
       }"
+      v-on:mousedown="rightHandleMouseDown"
+      v-on:mouseup="handleMouseUp"
     ></v-card>
     <v-divider
       style="color: red; z-index: 9999; height: 10px"
       id="line"
       class="line"
-      v-on:mouseup="lineMouseUp"
       v-bind:style="{
         left: lineLeft + 'px',
         top: lineTop + 'px',
         width: lineRight - lineLeft + 'px',
       }"
+      v-on:mouseup="handleMouseUp"
     ></v-divider>
     <p
       style="left: -2px; position: relative; z-index: 99; border: solid 1px"
@@ -43,74 +43,38 @@
 import notationMixin from "../Mixins/notationMixin";
 import matrixOverlayMixin from "../Mixins/matrixOverlayMixin";
 import userOutgoingOperationsSyncMixin from "../Mixins/userOutgoingOperationsSyncMixin";
-import eventManagerMixin from "../Mixins/eventManager";
+import selectionMixin from "../Mixins/selectionMixin";
+import notationType from "../Mixins/notationType";
+import EditMode from "../Mixins/editMode";
+
 import { mapGetters } from "vuex";
 export default {
   mixins: [
     notationMixin,
     matrixOverlayMixin,
     userOutgoingOperationsSyncMixin,
-    eventManagerMixin,
+    selectionMixin,
   ],
   name: "LineDrawer",
   props: {
-    notationType: { type: String },
-    startMouseDrawingPosition: { type: Object },
-    currentMousePosition: { type: Object },
-    selectedLineId: { type: String },
-    ended: { type: Boolean },
-  },
-  watch: {
-    startMouseDrawingPosition: {
-      immediate: true,
-      handler: function (position) {
-        if (
-          !!position &&
-          typeof position.x === "number" &&
-          isFinite(position.x)
-        ) {
-          this.startLineDrawing(position);
-        }
-      },
-    },
-    currentMousePosition: {
-      immediate: true,
-      handler: function (position) {
-        if (
-          !!position &&
-          typeof position.x === "number" &&
-          isFinite(position.x)
-        ) {
-          console.debug("right pos from watch:" + position.x);
-          this.updateLine(position.x); ///TODO support update of left poistion too
-        }
-      },
-    },
-    ended: {
-      immediate: true,
-      handler: function () {
-        if (!this.drawLineRelay.selectedLineId) {
-          this.endDrawLine();
-        }
-      },
-    },
-    selectedLineId: {
-      immediate: true,
-      handler: function (selectedLineId) {
-        if (!!selectedLineId) {
-          this.startLineEditing(selectedLineId);
-        }
-      },
-    },
+    svgId: { type: String },
   },
   data: function () {
     return {
+      notationType: "",
+      editStarted: false,
+      selectedLineId: null,
       linePosition: {
         x1: 0,
         x2: 0,
         y: 0,
       },
     };
+  },
+  mounted: function () {
+    this.registerSvgMouseDown();
+    this.registerSvgMouseMove();
+    this.registerSvgMouseUp();
   },
   computed: {
     lineLeft: function () {
@@ -128,65 +92,31 @@ export default {
     lineTop: function () {
       return this.linePosition.y;
     },
-    // lineLeftHandleLeft: function () {
-    //   console.debug(
-    //     "lineLeftHandleLeft:" +
-    //       Math.min(this.linePosition.x1, this.linePosition.x2) +
-    //       "px"
-    //   );
-    //   return Math.min(this.linePosition.x1, this.linePosition.x2);
-    // },
-    // lineRightHandleLeft: function () {
-    //   console.debug(
-    //     "lineRightHandleLeft" +
-    //       Math.max(this.linePosition.x1, this.linePosition.x2) +
-    //       "px"
-    //   );
-    //   return Math.max(this.linePosition.x1, this.linePosition.x2) ;
-    // },
-    // lineHandleTop: function () {
-    //   console.debug(
-    //     "lineHandleTop:" + this.linePosition.y + this.getTabsHeight() - 5 + "px"
-    //   );
-    //   return this.linePosition.y + this.getTabsHeight() - 5 + "px";
-    // },
   },
   methods: {
     ...mapGetters({
       getNotations: "getNotations",
+      getCurrentEditMode: "getCurrentEditMode",
     }),
+
     /// TODO move to global
     getNearestRow: function (clickedYPos) {
       let clickedRow = Math.round(clickedYPos / this.matrixMixin_getRectSize());
       return clickedRow * this.matrixMixin_getRectSize();
     },
-    // either fraction or sqrt
-    setLine: function (row, fromCol, toCol) {
-      let line = {
-        type: this.notationType,
-        row: row,
-        fromCol: fromCol,
-        toCol: toCol,
-      };
-
-      this.$store
-        .dispatch("addNotation", line)
-        .then((line) => {
-          this.userOperationsMixin_syncOutgoingSaveNotation(line);
-        })
-        .catch((e) => {
-          console.error(e);
-        });
-    },
     startLineDrawing: function (position) {
-      let y = this.getNearestRow(position.y);
+      ///TODO move to function
+      this.editStarted = true;
       this.linePosition.x2 = this.linePosition.x1 = position.x;
-      this.linePosition.y = y;
+      this.linePosition.y = this.getNearestRow(position.y);
     },
-    startLineEditing: function (selectedLineId) {
-      let storedNotation = this.getNotations()[selectedLineId];
+    startLineEditing: function () {
+      this.editStarted = true;
+
+      this.hideLine(this.selectedLineId);
+      let storedNotation = this.getNotations()[this.selectedLineId];
       if (!storedNotation) {
-        console.error(`selectedLineId: ${selectedLineId} not found `);
+        console.error(`selectedLineId: ${this.selectedLineId} not found `);
         return;
       }
 
@@ -209,14 +139,7 @@ export default {
           this.linePosition.y
       );
     },
-    // updateLineRightPosition: function (x) {
-    //   console.debug("updateLineRightPosition:" + x);
-    //   this.linePosition.x2 = x;
-    // },
-    // updateLineLeftPosition: function (x) {
-    //   this.linePosition.x1 = x;
-    // },
-    updateLine: function (position) {
+    setLine: function (position) {
       if (position < this.linePosition.x1) {
         this.linePosition.x1 = position;
       }
@@ -224,16 +147,32 @@ export default {
         this.linePosition.x2 = position;
       }
     },
+    saveLine: function (row, fromCol, toCol) {
+      let line = {
+        type: this.notationType,
+        row: row,
+        fromCol: fromCol,
+        toCol: toCol,
+      };
 
-    lineMouseUp() {
-      if (!this.selectedLineId) {
-        this.endDrawLine();
-      }
+      this.$store
+        .dispatch("addNotation", line)
+        .then((line) => {
+          this.userOperationsMixin_syncOutgoingSaveNotation(line);
+        })
+        .catch((e) => {
+          console.error(e);
+        });
     },
-    reset: function () {
-      this.linePosition.x1 = this.linePosition.x2 = this.linePosition.y = 0;
+    hideLine(lineId) {
+      document.getElementById(lineId).style.display = "none";
+    },
+    showLine(lineId) {
+      document.getElementById(lineId).style.display = "block";
     },
     endDrawLine: function () {
+      if (!!this.selectedLineId) this.showLine(this.selectedLineId);
+
       if (this.linePosition.x2 != this.linePosition.x1) {
         let fromCol = Math.floor(
           this.linePosition.x1 / this.matrixMixin_getRectSize()
@@ -247,25 +186,102 @@ export default {
           this.linePosition.y / this.matrixMixin_getRectSize()
         );
         console.log("endDrawLine");
-        this.setLine(row, fromCol, toCol);
+        this.saveLine(row, fromCol, toCol);
         this.$emit("ended"); // signal parent
       }
+      this.reset();
     },
-    handleMouseMove(e) {
+    reset: function () {
+      this.linePosition.x1 = this.linePosition.x2 = this.linePosition.y = 0;
+      this.editStarted = false;
+    },
+    registerSvgMouseMove: function () {
+      document
+        .getElementById(this.svgId)
+        .addEventListener("mousemove", this.handleSvgMouseMove);
+    },
+    registerSvgMouseDown: function (e) {
+      document
+        .getElementById(this.svgId)
+        .addEventListener("mousedown", this.handleSvgMouseDown);
+    },
+
+    registerSvgMouseUp: function () {
+      document
+        .getElementById(this.svgId)
+        .addEventListener("mouseup", this.handleMouseUp);
+    },
+    leftHandleMouseDown() {
+      this.editStarted = true;
+    },
+    rightHandleMouseDown() {
+      this.editStarted = true;
+    },
+    handleSvgMouseDown(e) {
       // left button is pressed
       if (e.buttons !== 1) {
         return;
       }
-      //this.updateLine(e.clientX);
+
+      if (!!this.editStarted) {
+        return;
+      }
+
+      if (
+        this.getCurrentEditMode() === EditMode.FRACTION ||
+        this.getCurrentEditMode() === EditMode.SQRT
+      ) {
+        // new line
+        this.notationType =
+          this.getCurrentEditMode() === EditMode.FRACTION
+            ? notationType.FRACTION
+            : notationType.SQRT;
+
+        this.startLineDrawing({ x: e.offsetX, y: e.offsetY });
+      }
+
+      //existing line
+      let fraction = this.selectionMixin_findFractionLineAtClickedPosition(e);
+      if (!!fraction) {
+        this.notationType = notationType.FRACTION;
+        this.selectedLineId = fraction.id;
+        this.startLineEditing();
+        return;
+      }
+
+      let sqrt = this.selectionMixin_findSqrtLineAtClickedPosition(e);
+      if (!!sqrt) {
+        this.notationType = notationType.SQRT;
+        this.selectedLineId = sqrt.id;
+        this.startLineEditing();
+      }
     },
-    // rightLineHandleMouseMove(e) {
-    //   // left button is pressed
-    //   if (e.buttons !== 1) {
-    //     return;
-    //   }
-    //   console.debug("rightLineHandleMouseMove");
-    //   this.updateLine(e.clientX - this.getTabsLeft());
-    // },
+    handleSvgMouseMove(e) {
+      // left button is pressed
+      if (e.buttons !== 1) {
+        return;
+      }
+
+      if (this.linePosition.x1 === 0 && this.linePosition.x2 === 0) {
+        return;
+      }
+
+      if (!this.editStarted) {
+        return;
+      }
+
+      this.setLine(e.offsetX);
+    },
+    handleMouseUp() {
+      if (this.linePosition.x1 === 0 && this.linePosition.x2 === 0) {
+        return;
+      }
+      if (!this.editStarted) {
+        return;
+      }
+
+      this.endDrawLine();
+    },
   },
 };
 </script>

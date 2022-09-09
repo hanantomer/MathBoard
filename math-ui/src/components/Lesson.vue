@@ -12,8 +12,6 @@
           <v-col colls="1">
             <lesson-toolbar
               ref="editoToolbar"
-              :_isAdmin="isAdmin"
-              :_authorized="authorized"
               :lessonId="lessonId"
               v-on="{
                 selectionButtonPressed: eventManager_selectionButtonPressed,
@@ -53,34 +51,22 @@
                     v-on="{
                       ended: eventManager_endDrawLine,
                     }"
-                    :notationType="drawLineRelay.notationType"
-                    :startMouseDrawingPosition="
-                      drawLineRelay.startMousePosition
-                    "
-                    :currentMousePosition="drawLineRelay.currentMousePosition"
-                    :ended="drawLineRelay.ended"
-                    :selectedLineId="drawLineRelay.selectedLineId"
-                    v-show="
-                      eventManager_getCurrentMode === 'FRACTION' ||
-                      eventManager_getCurrentMode === 'SQRT' ||
-                      eventManager_getCurrentMode === 'SELECT_FRACTION' ||
-                      eventManager_getCurrentMode === 'SELECT_SQRT'
-                    "
+                    :svgId="svgId"
                   ></lineDrawer>
                 </v-tab-item>
                 <v-tab-item> </v-tab-item>
               </v-tabs-items>
 
               <areaSelector
-                :svg="svgId"
+                :svgId="svgId"
                 :initialPosition="selectionAreaRelay.initialPosition"
                 :currentPosition="selectionAreaRelay.currentPosition"
                 :currentMovePosition="selectionAreaRelay.currentMovePosition"
                 :selectionEnded="selectionAreaRelay.ended"
                 :moveEnded="selectionAreaRelay.moveEnded"
                 v-show="
-                  eventManager_getCurrentMode === 'SELECTING' ||
-                  eventManager_getCurrentMode === 'MOVESELECTION'
+                  getCurrentEditMode() === 'SELECTING' ||
+                  getCurrentEditMode() === 'MOVESELECTION'
                 "
               ></areaSelector>
             </div>
@@ -95,7 +81,6 @@
 </template>
 
 <script>
-import * as d3 from "d3";
 import { mapState } from "vuex";
 import { mapGetters } from "vuex";
 import matrixOverlayMixin from "../Mixins/matrixOverlayMixin";
@@ -122,8 +107,9 @@ export default {
     window.removeEventListener("keyup", this.eventManager_keyUp);
   },
   mounted: function () {
+    // for keyboard base editing
     this.$loadLesson().then(() => {
-      window.addEventListener("keyup", this.eventManager_keyUp); /// TODO check if still required
+      window.addEventListener("keyup", this.eventManager_keyUp);
     });
     this.matrixMixin_setMatrix(this.svgId);
     this.reRenderMathJax();
@@ -150,7 +136,7 @@ export default {
       notations: (state) => {
         return state.notationStore.notations;
       },
-      authorized: (state) => state.userStore.loggedUser.authorized,
+      //      authorized: (state) => state.userStore.loggedUser.authorized,
       lessonName: (state) => {
         return state.lessonStore.currentLesson.name;
       },
@@ -174,6 +160,7 @@ export default {
       getLessons: "getLessons",
       getUser: "getUser",
       getSymbols: "getSymbols",
+      getCurrentEditMode: "getCurrentEditMode",
     }),
     $loadLesson: async function () {
       // load from db to store

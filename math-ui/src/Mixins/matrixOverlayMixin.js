@@ -46,10 +46,10 @@ export default {
         this.prevSelectedNotation.style.fill = "";
       this.prevSelectedNotation = clickedNotation;
 
-      clickedNotation.style.fill =
-        clickedNotation.style.fill == this.selectedRecColor
-          ? ""
-          : this.selectedRecColor;
+      clickedNotation.style.fill = this.selectedRecColor;
+      //clickedNotation.style.fill == this.selectedRecColor
+      //  ? ""
+      //  : this.selectedRecColor;
     },
     //https://stackoverflow.com/questions/22428484/get-element-from-point-when-you-have-overlapping-elements
     matrixMixin_findClickedObject(point, tagName, notationType) {
