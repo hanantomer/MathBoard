@@ -9,6 +9,7 @@
       }"
       v-on:mousedown="leftHandleMouseDown"
       v-on:mouseup="handleMouseUp"
+      v-show="editStarted === true || !!selectedLineId"
     ></v-card>
     <v-card
       id="lineRightHandle"
@@ -19,6 +20,7 @@
       }"
       v-on:mousedown="rightHandleMouseDown"
       v-on:mouseup="handleMouseUp"
+      v-show="editStarted === true || !!selectedLineId"
     ></v-card>
     <v-divider
       style="color: red; z-index: 9999; height: 10px"
@@ -30,6 +32,7 @@
         width: lineRight - lineLeft + 'px',
       }"
       v-on:mouseup="handleMouseUp"
+      v-show="editStarted === true || !!selectedLineId"
     ></v-divider>
     <p
       style="left: -2px; position: relative; z-index: 99; border: solid 1px"
@@ -61,8 +64,8 @@ export default {
   },
   data: function () {
     return {
-      notationType: "",
       editStarted: false,
+      notationType: "",
       selectedLineId: null,
       linePosition: {
         x1: 0,
@@ -110,8 +113,8 @@ export default {
       this.linePosition.x2 = this.linePosition.x1 = position.x;
       this.linePosition.y = this.getNearestRow(position.y);
     },
-    startLineEditing: function () {
-      this.editStarted = true;
+    selectLine: function () {
+      this.matrixMixin_unselectPreviouslySelectedtRect();
 
       this.hideLine(this.selectedLineId);
       let storedNotation = this.getNotations()[this.selectedLineId];
@@ -131,7 +134,7 @@ export default {
 
       this.linePosition.y = this.getNotationYposByRow(storedNotation.row);
       console.debug(
-        "startLineEditing: x1:" +
+        "selectLine: x1:" +
           this.linePosition.x1 +
           ",x2:" +
           this.linePosition.x2 +
@@ -245,7 +248,7 @@ export default {
       if (!!fraction) {
         this.notationType = notationType.FRACTION;
         this.selectedLineId = fraction.id;
-        this.startLineEditing();
+        this.selectLine();
         return;
       }
 
@@ -253,7 +256,7 @@ export default {
       if (!!sqrt) {
         this.notationType = notationType.SQRT;
         this.selectedLineId = sqrt.id;
-        this.startLineEditing();
+        this.selectLine();
       }
     },
     handleSvgMouseMove(e) {

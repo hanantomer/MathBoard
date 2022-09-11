@@ -51,6 +51,10 @@ export default {
       //  ? ""
       //  : this.selectedRecColor;
     },
+    matrixMixin_unselectPreviouslySelectedtRect(clickedNotation) {
+      if (!!this.prevSelectedNotation)
+        this.prevSelectedNotation.style.fill = "";
+    },
     //https://stackoverflow.com/questions/22428484/get-element-from-point-when-you-have-overlapping-elements
     matrixMixin_findClickedObject(point, tagName, notationType) {
       var elements = [];
