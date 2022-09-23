@@ -21,8 +21,8 @@ export default {
       rectSize: 30,
       lineHeight: 4,
       topLevelGroup: null,
-      prevSelectedNotation: null,
-      selectedRecColor: "lightcyan",
+      prevActiveRect: null,
+      activeRectColor: "lightcyan",
       borderColor: "lightgray",
       svgns: "http://www.w3.org/2000/svg",
     };
@@ -40,20 +40,14 @@ export default {
     reRenderMathJax() {
       window.MathJax.typeset();
     },
-    toggleSelectedNotation(clickedNotation) {
+    toggleActiveRect(clickedNotation) {
       if (!clickedNotation) return;
-      if (!!this.prevSelectedNotation)
-        this.prevSelectedNotation.style.fill = "";
-      this.prevSelectedNotation = clickedNotation;
-
-      clickedNotation.style.fill = this.selectedRecColor;
-      //clickedNotation.style.fill == this.selectedRecColor
-      //  ? ""
-      //  : this.selectedRecColor;
+      if (!!this.prevActiveRect) this.prevActiveRect.style.fill = "";
+      this.prevActiveRect = clickedNotation;
+      clickedNotation.style.fill = this.activeRectColor;
     },
     matrixMixin_unselectPreviouslySelectedtRect(clickedNotation) {
-      if (!!this.prevSelectedNotation)
-        this.prevSelectedNotation.style.fill = "";
+      if (!!this.prevActiveRect) this.prevActiveRect.style.fill = "";
     },
     //https://stackoverflow.com/questions/22428484/get-element-from-point-when-you-have-overlapping-elements
     matrixMixin_findClickedObject(point, tagName, notationType) {
@@ -87,13 +81,13 @@ export default {
           (!notationType || notationType == item.attributes.type.value)
       );
     },
-    matrixMixin_setMatrix(svgId) {
+    matrixMixin_setMatrix() {
       for (var row = 0; row < this.rowsNum; row++) {
         this.matrix.push(d3.range(this.colsNum));
       }
 
       this.topLevelGroup = d3
-        .select("#" + svgId)
+        .select("#" + this.svgId)
         .selectAll("g")
         .data(this.matrix)
         .enter()
@@ -129,29 +123,29 @@ export default {
 
       this.topLevelGroup.selectAll("rect").attr("stroke-opacity", this.opacity);
     },
-    matrixMixin_selectRectByCoordinates(clickedCoordinates) {
+    matrixMixin_activateRectByCoordinates(clickedCoordinates) {
       let rect = document
-        .querySelector(`g[row="${clickedCoordinates.row}"]`)
+        .querySelector(
+          `svg[id="${this.svgId}"] g[row="${clickedCoordinates.row}"]`
+        )
         .querySelector(
           `rect[col="${clickedCoordinates.col ?? clickedCoordinates.fromCol}"]`
         );
 
-      if (rect) this.toggleSelectedNotation(rect, clickedCoordinates);
+      if (rect) this.toggleActiveRect(rect, clickedCoordinates);
     },
     matrixMixin_getRectSize() {
       return this.rectSize;
     },
     getNextRect(horizontalStep, verticalStep) {
-      if (!this.prevSelectedNotation) {
+      if (!this.prevActiveRect) {
         return;
       }
 
-      let col = parseInt(this.prevSelectedNotation.attributes.col.value);
+      let col = parseInt(this.prevActiveRect.attributes.col.value);
       let nextCol = col;
 
-      let row = parseInt(
-        this.prevSelectedNotation.parentNode.attributes.row.value
-      );
+      let row = parseInt(this.prevActiveRect.parentNode.attributes.row.value);
       let nextRow = row;
 
       if (col + horizontalStep < this.colsNum && col + horizontalStep >= 0) {
@@ -181,7 +175,7 @@ export default {
       let nextRect = this.getNextRect(horizontalStep, verticalStep);
       if (!!nextRect) {
         nextRect.type = "rect";
-        this.$store.dispatch("setSelectedRect", nextRect);
+        this.$store.dispatch("setActiveRect", nextRect);
         this.userOperationsMixin_syncOutgoingSelectedPosition(nextRect);
       }
     },

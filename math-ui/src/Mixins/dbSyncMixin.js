@@ -134,7 +134,6 @@ module.exports = {
         this.handleError(error);
       }
     },
-
     saveNotation: async function (notation) {
       let notationAtCoordinates = await this.getNotationByCoordinates(notation);
       let res = null;

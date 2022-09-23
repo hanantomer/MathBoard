@@ -39,7 +39,7 @@
               icon
               v-on="on"
               v-bind="attrs"
-              :disabled="!authorized && !isAdmin"
+              :disabled="!authorized && !isTeacher"
               v-on:click="$deleteButtonPressed"
               x-small
               ><v-icon>mdi-delete</v-icon></v-btn
@@ -50,7 +50,7 @@
       </v-tooltip>
 
       <!-- create access link -->
-      <v-tooltip top hidden v-if="isAdmin" v-model="showAccessTooltip">
+      <v-tooltip top hidden v-if="isTeacher" v-model="showAccessTooltip">
         <template v-slot:activator="{ on, attrs }">
           <v-btn
             icon
@@ -84,7 +84,7 @@
               v-on="on"
               v-bind="attrs"
               v-on:click="$drawFractionLineButtonPressed"
-              :disabled="!authorized && !isAdmin"
+              :disabled="!authorized && !isTeacher"
             >
               <v-icon>mdi-tooltip-minus-outline</v-icon>
             </v-btn>
@@ -110,7 +110,7 @@
               v-on="on"
               v-bind="attrs"
               v-on:click="$drawSqrtLineButtonPressed"
-              :disabled="!authorized && !isAdmin"
+              :disabled="!authorized && !isTeacher"
             >
               <v-icon>mdi-square-root</v-icon>
             </v-btn>
@@ -136,7 +136,7 @@
               v-on="on"
               v-bind="attrs"
               v-on:click="$powerButtonPressed"
-              :disabled="!authorized && !isAdmin"
+              :disabled="!authorized && !isTeacher"
             >
               <v-icon>mdi-exponent</v-icon>
             </v-btn>
@@ -149,7 +149,7 @@
       <v-tooltip top hidden>
         <template v-slot:activator="{ on, attrs }">
           <v-btn
-            v-if="isAdmin"
+            v-if="isTeacher"
             @click="$toggleLessonMatrix"
             icon
             color="white"
@@ -165,7 +165,7 @@
       </v-tooltip>
 
       <v-btn
-        :disabled="!authorized && !isAdmin"
+        :disabled="!authorized && !isTeacher"
         v-for="s in signs"
         :key="s.sign"
         v-on:click="$symbolButtonPressed"
@@ -179,7 +179,7 @@
 </template>
 
 <script>
-import matrixOverlayMixin from "../Mixins/matrixOverlayMixin";
+import matrixMixin from "../Mixins/matrixMixin";
 import createAccessLinkDialog from "./CreateAccessLinkDialog.vue";
 import { mapGetters } from "vuex";
 
@@ -187,10 +187,7 @@ export default {
   components: {
     createAccessLinkDialog,
   },
-  mixins: [matrixOverlayMixin],
-  props: {
-    lessonId: { type: String },
-  },
+  mixins: [matrixMixin],
   methods: {
     ...mapGetters({
       getCurrentLesson: "getCurrentLesson",
@@ -230,7 +227,7 @@ export default {
     },
     $createAccessLink: function (link) {
       this.$store.dispatch("createAccessLink", {
-        LessonId: this.lessonId,
+        LessonId: this.getCurrentLesson().id,
         link: link,
       });
     },
@@ -239,7 +236,7 @@ export default {
     },
   },
   computed: {
-    isAdmin: function () {
+    isTeacher: function () {
       return this.getCurrentLesson().UserId === this.getUser().id;
     },
     authorized: function () {

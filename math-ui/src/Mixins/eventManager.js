@@ -5,13 +5,13 @@ export default {
   data: function () {
     return {
       //currentMode: EditMode.ADD_SYMBOL,
-      selectionAreaRelay: {
-        initialPosition: { x: 0, y: 0 },
-        currentPosition: { x: 0, y: 0 },
-        currentMovePosition: { x: 0, y: 0 },
-        ended: false,
-        moveEnded: false,
-      },
+      // selectionAreaRelay: {
+      //   initialPosition: { x: 0, y: 0 },
+      //   currentPosition: { x: 0, y: 0 },
+      //   currentMovePosition: { x: 0, y: 0 },
+      //   ended: false,
+      //   moveEnded: false,
+      // },
       // drawLineRelay: {
       //   notationType: "",
       //   startMousePosition: {},
@@ -23,8 +23,6 @@ export default {
       //     this.currentMousePosition = {};
       //   },
       // },
-      tabsHeight: null,
-      tabsLeft: null,
     };
   },
   methods: {
@@ -34,26 +32,6 @@ export default {
     ...mapActions({
       setCurrentEditMode: "setCurrentEditMode",
     }),
-    getTabsHeight: function () {
-      if (!this.tabsHeight && document.getElementById("tabs")) {
-        this.tabsHeight = document
-          .getElementById("tabs")
-          .getBoundingClientRect().height;
-      }
-      return this.tabsHeight;
-    },
-    getTabsLeft: function () {
-      if (!this.tabsLeft && document.getElementById("tabs")) {
-        this.tabsLeft = document
-          .getElementById("tabs")
-          .getBoundingClientRect().x;
-      }
-      return this.tabsHeight;
-    },
-    // setCurrentEditMode(newMode) {
-    //   this.getCurrentEditMode() = newMode;
-    //   console.debug("new mode:" + newMode);
-    // },
     toggleSelectionMode() {
       if (this.getCurrentEditMode() == EditMode.SELECT) {
         this.endSelectionMode();
@@ -65,7 +43,6 @@ export default {
       this.reset();
       this.fractionButtonActive = 0;
       await this.setCurrentEditMode(EditMode.FRACTION);
-      //      this.drawLineRelay.notationType = notationType.FRACTION;
     },
     async startSqrtMode() {
       this.reset();
@@ -77,7 +54,7 @@ export default {
       this.reset();
     },
     toggleDeleteMode() {
-      if (this.getCurrentEditMode() == EditMode.DELETING) {
+      if (this.getCurrentEditMode() == EditMode.DELETE) {
         this.endDeleteMode();
       } else {
         this.startDeleteMode();
@@ -91,20 +68,23 @@ export default {
       }
     },
     hideDeleteCursor() {
-      Array.from(document.getElementById(this.svgId)).forEach((e) =>
-        e.classList.remove("deleteButtonActive")
-      );
+      //Array.from(document.getElementById(this.svgId)).forEach((e) =>
+      //  e.classList.remove("deleteButtonActive")
+      //);
+      document
+        .getElementById(this.svgId)
+        .classList.remove("deleteButtonActive");
     },
     showDeleteCursor() {
-      Array.from(document.getElementById(this.svgId)).forEach((e) =>
-        e.classList.add("deleteButtonActive")
-      );
+      //Array.from(document.getElementById(this.svgId)).forEach((e) =>
+      //  e.classList.add("deleteButtonActive")
+      //);
+      document.getElementById(this.svgId).classList.add("deleteButtonActive");
     },
     async reset() {
-      this.$refs.editoToolbar.resetToggleButtons();
+      this.$refs.editorToolbar.resetToggleButtons();
       this.hideDeleteCursor();
       await this.setCurrentEditMode(EditMode.ADD_SYMBOL);
-      //this.drawLineRelay.reset();
     },
     async startDeleteMode() {
       this.reset();
@@ -118,19 +98,14 @@ export default {
     async startSelectionMode() {
       this.reset();
       this.selectionButtonActive = 0;
-      this.selectionAreaRelay.ended = false;
-      this.selectionAreaRelay.moveEnded = false;
       await this.setCurrentEditMode(EditMode.SELECT);
     },
     async endSelectionMode() {
-      // don't fully reset here to allow moving selection
-      this.$refs.editoToolbar.resetToggleButtons();
-      await this.setCurrentEditMode(EditMode.MOVESELECTION);
-      this.selectionAreaRelay.ended = true;
+      this.$refs.editorToolbar.resetToggleButtons();
+      await this.setCurrentEditMode(EditMode.ADD_SYMBOL);
     },
     async endMoveSelectionMode() {
       await this.setCurrentEditMode(EditMode.ADD_SYMBOL);
-      this.selectionAreaRelay.moveEnded = true;
     },
     async startPowerMode() {
       this.reset();
@@ -139,19 +114,6 @@ export default {
     },
     endPowerMode() {
       this.reset();
-    },
-    async startMoveMode() {
-      await this.setCurrentEditMode(EditMode.MOVESELECTION);
-    },
-    endMoveMode() {
-      this.reset();
-    },
-    moveSelection(e) {
-      //this.endMoveMode();
-      this.notationMixin_moveSelection(e);
-    },
-    setSelectedNotations(e) {
-      this.selectionMixin_endSelect(e);
     },
     eventManager_selectionButtonPressed() {
       this.toggleSelectionMode();
@@ -177,31 +139,18 @@ export default {
     },
     async eventManager_mouseDown(e) {
       if (
-        // this mouse down is handled by LineDrawer
         this.getCurrentEditMode() === EditMode.FRACTION ||
-        this.getCurrentEditMode() === EditMode.SQRT
+        this.getCurrentEditMode() === EditMode.SQRT ||
+        this.getCurrentEditMode() === EditMode.SELECT ||
+        this.getCurrentEditMode() === EditMode.DELETE
       ) {
         return;
       }
 
-      if (this.getCurrentEditMode() === EditMode.SELECT) {
-        await this.setCurrentEditMode(EditMode.SELECTING); //  show selectionArea component
-
-        this.selectionAreaRelay.initialPosition = {
-          x: e.oofsetX,
-          y: e.offsetY,
-        };
-        return;
-      }
-      if (this.getCurrentEditMode() === EditMode.DELETE) {
-        await this.setCurrentEditMode(EditMode.DELETING);
-        return;
-      }
-
-      let selectedRect = this.selectionMixin_findRectAtClickedPosition(e);
-      if (!!selectedRect) {
+      let activeRect = this.activateRectMixin_findRectAtClickedPosition(e);
+      if (!!activeRect) {
         await this.setCurrentEditMode(EditMode.ADD_SYMBOL);
-        this.selectionMixin_selectRect(selectedRect);
+        this.activateRectMixin_activateRect(activeRect);
         return;
       }
     },
@@ -269,35 +218,10 @@ export default {
       }
     },
     eventManager_mouseUp(e) {
-      if (this.getCurrentEditMode() === EditMode.SELECTING) {
-        this.endSelectionMode();
-        return;
-      }
-
-      if (this.getCurrentEditMode() === EditMode.MOVESELECTION) {
-        this.moveSelection(e);
-        this.endMoveSelectionMode();
-        return;
-      }
-
-      if (this.getCurrentEditMode() === EditMode.DELETING) {
+      if (this.getCurrentEditMode() === EditMode.DELETE) {
         this.endDeleteMode();
         return;
       }
-
-      // if (
-      //   this.getCurrentEditMode() === EditMode.FRACTION ||
-      //   this.getCurrentEditMode() === EditMode.SELECT_FRACTION ||
-      //   this.getCurrentEditMode() === EditMode.SQRT ||
-      //   this.getCurrentEditMode() === EditMode.SELECT_SQRT
-      // ) {
-      //   //this.drawLineRelay.ended = !this.drawLineRelay.ended;
-      //   return;
-      // }
-    },
-    // start moving selection
-    eventManager_selectionMouseDown(e) {
-      this.startMoveMode();
     },
     eventManager_mouseMove(e) {
       this.showFractionLineTooltip = false;
@@ -306,45 +230,7 @@ export default {
       if (e.buttons !== 1) {
         return;
       }
-
-      // if (this.getCurrentEditMode() === EditMode.SELECT_FRACTION) {
-      //   this.setCurrentEditMode(EditMode.FRACTION);
-      // }
-
-      // if (this.getCurrentEditMode() === EditMode.SELECT_SQRT) {
-      //   this.setCurrentEditMode(EditMode.SQRT);
-      // }
-
-      // if (
-      //   this.getCurrentEditMode() === EditMode.FRACTION ||
-      //   this.getCurrentEditMode() === EditMode.SQRT
-      // ) {
-      //   this.drawLineRelay.currentMousePosition = {
-      //     x: e.offsetX,
-      //     y: e.offsetY,
-      //   };
-      //   return;
-      // }
-
-      // during selecting arae
-      if (this.getCurrentEditMode() === EditMode.SELECTING) {
-        this.selectionAreaRelay.currentPosition = {
-          x: e.offsetX,
-          y: e.offsetY,
-        };
-        return;
-      }
-
-      // during move selected symbols
-      if (this.getCurrentEditMode() === EditMode.MOVESELECTION) {
-        this.selectionAreaRelay.currentMovePosition = {
-          x: e.offsetX,
-          y: e.offsetY,
-        };
-        return;
-      }
-
-      if (this.getCurrentEditMode() === EditMode.DELETING) {
+      if (this.getCurrentEditMode() === EditMode.DELETE) {
         this.notationMixin_removeNotationsAtMousePosition(e);
         return;
       }

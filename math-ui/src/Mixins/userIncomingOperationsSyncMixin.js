@@ -9,7 +9,7 @@ client.configure(socketio(socket));
 
 export default {
   methods: {
-    mixin_syncIncomingUserOperations: async function (lessonId, isAdmin) {
+    mixin_syncIncomingUserOperations: async function (lessonId, isTeacher) {
       // this will route events from feathers
       await client.service("authentication").create({
         query: { access_token: this.getAccessToken(), lessonId: lessonId },
@@ -35,13 +35,13 @@ export default {
       });
       client.service("selectedPosition").on("updated", (selectedPosition) => {
         if (selectedPosition.UserId !== this.getUser().id) {
-          _store.dispatch("setSelectedRect", selectedPosition);
+          _store.dispatch("setActiveRect", selectedPosition);
         }
       });
       client.service("authorization").on("updated", (user) => {
         _store.dispatch("setUser", user);
       });
-      if (isAdmin) {
+      if (isTeacher) {
         client.service("heartbeat").on("updated", (user) => {
           if (user.id !== this.getUser().id) {
             _store.dispatch("updateStudentHeartbeat", user);

@@ -1,3 +1,4 @@
+//  questions of current lesson
 import dbSyncMixin from "../Mixins/dbSyncMixin";
 
 export default {

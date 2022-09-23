@@ -3,6 +3,8 @@ import Welcome from "../components/Welcome.vue";
 import Login from "../components/Login.vue";
 import Lessons from "../components/Lessons.vue";
 import Lesson from "../components/Lesson.vue";
+import Questions from "../components/Questions.vue";
+import Question from "../components/Question.vue";
 import store from "../store/index.js";
 import authMixin from "../Mixins/authMixin.js";
 
@@ -26,9 +28,22 @@ const router = new VueRouter({
       meta: { requiresAuth: true },
     },
     {
-      path: "/symbols/:lessonId",
-      name: "symbols",
+      path: "/lesson/:lessonId",
+      name: "lesson",
       component: Lesson,
+      props: true,
+      meta: { requiresAuth: true },
+    },
+    {
+      path: "/questions",
+      component: Questions,
+      props: true,
+      meta: { requiresAuth: true },
+    },
+    {
+      path: "/question/:questionId",
+      name: "question",
+      component: Question,
       props: true,
       meta: { requiresAuth: true },
     },

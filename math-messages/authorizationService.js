@@ -31,7 +31,7 @@ class AuhorizationService {
     }
 
     let isOwner =
-      !!user && dbUtil.isAdmin(user.id, data.authorization.lessonId);
+      !!user && dbUtil.isTeacher(user.id, data.authorization.lessonId);
     if (isOwner) {
       return {
         userId: data.authorization.student,

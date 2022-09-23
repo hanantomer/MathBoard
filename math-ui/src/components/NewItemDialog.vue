@@ -3,8 +3,8 @@
     <v-dialog v-model="show" persistent max-width="400px" min-height="400x">
       <v-form @submit.prevent="save">
         <v-card>
-          <v-card-title>
-            <span class="headline">Specify lesson name</span>
+          <v-card-title class="headline">
+            <span>{{ title }} </span>
           </v-card-title>
           <v-card-text>
             <v-container>
@@ -41,18 +41,20 @@
 <script>
 export default {
   props: {
-    dialog: { show: false, name: "" },
+    dialog: { show: false, name: "", title: "" },
   },
   watch: {
     dialog(val) {
       this.show = val.show;
       this.name = val.name;
+      this.title = val.title;
     },
   },
   data() {
     return {
       name: "",
       show: false,
+      title: "",
     };
   },
   methods: {
@@ -62,3 +64,9 @@ export default {
   },
 };
 </script>
+<style scoped>
+.headline {
+  background-color: lightgray;
+  font-size: smaller;
+}
+</style>

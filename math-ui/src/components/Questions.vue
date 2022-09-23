@@ -1,18 +1,25 @@
 <template>
   <v-container>
     <NewItemDialog
-      :dialog="lessonDialog"
-      v-on="{ save: saveLesson }"
+      :dialog="questionDialog"
+      v-on="{ save: saveQuestion }"
     ></NewItemDialog>
     <v-card class="mx-auto" max-width="500">
       <v-toolbar color="primary" dark>
-        <v-toolbar-title>My Lessons</v-toolbar-title>
+        <v-toolbar-title>Lesson Questions</v-toolbar-title>
 
         <v-spacer></v-spacer>
 
-        <v-btn icon v-on:click="openLessonDialog">
+        <v-btn icon v-on:click="openQuestionDialog">
           <v-icon>mdi-plus</v-icon>
         </v-btn>
+        <v-combobox
+          v-model="select"
+          :items="lessons"
+          label="Choose a lesson"
+          outlined
+          dense
+        ></v-combobox>
       </v-toolbar>
 
       <v-list two-line>
@@ -20,9 +27,9 @@
           <v-list-item
             v-for="item in items"
             :key="item.id"
-            @click="seletctLesson(item)"
+            @click="seletctQuestion(item)"
           >
-            <v-list-item-content class="lesson_title">
+            <v-list-item-content class="question_title">
               <v-list-item-title v-text="item.name"> </v-list-item-title>
             </v-list-item-content>
           </v-list-item>
@@ -38,53 +45,59 @@ import NewItemDialog from "./NewItemDialog.vue";
 
 export default {
   components: { NewItemDialog },
-  name: "Lessons",
+  name: "Questions",
   mounted() {
-    this.loadLessons().then((lessons) => {
-      if (!lessons) {
-        this.openLessonDialog();
+    this.loadQuestions().then((questions) => {
+      if (!questions) {
+        this.openQuestionDialog();
       }
     });
   },
   computed: {
-    items() {
+    lessons() {
+      return this.getQuestions();
+    },
+    lessons() {
       return this.getLessons();
     },
   },
   methods: {
     ...mapActions({
       loadLessons: "loadLessons",
-      addLesson: "addLesson",
-      setCurrentLesson: "setCurrentLesson",
+      loadQuestions: "loadQuestions",
+      addQuestion: "addQuestion",
+      setCurrentLesson: "setCurrentQuestion",
+      setCurrenQuestion: "setCurrenQuestion",
     }),
     ...mapGetters({
       getLessons: "getLessons",
+      getQuestions: "getQuestions",
+      getCurrentQuestion: "getCurrentQuestion",
     }),
     openLessonDialog() {
-      this.lessonDialog = {
+      this.questionDialog = {
         show: true,
         name: "",
-        title: "Please specify lesson title",
+        title: "Please specify question title",
       };
     },
-    async saveLesson(lesson) {
-      let newLesson = await this.addLesson(lesson);
+    async saveQuestion(question) {
+      let newQuestion = await this.addQuestion(question);
       this.$router.push({
-        path: "/lesson/" + newLesson.id,
+        path: "/question/" + newQuestion.id,
       });
     },
-    async seletctLesson(lesson) {
-      this.setCurrentLesson(lesson).then(() =>
+    async seletctQuestion(question) {
+      this.setCurrentQuestion(question).then(() =>
         this.$router.push({
-          path: "/lesson/" + lesson.id,
+          path: "/question/" + question.id,
         })
       );
     },
   },
   data() {
     return {
-      selectedItem: {},
-      lessonDialog: { show: false, name: "" },
+      questionDialog: { show: false, name: "" },
       menu: [
         { icon: "plus", title: "Add" },
         { icon: "remove", title: "Remove" },
@@ -95,7 +108,7 @@ export default {
 </script>
 
 <style>
-.lesson_title {
+.question_title {
   justify-content: left !important;
 }
 </style>

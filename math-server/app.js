@@ -57,6 +57,13 @@ let sqrtResource = finale.resource({
 sqrtResource.use(authMiddleware);
 sqrtResource.use(lessonMiddleware);
 
+let questionResource = finale.resource({
+    model: db.sequelize.models["Question"],
+    endpoints: ["/question", "/question/:id"],
+});
+questionResource.use(authMiddleware);
+questionResource.use(lessonMiddleware);
+
 finale.resource({
     model: db.sequelize.models["AccessLink"],
     endpoints: ["/accessLink", "/accessLink/:id"],

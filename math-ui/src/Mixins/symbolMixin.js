@@ -5,8 +5,8 @@ export default {
         value: value,
         type: type,
       };
-      symbol.col = this.getSelctedRect().col;
-      symbol.row = this.getSelctedRect().row;
+      symbol.col = this.getActiveRect().col;
+      symbol.row = this.getActiveRect().row;
 
       this.$store
         .dispatch("addNotation", symbol)

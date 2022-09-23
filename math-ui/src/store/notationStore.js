@@ -1,3 +1,4 @@
+// notations of current board(lesson, question or answers)
 import Vue from "vue";
 import dbSyncMixin from "../Mixins/dbSyncMixin";
 import BoardType from "../Mixins/boardType";

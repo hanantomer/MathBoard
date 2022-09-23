@@ -51,7 +51,7 @@ module.exports = {
         return accessLink;
     },
 
-    isAdmin: async function (userId, lessonId) {
+    isTeacher: async function (userId, lessonId) {
         let lesson = await db.sequelize.models["Lesson"].findOne({
             where: {
                 id: lessonId,

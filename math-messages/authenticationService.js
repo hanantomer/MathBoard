@@ -34,9 +34,9 @@ class AuthenticationService {
       return;
     }
 
-    let isAdmin = await dbUtil.isAdmin(user.id, lessonId);
+    let isTeacher = await dbUtil.isTeacher(user.id, lessonId);
 
-    if (isAdmin) {
+    if (isTeacher) {
       // store admin connection when she logs on
       this.lessonAdminConnection.set(lessonId, {
         userId: user.id,

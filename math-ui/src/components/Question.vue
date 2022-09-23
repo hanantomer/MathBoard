@@ -12,6 +12,7 @@
           <v-col colls="1">
             <lesson-toolbar
               ref="editorToolbar"
+              :lessonId="lessonId"
               v-on="{
                 selectionButtonPressed: eventManager_selectionButtonPressed,
                 deleteButtonPressed: eventManager_deleteButtonPressed,
@@ -61,7 +62,7 @@ import notationMixin from "../Mixins/notationMixin";
 import userOperationsOutgoingSyncMixin from "../Mixins/userOutgoingOperationsSyncMixin";
 import userOperationsIncomingSyncMixin from "../Mixins/userIncomingOperationsSyncMixin";
 import lessonStudents from "./LessonStudents.vue";
-import lessonToolbar from "./Toolbar.vue";
+import questionToolbar from "./Toolbar.vue";
 import areaSelector from "./AreaSelector.vue";
 import lineDrawer from "./LineDrawer.vue";
 import newItemDialog from "./NewItemDialog.vue";
@@ -70,7 +71,7 @@ import questions from "./Questions.vue";
 export default {
   components: {
     lessonStudents,
-    lessonToolbar,
+    questionToolbar,
     areaSelector,
     lineDrawer,
     newItemDialog,
@@ -80,10 +81,6 @@ export default {
     window.removeEventListener("keyup", this.eventManager_keyUp);
   },
   mounted: function () {
-    // for keyboard base editing
-    this.loadLesson().then(() => {
-      window.addEventListener("keyup", this.eventManager_keyUp);
-    });
     this.matrixMixin_setMatrix(this.svgId);
     this.reRenderMathJax();
   },
@@ -91,7 +88,8 @@ export default {
     return {
       isTeacher: false,
       matrix: [],
-      svgId: "lessonSvg",
+      svgId: "questionsSvg",
+      questionDialog: { show: false, name: "" },
     };
   },
   mixins: [
@@ -134,6 +132,7 @@ export default {
       getSymbols: "getSymbols",
       getCurrentEditMode: "getCurrentEditMode",
     }),
+    saveQuesstion: async function () {},
     loadLesson: async function () {
       // load from db to store
       if (!this.getCurrentLesson().hasOwnProperty()) {
@@ -156,6 +155,13 @@ export default {
 
       // listen to changes
       this.mixin_syncIncomingUserOperations(this.lessonId, this.isTeacher); ///TODO create mechnism to handle gaps between load and sync
+    },
+    openQuestionDialog() {
+      this.questionDialog = {
+        show: true,
+        name: "",
+        title: "Please specify question title",
+      };
     },
   },
 };

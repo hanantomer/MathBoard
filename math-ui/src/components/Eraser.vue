@@ -1,23 +1,3 @@
-<template>
-  <div>
-    <v-card
-      id="selection"
-      class="selection"
-      v-bind:style="{
-        left: selectionRectLeft,
-        top: selectionRectTop,
-        width: selectionRectWidth,
-        height: selectionRectHeight,
-      }"
-      v-show="
-        !!selectionPosition.x1 &&
-        !!selectionPosition.x2 &&
-        !!selectionPosition.y1 &&
-        !!selectionPosition.y2
-      "
-    ></v-card>
-  </div>
-</template>
 <script>
 import { mapGetters } from "vuex";
 import EditMode from "../Mixins/editMode";
@@ -25,16 +5,9 @@ import * as d3 from "d3";
 import matrixMixin from "../Mixins/matrixMixin";
 import userOutgoingOperationsSyncMixin from "../Mixins/userOutgoingOperationsSyncMixin";
 
-const SelectionMode = Object.freeze({
-  SELECTING: "SELECTING",
-  MOVE: "MOVE",
-});
 export default {
-  name: "SelectionArea",
+  name: "Eraser",
   mixins: [matrixMixin, userOutgoingOperationsSyncMixin],
-  props: {
-    svgId: "",
-  },
   data: function () {
     return {
       selectionMode: SelectionMode.SELECTING,

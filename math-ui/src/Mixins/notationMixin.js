@@ -6,16 +6,6 @@ export default {
     getNotationYposByRow(row) {
       return row * this.matrixMixin_getRectSize();
     },
-    notationMixin_moveSelection: function (e) {
-      let selectedNotations = this.getSelectedNotations();
-      this.$store
-        .dispatch("updateSelectedNotationCoordinates")
-        .then(() =>
-          selectedNotations.forEach((n) =>
-            this.userOperationsMixin_syncOutgoingUpdateSelectedNotation(n)
-          )
-        );
-    },
     notationMixin_removeNotationsAtMousePosition: function (e) {
       let rectAtMousePosition = this.matrixMixin_findClickedObject(
         {
@@ -31,7 +21,7 @@ export default {
       });
     },
     notationMixin_removeNotationAtSeletedPosition() {
-      this.romoveNotations(this.getSelctedRect());
+      this.romoveNotations(this.getActiveRect());
     },
     async romoveNotations(rect) {
       let notationsToDelete = await this.$store.dispatch(

@@ -23,8 +23,22 @@ module.exports = (sequelize, DataTypes) => {
                 field: "index",
                 allowNull: false,
             },
+            name: {
+                type: DataTypes.STRING,
+                field: "name",
+                allowNull: false,
+            },
         },
-        { sequelize, freezeTableName: true }
+        {
+            sequelize,
+            freezeTableName: true,
+            indexes: [
+                {
+                    unique: false,
+                    fields: ["lessonId"],
+                },
+            ],
+        }
     );
 
     return Question;

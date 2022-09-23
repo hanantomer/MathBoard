@@ -6,6 +6,4 @@ export default {
   DELETE: "DELETE", // after delete button pressed
   DELETING: "DELETING", // mouse clicked following delete button pressed
   SELECT: "SELECT", //  after select button pressed
-  SELECTING: "SELECTING", // mouse clicked following select button pressed
-  MOVESELECTION: "MOVESELECTION",
 };

@@ -47,16 +47,11 @@
 
       <v-tooltip bottom hidden>
         <template v-slot:activator="{ on, attrs }">
-          <v-btn
-            v-show="!!user.id"
-            icon
-            v-on="on"
-            v-bind:to="{ path: '/lessons/' + (!!user ? user.id : '') }"
-          >
+          <v-btn v-show="!!user.id" icon v-on="on" v-on:click="navToQuestions">
             <v-icon>mdi-message-question-outline</v-icon>
           </v-btn>
         </template>
-        <span>Exercises</span>
+        <span>Questions</span>
       </v-tooltip>
 
       <v-btn v-show="!user.id" icon v-on:click="openLoginDialog('Login')">
@@ -136,6 +131,10 @@ export default {
     navToLessons: function () {
       this.$router.push("/lessons");
     },
+    navToQuestions: function () {
+      this.$router.push("/questions");
+    },
+
     // signInViaGoogleAuth: async function () {
     //   let user = await this.authGoogleUser(this.googleUser);
     //   if (!!user) {

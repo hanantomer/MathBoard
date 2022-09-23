@@ -44,20 +44,14 @@
 </template>
 <script>
 import notationMixin from "../Mixins/notationMixin";
-import matrixOverlayMixin from "../Mixins/matrixOverlayMixin";
+import matrixMixin from "../Mixins/matrixMixin";
 import userOutgoingOperationsSyncMixin from "../Mixins/userOutgoingOperationsSyncMixin";
-import selectionMixin from "../Mixins/selectionMixin";
 import notationType from "../Mixins/notationType";
 import EditMode from "../Mixins/editMode";
-
 import { mapGetters } from "vuex";
+
 export default {
-  mixins: [
-    notationMixin,
-    matrixOverlayMixin,
-    userOutgoingOperationsSyncMixin,
-    selectionMixin,
-  ],
+  mixins: [notationMixin, matrixMixin, userOutgoingOperationsSyncMixin],
   name: "LineDrawer",
   props: {
     svgId: { type: String },
@@ -206,7 +200,7 @@ export default {
     registerSvgMouseDown: function (e) {
       document
         .getElementById(this.svgId)
-        .addEventListener("mousedown", this.handleSvgMouseDown);
+        .addEventListener("mousedown", this.handleMouseDown);
     },
 
     registerSvgMouseUp: function () {
@@ -220,7 +214,7 @@ export default {
     rightHandleMouseDown() {
       this.editStarted = true;
     },
-    handleSvgMouseDown(e) {
+    handleMouseDown(e) {
       // left button is pressed
       if (e.buttons !== 1) {
         return;
@@ -244,7 +238,7 @@ export default {
       }
 
       //existing line
-      let fraction = this.selectionMixin_findFractionLineAtClickedPosition(e);
+      let fraction = this.findFractionLineAtClickedPosition(e);
       if (!!fraction) {
         this.notationType = notationType.FRACTION;
         this.selectedLineId = fraction.id;
@@ -252,7 +246,7 @@ export default {
         return;
       }
 
-      let sqrt = this.selectionMixin_findSqrtLineAtClickedPosition(e);
+      let sqrt = this.findSqrtLineAtClickedPosition(e);
       if (!!sqrt) {
         this.notationType = notationType.SQRT;
         this.selectedLineId = sqrt.id;
@@ -284,6 +278,26 @@ export default {
       }
 
       this.endDrawLine();
+    },
+    findFractionLineAtClickedPosition(e) {
+      return this.matrixMixin_findClickedObject(
+        {
+          x: e.clientX,
+          y: e.clientY,
+        },
+        "foreignObject",
+        "fraction"
+      );
+    },
+    findSqrtLineAtClickedPosition(e) {
+      return this.matrixMixin_findClickedObject(
+        {
+          x: e.clientX,
+          y: e.clientY,
+        },
+        "foreignObject",
+        "sqrt"
+      );
     },
   },
 };
