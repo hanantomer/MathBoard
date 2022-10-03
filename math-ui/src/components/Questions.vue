@@ -4,33 +4,36 @@
       :dialog="questionDialog"
       v-on="{ save: saveQuestion }"
     ></NewItemDialog>
-    <v-card class="mx-auto" max-width="500">
+    <v-card class="mx-auto" max-width="600" min-height="600">
       <v-toolbar color="primary" dark>
-        <v-toolbar-title>Lesson Questions</v-toolbar-title>
+        <v-toolbar-title>Questions</v-toolbar-title>
 
         <v-spacer></v-spacer>
 
         <v-btn icon v-on:click="openQuestionDialog">
           <v-icon>mdi-plus</v-icon>
         </v-btn>
-        <v-combobox
-          v-model="select"
-          :items="lessons"
-          label="Choose a lesson"
-          outlined
-          dense
-        ></v-combobox>
       </v-toolbar>
-
+      <v-select
+        style="margin-top: 10px"
+        v-model="selectedLessonId"
+        :items="lessons"
+        item-value="id"
+        item-text="name"
+        label="Please choose a lesson:"
+        @input="lessonchanged"
+        dense
+        outlined
+      ></v-select>
       <v-list two-line>
         <v-list-item-group active-class="primary--text">
           <v-list-item
-            v-for="item in items"
-            :key="item.id"
-            @click="seletctQuestion(item)"
+            v-for="question in questions"
+            :key="question.id"
+            @click="seletctQuestion(question)"
           >
             <v-list-item-content class="question_title">
-              <v-list-item-title v-text="item.name"> </v-list-item-title>
+              <v-list-item-title v-text="question.name"> </v-list-item-title>
             </v-list-item-content>
           </v-list-item>
         </v-list-item-group>
@@ -46,17 +49,13 @@ import NewItemDialog from "./NewItemDialog.vue";
 export default {
   components: { NewItemDialog },
   name: "Questions",
-  mounted() {
-    this.loadQuestions().then((questions) => {
-      if (!questions) {
-        this.openQuestionDialog();
-      }
-    });
+  async mounted() {
+    await this.loadLessons();
+    await this.loadQuestions();
+    this.selectedLessonId = this.getCurrentLesson().id;
+    this.questions = this.getQuestions();
   },
   computed: {
-    lessons() {
-      return this.getQuestions();
-    },
     lessons() {
       return this.getLessons();
     },
@@ -66,15 +65,24 @@ export default {
       loadLessons: "loadLessons",
       loadQuestions: "loadQuestions",
       addQuestion: "addQuestion",
-      setCurrentLesson: "setCurrentQuestion",
-      setCurrenQuestion: "setCurrenQuestion",
+      setCurrentLesson: "setCurrentLesson",
+      setCurrentQuestion: "setCurrentQuestion",
     }),
     ...mapGetters({
       getLessons: "getLessons",
       getQuestions: "getQuestions",
+      getCurrentLesson: "getCurrentLesson",
       getCurrentQuestion: "getCurrentQuestion",
     }),
-    openLessonDialog() {
+    async lessonchanged() {
+      let selectedLesson = this.getLessons().find(
+        (l) => l.id === this.selectedLessonId
+      );
+      await this.setCurrentLesson(selectedLesson);
+      await this.loadQuestions();
+      this.questions = this.getQuestions();
+    },
+    openQuestionDialog() {
       this.questionDialog = {
         show: true,
         name: "",
@@ -97,6 +105,8 @@ export default {
   },
   data() {
     return {
+      questions: [],
+      selectedLessonId: null,
       questionDialog: { show: false, name: "" },
       menu: [
         { icon: "plus", title: "Add" },
@@ -104,6 +114,15 @@ export default {
       ],
     };
   },
+  // watch: {
+  //   selectedLesson: async function (lessonId) {
+  //     if (!!lessonId) {
+  //       await this.setCurrentLesson(this.getLessonById(lessonId));
+  //       await this.loadQuestions();
+  //       this.questions = this.getQuestions();
+  //     }
+  //   },
+  // },
 };
 </script>
 

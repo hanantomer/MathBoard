@@ -15,12 +15,16 @@ finale.initialize({
     sequelize: db.sequelize,
 });
 
+// user
+
 let userResource = finale.resource({
     model: db.sequelize.models["User"],
     endpoints: ["/users", "/users/:id"],
 });
 userResource.use(userMiddleware);
 userResource.use(authMiddleware);
+
+// lesson
 
 let lessonResource = finale.resource({
     model: db.sequelize.models["Lesson"],
@@ -29,40 +33,67 @@ let lessonResource = finale.resource({
 lessonResource.use(authMiddleware);
 lessonResource.use(lessonMiddleware);
 
-let symbolResource = finale.resource({
+let lessonSymbolResource = finale.resource({
     model: db.sequelize.models["LessonSymbol"],
     endpoints: ["/lessonsymbols", "/lessonsymbols/:id"],
 });
-symbolResource.use(authMiddleware);
-symbolResource.use(lessonMiddleware);
+lessonSymbolResource.use(authMiddleware);
+lessonSymbolResource.use(lessonMiddleware);
 
-let powerResource = finale.resource({
+let lessonPowerResource = finale.resource({
     model: db.sequelize.models["LessonPower"],
     endpoints: ["/lessonpowers", "/lessonpowers/:id"],
 });
-powerResource.use(authMiddleware);
-powerResource.use(lessonMiddleware);
+lessonPowerResource.use(authMiddleware);
+lessonPowerResource.use(lessonMiddleware);
 
-let fractionResource = finale.resource({
+let lessonFractionResource = finale.resource({
     model: db.sequelize.models["LessonFraction"],
     endpoints: ["/lessonfractions", "/lessonfractions/:id"],
 });
-fractionResource.use(authMiddleware);
-fractionResource.use(lessonMiddleware);
+lessonFractionResource.use(authMiddleware);
+lessonFractionResource.use(lessonMiddleware);
 
-let sqrtResource = finale.resource({
+let lessonSqrtResource = finale.resource({
     model: db.sequelize.models["LessonSqrt"],
     endpoints: ["/lessonsqrts", "/lessonsqrts/:id"],
 });
-sqrtResource.use(authMiddleware);
-sqrtResource.use(lessonMiddleware);
+lessonSqrtResource.use(authMiddleware);
+lessonSqrtResource.use(lessonMiddleware);
+
+// question
 
 let questionResource = finale.resource({
     model: db.sequelize.models["Question"],
-    endpoints: ["/question", "/question/:id"],
+    endpoints: ["/questions", "/questions/:id"],
 });
 questionResource.use(authMiddleware);
-questionResource.use(lessonMiddleware);
+
+let questionSymbolResource = finale.resource({
+    model: db.sequelize.models["QuestionSymbol"],
+    endpoints: ["/questionsymbols", "/questionsymbols/:id"],
+});
+questionSymbolResource.use(authMiddleware);
+
+let questionPowerResource = finale.resource({
+    model: db.sequelize.models["QuestionPower"],
+    endpoints: ["/questionpowers", "/questionpowers/:id"],
+});
+questionPowerResource.use(authMiddleware);
+
+let questionFractionResource = finale.resource({
+    model: db.sequelize.models["QuestionFraction"],
+    endpoints: ["/questionfractions", "/questionfractions/:id"],
+});
+questionFractionResource.use(authMiddleware);
+
+let questionSqrtResource = finale.resource({
+    model: db.sequelize.models["QuestionSqrt"],
+    endpoints: ["/questionsqrts", "/questionsqrts/:id"],
+});
+questionSqrtResource.use(authMiddleware);
+
+// access link
 
 finale.resource({
     model: db.sequelize.models["AccessLink"],

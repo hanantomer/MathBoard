@@ -18,11 +18,6 @@ module.exports = (sequelize, DataTypes) => {
 
     Question.init(
         {
-            index: {
-                type: DataTypes.INTEGER,
-                field: "index",
-                allowNull: false,
-            },
             name: {
                 type: DataTypes.STRING,
                 field: "name",

@@ -1,8 +1,13 @@
 import NotationType from "./notationType";
+import { mapActions } from "vuex";
+import { mapState } from "vuex";
 import * as d3 from "d3";
 
 export default {
   computed: {
+    ...mapState({
+      prevActiveRect: (state) => state.activeRectStore.prevActiveRect,
+    }),
     fontSize: function () {
       return `${this.rectSize / 25}em`;
     },
@@ -21,14 +26,17 @@ export default {
       rectSize: 30,
       lineHeight: 4,
       topLevelGroup: null,
-      prevActiveRect: null,
       activeRectColor: "lightcyan",
       borderColor: "lightgray",
       svgns: "http://www.w3.org/2000/svg",
     };
   },
   methods: {
-    isLine(notationType) {
+    ...mapActions({
+      setPrevActiveRect: "setPrevActiveRect",
+    }),
+
+    $isLine(notationType) {
       return (
         notationType === NotationType.FRACTION ||
         notationType === NotationType.SQRT ||
@@ -40,13 +48,13 @@ export default {
     reRenderMathJax() {
       window.MathJax.typeset();
     },
-    toggleActiveRect(clickedNotation) {
+    async $toggleActiveRect(clickedNotation) {
       if (!clickedNotation) return;
       if (!!this.prevActiveRect) this.prevActiveRect.style.fill = "";
-      this.prevActiveRect = clickedNotation;
+      await this.setPrevActiveRect(clickedNotation);
       clickedNotation.style.fill = this.activeRectColor;
     },
-    matrixMixin_unselectPreviouslySelectedtRect(clickedNotation) {
+    matrixMixin_unselectPreviouslySelectedtRect() {
       if (!!this.prevActiveRect) this.prevActiveRect.style.fill = "";
     },
     //https://stackoverflow.com/questions/22428484/get-element-from-point-when-you-have-overlapping-elements
@@ -132,7 +140,7 @@ export default {
           `rect[col="${clickedCoordinates.col ?? clickedCoordinates.fromCol}"]`
         );
 
-      if (rect) this.toggleActiveRect(rect, clickedCoordinates);
+      if (rect) this.$toggleActiveRect(rect, clickedCoordinates);
     },
     matrixMixin_getRectSize() {
       return this.rectSize;
@@ -179,7 +187,6 @@ export default {
         this.userOperationsMixin_syncOutgoingSelectedPosition(nextRect);
       }
     },
-
     updateNotation: function (n) {
       n.setAttribute("col", (n) => {
         return n.col;
@@ -272,7 +279,7 @@ export default {
       return n.type + n.id;
     },
     $col(n) {
-      return this.isLine(n.type) ? n.fromCol : n.col;
+      return this.$isLine(n.type) ? n.fromCol : n.col;
     },
     $row(n) {
       return n.row;

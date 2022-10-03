@@ -166,7 +166,7 @@ module.exports = {
           `${notation.boardType}${notation.type}s/${notation.id}`
         ); // e.g lessonsymbols/1)
       } catch (error) {
-        this.this.handleError(error);
+        this.handleError(error);
       }
     },
     getLesson: async function (lessonId) {
@@ -174,36 +174,38 @@ module.exports = {
         let res = await axiosInstnce.get("/lessons?id=" + lessonId);
         return !!res ? res.data[0] : null;
       } catch (error) {
-        this.this.handleError(error);
+        this.handleError(error);
       }
     },
     getQuestion: async function (questionId) {
       try {
-        let res = await axiosInstnce.get("/question?id=" + questionId);
+        let res = await axiosInstnce.get("/questions?id=" + questionId);
         return !!res ? res.data[0] : null;
       } catch (error) {
-        this.this.handleError(error);
+        this.handleError(error);
       }
     },
     getLessons: async function (userId) {
       try {
         return axiosInstnce.get("/lessons?UserId=" + userId);
       } catch (error) {
-        this.this.handleError(error);
+        this.handleError(error);
       }
     },
     getQuestions: async function (lessonId) {
-      console.log(user);
       try {
         return axiosInstnce.get("/questions?LessonId=" + lessonId);
       } catch (error) {
-        this.this.handleError(error);
+        this.handleError(error);
       }
     },
     getNotations: function (parent, notationType) {
       try {
+        // e.g lessonsymbols?id=1
         return axiosInstnce.get(
-          `${parent.boardType}${notationType}s?${parent.boardType}id=${parent.id}` // e.g lessonsymbols?id=1
+          `${
+            parent.boardType
+          }${notationType}s?${parent.boardType.capitalize()}Id=${parent.id}`
         );
       } catch (error) {
         this.handleError(error);

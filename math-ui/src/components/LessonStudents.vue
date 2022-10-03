@@ -36,14 +36,11 @@
 </template>
 
 <script>
-import { mapState, mapActions } from "vuex";
+import { mapGetters, mapState, mapActions } from "vuex";
 import userOperationsOutgoingSyncMixin from "../Mixins/userOutgoingOperationsSyncMixin";
 
 export default {
   mixins: [userOperationsOutgoingSyncMixin],
-  props: {
-    lessonId: { type: String },
-  },
   computed: {
     ...mapState({
       students: (state) => {
@@ -52,6 +49,9 @@ export default {
     }),
   },
   methods: {
+    ...mapGetters({
+      getCurrentLesson: "getCurrentLesson",
+    }),
     ...mapActions({
       toggleAuthorization: "toggleAuthorization",
     }),
@@ -61,7 +61,7 @@ export default {
     $toggleStudentAuthorization: function (student) {
       this.toggleAuthorization(student.userId).then((authorization) => {
         this.userOperationsMixin_syncOutgoingAuthUser(
-          this.lessonId,
+          this.getCurrentLesson().id,
           authorization.authorizedStudentId,
           authorization.revokedStudentId
         );

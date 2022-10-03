@@ -18,7 +18,7 @@
               icon
               v-on="on"
               v-bind="attrs"
-              v-on:click="$selectionButtonPressed"
+              v-on:click="$toggleSelectionMode"
               x-small
               ><v-icon>mdi-selection</v-icon></v-btn
             >
@@ -40,7 +40,7 @@
               v-on="on"
               v-bind="attrs"
               :disabled="!authorized && !isTeacher"
-              v-on:click="$deleteButtonPressed"
+              v-on:click="$toggleDeleteMode"
               x-small
               ><v-icon>mdi-delete</v-icon></v-btn
             >
@@ -83,7 +83,7 @@
               dark
               v-on="on"
               v-bind="attrs"
-              v-on:click="$drawFractionLineButtonPressed"
+              v-on:click="$toggleFractionMode"
               :disabled="!authorized && !isTeacher"
             >
               <v-icon>mdi-tooltip-minus-outline</v-icon>
@@ -109,7 +109,7 @@
               dark
               v-on="on"
               v-bind="attrs"
-              v-on:click="$drawSqrtLineButtonPressed"
+              v-on:click="$toggleSqrtMode"
               :disabled="!authorized && !isTeacher"
             >
               <v-icon>mdi-square-root</v-icon>
@@ -135,7 +135,7 @@
               dark
               v-on="on"
               v-bind="attrs"
-              v-on:click="$powerButtonPressed"
+              v-on:click="$togglePowerMode"
               :disabled="!authorized && !isTeacher"
             >
               <v-icon>mdi-exponent</v-icon>
@@ -179,48 +179,122 @@
 </template>
 
 <script>
+import EditMode from "../Mixins/editMode";
 import matrixMixin from "../Mixins/matrixMixin";
+import symbolMixin from "../Mixins/symbolMixin";
+import userIncomingOperationsSyncMixin from "../Mixins/userIncomingOperationsSyncMixin";
+import userOutgoingOperationsSyncMixin from "../Mixins/userOutgoingOperationsSyncMixin";
 import createAccessLinkDialog from "./CreateAccessLinkDialog.vue";
 import { mapGetters } from "vuex";
+import { mapActions } from "vuex";
 
 export default {
   components: {
     createAccessLinkDialog,
   },
-  mixins: [matrixMixin],
+  mixins: [
+    matrixMixin,
+    symbolMixin,
+    userIncomingOperationsSyncMixin,
+    userOutgoingOperationsSyncMixin,
+  ],
+  mounted: function () {
+    this.$root.$on("resetToolbarState", () => {
+      this.reset();
+    });
+  },
   methods: {
     ...mapGetters({
+      getCurrentEditMode: "getCurrentEditMode",
       getCurrentLesson: "getCurrentLesson",
       getUser: "getUser",
     }),
-
-    $resetButtonsState() {
-      this.deleteButtonActive = this.selectionButtonActive = this.fractionButtonActive = this.squareRootButtonActive = this.powerButtonActive = 1;
-    },
-    $powerButtonPressed() {
+    ...mapActions({
+      setCurrentEditMode: "setCurrentEditMode",
+    }),
+    $toggleFractionMode() {
       this.$resetButtonsState();
-      this.$emit("powerButtonPressed");
+      if (this.getCurrentEditMode() == EditMode.FRACTION) {
+        this.$reset();
+      } else {
+        this.$startFractionMode();
+      }
     },
-    $deleteButtonPressed() {
-      this.$resetButtonsState();
-      this.$emit("deleteButtonPressed");
-    },
-    $drawSqrtLineButtonPressed() {
-      this.$resetButtonsState();
-      this.$emit("drawSqrtLineButtonPressed");
-    },
-    $drawFractionLineButtonPressed() {
-      this.$resetButtonsState();
-      this.$emit("drawFractionLineButtonPressed");
-    },
-    $selectionButtonPressed() {
-      this.$resetButtonsState();
-      this.$emit("selectionButtonPressed");
+    async $startFractionMode() {
+      this.$reset();
+      this.fractionButtonActive = 0;
+      await this.setCurrentEditMode(EditMode.FRACTION);
     },
 
+    $toggleSqrtMode() {
+      this.$resetButtonsState();
+      if (this.getCurrentEditMode() == EditMode.SQRT) {
+        this.$reset();
+      } else {
+        this.$startSqrtMode();
+      }
+    },
+
+    async $startSqrtMode() {
+      this.$reset();
+      this.squareRootButtonActive = 0;
+      await this.setCurrentEditMode(EditMode.SQRT);
+    },
+
+    $togglePowerMode() {
+      this.$resetButtonsState();
+      if (this.getCurrentEditMode() == EditMode.ADD_POWER) {
+        this.$endPowerMode();
+      } else {
+        this.$startPowerMode();
+      }
+    },
+    async $startPowerMode() {
+      this.reset();
+      this.powerButtonActive = 0;
+      await this.setCurrentEditMode(EditMode.ADD_POWER);
+    },
+    $endPowerMode() {
+      this.reset();
+    },
+    $toggleDeleteMode() {
+      if (this.getCurrentEditMode() == EditMode.DELETE) {
+        this.endDeleteMode();
+      } else {
+        this.startDeleteMode();
+      }
+    },
+    async $startDeleteMode() {
+      this.reset();
+      this.deleteButtonActive = 0;
+      this.showDeleteCursor();
+      await this.setCurrentEditMode(EditMode.DELETE);
+    },
+    $endDeleteMode() {
+      this.reset();
+    },
+    $toggleSelectionMode() {
+      if (this.getCurrentEditMode() == EditMode.SELECT) {
+        this.$endSelectionMode();
+      } else {
+        this.$startSelectionMode();
+      }
+    },
+    async $startSelectionMode() {
+      this.reset();
+      this.selectionButtonActive = 0;
+      await this.setCurrentEditMode(EditMode.SELECT);
+    },
+    async $endSelectionMode() {
+      this.$reset();
+      await this.setCurrentEditMode(EditMode.ADD_SYMBOL);
+    },
     $symbolButtonPressed(e) {
-      this.$resetButtonsState();
-      this.$emit("symbolButtonPressed", e);
+      if (this.getCurrentEditMode() === EditMode.ADD_SYMBOL)
+        this.symbolMixin_addSymbol(e.currentTarget.innerText, "symbol");
+      else if (this.getCurrentEditMode() === EditMode.ADD_POWER) {
+        this.symbolMixin_addSymbol(e.currentTarget.innerText, "power");
+      }
     },
     $toggleLessonMatrix() {
       this.matrixMixin_toggleMatrixOverlay();
@@ -231,8 +305,21 @@ export default {
         link: link,
       });
     },
-    resetToggleButtons() {
-      this.deleteButtonActive = this.selectionButtonActive = this.fractionButtonActive = 1;
+    async $reset() {
+      this.$resetButtonsState();
+      this.$hideDeleteCursor();
+      await this.setCurrentEditMode(EditMode.ADD_SYMBOL);
+    },
+    $resetButtonsState() {
+      this.deleteButtonActive = this.selectionButtonActive = this.fractionButtonActive = this.squareRootButtonActive = this.powerButtonActive = 1;
+    },
+    $showDeleteCursor() {
+      document.getElementById(this.svgId).classList.add("deleteButtonActive");
+    },
+    $hideDeleteCursor() {
+      document
+        .getElementById(this.svgId)
+        .classList.remove("deleteButtonActive");
     },
   },
   computed: {
@@ -241,6 +328,13 @@ export default {
     },
     authorized: function () {
       return !!this.getUser().authorized;
+    },
+  },
+  wtach: {
+    reset(newVal) {
+      if (!!newVal) {
+        this.reset();
+      }
     },
   },
   data: function () {

@@ -2,159 +2,23 @@ import EditMode from "./editMode";
 import { mapGetters } from "vuex";
 import { mapActions } from "vuex";
 export default {
-  data: function () {
-    return {
-      //currentMode: EditMode.ADD_SYMBOL,
-      // selectionAreaRelay: {
-      //   initialPosition: { x: 0, y: 0 },
-      //   currentPosition: { x: 0, y: 0 },
-      //   currentMovePosition: { x: 0, y: 0 },
-      //   ended: false,
-      //   moveEnded: false,
-      // },
-      // drawLineRelay: {
-      //   notationType: "",
-      //   startMousePosition: {},
-      //   currentMousePosition: {},
-      //   ended: false,
-      //   reset() {
-      //     notationType: "";
-      //     this.startMousePosition = {};
-      //     this.currentMousePosition = {};
-      //   },
-      // },
-    };
+  mounted: function () {
+    // emitted in  app.vue
+    this.$root.$on("keyup", this.eventManager_keyUp);
   },
+  beforeDestroy: function () {
+    this.$root.$off("keyup", this.eventManager_keyUp);
+  },
+
   methods: {
     ...mapGetters({
       getCurrentEditMode: "getCurrentEditMode",
     }),
     ...mapActions({
-      setCurrentEditMode: "setCurrentEditMode",
+      setCurrentEditMode: "setCurrentEditMode", ///TODO might be eliminated
     }),
-    toggleSelectionMode() {
-      if (this.getCurrentEditMode() == EditMode.SELECT) {
-        this.endSelectionMode();
-      } else {
-        this.startSelectionMode();
-      }
-    },
-    async startFractionMode() {
-      this.reset();
-      this.fractionButtonActive = 0;
-      await this.setCurrentEditMode(EditMode.FRACTION);
-    },
-    async startSqrtMode() {
-      this.reset();
-      this.squareRootButtonActive = 0;
-      await this.setCurrentEditMode(EditMode.SQRT);
-    },
-    // emit event from component
-    eventManager_endDrawLine() {
-      this.reset();
-    },
-    toggleDeleteMode() {
-      if (this.getCurrentEditMode() == EditMode.DELETE) {
-        this.endDeleteMode();
-      } else {
-        this.startDeleteMode();
-      }
-    },
-    togglePowerMode() {
-      if (this.getCurrentEditMode() == EditMode.ADD_POWER) {
-        this.endPowerMode();
-      } else {
-        this.startPowerMode();
-      }
-    },
-    hideDeleteCursor() {
-      //Array.from(document.getElementById(this.svgId)).forEach((e) =>
-      //  e.classList.remove("deleteButtonActive")
-      //);
-      document
-        .getElementById(this.svgId)
-        .classList.remove("deleteButtonActive");
-    },
-    showDeleteCursor() {
-      //Array.from(document.getElementById(this.svgId)).forEach((e) =>
-      //  e.classList.add("deleteButtonActive")
-      //);
-      document.getElementById(this.svgId).classList.add("deleteButtonActive");
-    },
-    async reset() {
-      this.$refs.editorToolbar.resetToggleButtons();
-      this.hideDeleteCursor();
-      await this.setCurrentEditMode(EditMode.ADD_SYMBOL);
-    },
-    async startDeleteMode() {
-      this.reset();
-      this.deleteButtonActive = 0;
-      this.showDeleteCursor();
-      await this.setCurrentEditMode(EditMode.DELETE);
-    },
-    endDeleteMode() {
-      this.reset();
-    },
-    async startSelectionMode() {
-      this.reset();
-      this.selectionButtonActive = 0;
-      await this.setCurrentEditMode(EditMode.SELECT);
-    },
-    async endSelectionMode() {
-      this.$refs.editorToolbar.resetToggleButtons();
-      await this.setCurrentEditMode(EditMode.ADD_SYMBOL);
-    },
-    async endMoveSelectionMode() {
-      await this.setCurrentEditMode(EditMode.ADD_SYMBOL);
-    },
-    async startPowerMode() {
-      this.reset();
-      this.powerButtonActive = 0;
-      await this.setCurrentEditMode(EditMode.ADD_POWER);
-    },
-    endPowerMode() {
-      this.reset();
-    },
-    eventManager_selectionButtonPressed() {
-      this.toggleSelectionMode();
-    },
-    eventManager_drawFractionLineButtonPressed() {
-      this.startFractionMode();
-    },
-    eventManager_drawSqrtLineButtonPressed() {
-      this.startSqrtMode();
-    },
-    eventManager_deleteButtonPressed() {
-      this.toggleDeleteMode();
-    },
-    eventManager_powerButtonPressed() {
-      this.togglePowerMode();
-    },
-    eventManager_symbolButtonPressed(e) {
-      if (this.getCurrentEditMode() === EditMode.ADD_SYMBOL)
-        this.symbolMixin_addSymbol(e.currentTarget.innerText, "symbol");
-      else if (this.getCurrentEditMode() === EditMode.ADD_POWER) {
-        this.symbolMixin_addSymbol(e.currentTarget.innerText, "power");
-      }
-    },
-    async eventManager_mouseDown(e) {
-      if (
-        this.getCurrentEditMode() === EditMode.FRACTION ||
-        this.getCurrentEditMode() === EditMode.SQRT ||
-        this.getCurrentEditMode() === EditMode.SELECT ||
-        this.getCurrentEditMode() === EditMode.DELETE
-      ) {
-        return;
-      }
 
-      let activeRect = this.activateRectMixin_findRectAtClickedPosition(e);
-      if (!!activeRect) {
-        await this.setCurrentEditMode(EditMode.ADD_SYMBOL);
-        this.activateRectMixin_activateRect(activeRect);
-        return;
-      }
-    },
-    eventManager_keyUp(e) {
+    async eventManager_keyUp(e) {
       if (e.ctrlKey || e.altKey) {
         return;
       }
@@ -217,12 +81,32 @@ export default {
         this.symbolMixin_addSymbol(e.key, "symbol");
       }
     },
+
+    async eventManager_mouseDown(e) {
+      if (
+        this.getCurrentEditMode() === EditMode.FRACTION ||
+        this.getCurrentEditMode() === EditMode.SQRT ||
+        this.getCurrentEditMode() === EditMode.SELECT ||
+        this.getCurrentEditMode() === EditMode.DELETE
+      ) {
+        return;
+      }
+
+      let activeRect = this.activateRectMixin_findRectAtClickedPosition(e);
+      if (!!activeRect) {
+        await this.setCurrentEditMode(EditMode.ADD_SYMBOL);
+        this.activateRectMixin_activateRect(activeRect);
+        return;
+      }
+    },
+
     eventManager_mouseUp(e) {
       if (this.getCurrentEditMode() === EditMode.DELETE) {
         this.endDeleteMode();
         return;
       }
     },
+
     eventManager_mouseMove(e) {
       this.showFractionLineTooltip = false;
       this.showAccessTooltip = false;

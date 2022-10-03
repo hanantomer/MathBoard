@@ -1,5 +1,10 @@
+import { mapGetters } from "vuex";
+
 export default {
   methods: {
+    ...mapGetters({
+      getActiveRect: "getActiveRect",
+    }),
     symbolMixin_addSymbol(value, type) {
       let symbol = {
         value: value,

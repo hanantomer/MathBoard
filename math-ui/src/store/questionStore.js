@@ -18,7 +18,7 @@ export default {
     },
   },
   mutations: {
-    addQuestions(state, question) {
+    addQuestion(state, question) {
       state.questions.push(question);
     },
     setCurrentQuestion(state, question) {

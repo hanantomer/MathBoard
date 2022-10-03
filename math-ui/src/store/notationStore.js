@@ -53,6 +53,14 @@ const helper = {
         });
       });
   },
+
+  loadNotations(context) {
+    context.commit("removeAllNotations");
+    helper.loadNotationType(context, NotationType.SYMBOL);
+    helper.loadNotationType(context, NotationType.POWER);
+    helper.loadNotationType(context, NotationType.FRACTION);
+    helper.loadNotationType(context, NotationType.SQRT);
+  },
 };
 
 export default {
@@ -129,12 +137,15 @@ export default {
         boardType: BoardType.LESSON,
         id: parentId,
       });
-      context.commit("removeAllNotations");
+      helper.loadNotations(context);
+    },
 
-      helper.loadNotationType(context, NotationType.SYMBOL);
-      helper.loadNotationType(context, NotationType.POWER);
-      helper.loadNotationType(context, NotationType.FRACTION);
-      helper.loadNotationType(context, NotationType.SQRT);
+    async loadQuestionNotations(context, parentId) {
+      context.commit("setParent", {
+        boardType: BoardType.QUESTION,
+        id: parentId,
+      });
+      helper.loadNotations(context);
     },
 
     async addNotation(context, notation) {

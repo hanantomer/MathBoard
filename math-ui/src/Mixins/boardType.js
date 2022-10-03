@@ -1,6 +1,6 @@
 export default Object.freeze({
   LESSON: "lesson",
-  EXERCISE: "exercise",
+  QUESTION: "question",
   ANSWER: "answer",
   NONE: "none",
 });

@@ -2,38 +2,27 @@
   <div class="fill-height" style="width: 100%; position: relative">
     <v-row dense style="max-height: 25px">
       <v-col cols="12" class="d-flex justify-center">
-        <p>{{ lessonName }}</p>
+        <p>{{ questionTitle }}</p>
         <!-- TODO: better design for lesson title -->
       </v-col>
     </v-row>
     <v-row dense style="height: 98%">
-      <v-col cols="10" fluid>
+      <v-col cols="12" fluid>
         <v-row style="height: 100%">
           <v-col colls="1">
-            <lesson-toolbar
-              ref="editorToolbar"
-              :lessonId="lessonId"
-              v-on="{
-                selectionButtonPressed: eventManager_selectionButtonPressed,
-                deleteButtonPressed: eventManager_deleteButtonPressed,
-                symbolButtonPressed: eventManager_symbolButtonPressed,
-                drawSqrtLineButtonPressed: eventManager_drawSqrtLineButtonPressed,
-                drawFractionLineButtonPressed: eventManager_drawFractionLineButtonPressed,
-                powerButtonPressed: eventManager_powerButtonPressed,
-              }"
-            ></lesson-toolbar>
+            <question-toolbar></question-toolbar>
           </v-col>
           <v-col cols="11">
             <div style="overflow: auto; height: 100%; position: relative">
               <lineDrawer
                 v-on="{
-                  ended: eventManager_endDrawLine,
+                  ended: $resetToolbarState,
                 }"
                 :svgId="svgId"
               ></lineDrawer>
               <areaSelector :svgId="svgId"></areaSelector>
               <svg
-                v-bind:id="lessonSvg"
+                v-bind:id="svgId"
                 width="1350px"
                 height="600px"
                 v-on:mousedown="eventManager_mouseDown"
@@ -43,9 +32,6 @@
             </div>
           </v-col>
         </v-row>
-      </v-col>
-      <v-col cols="2" v-if="isTeacher">
-        <lesson-students :lessonId="lessonId"></lesson-students>
       </v-col>
     </v-row>
   </div>
@@ -58,62 +44,56 @@ import matrixMixin from "../Mixins/matrixMixin";
 import activateRectMixin from "../Mixins/activateRectMixin";
 import eventManager from "../Mixins/eventManager";
 import symbolMixin from "../Mixins/symbolMixin";
-import notationMixin from "../Mixins/notationMixin";
 import userOperationsOutgoingSyncMixin from "../Mixins/userOutgoingOperationsSyncMixin";
 import userOperationsIncomingSyncMixin from "../Mixins/userIncomingOperationsSyncMixin";
-import lessonStudents from "./LessonStudents.vue";
+import notationMixin from "../Mixins/notationMixin";
 import questionToolbar from "./Toolbar.vue";
 import areaSelector from "./AreaSelector.vue";
 import lineDrawer from "./LineDrawer.vue";
 import newItemDialog from "./NewItemDialog.vue";
-import questions from "./Questions.vue";
 
 export default {
   components: {
-    lessonStudents,
     questionToolbar,
     areaSelector,
     lineDrawer,
     newItemDialog,
-    questions,
-  },
-  destroyed: function () {
-    window.removeEventListener("keyup", this.eventManager_keyUp);
   },
   mounted: function () {
-    this.matrixMixin_setMatrix(this.svgId);
-    this.reRenderMathJax();
+    this.loadQuestion().then(() => {
+      this.activateRectMixin_reset();
+      this.matrixMixin_setMatrix(this.svgId);
+      this.reRenderMathJax();
+    });
   },
   data: function () {
     return {
       isTeacher: false,
       matrix: [],
       svgId: "questionsSvg",
-      questionDialog: { show: false, name: "" },
     };
   },
   mixins: [
     matrixMixin,
     activateRectMixin,
-    userOperationsOutgoingSyncMixin,
-    userOperationsIncomingSyncMixin,
     symbolMixin,
     eventManager,
     notationMixin,
+    userOperationsOutgoingSyncMixin,
+    userOperationsIncomingSyncMixin,
   ],
   computed: {
     ...mapState({
       notations: (state) => {
         return state.notationStore.notations;
       },
-      //      authorized: (state) => state.userStore.loggedUser.authorized,
-      lessonName: (state) => {
-        return state.lessonStore.currentLesson.name;
+      questionTitle: (state) => {
+        return state.questionStore.currentQuestion.name;
       },
     }),
   },
   watch: {
-    $route: "loadLesson",
+    $route: "loadQuestion",
     notations: {
       deep: true,
       handler: function (notations) {
@@ -127,41 +107,32 @@ export default {
       getSelectedNotations: "getSelectedNotations",
       getNotations: "getNotations",
       getCurrentLesson: "getCurrentLesson",
-      getLessons: "getLessons",
+      getCurrentQuestion: "getCurrentQuestion",
       getUser: "getUser",
       getSymbols: "getSymbols",
       getCurrentEditMode: "getCurrentEditMode",
     }),
+    $resetToolbarState: function () {
+      // see toolbat.vue
+      this.$root.$emit("resetToolbarState");
+    },
     saveQuesstion: async function () {},
-    loadLesson: async function () {
+    loadQuestion: async function () {
       // load from db to store
-      if (!this.getCurrentLesson().hasOwnProperty()) {
-        await this.$store.dispatch("loadLesson", this.lessonId);
+      if (!this.getCurrentQuestion().hasOwnProperty()) {
+        await this.$store.dispatch(
+          "loadQuestion",
+          this.$route.params.questionId || this.getCurrentQuestion().id
+        );
       }
 
       this.isTeacher = this.getCurrentLesson().UserId === this.getUser().id;
 
-      // if student, send heartbeat to teacher
-      if (!this.isTeacher) {
-        setInterval(
-          this.userOperationsMixin_syncOutgoingHeartBeat,
-          1000,
-          this.lessonId
-        );
-      }
-
       // refresh screen
-      await this.$store.dispatch("loadLessonNotations", this.lessonId);
-
-      // listen to changes
-      this.mixin_syncIncomingUserOperations(this.lessonId, this.isTeacher); ///TODO create mechnism to handle gaps between load and sync
-    },
-    openQuestionDialog() {
-      this.questionDialog = {
-        show: true,
-        name: "",
-        title: "Please specify question title",
-      };
+      await this.$store.dispatch(
+        "loadQuestionNotations",
+        this.getCurrentQuestion().id
+      );
     },
   },
 };

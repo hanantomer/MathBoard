@@ -2,7 +2,7 @@
   <div class="fill-height" style="width: 100%; position: relative">
     <v-row dense style="max-height: 25px">
       <v-col cols="12" class="d-flex justify-center">
-        <p>{{ lessonName }}</p>
+        <p>{{ lessonTitle }}</p>
         <!-- TODO: better design for lesson title -->
       </v-col>
     </v-row>
@@ -10,29 +10,19 @@
       <v-col cols="10" fluid>
         <v-row style="height: 100%">
           <v-col colls="1">
-            <lesson-toolbar
-              ref="editorToolbar"
-              v-on="{
-                selectionButtonPressed: eventManager_selectionButtonPressed,
-                deleteButtonPressed: eventManager_deleteButtonPressed,
-                symbolButtonPressed: eventManager_symbolButtonPressed,
-                drawSqrtLineButtonPressed: eventManager_drawSqrtLineButtonPressed,
-                drawFractionLineButtonPressed: eventManager_drawFractionLineButtonPressed,
-                powerButtonPressed: eventManager_powerButtonPressed,
-              }"
-            ></lesson-toolbar>
+            <lesson-toolbar></lesson-toolbar>
           </v-col>
           <v-col cols="11">
             <div style="overflow: auto; height: 100%; position: relative">
               <lineDrawer
                 v-on="{
-                  ended: eventManager_endDrawLine,
+                  ended: resetToolbarState,
                 }"
                 :svgId="svgId"
               ></lineDrawer>
               <areaSelector :svgId="svgId"></areaSelector>
               <svg
-                v-bind:id="lessonSvg"
+                v-bind:id="svgId"
                 width="1350px"
                 height="600px"
                 v-on:mousedown="eventManager_mouseDown"
@@ -44,7 +34,7 @@
         </v-row>
       </v-col>
       <v-col cols="2" v-if="isTeacher">
-        <lesson-students :lessonId="lessonId"></lesson-students>
+        <lesson-students></lesson-students>
       </v-col>
     </v-row>
   </div>
@@ -76,16 +66,13 @@ export default {
     newItemDialog,
     questions,
   },
-  destroyed: function () {
-    window.removeEventListener("keyup", this.eventManager_keyUp);
-  },
   mounted: function () {
     // for keyboard base editing
     this.loadLesson().then(() => {
-      window.addEventListener("keyup", this.eventManager_keyUp);
+      this.activateRectMixin_reset();
+      this.matrixMixin_setMatrix(this.svgId);
+      this.reRenderMathJax();
     });
-    this.matrixMixin_setMatrix(this.svgId);
-    this.reRenderMathJax();
   },
   data: function () {
     return {
@@ -109,7 +96,7 @@ export default {
         return state.notationStore.notations;
       },
       //      authorized: (state) => state.userStore.loggedUser.authorized,
-      lessonName: (state) => {
+      lessonTitle: (state) => {
         return state.lessonStore.currentLesson.name;
       },
     }),
@@ -134,10 +121,16 @@ export default {
       getSymbols: "getSymbols",
       getCurrentEditMode: "getCurrentEditMode",
     }),
+    resetToolbarState: function () {
+      this.$root.$emit("resetToolbarState");
+    },
     loadLesson: async function () {
       // load from db to store
       if (!this.getCurrentLesson().hasOwnProperty()) {
-        await this.$store.dispatch("loadLesson", this.lessonId);
+        await this.$store.dispatch(
+          "loadLesson",
+          this.$route.params.lessonId || this.getCurrentLesson().id
+        );
       }
 
       this.isTeacher = this.getCurrentLesson().UserId === this.getUser().id;
@@ -147,15 +140,21 @@ export default {
         setInterval(
           this.userOperationsMixin_syncOutgoingHeartBeat,
           1000,
-          this.lessonId
+          this.getCurrentLesson().id
         );
       }
 
       // refresh screen
-      await this.$store.dispatch("loadLessonNotations", this.lessonId);
+      await this.$store.dispatch(
+        "loadLessonNotations",
+        this.getCurrentLesson().id
+      );
 
       // listen to changes
-      this.mixin_syncIncomingUserOperations(this.lessonId, this.isTeacher); ///TODO create mechnism to handle gaps between load and sync
+      this.mixin_syncIncomingUserOperations(
+        this.getCurrentLesson().id,
+        this.isTeacher
+      ); ///TODO create mechnism to handle gaps between load and sync
     },
   },
 };

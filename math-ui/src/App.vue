@@ -115,6 +115,13 @@ export default {
   name: "App",
   components: { Login },
   mixins: [authMixin],
+  mounted: function () {
+    window.removeEventListener("keyup", this.onKeyUp);
+    window.addEventListener("keyup", this.onKeyUp);
+  },
+  destroyed: function () {
+    window.removeEventListener("keyup", this.onKeyUp);
+  },
   data: () => ({
     loginDialog: null,
   }),
@@ -123,7 +130,9 @@ export default {
     openLoginDialog(tab) {
       this.loginDialog = { show: true, tab: tab };
     },
-
+    onKeyUp: function (key) {
+      this.$root.$emit("keyup", key);
+    },
     signOut: function () {
       this.mixin_signOut();
       this.$router.push("/login");

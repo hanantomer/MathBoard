@@ -22,9 +22,6 @@ module.exports = {
     list: {
         fetch: {
             before: async (req, res, context) => {
-                //console.debug(
-                //    `lessonMiddleware, req.query:${JSON.stringify(req.query)}`
-                //);
                 // replace link with actual lessonId
                 if (!!req.query.lessonId) {
                     req.query.lessonId = await dbUtil.parseLessonId(

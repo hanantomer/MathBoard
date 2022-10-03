@@ -64,9 +64,3 @@ export default {
   },
 };
 </script>
-<style scoped>
-.headline {
-  background-color: lightgray;
-  font-size: smaller;
-}
-</style>

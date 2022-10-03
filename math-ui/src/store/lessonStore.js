@@ -22,7 +22,9 @@ export default {
   },
   mutations: {
     addLesson(state, lesson) {
-      state.lessons.push(lesson);
+      if (state.lessons.indexOf(lesson) < 0) {
+        state.lessons.push(lesson);
+      }
       state.currentLesson = lesson;
     },
     setCurrentLesson(state, lesson) {

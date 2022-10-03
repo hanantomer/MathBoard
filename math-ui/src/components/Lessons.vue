@@ -4,7 +4,7 @@
       :dialog="lessonDialog"
       v-on="{ save: saveLesson }"
     ></NewItemDialog>
-    <v-card class="mx-auto" max-width="500">
+    <v-card class="mx-auto" max-width="600" min-height="600">
       <v-toolbar color="primary" dark>
         <v-toolbar-title>My Lessons</v-toolbar-title>
 
@@ -18,12 +18,12 @@
       <v-list two-line>
         <v-list-item-group active-class="primary--text">
           <v-list-item
-            v-for="item in items"
-            :key="item.id"
-            @click="seletctLesson(item)"
+            v-for="lesson in lessons"
+            :key="lesson.id"
+            @click="seletctLesson(lesson)"
           >
             <v-list-item-content class="lesson_title">
-              <v-list-item-title v-text="item.name"> </v-list-item-title>
+              <v-list-item-title v-text="lesson.name"> </v-list-item-title>
             </v-list-item-content>
           </v-list-item>
         </v-list-item-group>
@@ -44,12 +44,14 @@ export default {
       if (!lessons) {
         this.openLessonDialog();
       }
+      this.lessons = this.getLessons();
     });
   },
   computed: {
-    items() {
-      return this.getLessons();
-    },
+    // lessons() {
+    //   console.debug(this.getLessons().length);
+    //   return this.getLessons();
+    // },
   },
   methods: {
     ...mapActions({
@@ -83,6 +85,7 @@ export default {
   },
   data() {
     return {
+      lessons: [],
       selectedItem: {},
       lessonDialog: { show: false, name: "" },
       menu: [

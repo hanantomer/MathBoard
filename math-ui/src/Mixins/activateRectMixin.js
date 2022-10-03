@@ -9,7 +9,8 @@ export default {
   watch: {
     activeRect: {
       handler(activeRect) {
-        this.matrixMixin_activateRectByCoordinates(activeRect);
+        if (!!activeRect)
+          this.matrixMixin_activateRectByCoordinates(activeRect);
       },
     },
   },
@@ -18,16 +19,13 @@ export default {
       getActiveRect: "getActiveRect",
     }),
     activateRectMixin_findRectAtClickedPosition(e) {
-      //return
-      let r = this.matrixMixin_findClickedObject(
+      return this.matrixMixin_findClickedObject(
         {
           x: e.clientX,
           y: e.clientY,
         },
         "rect"
       );
-
-      return r;
     },
     activateRectMixin_activateRect(rect) {
       let clickedPosition = {
@@ -38,6 +36,10 @@ export default {
       this.$store.dispatch("setActiveRect", clickedPosition).then(() => {
         this.userOperationsMixin_syncOutgoingSelectedPosition(clickedPosition);
       });
+    },
+    activateRectMixin_reset() {
+      this.$store.dispatch("setActiveRect", null);
+      this.$store.dispatch("setPrevActiveRect", null);
     },
   },
 };
