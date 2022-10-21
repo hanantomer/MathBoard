@@ -1,4 +1,5 @@
 import dbSyncMixin from "../Mixins/dbSyncMixin";
+import EditMode from "../Mixins/editMode";
 
 export default {
   modules: {
@@ -7,7 +8,7 @@ export default {
   state: {
     lessons: [],
     currentLesson: {},
-    currentEditMode: "",
+    currentEditMode: EditMode.SYMBOL,
   },
   getters: {
     getCurrentEditMode: (state) => {

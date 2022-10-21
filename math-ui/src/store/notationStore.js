@@ -12,35 +12,294 @@ Object.defineProperty(String.prototype, "capitalize", {
 });
 
 const helper = {
-  symbolAtCoordinates: function (coordinates, symbolCoordinates) {
+  // point
+  pointAtPointCoordinates: function (point1Coordinates, point2Coordinates) {
     return (
-      coordinates.col == symbolCoordinates.col &&
-      coordinates.row == symbolCoordinates.row
+      point1Coordinates.col == point2Coordinates.col &&
+      point2Coordinates.row == point2Coordinates.row
     );
   },
-  lineAtCoordinates: function (coordinates, lineCoordinates) {
+
+  pointAtLineCoordinates: function (pointCoordinates, lineCoordinates) {
     return (
-      coordinates.col >= lineCoordinates.fromCol &&
-      coordinates.col <= lineCoordinates.toCol &&
-      coordinates.row <= lineCoordinates.row + 1 &&
-      coordinates.row >= lineCoordinates.row - 1
+      pointCoordinates.col >= lineCoordinates.fromCol &&
+      pointCoordinates.col <= lineCoordinates.toCol &&
+      pointCoordinates.row == lineCoordinates.row
     );
   },
-  findNotationsByCoordinates: function (state, coordinates) {
+
+  pointAtRectCoordinates: function (pointCoordinates, rectCoordinates) {
+    return (
+      pointCoordinates.col >= rectCoordinates.fromCol &&
+      pointCoordinates.col <= rectCoordinates.toCol &&
+      pointCoordinates.row >= rectCoordinates.fromRow &&
+      pointCoordinates.row <= rectCoordinates.toRow
+    );
+  },
+
+  // line
+  lineAtPointCoordinates: function (lineCoordinates, pointCoordinates) {
+    return (
+      lineCoordinates.fromCol <= pointCoordinates.col &&
+      lineCoordinates.toCol >= pointCoordinates.col &&
+      lineCoordinates.row == pointCoordinates.row
+    );
+  },
+
+  lineAtLineCoordinates: function (line1Coordinates, line2Coordinates) {
+    return (
+      ((line1Coordinates.fromCol >= line2Coordinates.fromCol &&
+        line1Coordinates.fromCol <= line2Coordinates.toCol) ||
+        (line1Coordinates.toCol >= line2Coordinates.fromCol &&
+          line1Coordinates.toCol <= line2Coordinates.toCol)) &&
+      line1Coordinates.row == line2Coordinates.row
+    );
+  },
+
+  lineAtRectCoordinates: function (lineCoordinates, rectCoordinates) {
+    return (
+      ((lineCoordinates.fromCol >= rectCoordinates.fromCol &&
+        lineCoordinates.fromCol <= rectCoordinates.toCol) ||
+        (lineCoordinates.toCol >= rectCoordinates.fromCol &&
+          lineCoordinates.toCol <= rectCoordinates.toCol)) &&
+      lineCoordinates.row >= rectCoordinates.fromRow &&
+      lineCoordinates.row <= rectCoordinates.toRow
+    );
+  },
+
+  // rect
+  rectAtPointCoordinates: function (rectCoordinates, pointCoordinates) {
+    return (
+      rectCoordinates.fromCol <= pointCoordinates.col &&
+      rectCoordinates.toCol >= pointCoordinates.toCol &&
+      rectCoordinates.fromRow <= pointCoordinates.row &&
+      rectCoordinates.toRow >= pointCoordinates.row
+    );
+  },
+
+  rectAtLineCoordinates: function (rectCoordinates, lineCoordinates) {
+    return (
+      ((rectCoordinates.fromCol >= lineCoordinates.fromCol &&
+        rectCoordinates.fromCol <= lineCoordinates.toCol) ||
+        (rectCoordinates.toCol >= lineCoordinates.fromCol &&
+          rectCoordinates.toCol <= lineCoordinates.toCol)) &&
+      rectCoordinates.fromRow <= lineCoordinates.row &&
+      rectCoordinates.toRow >= lineCoordinates.row
+    );
+  },
+
+  rectAtRectCoordinates: function (rect1Coordinates, rect2Coordinates) {
+    return (
+      ((rect1Coordinates.fromCol >= rect2Coordinates.fromCol &&
+        rect1Coordinates.fromCol <= rect2Coordinates.toCol) ||
+        (rect1Coordinates.toCol >= rect2Coordinates.fromCol &&
+          rectCoordinates.toCol <= rect2Coordinates.toCol)) &&
+      ((rect1Coordinates.fromRow >= rect2Coordinates.fromRow &&
+        rect1Coordinates.fromRow <= rect2Coordinates.toRow) ||
+        (rect1Coordinates.toRow >= rect2Coordinates.fromRow &&
+          rectCoordinates.toRow <= rect2Coordinates.toRow))
+    );
+  },
+
+  // return a list of notations wich overlap given point coordinates
+  findNotationsByPointCoordinates: function (state, pointCoordinates) {
     return Object.entries(state.notations)
       .map((n) => n[1])
       .filter((n) =>
         n.type == "symbol" || n.type == "power"
-          ? helper.symbolAtCoordinates(coordinates, {
+          ? helper.pointAtPointCoordinates(pointCoordinates, {
               col: n.col,
               row: n.row,
             })
-          : helper.lineAtCoordinates(coordinates, {
+          : n.type == "fraction" || n.type == "sqrt"
+          ? helper.lineAtPointCoordinates(pointCoordinates, {
               fromCol: n.fromCol,
               toCol: n.toCol,
               row: n.row,
             })
+          : n.type == "text"
+          ? helper.rectAtPointCoordinates(pointCoordinates, {
+              fromCol: n.fromCol,
+              toCol: n.toCol,
+              fromRow: n.fromRow,
+              toRow: n.toRow,
+            })
+          : false
       );
+  },
+
+  // return a list of notations wich overlap given line coordinates
+  findNotationsByLineCoordinates: function (state, lineCoordinates) {
+    return Object.entries(state.notations)
+      .map((n) => n[1])
+      .filter((n) =>
+        n.type == "symbol" || n.type == "power"
+          ? helper.lineAtPointCoordinates(lineCoordinates, {
+              col: n.col,
+              row: n.row,
+            })
+          : n.type == "fraction" || n.type == "sqrt"
+          ? helper.lineAtLineCoordinates(lineCoordinates, {
+              fromCol: n.fromCol,
+              toCol: n.toCol,
+              row: n.row,
+            })
+          : n.type == "text"
+          ? helper.rectAtLineCoordinates(lineCoordinates, {
+              fromCol: n.fromCol,
+              toCol: n.toCol,
+              fromRow: n.fromRow,
+              toRow: n.toRow,
+            })
+          : false
+      );
+  },
+
+  // return a list of notations wich overlap given rect coordinates
+  findNotationsByRectCoordinates: function (state, rectCoordinates) {
+    return Object.entries(state.notations)
+      .map((n) => n[1])
+      .filter((n) =>
+        n.type == "symbol" || n.type == "power"
+          ? helper.pointAtRectCoordinates(rectCoordinates, {
+              col: n.col,
+              row: n.row,
+            })
+          : n.type == "fraction" || n.type == "sqrt"
+          ? helper.lineAtRectCoordinates(rectCoordinates, {
+              fromCol: n.fromCol,
+              toCol: n.toCol,
+              row: n.row,
+            })
+          : n.type == "text"
+          ? helper.rectAtRectCoordinates(rectCoordinates, {
+              fromCol: n.fromCol,
+              toCol: n.toCol,
+              fromRow: n.fromRow,
+              toRow: n.toRow,
+            })
+          : false
+      );
+  },
+
+  findOverlapNotationsOfSameType(state, notation) {
+    return Object.entries(state.notations)
+      .map((n) => n[1])
+      .filter((n1) => n1.type === notation.type)
+      .filter((n2) => {
+        switch (notation.type) {
+          case NotationType.SYMBOL:
+          case NotationType.POWER:
+            return helper.pointAtPointCoordinates(
+              { col: notation.col, row: notation.row },
+              n2
+            );
+          case NotationType.FRACTION:
+          case NotationType.SQRT:
+            return helper.lineAtLineCoordinates(
+              {
+                fromCol: notation.fromCol,
+                toCol: notation.toCol,
+                row: notation.row,
+              },
+              n2
+            );
+          case NotationType.TEXT:
+          case NotationType.IMAGE:
+          case NotationType.GEO:
+            return helper.rectAtRectCoordinates(
+              {
+                fromCol: notation.fromCol,
+                toCol: notation.toCol,
+                fromRow: notation.fromRow,
+                toRow: notation.toRow,
+              },
+              n2
+            );
+        }
+      });
+  },
+
+  findOverlapNotationsOfAnyType(state, notation) {
+    return Object.entries(state.notations)
+      .map((n) => n[1])
+      .filter((n2) => {
+        switch (notation.type) {
+          case (NotationType.SYMBOL, NotationType.POWER):
+            return (
+              helper.pointAtPointCoordinates(
+                { col: notation.col, row: notation.row },
+                n2
+              ) ??
+              helper.lineAtPointCoordinates(
+                { col: notation.col, row: notation.row },
+                n2
+              ) ??
+              helper.rectAtPointCoordinates(
+                { col: notation.col, row: notation.row },
+                n2
+              )
+            );
+          case (NotationType.FRACTION, NotationType.SQRT):
+            return (
+              helper.lineAtPointCoordinates(
+                {
+                  fromCol: notation.fromCol,
+                  toCol: notation.toCol,
+                  row: notation.row,
+                },
+                n2
+              ) ??
+              helper.lineAtLineCoordinates(
+                {
+                  fromCol: notation.fromCol,
+                  toCol: notation.toCol,
+                  row: notation.row,
+                },
+                n2
+              ) ??
+              helper.lineAtRectCoordinates(
+                {
+                  fromCol: notation.fromCol,
+                  toCol: notation.toCol,
+                  row: notation.row,
+                },
+                n2
+              )
+            );
+
+          case (NotationType.TEXT, NotationType.IMAGE, NotationType.GEO):
+            return (
+              helper.pointAtRectCoordinates(
+                {
+                  fromCol: notation.fromCol,
+                  toCol: notation.toCol,
+                  fromRow: notation.fromRow,
+                  toRow: notation.toRow,
+                },
+                n2
+              ) ??
+              helper.lineAtRectCoordinates(
+                {
+                  fromCol: notation.fromCol,
+                  toCol: notation.toCol,
+                  fromRow: notation.fromRow,
+                  toRow: notation.toRow,
+                },
+                n2
+              ) ??
+              helper.rectAtRectCoordinates(
+                {
+                  fromCol: notation.fromCol,
+                  toCol: notation.toCol,
+                  fromRow: notation.fromRow,
+                  toRow: notation.toRow,
+                },
+                n2
+              )
+            );
+        }
+      });
   },
 
   loadNotationType(context, currentType) {
@@ -60,6 +319,7 @@ const helper = {
     helper.loadNotationType(context, NotationType.POWER);
     helper.loadNotationType(context, NotationType.FRACTION);
     helper.loadNotationType(context, NotationType.SQRT);
+    helper.loadNotationType(context, NotationType.TEXT);
   },
 };
 
@@ -94,8 +354,11 @@ export default {
     removeNotation(state, notation) {
       Vue.delete(state.notations, notation);
     },
-    selectNotation(state, coordinates) {
-      let notations = helper.findNotationsByCoordinates(state, coordinates);
+    selectNotation(state, pointCoordinates) {
+      let notations = helper.findNotationsByPointCoordinates(
+        state,
+        pointCoordinates
+      );
       notations.forEach((n) => {
         Vue.set(state.notations, n.type + n.id, { ...n, selected: true });
       });
@@ -154,10 +417,33 @@ export default {
       notation[notation.boardType.capitalize() + "Id"] =
         context.getters.getParent.id;
 
+      // notation overlaps with other notation of same type => update
+      let overlappedSameTypeNotations = helper.findOverlapNotationsOfSameType(
+        context.state,
+        notation
+      );
+      if (overlappedSameTypeNotations?.length) {
+        notation.id = overlappedSameTypeNotations[0].id;
+        await dbSyncMixin.methods.updateNotation(notation);
+        context.commit("setNotation", notation);
+        return notation;
+      }
+
+      // notation overlaps with other notation of other type => ignore
+      let overlappedAnyTypeNotations = helper.findOverlapNotationsOfAnyType(
+        context.state,
+        notation
+      );
+      if (overlappedAnyTypeNotations?.length) {
+        return null;
+      }
+
+      // no overlapping -> add
       notation = await dbSyncMixin.methods.saveNotation(notation);
       context.commit("setNotation", notation);
       return notation;
     },
+
     syncIncomingAddedNotation(context, notation) {
       context.commit("setNotation", notation);
     },
@@ -168,7 +454,7 @@ export default {
       context.commit("setNotation", notation);
     },
     removeNotations(context, coordinates) {
-      let notationsAtCoordinates = helper.findNotationsByCoordinates(
+      let notationsAtCoordinates = helper.findNotationsByPointCoordinates(
         context.state,
         coordinates
       );
@@ -182,8 +468,8 @@ export default {
       }
       return notationsAtCoordinates;
     },
-    selectNotation(context, coordinates) {
-      context.commit("selectNotation", coordinates);
+    selectNotation(context, pointCoordinates) {
+      context.commit("selectNotation", pointCoordinates);
     },
     unselectAllNotations(context) {
       context.commit("unselectAllNotations");

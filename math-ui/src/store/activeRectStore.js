@@ -2,31 +2,21 @@ import Vue from "vue";
 
 export default {
   state: {
-    activeRect: { x: 0, y: 0 },
-    prevActiveRect: null,
+    activeRectArr: [],
   },
   getters: {
-    getActiveRect: (state) => {
-      return state.activeRect;
-    },
-    getPrevActiveRect: (state) => {
-      return state.prevActiveRect;
+    getActiveRectArr: (state) => {
+      return state.activeRectArr;
     },
   },
   mutations: {
-    setActiveRect(state, activeRect) {
-      Vue.set(state, "activeRect", activeRect);
-    },
-    setPrevActiveRect(state, activeRect) {
-      Vue.set(state, "prevActiveRect", activeRect);
+    setActiveRectArr(state, activeRectArr) {
+      Vue.set(state, "activeRectArr", activeRectArr);
     },
   },
   actions: {
-    setActiveRect(context, activeRect) {
-      context.commit("setActiveRect", activeRect);
-    },
-    setPrevActiveRect(context, activeRect) {
-      context.commit("setPrevActiveRect", activeRect);
+    setActiveRectArr(context, activeRectArr) {
+      context.commit("setActiveRectArr", activeRectArr);
     },
   },
 };

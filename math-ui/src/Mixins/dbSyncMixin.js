@@ -1,3 +1,4 @@
+const NotationType = require("./notationType");
 const axios = require("axios");
 const axiosInstnce = axios.create({
   baseURL: "http://localhost:8081",
@@ -135,23 +136,10 @@ module.exports = {
       }
     },
     saveNotation: async function (notation) {
-      let notationAtCoordinates = await this.getNotationByCoordinates(notation);
-      let res = null;
-      if (!!notationAtCoordinates) {
-        notation.id = notationAtCoordinates.id;
-        res = await axiosInstnce.put(
-          `/${notation.boardType}${notation.type.toLowerCase()}s/${
-            notation.id
-          }`,
-          notation
-        );
-      } else {
-        res = await axiosInstnce.post(
-          `/${notation.boardType}${notation.type.toLowerCase()}s`,
-          notation
-        );
-      }
-
+      res = await axiosInstnce.post(
+        `/${notation.boardType}${notation.type.toLowerCase()}s`,
+        notation
+      );
       return res ? { ...res.data, type: notation.type } : null;
     },
     updateNotation: async function (notation) {

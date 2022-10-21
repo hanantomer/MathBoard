@@ -61,6 +61,13 @@ let lessonSqrtResource = finale.resource({
 lessonSqrtResource.use(authMiddleware);
 lessonSqrtResource.use(lessonMiddleware);
 
+let lessonTextResource = finale.resource({
+    model: db.sequelize.models["LessonText"],
+    endpoints: ["/lessontexts", "/lessontexts/:id"],
+});
+lessonTextResource.use(authMiddleware);
+lessonTextResource.use(lessonMiddleware);
+
 // question
 
 let questionResource = finale.resource({

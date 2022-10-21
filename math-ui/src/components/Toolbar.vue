@@ -1,10 +1,38 @@
 <template>
   <div>
-    <createAccessLinkDialog
-      v-model="isAccessLinkDialogOpen"
+    <accessLinkDialog
+      v-model="accessLinkDialogOpen"
       v-on="{ create: $createAccessLink }"
-    ></createAccessLinkDialog>
+    ></accessLinkDialog>
+    <freeTextDialog
+      v-model="freeTextDialogOpen"
+      v-on="{ freeTextSubmitted: $submitText }"
+    ></freeTextDialog>
+
     <v-toolbar color="primary" dark class="vertical-toolbar">
+      <!-- text tool  -->
+      <v-tooltip top hidden>
+        <template v-slot:activator="{ on, attrs }">
+          <v-btn-toggle
+            v-model="textButtonActive"
+            background-color="transparent"
+            active-class="iconActive"
+          >
+            <v-btn
+              icon
+              v-on="on"
+              v-bind="attrs"
+              :disabled="(!authorized && !isTeacher) || !hasActiveRect"
+              v-on:click="$startTextMode"
+              @click.stop="freeTextDialogOpen = true"
+              x-small
+              ><v-icon>mdi-text</v-icon></v-btn
+            >
+          </v-btn-toggle>
+        </template>
+        <span>Free Text</span>
+      </v-tooltip>
+
       <!-- selection button -->
       <v-tooltip top hidden>
         <template v-slot:activator="{ on, attrs }">
@@ -56,7 +84,7 @@
             icon
             v-on="on"
             v-bind="attrs"
-            @click.stop="isAccessLinkDialogOpen = true"
+            @click.stop="accessLinkDialogOpen = true"
             color="white"
             x-small
             fab
@@ -180,17 +208,20 @@
 
 <script>
 import EditMode from "../Mixins/editMode";
+import NotationType from "../Mixins/notationType";
 import matrixMixin from "../Mixins/matrixMixin";
 import symbolMixin from "../Mixins/symbolMixin";
 import userIncomingOperationsSyncMixin from "../Mixins/userIncomingOperationsSyncMixin";
 import userOutgoingOperationsSyncMixin from "../Mixins/userOutgoingOperationsSyncMixin";
-import createAccessLinkDialog from "./CreateAccessLinkDialog.vue";
+import accessLinkDialog from "./AccessLinkDialog.vue";
+import freeTextDialog from "./FreeTextDialog.vue";
 import { mapGetters } from "vuex";
 import { mapActions } from "vuex";
 
 export default {
   components: {
-    createAccessLinkDialog,
+    accessLinkDialog,
+    freeTextDialog,
   },
   mixins: [
     matrixMixin,
@@ -199,14 +230,16 @@ export default {
     userOutgoingOperationsSyncMixin,
   ],
   mounted: function () {
+    //emited from lesson/question/answer
     this.$root.$on("resetToolbarState", () => {
-      this.reset();
+      this.$reset();
     });
   },
   methods: {
     ...mapGetters({
       getCurrentEditMode: "getCurrentEditMode",
       getCurrentLesson: "getCurrentLesson",
+      getActiveRectArr: "getActiveRectArr",
       getUser: "getUser",
     }),
     ...mapActions({
@@ -243,35 +276,50 @@ export default {
 
     $togglePowerMode() {
       this.$resetButtonsState();
-      if (this.getCurrentEditMode() == EditMode.ADD_POWER) {
+      if (this.getCurrentEditMode() == EditMode.POWER) {
         this.$endPowerMode();
       } else {
         this.$startPowerMode();
       }
     },
     async $startPowerMode() {
-      this.reset();
+      this.$reset();
       this.powerButtonActive = 0;
-      await this.setCurrentEditMode(EditMode.ADD_POWER);
+      await this.setCurrentEditMode(EditMode.POWER);
     },
     $endPowerMode() {
-      this.reset();
+      this.$reset();
     },
     $toggleDeleteMode() {
       if (this.getCurrentEditMode() == EditMode.DELETE) {
-        this.endDeleteMode();
+        this.$endDeleteMode();
       } else {
-        this.startDeleteMode();
+        this.$startDeleteMode();
       }
     },
+    // $toggleTextMode() {
+    //   if (this.getCurrentEditMode() == EditMode.TEXT) {
+    //     this.$endTextMode();
+    //   } else {
+    //     this.$startTextMode();
+    //   }
+    // },
+    async $startTextMode() {
+      this.$reset();
+      this.textButtonActive = 0;
+      await this.setCurrentEditMode(EditMode.TEXT);
+    },
+    $endTextMode() {
+      this.$reset();
+    },
     async $startDeleteMode() {
-      this.reset();
+      this.$reset();
       this.deleteButtonActive = 0;
       this.showDeleteCursor();
       await this.setCurrentEditMode(EditMode.DELETE);
     },
     $endDeleteMode() {
-      this.reset();
+      this.$reset();
     },
     $toggleSelectionMode() {
       if (this.getCurrentEditMode() == EditMode.SELECT) {
@@ -281,18 +329,18 @@ export default {
       }
     },
     async $startSelectionMode() {
-      this.reset();
+      this.$reset();
       this.selectionButtonActive = 0;
       await this.setCurrentEditMode(EditMode.SELECT);
     },
     async $endSelectionMode() {
       this.$reset();
-      await this.setCurrentEditMode(EditMode.ADD_SYMBOL);
+      await this.setCurrentEditMode(EditMode.SYMBOL);
     },
     $symbolButtonPressed(e) {
-      if (this.getCurrentEditMode() === EditMode.ADD_SYMBOL)
+      if (this.getCurrentEditMode() === EditMode.SYMBOL)
         this.symbolMixin_addSymbol(e.currentTarget.innerText, "symbol");
-      else if (this.getCurrentEditMode() === EditMode.ADD_POWER) {
+      else if (this.getCurrentEditMode() === EditMode.POWER) {
         this.symbolMixin_addSymbol(e.currentTarget.innerText, "power");
       }
     },
@@ -305,22 +353,42 @@ export default {
         link: link,
       });
     },
+    $submitText: function (value) {
+      let activeRect = this.getActiveRectArr()[0];
+      let text = {
+        type: NotationType.TEXT,
+        fromCol: activeRect.col,
+        toCol:
+          parseInt(activeRect.col) + Math.floor(this.freeTextRectWidth(value)),
+        fromRow: activeRect.row,
+        toRow:
+          parseInt(activeRect.row) + Math.floor(this.freeTextRectHeight(value)),
+        value: value,
+      };
+      this.$store
+        .dispatch("addNotation", text)
+        .then((text) => {
+          this.userOperationsMixin_syncOutgoingSaveNotation(text);
+        })
+        .catch((e) => {
+          console.error(e);
+        });
+    },
     async $reset() {
       this.$resetButtonsState();
-      this.$hideDeleteCursor();
-      await this.setCurrentEditMode(EditMode.ADD_SYMBOL);
+      await this.setCurrentEditMode(EditMode.SYMBOL);
     },
     $resetButtonsState() {
       this.deleteButtonActive = this.selectionButtonActive = this.fractionButtonActive = this.squareRootButtonActive = this.powerButtonActive = 1;
     },
-    $showDeleteCursor() {
-      document.getElementById(this.svgId).classList.add("deleteButtonActive");
-    },
-    $hideDeleteCursor() {
-      document
-        .getElementById(this.svgId)
-        .classList.remove("deleteButtonActive");
-    },
+    // $showDeleteCursor() {
+    //   document.getElementById(this.svgId).classList.add("deleteButtonActive");
+    // },
+    // $hideDeleteCursor() {
+    //   document
+    //     .getElementById(this.svgId)
+    //     .classList.remove("deleteButtonActive");
+    // },
   },
   computed: {
     isTeacher: function () {
@@ -329,18 +397,16 @@ export default {
     authorized: function () {
       return !!this.getUser().authorized;
     },
-  },
-  wtach: {
-    reset(newVal) {
-      if (!!newVal) {
-        this.reset();
-      }
+    hasActiveRect: function () {
+      return !!this.getActiveRectArr() ?? this.getActiveRectArr()[0];
     },
   },
   data: function () {
     return {
-      isAccessLinkDialogOpen: false,
+      accessLinkDialogOpen: false,
+      freeTextDialogOpen: false,
       deleteButtonActive: 1,
+      textButtonActive: 1,
       selectionButtonActive: 1,
       fractionButtonActive: 1,
       squareRootButtonActive: 1,

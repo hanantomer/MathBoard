@@ -1,6 +1,7 @@
 export default {
-  ADD_SYMBOL: "ADD_SYMBOL",
-  ADD_POWER: "ADD_POWER",
+  SYMBOL: "SYMBOL",
+  POWER: "POWER",
+  TEXT: "TEXT",
   FRACTION: "FRACTION",
   SQRT: "SQRT",
   DELETE: "DELETE", // after delete button pressed

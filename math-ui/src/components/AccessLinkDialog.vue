@@ -35,7 +35,7 @@
 
 <script>
 export default {
-  name: "createAccessLinkDialog",
+  name: "accessLinkDialog",
 
   props: {
     value: Boolean,

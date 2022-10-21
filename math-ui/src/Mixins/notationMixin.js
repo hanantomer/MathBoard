@@ -21,7 +21,7 @@ export default {
       });
     },
     notationMixin_removeNotationAtSeletedPosition() {
-      this.romoveNotations(this.getActiveRect());
+      this.romoveNotations(this.getActiveRectArr()[0]);
     },
     async romoveNotations(rect) {
       let notationsToDelete = await this.$store.dispatch(

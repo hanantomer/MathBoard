@@ -4,12 +4,25 @@ import { mapState } from "vuex";
 import * as d3 from "d3";
 
 export default {
+  mounted: function () {
+    let textMeasurementEl = document.createElement("canvas");
+    this.textMeasurementCtx = textMeasurementEl.getContext("2d");
+    this.textMeasurementCtx.font = window
+      .getComputedStyle(this.$el, null)
+      .getPropertyValue("font");
+  },
   computed: {
     ...mapState({
       prevActiveRect: (state) => state.activeRectStore.prevActiveRect,
     }),
     fontSize: function () {
       return `${this.rectSize / 25}em`;
+    },
+    textFontSize: function () {
+      return window
+        .getComputedStyle(this.$el, null)
+        .getPropertyValue("font-size");
+      //return `${this.rectSize / 35}em`;
     },
     powerFontSize: function () {
       return `${this.rectSize / 50}em`;
@@ -20,13 +33,13 @@ export default {
   },
   data: function () {
     return {
+      textMeasurementCtx: null,
       opacity: 1,
       colsNum: 44,
       rowsNum: 24,
       rectSize: 30,
       lineHeight: 4,
       topLevelGroup: null,
-      activeRectColor: "lightcyan",
       borderColor: "lightgray",
       svgns: "http://www.w3.org/2000/svg",
     };
@@ -35,9 +48,19 @@ export default {
     ...mapActions({
       setPrevActiveRect: "setPrevActiveRect",
     }),
-
-    $isLine(notationType) {
+    freeTextRectWidth(value) {
+      return this.textMeasurementCtx.measureText(value).width / this.rectSize;
+    },
+    freeTextRectHeight(value) {
       return (
+        (this.textFontSize.replace("px", "") * value.split(/\r*\n/).length) /
+        this.rectSize
+      );
+    },
+    $isLine(notationType) {
+      /// TODO change name
+      return (
+        notationType === NotationType.TEXT ||
         notationType === NotationType.FRACTION ||
         notationType === NotationType.SQRT ||
         notationType === NotationType.SQRTSYMBOL ||
@@ -47,15 +70,6 @@ export default {
     },
     reRenderMathJax() {
       window.MathJax.typeset();
-    },
-    async $toggleActiveRect(clickedNotation) {
-      if (!clickedNotation) return;
-      if (!!this.prevActiveRect) this.prevActiveRect.style.fill = "";
-      await this.setPrevActiveRect(clickedNotation);
-      clickedNotation.style.fill = this.activeRectColor;
-    },
-    matrixMixin_unselectPreviouslySelectedtRect() {
-      if (!!this.prevActiveRect) this.prevActiveRect.style.fill = "";
     },
     //https://stackoverflow.com/questions/22428484/get-element-from-point-when-you-have-overlapping-elements
     matrixMixin_findClickedObject(point, tagName, notationType) {
@@ -131,30 +145,19 @@ export default {
 
       this.topLevelGroup.selectAll("rect").attr("stroke-opacity", this.opacity);
     },
-    matrixMixin_activateRectByCoordinates(clickedCoordinates) {
-      let rect = document
-        .querySelector(
-          `svg[id="${this.svgId}"] g[row="${clickedCoordinates.row}"]`
-        )
-        .querySelector(
-          `rect[col="${clickedCoordinates.col ?? clickedCoordinates.fromCol}"]`
-        );
-
-      if (rect) this.$toggleActiveRect(rect, clickedCoordinates);
-    },
     matrixMixin_getRectSize() {
       return this.rectSize;
     },
     getNextRect(horizontalStep, verticalStep) {
-      if (!this.prevActiveRect) {
+      if (!this.getActiveRectArr().length) {
         return;
       }
 
-      let col = parseInt(this.prevActiveRect.attributes.col.value);
-      let nextCol = col;
-
-      let row = parseInt(this.prevActiveRect.parentNode.attributes.row.value);
-      let nextRow = row;
+      let activeRect = this.getActiveRectArr()[0];
+      let col = parseInt(activeRect.col);
+      let row = parseInt(activeRect.row);
+      let nextCol = parseInt(col);
+      let nextRow = parseInt(row);
 
       if (col + horizontalStep < this.colsNum && col + horizontalStep >= 0) {
         nextCol += horizontalStep;
@@ -183,9 +186,14 @@ export default {
       let nextRect = this.getNextRect(horizontalStep, verticalStep);
       if (!!nextRect) {
         nextRect.type = "rect";
-        this.$store.dispatch("setActiveRect", nextRect);
-        this.userOperationsMixin_syncOutgoingSelectedPosition(nextRect);
+        this.$store.dispatch("setActiveRectArr", [nextRect]);
+        this.userOperationsMixin_syncOutgoingSelectedPosition([nextRect]);
       }
+    },
+    matrixMixin_findRect(rect) {
+      return document
+        .querySelector(`g[row='${rect.row}']`)
+        .querySelector(`rect[col='${rect.col}']`);
     },
     updateNotation: function (n) {
       n.setAttribute("col", (n) => {
@@ -214,6 +222,14 @@ export default {
             let sqrtElement = { ...element };
             sqrtElement.type = NotationType.SQRTSYMBOL;
             enrichedNotations.push(sqrtElement);
+          }
+          if (element.type === "text") {
+            element.value.split(/\r*\n/).forEach((row, index) => {
+              let textElement = { ...element };
+              textElement.value = row;
+              textElement.index = index;
+              enrichedNotations.push(textElement);
+            });
           }
         }
       }
@@ -301,6 +317,15 @@ export default {
         return this.getNotationYposByRow(n.row);
       }
 
+      if (n.type === NotationType.TEXT) {
+        if (n.index != null) {
+          return (
+            this.getNotationYposByRow(n.fromRow) +
+            n.index * this.textFontSize.replace("px", "")
+          );
+        }
+      }
+
       if (n.type === NotationType.POWER) {
         return this.getNotationYposByRow(n.row) - 5;
       }
@@ -314,6 +339,13 @@ export default {
       }
     },
     $width(n) {
+      if (n.type === NotationType.TEXT) {
+        return (
+          this.textMeasurementCtx.measureText(n.value).width +
+          1 * n.value.length
+        );
+      }
+
       if (
         n.type === NotationType.SYMBOL ||
         n.type === NotationType.SQRTSYMBOL ||
@@ -325,6 +357,15 @@ export default {
         return (n.toCol - n.fromCol) * this.rectSize;
     },
     $height(n) {
+      if (n.type === NotationType.TEXT) {
+        // exclude original text node
+        if (n.index != null)
+          return (
+            (this.textFontSize.replace("px", "") + 5) *
+            n.value.split(/\r*\n/).length
+          );
+      }
+
       if (
         n.type === NotationType.SYMBOL ||
         n.type === NotationType.SQRTSYMBOL ||
@@ -336,7 +377,11 @@ export default {
         return this.lineHeight;
     },
     $fontSize(n) {
-      return n.type === NotationType.POWER ? this.powerFontSize : this.fontSize;
+      return n.type === NotationType.POWER
+        ? this.powerFontSize
+        : n.type === NotationType.TEXT
+        ? this.textFontSize
+        : this.fontSize;
     },
     $color(n) {
       return n.selected ? "red" : "black";
@@ -350,6 +395,7 @@ export default {
       if (n.type === NotationType.SQRTSYMBOL) {
         return `<p style='position:relative;left:-3px; font-size:1.4em'>&#x221A;</p>`;
       }
+
       return !!n.value ? "$$" + n.value + "$$" : "";
     },
     updateNotations: function (update) {

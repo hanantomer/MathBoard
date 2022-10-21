@@ -43,6 +43,7 @@
 <script>
 import { mapState } from "vuex";
 import { mapGetters } from "vuex";
+import { mapActions } from "vuex";
 import matrixMixin from "../Mixins/matrixMixin";
 import activateRectMixin from "../Mixins/activateRectMixin";
 import eventManager from "../Mixins/eventManager";
@@ -112,6 +113,10 @@ export default {
     },
   },
   methods: {
+    ...mapActions({
+      setCurrentEditMode: "setCurrentEditMode",
+    }),
+
     ...mapGetters({
       getSelectedNotations: "getSelectedNotations",
       getNotations: "getNotations",

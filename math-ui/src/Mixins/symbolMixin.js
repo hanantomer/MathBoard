@@ -3,15 +3,16 @@ import { mapGetters } from "vuex";
 export default {
   methods: {
     ...mapGetters({
-      getActiveRect: "getActiveRect",
+      getActiveRectArr: "getActiveRectArr",
     }),
     symbolMixin_addSymbol(value, type) {
+      let activeRect = this.getActiveRectArr()[0];
       let symbol = {
         value: value,
         type: type,
       };
-      symbol.col = this.getActiveRect().col;
-      symbol.row = this.getActiveRect().row;
+      symbol.col = activeRect.col;
+      symbol.row = activeRect.row;
 
       this.$store
         .dispatch("addNotation", symbol)

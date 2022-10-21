@@ -24,6 +24,7 @@ import EditMode from "../Mixins/editMode";
 import * as d3 from "d3";
 import matrixMixin from "../Mixins/matrixMixin";
 import userOutgoingOperationsSyncMixin from "../Mixins/userOutgoingOperationsSyncMixin";
+import NotationType from "../Mixins/notationType";
 
 const SelectionMode = Object.freeze({
   SELECTING: "SELECTING",
@@ -180,7 +181,7 @@ export default {
         d3.select("#" + this.svgId)
           .selectAll("foreignObject")
           .each((datum) => {
-            let row = datum.row;
+            let row = datum.row ?? datum.fromRow;
             let col = datum.col ?? datum.fromCol;
             if (
               !!col &&

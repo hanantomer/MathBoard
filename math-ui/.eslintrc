@@ -5,6 +5,7 @@
   "extends": ["plugin:prettier/recommended", "plugin:vue/base"],
   "plugins": ["prettier"],
   "rules": { "prettier/prettier": ["error", { "endOfLine": "auto" }] },
+  // "parser": "babel-eslint",
   "parserOptions": {
     "vueFeatures": {
       "filter": true,

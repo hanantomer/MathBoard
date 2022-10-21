@@ -14,18 +14,15 @@ export default {
     ...mapGetters({
       getCurrentEditMode: "getCurrentEditMode",
     }),
-    ...mapActions({
-      setCurrentEditMode: "setCurrentEditMode", ///TODO might be eliminated
-    }),
 
-    async eventManager_keyUp(e) {
+    eventManager_keyUp(e) {
       if (e.ctrlKey || e.altKey) {
         return;
       }
 
       if (
         // in power mode allow digits only
-        this.getCurrentEditMode() === EditMode.ADD_POWER &&
+        this.getCurrentEditMode() === EditMode.POWER &&
         e.code.startsWith("Digit")
       ) {
         this.symbolMixin_addSymbol(e.key, "power");
@@ -77,12 +74,12 @@ export default {
         return;
       }
 
-      if (this.getCurrentEditMode() === EditMode.ADD_SYMBOL) {
+      if (this.getCurrentEditMode() === EditMode.SYMBOL) {
         this.symbolMixin_addSymbol(e.key, "symbol");
       }
     },
 
-    async eventManager_mouseDown(e) {
+    eventManager_mouseDown(e) {
       if (
         this.getCurrentEditMode() === EditMode.FRACTION ||
         this.getCurrentEditMode() === EditMode.SQRT ||
@@ -92,12 +89,7 @@ export default {
         return;
       }
 
-      let activeRect = this.activateRectMixin_findRectAtClickedPosition(e);
-      if (!!activeRect) {
-        await this.setCurrentEditMode(EditMode.ADD_SYMBOL);
-        this.activateRectMixin_activateRect(activeRect);
-        return;
-      }
+      this.activateRectMixin_activateRect(e);
     },
 
     eventManager_mouseUp(e) {
