@@ -35,7 +35,7 @@ export default {
       });
       client.service("selectedPosition").on("updated", (selectedPosition) => {
         if (selectedPosition.UserId !== this.getUser().id) {
-          _store.dispatch("setActiveRect", selectedPosition);
+          _store.dispatch("setActiveCell", selectedPosition);
         }
       });
       client.service("authorization").on("updated", (user) => {

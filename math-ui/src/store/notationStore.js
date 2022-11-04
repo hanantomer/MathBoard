@@ -16,7 +16,7 @@ const helper = {
   pointAtPointCoordinates: function (point1Coordinates, point2Coordinates) {
     return (
       point1Coordinates.col == point2Coordinates.col &&
-      point2Coordinates.row == point2Coordinates.row
+      point1Coordinates.row == point2Coordinates.row
     );
   },
 
@@ -71,7 +71,7 @@ const helper = {
   rectAtPointCoordinates: function (rectCoordinates, pointCoordinates) {
     return (
       rectCoordinates.fromCol <= pointCoordinates.col &&
-      rectCoordinates.toCol >= pointCoordinates.toCol &&
+      rectCoordinates.toCol >= pointCoordinates.col &&
       rectCoordinates.fromRow <= pointCoordinates.row &&
       rectCoordinates.toRow >= pointCoordinates.row
     );
@@ -93,37 +93,48 @@ const helper = {
       ((rect1Coordinates.fromCol >= rect2Coordinates.fromCol &&
         rect1Coordinates.fromCol <= rect2Coordinates.toCol) ||
         (rect1Coordinates.toCol >= rect2Coordinates.fromCol &&
-          rectCoordinates.toCol <= rect2Coordinates.toCol)) &&
+          rect1Coordinates.toCol <= rect2Coordinates.toCol)) &&
       ((rect1Coordinates.fromRow >= rect2Coordinates.fromRow &&
         rect1Coordinates.fromRow <= rect2Coordinates.toRow) ||
         (rect1Coordinates.toRow >= rect2Coordinates.fromRow &&
-          rectCoordinates.toRow <= rect2Coordinates.toRow))
+          rect1Coordinates.toRow <= rect2Coordinates.toRow))
     );
   },
 
   // return a list of notations wich overlap given point coordinates
-  findNotationsByPointCoordinates: function (state, pointCoordinates) {
+  findNotationsByCellCoordinates: function (state, pointCoordinates) {
     return Object.entries(state.notations)
       .map((n) => n[1])
       .filter((n) =>
-        n.type == "symbol" || n.type == "power"
-          ? helper.pointAtPointCoordinates(pointCoordinates, {
-              col: n.col,
-              row: n.row,
-            })
-          : n.type == "fraction" || n.type == "sqrt"
-          ? helper.lineAtPointCoordinates(pointCoordinates, {
-              fromCol: n.fromCol,
-              toCol: n.toCol,
-              row: n.row,
-            })
-          : n.type == "text"
-          ? helper.rectAtPointCoordinates(pointCoordinates, {
-              fromCol: n.fromCol,
-              toCol: n.toCol,
-              fromRow: n.fromRow,
-              toRow: n.toRow,
-            })
+        n.type == NotationType.SYMBOL ||
+        n.type == NotationType.POWER ||
+        n.type == NotationType.SIGN
+          ? helper.pointAtPointCoordinates(
+              {
+                col: n.col,
+                row: n.row,
+              },
+              pointCoordinates
+            )
+          : n.type == NotationType.FRACTION || n.type == NotationType.SQRT
+          ? helper.lineAtPointCoordinates(
+              {
+                fromCol: n.fromCol,
+                toCol: n.toCol,
+                row: n.row,
+              },
+              pointCoordinates
+            )
+          : n.type == NotationType.TEXT
+          ? helper.rectAtPointCoordinates(
+              {
+                fromCol: n.fromCol,
+                toCol: n.toCol,
+                fromRow: n.fromRow,
+                toRow: n.toRow,
+              },
+              pointCoordinates
+            )
           : false
       );
   },
@@ -133,24 +144,35 @@ const helper = {
     return Object.entries(state.notations)
       .map((n) => n[1])
       .filter((n) =>
-        n.type == "symbol" || n.type == "power"
-          ? helper.lineAtPointCoordinates(lineCoordinates, {
-              col: n.col,
-              row: n.row,
-            })
-          : n.type == "fraction" || n.type == "sqrt"
-          ? helper.lineAtLineCoordinates(lineCoordinates, {
-              fromCol: n.fromCol,
-              toCol: n.toCol,
-              row: n.row,
-            })
-          : n.type == "text"
-          ? helper.rectAtLineCoordinates(lineCoordinates, {
-              fromCol: n.fromCol,
-              toCol: n.toCol,
-              fromRow: n.fromRow,
-              toRow: n.toRow,
-            })
+        n.type == NotationType.SYMBOL ||
+        n.type == NotationType.POWER ||
+        n.type == NotationType.SIGN
+          ? helper.pointAtLineCoordinates(
+              {
+                col: n.col,
+                row: n.row,
+              },
+              lineCoordinates
+            )
+          : n.type == NotationType.FRACTION || n.type == NotationType.SQRT
+          ? helper.lineAtLineCoordinates(
+              {
+                fromCol: n.fromCol,
+                toCol: n.toCol,
+                row: n.row,
+              },
+              lineCoordinates
+            )
+          : n.type == NotationType.TEXT
+          ? helper.rectAtLineCoordinates(
+              {
+                fromCol: n.fromCol,
+                toCol: n.toCol,
+                fromRow: n.fromRow,
+                toRow: n.toRow,
+              },
+              lineCoordinates
+            )
           : false
       );
   },
@@ -160,24 +182,35 @@ const helper = {
     return Object.entries(state.notations)
       .map((n) => n[1])
       .filter((n) =>
-        n.type == "symbol" || n.type == "power"
-          ? helper.pointAtRectCoordinates(rectCoordinates, {
-              col: n.col,
-              row: n.row,
-            })
-          : n.type == "fraction" || n.type == "sqrt"
-          ? helper.lineAtRectCoordinates(rectCoordinates, {
-              fromCol: n.fromCol,
-              toCol: n.toCol,
-              row: n.row,
-            })
-          : n.type == "text"
-          ? helper.rectAtRectCoordinates(rectCoordinates, {
-              fromCol: n.fromCol,
-              toCol: n.toCol,
-              fromRow: n.fromRow,
-              toRow: n.toRow,
-            })
+        n.type == NotationType.SYMBOL ||
+        n.type == NotationType.POWER ||
+        n.type == NotationType.SIGN
+          ? helper.pointAtRectCoordinates(
+              {
+                col: n.col,
+                row: n.row,
+              },
+              rectCoordinates
+            )
+          : n.type == NotationType.FRACTION || n.type == NotationType.SQRT
+          ? helper.lineAtRectCoordinates(
+              {
+                fromCol: n.fromCol,
+                toCol: n.toCol,
+                row: n.row,
+              },
+              rectCoordinates
+            )
+          : n.type == NotationType.TEXT
+          ? helper.rectAtRectCoordinates(
+              {
+                fromCol: n.fromCol,
+                toCol: n.toCol,
+                fromRow: n.fromRow,
+                toRow: n.toRow,
+              },
+              rectCoordinates
+            )
           : false
       );
   },
@@ -189,6 +222,7 @@ const helper = {
       .filter((n2) => {
         switch (notation.type) {
           case NotationType.SYMBOL:
+          case NotationType.SIGN:
           case NotationType.POWER:
             return helper.pointAtPointCoordinates(
               { col: notation.col, row: notation.row },
@@ -225,7 +259,8 @@ const helper = {
       .map((n) => n[1])
       .filter((n2) => {
         switch (notation.type) {
-          case (NotationType.SYMBOL, NotationType.POWER):
+          case NotationType.SYMBOL:
+          case NotationType.POWER:
             return (
               helper.pointAtPointCoordinates(
                 { col: notation.col, row: notation.row },
@@ -240,7 +275,8 @@ const helper = {
                 n2
               )
             );
-          case (NotationType.FRACTION, NotationType.SQRT):
+          case NotationType.FRACTION:
+          case NotationType.SQRT:
             return (
               helper.lineAtPointCoordinates(
                 {
@@ -268,7 +304,9 @@ const helper = {
               )
             );
 
-          case (NotationType.TEXT, NotationType.IMAGE, NotationType.GEO):
+          case NotationType.TEXT:
+          case NotationType.IMAGE:
+          case NotationType.GEO:
             return (
               helper.pointAtRectCoordinates(
                 {
@@ -316,6 +354,7 @@ const helper = {
   loadNotations(context) {
     context.commit("removeAllNotations");
     helper.loadNotationType(context, NotationType.SYMBOL);
+    helper.loadNotationType(context, NotationType.SIGN);
     helper.loadNotationType(context, NotationType.POWER);
     helper.loadNotationType(context, NotationType.FRACTION);
     helper.loadNotationType(context, NotationType.SQRT);
@@ -341,6 +380,16 @@ export default {
     getNotations(state) {
       return state.notations;
     },
+    getLastNotation(state) {
+      return Object.values(state.notations).length === 0
+        ? null
+        : Object.values(state.notations).slice(-1)[0];
+    },
+    lastNotationIsSingular(state) {
+      return Object.values(state.notations).length === 0
+        ? null
+        : Object.values(state.notations).slice(-1)[0].value.length === 1;
+    },
   },
   mutations: {
     setParent(state, parent) {
@@ -355,7 +404,7 @@ export default {
       Vue.delete(state.notations, notation);
     },
     selectNotation(state, pointCoordinates) {
-      let notations = helper.findNotationsByPointCoordinates(
+      let notations = helper.findNotationsByCellCoordinates(
         state,
         pointCoordinates
       );
@@ -374,19 +423,41 @@ export default {
       Object.entries(state.notations)
         .filter((notation) => !!notation[1].selected)
         .forEach((notation) => {
-          if (notation[1].type === "symbol") {
-            Vue.set(state.notations, notation[0], {
-              ...notation[1],
-              col: notation[1].col + payload.rectDeltaX,
-              row: notation[1].row + payload.rectDeltaY,
-            });
-          } else {
-            // sqrt or fraction line
-            Vue.set(state.notations, notation[0], {
-              ...notation[1],
-              fromCol: notation[1].fromCol + payload.rectDeltaX,
-              row: notation[1].row + payload.rectDeltaY,
-            });
+          switch (notation[1].type) {
+            case NotationType.SYMBOL:
+            case NotationType.SIGN:
+            case NotationType.POWER:
+              {
+                Vue.set(state.notations, notation[0], {
+                  ...notation[1],
+                  col: notation[1].col + payload.rectDeltaX,
+                  row: notation[1].row + payload.rectDeltaY,
+                });
+              }
+              break;
+            case NotationType.FRACTION:
+            case NotationType.SQRT:
+              {
+                Vue.set(state.notations, notation[0], {
+                  ...notation[1],
+                  fromCol: notation[1].fromCol + payload.rectDeltaX,
+                  toCol: notation[1].toCol + payload.rectDeltaX,
+                  row: notation[1].row + payload.rectDeltaY,
+                });
+              }
+              break;
+            case NotationType.TEXT:
+            case NotationType.IMAGE:
+            case NotationType.GEO: {
+              Vue.set(state.notations, notation[0], {
+                ...notation[1],
+                fromCol: notation[1].fromCol + payload.rectDeltaX,
+                toCol: notation[1].toCol + payload.rectDeltaX,
+                fromRow: notation[1].fromRow + payload.rectDeltaY,
+                toRow: notation[1].toRow + payload.rectDeltaY,
+              });
+              break;
+            }
           }
         });
     },
@@ -418,16 +489,16 @@ export default {
         context.getters.getParent.id;
 
       // notation overlaps with other notation of same type => update
-      let overlappedSameTypeNotations = helper.findOverlapNotationsOfSameType(
-        context.state,
-        notation
-      );
-      if (overlappedSameTypeNotations?.length) {
-        notation.id = overlappedSameTypeNotations[0].id;
-        await dbSyncMixin.methods.updateNotation(notation);
-        context.commit("setNotation", notation);
-        return notation;
-      }
+      // let overlappedSameTypeNotations = helper.findOverlapNotationsOfSameType(
+      //   context.state,
+      //   notation
+      // );
+      // if (overlappedSameTypeNotations?.length) {
+      //   notation.id = overlappedSameTypeNotations[0].id;
+      //   await dbSyncMixin.methods.updateNotation(notation);
+      //   context.commit("setNotation", notation);
+      //   return notation;
+      // }
 
       // notation overlaps with other notation of other type => ignore
       let overlappedAnyTypeNotations = helper.findOverlapNotationsOfAnyType(
@@ -453,21 +524,38 @@ export default {
     syncIncomingUpdatedNotation(context, notation) {
       context.commit("setNotation", notation);
     },
-    removeNotations(context, coordinates) {
-      let notationsAtCoordinates = helper.findNotationsByPointCoordinates(
+    removeNotationsByCell(context, cell) {
+      let notationsAtCell = helper.findNotationsByCellCoordinates(
         context.state,
-        coordinates
+        cell
       );
-      if (!!notationsAtCoordinates) {
-        notationsAtCoordinates.forEach(async (n) => {
+      if (!!notationsAtCell) {
+        notationsAtCell.forEach(async (n) => {
           n.boardType = context.getters.getParent.boardType;
           await dbSyncMixin.methods
             .removeNotation(n)
             .then(() => context.commit("removeNotation", n.type + n.id));
         });
       }
-      return notationsAtCoordinates;
+      return notationsAtCell;
     },
+
+    removeNotationsByRect(context, rect) {
+      let notationsAtRectCoordinates = helper.findNotationsByRectCoordinates(
+        context.state,
+        rect
+      );
+      if (!!notationsAtRectCoordinates) {
+        notationsAtRectCoordinates.forEach(async (n) => {
+          n.boardType = context.getters.getParent.boardType;
+          await dbSyncMixin.methods
+            .removeNotation(n)
+            .then(() => context.commit("removeNotation", n.type + n.id));
+        });
+      }
+      return notationsAtRectCoordinates;
+    },
+
     selectNotation(context, pointCoordinates) {
       context.commit("selectNotation", pointCoordinates);
     },
@@ -484,6 +572,10 @@ export default {
         await dbSyncMixin.methods.updateNotation(notation);
       });
       context.commit("unselectAllNotations");
+    },
+    async updateNotation(context, notation) {
+      await dbSyncMixin.methods.updateNotation(notation);
+      context.commit("setNotation", notation);
     },
   },
 };

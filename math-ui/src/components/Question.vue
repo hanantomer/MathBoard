@@ -41,7 +41,7 @@
 import { mapState } from "vuex";
 import { mapGetters } from "vuex";
 import matrixMixin from "../Mixins/matrixMixin";
-import activateRectMixin from "../Mixins/activateRectMixin";
+import activateCellMixin from "../Mixins/activateCellMixin";
 import eventManager from "../Mixins/eventManager";
 import symbolMixin from "../Mixins/symbolMixin";
 import userOperationsOutgoingSyncMixin from "../Mixins/userOutgoingOperationsSyncMixin";
@@ -61,7 +61,7 @@ export default {
   },
   mounted: function () {
     this.loadQuestion().then(() => {
-      this.activateRectMixin_reset();
+      this.activateCellMixin_reset();
       this.matrixMixin_setMatrix(this.svgId);
       this.reRenderMathJax();
     });
@@ -75,7 +75,7 @@ export default {
   },
   mixins: [
     matrixMixin,
-    activateRectMixin,
+    activateCellMixin,
     symbolMixin,
     eventManager,
     notationMixin,

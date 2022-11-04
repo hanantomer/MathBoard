@@ -1,31 +1,44 @@
 import EditMode from "./editMode";
 import { mapGetters } from "vuex";
-import { mapActions } from "vuex";
 export default {
   mounted: function () {
     // emitted in  app.vue
     this.$root.$on("keyup", this.eventManager_keyUp);
+    this.$root.$on("paste", this.eventManager_paste);
   },
   beforeDestroy: function () {
     this.$root.$off("keyup", this.eventManager_keyUp);
+    this.$root.$off("paste", this.eventManager_paste);
+  },
+
+  data: function () {
+    return {
+      signList: ["=", "+", "-", "*", "/", "\\", "(", ")", "[", "]"],
+    };
   },
 
   methods: {
     ...mapGetters({
       getCurrentEditMode: "getCurrentEditMode",
+      getLastNotation: "getLastNotation",
     }),
 
-    eventManager_keyUp(e) {
-      if (e.ctrlKey || e.altKey) {
+    async eventManager_paste(e) {
+      const dT = e.clipboardData || window.clipboardData;
+      const file = dT.items[0].getAsFile(); //dT.files[0];
+      if (!file) {
         return;
       }
-
-      if (
-        // in power mode allow digits only
-        this.getCurrentEditMode() === EditMode.POWER &&
-        e.code.startsWith("Digit")
-      ) {
-        this.symbolMixin_addSymbol(e.key, "power");
+      const data = await fetch(file);
+      const blob = await data.blob();
+      const reader = new FileReader();
+      reader.readAsDataURL(blob);
+      reader.onloadend = () => {
+        const base64data = reader.result;
+      };
+    },
+    eventManager_keyUp(e) {
+      if (e.ctrlKey || e.altKey) {
         return;
       }
 
@@ -43,9 +56,21 @@ export default {
           e.code === "ArrowLeft" ||
           e.code === "ArrowRight" ||
           e.code === "ArrowUp" ||
-          e.code === "ArrowDown"
+          e.code === "ArrowDown" ||
+          e.code === "Space"
         )
       ) {
+        return;
+      }
+
+      if (e.code === "Backspace") {
+        this.notationMixin_removeNotationAtSeletedPosition();
+        this.matrixMixin_setNextRect(-1, 0);
+        return;
+      }
+
+      if (e.code === "Delete") {
+        this.notationMixin_removeNotationAtSeletedPosition();
         return;
       }
 
@@ -54,7 +79,7 @@ export default {
         return;
       }
 
-      if (e.code === "ArrowRight") {
+      if (e.code === "ArrowRight" || e.code === "Space") {
         this.matrixMixin_setNextRect(1, 0);
         return;
       }
@@ -69,47 +94,19 @@ export default {
         return;
       }
 
-      if (e.code === "Backspace" || e.code === "Delete") {
-        this.notationMixin_removeNotationAtSeletedPosition();
-        return;
-      }
-
-      if (this.getCurrentEditMode() === EditMode.SYMBOL) {
-        this.symbolMixin_addSymbol(e.key, "symbol");
-      }
+      this.symbolMixin_addSymbol(e);
     },
 
     eventManager_mouseDown(e) {
       if (
         this.getCurrentEditMode() === EditMode.FRACTION ||
         this.getCurrentEditMode() === EditMode.SQRT ||
-        this.getCurrentEditMode() === EditMode.SELECT ||
-        this.getCurrentEditMode() === EditMode.DELETE
+        this.getCurrentEditMode() === EditMode.SELECT
       ) {
         return;
       }
 
-      this.activateRectMixin_activateRect(e);
-    },
-
-    eventManager_mouseUp(e) {
-      if (this.getCurrentEditMode() === EditMode.DELETE) {
-        this.endDeleteMode();
-        return;
-      }
-    },
-
-    eventManager_mouseMove(e) {
-      this.showFractionLineTooltip = false;
-      this.showAccessTooltip = false;
-      // left button is pressed
-      if (e.buttons !== 1) {
-        return;
-      }
-      if (this.getCurrentEditMode() === EditMode.DELETE) {
-        this.notationMixin_removeNotationsAtMousePosition(e);
-        return;
-      }
+      this.activateCellMixin_activateCell(e);
     },
   },
 };

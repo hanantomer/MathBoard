@@ -1,27 +1,27 @@
 import { mapState } from "vuex";
-import EditMode from "../Mixins/editMode";
+import EditMode from "./editMode";
 export default {
   data: function () {
     return {
-      activeRectColor: "lightcyan",
+      activeCellColor: "lightcyan",
     };
   },
   computed: {
     ...mapState({
-      activeRectArr: (state) => state.activeRectStore.activeRectArr,
+      activeCellArr: (state) => state.activeCellStore.activeCellArr,
     }),
   },
   watch: {
-    activeRectArr: {
-      handler(activeRectArr, prevActiveRectArr) {
-        if (!!activeRectArr)
-          this.$activateRectArr(activeRectArr, prevActiveRectArr);
+    activeCellArr: {
+      handler(activeCellArr, prevActiveCellArr) {
+        if (!!activeCellArr)
+          this.$activateCellArr(activeCellArr, prevActiveCellArr);
       },
     },
   },
   methods: {
     // called via mouse click
-    activateRectMixin_activateRect(e) {
+    activateCellMixin_activateCell(e) {
       let clickedRect = this.$findRectAtClickedPosition(e);
 
       if (!!clickedRect) {
@@ -30,6 +30,7 @@ export default {
         if (!!overlapTextNotation) {
           // activate multiple rects
           this.$activateTextNotationRects(overlapTextNotation);
+          return;
         }
 
         // activate single rect
@@ -44,8 +45,8 @@ export default {
       }
     },
 
-    activateRectMixin_reset() {
-      this.$store.dispatch("setActiveRectArr", []);
+    activateCellMixin_reset() {
+      this.$store.dispatch("setActiveCellArr", []);
     },
 
     $getOverlappedTextNotation(clickedRect) {
@@ -71,42 +72,42 @@ export default {
 
     $activateTextNotationRects(textNotation) {
       this.setCurrentEditMode(EditMode.TEXT).then(() => {
-        let rectArr = [];
+        let cellArr = [];
         for (let col = textNotation.fromCol; col <= textNotation.toCol; col++) {
           for (
             let row = textNotation.fromRow;
             row <= textNotation.toRow;
             row++
           ) {
-            rectArr.push({ col: col, row: row });
+            cellArr.push({ col: col, row: row });
           }
         }
-        this.$updateStoreAndDispatch(rectArr);
+        this.$updateStoreAndDispatch(cellArr);
       });
     },
 
     // called by store watcher
-    $activateRectArr(activeRectArr, prevActiveRectArr) {
-      this.$unselectPreviouslyActiveRectArr(prevActiveRectArr);
+    $activateCellArr(activeCellArr, prevActiveCellArr) {
+      this.$unselectPreviouslyActiveCellArr(prevActiveCellArr);
 
-      activeRectArr.forEach((rect) => {
+      activeCellArr.forEach((rect) => {
         let rectElm = document
           .querySelector(`svg[id="${this.svgId}"] g[row="${rect.row}"]`)
           .querySelector(`rect[col="${rect.col}"]`);
 
-        rectElm.style.fill = this.activeRectColor;
+        rectElm.style.fill = this.activeCellColor;
       });
     },
 
-    $unselectPreviouslyActiveRectArr(prevActiveRectArr) {
-      if (!prevActiveRectArr) return;
-      prevActiveRectArr.forEach((rect) => {
+    $unselectPreviouslyActiveCellArr(prevActiveCellArr) {
+      if (!prevActiveCellArr) return;
+      prevActiveCellArr.forEach((rect) => {
         this.matrixMixin_findRect(rect).style.fill = "";
       });
     },
 
     $updateStoreAndDispatch(rectArr) {
-      this.$store.dispatch("setActiveRectArr", rectArr).then(() => {
+      this.$store.dispatch("setActiveCellArr", rectArr).then(() => {
         this.userOperationsMixin_syncOutgoingSelectedPosition(rectArr);
       });
     },

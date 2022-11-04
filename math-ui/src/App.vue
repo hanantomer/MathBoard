@@ -118,9 +118,12 @@ export default {
   mounted: function () {
     window.removeEventListener("keyup", this.onKeyUp);
     window.addEventListener("keyup", this.onKeyUp);
+    window.removeEventListener("paste", this.onKeyUp);
+    document.addEventListener("paste", this.onPaste);
   },
   destroyed: function () {
     window.removeEventListener("keyup", this.onKeyUp);
+    window.removeEventListener("paste", this.onKeyUp);
   },
   data: () => ({
     loginDialog: null,
@@ -132,6 +135,9 @@ export default {
     },
     onKeyUp: function (key) {
       this.$root.$emit("keyup", key);
+    },
+    onPaste: function (e) {
+      this.$root.$emit("paste", e);
     },
     signOut: function () {
       this.mixin_signOut();

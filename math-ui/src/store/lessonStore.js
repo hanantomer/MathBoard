@@ -1,5 +1,6 @@
 import dbSyncMixin from "../Mixins/dbSyncMixin";
 import EditMode from "../Mixins/editMode";
+import Vue from "vue";
 
 export default {
   modules: {
@@ -8,11 +9,11 @@ export default {
   state: {
     lessons: [],
     currentLesson: {},
-    currentEditMode: EditMode.SYMBOL,
+    operationMode: { editMode: EditMode.SYMBOL },
   },
   getters: {
     getCurrentEditMode: (state) => {
-      return state.currentEditMode;
+      return state.operationMode.editMode;
     },
     getLessons: (state) => {
       return state.lessons;
@@ -38,7 +39,7 @@ export default {
       state.lessons = [];
     },
     setCurrentEditMode: function (state, editMode) {
-      state.currentEditMode = editMode;
+      Vue.set(state.operationMode, "editMode", editMode);
     },
   },
   actions: {

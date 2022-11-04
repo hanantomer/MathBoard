@@ -3,11 +3,12 @@
     <v-card
       id="selection"
       class="selection"
+      v-on:mouseup="handleMouseUp"
       v-bind:style="{
-        left: selectionRectLeft,
-        top: selectionRectTop,
-        width: selectionRectWidth,
-        height: selectionRectHeight,
+        left: selectionRectLeft + 'px',
+        top: selectionRectTop + 'px',
+        width: selectionRectWidth + 'px',
+        height: selectionRectHeight + 'px',
       }"
       v-show="
         !!selectionPosition.x1 &&
@@ -20,16 +21,17 @@
 </template>
 <script>
 import { mapGetters } from "vuex";
+import { mapActions } from "vuex";
 import EditMode from "../Mixins/editMode";
 import * as d3 from "d3";
 import matrixMixin from "../Mixins/matrixMixin";
 import userOutgoingOperationsSyncMixin from "../Mixins/userOutgoingOperationsSyncMixin";
-import NotationType from "../Mixins/notationType";
 
 const SelectionMode = Object.freeze({
   SELECTING: "SELECTING",
   MOVE: "MOVE",
 });
+
 export default {
   name: "SelectionArea",
   mixins: [matrixMixin, userOutgoingOperationsSyncMixin],
@@ -39,7 +41,6 @@ export default {
   data: function () {
     return {
       selectionMode: SelectionMode.SELECTING,
-      selectionStarted: false,
       selectionPosition: {
         x1: null,
         y1: null,
@@ -58,42 +59,58 @@ export default {
     },
 
     selectionRectLeft: function () {
-      return (
-        Math.min(this.selectionPosition.x1, this.selectionPosition.x2) + "px"
-      );
+      return Math.min(this.selectionPosition.x1, this.selectionPosition.x2);
     },
     selectionRectTop: function () {
-      return (
-        Math.min(this.selectionPosition.y1, this.selectionPosition.y2) + "px"
-      );
+      return Math.min(this.selectionPosition.y1, this.selectionPosition.y2);
     },
     selectionRectWidth: function () {
       return (
         Math.max(this.selectionPosition.x1, this.selectionPosition.x2) -
-        Math.min(this.selectionPosition.x1, this.selectionPosition.x2) +
-        "px"
+        Math.min(this.selectionPosition.x1, this.selectionPosition.x2)
       );
     },
     selectionRectHeight: function () {
       return (
         Math.max(this.selectionPosition.y1, this.selectionPosition.y2) -
-        Math.min(this.selectionPosition.y1, this.selectionPosition.y2) +
-        "px"
+        Math.min(this.selectionPosition.y1, this.selectionPosition.y2)
       );
     },
   },
-
   mounted: function () {
     this.registerSvgMouseDown();
     this.registerSvgMouseMove();
     this.registerSvgMouseUp();
+    // emitted in  app.vue
+    this.$root.$on("keyup", this.keyUp);
   },
-
+  beforeDestroy: function () {
+    this.$root.$off("keyup", this.keyUp);
+  },
   methods: {
     ...mapGetters({
       getCurrentEditMode: "getCurrentEditMode",
       getSelectedNotations: "getSelectedNotations",
     }),
+    ...mapActions({
+      setCurrentEditMode: "setCurrentEditMode",
+    }),
+
+    keyUp: function (e) {
+      if (e.code === "Backspace" || e.code === "Delete") {
+        this.$store.dispatch("removeNotationsByRect", {
+          fromCol: this.selectionRectLeft / this.matrixMixin_getRectSize(),
+          toCol:
+            (this.selectionRectLeft + this.selectionRectWidth) /
+            this.matrixMixin_getRectSize(),
+          fromRow: this.selectionRectTop / this.matrixMixin_getRectSize(),
+          toRow:
+            (this.selectionRectTop + this.selectionRectHeight) /
+            this.matrixMixin_getRectSize(),
+        });
+        this.resetSelection();
+      }
+    },
 
     registerSvgMouseDown: function (e) {
       document
@@ -113,30 +130,24 @@ export default {
         .addEventListener("mouseup", this.handleMouseUp);
     },
 
-    handleMouseDown(e) {
+    /*handleMouseDown(e) {
       // left button is pressed
       if (e.buttons !== 1) {
         return;
       }
 
       if (this.getCurrentEditMode() !== EditMode.SELECT) {
-        return;
+        this.resetSelection();
       }
-
-      this.selectionStarted = true;
-    },
+    },*/
     handleMouseMove(e) {
       if (e.buttons !== 1) {
         return;
       }
 
-      // selection icon pressed
       if (this.getCurrentEditMode() !== EditMode.SELECT) {
         return;
       }
-
-      // console.debug(e.currentTarget);
-      // console.debug(e.offsetX);
 
       if (this.selectionMode === SelectionMode.SELECTING) {
         this.updateSelectionArea(e);
@@ -152,7 +163,6 @@ export default {
       if (this.getCurrentEditMode() !== EditMode.SELECT) {
         return;
       }
-
       if (this.selectionMode === SelectionMode.SELECTING) {
         this.endSelect();
         return;
@@ -165,8 +175,6 @@ export default {
 
     // extend or shrink selection area from inner mouse move
     updateSelectionArea(e) {
-      // start selection
-
       if (!this.selectionPosition.x1) {
         this.selectionPosition.x1 = e.clientX - this.svgDimensions.x;
         this.selectionPosition.y1 = e.clientY - this.svgDimensions.y;
@@ -176,6 +184,7 @@ export default {
       this.selectionPosition.y2 = e.clientY - this.svgDimensions.y;
     },
     endSelect() {
+      //this.setCurrentEditMode(EditMode.SYMBOL);
       this.selectionMode = SelectionMode.MOVE;
       if (this.selectionPosition.x2 != this.selectionPosition.x1) {
         d3.select("#" + this.svgId)
@@ -262,8 +271,8 @@ export default {
       this.dragPosition.x = null;
       this.dragPosition.y = null;
       this.selectionPosition.x1 = this.selectionPosition.x2 = this.selectionPosition.y1 = this.selectionPosition.y2 = null;
-      this.selectionStarted = false;
       this.selectionMode = SelectionMode.SELECTING;
+      this.setCurrentEditMode(EditMode.SYMBOL);
       this.$store.dispatch("unselectAllNotations");
     },
   },

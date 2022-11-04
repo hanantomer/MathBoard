@@ -26,8 +26,6 @@
                 width="1350px"
                 height="600px"
                 v-on:mousedown="eventManager_mouseDown"
-                v-on:mousemove="eventManager_mouseMove"
-                v-on:mouseup="eventManager_mouseUp"
               ></svg>
             </div>
           </v-col>
@@ -45,7 +43,7 @@ import { mapState } from "vuex";
 import { mapGetters } from "vuex";
 import { mapActions } from "vuex";
 import matrixMixin from "../Mixins/matrixMixin";
-import activateRectMixin from "../Mixins/activateRectMixin";
+import activateCellMixin from "../Mixins/activateCellMixin";
 import eventManager from "../Mixins/eventManager";
 import symbolMixin from "../Mixins/symbolMixin";
 import notationMixin from "../Mixins/notationMixin";
@@ -70,7 +68,7 @@ export default {
   mounted: function () {
     // for keyboard base editing
     this.loadLesson().then(() => {
-      this.activateRectMixin_reset();
+      this.activateCellMixin_reset();
       this.matrixMixin_setMatrix(this.svgId);
       this.reRenderMathJax();
     });
@@ -84,7 +82,7 @@ export default {
   },
   mixins: [
     matrixMixin,
-    activateRectMixin,
+    activateCellMixin,
     userOperationsOutgoingSyncMixin,
     userOperationsIncomingSyncMixin,
     symbolMixin,

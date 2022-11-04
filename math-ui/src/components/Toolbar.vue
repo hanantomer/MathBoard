@@ -10,6 +10,23 @@
     ></freeTextDialog>
 
     <v-toolbar color="primary" dark class="vertical-toolbar">
+      <!-- create access link -->
+      <v-tooltip top hidden v-if="isTeacher" v-model="showAccessTooltip">
+        <template v-slot:activator="{ on, attrs }">
+          <v-btn
+            icon
+            v-on="on"
+            v-bind="attrs"
+            @click.stop="accessLinkDialogOpen = true"
+            color="white"
+            x-small
+            fab
+            dark
+            ><v-icon>mdi-account-plus</v-icon></v-btn
+          >
+        </template>
+        <span>Create Access Link</span>
+      </v-tooltip>
       <!-- text tool  -->
       <v-tooltip top hidden>
         <template v-slot:activator="{ on, attrs }">
@@ -22,7 +39,7 @@
               icon
               v-on="on"
               v-bind="attrs"
-              :disabled="(!authorized && !isTeacher) || !hasActiveRect"
+              :disabled="(!authorized && !isTeacher) || !hasActiveCell"
               v-on:click="$startTextMode"
               @click.stop="freeTextDialogOpen = true"
               x-small
@@ -53,46 +70,6 @@
           </v-btn-toggle>
         </template>
         <span>Selection</span>
-      </v-tooltip>
-
-      <!-- eraser tool -->
-      <v-tooltip top hidden>
-        <template v-slot:activator="{ on, attrs }">
-          <v-btn-toggle
-            v-model="deleteButtonActive"
-            background-color="transparent"
-            active-class="iconActive"
-          >
-            <v-btn
-              icon
-              v-on="on"
-              v-bind="attrs"
-              :disabled="!authorized && !isTeacher"
-              v-on:click="$toggleDeleteMode"
-              x-small
-              ><v-icon>mdi-delete</v-icon></v-btn
-            >
-          </v-btn-toggle>
-        </template>
-        <span>Eraser</span>
-      </v-tooltip>
-
-      <!-- create access link -->
-      <v-tooltip top hidden v-if="isTeacher" v-model="showAccessTooltip">
-        <template v-slot:activator="{ on, attrs }">
-          <v-btn
-            icon
-            v-on="on"
-            v-bind="attrs"
-            @click.stop="accessLinkDialogOpen = true"
-            color="white"
-            x-small
-            fab
-            dark
-            ><v-icon>mdi-account-plus</v-icon></v-btn
-          >
-        </template>
-        <span>Create Access Link</span>
       </v-tooltip>
 
       <!-- fraction line-->
@@ -174,7 +151,7 @@
       </v-tooltip>
 
       <!-- toggle mtrix rectangles -->
-      <v-tooltip top hidden>
+      <!-- <v-tooltip top hidden>
         <template v-slot:activator="{ on, attrs }">
           <v-btn
             v-if="isTeacher"
@@ -190,18 +167,7 @@
           </v-btn>
         </template>
         <span>Toggle matrix rectangles</span>
-      </v-tooltip>
-
-      <v-btn
-        :disabled="!authorized && !isTeacher"
-        v-for="s in signs"
-        :key="s.sign"
-        v-on:click="$symbolButtonPressed"
-        x-small
-        text
-        fab
-        ><span class="mr-1">{{ s.sign }}</span></v-btn
-      >
+      </v-tooltip> -->
     </v-toolbar>
   </div>
 </template>
@@ -217,6 +183,7 @@ import accessLinkDialog from "./AccessLinkDialog.vue";
 import freeTextDialog from "./FreeTextDialog.vue";
 import { mapGetters } from "vuex";
 import { mapActions } from "vuex";
+import { mapState } from "vuex";
 
 export default {
   components: {
@@ -239,7 +206,7 @@ export default {
     ...mapGetters({
       getCurrentEditMode: "getCurrentEditMode",
       getCurrentLesson: "getCurrentLesson",
-      getActiveRectArr: "getActiveRectArr",
+      getActiveCellArr: "getActiveCellArr",
       getUser: "getUser",
     }),
     ...mapActions({
@@ -290,13 +257,13 @@ export default {
     $endPowerMode() {
       this.$reset();
     },
-    $toggleDeleteMode() {
-      if (this.getCurrentEditMode() == EditMode.DELETE) {
-        this.$endDeleteMode();
-      } else {
-        this.$startDeleteMode();
-      }
-    },
+    // $toggleDeleteMode() {
+    //   if (this.getCurrentEditMode() == EditMode.DELETE) {
+    //     this.$endDeleteMode();
+    //   } else {
+    //     this.$startDeleteMode();
+    //   }
+    // },
     // $toggleTextMode() {
     //   if (this.getCurrentEditMode() == EditMode.TEXT) {
     //     this.$endTextMode();
@@ -312,15 +279,15 @@ export default {
     $endTextMode() {
       this.$reset();
     },
-    async $startDeleteMode() {
-      this.$reset();
-      this.deleteButtonActive = 0;
-      this.showDeleteCursor();
-      await this.setCurrentEditMode(EditMode.DELETE);
-    },
-    $endDeleteMode() {
-      this.$reset();
-    },
+    // async $startDeleteMode() {
+    //   this.$reset();
+    //   this.deleteButtonActive = 0;
+    //   this.showDeleteCursor();
+    //   await this.setCurrentEditMode(EditMode.DELETE);
+    // },
+    // $endDeleteMode() {
+    //   this.$reset();
+    // },
     $toggleSelectionMode() {
       if (this.getCurrentEditMode() == EditMode.SELECT) {
         this.$endSelectionMode();
@@ -353,17 +320,18 @@ export default {
         link: link,
       });
     },
-    $submitText: function (value) {
-      let activeRect = this.getActiveRectArr()[0];
+    $submitText: function (value, background_color) {
+      let activeCell = this.getActiveCellArr()[0];
       let text = {
         type: NotationType.TEXT,
-        fromCol: activeRect.col,
+        fromCol: activeCell.col,
         toCol:
-          parseInt(activeRect.col) + Math.floor(this.freeTextRectWidth(value)),
-        fromRow: activeRect.row,
+          parseInt(activeCell.col) + Math.floor(this.freeTextRectWidth(value)),
+        fromRow: activeCell.row,
         toRow:
-          parseInt(activeRect.row) + Math.floor(this.freeTextRectHeight(value)),
+          parseInt(activeCell.row) + Math.floor(this.freeTextRectHeight(value)),
         value: value,
+        background_color: background_color,
       };
       this.$store
         .dispatch("addNotation", text)
@@ -373,6 +341,8 @@ export default {
         .catch((e) => {
           console.error(e);
         });
+
+      this.$store.dispatch("setActiveCellArr", []);
     },
     async $reset() {
       this.$resetButtonsState();
@@ -391,16 +361,32 @@ export default {
     // },
   },
   computed: {
+    ...mapState({
+      currentEditMode: (state) => {
+        return state.lessonStore.operationMode.editMode;
+      },
+    }),
     isTeacher: function () {
       return this.getCurrentLesson().UserId === this.getUser().id;
     },
     authorized: function () {
       return !!this.getUser().authorized;
     },
-    hasActiveRect: function () {
-      return !!this.getActiveRectArr() ?? this.getActiveRectArr()[0];
+    hasActiveCell: function () {
+      return this.getActiveCellArr().length > 0;
     },
   },
+  watch: {
+    currentEditMode: {
+      deep: true,
+      handler(newVal) {
+        if (newVal == EditMode.SYMBOL) {
+          this.$resetButtonsState();
+        }
+      },
+    },
+  },
+
   data: function () {
     return {
       accessLinkDialogOpen: false,

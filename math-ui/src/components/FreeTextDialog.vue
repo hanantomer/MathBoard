@@ -17,6 +17,21 @@
                 ></v-textarea>
               </v-col>
             </v-row>
+            <v-row>
+              <v-col cols="6"> Background color: </v-col>
+            </v-row>
+
+            <v-row>
+              <v-col cols="12">
+                <v-color-picker
+                  v-model="background_color"
+                  dot-size="25"
+                  mode="hexa"
+                  show-swatches
+                  swatches-max-height="100"
+                ></v-color-picker>
+              </v-col>
+            </v-row>
           </v-container>
         </v-card-text>
         <v-card-actions>
@@ -57,12 +72,12 @@ export default {
     show(val) {
       if (val) {
         this.text =
-          // check if text notation is activated
-          this.getActiveRectArr().length > 1
+          // check if text notation is cell is highlited
+          this.getActiveCellArr().length > 1
             ? Object.values(this.getNotations()).find((n) => {
                 return (
-                  n.fromCol == this.getActiveRectArr()[0].col &&
-                  n.fromRow == this.getActiveRectArr()[0].row
+                  n.fromCol == this.getActiveCellArr()[0].col &&
+                  n.fromRow == this.getActiveCellArr()[0].row
                 );
               }).value
             : "";
@@ -72,16 +87,17 @@ export default {
   data() {
     return {
       text: "",
+      background_color: "#000001",
     };
   },
   methods: {
     ...mapGetters({
-      getActiveRectArr: "getActiveRectArr",
+      getActiveCellArr: "getActiveCellArr",
       getNotations: "getNotations",
     }),
     submit: function () {
       this.show = false;
-      this.$emit("freeTextSubmitted", this.text);
+      this.$emit("freeTextSubmitted", this.text, this.background_color);
     },
   },
 };

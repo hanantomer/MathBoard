@@ -40,6 +40,13 @@ let lessonSymbolResource = finale.resource({
 lessonSymbolResource.use(authMiddleware);
 lessonSymbolResource.use(lessonMiddleware);
 
+let lessonSignResource = finale.resource({
+    model: db.sequelize.models["LessonSign"],
+    endpoints: ["/lessonsigns", "/lessonsigns/:id"],
+});
+lessonSignResource.use(authMiddleware);
+lessonSignResource.use(lessonMiddleware);
+
 let lessonPowerResource = finale.resource({
     model: db.sequelize.models["LessonPower"],
     endpoints: ["/lessonpowers", "/lessonpowers/:id"],
@@ -81,6 +88,12 @@ let questionSymbolResource = finale.resource({
     endpoints: ["/questionsymbols", "/questionsymbols/:id"],
 });
 questionSymbolResource.use(authMiddleware);
+
+let questionSignResource = finale.resource({
+    model: db.sequelize.models["QuestionSign"],
+    endpoints: ["/questionsigns", "/questionsigns/:id"],
+});
+questionSignResource.use(authMiddleware);
 
 let questionPowerResource = finale.resource({
     model: db.sequelize.models["QuestionPower"],

@@ -136,6 +136,7 @@ module.exports = {
       }
     },
     saveNotation: async function (notation) {
+      console.debug("dbsync:" + notation.value);
       res = await axiosInstnce.post(
         `/${notation.boardType}${notation.type.toLowerCase()}s`,
         notation

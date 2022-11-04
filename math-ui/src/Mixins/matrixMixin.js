@@ -13,7 +13,7 @@ export default {
   },
   computed: {
     ...mapState({
-      prevActiveRect: (state) => state.activeRectStore.prevActiveRect,
+      prevActiveCell: (state) => state.activeCellStore.prevActiveCell,
     }),
     fontSize: function () {
       return `${this.rectSize / 25}em`;
@@ -22,11 +22,14 @@ export default {
       return window
         .getComputedStyle(this.$el, null)
         .getPropertyValue("font-size");
-      //return `${this.rectSize / 35}em`;
     },
     powerFontSize: function () {
       return `${this.rectSize / 50}em`;
     },
+    signFontSize: function () {
+      return `${this.rectSize / 28}em`;
+    },
+
     sqrtFontSize: function () {
       return `${this.rectSize / 20}em`;
     },
@@ -37,7 +40,7 @@ export default {
       opacity: 1,
       colsNum: 44,
       rowsNum: 24,
-      rectSize: 30,
+      rectSize: 25,
       lineHeight: 4,
       topLevelGroup: null,
       borderColor: "lightgray",
@@ -46,7 +49,7 @@ export default {
   },
   methods: {
     ...mapActions({
-      setPrevActiveRect: "setPrevActiveRect",
+      setPrevActiveCell: "setPrevActiveCell",
     }),
     freeTextRectWidth(value) {
       return this.textMeasurementCtx.measureText(value).width / this.rectSize;
@@ -57,8 +60,7 @@ export default {
         this.rectSize
       );
     },
-    $isLine(notationType) {
-      /// TODO change name
+    $isLineOrRect(notationType) {
       return (
         notationType === NotationType.TEXT ||
         notationType === NotationType.FRACTION ||
@@ -149,13 +151,13 @@ export default {
       return this.rectSize;
     },
     getNextRect(horizontalStep, verticalStep) {
-      if (!this.getActiveRectArr().length) {
+      if (!this.getActiveCellArr().length) {
         return;
       }
 
-      let activeRect = this.getActiveRectArr()[0];
-      let col = parseInt(activeRect.col);
-      let row = parseInt(activeRect.row);
+      let activeCell = this.getActiveCellArr()[0];
+      let col = parseInt(activeCell.col);
+      let row = parseInt(activeCell.row);
       let nextCol = parseInt(col);
       let nextRow = parseInt(row);
 
@@ -186,7 +188,7 @@ export default {
       let nextRect = this.getNextRect(horizontalStep, verticalStep);
       if (!!nextRect) {
         nextRect.type = "rect";
-        this.$store.dispatch("setActiveRectArr", [nextRect]);
+        this.$store.dispatch("setActiveCellArr", [nextRect]);
         this.userOperationsMixin_syncOutgoingSelectedPosition([nextRect]);
       }
     },
@@ -218,18 +220,11 @@ export default {
         if (Object.hasOwnProperty.call(notations, key)) {
           const element = notations[key];
           enrichedNotations.push(element);
+          // add sqrt symbol
           if (element.type === "sqrt") {
             let sqrtElement = { ...element };
             sqrtElement.type = NotationType.SQRTSYMBOL;
             enrichedNotations.push(sqrtElement);
-          }
-          if (element.type === "text") {
-            element.value.split(/\r*\n/).forEach((row, index) => {
-              let textElement = { ...element };
-              textElement.value = row;
-              textElement.index = index;
-              enrichedNotations.push(textElement);
-            });
           }
         }
       }
@@ -295,7 +290,7 @@ export default {
       return n.type + n.id;
     },
     $col(n) {
-      return this.$isLine(n.type) ? n.fromCol : n.col;
+      return this.$isLineOrRect(n.type) ? n.fromCol : n.col;
     },
     $row(n) {
       return n.row;
@@ -310,20 +305,20 @@ export default {
       if (n.type === NotationType.POWER) {
         return this.getNotationXposByCol(col) - this.rectSize / 3;
       }
+
+      //if (n.type === NotationType.SIGN) {
+      //  return this.getNotationXposByCol(col) + this.rectSize / 2;
+      //}
+
       return this.getNotationXposByCol(col);
     },
     $y(n) {
-      if (n.type === NotationType.SYMBOL) {
+      if (n.type === NotationType.SYMBOL || n.type === NotationType.SIGN) {
         return this.getNotationYposByRow(n.row);
       }
 
       if (n.type === NotationType.TEXT) {
-        if (n.index != null) {
-          return (
-            this.getNotationYposByRow(n.fromRow) +
-            n.index * this.textFontSize.replace("px", "")
-          );
-        }
+        return this.getNotationYposByRow(n.fromRow);
       }
 
       if (n.type === NotationType.POWER) {
@@ -347,6 +342,7 @@ export default {
       }
 
       if (
+        n.type === NotationType.SIGN ||
         n.type === NotationType.SYMBOL ||
         n.type === NotationType.SQRTSYMBOL ||
         n.type === NotationType.POWER
@@ -359,14 +355,15 @@ export default {
     $height(n) {
       if (n.type === NotationType.TEXT) {
         // exclude original text node
-        if (n.index != null)
-          return (
-            (this.textFontSize.replace("px", "") + 5) *
-            n.value.split(/\r*\n/).length
-          );
+        //if (n.index != null)
+        return (
+          (this.textFontSize.replace("px", "") + 5) *
+          n.value.split(/\r*\n/).length
+        );
       }
 
       if (
+        n.type === NotationType.SIGN ||
         n.type === NotationType.SYMBOL ||
         n.type === NotationType.SQRTSYMBOL ||
         n.type === NotationType.POWER
@@ -381,6 +378,8 @@ export default {
         ? this.powerFontSize
         : n.type === NotationType.TEXT
         ? this.textFontSize
+        : n.type === NotationType.SIGN
+        ? this.signFontSize
         : this.fontSize;
     },
     $color(n) {
@@ -394,6 +393,10 @@ export default {
       }
       if (n.type === NotationType.SQRTSYMBOL) {
         return `<p style='position:relative;left:-3px; font-size:1.4em'>&#x221A;</p>`;
+      }
+
+      if (n.type === NotationType.TEXT) {
+        return `<pre style='border:groove 1px;background-color:${n.background_color}'>${n.value}</pre>`;
       }
 
       return !!n.value ? "$$" + n.value + "$$" : "";

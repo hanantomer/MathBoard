@@ -21,12 +21,12 @@ export default {
       });
     },
     notationMixin_removeNotationAtSeletedPosition() {
-      this.romoveNotations(this.getActiveRectArr()[0]);
+      this.romoveNotations(this.getActiveCellArr()[0]);
     },
-    async romoveNotations(rect) {
+    async romoveNotations(point) {
       let notationsToDelete = await this.$store.dispatch(
-        "removeNotations",
-        rect
+        "removeNotationsByCell",
+        point
       );
       if (!!notationsToDelete) {
         notationsToDelete.forEach((notation) =>
