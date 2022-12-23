@@ -42,7 +42,7 @@ export default {
     async loadQuestions(context) {
       context.commit("removeAllQuestions");
       let questions = await dbSyncMixin.methods.getQuestions(
-        context.getters.getCurrentLesson.id
+        context.getters.getCurrentLesson.uuid
       );
       if (questions.data.length > 0) {
         questions.data.forEach((e) => {
@@ -52,7 +52,7 @@ export default {
       return questions.data.length > 0;
     },
     async addQuestion(context, question) {
-      question.LessonId = context.getters.getCurrentLesson.id;
+      question.LessonUUId = context.getters.getCurrentLesson.uuid;
       question = await dbSyncMixin.methods.addQuestion(question);
       context.commit("addQuestion", question.data);
       return question.data;
@@ -61,7 +61,7 @@ export default {
       context.commit("setCurrentQuestion", question);
     },
     removeQuestion(context, question) {
-      context.commit("removeQuestion", question.id);
+      context.commit("removeQuestion", question.uuid);
     },
   },
 };

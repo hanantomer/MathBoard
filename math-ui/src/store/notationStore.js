@@ -1,17 +1,82 @@
+///TODO - create notation family and move helper functions outside
+
 // notations of current board(lesson, question or answers)
 import Vue from "vue";
 import dbSyncMixin from "../Mixins/dbSyncMixin";
 import BoardType from "../Mixins/boardType";
 import NotationType from "../Mixins/notationType";
-
-Object.defineProperty(String.prototype, "capitalize", {
-  value: function () {
-    return this.charAt(0).toUpperCase() + this.slice(1);
-  },
-  enumerable: false,
-});
+import globals from "../globals.js";
 
 const helper = {
+  // matrix which marks in true each occupied cell
+  createCellOccupationMatrix: function () {
+    let rowArr = new Array(globals.rowsNum).fill(0);
+    rowArr.forEach((row, rowIndex) => {
+      let colArr = new Array(globals.colsNum).fill(0);
+      colArr.forEach((col, colIndex) => {
+        colArr[colIndex] = null;
+      });
+      rowArr[rowIndex] = colArr;
+    });
+    return rowArr;
+  },
+  updateOccupationMatrix: function (matrix, notation, oldNotation) {
+    switch (notation.type) {
+      case NotationType.SYMBOL:
+      case NotationType.SIGN:
+      case NotationType.POWER:
+        matrix[notation.row][notation.col] = notation;
+        // clean matrix pointer to old notation
+        if (!!oldNotation) {
+          matrix[oldNotation.row][oldNotation.col] = null;
+        }
+        break;
+      case NotationType.FRACTION:
+      case NotationType.SQRT:
+        for (let col = notation.fromCol; col <= notation.toCol; col++) {
+          matrix[parseInt(notation.row)][parseInt(col)] = notation;
+        }
+        // clean matrix pointer to old notation
+        if (!!oldNotation) {
+          for (let col = oldNotation.fromCol; col <= oldNotation.toCol; col++) {
+            matrix[parseInt(oldNotation.row)][parseInt(col)] = null;
+          }
+        }
+      case NotationType.TEXT:
+      case NotationType.IMAGE:
+      case NotationType.GEO:
+        for (let row = notation.fromRow; row <= notation.toRow; row++) {
+          for (let col = notation.fromCol; col <= notation.toCol; col++) {
+            matrix[parseInt(row)][parseInt(col)] = notation;
+          }
+        }
+        // clean matrix pointer to old notation
+        if (!!oldNotation) {
+          for (let row = oldNotation.fromRow; row <= oldNotation.toRow; row++) {
+            for (
+              let col = oldNotation.fromCol;
+              col <= oldNotation.toCol;
+              col++
+            ) {
+              matrix[parseInt(row)][parseInt(col)] = null;
+            }
+          }
+        }
+    }
+  },
+
+  // return true for student in question and row is inside question area
+  isStudentInQuestionArea(context, col, row) {
+    return (
+      row &&
+      col &&
+      context.getters.getParent.boardType === BoardType.QUESTION &&
+      !context.getters.isTeacher &&
+      context.state.cellOccupationMatrix[parseInt(row)][parseInt(col)]
+        ?.boardType === BoardType.QUESTION
+    );
+  },
+
   // point
   pointAtPointCoordinates: function (point1Coordinates, point2Coordinates) {
     return (
@@ -139,44 +204,6 @@ const helper = {
       );
   },
 
-  // return a list of notations wich overlap given line coordinates
-  findNotationsByLineCoordinates: function (state, lineCoordinates) {
-    return Object.entries(state.notations)
-      .map((n) => n[1])
-      .filter((n) =>
-        n.type == NotationType.SYMBOL ||
-        n.type == NotationType.POWER ||
-        n.type == NotationType.SIGN
-          ? helper.pointAtLineCoordinates(
-              {
-                col: n.col,
-                row: n.row,
-              },
-              lineCoordinates
-            )
-          : n.type == NotationType.FRACTION || n.type == NotationType.SQRT
-          ? helper.lineAtLineCoordinates(
-              {
-                fromCol: n.fromCol,
-                toCol: n.toCol,
-                row: n.row,
-              },
-              lineCoordinates
-            )
-          : n.type == NotationType.TEXT
-          ? helper.rectAtLineCoordinates(
-              {
-                fromCol: n.fromCol,
-                toCol: n.toCol,
-                fromRow: n.fromRow,
-                toRow: n.toRow,
-              },
-              lineCoordinates
-            )
-          : false
-      );
-  },
-
   // return a list of notations wich overlap given rect coordinates
   findNotationsByRectCoordinates: function (state, rectCoordinates) {
     return Object.entries(state.notations)
@@ -210,6 +237,44 @@ const helper = {
                 toRow: n.toRow,
               },
               rectCoordinates
+            )
+          : false
+      );
+  },
+
+  // return a list of notations wich overlap given line coordinates
+  findNotationsByLineCoordinates: function (state, lineCoordinates) {
+    return Object.entries(state.notations)
+      .map((n) => n[1])
+      .filter((n) =>
+        n.type == NotationType.SYMBOL ||
+        n.type == NotationType.POWER ||
+        n.type == NotationType.SIGN
+          ? helper.pointAtLineCoordinates(
+              {
+                col: n.col,
+                row: n.row,
+              },
+              lineCoordinates
+            )
+          : n.type == NotationType.FRACTION || n.type == NotationType.SQRT
+          ? helper.lineAtLineCoordinates(
+              {
+                fromCol: n.fromCol,
+                toCol: n.toCol,
+                row: n.row,
+              },
+              lineCoordinates
+            )
+          : n.type == NotationType.TEXT
+          ? helper.rectAtLineCoordinates(
+              {
+                fromCol: n.fromCol,
+                toCol: n.toCol,
+                fromRow: n.fromRow,
+                toRow: n.toRow,
+              },
+              lineCoordinates
             )
           : false
       );
@@ -340,25 +405,38 @@ const helper = {
       });
   },
 
-  loadNotationType(context, currentType) {
-    dbSyncMixin.methods
-      .getNotations(context.getters.getParent, currentType)
-      .then((notations) => {
-        notations.data.forEach((notation) => {
-          notation.type = currentType;
-          context.commit("setNotation", notation);
-        });
-      });
+  async loadNotationType(context, notationType, boardType) {
+    let notations = await dbSyncMixin.methods.getNotations(
+      notationType,
+      boardType,
+      context.getters.getParent.uuid,
+      context.getters.getUser.id
+    );
+
+    notations?.data?.forEach((notation) => {
+      notation.type = notationType;
+      context.commit("setNotation", notation);
+    });
   },
 
-  loadNotations(context) {
-    context.commit("removeAllNotations");
-    helper.loadNotationType(context, NotationType.SYMBOL);
-    helper.loadNotationType(context, NotationType.SIGN);
-    helper.loadNotationType(context, NotationType.POWER);
-    helper.loadNotationType(context, NotationType.FRACTION);
-    helper.loadNotationType(context, NotationType.SQRT);
-    helper.loadNotationType(context, NotationType.TEXT);
+  async loadNotations(context, boardType) {
+    // TODO: move outside -> context.commit("removeAllNotations");
+    await helper.loadNotationType(context, NotationType.SYMBOL, boardType);
+    await helper.loadNotationType(context, NotationType.SIGN, boardType);
+    await helper.loadNotationType(context, NotationType.POWER, boardType);
+    await helper.loadNotationType(context, NotationType.FRACTION, boardType);
+    await helper.loadNotationType(context, NotationType.SQRT, boardType);
+    await helper.loadNotationType(context, NotationType.TEXT, boardType);
+    await helper.loadNotationType(context, NotationType.IMAGE, boardType);
+  },
+
+  deActivateAllNotations(state) {
+    Object.entries(state.notations)
+      .map((n) => n[1])
+      .filter((n) => !!n.active)
+      .forEach((n) => {
+        Vue.set(n, "active", false);
+      });
   },
 };
 
@@ -369,26 +447,26 @@ export default {
   state: {
     parent: { Id: null, boardType: BoardType.NONE },
     notations: {},
+    activeCell: {},
+    cellOccupationMatrix: helper.createCellOccupationMatrix(),
   },
   getters: {
-    getParent(state) {
+    getParent: (state) => {
       return state.parent;
     },
     getSelectedNotations: (state) => {
       return Object.values(state.notations).filter((v) => v.selected === true);
     },
-    getNotations(state) {
+    getNotations: (state) => {
       return state.notations;
     },
-    getLastNotation(state) {
-      return Object.values(state.notations).length === 0
-        ? null
-        : Object.values(state.notations).slice(-1)[0];
+    getActiveNotation: (state) => {
+      return Object.entries(state.notations)
+        .map((n) => n[1])
+        .find((n) => !!n.active);
     },
-    lastNotationIsSingular(state) {
-      return Object.values(state.notations).length === 0
-        ? null
-        : Object.values(state.notations).slice(-1)[0].value.length === 1;
+    getActiveCell: (state) => {
+      return state.activeCell;
     },
   },
   mutations: {
@@ -396,12 +474,20 @@ export default {
       state.parent = parent;
     },
     setNotation(state, notation) {
+      let oldNotation = state.notations[notation.type + notation.id];
       notation.selected = false;
-      notation.boardType = state.parent.boardType;
+      // for answer, notation.boardType is populated
+      if (!notation.boardType) notation.boardType = state.parent.boardType;
       Vue.set(state.notations, notation.type + notation.id, notation);
+
+      helper.updateOccupationMatrix(
+        state.cellOccupationMatrix,
+        notation,
+        oldNotation
+      );
     },
     removeNotation(state, notation) {
-      Vue.delete(state.notations, notation);
+      Vue.delete(state.notations, notation.type + notation.id);
     },
     selectNotation(state, pointCoordinates) {
       let notations = helper.findNotationsByCellCoordinates(
@@ -419,93 +505,69 @@ export default {
           Vue.set(state.notations[n[0]], "selected", false);
         });
     },
-    moveSelectedNotations(state, payload) {
-      Object.entries(state.notations)
-        .filter((notation) => !!notation[1].selected)
-        .forEach((notation) => {
-          switch (notation[1].type) {
-            case NotationType.SYMBOL:
-            case NotationType.SIGN:
-            case NotationType.POWER:
-              {
-                Vue.set(state.notations, notation[0], {
-                  ...notation[1],
-                  col: notation[1].col + payload.rectDeltaX,
-                  row: notation[1].row + payload.rectDeltaY,
-                });
-              }
-              break;
-            case NotationType.FRACTION:
-            case NotationType.SQRT:
-              {
-                Vue.set(state.notations, notation[0], {
-                  ...notation[1],
-                  fromCol: notation[1].fromCol + payload.rectDeltaX,
-                  toCol: notation[1].toCol + payload.rectDeltaX,
-                  row: notation[1].row + payload.rectDeltaY,
-                });
-              }
-              break;
-            case NotationType.TEXT:
-            case NotationType.IMAGE:
-            case NotationType.GEO: {
-              Vue.set(state.notations, notation[0], {
-                ...notation[1],
-                fromCol: notation[1].fromCol + payload.rectDeltaX,
-                toCol: notation[1].toCol + payload.rectDeltaX,
-                fromRow: notation[1].fromRow + payload.rectDeltaY,
-                toRow: notation[1].toRow + payload.rectDeltaY,
-              });
-              break;
-            }
-          }
-        });
-    },
+
+    moveSelectedNotations(state, payload) {},
     removeAllNotations(state) {
       state.notations = {};
     },
+    // for notations with more than single cell
+    setActiveNotation(state, activeNotation) {
+      helper.deActivateAllNotations(state);
+      Vue.set(activeNotation, "active", true);
+      Vue.set(state, "activeCell", {});
+    },
+    setActiveCell(state, activeCell) {
+      Vue.set(state, "activeCell", activeCell);
+      helper.deActivateAllNotations(state);
+    },
   },
   actions: {
-    async loadLessonNotations(context, parentId) {
+    async loadLessonNotations(context) {
       context.commit("setParent", {
         boardType: BoardType.LESSON,
-        id: parentId,
+        uuid: context.getters.getCurrentLesson.uuid,
       });
-      helper.loadNotations(context);
+      helper.loadNotations(context, BoardType.LESSON);
     },
 
-    async loadQuestionNotations(context, parentId) {
+    async loadQuestionNotations(context) {
       context.commit("setParent", {
         boardType: BoardType.QUESTION,
-        id: parentId,
+        uuid: context.getters.getCurrentQuestion.uuid,
       });
-      helper.loadNotations(context);
+
+      await context.dispatch("removeAllNotations");
+      await helper.loadNotations(context, BoardType.QUESTION);
+      await helper.loadNotations(context, BoardType.ANSWER);
     },
 
     async addNotation(context, notation) {
       notation.UserId = context.getters.getUser.id;
       notation.boardType = context.getters.getParent.boardType;
-      notation[notation.boardType.capitalize() + "Id"] =
-        context.getters.getParent.id;
+      notation[notation.boardType.capitalize() + "UUId"] =
+        context.getters.getParent.uuid;
 
-      // notation overlaps with other notation of same type => update
-      // let overlappedSameTypeNotations = helper.findOverlapNotationsOfSameType(
-      //   context.state,
-      //   notation
-      // );
-      // if (overlappedSameTypeNotations?.length) {
-      //   notation.id = overlappedSameTypeNotations[0].id;
-      //   await dbSyncMixin.methods.updateNotation(notation);
-      //   context.commit("setNotation", notation);
-      //   return notation;
-      // }
+      let overlappedSameTypeNotations = helper.findOverlapNotationsOfAnyType(
+        context.state,
+        notation
+      );
+
+      if (overlappedSameTypeNotations?.length > 0) {
+        overlappedSameTypeNotations[0].value = notation.value;
+        notation = await dbSyncMixin.methods.updateNotation(
+          overlappedSameTypeNotations[0]
+        );
+        context.commit("setNotation", notation);
+        return notation;
+      }
 
       // notation overlaps with other notation of other type => ignore
       let overlappedAnyTypeNotations = helper.findOverlapNotationsOfAnyType(
         context.state,
         notation
       );
-      if (overlappedAnyTypeNotations?.length) {
+
+      if (overlappedAnyTypeNotations?.length > 0) {
         return null;
       }
 
@@ -519,7 +581,7 @@ export default {
       context.commit("setNotation", notation);
     },
     syncIncomingRemovedNotation(context, notation) {
-      context.commit("removeNotation", notation.type + notation.id);
+      context.commit("removeNotation", notation);
     },
     syncIncomingUpdatedNotation(context, notation) {
       context.commit("setNotation", notation);
@@ -534,12 +596,13 @@ export default {
           n.boardType = context.getters.getParent.boardType;
           await dbSyncMixin.methods
             .removeNotation(n)
-            .then(() => context.commit("removeNotation", n.type + n.id));
+            .then(() => context.commit("removeNotation", n));
         });
       }
       return notationsAtCell;
     },
 
+    // remove notations wich overlaps with a rect(multiple cells)
     removeNotationsByRect(context, rect) {
       let notationsAtRectCoordinates = helper.findNotationsByRectCoordinates(
         context.state,
@@ -550,10 +613,17 @@ export default {
           n.boardType = context.getters.getParent.boardType;
           await dbSyncMixin.methods
             .removeNotation(n)
-            .then(() => context.commit("removeNotation", n.type + n.id));
+            .then(() => context.commit("removeNotation", n));
         });
       }
       return notationsAtRectCoordinates;
+    },
+
+    async removeActiveNotation(context) {
+      let notationToDelete = context.getters.getActiveNotation;
+      await dbSyncMixin.methods.removeNotation(notationToDelete);
+      context.commit("removeNotation", notationToDelete);
+      return notationToDelete;
     },
 
     selectNotation(context, pointCoordinates) {
@@ -562,20 +632,111 @@ export default {
     unselectAllNotations(context) {
       context.commit("unselectAllNotations");
     },
+
     // move without persistence - called during  mouse move  - don't bother the database during move
     moveSelectedNotations(context, notations) {
-      context.commit("moveSelectedNotations", notations);
+      //context.commit("moveSelectedNotations", notations);
+      Object.entries(state.notations)
+        .filter((notation) => !!notation[1].selected)
+        .forEach((notation) => {
+          switch (notation[1].type) {
+            case NotationType.SYMBOL:
+            case NotationType.SIGN:
+            case NotationType.POWER:
+              notation[1].col += payload.rectDeltaX;
+              notation[1].row += payload.rectDeltaY;
+              context.commit("setNotation", notation[1]);
+              //Vue.set(state.notations, notation[0], {
+              ///TODO use set notation
+              //...notation[1],
+              //col: notation[1].col + payload.rectDeltaX,
+              //row: notation[1].row + payload.rectDeltaY,
+              //});
+              break;
+            case NotationType.FRACTION:
+            case NotationType.SQRT:
+              notation[1].fromCol += payload.rectDeltaX;
+              notation[1].toCol += payload.rectDeltaX;
+              notation[1].row += payload.rectDeltaY;
+              context.commit("setNotation", notation[1]);
+              break;
+            case NotationType.TEXT:
+            case NotationType.IMAGE:
+            case NotationType.GEO: {
+              notation[1].fromCol += payload.rectDeltaX;
+              notation[1].toCol += payload.rectDeltaX;
+              notation[1].fromRow += payload.rectDeltaY;
+              notation[1].toRow += payload.rectDeltaY;
+              context.commit("setNotation", notation[1]);
+              break;
+            }
+          }
+        });
     },
-    // move with persistence - called upon muose up
+
+    // move selected notations with persistence - called upon muose up
     updateSelectedNotationCoordinates(context) {
+      // disallow update if any notation overlaps question area
+
+      context.getters.getSelectedNotations.forEach(async (notation) => {
+        if (
+          helper.isStudentInQuestionArea(
+            context,
+            notation.col,
+            notation.row ?? notation.toRow
+          )
+        ) {
+          return;
+        }
+      });
+
       context.getters.getSelectedNotations.forEach(async (notation) => {
         await dbSyncMixin.methods.updateNotation(notation);
       });
       context.commit("unselectAllNotations");
     },
+
     async updateNotation(context, notation) {
+      // disallow update for student in question area
+
+      if (
+        helper.isStudentInQuestionArea(
+          context,
+          notation.col,
+          notation.row ?? notation.toRow
+        )
+      ) {
+        return;
+      }
       await dbSyncMixin.methods.updateNotation(notation);
       context.commit("setNotation", notation);
+    },
+
+    async setActiveNotation(context, activeNotation) {
+      if (
+        // disallow activation of question rows for student
+        helper.isStudentInQuestionArea(
+          context,
+          activeNotation.col ?? activeNotation.fromCol,
+          activeNotation.row ?? activeNotation.fromRow
+        )
+      ) {
+        return;
+      }
+      context.commit("setActiveNotation", activeNotation);
+    },
+    setActiveCell(context, activeCell) {
+      if (
+        // disallow activation of question rows for student
+        activeCell.row &&
+        helper.isStudentInQuestionArea(context, activeCell.col, activeCell.row)
+      ) {
+        return;
+      }
+      context.commit("setActiveCell", activeCell);
+    },
+    removeAllNotations(context) {
+      context.commit("removeAllNotations");
     },
   },
 };

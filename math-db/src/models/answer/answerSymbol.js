@@ -1,22 +1,22 @@
 "use strict";
 const { Model } = require("sequelize");
 module.exports = (sequelize, DataTypes) => {
-    class LessonSymbol extends Model {
+    class AnswerSymbol extends Model {
         static associate(models) {
-            LessonSymbol.belongsTo(models.Lesson, {
+            AnswerSymbol.belongsTo(models.Question, {
                 onDelete: "CASCADE",
                 onUpdate: "CASCADE",
                 foreignKey: { allowNull: false },
             });
-            LessonSymbol.belongsTo(models.User, {
+            AnswerSymbol.belongsTo(models.User, {
                 onDelete: "CASCADE",
                 onUpdate: "CASCADE",
                 foreignKey: { allowNull: false },
-            });
+            });             
         }
     }
 
-    LessonSymbol.init(
+    AnswerSymbol.init(
         {
             col: {
                 type: DataTypes.INTEGER,
@@ -38,11 +38,11 @@ module.exports = (sequelize, DataTypes) => {
             indexes: [
                 {
                     unique: true,
-                    fields: ["lessonId", "row", "col"],
+                    fields: ["questionId","row","col","userId"],
                 },
             ],
         }
     );
 
-    return LessonSymbol;
+    return AnswerSymbol;
 };

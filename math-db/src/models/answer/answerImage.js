@@ -1,28 +1,36 @@
 "use strict";
 const { Model } = require("sequelize");
 module.exports = (sequelize, DataTypes) => {
-    class AnswerSymbol extends Model {
+    class AnswerImage extends Model {
         static associate(models) {
-            AnswerSymbol.belongsTo(models.Answer, {
+            AnswerImage.belongsTo(models.Question, {
                 onDelete: "CASCADE",
                 onUpdate: "CASCADE",
                 foreignKey: { allowNull: false },
             });
-            AnswerSymbol.belongsTo(models.User, {
+            AnswerImage.belongsTo(models.User, {
                 onDelete: "CASCADE",
                 onUpdate: "CASCADE",
                 foreignKey: { allowNull: false },
-            });
+            });            
         }
     }
 
-    AnswerSymbol.init(
+    AnswerImage.init(
         {
-            col: {
+            fromCol: {
                 type: DataTypes.INTEGER,
                 allowNull: false,
             },
-            row: {
+            toCol: {
+                type: DataTypes.INTEGER,
+                allowNull: false,
+            },
+            fromRow: {
+                type: DataTypes.INTEGER,
+                allowNull: false,
+            },
+            toRow: {
                 type: DataTypes.INTEGER,
                 allowNull: false,
             },
@@ -38,11 +46,11 @@ module.exports = (sequelize, DataTypes) => {
             indexes: [
                 {
                     unique: true,
-                    fields: ["row", "col"],
+                    fields: ["questionId","fromRow","fromCol","userId"],
                 },
             ],
         }
     );
 
-    return AnswerSymbol;
+    return AnswerImage;
 };

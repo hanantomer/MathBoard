@@ -21,17 +21,25 @@ export default {
       });
     },
     notationMixin_removeNotationAtSeletedPosition() {
-      this.romoveNotations(this.getActiveCellArr()[0]);
+      this.romoveActiveCellNotations();
+      this.romoveActiveNotations();
     },
-    async romoveNotations(point) {
+    async romoveActiveCellNotations() {
+      let cell = this.getActiveCell();
       let notationsToDelete = await this.$store.dispatch(
         "removeNotationsByCell",
-        point
+        cell
       );
       if (!!notationsToDelete) {
         notationsToDelete.forEach((notation) =>
           this.userOperationsMixin_syncOutgoingRemoveNotation(notation)
         );
+      }
+    },
+    async romoveActiveNotations() {
+      let notationToDelete = await this.$store.dispatch("removeActiveNotation");
+      if (!!notationToDelete) {
+        this.userOperationsMixin_syncOutgoingRemoveNotation(notationToDelete);
       }
     },
   },

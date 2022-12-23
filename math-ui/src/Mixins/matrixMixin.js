@@ -1,6 +1,5 @@
 import NotationType from "./notationType";
-import { mapActions } from "vuex";
-import { mapState } from "vuex";
+import { mapActions, mapGetters, mapState } from "vuex";
 import * as d3 from "d3";
 
 export default {
@@ -13,7 +12,7 @@ export default {
   },
   computed: {
     ...mapState({
-      prevActiveCell: (state) => state.activeCellStore.prevActiveCell,
+      prevActiveCell: (state) => state.notationStore.prevActiveCell,
     }),
     fontSize: function () {
       return `${this.rectSize / 25}em`;
@@ -43,11 +42,14 @@ export default {
       rectSize: 25,
       lineHeight: 4,
       topLevelGroup: null,
-      borderColor: "lightgray",
       svgns: "http://www.w3.org/2000/svg",
     };
   },
   methods: {
+    ...mapGetters({
+      getActiveNotation: "getActiveNotation",
+      getCurrentLesson: "getCurrentLesson",
+    }),
     ...mapActions({
       setPrevActiveCell: "setPrevActiveCell",
     }),
@@ -63,15 +65,13 @@ export default {
     $isLineOrRect(notationType) {
       return (
         notationType === NotationType.TEXT ||
+        notationType === NotationType.IMAGE ||
         notationType === NotationType.FRACTION ||
         notationType === NotationType.SQRT ||
         notationType === NotationType.SQRTSYMBOL ||
         notationType === NotationType.LEFT_HANDLE ||
         notationType === NotationType.RIGHT_HANDLE
       );
-    },
-    reRenderMathJax() {
-      window.MathJax.typeset();
     },
     //https://stackoverflow.com/questions/22428484/get-element-from-point-when-you-have-overlapping-elements
     matrixMixin_findClickedObject(point, tagName, notationType) {
@@ -105,6 +105,7 @@ export default {
           (!notationType || notationType == item.attributes.type.value)
       );
     },
+
     matrixMixin_setMatrix() {
       for (var row = 0; row < this.rowsNum; row++) {
         this.matrix.push(d3.range(this.colsNum));
@@ -122,16 +123,20 @@ export default {
         .lower()
         .attr("transform", (d, i) => {
           return "translate(0, " + this.rectSize * i + ")";
-        });
-
-      this.topLevelGroup
+        })
         .selectAll("rect")
-        .data(this.matrix[0])
+        .data((r) => r)
         .enter()
         .append("rect")
-        .attr("fill", "white")
+        .attr("fill", (a, i, d) => {
+          return "white";
+          //if (!bkColorFunc) return "white";
+          //use callback to  colorise question-part background for students
+          //let row = parseInt(d[i].parentNode.attributes["row"].value);
+          //return bkColorFunc(row) ? "whitesmoke" : "white";
+        })
         .attr("stroke-opacity", this.opacity)
-        .style("stroke", "lightgray")
+        .attr("stroke", "lightgray")
         .attr("col", (d, i) => {
           return i;
         })
@@ -151,13 +156,12 @@ export default {
       return this.rectSize;
     },
     getNextRect(horizontalStep, verticalStep) {
-      if (!this.getActiveCellArr().length) {
+      if (!this.getActiveCell()?.col) {
         return;
       }
 
-      let activeCell = this.getActiveCellArr()[0];
-      let col = parseInt(activeCell.col);
-      let row = parseInt(activeCell.row);
+      let col = parseInt(this.getActiveCell().col);
+      let row = parseInt(this.getActiveCell().row);
       let nextCol = parseInt(col);
       let nextRow = parseInt(row);
 
@@ -188,8 +192,8 @@ export default {
       let nextRect = this.getNextRect(horizontalStep, verticalStep);
       if (!!nextRect) {
         nextRect.type = "rect";
-        this.$store.dispatch("setActiveCellArr", [nextRect]);
-        this.userOperationsMixin_syncOutgoingSelectedPosition([nextRect]);
+        this.$store.dispatch("setActiveCell", nextRect);
+        this.userOperationsMixin_syncOutgoingActiveCell(nextRect);
       }
     },
     matrixMixin_findRect(rect) {
@@ -214,25 +218,37 @@ export default {
     removeNotation: function (n) {
       document.getElementById(n.id + n.type).remove();
     },
-    enrichNotations: function (notations) {
+    enrichNotations: async function (notations) {
       let enrichedNotations = [];
       for (const key in notations) {
         if (Object.hasOwnProperty.call(notations, key)) {
           const element = notations[key];
           enrichedNotations.push(element);
           // add sqrt symbol
-          if (element.type === "sqrt") {
+          if (element.type === NotationType.SQRT) {
             let sqrtElement = { ...element };
             sqrtElement.type = NotationType.SQRTSYMBOL;
             enrichedNotations.push(sqrtElement);
           }
+          // calculate image dimensions
+          // if (element.type === NotationType.IMAGE) {
+          //   let image = new Image();
+          //   this.loadImage(image, element.value);
+          //   element.toCol = Math.round(
+          //     image.width / this.rectSize + element.fromCol
+          //   );
+
+          //   element.toRow = Math.round(
+          //     image.height / this.rectSize + element.fromRow
+          //   );
+          // }
         }
       }
       return enrichedNotations;
     },
-    matrixMixin_refreshScreen(notations, svgId) {
+    async matrixMixin_refreshScreen(notations, svgId) {
       try {
-        notations = this.enrichNotations(notations);
+        notations = await this.enrichNotations(notations);
       } catch {} // cant check if observer has properties
       d3.select("#" + svgId)
         .selectAll("foreignObject")
@@ -306,10 +322,6 @@ export default {
         return this.getNotationXposByCol(col) - this.rectSize / 3;
       }
 
-      //if (n.type === NotationType.SIGN) {
-      //  return this.getNotationXposByCol(col) + this.rectSize / 2;
-      //}
-
       return this.getNotationXposByCol(col);
     },
     $y(n) {
@@ -317,7 +329,7 @@ export default {
         return this.getNotationYposByRow(n.row);
       }
 
-      if (n.type === NotationType.TEXT) {
+      if (n.type === NotationType.TEXT || n.type === NotationType.IMAGE) {
         return this.getNotationYposByRow(n.fromRow);
       }
 
@@ -329,7 +341,10 @@ export default {
         return this.getNotationYposByRow(n.row) - 4;
       }
 
-      if (n.type === NotationType.SQRTSYMBOL || n.type === "sqrt") {
+      if (
+        n.type === NotationType.SQRTSYMBOL ||
+        n.type === "NotationType.SQRT"
+      ) {
         return this.getNotationYposByRow(n.row) - 4;
       }
     },
@@ -349,13 +364,15 @@ export default {
       )
         return this.rectSize;
 
-      if (n.type === NotationType.FRACTION || n.type === NotationType.SQRT)
-        return (n.toCol - n.fromCol) * this.rectSize;
+      if (
+        n.type === NotationType.FRACTION ||
+        n.type === NotationType.SQRT ||
+        n.type === NotationType.IMAGE
+      )
+        return (n.toCol - n.fromCol) * this.rectSize + 5;
     },
     $height(n) {
       if (n.type === NotationType.TEXT) {
-        // exclude original text node
-        //if (n.index != null)
         return (
           (this.textFontSize.replace("px", "") + 5) *
           n.value.split(/\r*\n/).length
@@ -367,11 +384,17 @@ export default {
         n.type === NotationType.SYMBOL ||
         n.type === NotationType.SQRTSYMBOL ||
         n.type === NotationType.POWER
-      )
+      ) {
         return this.rectSize;
+      }
 
-      if (n.type === NotationType.FRACTION || n.type === NotationType.SQRT)
+      if (n.type === NotationType.IMAGE) {
+        return (n.toRow - n.fromRow) * this.rectSize + 5;
+      }
+
+      if (n.type === NotationType.FRACTION || n.type === NotationType.SQRT) {
         return this.lineHeight;
+      }
     },
     $fontSize(n) {
       return n.type === NotationType.POWER
@@ -396,10 +419,25 @@ export default {
       }
 
       if (n.type === NotationType.TEXT) {
-        return `<pre style='border:groove 1px;background-color:${n.background_color}'>${n.value}</pre>`;
+        let borderColor = this.$borderColor(n === this.getActiveNotation());
+        return `<pre style='border:groove 2px;border-color:${borderColor};background-color:${n.background_color}'>${n.value}</pre>`;
       }
 
-      return !!n.value ? "$$" + n.value + "$$" : "";
+      if (n.type === NotationType.IMAGE) {
+        let borderColor = this.$borderColor(n === this.getActiveNotation());
+        return `<img style='border:groove 2px;border-color:${borderColor}' src='${n.value}'>`;
+      }
+
+      let fontWeight =
+        this.getCurrentLesson().UserId === n.UserId ? "bold" : "normal";
+
+      let color =
+        this.getCurrentLesson().UserId === n.UserId ? "black" : "purple";
+
+      return `<p style='color:${color};font-weight:${fontWeight};margin-left:4px;font-size:1.1em'>${n.value}</p>`;
+    },
+    $borderColor: function (selected) {
+      return !!selected ? "red" : "transparent";
     },
     updateNotations: function (update) {
       return update
@@ -436,5 +474,17 @@ export default {
           d3.select(this).remove();
         });
     },
+    // loadImage: function (img, base64) {
+    //   img.src = base64;
+    //   var timeOut = 5 * 1000; ///TODO caheck await
+    //   var start = new Date().getTime();
+    //   while (1)
+    //     if (
+    //       img.complete ||
+    //       img.naturalWidth ||
+    //       new Date().getTime() - start > timeOut
+    //     )
+    //       break;
+    // },
   },
 };

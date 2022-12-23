@@ -1,25 +1,39 @@
-const NotationType = require("./notationType");
+const BoardType = require("./boardType");
 const axios = require("axios");
 const axiosInstnce = axios.create({
   baseURL: "http://localhost:8081",
 });
 
-axiosInstnce.interceptors.request.use(function (config) {
-  const isOAuth =
-    gapi.auth2.getAuthInstance() != null &&
-    gapi.auth2.getAuthInstance().currentUser != null &&
-    gapi.auth2.getAuthInstance().currentUser.get().isSignedIn();
+Object.defineProperty(String.prototype, "capitalize", {
+  value: function () {
+    return this.charAt(0).toUpperCase() + this.slice(1);
+  },
+  enumerable: false,
+});
 
-  const access_token = isOAuth
-    ? `Bearer ${
-        gapi.auth2.getAuthInstance().currentUser.get().getAuthResponse()
-          .id_token
-      }`
-    : window.$cookies.get("access_token") != null &&
-      window.$cookies.get("access_token") != "null" &&
-      window.$cookies.get("access_token") != "undefined"
-    ? window.$cookies.get("access_token")
-    : null;
+axiosInstnce.interceptors.request.use(function (config) {
+  // const isOAuth =
+  //   gapi.auth2.getAuthInstance() != null &&
+  //   gapi.auth2.getAuthInstance().currentUser != null &&
+  //   gapi.auth2.getAuthInstance().currentUser.get().isSignedIn();
+
+  // const access_token = isOAuth
+  //   ? `Bearer ${
+  //       gapi.auth2.getAuthInstance().currentUser.get().getAuthResponse()
+  //         .id_token
+  //     }`
+  //   : window.$cookies.get("access_token") != null &&
+  //     window.$cookies.get("access_token") != "null" &&
+  //     window.$cookies.get("access_token") != "undefined"
+  //   ? window.$cookies.get("access_token")
+  //   : null;
+
+  const access_token =
+    window.$cookies.get("access_token") != null &&
+    window.$cookies.get("access_token") != "null" &&
+    window.$cookies.get("access_token") != "undefined"
+      ? window.$cookies.get("access_token")
+      : null;
 
   if (access_token != null) {
     console.debug(`sending access_token:${access_token}`);
@@ -52,7 +66,7 @@ module.exports = {
     },
     getNotationByCoordinates: async function (notation) {
       let endpoint = `${notation.boardType}${notation.type}s`; // e.g lessonsymbols
-      let parentIdFieldName = `${notation.boardType.capitalize()}Id`; // e.g lessonId
+      let parentIdFieldName = `${notation.boardType.capitalize()}uuid`; // e.g lessonId
       let parentIdValue = notation[parentIdFieldName]; // e.g lessonId value
       let row = notation.row;
       let col =
@@ -72,17 +86,6 @@ module.exports = {
         this.handleError(error);
       }
     },
-    createAccessLink: async function (lessonId, link) {
-      try {
-        let res = await axiosInstnce.post("/accessLink", {
-          LessonId: lessonId,
-          link: link,
-        });
-        return res.data;
-      } catch (error) {
-        this.handleError(error);
-      }
-    },
     authGoogleUser: async function () {
       try {
         let res = await axiosInstnce.get("/users");
@@ -92,6 +95,7 @@ module.exports = {
         this.handleError(error);
       }
     },
+    // the token is taken from cookie. see interceptor at the top of the page
     authLocalUserByToken: async function () {
       try {
         let res = await axiosInstnce.get("/users");
@@ -141,7 +145,9 @@ module.exports = {
         `/${notation.boardType}${notation.type.toLowerCase()}s`,
         notation
       );
-      return res ? { ...res.data, type: notation.type } : null;
+      return res
+        ? { ...res.data, type: notation.type, LessonUUId: notation.LessonUUId }
+        : null;
     },
     updateNotation: async function (notation) {
       return await axiosInstnce.put(
@@ -158,17 +164,17 @@ module.exports = {
         this.handleError(error);
       }
     },
-    getLesson: async function (lessonId) {
+    getLesson: async function (LessonUUId) {
       try {
-        let res = await axiosInstnce.get("/lessons?id=" + lessonId);
+        let res = await axiosInstnce.get("/lessons?uuid=" + LessonUUId);
         return !!res ? res.data[0] : null;
       } catch (error) {
         this.handleError(error);
       }
     },
-    getQuestion: async function (questionId) {
+    getQuestion: async function (questionUUId) {
       try {
-        let res = await axiosInstnce.get("/questions?id=" + questionId);
+        let res = await axiosInstnce.get("/questions?uuid=" + questionUUId);
         return !!res ? res.data[0] : null;
       } catch (error) {
         this.handleError(error);
@@ -181,21 +187,24 @@ module.exports = {
         this.handleError(error);
       }
     },
-    getQuestions: async function (lessonId) {
+    getQuestions: async function (lessonUUId) {
       try {
-        return axiosInstnce.get("/questions?LessonId=" + lessonId);
+        return axiosInstnce.get("/questions?LessonUUId=" + lessonUUId);
       } catch (error) {
         this.handleError(error);
       }
     },
-    getNotations: function (parent, notationType) {
+    getNotations: function (notationType, boardType, LessonUUId, userId) {
       try {
-        // e.g lessonsymbols?id=1
-        return axiosInstnce.get(
-          `${
-            parent.boardType
-          }${notationType}s?${parent.boardType.capitalize()}Id=${parent.id}`
-        );
+        // e.g lessonsymbols?LessonUUId=1
+        let uri = `${boardType}${notationType}s?${boardType.capitalize()}LessonUUId=${LessonUUId}`;
+
+        // for answer, load notations of logged user
+        if (boardType === BoardType.ANSWER) {
+          uri += `&UserId=${userId}`;
+        }
+
+        return axiosInstnce.get(uri);
       } catch (error) {
         this.handleError(error);
       }

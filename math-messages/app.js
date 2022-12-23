@@ -8,20 +8,20 @@ app.configure(socketio());
 const AuthorizationService = require("./authorizationService");
 const AuthenticationService = require("./authenticationService");
 const HeartbeatService = require("./heartbeatService");
-const selectedPositionSyncService = require("./selectedPositionSyncService");
+const activeCellSyncService = require("./activeCellSyncService");
 const NotationSyncService = require("./notationSyncService");
 
 app.use("authorization", new AuthorizationService(app));
 app.use("authentication", new AuthenticationService(app));
 app.use("heartbeat", new HeartbeatService(app));
-app.use("selectedPosition", new selectedPositionSyncService(app));
+app.use("activeCell", new activeCellSyncService(app));
 app.use("notationSync", new NotationSyncService(app));
 
 app.service("authorization").publish("updated", (authorization, ctx) => {
   return [
     app.channel(
       constants.LESSON_CHANNEL_PREFIX +
-        authorization.lessonId +
+        authorization.LessonUUId +
         constants.USER_CHANNEL_PREFIX +
         authorization.userId
     ),
@@ -32,7 +32,7 @@ app.service("authentication").publish("created", (authentication, ctx) => {
   return [
     app.channel(
       constants.LESSON_CHANNEL_PREFIX +
-        authentication.lessonId +
+        authentication.LessonUUId +
         constants.USER_CHANNEL_PREFIX +
         authentication.userId
     ),
@@ -43,32 +43,32 @@ app.service("heartbeat").publish("updated", (heartbeat, ctx) => {
   return [
     app.channel(
       constants.LESSON_CHANNEL_PREFIX +
-        heartbeat.lessonId +
+        heartbeat.LessonUUId +
         constants.USER_CHANNEL_PREFIX +
         heartbeat.userId
     ),
   ];
 });
 
-app.service("selectedPosition").publish("updated", (position, ctx) => {
+app.service("activeCell").publish("updated", (position, ctx) => {
   console.debug(
     `publish selected rect updated data: ${JSON.stringify(
       position
-    )} to channel: ${position.LessonId.toString()}`
+    )} to channel: ${position.LessonUUId.toString()}`
   );
-  return [app.channel(constants.LESSON_CHANNEL_PREFIX + position.LessonId)];
+  return [app.channel(constants.LESSON_CHANNEL_PREFIX + position.LessonUUId)];
 });
 
 app.service("notationSync").publish("created", (notation, ctx) => {
-  return [app.channel(constants.LESSON_CHANNEL_PREFIX + notation.LessonId)];
+  return [app.channel(constants.LESSON_CHANNEL_PREFIX + notation.LessonUUId)];
 });
 
 app.service("notationSync").publish("updated", (notation, ctx) => {
-  return [app.channel(constants.LESSON_CHANNEL_PREFIX + notation.LessonId)];
+  return [app.channel(constants.LESSON_CHANNEL_PREFIX + notation.LessonUUId)];
 });
 
 app.service("notationSync").publish("removed", (notation, ctx) => {
-  return [app.channel(constants.LESSON_CHANNEL_PREFIX + notation.LessonId)];
+  return [app.channel(constants.LESSON_CHANNEL_PREFIX + notation.LessonUUId)];
 });
 
 const PORT = process.env.PORT || 3030;

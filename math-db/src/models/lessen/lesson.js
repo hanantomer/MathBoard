@@ -18,13 +18,25 @@ module.exports = (sequelize, DataTypes) => {
 
     Lesson.init(
         {
+            uuid: {
+                type: DataTypes.UUID,
+                defaultValue: DataTypes.UUIDV4,
+            },
             name: {
                 type: DataTypes.STRING,
-                field: "name",
                 allowNull: false,
             },
         },
-        { sequelize, freezeTableName: true }
+        {
+            sequelize,
+            freezeTableName: true,
+            indexes: [
+                {
+                    unique: true,
+                    fields: ["uuId"],
+                },
+            ],
+        }
     );
 
     return Lesson;

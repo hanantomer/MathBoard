@@ -1,5 +1,6 @@
 const authUtil = require("math-auth/src/authUtil");
 const dbUtil = require("math-db/src/dbUtil");
+const util = require("./util");
 const constants = require("./constants");
 
 class AuthenticationService {
@@ -10,8 +11,6 @@ class AuthenticationService {
   }
 
   async authUserByToken(access_token) {
-    //    console.debug(`AuthenticationService-find access_token:${access_token}`);
-
     let user = await authUtil.authByLocalToken(access_token);
     if (!user) {
       console.error(
@@ -24,12 +23,12 @@ class AuthenticationService {
 
   // manage user login, join user to lesson or user channels
   async create(data, params) {
-    let user = await this.authUserByToken(data.query.access_token);
+    let user = await util.getUserFromCookie(params.headers.cookie, this.app);
     if (!user) {
       return;
     }
 
-    let lessonId = await dbUtil.parseLessonId(data.query.lessonId);
+    let lessonId = await dbUtil.getIdByUUID("Lesson", data.LessonUUId);
     if (!lessonId) {
       return;
     }
@@ -49,7 +48,7 @@ class AuthenticationService {
           this.app
             .channel(
               constants.LESSON_CHANNEL_PREFIX +
-                lessonId +
+                data.LessonUUId +
                 constants.USER_CHANNEL_PREFIX +
                 student
             )
@@ -69,7 +68,7 @@ class AuthenticationService {
       this.app
         .channel(
           constants.LESSON_CHANNEL_PREFIX +
-            lessonId +
+            data.LessonUUId +
             constants.USER_CHANNEL_PREFIX +
             user.id
         )
@@ -82,7 +81,7 @@ class AuthenticationService {
         this.app
           .channel(
             constants.LESSON_CHANNEL_PREFIX +
-              lessonId +
+              data.LessonUUId +
               constants.USER_CHANNEL_PREFIX +
               user.id
           )
@@ -90,9 +89,9 @@ class AuthenticationService {
       }
     }
 
-    // either admin or student join lesson channel
+    // either teacher or student join lesson channel
     this.app
-      .channel(constants.LESSON_CHANNEL_PREFIX + lessonId)
+      .channel(constants.LESSON_CHANNEL_PREFIX + data.LessonUUId)
       .join(params.connection);
     console.log(`subscribing user: ${user.email} to lesson: ${lessonId}`);
   }

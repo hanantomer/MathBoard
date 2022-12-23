@@ -1,41 +1,18 @@
 import { mapGetters } from "vuex";
+import { mapActions } from "vuex";
 import NotationType from "./notationType";
 import EditMode from "./editMode";
 
 export default {
   methods: {
     ...mapGetters({
-      getActiveCellArr: "getActiveCellArr",
+      getActiveCell: "getActiveCell",
       getCurrentEditMode: "getCurrentEditMode",
-      getLastActiveCell: "getLastActiveCell",
-      getLastNotation: "getLastNotation",
-      lastNotationIsSingular: "lastNotationIsSingular",
     }),
 
-    // isScalarAdjacentToLetter(key) {
-    //   if (!Object.keys(this.getNotations()).length) {
-    //     return false;
-    //   }
-
-    //   let lastNotation = this.getLastNotation();
-    //   if (this.getLastActiveCell()?.col != lastNotation.col + 1) {
-    //     return false;
-    //   }
-
-    //   let lastNotaionIsLetter =
-    //     lastNotation.type == NotationType.SYMBOL &&
-    //     /[a-zA-Z]/.test(lastNotation.value);
-
-    //   let lastNotaionIsScalar =
-    //     lastNotation.type == NotationType.SYMBOL &&
-    //     /[0-9]/.test(lastNotation.value);
-
-    //   if (!isNaN(key) && lastNotaionIsLetter) return true;
-
-    //   if (isNaN(key) && lastNotaionIsScalar) return true;
-
-    //   return false;
-    // },
+    ...mapActions({
+      addNotation: "addNotation",
+    }),
 
     symbolMixin_addSymbol(e) {
       if (
@@ -62,16 +39,14 @@ export default {
     },
 
     addSymbol(value, type) {
-      let activeCell = this.getActiveCellArr()[0];
       let symbol = {
         value: value,
         type: type,
       };
-      symbol.col = activeCell.col;
-      symbol.row = activeCell.row;
+      symbol.col = this.getActiveCell().col;
+      symbol.row = this.getActiveCell().row;
 
-      this.$store
-        .dispatch("addNotation", symbol)
+      this.addNotation(symbol)
         .then((symbol) => {
           this.userOperationsMixin_syncOutgoingSaveNotation(symbol);
         })

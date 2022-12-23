@@ -1,28 +1,36 @@
 "use strict";
 const { Model } = require("sequelize");
 module.exports = (sequelize, DataTypes) => {
-    class LessonSymbol extends Model {
+    class QuestionText extends Model {
         static associate(models) {
-            LessonSymbol.belongsTo(models.Lesson, {
+            QuestionText.belongsTo(models.Question, {
                 onDelete: "CASCADE",
                 onUpdate: "CASCADE",
                 foreignKey: { allowNull: false },
             });
-            LessonSymbol.belongsTo(models.User, {
+            QuestionText.belongsTo(models.User, {
                 onDelete: "CASCADE",
                 onUpdate: "CASCADE",
                 foreignKey: { allowNull: false },
-            });
+            });             
         }
     }
 
-    LessonSymbol.init(
+    QuestionText.init(
         {
-            col: {
+            fromCol: {
                 type: DataTypes.INTEGER,
                 allowNull: false,
             },
-            row: {
+            toCol: {
+                type: DataTypes.INTEGER,
+                allowNull: false,
+            },
+            fromRow: {
+                type: DataTypes.INTEGER,
+                allowNull: false,
+            },
+            toRow: {
                 type: DataTypes.INTEGER,
                 allowNull: false,
             },
@@ -30,6 +38,10 @@ module.exports = (sequelize, DataTypes) => {
                 type: DataTypes.STRING,
                 allowNull: false,
             },
+            background_color: {
+                type: DataTypes.STRING,
+                allowNull: false,
+            }
         },
 
         {
@@ -38,11 +50,11 @@ module.exports = (sequelize, DataTypes) => {
             indexes: [
                 {
                     unique: true,
-                    fields: ["lessonId", "row", "col"],
+                    fields: ["questionId","fromRow", "fromCol"],
                 },
             ],
         }
     );
 
-    return LessonSymbol;
+    return QuestionText;
 };

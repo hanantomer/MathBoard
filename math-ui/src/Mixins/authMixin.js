@@ -9,7 +9,7 @@ export default {
       }`;
       return access_token;
     },
-    mixin_signedInWithGoogle: function () {
+    signedInWithGoogle: function () {
       return (
         gapi.auth2.getAuthInstance() &&
         gapi.auth2.getAuthInstance().currentUser.get().isSignedIn()
@@ -19,7 +19,7 @@ export default {
       return !!window.$cookies.get("access_token");
     },
     mixin_signOut: async function () {
-      if (this.mixin_signedInWithGoogle()) {
+      if (this.signedInWithGoogle()) {
         gapi.auth2.getAuthInstance().signOut();
       } else {
         window.$cookies.remove("access_token");

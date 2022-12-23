@@ -8,6 +8,11 @@ module.exports = (sequelize, DataTypes) => {
                 onUpdate: "CASCADE",
                 foreignKey: { allowNull: false },
             });
+            QuestionSymbol.belongsTo(models.User, {
+                onDelete: "CASCADE",
+                onUpdate: "CASCADE",
+                foreignKey: { allowNull: false },
+            });             
         }
     }
 
@@ -32,8 +37,8 @@ module.exports = (sequelize, DataTypes) => {
             freezeTableName: true,
             indexes: [
                 {
-                    unique: false,
-                    fields: ["questionId"],
+                    unique: true,
+                    fields: ["questionId","row", "col"],
                 },
             ],
         }

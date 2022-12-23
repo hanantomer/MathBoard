@@ -1,4 +1,5 @@
 const dbUtil = require("math-db/src/dbUtil");
+const util = require("./util.js");
 class notationSyncService {
   constructor(app) {
     this.app = app;
@@ -7,17 +8,14 @@ class notationSyncService {
   async enrichNotation(notation, userId) {
     if (!!notation) {
       notation.UserId = userId;
-      let lessonId = await dbUtil.parseLessonId(notation.LessonId);
+
+      let lessonId = await dbUtil.getIdByUUID("Lesson", notation.LessonUUId);
       notation.LessonId = lessonId;
     }
   }
 
-  async getUser(access_token) {
-    return this.app.service("authentication").authUserByToken(access_token);
-  }
-
   async create(data, params) {
-    let user = await this.getUser(params.query.access_token);
+    let user = await util.getUserFromCookie(params.headers.cookie, this.app);
     if (!!user) {
       this.enrichNotation(data.notation, user.id);
     }
@@ -25,7 +23,7 @@ class notationSyncService {
   }
 
   async update(data, params) {
-    let user = await this.getUser(params.query.access_token);
+    let user = await util.getUserFromCookie(params.headers.cookie, this.app);
     if (!!user) {
       this.enrichNotation(data.notation, user.id);
       return data.notation;
@@ -33,7 +31,7 @@ class notationSyncService {
   }
 
   async remove(data, params) {
-    let user = await this.getUser(params.query.access_token);
+    let user = await util.getUserFromCookie(params.headers.cookie, this.app);
     if (!!user) {
       this.enrichNotation(data.notation, user.id);
       return data.notation;

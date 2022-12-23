@@ -8,6 +8,11 @@ module.exports = (sequelize, DataTypes) => {
                 onUpdate: "CASCADE",
                 foreignKey: { allowNull: false },
             });
+            QuestionPower.belongsTo(models.User, {
+                onDelete: "CASCADE",
+                onUpdate: "CASCADE",
+                foreignKey: { allowNull: false },
+            }); 
         }
     }
 
@@ -33,7 +38,7 @@ module.exports = (sequelize, DataTypes) => {
             indexes: [
                 {
                     unique: false,
-                    fields: ["questionId"],
+                    fields: ["questionId", "row", "col"],
                 },
             ],
         }

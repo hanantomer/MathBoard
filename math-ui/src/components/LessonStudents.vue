@@ -61,7 +61,6 @@ export default {
     $toggleStudentAuthorization: function (student) {
       this.toggleAuthorization(student.userId).then((authorization) => {
         this.userOperationsMixin_syncOutgoingAuthUser(
-          this.getCurrentLesson().id,
           authorization.authorizedStudentId,
           authorization.revokedStudentId
         );

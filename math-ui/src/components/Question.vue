@@ -10,7 +10,7 @@
       <v-col cols="12" fluid>
         <v-row style="height: 100%">
           <v-col colls="1">
-            <question-toolbar></question-toolbar>
+            <toolbar></toolbar>
           </v-col>
           <v-col cols="11">
             <div style="overflow: auto; height: 100%; position: relative">
@@ -26,8 +26,6 @@
                 width="1350px"
                 height="600px"
                 v-on:mousedown="eventManager_mouseDown"
-                v-on:mousemove="eventManager_mouseMove"
-                v-on:mouseup="eventManager_mouseUp"
               ></svg>
             </div>
           </v-col>
@@ -40,42 +38,55 @@
 <script>
 import { mapState } from "vuex";
 import { mapGetters } from "vuex";
+import { mapActions } from "vuex";
 import matrixMixin from "../Mixins/matrixMixin";
-import activateCellMixin from "../Mixins/activateCellMixin";
+import activateObjectMixin from "../Mixins/activateObjectMixin";
 import eventManager from "../Mixins/eventManager";
 import symbolMixin from "../Mixins/symbolMixin";
 import userOperationsOutgoingSyncMixin from "../Mixins/userOutgoingOperationsSyncMixin";
 import userOperationsIncomingSyncMixin from "../Mixins/userIncomingOperationsSyncMixin";
 import notationMixin from "../Mixins/notationMixin";
-import questionToolbar from "./Toolbar.vue";
+import toolbar from "./Toolbar.vue";
 import areaSelector from "./AreaSelector.vue";
 import lineDrawer from "./LineDrawer.vue";
 import newItemDialog from "./NewItemDialog.vue";
+import boardType from "../Mixins/boardType";
 
 export default {
   components: {
-    questionToolbar,
+    toolbar,
     areaSelector,
     lineDrawer,
     newItemDialog,
   },
-  mounted: function () {
-    this.loadQuestion().then(() => {
-      this.activateCellMixin_reset();
-      this.matrixMixin_setMatrix(this.svgId);
-      this.reRenderMathJax();
-    });
+  mounted: async function () {
+    await this.$loadQuestion();
+
+    this.activateObjectMixin_reset();
+
+    // for teacher matrix background is garay
+    if (this.isTeacher()) {
+      this.matrixMixin_setMatrix();
+    }
+
+    // for student, matrix question area background is in whitesmoke
+    if (!this.isTeacher()) {
+      this.matrixMixin_setMatrix((row) => {
+        return row <= this.getMaxNotationRow() ? 1 : 0;
+      });
+    }
   },
+
   data: function () {
     return {
-      isTeacher: false,
       matrix: [],
       svgId: "questionsSvg",
     };
   },
+
   mixins: [
     matrixMixin,
-    activateCellMixin,
+    activateObjectMixin,
     symbolMixin,
     eventManager,
     notationMixin,
@@ -98,40 +109,45 @@ export default {
       deep: true,
       handler: function (notations) {
         this.matrixMixin_refreshScreen(notations, this.svgId);
-        this.reRenderMathJax();
       },
     },
   },
   methods: {
     ...mapGetters({
-      getSelectedNotations: "getSelectedNotations",
-      getNotations: "getNotations",
       getCurrentLesson: "getCurrentLesson",
       getCurrentQuestion: "getCurrentQuestion",
       getUser: "getUser",
-      getSymbols: "getSymbols",
       getCurrentEditMode: "getCurrentEditMode",
+      getNotations: "getNotations",
+      isTeacher: "isTeacher",
+      getMaxNotationRow: "getMaxNotationRow",
     }),
+    ...mapActions({
+      loadLesson: "loadLesson",
+      loadQuestion: "loadQuestion",
+      loadQuestionNotations: "loadQuestionNotations",
+    }),
+
     $resetToolbarState: function () {
       // see toolbat.vue
       this.$root.$emit("resetToolbarState");
     },
-    saveQuesstion: async function () {},
-    loadQuestion: async function () {
+
+    markQuestionAsResolved: async function () {},
+
+    $loadQuestion: async function () {
       // load from db to store
       if (!this.getCurrentQuestion().hasOwnProperty()) {
-        await this.$store.dispatch(
-          "loadQuestion",
+        await this.loadQuestion(
           this.$route.params.questionId || this.getCurrentQuestion().id
         );
+
+        await this.loadLesson(this.getCurrentQuestion().LessonId);
       }
 
-      this.isTeacher = this.getCurrentLesson().UserId === this.getUser().id;
-
-      // refresh screen
-      await this.$store.dispatch(
-        "loadQuestionNotations",
-        this.getCurrentQuestion().id
+      await this.loadQuestionNotations(
+        this.getCurrentQuestion().id,
+        boardType.QUESTION
       );
     },
   },

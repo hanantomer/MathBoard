@@ -18,9 +18,12 @@ module.exports = (sequelize, DataTypes) => {
 
     Question.init(
         {
+            uuid: {
+                type: DataTypes.UUID,
+                defaultValue: DataTypes.UUIDV4,
+            },
             name: {
                 type: DataTypes.STRING,
-                field: "name",
                 allowNull: false,
             },
         },
@@ -31,6 +34,10 @@ module.exports = (sequelize, DataTypes) => {
                 {
                     unique: false,
                     fields: ["lessonId"],
+                },
+                {
+                    unique: true,
+                    fields: ["uuId"],
                 },
             ],
         }

@@ -3,7 +3,7 @@ const { Model } = require("sequelize");
 module.exports = (sequelize, DataTypes) => {
     class QuestionImage extends Model {
         static associate(models) {
-            QuestionImage.belongsTo(models.Lesson, {
+            QuestionImage.belongsTo(models.Question, {
                 onDelete: "CASCADE",
                 onUpdate: "CASCADE",
                 foreignKey: { allowNull: false },
@@ -12,11 +12,11 @@ module.exports = (sequelize, DataTypes) => {
                 onDelete: "CASCADE",
                 onUpdate: "CASCADE",
                 foreignKey: { allowNull: false },
-            });
+            });            
         }
     }
 
-    QuestionText.init(
+    QuestionImage.init(
         {
             fromCol: {
                 type: DataTypes.INTEGER,
@@ -45,8 +45,8 @@ module.exports = (sequelize, DataTypes) => {
             freezeTableName: true,
             indexes: [
                 {
-                    unique: false,
-                    fields: ["lessonId"],
+                    unique: true,
+                    fields: ["questionId","fromRow", "fromCol"],
                 },
             ],
         }

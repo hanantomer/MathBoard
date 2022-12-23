@@ -1,4 +1,5 @@
 import EditMode from "./editMode";
+import NotationType from "./notationType";
 import { mapGetters } from "vuex";
 export default {
   mounted: function () {
@@ -20,23 +21,54 @@ export default {
   methods: {
     ...mapGetters({
       getCurrentEditMode: "getCurrentEditMode",
-      getLastNotation: "getLastNotation",
     }),
 
     async eventManager_paste(e) {
+      // disallow adding image by student
+      if (!this.isTeacher()) return;
+
       const dT = e.clipboardData || window.clipboardData;
-      const file = dT.items[0].getAsFile(); //dT.files[0];
-      if (!file) {
-        return;
-      }
-      const data = await fetch(file);
-      const blob = await data.blob();
-      const reader = new FileReader();
-      reader.readAsDataURL(blob);
-      reader.onloadend = () => {
+      const item = dT.items[0]; //dT.files[0];
+
+      var reader = new FileReader();
+      var that = this;
+      reader.addEventListener("load", () => {
         const base64data = reader.result;
-      };
+
+        let image = new Image();
+        image.src = base64data;
+        image.onload = () => {
+          let fromCol = parseInt(that.getActiveCell().col);
+          let fromRow = parseInt(that.getActiveCell().row);
+          let toCol =
+            Math.ceil(image.width / that.matrixMixin_getRectSize()) + fromCol;
+          let toRow =
+            Math.ceil(image.height / that.matrixMixin_getRectSize()) + fromRow;
+
+          let notation = {
+            type: NotationType.IMAGE,
+            fromCol: fromCol,
+            toCol: toCol,
+            fromRow: fromRow,
+            toRow: toRow,
+            value: base64data,
+          };
+          that.$store
+            .dispatch("addNotation", notation)
+            .then((text) => {
+              this.userOperationsMixin_syncOutgoingSaveNotation(notation);
+            })
+            .catch((e) => {
+              console.error(e);
+            });
+
+          that.$store.dispatch("setActiveCell", {});
+        };
+      });
+
+      reader.readAsDataURL(item.getAsFile());
     },
+
     eventManager_keyUp(e) {
       if (e.ctrlKey || e.altKey) {
         return;
@@ -94,6 +126,11 @@ export default {
         return;
       }
 
+      if (e.code === "Enter") {
+        this.matrixMixin_setNextRow(0, 1);
+        return;
+      }
+
       this.symbolMixin_addSymbol(e);
     },
 
@@ -106,7 +143,7 @@ export default {
         return;
       }
 
-      this.activateCellMixin_activateCell(e);
+      this.activateObjectMixin_activateClickedObject(e);
     },
   },
 };

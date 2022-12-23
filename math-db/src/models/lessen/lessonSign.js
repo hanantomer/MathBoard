@@ -37,8 +37,8 @@ module.exports = (sequelize, DataTypes) => {
             freezeTableName: true,
             indexes: [
                 {
-                    unique: false,
-                    fields: ["lessonId"],
+                    unique: true,
+                    fields: ["lessonId", "row", "col"],
                 },
             ],
         }

@@ -149,17 +149,24 @@
 </template>
 
 <script>
+import { stringify } from "querystring";
 import { mapActions } from "vuex";
 import { mapGetters } from "vuex";
 export default {
   name: "Login",
   mounted() {
-    gapi.signin2.render("google-signin-btn", {
+    //this.show = true;
+    /*    gapi.signin2.render("google-signin-btn", {
       scope: "email",
       longtitle: true,
       theme: "dark",
       onsuccess: this.googleOnSuccess,
-    });
+    });*/
+  },
+  created() {
+    if (this.$route.path === "/login") {
+      this.dialog = true;
+    }
   },
   methods: {
     ...mapGetters({ getUser: "getUser" }),
@@ -170,7 +177,7 @@ export default {
       authGoogleUser: "authGoogleUser",
     }),
     googleOnSuccess: async function (user) {
-      this.isOpen = false;
+      this.show = false;
       window.$cookies.remove("access_token");
     },
     validateRegister: async function () {
@@ -197,7 +204,11 @@ export default {
           this.loginFailed = false;
           this.show = false;
           this.setUser(authenticatedUser);
-          window.$cookies.set("access_token", authenticatedUser.access_token);
+
+          if (window.navigator.cookieEnabled) {
+            window.$cookies.set("access_token", authenticatedUser.access_token);
+          }
+
           if (this.$refs.registerForm) {
             this.$refs.registerForm.reset();
           }
@@ -207,12 +218,6 @@ export default {
           if (this.$route.query.from) {
             this.$router.replace(this.$route.query.from);
           }
-          /*this.$router.push(
-            this.$route.query.from ||
-              this.$route.fullPath + "/lessons/" + authenticatedUser.id
-          );
-          this.$router.go();
-          */
         } else {
           this.loginFailed = true;
         }
@@ -227,17 +232,18 @@ export default {
   },
   watch: {
     dialog(val) {
-      this.show = val.show;
-      this.tab = val.tab === "Login" ? 0 : 1;
+      this.show = val;
     },
-    $route(from, to) {
-      if (from.path === "/login") {
-        this.show = true;
-      }
+    type(val) {
+      this.tab = val === "Login" ? 0 : 1;
     },
   },
   props: {
-    dialog: { tab: 0 },
+    dialog: false,
+    type: {
+      type: String,
+      default: "Login",
+    },
   },
   data: () => ({
     loginFailed: false,

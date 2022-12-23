@@ -51,9 +51,15 @@ export default {
   name: "Questions",
   async mounted() {
     await this.loadLessons();
-    await this.loadQuestions();
+    if (!this.getCurrentLesson()?.id) return;
     this.selectedLessonId = this.getCurrentLesson().id;
-    this.questions = this.getQuestions();
+
+    this.loadQuestions().then((questions) => {
+      if (!questions) {
+        this.openQuestionDialog();
+      }
+      this.questions = this.getQuestions();
+    });
   },
   computed: {
     lessons() {
@@ -76,7 +82,7 @@ export default {
     }),
     async lessonchanged() {
       let selectedLesson = this.getLessons().find(
-        (l) => l.id === this.selectedLessonId
+        (l) => l.uuid === this.selectedLessonId
       );
       await this.setCurrentLesson(selectedLesson);
       await this.loadQuestions();
@@ -92,13 +98,13 @@ export default {
     async saveQuestion(question) {
       let newQuestion = await this.addQuestion(question);
       this.$router.push({
-        path: "/question/" + newQuestion.id,
+        path: "/question/" + newQuestion.uuid,
       });
     },
     async seletctQuestion(question) {
       this.setCurrentQuestion(question).then(() =>
         this.$router.push({
-          path: "/question/" + question.id,
+          path: "/question/" + question.uuid,
         })
       );
     },
@@ -114,15 +120,6 @@ export default {
       ],
     };
   },
-  // watch: {
-  //   selectedLesson: async function (lessonId) {
-  //     if (!!lessonId) {
-  //       await this.setCurrentLesson(this.getLessonById(lessonId));
-  //       await this.loadQuestions();
-  //       this.questions = this.getQuestions();
-  //     }
-  //   },
-  // },
 };
 </script>
 

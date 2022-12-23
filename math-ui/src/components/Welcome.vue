@@ -38,11 +38,11 @@ export default {
   mounted() {},
   methods: {
     openLoginDialog() {
-      this.loginDialog = { show: true, tab: "Register" };
+      this.loginDialog.dialog = true;
     },
   },
   data: () => ({
-    loginDialog: { show: false, tab: "Register" },
+    loginDialog: { dialog: false, tab: "Register" },
     bullets: [
       "Editable notations",
       "Board sharing with students",

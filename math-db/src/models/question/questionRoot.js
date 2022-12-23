@@ -8,6 +8,11 @@ module.exports = (sequelize, DataTypes) => {
                 onUpdate: "CASCADE",
                 foreignKey: { allowNull: false },
             });
+            QuestionRoot.belongsTo(models.User, {
+                onDelete: "CASCADE",
+                onUpdate: "CASCADE",
+                foreignKey: { allowNull: false },
+            }); 
         }
     }
     QuestionRoot.init(

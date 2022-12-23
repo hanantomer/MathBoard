@@ -92,8 +92,8 @@ export default {
   },
   methods: {
     ...mapGetters({
-      getNotations: "getNotations",
       getCurrentEditMode: "getCurrentEditMode",
+      getNotations: "getNotations",
     }),
 
     /// TODO move to global

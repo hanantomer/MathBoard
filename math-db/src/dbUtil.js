@@ -18,52 +18,8 @@ Object.defineProperty(String.prototype, "capitalize", {
 });
 
 module.exports = {
-    parseLessonId: async function (lessonId) {
-        if (this.lessonIdFromAccessLink(lessonId)) {
-            let accessLink = null;
-            try {
-                if (!accessLinkCache.has(lessonId)) {
-                    accessLinkCache.set(
-                        lessonId,
-                        await this.getAccessLink(lessonId)
-                    );
-                }
-                accessLink = accessLinkCache.get(lessonId);
-            } catch (e) {
-                console.debug(
-                    `error parsing lesson id ${lessonId}, error:{e}`
-                );
-            }
-            if (!accessLink) {
-                console.error(
-                    `accessLink for suffix:${lessonId} not found,lessonId unknown`
-                );
-                return;
-            }
-            return Number(accessLink.LessonId);
-        }
-        return Number(lessonId);
-    },
-    lessonIdFromAccessLink: function (lessonId) {
-        return !!lessonId ? lessonId.toString().indexOf("l_") === 0 : null;
-    },
-    //TODO use cahce
-    getAccessLink: function (lessonLink) {
-        let accessLink = db.sequelize.models["AccessLink"].findOne({
-            where: {
-                link: { [Op.endsWith]: lessonLink },
-            },
-        });
-        if (!accessLink) {
-            console.debug(
-                `lessonMiddleware, accessLink not found for:${lessonLink}`
-            );
-            return null;
-        }
-
-        return accessLink;
-    },
-
+    
+    
     isTeacher: async function (userId, lessonId) {
         let lesson = await db.sequelize.models["Lesson"].findOne({
             where: {
@@ -73,7 +29,8 @@ module.exports = {
 
         return !!lesson && lesson.UserId === userId;
     },
-    findRectOverlapsWithNewRect (boardType, parentId, fromRow, toRow,  fromCol, toCol) {
+   
+    findRectOverlapsWithNewRect(boardType, parentId, fromRow, toRow, fromCol, toCol) {
        
         Object.getOwnPropertyNames(NotationType.prototype).forEach((notationType) => {
             let model =
@@ -85,6 +42,7 @@ module.exports = {
 
         return null;            
     },
+
     findRectOverlapsWithNewLine (boardType, parentId, fromRow, toRow,  fromCol, toCol) {
        
         Object.getOwnPropertyNames(NotationType.prototype).forEach((notationType) => {
@@ -109,6 +67,7 @@ module.exports = {
             }
         });    
     },    
+
     async findPointOverlappingWithLine(model, parentFieldName, parentId, row, fromCol, toCol) {
         return await db.sequelize.models[model].findOne({
             where: {
@@ -118,8 +77,27 @@ module.exports = {
             }
         });    
     },    
+    async getIdByUUID(model, uuid) {
+        let res = await db.sequelize.models[model].findOne({
+            where: {
+                uuid: uuid
+            }
+        });
+
+        return res.id;
+    },
+    async getUUIDById(model, id) {
+        let res = await db.sequelize.models[model].findOne({
+            where: {
+                id: id
+            }
+        });
+
+        return res.uuid;
+    },
+
     async findPointOverlappingWithRect(model, parentFieldName, parentId, fromRow, toRow, fromCol, toCol) {
-        await db.sequelize.models[model].findOne({
+        return await db.sequelize.models[model].findOne({
             where: {
                 [parentFieldName]: parentId,
                 col: { [Op.between]: [parseInt(fromCol), parseInt(toCol)] },
@@ -127,6 +105,7 @@ module.exports = {
             }
         });    
     },        
+
     /*Line*/
     async findLineOverlappingWithPoint(model, parentFieldName, parentId, row, col) {
         return await db.sequelize.models[model].findOne({
@@ -138,6 +117,7 @@ module.exports = {
             }
         });    
     },    
+
     async findLineOverlappingWithLine(model, parentFieldName, parentId, row, fromCol, toCol) {
         return await db.sequelize.models[model].findOne({
             where: {
@@ -157,6 +137,7 @@ module.exports = {
             }
         });    
     },    
+  
     async findLineOverlappingWithRect(model, parentFieldName, parentId, fromRow, toRow, fromCol, toCol) {
         await db.sequelize.models[model].findOne({
             where: {
@@ -189,6 +170,7 @@ module.exports = {
             }
         });    
     },    
+
     async findRectOverlappingWithLine(model, parentFieldName, parentId, row, fromCol, toCol) {
         return await db.sequelize.models[model].findOne({
             where: {
@@ -209,6 +191,7 @@ module.exports = {
             }
         });    
     },    
+
     async findRectOverlappingWithRect(model, parentFieldName, parentId, fromRow, toRow, fromCol, toCol) {
         await db.sequelize.models[model].findOne({
             where: {

@@ -10,7 +10,7 @@
       <v-col cols="10" fluid>
         <v-row style="height: 100%">
           <v-col colls="1">
-            <lesson-toolbar></lesson-toolbar>
+            <toolbar></toolbar>
           </v-col>
           <v-col cols="11">
             <div style="overflow: auto; height: 100%; position: relative">
@@ -43,14 +43,14 @@ import { mapState } from "vuex";
 import { mapGetters } from "vuex";
 import { mapActions } from "vuex";
 import matrixMixin from "../Mixins/matrixMixin";
-import activateCellMixin from "../Mixins/activateCellMixin";
+import activateObjectMixin from "../Mixins/activateObjectMixin";
 import eventManager from "../Mixins/eventManager";
 import symbolMixin from "../Mixins/symbolMixin";
 import notationMixin from "../Mixins/notationMixin";
 import userOperationsOutgoingSyncMixin from "../Mixins/userOutgoingOperationsSyncMixin";
 import userOperationsIncomingSyncMixin from "../Mixins/userIncomingOperationsSyncMixin";
 import lessonStudents from "./LessonStudents.vue";
-import lessonToolbar from "./Toolbar.vue";
+import toolbar from "./Toolbar.vue";
 import areaSelector from "./AreaSelector.vue";
 import lineDrawer from "./LineDrawer.vue";
 import newItemDialog from "./NewItemDialog.vue";
@@ -59,7 +59,7 @@ import questions from "./Questions.vue";
 export default {
   components: {
     lessonStudents,
-    lessonToolbar,
+    toolbar,
     areaSelector,
     lineDrawer,
     newItemDialog,
@@ -68,21 +68,19 @@ export default {
   mounted: function () {
     // for keyboard base editing
     this.loadLesson().then(() => {
-      this.activateCellMixin_reset();
-      this.matrixMixin_setMatrix(this.svgId);
-      this.reRenderMathJax();
+      this.activateObjectMixin_reset();
+      this.matrixMixin_setMatrix();
     });
   },
   data: function () {
     return {
-      isTeacher: false,
       matrix: [],
       svgId: "lessonSvg",
     };
   },
   mixins: [
     matrixMixin,
-    activateCellMixin,
+    activateObjectMixin,
     userOperationsOutgoingSyncMixin,
     userOperationsIncomingSyncMixin,
     symbolMixin,
@@ -94,7 +92,6 @@ export default {
       notations: (state) => {
         return state.notationStore.notations;
       },
-      //      authorized: (state) => state.userStore.loggedUser.authorized,
       lessonTitle: (state) => {
         return state.lessonStore.currentLesson.name;
       },
@@ -106,23 +103,19 @@ export default {
       deep: true,
       handler: function (notations) {
         this.matrixMixin_refreshScreen(notations, this.svgId);
-        this.reRenderMathJax();
       },
     },
   },
   methods: {
-    ...mapActions({
-      setCurrentEditMode: "setCurrentEditMode",
-    }),
-
     ...mapGetters({
-      getSelectedNotations: "getSelectedNotations",
-      getNotations: "getNotations",
       getCurrentLesson: "getCurrentLesson",
       getLessons: "getLessons",
       getUser: "getUser",
-      getSymbols: "getSymbols",
       getCurrentEditMode: "getCurrentEditMode",
+      isTeacher: "isTeacher",
+    }),
+    ...mapActions({
+      loadLessonNotations: "loadLessonNotations",
     }),
     resetToolbarState: function () {
       this.$root.$emit("resetToolbarState");
@@ -132,32 +125,24 @@ export default {
       if (!this.getCurrentLesson().hasOwnProperty()) {
         await this.$store.dispatch(
           "loadLesson",
-          this.$route.params.lessonId || this.getCurrentLesson().id
+          this.$route.params.LessonUUId || this.getCurrentLesson().uuid
         );
       }
 
-      this.isTeacher = this.getCurrentLesson().UserId === this.getUser().id;
-
       // if student, send heartbeat to teacher
-      if (!this.isTeacher) {
+      if (!this.isTeacher()) {
         setInterval(
           this.userOperationsMixin_syncOutgoingHeartBeat,
-          1000,
-          this.getCurrentLesson().id
+          5000,
+          this.getCurrentLesson().uuid
         );
       }
 
       // refresh screen
-      await this.$store.dispatch(
-        "loadLessonNotations",
-        this.getCurrentLesson().id
-      );
+      this.loadLessonNotations();
 
       // listen to changes
-      this.mixin_syncIncomingUserOperations(
-        this.getCurrentLesson().id,
-        this.isTeacher
-      ); ///TODO create mechnism to handle gaps between load and sync
+      this.mixin_syncIncomingUserOperations();
     },
   },
 };

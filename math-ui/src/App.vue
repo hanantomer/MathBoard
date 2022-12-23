@@ -1,6 +1,6 @@
 <template>
   <v-app id="app">
-    <login :dialog="loginDialog"></login>
+    <login :dialog="loginDialog" :type="loginType"></login>
     <v-app-bar
       style="max-height: 60px; padding-right: 10px"
       class="float-end"
@@ -30,6 +30,7 @@
 
       <v-spacer></v-spacer>
 
+      <!-- lessons -->
       <v-tooltip bottom hidden>
         <template v-slot:activator="{ on, attrs }">
           <v-btn
@@ -45,6 +46,7 @@
         <span>Lessons</span>
       </v-tooltip>
 
+      <!-- questions -->
       <v-tooltip bottom hidden>
         <template v-slot:activator="{ on, attrs }">
           <v-btn v-show="!!user.id" icon v-on="on" v-on:click="navToQuestions">
@@ -54,6 +56,7 @@
         <span>Questions</span>
       </v-tooltip>
 
+      <!-- sign in / register -->
       <v-btn v-show="!user.id" icon v-on:click="openLoginDialog('Login')">
         <v-icon>mdi-account</v-icon>
         <span style="font-size: 0.7em">Sign In</span>
@@ -66,6 +69,7 @@
         <span style="font-size: 0.7em">Register</span>
       </v-btn>
 
+      <!-- user image or name -->
       <v-tooltip bottom hidden>
         <template v-slot:activator="{ on, attrs }">
           <v-avatar v-show="user.imageUrl" v-bind="attrs" v-on="on" size="36px"
@@ -125,13 +129,16 @@ export default {
     window.removeEventListener("keyup", this.onKeyUp);
     window.removeEventListener("paste", this.onKeyUp);
   },
+
   data: () => ({
     loginDialog: null,
+    loginType: null,
   }),
   methods: {
     ...mapGetters({ getUser: "getUser" }),
     openLoginDialog(tab) {
-      this.loginDialog = { show: true, tab: tab };
+      this.loginDialog = true;
+      this.loginType = "Login";
     },
     onKeyUp: function (key) {
       this.$root.$emit("keyup", key);

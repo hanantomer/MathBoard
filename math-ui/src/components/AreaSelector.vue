@@ -130,16 +130,6 @@ export default {
         .addEventListener("mouseup", this.handleMouseUp);
     },
 
-    /*handleMouseDown(e) {
-      // left button is pressed
-      if (e.buttons !== 1) {
-        return;
-      }
-
-      if (this.getCurrentEditMode() !== EditMode.SELECT) {
-        this.resetSelection();
-      }
-    },*/
     handleMouseMove(e) {
       if (e.buttons !== 1) {
         return;

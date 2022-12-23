@@ -21,6 +21,10 @@ export default {
     getCurrentLesson: (state) => {
       return state.currentLesson;
     },
+    // returns true if the logged user is the teacher
+    isTeacher(state, getters) {
+      return state.currentLesson?.UserId === getters.getUser?.id;
+    },
   },
   mutations: {
     addLesson(state, lesson) {
@@ -43,8 +47,8 @@ export default {
     },
   },
   actions: {
-    async loadLesson(context, lessonId) {
-      let lesson = await dbSyncMixin.methods.getLesson(lessonId);
+    async loadLesson(context, LessonUUId) {
+      let lesson = await dbSyncMixin.methods.getLesson(LessonUUId);
       if (!!lesson) {
         context.commit("addLesson", lesson);
         context.commit("setCurrentLesson", lesson);

@@ -34,6 +34,7 @@
 </template>
 
 <script>
+import { mapGetters } from "vuex";
 export default {
   name: "accessLinkDialog",
 
@@ -53,12 +54,14 @@ export default {
   },
   data() {
     return {
-      site: "http://localhost:8080/symbols/",
+      site: "http://localhost:8080/lesson/",
       link: "",
-      linkPrefix: "l_",
     };
   },
   methods: {
+    ...mapGetters({
+      getCurrentLesson: "getCurrentLesson",
+    }),
     copy: function () {
       navigator.clipboard.writeText(this.link);
       this.show = false;
@@ -66,10 +69,7 @@ export default {
     },
   },
   created: function () {
-    this.link =
-      this.site +
-      this.linkPrefix +
-      Math.random().toString(36).replace(".", "!");
+    this.link = this.site + this.getCurrentLesson().uuid;
   },
 };
 </script>

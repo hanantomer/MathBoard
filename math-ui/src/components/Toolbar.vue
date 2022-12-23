@@ -206,8 +206,10 @@ export default {
     ...mapGetters({
       getCurrentEditMode: "getCurrentEditMode",
       getCurrentLesson: "getCurrentLesson",
-      getActiveCellArr: "getActiveCellArr",
+      getActiveCell: "getActiveCell",
+      getActiveNotation: "getActiveNotation",
       getUser: "getUser",
+      isTeacher: "isTeacher",
     }),
     ...mapActions({
       setCurrentEditMode: "setCurrentEditMode",
@@ -321,7 +323,7 @@ export default {
       });
     },
     $submitText: function (value, background_color) {
-      let activeCell = this.getActiveCellArr()[0];
+      let activeCell = this.getActiveCell();
       let text = {
         type: NotationType.TEXT,
         fromCol: activeCell.col,
@@ -342,7 +344,7 @@ export default {
           console.error(e);
         });
 
-      this.$store.dispatch("setActiveCellArr", []);
+      this.$store.dispatch("setActiveCell", {});
     },
     async $reset() {
       this.$resetButtonsState();
@@ -366,14 +368,11 @@ export default {
         return state.lessonStore.operationMode.editMode;
       },
     }),
-    isTeacher: function () {
-      return this.getCurrentLesson().UserId === this.getUser().id;
-    },
     authorized: function () {
       return !!this.getUser().authorized;
     },
     hasActiveCell: function () {
-      return this.getActiveCellArr().length > 0;
+      return !!this.getActiveCell()?.col || !!this.getActiveNotation()?.id;
     },
   },
   watch: {

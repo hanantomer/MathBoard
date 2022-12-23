@@ -6,7 +6,6 @@ import Lesson from "../components/Lesson.vue";
 import Questions from "../components/Questions.vue";
 import Question from "../components/Question.vue";
 import store from "../store/index.js";
-import authMixin from "../Mixins/authMixin.js";
 
 const router = new VueRouter({
   mode: "history",
@@ -19,7 +18,9 @@ const router = new VueRouter({
     {
       path: "/login",
       component: Login,
+      name: "login",
       meta: { requiresAuth: false },
+      props: { default: true },
     },
     {
       path: "/lessons",
@@ -28,7 +29,7 @@ const router = new VueRouter({
       meta: { requiresAuth: true },
     },
     {
-      path: "/lesson/:lessonId",
+      path: "/lesson/:LessonUUId",
       name: "lesson",
       component: Lesson,
       meta: { requiresAuth: true },
@@ -39,7 +40,7 @@ const router = new VueRouter({
       meta: { requiresAuth: true },
     },
     {
-      path: "/question/:questionId",
+      path: "/question/:questionUUId",
       name: "question",
       component: Question,
       meta: { requiresAuth: true },
@@ -48,41 +49,55 @@ const router = new VueRouter({
 });
 
 router.beforeEach(async (to, from, next) => {
-  if (
-    to.matched.some((record) => record.meta.requiresAuth) &&
-    !store.getters.getUser.id
-  ) {
-    let user = await store.dispatch("setUser", {});
-    if (window.$cookies.get("access_token")) {
-      // local
-      user = await store.dispatch("authLocalUserByToken");
-      if (!!user) {
-        await store.dispatch("setUser", user);
-      }
-    } else {
-      // google
-      let googleUser = await authMixin.methods.mixin_getGoogleUser();
-      if (!!googleUser) {
-        user = await store.dispatch("mixin_authGoogleUser");
-        if (!user) {
-          user = await store.dispatch("mixin_registerUser", googleUser);
-        }
-        user = await store.dispatch("setUser", { ...user, ...googleUser });
-      }
-    }
-    if (!user || !user.id) {
-      const frompath = window.location.pathname;
-      next({
-        path: "/login",
-        query: { from: frompath },
-        //params: { nextUrl: to.fullPath },
-      });
-    } else {
-      next();
-    }
-  } else {
+  // auth not required
+  if (!to.matched.some((record) => record.meta.requiresAuth)) {
     next();
+    return;
   }
+
+  // already signed in
+  if (!!store.getters.getUser?.id) {
+    next();
+    return;
+  }
+
+  // local access token is present
+  if (!!window.$cookies.get("access_token")) {
+    let user = await store.dispatch("authLocalUserByToken");
+    if (!!user) {
+      await store.dispatch("setUser", user);
+      next();
+      return;
+    }
+
+    // local token is invalid
+    next({
+      path: "/login",
+      query: { from: window.location.pathname },
+    });
+  }
+
+  /*
+
+  // google auth exists for our domain
+  let googleUser = await authMixin.methods.mixin_getGoogleUser();
+  if (!!googleUser) {
+    user = await store.dispatch("authGoogleUser");
+    if (!user) {
+      // local auth info removed at the server side -> re-create
+      user = await store.dispatch("registerUser", googleUser);
+    }
+    user = await store.dispatch("setUser", { ...user, ...googleUser });
+    next();
+    return;
+  }*/
+
+  // could not find user info -> login/register
+  next({
+    name: "login",
+    params: { dialog: true, type: "Login" },
+    query: { from: window.location.pathname },
+  });
 });
 
 export default router;

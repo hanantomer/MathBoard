@@ -19,7 +19,7 @@
         <v-list-item-group active-class="primary--text">
           <v-list-item
             v-for="lesson in lessons"
-            :key="lesson.id"
+            :key="lesson.uuid"
             @click="seletctLesson(lesson)"
           >
             <v-list-item-content class="lesson_title">
@@ -47,12 +47,6 @@ export default {
       this.lessons = this.getLessons();
     });
   },
-  computed: {
-    // lessons() {
-    //   console.debug(this.getLessons().length);
-    //   return this.getLessons();
-    // },
-  },
   methods: {
     ...mapActions({
       loadLessons: "loadLessons",
@@ -72,13 +66,13 @@ export default {
     async saveLesson(lesson) {
       let newLesson = await this.addLesson(lesson);
       this.$router.push({
-        path: "/lesson/" + newLesson.id,
+        path: "/lesson/" + newLesson.uuid,
       });
     },
     async seletctLesson(lesson) {
       this.setCurrentLesson(lesson).then(() =>
         this.$router.push({
-          path: "/lesson/" + lesson.id,
+          path: "/lesson/" + lesson.uuid,
         })
       );
     },

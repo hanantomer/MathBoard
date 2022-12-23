@@ -1,18 +1,16 @@
 const dbUtil = require("math-db/src/dbUtil");
-
+const util = require("./util.js");
 class AuhorizationService {
   constructor(app) {
     this.app = app;
     this.lessonAuthorizedUsers = [];
   }
 
-  async get(data, params) {
-    let user = await this.app
-      .service("authentication")
-      .authUserByToken(params.query.access_token);
+  async get(id, data, params) {
+    let user = await util.getUserFromCookie(params.headers.cookie, this.app);
 
     if (!!user) {
-      user.lessonId = await dbUtil.parseLessonId(data.lessonId);
+      user.lessonId = await dbUtil.getIdByUUID("Lesson", data.LessonUUId);
 
       return (
         !!this.lessonAuthorizedUsers[user.lessonId] &&
@@ -27,7 +25,10 @@ class AuhorizationService {
       .authUserByToken(params.query.access_token);
 
     if (!!user) {
-      user.lessonId = await dbUtil.parseLessonId(data.authorization.lessonId);
+      user.lessonId = await dbUtil.getIdByUUID(
+        "lesson",
+        data.authorization.LessonUUId
+      );
     }
 
     let isOwner =
