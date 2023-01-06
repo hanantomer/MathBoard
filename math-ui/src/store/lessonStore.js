@@ -1,6 +1,13 @@
 import dbSyncMixin from "../Mixins/dbSyncMixin";
 import EditMode from "../Mixins/editMode";
+import UserType from "../Mixins/userType";
 import Vue from "vue";
+
+const helper = {
+  findLessonById: function (state, id) {
+    return state.lessons.find((s) => s.id == id);
+  },
+};
 
 export default {
   modules: {
@@ -21,9 +28,8 @@ export default {
     getCurrentLesson: (state) => {
       return state.currentLesson;
     },
-    // returns true if the logged user is the teacher
     isTeacher(state, getters) {
-      return state.currentLesson?.UserId === getters.getUser?.id;
+      return getters.getUser?.userType === UserType.TEACHER;
     },
   },
   mutations: {
@@ -37,7 +43,7 @@ export default {
       state.currentLesson = lesson;
     },
     removeLesson(state, id) {
-      state.lessons.splice(helper.find(state, id), 1);
+      state.lessons.splice(helper.findLessonById(state, id), 1);
     },
     removeAllLessons(state) {
       state.lessons = [];
@@ -54,14 +60,19 @@ export default {
         context.commit("setCurrentLesson", lesson);
       }
     },
-    async loadLessons(context) {
+    async loadLessons(context, isTeacher) {
       context.commit("removeAllLessons");
-      let lessons = await dbSyncMixin.methods.getLessons(
-        context.getters.getUser.id
-      );
+      let lessons = isTeacher
+        ? await dbSyncMixin.methods.getTeacherLessons(
+            context.getters.getUser.id
+          )
+        : await dbSyncMixin.methods.getStudentLessons(
+            context.getters.getUser.id
+          );
+
       if (lessons.data.length > 0) {
         lessons.data.forEach((e) => {
-          context.commit("addLesson", e);
+          context.commit("addLesson", e.Lesson ?? e);
         });
       }
       return lessons.data.length > 0;
@@ -72,8 +83,12 @@ export default {
       context.commit("addLesson", lesson.data);
       return lesson.data;
     },
-    setCurrentLesson(context, payload) {
-      context.commit("setCurrentLesson", payload);
+    async addCurrentLessonToSharedLessons(context) {
+      await dbSyncMixin.methods.addLessonToSharedLessons(
+        context.getters.getCurrentLesson.uuid,
+        context.getters.getUser.id
+      );
+      //context.commit("setCurrentLesson", payload);
     },
     setCurrentEditMode(context, editMode) {
       context.commit("setCurrentEditMode", editMode);

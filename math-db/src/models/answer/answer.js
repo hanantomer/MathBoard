@@ -1,14 +1,19 @@
 "use strict";
 const { Model, INTEGER } = require("sequelize");
 module.exports = (sequelize, DataTypes) => {
-    class Lesson extends Model {
+    class Answer extends Model {
         /**
          * Helper method for defining associations.
          * This method is not a part of Sequelize lifecycle.
          * The `models/index` file will call this method automatically.
          */
         static associate(models) {
-            Lesson.belongsTo(models.User, {
+            Answer.belongsTo(models.Question, {
+                onDelete: "CASCADE",
+                onUpdate: "CASCADE",
+                foreignKey: { allowNull: false },   
+            });
+            Answer.belongsTo(models.User, {
                 onDelete: "CASCADE",
                 onUpdate: "CASCADE",
                 foreignKey: { allowNull: false },
@@ -16,16 +21,8 @@ module.exports = (sequelize, DataTypes) => {
         }
     }
 
-    Lesson.init(
+    Answer.init(
         {
-            uuid: {
-                type: DataTypes.UUID,
-                defaultValue: DataTypes.UUIDV4,
-            },
-            name: {
-                type: DataTypes.STRING,
-                allowNull: false,
-            },
         },
         {
             sequelize,
@@ -33,11 +30,11 @@ module.exports = (sequelize, DataTypes) => {
             indexes: [
                 {
                     unique: true,
-                    fields: ["uuid"],
+                    fields: ["QuestionId", "UserId"],
                 },
             ],
         }
     );
 
-    return Lesson;
+    return Answer;
 };

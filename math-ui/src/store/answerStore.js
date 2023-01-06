@@ -1,6 +1,12 @@
 //  answers of current question
 import dbSyncMixin from "../Mixins/dbSyncMixin";
 
+const helper = {
+  findAnswerById: function (state, id) {
+    return state.answers.find((s) => s.id == id);
+  },
+};
+
 export default {
   modules: {
     dbSyncMixin,
@@ -18,14 +24,14 @@ export default {
     },
   },
   mutations: {
-    addAnswers(state, answer) {
+    addAnswer(state, answer) {
       state.answers.push(answer);
     },
     setCurrentAnswer(state, answer) {
       state.currentAnswer = answer;
     },
     removeAnswer(state, id) {
-      state.answers.splice(helper.find(state, id), 1);
+      state.answers.splice(helper.findAnswerById(state, id), 1);
     },
     removeAllAnswers(state) {
       state.answers = [];
@@ -51,8 +57,17 @@ export default {
       }
       return answers.data.length > 0;
     },
-    async addAnswer(context, answer) {
-      answer.LessonId = context.getters.getCurrentLesson.uuid;
+    async addAnswer(context) {
+      if (
+        context.getters.getAnswers.find(
+          (a) => a.uuid == context.getters.getCurrentQuestion.uuid
+        ) != null
+      ) {
+        return;
+      }
+      let answer = {};
+      answer.QuestionUUId = context.getters.getCurrentQuestion.uuid;
+      answer.UserId = context.getters.getUser.id;
       answer = await dbSyncMixin.methods.addAnswer(answer);
       context.commit("addAnswer", answer.data);
       return answer.data;

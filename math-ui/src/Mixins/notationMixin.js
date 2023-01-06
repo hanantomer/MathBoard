@@ -1,3 +1,5 @@
+/// TOD unite with symbol mixin
+
 export default {
   methods: {
     getNotationXposByCol(col) {

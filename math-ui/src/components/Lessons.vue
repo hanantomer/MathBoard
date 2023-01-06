@@ -6,7 +6,7 @@
     ></NewItemDialog>
     <v-card class="mx-auto" max-width="600" min-height="600">
       <v-toolbar color="primary" dark>
-        <v-toolbar-title>My Lessons</v-toolbar-title>
+        <v-toolbar-title>{{ title }}</v-toolbar-title>
 
         <v-spacer></v-spacer>
 
@@ -40,21 +40,23 @@ export default {
   components: { NewItemDialog },
   name: "Lessons",
   mounted() {
-    this.loadLessons().then((lessons) => {
-      if (!lessons) {
+    this.title = this.isTeacher() ? "My Lessons" : "Lessons Shared with me";
+    this.loadLessons(this.isTeacher()).then((lessons) => {
+      if (this.isTeacher() && !lessons) {
         this.openLessonDialog();
       }
-      this.lessons = this.getLessons();
+      //    this.lessons = this.getLessons();
     });
   },
   methods: {
     ...mapActions({
       loadLessons: "loadLessons",
       addLesson: "addLesson",
-      setCurrentLesson: "setCurrentLesson",
+      loadLesson: "loadLesson",
     }),
     ...mapGetters({
       getLessons: "getLessons",
+      isTeacher: "isTeacher",
     }),
     openLessonDialog() {
       this.lessonDialog = {
@@ -70,16 +72,22 @@ export default {
       });
     },
     async seletctLesson(lesson) {
-      this.setCurrentLesson(lesson).then(() =>
+      this.loadLesson(lesson.uuid).then(() =>
         this.$router.push({
           path: "/lesson/" + lesson.uuid,
         })
       );
     },
   },
+  computed: {
+    lessons: function () {
+      return this.getLessons();
+    },
+  },
   data() {
     return {
-      lessons: [],
+      title: "",
+      //      lessons: [],
       selectedItem: {},
       lessonDialog: { show: false, name: "" },
       menu: [

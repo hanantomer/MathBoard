@@ -6,6 +6,7 @@ const db = require("math-db/src/models/index");
 const authMiddleware = require("math-auth/src/authMiddleware");
 const userMiddleware = require("./userMiddleware");
 const lessonMiddleware = require("./lessonMiddleware");
+const lessonStudentMiddleware = require("./lessonStudentMiddleware");
 
 const notationTypes = [
     "symbol",
@@ -62,6 +63,15 @@ let questionResource = finale.resource({
 questionResource.use(authMiddleware);
 questionResource.use(lessonMiddleware);
 
+// answer
+
+let answerResource = finale.resource({
+    model: db.sequelize.models["Answer"],
+    endpoints: ["/answers", "/answers/:uuid"],
+});
+answerResource.use(authMiddleware);
+answerResource.use(lessonMiddleware);
+
 // notations
 boardTypes.forEach((b) => {
     notationTypes.forEach((n) => {
@@ -73,6 +83,16 @@ boardTypes.forEach((b) => {
         resource.use(lessonMiddleware);
     });
 });
+
+// lesson students link
+
+let lessonStudentsResource = finale.resource({
+    model: db.sequelize.models["LessonStudent"],
+    endpoints: ["/lessonstudents"],
+});
+lessonStudentsResource.use(authMiddleware);
+lessonStudentsResource.use(lessonMiddleware);
+lessonStudentsResource.use(lessonStudentMiddleware);
 
 // Resets the database and launches the express app on :8081
 db.sequelize.sync({ force: true }).then(() => {

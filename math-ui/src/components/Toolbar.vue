@@ -1,13 +1,7 @@
 <template>
   <div>
-    <accessLinkDialog
-      v-model="accessLinkDialogOpen"
-      v-on="{ create: $createAccessLink }"
-    ></accessLinkDialog>
-    <freeTextDialog
-      v-model="freeTextDialogOpen"
-      v-on="{ freeTextSubmitted: $submitText }"
-    ></freeTextDialog>
+    <accessLinkDialog v-model="accessLinkDialogOpen"></accessLinkDialog>
+    <freeTextDialog v-model="freeTextDialogOpen"></freeTextDialog>
 
     <v-toolbar color="primary" dark class="vertical-toolbar">
       <!-- create access link -->
@@ -315,12 +309,6 @@ export default {
     },
     $toggleLessonMatrix() {
       this.matrixMixin_toggleMatrixOverlay();
-    },
-    $createAccessLink: function (link) {
-      this.$store.dispatch("createAccessLink", {
-        LessonId: this.getCurrentLesson().id,
-        link: link,
-      });
     },
     $submitText: function (value, background_color) {
       let activeCell = this.getActiveCell();

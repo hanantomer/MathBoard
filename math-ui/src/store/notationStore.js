@@ -409,8 +409,7 @@ const helper = {
     let notations = await dbSyncMixin.methods.getNotations(
       notationType,
       boardType,
-      context.getters.getParent.uuid,
-      context.getters.getUser.id
+      context.getters.getParent.uuid
     );
 
     notations?.data?.forEach((notation) => {
@@ -527,6 +526,7 @@ export default {
         boardType: BoardType.LESSON,
         uuid: context.getters.getCurrentLesson.uuid,
       });
+      await context.dispatch("removeAllNotations");
       helper.loadNotations(context, BoardType.LESSON);
     },
 

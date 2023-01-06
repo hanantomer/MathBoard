@@ -1,4 +1,4 @@
-const BoardType = require("./boardType");
+const BoardType = require("./boardType").default;
 const axios = require("axios");
 const axiosInstnce = axios.create({
   baseURL: "http://localhost:8081",
@@ -132,6 +132,16 @@ module.exports = {
         this.handleError(error);
       }
     },
+    addLessonToSharedLessons: async function (lessonUUId, userId) {
+      try {
+        return await axiosInstnce.post("/lessonStudents", {
+          LessonUUId: lessonUUId,
+          UserId: userId,
+        });
+      } catch (error) {
+        this.handleError(error);
+      }
+    },
     addQuestion: async function (question) {
       try {
         return await axiosInstnce.post("/questions", question);
@@ -139,6 +149,14 @@ module.exports = {
         this.handleError(error);
       }
     },
+    addAnswer: async function (answer) {
+      try {
+        return await axiosInstnce.post("/answers", answer);
+      } catch (error) {
+        this.handleError(error);
+      }
+    },
+
     saveNotation: async function (notation) {
       console.debug("dbsync:" + notation.value);
       res = await axiosInstnce.post(
@@ -180,13 +198,21 @@ module.exports = {
         this.handleError(error);
       }
     },
-    getLessons: async function (userId) {
+    getTeacherLessons: async function (userId) {
       try {
         return axiosInstnce.get("/lessons?UserId=" + userId);
       } catch (error) {
         this.handleError(error);
       }
     },
+    getStudentLessons: async function (userId) {
+      try {
+        return await axiosInstnce.get("/lessonstudents?UserId=" + userId);
+      } catch (error) {
+        this.handleError(error);
+      }
+    },
+
     getQuestions: async function (lessonUUId) {
       try {
         return axiosInstnce.get("/questions?LessonUUId=" + lessonUUId);
@@ -194,15 +220,28 @@ module.exports = {
         this.handleError(error);
       }
     },
-    getNotations: function (notationType, boardType, LessonUUId, userId) {
+    getNotations: function (notationType, boardType, parentUUId, userId) {
       try {
         // e.g lessonsymbols?LessonUUId=1
-        let uri = `${boardType}${notationType}s?${boardType.capitalize()}LessonUUId=${LessonUUId}`;
+        let parentFieldName =
+          boardType == BoardType.LESSON
+            ? "LessonUUId"
+            : boardType == BoardType.QUESTION
+            ? "QuestionUUId"
+            : boardType == BoardType.ANSWER
+            ? "AnswerUUId"
+            : null;
+
+        if (boardType == null) {
+          throw new Error("Invalid boardType:" + boardType);
+        }
+
+        let uri = `${boardType}${notationType}s?${parentFieldName}=${parentUUId}`;
 
         // for answer, load notations of logged user
-        if (boardType === BoardType.ANSWER) {
-          uri += `&UserId=${userId}`;
-        }
+        //if (boardType === BoardType.ANSWER) {
+        //  uri += `&UserId=${userId}`;
+        // }
 
         return axiosInstnce.get(uri);
       } catch (error) {

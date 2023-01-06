@@ -41,6 +41,9 @@ module.exports = (sequelize, DataTypes) => {
             access_token: {
                 type: DataTypes.STRING,
             },
+            userType: {
+                type: DataTypes.STRING,
+            }
         },
         { sequelize, freezeTableName: true }
     );

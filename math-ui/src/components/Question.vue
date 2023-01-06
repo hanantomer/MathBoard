@@ -1,9 +1,15 @@
 <template>
   <div class="fill-height" style="width: 100%; position: relative">
     <v-row dense style="max-height: 25px">
-      <v-col cols="12" class="d-flex justify-center">
+      <v-col cols="5" class="d-flex justify-center">
         <p>{{ questionTitle }}</p>
-        <!-- TODO: better design for lesson title -->
+      </v-col>
+      <v-col cols="4" class="d-flex justify-center">
+        <v-combobox
+          :items="students"
+          v-model="selectedStudent"
+          label="Please select a students' answer:"
+        ></v-combobox>
       </v-col>
     </v-row>
     <v-row dense style="height: 98%">
@@ -64,23 +70,27 @@ export default {
 
     this.activateObjectMixin_reset();
 
-    // for teacher matrix background is garay
-    if (this.isTeacher()) {
-      this.matrixMixin_setMatrix();
-    }
-
+    // for teacher matrix background is gray
+    //if (this.isTeacher()) {
+    this.matrixMixin_setMatrix();
+    //}
+    //
     // for student, matrix question area background is in whitesmoke
-    if (!this.isTeacher()) {
-      this.matrixMixin_setMatrix((row) => {
-        return row <= this.getMaxNotationRow() ? 1 : 0;
-      });
-    }
+    // if (!this.isTeacher()) {
+    //   this.matrixMixin_setMatrix((row) => {
+    //     return row <= this.getMaxNotationRow() ? 1 : 0;
+    //   });
+    // }
+
+    // init outgoing relay
+    //this.userOperationsMixin_init();
   },
 
   data: function () {
     return {
       matrix: [],
       svgId: "questionsSvg",
+      selectedStudent: {},
     };
   },
 
@@ -95,6 +105,13 @@ export default {
   ],
   computed: {
     ...mapState({
+      students: (state) => {
+        return state.answerStore.answers?.length === 0
+          ? null
+          : state.answerStore.answers.map((a) => {
+              return this.getStudent(a.UserId);
+            });
+      },
       notations: (state) => {
         return state.notationStore.notations;
       },
@@ -121,34 +138,36 @@ export default {
       getNotations: "getNotations",
       isTeacher: "isTeacher",
       getMaxNotationRow: "getMaxNotationRow",
+      getStudent: "getStudent",
     }),
     ...mapActions({
       loadLesson: "loadLesson",
       loadQuestion: "loadQuestion",
       loadQuestionNotations: "loadQuestionNotations",
+      addAnswer: "addAnswer",
     }),
 
     $resetToolbarState: function () {
-      // see toolbat.vue
+      // see toolbar.vue
       this.$root.$emit("resetToolbarState");
     },
 
     markQuestionAsResolved: async function () {},
 
     $loadQuestion: async function () {
+      await this.loadLesson(this.getCurrentQuestion().LessonUUId);
       // load from db to store
-      if (!this.getCurrentQuestion().hasOwnProperty()) {
-        await this.loadQuestion(
-          this.$route.params.questionId || this.getCurrentQuestion().id
-        );
-
-        await this.loadLesson(this.getCurrentQuestion().LessonId);
+      //if (!this.getCurrentQuestion().hasOwnProperty()) {
+      await this.loadQuestion(
+        this.$route.params.questionUUId || this.getCurrentQuestion().uuid
+      );
+      //}
+      // add student answer when question is first selected
+      if (!this.isTeacher()) {
+        this.addAnswer();
       }
 
-      await this.loadQuestionNotations(
-        this.getCurrentQuestion().id,
-        boardType.QUESTION
-      );
+      await this.loadQuestionNotations();
     },
   },
 };

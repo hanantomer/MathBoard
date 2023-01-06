@@ -2,19 +2,6 @@
 const dbUtil = require("math-db/src/dbUtil");
 
 module.exports = {
-    read: {
-        send: {
-            before: async (req, res, context) => {
-                if (!!req.body.LessonId) {
-                    delete req.body.LessonId;
-                }
-                if (!!res.data.QuestionId) {
-                    delete req.body.QuestionId;
-                }
-                return context.continue;
-            },
-        },
-    },
     create: {
         write: {
             before: async (req, res, context) => {
@@ -35,9 +22,21 @@ module.exports = {
             },
             after: async (req, res, context) => {
                 if (!!context.instance.dataValues.LessonId) {
+                    context.instance.dataValues.LessonUUId =
+                        await dbUtil.getIdByUUID(
+                            "Lesson",
+                            context.instance.dataValues.LessonId
+                        );
+
                     context.instance.dataValues.LessonId = null;
                 }
                 if (!!context.instance.dataValues.QuestionId) {
+                    context.instance.dataValues.QuestionUUId =
+                        await dbUtil.getIdByUUID(
+                            "Question",
+                            context.instance.dataValues.QuestionId
+                        );
+
                     context.instance.dataValues.QuestionId = null;
                 }
                 return context.continue;
@@ -48,16 +47,16 @@ module.exports = {
         fetch: {
             before: async (req, res, context) => {
                 if (!!req.query.LessonUUId) {
-                    req.query.lessonId = await dbUtil.getIdByUUID(
+                    req.query.LessonId = await dbUtil.getIdByUUID(
                         "Lesson",
                         req.query.LessonUUId
                     );
                     delete req.query.LessonUUId;
                 }
-                if (!!req.query.questionUUId) {
-                    req.query.questionUUId = await dbUtil.getIdByUUID(
+                if (!!req.query.QuestionUUId) {
+                    req.query.QuestionUUId = await dbUtil.getIdByUUID(
                         "Question",
-                        req.query.questionUUId
+                        req.query.QuestionUUId
                     );
                     delete req.query.LessonUUId;
                 }

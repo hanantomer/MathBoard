@@ -65,7 +65,6 @@ export default {
     copy: function () {
       navigator.clipboard.writeText(this.link);
       this.show = false;
-      this.$emit("create", this.link);
     },
   },
   created: function () {

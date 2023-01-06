@@ -1,7 +1,6 @@
 "use strict";
 const db = require("./models/index");
 const { Op } = require("sequelize");
-const accessLinkCache = new Map();
 
 const boardType = Object.freeze({
   LESSON: "lesson",
@@ -84,7 +83,7 @@ module.exports = {
             }
         });
 
-        return res.id;
+        return res?.id;
     },
     async getUUIDById(model, id) {
         let res = await db.sequelize.models[model].findOne({
@@ -93,7 +92,16 @@ module.exports = {
             }
         });
 
-        return res.uuid;
+        return res?.uuid;
+    },
+
+    async getStudentLessons(userId) {
+        let res = await db.sequelize.models["LessonStudent"].findAll({
+            include:[{model: db.sequelize.models["User"]},{model: db.sequelize.models["Lesson"]}],
+            where: {UserId: userId}
+        });
+
+        return res;
     },
 
     async findPointOverlappingWithRect(model, parentFieldName, parentId, fromRow, toRow, fromCol, toCol) {

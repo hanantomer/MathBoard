@@ -1,6 +1,7 @@
 import NotationType from "./notationType";
 import { mapActions, mapGetters, mapState } from "vuex";
 import * as d3 from "d3";
+import BoardType from "../Mixins/boardType";
 
 export default {
   mounted: function () {
@@ -49,6 +50,7 @@ export default {
     ...mapGetters({
       getActiveNotation: "getActiveNotation",
       getCurrentLesson: "getCurrentLesson",
+      getParent: "getParent",
     }),
     ...mapActions({
       setPrevActiveCell: "setPrevActiveCell",
@@ -107,10 +109,12 @@ export default {
     },
 
     matrixMixin_setMatrix() {
+      // render rows
       for (var row = 0; row < this.rowsNum; row++) {
         this.matrix.push(d3.range(this.colsNum));
       }
 
+      // render rectangles
       this.topLevelGroup = d3
         .select("#" + this.svgId)
         .selectAll("g")
@@ -432,7 +436,10 @@ export default {
         this.getCurrentLesson().UserId === n.UserId ? "bold" : "normal";
 
       let color =
-        this.getCurrentLesson().UserId === n.UserId ? "black" : "purple";
+        this.getParent().boardType === BoardType.QUESTION &&
+        this.getCurrentLesson().UserId !== n.UserId
+          ? "purple"
+          : "black";
 
       return `<p style='color:${color};font-weight:${fontWeight};margin-left:4px;font-size:1.1em'>${n.value}</p>`;
     },

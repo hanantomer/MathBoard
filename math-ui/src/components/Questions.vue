@@ -50,7 +50,7 @@ export default {
   components: { NewItemDialog },
   name: "Questions",
   async mounted() {
-    await this.loadLessons();
+    await this.loadLessons(this.isTeacher());
     if (!this.getCurrentLesson()?.id) return;
     this.selectedLessonId = this.getCurrentLesson().id;
 
@@ -75,6 +75,7 @@ export default {
       setCurrentQuestion: "setCurrentQuestion",
     }),
     ...mapGetters({
+      isTeacher: "isTeacher",
       getLessons: "getLessons",
       getQuestions: "getQuestions",
       getCurrentLesson: "getCurrentLesson",

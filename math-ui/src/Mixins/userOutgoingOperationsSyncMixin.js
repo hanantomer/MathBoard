@@ -2,12 +2,18 @@ import io from "socket.io-client";
 import feathers from "@feathersjs/feathers";
 import socketio from "@feathersjs/socketio-client";
 
-let socket = io("http://localhost:3030");
-let client = feathers();
-client.configure(socketio(socket));
-
 export default {
+  data: function () {
+    return {
+      client: null,
+    };
+  },
   methods: {
+    userOperationsMixin_init: function () {
+      let socket = io("http://localhost:3030");
+      this.client = feathers();
+      this.client.configure(socketio(socket));
+    },
     signedInWithGoogle: function () {
       return (
         gapi.auth2.getAuthInstance() &&
@@ -26,30 +32,37 @@ export default {
     userOperationsMixin_syncOutgoingActiveCell: async function (activeCell) {
       activeCell.LessonUUId = this.getCurrentLesson().uuid;
       console.debug(`sync selected rect ${JSON.stringify(activeCell)}`);
-      client.service("activeCell").update({}, { activeCell: activeCell }, {});
+      this.client
+        .service("activeCell")
+        .update({}, { activeCell: activeCell }, {});
     },
     userOperationsMixin_syncOutgoingSaveNotation: async function (notation) {
-      client.service("notationSync").create({ notation: notation }, {});
+      this.client.service("notationSync").create({ notation: notation }, {});
     },
     userOperationsMixin_syncOutgoingRemoveNotation: async function (notation) {
-      client.service("notationSync").remove({}, { notation: notation }, {});
+      this.client
+        .service("notationSync")
+        .remove({}, { notation: notation }, {});
     },
     userOperationsMixin_syncOutgoingUpdateSelectedNotation: async function (
       selectedNotation
     ) {
-      client
+      this.client
         .service("notationSync")
         .update({}, { notation: selectedNotation }, {});
     },
     userOperationsMixin_syncOutgoingHeartBeat: async function (LessonUUId) {
-      client.service("heartbeat").update({}, { LessonUUId: LessonUUId }, {});
+      this.client
+        .service("heartbeat")
+        .update({}, { LessonUUId: LessonUUId }, {});
     },
+    // inform students that he is eligible to edit
     userOperationsMixin_syncOutgoingAuthUser: async function (
       authorizedStudentId,
       revokedStudentId
     ) {
       if (authorizedStudentId)
-        client.service("authorization").update(
+        this.client.service("authorization").update(
           {},
           {
             authorization: {
@@ -61,7 +74,7 @@ export default {
           {}
         );
       if (revokedStudentId)
-        client.service("authorization").update(
+        this.client.service("authorization").update(
           {},
           {
             authorization: {

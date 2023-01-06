@@ -1,6 +1,12 @@
 //  questions of current lesson
 import dbSyncMixin from "../Mixins/dbSyncMixin";
 
+const helper = {
+  findQuestionById: function (state, id) {
+    return state.questions.find((q) => q.id == id);
+  },
+};
+
 export default {
   modules: {
     dbSyncMixin,
@@ -25,7 +31,7 @@ export default {
       state.currentQuestion = question;
     },
     removeQuestion(state, id) {
-      state.questions.splice(helper.find(state, id), 1);
+      state.questions.splice(helper.findQuestionById(state, id), 1);
     },
     removeAllQuestions(state) {
       state.questions = [];

@@ -75,12 +75,6 @@ export default {
     setAuthorization(context, student) {
       context.commit("setStudent", student);
     },
-    async createAccessLink(context, accessLink) {
-      return dbSyncMixin.methods.createAccessLink(
-        accessLink.LessonId,
-        accessLink.link
-      );
-    },
     toggeleStudentAuthorization(context, studentId) {
       context.commit("toggelStudentAuthorization", studentId);
     },

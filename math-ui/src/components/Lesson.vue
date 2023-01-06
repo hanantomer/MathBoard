@@ -31,7 +31,7 @@
           </v-col>
         </v-row>
       </v-col>
-      <v-col cols="2" v-if="isTeacher">
+      <v-col cols="2" v-if="teacher">
         <lesson-students></lesson-students>
       </v-col>
     </v-row>
@@ -70,6 +70,10 @@ export default {
     this.loadLesson().then(() => {
       this.activateObjectMixin_reset();
       this.matrixMixin_setMatrix();
+
+      if (!this.isTeacher()) {
+        this.addCurrentLessonToSharedLessons();
+      }
     });
   },
   data: function () {
@@ -88,6 +92,9 @@ export default {
     notationMixin,
   ],
   computed: {
+    ...mapGetters({
+      teacher: "isTeacher",
+    }),
     ...mapState({
       notations: (state) => {
         return state.notationStore.notations;
@@ -116,6 +123,7 @@ export default {
     }),
     ...mapActions({
       loadLessonNotations: "loadLessonNotations",
+      addCurrentLessonToSharedLessons: "addCurrentLessonToSharedLessons",
     }),
     resetToolbarState: function () {
       this.$root.$emit("resetToolbarState");
@@ -141,8 +149,11 @@ export default {
       // refresh screen
       this.loadLessonNotations();
 
-      // listen to changes
+      // listen to other users
       this.mixin_syncIncomingUserOperations();
+
+      // init outgoing relay
+      this.userOperationsMixin_init();
     },
   },
 };
