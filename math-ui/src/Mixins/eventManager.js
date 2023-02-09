@@ -21,6 +21,7 @@ export default {
   methods: {
     ...mapGetters({
       getCurrentEditMode: "getCurrentEditMode",
+      getParent: "getParent",
     }),
 
     async eventManager_paste(e) {
@@ -56,7 +57,9 @@ export default {
           that.$store
             .dispatch("addNotation", notation)
             .then((text) => {
-              this.userOperationsMixin_syncOutgoingSaveNotation(notation);
+              if (this.getParent().boardType === BoardType.LESSON) {
+                this.userOperationsMixin_syncOutgoingSaveNotation(notation);
+              }
             })
             .catch((e) => {
               console.error(e);

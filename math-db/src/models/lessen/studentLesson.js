@@ -1,14 +1,15 @@
+// lessons sheared with students via access link
 "use strict";
 const { Model } = require("sequelize");
 module.exports = (sequelize, DataTypes) => {
-    class LessonStudent extends Model {
+    class StudentLesson extends Model {
         static associate(models) {
-            LessonStudent.belongsTo(models.Lesson, {
+            StudentLesson.belongsTo(models.Lesson, {
                 onDelete: "CASCADE",
                 onUpdate: "CASCADE",
                 foreignKey: { allowNull: false },
             });
-            LessonStudent.belongsTo(models.User, {
+            StudentLesson.belongsTo(models.User, {
                 onDelete: "CASCADE",
                 onUpdate: "CASCADE",
                 foreignKey: { allowNull: false },
@@ -16,7 +17,7 @@ module.exports = (sequelize, DataTypes) => {
         }
     }
 
-    LessonStudent.init(
+    StudentLesson.init(
         {
         },
         {
@@ -31,5 +32,5 @@ module.exports = (sequelize, DataTypes) => {
         }
     );
 
-    return LessonStudent;
+    return StudentLesson;
 };

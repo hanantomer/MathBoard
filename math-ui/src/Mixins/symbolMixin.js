@@ -1,6 +1,7 @@
 import { mapGetters } from "vuex";
 import { mapActions } from "vuex";
 import NotationType from "./notationType";
+import BoardType from "../Mixins/boardType";
 import EditMode from "./editMode";
 
 export default {
@@ -8,6 +9,7 @@ export default {
     ...mapGetters({
       getActiveCell: "getActiveCell",
       getCurrentEditMode: "getCurrentEditMode",
+      getParent: "getParent",
     }),
 
     ...mapActions({
@@ -48,7 +50,9 @@ export default {
 
       this.addNotation(symbol)
         .then((symbol) => {
-          this.userOperationsMixin_syncOutgoingSaveNotation(symbol);
+          if (this.getParent().boardType === BoardType.LESSON) {
+            this.userOperationsMixin_syncOutgoingSaveNotation(symbol);
+          }
         })
         .then(() => {
           this.matrixMixin_setNextRect(1, 0);

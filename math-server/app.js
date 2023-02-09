@@ -4,9 +4,27 @@ const bodyParser = require("body-parser");
 const finale = require("finale-rest");
 const db = require("math-db/src/models/index");
 const authMiddleware = require("math-auth/src/authMiddleware");
-const userMiddleware = require("./userMiddleware");
-const lessonMiddleware = require("./lessonMiddleware");
-const lessonStudentMiddleware = require("./lessonStudentMiddleware");
+const addAccesstokenToResponseMiddleware = require("./middleware/addAccesstokenToResponse");
+
+const createLessonChildMiddleware = require("./middleware/createLessonChild");
+const getLessonChildrenMiddleware = require("./middleware/getLessonChildren");
+const updateLessonChildMiddleware = require("./middleware/updateLessonChild");
+
+const createQuestionChildMiddleware = require("./middleware/createQuestionChild");
+const getQuestionChildrenMiddleware = require("./middleware/getQuestionChildren");
+const updateQuestionChildMiddleware = require("./middleware/updateQuestionChild");
+
+const createAnswerChildMiddleware = require("./middleware/createAnswerChild");
+const getAnswerChildrenMiddleware = require("./middleware/getAnswerChildren");
+
+const getAnswersMiddleware = require("./middleware/getAnswers");
+const createAnswerMiddleware = require("./middleware/createAnswer");
+const updateAnswerChildMiddleware = require("./middleware/updateAnswerChild");
+
+const getStudentLessonsMiddleware = require("./middleware/getStudentLessons");
+const ommitPasswordFromResponseMiddleware = require("./middleware/ommitPasswordFromResponse");
+const getQuestions = require("./middleware/getQuestions");
+const createQuestion = require("./middleware/createQuestion");
 
 const notationTypes = [
     "symbol",
@@ -18,7 +36,32 @@ const notationTypes = [
     "image",
 ];
 
-const boardTypes = ["lesson", "question", "answer"];
+const boardTypes = [
+    {
+        name: "lesson",
+        middleware: [
+            createLessonChildMiddleware,
+            updateLessonChildMiddleware,
+            getLessonChildrenMiddleware,
+        ],
+    },
+    {
+        name: "question",
+        middleware: [
+            createQuestionChildMiddleware,
+            updateQuestionChildMiddleware,
+            getQuestionChildrenMiddleware,
+        ],
+    },
+    {
+        name: "answer",
+        middleware: [
+            createAnswerChildMiddleware,
+            updateAnswerChildMiddleware,
+            getAnswerChildrenMiddleware,
+        ],
+    },
+];
 
 let app = express();
 app.use(cors());
@@ -43,8 +86,9 @@ let userResource = finale.resource({
     model: db.sequelize.models["User"],
     endpoints: ["/users", "/users/:id"],
 });
-userResource.use(userMiddleware);
 userResource.use(authMiddleware);
+userResource.use(addAccesstokenToResponseMiddleware);
+userResource.use(ommitPasswordFromResponseMiddleware);
 
 // lesson
 
@@ -61,7 +105,10 @@ let questionResource = finale.resource({
     endpoints: ["/questions", "/questions/:uuid"],
 });
 questionResource.use(authMiddleware);
-questionResource.use(lessonMiddleware);
+questionResource.use(createLessonChildMiddleware);
+questionResource.use(getLessonChildrenMiddleware);
+questionResource.use(getQuestions);
+questionResource.use(createQuestion);
 
 // answer
 
@@ -70,29 +117,33 @@ let answerResource = finale.resource({
     endpoints: ["/answers", "/answers/:uuid"],
 });
 answerResource.use(authMiddleware);
-answerResource.use(lessonMiddleware);
+answerResource.use(createQuestionChildMiddleware);
+answerResource.use(getQuestionChildrenMiddleware);
+answerResource.use(getAnswersMiddleware);
+answerResource.use(createAnswerMiddleware);
 
 // notations
 boardTypes.forEach((b) => {
     notationTypes.forEach((n) => {
         let resource = finale.resource({
-            model: db.sequelize.models[b.capitalize() + n.capitalize()],
-            endpoints: [`/${b}${n}s`, `/${b}${n}s/:id`],
+            model: db.sequelize.models[b.name.capitalize() + n.capitalize()],
+            endpoints: [`/${b.name}${n}s`, `/${b.name}${n}s/:id`],
         });
         resource.use(authMiddleware);
-        resource.use(lessonMiddleware);
+        b.middleware.forEach((m) => {
+            resource.use(m);
+        });
     });
 });
 
-// lesson students link
-
-let lessonStudentsResource = finale.resource({
-    model: db.sequelize.models["LessonStudent"],
-    endpoints: ["/lessonstudents"],
+// student lessons relation
+let studentsLessonResource = finale.resource({
+    model: db.sequelize.models["StudentLesson"],
+    endpoints: ["/studentlessons", "/studentlessons/:id"],
 });
-lessonStudentsResource.use(authMiddleware);
-lessonStudentsResource.use(lessonMiddleware);
-lessonStudentsResource.use(lessonStudentMiddleware);
+studentsLessonResource.use(authMiddleware);
+studentsLessonResource.use(getStudentLessonsMiddleware);
+studentsLessonResource.use(createLessonChildMiddleware);
 
 // Resets the database and launches the express app on :8081
 db.sequelize.sync({ force: true }).then(() => {

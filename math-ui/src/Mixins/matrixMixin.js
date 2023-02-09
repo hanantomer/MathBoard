@@ -5,9 +5,18 @@ import BoardType from "../Mixins/boardType";
 
 export default {
   mounted: function () {
+    if (!this.svgId) return; // component not loaded yet
+    this.rectSize = Math.min(
+      Math.floor(
+        document.getElementById(this.svgId).clientWidth / this.colsNum
+      ),
+      Math.floor(
+        document.getElementById(this.svgId).clientHeight / this.rowsNum
+      )
+    );
     let textMeasurementEl = document.createElement("canvas");
-    this.textMeasurementCtx = textMeasurementEl.getContext("2d");
-    this.textMeasurementCtx.font = window
+    window.textMeasurementCtx = textMeasurementEl.getContext("2d");
+    window.textMeasurementCtx.font = window
       .getComputedStyle(this.$el, null)
       .getPropertyValue("font");
   },
@@ -36,14 +45,15 @@ export default {
   },
   data: function () {
     return {
-      textMeasurementCtx: null,
       opacity: 1,
-      colsNum: 44,
-      rowsNum: 24,
+      colsNum: 35,
+      rowsNum: 20,
       rectSize: 25,
       lineHeight: 4,
       topLevelGroup: null,
       svgns: "http://www.w3.org/2000/svg",
+      svgWidth: "1400px",
+      svgHeight: "700px",
     };
   },
   methods: {
@@ -56,7 +66,7 @@ export default {
       setPrevActiveCell: "setPrevActiveCell",
     }),
     freeTextRectWidth(value) {
-      return this.textMeasurementCtx.measureText(value).width / this.rectSize;
+      return window.textMeasurementCtx.measureText(value).width / this.rectSize;
     },
     freeTextRectHeight(value) {
       return (
@@ -134,10 +144,6 @@ export default {
         .append("rect")
         .attr("fill", (a, i, d) => {
           return "white";
-          //if (!bkColorFunc) return "white";
-          //use callback to  colorise question-part background for students
-          //let row = parseInt(d[i].parentNode.attributes["row"].value);
-          //return bkColorFunc(row) ? "whitesmoke" : "white";
         })
         .attr("stroke-opacity", this.opacity)
         .attr("stroke", "lightgray")
@@ -197,7 +203,9 @@ export default {
       if (!!nextRect) {
         nextRect.type = "rect";
         this.$store.dispatch("setActiveCell", nextRect);
-        this.userOperationsMixin_syncOutgoingActiveCell(nextRect);
+        if (this.getParent().boardType === BoardType.LESSON) {
+          this.userOperationsMixin_syncOutgoingActiveCell(nextRect);
+        }
       }
     },
     matrixMixin_findRect(rect) {
@@ -270,41 +278,43 @@ export default {
         );
     },
     showNotations: function (enter) {
-      return enter
-        .append("foreignObject")
-        .attr("type", (n) => {
-          return n.type;
-        })
-        .attr("id", (n) => {
-          return this.$id(n);
-        })
-        .attr("col", (n) => {
-          return this.$col(n);
-        })
-        .attr("row", (n) => {
-          return this.$row(n);
-        })
-        .attr("x", (n) => {
-          return this.$x(n);
-        })
-        .attr("y", (n) => {
-          return this.$y(n);
-        })
-        .attr("width", (n) => {
-          return this.$width(n);
-        })
-        .attr("height", (n) => {
-          return this.$height(n);
-        })
-        .style("font-size", (n) => {
-          return this.$fontSize(n);
-        })
-        .style("color", (n) => {
-          return this.$color(n);
-        })
-        .html((n) => {
-          return this.$html(n);
-        });
+      return (
+        enter
+          .append("foreignObject")
+          .attr("type", (n) => {
+            return n.type;
+          })
+          .attr("id", (n) => {
+            return this.$id(n);
+          })
+          .attr("col", (n) => {
+            return this.$col(n);
+          })
+          .attr("row", (n) => {
+            return this.$row(n);
+          })
+          .attr("x", (n) => {
+            return this.$x(n);
+          })
+          .attr("y", (n) => {
+            return this.$y(n);
+          })
+          .attr("width", (n) => {
+            return this.$width(n);
+          })
+          .attr("height", (n) => {
+            return this.$height(n);
+          })
+          .style("font-size", (n) => {
+            return this.$fontSize(n);
+          })
+          //.style("color", (n) => {
+          //  return this.$color(n);
+          //})
+          .html((n) => {
+            return this.$html(n);
+          })
+      );
     },
     $id(n) {
       return n.type + n.id;
@@ -355,7 +365,7 @@ export default {
     $width(n) {
       if (n.type === NotationType.TEXT) {
         return (
-          this.textMeasurementCtx.measureText(n.value).width +
+          window.textMeasurementCtx.measureText(n.value).width +
           1 * n.value.length
         );
       }
@@ -409,17 +419,24 @@ export default {
         ? this.signFontSize
         : this.fontSize;
     },
-    $color(n) {
-      return n.selected ? "red" : "black";
-    },
+    //$color(n) {
+    //  return n.selected ? "red" : "black";
+    //},
     $html(n) {
-      if (n.type === NotationType.FRACTION || n.type === NotationType.SQRT) {
+      if (n.type === NotationType.FRACTION) {
         return `<span class=line style='width:${
           (n.toCol - n.fromCol) * this.rectSize
         }px;'></span>`;
       }
+
+      if (n.type === NotationType.SQRT) {
+        return `<span class=line style='position:relative;left:9px;width:${
+          (n.toCol - n.fromCol) * this.rectSize - 8
+        }px;'></span>`;
+      }
+
       if (n.type === NotationType.SQRTSYMBOL) {
-        return `<p style='position:relative;left:-3px; font-size:1.4em'>&#x221A;</p>`;
+        return `<p style='position:relative;left:5px; font-size:1.4em'>&#x221A;</p>`;
       }
 
       if (n.type === NotationType.TEXT) {
@@ -435,40 +452,43 @@ export default {
       let fontWeight =
         this.getCurrentLesson().UserId === n.UserId ? "bold" : "normal";
 
-      let color =
-        this.getParent().boardType === BoardType.QUESTION &&
-        this.getCurrentLesson().UserId !== n.UserId
-          ? "purple"
-          : "black";
+      let color = n.selected
+        ? "red"
+        : this.getParent().boardType === BoardType.ANSWER &&
+          this.getCurrentLesson().UserId !== n.UserId
+        ? "purple"
+        : "black";
 
-      return `<p style='color:${color};font-weight:${fontWeight};margin-left:4px;font-size:1.1em'>${n.value}</p>`;
+      return `<p style='color:${color};font-weight:${fontWeight};margin-left:8px;font-size:1.1em'>${n.value}</p>`;
     },
     $borderColor: function (selected) {
       return !!selected ? "red" : "transparent";
     },
     updateNotations: function (update) {
-      return update
-        .style("color", (n) => {
-          return this.$color(n);
-        })
-        .attr("x", (n, i) => {
-          return this.$x(n);
-        })
-        .attr("y", (n) => {
-          return this.$y(n);
-        })
-        .attr("col", (n) => {
-          return this.$col(n);
-        })
-        .attr("row", (n) => {
-          return this.$row(n);
-        })
-        .attr("width", (n) => {
-          return this.$width(n);
-        })
-        .html((n) => {
-          return this.$html(n);
-        });
+      return (
+        update
+          //.style("color", (n) => {
+          //  return this.$color(n);
+          //})
+          .attr("x", (n, i) => {
+            return this.$x(n);
+          })
+          .attr("y", (n) => {
+            return this.$y(n);
+          })
+          .attr("col", (n) => {
+            return this.$col(n);
+          })
+          .attr("row", (n) => {
+            return this.$row(n);
+          })
+          .attr("width", (n) => {
+            return this.$width(n);
+          })
+          .html((n) => {
+            return this.$html(n);
+          })
+      );
     },
     removeNotations: function (exit) {
       return exit
@@ -481,17 +501,5 @@ export default {
           d3.select(this).remove();
         });
     },
-    // loadImage: function (img, base64) {
-    //   img.src = base64;
-    //   var timeOut = 5 * 1000; ///TODO caheck await
-    //   var start = new Date().getTime();
-    //   while (1)
-    //     if (
-    //       img.complete ||
-    //       img.naturalWidth ||
-    //       new Date().getTime() - start > timeOut
-    //     )
-    //       break;
-    // },
   },
 };

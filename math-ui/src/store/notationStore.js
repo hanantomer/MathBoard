@@ -405,12 +405,14 @@ const helper = {
       });
   },
 
-  async loadNotationType(context, notationType, boardType) {
+  async loadNotationType(context, parentUUId, notationType, boardType) {
     let notations = await dbSyncMixin.methods.getNotations(
       notationType,
       boardType,
-      context.getters.getParent.uuid
+      parentUUId
     );
+
+    if (notations?.data?.length === 0) return;
 
     notations?.data?.forEach((notation) => {
       notation.type = notationType;
@@ -419,14 +421,49 @@ const helper = {
   },
 
   async loadNotations(context, boardType) {
-    // TODO: move outside -> context.commit("removeAllNotations");
-    await helper.loadNotationType(context, NotationType.SYMBOL, boardType);
-    await helper.loadNotationType(context, NotationType.SIGN, boardType);
-    await helper.loadNotationType(context, NotationType.POWER, boardType);
-    await helper.loadNotationType(context, NotationType.FRACTION, boardType);
-    await helper.loadNotationType(context, NotationType.SQRT, boardType);
-    await helper.loadNotationType(context, NotationType.TEXT, boardType);
-    await helper.loadNotationType(context, NotationType.IMAGE, boardType);
+    let parentUUId = context.getters.getParent.uuid;
+    await helper.loadNotationType(
+      context,
+      parentUUId,
+      NotationType.SYMBOL,
+      boardType
+    );
+    await helper.loadNotationType(
+      context,
+      parentUUId,
+      NotationType.SIGN,
+      boardType
+    );
+    await helper.loadNotationType(
+      context,
+      parentUUId,
+      NotationType.POWER,
+      boardType
+    );
+    await helper.loadNotationType(
+      context,
+      parentUUId,
+      NotationType.FRACTION,
+      boardType
+    );
+    await helper.loadNotationType(
+      context,
+      parentUUId,
+      NotationType.SQRT,
+      boardType
+    );
+    await helper.loadNotationType(
+      context,
+      parentUUId,
+      NotationType.TEXT,
+      boardType
+    );
+    await helper.loadNotationType(
+      context,
+      parentUUId,
+      NotationType.IMAGE,
+      boardType
+    );
   },
 
   deActivateAllNotations(state) {
@@ -474,7 +511,7 @@ export default {
     },
     setNotation(state, notation) {
       let oldNotation = state.notations[notation.type + notation.id];
-      notation.selected = false;
+      //notation.selected = false;
       // for answer, notation.boardType is populated
       if (!notation.boardType) notation.boardType = state.parent.boardType;
       Vue.set(state.notations, notation.type + notation.id, notation);
@@ -505,7 +542,6 @@ export default {
         });
     },
 
-    moveSelectedNotations(state, payload) {},
     removeAllNotations(state) {
       state.notations = {};
     },
@@ -538,22 +574,41 @@ export default {
 
       await context.dispatch("removeAllNotations");
       await helper.loadNotations(context, BoardType.QUESTION);
+    },
+
+    async loadAnswerNotations(context) {
+      context.commit("setParent", {
+        boardType: BoardType.ANSWER,
+        uuid: context.getters.getCurrentAnswer.uuid,
+      });
+
       await helper.loadNotations(context, BoardType.ANSWER);
     },
 
     async addNotation(context, notation) {
+      if (!context.getters.getUser.authorized && !context.getters.isTeacher)
+        return;
+
       notation.UserId = context.getters.getUser.id;
       notation.boardType = context.getters.getParent.boardType;
       notation[notation.boardType.capitalize() + "UUId"] =
         context.getters.getParent.uuid;
 
-      let overlappedSameTypeNotations = helper.findOverlapNotationsOfAnyType(
+      let overlappedSameTypeNotations = helper.findOverlapNotationsOfSameType(
         context.state,
         notation
       );
 
       if (overlappedSameTypeNotations?.length > 0) {
-        overlappedSameTypeNotations[0].value = notation.value;
+        let oldNotation = overlappedSameTypeNotations[0];
+        oldNotation.value = notation.value;
+        if (!!notation.col) oldNotation.col = notation.col;
+        if (!!notation.fromCol) oldNotation.fromCol = notation.fromCol;
+        if (!!notation.toCol) oldNotation.toCol = notation.toCol;
+        if (!!notation.row) oldNotation.row = notation.row;
+        if (!!notation.fromRow) oldNotation.row = notation.row;
+        if (!!notation.toRow) oldNotation.toRow = notation.toRow;
+
         notation = await dbSyncMixin.methods.updateNotation(
           overlappedSameTypeNotations[0]
         );
@@ -634,39 +689,33 @@ export default {
     },
 
     // move without persistence - called during  mouse move  - don't bother the database during move
-    moveSelectedNotations(context, notations) {
-      //context.commit("moveSelectedNotations", notations);
-      Object.entries(state.notations)
+    moveSelectedNotations(context, delta) {
+      console.debug(`${delta.rectDeltaX}`);
+      Object.entries(context.state.notations)
         .filter((notation) => !!notation[1].selected)
         .forEach((notation) => {
           switch (notation[1].type) {
             case NotationType.SYMBOL:
             case NotationType.SIGN:
             case NotationType.POWER:
-              notation[1].col += payload.rectDeltaX;
-              notation[1].row += payload.rectDeltaY;
+              notation[1].col += delta.rectDeltaX;
+              notation[1].row += delta.rectDeltaY;
               context.commit("setNotation", notation[1]);
-              //Vue.set(state.notations, notation[0], {
-              ///TODO use set notation
-              //...notation[1],
-              //col: notation[1].col + payload.rectDeltaX,
-              //row: notation[1].row + payload.rectDeltaY,
-              //});
               break;
             case NotationType.FRACTION:
             case NotationType.SQRT:
-              notation[1].fromCol += payload.rectDeltaX;
-              notation[1].toCol += payload.rectDeltaX;
-              notation[1].row += payload.rectDeltaY;
+              notation[1].fromCol += delta.rectDeltaX;
+              notation[1].toCol += delta.rectDeltaX;
+              notation[1].row += delta.rectDeltaY;
               context.commit("setNotation", notation[1]);
               break;
             case NotationType.TEXT:
             case NotationType.IMAGE:
             case NotationType.GEO: {
-              notation[1].fromCol += payload.rectDeltaX;
-              notation[1].toCol += payload.rectDeltaX;
-              notation[1].fromRow += payload.rectDeltaY;
-              notation[1].toRow += payload.rectDeltaY;
+              notation[1].fromCol += delta.rectDeltaX;
+              notation[1].toCol += delta.rectDeltaX;
+              notation[1].fromRow += delta.rectDeltaY;
+              notation[1].toRow += delta.rectDeltaY;
               context.commit("setNotation", notation[1]);
               break;
             }

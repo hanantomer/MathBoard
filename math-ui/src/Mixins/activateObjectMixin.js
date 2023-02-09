@@ -2,7 +2,8 @@ import { mapState } from "vuex";
 import { mapGetters } from "vuex";
 import { mapActions } from "vuex";
 import EditMode from "./editMode";
-import notationType from "./notationType";
+import NotationType from "./notationType";
+import BoardType from "./boardType";
 export default {
   data: function () {
     return {
@@ -31,6 +32,7 @@ export default {
 
     ...mapGetters({
       getNotations: "getNotations",
+      getParent: "getParent",
     }),
 
     // called via mouse click
@@ -42,7 +44,7 @@ export default {
         let overlapRectNotation = this.$getOverlappedRectNotation(clickedRect);
         if (!!overlapRectNotation) {
           this.setActiveNotation(overlapRectNotation).then(() => {
-            if (overlapRectNotation.type === notationType.TEXT) {
+            if (overlapRectNotation.type === NotationType.TEXT) {
               this.setCurrentEditMode(EditMode.TEXT);
             }
           });
@@ -56,7 +58,9 @@ export default {
         };
 
         this.setActiveCell(cellToActivate).then(() => {
-          this.userOperationsMixin_syncOutgoingActiveCell(cellToActivate);
+          if (this.getParent().boardType === BoardType.LESSON) {
+            this.userOperationsMixin_syncOutgoingActiveCell(cellToActivate);
+          }
           this.setCurrentEditMode(EditMode.SYMBOL);
         });
       }
@@ -89,7 +93,7 @@ export default {
 
     // called by store watcher
     $activateCell(activeCell, prevActiveCell) {
-      this.$unselectPreviouslyActiveCell(prevActiveCell);
+      this.activateObjectMixin_unselectPreviouslyActiveCell(prevActiveCell);
 
       if (!!activeCell?.col) {
         let rectElm = document
@@ -100,7 +104,7 @@ export default {
       }
     },
 
-    $unselectPreviouslyActiveCell(prevActiveCell) {
+    activateObjectMixin_unselectPreviouslyActiveCell(prevActiveCell) {
       if (!prevActiveCell.col) return;
       this.matrixMixin_findRect(prevActiveCell).style.fill = "";
     },

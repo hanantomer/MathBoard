@@ -25,7 +25,7 @@ module.exports = {
                 throw new ForbiddenError();
             }
             req.body.UserId = user.id;
-            return context.continue();
+            return context.continue;
         },
     },
     list: {
@@ -46,23 +46,18 @@ module.exports = {
                 throw new ForbiddenError();
             }
             context.user = user;
-            return context.continue();
+            return context.continue;
         },
     },
 };
 async function authLocal(req) {
-    console.debug(`auth headers.authentication:${req.headers.authentication}`);
     let user = await authUtil.authByLocalToken(req.headers.authentication);
-    console.debug(`auth headers.authentication user:${user}`);
     // set email for upcoming find
     req.query.email = user.email;
     return user;
 }
 
 async function authBearer(req) {
-    console.debug(
-        `Bearer auth headers.authentication:${req.headers.authentication}`
-    );
     let user = await authUtil.authByGoogleToken(req.headers.authentication);
     // set email for upcoming find
     req.query.email = user.email;
@@ -70,7 +65,6 @@ async function authBearer(req) {
 }
 
 async function authPassword(req) {
-    console.debug(`auth password:${req.query.password}`);
     return await authUtil.authByLocalPassword(
         req.query.email,
         req.query.password

@@ -23,11 +23,26 @@ module.exports = (sequelize, DataTypes) => {
 
     Answer.init(
         {
+            uuid: {
+                type: DataTypes.UUID,
+                defaultValue: DataTypes.UUIDV4,
+            },
+            status: {
+                type: DataTypes.STRING,
+                defaultValue: "DRAFT",  //DRAFT, APPROVED, CHECKED
+            },
+            score: {
+                type: DataTypes.INTEGER,
+            }
         },
         {
             sequelize,
             freezeTableName: true,
             indexes: [
+                {
+                    unique: true,
+                    fields: ["uuid"],
+                },
                 {
                     unique: true,
                     fields: ["QuestionId", "UserId"],

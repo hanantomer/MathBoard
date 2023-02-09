@@ -34,10 +34,7 @@ export default {
   },
   mutations: {
     addLesson(state, lesson) {
-      if (state.lessons.indexOf(lesson) < 0) {
-        state.lessons.push(lesson);
-      }
-      state.currentLesson = lesson;
+      state.lessons.push(lesson);
     },
     setCurrentLesson(state, lesson) {
       state.currentLesson = lesson;
@@ -55,10 +52,13 @@ export default {
   actions: {
     async loadLesson(context, LessonUUId) {
       let lesson = await dbSyncMixin.methods.getLesson(LessonUUId);
+      if (!lesson) console.error(`lesson ${LessonUUId} is invalid`);
       if (!!lesson) {
-        context.commit("addLesson", lesson);
         context.commit("setCurrentLesson", lesson);
       }
+    },
+    async setCurrentLesson(context, lesson) {
+      context.commit("setCurrentLesson", lesson);
     },
     async loadLessons(context, isTeacher) {
       context.commit("removeAllLessons");
@@ -83,12 +83,11 @@ export default {
       context.commit("addLesson", lesson.data);
       return lesson.data;
     },
-    async addCurrentLessonToSharedLessons(context) {
+    async addLessonToSharedLessons(context) {
       await dbSyncMixin.methods.addLessonToSharedLessons(
         context.getters.getCurrentLesson.uuid,
         context.getters.getUser.id
       );
-      //context.commit("setCurrentLesson", payload);
     },
     setCurrentEditMode(context, editMode) {
       context.commit("setCurrentEditMode", editMode);

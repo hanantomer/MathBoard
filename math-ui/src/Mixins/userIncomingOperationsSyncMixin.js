@@ -38,7 +38,9 @@ export default {
         }
       });
       client.service("authorization").on("updated", (user) => {
-        _store.dispatch("setUser", user);
+        if (user.userId === this.getUser().id) {
+          _store.dispatch("setUserWriteAuthorization");
+        }
       });
       if (this.isTeacher()) {
         client.service("heartbeat").on("updated", (user) => {

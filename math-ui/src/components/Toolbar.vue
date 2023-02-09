@@ -1,7 +1,12 @@
 <template>
   <div>
     <accessLinkDialog v-model="accessLinkDialogOpen"></accessLinkDialog>
-    <freeTextDialog v-model="freeTextDialogOpen"></freeTextDialog>
+    <freeTextDialog
+      v-model="freeTextDialogOpen"
+      v-on="{
+        submitText: $submitText,
+      }"
+    ></freeTextDialog>
 
     <v-toolbar color="primary" dark class="vertical-toolbar">
       <!-- create access link -->
@@ -33,7 +38,7 @@
               icon
               v-on="on"
               v-bind="attrs"
-              :disabled="(!authorized && !isTeacher) || !hasActiveCell"
+              :disabled="!canEdit || !hasActiveCell"
               v-on:click="$startTextMode"
               @click.stop="freeTextDialogOpen = true"
               x-small
@@ -57,6 +62,7 @@
               icon
               v-on="on"
               v-bind="attrs"
+              :disabled="!canEdit"
               v-on:click="$toggleSelectionMode"
               x-small
               ><v-icon>mdi-selection</v-icon></v-btn
@@ -83,7 +89,7 @@
               v-on="on"
               v-bind="attrs"
               v-on:click="$toggleFractionMode"
-              :disabled="!authorized && !isTeacher"
+              :disabled="!canEdit"
             >
               <v-icon>mdi-tooltip-minus-outline</v-icon>
             </v-btn>
@@ -109,7 +115,7 @@
               v-on="on"
               v-bind="attrs"
               v-on:click="$toggleSqrtMode"
-              :disabled="!authorized && !isTeacher"
+              :disabled="!canEdit"
             >
               <v-icon>mdi-square-root</v-icon>
             </v-btn>
@@ -135,7 +141,7 @@
               v-on="on"
               v-bind="attrs"
               v-on:click="$togglePowerMode"
-              :disabled="!authorized && !isTeacher"
+              :disabled="!canEdit"
             >
               <v-icon>mdi-exponent</v-icon>
             </v-btn>
@@ -143,25 +149,6 @@
         </template>
         <span>Power</span>
       </v-tooltip>
-
-      <!-- toggle mtrix rectangles -->
-      <!-- <v-tooltip top hidden>
-        <template v-slot:activator="{ on, attrs }">
-          <v-btn
-            v-if="isTeacher"
-            @click="$toggleLessonMatrix"
-            icon
-            color="white"
-            x-small
-            fab
-            dark
-            v-on="on"
-            v-bind="attrs"
-            ><v-icon>mdi-grid</v-icon>
-          </v-btn>
-        </template>
-        <span>Toggle matrix rectangles</span>
-      </v-tooltip> -->
     </v-toolbar>
   </div>
 </template>
@@ -253,20 +240,6 @@ export default {
     $endPowerMode() {
       this.$reset();
     },
-    // $toggleDeleteMode() {
-    //   if (this.getCurrentEditMode() == EditMode.DELETE) {
-    //     this.$endDeleteMode();
-    //   } else {
-    //     this.$startDeleteMode();
-    //   }
-    // },
-    // $toggleTextMode() {
-    //   if (this.getCurrentEditMode() == EditMode.TEXT) {
-    //     this.$endTextMode();
-    //   } else {
-    //     this.$startTextMode();
-    //   }
-    // },
     async $startTextMode() {
       this.$reset();
       this.textButtonActive = 0;
@@ -275,15 +248,6 @@ export default {
     $endTextMode() {
       this.$reset();
     },
-    // async $startDeleteMode() {
-    //   this.$reset();
-    //   this.deleteButtonActive = 0;
-    //   this.showDeleteCursor();
-    //   await this.setCurrentEditMode(EditMode.DELETE);
-    // },
-    // $endDeleteMode() {
-    //   this.$reset();
-    // },
     $toggleSelectionMode() {
       if (this.getCurrentEditMode() == EditMode.SELECT) {
         this.$endSelectionMode();
@@ -306,9 +270,6 @@ export default {
       else if (this.getCurrentEditMode() === EditMode.POWER) {
         this.symbolMixin_addSymbol(e.currentTarget.innerText, "power");
       }
-    },
-    $toggleLessonMatrix() {
-      this.matrixMixin_toggleMatrixOverlay();
     },
     $submitText: function (value, background_color) {
       let activeCell = this.getActiveCell();
@@ -341,14 +302,6 @@ export default {
     $resetButtonsState() {
       this.deleteButtonActive = this.selectionButtonActive = this.fractionButtonActive = this.squareRootButtonActive = this.powerButtonActive = 1;
     },
-    // $showDeleteCursor() {
-    //   document.getElementById(this.svgId).classList.add("deleteButtonActive");
-    // },
-    // $hideDeleteCursor() {
-    //   document
-    //     .getElementById(this.svgId)
-    //     .classList.remove("deleteButtonActive");
-    // },
   },
   computed: {
     ...mapState({
@@ -356,8 +309,8 @@ export default {
         return state.lessonStore.operationMode.editMode;
       },
     }),
-    authorized: function () {
-      return !!this.getUser().authorized;
+    canEdit: function () {
+      return this.getUser().authorized || this.isTeacher();
     },
     hasActiveCell: function () {
       return !!this.getActiveCell()?.col || !!this.getActiveNotation()?.id;

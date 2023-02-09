@@ -38,10 +38,9 @@ export default {
     },
   },
   actions: {
-    async loadQuestion(context, questionId) {
-      let question = await dbSyncMixin.methods.getQuestion(questionId);
+    async loadQuestion(context, questionUUId) {
+      let question = await dbSyncMixin.methods.getQuestion(questionUUId);
       if (!!question) {
-        context.commit("addQuestion", question);
         context.commit("setCurrentQuestion", question);
       }
     },

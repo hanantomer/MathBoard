@@ -1,6 +1,5 @@
 <template>
   <div style="width: 100%">
-    <login :dialog="loginDialog"></login>
     <v-row>
       <v-col class="text-center" cols="12">
         <v-card flat>
@@ -8,7 +7,7 @@
             <h3>Teach MATH online with Mathboard</h3>
           </v-card-title>
           <v-card-actions class="justify-center">
-            <v-btn color="orange" v-on:click="openLoginDialog(1)"
+            <v-btn color="orange" v-on:click="openLoginDialog"
               >Get Started</v-btn
             >
           </v-card-actions>
@@ -31,14 +30,13 @@
 </template>
 
 <script>
-import Login from "./Login.vue";
 export default {
   name: "Welcome",
-  components: { Login },
-  mounted() {},
   methods: {
     openLoginDialog() {
-      this.loginDialog.dialog = true;
+      this.$router.push({
+        path: "/login",
+      });
     },
   },
   data: () => ({

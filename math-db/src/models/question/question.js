@@ -33,7 +33,7 @@ module.exports = (sequelize, DataTypes) => {
             indexes: [
                 {
                     unique: false,
-                    fields: ["lessonId"],
+                    fields: ["LessonId"],
                 },
                 {
                     unique: true,

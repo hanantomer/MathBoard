@@ -1,15 +1,8 @@
 <template>
   <div class="fill-height" style="width: 100%; position: relative">
-    <v-row dense style="max-height: 25px">
-      <v-col cols="5" class="d-flex justify-center">
+    <v-row>
+      <v-col cols="12" class="d-flex justify-center">
         <p>{{ questionTitle }}</p>
-      </v-col>
-      <v-col cols="4" class="d-flex justify-center">
-        <v-combobox
-          :items="students"
-          v-model="selectedStudent"
-          label="Please select a students' answer:"
-        ></v-combobox>
       </v-col>
     </v-row>
     <v-row dense style="height: 98%">
@@ -29,8 +22,8 @@
               <areaSelector :svgId="svgId"></areaSelector>
               <svg
                 v-bind:id="svgId"
-                width="1350px"
-                height="600px"
+                v-bind:width="svgWidth"
+                v-bind:height="svgHeight"
                 v-on:mousedown="eventManager_mouseDown"
               ></svg>
             </div>
@@ -49,14 +42,11 @@ import matrixMixin from "../Mixins/matrixMixin";
 import activateObjectMixin from "../Mixins/activateObjectMixin";
 import eventManager from "../Mixins/eventManager";
 import symbolMixin from "../Mixins/symbolMixin";
-import userOperationsOutgoingSyncMixin from "../Mixins/userOutgoingOperationsSyncMixin";
-import userOperationsIncomingSyncMixin from "../Mixins/userIncomingOperationsSyncMixin";
 import notationMixin from "../Mixins/notationMixin";
 import toolbar from "./Toolbar.vue";
 import areaSelector from "./AreaSelector.vue";
 import lineDrawer from "./LineDrawer.vue";
 import newItemDialog from "./NewItemDialog.vue";
-import boardType from "../Mixins/boardType";
 
 export default {
   components: {
@@ -69,28 +59,14 @@ export default {
     await this.$loadQuestion();
 
     this.activateObjectMixin_reset();
-
-    // for teacher matrix background is gray
-    //if (this.isTeacher()) {
     this.matrixMixin_setMatrix();
-    //}
-    //
-    // for student, matrix question area background is in whitesmoke
-    // if (!this.isTeacher()) {
-    //   this.matrixMixin_setMatrix((row) => {
-    //     return row <= this.getMaxNotationRow() ? 1 : 0;
-    //   });
-    // }
-
-    // init outgoing relay
-    //this.userOperationsMixin_init();
   },
 
   data: function () {
     return {
       matrix: [],
       svgId: "questionsSvg",
-      selectedStudent: {},
+      selectedStudent: { text: "", value: 0 },
     };
   },
 
@@ -100,16 +76,20 @@ export default {
     symbolMixin,
     eventManager,
     notationMixin,
-    userOperationsOutgoingSyncMixin,
-    userOperationsIncomingSyncMixin,
   ],
   computed: {
+    doShowStudentsList: function () {
+      return this.isTeacher() && this.students.length > 0;
+    },
     ...mapState({
-      students: (state) => {
+      students: function (state) {
         return state.answerStore.answers?.length === 0
-          ? null
+          ? []
           : state.answerStore.answers.map((a) => {
-              return this.getStudent(a.UserId);
+              return {
+                text: `${a.User.firstName} ${a.User.lastName}`,
+                value: a.User.id,
+              };
             });
       },
       notations: (state) => {
@@ -137,7 +117,6 @@ export default {
       getCurrentEditMode: "getCurrentEditMode",
       getNotations: "getNotations",
       isTeacher: "isTeacher",
-      getMaxNotationRow: "getMaxNotationRow",
       getStudent: "getStudent",
     }),
     ...mapActions({
@@ -157,16 +136,9 @@ export default {
     $loadQuestion: async function () {
       await this.loadLesson(this.getCurrentQuestion().LessonUUId);
       // load from db to store
-      //if (!this.getCurrentQuestion().hasOwnProperty()) {
       await this.loadQuestion(
         this.$route.params.questionUUId || this.getCurrentQuestion().uuid
       );
-      //}
-      // add student answer when question is first selected
-      if (!this.isTeacher()) {
-        this.addAnswer();
-      }
-
       await this.loadQuestionNotations();
     },
   },

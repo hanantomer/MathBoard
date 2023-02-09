@@ -8,16 +8,13 @@ class notationSyncService {
   async enrichNotation(notation, userId) {
     if (!!notation) {
       notation.UserId = userId;
-
-      let lessonId = await dbUtil.getIdByUUID("Lesson", notation.LessonUUId);
-      notation.LessonId = lessonId;
     }
   }
 
   async create(data, params) {
     let user = await util.getUserFromCookie(params.headers.cookie, this.app);
     if (!!user) {
-      this.enrichNotation(data.notation, user.id);
+      this.enrichNotation(data.notation.data, user.id);
     }
     return data.notation;
   }
@@ -25,7 +22,7 @@ class notationSyncService {
   async update(data, params) {
     let user = await util.getUserFromCookie(params.headers.cookie, this.app);
     if (!!user) {
-      this.enrichNotation(data.notation, user.id);
+      this.enrichNotation(data.notation.data, user.id);
       return data.notation;
     }
   }
@@ -33,7 +30,7 @@ class notationSyncService {
   async remove(data, params) {
     let user = await util.getUserFromCookie(params.headers.cookie, this.app);
     if (!!user) {
-      this.enrichNotation(data.notation, user.id);
+      this.enrichNotation(data.notation.data, user.id);
       return data.notation;
     }
   }

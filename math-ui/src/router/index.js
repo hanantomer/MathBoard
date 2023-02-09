@@ -5,6 +5,9 @@ import Lessons from "../components/Lessons.vue";
 import Lesson from "../components/Lesson.vue";
 import Questions from "../components/Questions.vue";
 import Question from "../components/Question.vue";
+import Answers from "../components/Answers.vue";
+import Answer from "../components/Answer.vue";
+
 import store from "../store/index.js";
 
 const router = new VueRouter({
@@ -43,6 +46,17 @@ const router = new VueRouter({
       path: "/question/:questionUUId",
       name: "question",
       component: Question,
+      meta: { requiresAuth: true },
+    },
+    {
+      path: "/answers",
+      component: Answers,
+      meta: { requiresAuth: true },
+    },
+    {
+      path: "/answer/:answerUUId",
+      name: "answer",
+      component: Answer,
       meta: { requiresAuth: true },
     },
   ],

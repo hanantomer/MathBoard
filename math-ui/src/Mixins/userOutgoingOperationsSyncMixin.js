@@ -11,8 +11,8 @@ export default {
   methods: {
     userOperationsMixin_init: function () {
       let socket = io("http://localhost:3030");
-      this.client = feathers();
-      this.client.configure(socketio(socket));
+      window.feathers_client = feathers();
+      window.feathers_client.configure(socketio(socket));
     },
     signedInWithGoogle: function () {
       return (
@@ -32,27 +32,29 @@ export default {
     userOperationsMixin_syncOutgoingActiveCell: async function (activeCell) {
       activeCell.LessonUUId = this.getCurrentLesson().uuid;
       console.debug(`sync selected rect ${JSON.stringify(activeCell)}`);
-      this.client
+      window.feathers_client
         .service("activeCell")
         .update({}, { activeCell: activeCell }, {});
     },
     userOperationsMixin_syncOutgoingSaveNotation: async function (notation) {
-      this.client.service("notationSync").create({ notation: notation }, {});
+      window.feathers_client
+        .service("notationSync")
+        .create({ notation: notation }, {});
     },
     userOperationsMixin_syncOutgoingRemoveNotation: async function (notation) {
-      this.client
+      window.feathers_client
         .service("notationSync")
         .remove({}, { notation: notation }, {});
     },
     userOperationsMixin_syncOutgoingUpdateSelectedNotation: async function (
       selectedNotation
     ) {
-      this.client
+      window.feathers_client
         .service("notationSync")
         .update({}, { notation: selectedNotation }, {});
     },
     userOperationsMixin_syncOutgoingHeartBeat: async function (LessonUUId) {
-      this.client
+      window.feathers_client
         .service("heartbeat")
         .update({}, { LessonUUId: LessonUUId }, {});
     },
@@ -62,25 +64,27 @@ export default {
       revokedStudentId
     ) {
       if (authorizedStudentId)
-        this.client.service("authorization").update(
+        window.feathers_client.service("authorization").update(
           {},
           {
             authorization: {
               LessonUUId: this.getCurrentLesson().uuid,
               student: authorizedStudentId,
               authorized: true,
+              access_token: this.getAccessToken(),
             },
           },
           {}
         );
       if (revokedStudentId)
-        this.client.service("authorization").update(
+        window.feathers_client.service("authorization").update(
           {},
           {
             authorization: {
               LessonUUId: this.getCurrentLesson().uuid,
               student: revokedStudentId,
               authorized: false,
+              access_token: this.getAccessToken(),
             },
           },
           {}

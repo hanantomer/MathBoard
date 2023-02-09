@@ -48,12 +48,22 @@
 
       <!-- questions -->
       <v-tooltip bottom hidden>
-        <template v-slot:activator="{ on, attrs }">
+        <template v-slot:activator="{ on }">
           <v-btn v-show="!!user.id" icon v-on="on" v-on:click="navToQuestions">
             <v-icon>mdi-message-question-outline</v-icon>
           </v-btn>
         </template>
         <span>Questions</span>
+      </v-tooltip>
+
+      <!-- answers -->
+      <v-tooltip bottom hidden>
+        <template v-slot:activator="{ on }">
+          <v-btn v-show="teacher" icon v-on="on" v-on:click="navToAnswers">
+            <v-icon>mdi-checkbox-marked-outline</v-icon>
+          </v-btn>
+        </template>
+        <span>Answers</span>
       </v-tooltip>
 
       <!-- sign in / register -->
@@ -135,7 +145,7 @@ export default {
     loginType: null,
   }),
   methods: {
-    ...mapGetters({ getUser: "getUser" }),
+    ...mapGetters({ getUser: "getUser", isTeacher: "isTeacher" }),
     openLoginDialog(tab) {
       this.loginDialog = true;
       this.loginType = "Login";
@@ -156,6 +166,9 @@ export default {
     navToQuestions: function () {
       this.$router.push("/questions");
     },
+    navToAnswers: function () {
+      this.$router.push("/answers");
+    },
 
     // signInViaGoogleAuth: async function () {
     //   let user = await this.authGoogleUser(this.googleUser);
@@ -169,6 +182,9 @@ export default {
   computed: {
     user: function () {
       return this.getUser();
+    },
+    teacher: function () {
+      return this.isTeacher();
     },
   },
 };

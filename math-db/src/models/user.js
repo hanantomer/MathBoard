@@ -41,7 +41,7 @@ module.exports = (sequelize, DataTypes) => {
             access_token: {
                 type: DataTypes.STRING,
             },
-            userType: {
+            userType: { // teacher vs student
                 type: DataTypes.STRING,
             }
         },

@@ -87,8 +87,8 @@ export default {
     }),
     submit: function () {
       this.show = false;
-      //this.$emit("freeTextSubmitted", this.text, this.background_color);
-      this.$emit("freeTextSubmitted", this.text, "lightYellow");
+      //this.$emit("submitText", this.text, this.background_color);
+      this.$emit("submitText", this.text, "lightYellow");
       this.text = "";
     },
   },

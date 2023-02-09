@@ -3,7 +3,7 @@ const { Model } = require("sequelize");
 module.exports = (sequelize, DataTypes) => {
     class AnswerSqrt extends Model {
         static associate(models) {
-            AnswerSqrt.belongsTo(models.Question, {
+            AnswerSqrt.belongsTo(models.Answer, {
                 onDelete: "CASCADE",
                 onUpdate: "CASCADE",
                 foreignKey: { allowNull: false },
@@ -37,7 +37,7 @@ module.exports = (sequelize, DataTypes) => {
             indexes: [
                 {
                     unique: true,
-                    fields: ["questionId", "row", "fromCol","userId"],
+                    fields: ["AnswerId", "row", "fromCol","userId"],
                 },
             ],
         }

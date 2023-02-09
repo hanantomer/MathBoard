@@ -11,10 +11,8 @@
         height: selectionRectHeight + 'px',
       }"
       v-show="
-        !!selectionPosition.x1 &&
-        !!selectionPosition.x2 &&
-        !!selectionPosition.y1 &&
-        !!selectionPosition.y2
+        selectionPosition.x1 != selectionPosition.x2 &&
+        selectionPosition.y1 != selectionPosition.y2
       "
     ></v-card>
   </div>
@@ -163,8 +161,38 @@ export default {
       }
     },
 
+    noramalizeLeftOrTop(point) {
+      return (
+        Math.floor(point / this.matrixMixin_getRectSize()) *
+        this.matrixMixin_getRectSize()
+      );
+    },
+
+    noramalizeRightOrBottom(point) {
+      return (
+        Math.ceil(point / this.matrixMixin_getRectSize()) *
+        this.matrixMixin_getRectSize()
+      );
+    },
+
+    normalizeSelection() {
+      this.selectionPosition.x1 = this.noramalizeLeftOrTop(
+        this.selectionPosition.x1
+      );
+      this.selectionPosition.y1 = this.noramalizeLeftOrTop(
+        this.selectionPosition.y1
+      );
+      this.selectionPosition.x2 = this.noramalizeRightOrBottom(
+        this.selectionPosition.x2
+      );
+      this.selectionPosition.y2 = this.noramalizeRightOrBottom(
+        this.selectionPosition.y2
+      );
+    },
+
     // extend or shrink selection area from inner mouse move
     updateSelectionArea(e) {
+      // normalize selection position to edges of rectangle
       if (!this.selectionPosition.x1) {
         this.selectionPosition.x1 = e.clientX - this.svgDimensions.x;
         this.selectionPosition.y1 = e.clientY - this.svgDimensions.y;
@@ -174,24 +202,25 @@ export default {
       this.selectionPosition.y2 = e.clientY - this.svgDimensions.y;
     },
     endSelect() {
-      //this.setCurrentEditMode(EditMode.SYMBOL);
       this.selectionMode = SelectionMode.MOVE;
       if (this.selectionPosition.x2 != this.selectionPosition.x1) {
+        this.normalizeSelection();
+
         d3.select("#" + this.svgId)
           .selectAll("foreignObject")
           .each((datum) => {
             let row = datum.row ?? datum.fromRow;
             let col = datum.col ?? datum.fromCol;
             if (
-              !!col &&
-              !!row &&
-              this.matrixMixin_getRectSize() * col >
+              //!!col &&
+              //!!row &&
+              this.matrixMixin_getRectSize() * col >=
                 this.selectionPosition.x1 &&
-              this.matrixMixin_getRectSize() * col <
+              this.matrixMixin_getRectSize() * col <=
                 this.selectionPosition.x2 &&
-              this.matrixMixin_getRectSize() * row >
+              this.matrixMixin_getRectSize() * row >=
                 this.selectionPosition.y1 &&
-              this.matrixMixin_getRectSize() * row < this.selectionPosition.y2
+              this.matrixMixin_getRectSize() * row <= this.selectionPosition.y2
             ) {
               this.$store.dispatch("selectNotation", {
                 col: col,
@@ -228,12 +257,14 @@ export default {
         (e.clientY - this.svgDimensions.y - this.dragPosition.y) / rectSize
       );
 
+      console.log(rectDeltaX);
+
       if (rectDeltaX != 0 || rectDeltaY != 0) {
         this.$store
           .dispatch("moveSelectedNotations", {
             rectDeltaX,
             rectDeltaY,
-            rectSize,
+            //      rectSize,
           })
           .then(() => {
             this.selectionPosition.x1 += rectDeltaX * rectSize;

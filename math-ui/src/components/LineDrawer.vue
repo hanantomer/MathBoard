@@ -108,7 +108,7 @@ export default {
       this.linePosition.y = this.getNearestRow(position.y);
     },
     selectLine: function () {
-      this.matrixMixin_unselectPreviouslySelectedtRect();
+      //this.activateObjectMixin_unselectPreviouslyActiveCell();
 
       this.hideLine(this.selectedLineId);
       let storedNotation = this.getNotations()[this.selectedLineId];
@@ -182,7 +182,6 @@ export default {
         let row = Math.round(
           this.linePosition.y / this.matrixMixin_getRectSize()
         );
-        console.log("endDrawLine");
         this.saveLine(row, fromCol, toCol);
         this.$emit("ended"); // signal parent
       }

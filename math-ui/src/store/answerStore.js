@@ -38,17 +38,23 @@ export default {
     },
   },
   actions: {
-    async loadAnswer(context, answerId) {
-      let answer = await dbSyncMixin.methods.getAnswer(answerId);
+    async loadAnswer(context, answerUUId) {
+      let answer = await dbSyncMixin.methods.getAnswer(answerUUId);
+      let question = await dbSyncMixin.methods.getQuestion(
+        answer.Question.uuid
+      );
+
       if (!!answer) {
         context.commit("addAnswer", answer);
         context.commit("setCurrentAnswer", answer);
+        context.commit("setCurrentQuestion", question);
       }
     },
+
     async loadAnswers(context) {
       context.commit("removeAllAnswers");
       let answers = await dbSyncMixin.methods.getAnswers(
-        context.getters.getCurrentLesson.uuid
+        context.getters.getCurrentQuestion.uuid
       );
       if (answers.data.length > 0) {
         answers.data.forEach((e) => {
@@ -58,14 +64,13 @@ export default {
       return answers.data.length > 0;
     },
     async addAnswer(context) {
-      if (
-        context.getters.getAnswers.find(
-          (a) => a.uuid == context.getters.getCurrentQuestion.uuid
-        ) != null
-      ) {
-        return;
-      }
-      let answer = {};
+      let answer = context.getters.getAnswers.find(
+        (a) => a.Question.uuid == context.getters.getCurrentQuestion.uuid
+      );
+
+      if (!!answer) return answer;
+
+      answer = {};
       answer.QuestionUUId = context.getters.getCurrentQuestion.uuid;
       answer.UserId = context.getters.getUser.id;
       answer = await dbSyncMixin.methods.addAnswer(answer);

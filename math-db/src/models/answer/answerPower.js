@@ -3,7 +3,7 @@ const { Model } = require("sequelize");
 module.exports = (sequelize, DataTypes) => {
     class AnswerPower extends Model {
         static associate(models) {
-            AnswerPower.belongsTo(models.Question, {
+            AnswerPower.belongsTo(models.Answer, {
                 onDelete: "CASCADE",
                 onUpdate: "CASCADE",
                 foreignKey: { allowNull: false },
@@ -38,7 +38,7 @@ module.exports = (sequelize, DataTypes) => {
             indexes: [
                 {
                     unique: true,
-                    fields: ["questionId","row","col","userId"],
+                    fields: ["AnswerId","row","col","userId"],
                 },
             ],
         }

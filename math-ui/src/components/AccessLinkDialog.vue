@@ -54,7 +54,7 @@ export default {
   },
   data() {
     return {
-      site: "http://localhost:8080/lesson/",
+      site: "http://localhost:8080/lesson/", ///TODO: point to parameter
       link: "",
     };
   },

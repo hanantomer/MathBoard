@@ -134,7 +134,14 @@ module.exports = {
     },
     addLessonToSharedLessons: async function (lessonUUId, userId) {
       try {
-        return await axiosInstnce.post("/lessonStudents", {
+        // check if exists
+        let studentLesson = await axiosInstnce.get(
+          `/studentlessons?LessonUUId=${lessonUUId}&UserId=${userId}`
+        );
+
+        if (!!studentLesson.data) return studentLesson.data;
+
+        return await axiosInstnce.post("/studentlessons", {
           LessonUUId: lessonUUId,
           UserId: userId,
         });
@@ -159,7 +166,7 @@ module.exports = {
 
     saveNotation: async function (notation) {
       console.debug("dbsync:" + notation.value);
-      res = await axiosInstnce.post(
+      let res = await axiosInstnce.post(
         `/${notation.boardType}${notation.type.toLowerCase()}s`,
         notation
       );
@@ -168,10 +175,13 @@ module.exports = {
         : null;
     },
     updateNotation: async function (notation) {
-      return await axiosInstnce.put(
+      let res = await axiosInstnce.put(
         `/${notation.boardType}${notation.type.toLowerCase()}s/${notation.id}`,
         notation
       );
+      return res
+        ? { ...res.data, type: notation.type, LessonUUId: notation.LessonUUId }
+        : null;
     },
     removeNotation: async function (notation) {
       try {
@@ -198,6 +208,15 @@ module.exports = {
         this.handleError(error);
       }
     },
+    getAnswer: async function (answerUUId) {
+      try {
+        let res = await axiosInstnce.get("/answers?uuid=" + answerUUId);
+        return !!res ? res.data[0] : null;
+      } catch (error) {
+        this.handleError(error);
+      }
+    },
+
     getTeacherLessons: async function (userId) {
       try {
         return axiosInstnce.get("/lessons?UserId=" + userId);
@@ -207,20 +226,30 @@ module.exports = {
     },
     getStudentLessons: async function (userId) {
       try {
-        return await axiosInstnce.get("/lessonstudents?UserId=" + userId);
+        return await axiosInstnce.get("/studentlessons?UserId=" + userId);
       } catch (error) {
         this.handleError(error);
       }
     },
-
     getQuestions: async function (lessonUUId) {
       try {
-        return axiosInstnce.get("/questions?LessonUUId=" + lessonUUId);
+        return !!lessonUUId
+          ? axiosInstnce.get("/questions?LessonUUId=" + lessonUUId)
+          : axiosInstnce.get("/questions");
       } catch (error) {
         this.handleError(error);
       }
     },
-    getNotations: function (notationType, boardType, parentUUId, userId) {
+    getAnswers: async function (questionUUId) {
+      try {
+        return !!questionUUId
+          ? axiosInstnce.get("/answers?QuestionUUId=" + questionUUId)
+          : axiosInstnce.get("/answers");
+      } catch (error) {
+        this.handleError(error);
+      }
+    },
+    getNotations: function (notationType, boardType, parentUUId) {
       try {
         // e.g lessonsymbols?LessonUUId=1
         let parentFieldName =
@@ -237,11 +266,6 @@ module.exports = {
         }
 
         let uri = `${boardType}${notationType}s?${parentFieldName}=${parentUUId}`;
-
-        // for answer, load notations of logged user
-        //if (boardType === BoardType.ANSWER) {
-        //  uri += `&UserId=${userId}`;
-        // }
 
         return axiosInstnce.get(uri);
       } catch (error) {

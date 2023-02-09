@@ -4,30 +4,32 @@
       :dialog="lessonDialog"
       v-on="{ save: saveLesson }"
     ></NewItemDialog>
-    <v-card class="mx-auto" max-width="600" min-height="600">
+    <v-card class="mx-auto" max-width="800" min-height="600">
       <v-toolbar color="primary" dark>
         <v-toolbar-title>{{ title }}</v-toolbar-title>
-
         <v-spacer></v-spacer>
-
         <v-btn icon v-on:click="openLessonDialog">
           <v-icon>mdi-plus</v-icon>
         </v-btn>
       </v-toolbar>
-
-      <v-list two-line>
-        <v-list-item-group active-class="primary--text">
-          <v-list-item
-            v-for="lesson in lessons"
-            :key="lesson.uuid"
-            @click="seletctLesson(lesson)"
-          >
-            <v-list-item-content class="lesson_title">
-              <v-list-item-title v-text="lesson.name"> </v-list-item-title>
-            </v-list-item-content>
-          </v-list-item>
-        </v-list-item-group>
-      </v-list>
+      <v-card-title>
+        <v-text-field
+          v-model="search"
+          append-icon="mdi-magnify"
+          label="Search"
+          single-line
+          hide-details
+        ></v-text-field>
+      </v-card-title>
+      <v-data-table
+        :search="search"
+        :headers="headers"
+        :items="lessons"
+        :item-key="uuid"
+        :items-per-page="10"
+        class="elevation-1"
+        @click:row="seletctLesson"
+      ></v-data-table>
     </v-card>
   </v-container>
 </template>
@@ -45,7 +47,6 @@ export default {
       if (this.isTeacher() && !lessons) {
         this.openLessonDialog();
       }
-      //    this.lessons = this.getLessons();
     });
   },
   methods: {
@@ -53,6 +54,7 @@ export default {
       loadLessons: "loadLessons",
       addLesson: "addLesson",
       loadLesson: "loadLesson",
+      setCurrentLesson: "setCurrentLesson",
     }),
     ...mapGetters({
       getLessons: "getLessons",
@@ -62,16 +64,17 @@ export default {
       this.lessonDialog = {
         show: true,
         name: "",
-        title: "Please specify lesson title",
+        title: "<span>Please specify <strong>lesson</strong> title</span",
       };
     },
-    async saveLesson(lesson) {
-      let newLesson = await this.addLesson(lesson);
+    async saveLesson(newLesson) {
+      let savedLesson = await this.addLesson(newLesson);
+      await this.setCurrentLesson(savedLesson);
       this.$router.push({
-        path: "/lesson/" + newLesson.uuid,
+        path: "/lesson/" + savedLesson.uuid,
       });
     },
-    async seletctLesson(lesson) {
+    async seletctLesson(lesson, b) {
       this.loadLesson(lesson.uuid).then(() =>
         this.$router.push({
           path: "/lesson/" + lesson.uuid,
@@ -80,15 +83,30 @@ export default {
     },
   },
   computed: {
+    headers: () => [
+      {
+        text: "Name",
+        value: "name",
+      },
+      {
+        text: "Created At",
+        value: "createdAt",
+      },
+    ],
     lessons: function () {
-      return this.getLessons();
+      return this.getLessons().map((l) => {
+        return {
+          uuid: l.uuid,
+          name: l.name,
+          createdAt: new Date(l.createdAt),
+        };
+      });
     },
   },
   data() {
     return {
+      search: "",
       title: "",
-      //      lessons: [],
-      selectedItem: {},
       lessonDialog: { show: false, name: "" },
       menu: [
         { icon: "plus", title: "Add" },

@@ -1,10 +1,25 @@
 <template>
   <v-container>
-    <NewItemDialog
+    <v-dialog v-model="noLessonDialog" max-width="290">
+      <v-card>
+        <v-card-title class="text-h5">Attention </v-card-title>
+
+        <v-card-text>
+          Please create lesson for which you can add a question
+        </v-card-text>
+
+        <v-card-actions>
+          <v-spacer></v-spacer>
+
+          <v-btn color="green darken-1" text @click="navToLessons"> OK </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+    <NewQuestionDialog
       :dialog="questionDialog"
       v-on="{ save: saveQuestion }"
-    ></NewItemDialog>
-    <v-card class="mx-auto" max-width="600" min-height="600">
+    ></NewQuestionDialog>
+    <v-card class="mx-auto" max-width="800" min-height="600">
       <v-toolbar color="primary" dark>
         <v-toolbar-title>Questions</v-toolbar-title>
 
@@ -14,56 +29,55 @@
           <v-icon>mdi-plus</v-icon>
         </v-btn>
       </v-toolbar>
-      <v-select
-        style="margin-top: 10px"
-        v-model="selectedLessonId"
-        :items="lessons"
-        item-value="id"
-        item-text="name"
-        label="Please choose a lesson:"
-        @input="lessonchanged"
-        dense
-        outlined
-      ></v-select>
-      <v-list two-line>
-        <v-list-item-group active-class="primary--text">
-          <v-list-item
-            v-for="question in questions"
-            :key="question.id"
-            @click="seletctQuestion(question)"
-          >
-            <v-list-item-content class="question_title">
-              <v-list-item-title v-text="question.name"> </v-list-item-title>
-            </v-list-item-content>
-          </v-list-item>
-        </v-list-item-group>
-      </v-list>
+      <v-data-table
+        :headers="headers"
+        :items="questions"
+        :item-key="uuid"
+        :items-per-page="10"
+        class="elevation-1"
+        @click:row="seletctQuestion"
+      ></v-data-table>
     </v-card>
   </v-container>
 </template>
 <script>
 import { mapActions } from "vuex";
 import { mapGetters } from "vuex";
-import NewItemDialog from "./NewItemDialog.vue";
+import NewQuestionDialog from "./NewQuestionDialog.vue";
 
 export default {
-  components: { NewItemDialog },
+  mounted: function () {
+    this.load();
+  },
+  components: { NewQuestionDialog },
   name: "Questions",
-  async mounted() {
-    await this.loadLessons(this.isTeacher());
-    if (!this.getCurrentLesson()?.id) return;
-    this.selectedLessonId = this.getCurrentLesson().id;
-
-    this.loadQuestions().then((questions) => {
-      if (!questions) {
-        this.openQuestionDialog();
-      }
-      this.questions = this.getQuestions();
-    });
+  watch: {
+    $route: "load",
   },
   computed: {
-    lessons() {
-      return this.getLessons();
+    headers: () => [
+      {
+        text: "Lesson Name",
+        value: "lessonName",
+      },
+      {
+        text: "Question Name",
+        value: "name",
+      },
+      {
+        text: "Created At",
+        value: "createdAt",
+      },
+    ],
+    questions: function () {
+      return this.getQuestions().map((q) => {
+        return {
+          uuid: q.uuid,
+          name: q.name,
+          lessonName: q.Lesson.name,
+          createdAt: new Date(q.createdAt),
+        };
+      });
     },
   },
   methods: {
@@ -73,47 +87,74 @@ export default {
       addQuestion: "addQuestion",
       setCurrentLesson: "setCurrentLesson",
       setCurrentQuestion: "setCurrentQuestion",
+      setCurrentAnswer: "setCurrentAnswer",
+      isTeacher: "isTeacher",
     }),
     ...mapGetters({
       isTeacher: "isTeacher",
-      getLessons: "getLessons",
       getQuestions: "getQuestions",
-      getCurrentLesson: "getCurrentLesson",
-      getCurrentQuestion: "getCurrentQuestion",
     }),
-    async lessonchanged() {
-      let selectedLesson = this.getLessons().find(
-        (l) => l.uuid === this.selectedLessonId
-      );
-      await this.setCurrentLesson(selectedLesson);
-      await this.loadQuestions();
-      this.questions = this.getQuestions();
+    ...mapActions({
+      addAnswer: "addAnswer",
+    }),
+
+    navToLessons() {
+      this.noLessonDialog = false;
+      this.$router.push({
+        path: "/lessons/",
+      });
     },
+
+    async load() {
+      let lessonCount = await this.loadLessons(this.isTeacher());
+      if (!lessonCount) {
+        this.noLessonDialog = true;
+        return;
+      }
+      this.loadQuestions().then((questions) => {
+        if (!questions) {
+          this.openQuestionDialog();
+        }
+      });
+    },
+
     openQuestionDialog() {
       this.questionDialog = {
         show: true,
         name: "",
-        title: "Please specify question title",
+        title: "<span>Please specify <strong>question</strong> title</span",
       };
     },
+
     async saveQuestion(question) {
       let newQuestion = await this.addQuestion(question);
       this.$router.push({
         path: "/question/" + newQuestion.uuid,
       });
     },
+
     async seletctQuestion(question) {
-      this.setCurrentQuestion(question).then(() =>
-        this.$router.push({
-          path: "/question/" + question.uuid,
-        })
-      );
+      if (this.isTeacher()) {
+        this.setCurrentQuestion(question).then(() =>
+          this.$router.push({
+            path: "/question/" + question.uuid,
+          })
+        );
+      } else {
+        await this.setCurrentQuestion(question);
+        // add student answer when question is first selected
+        let answer = await this.addAnswer();
+        this.setCurrentAnswer(answer).then(() =>
+          this.$router.push({
+            path: "/answer/" + answer.uuid,
+          })
+        );
+      }
     },
   },
   data() {
     return {
-      questions: [],
-      selectedLessonId: null,
+      noLessonDialog: false,
       questionDialog: { show: false, name: "" },
       menu: [
         { icon: "plus", title: "Add" },

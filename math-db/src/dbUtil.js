@@ -96,14 +96,39 @@ module.exports = {
     },
 
     async getStudentLessons(userId) {
-        let res = await db.sequelize.models["LessonStudent"].findAll({
+        return await db.sequelize.models["StudentLesson"].findAll({
             include:[{model: db.sequelize.models["User"]},{model: db.sequelize.models["Lesson"]}],
             where: {UserId: userId}
         });
-
-        return res;
     },
 
+    async getAnswersWithStudentQuestionAndLesson(whereClause) {
+        return await db.sequelize.models["Answer"].findAll({
+            include: [
+                { model: db.sequelize.models["User"] },
+                {
+                    model: db.sequelize.models["Question"],
+                    include: [{ model: db.sequelize.models["Lesson"] }]
+                }],
+            where: whereClause
+        });
+    },
+
+    async getQuestionsWithLesson(whereClause) {
+        return await db.sequelize.models["Question"].findAll({
+            include:[{model: db.sequelize.models["Lesson"]}],
+            where:  whereClause 
+        });
+    },
+
+    async getLesson(lessonUUId) {
+        return  await db.sequelize.models["Lesson"].findOne({
+            where: {
+                uuid: lessonUUId
+            }
+        });
+    },
+    
     async findPointOverlappingWithRect(model, parentFieldName, parentId, fromRow, toRow, fromCol, toCol) {
         return await db.sequelize.models[model].findOne({
             where: {

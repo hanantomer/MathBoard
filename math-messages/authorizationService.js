@@ -22,22 +22,22 @@ class AuhorizationService {
   async update(data, params) {
     let user = await this.app
       .service("authentication")
-      .authUserByToken(params.query.access_token);
+      .authUserByToken(params.authorization.access_token);
 
+    let lessonId = null;
     if (!!user) {
-      user.lessonId = await dbUtil.getIdByUUID(
-        "lesson",
-        data.authorization.LessonUUId
+      lessonId = await dbUtil.getIdByUUID(
+        "Lesson",
+        params.authorization.LessonUUId
       );
     }
 
-    let isOwner =
-      !!user && dbUtil.isTeacher(user.id, data.authorization.lessonId);
+    let isOwner = !!user && dbUtil.isTeacher(user.id, lessonId);
     if (isOwner) {
       return {
-        userId: data.authorization.student,
-        lessonId: user.lessonId,
-        authorized: data.authorization.authorized,
+        userId: params.authorization.student,
+        LessonUUId: params.authorization.LessonUUId,
+        authorized: params.authorization.authorized,
       };
     }
   }

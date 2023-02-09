@@ -2,13 +2,13 @@
 const dbUtil = require("math-db/src/dbUtil");
 
 module.exports = {
-    read: {
-        send: {
+    list: {
+        fetch: {
             before: async (req, res, context) => {
                 context.instance = await dbUtil.getStudentLessons(
                     req.query.UserId
                 );
-                return context.continue;
+                return context.skip;
             },
         },
     },
