@@ -1,28 +1,28 @@
 <template>
   <div>
     <v-card>
-      <v-card-title> <h5>Online Students</h5></v-card-title>
+      <v-card-title>
+        <p style="font-size: 1vw">Online Students</p></v-card-title
+      >
       <v-card-text>
         <template v-if="!!students.length">
           <v-list>
             <v-list-item-group active-class="activestudent" color="indigo">
-              <v-list-item v-for="student in students" :key="student.id">
+              <v-list-item
+                v-for="student in students"
+                :key="student.id"
+                v-on:click="$toggleStudentAuthorization(student)"
+              >
                 <v-list-item-avatar>
                   <v-img :src="student.imageUrl"></v-img>
                 </v-list-item-avatar>
                 <v-list-item-content>
                   <v-list-item-title
+                    style="font-size: 0.9vw"
                     v-text="$getStudentDisplayName(student)"
                   ></v-list-item-title>
                 </v-list-item-content>
-                <v-btn
-                  class="[mx-2]"
-                  fab
-                  dark
-                  x-small
-                  color="green"
-                  v-on:click="$toggleStudentAuthorization(student)"
-                >
+                <v-btn class="[mx-2]" fab dark x-small color="green">
                   <v-icon dark> mdi-pencil </v-icon>
                 </v-btn>
               </v-list-item>
@@ -62,7 +62,8 @@ export default {
       this.toggleAuthorization(student.userId).then((authorization) => {
         this.userOperationsMixin_syncOutgoingAuthUser(
           authorization.authorizedStudentId,
-          authorization.revokedStudentId
+          authorization.revokedStudentId,
+          this.getCurrentLesson().uuid
         );
       });
     },

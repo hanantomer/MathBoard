@@ -1,13 +1,48 @@
-/// TOD unite with symbol mixin
+import { mapGetters, mapActions } from "vuex";
+import NotationType from "./notationType";
+import BoardType from "../Mixins/boardType";
+import EditMode from "./editMode";
 
 export default {
   methods: {
-    getNotationXposByCol(col) {
-      return col * this.matrixMixin_getRectSize();
+    ...mapGetters({
+      getActiveCell: "getActiveCell",
+      getCurrentEditMode: "getCurrentEditMode",
+      getParent: "getParent",
+    }),
+
+    ...mapActions({
+      removeNotationsByCell: "removeNotationsByCell",
+      removeActiveNotation: "removeActiveNotation",
+      removeSelectedNotations: "removeSelectedNotations",
+      unselectAllNotations: "unselectAllNotations",
+      addNotation: "addNotation",
+    }),
+
+    notationMixin_addNotation(e) {
+      if (
+        // in power mode allow digits only
+        this.getCurrentEditMode() === EditMode.POWER &&
+        e.code.startsWith("Digit")
+      ) {
+        this.$addNotation(e.key, NotationType.POWER);
+        return;
+      }
+
+      if (
+        this.getCurrentEditMode() === EditMode.SYMBOL &&
+        this.signList.indexOf(e.key) >= 0
+      ) {
+        this.$addNotation(e.key, NotationType.SIGN);
+        return;
+      }
+
+      if (this.getCurrentEditMode() === EditMode.SYMBOL) {
+        this.$addNotation(e.key, NotationType.SYMBOL);
+        return;
+      }
     },
-    getNotationYposByRow(row) {
-      return row * this.matrixMixin_getRectSize();
-    },
+
     notationMixin_removeNotationsAtMousePosition: function (e) {
       let rectAtMousePosition = this.matrixMixin_findClickedObject(
         {
@@ -22,27 +57,59 @@ export default {
         col: rectAtMousePosition.attributes.col.value,
       });
     },
-    notationMixin_removeNotationAtSeletedPosition() {
-      this.romoveActiveCellNotations();
-      this.romoveActiveNotations();
+    notationMixin_removeActiveOrSelectedNotations() {
+      this.$removeActiveCellNotations();
+      this.$removeActiveNotation();
+      this.$removeSelectedNotations();
     },
-    async romoveActiveCellNotations() {
+
+    async $removeActiveCellNotations() {
       let cell = this.getActiveCell();
-      let notationsToDelete = await this.$store.dispatch(
-        "removeNotationsByCell",
-        cell
-      );
+      let notationsToDelete = await this.removeNotationsByCell(cell);
       if (!!notationsToDelete) {
         notationsToDelete.forEach((notation) =>
           this.userOperationsMixin_syncOutgoingRemoveNotation(notation)
         );
       }
     },
-    async romoveActiveNotations() {
-      let notationToDelete = await this.$store.dispatch("removeActiveNotation");
-      if (!!notationToDelete) {
-        this.userOperationsMixin_syncOutgoingRemoveNotation(notationToDelete);
+
+    async $removeActiveNotation() {
+      let deletedNotation = await this.removeActiveNotation();
+      if (!!deletedNotation) {
+        this.userOperationsMixin_syncOutgoingRemoveNotation(deletedNotation);
       }
+    },
+
+    async $removeSelectedNotations() {
+      let deletedNotations = await this.removeSelectedNotations();
+      if (!!deletedNotations) {
+        deletedNotations.forEach((n) =>
+          this.userOperationsMixin_syncOutgoingRemoveNotation(n)
+        );
+      }
+      this.unselectAllNotations();
+    },
+
+    $addNotation(value, type) {
+      let symbol = {
+        value: value,
+        type: type,
+      };
+      symbol.col = this.getActiveCell().col;
+      symbol.row = this.getActiveCell().row;
+
+      this.addNotation(symbol)
+        .then((symbol) => {
+          if (this.getParent().boardType === BoardType.LESSON) {
+            this.userOperationsMixin_syncOutgoingSaveNotation(symbol);
+          }
+        })
+        .then(() => {
+          this.matrixMixin_setNextRect(1, 0);
+        })
+        .catch((e) => {
+          console.error(e);
+        });
     },
   },
 };

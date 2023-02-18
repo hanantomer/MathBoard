@@ -511,9 +511,9 @@ export default {
     },
     setNotation(state, notation) {
       let oldNotation = state.notations[notation.type + notation.id];
-      //notation.selected = false;
-      // for answer, notation.boardType is populated
+
       if (!notation.boardType) notation.boardType = state.parent.boardType;
+
       Vue.set(state.notations, notation.type + notation.id, notation);
 
       helper.updateOccupationMatrix(
@@ -676,9 +676,22 @@ export default {
 
     async removeActiveNotation(context) {
       let notationToDelete = context.getters.getActiveNotation;
+      if (!notationToDelete) return;
+
       await dbSyncMixin.methods.removeNotation(notationToDelete);
       context.commit("removeNotation", notationToDelete);
       return notationToDelete;
+    },
+
+    async removeSelectedNotations(context) {
+      let notationsToDelete = [...context.getters.getSelectedNotations];
+      if (!notationsToDelete) return;
+
+      notationsToDelete.forEach(async (n) => {
+        await dbSyncMixin.methods.removeNotation(n);
+        context.commit("removeNotation", n);
+      });
+      return notationsToDelete;
     },
 
     selectNotation(context, pointCoordinates) {
@@ -698,12 +711,14 @@ export default {
             case NotationType.SYMBOL:
             case NotationType.SIGN:
             case NotationType.POWER:
+              notation.UserId = context.getters.getUser.id;
               notation[1].col += delta.rectDeltaX;
               notation[1].row += delta.rectDeltaY;
               context.commit("setNotation", notation[1]);
               break;
             case NotationType.FRACTION:
             case NotationType.SQRT:
+              notation.UserId = context.getters.getUser.id;
               notation[1].fromCol += delta.rectDeltaX;
               notation[1].toCol += delta.rectDeltaX;
               notation[1].row += delta.rectDeltaY;
@@ -712,6 +727,7 @@ export default {
             case NotationType.TEXT:
             case NotationType.IMAGE:
             case NotationType.GEO: {
+              notation.UserId = context.getters.getUser.id;
               notation[1].fromCol += delta.rectDeltaX;
               notation[1].toCol += delta.rectDeltaX;
               notation[1].fromRow += delta.rectDeltaY;
@@ -746,6 +762,7 @@ export default {
     },
 
     async updateNotation(context, notation) {
+      notation.UserId = context.getters.getUser.id;
       // disallow update for student in question area
 
       if (

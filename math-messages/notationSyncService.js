@@ -19,10 +19,10 @@ class notationSyncService {
     return data.notation;
   }
 
-  async update(data, params) {
+  async update(id, data, params) {
     let user = await util.getUserFromCookie(params.headers.cookie, this.app);
     if (!!user) {
-      this.enrichNotation(data.notation.data, user.id);
+      this.enrichNotation(data.notation, user.id);
       return data.notation;
     }
   }
@@ -30,7 +30,7 @@ class notationSyncService {
   async remove(data, params) {
     let user = await util.getUserFromCookie(params.headers.cookie, this.app);
     if (!!user) {
-      this.enrichNotation(data.notation.data, user.id);
+      this.enrichNotation(data.notation, user.id);
       return data.notation;
     }
   }

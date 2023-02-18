@@ -501,5 +501,11 @@ export default {
           d3.select(this).remove();
         });
     },
+    getNotationXposByCol(col) {
+      return col * this.matrixMixin_getRectSize();
+    },
+    getNotationYposByRow(row) {
+      return row * this.matrixMixin_getRectSize();
+    },
   },
 };

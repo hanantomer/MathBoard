@@ -51,11 +51,6 @@ app.service("heartbeat").publish("updated", (heartbeat, ctx) => {
 });
 
 app.service("activeCell").publish("updated", (position, ctx) => {
-  console.debug(
-    `publish selected rect updated data: ${JSON.stringify(
-      position
-    )} to channel: ${position.LessonUUId.toString()}`
-  );
   return [app.channel(constants.LESSON_CHANNEL_PREFIX + position.LessonUUId)];
 });
 

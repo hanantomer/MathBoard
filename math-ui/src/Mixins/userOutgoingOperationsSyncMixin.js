@@ -20,18 +20,8 @@ export default {
         gapi.auth2.getAuthInstance().currentUser.get().isSignedIn()
       );
     },
-    getAccessToken() {
-      // return `${
-      //   this.signedInWithGoogle()
-      //     ? gapi.auth2.getAuthInstance().currentUser.get().getAuthResponse()
-      //         .id_token
-      //     : window.$cookies.get("access_token")
-      // }`;
-      return window.$cookies.get("access_token");
-    },
     userOperationsMixin_syncOutgoingActiveCell: async function (activeCell) {
       activeCell.LessonUUId = this.getCurrentLesson().uuid;
-      console.debug(`sync selected rect ${JSON.stringify(activeCell)}`);
       window.feathers_client
         .service("activeCell")
         .update({}, { activeCell: activeCell }, {});
@@ -44,7 +34,7 @@ export default {
     userOperationsMixin_syncOutgoingRemoveNotation: async function (notation) {
       window.feathers_client
         .service("notationSync")
-        .remove({}, { notation: notation }, {});
+        .remove({ notation: notation }, {});
     },
     userOperationsMixin_syncOutgoingUpdateSelectedNotation: async function (
       selectedNotation
@@ -61,18 +51,16 @@ export default {
     // inform students that he is eligible to edit
     userOperationsMixin_syncOutgoingAuthUser: async function (
       authorizedStudentId,
-      revokedStudentId
+      revokedStudentId,
+      LessonUUId
     ) {
       if (authorizedStudentId)
         window.feathers_client.service("authorization").update(
           {},
           {
-            authorization: {
-              LessonUUId: this.getCurrentLesson().uuid,
-              student: authorizedStudentId,
-              authorized: true,
-              access_token: this.getAccessToken(),
-            },
+            LessonUUId: LessonUUId,
+            userId: authorizedStudentId,
+            authorized: true,
           },
           {}
         );
@@ -80,12 +68,9 @@ export default {
         window.feathers_client.service("authorization").update(
           {},
           {
-            authorization: {
-              LessonUUId: this.getCurrentLesson().uuid,
-              student: revokedStudentId,
-              authorized: false,
-              access_token: this.getAccessToken(),
-            },
+            LessonUUId: LessonUUId,
+            userId: revokedStudentId,
+            authorized: false,
           },
           {}
         );

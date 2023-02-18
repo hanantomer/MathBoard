@@ -94,7 +94,7 @@ export default {
       setCurrentEditMode: "setCurrentEditMode",
     }),
 
-    keyUp: function (e) {
+    /*keyUp: function (e) {
       if (e.code === "Backspace" || e.code === "Delete") {
         this.$store.dispatch("removeNotationsByRect", {
           fromCol: this.selectionRectLeft / this.matrixMixin_getRectSize(),
@@ -108,7 +108,7 @@ export default {
         });
         this.resetSelection();
       }
-    },
+    },*/
 
     registerSvgMouseDown: function (e) {
       document
@@ -212,8 +212,6 @@ export default {
             let row = datum.row ?? datum.fromRow;
             let col = datum.col ?? datum.fromCol;
             if (
-              //!!col &&
-              //!!row &&
               this.matrixMixin_getRectSize() * col >=
                 this.selectionPosition.x1 &&
               this.matrixMixin_getRectSize() * col <=
@@ -294,7 +292,7 @@ export default {
       this.selectionPosition.x1 = this.selectionPosition.x2 = this.selectionPosition.y1 = this.selectionPosition.y2 = null;
       this.selectionMode = SelectionMode.SELECTING;
       this.setCurrentEditMode(EditMode.SYMBOL);
-      this.$store.dispatch("unselectAllNotations");
+      //this.$store.dispatch("unselectAllNotations");
     },
   },
 };

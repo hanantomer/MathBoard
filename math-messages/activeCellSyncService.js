@@ -8,7 +8,7 @@ class activeCellSyncService {
     let user = await util.getUserFromCookie(params.headers.cookie, this.app);
 
     if (!!user) {
-      data.activeCell.userId = user.id;
+      data.activeCell.UserId = user.id;
 
       console.debug(
         `rect position changed: ${JSON.stringify(data.activeCell)}`

@@ -45,7 +45,6 @@ import { mapActions } from "vuex";
 import matrixMixin from "../Mixins/matrixMixin";
 import activateObjectMixin from "../Mixins/activateObjectMixin";
 import eventManager from "../Mixins/eventManager";
-import symbolMixin from "../Mixins/symbolMixin";
 import notationMixin from "../Mixins/notationMixin";
 import userOperationsOutgoingSyncMixin from "../Mixins/userOutgoingOperationsSyncMixin";
 import userOperationsIncomingSyncMixin from "../Mixins/userIncomingOperationsSyncMixin";
@@ -66,7 +65,7 @@ export default {
     questions,
   },
   mounted: function () {
-    this.loadLesson().then(() => {
+    this.loadLesson(this.$route.params.LessonUUId).then(() => {
       this.activateObjectMixin_reset();
       this.matrixMixin_setMatrix();
 
@@ -86,7 +85,6 @@ export default {
     activateObjectMixin,
     userOperationsOutgoingSyncMixin,
     userOperationsIncomingSyncMixin,
-    symbolMixin,
     eventManager,
     notationMixin,
   ],
@@ -127,14 +125,11 @@ export default {
     resetToolbarState: function () {
       this.$root.$emit("resetToolbarState");
     },
-    loadLesson: async function () {
+    loadLesson: async function (lessonUUID) {
       // load from db to store
-      await this.$store.dispatch(
-        "loadLesson",
-        this.$route.params.LessonUUId || this.getCurrentLesson().uuid
-      );
+      await this.$store.dispatch("loadLesson", lessonUUID);
 
-      // if student, send heartbeat to teacher
+      // for student, send heartbeat to teacher
       if (!this.isTeacher()) {
         setInterval(
           this.userOperationsMixin_syncOutgoingHeartBeat,

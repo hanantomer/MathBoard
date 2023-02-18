@@ -99,13 +99,13 @@ export default {
       }
 
       if (e.code === "Backspace") {
-        this.notationMixin_removeNotationAtSeletedPosition();
+        this.notationMixin_removeActiveOrSelectedNotations();
         this.matrixMixin_setNextRect(-1, 0);
         return;
       }
 
       if (e.code === "Delete") {
-        this.notationMixin_removeNotationAtSeletedPosition();
+        this.notationMixin_removeActiveOrSelectedNotations();
         return;
       }
 
@@ -134,7 +134,7 @@ export default {
         return;
       }
 
-      this.symbolMixin_addSymbol(e);
+      this.notationMixin_addNotation(e);
     },
 
     eventManager_mouseDown(e) {

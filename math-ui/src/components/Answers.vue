@@ -89,28 +89,6 @@ export default {
         };
       });
     },
-    // selectedLesson: {
-    //   set(lessonUUId) {
-    //     this.setCurrentLesson(
-    //       this.getLessons().find((l) => l.uuid == lessonUUId)
-    //     );
-    //     this.loadQuestions();
-    //   },
-    //   get() {
-    //     return this.getCurrentLesson();
-    //   },
-    // },
-    // selectedQuestion: {
-    //   set(questionUUId) {
-    //     this.setCurrentQuestion(
-    //       this.getQuestions().find((l) => l.uuid == questionUUId)
-    //     );
-    //     this.loadAnswers();
-    //   },
-    //   get() {
-    //     return this.getCurrentQuestion();
-    //   },
-    // },
   },
   methods: {
     ...mapActions({

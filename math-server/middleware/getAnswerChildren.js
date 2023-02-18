@@ -15,6 +15,29 @@ module.exports = {
 
                 return context.continue;
             },
+            // replace id with AnswerUUId
+            after: async (req, res, context) => {
+                if (!!context.instance.dataValues.AnswerId) {
+                    context.instance.dataValues.AnswerUUId =
+                        await dbUtil.getUUIDById(
+                            "Answer",
+                            context.instance.dataValues.AnswerId
+                        );
+                    context.instance.dataValues.AnswerId = null;
+                }
+                return context.continue;
+            },
+
+            after: async (req, res, context) => {
+                context.instance.forEach(async (n) => {
+                    n.dataValues.AnswerUUId = await dbUtil.getUUIDById(
+                        "Answer",
+                        n.dataValues.AnswerId
+                    );
+                    n.AnswerId = null;
+                });
+                return context.continue;
+            },
         },
     },
 };

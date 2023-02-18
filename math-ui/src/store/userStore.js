@@ -17,14 +17,16 @@ export default {
     setUser(state, user) {
       Vue.set(state, "loggedUser", user);
     },
-    setUserWriteAuthorization(state) {
-      Vue.set(state, "loggedUser", { ...state.loggedUser, authorized: true });
+    setUserWriteAuthorization(state, authorized) {
+      Vue.set(state, "loggedUser", {
+        ...state.loggedUser,
+        authorized: authorized,
+      });
     },
   },
   actions: {
-    async setUserWriteAuthorization(context) {
-      context.commit("setUserWriteAuthorization");
-      return user;
+    async setUserWriteAuthorization(context, authorized) {
+      context.commit("setUserWriteAuthorization", authorized);
     },
     async setUser(context, user) {
       context.commit("setUser", user);

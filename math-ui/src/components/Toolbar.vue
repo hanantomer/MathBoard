@@ -157,7 +157,6 @@
 import EditMode from "../Mixins/editMode";
 import NotationType from "../Mixins/notationType";
 import matrixMixin from "../Mixins/matrixMixin";
-import symbolMixin from "../Mixins/symbolMixin";
 import userIncomingOperationsSyncMixin from "../Mixins/userIncomingOperationsSyncMixin";
 import userOutgoingOperationsSyncMixin from "../Mixins/userOutgoingOperationsSyncMixin";
 import accessLinkDialog from "./AccessLinkDialog.vue";
@@ -173,7 +172,6 @@ export default {
   },
   mixins: [
     matrixMixin,
-    symbolMixin,
     userIncomingOperationsSyncMixin,
     userOutgoingOperationsSyncMixin,
   ],
@@ -266,9 +264,9 @@ export default {
     },
     $symbolButtonPressed(e) {
       if (this.getCurrentEditMode() === EditMode.SYMBOL)
-        this.symbolMixin_addSymbol(e.currentTarget.innerText, "symbol");
+        this.notationMixin_addNotation(e.currentTarget.innerText, "symbol");
       else if (this.getCurrentEditMode() === EditMode.POWER) {
-        this.symbolMixin_addSymbol(e.currentTarget.innerText, "power");
+        this.notationMixin_addNotation(e.currentTarget.innerText, "power");
       }
     },
     $submitText: function (value, background_color) {

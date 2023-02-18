@@ -17,31 +17,36 @@ export default {
       let _store = store;
 
       client.service("notationSync").on("created", (notation) => {
-        if (notation.userId !== this.getUser().id) {
+        if (notation.UserId !== this.getUser().id) {
           _store.dispatch("syncIncomingUpdatedNotation", notation);
         }
       });
 
       client.service("notationSync").on("updated", (notation) => {
-        if (notation.userId !== this.getUser().id) {
+        if (notation.UserId !== this.getUser().id) {
           _store.dispatch("syncIncomingUpdatedNotation", notation);
         }
       });
       client.service("notationSync").on("removed", (notation) => {
-        if (notation.userId !== this.getUser().id) {
+        if (notation.UserId !== this.getUser().id) {
           _store.dispatch("syncIncomingRemovedNotation", notation);
         }
       });
       client.service("activeCell").on("updated", (activeCell) => {
-        if (activeCell.userId !== this.getUser().id) {
+        if (activeCell.UserId !== this.getUser().id) {
           _store.dispatch("setActiveCell", activeCell);
         }
       });
-      client.service("authorization").on("updated", (user) => {
-        if (user.userId === this.getUser().id) {
-          _store.dispatch("setUserWriteAuthorization");
-        }
-      });
+      if (!this.isTeacher()) {
+        client.service("authorization").on("updated", (authData) => {
+          if (
+            authData.UserId === this.getUser().id &&
+            this.getCurrentLesson().uuid === authData.LessonUUId
+          ) {
+            _store.dispatch("setUserWriteAuthorization", authData.authorized);
+          }
+        });
+      }
       if (this.isTeacher()) {
         client.service("heartbeat").on("updated", (user) => {
           if (user.id !== this.getUser().id) {

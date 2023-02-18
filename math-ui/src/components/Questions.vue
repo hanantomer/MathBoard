@@ -85,7 +85,6 @@ export default {
       loadLessons: "loadLessons",
       loadQuestions: "loadQuestions",
       addQuestion: "addQuestion",
-      setCurrentLesson: "setCurrentLesson",
       setCurrentQuestion: "setCurrentQuestion",
       setCurrentAnswer: "setCurrentAnswer",
       isTeacher: "isTeacher",

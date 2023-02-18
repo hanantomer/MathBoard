@@ -51,11 +51,13 @@ export default {
         this.$emit("input", value);
       },
     },
+    link() {
+      return this.site + this.getCurrentLesson().uuid;
+    },
   },
   data() {
     return {
       site: "http://localhost:8080/lesson/", ///TODO: point to parameter
-      link: "",
     };
   },
   methods: {
@@ -66,9 +68,6 @@ export default {
       navigator.clipboard.writeText(this.link);
       this.show = false;
     },
-  },
-  created: function () {
-    this.link = this.site + this.getCurrentLesson().uuid;
   },
 };
 </script>

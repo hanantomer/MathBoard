@@ -19,27 +19,14 @@ class AuhorizationService {
     }
   }
 
-  async update(data, params) {
-    let user = await this.app
-      .service("authentication")
-      .authUserByToken(params.authorization.access_token);
+  async update(id, data, params) {
+    let user = await util.getUserFromCookie(params.headers.cookie, this.app);
+    let lessonId = await dbUtil.getIdByUUID("Lesson", data.LessonUUId);
+    let isTeacher = await dbUtil.isTeacher(user.id, lessonId);
+    if (!isTeacher) return;
 
-    let lessonId = null;
-    if (!!user) {
-      lessonId = await dbUtil.getIdByUUID(
-        "Lesson",
-        params.authorization.LessonUUId
-      );
-    }
-
-    let isOwner = !!user && dbUtil.isTeacher(user.id, lessonId);
-    if (isOwner) {
-      return {
-        userId: params.authorization.student,
-        LessonUUId: params.authorization.LessonUUId,
-        authorized: params.authorization.authorized,
-      };
-    }
+    return data;
   }
 }
+
 module.exports = AuhorizationService;

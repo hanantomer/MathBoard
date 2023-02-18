@@ -41,7 +41,6 @@ import { mapActions } from "vuex";
 import matrixMixin from "../Mixins/matrixMixin";
 import activateObjectMixin from "../Mixins/activateObjectMixin";
 import eventManager from "../Mixins/eventManager";
-import symbolMixin from "../Mixins/symbolMixin";
 import notationMixin from "../Mixins/notationMixin";
 import toolbar from "./Toolbar.vue";
 import areaSelector from "./AreaSelector.vue";
@@ -64,13 +63,7 @@ export default {
     };
   },
 
-  mixins: [
-    matrixMixin,
-    activateObjectMixin,
-    symbolMixin,
-    eventManager,
-    notationMixin,
-  ],
+  mixins: [matrixMixin, activateObjectMixin, eventManager, notationMixin],
   computed: {
     ...mapState({
       notations: (state) => {

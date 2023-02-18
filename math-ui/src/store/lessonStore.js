@@ -52,10 +52,10 @@ export default {
   actions: {
     async loadLesson(context, LessonUUId) {
       let lesson = await dbSyncMixin.methods.getLesson(LessonUUId);
-      if (!lesson) console.error(`lesson ${LessonUUId} is invalid`);
       if (!!lesson) {
         context.commit("setCurrentLesson", lesson);
       }
+      return lesson;
     },
     async setCurrentLesson(context, lesson) {
       context.commit("setCurrentLesson", lesson);
