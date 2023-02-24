@@ -466,14 +466,14 @@ const helper = {
     );
   },
 
-  deActivateAllNotations(state) {
+  /* deActivateAllNotations(state) {
     Object.entries(state.notations)
       .map((n) => n[1])
       .filter((n) => !!n.active)
       .forEach((n) => {
         Vue.set(n, "active", false);
       });
-  },
+  },*/
 };
 
 export default {
@@ -484,6 +484,7 @@ export default {
     parent: { Id: null, boardType: BoardType.NONE },
     notations: {},
     activeCell: {},
+    activeNotation: {},
     cellOccupationMatrix: helper.createCellOccupationMatrix(),
   },
   getters: {
@@ -497,9 +498,10 @@ export default {
       return state.notations;
     },
     getActiveNotation: (state) => {
-      return Object.entries(state.notations)
-        .map((n) => n[1])
-        .find((n) => !!n.active);
+      return state.activeNotation;
+      // return Object.entries(state.notations)
+      //   .map((n) => n[1])
+      //   .find((n) => !!n.active);
     },
     getActiveCell: (state) => {
       return state.activeCell;
@@ -541,19 +543,21 @@ export default {
           Vue.set(state.notations[n[0]], "selected", false);
         });
     },
-
     removeAllNotations(state) {
       state.notations = {};
     },
     // for notations with more than single cell
     setActiveNotation(state, activeNotation) {
-      helper.deActivateAllNotations(state);
+      //helper.deActivateAllNotations(state);
+      if (state.activeNotation) delete state.activeNotation.selected;
       Vue.set(activeNotation, "active", true);
-      Vue.set(state, "activeCell", {});
+      Vue.set(state, "activeNotation", activeNotation);
+      Vue.set(state, "activeCell", null);
     },
     setActiveCell(state, activeCell) {
       Vue.set(state, "activeCell", activeCell);
-      helper.deActivateAllNotations(state);
+      Vue.set(state, "activeNotation", null);
+      //helper.deActivateAllNotations(state);
     },
   },
   actions: {
@@ -646,14 +650,16 @@ export default {
         context.state,
         cell
       );
-      if (!!notationsAtCell) {
-        notationsAtCell.forEach(async (n) => {
-          n.boardType = context.getters.getParent.boardType;
-          await dbSyncMixin.methods
-            .removeNotation(n)
-            .then(() => context.commit("removeNotation", n));
-        });
-      }
+
+      if (!notationsAtCell) return;
+
+      notationsAtCell.forEach(async (n) => {
+        n.boardType = context.getters.getParent.boardType;
+        await dbSyncMixin.methods
+          .removeNotation(n)
+          .then(() => context.commit("removeNotation", n));
+      });
+
       return notationsAtCell;
     },
 

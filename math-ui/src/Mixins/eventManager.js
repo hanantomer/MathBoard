@@ -1,6 +1,6 @@
 import EditMode from "./editMode";
 import NotationType from "./notationType";
-import { mapGetters } from "vuex";
+import { mapGetters, mapActions } from "vuex";
 export default {
   mounted: function () {
     // emitted in  app.vue
@@ -22,6 +22,10 @@ export default {
     ...mapGetters({
       getCurrentEditMode: "getCurrentEditMode",
       getParent: "getParent",
+    }),
+
+    ...mapActions({
+      setActiveNotation: "setActiveNotation",
     }),
 
     async eventManager_paste(e) {
@@ -147,6 +151,15 @@ export default {
       }
 
       this.activateObjectMixin_activateClickedObject(e);
+    },
+    eventManager_lineDrawEnded() {
+      // see toolbar.vue
+      this.$root.$emit("resetToolbarState");
+      this.activateObjectMixin_unselectPreviouslyActiveCell();
+    },
+    eventManager_lineSelected(line) {
+      //this.activateObjectMixin_unselectPreviouslyActiveCell();
+      this.setActiveNotation(line);
     },
   },
 };

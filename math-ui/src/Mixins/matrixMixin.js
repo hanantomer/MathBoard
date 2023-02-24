@@ -74,10 +74,14 @@ export default {
         this.rectSize
       );
     },
-    $isLineOrRect(notationType) {
+    $isRect(notationType) {
       return (
         notationType === NotationType.TEXT ||
-        notationType === NotationType.IMAGE ||
+        notationType === NotationType.IMAGE
+      );
+    },
+    $isLine(notationType) {
+      return (
         notationType === NotationType.FRACTION ||
         notationType === NotationType.SQRT ||
         notationType === NotationType.SQRTSYMBOL ||
@@ -217,6 +221,18 @@ export default {
       n.setAttribute("col", (n) => {
         return n.col;
       })
+        .setAttribute("fromCol", (n) => {
+          return n.fromCol;
+        })
+        .setAttribute("toCol", (n) => {
+          return n.toCol;
+        })
+        .setAttribute("fromRow", (n) => {
+          return n.fromRow;
+        })
+        .setAttribute("toRow", (n) => {
+          return n.toRow;
+        })
         .setAttribute("row", (n) => {
           return n.row;
         })
@@ -224,7 +240,7 @@ export default {
           return this.getNotationXposByCol(n.col ?? n.fromCol);
         })
         .setAttribute("y", (n) => {
-          return this.getNotationXposByCol(n.row);
+          return this.getNotationXposByCol(n.row ?? n.fromRow);
         });
     },
     removeNotation: function (n) {
@@ -277,6 +293,7 @@ export default {
           }
         );
     },
+    /// TODO addNotation?
     showNotations: function (enter) {
       return (
         enter
@@ -288,10 +305,22 @@ export default {
             return this.$id(n);
           })
           .attr("col", (n) => {
-            return this.$col(n);
+            return n.col;
+          })
+          .attr("fromCol", (n) => {
+            return n.fromCol;
+          })
+          .attr("toCol", (n) => {
+            return n.toCol;
           })
           .attr("row", (n) => {
-            return this.$row(n);
+            return n.row;
+          })
+          .attr("fromRow", (n) => {
+            return n.fromRow;
+          })
+          .attr("toRow", (n) => {
+            return n.toRow;
           })
           .attr("x", (n) => {
             return this.$x(n);
@@ -320,15 +349,21 @@ export default {
       return n.type + n.id;
     },
     $col(n) {
-      return this.$isLineOrRect(n.type) ? n.fromCol : n.col;
+      return this.$isLine(n.type) || this.$isRect(n.type) ? n.fromCol : n.col;
     },
     $row(n) {
-      return n.row;
+      return this.$isRect(n.type) ? n.fromRow : n.row;
     },
     $x(n) {
       let col = this.$col(n);
+      let deltaX =
+        n.type === NotationType.SQRTSYMBOL || n.type === NotationType.POWER
+          ? Math.round(this.rectSize / 3) * -1
+          : 0;
 
-      if (n.type === NotationType.SQRTSYMBOL) {
+      return this.getNotationXposByCol(col) + deltaX;
+
+      /*if (n.type === NotationType.SQRTSYMBOL) {
         return this.getNotationXposByCol(col) - Math.round(this.rectSize / 3);
       }
 
@@ -337,10 +372,21 @@ export default {
       }
 
       return this.getNotationXposByCol(col);
+      */
     },
     $y(n) {
-      if (n.type === NotationType.SYMBOL || n.type === NotationType.SIGN) {
-        return this.getNotationYposByRow(n.row);
+      let row = this.$row(n);
+      let deltaY =
+        n.type === NotationType.POWER
+          ? -5
+          : n.type === NotationType.FRACTION || n.type === NotationType.SQRT
+          ? -4
+          : 0;
+
+      return this.getNotationYposByRow(row) + deltaY;
+
+      /*if (n.type === NotationType.SYMBOL || n.type === NotationType.SIGN) {
+        return this.getNotationYposByRow(row);
       }
 
       if (n.type === NotationType.TEXT || n.type === NotationType.IMAGE) {
@@ -355,12 +401,9 @@ export default {
         return this.getNotationYposByRow(n.row) - 4;
       }
 
-      if (
-        n.type === NotationType.SQRTSYMBOL ||
-        n.type === "NotationType.SQRT"
-      ) {
+      if (n.type === NotationType.SQRTSYMBOL || n.type === NotationType.SQRT) {
         return this.getNotationYposByRow(n.row) - 4;
-      }
+      }*/
     },
     $width(n) {
       if (n.type === NotationType.TEXT) {

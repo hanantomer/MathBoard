@@ -59,7 +59,7 @@ export default {
           {},
           {
             LessonUUId: LessonUUId,
-            userId: authorizedStudentId,
+            UserId: authorizedStudentId,
             authorized: true,
           },
           {}

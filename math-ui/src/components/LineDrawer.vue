@@ -48,11 +48,18 @@ import matrixMixin from "../Mixins/matrixMixin";
 import userOutgoingOperationsSyncMixin from "../Mixins/userOutgoingOperationsSyncMixin";
 import notationType from "../Mixins/notationType";
 import EditMode from "../Mixins/editMode";
-import { mapGetters } from "vuex";
+import { mapGetters, mapState } from "vuex";
 
 export default {
   mixins: [notationMixin, matrixMixin, userOutgoingOperationsSyncMixin],
   name: "LineDrawer",
+  mounted: function () {
+    // emitted in  app.vue
+    this.$root.$on("keyup", this.$hideLine);
+  },
+  beforeDestroy: function () {
+    this.$root.$off("keyup", this.$hideLine);
+  },
   props: {
     svgId: { type: String },
   },
@@ -75,19 +82,26 @@ export default {
   },
   computed: {
     lineLeft: function () {
-      // console.debug(
-      //   "line left:" + this.linePosition.x1 + "," + this.linePosition.x1
-      // );
       return Math.min(this.linePosition.x1, this.linePosition.x2);
     },
     lineRight: function () {
-      // console.debug(
-      //   "line right:" + this.linePosition.x1 + "," + this.linePosition.x1
-      // );
       return Math.max(this.linePosition.x1, this.linePosition.x2);
     },
     lineTop: function () {
       return this.linePosition.y;
+    },
+
+    ...mapState({
+      activeCell: (state) => state.notationStore.activeCell,
+    }),
+  },
+  watch: {
+    activeCell: {
+      handler() {
+        if (!this.selectedLineId) return;
+        this.$showLine();
+        this.reset();
+      },
     },
   },
   methods: {
@@ -107,17 +121,15 @@ export default {
       this.linePosition.x2 = this.linePosition.x1 = position.x;
       this.linePosition.y = this.getNearestRow(position.y);
     },
-    selectLine: function () {
-      //this.activateObjectMixin_unselectPreviouslyActiveCell();
-
-      this.hideLine(this.selectedLineId);
+    $selectLine: function () {
+      ///TODO - signal parent to deactivate previous active notation
+      //this.activateObjectMixin_reset();
+      this.$hideLine();
       let storedNotation = this.getNotations()[this.selectedLineId];
       if (!storedNotation) {
         console.error(`selectedLineId: ${this.selectedLineId} not found `);
         return;
       }
-
-      console.log(`storedNotation: ${JSON.stringify(storedNotation)} `);
 
       this.linePosition.x1 = this.getNotationXposByCol(storedNotation.fromCol);
 
@@ -127,16 +139,9 @@ export default {
           this.matrixMixin_getRectSize();
 
       this.linePosition.y = this.getNotationYposByRow(storedNotation.row);
-      console.debug(
-        "selectLine: x1:" +
-          this.linePosition.x1 +
-          ",x2:" +
-          this.linePosition.x2 +
-          ",y:" +
-          this.linePosition.y
-      );
+      this.$emit("lineSelected", storedNotation); // signal parent
     },
-    setLine: function (position) {
+    $setLine: function (position) {
       if (position < this.linePosition.x1) {
         this.linePosition.x1 = position;
       }
@@ -144,7 +149,7 @@ export default {
         this.linePosition.x2 = position;
       }
     },
-    saveLine: function (row, fromCol, toCol) {
+    $saveLine: function (row, fromCol, toCol) {
       let line = {
         type: this.notationType,
         row: row,
@@ -161,14 +166,14 @@ export default {
           console.error(e);
         });
     },
-    hideLine(lineId) {
-      document.getElementById(lineId).style.display = "none";
+    $hideLine() {
+      document.getElementById(this.selectedLineId).style.display = "none";
     },
-    showLine(lineId) {
-      document.getElementById(lineId).style.display = "block";
+    $showLine() {
+      document.getElementById(this.selectedLineId).style.display = "block";
     },
-    endDrawLine: function () {
-      if (!!this.selectedLineId) this.showLine(this.selectedLineId);
+    $endDrawLine: function () {
+      if (!!this.selectedLineId) this.$showLine();
 
       if (this.linePosition.x2 != this.linePosition.x1) {
         let fromCol = Math.floor(
@@ -182,8 +187,8 @@ export default {
         let row = Math.round(
           this.linePosition.y / this.matrixMixin_getRectSize()
         );
-        this.saveLine(row, fromCol, toCol);
-        this.$emit("ended"); // signal parent
+        this.$saveLine(row, fromCol, toCol);
+        this.$emit("drawLineEnded"); // signal parent
       }
       this.reset();
     },
@@ -237,19 +242,19 @@ export default {
       }
 
       //existing line
-      let fraction = this.findFractionLineAtClickedPosition(e);
+      let fraction = this.$findFractionLineAtClickedPosition(e);
       if (!!fraction) {
         this.notationType = notationType.FRACTION;
         this.selectedLineId = fraction.id;
-        this.selectLine();
+        this.$selectLine();
         return;
       }
 
-      let sqrt = this.findSqrtLineAtClickedPosition(e);
+      let sqrt = this.$findSqrtLineAtClickedPosition(e);
       if (!!sqrt) {
         this.notationType = notationType.SQRT;
         this.selectedLineId = sqrt.id;
-        this.selectLine();
+        this.$selectLine();
       }
     },
     handleSvgMouseMove(e) {
@@ -266,7 +271,7 @@ export default {
         return;
       }
 
-      this.setLine(e.offsetX);
+      this.$setLine(e.offsetX);
     },
     handleMouseUp() {
       if (this.linePosition.x1 === 0 && this.linePosition.x2 === 0) {
@@ -276,9 +281,9 @@ export default {
         return;
       }
 
-      this.endDrawLine();
+      this.$endDrawLine();
     },
-    findFractionLineAtClickedPosition(e) {
+    $findFractionLineAtClickedPosition(e) {
       return this.matrixMixin_findClickedObject(
         {
           x: e.clientX,
@@ -288,7 +293,7 @@ export default {
         "fraction"
       );
     },
-    findSqrtLineAtClickedPosition(e) {
+    $findSqrtLineAtClickedPosition(e) {
       return this.matrixMixin_findClickedObject(
         {
           x: e.clientX,

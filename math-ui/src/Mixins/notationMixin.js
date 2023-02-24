@@ -65,19 +65,20 @@ export default {
 
     async $removeActiveCellNotations() {
       let cell = this.getActiveCell();
+      if (!cell) return;
+
       let notationsToDelete = await this.removeNotationsByCell(cell);
-      if (!!notationsToDelete) {
-        notationsToDelete.forEach((notation) =>
-          this.userOperationsMixin_syncOutgoingRemoveNotation(notation)
-        );
-      }
+      if (!notationsToDelete) return;
+
+      notationsToDelete.forEach((notation) =>
+        this.userOperationsMixin_syncOutgoingRemoveNotation(notation)
+      );
     },
 
     async $removeActiveNotation() {
       let deletedNotation = await this.removeActiveNotation();
-      if (!!deletedNotation) {
-        this.userOperationsMixin_syncOutgoingRemoveNotation(deletedNotation);
-      }
+      if (!deletedNotation) return;
+      this.userOperationsMixin_syncOutgoingRemoveNotation(deletedNotation);
     },
 
     async $removeSelectedNotations() {

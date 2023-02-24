@@ -21,6 +21,10 @@ export default {
       handler(activeCell, prevActiveCell) {
         this.$activateCell(activeCell, prevActiveCell);
       },
+      activeNotation: {
+        //        handler(activeCell, prevActiveCell) {
+        //          this.$activateCell(activeCell, prevActiveCell);
+      },
     },
   },
   methods: {
@@ -38,32 +42,41 @@ export default {
     // called via mouse click
     activateObjectMixin_activateClickedObject(e) {
       let clickedRect = this.$findCellAtClickedPosition(e);
+      let clickedPoint = { x: e.clientX, y: e.clientY };
 
-      if (!!clickedRect) {
-        // activate notation
-        let overlapRectNotation = this.$getOverlappedRectNotation(clickedRect);
-        if (!!overlapRectNotation) {
-          this.setActiveNotation(overlapRectNotation).then(() => {
-            if (overlapRectNotation.type === NotationType.TEXT) {
-              this.setCurrentEditMode(EditMode.TEXT);
-            }
-          });
-          return;
-        }
-
-        // activate single cell
-        let cellToActivate = {
-          col: clickedRect.attributes.col.value,
-          row: clickedRect.parentNode.attributes.row.value,
-        };
-
-        this.setActiveCell(cellToActivate).then(() => {
-          if (this.getParent().boardType === BoardType.LESSON) {
-            this.userOperationsMixin_syncOutgoingActiveCell(cellToActivate);
-          }
-          this.setCurrentEditMode(EditMode.SYMBOL);
-        });
+      if (!clickedRect) {
+        return;
       }
+
+      // activate notation
+      let overlapRectNotation = this.$getOverlappedRectNotation(clickedPoint);
+      if (!!overlapRectNotation) {
+        this.setActiveNotation(overlapRectNotation).then(() => {
+          if (overlapRectNotation.type === NotationType.TEXT) {
+            this.setCurrentEditMode(EditMode.TEXT);
+          }
+        });
+        return;
+      }
+
+      let overlapLineNotation = this.$getOverlappedLineNotation(clickedPoint);
+      if (!!overlapLineNotation) {
+        // selection of line is handled in LineDrawer.vue, here we just reset previous activated element
+        return;
+      }
+
+      // no underlying elements found, activate single cell
+      let cellToActivate = {
+        col: clickedRect.attributes.col.value,
+        row: clickedRect.parentNode.attributes.row.value,
+      };
+
+      this.setActiveCell(cellToActivate).then(() => {
+        if (this.getParent().boardType === BoardType.LESSON) {
+          this.userOperationsMixin_syncOutgoingActiveCell(cellToActivate);
+        }
+        this.setCurrentEditMode(EditMode.SYMBOL);
+      });
     },
 
     activateObjectMixin_reset() {
@@ -71,13 +84,56 @@ export default {
       this.$store.dispatch("setActiveNotation", {});
     },
 
-    $getOverlappedRectNotation(clickedRect) {
+    activateObjectMixin_unselectPreviouslyActiveCell(prevActiveCell) {
+      if (!prevActiveCell?.col) return;
+      this.matrixMixin_findRect(prevActiveCell).style.fill = "";
+    },
+
+    $getOverlappedRectNotation(clickedPoint) {
+      let rectElement = this.$findTextAtClickedPosition(clickedPoint);
+      if (!rectElement) return;
+
       return Object.values(this.getNotations()).find(
         (n) =>
-          clickedRect.attributes.col.value >= n.fromCol &&
-          clickedRect.attributes.col.value <= n.toCol &&
-          clickedRect.parentNode.attributes.row.value >= n.fromRow &&
-          clickedRect.parentNode.attributes.row.value <= n.toRow
+          rectElement.attributes.fromCol?.value >= n.fromCol &&
+          rectElement.attributes.toCol?.value <= n.toCol &&
+          rectElement.attributes.fromRow?.value >= n.fromRow &&
+          rectElement.attributes.fromRow?.value <= n.toRow
+      );
+    },
+
+    $getOverlappedLineNotation(clickedPoint) {
+      let fractionElement = this.$findFractionAtClickedPosition(clickedPoint);
+      if (!fractionElement) return;
+
+      return Object.values(this.getNotations()).find(
+        (n) =>
+          fractionElement.attributes.fromCol?.value >= n.fromCol &&
+          fractionElement.attributes.toCol?.value <= n.toCol &&
+          fractionElement.attributes.row?.value >= n.row &&
+          fractionElement.attributes.row?.value <= n.row
+      );
+    },
+
+    $findFractionAtClickedPosition(point) {
+      return this.matrixMixin_findClickedObject(
+        {
+          x: point.x,
+          y: point.y,
+        },
+        "foreignObject",
+        "fraction"
+      );
+    },
+
+    $findTextAtClickedPosition(point) {
+      return this.matrixMixin_findClickedObject(
+        {
+          x: point.x,
+          y: point.y,
+        },
+        "foreignObject",
+        "text"
       );
     },
 
@@ -94,19 +150,13 @@ export default {
     // called by store watcher
     $activateCell(activeCell, prevActiveCell) {
       this.activateObjectMixin_unselectPreviouslyActiveCell(prevActiveCell);
+      if (!activeCell?.col) return;
 
-      if (!!activeCell?.col) {
-        let rectElm = document
-          .querySelector(`svg[id="${this.svgId}"] g[row="${activeCell.row}"]`)
-          .querySelector(`rect[col="${activeCell.col}"]`);
+      let rectElm = document
+        .querySelector(`svg[id="${this.svgId}"] g[row="${activeCell.row}"]`)
+        .querySelector(`rect[col="${activeCell.col}"]`);
 
-        rectElm.style.fill = this.activeCellColor;
-      }
-    },
-
-    activateObjectMixin_unselectPreviouslyActiveCell(prevActiveCell) {
-      if (!prevActiveCell.col) return;
-      this.matrixMixin_findRect(prevActiveCell).style.fill = "";
+      rectElm.style.fill = this.activeCellColor;
     },
   },
 };

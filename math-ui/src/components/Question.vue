@@ -15,7 +15,8 @@
             <div style="overflow: auto; height: 100%; position: relative">
               <lineDrawer
                 v-on="{
-                  ended: $resetToolbarState,
+                  drawLineEnded: eventManager_lineDrawEnded,
+                  lineSelected: eventManager_lineSelected,
                 }"
                 :svgId="svgId"
               ></lineDrawer>
@@ -118,11 +119,6 @@ export default {
       loadQuestionNotations: "loadQuestionNotations",
       addAnswer: "addAnswer",
     }),
-
-    $resetToolbarState: function () {
-      // see toolbar.vue
-      this.$root.$emit("resetToolbarState");
-    },
 
     markQuestionAsResolved: async function () {},
 

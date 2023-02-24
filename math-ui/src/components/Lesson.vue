@@ -16,7 +16,8 @@
             <div style="overflow: auto; height: 100%; position: relative">
               <lineDrawer
                 v-on="{
-                  ended: resetToolbarState,
+                  drawLineEnded: eventManager_lineDrawEnded,
+                  lineSelected: eventManager_lineSelected,
                 }"
                 :svgId="svgId"
               ></lineDrawer>

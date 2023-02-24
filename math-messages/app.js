@@ -23,7 +23,7 @@ app.service("authorization").publish("updated", (authorization, ctx) => {
       constants.LESSON_CHANNEL_PREFIX +
         authorization.LessonUUId +
         constants.USER_CHANNEL_PREFIX +
-        authorization.userId
+        authorization.UserId
     ),
   ];
 });
