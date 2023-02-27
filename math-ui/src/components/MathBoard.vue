@@ -1,12 +1,12 @@
 <template>
   <div class="fill-height" style="width: 100%; position: relative">
-    <v-row>
+    <v-row dense style="max-height: 25px">
       <v-col cols="12" class="d-flex justify-center">
-        <p>{{ answertTitle }}</p>
+        <p>{{ title }}</p>
       </v-col>
     </v-row>
     <v-row dense style="height: 98%">
-      <v-col cols="12" fluid>
+      <v-col cols="10" fluid>
         <v-row style="height: 100%">
           <v-col colls="1">
             <toolbar></toolbar>
@@ -30,6 +30,7 @@
           </v-col>
         </v-row>
       </v-col>
+      <slot name="students"></slot>
     </v-row>
   </div>
 </template>
@@ -42,44 +43,53 @@ import matrixMixin from "../Mixins/matrixMixin";
 import activateObjectMixin from "../Mixins/activateObjectMixin";
 import eventManager from "../Mixins/eventManager";
 import notationMixin from "../Mixins/notationMixin";
+import userOperationsOutgoingSyncMixin from "../Mixins/userOutgoingOperationsSyncMixin";
+import userOperationsIncomingSyncMixin from "../Mixins/userIncomingOperationsSyncMixin";
+import lessonStudents from "./LessonStudents.vue";
 import toolbar from "./Toolbar.vue";
 import areaSelector from "./AreaSelector.vue";
 import lineDrawer from "./LineDrawer.vue";
+import newItemDialog from "./NewItemDialog.vue";
+import questions from "./Questions.vue";
 
 export default {
   components: {
+    //lessonStudents,
     toolbar,
     areaSelector,
     lineDrawer,
+    //newItemDialog,
+    //questions,
   },
-  mounted: async function () {
-    await this.$loadAnswer();
-  },
-
   data: function () {
     return {
       matrix: [],
-      svgId: "answerSvg",
+      //      svgId: "lessonSvg",
     };
   },
-
-  mixins: [matrixMixin, activateObjectMixin, eventManager, notationMixin],
+  mixins: [
+    matrixMixin,
+    activateObjectMixin,
+    //userOperationsOutgoingSyncMixin,
+    // userOperationsIncomingSyncMixin,
+    eventManager,
+    notationMixin,
+  ],
   computed: {
+    ...mapGetters({
+      teacher: "isTeacher",
+    }),
     ...mapState({
       notations: (state) => {
         return state.notationStore.notations;
       },
-      answerTitle: (state) => {
-        return (
-          state.answerStore.currentAnswer.user.firstName +
-          " " +
-          state.answerStore.currentAnswer.user.lastName
-        );
-      },
+      //lessonTitle: (state) => {
+      //  return state.lessonStore.currentLesson.name;
+      //},
     }),
   },
   watch: {
-    $route: "loadAnswer",
+    $route: "loadLesson",
     notations: {
       deep: true,
       handler: function (notations) {
@@ -89,34 +99,41 @@ export default {
   },
   methods: {
     ...mapGetters({
+      getCurrentLesson: "getCurrentLesson",
+      //getLessons: "getLessons",
+      getUser: "getUser",
       getCurrentEditMode: "getCurrentEditMode",
-      getNotations: "getNotations",
-      isTeacher: "isTeacher",
+      //isTeacher: "isTeacher",
     }),
     ...mapActions({
-      loadAnswer: "loadAnswer",
-      loadAnswerNotations: "loadAnswerNotations",
-      loadQuestionNotations: "loadQuestionNotations",
+      //loadLessonNotations: "loadLessonNotations",
+      //addLessonToSharedLessons: "addLessonToSharedLessons",
     }),
-
-    $resetToolbarState: function () {
-      // see toolbar.vue
+    resetToolbarState: function () {
       this.$root.$emit("resetToolbarState");
     },
-
-    markAnswerAsChecked: async function () {},
-
-    $loadAnswer: async function () {
-      this.activateObjectMixin_reset();
-      this.matrixMixin_setMatrix();
-
+    /*loadLesson: async function (lessonUUID) {
       // load from db to store
-      await this.loadAnswer(
-        this.$route.params.answerUUId || this.getCurrentAnswer().uuid
-      );
-      await this.loadQuestionNotations();
-      await this.loadAnswerNotations();
-    },
+      await this.$store.dispatch("loadLesson", lessonUUID);
+
+      // for student, send heartbeat to teacher
+      if (!this.isTeacher()) {
+        setInterval(
+          this.userOperationsMixin_syncOutgoingHeartBeat,
+          5000,
+          this.getCurrentLesson().uuid
+        );
+      }
+
+      // refresh screen
+      this.loadLessonNotations();
+
+      // listen to other users
+      this.mixin_syncIncomingUserOperations();
+
+      // init outgoing relay
+      this.userOperationsMixin_init();
+    },*/
   },
 };
 </script>

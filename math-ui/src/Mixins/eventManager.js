@@ -157,9 +157,5 @@ export default {
       this.$root.$emit("resetToolbarState");
       this.activateObjectMixin_unselectPreviouslyActiveCell();
     },
-    eventManager_lineSelected(line) {
-      //this.activateObjectMixin_unselectPreviouslyActiveCell();
-      this.setActiveNotation(line);
-    },
   },
 };

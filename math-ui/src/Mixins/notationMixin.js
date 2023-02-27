@@ -12,7 +12,7 @@ export default {
     }),
 
     ...mapActions({
-      removeNotationsByCell: "removeNotationsByCell",
+      removeSymbolsByCell: "removeSymbolsByCell",
       removeActiveNotation: "removeActiveNotation",
       removeSelectedNotations: "removeSelectedNotations",
       unselectAllNotations: "unselectAllNotations",
@@ -67,7 +67,7 @@ export default {
       let cell = this.getActiveCell();
       if (!cell) return;
 
-      let notationsToDelete = await this.removeNotationsByCell(cell);
+      let notationsToDelete = await this.removeSymbolsByCell(cell);
       if (!notationsToDelete) return;
 
       notationsToDelete.forEach((notation) =>

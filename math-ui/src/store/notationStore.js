@@ -465,15 +465,6 @@ const helper = {
       boardType
     );
   },
-
-  /* deActivateAllNotations(state) {
-    Object.entries(state.notations)
-      .map((n) => n[1])
-      .filter((n) => !!n.active)
-      .forEach((n) => {
-        Vue.set(n, "active", false);
-      });
-  },*/
 };
 
 export default {
@@ -645,26 +636,31 @@ export default {
     syncIncomingUpdatedNotation(context, notation) {
       context.commit("setNotation", notation);
     },
-    removeNotationsByCell(context, cell) {
-      let notationsAtCell = helper.findNotationsByCellCoordinates(
-        context.state,
-        cell
-      );
+    removeSymbolsByCell(context, cell) {
+      if (!context.getters.getUser.authorized && !context.getters.isTeacher)
+        return;
 
-      if (!notationsAtCell) return;
+      let symbolsAtCell = helper
+        .findNotationsByCellCoordinates(context.state, cell)
+        .filter((n) => n.type === NotationType.SYMBOL);
 
-      notationsAtCell.forEach(async (n) => {
+      if (!symbolsAtCell) return;
+
+      symbolsAtCell.forEach(async (n) => {
         n.boardType = context.getters.getParent.boardType;
         await dbSyncMixin.methods
           .removeNotation(n)
           .then(() => context.commit("removeNotation", n));
       });
 
-      return notationsAtCell;
+      return symbolsAtCell;
     },
 
     // remove notations wich overlaps with a rect(multiple cells)
     removeNotationsByRect(context, rect) {
+      if (!context.getters.getUser.authorized && !context.getters.isTeacher)
+        return;
+
       let notationsAtRectCoordinates = helper.findNotationsByRectCoordinates(
         context.state,
         rect
@@ -681,6 +677,9 @@ export default {
     },
 
     async removeActiveNotation(context) {
+      if (!context.getters.getUser.authorized && !context.getters.isTeacher)
+        return;
+
       let notationToDelete = context.getters.getActiveNotation;
       if (!notationToDelete) return;
 

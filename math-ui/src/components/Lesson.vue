@@ -17,7 +17,6 @@
               <lineDrawer
                 v-on="{
                   drawLineEnded: eventManager_lineDrawEnded,
-                  lineSelected: eventManager_lineSelected,
                 }"
                 :svgId="svgId"
               ></lineDrawer>
