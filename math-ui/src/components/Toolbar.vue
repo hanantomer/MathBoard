@@ -10,7 +10,7 @@
 
     <v-toolbar color="primary" dark class="vertical-toolbar">
       <!-- create access link -->
-      <v-tooltip top hidden v-if="isTeacher" v-model="showAccessTooltip">
+      <v-tooltip top hidden v-if="teacher" v-model="showAccessTooltip">
         <template v-slot:activator="{ on, attrs }">
           <v-btn
             icon
@@ -307,6 +307,9 @@ export default {
         return state.lessonStore.operationMode.editMode;
       },
     }),
+    teacher: function () {
+      return this.isTeacher();
+    },
     canEdit: function () {
       return this.getUser().authorized || this.isTeacher();
     },

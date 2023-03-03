@@ -138,8 +138,9 @@ module.exports = {
         let studentLesson = await axiosInstnce.get(
           `/studentlessons?LessonUUId=${lessonUUId}&UserId=${userId}`
         );
+        console.debug(studentLesson);
 
-        if (!!studentLesson.data) return studentLesson.data;
+        if (!!studentLesson.data.length) return;
 
         return await axiosInstnce.post("/studentlessons", {
           LessonUUId: lessonUUId,

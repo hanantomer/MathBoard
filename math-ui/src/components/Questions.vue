@@ -32,7 +32,6 @@
       <v-data-table
         :headers="headers"
         :items="questions"
-        :item-key="uuid"
         :items-per-page="10"
         class="elevation-1"
         @click:row="seletctQuestion"

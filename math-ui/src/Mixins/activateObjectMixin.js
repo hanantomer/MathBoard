@@ -72,10 +72,11 @@ export default {
       };
 
       this.setActiveCell(cellToActivate).then(() => {
-        if (this.getParent().boardType === BoardType.LESSON) {
-          this.userOperationsMixin_syncOutgoingActiveCell(cellToActivate);
-        }
+        //if (this.getParent().boardType === BoardType.LESSON) {
+        //  this.userOperationsMixin_syncOutgoingActiveCell(cellToActivate);
+        //}
         this.setCurrentEditMode(EditMode.SYMBOL);
+        return cellToActivate;
       });
     },
 

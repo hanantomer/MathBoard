@@ -70,9 +70,10 @@ export default {
       let notationsToDelete = await this.removeSymbolsByCell(cell);
       if (!notationsToDelete) return;
 
-      notationsToDelete.forEach((notation) =>
-        this.userOperationsMixin_syncOutgoingRemoveNotation(notation)
-      );
+      notationsToDelete.forEach((notation) => {
+        if (notation.NotationType === NotationType.SYMBOL)
+          this.userOperationsMixin_syncOutgoingRemoveNotation(notation);
+      });
     },
 
     async $removeActiveNotation() {

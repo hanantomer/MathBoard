@@ -1,75 +1,42 @@
 <template>
-  <div class="fill-height" style="width: 100%; position: relative">
-    <v-row>
-      <v-col cols="12" class="d-flex justify-center">
-        <p>{{ questionTitle }}</p>
-      </v-col>
-    </v-row>
-    <v-row dense style="height: 98%">
-      <v-col cols="12" fluid>
-        <v-row style="height: 100%">
-          <v-col colls="1">
-            <toolbar></toolbar>
-          </v-col>
-          <v-col cols="11">
-            <div style="overflow: auto; height: 100%; position: relative">
-              <lineDrawer
-                v-on="{
-                  drawLineEnded: eventManager_lineDrawEnded,
-                }"
-                :svgId="svgId"
-              ></lineDrawer>
-              <areaSelector :svgId="svgId"></areaSelector>
-              <svg
-                v-bind:id="svgId"
-                v-bind:width="svgWidth"
-                v-bind:height="svgHeight"
-                v-on:mousedown="eventManager_mouseDown"
-              ></svg>
-            </div>
-          </v-col>
-        </v-row>
-      </v-col>
-    </v-row>
-  </div>
+  <v-row>
+    <v-col cols="12">
+      <mathBoard :svgId="svgId" :loaded="loaded">
+        <template #title
+          ><p>{{ questionTitle }}</p></template
+        >1
+      </mathBoard>
+    </v-col>
+  </v-row>
 </template>
 
 <script>
 import { mapState } from "vuex";
 import { mapGetters } from "vuex";
 import { mapActions } from "vuex";
+import mathBoard from "./MathBoard.vue";
 import matrixMixin from "../Mixins/matrixMixin";
 import activateObjectMixin from "../Mixins/activateObjectMixin";
-import eventManager from "../Mixins/eventManager";
 import notationMixin from "../Mixins/notationMixin";
-import toolbar from "./Toolbar.vue";
-import areaSelector from "./AreaSelector.vue";
-import lineDrawer from "./LineDrawer.vue";
-import newItemDialog from "./NewItemDialog.vue";
 
 export default {
+  mixins: [matrixMixin, activateObjectMixin, notationMixin],
   components: {
-    toolbar,
-    areaSelector,
-    lineDrawer,
-    newItemDialog,
+    mathBoard,
   },
   mounted: async function () {
     await this.$loadQuestion();
-
-    this.activateObjectMixin_reset();
-    this.matrixMixin_setMatrix();
+    this.loaded = true; // signal child
   },
 
   data: function () {
     return {
-      matrix: [],
       svgId: "questionsSvg",
+      loaded: false,
       selectedStudent: { text: "", value: 0 },
     };
   },
 
-  mixins: [matrixMixin, activateObjectMixin, eventManager, notationMixin],
   computed: {
     doShowStudentsList: function () {
       return this.isTeacher() && this.students.length > 0;
@@ -85,9 +52,6 @@ export default {
               };
             });
       },
-      notations: (state) => {
-        return state.notationStore.notations;
-      },
       questionTitle: (state) => {
         return state.questionStore.currentQuestion.name;
       },
@@ -95,12 +59,6 @@ export default {
   },
   watch: {
     $route: "loadQuestion",
-    notations: {
-      deep: true,
-      handler: function (notations) {
-        this.matrixMixin_refreshScreen(notations, this.svgId);
-      },
-    },
   },
   methods: {
     ...mapGetters({
@@ -132,37 +90,3 @@ export default {
   },
 };
 </script>
-
-<style>
-.activestudent {
-  border: 2px dashed rgb(143, 26, 179);
-}
-.hellow {
-  padding: 5px;
-  color: darkkhaki;
-}
-
-/* (Optional) Apply a "closed-hand" cursor during drag operation. */
-.grabbable:active {
-  cursor: grabbing;
-  cursor: -moz-grabbing;
-  cursor: -webkit-grabbing;
-}
-.nopadding {
-  padding: 0 !important;
-}
-.iconActive {
-  background-color: dodgerblue;
-}
-.deleteButtonActive {
-  cursor: URL("~@/assets/delete.jpg"), none !important;
-}
-mjx-container[jax="SVG"][display="true"] {
-  margin: auto !important;
-}
-
-mjx-line {
-  margin-top: 0.05em !important;
-  margin-bottom: 0.3em !important;
-}
-</style>

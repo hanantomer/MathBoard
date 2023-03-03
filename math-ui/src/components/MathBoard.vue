@@ -2,33 +2,29 @@
   <div class="fill-height" style="width: 100%; position: relative">
     <v-row dense style="max-height: 25px">
       <v-col cols="12" class="d-flex justify-center">
-        <p>{{ title }}</p>
+        <slot name="title"></slot>
       </v-col>
     </v-row>
-    <v-row dense style="height: 98%">
-      <v-col cols="10" fluid>
-        <v-row style="height: 100%">
-          <v-col colls="1">
-            <toolbar></toolbar>
-          </v-col>
-          <v-col cols="11">
-            <div style="overflow: auto; height: 100%; position: relative">
-              <lineDrawer
-                v-on="{
-                  drawLineEnded: eventManager_lineDrawEnded,
-                }"
-                :svgId="svgId"
-              ></lineDrawer>
-              <areaSelector :svgId="svgId"></areaSelector>
-              <svg
-                v-bind:id="svgId"
-                v-bind:width="svgWidth"
-                v-bind:height="svgHeight"
-                v-on:mousedown="eventManager_mouseDown"
-              ></svg>
-            </div>
-          </v-col>
-        </v-row>
+    <v-row style="height: 100%">
+      <v-col colls="1">
+        <toolbar></toolbar>
+      </v-col>
+      <v-col cols="11">
+        <div style="overflow: auto; height: 100%; position: relative">
+          <lineDrawer
+            v-on="{
+              drawLineEnded: eventManager_lineDrawEnded,
+            }"
+            :svgId="svgId"
+          ></lineDrawer>
+          <areaSelector :svgId="svgId"></areaSelector>
+          <svg
+            v-bind:id="svgId"
+            v-bind:width="svgWidth"
+            v-bind:height="svgHeight"
+            v-on:mousedown="eventManager_mouseDown"
+          ></svg>
+        </div>
       </v-col>
       <slot name="students"></slot>
     </v-row>
@@ -38,43 +34,37 @@
 <script>
 import { mapState } from "vuex";
 import { mapGetters } from "vuex";
-import { mapActions } from "vuex";
 import matrixMixin from "../Mixins/matrixMixin";
 import activateObjectMixin from "../Mixins/activateObjectMixin";
 import eventManager from "../Mixins/eventManager";
 import notationMixin from "../Mixins/notationMixin";
-import userOperationsOutgoingSyncMixin from "../Mixins/userOutgoingOperationsSyncMixin";
-import userOperationsIncomingSyncMixin from "../Mixins/userIncomingOperationsSyncMixin";
-import lessonStudents from "./LessonStudents.vue";
+import userOutgoingOperationsSyncMixin from "../Mixins/userOutgoingOperationsSyncMixin";
 import toolbar from "./Toolbar.vue";
 import areaSelector from "./AreaSelector.vue";
 import lineDrawer from "./LineDrawer.vue";
-import newItemDialog from "./NewItemDialog.vue";
-import questions from "./Questions.vue";
 
 export default {
   components: {
-    //lessonStudents,
     toolbar,
     areaSelector,
     lineDrawer,
-    //newItemDialog,
-    //questions,
   },
-  data: function () {
-    return {
-      matrix: [],
-      //      svgId: "lessonSvg",
-    };
+  props: {
+    svgId: null,
+    loaded: false,
   },
   mixins: [
     matrixMixin,
     activateObjectMixin,
-    //userOperationsOutgoingSyncMixin,
-    // userOperationsIncomingSyncMixin,
     eventManager,
     notationMixin,
+    userOutgoingOperationsSyncMixin,
   ],
+  data: function () {
+    return {
+      matrix: [],
+    };
+  },
   computed: {
     ...mapGetters({
       teacher: "isTeacher",
@@ -83,13 +73,14 @@ export default {
       notations: (state) => {
         return state.notationStore.notations;
       },
-      //lessonTitle: (state) => {
-      //  return state.lessonStore.currentLesson.name;
-      //},
     }),
   },
   watch: {
-    $route: "loadLesson",
+    loaded: {
+      handler: function (loaded) {
+        if (!!loaded) this.load();
+      },
+    },
     notations: {
       deep: true,
       handler: function (notations) {
@@ -100,40 +91,16 @@ export default {
   methods: {
     ...mapGetters({
       getCurrentLesson: "getCurrentLesson",
-      //getLessons: "getLessons",
       getUser: "getUser",
       getCurrentEditMode: "getCurrentEditMode",
-      //isTeacher: "isTeacher",
-    }),
-    ...mapActions({
-      //loadLessonNotations: "loadLessonNotations",
-      //addLessonToSharedLessons: "addLessonToSharedLessons",
     }),
     resetToolbarState: function () {
       this.$root.$emit("resetToolbarState");
     },
-    /*loadLesson: async function (lessonUUID) {
-      // load from db to store
-      await this.$store.dispatch("loadLesson", lessonUUID);
-
-      // for student, send heartbeat to teacher
-      if (!this.isTeacher()) {
-        setInterval(
-          this.userOperationsMixin_syncOutgoingHeartBeat,
-          5000,
-          this.getCurrentLesson().uuid
-        );
-      }
-
-      // refresh screen
-      this.loadLessonNotations();
-
-      // listen to other users
-      this.mixin_syncIncomingUserOperations();
-
-      // init outgoing relay
-      this.userOperationsMixin_init();
-    },*/
+    load: function () {
+      this.activateObjectMixin_reset();
+      this.matrixMixin_setMatrix();
+    },
   },
 };
 </script>

@@ -2,9 +2,13 @@ import io from "socket.io-client";
 import feathers from "@feathersjs/feathers";
 import socketio from "@feathersjs/socketio-client";
 import store from "../store/index.js";
+import { mapGetters } from "vuex";
 
 export default {
   methods: {
+    ...mapGetters({
+      getUser: "getUser",
+    }),
     mixin_syncIncomingUserOperations: async function () {
       let socket = io("http://localhost:3030");
       let client = feathers();

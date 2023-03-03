@@ -150,7 +150,12 @@ export default {
         return;
       }
 
-      this.activateObjectMixin_activateClickedObject(e);
+      let activeCell = this.activateObjectMixin_activateClickedObject(e);
+      if (!!activeCell) {
+        if (this.getParent().boardType === BoardType.LESSON) {
+          this.userOperationsMixin_syncOutgoingActiveCell(cellToActivate);
+        }
+      }
     },
     eventManager_lineDrawEnded() {
       // see toolbar.vue
