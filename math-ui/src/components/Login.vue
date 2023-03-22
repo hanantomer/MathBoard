@@ -149,24 +149,26 @@
 </template>
 
 <script>
-import { stringify } from "querystring";
 import { mapActions } from "vuex";
 import { mapGetters } from "vuex";
 export default {
   name: "Login",
   mounted() {
-    //this.show = true;
+    //    if (!this.show) this.show = true;
     /*    gapi.signin2.render("google-signin-btn", {
       scope: "email",
       longtitle: true,
       theme: "dark",
       onsuccess: this.googleOnSuccess,
     });*/
+    if (this.dialog) {
+      this.show = true;
+    }
   },
   created() {
-    if (this.$route.path === "/login") {
-      this.dialog = true;
-    }
+    //if (this.$route.path === "/login") {
+    //  this.show = true;
+    // }
   },
   methods: {
     ...mapGetters({ getUser: "getUser" }),

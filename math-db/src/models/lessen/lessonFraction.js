@@ -37,9 +37,12 @@ module.exports = (sequelize, DataTypes) => {
             indexes: [
                 {
                     unique: true,
-                    fields: ["lessonId", "row", "fromCol"],
+                    fields: ["LessonId", "row", "fromCol"],
                 },
             ],
+             defaultScope: {
+                exclude: ["LessonId"]
+            },
         }
     );
 

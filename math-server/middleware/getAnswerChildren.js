@@ -10,7 +10,6 @@ module.exports = {
                         "Answer",
                         req.query.AnswerUUId
                     );
-                    delete req.query.AnswerUUId;
                 }
 
                 return context.continue;
@@ -23,7 +22,6 @@ module.exports = {
                             "Answer",
                             context.instance.dataValues.AnswerId
                         );
-                    context.instance.dataValues.AnswerId = null;
                 }
                 return context.continue;
             },
@@ -34,7 +32,6 @@ module.exports = {
                         "Answer",
                         n.dataValues.AnswerId
                     );
-                    n.AnswerId = null;
                 });
                 return context.continue;
             },

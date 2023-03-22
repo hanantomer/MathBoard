@@ -10,7 +10,6 @@ module.exports = {
                         "Lesson",
                         req.query.LessonUUId
                     );
-                    delete req.query.LessonUUId;
                 }
                 return context.continue;
             },
@@ -22,7 +21,6 @@ module.exports = {
                             "Lesson",
                             context.instance[i].dataValues.LessonId
                         );
-                    context.instance[i].dataValues.LessonId = null;
                 }
                 return context.continue;
             },

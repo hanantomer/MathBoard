@@ -123,7 +123,7 @@
 
 <script>
 import Login from "./components/Login.vue";
-import { mapGetters } from "vuex";
+import { mapGetters, mapActions } from "vuex";
 import authMixin from "./Mixins/authMixin";
 export default {
   name: "App",
@@ -146,6 +146,7 @@ export default {
   }),
   methods: {
     ...mapGetters({ getUser: "getUser", isTeacher: "isTeacher" }),
+    ...mapActions({ setUser: "setUser" }),
     openLoginDialog(tab) {
       this.loginDialog = true;
       this.loginType = "Login";
@@ -158,7 +159,8 @@ export default {
     },
     signOut: function () {
       this.mixin_signOut();
-      this.$router.push("/login");
+      this.setUser({});
+      this.$router.push("/");
     },
     navToLessons: function () {
       this.$router.push("/lessons");

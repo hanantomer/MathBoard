@@ -20,7 +20,8 @@
                   <v-list-item-title
                     style="font-size: 0.9vw"
                     v-text="$getStudentDisplayName(student)"
-                  ></v-list-item-title>
+                  >
+                  </v-list-item-title>
                 </v-list-item-content>
                 <v-btn class="[mx-2]" fab dark x-small color="green">
                   <v-icon dark> mdi-pencil </v-icon>

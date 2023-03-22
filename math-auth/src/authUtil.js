@@ -13,6 +13,7 @@ module.exports = {
         //TODO add caching
         let user = await db.sequelize.models["User"].findOne({
             where: { email: email },
+            attributes: { include: ["password"] },
         });
         if (!user) {
             return null;
@@ -27,6 +28,7 @@ module.exports = {
                 { expiresIn: 86400 * 30 }
             );
             user.access_token = access_token;
+            user.password = null;
             return user;
         }
         return null;

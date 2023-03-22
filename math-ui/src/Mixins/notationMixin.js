@@ -71,7 +71,10 @@ export default {
       if (!notationsToDelete) return;
 
       notationsToDelete.forEach((notation) => {
-        if (notation.NotationType === NotationType.SYMBOL)
+        if (
+          notation.NotationType === NotationType.SYMBOL ||
+          notation.NotationType === NotationType.SIGN
+        )
           this.userOperationsMixin_syncOutgoingRemoveNotation(notation);
       });
     },

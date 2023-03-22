@@ -10,10 +10,11 @@ export default {
       return access_token;
     },
     signedInWithGoogle: function () {
-      return (
-        gapi.auth2.getAuthInstance() &&
-        gapi.auth2.getAuthInstance().currentUser.get().isSignedIn()
-      );
+      return false;
+      //return (
+      //  gapi.auth2.getAuthInstance() &&
+      //  gapi.auth2.getAuthInstance().currentUser.get().isSignedIn()
+      //);
     },
     mixin_signedInLocally: function () {
       return !!window.$cookies.get("access_token");

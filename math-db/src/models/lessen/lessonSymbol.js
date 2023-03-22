@@ -41,7 +41,10 @@ module.exports = (sequelize, DataTypes) => {
                     fields: ['lessonId', 'row', 'col'],
                 },
             ],
-        }
+            defaultScope: {
+               exclude: ["LessonId"]
+            }
+        },
     );
 
     return LessonSymbol;

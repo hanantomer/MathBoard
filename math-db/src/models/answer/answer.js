@@ -48,6 +48,22 @@ module.exports = (sequelize, DataTypes) => {
                     fields: ["QuestionId", "UserId"],
                 },
             ],
+            defaultScope: {
+                include: [
+                    { model: sequelize.models["User"] },
+                    {
+                        model: sequelize.models["Question"],
+                        attributes: {
+                            include: [{
+                                model: sequelize.models["Lesson"],
+                                attributes: {
+                                    exclude: ["id"]
+                                }
+                            }]
+                        },
+                    }],
+                exclude: ["id", "QuestionId"]
+            },
         }
     );
 

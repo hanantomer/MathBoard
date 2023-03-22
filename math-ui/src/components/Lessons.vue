@@ -25,7 +25,6 @@
         :search="search"
         :headers="headers"
         :items="lessons"
-        :item-key="uuid"
         :items-per-page="10"
         class="elevation-1"
         @click:row="seletctLesson"

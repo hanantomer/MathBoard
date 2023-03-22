@@ -53,6 +53,9 @@ module.exports = (sequelize, DataTypes) => {
                     fields: ["lessonId"],
                 },
             ],
+            defaultScope: {
+               exclude: ["id"]
+            },
         }
     );
 

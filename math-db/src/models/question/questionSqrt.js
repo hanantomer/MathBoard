@@ -40,6 +40,9 @@ module.exports = (sequelize, DataTypes) => {
                     fields: ["questionId", "row", "fromCol"],
                 },
             ],
+            defaultScope: {
+                exclude: ["QuestionId"]
+            },
         }
     );
 

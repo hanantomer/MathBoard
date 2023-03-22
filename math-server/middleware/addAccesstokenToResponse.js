@@ -5,8 +5,7 @@ module.exports = {
         fetch: {
             after: function (req, res, context) {
                 // return token produced during authorization
-                context.instance[0].access_token = context.user.access_token;
-                delete context.instance[0].password;
+                context.instance = context.user;
                 return context.continue;
             },
         },

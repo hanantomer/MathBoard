@@ -15,16 +15,16 @@ const getQuestionChildrenMiddleware = require("./middleware/getQuestionChildren"
 const updateQuestionChildMiddleware = require("./middleware/updateQuestionChild");
 
 const createAnswerChildMiddleware = require("./middleware/createAnswerChild");
-const getAnswerChildrenMiddleware = require("./middleware/getAnswerChildren");
+//const getAnswerChildrenMiddleware = require("./middleware/getAnswerChildren");
 
-const getAnswersMiddleware = require("./middleware/getAnswers");
+//const getAnswersMiddleware = require("./middleware/getAnswers");
 const createAnswerMiddleware = require("./middleware/createAnswer");
 const updateAnswerChildMiddleware = require("./middleware/updateAnswerChild");
 
-const getStudentLessonsMiddleware = require("./middleware/getStudentLessons");
-const ommitPasswordFromResponseMiddleware = require("./middleware/ommitPasswordFromResponse");
-const getQuestions = require("./middleware/getQuestions");
-const createQuestion = require("./middleware/createQuestion");
+//const getStudentLessonsMiddleware = require("./middleware/getStudentLessons");
+//const ommitPasswordFromResponseMiddleware = require("./middleware/ommitPasswordFromResponse");
+//const getQuestions = require("./middleware/getQuestions");
+const createQuestionMiddleware = require("./middleware/createQuestion");
 
 const notationTypes = [
     "symbol",
@@ -58,7 +58,7 @@ const boardTypes = [
         middleware: [
             createAnswerChildMiddleware,
             updateAnswerChildMiddleware,
-            getAnswerChildrenMiddleware,
+            //            getAnswerChildrenMiddleware,
         ],
     },
 ];
@@ -89,7 +89,7 @@ let userResource = finale.resource({
 });
 userResource.use(authMiddleware);
 userResource.use(addAccesstokenToResponseMiddleware);
-userResource.use(ommitPasswordFromResponseMiddleware);
+//userResource.use(ommitPasswordFromResponseMiddleware);
 
 // lesson
 
@@ -108,8 +108,8 @@ let questionResource = finale.resource({
 questionResource.use(authMiddleware);
 questionResource.use(createLessonChildMiddleware);
 questionResource.use(getLessonChildrenMiddleware);
-questionResource.use(getQuestions);
-questionResource.use(createQuestion);
+//questionResource.use(getQuestions);
+questionResource.use(createQuestionMiddleware);
 
 // answer
 
@@ -120,7 +120,7 @@ let answerResource = finale.resource({
 answerResource.use(authMiddleware);
 answerResource.use(createQuestionChildMiddleware);
 answerResource.use(getQuestionChildrenMiddleware);
-answerResource.use(getAnswersMiddleware);
+//answerResource.use(getAnswersMiddleware);
 answerResource.use(createAnswerMiddleware);
 
 // notations
@@ -143,7 +143,7 @@ let studentsLessonResource = finale.resource({
     endpoints: ["/studentlessons", "/studentlessons/:id"],
 });
 studentsLessonResource.use(authMiddleware);
-studentsLessonResource.use(getStudentLessonsMiddleware);
+//studentsLessonResource.use(getStudentLessonsMiddleware);
 studentsLessonResource.use(createLessonChildMiddleware);
 
 // Resets the database and launches the express app on :8081

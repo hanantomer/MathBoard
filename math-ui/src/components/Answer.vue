@@ -11,8 +11,7 @@
 </template>
 
 <script>
-import { mapState } from "vuex";
-import { mapActions } from "vuex";
+import { mapState, mapActions, mapGetters } from "vuex";
 import mathBoard from "./MathBoard.vue";
 import matrixMixin from "../Mixins/matrixMixin";
 import activateObjectMixin from "../Mixins/activateObjectMixin";
@@ -41,9 +40,9 @@ export default {
     ...mapState({
       answerTitle: (state) => {
         return (
-          state.answerStore.currentAnswer.user.firstName +
+          state.answerStore.currentAnswer?.User?.firstName +
           " " +
-          state.answerStore.currentAnswer.user.lastName
+          state.answerStore.currentAnswer?.User?.lastName
         );
       },
     }),
@@ -56,6 +55,9 @@ export default {
       loadAnswer: "loadAnswer",
       loadAnswerNotations: "loadAnswerNotations",
       loadQuestionNotations: "loadQuestionNotations",
+    }),
+    ...mapGetters({
+      getCurrentAnswer: "getCurrentAnswer",
     }),
 
     markAnswerAsChecked: async function () {},

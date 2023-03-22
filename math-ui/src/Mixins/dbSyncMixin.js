@@ -111,7 +111,7 @@ module.exports = {
           `/users?email=${email}&password=${password}`
         );
         console.debug(`authLocalUserByPassword:${JSON.stringify(res)}`);
-        return !!res ? res.data[0] : null;
+        return !!res ? res.data : null;
       } catch (error) {
         this.handleError(error);
       }

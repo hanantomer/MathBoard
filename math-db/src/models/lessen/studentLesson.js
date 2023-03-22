@@ -18,8 +18,7 @@ module.exports = (sequelize, DataTypes) => {
     }
 
     StudentLesson.init(
-        {
-        },
+        {},
         {
             sequelize,
             freezeTableName: true,
@@ -29,6 +28,11 @@ module.exports = (sequelize, DataTypes) => {
                     fields: ["LessonId", "userId"],
                 },
             ],
+            defaultScope: {
+                include: [
+                    { model: sequelize.models["User"] },
+                    { model: sequelize.models["Lesson"], exclude:["id"] }],
+            },
         }
     );
 

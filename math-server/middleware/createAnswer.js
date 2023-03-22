@@ -4,22 +4,32 @@ const dbUtil = require("math-db/src/dbUtil");
 module.exports = {
     create: {
         write: {
-            // eagerly load student with answer after creation
-            after: async (req, res, context) => {
-                let questionId = await dbUtil.getIdByUUID(
-                    "Question",
-                    context.instance.dataValues.QuestionUUId
+            before: async (req, res, context) => {
+                // check if exists
+                let answer = await dbUtil.findUserAnswer(
+                    req.body.UserId,
+                    req.body.QuestionId
                 );
-                context.instance =
-                    await dbUtil.getAnswersWithStudentQuestionAndLesson(
-                        questionId
-                    );
-                if (context.instance.length > 0) {
-                    delete context.instance[0].dataValues.QuestionId;
-                    delete context.instance[0].dataValues.Question.id;
+                if (!!answer) {
+                    context.instance = answer;
+                    return context.skip;
                 }
+
                 return context.continue;
             },
+            // eagerly load student with answer after creation
+            // after: async (req, res, context) => {
+            //     let questionId = await dbUtil.getIdByUUID(
+            //         "Question",
+            //         context.instance.dataValues.QuestionUUId
+            //     );
+            //     context.instance =
+            //         await dbUtil.getAnswerWithStudentQuestionAndLesson(
+            //             questionId
+            //         );
+
+            //     return context.continue;
+            // },
         },
     },
 };

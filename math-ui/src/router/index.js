@@ -23,7 +23,7 @@ const router = new VueRouter({
       component: Login,
       name: "login",
       meta: { requiresAuth: false },
-      props: { default: true },
+      props: true,
     },
     {
       path: "/lessons",
@@ -63,8 +63,8 @@ const router = new VueRouter({
 });
 
 router.beforeEach(async (to, from, next) => {
-  // auth not required
   if (!to.matched.some((record) => record.meta.requiresAuth)) {
+    // auth not required
     next();
     return;
   }
@@ -86,7 +86,8 @@ router.beforeEach(async (to, from, next) => {
 
     // local token is invalid
     next({
-      path: "/login",
+      name: "login",
+      params: { dialog: true, type: "Login" },
       query: { from: window.location.pathname },
     });
   }

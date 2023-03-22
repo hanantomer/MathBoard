@@ -23,8 +23,6 @@ module.exports = {
                             "Question",
                             context.instance.dataValues.QuestionId
                         );
-
-                    context.instance.dataValues.QuestionId = null;
                 }
                 return context.continue;
             },

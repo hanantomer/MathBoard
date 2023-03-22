@@ -78,6 +78,9 @@ module.exports = {
     },    
     async getIdByUUID(model, uuid) {
         let res = await db.sequelize.models[model].findOne({
+            attributes: {
+                include: ["id"]
+            },
             where: {
                 uuid: uuid
             }
@@ -95,24 +98,39 @@ module.exports = {
         return res?.uuid;
     },
 
-    async getStudentLessons(userId) {
-        return await db.sequelize.models["StudentLesson"].findAll({
-            include:[{model: db.sequelize.models["User"]},{model: db.sequelize.models["Lesson"]}],
-            where: {UserId: userId}
-        });
-    },
+    // async getStudentLessons(userId) {
+    //     return await db.sequelize.models["StudentLesson"].findAll({
+    //         include:[{model: db.sequelize.models["User"]},{model: db.sequelize.models["Lesson"]}],
+    //         where: {UserId: userId}
+    //     });
+    // },
 
-    async getAnswersWithStudentQuestionAndLesson(whereClause) {
-        return await db.sequelize.models["Answer"].findAll({
-            include: [
-                { model: db.sequelize.models["User"] },
-                {
-                    model: db.sequelize.models["Question"],
-                    include: [{ model: db.sequelize.models["Lesson"] }]
-                }],
-            where: whereClause
-        });
-    },
+    // async getAnswerWithStudentQuestionAndLesson(whereClause) {
+    //     return await db.sequelize.models["Answer"].findOne({
+    //         include: [
+    //             { model: db.sequelize.models["User"] },
+    //             {
+    //                 model: db.sequelize.models["Question"],
+    //                 include: [{ model: db.sequelize.models["Lesson"], exclude:["id"] }],
+    //                 exclude: ["id","QuestionId"]
+    //             }],
+    //         where: whereClause
+    //     });
+    // },
+
+    // async getAnswersWithStudentQuestionAndLesson(whereClause) {
+    //     return await db.sequelize.models["Answer"].findAll({
+    //         include: [
+    //             { model: db.sequelize.models["User"] },
+    //             {
+    //                 model: db.sequelize.models["Question"],
+    //                 include: [{ model: db.sequelize.models["Lesson"], exclude:["id"] }],
+    //                 exclude: ["id","QuestionId"]
+    //             }],
+    //         where: whereClause
+    //     });
+    // },
+
 
     async getQuestionsWithLesson(whereClause) {
         return await db.sequelize.models["Question"].findAll({
@@ -252,5 +270,15 @@ module.exports = {
                 }]},
             }
         });    
-    }        
+    },       
+
+    async findUserAnswer(userId, questionId) {
+        return await db.sequelize.models["Answer"].findOne({
+            where: {
+                UserId: userId,
+                QuestionId: questionId,
+            }
+        });    
+    },    
+
 }

@@ -40,6 +40,10 @@ module.exports = (sequelize, DataTypes) => {
                     fields: ["uuId"],
                 },
             ],
+            defaultScope: {
+                include: { model: sequelize.models["Lesson"] },
+                exclude: ["id","LessonId"]
+            },            
         }
     );
 

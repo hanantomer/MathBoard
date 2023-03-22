@@ -45,7 +45,12 @@ module.exports = (sequelize, DataTypes) => {
                 type: DataTypes.STRING,
             }
         },
-        { sequelize, freezeTableName: true }
+        {
+            sequelize, freezeTableName: true, defaultScope: {
+                defaultScope: {
+                    exclude: ["password"]
+                }
+        }}
     );
 
     return User;

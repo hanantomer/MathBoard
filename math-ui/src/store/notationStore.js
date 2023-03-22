@@ -642,7 +642,9 @@ export default {
 
       let symbolsAtCell = helper
         .findNotationsByCellCoordinates(context.state, cell)
-        .filter((n) => n.type === NotationType.SYMBOL);
+        .filter(
+          (n) => n.type === NotationType.SYMBOL || n.type === NotationType.SIGN
+        );
 
       if (!symbolsAtCell) return;
 
