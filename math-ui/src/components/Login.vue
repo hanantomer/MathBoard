@@ -1,8 +1,8 @@
 <template>
-  <v-dialog v-model="show" max-width="600px" min-width="360px">
+  <v-dialog v-model="dialog" max-width="600px" min-width="360px">
     <div>
       <v-tabs
-        v-model="tab"
+        v-model="dialogType"
         show-arrows
         background-color="deep-purple accent-4"
         icons-and-text
@@ -151,8 +151,11 @@
 <script>
 import { mapActions } from "vuex";
 import { mapGetters } from "vuex";
+import authMixin from "../Mixins/authMixin";
+
 export default {
   name: "Login",
+  mixins: [authMixin],
   mounted() {
     //    if (!this.show) this.show = true;
     /*    gapi.signin2.render("google-signin-btn", {
@@ -161,13 +164,8 @@ export default {
       theme: "dark",
       onsuccess: this.googleOnSuccess,
     });*/
-    if (this.dialog) {
-      this.show = true;
-    }
-  },
-  created() {
-    //if (this.$route.path === "/login") {
-    //  this.show = true;
+    // if (this.dialog) {
+    //   this.show = true;
     // }
   },
   methods: {
@@ -175,8 +173,8 @@ export default {
     ...mapActions({
       registerUser: "registerUser",
       setUser: "setUser",
-      authLocalUserByPassword: "authLocalUserByPassword",
-      authGoogleUser: "authGoogleUser",
+      //authLocalUserByPassword: "authLocalUserByPassword",
+      //authGoogleUser: "authGoogleUser",
     }),
     googleOnSuccess: async function (user) {
       this.show = false;
@@ -197,14 +195,17 @@ export default {
     },
     validateLogin: async function () {
       if (this.$refs.loginForm.validate()) {
-        let user = {
-          email: this.loginEmail,
-          password: this.loginPassword,
-        };
-        let authenticatedUser = await this.authLocalUserByPassword(user);
+        let authenticatedUser = await this.mixin_authLocalUserByPassword(
+          this.loginEmail,
+          this.loginPassword
+        );
+
         if (!!authenticatedUser) {
           this.loginFailed = false;
-          this.show = false;
+
+          //this.show = false;
+          this.$emit("closed");
+
           this.setUser(authenticatedUser);
 
           if (window.navigator.cookieEnabled) {
@@ -233,50 +234,55 @@ export default {
     },
   },
   watch: {
-    dialog(val) {
-      this.show = val;
-    },
-    type(val) {
-      this.tab = val === "Login" ? 0 : 1;
-    },
+    //dialog(val) {
+    //  this.show = val;
+    //},
+    //type(val) {
+    //  this.tab = val === "Login" ? 0 : 1;
+    //},
   },
   props: {
-    dialog: false,
-    type: {
+    dialog: {
+      type: Boolean,
+      default: false,
+    },
+    dialogType: {
       type: String,
       default: "Login",
     },
   },
-  data: () => ({
-    loginFailed: false,
-    tab: 0,
-    show: false,
-    tabs: [
-      { name: "Login", icon: "mdi-account" },
-      { name: "Register", icon: "mdi-account-outline" },
-    ],
-    valid: true,
-    firstName: "",
-    lastName: "",
-    email: "",
-    password: "",
-    verify: "",
-    loginPassword: "12345678",
-    loginEmail: "hanantomer@gmail.com",
-    loginEmailRules: [
-      (v) => !!v || "Required",
-      (v) => /.+@.+\..+/.test(v) || "E-mail must be valid",
-    ],
-    emailRules: [
-      (v) => !!v || "Required",
-      (v) => /.+@.+\..+/.test(v) || "E-mail must be valid",
-    ],
-    show1: false,
-    rules: {
-      required: (value) => !!value || "Required.",
-      min: (v) => (v && v.length >= 8) || "Min 8 characters",
-    },
-  }),
+  data() {
+    return {
+      loginFailed: false,
+      tab: 0,
+      show: false,
+      tabs: [
+        { name: "Login", icon: "mdi-account" },
+        { name: "Register", icon: "mdi-account-outline" },
+      ],
+      valid: true,
+      firstName: "",
+      lastName: "",
+      email: "",
+      password: "",
+      verify: "",
+      loginPassword: "12345678",
+      loginEmail: "hanantomer@gmail.com",
+      loginEmailRules: [
+        (v) => !!v || "Required",
+        (v) => /.+@.+\..+/.test(v) || "E-mail must be valid",
+      ],
+      emailRules: [
+        (v) => !!v || "Required",
+        (v) => /.+@.+\..+/.test(v) || "E-mail must be valid",
+      ],
+      show1: false,
+      rules: {
+        required: (value) => !!value || "Required.",
+        min: (v) => (v && v.length >= 8) || "Min 8 characters",
+      },
+    };
+  },
 };
 </script>
 <style>

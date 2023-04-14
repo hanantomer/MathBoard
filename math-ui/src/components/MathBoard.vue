@@ -37,6 +37,7 @@ import { mapGetters } from "vuex";
 import matrixMixin from "../Mixins/matrixMixin";
 import activateObjectMixin from "../Mixins/activateObjectMixin";
 import eventManager from "../Mixins/eventManager";
+import authMixin from "../Mixins/authMixin";
 import notationMixin from "../Mixins/notationMixin";
 import userOutgoingOperationsSyncMixin from "../Mixins/userOutgoingOperationsSyncMixin";
 import toolbar from "./Toolbar.vue";
@@ -57,6 +58,7 @@ export default {
     matrixMixin,
     activateObjectMixin,
     eventManager,
+    authMixin,
     notationMixin,
     userOutgoingOperationsSyncMixin,
   ],

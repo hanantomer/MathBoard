@@ -7,7 +7,7 @@ module.exports = {
             before: async (req, res, context) => {
                 // check if exists
                 let answer = await dbUtil.findUserAnswer(
-                    req.body.UserId,
+                    context.user.id,
                     req.body.QuestionId
                 );
                 if (!!answer) {
@@ -17,19 +17,6 @@ module.exports = {
 
                 return context.continue;
             },
-            // eagerly load student with answer after creation
-            // after: async (req, res, context) => {
-            //     let questionId = await dbUtil.getIdByUUID(
-            //         "Question",
-            //         context.instance.dataValues.QuestionUUId
-            //     );
-            //     context.instance =
-            //         await dbUtil.getAnswerWithStudentQuestionAndLesson(
-            //             questionId
-            //         );
-
-            //     return context.continue;
-            // },
         },
     },
 };

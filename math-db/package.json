@@ -8,10 +8,11 @@
     "eslint-plugin-prettier": "^4.0.0",
     "pg": "^8.7.1",
     "pg-hstore": "^2.3.4",
-    "prettier": "^2.4.0",
-    "sqlite3": "npm:@vscode/sqlite3@^5.0.7"
+    "prettier": "^2.4.0"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "jest": "^29.5.0"
+  },
   "scripts": {},
   "author": "",
   "license": "ISC"

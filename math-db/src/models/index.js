@@ -25,34 +25,32 @@ function customLogger(queryString, queryObject) {
     console.log(queryObject.bind); // outputs an array
 }
 
-
 function processDir(dir) {
     fs.readdirSync(dir)
-    .filter((file) => {
-        return (
-            file.indexOf(".") !== 0 &&
-            file !== basename &&
-            file.slice(-3) === ".js"
-        );
-    })
-    .forEach((file) => {
-        const model = require(path.join(dir, file))(
-            sequelize,
-            Sequelize.DataTypes
-        );
-        db[model.name] = model;
-    });
+        .filter((file) => {
+            return (
+                file.indexOf(".") !== 0 &&
+                file !== basename &&
+                file.slice(-3) === ".js"
+            );
+        })
+        .forEach((file) => {
+            const model = require(path.join(dir, file))(
+                sequelize,
+                Sequelize.DataTypes
+            );
+            db[model.name] = model;
+        });
 
     // rcursively loop over sub directories
     fs.readdirSync(dir)
         .filter((file) => {
             file = path.resolve(dir, file);
-            return (
-                fs.statSync(file).isDirectory()
-        );
-        }).forEach((subdir) => {
+            return fs.statSync(file).isDirectory();
+        })
+        .forEach((subdir) => {
             processDir(dir.concat("/").concat(subdir));
-    });
+        });
 }
 
 processDir(__dirname);
@@ -60,9 +58,8 @@ processDir(__dirname);
 Object.keys(db).forEach((modelName) => {
     if (db[modelName].associate) {
         db[modelName].associate(db);
-        }
-    });
-
+    }
+});
 
 db.sequelize = sequelize;
 db.Sequelize = Sequelize;

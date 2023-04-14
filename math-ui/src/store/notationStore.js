@@ -20,27 +20,41 @@ const helper = {
     });
     return rowArr;
   },
-  updateOccupationMatrix: function (matrix, notation, oldNotation) {
+
+  removeFromOccupationMatrix: function (matrix, notation) {
+    switch (notation.type) {
+      case NotationType.SYMBOL:
+      case NotationType.SIGN:
+      case NotationType.POWER:
+        matrix[notation.row][notation.col] = null;
+        break;
+      case NotationType.FRACTION:
+      case NotationType.SQRT:
+        for (let col = oldNotation.fromCol; col <= notation.toCol; col++) {
+          matrix[parseInt(notation.row)][parseInt(col)] = null;
+        }
+      case NotationType.TEXT:
+      case NotationType.IMAGE:
+      case NotationType.GEO:
+        for (let row = notation.fromRow; row <= notation.toRow; row++) {
+          for (let col = notation.fromCol; col <= notation.toCol; col++) {
+            matrix[parseInt(row)][parseInt(col)] = null;
+          }
+        }
+    }
+  },
+
+  addToOccupationMatrix: function (matrix, notation) {
     switch (notation.type) {
       case NotationType.SYMBOL:
       case NotationType.SIGN:
       case NotationType.POWER:
         matrix[notation.row][notation.col] = notation;
-        // clean matrix pointer to old notation
-        if (!!oldNotation) {
-          matrix[oldNotation.row][oldNotation.col] = null;
-        }
         break;
       case NotationType.FRACTION:
       case NotationType.SQRT:
         for (let col = notation.fromCol; col <= notation.toCol; col++) {
           matrix[parseInt(notation.row)][parseInt(col)] = notation;
-        }
-        // clean matrix pointer to old notation
-        if (!!oldNotation) {
-          for (let col = oldNotation.fromCol; col <= oldNotation.toCol; col++) {
-            matrix[parseInt(oldNotation.row)][parseInt(col)] = null;
-          }
         }
       case NotationType.TEXT:
       case NotationType.IMAGE:
@@ -48,18 +62,6 @@ const helper = {
         for (let row = notation.fromRow; row <= notation.toRow; row++) {
           for (let col = notation.fromCol; col <= notation.toCol; col++) {
             matrix[parseInt(row)][parseInt(col)] = notation;
-          }
-        }
-        // clean matrix pointer to old notation
-        if (!!oldNotation) {
-          for (let row = oldNotation.fromRow; row <= oldNotation.toRow; row++) {
-            for (
-              let col = oldNotation.fromCol;
-              col <= oldNotation.toCol;
-              col++
-            ) {
-              matrix[parseInt(row)][parseInt(col)] = null;
-            }
           }
         }
     }
@@ -78,11 +80,8 @@ const helper = {
   },
 
   // point
-  pointAtPointCoordinates: function (point1Coordinates, point2Coordinates) {
-    return (
-      point1Coordinates.col == point2Coordinates.col &&
-      point1Coordinates.row == point2Coordinates.row
-    );
+  pointAtPointCoordinates: function (n1, n2) {
+    return n1.col == n2.col && n1.row == n2.row && n1.UserId === n2.USerId;
   },
 
   pointAtLineCoordinates: function (pointCoordinates, lineCoordinates) {
@@ -290,7 +289,7 @@ const helper = {
           case NotationType.SIGN:
           case NotationType.POWER:
             return helper.pointAtPointCoordinates(
-              { col: notation.col, row: notation.row },
+              { col: notation.col, row: notation.row, UserId: notation.UserId },
               n2
             );
           case NotationType.FRACTION:
@@ -328,7 +327,11 @@ const helper = {
           case NotationType.POWER:
             return (
               helper.pointAtPointCoordinates(
-                { col: notation.col, row: notation.row },
+                {
+                  col: notation.col,
+                  row: notation.row,
+                  UserId: notation.UserId,
+                },
                 n2
               ) ??
               helper.lineAtPointCoordinates(
@@ -416,6 +419,7 @@ const helper = {
 
     notations?.data?.forEach((notation) => {
       notation.type = notationType;
+      notation.boardType = boardType;
       context.commit("setNotation", notation);
     });
   },
@@ -468,9 +472,6 @@ const helper = {
 };
 
 export default {
-  modules: {
-    dbSyncMixin,
-  },
   state: {
     parent: { Id: null, boardType: BoardType.NONE },
     notations: {},
@@ -490,33 +491,49 @@ export default {
     },
     getActiveNotation: (state) => {
       return state.activeNotation;
-      // return Object.entries(state.notations)
-      //   .map((n) => n[1])
-      //   .find((n) => !!n.active);
     },
     getActiveCell: (state) => {
       return state.activeCell;
     },
   },
   mutations: {
-    setParent(state, parent) {
-      state.parent = parent;
+    setParent(state, newParent) {
+      Vue.set(state, "parent", newParent);
     },
     setNotation(state, notation) {
-      let oldNotation = state.notations[notation.type + notation.id];
-
       if (!notation.boardType) notation.boardType = state.parent.boardType;
 
-      Vue.set(state.notations, notation.type + notation.id, notation);
-
-      helper.updateOccupationMatrix(
-        state.cellOccupationMatrix,
-        notation,
-        oldNotation
+      Vue.set(
+        state.notations,
+        notation.boardType + notation.type + notation.id,
+        notation
       );
+
+      // add aditinal erase sign to teacher overrides
+      if (
+        state.cellOccupationMatrix[parseInt(notation.row)][
+          parseInt(notation.col)
+        ]?.boardType === BoardType.ANSWER
+      ) {
+        if (
+          (this.getters.isTeacher && // teacher correction when viewing students` answer
+            this.getters.getUser.id == notation.UserId) ||
+          (!this.getters.isTeacher && // teacher correction when students edits answer
+            this.getters.getUser.id !== notation.UserId)
+        ) {
+          notation.value = "/" + notation.value; // to mark that studnts` symbol is incorrect
+        }
+      }
+
+      helper.addToOccupationMatrix(state.cellOccupationMatrix, notation);
     },
     removeNotation(state, notation) {
-      Vue.delete(state.notations, notation.type + notation.id);
+      helper.removeFromOccupationMatrix(state.cellOccupationMatrix, notation);
+
+      Vue.delete(
+        state.notations,
+        notation.boardType + notation.type + notation.id
+      );
     },
     selectNotation(state, pointCoordinates) {
       let notations = helper.findNotationsByCellCoordinates(
@@ -524,7 +541,10 @@ export default {
         pointCoordinates
       );
       notations.forEach((n) => {
-        Vue.set(state.notations, n.type + n.id, { ...n, selected: true });
+        Vue.set(state.notations, n.boardType + n.type + n.id, {
+          ...n,
+          selected: true,
+        });
       });
     },
     unselectAllNotations(state) {
@@ -581,9 +601,6 @@ export default {
     },
 
     async addNotation(context, notation) {
-      if (!context.getters.getUser.authorized && !context.getters.isTeacher)
-        return;
-
       notation.UserId = context.getters.getUser.id;
       notation.boardType = context.getters.getParent.boardType;
       notation[notation.boardType.capitalize() + "UUId"] =
@@ -601,7 +618,7 @@ export default {
         if (!!notation.fromCol) oldNotation.fromCol = notation.fromCol;
         if (!!notation.toCol) oldNotation.toCol = notation.toCol;
         if (!!notation.row) oldNotation.row = notation.row;
-        if (!!notation.fromRow) oldNotation.row = notation.row;
+        if (!!notation.fromRow) oldNotation.fromRow = notation.fromRow;
         if (!!notation.toRow) oldNotation.toRow = notation.toRow;
 
         notation = await dbSyncMixin.methods.updateNotation(
@@ -637,9 +654,6 @@ export default {
       context.commit("setNotation", notation);
     },
     removeSymbolsByCell(context, cell) {
-      if (!context.getters.getUser.authorized && !context.getters.isTeacher)
-        return;
-
       let symbolsAtCell = helper
         .findNotationsByCellCoordinates(context.state, cell)
         .filter(
@@ -660,9 +674,6 @@ export default {
 
     // remove notations wich overlaps with a rect(multiple cells)
     removeNotationsByRect(context, rect) {
-      if (!context.getters.getUser.authorized && !context.getters.isTeacher)
-        return;
-
       let notationsAtRectCoordinates = helper.findNotationsByRectCoordinates(
         context.state,
         rect
@@ -679,13 +690,9 @@ export default {
     },
 
     async removeActiveNotation(context) {
-      if (!context.getters.getUser.authorized && !context.getters.isTeacher)
-        return;
-
       let notationToDelete = context.getters.getActiveNotation;
       if (!notationToDelete) return;
-
-      await dbSyncMixin.methods.removeNotation(notationToDelete);
+      dbSyncMixin.methods.removeNotation(notationToDelete);
       context.commit("removeNotation", notationToDelete);
       return notationToDelete;
     },
@@ -798,6 +805,7 @@ export default {
       }
       context.commit("setActiveNotation", activeNotation);
     },
+
     setActiveCell(context, activeCell) {
       if (
         // disallow activation of question rows for student
@@ -808,6 +816,7 @@ export default {
       }
       context.commit("setActiveCell", activeCell);
     },
+
     removeAllNotations(context) {
       context.commit("removeAllNotations");
     },

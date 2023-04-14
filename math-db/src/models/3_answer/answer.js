@@ -51,19 +51,11 @@ module.exports = (sequelize, DataTypes) => {
             defaultScope: {
                 include: [
                     { model: sequelize.models["User"] },
-                    {
-                        model: sequelize.models["Question"],
-                        attributes: {
-                            include: [{
-                                model: sequelize.models["Lesson"],
-                                attributes: {
-                                    exclude: ["id"]
-                                }
-                            }]
-                        },
-                    }],
-                exclude: ["id", "QuestionId"]
+                    { model: sequelize.models["Question"]}],
             },
+            scopes: {
+                existsScope: {},
+            }
         }
     );
 

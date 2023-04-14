@@ -6,4 +6,7 @@ export default {
   SQRT: "SQRT",
   DELETING: "DELETING", // mouse clicked following delete button pressed
   SELECT: "SELECT", //  after select button pressed
+  CHECKMARK: "CHECKMARK", // after checkmark button pressed
+  SEMICHECKMARK: "SEMICHECKMARK", // after semicheck button pressed
+  XMARK: "XMARK", // after xmark button pressed
 };

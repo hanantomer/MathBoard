@@ -7,6 +7,8 @@ export default {
   methods: {
     ...mapGetters({
       getActiveCell: "getActiveCell",
+      getActiveNotation: "getActiveNotation",
+      getSelectedNotations: "getSelectedNotations",
       getCurrentEditMode: "getCurrentEditMode",
       getParent: "getParent",
     }),
@@ -19,6 +21,10 @@ export default {
       addNotation: "addNotation",
     }),
 
+    notationMixin_addSpecialSymbol(notationType) {
+      this.$addNotation(null, notationType);
+    },
+
     notationMixin_addNotation(e) {
       if (
         // in power mode allow digits only
@@ -29,11 +35,27 @@ export default {
         return;
       }
 
+      ///TODO check if still relevant
       if (
         this.getCurrentEditMode() === EditMode.SYMBOL &&
         this.signList.indexOf(e.key) >= 0
       ) {
         this.$addNotation(e.key, NotationType.SIGN);
+        return;
+      }
+
+      if (this.getCurrentEditMode() === EditMode.CHECKMARK) {
+        this.$addNotation("&#x2714", NotationType.SYMBOL);
+        return;
+      }
+
+      if (this.getCurrentEditMode() === EditMode.SEMICHECKMARK) {
+        this.$addNotation("&#x237B;", NotationType.SYMBOL);
+        return;
+      }
+
+      if (this.getCurrentEditMode() === EditMode.XMARK) {
+        this.$addNotation("&#x2718;", NotationType.SYMBOL);
         return;
       }
 
@@ -58,9 +80,15 @@ export default {
       });
     },
     notationMixin_removeActiveOrSelectedNotations() {
-      this.$removeActiveCellNotations();
-      this.$removeActiveNotation();
-      this.$removeSelectedNotations();
+      if (!!this.getActiveCell()) {
+        this.$removeActiveCellNotations();
+      }
+      if (!!this.getActiveNotation()) {
+        this.$removeActiveNotation();
+      }
+      if (!!this.getSelectedNotations().length) {
+        this.$removeSelectedNotations();
+      }
     },
 
     async $removeActiveCellNotations() {
@@ -71,21 +99,27 @@ export default {
       if (!notationsToDelete) return;
 
       notationsToDelete.forEach((notation) => {
-        if (
-          notation.NotationType === NotationType.SYMBOL ||
-          notation.NotationType === NotationType.SIGN
-        )
-          this.userOperationsMixin_syncOutgoingRemoveNotation(notation);
+        //if (
+        //  notation.NotationType === NotationType.SYMBOL ||
+        //  notation.NotationType === NotationType.SIGN
+        //)
+        this.userOperationsMixin_syncOutgoingRemoveNotation(notation);
       });
     },
 
     async $removeActiveNotation() {
+      if (!this.mixin_canEdit()) {
+        return;
+      }
       let deletedNotation = await this.removeActiveNotation();
       if (!deletedNotation) return;
       this.userOperationsMixin_syncOutgoingRemoveNotation(deletedNotation);
     },
 
     async $removeSelectedNotations() {
+      if (!this.mixin_canEdit()) {
+        return;
+      }
       let deletedNotations = await this.removeSelectedNotations();
       if (!!deletedNotations) {
         deletedNotations.forEach((n) =>
@@ -110,7 +144,9 @@ export default {
           }
         })
         .then(() => {
-          this.matrixMixin_setNextRect(1, 0);
+          if (this.getCurrentEditMode() == EditMode.SYMBOL) {
+            this.matrixMixin_setNextRect(1, 0);
+          }
         })
         .catch((e) => {
           console.error(e);

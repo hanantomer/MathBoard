@@ -27,6 +27,7 @@ export default {
     addQuestion(state, question) {
       state.questions.push(question);
     },
+
     setCurrentQuestion(state, question) {
       state.currentQuestion = question;
     },
@@ -56,6 +57,7 @@ export default {
       }
       return questions.data.length > 0;
     },
+
     async addQuestion(context, question) {
       question.LessonUUId = context.getters.getCurrentLesson.uuid;
       question = await dbSyncMixin.methods.addQuestion(question);

@@ -8,6 +8,7 @@ export default {
   methods: {
     ...mapGetters({
       getUser: "getUser",
+      getParent: "getParent",
     }),
     mixin_syncIncomingUserOperations: async function () {
       let socket = io("http://localhost:3030");
@@ -21,23 +22,35 @@ export default {
       let _store = store;
 
       client.service("notationSync").on("created", (notation) => {
-        if (notation.UserId !== this.getUser().id) {
+        if (
+          notation.UserId !== this.getUser().id &&
+          this.getParent().boardType === "lesson"
+        ) {
           _store.dispatch("syncIncomingUpdatedNotation", notation);
         }
       });
 
       client.service("notationSync").on("updated", (notation) => {
-        if (notation.UserId !== this.getUser().id) {
+        if (
+          notation.UserId !== this.getUser().id &&
+          this.getParent().boardType === "lesson"
+        ) {
           _store.dispatch("syncIncomingUpdatedNotation", notation);
         }
       });
       client.service("notationSync").on("removed", (notation) => {
-        if (notation.UserId !== this.getUser().id) {
+        if (
+          notation.UserId !== this.getUser().id &&
+          this.getParent().boardType === "lesson"
+        ) {
           _store.dispatch("syncIncomingRemovedNotation", notation);
         }
       });
       client.service("activeCell").on("updated", (activeCell) => {
-        if (activeCell.UserId !== this.getUser().id) {
+        if (
+          activeCell.UserId !== this.getUser().id &&
+          this.getParent().boardType === "lesson"
+        ) {
           _store.dispatch("setActiveCell", activeCell);
         }
       });
@@ -53,7 +66,10 @@ export default {
       }
       if (this.isTeacher()) {
         client.service("heartbeat").on("updated", (user) => {
-          if (user.id !== this.getUser().id) {
+          if (
+            user.id !== this.getUser().id &&
+            this.getParent().boardType === "lesson"
+          ) {
             _store.dispatch("updateStudentHeartbeat", user);
           }
         });

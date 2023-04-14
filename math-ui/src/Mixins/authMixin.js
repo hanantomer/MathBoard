@@ -1,5 +1,26 @@
+import dbSyncMixin from "../Mixins/dbSyncMixin";
+import { mapGetters } from "vuex";
 export default {
   methods: {
+    ...mapGetters({
+      isTeacher: "isTeacher",
+    }),
+    mixin_canEdit: function () {
+      return (
+        this.isTeacher() || // teacher in lesson or question
+        this.getUser().authorized || // student in lesson when authorized by teacher
+        this.getParent().boardType == "answer" // student writing an  answer
+      );
+    },
+    mixin_authGoogleUser: async function (context) {
+      return await dbSyncMixin.methods.authGoogleUser();
+    },
+    mixin_authLocalUserByToken: async function () {
+      return await dbSyncMixin.methods.authLocalUserByToken();
+    },
+    mixin_authLocalUserByPassword: async function (email, password) {
+      return await dbSyncMixin.methods.authLocalUserByPassword(email, password);
+    },
     mixin_getToken: function () {
       const access_token = `${
         gapi.auth2.getAuthInstance().currentUser.get().isSignedIn()

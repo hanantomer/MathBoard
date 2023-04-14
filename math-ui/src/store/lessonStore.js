@@ -1,6 +1,5 @@
 import dbSyncMixin from "../Mixins/dbSyncMixin";
 import EditMode from "../Mixins/editMode";
-import UserType from "../Mixins/userType";
 import Vue from "vue";
 
 const helper = {
@@ -29,7 +28,7 @@ export default {
       return state.currentLesson;
     },
     isTeacher(state, getters) {
-      return getters.getUser?.userType === UserType.TEACHER;
+      return getters.getUser?.userType === "teacher";
     },
   },
   mutations: {

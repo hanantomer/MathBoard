@@ -1,5 +1,6 @@
-const BoardType = require("./boardType").default;
-const axios = require("axios");
+import BoardType from "./boardType";
+import axios from "axios";
+
 const axiosInstnce = axios.create({
   baseURL: "http://localhost:8081",
 });
@@ -39,12 +40,11 @@ axiosInstnce.interceptors.request.use(function (config) {
     console.debug(`sending access_token:${access_token}`);
     config.headers.authentication = access_token;
   }
-  access_token;
 
   return config;
 });
 
-module.exports = {
+export default {
   methods: {
     handleError: function (error) {
       if (error.response) {
@@ -95,12 +95,11 @@ module.exports = {
         this.handleError(error);
       }
     },
-    // the token is taken from cookie. see interceptor at the top of the page
+    // token is taken from cookie. see interceptor at the top of the page
     authLocalUserByToken: async function () {
       try {
         let res = await axiosInstnce.get("/users");
-        console.debug(`authLocalUserByToken:${JSON.stringify(res)}`);
-        return !!res ? res.data[0] : null;
+        return !!res ? res.data : null;
       } catch (error) {
         this.handleError(error);
       }
@@ -185,6 +184,11 @@ module.exports = {
         : null;
     },
     removeNotation: async function (notation) {
+      /// TODO find a way to get current user
+      //if (this.getUser().id != notation.UserId) {
+      //  return;
+      //}
+
       try {
         axiosInstnce.delete(
           `${notation.boardType}${notation.type}s/${notation.id}`

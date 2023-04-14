@@ -362,17 +362,6 @@ export default {
           : 0;
 
       return this.getNotationXposByCol(col) + deltaX;
-
-      /*if (n.type === NotationType.SQRTSYMBOL) {
-        return this.getNotationXposByCol(col) - Math.round(this.rectSize / 3);
-      }
-
-      if (n.type === NotationType.POWER) {
-        return this.getNotationXposByCol(col) - this.rectSize / 3;
-      }
-
-      return this.getNotationXposByCol(col);
-      */
     },
     $y(n) {
       let row = this.$row(n);
@@ -384,26 +373,6 @@ export default {
           : 0;
 
       return this.getNotationYposByRow(row) + deltaY;
-
-      /*if (n.type === NotationType.SYMBOL || n.type === NotationType.SIGN) {
-        return this.getNotationYposByRow(row);
-      }
-
-      if (n.type === NotationType.TEXT || n.type === NotationType.IMAGE) {
-        return this.getNotationYposByRow(n.fromRow);
-      }
-
-      if (n.type === NotationType.POWER) {
-        return this.getNotationYposByRow(n.row) - 5;
-      }
-
-      if (n.type === NotationType.FRACTION || n.type === NotationType.SQRT) {
-        return this.getNotationYposByRow(n.row) - 4;
-      }
-
-      if (n.type === NotationType.SQRTSYMBOL || n.type === NotationType.SQRT) {
-        return this.getNotationYposByRow(n.row) - 4;
-      }*/
     },
     $width(n) {
       if (n.type === NotationType.TEXT) {
@@ -462,9 +431,6 @@ export default {
         ? this.signFontSize
         : this.fontSize;
     },
-    //$color(n) {
-    //  return n.selected ? "red" : "black";
-    //},
     $html(n) {
       if (n.type === NotationType.FRACTION) {
         return `<span class=line style='width:${
@@ -498,7 +464,7 @@ export default {
       let color = n.selected
         ? "red"
         : this.getParent().boardType === BoardType.ANSWER &&
-          this.getCurrentLesson().UserId !== n.UserId
+          this.getUser().id != n.UserId
         ? "purple"
         : "black";
 

@@ -138,6 +138,10 @@ export default {
         return;
       }
 
+      if (!this.mixin_canEdit()) {
+        return;
+      }
+
       this.notationMixin_addNotation(e);
     },
 
@@ -155,6 +159,15 @@ export default {
         if (this.getParent().boardType === BoardType.LESSON) {
           this.userOperationsMixin_syncOutgoingActiveCell(cellToActivate);
         }
+      }
+
+      if (
+        this.getCurrentEditMode() === EditMode.CHECKMARK ||
+        this.getCurrentEditMode() === EditMode.SEMICHECKMARK ||
+        this.getCurrentEditMode() === EditMode.XMARK
+      ) {
+        this.notationMixin_addNotation();
+        return;
       }
     },
     eventManager_lineDrawEnded() {

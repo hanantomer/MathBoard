@@ -12,6 +12,19 @@ export default {
     getUser: function (state) {
       return state.loggedUser;
     },
+    // async authLocalUserByToken() {
+    //   let user = await dbSyncMixin.methods.authLocalUserByToken();
+    //   return user;
+    // },
+    // async authLocalUserByPassword(context, user) {
+    //   return await dbSyncMixin.methods.authLocalUserByPassword(
+    //     user.email,
+    //     user.password
+    //   );
+    // },
+    //async authGoogleUser(context) {
+    //  return await authMixin.methods.mixin_authGoogleUser();
+    //},
   },
   mutations: {
     setUser(state, user) {
@@ -31,18 +44,6 @@ export default {
     async setUser(context, user) {
       context.commit("setUser", user);
       return user;
-    },
-    async authLocalUserByToken(context) {
-      return dbSyncMixin.methods.authLocalUserByToken();
-    },
-    async authLocalUserByPassword(context, user) {
-      return dbSyncMixin.methods.authLocalUserByPassword(
-        user.email,
-        user.password
-      );
-    },
-    async authGoogleUser(context) {
-      return await dbSyncMixin.methods.authGoogleUser();
     },
     async registerUser(context, user) {
       return dbSyncMixin.methods.registerUser(user);

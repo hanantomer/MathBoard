@@ -1,6 +1,10 @@
 <template>
   <v-app id="app">
-    <login :dialog="loginDialog" :type="loginType"></login>
+    <login
+      :dialog="loginDialog"
+      :dialogType="loginType"
+      @closed="closeLoginDialog"
+    ></login>
     <v-app-bar
       style="max-height: 60px; padding-right: 10px"
       class="float-end"
@@ -67,7 +71,7 @@
       </v-tooltip>
 
       <!-- sign in / register -->
-      <v-btn v-show="!user.id" icon v-on:click="openLoginDialog('Login')">
+      <v-btn v-show="!user.id" icon v-on:click="showLoginDialog('Login')">
         <v-icon>mdi-account</v-icon>
         <span style="font-size: 0.7em">Sign In</span>
       </v-btn>
@@ -139,18 +143,33 @@ export default {
     window.removeEventListener("keyup", this.onKeyUp);
     window.removeEventListener("paste", this.onKeyUp);
   },
-
-  data: () => ({
-    loginDialog: null,
-    loginType: null,
-  }),
+  data() {
+    return {
+      loginDialog: false,
+      loginType: "Login",
+    };
+  },
+  computed: {
+    user: function () {
+      return this.getUser();
+    },
+    teacher: function () {
+      return this.isTeacher();
+    },
+  },
   methods: {
     ...mapGetters({ getUser: "getUser", isTeacher: "isTeacher" }),
     ...mapActions({ setUser: "setUser" }),
-    openLoginDialog(tab) {
+
+    showLoginDialog(type) {
+      this.loginType = type;
       this.loginDialog = true;
-      this.loginType = "Login";
     },
+
+    closeLoginDialog: function () {
+      this.loginDialog = false;
+    },
+
     onKeyUp: function (key) {
       this.$root.$emit("keyup", key);
     },
@@ -180,14 +199,6 @@ export default {
     //     return await this.registerUser(...this.googleUser);
     //   }
     // },
-  },
-  computed: {
-    user: function () {
-      return this.getUser();
-    },
-    teacher: function () {
-      return this.isTeacher();
-    },
   },
 };
 </script>

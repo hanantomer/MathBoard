@@ -11,7 +11,7 @@
 </template>
 
 <script>
-import { mapState, mapActions, mapGetters } from "vuex";
+import { mapActions, mapGetters } from "vuex";
 import mathBoard from "./MathBoard.vue";
 import matrixMixin from "../Mixins/matrixMixin";
 import activateObjectMixin from "../Mixins/activateObjectMixin";
@@ -37,15 +37,13 @@ export default {
 
   mixins: [matrixMixin, activateObjectMixin, notationMixin],
   computed: {
-    ...mapState({
-      answerTitle: (state) => {
-        return (
-          state.answerStore.currentAnswer?.User?.firstName +
-          " " +
-          state.answerStore.currentAnswer?.User?.lastName
-        );
-      },
-    }),
+    answerTitle: function () {
+      return this.isTeacher()
+        ? this.getCurrentAnswer()?.User?.firstName +
+            " " +
+            this.getCurrentAnswer()?.User?.lastName
+        : this.getCurrentQuestion()?.name;
+    },
   },
   watch: {
     $route: "loadAnswer",
@@ -58,6 +56,8 @@ export default {
     }),
     ...mapGetters({
       getCurrentAnswer: "getCurrentAnswer",
+      getCurrentQuestion: "getCurrentQuestion",
+      isTeacher: "isTeacher",
     }),
 
     markAnswerAsChecked: async function () {},

@@ -96,16 +96,7 @@ export default {
 
     keyUp: function (e) {
       if (e.code === "Backspace" || e.code === "Delete") {
-        // this.$store.dispatch("removeNotationsByRect", {
-        //   fromCol: this.selectionRectLeft / this.matrixMixin_getRectSize(),
-        //   toCol:
-        //     (this.selectionRectLeft + this.selectionRectWidth) /
-        //     this.matrixMixin_getRectSize(),
-        //   fromRow: this.selectionRectTop / this.matrixMixin_getRectSize(),
-        //   toRow:
-        //     (this.selectionRectTop + this.selectionRectHeight) /
-        //     this.matrixMixin_getRectSize(),
-        // });
+        // actual deletion is handled by eventManager
         this.resetSelection();
       }
     },

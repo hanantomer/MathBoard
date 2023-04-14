@@ -12,7 +12,9 @@
     "jsonwebtoken": "^8.5.1",
     "prettier": "^2.4.0"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "jest": "^29.5.0"
+  },
   "scripts": {},
   "author": "",
   "license": "ISC"

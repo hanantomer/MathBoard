@@ -4,34 +4,9 @@
       <v-toolbar color="primary" dark>
         <v-toolbar-title>Answers</v-toolbar-title>
       </v-toolbar>
-      <!-- <v-row>
-        <v-col>
-          <v-select
-            v-model="selectedLesson"
-            :items="lessons"
-            item-value="uuid"
-            item-text="name"
-            label="lesson:"
-            dense
-            outlined
-          ></v-select>
-        </v-col>
-        <v-col>
-          <v-select
-            v-model="selectedQuestion"
-            :items="questions"
-            item-value="uuid"
-            item-text="name"
-            label="question:"
-            dense
-            outlined
-          ></v-select>
-        </v-col>
-      </v-row> -->
       <v-data-table
         :headers="headers"
         :items="answers"
-        :item-key="uuid"
         :items-per-page="10"
         class="elevation-1"
         @click:row="selectAnswer"

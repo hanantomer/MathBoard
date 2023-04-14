@@ -7,6 +7,9 @@ export default Object.freeze({
   IMAGE: "image",
   SQRT: "sqrt",
   SQRTSYMBOL: "sqrtSymbol",
+  CHECKMARK: "checkmark",
+  SEMICHECKMARK: "semiCheckmark",
+  XMARK: "xmark",
   RIGHT_HANDLE: "rightHandle",
   LEFT_HANDLE: "leftHandle",
 });

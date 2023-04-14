@@ -18,14 +18,8 @@ Object.defineProperty(String.prototype, "capitalize", {
 
 module.exports = {
     
-    
     isTeacher: async function (userId, lessonId) {
-        let lesson = await db.sequelize.models["Lesson"].findOne({
-            where: {
-                id: lessonId,
-            },
-        });
-
+        let lesson = await db.sequelize.models["Lesson"].findByPk(lessonId);
         return !!lesson && lesson.UserId === userId;
     },
    
@@ -55,7 +49,6 @@ module.exports = {
         return null;            
     },
 
-
     /*Point*/
     async findPointOverlappingWithPoint(model, parentFieldName, parentId, row, col) {
         return await db.sequelize.models[model].findOne({
@@ -76,76 +69,6 @@ module.exports = {
             }
         });    
     },    
-    async getIdByUUID(model, uuid) {
-        let res = await db.sequelize.models[model].findOne({
-            attributes: {
-                include: ["id"]
-            },
-            where: {
-                uuid: uuid
-            }
-        });
-
-        return res?.id;
-    },
-    async getUUIDById(model, id) {
-        let res = await db.sequelize.models[model].findOne({
-            where: {
-                id: id
-            }
-        });
-
-        return res?.uuid;
-    },
-
-    // async getStudentLessons(userId) {
-    //     return await db.sequelize.models["StudentLesson"].findAll({
-    //         include:[{model: db.sequelize.models["User"]},{model: db.sequelize.models["Lesson"]}],
-    //         where: {UserId: userId}
-    //     });
-    // },
-
-    // async getAnswerWithStudentQuestionAndLesson(whereClause) {
-    //     return await db.sequelize.models["Answer"].findOne({
-    //         include: [
-    //             { model: db.sequelize.models["User"] },
-    //             {
-    //                 model: db.sequelize.models["Question"],
-    //                 include: [{ model: db.sequelize.models["Lesson"], exclude:["id"] }],
-    //                 exclude: ["id","QuestionId"]
-    //             }],
-    //         where: whereClause
-    //     });
-    // },
-
-    // async getAnswersWithStudentQuestionAndLesson(whereClause) {
-    //     return await db.sequelize.models["Answer"].findAll({
-    //         include: [
-    //             { model: db.sequelize.models["User"] },
-    //             {
-    //                 model: db.sequelize.models["Question"],
-    //                 include: [{ model: db.sequelize.models["Lesson"], exclude:["id"] }],
-    //                 exclude: ["id","QuestionId"]
-    //             }],
-    //         where: whereClause
-    //     });
-    // },
-
-
-    async getQuestionsWithLesson(whereClause) {
-        return await db.sequelize.models["Question"].findAll({
-            include:[{model: db.sequelize.models["Lesson"]}],
-            where:  whereClause 
-        });
-    },
-
-    async getLesson(lessonUUId) {
-        return  await db.sequelize.models["Lesson"].findOne({
-            where: {
-                uuid: lessonUUId
-            }
-        });
-    },
     
     async findPointOverlappingWithRect(model, parentFieldName, parentId, fromRow, toRow, fromCol, toCol) {
         return await db.sequelize.models[model].findOne({
@@ -273,12 +196,51 @@ module.exports = {
     },       
 
     async findUserAnswer(userId, questionId) {
-        return await db.sequelize.models["Answer"].findOne({
+        let answer =  await db.sequelize.models["Answer"].scope("existsScope").findOne({
             where: {
                 UserId: userId,
                 QuestionId: questionId,
             }
-        });    
+        }); 
+        return answer
     },    
+
+    async getIdByUUID(model, uuid) {
+        let res = await db.sequelize.models[model].findOne({
+            attributes: {
+                include: ["id"]
+            },
+            where: {
+                uuid: uuid
+            }
+        });
+
+        return res?.id;
+    },
+    async getUUIDById(model, id) {
+        let res = await db.sequelize.models[model].findOne({
+            where: {
+                id: id
+            }
+        });
+
+        return res?.uuid;
+    },
+
+    async getLesson(lessonUUId) {
+        return  await db.sequelize.models["Lesson"].findOne({
+            where: {
+                uuid: lessonUUId
+            }
+        });
+    },
+
+    async getNotation(id, url) {
+        let modelName =
+            Object.values(db.sequelize.models).find(m => m.name.toLowerCase() == url.substring(1, url.length - 3)).name;
+        
+        let notation = await db.sequelize.models[modelName].findByPk(id);
+        return notation;
+    },
 
 }

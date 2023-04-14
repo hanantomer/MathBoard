@@ -9,12 +9,14 @@ import Answers from "../components/Answers.vue";
 import Answer from "../components/Answer.vue";
 
 import store from "../store/index.js";
+import authMixin from "../Mixins/authMixin";
 
 const router = new VueRouter({
   mode: "history",
   routes: [
     {
       path: "/",
+      name: "main",
       component: Welcome,
       meta: { requiresAuth: false },
     },
@@ -76,21 +78,22 @@ router.beforeEach(async (to, from, next) => {
   }
 
   // local access token is present
-  if (!!window.$cookies.get("access_token")) {
-    let user = await store.dispatch("authLocalUserByToken");
-    if (!!user) {
-      await store.dispatch("setUser", user);
-      next();
-      return;
-    }
-
-    // local token is invalid
-    next({
-      name: "login",
-      params: { dialog: true, type: "Login" },
-      query: { from: window.location.pathname },
-    });
+  //let access_token = window.$cookies.get("access_token");
+  //console.log(access_token);
+  //if (!!access_token) {
+  let user = await authMixin.methods.mixin_authLocalUserByToken();
+  if (!!user) {
+    store.dispatch("setUser", user);
+    next();
+    return;
   }
+  next({
+    name: "login",
+    params: { dialog: true, type: "Login" },
+    query: { from: window.location.pathname },
+  });
+
+  //}
 
   /*
 
@@ -108,11 +111,6 @@ router.beforeEach(async (to, from, next) => {
   }*/
 
   // could not find user info -> login/register
-  next({
-    name: "login",
-    params: { dialog: true, type: "Login" },
-    query: { from: window.location.pathname },
-  });
 });
 
 export default router;

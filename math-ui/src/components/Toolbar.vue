@@ -10,7 +10,7 @@
 
     <v-toolbar color="primary" dark class="vertical-toolbar">
       <!-- create access link -->
-      <v-tooltip top hidden v-if="teacher" v-model="showAccessTooltip">
+      <v-tooltip top hidden v-if="editEnabled" v-model="showAccessTooltip">
         <template v-slot:activator="{ on, attrs }">
           <v-btn
             icon
@@ -38,7 +38,7 @@
               icon
               v-on="on"
               v-bind="attrs"
-              :disabled="!canEdit || !hasActiveCell"
+              :disabled="!editEnabled || !hasActiveCell"
               v-on:click="$startTextMode"
               @click.stop="freeTextDialogOpen = true"
               x-small
@@ -62,7 +62,7 @@
               icon
               v-on="on"
               v-bind="attrs"
-              :disabled="!canEdit"
+              :disabled="!editEnabled"
               v-on:click="$toggleSelectionMode"
               x-small
               ><v-icon>mdi-selection</v-icon></v-btn
@@ -89,7 +89,7 @@
               v-on="on"
               v-bind="attrs"
               v-on:click="$toggleFractionMode"
-              :disabled="!canEdit"
+              :disabled="!editEnabled"
             >
               <v-icon>mdi-tooltip-minus-outline</v-icon>
             </v-btn>
@@ -115,7 +115,7 @@
               v-on="on"
               v-bind="attrs"
               v-on:click="$toggleSqrtMode"
-              :disabled="!canEdit"
+              :disabled="!editEnabled"
             >
               <v-icon>mdi-square-root</v-icon>
             </v-btn>
@@ -141,13 +141,94 @@
               v-on="on"
               v-bind="attrs"
               v-on:click="$togglePowerMode"
-              :disabled="!canEdit"
+              :disabled="!editEnabled"
             >
               <v-icon>mdi-exponent</v-icon>
             </v-btn>
           </v-btn-toggle>
         </template>
         <span>Power</span>
+      </v-tooltip>
+
+      <!-- checkmark-->
+      <v-tooltip top hidden v-model="showCheckmarkTooltip">
+        <template v-slot:activator="{ on, attrs }">
+          <v-btn-toggle
+            v-model="checkmarkButtonActive"
+            background-color="transparent"
+            active-class="iconActive"
+          >
+            <v-btn
+              v-if="answerCheckMode"
+              icon
+              color="white"
+              x-small
+              fab
+              dark
+              v-on="on"
+              v-bind="attrs"
+              v-on:click="$toggleCheckmarkMode"
+            >
+              <v-icon>mdi-checkbox-marked-circle-outline</v-icon>
+            </v-btn>
+          </v-btn-toggle>
+        </template>
+        <span>Correct</span>
+      </v-tooltip>
+
+      <!-- semicheckmark-->
+      <v-tooltip top hidden v-model="showSemicheckmarkTooltip">
+        <template v-slot:activator="{ on, attrs }">
+          <v-btn-toggle
+            v-model="semicheckmarkButtonActive"
+            background-color="transparent"
+            active-class="iconActive"
+          >
+            <v-btn
+              v-if="answerCheckMode"
+              icon
+              color="white"
+              x-small
+              fab
+              dark
+              v-on="on"
+              v-bind="attrs"
+              v-on:click="$toggleSemiCheckmarkMode"
+            >
+              <v-icon style="position: relative; left: 8px">mdi-check</v-icon>
+              <v-icon style="position: relative; left: -8px; top: -1px"
+                >mdi-minus</v-icon
+              >
+            </v-btn>
+          </v-btn-toggle>
+        </template>
+        <span>Half Correct</span>
+      </v-tooltip>
+
+      <!-- xmark-->
+      <v-tooltip top hidden v-model="showXmarkTooltip">
+        <template v-slot:activator="{ on, attrs }">
+          <v-btn-toggle
+            v-model="xmarkButtonActive"
+            background-color="transparent"
+            active-class="iconActive"
+          >
+            <v-btn
+              v-if="answerCheckMode"
+              icon
+              color="white"
+              x-small
+              fab
+              dark
+              v-on="on"
+              v-bind="attrs"
+              v-on:click="$toggleXmarkMode"
+            >
+              <v-icon>mdi-close-outline</v-icon>
+            </v-btn>
+          </v-btn-toggle>
+        </template>
+        <span>Incorrect</span>
       </v-tooltip>
     </v-toolbar>
   </div>
@@ -161,6 +242,7 @@ import userIncomingOperationsSyncMixin from "../Mixins/userIncomingOperationsSyn
 import userOutgoingOperationsSyncMixin from "../Mixins/userOutgoingOperationsSyncMixin";
 import accessLinkDialog from "./AccessLinkDialog.vue";
 import freeTextDialog from "./FreeTextDialog.vue";
+import authMixin from "../Mixins/authMixin";
 import { mapGetters } from "vuex";
 import { mapActions } from "vuex";
 import { mapState } from "vuex";
@@ -171,6 +253,7 @@ export default {
     freeTextDialog,
   },
   mixins: [
+    authMixin,
     matrixMixin,
     userIncomingOperationsSyncMixin,
     userOutgoingOperationsSyncMixin,
@@ -184,10 +267,9 @@ export default {
   methods: {
     ...mapGetters({
       getCurrentEditMode: "getCurrentEditMode",
-      getCurrentLesson: "getCurrentLesson",
       getActiveCell: "getActiveCell",
       getActiveNotation: "getActiveNotation",
-      getUser: "getUser",
+      getParent: "getParent",
       isTeacher: "isTeacher",
     }),
     ...mapActions({
@@ -262,13 +344,53 @@ export default {
       this.$reset();
       await this.setCurrentEditMode(EditMode.SYMBOL);
     },
-    $symbolButtonPressed(e) {
-      if (this.getCurrentEditMode() === EditMode.SYMBOL)
-        this.notationMixin_addNotation(e.currentTarget.innerText, "symbol");
-      else if (this.getCurrentEditMode() === EditMode.POWER) {
-        this.notationMixin_addNotation(e.currentTarget.innerText, "power");
+    async $toggleCheckmarkMode() {
+      if (this.getCurrentEditMode() == EditMode.CHECKMARK) {
+        this.$reset();
+        await this.setCurrentEditMode(EditMode.SYMBOL);
+      } else {
+        this.$startCheckmarkMode();
       }
     },
+    async $startCheckmarkMode() {
+      this.$reset();
+      this.checkmarkButtonActive = 0;
+      await this.setCurrentEditMode(EditMode.CHECKMARK);
+    },
+    async $toggleSemiCheckmarkMode() {
+      if (this.getCurrentEditMode() == EditMode.SEMICHECKMARK) {
+        this.$reset();
+        await this.setCurrentEditMode(EditMode.SYMBOL);
+      } else {
+        this.$startSemiCheckmarkMode();
+      }
+    },
+    async $startSemiCheckmarkMode() {
+      this.$reset();
+      this.semicheckmarkButtonActive = 0;
+      await this.setCurrentEditMode(EditMode.SEMICHECKMARK);
+    },
+    async $toggleXmarkMode() {
+      if (this.getCurrentEditMode() == EditMode.XMARK) {
+        this.$reset();
+        await this.setCurrentEditMode(EditMode.SYMBOL);
+      } else {
+        this.$startXmarkMode();
+      }
+    },
+    async $startXmarkMode() {
+      this.$reset();
+      this.xmarkButtonActive = 0;
+      await this.setCurrentEditMode(EditMode.XMARK);
+    },
+
+    // $symbolButtonPressed(e) {
+    //   if (this.getCurrentEditMode() === EditMode.SYMBOL)
+    //     this.notationMixin_addNotation(e.currentTarget.innerText, "symbol");
+    //   else if (this.getCurrentEditMode() === EditMode.POWER) {
+    //     this.notationMixin_addNotation(e.currentTarget.innerText, "power");
+    //   }
+    // },
     $submitText: function (value, background_color) {
       let activeCell = this.getActiveCell();
       let text = {
@@ -298,7 +420,26 @@ export default {
       await this.setCurrentEditMode(EditMode.SYMBOL);
     },
     $resetButtonsState() {
-      this.deleteButtonActive = this.selectionButtonActive = this.fractionButtonActive = this.squareRootButtonActive = this.powerButtonActive = 1;
+      this.checkmarkButtonActive = 1;
+      this.semicheckmarkButtonActive = 1;
+      this.xmarkButtonActive = 1;
+      this.deleteButtonActive = 1;
+      this.selectionButtonActive = 1;
+      this.fractionButtonActive = 1;
+      this.squareRootButtonActive = 1;
+      this.powerButtonActive = 1;
+    },
+    $checkmark() {
+      //this.notationMixin_addSpecialSymbol("", NotationType.CHECKMARK);
+      this.checkmarkButtonActive = 0;
+    },
+    $semicheckmark() {
+      //this.notationMixin_addSpecialSymbol("", NotationType.CHECKMARK);
+      this.semicheckmarkButtonActive = 0;
+    },
+    $xmark() {
+      //this.notationMixin_addSpecialSymbol("", NotationType.CHECKMARK);
+      this.xmarkButtonActive = 0;
     },
   },
   computed: {
@@ -307,14 +448,17 @@ export default {
         return state.lessonStore.operationMode.editMode;
       },
     }),
-    teacher: function () {
-      return this.isTeacher();
-    },
-    canEdit: function () {
-      return this.getUser().authorized || this.isTeacher();
+    editEnabled: function () {
+      return this.mixin_canEdit();
     },
     hasActiveCell: function () {
       return !!this.getActiveCell()?.col || !!this.getActiveNotation()?.id;
+    },
+    answerCheckMode: function () {
+      let answerCheckMode =
+        this.getParent().boardType === "answer" && this.isTeacher() === true;
+
+      return answerCheckMode;
     },
   },
   watch: {
@@ -338,10 +482,16 @@ export default {
       fractionButtonActive: 1,
       squareRootButtonActive: 1,
       powerButtonActive: 1,
+      checkmarkButtonActive: 1,
+      semicheckmarkButtonActive: 1,
+      xmarkButtonActive: 1,
       showFractionLineTooltip: false,
       showSquareRootTooltip: false,
       showPowerTooltip: false,
       showAccessTooltip: false,
+      showCheckmarkTooltip: false,
+      showSemicheckmarkTooltip: false,
+      showXmarkTooltip: false,
       signs: [
         { sign: "1" },
         { sign: "2" },
