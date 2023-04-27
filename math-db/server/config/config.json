@@ -2,5 +2,10 @@
   "development": {
     "storage": "C:\\dev\\MathBoard\\math-server\\math.db",
     "dialect": "sqlite"
+  },
+  "test": {
+    "storage": "C:\\dev\\MathBoard\\math-server\\math.db",
+    "dialect": "sqlite"
   }
+
 }

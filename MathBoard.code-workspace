@@ -14,10 +14,17 @@
     },
     {
       "path": "math-messages"
+    },
+    {
+      "path": "math-ui3"
     }
   ],
   "settings": {
-    "eslint.options": {}
+    "eslint.options": {},
+    "jest.disabledWorkspaceFolders": [
+      "math-ui3",
+      "math-ui"
+    ]
   },
   "launch": {
     "version": "0.2.0",

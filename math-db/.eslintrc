@@ -1,9 +1,10 @@
 {
   "env": {
-    "node": true
+    "node": true,
+     "jest/globals": true
   },
   "extends": ["plugin:prettier/recommended"],
-  "plugins": ["prettier"],
+  "plugins": ["prettier", "jest"],
   "rules": { "prettier/prettier": ["error", { "endOfLine": "auto" }] },
   "parserOptions": {
     "ecmaVersion": 2020,

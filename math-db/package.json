@@ -3,17 +3,26 @@
   "version": "1.0.0",
   "description": "",
   "dependencies": {
-    "eslint": "^7.32.0",
+    "@types/jest": "^29.5.0",
+    "eslint": "^8.38.0",
     "eslint-config-prettier": "^8.3.0",
     "eslint-plugin-prettier": "^4.0.0",
     "pg": "^8.7.1",
     "pg-hstore": "^2.3.4",
-    "prettier": "^2.4.0"
+    "prettier": "^2.4.0",
+    "reflect-metadata": "^0.1.13",
+    "sequelize": "^6.31.0",
+    "sequelize-typescript": "^2.1.5"
   },
   "devDependencies": {
+    "@types/node": "^18.16.1",
+    "@types/validator": "^13.7.15",
+    "eslint-plugin-jest": "^27.2.1",
     "jest": "^29.5.0"
   },
-  "scripts": {},
+  "scripts": {
+    "test": "jest"
+  },
   "author": "",
   "license": "ISC"
 }
