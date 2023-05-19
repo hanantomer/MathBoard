@@ -3,7 +3,7 @@
 // notations of current board(lesson, question or answers)
 import * as  Vue from "vue";
 import dbSyncMixin from "../Mixins/dbSyncMixin";
-import BoardType from "../Mixins/boardType";
+import BoardType from "../../../math-common/boardType";
 import NotationType from "../Mixins/notationType";
 import globals from "../globals.js";
 

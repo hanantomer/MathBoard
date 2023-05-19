@@ -1,4 +1,4 @@
-import BoardType from "./boardType";
+import BoardType from "../../../math-common/boardType";
 import axios from "axios";
 import { useCookies } from "vue3-cookies";
 import { User } from "../../../math-db/src/models/user";

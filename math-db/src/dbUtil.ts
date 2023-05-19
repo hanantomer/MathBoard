@@ -1,6 +1,9 @@
 import {
     Model
 } from "sequelize-typescript";
+
+import LessonModel from "./models/lesson/lesson.model"
+
 const db = require("./models/index");
 const { Op } = require("sequelize");
 
@@ -18,10 +21,10 @@ Object.defineProperty(String.prototype, "capitalize", {
     enumerable: false,
 });
 
-module.exports = {
-    isTeacher: async function (userId, lessonId) {
-        let lesson = await db.sequelize.models["Lesson"].findByPk(lessonId);
-        return !!lesson && lesson.UserId === userId;
+export default {
+    isTeacher: async function (userId: number, lessonId: number) {
+        let lessonModel: LessonModel = await db.sequelize.models["Lesson"].findByPk(lessonId);
+        return lessonModel && lessonModel.user.id === userId;
     },
 
     // findRectOverlapsWithNewRect(
@@ -344,7 +347,7 @@ module.exports = {
         return answer;
     },
 
-    async getIdByUUID(model, uuid) {
+    async getIdByUUID(model: string, uuid: string) {
         let res = await db.sequelize.models[model].findOne({
             attributes: {
                 include: ["id"],
@@ -356,7 +359,7 @@ module.exports = {
 
         return res?.id;
     },
-    async getUUIDById(model, id) {
+    async getUUIDById(model: string, id: number) {
         let res = await db.sequelize.models[model].findOne({
             where: {
                 id: id,
@@ -376,11 +379,12 @@ module.exports = {
 
     async getNotation(id: number, url: string) {
         
-        let modelName = Object.values(db.sequelize.models).find(
+        const model = Object.values(db.sequelize.models).find(
             (m: any) => m.name.toLowerCase() == url.substring(1, url.length - 3)
-        ).name;
+        ) as Model;
 
-        let notation = await db.sequelize.models[modelName].findByPk(id);
+        /// TODO : repale createdat with name
+        let notation = await db.sequelize.models[model.createdAt].findByPk(id);
         return notation;
     },
 };

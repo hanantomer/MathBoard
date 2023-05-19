@@ -3,7 +3,7 @@ import { mapGetters } from "vuex";
 import { mapActions } from "vuex";
 import EditMode from "./editMode";
 import NotationType from "./notationType";
-import BoardType from "./boardType";
+import BoardType from "../../../math-common/boardType";
 export default {
   data: function () {
     return {
@@ -50,7 +50,7 @@ export default {
 
       // activate notation
       let overlapRectNotation = this.$getOverlappedRectNotation(clickedPoint);
-      if (!!overlapRectNotation) {
+      if (overlapRectNotation) {
         this.setActiveNotation(overlapRectNotation).then(() => {
           if (overlapRectNotation.type === NotationType.TEXT) {
             this.setCurrentEditMode(EditMode.TEXT);
@@ -60,7 +60,7 @@ export default {
       }
 
       let overlapLineNotation = this.$getOverlappedLineNotation(clickedPoint);
-      if (!!overlapLineNotation) {
+      if (overlapLineNotation) {
         // selection of line is handled in LineDrawer.vue, here we just reset previous activated element
         return;
       }

@@ -36,4 +36,4 @@ class notationSyncService {
   }
 }
 
-module.exports = notationSyncService;
+export default notationSyncService;

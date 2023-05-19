@@ -2,7 +2,7 @@
   "name": "math-auth",
   "version": "1.0.0",
   "descripnpm installtion": "",
-  "main": "index.js",
+  "main": "index.ts",
   "dependencies": {
     "bcryptjs": "^2.4.3",
     "eslint": "^7.32.0",
@@ -10,7 +10,8 @@
     "eslint-plugin-prettier": "^4.0.0",
     "google-auth-library": "^6.1.6",
     "jsonwebtoken": "^8.5.1",
-    "prettier": "^2.4.0"
+    "prettier": "^2.4.0",
+    "typescript": "^5.0.4"
   },
   "devDependencies": {
     "jest": "^29.5.0"

@@ -1,7 +1,7 @@
 import io from "socket.io-client";
 import feathers from "@feathersjs/feathers";
 import socketio from "@feathersjs/socketio-client";
-import store from "../store/index.js";
+import store from "../store/index.ts";
 import { mapGetters } from "vuex";
 
 export default {

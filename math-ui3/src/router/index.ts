@@ -4,7 +4,7 @@
 // Composables
 import { createRouter, createWebHistory } from 'vue-router'
 
-import store from "../store/index.js";
+import store from "../store/index.ts";
 import authMixin from "../Mixins/authMixin";
 
 const routes = [

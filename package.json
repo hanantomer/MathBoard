@@ -10,11 +10,13 @@
     "@feathersjs/socketio-client": "^4.5.11",
     "bcryptjs": "^2.4.3",
     "finale-rest": "^1.1.1",
-    "sequelize": "^6.9.0",
+    "reflect-metadata": "^0.1.13",
+    "sequelize": "^6.31.1",
+    "sequelize-typescript": "^2.1.5",
     "socket.io-client": "^2.4.0",
-    "sqlite3": "^5.0.2"
+    "sqlite3": "^5.0.2",
+    "typescript": "^5.0.4"
   },
-  "devDependencies": {},
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },

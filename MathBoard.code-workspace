@@ -17,13 +17,17 @@
     },
     {
       "path": "math-ui3"
+    },
+    {
+      "path": "math-common"
     }
   ],
   "settings": {
     "eslint.options": {},
     "jest.disabledWorkspaceFolders": [
       "math-ui3",
-      "math-ui"
+      "math-ui",
+      "math-common"
     ]
   },
   "launch": {

@@ -1,13 +1,18 @@
-import { Sequelize } from "sequelize";
+import { Sequelize } from "sequelize-typescript";
 
 const env: string = process.env.NODE_ENV || "development";
-const config = require(`${global.__mathdb}/server/config/config.json`)[env];
+const config = require('../../server/config/config.json')[
+    env
+];
 
 const sequelize = config.url
     ? new Sequelize(config.url, config)
     : new Sequelize(config.database, config.username, config.password, config);
 
-export { Sequelize, sequelize };
+sequelize.addModels([__dirname.replaceAll("\\","/") + "/**/*.model.js"]);    
+
+
+export default { Sequelize, sequelize };
     
     
 /*
@@ -78,5 +83,5 @@ Object.keys(db).forEach((modelName) => {
 db.sequelize = sequelize;
 db.Sequelize = Sequelize;
 
-module.exports = db;
+export default db;
 */

@@ -24,4 +24,4 @@ class HeartbeatService {
     }
   }
 }
-module.exports = HeartbeatService;
+export default HeartbeatService;

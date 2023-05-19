@@ -17,4 +17,4 @@ class activeCellSyncService {
     }
   }
 }
-module.exports = activeCellSyncService;
+export default activeCellSyncService;

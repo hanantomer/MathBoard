@@ -1,4 +1,4 @@
-module.exports = {
+export default {
   getAccessTokenFromCookie: async function (cookie) {
     if (!!cookie)
       return cookie.match("(^|;)\\s*access_token\\s*=\\s*([^;]+)")?.pop() || "";

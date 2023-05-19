@@ -29,4 +29,4 @@ class AuhorizationService {
   }
 }
 
-module.exports = AuhorizationService;
+export default AuhorizationService;
