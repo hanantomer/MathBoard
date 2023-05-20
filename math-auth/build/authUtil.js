@@ -19,7 +19,7 @@ class AuthUtils {
     constructor() {
         this.userCache = new Map();
     }
-    authByLocalPassword(email, password) {
+    static authByLocalPassword(email, password) {
         return __awaiter(this, void 0, void 0, function* () {
             //TODO add caching
             let user = yield db.sequelize.models["User"].findOne({
@@ -40,7 +40,7 @@ class AuthUtils {
             return null;
         });
     }
-    authByLocalToken(access_token) {
+    static authByLocalToken(access_token) {
         return __awaiter(this, void 0, void 0, function* () {
             let decodedToken = jwt.verify(access_token, clientSecretData.client_secret);
             // TODO - check expiration
@@ -52,7 +52,7 @@ class AuthUtils {
             return this.userCache.get(decodedToken.email);
         });
     }
-    authByGoogleToken(access_token) {
+    static authByGoogleToken(access_token) {
         return __awaiter(this, void 0, void 0, function* () {
             const ticket = yield oAuth2client
                 .verifyIdToken({

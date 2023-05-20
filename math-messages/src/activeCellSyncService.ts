@@ -1,10 +1,11 @@
-const util = require("./util.js");
+import util from "./util.js";
 
 class activeCellSyncService {
-  constructor(app) {
+  app: any;
+  constructor(app: any) {
     this.app = app;
   }
-  async update(id, data, params) {
+  async update(id: number, data: any, params: any) {
     let user = await util.getUserFromCookie(params.headers.cookie, this.app);
 
     if (!!user) {

@@ -1,17 +1,18 @@
-const dbUtil = require("math-db/src/dbUtil");
-const util = require("./util.js");
-class notationSyncService {
-  constructor(app) {
+import util from "./util.js";
+
+export default class notationSyncService {
+  app: any;
+  constructor(app: any) {
     this.app = app;
   }
 
-  async enrichNotation(notation, userId) {
+  async enrichNotation(notation: any, userId: number) {
     if (!!notation) {
       notation.UserId = userId;
     }
   }
 
-  async create(data, params) {
+  async create(data: any, params: any) {
     let user = await util.getUserFromCookie(params.headers.cookie, this.app);
     if (!!user) {
       this.enrichNotation(data.notation.data, user.id);
@@ -19,7 +20,7 @@ class notationSyncService {
     return data.notation;
   }
 
-  async update(id, data, params) {
+  async update(id: number, data: any, params: any) {
     let user = await util.getUserFromCookie(params.headers.cookie, this.app);
     if (!!user) {
       this.enrichNotation(data.notation, user.id);
@@ -27,7 +28,7 @@ class notationSyncService {
     }
   }
 
-  async remove(data, params) {
+  async remove(data: any, params: any) {
     let user = await util.getUserFromCookie(params.headers.cookie, this.app);
     if (!!user) {
       this.enrichNotation(data.notation, user.id);
@@ -36,4 +37,3 @@ class notationSyncService {
   }
 }
 
-export default notationSyncService;

@@ -28,7 +28,8 @@
       "math-ui3",
       "math-ui",
       "math-common"
-    ]
+    ],
+    "typescript.tsdk": "math-server\\node_modules\\typescript\\lib"
   },
   "launch": {
     "version": "0.2.0",

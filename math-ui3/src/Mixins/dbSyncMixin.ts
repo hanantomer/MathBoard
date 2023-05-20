@@ -1,59 +1,84 @@
-import BoardType from "../../../math-common/boardType";
-import axios from "axios";
+import { BoardType, NotationType } from "../../../math-common/src/enum";
 import { useCookies } from "vue3-cookies";
-import { User } from "../../../math-db/src/models/user";
-import { Lesson } from "../../../math-db/src/models/1_lesson/lesson";
+import { onMounted } from "vue";
+import User from "../../../math-db/src/models/user.model";
+import Lesson from "../../../math-db/src/models/lesson/lesson.model";
+import Question from "../../../math-db/src/models/question/question.model";
+import Answer from "../../../math-db/src/models/answer/answer.model";
+import axios from "axios";
 
 const { cookies } = useCookies();
 
+interface GetUserResponse {
+  data: User[];
+}
 
-///TODO move to module
-const axiosInstnce = axios.create({
-  baseURL: "http://localhost:8081",
-});
+interface GetLessonResponse {
+  data: Lesson[];
+}
+interface GetQuestionResponse {
+  data: Question[];
+}
+interface GetAnswerResponse {
+  data: Answer[];
+}
 
-Object.defineProperty(String.prototype, "capitalize", {
-  value: function () {
-    return this.charAt(0).toUpperCase() + this.slice(1);
-  },
-  enumerable: false,
-});
 
-axiosInstnce.interceptors.request.use(function (config) {
-  // const isOAuth =
-  //   gapi.auth2.getAuthInstance() != null &&
-  //   gapi.auth2.getAuthInstance().currentUser != null &&
-  //   gapi.auth2.getAuthInstance().currentUser.get().isSignedIn();
+// Object.defineProperty(String.prototype, "capitalize", {
+//   value: function () {
+//     return this.charAt(0).toUpperCase() + this.slice(1);
+//   },
+//   enumerable: false,
+// });
 
-  // const access_token = isOAuth
-  //   ? `Bearer ${
-  //       gapi.auth2.getAuthInstance().currentUser.get().getAuthResponse()
-  //         .id_token
-  //     }`
-  //   : window.$cookies.get("access_token") != null &&
-  //     window.$cookies.get("access_token") != "null" &&
-  //     window.$cookies.get("access_token") != "undefined"
-  //   ? window.$cookies.get("access_token")
-  //   : null;
 
-  const access_token =
-    cookies.get("access_token") != null &&
-    cookies.get("access_token") != "null" &&
-    cookies.get("access_token") != "undefined"
-      ? cookies.get("access_token")
-      : null;
+export default function dbSync() {
+  // TODO use enviroment variable
+  const baseURL = "http://localhost:8081";
 
-  if (access_token != null) {
-    console.debug(`sending access_token:${access_token}`);
-    config.headers.authentication = access_token;
-  }
+  //var axios: any;
 
-  return config;
-});
+  onMounted(() => {
+    //axios = axios.create({
+      // TODO use enviroment variable
+      //baseURL: "http://localhost:8081",
+    //}//);
 
-export default function () {
+    axios.interceptors.request.use(function (config: any) {
+      // const isOAuth =
+      //   gapi.auth2.getAuthInstance() != null &&
+      //   gapi.auth2.getAuthInstance().currentUser != null &&
+      //   gapi.auth2.getAuthInstance().currentUser.get().isSignedIn();
 
-  function handleError(error : any) {
+      // const access_token = isOAuth
+      //   ? `Bearer ${
+      //       gapi.auth2.getAuthInstance().currentUser.get().getAuthResponse()
+      //         .id_token
+      //     }`
+      //   : window.$cookies.get("access_token") != null &&
+      //     window.$cookies.get("access_token") != "null" &&
+      //     window.$cookies.get("access_token") != "undefined"
+      //   ? window.$cookies.get("access_token")
+      //   : null;
+
+      const access_token =
+        cookies.get("access_token") != null &&
+          cookies.get("access_token") != "null" &&
+          cookies.get("access_token") != "undefined"
+          ? cookies.get("access_token")
+          : null;
+
+      if (access_token != null) {
+        console.debug(`sending access_token:${access_token}`);
+        config.headers.authentication = access_token;
+      }
+
+      return config;
+    });
+  });
+
+  /// TOD avoid biolerplate - move to interceptor
+  function handleError(error: any) {
     if (error.response) {
       // The request was made and the server responded with a status code
       // that falls out of the range of 2xx
@@ -70,6 +95,7 @@ export default function () {
       console.log("Error", error.message);
     }
     console.log(error.config);
+    return null;
   }
 
   // async function getNotationByCoordinates(notation) {
@@ -88,206 +114,230 @@ export default function () {
 
   //   try {
   //     const query = `/${endpoint.toLocaleLowerCase()}?${parentIdFieldName}=${parentIdValue}&row=${row}&${colFieldName}=${col}`;
-  //     const res = await axiosInstnce.get(query);
+  //     const { data } =await axios.get(query);
   //     return res?.data?.length > 0 ? res.data[0] : null;
   //   } catch (error) {
   //     handleError(error);
   //   }
   // }
 
-  async function authGoogleUser() {
+
+  async function authGoogleUser(): Promise<GetUserResponse> {
     try {
-      const res = await axiosInstnce.get("/users");
-      console.debug(`authGoogleUser:${JSON.stringify(res)}`);
-      return res ? res.data[0] : null;
+      const { data } = await axios.get<GetUserResponse>(baseURL + "/users");
+      return data;
     } catch (error) {
-      this.handleError(error);
+      handleError(error);
+      return {data: []};
     }
   }
   // token is taken from cookie. see interceptor at the top of the page
-  async function authLocalUserByToken() {
+  async function authLocalUserByToken(): Promise<GetUserResponse> {
     try {
-      const res = await axiosInstnce.get("/users");
-      return res ? res.data : null;
+      const { data } = await axios.get(baseURL + "/users");
+      return data;
     } catch (error) {
       handleError(error);
+      return { data: [] };
     }
   }
 
-  async function authLocalUserByPassword(email: string, password: string) {
+  async function authLocalUserByPassword(
+    email: string,
+    password: string
+  ): Promise<GetUserResponse> {
     try {
-      const res = await axiosInstnce.get(
-        `/users?email=${email}&password=${password}`
+      const { data } = await axios.get(
+        baseURL + `/users?email=${email}&password=${password}`
       );
-      console.debug(`authLocalUserByPassword:${JSON.stringify(res)}`);
-      return res ? res.data : null;
+      return data;
     } catch (error) {
       handleError(error);
+      return { data: [] };
     }
   }
 
-  async function registerUser(user: User) {
+  async function registerUser(user: User) : Promise<GetUserResponse> {
     try {
-      await axiosInstnce.post("/users", user);
-      console.debug(`registerUser:${JSON.stringify(user)}`);
+      const { data } = await axios.post(baseURL + "/users", user);
+      return data;
     } catch (error) {
       handleError(error);
+      return { data: [] };
     }
   }
 
-  async function addLesson(lesson: Lesson) {
-    try {
-      console.debug(`adding lesson:${lesson.name}`);
-      return await axiosInstnce.post("/lessons", lesson);
-    } catch (error) {
-      handleError(error);
-    }
-  }
 
-  async function addLessonToSharedLessons(lessonUUId, userId) {
+  async function addLessonToSharedLessons(lessonUUId: string, userId: number) {
     try {
       // check if exists
-      const studentLesson = await axiosInstnce.get(
+      const studentLesson = await axios.get(
         `/studentlessons?LessonUUId=${lessonUUId}&UserId=${userId}`
       );
       console.debug(studentLesson);
 
       if (studentLesson.data.length) return;
 
-      return await axiosInstnce.post("/studentlessons", {
+      return await axios.post(baseURL  + "/studentlessons", {
         LessonUUId: lessonUUId,
         UserId: userId,
       });
     } catch (error) {
-      this.handleError(error);
+      handleError(error);
     }
   }
 
-  async function addQuestion(question) {
+  async function addLesson(lesson: Lesson): Promise<GetLessonResponse> {
     try {
-      return await axiosInstnce.post("/questions", question);
+      const { data } = await axios.post<GetLessonResponse>(
+        baseURL + "/lessons",
+        lesson
+      );
+      return data;
     } catch (error) {
-      this.handleError(error);
+      handleError(error);
+      return { data: [] };
     }
   }
 
-  async function addAnswer(answer) {
+  async function addQuestion(question: Question): Promise<GetQuestionResponse> {
     try {
-      return await axiosInstnce.post("/answers", answer);
+      const { data } = await axios.post<GetQuestionResponse>(
+        baseURL + "/questions",
+        question
+      );
+      return data;
     } catch (error) {
-      this.handleError(error);
+      handleError(error);
+      return { data: [] };
     }
   }
 
-  async function saveNotation(notation) {
-    console.debug("dbsync:" + notation.value);
-    const res = await axiosInstnce.post(
-      `/${notation.boardType}${notation.type.toLowerCase()}s`,
-      notation
-    );
-    return res
-      ? { ...res.data, type: notation.type, LessonUUId: notation.LessonUUId }
-      : null;
+  async function addAnswer(answer: Answer) : Promise<GetAnswerResponse> {
+    try {
+      const { data } = await axios.post<GetAnswerResponse>(
+        baseURL + "/answers",
+        answer
+      );
+      return data;
+    } catch (error) {
+      handleError(error);
+      return { data: [] };
+    }
   }
 
-  async function updateNotation(notation) {
-    const res = await axiosInstnce.put(
+  async function updateNotation(notation: any) {
+    const { data } =await axios.put(
       `/${notation.boardType}${notation.type.toLowerCase()}s/${notation.id}`,
       notation
     );
-    return res
-      ? { ...res.data, type: notation.type, LessonUUId: notation.LessonUUId }
-      : null;
+    return data;
+//      ? { ...res.data, type: notation.type, LessonUUId: notation.LessonUUId }
+//      : null;
   }
 
-  async function removeNotation(notation) {
+  async function removeNotation(notation: any) {
     /// TODO find a way to get current user
     //if (this.getUser().id != notation.UserId) {
     //  return;
     //}
     try {
-      axiosInstnce.delete(
+      axios.delete(
         `${notation.boardType}${notation.type}s/${notation.id}`
       ); // e.g lessonsymbols/1)
     } catch (error) {
-      this.handleError(error);
+      handleError(error);
+      return { data: [] };
     }
   }
 
-  async function getLesson(LessonUUId) {
+  async function getLesson(LessonUUId: string) : Promise<GetLessonResponse> {
     try {
-      const res = await axiosInstnce.get("/lessons?uuid=" + LessonUUId);
-      return res ? res.data[0] : null;
+      const { data } = await axios.get<GetLessonResponse>(baseURL + "/lessons?uuid=" + LessonUUId);
+      return data;
     } catch (error) {
-      this.handleError(error);
+      handleError(error);
+      return {data: []}
     }
   }
 
-  async function getQuestion(questionUUId) {
+  async function getQuestion(questionUUId: string): Promise<GetQuestionResponse> {
     try {
-      const res = await axiosInstnce.get("/questions?uuid=" + questionUUId);
-      return res ? res.data[0] : null;
+      const { data } = await axios.get<GetQuestionResponse>(
+        baseURL + "/questions?uuid=" + questionUUId
+      );
+      return data;
     } catch (error) {
-      this.handleError(error);
+      handleError(error);
+      return { data: [] };
     }
   }
 
-  async function getAnswer(answerUUId) {
+  async function getAnswer(answerUUId: string) {
     try {
-      const res = await axiosInstnce.get("/answers?uuid=" + answerUUId);
-      return res ? res.data[0] : null;
+      const { data } = await axios.get(baseURL  + "/answers?uuid=" + answerUUId);
+      return data;
     } catch (error) {
-      this.handleError(error);
+      handleError(error);
+      return { data: [] };
     }
   }
 
-  async function getTeacherLessons(userId) {
+  async function getTeacherLessons(userId: number) {
     try {
-      return axiosInstnce.get("/lessons?UserId=" + userId);
+      return axios.get(baseURL  + "/lessons?UserId=" + userId);
     } catch (error) {
-      this.handleError(error);
+      handleError(error);
+      return { data: [] };
     }
   }
 
-  async function getStudentLessons(userId) {
+  async function getStudentLessons(userId: number) {
     try {
-      return await axiosInstnce.get("/studentlessons?UserId=" + userId);
+      return await axios.get(baseURL  + "/studentlessons?UserId=" + userId);
     } catch (error) {
-      this.handleError(error);
+      handleError(error);
+      return { data: [] };
     }
   }
 
-  async function getQuestions(lessonUUId) {
+  async function getQuestions(lessonUUId: string) {
     try {
       return lessonUUId
-        ? axiosInstnce.get("/questions?LessonUUId=" + lessonUUId)
-        : axiosInstnce.get("/questions");
+        ? axios.get(baseURL  + "/questions?LessonUUId=" + lessonUUId)
+        : axios.get(baseURL  + "/questions");
     } catch (error) {
-      this.handleError(error);
+      handleError(error);
+      return { data: [] };
     }
   }
 
-  async function getAnswers(questionUUId) {
+  async function getAnswers(questionUUId: string) {
     try {
       return questionUUId
-        ? axiosInstnce.get("/answers?QuestionUUId=" + questionUUId)
-        : axiosInstnce.get("/answers");
+        ? axios.get(baseURL  + "/answers?QuestionUUId=" + questionUUId)
+        : axios.get(baseURL  + "/answers").data;
     } catch (error) {
-      this.handleError(error);
+      handleError(error);
+      return { data: [] };
     }
   }
 
-  async function getNotations(notationType, boardType, parentUUId) {
+  async function getNotations(
+    notationType: NotationType,
+    boardType: BoardType,
+    parentUUId: string
+  ) {
     try {
       // e.g lessonsymbols?LessonUUId=1
       const parentFieldName =
         boardType == BoardType.LESSON
           ? "LessonUUId"
           : boardType == BoardType.QUESTION
-            ? "QuestionUUId"
-            : boardType == BoardType.ANSWER
-              ? "AnswerUUId"
-              : null;
+          ? "QuestionUUId"
+          : boardType == BoardType.ANSWER
+          ? "AnswerUUId"
+          : null;
 
       if (boardType == null) {
         throw new Error("Invalid boardType:" + boardType);
@@ -295,14 +345,15 @@ export default function () {
 
       const uri = `${boardType}${notationType}s?${parentFieldName}=${parentUUId}`;
 
-      return axiosInstnce.get(uri);
+      return axios.get(uri);
     } catch (error) {
-      this.handleError(error);
+      handleError(error);
+      return { data: [] };
     }
   }
 
   return {
-//    getNotationByCoordinates,
+    //    getNotationByCoordinates,
     getNotations,
     getAnswers,
     getQuestions,
@@ -319,7 +370,6 @@ export default function () {
     addLessonToSharedLessons,
     addQuestion,
     addAnswer,
-    saveNotation,
     updateNotation,
     removeNotation
   }

@@ -2,8 +2,8 @@ import { Model, Column, DataType, BelongsTo, ForeignKey } from "sequelize-typesc
 import BoardDecorator from "../boardDecorator";
 import User from "../user.model";
 
-@BoardDecorator("question")
-export default class Question extends Model {
+@BoardDecorator("lesson")
+export default class Lesson extends Model {
     
     @ForeignKey(() => User)
     userId!: number;

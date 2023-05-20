@@ -123,6 +123,7 @@
 </template>
 
 <script type="ts" allowJs="true">
+import { BoardType }  from "@common/src/enums";
 import Login from "./components/Login.vue";
 import { mapGetters, mapActions } from "vuex";
 import authMixin from "./Mixins/authMixin";

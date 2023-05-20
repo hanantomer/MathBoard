@@ -1,17 +1,20 @@
-const authUtil = require("math-auth/src/authUtil");
-const dbUtil = require("math-db/src/dbUtil");
-const util = require("./util");
-const constants = require("./constants");
+import authUtil from "../../math-auth/build/authUtil";
+import dbUtil from "../../math-db/build/dbUtil";
+import util from "./util";
+import constants from "./constants";
 
-class AuthenticationService {
-  constructor(app) {
+export default class AuthenticationService {
+  app: any;
+  lessonAdminConnection: Map<any, any>;
+  lessonStudentConnection: Map<any, any>;
+  constructor(app: any) {
     this.app = app;
     this.lessonAdminConnection = new Map(); // key lesson, value: userId/connection(1 only)
     this.lessonStudentConnection = new Map(); // key lesson, value: set where key:userId
   }
 
-  async authUserByToken(access_token) {
-    let user = await authUtil.authByLocalToken(access_token);
+  async authUserByToken(access_token: string) {
+    let user: any = await authUtil.authByLocalToken(access_token);
     if (!user) {
       console.error(
         `access_token:${access_token} not accociated with any user`
@@ -22,18 +25,18 @@ class AuthenticationService {
   }
 
   // manage user login, join user to lesson or user channels
-  async create(data, params) {
-    let user = await util.getUserFromCookie(params.headers.cookie, this.app);
+  async create(data: any, params: any) {
+    let user: any = await util.getUserFromCookie(params.headers.cookie, this.app);
     if (!user) {
       return;
     }
 
-    let lessonId = await dbUtil.getIdByUUID("Lesson", data.LessonUUId);
+    let lessonId: number  = await dbUtil.getIdByUUID("Lesson", data.LessonUUId);
     if (!lessonId) {
       return;
     }
 
-    let isTeacher = await dbUtil.isTeacher(user.id, lessonId);
+    let isTeacher: boolean = await dbUtil.isTeacher(user.id, lessonId);
 
     if (isTeacher) {
       // store admin connection when she logs on
@@ -43,7 +46,7 @@ class AuthenticationService {
       });
       // join admin to existing student channels
       if (this.lessonStudentConnection.has(lessonId)) {
-        this.lessonStudentConnection.get(lessonId).forEach((student) => {
+        this.lessonStudentConnection.get(lessonId).forEach((student: number) => {
           // join admin to all student channels
           this.app
             .channel(
@@ -97,4 +100,3 @@ class AuthenticationService {
   }
 }
 
-export default AuthenticationService;

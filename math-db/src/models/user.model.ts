@@ -4,8 +4,26 @@ import {
     DefaultScope,
     Model,
     Column,
-    DataType
+    DataType,
+    
 } from "sequelize-typescript";
+
+import { Optional } from "sequelize";
+
+
+export interface UserAttributes {
+    id: number;
+    uuid: string;
+    firstName: string;
+    lastName: string;
+    password: string;
+    access_token: string;
+    imageUrl: string;
+    userType: string; ///TODU use enum
+    authorized: boolean;
+}
+
+interface UserCreationAttributes extends Optional<UserAttributes, 'id'> {}
 
 @DefaultScope(() => ({
     attributes: {
@@ -23,7 +41,12 @@ import {
         },
     ],
 })
-export default class User extends Model {
+export default class User extends Model<
+    UserAttributes,
+    UserCreationAttributes
+    > {
+    
+    authorized!: boolean;
     
     @Column({
         type: DataType.UUID,

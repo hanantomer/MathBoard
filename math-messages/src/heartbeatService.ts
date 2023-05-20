@@ -1,11 +1,11 @@
-const dbUtil = require("math-db/src/dbUtil");
-const util = require("./util");
+import util from "./util";
 
-class HeartbeatService {
-  constructor(app) {
+export default class HeartbeatService {
+  app: any;
+  constructor(app: any ) {
     this.app = app;
   }
-  async update(id, data, params) {
+  async update(id: number, data: any, params: any) {
     let access_token = await util.getAccessTokenFromCookie(
       params.headers.cookie
     );
@@ -24,4 +24,4 @@ class HeartbeatService {
     }
   }
 }
-export default HeartbeatService;
+

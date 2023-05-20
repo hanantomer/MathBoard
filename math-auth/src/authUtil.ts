@@ -6,10 +6,10 @@ const clientSecretData = require("../client_secret.json");
 const oAuth2client = new OAuth2Client(clientSecretData.web.client_id);
 
 export default class AuthUtils {
-
     userCache = new Map();
+    static userCache: any;
 
-    async authByLocalPassword(email: string, password: string) {
+    static async authByLocalPassword(email: string, password: string) {
         //TODO add caching
         let user = await db.sequelize.models["User"].findOne({
             where: { email: email },
@@ -33,7 +33,7 @@ export default class AuthUtils {
         }
         return null;
     }
-    async authByLocalToken(access_token: string) {
+    static async authByLocalToken(access_token: string) {
         let decodedToken = jwt.verify(
             access_token,
             clientSecretData.client_secret
@@ -49,15 +49,15 @@ export default class AuthUtils {
         }
         return this.userCache.get(decodedToken.email);
     }
-    
-    async authByGoogleToken(access_token: string) {
+
+    static async authByGoogleToken(access_token: string) {
         const ticket = await oAuth2client
             .verifyIdToken({
                 idToken: access_token.replace("Bearer ", ""),
                 audience: clientSecretData.web.client_id,
             })
             .catch(console.error); //TODO log error
- 
+
         if (!!ticket) {
             let user = await db.sequelize.models["User"].findOne({
                 where: { email: ticket.payload.email },

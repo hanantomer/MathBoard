@@ -1,15 +1,15 @@
-const feathers = require("@feathersjs/feathers");
-const socketio = require("@feathersjs/socketio");
-const constants = require("./constants");
+import feathers from "@feathersjs/feathers";
+import socketio from "@feathersjs/socketio";
+import constants from "./constants";
 
-const app = feathers();
+const app: any = feathers();
 app.configure(socketio());
 
-const AuthorizationService = require("./authorizationService");
-const AuthenticationService = require("./authenticationService");
-const HeartbeatService = require("./heartbeatService");
-const activeCellSyncService = require("./activeCellSyncService");
-const NotationSyncService = require("./notationSyncService");
+import AuthorizationService from "./authorizationService";
+import AuthenticationService from "./authenticationService";
+import HeartbeatService from "./heartbeatService";
+import activeCellSyncService from "./activeCellSyncService";
+import NotationSyncService from "./notationSyncService";
 
 app.use("authorization", new AuthorizationService(app));
 app.use("authentication", new AuthenticationService(app));
@@ -17,7 +17,7 @@ app.use("heartbeat", new HeartbeatService(app));
 app.use("activeCell", new activeCellSyncService(app));
 app.use("notationSync", new NotationSyncService(app));
 
-app.service("authorization").publish("updated", (authorization, ctx) => {
+app.service("authorization").publish("updated", (authorization: any, ctx: any) => {
   return [
     app.channel(
       constants.LESSON_CHANNEL_PREFIX +
@@ -28,7 +28,7 @@ app.service("authorization").publish("updated", (authorization, ctx) => {
   ];
 });
 
-app.service("authentication").publish("created", (authentication, ctx) => {
+app.service("authentication").publish("created", (authentication: any, ctx: any) => {
   return [
     app.channel(
       constants.LESSON_CHANNEL_PREFIX +
@@ -39,7 +39,7 @@ app.service("authentication").publish("created", (authentication, ctx) => {
   ];
 });
 
-app.service("heartbeat").publish("updated", (heartbeat, ctx) => {
+app.service("heartbeat").publish("updated", (heartbeat: any, ctx: any) => {
   return [
     app.channel(
       constants.LESSON_CHANNEL_PREFIX +
@@ -50,23 +50,23 @@ app.service("heartbeat").publish("updated", (heartbeat, ctx) => {
   ];
 });
 
-app.service("activeCell").publish("updated", (position, ctx) => {
+app.service("activeCell").publish("updated", (position: any, ctx: any) => {
   return [app.channel(constants.LESSON_CHANNEL_PREFIX + position.LessonUUId)];
 });
 
-app.service("notationSync").publish("created", (notation, ctx) => {
+app.service("notationSync").publish("created", (notation: any, ctx: any) => {
   return [app.channel(constants.LESSON_CHANNEL_PREFIX + notation.LessonUUId)];
 });
 
-app.service("notationSync").publish("updated", (notation, ctx) => {
+app.service("notationSync").publish("updated", (notation: any, ctx: any) => {
   return [app.channel(constants.LESSON_CHANNEL_PREFIX + notation.LessonUUId)];
 });
 
-app.service("notationSync").publish("removed", (notation, ctx) => {
+app.service("notationSync").publish("removed", (notation: any, ctx: any) => {
   return [app.channel(constants.LESSON_CHANNEL_PREFIX + notation.LessonUUId)];
 });
 
-const PORT = process.env.PORT || 3030;
+const PORT: number = Number(process.env.PORT) || 3030;
 app
   .listen(PORT)
   .on("listening", () => console.log(`server running on port ${PORT}`));
