@@ -1,15 +1,14 @@
-import LessonDecorator from "../lessonDecorator";
 import { Model, Column, BelongsTo, ForeignKey } from "sequelize-typescript";
 import { NotationType, BoardType } from "../../../../../math-common/src/enum";
 import { UUID, UUIDV4 } from "sequelize/types/data-types";
+import AnswerDecorator from "../answerDecorator";
 import User from "../../user.model";
-import Lesson from "../lesson.model";
+import Answer from "../answer.model";
 
-
-@LessonDecorator("LessonSqrt")
-export default class LessonSqrt extends Model {
-    notationType: NotationType = NotationType.SQRT;
-    boardType: BoardType = BoardType.LESSON;
+@AnswerDecorator("AnswerText")
+export default class AnswerText extends Model {
+    notationType: NotationType = NotationType.TEXT;
+    boardType: BoardType = BoardType.ANSWER;
 
     @Column({ type: UUID, defaultValue: UUIDV4 })
     uuid!: string;
@@ -20,11 +19,11 @@ export default class LessonSqrt extends Model {
     @BelongsTo(() => User)
     user!: User;
 
-    @ForeignKey(() => Lesson)
-    lessonId!: number;
+    @ForeignKey(() => Answer)
+    answerId!: number;
 
-    @BelongsTo(() => Lesson)
-    lesson!: Lesson;
+    @BelongsTo(() => Answer)
+    answer!: Answer;
 
     @Column
     fromCol!: number;
@@ -33,5 +32,8 @@ export default class LessonSqrt extends Model {
     toCol!: number;
 
     @Column
-    row!: number;
+    fromRow!: number;
+
+    @Column
+    toRow!: number;
 }

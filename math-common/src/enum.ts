@@ -4,7 +4,7 @@ export enum BoardType{
   ANSWER
 };
 
-export enum NotationType {
+export enum NotationType { // TODO move to class with static readonly fields and set type family to each type
   SYMBOL,
   SIGN,
   POWER,
@@ -12,6 +12,7 @@ export enum NotationType {
   SQRT,
   TEXT,
   IMAGE,
+  GEO
 };
 
 export enum EditMode {

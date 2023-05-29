@@ -4,7 +4,7 @@ import User from "../user.model";
 
 @BoardDecorator("lesson")
 export default class Lesson extends Model {
-    
+
     @ForeignKey(() => User)
     userId!: number;
 

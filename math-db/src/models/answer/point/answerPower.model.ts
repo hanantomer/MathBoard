@@ -1,10 +1,16 @@
 import { Model, Column, BelongsTo, ForeignKey } from "sequelize-typescript";
+import { NotationType, BoardType } from "../../../../../math-common/src/enum";
+import { UUID, UUIDV4 } from "sequelize/types/data-types";
 import AnswerDecorator from "../answerDecorator";
 import User from "../../user.model";
 import Answer from "../answer.model";
 
-@AnswerDecorator("AnswerText")
-export default class AnswerText extends Model {
+@AnswerDecorator("AnswerPower")
+export default class AnswerPower extends Model {
+
+    notationType: NotationType = NotationType.POWER;
+    boardType: BoardType = BoardType.ANSWER;
+
     @ForeignKey(() => User)
     userId!: number;
 
@@ -16,16 +22,13 @@ export default class AnswerText extends Model {
 
     @BelongsTo(() => Answer)
     answer!: Answer;
-    
-    @Column
-    fromCol!: number;
 
     @Column
-    toCol!: number;
+    col!: number;
 
     @Column
-    fromRow!: number;
+    row!: number;
 
     @Column
-    toRow!: number;
+    value!: string;
 }

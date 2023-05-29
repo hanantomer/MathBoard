@@ -32,9 +32,6 @@ export const useLessonStore = defineStore("lesson", {
     getCurrentLesson(state) {
       return state.currentLesson;
     },
-    //isTeacher: function() {  // does not belong here, take it from user store
-    //  return getters.getUser?.userType === "teacher";
-    //},
   },
   actions: {
     async loadLesson(LessonUUId: string) : Promise<Lesson|null> {

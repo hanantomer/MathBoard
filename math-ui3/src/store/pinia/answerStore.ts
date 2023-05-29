@@ -1,7 +1,7 @@
 import { defineStore } from "pinia";
 import Answer from "../../../../math-db/src/models/answer/answer.model";
 import Question from "../../../../math-db/src/models/question/question.model";
-import dbSync from "../../Mixins/dbSyncMixin";
+import { dbSync } from "../../Mixins/dbSyncMixin";
 import { useQuestionStore } from "./questionStore";
 import { useUserStore } from "./userStore";
 
@@ -9,7 +9,7 @@ const questionStore = useQuestionStore();
 const userStore = useUserStore();
 const db = dbSync();
 
-export const answerStore = defineStore("answer", {
+export const useAnswerStore = defineStore("answer", {
   state: () => ({
     answers: <Answer[]>[],
     currentAnswer: <Answer>{},

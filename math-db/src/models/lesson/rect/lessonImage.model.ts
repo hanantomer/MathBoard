@@ -1,10 +1,18 @@
 import { Model, Column, BelongsTo, ForeignKey } from "sequelize-typescript";
+import { NotationType, BoardType } from "../../../../../math-common/src/enum";
+import { UUID, UUIDV4 } from "sequelize/types/data-types";
 import LessonDecorator from "../lessonDecorator";
 import User from "../../user.model";
 import Lesson from "../lesson.model";
 
 @LessonDecorator("LessonImage")
 export default class LessonImage extends Model {
+    notationType: NotationType = NotationType.IMAGE;
+    boardType: BoardType = BoardType.LESSON;
+
+    @Column({ type: UUID, defaultValue: UUIDV4 })
+    uuid!: string;
+
     @ForeignKey(() => User)
     userId!: number;
 
