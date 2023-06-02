@@ -9,6 +9,7 @@ import Question from "../question.model";
 export default class QuestionSymbol extends Model {
     notationType: NotationType = NotationType.SYMBOL;
     boardType: BoardType = BoardType.QUESTION;
+    selected: boolean = false;
 
     @Column({ type: UUID, defaultValue: UUIDV4 })
     uuid!: string;

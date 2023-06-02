@@ -9,6 +9,7 @@ import Answer from "../answer.model";
 export default class AnswerText extends Model {
     notationType: NotationType = NotationType.TEXT;
     boardType: BoardType = BoardType.ANSWER;
+    selected: boolean = false;
 
     @Column({ type: UUID, defaultValue: UUIDV4 })
     uuid!: string;

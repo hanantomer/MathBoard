@@ -1,6 +1,6 @@
 import { defineStore } from "pinia";
 import User from "../../../../math-db/src/models/user.model";
-import dbSync from "../../Mixins/dbSyncMixin";
+import { dbSync } from "../../Mixins/dbSyncMixin";
 const db = dbSync();
 
 export const useUserStore = defineStore("user", {

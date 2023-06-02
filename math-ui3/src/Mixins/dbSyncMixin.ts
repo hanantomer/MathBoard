@@ -9,10 +9,13 @@ import Answer from "../../../math-db/src/models/answer/answer.model";
 
 import {
   Notation,
-  QuestionResponse,
-  LessonResponse,
+  Response
+/*  ,Response<Question>,
+  Response<Lesson>,
   UserResponse,
-  AnswerResponse,
+  Response<Answer>,
+  Response<Notation>,
+  */
 } from "./responseTypes";
 
 
@@ -30,45 +33,48 @@ export function dbSync() {
     initAxiosInterceptors();
   });
 
-  function getParentFieldName(boardType: BoardType) {
+  function getParentFieldName(boardType: BoardType) : string | null {
     const parentFieldName =
       boardType == BoardType.LESSON
         ? "LessonUUId"
         : boardType == BoardType.QUESTION
         ? "QuestionUUId"
         : boardType == BoardType.ANSWER
-        ? "AnswerUUId"
-        : null;
+        ? "AnswerUUId" : null;
 
     if (boardType == null) {
       throw new Error("Invalid boardType:" + boardType);
     }
+
     return parentFieldName;
   }
 
-  async function authGoogleUser(): Promise<UserResponse> {
-      const { data } = await axios.get<UserResponse>(baseURL + "/users");
-      return data;
+  async function authGoogleUser(): Promise<User>  {
+      const { data } = await axios.get<Response<User>>(baseURL + "/users");
+      return data.data[0];
   }
   // token is taken from cookie. see interceptor at the top of the page
-  async function authLocalUserByToken(): Promise<UserResponse> {
-      const { data } = await axios.get(baseURL + "/users");
-      return data;
+  async function authLocalUserByToken(): Promise<User> {
+      const { data } = await axios.get<Response<User>>(baseURL + "/users");
+      return data.data[0];
   }
 
   async function authLocalUserByPassword(
     email: string,
     password: string
-  ): Promise<UserResponse> {
-    const { data } = await axios.get<UserResponse>(
+  ): Promise<User> {
+    const { data } = await axios.get<Response<User>>(
       baseURL + `/users?email=${email}&password=${password}`
     );
-    return data;
+    return data.data[0];
   }
 
-  async function registerUser(user: User) : Promise<UserResponse> {
-      const { data } = await axios.post(baseURL + "/users", user);
-      return data;
+  async function registerUser(user: User) : Promise<User> {
+      const { data } = await axios.post<Response<User>>(
+        baseURL + "/users",
+        user
+      );
+      return data.data[0];
   }
 
 
@@ -82,98 +88,120 @@ export function dbSync() {
 
       if (studentLesson.data.length) return;
 
-      return await axios.post(baseURL  + "/studentlessons", {
+      await axios.post(baseURL  + "/studentlessons", {
         LessonUUId: lessonUUId,
         UserId: userId,
       });
   }
 
-  async function addLesson(lesson: Lesson): Promise<LessonResponse> {
-      const { data } = await axios.post<LessonResponse>(
+  async function addLesson(lesson: Lesson): Promise<Lesson> {
+      const { data } = await axios.post<Response<Lesson>>(
         baseURL + "/lessons",
         lesson
       );
-      return data;
+      return data.data[0];
   }
 
-  async function addQuestion(question: Question): Promise<QuestionResponse> {
-      const { data } = await axios.post<QuestionResponse>(
+  async function addQuestion(question: Question): Promise<Question> {
+      const { data } = await axios.post<Response<Question>>(
         baseURL + "/questions",
         question
       );
-      return data;
+      return data.data[0];
   }
 
-  async function addAnswer(answer: Answer) : Promise<AnswerResponse> {
-      const { data } = await axios.post<AnswerResponse>(
+  async function addAnswer(answer: Answer) : Promise<Answer> {
+      const { data } = await axios.post<Response<Answer>>(
         baseURL + "/answers",
         answer
       );
-      return data;
+      return data.data[0];
   }
 
-  async function updateNotation(notation: any) {
-    const { data } = await axios.put(
-      `/${notation.boardType}${notation.type.toLowerCase()}s/${notation.id}`,
+  async function addNotation(notation: Notation): Promise<Notation> {
+    const { data } = await axios.post<Response<Notation>>(
+      baseURL +
+        `/${notation.boardType}${notation.notationType.toLowerCase()}s/`,
       notation
     );
-    return data;
+    return data.data[0];
   }
 
-  async function getLesson(LessonUUId: string) : Promise<LessonResponse> {
-    const { data } = await axios.get<LessonResponse>(baseURL + "/lessons?uuid=" + LessonUUId);
-    return data;
+
+  async function updateNotation(notation: Notation): Promise<Notation> {
+    const { data } = await axios.put<Response<Notation>>(
+      baseURL +
+        `/${notation.boardType}${notation.notationType.toLowerCase()}s/${
+          notation.id
+        }`,
+      notation
+    );
+    return data.data[0];
   }
 
-  async function getQuestion(questionUUId: string): Promise<QuestionResponse> {
-    const { data } = await axios.get<QuestionResponse>(
+  async function getLesson(LessonUUId: string) : Promise<Lesson> {
+    const { data } = await axios.get<Response<Lesson>>(baseURL + "/lessons?uuid=" + LessonUUId);
+    return data.data[0];
+  }
+
+  async function getQuestion(questionUUId: string): Promise<Question> {
+    const { data } = await axios.get<Response<Question>>(
       baseURL + "/questions?uuid=" + questionUUId
     );
-    return data;
+    return data.data[0];
   }
 
-  async function getAnswer(answerUUId: string) {
-      const { data } = await axios.get(baseURL  + "/answers?uuid=" + answerUUId);
-      return data;
+  async function getAnswer(answerUUId: string) : Promise<Answer>{
+      const { data } = await axios.get<Response<Answer>>(baseURL  + "/answers?uuid=" + answerUUId);
+      return data.data[0];
   }
 
-  async function getTeacherLessons(userId: number) {
-    return axios.get(baseURL  + "/lessons?UserId=" + userId);
+  async function getTeacherLessons(userId: number) : Promise<Lesson[]>{
+     const { data } = await axios.get<Response<Lesson>>(
+       baseURL + "/lessons?UserId=" + userId
+    );
+
+    return data.data;
   }
 
-  async function getStudentLessons(userId: number) {
-      return await axios.get(baseURL  + "/studentlessons?UserId=" + userId);
+  async function getStudentLessons(userId: number): Promise<Lesson[]> {
+    const { data } = await axios.get<Response<Lesson>>(
+      baseURL + "/studentlessons?UserId=" + userId
+    );
+
+    return data.data;
   }
 
-  async function getQuestions(lessonUUId: string) {
-    return lessonUUId
-      ? axios.get(baseURL  + "/questions?LessonUUId=" + lessonUUId)
-      : axios.get(baseURL  + "/questions");
+  async function getQuestions(lessonUUId: string) : Promise<Question[]> {
+    const { data } = await axios.get<Response<Question>>(baseURL  + "/questions?LessonUUId=" + lessonUUId)
+    return data.data;
   }
 
-  async function getAnswers(questionUUId: string) {
-    const { data } = await axios.get<QuestionResponse>(baseURL + "/answers?QuestionUUId=" + questionUUId)
-    return data;
+  async function getAnswers(questionUUId: string): Promise<Answer[]> {
+    const { data } = await axios.get<Response<Answer>>(
+      baseURL + "/answers?QuestionUUId=" + questionUUId
+    );
+
+    return data.data;
   }
 
   async function removeNotation(notation: Notation) {
     axios.delete(`${notation.boardType}${notation.notationType}s/${notation.id}`); // e.g lessonsymbols/1)
   }
 
-  async function getNotations<T>(
+  async function getNotations<T extends Notation>(
     notationType: NotationType,
     boardType: BoardType,
     parentUUId: string
-  ): Promise<T> {
+  ): Promise<T[]> {
       // e.g lessonsymbols?LessonUUId=1
       const parentFieldName = getParentFieldName(boardType);
       const uri = `${boardType}${notationType}s?${parentFieldName}=${parentUUId}`;
-      const { data } = (await axios.get<T>(uri));
-      return data
+      const { data } = (await axios.get<Response<T>>(uri));
+      return data.data
   }
 
   return {
-    //    getNotationByCoordinates,
     getNotations,
     getAnswers,
     getQuestions,
@@ -190,6 +218,7 @@ export function dbSync() {
     addLessonToSharedLessons,
     addQuestion,
     addAnswer,
+    addNotation,
     updateNotation,
     removeNotation,
   };

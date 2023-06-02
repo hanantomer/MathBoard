@@ -1,38 +1,26 @@
-import EditMode from "./editMode";
-import NotationType from "./notationType";
-import { mapGetters, mapActions } from "vuex";
-export default {
-  mounted: function () {
-    // emitted in  app.vue
-    this.$root.$on("keyup", this.eventManager_keyUp);
-    this.$root.$on("paste", this.eventManager_paste);
-  },
-  beforeDestroy: function () {
-    this.$root.$off("keyup", this.eventManager_keyUp);
-    this.$root.$off("paste", this.eventManager_paste);
-  },
+import { BoardType, EditMode, NotationType } from "../../../math-common/src/enum";
+import { useUserStore } from "../../src/store/pinia/userStore"
+import { useN } from "../../src/store/pinia/notationStore";
+const userStore = useUserStore();
 
-  data: function () {
-    return {
-      signList: ["=", "+", "-", "*", "/", "\\", "(", ")", "[", "]"],
-    };
-  },
+export default {
+
 
   methods: {
-    ...mapGetters({
-      getCurrentEditMode: "getCurrentEditMode",
-      getParent: "getParent",
-    }),
+    // ...mapGetters({
+    //   getCurrentEditMode: "getCurrentEditMode",
+    //   getParent: "getParent",
+    // }),
 
-    ...mapActions({
-      setActiveNotation: "setActiveNotation",
-    }),
+    // ...mapActions({
+    //   setActiveNotation: "setActiveNotation",
+    // }),
 
-    async eventManager_paste(e) {
+    async eventManager_paste(e: any) {
       // disallow adding image by student
-      if (!this.isTeacher()) return;
+      if (!userStore.isTeacher) return;
 
-      const dT = e.clipboardData || window.clipboardData;
+      const dT = e.clipboardData || window.Clipboard;
       const item = dT.items[0]; //dT.files[0];
 
       var reader = new FileReader();
@@ -40,7 +28,7 @@ export default {
       reader.addEventListener("load", () => {
         const base64data = reader.result;
 
-        let image = new Image();
+        let image: any = new Image();
         image.src = base64data;
         image.onload = () => {
           let fromCol = parseInt(that.getActiveCell().col);

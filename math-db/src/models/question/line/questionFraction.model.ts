@@ -7,11 +7,11 @@ import QuestionDecorator from "../questionDecorator";
 
 @QuestionDecorator("LessonFraction")
 export default class QuestionFraction extends Model {
-
     notationType: NotationType = NotationType.FRACTION;
     boardType: BoardType = BoardType.QUESTION;
+    selected: boolean = false;
 
-      @Column({ type: UUID, defaultValue: UUIDV4 })
+    @Column({ type: UUID, defaultValue: UUIDV4 })
     uuid!: string;
 
     @ForeignKey(() => User)

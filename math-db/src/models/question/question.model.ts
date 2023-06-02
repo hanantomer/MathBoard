@@ -7,6 +7,7 @@ import User from "../user.model";
 export interface QuestionAttributes {
     id: number;
     userId: number;
+    lessonUUID: string;
     user: User;
     uuid: string;
     name: string;
@@ -37,4 +38,9 @@ export default class Question extends Model<
         defaultValue: DataType.UUIDV4,
     })
     name!: string;
+
+    @Column({
+        type: DataType.STRING,
+    })
+    lessonUUID!: string;
 }

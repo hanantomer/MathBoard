@@ -11,12 +11,12 @@ const db = dbSync();
 
 export const useAnswerStore = defineStore("answer", {
   state: () => ({
-    answers: <Answer[]>[],
+    answers: <Map<String, Answer>>{},
     currentAnswer: <Answer>{},
   }),
 
   getters: {
-    getAnswers: function (): Answer[] {
+    getAnswers: function (): Map<String, Answer> {
       return this.answers;
     },
 
@@ -31,44 +31,47 @@ export const useAnswerStore = defineStore("answer", {
       const question: Question = await db.getQuestion(answer.question.id);
 
       if (answer) {
-        this.answers.push(answer);
+        this.answers.set(answer.uuid, answer);
         this.currentAnswer = answer;
         questionStore.loadQuestion(question.uuid);
       }
     },
 
     async loadAnswers() {
-      this.answers = [];
-      const answers: Answer[] = await db.getAnswers(
+      const answers = await db.getAnswers(
         questionStore.getCurrentQuestion.uuid
       );
       if (answers.length > 0) {
-        answers.forEach((a: any) => {
-          this.answers.push(a);
+        answers.forEach((a: Answer) => {
+          this.answers.set(a.uuid, a);
         });
       }
     },
 
-    async addNewAnswer() {
-      let answer = this.getAnswers.find(
-        (a) => a.question.uuid == questionStore.getCurrentQuestion.uuid
-      );
-      if (answer) return answer;
+    async addNewAnswer(): Promise<Answer> {
+      let answerForCurrentQuestion: Answer|null = null;
+      this.getAnswers.forEach(a => {
+        if (a.question.uuid == questionStore.getCurrentQuestion.uuid) {
+          answerForCurrentQuestion = a;
+          return;
+        }
+      });
+      if (answerForCurrentQuestion) return answerForCurrentQuestion;
 
-      answer = <Answer>{};
+      let answer = <Answer>{};
       answer.question = questionStore.getCurrentQuestion;
       answer.user = userStore.getCurrentUser;
       answer = await db.addAnswer(answer);
-      this.answers.push(answer);
-      return answer.data;
+      this.answers.set(answer.uuid, answer);
+      return answer;
     },
 
-
-    setCurrentAnswer(context, answer) {
-      context.commit("setCurrentAnswer", answer);
+    setCurrentAnswer(answer: Answer) {
+      this.currentAnswer = answer;
     },
-    removeAnswer(context, answer) {
-      context.commit("removeAnswer", answer.id);
+
+    removeAnswer(answer: Answer) {
+      this.answers.delete(answer.uuid);
     },
   },
 });

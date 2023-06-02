@@ -44,6 +44,8 @@ import toolbar from "./Toolbar.vue";
 import areaSelector from "./AreaSelector.vue";
 import lineDrawer from "./LineDrawer.vue";
 
+
+
 export default {
   components: {
     toolbar,
@@ -62,6 +64,16 @@ export default {
     notationMixin,
     userOutgoingOperationsSyncMixin,
   ],
+  mounted: function () {
+    // emitted in  app.vue
+    this.$root.$on("keyup", this.eventManager_keyUp);
+    this.$root.$on("paste", this.eventManager_paste);
+  },
+  beforeDestroy: function () {
+    this.$root.$off("keyup", this.eventManager_keyUp);
+    this.$root.$off("paste", this.eventManager_paste);
+  },
+
   data: function () {
     return {
       matrix: [],

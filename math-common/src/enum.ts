@@ -4,16 +4,47 @@ export enum BoardType{
   ANSWER
 };
 
+
+export enum Sample {
+  V = "V",
+}
+
+export const SampleLabel = new Map<string, string>([
+  [Sample.V, 'FIVE'],
+]);
+
+
+export enum NotationShape {
+  POINT,
+  LINE,
+  RECT
+}
+
+
 export enum NotationType { // TODO move to class with static readonly fields and set type family to each type
-  SYMBOL,
-  SIGN,
-  POWER,
-  FRACTION,
-  SQRT,
-  TEXT,
-  IMAGE,
-  GEO
+  SYMBOL  = "SYMBOL",
+  SIGN    = "SIGN",
+  POWER   = "POWER",
+  FRACTION= "FRACTION",
+  SQRT    = "SQRT",
+  TEXT    = "TEXT",
+  IMAGE   = "IMAGE",
+  GEO     = "GEO"
 };
+
+export const NotationTypeShape = new Map<string, number> ([
+  [NotationType.SYMBOL, NotationShape.POINT],
+  [NotationType.SIGN, NotationShape.POINT],
+  [NotationType.POWER, NotationShape.POINT],
+  [NotationType.SQRT, NotationShape.LINE],
+  [NotationType.FRACTION, NotationShape.LINE],
+  [NotationType.TEXT, NotationShape.RECT],
+  [NotationType.IMAGE, NotationShape.RECT],
+  [NotationType.GEO, NotationShape.RECT]
+])
+
+
+
 
 export enum EditMode {
   SYMBOL,
@@ -26,6 +57,11 @@ export enum EditMode {
   CHECKMARK, // after checkmark button pressed
   SEMICHECKMARK, // after semicheck button pressed
   XMARK, // after xmark button pressed
+};
+
+export enum UesrType {
+  TEACHER,
+  STUDENT
 };
 
 

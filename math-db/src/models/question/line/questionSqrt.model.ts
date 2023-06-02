@@ -9,6 +9,7 @@ import QuestionDecorator from "../questionDecorator";
 export default class QuestionSqrt extends Model {
     notationType: NotationType = NotationType.SQRT;
     boardType: BoardType = BoardType.QUESTION;
+    selected: boolean = false;
 
     @Column({ type: UUID, defaultValue: UUIDV4 })
     uuid!: string;
