@@ -8,9 +8,9 @@ import Lesson from "../lesson.model";
 
 @LessonDecorator("LessonRoot")
 export default class LessonRoot extends Model implements BaseModel {
-    notationType: NotationType = NotationType.SQRT;
-    boardType: BoardType = BoardType.LESSON;
-    selected: boolean = false;
+    notationType = NotationType.SQRT;
+    boardType = BoardType.LESSON;
+    value = null;
 
     @Column({ type: UUID, defaultValue: UUIDV4 })
     uuid!: string;

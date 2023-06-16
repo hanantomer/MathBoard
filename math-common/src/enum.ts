@@ -5,15 +5,6 @@ export enum BoardType{
 };
 
 
-export enum Sample {
-  V = "V",
-}
-
-export const SampleLabel = new Map<string, string>([
-  [Sample.V, 'FIVE'],
-]);
-
-
 export enum NotationShape {
   POINT,
   LINE,
@@ -22,14 +13,15 @@ export enum NotationShape {
 
 
 export enum NotationType { // TODO move to class with static readonly fields and set type family to each type
-  SYMBOL  = "SYMBOL",
-  SIGN    = "SIGN",
-  POWER   = "POWER",
-  FRACTION= "FRACTION",
-  SQRT    = "SQRT",
-  TEXT    = "TEXT",
-  IMAGE   = "IMAGE",
-  GEO     = "GEO"
+  SYMBOL      = "SYMBOL",
+  SIGN        = "SIGN",
+  POWER       = "POWER",
+  FRACTION    = "FRACTION",
+  SQRT        = "SQRT",
+  SQRTSYMBOL  = "SQRTSYMBOL",
+  TEXT        = "TEXT",
+  IMAGE       = "IMAGE",
+  GEO         = "GEO"
 };
 
 export const NotationTypeShape = new Map<string, number> ([

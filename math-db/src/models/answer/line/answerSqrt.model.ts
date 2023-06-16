@@ -9,9 +9,9 @@ import Answer from "../answer.model";
 
 @AnswerDecorator("AnswerSqrt")
 export default class AnswerSqrt extends Model implements BaseModel {
-    notationType: NotationType = NotationType.SQRT;
-    boardType: BoardType = BoardType.ANSWER;
-    selected: boolean = false;
+    notationType = NotationType.SQRT;
+    boardType = BoardType.ANSWER;
+    value = null;
 
     @Column({ type: UUID, defaultValue: UUIDV4 })
     uuid!: string;

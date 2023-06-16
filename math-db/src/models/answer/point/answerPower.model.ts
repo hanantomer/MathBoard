@@ -8,10 +8,9 @@ import Answer from "../answer.model";
 
 @AnswerDecorator("AnswerPower")
 export default class AnswerPower extends Model implements BaseModel {
-    notationType: NotationType = NotationType.POWER;
-    boardType: BoardType = BoardType.ANSWER;
-    selected: boolean = false;
-
+    notationType = NotationType.POWER;
+    boardType = BoardType.ANSWER;
+    
     @Column({ type: UUID, defaultValue: UUIDV4 })
     uuid!: string;
 

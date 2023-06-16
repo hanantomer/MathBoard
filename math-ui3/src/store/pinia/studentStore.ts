@@ -1,18 +1,63 @@
-import dbSyncMixin from "../Mixins/dbSyncMixin";
+import { defineStore } from "pinia";
+import User from "../../../../math-db/src/models/user.model";
+import { reactive } from "vue";
+import dbHelper from "../../Helpers/dbHelper";
+const db = dbHelper();
 
-const helper = {
-  findStudentById: function (state, id) {
-    return state.students.find((s) => s.userId === id);
-  },
-};
+export const useStudentStore = defineStore("studentanswer", () => {
 
-export default {
-  modules: {
-    dbSyncMixin,
-  },
-  state: {
-    students: [],
-  },
+  let students: Map<String, User> = reactive(<Map<String, User>>{});
+  let authorizedStudent: User = reactive(<User>{});
+
+  function setAuthorizedStudent(authorizedStudentUUID: string): void {
+    this.authorizedStudent = this.students.get(authorizedStudentUUID);
+  }
+
+  function setStudentHeartbeat(uuid: string): void {
+    let student = students.get(uuid);
+    if (student) {
+      student.lastHeartbeatTime = new Date();
+    }
+  }
+
+  return {
+    students,
+    authorizedStudent,
+    setAuthorizedStudent,
+    setStudentHeartbeat,
+  };
+});
+
+
+/*
+
+/// TODO caller should calculate prev authorized vs current
+    //return {
+    //  authorizedStudentId: authorizedStudentUUID,
+    //  revokedStudentId: prevAuthorizedStudenUUId,
+    //};
+
+// context.commit("toggleAuthorization", studentId);
+
+    // let authorizedStudentId = !!helper.findStudentById(
+    //   context.state,
+    //   studentId
+    // ).authorized
+    //   ? studentId
+    //   : null;
+
+    // let revokedStudentId = null;
+    // if (!authorizedStudentId) {
+    //   revokedStudentId = studentId;
+    // }
+    // if (!revokedStudentId && !!prevAuthorizedStudent) {
+    //   revokedStudentId = prevAuthorizedStudent.userId;
+    // }
+
+    //let prevAuthorizedStudenUUId = this.authorizedStudent?.uuid;
+
+
+
   getters: {
     getStudent: function (state) {
       return (studentId) => {
@@ -83,3 +128,4 @@ export default {
     },
   },
 };
+*/

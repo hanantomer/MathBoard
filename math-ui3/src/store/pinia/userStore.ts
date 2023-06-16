@@ -1,32 +1,36 @@
 import { defineStore } from "pinia";
 import User from "../../../../math-db/src/models/user.model";
-import { dbSync } from "../../Mixins/dbSyncMixin";
+import { dbSync } from "../../Helpers/dbSyncMixin";
 const db = dbSync();
 
-export const useUserStore = defineStore("user", {
-  state: () => ({
-    currentUser: <User>{},
-  }),
+export const useUserStore = defineStore("user", () => {
 
-  getters: {
-    getCurrentUser: function (): User {
-      return this.currentUser;
-    },
-    isTeacher: function (): boolean {
-      // does not belong here, take it from user store
-      return this.getCurrentUser.userType === "TEACHER";
-    },
-  },
+  let currentUser: User = new User();
+  let authorized = false;
 
-  actions: {
-    setUserWriteAuthorization(authorized: boolean) {
-      this.currentUser.authorized = authorized;
-    },
-    setUser(user: User) {
-      this.currentUser = user;
-    },
-    registerUser(user: User) {
+  function isTeacher(): boolean {
+      return currentUser?.userType === "TEACHER";
+  };
+
+  function setUserWriteAuthorization(isAauthorized: boolean) {
+      authorized = isAauthorized;
+  };
+
+  function setUser(user: User) {
+      currentUser = user;
+  };
+
+  function registerUser(user: User) {
       db.registerUser(user);
-    },
-  },
+  };
+
+  return {
+    currentUser,
+    authorized,
+    setUserWriteAuthorization,
+    isTeacher,
+    setUser,
+    registerUser,
+  };
+
 });

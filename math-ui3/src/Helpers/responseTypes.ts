@@ -1,3 +1,7 @@
+/**
+ * All this mess cause we cant use inheritance with sequlize-typescript entities
+ */
+
 import { Model } from "sequelize-typescript";
 
 import LessonSymbol from "../../../math-db/src/models/lesson/point/lessonSymbol.model";
@@ -62,3 +66,11 @@ export type RectNotation =
   | AnswerText;
 
 export type Notation = PointNotation | LineNotation | RectNotation;
+export type TextNotation = AnswerText | LessonText | QuestionText;
+export type ImageNotation = AnswerImage | LessonImage | QuestionImage;
+export type SymbolNotation = AnswerSymbol | LessonSymbol | QuestionSymbol;
+export type SqrtNotation = AnswerSqrt | LessonSqrt | QuestionSqrt;
+export type FractionNotation = AnswerFraction | LessonFraction | QuestionFraction;
+export type RootNotation = AnswerRoot | LessonRoot | QuestionRoot;
+export type PowerNotation = AnswerPower | LessonPower | QuestionPower;
+export type SignNotation = AnswerSign | LessonSign | QuestionSign;

@@ -1,7 +1,7 @@
 import { defineStore } from "pinia";
 import Answer from "../../../../math-db/src/models/answer/answer.model";
 import Question from "../../../../math-db/src/models/question/question.model";
-import { dbSync } from "../../Mixins/dbSyncMixin";
+import { dbSync } from "../../Helpers/dbSyncMixin";
 import { useQuestionStore } from "./questionStore";
 import { useUserStore } from "./userStore";
 
@@ -9,24 +9,12 @@ const questionStore = useQuestionStore();
 const userStore = useUserStore();
 const db = dbSync();
 
-export const useAnswerStore = defineStore("answer", {
-  state: () => ({
-    answers: <Map<String, Answer>>{},
-    currentAnswer: <Answer>{},
-  }),
+export const useAnswerStore = defineStore("answer", () => {
 
-  getters: {
-    getAnswers: function (): Map<String, Answer> {
-      return this.answers;
-    },
+  let answers: Map<String, Answer> = new Map();
+  let currentAnswer: Answer =  new Answer();
 
-    getCurrentAnswer: function (): Answer {
-      return this.currentAnswer;
-    },
-  },
-
-  actions: {
-    async loadAnswer(answerUUId: string) {
+  async function loadAnswer(answerUUId: string) {
       const answer: Answer = await db.getAnswer(answerUUId);
       const question: Question = await db.getQuestion(answer.question.id);
 
@@ -35,23 +23,23 @@ export const useAnswerStore = defineStore("answer", {
         this.currentAnswer = answer;
         questionStore.loadQuestion(question.uuid);
       }
-    },
+  };
 
-    async loadAnswers() {
+  async function loadAnswers() {
       const answers = await db.getAnswers(
-        questionStore.getCurrentQuestion.uuid
+        questionStore.currentQuestion.uuid
       );
       if (answers.length > 0) {
         answers.forEach((a: Answer) => {
           this.answers.set(a.uuid, a);
         });
       }
-    },
+  };
 
-    async addNewAnswer(): Promise<Answer> {
+  async function addNewAnswer(): Promise<Answer> {
       let answerForCurrentQuestion: Answer|null = null;
-      this.getAnswers.forEach(a => {
-        if (a.question.uuid == questionStore.getCurrentQuestion.uuid) {
+      this.answers.forEach((a : Answer)  => {
+        if (a.question.uuid == questionStore.currentQuestion.uuid) {
           answerForCurrentQuestion = a;
           return;
         }
@@ -59,19 +47,20 @@ export const useAnswerStore = defineStore("answer", {
       if (answerForCurrentQuestion) return answerForCurrentQuestion;
 
       let answer = <Answer>{};
-      answer.question = questionStore.getCurrentQuestion;
-      answer.user = userStore.getCurrentUser;
+      answer.question = questionStore.currentQuestion;
+      answer.user = userStore.currentUser;
       answer = await db.addAnswer(answer);
       this.answers.set(answer.uuid, answer);
       return answer;
-    },
+  };
 
-    setCurrentAnswer(answer: Answer) {
+  function setCurrentAnswer(answer: Answer) {
       this.currentAnswer = answer;
-    },
+  };
 
-    removeAnswer(answer: Answer) {
+  function removeAnswer(answer: Answer) {
       this.answers.delete(answer.uuid);
-    },
-  },
+  };
+
+  return {answers, currentAnswer, loadAnswer, loadAnswers, addNewAnswer, setCurrentAnswer, removeAnswer}
 });

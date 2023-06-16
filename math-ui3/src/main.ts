@@ -15,7 +15,7 @@ import { registerPlugins } from '@/plugins'
 
 import { createPinia } from 'pinia'
 
-import  store  from "./store/index";
+import  store  from "./store/pinia/indexStore";
 
 const app = createApp(App)
 

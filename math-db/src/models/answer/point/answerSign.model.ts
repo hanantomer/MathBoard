@@ -8,10 +8,9 @@ import Answer from "../answer.model";
 
 @AnswerDecorator("AnswerSign")
 export default class AnswerSign extends Model implements BaseModel {
-    notationType: NotationType = NotationType.SIGN;
-    boardType: BoardType = BoardType.ANSWER;
-    selected: boolean = false;
-
+    notationType = NotationType.SIGN;
+    boardType = BoardType.ANSWER;
+    
     @Column({ type: UUID, defaultValue: UUIDV4 })
     uuid!: string;
 

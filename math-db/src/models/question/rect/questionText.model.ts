@@ -7,9 +7,8 @@ import Question from "../question.model";
 
 @QuestionDecorator("QuestionText")
 export default class QuestionText extends Model {
-    notationType: NotationType = NotationType.TEXT;
-    boardType: BoardType = BoardType.QUESTION;
-    selected: boolean = false;
+    notationType = NotationType.TEXT;
+    boardType = BoardType.QUESTION;
 
     @Column({ type: UUID, defaultValue: UUIDV4 })
     uuid!: string;
@@ -37,4 +36,7 @@ export default class QuestionText extends Model {
 
     @Column
     toRow!: number;
+
+    @Column
+    value!: string;
 }

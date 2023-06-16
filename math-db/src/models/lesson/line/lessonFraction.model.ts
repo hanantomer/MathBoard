@@ -8,10 +8,9 @@ import LessonDecorator from "../lessonDecorator";
 
 @LessonDecorator("LessonFraction")
 export default class LessonFraction extends Model implements BaseModel {
-    
-    notationType: NotationType = NotationType.FRACTION;
-    boardType: BoardType = BoardType.LESSON;
-    selected: boolean = false;
+    notationType = NotationType.FRACTION;
+    boardType = BoardType.LESSON;
+    value = null;
 
     @Column({ type: UUID, defaultValue: UUIDV4 })
     uuid!: string;

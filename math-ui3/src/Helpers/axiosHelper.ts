@@ -2,10 +2,12 @@ import axios from "axios";
 import { useCookies } from "vue3-cookies";
 const { cookies } = useCookies();
 
-const baseURL = "http://localhost:8081";
 
+export default function axiosHelper() {
+  ///TODO: take from enviroment\
+  const baseURL = "http://localhost:8081";
 
-function handleError(error: any) {
+  function handleError(error: any) {
     if (error.response) {
       // The request was made and the server responded with a status code
       // that falls out of the range of 2xx
@@ -25,10 +27,7 @@ function handleError(error: any) {
     return null;
   }
 
-
-function initAxiosInterceptors() {
-
-
+  function initAxiosInterceptors() {
     axios.interceptors.response.use(
       (response) => response,
       (error) => {
@@ -55,8 +54,8 @@ function initAxiosInterceptors() {
 
       const access_token =
         cookies.get("access_token") != null &&
-          cookies.get("access_token") != "null" &&
-          cookies.get("access_token") != "undefined"
+        cookies.get("access_token") != "null" &&
+        cookies.get("access_token") != "undefined"
           ? cookies.get("access_token")
           : null;
 
@@ -67,8 +66,17 @@ function initAxiosInterceptors() {
 
       return config;
     });
-};
+  }
+  return { baseURL, initAxiosInterceptors, handleError };
+}
 
-export { baseURL, initAxiosInterceptors };
+
+
+
+
+
+
+
+
 
 

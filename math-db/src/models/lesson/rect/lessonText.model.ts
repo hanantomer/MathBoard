@@ -8,9 +8,8 @@ import Lesson from "../lesson.model";
 
 @LessonDecorator("LessonText")
 export default class LessonText extends Model implements BaseModel {
-    notationType: NotationType = NotationType.TEXT;
-    boardType: BoardType = BoardType.LESSON;
-    selected: boolean = false;
+    notationType = NotationType.TEXT;
+    boardType = BoardType.LESSON;
 
     @Column({ type: UUID, defaultValue: UUIDV4 })
     uuid!: string;
@@ -38,4 +37,7 @@ export default class LessonText extends Model implements BaseModel {
 
     @Column
     toRow!: number;
+
+    @Column
+    value!: string;
 }

@@ -1,70 +1,44 @@
 import { BoardType, EditMode, NotationType } from "../../../math-common/src/enum";
-import { useUserStore } from "../../src/store/pinia/userStore"
-import { useN } from "../../src/store/pinia/notationStore";
+import { useUserStore } from "../store/pinia/userStore"
+
+import useMatrixHelper from "./matrixHelper";
+import useNotationHelper from "./notationHelper";
+
 const userStore = useUserStore();
+const matrixHelper = useMatrixHelper();
+const notationHelper = useNotationHelper();
 
-export default {
+export default function eventHelper() {
 
+  async function paste(e: ClipboardEvent) {
+    // disallow adding image by student
+    if (!userStore.isTeacher) return;
 
-  methods: {
-    // ...mapGetters({
-    //   getCurrentEditMode: "getCurrentEditMode",
-    //   getParent: "getParent",
-    // }),
+    const dT = e.clipboardData /*|| window.Clipboard*/;
+    const item = dT?.items[0];
 
-    // ...mapActions({
-    //   setActiveNotation: "setActiveNotation",
-    // }),
+    var reader = new FileReader();
+    var that = this;
+    reader.addEventListener("load", () => {
+      const base64data = reader.result;
 
-    async eventManager_paste(e: any) {
-      // disallow adding image by student
-      if (!userStore.isTeacher) return;
+      let image: any = new Image();
+      image.src = base64data;
+      image.onload = () => {
+        if (!base64data) return;
+        let fromCol = parseInt(that.getActiveCell().col);
+        let fromRow = parseInt(that.getActiveCell().row);
+        let toCol =
+          Math.ceil(image.width / matrixHelper.rectSize) + fromCol;
+        let toRow = Math.ceil(image.height / matrixHelper.rectSize) + fromRow;
+        notationHelper.addImageNotation(fromCol, toCol, fromRow, toRow, base64data.toString());
+      }
+    });
 
-      const dT = e.clipboardData || window.Clipboard;
-      const item = dT.items[0]; //dT.files[0];
+    reader.readAsDataURL(item?.getAsFile() as Blob);
+  };
 
-      var reader = new FileReader();
-      var that = this;
-      reader.addEventListener("load", () => {
-        const base64data = reader.result;
-
-        let image: any = new Image();
-        image.src = base64data;
-        image.onload = () => {
-          let fromCol = parseInt(that.getActiveCell().col);
-          let fromRow = parseInt(that.getActiveCell().row);
-          let toCol =
-            Math.ceil(image.width / that.matrixMixin_getRectSize()) + fromCol;
-          let toRow =
-            Math.ceil(image.height / that.matrixMixin_getRectSize()) + fromRow;
-
-          let notation = {
-            type: NotationType.IMAGE,
-            fromCol: fromCol,
-            toCol: toCol,
-            fromRow: fromRow,
-            toRow: toRow,
-            value: base64data,
-          };
-          that.$store
-            .dispatch("addNotation", notation)
-            .then((text) => {
-              if (this.getParent().boardType === BoardType.LESSON) {
-                this.userOperationsMixin_syncOutgoingSaveNotation(notation);
-              }
-            })
-            .catch((e) => {
-              console.error(e);
-            });
-
-          that.$store.dispatch("setActiveCell", {});
-        };
-      });
-
-      reader.readAsDataURL(item.getAsFile());
-    },
-
-    eventManager_keyUp(e) {
+  function keyUp(e: KeyboardEvent) {
       if (e.ctrlKey || e.altKey) {
         return;
       }
@@ -131,9 +105,9 @@ export default {
       }
 
       this.notationMixin_addNotation(e);
-    },
+  };
 
-    eventManager_mouseDown(e) {
+  function mouseDown(e: MouseEvent) {
       if (
         this.getCurrentEditMode() === EditMode.FRACTION ||
         this.getCurrentEditMode() === EditMode.SQRT ||
@@ -145,7 +119,7 @@ export default {
       let activeCell = this.activateObjectMixin_activateClickedObject(e);
       if (!!activeCell) {
         if (this.getParent().boardType === BoardType.LESSON) {
-          this.userOperationsMixin_syncOutgoingActiveCell(cellToActivate);
+          this.userOperationsMixin_syncOutgoingActiveCell(activeCell);
         }
       }
 
@@ -157,11 +131,13 @@ export default {
         this.notationMixin_addNotation();
         return;
       }
-    },
-    eventManager_lineDrawEnded() {
+  };
+
+  function lineDrawEnded() {
       // see toolbar.vue
       this.$root.$emit("resetToolbarState");
       this.activateObjectMixin_unselectPreviouslyActiveCell();
-    },
-  },
+  };
+
+  return {paste, keyUp, mouseDown, lineDrawEnded}
 };

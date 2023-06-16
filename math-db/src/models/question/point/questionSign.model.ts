@@ -7,9 +7,8 @@ import Question from "../question.model";
 
 @QuestionDecorator("QuestionSign")
 export default class QuestionSign extends Model {
-    notationType: NotationType = NotationType.SIGN;
-    boardType: BoardType = BoardType.QUESTION;
-    selected: boolean = false;
+    notationType = NotationType.SIGN;
+    boardType = BoardType.QUESTION;
 
     @Column({ type: UUID, defaultValue: UUIDV4 })
     uuid!: string;

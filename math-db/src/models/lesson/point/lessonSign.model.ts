@@ -8,9 +8,8 @@ import Lesson from "../lesson.model";
 
 @LessonDecorator("LessonSign")
 export default class LessonSign extends Model implements BaseModel {
-    notationType: NotationType = NotationType.SIGN;
-    boardType: BoardType = BoardType.LESSON;
-    selected: boolean = false;
+    notationType = NotationType.SIGN;
+    boardType = BoardType.LESSON;
 
     @Column({ type: UUID, defaultValue: UUIDV4 })
     uuid!: string;

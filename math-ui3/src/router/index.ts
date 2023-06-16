@@ -5,7 +5,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
 
 import store from "../store/index.ts";
-import authMixin from "../Mixins/authMixin";
+import authMixin from "../Helpers/authMixin.js";
 
 const routes = [
   {

@@ -7,10 +7,9 @@ import User from "../../user.model";
 import Answer from "../answer.model";
 
 @AnswerDecorator("AnswerSymbol")
-export default class AnswerSymbol extends Model implements BaseModel {
-    notationType: NotationType = NotationType.SYMBOL;
-    boardType: BoardType = BoardType.ANSWER;
-    selected: boolean = false;
+export default class AnswerSymbol extends Model implements  BaseModel {
+    notationType = NotationType.SYMBOL;
+    boardType = BoardType.ANSWER;
 
     @Column({ type: UUID, defaultValue: UUIDV4 })
     uuid!: string;

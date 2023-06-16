@@ -8,9 +8,8 @@ import Lesson from "../lesson.model";
 
 @LessonDecorator("LessonPower")
 export default class LessonPower extends Model implements BaseModel {
-    notationType: NotationType = NotationType.POWER;
-    boardType: BoardType = BoardType.LESSON;
-    selected: boolean = false;
+    notationType = NotationType.POWER;
+    boardType = BoardType.LESSON;
 
     @Column({ type: UUID, defaultValue: UUIDV4 })
     uuid!: string;

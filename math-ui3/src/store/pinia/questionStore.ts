@@ -1,56 +1,45 @@
 //  questions of current lesson
 import { defineStore } from "pinia";
 import Question from "../../../../math-db/src/models/question/question.model";
-import {dbSync}  from "../../Mixins/dbSyncMixin";
+import {dbSync}  from "../../Helpers/dbSyncMixin";
 import { useLessonStore } from "./lessonStore";
-import QuestionSqrt from "../../../../math-db/src/models/question/line/questionSqrt.model";
 
 const lessonStore = useLessonStore();
 const db = dbSync();
 
-export const useQuestionStore = defineStore("answer", {
-  state: () => ({
-    questions: <Map<String, Question>>{},
-    currentQuestion: <Question>{},
-  }),
+///TODO: create convention for all crud operation for all stores
 
-  getters: {
-    getQuestions: function (): Map<String, Question> {
-      return this.questions;
-    },
 
-    getCurrentQuestion: function (): Question {
-      return this.currentQuestion;
-    },
-  },
-  actions: {
+export const useQuestionStore = defineStore("answer", ()=> {
 
-    async loadQuestion(questionUUId: string) {
-      this.currentQuestion = await db.getQuestion(questionUUId);
-    },
+  let questions: Map<String, Question> = new Map();
+  let currentQuestion: Question = new Question();
 
-    async loadAllQuestions() {
-      this.questions = <Map<String, Question>>{};
+  async function loadQuestion(questionUUId: string) {
+      currentQuestion = await db.getQuestion(questionUUId);
+  };
 
-      let questions = await db.getQuestions(lessonStore.getCurrentLesson.uuid);
-      questions.forEach((q: Question) => {
-        this.questions.set(q.uuid, q);
-      });
-    },
+  async function loadAllQuestions() {
+    let questions = await db.getQuestions(lessonStore.currentLesson.uuid);
+    questions.forEach((q: Question) => {
+      this.questions.set(q.uuid, q);
+    });
+  };
 
-    async addQuestion(question: Question) {
-      question.lessonUUID = lessonStore.getCurrentLesson.uuid;
-      question = await db.addQuestion(question);
-      this.questions.set(question.uuid, question);
-      return question;
-    },
+  async function addQuestion(question: Question) {
+    question.lessonUUID = lessonStore.currentLesson.uuid;
+    question = await db.addQuestion(question);
+    this.questions.set(question.uuid, question);
+    return question;
+  };
 
-    setCurrentQuestion(question: Question) {
-      this.currentQuestion = question;
-    },
+  function setCurrentQuestion(question: Question) {
+      currentQuestion = question;
+  };
 
-    removeQuestion(question: Question) {
+  function removeQuestion(question: Question) {
       this.questions.delete(question.uuid);
-    },
-  },
+  };
+
+  return { questions, currentQuestion,loadQuestion, loadAllQuestions, addQuestion  }
 });

@@ -1,15 +1,16 @@
 import { Model, Column, BelongsTo, ForeignKey } from "sequelize-typescript";
 import { NotationType, BoardType } from "../../../../../math-common/src/enum";
 import { UUID, UUIDV4 } from "sequelize/types/data-types";
+import { BaseModel } from "../../baseModel";
 import User from "../../user.model";
 import Question from "../question.model";
 import QuestionDecorator from "../questionDecorator";
 
 @QuestionDecorator("LessonFraction")
-export default class QuestionFraction extends Model {
-    notationType: NotationType = NotationType.FRACTION;
-    boardType: BoardType = BoardType.QUESTION;
-    selected: boolean = false;
+export default class QuestionFraction extends Model implements BaseModel {
+    notationType = NotationType.FRACTION;
+    boardType = BoardType.QUESTION;
+    value = null;
 
     @Column({ type: UUID, defaultValue: UUIDV4 })
     uuid!: string;

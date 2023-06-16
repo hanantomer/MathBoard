@@ -45,8 +45,8 @@ export default class User extends Model<
     UserAttributes,
     UserCreationAttributes
     > {
-    
     authorized!: boolean;
+    lastHeartbeatTime!: Date;
     
     @Column({
         type: DataType.UUID,

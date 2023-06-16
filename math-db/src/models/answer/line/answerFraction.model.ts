@@ -8,9 +8,9 @@ import AnswerDecorator from "../answerDecorator";
 
 @AnswerDecorator("AnswerFraction")
 export default class AnswerFraction extends Model implements BaseModel {
-    notationType: NotationType = NotationType.FRACTION;
-    boardType: BoardType = BoardType.ANSWER;
-    selected: boolean = false;
+    notationType = NotationType.FRACTION;
+    boardType = BoardType.ANSWER;
+    value = null;
 
     @Column({ type: UUID, defaultValue: UUIDV4 })
     uuid!: string;

@@ -7,9 +7,8 @@ import Question from "../question.model";
 
 @QuestionDecorator("QuestionPower")
 export default class QuestionPower extends Model {
-    notationType: NotationType = NotationType.POWER;
-    boardType: BoardType = BoardType.QUESTION;
-    selected: boolean = false;
+    notationType = NotationType.POWER;
+    boardType = BoardType.QUESTION;
 
     @Column({ type: UUID, defaultValue: UUIDV4 })
     uuid!: string;

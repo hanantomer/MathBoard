@@ -7,9 +7,9 @@ import Question from "../question.model";
 
 @QuestionDecorator("QuestionImage")
 export default class QuestionImage extends Model {
-    notationType: NotationType = NotationType.IMAGE;
-    boardType: BoardType = BoardType.QUESTION;
-    selected: boolean = false;
+    notationType = NotationType.IMAGE;
+    boardType = BoardType.QUESTION;
+    selected = false;
 
     @Column({ type: UUID, defaultValue: UUIDV4 })
     uuid!: string;
@@ -37,4 +37,7 @@ export default class QuestionImage extends Model {
 
     @Column
     toRow!: number;
+
+    @Column
+    value!: string;
 }

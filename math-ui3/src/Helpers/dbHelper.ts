@@ -1,6 +1,6 @@
 import { BoardType, NotationType } from "../../../math-common/src/enum";
 import axios from "axios";
-import { baseURL, initAxiosInterceptors } from "./axiosInterceptors"
+import axiosHelper from "./axiosHelper";
 import { onMounted } from "vue";
 import User from "../../../math-db/src/models/user.model";
 import Lesson from "../../../math-db/src/models/lesson/lesson.model";
@@ -10,25 +10,13 @@ import Answer from "../../../math-db/src/models/answer/answer.model";
 import {
   Notation,
   Response
-/*  ,Response<Question>,
-  Response<Lesson>,
-  UserResponse,
-  Response<Answer>,
-  Response<Notation>,
-  */
 } from "./responseTypes";
 
+const {baseURL, handleError, initAxiosInterceptors } = axiosHelper();
 
-// Object.defineProperty(String.prototype, "capitalize", {
-//   value: function () {
-//     return this.charAt(0).toUpperCase() + this.slice(1);
-//   },
-//   enumerable: false,
-// });
+export default function useDbHelper() {
 
-
-export function dbSync() {
-
+  ///TODO: move to main
   onMounted(() => {
     initAxiosInterceptors();
   });
@@ -156,17 +144,17 @@ export function dbSync() {
       return data.data[0];
   }
 
-  async function getTeacherLessons(userId: number) : Promise<Lesson[]>{
+  async function getTeacherLessons(userUUId: string) : Promise<Lesson[]>{
      const { data } = await axios.get<Response<Lesson>>(
-       baseURL + "/lessons?UserId=" + userId
+       baseURL + "/lessons?UserUUId=" + userUUId
     );
 
     return data.data;
   }
 
-  async function getStudentLessons(userId: number): Promise<Lesson[]> {
+  async function getStudentLessons(userUUId: string): Promise<Lesson[]> {
     const { data } = await axios.get<Response<Lesson>>(
-      baseURL + "/studentlessons?UserId=" + userId
+      baseURL + "/studentlessons?UserUUId=" + userUUId
     );
 
     return data.data;

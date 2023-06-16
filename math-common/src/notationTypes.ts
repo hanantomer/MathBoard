@@ -1,4 +1,4 @@
-import { BoardType, NotationType } from "../../../math-common/src/enum";
+import { BoardType, NotationType } from "./enum";
 
 
 // we dont have a notation model
@@ -9,6 +9,8 @@ export abstract class Notation  {
   boardType: BoardType;
   selected: boolean;
   userId: number;
+  value: string;
+  background_color: string;
 
   constructor(
     id: number,
@@ -17,6 +19,8 @@ export abstract class Notation  {
     boardType: BoardType,
     selected: boolean,
     userId: number,
+    value: string = "",
+    background_color: string =""
 ) {
     this.id = id
     this.uuid = uuid
@@ -24,13 +28,14 @@ export abstract class Notation  {
     this.boardType = boardType
     this.selected = selected
     this.userId = userId
+    this.value = value;
+    this.background_color = background_color;
   }
 };
 
 export type Point =  {
   col: number;
   row: number;
-  value: string;
 };
 
 export type Line =  {
@@ -46,13 +51,11 @@ export type Rect = {
   toRow: number;
 };
 
-// lesson
 
 export class PointNotation extends Notation implements Point {
   //lessonUUId: string;
   col: number;
   row: number;
-  value: string;
 
   constructor(
     id: number,
@@ -61,24 +64,85 @@ export class PointNotation extends Notation implements Point {
     boardType: BoardType,
     selected: boolean,
     userId: number,
-    //lessonUUId: string,
     col: number,
     row: number,
-    value: string
   ) {
     super(id, uuid, type, boardType, selected, userId);
-    //this.lessonUUId = lessonUUId;
     this.col = col;
     this.row = row;
-    this.value = value;
   }
 };
 
-export class LessonLineNotation extends Notation implements Line {
-  lessonUUId: string;
+export class LineNotation extends Notation implements Line {
+  
   fromCol: number;
   toCol: number;
   row: number;
+  
+  constructor(
+    id: number,
+    uuid: string,
+    type: NotationType,
+    boardType: BoardType,
+    selected: boolean,
+    userId: number,
+    fromCol: number,
+    toCol: number,
+    row: number
+  ) {
+    super(id, uuid, type, boardType, selected, userId);
+    this.fromCol = fromCol;
+    this.toCol = toCol;
+    this.row = row;
+  }
+};
+
+export class RectNotation extends Notation implements Rect {
+  
+  fromCol: number;
+  toCol: number;
+  fromRow: number;
+  toRow: number;
+  
+  constructor(
+    id: number,
+    uuid: string,
+    type: NotationType,
+    boardType: BoardType,
+    selected: boolean,
+    userId: number,
+    fromCol: number,
+    toCol: number,
+    fromRow: number,
+    toRow: number
+  ) {
+    super(id, uuid, type, boardType, selected, userId);
+    this.fromCol = fromCol;
+    this.toCol = toCol;
+    this.fromRow = fromRow;
+    this.toRow = toRow;
+  }
+};
+
+export class LessonPointNotation extends PointNotation  {
+
+  constructor(
+    id: number,
+    uuid: string,
+    type: NotationType,
+    boardType: BoardType,
+    selected: boolean,
+    userId: number,
+    col: number,
+    row: number,
+  ) {
+    super(id, uuid, type, boardType, selected, userId, col, row);
+  }
+};
+
+
+export class LessonLineNotation extends LineNotation  {
+  lessonUUId: string;
 
   constructor(
     id: number,
@@ -92,20 +156,13 @@ export class LessonLineNotation extends Notation implements Line {
     toCol: number,
     row: number
   ) {
-    super(id, uuid, type, boardType, selected, userId);
+    super(id, uuid, type, boardType, selected, userId, fromCol, toCol, row);
     this.lessonUUId = lessonUUId;
-    this.fromCol = fromCol;
-    this.toCol = toCol;
-    this.row = row;
   }
 };
 
-export class LessonRectNotation extends Notation implements Rect {
+export class LessonRectNotation extends RectNotation  {
   lessonUUId: string;
-  fromCol: number;
-  toCol: number;
-  fromRow: number;
-  toRow: number;
 
   constructor(
     id: number,
@@ -118,24 +175,15 @@ export class LessonRectNotation extends Notation implements Rect {
     fromCol: number,
     toCol: number,
     fromRow: number,
-    toRow: number
+    toRow: number,
   ) {
-    super(id, uuid, type, boardType, selected, userId);
+    super(id, uuid, type, boardType, selected, userId, fromCol, toCol, fromRow, toRow);
     this.lessonUUId = lessonUUId;
-    this.fromCol = fromCol
-    this.toCol = toCol;
-    this.fromRow = fromRow;
-    this.toRow = toRow;
   }
 };
 
-// question
-
-export class AnswerPointNotation extends Notation implements Point {
+export class AnswerPointNotation extends PointNotation  {
   answerUUId: string;
-  col: number;
-  row: number;
-  value: string;
 
   constructor(
     id: number,
@@ -147,21 +195,14 @@ export class AnswerPointNotation extends Notation implements Point {
     answerUUId: string,
     col: number,
     row: number,
-    value: string
   ) {
-    super(id, uuid, type, boardType, selected, userId);
+    super(id, uuid, type, boardType, selected, userId, col, row);
     this.answerUUId = answerUUId;
-    this.col = col;
-    this.row = row;
-    this.value = value;
   }
 };
 
-export class AnswerLineNotation extends Notation implements Line {
+export class AnswerLineNotation extends LineNotation  {
   answerUUId: string;
-  fromCol: number;
-  toCol: number;
-  row: number;
 
   constructor(
     id: number,
@@ -175,21 +216,14 @@ export class AnswerLineNotation extends Notation implements Line {
     toCol: number,
     row: number
   ) {
-    super(id, uuid, type, boardType, selected, userId);
+    super(id, uuid, type, boardType, selected, userId, fromCol, toCol, row);
     this.answerUUId = answerUUId;
-    this.fromCol = fromCol;
-    this.toCol = toCol;
-    this.row = row;
   }
 };
 
-export class AnswerRectNotation extends Notation implements Rect {
+export class AnswerRectNotation extends RectNotation {
   answerUUId: string;
-  fromCol: number;
-  toCol: number;
-  fromRow: number;
-  toRow: number;
-
+  
   constructor(
     id: number,
     uuid: string,
@@ -201,25 +235,15 @@ export class AnswerRectNotation extends Notation implements Rect {
     fromCol: number,
     toCol: number,
     fromRow: number,
-    toRow: number
+    toRow: number,
   ) {
-    super(id, uuid, type, boardType, selected, userId);
+    super(id, uuid, type, boardType, selected, userId, fromCol, toCol, fromRow, toRow);
     this.answerUUId = answerUUId;
-    this.fromCol = fromCol
-    this.toCol = toCol;
-    this.fromRow = fromRow;
-    this.toRow = toRow;
   }
 };
 
-
-// answer
-
-export class QuestionPointNotation extends Notation implements Point {
+export class QuestionPointNotation extends PointNotation  {
   questionUUId: string;
-  col: number;
-  row: number;
-  value: string;
 
   constructor(
     id: number,
@@ -231,21 +255,14 @@ export class QuestionPointNotation extends Notation implements Point {
     questionUUId: string,
     col: number,
     row: number,
-    value: string
   ) {
-    super(id, uuid, type, boardType, selected, userId);
+    super(id, uuid, type, boardType, selected, userId, col, row);
     this.questionUUId = questionUUId;
-    this.col = col;
-    this.row = row;
-    this.value = value;
   }
 };
 
-export class QuestionLineNotation extends Notation implements Line {
+export class QuestionLineNotation extends LineNotation {
   questionUUId: string;
-  fromCol: number;
-  toCol: number;
-  row: number;
 
   constructor(
     id: number,
@@ -259,20 +276,13 @@ export class QuestionLineNotation extends Notation implements Line {
     toCol: number,
     row: number
   ) {
-    super(id, uuid, type, boardType, selected, userId);
+    super(id, uuid, type, boardType, selected, userId, fromCol, toCol, row);
     this.questionUUId = questionUUId;
-    this.fromCol = fromCol;
-    this.toCol = toCol;
-    this.row = row;
   }
 };
 
-export class QuestionRectNotation extends Notation implements Rect {
+export class QuestionRectNotation extends RectNotation {
   questionUUId: string;
-  fromCol: number;
-  toCol: number;
-  fromRow: number;
-  toRow: number;
 
   constructor(
     id: number,
@@ -285,14 +295,10 @@ export class QuestionRectNotation extends Notation implements Rect {
     fromCol: number,
     toCol: number,
     fromRow: number,
-    toRow: number
+    toRow: number,
   ) {
-    super(id, uuid, type, boardType, selected, userId);
+    super(id, uuid, type, boardType, selected, userId, fromCol, toCol, fromRow, toRow);
     this.questionUUId = questionUUId;
-    this.fromCol = fromCol
-    this.toCol = toCol;
-    this.fromRow = fromRow;
-    this.toRow = toRow;
   }
 };
 

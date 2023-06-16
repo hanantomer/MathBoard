@@ -8,9 +8,8 @@ import Answer from "../answer.model";
 
 @AnswerDecorator("AnswerImage")
 export default class AnswerImage extends Model implements BaseModel {
-    notationType: NotationType = NotationType.IMAGE;
-    boardType: BoardType = BoardType.ANSWER;
-    selected: boolean = false;
+    notationType = NotationType.IMAGE;
+    boardType = BoardType.ANSWER;
 
     @Column({ type: UUID, defaultValue: UUIDV4 })
     uuid!: string;
@@ -38,4 +37,7 @@ export default class AnswerImage extends Model implements BaseModel {
 
     @Column
     toRow!: number;
+
+    @Column
+    value!: string;
 }

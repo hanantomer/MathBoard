@@ -3,26 +3,27 @@ import {
   PointNotation,
   LineNotation,
   RectNotation,
-} from "../../Mixins/responseTypes";
-import { dbSync } from "../../Mixins/dbSyncMixin";
+} from "../../Helpers/responseTypes";
+import { dbSync } from "../../Helpers/dbSyncMixin";
 const db = dbSync();
 import { PointCoordinates, LineCoordinates, RectCoordinates, matrixDimensions } from "../../../../math-common/src/globals";
 import { NotationType, NotationTypeShape, NotationShape, BoardType } from "../../../../math-common/src/enum";
 import { useUserStore } from "./userStore";
+import { UUID } from "sequelize";
 const userStore = useUserStore();
 
 
-export const helper = {
-  // matrix which marks in true each occupied cell
-  createCellOccupationMatrix: function (): Notation | null[][] {
-    let matrix: Notation | null[][] = new Array();
+export default function notationHelper() {
+   // matrix which marks in true each occupied cell
+  function createCellOccupationMatrix(): (Notation|null) [][] {
+    let matrix: (Notation|null)[][] = new Array();
     for (let i = 0; i < matrixDimensions.rowsNum; i++) {
       for (let j = 0; j < matrixDimensions.colsNum; j++) {
         matrix[i][j] = null;
       }
     }
     return matrix;
-  },
+  };
 
   // removeFromOccupationMatrix: function (
   //   matrix: any,
@@ -31,20 +32,20 @@ export const helper = {
   //   matrix[notation.row][notation.col] = null;
   // },
 
-  removePointFromOccupationMatrix: function (
+  function removePointFromOccupationMatrix(
     matrix: any,
     pointNotation: PointNotation
   ) {
     matrix[pointNotation.row][pointNotation.col] = null;
-  },
+  };
 
-  removeLineFromOccupationMatrix: function (matrix: any, line: LineNotation) {
+  function removeLineFromOccupationMatrix(matrix: any, line: LineNotation) {
     for (let col: number = line.fromCol; col <= line.toCol; col++) {
       matrix[line.row][col] = null;
     }
-  },
+  };
 
-  removeRectFromOccupationMatrix: function (
+  function removeRectFromOccupationMatrix (
     matrix: any,
     rect: RectCoordinates
   ) {
@@ -53,11 +54,11 @@ export const helper = {
         matrix[row][col] = null;
       }
     }
-  },
+  };
 
-  addPointToOccupationMatrix: function (matrix: any, notation: PointNotation) {
+  function addPointToOccupationMatrix(matrix: any, notation: PointNotation) {
     matrix[notation.row][notation.col] = notation;
-  },
+  };
 
   // addToOccupationMatrix: function (matrix: any, notation: LineNotation) {
   //   for (let col = notation.fromCol; col <= notation.toCol; col++) {
@@ -65,16 +66,16 @@ export const helper = {
   //   }
   // },
 
-  addRectToOccupationMatrix: function (matrix: any, notation: RectCoordinates) {
+  function addRectToOccupationMatrix (matrix: any, notation: RectCoordinates) {
     for (let row = notation.fromRow; row <= notation.toRow; row++) {
       for (let col = notation.fromCol; col <= notation.toCol; col++) {
         matrix[row][col] = notation;
       }
     }
-  },
+  };
 
   /// TODO move board type check outside
-  isCellInQuestionArea(
+  function isCellInQuestionArea(
     boardType: BoardType,
     pointCoordinates: PointCoordinates,
     occupationMatrix: (Notation | null)[][]
@@ -85,11 +86,11 @@ export const helper = {
       occupationMatrix.at(pointCoordinates.row)?.at(pointCoordinates.col)
         ?.boardType == BoardType.QUESTION
     );
-  },
+  };
 
   /// TODO move board type check outside
   // return true for student in question and point coordinates are within question area
-  isNotationInQuestionArea(
+  function isNotationInQuestionArea(
     notation: Notation,
     occupationMatrix: (Notation | null)[][]
   ): boolean {
@@ -142,18 +143,18 @@ export const helper = {
       }
     }
     return false;
-  },
+  };
 
   // point
-  pointAtPointCoordinates: function (
+  function pointAtPointCoordinates(
     n1: PointNotation,
     n2: PointCoordinates,
-    userId: number
+    userUUId: string
   ) {
-    return n1.col == n2.col && n1.row == n2.row && n1.userId === userId;
-  },
+    return n1.col == n2.col && n1.row == n2.row && n1.user.uuid === userUUId;
+  };
 
-  pointAtLineCoordinates: function (
+  function pointAtLineCoordinates (
     pointNotation: PointNotation,
     lineCoordinates: LineCoordinates,
     userId: number
@@ -164,9 +165,9 @@ export const helper = {
       pointNotation.row == lineCoordinates.row &&
       pointNotation.userId == userId
     );
-  },
+  };
 
-  pointAtRectCoordinates: function (
+  function pointAtRectCoordinates(
     pointNotation: PointNotation,
     rectCoordinates: RectCoordinates,
     userId: number
@@ -178,23 +179,23 @@ export const helper = {
       pointNotation.row <= rectCoordinates.toRow &&
       pointNotation.userId == userId
     );
-  },
+  };
 
   // line
-  lineAtPointCoordinates: function (
+  function lineAtPointCoordinates (
     lineCoordinates: LineNotation,
     pointCoordinates: PointCoordinates,
-    userId: number
+    userUUId: string
   ) {
     return (
       lineCoordinates.fromCol <= pointCoordinates.col &&
       lineCoordinates.toCol >= pointCoordinates.col &&
       lineCoordinates.row == pointCoordinates.row &&
-      lineCoordinates.userId == userId
+      lineCoordinates.user.uuid == userUUId
     );
-  },
+  };
 
-  lineAtLineCoordinates: function (
+  function lineAtLineCoordinates (
     line1Coordinates: LineNotation,
     line2Coordinates: LineNotation,
     userId: number
@@ -207,9 +208,9 @@ export const helper = {
       line1Coordinates.row == line2Coordinates.row &&
       line1Coordinates.userId == userId
     );
-  },
+  };
 
-  lineAtRectCoordinates: function (
+  function lineAtRectCoordinates (
     lineNotation: LineNotation,
     rectCoordinates: RectCoordinates,
     userId: number
@@ -223,24 +224,24 @@ export const helper = {
       lineNotation.row <= rectCoordinates.toRow &&
       lineNotation.userId == userId
     );
-  },
+  };
 
   // rect
-  rectAtPointCoordinates: function (
+  function rectAtPointCoordinates (
     rectNotation: RectNotation,
     pointCoordinates: PointCoordinates,
-    userId: number
+    userUUId: string
   ) {
     return (
       rectNotation.fromCol <= pointCoordinates.col &&
       rectNotation.toCol >= pointCoordinates.col &&
       rectNotation.fromRow <= pointCoordinates.row &&
       rectNotation.toRow >= pointCoordinates.row &&
-      rectNotation.userId == userId
+      rectNotation.user.uuid == userUUId
     );
-  },
+  };
 
-  rectAtLineCoordinates: function (
+  function rectAtLineCoordinates (
     rectNotation: RectNotation,
     lineCoordinates: LineCoordinates,
     userId: number
@@ -254,9 +255,9 @@ export const helper = {
       rectNotation.toRow >= lineCoordinates.row &&
       rectNotation.userId == userId
     );
-  },
+  };
 
-  rectAtRectCoordinates: function (
+  function rectAtRectCoordinates (
     rectNotation: RectNotation,
     rectCoordinates: RectCoordinates,
     userId: number
@@ -272,13 +273,13 @@ export const helper = {
           rectNotation.toRow <= rectCoordinates.toRow)) &&
       rectNotation.userId == userId
     );
-  },
+  };
 
   // return a list of notations wich overlap given point coordinates
-  findNotationsByCellCoordinates: function (
+  function findNotationsByCellCoordinates (
     notationsMap: Map<String, Notation>,
     cellCoordinates: PointCoordinates,
-    userId: number
+    userUUId: string
   ) {
     return Object.entries(notationsMap)
       .map((n: Notation[]) => n[1])
@@ -286,30 +287,22 @@ export const helper = {
         n.notationType == NotationType.SYMBOL || // maybe replace type with reflection
         n.notationType == NotationType.POWER ||
         n.notationType == NotationType.SIGN
-          ? helper.pointAtPointCoordinates(
+          ? pointAtPointCoordinates(
               n as PointNotation,
               cellCoordinates,
-              userId
+              userUUId
             )
           : n.notationType == NotationType.FRACTION ||
             n.notationType == NotationType.SQRT
-          ? helper.lineAtPointCoordinates(
-              n as LineNotation,
-              cellCoordinates,
-              userId
-            )
+          ? lineAtPointCoordinates(n as LineNotation, cellCoordinates, userUUId)
           : n.notationType == NotationType.TEXT
-          ? helper.rectAtPointCoordinates(
-              n as RectNotation,
-              cellCoordinates,
-              userId
-            )
+          ? rectAtPointCoordinates(n as RectNotation, cellCoordinates, userUUId)
           : false
       );
-  },
+  } ;
 
   // return a list of notations wich overlap given rect coordinates
-  findNotationsByRectCoordinates: function (
+  function findNotationsByRectCoordinates (
     notationsMap: Map<String, Notation>,
     rectCoordinates: RectCoordinates
   ) {
@@ -319,30 +312,30 @@ export const helper = {
         n.notationType == NotationType.SYMBOL ||
         n.notationType == NotationType.POWER ||
         n.notationType == NotationType.SIGN
-          ? helper.pointAtRectCoordinates(
+          ? pointAtRectCoordinates(
               n as PointNotation,
               rectCoordinates,
-              userStore.getCurrentUser.id
+              userStore.currentUser.id
             )
           : n.notationType == NotationType.FRACTION ||
             n.notationType == NotationType.SQRT
-          ? helper.lineAtRectCoordinates(
+          ? lineAtRectCoordinates(
               n as LineNotation,
               rectCoordinates,
-              userStore.getCurrentUser.id
+              userStore.currentUser.id
             )
           : n.notationType == NotationType.TEXT
-          ? helper.rectAtRectCoordinates(
+          ? rectAtRectCoordinates(
               n as RectNotation,
               rectCoordinates,
-              userStore.getCurrentUser.id
+              userStore.currentUser.id
             )
           : false
       );
-  },
+  }''
 
   // return a list of notations wich overlap given line coordinates
-  findNotationsByLineCoordinates: function (
+  function findNotationsByLineCoordinates (
     notationsMap: Map<String, Notation>,
     lineCoordinates: LineNotation
   ) {
@@ -352,29 +345,29 @@ export const helper = {
         n.notationType == NotationType.SYMBOL ||
         n.notationType == NotationType.POWER ||
         n.notationType == NotationType.SIGN
-          ? helper.pointAtLineCoordinates(
+          ? pointAtLineCoordinates(
               n as PointNotation,
               lineCoordinates,
-              userStore.getCurrentUser.id
+              userStore.currentUser.id
             )
           : n.notationType == NotationType.FRACTION ||
             n.notationType == NotationType.SQRT
-          ? helper.lineAtLineCoordinates(
+          ? lineAtLineCoordinates(
               n as LineNotation,
               lineCoordinates,
-              userStore.getCurrentUser.id
+              userStore.currentUser.id
             )
           : n.notationType == NotationType.TEXT
-          ? helper.rectAtLineCoordinates(
+          ? rectAtLineCoordinates(
               n as RectNotation,
               lineCoordinates,
-              userStore.getCurrentUser.id
+              userStore.currentUser.id
             )
           : false
       );
-  },
+  };
 
-  findOverlapNotationsOfSameType(
+  function findOverlapNotationsOfSameType(
     notationsMap: Map<String, Notation>,
     notation: Notation
   ): Notation | undefined {
@@ -386,31 +379,31 @@ export const helper = {
           case NotationType.SYMBOL:
           case NotationType.SIGN:
           case NotationType.POWER:
-            return helper.pointAtPointCoordinates(
+            return pointAtPointCoordinates(
               notation as PointNotation,
               n2 as PointNotation,
-              userStore.getCurrentUser.id
+              userStore.currentUser.id
             );
           case NotationType.FRACTION:
           case NotationType.SQRT:
-            return helper.lineAtLineCoordinates(
+            return lineAtLineCoordinates(
               notation as LineNotation,
               n2 as LineNotation,
-              userStore.getCurrentUser.id
+              userStore.currentUser.id
             );
           case NotationType.TEXT:
           case NotationType.IMAGE:
           case NotationType.GEO:
-            return helper.rectAtRectCoordinates(
+            return rectAtRectCoordinates(
               notation as RectNotation,
               n2 as RectCoordinates,
-              userStore.getCurrentUser.id
+              userStore.currentUser.id
             );
         }
       });
-  },
+  };
 
-  findOverlapNotationsOfAnyType(
+  function findOverlapNotationsOfAnyType(
     notationsMap: Map<String, Notation>,
     notation: Notation
   ): Notation | undefined {
@@ -421,39 +414,39 @@ export const helper = {
           case NotationType.SYMBOL:
           case NotationType.POWER:
             return (
-              helper.pointAtPointCoordinates(
+              pointAtPointCoordinates(
                 notation as PointNotation,
                 n2 as PointNotation,
-                userStore.getCurrentUser.id
+                userStore.currentUser.id
               ) ??
-              helper.lineAtPointCoordinates(
+              lineAtPointCoordinates(
                 notation as LineNotation,
                 n2 as PointNotation,
-                userStore.getCurrentUser.id
+                userStore.currentUser.id
               ) ??
-              helper.rectAtPointCoordinates(
+              rectAtPointCoordinates(
                 notation as RectNotation,
                 n2 as PointNotation,
-                userStore.getCurrentUser.id
+                userStore.currentUser.id
               )
             );
           case NotationType.FRACTION:
           case NotationType.SQRT:
             return (
-              helper.lineAtPointCoordinates(
+              lineAtPointCoordinates(
                 notation as LineNotation,
                 n2 as PointNotation,
-                userStore.getCurrentUser.id
+                userStore.currentUser.id
               ) ??
-              helper.lineAtLineCoordinates(
+              lineAtLineCoordinates(
                 notation as LineNotation,
                 n2 as LineNotation,
-                userStore.getCurrentUser.id
+                userStore.currentUser.id
               ) ??
-              helper.lineAtRectCoordinates(
+              lineAtRectCoordinates(
                 notation as LineNotation,
                 n2 as RectCoordinates,
-                userStore.getCurrentUser.id
+                userStore.currentUser.id
               )
             );
 
@@ -461,43 +454,43 @@ export const helper = {
           case NotationType.IMAGE:
           case NotationType.GEO:
             return (
-              helper.pointAtRectCoordinates(
+              pointAtRectCoordinates(
                 notation as PointNotation,
                 n2 as RectCoordinates,
-                userStore.getCurrentUser.id
+                userStore.currentUser.id
               ) ??
-              helper.lineAtRectCoordinates(
+              lineAtRectCoordinates(
                 notation as LineNotation,
                 n2 as RectCoordinates,
-                userStore.getCurrentUser.id
+                userStore.currentUser.id
               ) ??
-              helper.rectAtRectCoordinates(
+              rectAtRectCoordinates(
                 notation as RectNotation,
                 n2 as RectCoordinates,
-                userStore.getCurrentUser.id
+                userStore.currentUser.id
               )
             );
         }
       });
-  },
+  };
 
-  async getNotationsByType(
+  async function getNotationsByType(
     parentUUId: string,
     notationType: NotationType,
     boardType: BoardType
-  ): Promise<Map<String, Notation> | null> {
+  ): Promise<Map<String, Notation>> {
     switch (notationType) {
       case NotationType.SYMBOL:
       case NotationType.SIGN:
       case NotationType.POWER:
-        return this.getNotations<PointNotation>(
+        return getNotations<PointNotation>(
           parentUUId,
           notationType,
           boardType
         );
       case NotationType.FRACTION:
       case NotationType.SQRT:
-        return this.getNotations<LineNotation>(
+        return getNotations<LineNotation>(
           parentUUId,
           notationType,
           boardType
@@ -505,43 +498,42 @@ export const helper = {
       case NotationType.GEO:
       case NotationType.IMAGE:
       case NotationType.TEXT:
-        return this.getNotations<LineNotation>(
+        return getNotations<RectNotation>(
           parentUUId,
           notationType,
           boardType
         );
       default:
-        return null;
+        return new Map();
     }
-  },
+  };
 
-  async getNotations<T extends Notation>(
+  async function getNotations<T extends Notation>(
     parentUUId: string,
     notationType: NotationType,
     boardType: BoardType
-  ): Promise<Map<String, Notation> | null> {
+  ): Promise<Map<String, Notation>> {
     let notations = await db.getNotations<T>(
       notationType,
       boardType,
       parentUUId
     );
 
-    if (!notations) return null;
+    if (!notations) return new Map();
 
     return new Map<string, Notation>(
       notations.map((n: Notation) => [n.uuid, n])
     );
-  },
+  };
 
-  getNotationsByBoard(
+  function getNotationsByBoard(
     parentUUId: string,
     boardType: BoardType
   ): Map<String, Notation> {
     let notations = new Map<String, Notation>();
 
     for (const nt in NotationType) {
-      helper
-        .getNotationsByType(
+      getNotationsByType(
           parentUUId,
           NotationType[nt as keyof typeof NotationType],
           boardType
@@ -554,7 +546,21 @@ export const helper = {
     }
 
     return notations;
-  },
+  };
+
+  return {
+    createCellOccupationMatrix,
+    getNotationsByBoard,
+    getNotations,
+    getNotationsByType,
+    findOverlapNotationsOfAnyType,
+    findOverlapNotationsOfSameType,
+    findNotationsByLineCoordinates,
+    findNotationsByRectCoordinates,
+    findNotationsByCellCoordinates,
+    isNotationInQuestionArea,
+    isCellInQuestionArea,
+  };
 };
 
 
