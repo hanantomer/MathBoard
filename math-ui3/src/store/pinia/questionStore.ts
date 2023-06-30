@@ -1,11 +1,11 @@
 //  questions of current lesson
 import { defineStore } from "pinia";
 import Question from "../../../../math-db/src/models/question/question.model";
-import {dbSync}  from "../../Helpers/dbSyncMixin";
+import useDbHelper  from "../../Helpers/dbHelper";
 import { useLessonStore } from "./lessonStore";
 
 const lessonStore = useLessonStore();
-const db = dbSync();
+const db = useDbHelper();
 
 ///TODO: create convention for all crud operation for all stores
 
@@ -27,7 +27,7 @@ export const useQuestionStore = defineStore("answer", ()=> {
   };
 
   async function addQuestion(question: Question) {
-    question.lessonUUID = lessonStore.currentLesson.uuid;
+    question.lesson  = lessonStore.currentLesson;
     question = await db.addQuestion(question);
     this.questions.set(question.uuid, question);
     return question;

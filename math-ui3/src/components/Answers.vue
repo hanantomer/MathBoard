@@ -14,86 +14,81 @@
     </v-card>
   </v-container>
 </template>
-<script>
-import { mapActions } from "vuex";
-import { mapGetters } from "vuex";
+<script setup lang="ts">
+import { watch } from 'vue'
+import { useRoute, useRouter  } from 'vue-router'
+import { computed } from "vue"
+import { useLessonStore } from "../store/pinia/lessonStore";
+import { useQuestionStore } from "../store/pinia/questionStore";
+import { useAnswerStore } from "../store/pinia/answerStore";
+import Answer from '../../../math-db/src/models/answer/answer.model';
 
-export default {
-  name: "Answers",
-  async mounted() {
-    this.load();
+const route = useRoute();
+const router = useRouter();
+const lessonStore = useLessonStore();
+const questionStore = useQuestionStore();
+const answerStore = useAnswerStore();
+
+//export default {
+  //async mounted() {
+  //  this.load();
+  //},
+ watch(route, (to) => {
+    load();
   },
-  watch: {
-    $route: async function () {
-      this.load();
-    },
+  { flush: 'pre', immediate: true, deep: true }
+ );
+
+let headers = computed(() => [
+  {
+    text: "Lesson",
+    value: "lesson",
   },
-  computed: {
-    headers: () => [
-      {
-        text: "Lesson",
-        value: "lesson",
-      },
-      {
-        text: "Question",
-        value: "question",
-      },
-      {
-        text: "Student",
-        value: "student",
-      },
-      {
-        text: "Created At",
-        value: "createdAt",
-      },
-    ],
-    lessons() {
-      return this.getLessons();
-    },
-    questions() {
-      return this.getQuestions();
-    },
-    answers() {
-      return this.getAnswers().map((a) => {
-        return {
-          uuid: a.uuid,
-          lesson: a.Question.Lesson.name,
-          question: a.Question.name,
-          student: a.User.firstName + " " + a.User.lastName,
-          createdAt: new Date(a.createdAt),
-        };
-      });
-    },
+  {
+    text: "Question",
+    value: "question",
   },
-  methods: {
-    ...mapActions({
-      loadLessons: "loadLessons",
-      loadQuestions: "loadQuestions",
-      loadAnswers: "loadAnswers",
-      setCurrentAnswer: "setCurrentAnswer",
-    }),
-    ...mapGetters({
-      isTeacher: "isTeacher",
-      getLessons: "getLessons",
-      getQuestions: "getQuestions",
-      getAnswers: "getAnswers",
-      getCurrentLesson: "getCurrentLesson",
-      getCurrentQuestion: "getCurrentQuestion",
-    }),
-    async load() {
+  {
+    text: "Student",
+    value: "student",
+  },
+  {
+    text: "Created At",
+    value: "createdAt",
+  },
+]);
+
+const lessons = computed(() => {
+  return lessonStore.lessons
+});
+
+const questions = computed(() => {
+  return questionStore.questions;
+});
+
+
+const answers = computed(() => {
+  return Array.from(answerStore.answers).map(([key, value]) => {
+    return {
+      uuid: value.uuid,
+      lesson: value.question.lesson.name,
+      question: value.question.name,
+      student: value.user.firstName + " " + value.user.lastName,
+      createdAt: new Date(value.createdAt),
+    };
+  });
+});
+
+async function load() {
       await this.loadLessons(this.isTeacher());
       await this.loadQuestions();
       await this.loadAnswers();
-    },
-    async selectAnswer(answer) {
-      this.setCurrentAnswer(answer).then(() =>
-        this.$router.push({
-          path: "/answer/" + answer.uuid,
-        })
-      );
-    },
-  },
 };
+async function selectAnswer(answer: Answer) {
+  answerStore.setCurrentAnswer(answer);
+  router.push({ path: "/answer/" + answer.uuid });
+};
+
 </script>
 
 <style>

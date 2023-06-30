@@ -1,12 +1,24 @@
 import { BoardType, EditMode, NotationType } from "../../../math-common/src/enum";
 import { useUserStore } from "../store/pinia/userStore"
+import { useNotationStore } from "../store/pinia/notationStore"
 
 import useMatrixHelper from "./matrixHelper";
 import useNotationHelper from "./notationHelper";
+import useAuthHelper from "./authHelper";
+import useActivateObjectHelper from "./activateObjectHelper";
+import useEventBus from "../Helpers/useEventBus";
+import useUserOutgoingOperations from "./userOutgoingOperationsHelper";
 
 const userStore = useUserStore();
+const notationStore = useNotationStore();
 const matrixHelper = useMatrixHelper();
 const notationHelper = useNotationHelper();
+const authHelper = useAuthHelper();
+const eventBus = useEventBus();
+const activateObjectHelper = useActivateObjectHelper();
+const userOutgoingOperations = useUserOutgoingOperations();
+
+
 
 export default function eventHelper() {
 
@@ -65,79 +77,90 @@ export default function eventHelper() {
       }
 
       if (e.code === "Backspace") {
-        this.notationMixin_removeActiveOrSelectedNotations();
-        this.matrixMixin_setNextRect(-1, 0);
+        notationHelper.removeActiveOrSelectedNotations();
+        matrixHelper.setNextRect(-1, 0);
         return;
       }
 
       if (e.code === "Delete") {
-        this.notationMixin_removeActiveOrSelectedNotations();
+        notationHelper.removeActiveOrSelectedNotations();
         return;
       }
 
       if (e.code === "ArrowLeft") {
-        this.matrixMixin_setNextRect(-1, 0);
+        matrixHelper.setNextRect(-1, 0);
         return;
       }
 
       if (e.code === "ArrowRight" || e.code === "Space") {
-        this.matrixMixin_setNextRect(1, 0);
+        matrixHelper.setNextRect(1, 0);
         return;
       }
 
       if (e.code === "ArrowUp") {
-        this.matrixMixin_setNextRect(0, -1);
+        matrixHelper.setNextRect(0, -1);
         return;
       }
 
       if (e.code === "ArrowDown") {
-        this.matrixMixin_setNextRect(0, 1);
+        matrixHelper.setNextRect(0, -1);
         return;
       }
 
       if (e.code === "Enter") {
-        this.matrixMixin_setNextRow(0, 1);
+        matrixHelper.setNextRect(0, -1);
         return;
       }
 
-      if (!this.mixin_canEdit()) {
+      if (!authHelper.canEdit) {
         return;
       }
 
-      this.notationMixin_addNotation(e);
+      notationHelper.addSymbolNotation(e.key);
   };
 
   function mouseDown(e: MouseEvent) {
       if (
-        this.getCurrentEditMode() === EditMode.FRACTION ||
-        this.getCurrentEditMode() === EditMode.SQRT ||
-        this.getCurrentEditMode() === EditMode.SELECT
+        notationStore.editMode === EditMode.FRACTION.valueOf ||
+        notationStore.editMode === EditMode.SQRT.valueOf ||
+        notationStore.editMode === EditMode.SELECT.valueOf
       ) {
         return;
       }
 
-      let activeCell = this.activateObjectMixin_activateClickedObject(e);
-      if (!!activeCell) {
-        if (this.getParent().boardType === BoardType.LESSON) {
-          this.userOperationsMixin_syncOutgoingActiveCell(activeCell);
-        }
+      let activeCell = activateObjectHelper.activateClickedObject(e);
+      if (activeCell && notationStore.parent.type == BoardType.LESSON) {
+          userOutgoingOperations.syncOutgoingActiveCell(activeCell);
       }
 
       if (
-        this.getCurrentEditMode() === EditMode.CHECKMARK ||
-        this.getCurrentEditMode() === EditMode.SEMICHECKMARK ||
-        this.getCurrentEditMode() === EditMode.XMARK
+        notationStore.editMode === EditMode.CHECKMARK.valueOf ||
+        notationStore.editMode === EditMode.SEMICHECKMARK.valueOf ||
+        notationStore.editMode === EditMode.XMARK.valueOf
       ) {
-        this.notationMixin_addNotation();
+        notationHelper.addMarkNotation();
         return;
       }
   };
 
   function lineDrawEnded() {
       // see toolbar.vue
-      this.$root.$emit("resetToolbarState");
-      this.activateObjectMixin_unselectPreviouslyActiveCell();
+    eventBus.emit("resetToolbarState");
+    activateObjectHelper.reset();
+    // activateObjectMixin_unselectPreviouslyActiveCell();
   };
+
+  async function setActiveNotation(activeNotation: Notation | null) {
+    notationHelper.setAc
+    if (
+      // disallow activation of question rows for student
+      notationHelper.isNotationInQuestionArea(activeNotation)
+    ) {
+      return;
+    }
+
+    activeNotation = activeNotation;
+  }
 
   return {paste, keyUp, mouseDown, lineDrawEnded}
 };

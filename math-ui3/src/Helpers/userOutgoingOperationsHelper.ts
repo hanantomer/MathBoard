@@ -1,12 +1,20 @@
 
-import {  PointCoordinates } from "../../../math-common/src/globals";
+import {  CellCoordinates } from "../../../math-common/src/globals";
 import { Notation } from "./responseTypes";
+import { useNotationStore } from "../store/pinia/notationStore";
+import { storeToRefs } from 'pinia'
 
 import useFeathersHelper from "./feathersHelper";
 const { client } = useFeathersHelper();
+const notationStore = useNotationStore();
 
 export default function userOutgoingOperations() {
 
+    notationStore.$subscribe((mutation, state) => {
+      console.log("a change happened");
+      console.log(mutation, state);
+
+    });
 
     // function signedInWithGoogle() {
     //   return (
@@ -15,7 +23,7 @@ export default function userOutgoingOperations() {
     //   );
     // };
 
-   function syncOutgoingActiveCell (activeCell: PointCoordinates) {
+  function syncOutgoingActiveCell (activeCell: CellCoordinates) {
       //activeCell.LessonUUId = this.getCurrentLesson().uuid;
       client
         .service("activeCell")
@@ -41,7 +49,7 @@ export default function userOutgoingOperations() {
         .update({}, { notation: selectedNotation }, {});
   };
 
-  function _syncOutgoingHeartBeat(LessonUUId: string) {
+  function syncOutgoingHeartBeat(LessonUUId: string) {
       client
         .service("heartbeat")
         .update({}, { LessonUUId: LessonUUId }, {});
@@ -74,5 +82,12 @@ export default function userOutgoingOperations() {
         );
   };
 
-  return {}
+  return {
+    syncOutgoingUpdateSelectedNotation,
+    syncOutgoingActiveCell,
+    syncOutgoingAuthUser,
+    syncOutgoingHeartBeat,
+    syncOutgoingRemoveNotation,
+    syncOutgoingSaveNotation
+  }
 };

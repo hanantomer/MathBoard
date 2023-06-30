@@ -1,7 +1,7 @@
 import { defineStore } from "pinia";
 import User from "../../../../math-db/src/models/user.model";
-import { dbSync } from "../../Helpers/dbSyncMixin";
-const db = dbSync();
+import dbHelper  from "../../Helpers/dbHelper";
+const db = dbHelper();
 
 export const useUserStore = defineStore("user", () => {
 

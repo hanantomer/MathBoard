@@ -17,6 +17,7 @@
         },
         "sourceMap": true
     },
+    "files": [],
     "references": [
         { "path": "../math-db" },
         { "path": "../math-auth" },

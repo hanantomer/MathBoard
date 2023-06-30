@@ -4,7 +4,7 @@ import { EditMode, NotationShape, NotationType } from "../../../math-common/src/
 import { RectNotation, LineNotation } from "./responseTypes";
 import { useNotationStore } from "../store/pinia/notationStore";
 import {
-  PointCoordinates,
+  CellCoordinates,
   activeCellColor,
 } from "../../../math-common/src/globals";
 import { storeToRefs } from 'pinia'
@@ -15,8 +15,6 @@ const matrixHelper = useMatrixHelper();
 const notationStore = useNotationStore();
 const { activeCell, activeNotation } = storeToRefs(notationStore)
 
-
-
 export default function activateObjectHelper() {
 
   watch(activeCell, (oldActiveCell, newActiveCell) => {
@@ -24,11 +22,15 @@ export default function activateObjectHelper() {
   })
 
   // called via mouse click
-  function activateClickedObject(e: MouseEvent) {
-    let clickedRect = matrixHelper.findClickedObject(e, "rect", NotationType.TEXT);
+  function activateClickedObject(e: MouseEvent): CellCoordinates | null {
+    let clickedRect = matrixHelper.findClickedObject(
+      e,
+      "rect",
+      NotationType.TEXT
+    );
 
     if (!clickedRect) {
-      return;
+      return null;
     }
 
     // activate notation
@@ -39,13 +41,13 @@ export default function activateObjectHelper() {
           notationStore.setCurrentEditMode(EditMode.TEXT);
         }
       });
-      return;
+      return null;
     }
 
     let overlapLineNotation = getOverlappedLineNotation(e);
     if (overlapLineNotation) {
       // selection of line is handled in LineDrawer.vue, here we just reset previous activated element
-      return;
+      return null;
     }
 
     // no underlying elements found, activate single cell
@@ -54,15 +56,14 @@ export default function activateObjectHelper() {
       row: getElementCoordinateValue(clickedRect, "row"),
     };
 
-    notationStore.setActiveCell(cellToActivate).then(() => {
-      notationStore.setCurrentEditMode(EditMode.SYMBOL);
-      return cellToActivate;
-    });
+    notationStore.setActiveCell(cellToActivate);
+    notationStore.setCurrentEditMode(EditMode.SYMBOL);
+    return cellToActivate;
   }
 
-  function activateObjectMixin_reset() {
-    this.$store.dispatch("setActiveCell", {});
-    this.$store.dispatch("setActiveNotation", {});
+  function reset() {
+    notationStore.setActiveCell(null);
+    notationStore.setActiveNotation(null);
   }
 
   function getElementCoordinateValue(element: Element, attrName: string): number{
@@ -107,8 +108,8 @@ export default function activateObjectHelper() {
 
   // called by store watcher
   function activateCell(
-    activeCell: PointCoordinates,
-    prevActiveCell: PointCoordinates
+    activeCell: CellCoordinates | null,
+    prevActiveCell: CellCoordinates | null
   ) {
     this.activateObjectMixin_unselectPreviouslyActiveCell(prevActiveCell);
     if (!activeCell?.col) return;
@@ -122,5 +123,5 @@ export default function activateObjectHelper() {
     if (rectElm?.style) rectElm.style.fill = activeCellColor;
   }
 
-  return { activateCell };
+  return { activateCell, reset, activateClickedObject };
 }

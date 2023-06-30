@@ -9,7 +9,7 @@ const studentStore = useStudentStore();
 import { useNotationStore } from "../store/pinia/notationStore";
 import { BoardType } from "../../../math-common/src/enum";
 import {
-  PointCoordinates,
+  CellCoordinates,
 } from "../../../math-common/src/globals";
 import User from "../../../math-db/src/models/user.model";
 const notationStore = useNotationStore();
@@ -54,7 +54,7 @@ export default function userIncomingOperations() {
     });
     client
       .service("activeCell")
-      .on("updated", (activeCell: PointCoordinates) => {
+      .on("updated", (activeCell: CellCoordinates) => {
         if (
           //activeCell.UserId !== this.getUser().id &&
           notationStore.parent.type === BoardType.LESSON

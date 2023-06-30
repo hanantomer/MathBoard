@@ -17,278 +17,284 @@
     ></v-card>
   </div>
 </template>
-<script>
-import { mapGetters } from "vuex";
-import { mapActions } from "vuex";
-import EditMode from "../Mixins/editMode";
+<script setup lang="ts">
+
+import { watch, computed, ref } from "vue"
+import { EditMode } from "../../../math-common/src/enum";
+import { useNotationStore } from "../store/pinia/notationStore";
 import * as d3 from "d3";
-import matrixMixin from "../Mixins/matrixMixin";
-import userOutgoingOperationsSyncMixin from "../Mixins/userOutgoingOperationsSyncMixin";
+import useMatrixHelper from "../Helpers/matrixHelper";
+import useEventBus from "../Helpers/useEventBus";
+import UseUserOutgoingOperationsSyncHelper from "../Helpers/userOutgoingOperationsHelper";
+
+const eventBus = useEventBus();
+const notationStore = useNotationStore();
+const matrixHelper = useMatrixHelper();
+const userOutgoingOperationsSyncHelper = UseUserOutgoingOperationsSyncHelper();
 
 const SelectionMode = Object.freeze({
   SELECTING: "SELECTING",
   MOVE: "MOVE",
 });
 
-export default {
-  name: "SelectionArea",
-  mixins: [matrixMixin, userOutgoingOperationsSyncMixin],
-  props: {
-    svgId: "",
-  },
-  data: function () {
-    return {
-      selectionMode: SelectionMode.SELECTING,
-      selectionPosition: {
-        x1: null,
-        y1: null,
-        x2: null,
-        y2: null,
-      },
-      dragPosition: {
-        x: 0,
-        y: 0,
-      },
-    };
-  },
-  computed: {
-    svgDimensions: function () {
-      return document.getElementById(this.svgId).getBoundingClientRect();
-    },
+const props = defineProps({
+  svgId: { type: String, default: "" }
+})
 
-    selectionRectLeft: function () {
-      return Math.min(this.selectionPosition.x1, this.selectionPosition.x2);
-    },
-    selectionRectTop: function () {
-      return Math.min(this.selectionPosition.y1, this.selectionPosition.y2);
-    },
-    selectionRectWidth: function () {
-      return (
-        Math.max(this.selectionPosition.x1, this.selectionPosition.x2) -
-        Math.min(this.selectionPosition.x1, this.selectionPosition.x2)
-      );
-    },
-    selectionRectHeight: function () {
-      return (
-        Math.max(this.selectionPosition.y1, this.selectionPosition.y2) -
-        Math.min(this.selectionPosition.y1, this.selectionPosition.y2)
-      );
-    },
-  },
-  mounted: function () {
-    this.registerSvgMouseDown();
-    this.registerSvgMouseMove();
-    this.registerSvgMouseUp();
-    // emitted in  app.vue
-    this.$root.$on("keyup", this.keyUp);
-  },
-  beforeDestroy: function () {
-    this.$root.$off("keyup", this.keyUp);
-  },
-  methods: {
-    ...mapGetters({
-      getCurrentEditMode: "getCurrentEditMode",
-      getSelectedNotations: "getSelectedNotations",
-    }),
-    ...mapActions({
-      setCurrentEditMode: "setCurrentEditMode",
-    }),
+let selectionMode = SelectionMode.SELECTING.valueOf;
 
-    keyUp: function (e) {
-      if (e.code === "Backspace" || e.code === "Delete") {
-        // actual deletion is handled by eventManager
-        this.resetSelection();
-      }
-    },
+let selectionPosition = ref({
+  x1: 0,
+  y1: 0,
+  x2: 0,
+  y2: 0
+});
 
-    registerSvgMouseDown: function (e) {
-      document
-        .getElementById(this.svgId)
-        .addEventListener("mousedown", this.handleMouseDown);
-    },
+let dragPosition = ref({
+  x: 0,
+  y: 0,
+});
 
-    registerSvgMouseMove: function () {
-      document
-        .getElementById(this.svgId)
-        .parentElement.addEventListener("mousemove", this.handleMouseMove);
-    },
+const svgDimensions = computed(() => {
+  return document.getElementById(props.svgId)?.getBoundingClientRect()!;
+});
 
-    registerSvgMouseUp: function () {
-      document
-        .getElementById(this.svgId)
-        .addEventListener("mouseup", this.handleMouseUp);
-    },
 
-    handleMouseMove(e) {
+const selectionRectLeft = computed(() => {
+  Math.min(selectionPosition.value.x1, selectionPosition.value.x2);
+});
+
+const selectionRectTop = computed(() => {
+  Math.min(selectionPosition.value.y1, selectionPosition.value.y2);
+});
+
+const selectionRectWidth = computed(() => {
+  Math.max(selectionPosition.value.x1, selectionPosition.value.x2) -
+    Math.min(selectionPosition.value.x1, selectionPosition.value.x2)
+});
+
+const selectionRectHeight = computed(() => {
+  Math.max(selectionPosition.value.y1, selectionPosition.value.y2) -
+    Math.min(selectionPosition.value.y1, selectionPosition.value.y2)
+});
+
+/*onMounted(() => {
+  //registerSvgMouseDown();
+  registerSvgMouseMove();
+  registerSvgMouseUp();
+});
+*/
+  // emitted in  app.vue
+watch(() => eventBus.bus.value.get("keyup"), (e: KeyboardEvent) => {
+  keyUp(e);
+});
+
+watch(() => eventBus.bus.value.get("selectionMouseMove"), (e: MouseEvent) => {
+  handleMouseMove(e);
+});
+
+watch(() => eventBus.bus.value.get("selectionMouseUp"), (e: MouseEvent) => {
+  handleMouseUp(e);
+});
+
+
+
+
+function keyUp(e: KeyboardEvent) {
+  if (e.code === "Backspace" || e.code === "Delete") {
+    // actual deletion is handled by eventManager
+    resetSelection();
+  }
+};
+
+
+/*TODO: should be handled by parent
+whever user strat moving the mouse with left button pressed,
+mous move event shoul be directed to AreaSelector
+
+*/
+/*function registerSvgMouseDown() {
+  const el = document.getElementById(props.svgId);
+  el?.addEventListener("mousedown", handleMouseDown);
+};*/
+
+//function registerSvgMouseMove() {
+//  document?.getElementById(props.svgId)?.parentElement?.addEventListener("mousemove", handleMouseMove);
+//};
+
+
+//function registerSvgMouseUp() {
+//  document?.getElementById(props.svgId)?.addEventListener("mouseup", handleMouseUp);
+//};
+
+function handleMouseMove(e : MouseEvent) {
       if (e.buttons !== 1) {
         return;
       }
 
-      if (this.getCurrentEditMode() !== EditMode.SELECT) {
+      if (notationStore.editMode !== EditMode.SELECT.valueOf) {
         return;
       }
 
-      if (this.selectionMode === SelectionMode.SELECTING) {
-        this.updateSelectionArea(e);
+      if (selectionMode === SelectionMode.SELECTING.valueOf) {
+        updateSelectionArea(e);
         return;
       }
 
-      if (this.selectionMode === SelectionMode.MOVE) {
-        this.moveSelection(e);
+      if (selectionMode === SelectionMode.MOVE.valueOf) {
+        moveSelection(e);
         return;
       }
-    },
-    handleMouseUp() {
-      if (this.getCurrentEditMode() !== EditMode.SELECT) {
+};
+
+function handleMouseUp(e: MouseEvent) {
+      if (notationStore.editMode !== EditMode.SELECT.valueOf) {
         return;
       }
-      if (this.selectionMode === SelectionMode.SELECTING) {
-        this.endSelect();
+      if (selectionMode === SelectionMode.SELECTING.valueOf) {
+        endSelect();
         return;
       }
-      if (this.selectionMode === SelectionMode.MOVE) {
-        this.endMoveSelection();
+      if (selectionMode === SelectionMode.MOVE.valueOf) {
+        endMoveSelection(e);
         return;
       }
 
-      this.resetSelection();
-    },
+      resetSelection();
+};
 
-    noramalizeLeftOrTop(point) {
-      return (
-        Math.floor(point / this.matrixMixin_getRectSize()) *
-        this.matrixMixin_getRectSize()
-      );
-    },
+function noramalizeLeftOrTop(value: number) {
+      return Math.floor(value / matrixHelper.rectSize) *
+                  matrixHelper.rectSize;
+};
 
-    noramalizeRightOrBottom(point) {
-      return (
-        Math.ceil(point / this.matrixMixin_getRectSize()) *
-        this.matrixMixin_getRectSize()
-      );
-    },
+function noramalizeRightOrBottom(value: number) {
+  return Math.ceil(value / matrixHelper.rectSize) *
+    matrixHelper.rectSize;
+};
 
-    normalizeSelection() {
-      this.selectionPosition.x1 = this.noramalizeLeftOrTop(
-        this.selectionPosition.x1
+function normalizeSelection() {
+      selectionPosition.value.x1 = noramalizeLeftOrTop(
+        selectionPosition.value.x1
       );
-      this.selectionPosition.y1 = this.noramalizeLeftOrTop(
-        this.selectionPosition.y1
+      selectionPosition.value.y1 = noramalizeLeftOrTop(
+        selectionPosition.value.y1
       );
-      this.selectionPosition.x2 = this.noramalizeRightOrBottom(
-        this.selectionPosition.x2
+      selectionPosition.value.x2 = noramalizeRightOrBottom(
+        selectionPosition.value.x2
       );
-      this.selectionPosition.y2 = this.noramalizeRightOrBottom(
-        this.selectionPosition.y2
+      selectionPosition.value.y2 = noramalizeRightOrBottom(
+        selectionPosition.value.y2
       );
-    },
+};
 
     // extend or shrink selection area from inner mouse move
-    updateSelectionArea(e) {
+function updateSelectionArea(e: MouseEvent) {
       // normalize selection position to edges of rectangle
-      if (!this.selectionPosition.x1) {
-        this.selectionPosition.x1 = e.clientX - this.svgDimensions.x;
-        this.selectionPosition.y1 = e.clientY - this.svgDimensions.y;
-      }
+  if (!selectionPosition.value.x1) {
+    selectionPosition.value.x1 = e.clientX - svgDimensions.value.left;
+    selectionPosition.value.y1 = e.clientY - svgDimensions.value.top;
+  }
 
-      this.selectionPosition.x2 = e.clientX - this.svgDimensions.x;
-      this.selectionPosition.y2 = e.clientY - this.svgDimensions.y;
-    },
-    endSelect() {
-      this.selectionMode = SelectionMode.MOVE;
-      if (this.selectionPosition.x2 != this.selectionPosition.x1) {
-        this.normalizeSelection();
+  if (!selectionPosition.value.x2 && svgDimensions.value) {
 
-        d3.select("#" + this.svgId)
+    selectionPosition.value.x2 = e.clientX - svgDimensions.value.left;
+    selectionPosition.value.y2 = e.clientY - svgDimensions.value.top;
+  }
+};
+
+function endSelect() {
+      selectionMode = SelectionMode.MOVE.valueOf;
+      if (selectionPosition.value.x2 != selectionPosition.value.x1) {
+        normalizeSelection();
+
+        d3.select("#" + props.svgId)
           .selectAll("foreignObject")
-          .each((datum) => {
+          .each((datum: any) => {
             let row = datum.row ?? datum.fromRow;
             let col = datum.col ?? datum.fromCol;
             if (
-              this.matrixMixin_getRectSize() * col >=
-                this.selectionPosition.x1 &&
-              this.matrixMixin_getRectSize() * col <=
-                this.selectionPosition.x2 &&
-              this.matrixMixin_getRectSize() * row >=
-                this.selectionPosition.y1 &&
-              this.matrixMixin_getRectSize() * row <= this.selectionPosition.y2
+              matrixHelper.rectSize * col >=
+                selectionPosition.value.x1 &&
+              matrixHelper.rectSize * col <=
+                selectionPosition.value.x2 &&
+              matrixHelper.rectSize * row >=
+                selectionPosition.value.y1 &&
+              matrixHelper.rectSize * row <= selectionPosition.value.y2
             ) {
-              this.$store.dispatch("selectNotation", {
+              notationStore.selectNotation({
                 col: col,
                 row: row,
               });
             }
           });
       }
-    },
-    moveSelection(e) {
-      let rectSize = this.matrixMixin_getRectSize();
+};
+
+function moveSelection(e: MouseEvent) {
 
       // initial drag position
-      if (!this.dragPosition.x) {
-        this.dragPosition.x = e.clientX - this.svgDimensions.x;
-        this.dragPosition.y = e.clientY - this.svgDimensions.y;
+      if (!dragPosition.value.x) {
+        dragPosition.value.x = e.clientX - svgDimensions.value.left;
+        dragPosition.value.y = e.clientY - svgDimensions.value.top;
         return;
       }
 
       // movement is still too small
-      if (
-        Math.abs(e.clientX - this.svgDimensions.x - this.dragPosition.x) <
-          rectSize &&
-        Math.abs(e.clientY - this.svgDimensions.y - this.dragPosition.y) <
-          rectSize
+  if (
+        Math.abs(e.clientX - svgDimensions.value.x - dragPosition.value.x) <
+          matrixHelper.rectSize &&
+        Math.abs(e.clientY - svgDimensions.value.y - dragPosition.value.y) <
+          matrixHelper.rectSize
       ) {
         return;
       }
 
       const rectDeltaX = Math.round(
-        (e.clientX - this.svgDimensions.x - this.dragPosition.x) / rectSize
+        (e.clientX - svgDimensions.value.x - dragPosition.value.x) / matrixHelper.rectSize
       );
       const rectDeltaY = Math.round(
-        (e.clientY - this.svgDimensions.y - this.dragPosition.y) / rectSize
+        (e.clientY - svgDimensions.value.y - dragPosition.value.y) / matrixHelper.rectSize
       );
 
-      console.log(rectDeltaX);
-
       if (rectDeltaX != 0 || rectDeltaY != 0) {
-        this.$store
-          .dispatch("moveSelectedNotations", {
+        notationStore.moveSelectedNotations(
             rectDeltaX,
             rectDeltaY,
-            //      rectSize,
-          })
-          .then(() => {
-            this.selectionPosition.x1 += rectDeltaX * rectSize;
-            this.selectionPosition.y1 += rectDeltaY * rectSize;
-            this.selectionPosition.x2 += rectDeltaX * rectSize;
-            this.selectionPosition.y2 += rectDeltaY * rectSize;
-            this.dragPosition.x = e.clientX - this.svgDimensions.x;
-            this.dragPosition.y = e.clientY - this.svgDimensions.y;
-          });
-      }
-    },
+          );
 
-    endMoveSelection(e) {
-      let selectedNotations = this.getSelectedNotations();
-      this.$store
-        .dispatch("updateSelectedNotationCoordinates")
-        .then(() =>
-          selectedNotations.forEach((n) =>
-            this.userOperationsMixin_syncOutgoingUpdateSelectedNotation(n)
-          )
-        );
-      this.resetSelection();
-    },
-    resetSelection() {
-      this.dragPosition.x = null;
-      this.dragPosition.y = null;
-      this.selectionPosition.x1 = this.selectionPosition.x2 = this.selectionPosition.y1 = this.selectionPosition.y2 = null;
-      this.selectionMode = SelectionMode.SELECTING;
-      this.setCurrentEditMode(EditMode.SYMBOL);
-      //this.$store.dispatch("unselectAllNotations");
-    },
-  },
+          selectionPosition.value.x1 += rectDeltaX * matrixHelper.rectSize;
+          selectionPosition.value.y1 += rectDeltaY * matrixHelper.rectSize;
+          selectionPosition.value.x2 += rectDeltaX * matrixHelper.rectSize;
+          selectionPosition.value.y2 += rectDeltaY * matrixHelper.rectSize;
+          dragPosition.value.x = e.clientX - svgDimensions.value.x;
+          dragPosition.value.y = e.clientY - svgDimensions.value.y;
+      }
 };
+
+function endMoveSelection(e: MouseEvent) {
+  let selectedNotationKeys = notationStore.selectedNotations;
+  notationStore.updateSelectedNotationCoordinates();
+  selectedNotationKeys.forEach((notationKey) => {
+    let notation = notationStore.notations.get(notationKey);
+    if (notation) {
+      userOutgoingOperationsSyncHelper.
+        syncOutgoingUpdateSelectedNotation(notation)
+    }
+  });
+  resetSelection();
+};
+
+function resetSelection() {
+      dragPosition.value.x = 0;
+      dragPosition.value.y = 0;
+      selectionPosition.value.x1 = selectionPosition.value.x2 = selectionPosition.value.y1 = selectionPosition.value.y2 = 0;
+      selectionMode = SelectionMode.SELECTING.valueOf;
+      notationStore.editMode = EditMode.SYMBOL.valueOf;
+      //$store.dispatch("unselectAllNotations");
+};
+
+
 </script>
 
 <style>

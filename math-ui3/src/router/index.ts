@@ -4,8 +4,13 @@
 // Composables
 import { createRouter, createWebHistory } from 'vue-router'
 
-import store from "../store/index.ts";
-import authMixin from "../Helpers/authMixin.js";
+import store from "../store/pinia/indexStore";
+import useAuthHelper from "../Helpers/authHelper";
+const authHelper = useAuthHelper();
+
+import { useUserStore } from "../store/pinia/userStore";
+const userStore = useUserStore();
+
 
 const routes = [
   {
@@ -70,7 +75,7 @@ router.beforeEach(async (to, from) => {
   }
 
   // already signed in
-  if (store.getters.getUser?.id) {
+  if (userStore.currentUser?.uuid) {
     return;
   }
 
@@ -78,9 +83,9 @@ router.beforeEach(async (to, from) => {
   //let access_token = window.$cookies.get("access_token");
   //console.log(access_token);
   //if (!!access_token) {
-  const user = await authMixin.methods.mixin_authLocalUserByToken();
+  const user = await authHelper.authLocalUserByToken();
   if (user) {
-    store.dispatch("setUser", user);
+    userStore.setUser(user);
     return;
   }
 

@@ -33,41 +33,39 @@
   </v-row>
 </template>
 
-<script lang="ts">
-import { mapGetters } from "vuex";
-export default {
-  name: "accessLinkDialog",
+<script setup lang="ts">
 
-  props: {
-    value: Boolean,
-  },
+import { computed, ref } from "vue"
+import { apiHost } from "../../../math-common/src/globals";
+import { useLessonStore } from "../store/pinia/lessonStore";
 
-  computed: {
-    show: {
-      get() : boolean {
-        return this.value;
-      },
-      set(value: boolean) {
-        this.$emit("input", value);
-      },
-    },
-    link() : string {
-      return this.site + this.getCurrentLesson().uuid;
-    },
-  },
-  data() {
-    return {
-      site: "http://localhost:8080/lesson/", ///TODO: point to parameter
-    };
-  },
-  methods: {
-    ...mapGetters({
-      getCurrentLesson: "getCurrentLesson",
-    }),
-    copy: function () {
-      navigator.clipboard.writeText(this.link);
-      this.show = false;
-    },
-  },
+const lessonStore = useLessonStore();
+
+//defineEmits([])
+
+let show = ref(false);
+
+const props = defineProps({
+    value: Boolean
+});
+
+//let show = computed({
+//    get() : boolean {
+//      return props.value;
+ // }
+  //,
+   // set(value: boolean) {
+   //   emit("input", value);
+   // },
+//});
+
+const link = computed(() => {
+  return apiHost + "/lesson/" + lessonStore.currentLesson.uuid;
+});
+
+function copy() {
+    navigator.clipboard.writeText(link.value);
+    show.value = false;
 };
+
 </script>

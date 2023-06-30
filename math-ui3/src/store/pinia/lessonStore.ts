@@ -1,9 +1,9 @@
 //  questions of current lesson
 import Lesson from "../../../../math-db/src/models/lesson/lesson.model";
 import { defineStore } from "pinia";
-import { dbSync } from "../../Helpers/dbSyncMixin";
+import dbHelper from "../../Helpers/dbHelper";
 import { useUserStore } from "./userStore";
-const db = dbSync();
+const db = dbHelper();
 const userStore = useUserStore();
 
 

@@ -10,68 +10,67 @@
   </v-row>
 </template>
 
-<script>
-import { mapActions, mapGetters } from "vuex";
+<script setup lang="ts">
 import mathBoard from "./MathBoard.vue";
-import matrixMixin from "../Mixins/matrixMixin";
-import activateObjectMixin from "../Mixins/activateObjectMixin";
-import notationMixin from "../Mixins/notationMixin";
+import useMatrixHelper from "../Helpers/matrixHelper";
+import useActivateObjectHelper from "../Helpers/activateObjectHelper";
+import { computed, ref } from "vue"
+import { useUserStore } from "../store/pinia/userStore";
+import { useAnswerStore } from "../store/pinia/answerStore";
+import { useNotationStore } from "../store/pinia/notationStore";
+import { watch } from 'vue'
+import { useRoute } from 'vue-router'
 
-export default {
-  components: {
-    mathBoard,
-  },
-  mounted: async function () {
-    await this.$loadAnswer();
-    this.loaded = true; // signal child
-  },
+const route = useRoute();
+const matrixHelper = useMatrixHelper();
+const activateObjectHelper = useActivateObjectHelper();
+const userStore = useUserStore();
+const answerStore = useAnswerStore();
+const notationsStore = useNotationStore();
 
-  data: function () {
-    return {
-      matrix: [],
-      loaded: false,
-      svgId: "answerSvg",
-    };
-  },
+let loaded = ref(false);
+const svgId = "answerSvg";
 
-  mixins: [matrixMixin, activateObjectMixin, notationMixin],
-  computed: {
-    answerTitle: function () {
-      return this.isTeacher()
-        ? this.getCurrentAnswer()?.User?.firstName +
-            " " +
-            this.getCurrentAnswer()?.User?.lastName
-        : this.getCurrentQuestion()?.name;
-    },
-  },
-  watch: {
-    $route: "loadAnswer",
-  },
-  methods: {
-    ...mapActions({
-      loadAnswer: "loadAnswer",
-      loadAnswerNotations: "loadAnswerNotations",
-      loadQuestionNotations: "loadQuestionNotations",
-    }),
-    ...mapGetters({
-      getCurrentAnswer: "getCurrentAnswer",
-      getCurrentQuestion: "getCurrentQuestion",
-      isTeacher: "isTeacher",
-    }),
+let answerTitle = computed (() => {
+  return userStore.isTeacher() ?
+    answerStore.currentAnswer?.user?.firstName +
+    " " +
+    answerStore.currentAnswer?.user?.lastName
+    : answerStore.currentAnswer?.name;
+});
 
-    markAnswerAsChecked: async function () {},
-
-    $loadAnswer: async function () {
-      this.activateObjectMixin_reset();
-      this.matrixMixin_setMatrix();
-
-      // load from db to store
-      await this.loadAnswer(
-        this.$route.params.answerUUId || this.getCurrentAnswer().uuid
-      );
-      await this.loadQuestionNotations();
-      await this.loadAnswerNotations();
-    },
+watch(route, (to) => {
+  loadAnswer(to.params.answerUUId[0]);
   },
+  { flush: 'pre', immediate: true, deep: true }
+);
+
+// watch(
+//   () => route.meta.layout,
+//   (layout) => {
+//     loadAnswer(route.params.get(""));
+//   }
+// )
+
+//onMounted(() => {
+//  loadAnswer();
+//});
+
+async function markAnswerAsChecked() { };
+
+async function loadAnswer(answerUUId: string) {
+  activateObjectHelper.reset();
+  matrixHelper.setMatrix(svgId);
+
+  // load from db to store
+  answerStore.loadAnswer(answerUUId);
+  // await this.loadAnswer(
+  //   this.$route.params.answerUUId || this.getCurrentAnswer().uuid
+  // );
+  notationsStore.loadQuestionNotations();
+  notationsStore.loadAnswerNotations();
+
+  loaded.value = true; // signal child
 };
+
 </script>

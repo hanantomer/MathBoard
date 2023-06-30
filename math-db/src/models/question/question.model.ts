@@ -2,6 +2,7 @@ import { Model, Column, DataType, BelongsTo, ForeignKey } from "sequelize-typesc
 import { Optional } from "sequelize";
 import BoardDecorator from "../boardDecorator";
 import User from "../user.model";
+import Lesson from "../lesson/lesson.model";
 
 
 export interface QuestionAttributes {
@@ -27,6 +28,12 @@ export default class Question extends Model<
     @BelongsTo(() => User)
     user!: User;
 
+    @ForeignKey(() => Lesson)
+    lessonId!: number;
+
+    @BelongsTo(() => Lesson)
+    lesson!: Lesson;
+
     @Column({
         type: DataType.UUID,
         defaultValue: DataType.UUIDV4,
@@ -38,9 +45,4 @@ export default class Question extends Model<
         defaultValue: DataType.UUIDV4,
     })
     name!: string;
-
-    @Column({
-        type: DataType.STRING,
-    })
-    lessonUUID!: string;
 }

@@ -1,7 +1,7 @@
 export { }
 
 import { BoardType, NotationType, NotationTypeShape, NotationShape } from "../../../math-common/src/enum";
-import { Point, PointCoordinates } from "../../../math-common/src/globals";
+import { Point, CellCoordinates } from "../../../math-common/src/globals";
 import * as d3 from "d3";
 import { useNotationStore } from "../store/pinia/notationStore"
 import { useLessonStore } from "../store/pinia/lessonStore"
@@ -110,7 +110,7 @@ export default function useMatrixHelper() {
   function findClickedObject(
     point: Point,
     tagName: string,
-    notationType: NotationType
+    notationType: NotationType | null
   ) : Element {
     var elements = [];
     var display = [];
@@ -200,7 +200,7 @@ export default function useMatrixHelper() {
   function getNextRect(
     horizontalStep: number,
     verticalStep: number
-  ): PointCoordinates | undefined {
+  ): CellCoordinates | undefined {
     if (!notationStore.activeCell?.col || notationStore.activeCell?.row) {
       return;
     }
@@ -250,7 +250,7 @@ export default function useMatrixHelper() {
     }
   }
 
-  function findRect(point: PointCoordinates): HTMLElement | undefined | null {
+  function findRect(point: CellCoordinates): HTMLElement | undefined | null {
     return document
       ?.querySelector(`g[row='${point.row}']`)
       ?.querySelector(`rect[col='${point.col}']`);
@@ -596,10 +596,12 @@ export default function useMatrixHelper() {
 
 
   return {
+    setMatrix,
     showNotations,
     rectSize,
     findClickedObject,
     findRect,
     findTextAtClickedPosition,
+    setNextRect,
   };
 };
