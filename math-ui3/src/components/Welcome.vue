@@ -29,26 +29,25 @@
   </div>
 </template>
 
-<script>
-export default {
-  name: "Welcome",
-  methods: {
-    openLoginDialog() {
-      this.$router.push({
-        path: "/login",
-      });
-    },
-  },
-  data: () => ({
-    loginDialog: { dialog: false, tab: "Register" },
-    bullets: [
-      "Editable notations",
-      "Board sharing with students",
-      "Virtually call a student to the board",
-      "Dispatch exercises and submit feedback",
-    ],
-  }),
+<script setup lang="ts">
+
+import { useRouter } from 'vue-router'
+const router = useRouter();
+
+
+function openLoginDialog() {
+  router.push({
+    path: "/login",
+  });
 };
+
+let loginDialog = { dialog: false, tab: "Register" };
+  const bullets = [
+    "Editable notations",
+    "Board sharing with students",
+    "Virtually call a student to the board",
+    "Dispatch exercises and submit feedback"
+  ];
 </script>
 <style>
 .v-list-item__content {

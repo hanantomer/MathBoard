@@ -16,7 +16,7 @@
       </v-card>
     </v-dialog>
     <NewQuestionDialog
-      :dialog="questionDialog"
+      :dialog="questionDialog.show"
       v-on="{ save: saveQuestion }"
     ></NewQuestionDialog>
     <v-card class="mx-auto" max-width="800" min-height="600">
@@ -39,128 +39,117 @@
     </v-card>
   </v-container>
 </template>
-<script>
-import { mapActions } from "vuex";
-import { mapGetters } from "vuex";
+
+<script setup lang="ts">
 import NewQuestionDialog from "./NewQuestionDialog.vue";
+import Question from "../../../math-db/src/models/question/question.model";
+import { watch, onMounted, computed, ref, reactive } from "vue"
+import { useQuestionStore } from "../store/pinia/questionStore";
+import { useLessonStore } from "../store/pinia/lessonStore";
+import { useAnswerStore } from "../store/pinia/answerStore";
+import { useUserStore } from "../store/pinia/userStore";
+import { useRoute, useRouter } from 'vue-router'
 
-export default {
-  mounted: function () {
-    this.load();
+const questionStore = useQuestionStore();
+const lessonStore = useLessonStore();
+const answerStore = useAnswerStore();
+const userStore = useUserStore();
+const route = useRoute();
+const router = useRouter();
+
+const noLessonDialog = ref(false);
+let questionDialog = reactive({ show: false, name: "", title: "" });
+
+const menu = [
+  { icon: "plus", title: "Add" },
+  { icon: "remove", title: "Remove" },
+];
+
+onMounted(() => {
+  load();
+})
+
+watch(route, () => {
+  load();
+  },{ flush: 'pre', immediate: true, deep: true });
+
+const headers = [
+  {
+    text: "Lesson Name",
+    value: "lessonName",
   },
-  components: { NewQuestionDialog },
-  name: "Questions",
-  watch: {
-    $route: "load",
+  {
+    text: "Question Name",
+    value: "name",
   },
-  computed: {
-    headers: () => [
-      {
-        text: "Lesson Name",
-        value: "lessonName",
-      },
-      {
-        text: "Question Name",
-        value: "name",
-      },
-      {
-        text: "Created At",
-        value: "createdAt",
-      },
-    ],
-    questions: function () {
-      return this.getQuestions().map((q) => {
-        return {
-          uuid: q.uuid,
-          name: q.name,
-          lessonName: q.Lesson.name,
-          createdAt: new Date(q.createdAt),
-        };
-      });
-    },
+  {
+    text: "Created At",
+    value: "createdAt",
   },
-  methods: {
-    ...mapActions({
-      loadLessons: "loadLessons",
-      loadQuestions: "loadQuestions",
-      addQuestion: "addQuestion",
-      setCurrentQuestion: "setCurrentQuestion",
-      setCurrentAnswer: "setCurrentAnswer",
-      isTeacher: "isTeacher",
-    }),
-    ...mapGetters({
-      isTeacher: "isTeacher",
-      getQuestions: "getQuestions",
-    }),
-    ...mapActions({
-      addAnswer: "addAnswer",
-    }),
+];
 
-    navToLessons() {
-      this.noLessonDialog = false;
-      this.$router.push({
-        path: "/lessons/",
-      });
-    },
-
-    async load() {
-      let lessonCount = await this.loadLessons(this.isTeacher());
-      if (!lessonCount) {
-        this.noLessonDialog = true;
-        return;
-      }
-      this.loadQuestions().then((questions) => {
-        if (!questions) {
-          this.openQuestionDialog();
-        }
-      });
-    },
-
-    openQuestionDialog() {
-      this.questionDialog = {
-        show: true,
-        name: "",
-        title: "<span>Please specify <strong>question</strong> title</span",
-      };
-    },
-
-    async saveQuestion(question) {
-      let newQuestion = await this.addQuestion(question);
-      this.$router.push({
-        path: "/question/" + newQuestion.uuid,
-      });
-    },
-
-    async seletctQuestion(question) {
-      if (this.isTeacher()) {
-        this.setCurrentQuestion(question).then(() =>
-          this.$router.push({
-            path: "/question/" + question.uuid,
-          })
-        );
-      } else {
-        await this.setCurrentQuestion(question);
-        // add student answer when question is first selected
-        let answer = await this.addAnswer();
-        this.setCurrentAnswer(answer).then(() =>
-          this.$router.push({
-            path: "/answer/" + answer.uuid,
-          })
-        );
-      }
-    },
-  },
-  data() {
+const questions = computed(() => {
+  return Array.from(questionStore.questions.entries()).map(([key, question]) => {
     return {
-      noLessonDialog: false,
-      questionDialog: { show: false, name: "" },
-      menu: [
-        { icon: "plus", title: "Add" },
-        { icon: "remove", title: "Remove" },
-      ],
+      uuid: question.uuid,
+      name: question.name,
+      lessonName: question.lesson.name,
+      createdAt: new Date(question.createdAt),
     };
-  },
+  });
+});
+
+function navToLessons() {
+  noLessonDialog.value = false;
+  router.push({
+    path: "/lessons/",
+  });
 };
+
+function load() {
+  let lessonCount = lessonStore.lessons.size;
+  if (!lessonCount) {
+    noLessonDialog.value = true;
+    return;
+  }
+
+  questionStore.loadQuestions();
+  if (!questionStore.questions.size) {
+    openQuestionDialog();
+  }
+}
+
+function openQuestionDialog() {
+  questionDialog = {
+    show: true,
+    name: "",
+    title: "<span>Please specify <strong>question</strong> title</span",
+  };
+};
+
+function saveQuestion(question: Question) {
+  questionStore.addQuestion(question);
+  router.push({
+    path: "/question/" + questionStore.currentQuestion.uuid,
+  });
+};
+
+function seletctQuestion(question: Question) {
+  if (userStore.isTeacher()) {
+    questionStore.setCurrentQuestion(question.uuid);
+    router.push({
+      path: "/question/" + question.uuid,
+    });
+  } else {
+    questionStore.setCurrentQuestion(question.uuid);
+    // add student answer when question is first selected
+    answerStore.addAnswer();
+    router.push({
+      path: "/answer/" + answerStore.currentAnswer.uuid,
+    });
+  }
+};
+
 </script>
 
 <style>

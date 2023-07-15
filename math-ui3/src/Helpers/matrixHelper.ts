@@ -1,7 +1,7 @@
 export { }
 
 import { BoardType, NotationType, NotationTypeShape, NotationShape } from "../../../math-common/src/enum";
-import { Point, CellCoordinates } from "../../../math-common/src/globals";
+import { Point, CellCoordinates, getDefaultFontSize } from "../../../math-common/src/globals";
 import * as d3 from "d3";
 import { useNotationStore } from "../store/pinia/notationStore"
 import { useLessonStore } from "../store/pinia/lessonStore"
@@ -84,8 +84,8 @@ export default function useMatrixHelper() {
     return (<any>window).textMeasurementCtx.measureText(text).width / rectSize;
   }
 
-  function freeTextRectHeight(text: string, el: HTMLElement) {
-    let fontSize: number = Number.parseInt(textFontSize(el).replace("px", ""));
+  function freeTextRectHeight(text: string) {
+    let fontSize = getDefaultFontSize();
     return (fontSize * text.split(/\r*\n/).length) / rectSize;
   }
 
@@ -596,6 +596,8 @@ export default function useMatrixHelper() {
 
 
   return {
+    svgWidth,
+    svgHeight,
     setMatrix,
     showNotations,
     rectSize,
@@ -603,5 +605,10 @@ export default function useMatrixHelper() {
     findRect,
     findTextAtClickedPosition,
     setNextRect,
+    freeTextRectWidth,
+    freeTextRectHeight,
+    getNotationXposByCol,
+    getNotationYposByRow,
+    refreshScreen,
   };
 };

@@ -1,13 +1,15 @@
 //  questions of current lesson
 import { EditMode } from "../../../math-common/src/enum";
-import useDbHelper from "../Helpers/dbHelper";
+import useDbHelper from "../helpers/dbHelper";
 
 import {
   Notation,
   PointNotation,
   LineNotation,
-  RectNotation
-} from "../Helpers/responseTypes";
+  RectNotation,
+  SqrtNotation,
+  FractionNotation,
+} from "../helpers/responseTypes";
 
 import {
   LineCoordinates,
@@ -24,17 +26,32 @@ import { BoardType, NotationType } from "../../../math-common/src/enum";
 import { useUserStore } from "../store/pinia/userStore";
 import { error } from "console";
 import { useNotationStore } from "../store/pinia/notationStore";
+import { onMounted } from "vue"
 
 import AnswerImage from "../../../math-db/src/models/answer/rect/answerImage.model";
 import LessonImage from "../../../math-db/src/models/lesson/rect/lessonImage.model";
 import QuestionImage from "../../../math-db/src/models/question/rect/questionImage.model";
+
+import AnswerText from "../../../math-db/src/models/answer/rect/answerText.model";
+import LessonText from "../../../math-db/src/models/lesson/rect/lessonText.model";
+import QuestionText from "../../../math-db/src/models/question/rect/questionText.model";
+
 
 import AnswerSymbol from "../../../math-db/src/models/answer/point/answerSymbol.model";
 import LessonSymbol from "../../../math-db/src/models/lesson/point/lessonSymbol.model";
 import QuestionSymbol from "../../../math-db/src/models/question/point/questionSymbol.model";
 import useAuthHelper from "./authHelper";
 import useUserOutgoingOperations from "./userOutgoingOperationsHelper";
-import useMatrixHelper from "../Helpers/matrixHelper";
+import useMatrixHelper from "../helpers/matrixHelper";
+
+import LessonSqrt from "../../../math-db/src/models/lesson/line/lessonSqrt.model";
+import AnswerSqrt from "../../../math-db/src/models/answer/line/answerSqrt.model";
+import QuestionSqrt from "../../../math-db/src/models/question/line/questionSqrt.model";
+
+import LessonFraction from "../../../math-db/src/models/lesson/line/lessonFraction.model";
+import AnswerFraction from "../../../math-db/src/models/answer/line/answerFraction.model";
+import QuestionFraction from "../../../math-db/src/models/question/line/questionFraction.model";
+
 
 const matrixHelper = useMatrixHelper();
 const userStore = useUserStore();
@@ -43,13 +60,16 @@ const notationStore = useNotationStore();
 const authHelper = useAuthHelper();
 const userOutgoingOperations = useUserOutgoingOperations();
 
-type Board = {
-  uuid: string;
-  type: BoardType;
-};
-
 export default function notationMutateHelper() {
-  // point
+
+  /// TODO deal with mutations which originate from user incoming synchronisation
+  onMounted(() => {
+      notationStore.$subscribe((mutation, state) => {
+        console.log("a change happened");
+        console.log(mutation, state);
+      });
+  });
+
   function pointAtCellCoordinates(
     n1: PointNotation,
     n2: CellCoordinates,
@@ -507,7 +527,6 @@ export default function notationMutateHelper() {
     notationStore.notations.set(notation.uuid, notation);
   }
 
-
   async function addNotation<T extends Notation>(
     notation: T
   ): Promise<Notation | null> {
@@ -712,17 +731,17 @@ export default function notationMutateHelper() {
 
 
   function addMarkNotation() {
-    if (notationStore.editMode == EditMode.CHECKMARK.valueOf) {
+    if (notationStore.editMode == EditMode.CHECKMARK) {
       addSymbolNotation("&#x2714");
       return;
     }
 
-    if (notationStore.editMode == EditMode.SEMICHECKMARK.valueOf) {
+    if (notationStore.editMode == EditMode.SEMICHECKMARK) {
       addSymbolNotation("&#x237B");
       return;
     }
 
-    if (notationStore.editMode == EditMode.XMARK.valueOf) {
+    if (notationStore.editMode == EditMode.XMARK) {
       addSymbolNotation("&#x2718");
       return;
     }
@@ -814,6 +833,51 @@ export default function notationMutateHelper() {
     notationStore.resetActiveCell();
   }
 
+ function addTextNotation(
+   fromCol: number,
+   toCol: number,
+   fromRow: number,
+   toRow: number,
+   value: string)
+ {
+    let notation: RectNotation;
+
+    switch (notationStore.parent.type) {
+      case BoardType.ANSWER: {
+        notation = new AnswerText();
+        break;
+      }
+
+      case BoardType.LESSON: {
+        notation = new LessonText();
+        break;
+      }
+
+      case BoardType.QUESTION: {
+        notation = new QuestionText();
+      }
+    }
+
+    notation.fromCol = fromCol;
+    notation.toCol = toCol;
+    notation.fromRow = fromRow;
+    notation.toRow = toRow;
+    notation.value = value;
+
+    addNotation(notation)
+      .then(() => {
+        if (notationStore.parent.type === BoardType.LESSON) {
+          userOutgoingOperations.syncOutgoingSaveNotation(notation);
+        }
+      })
+      .catch((e) => {
+        console.error(e);
+      });
+
+    notationStore.resetActiveCell();
+  };
+
+
   function addSymbolNotation(value: string) {
     if (!notationStore.activeCell) return;
 
@@ -843,11 +907,90 @@ export default function notationMutateHelper() {
       userOutgoingOperations.syncOutgoingSaveNotation(notation);
     }
 
-    if (notationStore.editMode == EditMode.SYMBOL.valueOf) {
+    if (notationStore.editMode == EditMode.SYMBOL) {
       matrixHelper.setNextRect(1, 0);
     }
   }
 
+  function addSqrtNotation(coordinates: LineCoordinates) {
 
-  return {};
+    let notation: SqrtNotation;
+
+    switch (notationStore.parent.type) {
+      case BoardType.ANSWER: {
+        notation = new AnswerSqrt();
+        break;
+      }
+
+      case BoardType.LESSON: {
+        notation = new LessonSqrt();
+        break;
+      }
+
+      case BoardType.QUESTION: {
+        notation = new QuestionSqrt();
+      }
+    }
+
+    notation.fromCol = coordinates.fromCol;
+    notation.toCol = coordinates.toCol;
+    notation.row = coordinates.row;
+
+    addNotation(notation);
+    if (notationStore.parent.type === BoardType.LESSON) {
+      userOutgoingOperations.syncOutgoingSaveNotation(notation);
+    }
+  }
+
+    function addFractiontNotation(coordinates: LineCoordinates)  {
+      let notation: FractionNotation;
+
+      switch (notationStore.parent.type) {
+        case BoardType.ANSWER: {
+          notation = new AnswerFraction();
+          break;
+        }
+
+        case BoardType.LESSON: {
+          notation = new LessonFraction();
+          break;
+        }
+
+        case BoardType.QUESTION: {
+          notation = new QuestionFraction();
+        }
+      }
+
+      notation.fromCol = coordinates.fromCol;
+      notation.toCol = coordinates.toCol;
+      notation.row = coordinates.row;
+
+      addNotation(notation);
+      if (notationStore.parent.type === BoardType.LESSON) {
+        userOutgoingOperations.syncOutgoingSaveNotation(notation);
+      }
+    }
+
+
+
+  function setCurrentEditMode(editMode: EditMode) {
+    notationStore.editMode = editMode;
+  }
+
+
+  return {
+    selectNotation,
+    setActiveCell,
+    setActiveNotation,
+    addSymbolNotation,
+    addMarkNotation,
+    addImageNotation,
+    addTextNotation,
+    addFractiontNotation,
+    addSqrtNotation,
+    removeActiveOrSelectedNotations,
+    moveSelectedNotations,
+    updateSelectedNotationCoordinates,
+    setCurrentEditMode
+  };
 }

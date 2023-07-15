@@ -1,8 +1,19 @@
 import { PointNotation, LineNotation } from "./responseTypes";
 import { RectCoordinates } from "../../../math-common/src/globals";
+import { useNotationStore } from "../store/pinia/notationStore";
+import { onMounted } from "vue";
+
+const notationStore = useNotationStore();
 
 
-export default function occupationMatrixHelper() {
+export default function notationCellOccupationHelper() {
+
+  onMounted(() => {
+    notationStore.$subscribe((mutation, state) => {
+      console.log("a change happened");
+      console.log(mutation, state);
+    });
+  });
 
   function removePointFromOccupationMatrix(
     matrix: any,

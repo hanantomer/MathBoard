@@ -4,6 +4,10 @@
 
 import { Model } from "sequelize-typescript";
 
+//import Lesson from "../../../math-db/src/models/lesson/lesson.model";
+//import Question from "../../../math-db/src/models/question/question.model";
+//import Answer from "../../../math-db/src/models/answer/answer.model";
+
 import LessonSymbol from "../../../math-db/src/models/lesson/point/lessonSymbol.model";
 import LessonSign from "../../../math-db/src/models/lesson/point/lessonSign.model";
 import LessonPower from "../../../math-db/src/models/lesson/point/lessonPower.model";
@@ -74,3 +78,4 @@ export type FractionNotation = AnswerFraction | LessonFraction | QuestionFractio
 export type RootNotation = AnswerRoot | LessonRoot | QuestionRoot;
 export type PowerNotation = AnswerPower | LessonPower | QuestionPower;
 export type SignNotation = AnswerSign | LessonSign | QuestionSign;
+

@@ -29,15 +29,10 @@ const lessonStore = useLessonStore();
 const questionStore = useQuestionStore();
 const answerStore = useAnswerStore();
 
-//export default {
-  //async mounted() {
-  //  this.load();
-  //},
- watch(route, (to) => {
-    load();
-  },
-  { flush: 'pre', immediate: true, deep: true }
- );
+
+watch(route, (to) => {
+   load();
+},{ flush: 'pre', immediate: true, deep: true });
 
 let headers = computed(() => [
   {

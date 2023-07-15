@@ -1,11 +1,10 @@
 // notations of current board(lesson, question or answers)
 //  questions of current lesson
 import { defineStore } from "pinia";
-import { Notation} from "../../Helpers/responseTypes";
+import { Notation} from "../../helpers/responseTypes";
 import { CellCoordinates, matrixDimensions } from "../../../../math-common/src/globals";
-import { EditMode } from "../../../../math-common/src/enum";
-import { BoardType } from "../../../../math-common/src/enum";
-import { reactive } from "vue";
+import { EditMode, BoardType, NotationShape, NotationTypeShape } from "../../../../math-common/src/enum";
+import { reactive, ref } from "vue";
 
 type Board = {
   uuid: string;
@@ -22,10 +21,10 @@ export const useNotationStore = defineStore("notation", () => {
   const cellOccupationMatrix: (Notation | null)[][] = createCellOccupationMatrix();
   let parent: Board = reactive<Board>({ type: BoardType.LESSON, uuid: "" });
   let notations: Map<String, Notation> = reactive(<Map<String, Notation>>{});
-  let activeCell: CellCoordinates | null =  <CellCoordinates | null>reactive({});
-  let activeNotation: Notation | null = <Notation | null>reactive({});
-  let selectedNotations: string[] = reactive([]);
-  let editMode = reactive(EditMode.SYMBOL.valueOf);
+  let activeCell: CellCoordinates | null =  <CellCoordinates | null>{};
+  let activeNotation: Notation | null = <Notation | null>{};
+  let selectedNotations: string[] = [];
+  let editMode = ref(EditMode.SYMBOL);
 
 
   async function setActiveCell(newActiveCell: CellCoordinates | null) {
@@ -41,8 +40,8 @@ export const useNotationStore = defineStore("notation", () => {
     activeCell = { col: -1, row: -1 };
   }
 
-  function setCurrentEditMode(neweEditMode: EditMode) {
-    editMode = neweEditMode.valueOf;
+  function setCurrentEditMode(newEditMode: EditMode) {
+    editMode.value = newEditMode;
   }
 
   function createCellOccupationMatrix(): (Notation | null)[][] {
@@ -55,8 +54,14 @@ export const useNotationStore = defineStore("notation", () => {
     return matrix;
   }
 
+  function getNotations<T>(notationShape: NotationShape): T[] {
+    return Array.from(notations.values()).filter((n) => {
+      NotationTypeShape.get(n.notationType) == notationShape;
+    }) as T[];
+  }
 
   return {
+    getNotations,
     editMode,
     setCurrentEditMode,
     parent,

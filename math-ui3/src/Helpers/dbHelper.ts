@@ -12,7 +12,7 @@ import {
   Response
 } from "./responseTypes";
 
-const {baseURL, handleError, initAxiosInterceptors } = axiosHelper();
+const {baseURL, initAxiosInterceptors } = axiosHelper();
 
 export default function useDbHelper() {
 

@@ -20,28 +20,28 @@
 <script setup lang="ts">
 
 import { watch, computed, ref } from "vue"
-import { EditMode } from "../../../math-common/src/enum";
+import {
+  EditMode, AreaSelectionMode
+} from "../../../math-common/src/enum";
 import { useNotationStore } from "../store/pinia/notationStore";
 import * as d3 from "d3";
-import useMatrixHelper from "../Helpers/matrixHelper";
-import useEventBus from "../Helpers/useEventBus";
-import UseUserOutgoingOperationsSyncHelper from "../Helpers/userOutgoingOperationsHelper";
+import useMatrixHelper from "../helpers/matrixHelper";
+import useNotationMutateHelper from "../helpers/notationMutateHelper";
+import useEventBus from "../helpers/eventBus";
+import UseUserOutgoingOperationsSyncHelper from "../helpers/userOutgoingOperationsHelper";
 
 const eventBus = useEventBus();
 const notationStore = useNotationStore();
 const matrixHelper = useMatrixHelper();
+const notationMutateHelper = useNotationMutateHelper();
 const userOutgoingOperationsSyncHelper = UseUserOutgoingOperationsSyncHelper();
 
-const SelectionMode = Object.freeze({
-  SELECTING: "SELECTING",
-  MOVE: "MOVE",
-});
 
 const props = defineProps({
   svgId: { type: String, default: "" }
 })
 
-let selectionMode = SelectionMode.SELECTING.valueOf;
+let selectionMode :AreaSelectionMode = AreaSelectionMode.SELECTING;
 
 let selectionPosition = ref({
   x1: 0,
@@ -132,30 +132,30 @@ function handleMouseMove(e : MouseEvent) {
         return;
       }
 
-      if (notationStore.editMode !== EditMode.SELECT.valueOf) {
+      if (notationStore.editMode != EditMode.SELECT) {
         return;
       }
 
-      if (selectionMode === SelectionMode.SELECTING.valueOf) {
+      if (selectionMode == AreaSelectionMode.SELECTING) {
         updateSelectionArea(e);
         return;
       }
 
-      if (selectionMode === SelectionMode.MOVE.valueOf) {
+      if (selectionMode === AreaSelectionMode.MOVE) {
         moveSelection(e);
         return;
       }
 };
 
 function handleMouseUp(e: MouseEvent) {
-      if (notationStore.editMode !== EditMode.SELECT.valueOf) {
+      if (notationStore.editMode !== EditMode.SELECT) {
         return;
       }
-      if (selectionMode === SelectionMode.SELECTING.valueOf) {
+      if (selectionMode === AreaSelectionMode.SELECTING) {
         endSelect();
         return;
       }
-      if (selectionMode === SelectionMode.MOVE.valueOf) {
+      if (selectionMode === AreaSelectionMode.MOVE) {
         endMoveSelection(e);
         return;
       }
@@ -204,7 +204,7 @@ function updateSelectionArea(e: MouseEvent) {
 };
 
 function endSelect() {
-      selectionMode = SelectionMode.MOVE.valueOf;
+      selectionMode = AreaSelectionMode.MOVE;
       if (selectionPosition.value.x2 != selectionPosition.value.x1) {
         normalizeSelection();
 
@@ -222,7 +222,7 @@ function endSelect() {
                 selectionPosition.value.y1 &&
               matrixHelper.rectSize * row <= selectionPosition.value.y2
             ) {
-              notationStore.selectNotation({
+              notationMutateHelper.selectNotation({
                 col: col,
                 row: row,
               });
@@ -258,7 +258,7 @@ function moveSelection(e: MouseEvent) {
       );
 
       if (rectDeltaX != 0 || rectDeltaY != 0) {
-        notationStore.moveSelectedNotations(
+        notationMutateHelper.moveSelectedNotations(
             rectDeltaX,
             rectDeltaY,
           );
@@ -274,7 +274,7 @@ function moveSelection(e: MouseEvent) {
 
 function endMoveSelection(e: MouseEvent) {
   let selectedNotationKeys = notationStore.selectedNotations;
-  notationStore.updateSelectedNotationCoordinates();
+  notationMutateHelper.updateSelectedNotationCoordinates();
   selectedNotationKeys.forEach((notationKey) => {
     let notation = notationStore.notations.get(notationKey);
     if (notation) {
@@ -289,8 +289,8 @@ function resetSelection() {
       dragPosition.value.x = 0;
       dragPosition.value.y = 0;
       selectionPosition.value.x1 = selectionPosition.value.x2 = selectionPosition.value.y1 = selectionPosition.value.y2 = 0;
-      selectionMode = SelectionMode.SELECTING.valueOf;
-      notationStore.editMode = EditMode.SYMBOL.valueOf;
+      selectionMode = AreaSelectionMode.SELECTING;
+      notationStore.editMode = EditMode.SYMBOL;
       //$store.dispatch("unselectAllNotations");
 };
 

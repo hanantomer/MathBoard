@@ -2,7 +2,6 @@
 import {  CellCoordinates } from "../../../math-common/src/globals";
 import { Notation } from "./responseTypes";
 import { useNotationStore } from "../store/pinia/notationStore";
-import { storeToRefs } from 'pinia'
 
 import useFeathersHelper from "./feathersHelper";
 const { client } = useFeathersHelper();
@@ -10,10 +9,10 @@ const notationStore = useNotationStore();
 
 export default function userOutgoingOperations() {
 
+    ///TODO - watch internal notation mutations and dsiaptch to other users
     notationStore.$subscribe((mutation, state) => {
       console.log("a change happened");
       console.log(mutation, state);
-
     });
 
     // function signedInWithGoogle() {
@@ -88,6 +87,6 @@ export default function userOutgoingOperations() {
     syncOutgoingAuthUser,
     syncOutgoingHeartBeat,
     syncOutgoingRemoveNotation,
-    syncOutgoingSaveNotation
-  }
+    syncOutgoingSaveNotation,
+  };
 };

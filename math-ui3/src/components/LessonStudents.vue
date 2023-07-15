@@ -5,13 +5,13 @@
         <p style="font-size: 1vw">Online Students</p></v-card-title
       >
       <v-card-text>
-        <template v-if="!!students.length">
+        <template v-if="students">
           <v-list>
             <v-list-item-group active-class="activestudent" color="indigo">
               <v-list-item
                 v-for="student in students"
                 :key="student.id"
-                v-on:click="$toggleStudentAuthorization(student)"
+                v-on:click="toggleStudentAuthorization(student)"
               >
                 <v-list-item-avatar>
                   <v-img :src="student.imageUrl"></v-img>
@@ -19,7 +19,7 @@
                 <v-list-item-content>
                   <v-list-item-title
                     style="font-size: 0.9vw"
-                    v-text="$getStudentDisplayName(student)"
+                    v-text="getStudentDisplayName(student)"
                   >
                   </v-list-item-title>
                 </v-list-item-content>
@@ -36,40 +36,39 @@
   </div>
 </template>
 
-<script>
-import { mapGetters, mapState, mapActions } from "vuex";
-import userOperationsOutgoingSyncMixin from "../Mixins/userOutgoingOperationsSyncMixin";
+<script setup lang="ts">
+import { computed } from "vue"
+import { useStudentStore } from "../store/pinia/studentStore";
+import { useLessonStore } from "../store/pinia/lessonStore";
+import User from "@math-db/models/user.model";
+import UseUserOutgoingOperations from "../helpers/userOutgoingOperationsHelper";
 
-export default {
-  mixins: [userOperationsOutgoingSyncMixin],
-  computed: {
-    ...mapState({
-      students: (state) => {
-        return state.studentStore.students;
-      },
-    }),
-  },
-  methods: {
-    ...mapGetters({
-      getCurrentLesson: "getCurrentLesson",
-    }),
-    ...mapActions({
-      toggleAuthorization: "toggleAuthorization",
-    }),
-    $getStudentDisplayName(student) {
-      return student.firstName + " " + student.lastName;
-    },
-    $toggleStudentAuthorization: function (student) {
-      this.toggleAuthorization(student.userId).then((authorization) => {
-        this.userOperationsMixin_syncOutgoingAuthUser(
-          authorization.authorizedStudentUUId,
-          authorization.revokedStudentUUId,
-          this.getCurrentLesson().uuid
-        );
-      });
-    },
-  },
+const studentStore = useStudentStore();
+const lessonStore = useLessonStore();
+const userOutgoingOperations = UseUserOutgoingOperations();
+
+const students = computed(() => {
+  return Array.from(studentStore.students.values());
+});
+
+function getStudentDisplayName(student: User) {
+ return student.firstName + " " + student.lastName;
 };
+
+
+function toggleStudentAuthorization(student: User) {
+  let currentAuthorizedStudentUUId = studentStore.authorizedStudentUUId;
+  studentStore.authorizedStudentUUId = student.uuid;
+  userOutgoingOperations.syncOutgoingAuthUser(
+    studentStore.authorizedStudentUUId,
+    currentAuthorizedStudentUUId,
+    lessonStore.currentLesson.uuid
+  )
+};
+
+
+
+
 </script>
 
 <style>

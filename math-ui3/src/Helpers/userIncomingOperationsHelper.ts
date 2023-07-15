@@ -1,20 +1,15 @@
 import { Notation } from "./responseTypes";
-
 import { useUserStore } from "../store/pinia/userStore";
-const userStore = useUserStore();
-
 import { useStudentStore } from "../store/pinia/studentStore";
-const studentStore = useStudentStore();
-
 import { useNotationStore } from "../store/pinia/notationStore";
 import { BoardType } from "../../../math-common/src/enum";
-import {
-  CellCoordinates,
-} from "../../../math-common/src/globals";
+import { CellCoordinates } from "../../../math-common/src/globals";
 import User from "../../../math-db/src/models/user.model";
-const notationStore = useNotationStore();
-
 import useFeathersHelper from "./feathersHelper";
+
+const notationStore = useNotationStore();
+const userStore = useUserStore();
+const studentStore = useStudentStore();
 const { client } = useFeathersHelper();
 
 export default function userIncomingOperations() {

@@ -73,7 +73,7 @@
         <v-tab>
           <v-card class="px-4">
             <v-card-text>
-              <v-form ref="registerForm" v-model="valid" lazy-validation>
+              <v-form ref="registerForm" v-model="valid" lazy-validation  @submit.prevent>
                 <v-row>
                   <v-col cols="12" sm="6" md="6">
                     <v-text-field
@@ -130,6 +130,7 @@
                   <v-spacer></v-spacer>
                   <v-col class="d-flex ml-auto" cols="12" sm="3" xsm="12">
                     <v-btn
+                      type="submit"
                       x-large
                       block
                       :disabled="!valid"
@@ -148,149 +149,133 @@
   </v-dialog>
 </template>
 
-<script setup lang="ts" allowJs="true" >
-//import { defineComponent } from "vue";
-//import { useCookies } from "vue3-cookies";
-import { mapActions } from "vuex";
-import { mapGetters } from "vuex";
-import { User }  from "../../../math-db/src/models/user"
-import authMixin from "../Mixins/authMixin";
+<script setup lang="ts">
+import { LoginType } from "../../../math-common/src/enum"
+import useAuthHelper from "../helpers/authHelper";
+import { ref, computed, watch } from "vue";
+import { useCookies } from "vue3-cookies";
+import { useRouter, useRoute, RouteLocationRaw } from 'vue-router'
+import { PropType } from "vue";
 
 
-  // setup() {
-  //   const { cookies } = useCookies();
-  //   return { cookies };
-  // },
+const cookies = useCookies().cookies;
+const authHelper = useAuthHelper();
 
-  name: "Login",
-  mixins: [authMixin],
-  mounted() {
-    //    if (!this.show) this.show = true;
+const router = useRouter()
+const route = useRoute()
+
+
+const props = defineProps({
+  dialog: {
+    type: Boolean,
+    default: false,
+  },
+  dialogType: {
+    type: Object as PropType<LoginType>,
+    default: LoginType.LOGIN,
+  },
+});
+
+const loginForm = ref();
+const registerForm = ref();
+
+let loginFailed = false;
+let tab = 0;
+let show = false;
+let tabs = [
+  { name: "Login", icon: "mdi-account" },
+  { name: "Register", icon: "mdi-account-outline" },
+];
+let valid = true;
+let firstName = "";
+let lastName = "";
+let email = "";
+let password = "";
+let verify = "";
+let loginPassword = "12345678";    ///TODO remove those magic values
+let loginEmail = "hanantomer@gmail.com";
+let loginEmailRules = [
+  (v: string) => v || "Required",
+  (v: string) => /.+@.+\..+/.test(v) || "E-mail must be valid",
+];
+let emailRules = [
+  (v: string) => !!v || "Required",
+  (v: string) => /.+@.+\..+/.test(v) || "E-mail must be valid",
+];
+let show1 = false;
+let rules = {
+  required: (value: string) => !!value || "Required.",
+  min: (v: string) => (v && v.length >= 8) || "Min 8 characters",
+};
+
+const passwordMatch = computed(() => {
+  return () => password === verify || "Password must match"
+});
+
+watch(() => props.dialog, (val) => { show = val });
+watch(() => props.dialogType, (val) => { tab = val  === LoginType.LOGIN ? 0 : 1 });
+
+
+  //mounted() {
+    //    if (!show) show = true;
     /*    gapi.signin2.render("google-signin-btn", {
       scope: "email",
       longtitle: true,
       theme: "dark",
-      onsuccess: this.googleOnSuccess,
+      onsuccess: googleOnSuccess,
     });*/
-    // if (this.dialog) {
-    //   this.show = true;
+    // if (dialog) {
+    //   show = true;
     // }
-  },
-  methods: {
-    ...mapGetters({ getUser: "getUser" }),
-    ...mapActions({
-      registerUser: "registerUser",
-      setUser: "setUser",
-      //authLocalUserByPassword: "authLocalUserByPassword",
-      //authGoogleUser: "authGoogleUser",
-    }),
-    googleOnSuccess: async function () {
-      this.show = false;
-      this.cookies.remove("access_token");
-    },
-    validateRegister: async function () {
-      if (this.$refs.registerForm.validate()) {
-        let user = new (User);
-        user.firstName = this.firstName;
-        user.password = this.password;
-        user.lastName = this.lastName;
-        user.email = this.email;
-        await this.registerUser(user);
-        this.$refs.registerForm.reset();
-        this.$refs.loginForm.reset();
-        this.tab = 0; /*redirect to login*/
+  //},
+function googleOnSuccess() {
+  show = false;
+  cookies.remove("access_token");
+};
+
+function validateRegister() {
+  if (registerForm.value.validate()) {
+    authHelper.registerUser(firstName, lastName, email, password);
+    registerForm.value = null;
+    loginForm.value = null;
+    tab = 0; /*redirect to login*/
+  }
+};
+
+async function validateLogin() {
+  if (loginForm.value.validate()) {
+    let authenticatedUser = await authHelper.authLocalUserByUserAndPassword(
+      loginEmail,
+      loginPassword
+    );
+
+    if (authenticatedUser) {
+      loginFailed = false;
+
+      authHelper.setUser(authenticatedUser);
+
+      if (window.navigator.cookieEnabled) {
+        cookies.set("access_token", authenticatedUser.access_token);
       }
-    },
-    validateLogin: async function () {
-      if (this.$refs.loginForm.validate()) {
-        let authenticatedUser = await this.mixin_authLocalUserByPassword(
-          this.loginEmail,
-          this.loginPassword
-        );
 
-        if (authenticatedUser) {
-          this.loginFailed = false;
-
-          //this.show = false;
-          this.$emit("closed");
-
-          this.setUser(authenticatedUser);
-
-          if (window.navigator.cookieEnabled) {
-            this.cookies.set("access_token", authenticatedUser.access_token);
-          }
-
-          if (this.$refs.registerForm) {
-            this.$refs.registerForm.reset();
-          }
-          if (this.$refs.loginForm) {
-            this.$refs.loginForm.reset();
-          }
-          if (this.$route.query.from) {
-            this.$router.replace(this.$route.query.from);
-          }
-        } else {
-          this.loginFailed = true;
-        }
+      if (registerForm.value) {
+        registerForm.value = null;;
       }
-    },
-  },
+      if (loginForm.value) {
+        loginForm.value = null;
+      }
+      if (route.query.from) {
+        let r: RouteLocationRaw = route.query.from as string;
+        router.replace(r);
+      }
+    } else {
+      loginFailed = true;
+    }
+  }
+};
 
-  computed: {
-    passwordMatch() {
-      return () => this.password === this.verify || "Password must match";
-    },
-  },
-  watch: {
-    dialog(val) {
-      this.show = val;
-    },
-    type(val) {
-      this.tab = val === "Login" ? 0 : 1;
-    },
-  },
-  props: {
-    dialog: {
-      type: Boolean,
-      default: false,
-    },
-    dialogType: {
-      type: String,
-      default: "Login",
-    },
-  },
-  data() {
-    return {
-      loginFailed: false,
-      tab: 0,
-      show: false,
-      tabs: [
-        { name: "Login", icon: "mdi-account" },
-        { name: "Register", icon: "mdi-account-outline" },
-      ],
-      valid: true,
-      firstName: "",
-      lastName: "",
-      email: "",
-      password: "",
-      verify: "",
-      loginPassword: "12345678",
-      loginEmail: "hanantomer@gmail.com",
-      loginEmailRules: [
-        (v) => !!v || "Required",
-        (v) => /.+@.+\..+/.test(v) || "E-mail must be valid",
-      ],
-      emailRules: [
-        (v) => !!v || "Required",
-        (v) => /.+@.+\..+/.test(v) || "E-mail must be valid",
-      ],
-      show1: false,
-      rules: {
-        required: (value) => !!value || "Required.",
-        min: (v) => (v && v.length >= 8) || "Min 8 characters",
-      },
-    };
-}
+
+
 //});
 </script>
 <style>

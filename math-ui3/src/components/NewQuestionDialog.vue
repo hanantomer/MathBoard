@@ -51,52 +51,36 @@
   </v-row>
 </template>
 
-<script>
-import { mapActions } from "vuex";
-import { mapGetters } from "vuex";
+<script setup lang="ts">
+import { ref, computed, watch } from "vue";
+import { useLessonStore } from "../store/pinia/lessonStore";
+import useEventBus from "../helpers/eventBus";
 
-export default {
-  props: {
-    dialog: { show: false, name: "" },
-  },
-  watch: {
-    dialog(val) {
-      this.show = val.show;
-      this.name = val.name;
-    },
-  },
-  data() {
-    return {
-      name: "",
-      show: false,
-    };
-  },
-  methods: {
-    save() {
-      this.$emit("save", { name: this.name });
-    },
-    ...mapActions({
-      setCurrentLesson: "setCurrentLesson",
-    }),
-    ...mapGetters({
-      getCurrentLesson: "getCurrentLesson",
-      getLessons: "getLessons",
-    }),
-  },
-  computed: {
-    lessons() {
-      return this.getLessons();
-    },
-    selectedLesson: {
-      set(lessonUUId) {
-        this.setCurrentLesson(
-          this.getLessons().find((l) => l.uuid == lessonUUId)
-        );
-      },
-      get() {
-        return this.getCurrentLesson();
-      },
-    },
-  },
+const lessonStore = useLessonStore();
+const eventBus = useEventBus();
+const show = ref(false);
+const name = ref();
+
+const props = defineProps({
+  dialog: Boolean,
+  name: String
+});
+
+watch(() => props.dialog, (val) => { show.value = val })
+watch(() => props.name, (val) => { name.value = val })
+
+function save() {
+  eventBus.emit("save", name );
 };
+
+const lessons = computed(() => Array.from(lessonStore.lessons).map(([key, value]) => { return value }));
+const selectedLesson = computed({
+  get() {
+    return lessonStore.currentLesson;
+  },
+  set(selectedLesson) {
+    lessonStore.currentLesson = selectedLesson;
+  }
+});
+
 </script>

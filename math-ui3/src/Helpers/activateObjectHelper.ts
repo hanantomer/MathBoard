@@ -8,12 +8,13 @@ import {
   activeCellColor,
 } from "../../../math-common/src/globals";
 import { storeToRefs } from 'pinia'
-import useMatrixHelper  from "./matrixHelper"
+import useMatrixHelper from "./matrixHelper"
+import useNotationMutateHelper from "./notationMutateHelper"
 
-
+const notationMutateHelper = useNotationMutateHelper();
 const matrixHelper = useMatrixHelper();
 const notationStore = useNotationStore();
-const { activeCell, activeNotation } = storeToRefs(notationStore)
+const { activeCell } = storeToRefs(notationStore)
 
 export default function activateObjectHelper() {
 
@@ -36,7 +37,7 @@ export default function activateObjectHelper() {
     // activate notation
     let overlapRectNotation = getOverlappedRectNotation(e);
     if (overlapRectNotation) {
-      notationStore.setActiveNotation(overlapRectNotation).then(() => {
+      notationMutateHelper.setActiveNotation(overlapRectNotation).then(() => {
         if (overlapRectNotation?.notationType == NotationType.TEXT) {
           notationStore.setCurrentEditMode(EditMode.TEXT);
         }
@@ -62,8 +63,8 @@ export default function activateObjectHelper() {
   }
 
   function reset() {
-    notationStore.setActiveCell(null);
-    notationStore.setActiveNotation(null);
+    notationMutateHelper.setActiveCell(null);
+    notationMutateHelper.setActiveNotation(null);
   }
 
   function getElementCoordinateValue(element: Element, attrName: string): number{
@@ -96,7 +97,7 @@ export default function activateObjectHelper() {
     if (!fractionElement) return;
 
     return notationStore
-      .getNotations<LineNotation>(NotationShape.LINE)
+      .getNotations <LineNotation>(NotationShape.LINE)
       .find((n: LineNotation) => {
         getElementCoordinateValue(fractionElement, "fromCol") >= n.fromCol &&
           getElementCoordinateValue(fractionElement, "toCol") <= n.toCol &&

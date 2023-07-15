@@ -20,7 +20,7 @@
     "typescript-cookie": "^1.0.6",
     "vue": "^3.2.38",
     "vue-cookies": "^1.8.3",
-    "vue-router": "^4.0.0",
+    "vue-router": "^4.2.4",
     "vue3-cookies": "^1.0.6",
     "vuetify": "^3.0.0",
     "vuex": "^4.1.0",

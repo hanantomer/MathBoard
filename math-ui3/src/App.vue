@@ -1,10 +1,10 @@
 <template>
   <v-app id="app" full-height>
-    <login
+    <Login
       :dialog="loginDialog"
       :dialogType="loginType"
       @closed="closeLoginDialog"
-    ></login>
+    ></Login>
     <v-app-bar
       style="max-height: 80px; padding-right: 30px"
       color="primary"
@@ -35,12 +35,10 @@
 
       <!-- lessons -->
       <v-tooltip bottom hidden>
-        <template v-slot:activator="{ on, attrs }">
+        <template v-slot:activator="{ props }">
           <v-btn
-            v-show="!!user.id"
+            v-show="user"
             icon
-            v-on="on"
-            v-bind="attrs"
             v-on:click="navToLessons"
           >
             <v-icon>mdi-archive-edit-outline</v-icon>
@@ -51,8 +49,8 @@
 
       <!-- questions -->
       <v-tooltip bottom hidden>
-        <template v-slot:activator="{ on }">
-          <v-btn v-show="!!user.id" icon v-on="on" v-on:click="navToQuestions">
+        <template v-slot:activator="{ props }">
+          <v-btn v-show="user" icon v-on:click="navToQuestions">
             <v-icon>mdi-message-question-outline</v-icon>
           </v-btn>
         </template>
@@ -61,8 +59,8 @@
 
       <!-- answers -->
       <v-tooltip bottom hidden>
-        <template v-slot:activator="{ on }">
-          <v-btn v-show="teacher" icon v-on="on" v-on:click="navToAnswers">
+        <template v-slot:activator="{ props }">
+          <v-btn v-show="isTeacher" icon  v-on:click="navToAnswers">
             <v-icon>mdi-checkbox-marked-outline</v-icon>
           </v-btn>
         </template>
@@ -70,39 +68,37 @@
       </v-tooltip>
 
       <!-- sign in / register -->
-      <v-btn v-show="!user.id" icon v-on:click="showLoginDialog('Login')">
+      <v-btn v-show="!user" icon v-on:click="showLoginDialog(LoginType.LOGIN)">
         <v-icon>mdi-account</v-icon>
         <span style="font-size: 0.7em">Sign In</span>
       </v-btn>
 
       <v-divider class="mx-6" vertical></v-divider>
 
-      <v-btn v-show="!user.id" icon v-on:click="openLoginDialog('Register')">
+      <v-btn v-show="!user" icon v-on:click="showLoginDialog(LoginType.REGISTER)">
         <v-icon>mdi-account-outline</v-icon>
         <span style="font-size: 0.7em">Register</span>
       </v-btn>
 
       <!-- user image or name -->
       <v-tooltip bottom hidden>
-        <template v-slot:activator="{ on, attrs }">
-          <v-avatar v-show="user.imageUrl" v-bind="attrs" v-on="on" size="36px"
+        <template v-slot:activator="{ props }">
+          <v-avatar v-show="user.imageUrl" size="36px"
             ><img v-bind:src="user.imageUrl"
           /></v-avatar>
         </template>
-        <span v-show="!!user.firstName">{{ user.firstName }}</span>
+        <span v-show="user.firstName">{{ user.firstName }}</span>
       </v-tooltip>
 
-      <span v-show="!!user.firstName && !user.imageUrl"
+      <span v-show="user.firstName && !user.imageUrl"
         >Hello {{ user.firstName }}</span
       >
 
       <v-tooltip bottom hidden>
-        <template v-slot:activator="{ on, attrs }">
+        <template v-slot:activator="{ props }">
           <v-btn
-            v-show="!!user.id"
+            v-show="user"
             icon
-            v-on="on"
-            v-bind="attrs"
             v-on:click="signOut"
           >
             <v-icon>mdi-logout</v-icon>
@@ -122,83 +118,80 @@
   </v-app>
 </template>
 
-<script type="ts" allowJs="true">
-import { BoardType }  from "@common/src/enums";
+<script setup lang="ts">
+import { useRouter } from 'vue-router'
+import { onMounted, onUnmounted, ref } from "vue";
+import { LoginType } from "../../math-common/src/enum"
 import Login from "./components/Login.vue";
-import { mapGetters, mapActions } from "vuex";
-import authMixin from "./Mixins/authMixin";
-export default {
-  name: "App",
-  components: { Login },
-  mixins: [authMixin],
-  mounted: function () {
-    window.removeEventListener("keyup", this.onKeyUp);
-    window.addEventListener("keyup", this.onKeyUp);
-    window.removeEventListener("paste", this.onKeyUp);
-    document.addEventListener("paste", this.onPaste);
-  },
-  unmounted: function () {
-    window.removeEventListener("keyup", this.onKeyUp);
-    window.removeEventListener("paste", this.onKeyUp);
-  },
-  data() {
-    return {
-      loginDialog: false,
-      loginType: "Login",
-    };
-  },
-  computed: {
-    user: function () {
-      return this.getUser();
-    },
-    teacher: function () {
-      return this.isTeacher();
-    },
-  },
-  methods: {
-    ...mapGetters({ getUser: "getUser", isTeacher: "isTeacher" }),
-    ...mapActions({ setUser: "setUser" }),
+import useAuthHelper from "./helpers/authHelper";
+import useEventBus from "./helpers/eventBus";
+import { useUserStore } from "./store/pinia/userStore";
+import { computed } from 'vue';
 
-    showLoginDialog(type) {
-      this.loginType = type;
-      this.loginDialog = true;
-    },
+const router = useRouter();
+const eventBus = useEventBus();
+const authHelper = useAuthHelper();
+const userStore = useUserStore();
 
-    closeLoginDialog: function () {
-      this.loginDialog = false;
-    },
+onMounted(() => {
+    window.removeEventListener("keyup", onKeyUp);
+    document.addEventListener("paste", onPaste);
+});
 
-    onKeyUp: function (key) {
-      this.$root.$emit("keyup", key);
-    },
-    onPaste: function (e) {
-      this.$root.$emit("paste", e);
-    },
-    signOut: function () {
-      this.mixin_signOut();
-      this.setUser({});
-      this.$router.push("/");
-    },
-    navToLessons: function () {
-      this.$router.push("/lessons");
-    },
-    navToQuestions: function () {
-      this.$router.push("/questions");
-    },
-    navToAnswers: function () {
-      this.$router.push("/answers");
-    },
+onUnmounted(() => {
+    window.removeEventListener("keyup", onKeyUp);
+    window.removeEventListener("paste", onPaste);
+});
+
+let loginDialog = ref(false);
+let loginType = ref(LoginType.LOGIN);
+
+const user = computed(() => userStore.currentUser);
+const isTeacher  = computed(() => userStore.isTeacher);
+
+function showLoginDialog(lType: LoginType) {
+  loginType.value = lType;
+  loginDialog.value = true;
+};
+
+function closeLoginDialog() {
+  loginDialog.value = false;
+};
+
+function onKeyUp (key: KeyboardEvent) {
+  eventBus.emit("keyup", key);
+};
+
+function onPaste(e: ClipboardEvent) {
+  eventBus.emit("paste", e);
+};
+
+function signOut() {
+  authHelper.signOut();
+  router.push("/");
+};
+
+function navToLessons() {
+  router.push("/lessons");
+};
+
+function navToQuestions() {
+  router.push("/questions");
+};
+
+function navToAnswers() {
+  router.push("/answers");
+};
 
     // signInViaGoogleAuth: async function () {
-    //   let user = await this.authGoogleUser(this.googleUser);
+    //   let user = await authGoogleUser(googleUser);
     //   if (!!user) {
-    //     return await this.setUser(user);
+    //     return await setUser(user);
     //   } else {
-    //     return await this.registerUser(...this.googleUser);
+    //     return await registerUser(...googleUser);
     //   }
     // },
-  },
-};
+
 </script>
 <style>
 body {
@@ -209,8 +202,6 @@ body {
   -ms-user-select: none;
   user-select: none;
 }
-
-
 
 text {
   text-anchor: start;

@@ -1,6 +1,6 @@
 <template>
   <v-row justify="center">
-    <v-dialog v-model="show" max-width="800px" @keydown.esc="show = false">
+    <v-dialog v-model="dialog" max-width="800px" @keydown.esc="dialog = false">
       <v-card>
         <v-card-title>
           <span class="headline">Compose free text</span>
@@ -11,7 +11,7 @@
               <v-col cols="12">
                 <v-textarea
                   autofocus
-                  v-model="text"
+                  v-model="textValue"
                   background-color="grey lighten-2"
                   color="cyan"
                 ></v-textarea>
@@ -36,7 +36,7 @@
         </v-card-text>
         <v-card-actions>
           <v-spacer></v-spacer>
-          <v-btn color="blue darken-1" text @click="show = false">
+          <v-btn color="blue darken-1" text @click="dialog = false">
             Close
           </v-btn>
           <v-btn color="blue darken-1" text @click="submit">
@@ -48,49 +48,74 @@
   </v-row>
 </template>
 
-<script>
-import { mapGetters } from "vuex";
-export default {
-  name: "freeTextDialog",
+<script setup lang="ts">
+import { watch, ref } from "vue"
+import { useNotationStore } from "../store/pinia/notationStore";
+import { NotationType } from "../../../math-common/src/enum";
+import useEventBus from "../helpers/eventBus";
 
-  props: {
-    value: Boolean,
-    editText: String,
-  },
+const notationStore = useNotationStore();
+const eventBus = useEventBus();
 
-  computed: {
-    show: {
-      get() {
-        return this.value;
-      },
-      set(value) {
-        this.$emit("input", value);
-      },
-    },
-  },
-  watch: {
-    show(val) {
-      if (val && !!this.getActiveNotation()?.value) {
-        this.text = this.getActiveNotation().value;
-      }
-    },
-  },
-  data() {
-    return {
-      text: "",
+const props = defineProps({
+  show: { type: Boolean },
+})
+
+let dialog = ref(false);
+let textValue = ref("");
+
+watch(() => props.show,(newVal) => {
+  dialog.value = newVal;
+  setInitalTextValue();
+})
+
+function setInitalTextValue() {
+  if (notationStore.activeNotation?.notationType == NotationType.TEXT
+    && notationStore.activeNotation?.value)
+    textValue.value = notationStore.activeNotation.value;
+}
+
+function submit() {
+  dialog.value = false;
+  //this.$emit("submitText", this.text, this.background_color);
+  //this.$emit("submitText", this.text, "lightYellow");
+  textValue.value = "";
+  eventBus.emit("textAdded", textValue.value);
+}
+
+//const show = computed(() => {
+//  return
+  //get() {
+  //  return props.value;
+  //},
+  //set(value) {
+  //  emit(value);
+  //},
+//});
+
+//watch: {
+ //   show(val) {
+ //     if (val && !!this.getActiveNotation()?.value) {
+ //       this.text = this.getActiveNotation().value;
+//      }
+//    },
+//  },
+//  data() {
+//    return {
+//      text: "",
       //background_color: "#000001",
-    };
-  },
-  methods: {
-    ...mapGetters({
-      getActiveNotation: "getActiveNotation",
-    }),
-    submit: function () {
-      this.show = false;
-      //this.$emit("submitText", this.text, this.background_color);
-      this.$emit("submitText", this.text, "lightYellow");
-      this.text = "";
-    },
-  },
-};
+//    };
+//  },
+//  methods: {
+//    ...mapGetters({
+//      getActiveNotation: "getActiveNotation",
+///    }),
+    // submit: function () {
+    //   this.show = false;
+    //   //this.$emit("submitText", this.text, this.background_color);
+    //   this.$emit("submitText", this.text, "lightYellow");
+    //   this.text = "";
+    // },
+  //},
+//};
 </script>

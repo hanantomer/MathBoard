@@ -35,6 +35,10 @@ export const NotationTypeShape = new Map<string, number> ([
   [NotationType.GEO, NotationShape.RECT]
 ])
 
+export enum AreaSelectionMode {
+  SELECTING,
+  MOVE
+};
 
 
 
@@ -55,5 +59,12 @@ export enum UesrType {
   TEACHER,
   STUDENT
 };
+
+
+export enum LoginType {
+  LOGIN,
+  REGISTER
+};
+
 
 

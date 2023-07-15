@@ -1,11 +1,9 @@
 
 
-
-// Composables
 import { createRouter, createWebHistory } from 'vue-router'
 
 import store from "../store/pinia/indexStore";
-import useAuthHelper from "../Helpers/authHelper";
+import useAuthHelper from "../helpers/authHelper";
 const authHelper = useAuthHelper();
 
 import { useUserStore } from "../store/pinia/userStore";

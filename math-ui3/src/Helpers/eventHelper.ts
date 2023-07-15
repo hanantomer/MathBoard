@@ -1,18 +1,20 @@
-import { BoardType, EditMode, NotationType } from "../../../math-common/src/enum";
+import { BoardType, EditMode } from "../../../math-common/src/enum";
 import { useUserStore } from "../store/pinia/userStore"
 import { useNotationStore } from "../store/pinia/notationStore"
+import { Notation } from "../helpers/responseTypes";
+
 
 import useMatrixHelper from "./matrixHelper";
-import useNotationHelper from "./notationHelper";
+import useNotationMutationHelper from "./notationMutateHelper";
 import useAuthHelper from "./authHelper";
 import useActivateObjectHelper from "./activateObjectHelper";
-import useEventBus from "../Helpers/useEventBus";
+import useEventBus from "../helpers/eventBus";
 import useUserOutgoingOperations from "./userOutgoingOperationsHelper";
 
 const userStore = useUserStore();
 const notationStore = useNotationStore();
 const matrixHelper = useMatrixHelper();
-const notationHelper = useNotationHelper();
+const notationMutationHelper = useNotationMutationHelper();
 const authHelper = useAuthHelper();
 const eventBus = useEventBus();
 const activateObjectHelper = useActivateObjectHelper();
@@ -43,7 +45,7 @@ export default function eventHelper() {
         let toCol =
           Math.ceil(image.width / matrixHelper.rectSize) + fromCol;
         let toRow = Math.ceil(image.height / matrixHelper.rectSize) + fromRow;
-        notationHelper.addImageNotation(fromCol, toCol, fromRow, toRow, base64data.toString());
+        notationMutationHelper.addImageNotation(fromCol, toCol, fromRow, toRow, base64data.toString());
       }
     });
 
@@ -77,13 +79,13 @@ export default function eventHelper() {
       }
 
       if (e.code === "Backspace") {
-        notationHelper.removeActiveOrSelectedNotations();
+        notationMutationHelper.removeActiveOrSelectedNotations();
         matrixHelper.setNextRect(-1, 0);
         return;
       }
 
       if (e.code === "Delete") {
-        notationHelper.removeActiveOrSelectedNotations();
+        notationMutationHelper.removeActiveOrSelectedNotations();
         return;
       }
 
@@ -116,14 +118,14 @@ export default function eventHelper() {
         return;
       }
 
-      notationHelper.addSymbolNotation(e.key);
+      notationMutationHelper.addSymbolNotation(e.key);
   };
 
   function mouseDown(e: MouseEvent) {
       if (
-        notationStore.editMode === EditMode.FRACTION.valueOf ||
-        notationStore.editMode === EditMode.SQRT.valueOf ||
-        notationStore.editMode === EditMode.SELECT.valueOf
+        notationStore.editMode === EditMode.FRACTION ||
+        notationStore.editMode === EditMode.SQRT ||
+        notationStore.editMode === EditMode.SELECT
       ) {
         return;
       }
@@ -134,11 +136,11 @@ export default function eventHelper() {
       }
 
       if (
-        notationStore.editMode === EditMode.CHECKMARK.valueOf ||
-        notationStore.editMode === EditMode.SEMICHECKMARK.valueOf ||
-        notationStore.editMode === EditMode.XMARK.valueOf
+        notationStore.editMode === EditMode.CHECKMARK ||
+        notationStore.editMode === EditMode.SEMICHECKMARK ||
+        notationStore.editMode === EditMode.XMARK
       ) {
-        notationHelper.addMarkNotation();
+        notationMutationHelper.addMarkNotation();
         return;
       }
   };
@@ -150,17 +152,17 @@ export default function eventHelper() {
     // activateObjectMixin_unselectPreviouslyActiveCell();
   };
 
-  async function setActiveNotation(activeNotation: Notation | null) {
-    notationHelper.setAc
-    if (
-      // disallow activation of question rows for student
-      notationHelper.isNotationInQuestionArea(activeNotation)
-    ) {
-      return;
-    }
+  // async function setActiveNotation(activeNotation: Notation | null) {
+  //   notationMutationHelper.setAc
+  //   if (
+  //     // disallow activation of question rows for student
+  //     notationMutationHelper.isNotationInQuestionArea(activeNotation)
+  //   ) {
+  //     return;
+  //   }
 
-    activeNotation = activeNotation;
-  }
+  //   activeNotation = activeNotation;
+  // }
 
   return {paste, keyUp, mouseDown, lineDrawEnded}
 };

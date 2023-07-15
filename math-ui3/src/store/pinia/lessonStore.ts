@@ -1,45 +1,49 @@
 //  questions of current lesson
 import Lesson from "../../../../math-db/src/models/lesson/lesson.model";
 import { defineStore } from "pinia";
-import dbHelper from "../../Helpers/dbHelper";
+import dbHelper from "../../helpers/dbHelper";
 import { useUserStore } from "./userStore";
 const db = dbHelper();
 const userStore = useUserStore();
 
 
 export const useLessonStore = defineStore("lesson", () => {
-  let lessons: Map<String, Lesson>  = new Map();
+  let lessons: Map<String, Lesson> = new Map();
   let currentLesson: Lesson = new Lesson();
 
+  // async function loadCurrentLesson(): Promise<void> {
+  //   currentLesson = await db.getLesson(LessonUUId);
+  // }
 
-  async function loadLesson(LessonUUId: string): Promise<void> {
-    this.currentLesson = await db.getLesson(LessonUUId);
-  }
-
-  async function loadLessons(isTeacher: boolean) {
-    this.lessons = <Map<String, Lesson>>{};
-
-    let lessons = isTeacher
+  async function loadLessons() {
+    let lessonsFromDB = userStore.isTeacher()
       ? await db.getTeacherLessons(userStore.currentUser?.uuid)
       : await db.getStudentLessons(userStore.currentUser?.uuid);
 
-    lessons.forEach((l: Lesson) => {
-      this.lessons.set(l.uuid, l);
+    lessonsFromDB.forEach((l: Lesson) => {
+      lessons.set(l.uuid, l);
     });
   }
 
-  async function setCurrentLesson(lesson: Lesson) {
-    this.currentLesson = lesson;
+  async function setCurrentLesson(lessonUUId: string) {
+    if (!lessons.get(lessonUUId)) {
+      loadLessons();
+    }
+    if (lessons.get(lessonUUId)) {
+      currentLesson = lessons.get(lessonUUId)!;
+    }
   }
 
-  async function addLesson(lesson: Lesson) {
+  async function addLesson(lesson: Lesson) : Promise<Lesson>{
     lesson = await db.addLesson(lesson);
-    this.lessons.set(lesson.uuid, lesson);
+    lessons.set(lesson.uuid, lesson);
+    setCurrentLesson(lesson.uuid);
+    return lesson;
   }
 
   async function addLessonToSharedLessons() {
     await db.addLessonToSharedLessons(
-      this.getCurrentLesson.uuid,
+      currentLesson.uuid,
       userStore.currentUser.id
     );
   }
@@ -47,15 +51,14 @@ export const useLessonStore = defineStore("lesson", () => {
 
 
   function removeLesson(lessonUUId: string) {
-    this.lessons.forEach((l: Lesson) => {
-      if (l.uuid === lessonUUId) this.lessons.delete(l.uuid);
+    lessons.forEach((l: Lesson) => {
+      if (l.uuid === lessonUUId) lessons.delete(l.uuid);
     });
   }
 
   return {
     lessons,
     currentLesson,
-    loadLesson,
     loadLessons,
     setCurrentLesson,
     addLesson,

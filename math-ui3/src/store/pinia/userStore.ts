@@ -1,28 +1,28 @@
 import { defineStore } from "pinia";
 import User from "../../../../math-db/src/models/user.model";
-import dbHelper  from "../../Helpers/dbHelper";
+import dbHelper  from "../../helpers/dbHelper";
 const db = dbHelper();
 
 export const useUserStore = defineStore("user", () => {
-
-  let currentUser: User = new User();
+  let currentUser: User | null = new User();
   let authorized = false;
 
   function isTeacher(): boolean {
-      return currentUser?.userType === "TEACHER";
-  };
+    return currentUser?.userType === "TEACHER";
+  }
 
   function setUserWriteAuthorization(isAauthorized: boolean) {
-      authorized = isAauthorized;
-  };
+    authorized = isAauthorized;
+  }
 
   function setUser(user: User) {
-      currentUser = user;
-  };
+    currentUser = user;
+  }
 
   function registerUser(user: User) {
-      db.registerUser(user);
-  };
+    db.registerUser(user);
+  }
+
 
   return {
     currentUser,
@@ -32,5 +32,4 @@ export const useUserStore = defineStore("user", () => {
     setUser,
     registerUser,
   };
-
 });

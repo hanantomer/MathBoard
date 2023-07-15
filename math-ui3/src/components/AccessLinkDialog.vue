@@ -30,24 +30,26 @@
         </v-card-actions>
       </v-card>
     </v-dialog>
-  </v-row>
+  </v-row>i
 </template>
 
 <script setup lang="ts">
 
-import { computed, ref } from "vue"
+import { computed, ref, watch } from "vue"
 import { apiHost } from "../../../math-common/src/globals";
 import { useLessonStore } from "../store/pinia/lessonStore";
 
 const lessonStore = useLessonStore();
 
-//defineEmits([])
+const props = defineProps({
+  dialog: Boolean
+});
+
+watch(()=> props.dialog, (show: boolean) => {
+  show = show;
+})
 
 let show = ref(false);
-
-const props = defineProps({
-    value: Boolean
-});
 
 //let show = computed({
 //    get() : boolean {

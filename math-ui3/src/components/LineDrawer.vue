@@ -39,243 +39,231 @@
     </p>
   </div>
 </template>
-<script>
-import notationMixin from "../Mixins/notationMixin";
-import matrixMixin from "../Mixins/matrixMixin";
-import userOutgoingOperationsSyncMixin from "../Mixins/userOutgoingOperationsSyncMixin";
-import NotationType from "../Mixins/notationType";
-import EditMode from "../Mixins/editMode";
-import { mapGetters, mapState, mapActions } from "vuex";
+<script setup lang="ts">
 
-export default {
-  mixins: [notationMixin, matrixMixin, userOutgoingOperationsSyncMixin],
-  name: "LineDrawer",
-  props: {
-    svgId: { type: String },
-  },
-  data: function () {
-    return {
-      editStarted: false,
-      notationType: "",
-      linePosition: {
-        x1: 0,
-        x2: 0,
-        y: 0,
-      },
-    };
-  },
-  mounted: function () {
-    this.registerSvgMouseDown();
-    this.registerSvgMouseMove();
-    this.registerSvgMouseUp();
-  },
-  computed: {
-    lineLeft: function () {
-      return Math.min(this.linePosition.x1, this.linePosition.x2);
-    },
-    lineRight: function () {
-      return Math.max(this.linePosition.x1, this.linePosition.x2);
-    },
-    lineTop: function () {
-      return this.linePosition.y;
-    },
-    ...mapState({
-      activeCell: (state) => state.notationStore.activeCell,
-    }),
-  },
-  watch: {
-    activeCell: {
-      handler(newVal) {
-        if (!newVal) return;
-        this.reset();
-      },
-    },
-  },
-  methods: {
-    ...mapGetters({
-      getCurrentEditMode: "getCurrentEditMode",
-      getNotations: "getNotations",
-    }),
-    ...mapActions({
-      setActiveNotation: "setActiveNotation",
-    }),
-    /// TODO move to global
-    getNearestRow: function (clickedYPos) {
-      let clickedRow = Math.round(clickedYPos / this.matrixMixin_getRectSize());
-      return clickedRow * this.matrixMixin_getRectSize();
-    },
-    startLineDrawing: function (position) {
-      this.editStarted = true;
-      this.linePosition.x2 = this.linePosition.x1 = position.x;
-      this.linePosition.y = this.getNearestRow(position.y);
-    },
-    $selectLine: function (notationId) {
-      //this.editStarted = true;
-      let notation = this.getNotations()[notationId];
+import useMatrixHelper from "../helpers/matrixHelper";
+import useNotationMutateHelper from "../helpers/notationMutateHelper";
+import { watch, onMounted, computed } from "vue"
+import { useNotationStore } from "../store/pinia/notationStore";
+import { EditMode, NotationType } from "../../../math-common/src/enum";
+import { LineCoordinates, LinePosition, DotPosition  } from "../../../math-common/src/globals";
+import { LineNotation } from "../helpers/responseTypes";
+import { storeToRefs } from 'pinia'
+import useEventBus from "../helpers/eventBus";
 
-      this.linePosition.x1 = this.getNotationXposByCol(notation.fromCol);
+const eventBus = useEventBus();
+const matrixHelper = useMatrixHelper();
+const notationMutateHelper = useNotationMutateHelper();
+const notationStore = useNotationStore();
 
-      this.linePosition.x2 =
-        this.linePosition.x1 +
-        (notation.toCol - notation.fromCol) * this.matrixMixin_getRectSize();
+const { activeCell } = storeToRefs(notationStore);
 
-      this.linePosition.y = this.getNotationYposByRow(notation.row);
-      this.setActiveNotation(notation);
-    },
-    $setLine: function (position) {
-      if (position < this.linePosition.x1) {
-        this.linePosition.x1 = position;
-      }
-      if (position > this.linePosition.x1) {
-        this.linePosition.x2 = position;
-      }
-    },
-    $saveLine: function (row, fromCol, toCol) {
-      let line = {
-        type: this.notationType,
-        row: row,
-        fromCol: fromCol,
-        toCol: toCol,
-      };
+const props = defineProps({
+  svgId: { type: String }
+});
 
-      this.$store
-        .dispatch("addNotation", line)
-        .then((line) => {
-          this.userOperationsMixin_syncOutgoingSaveNotation(line);
-        })
-        .catch((e) => {
-          console.error(e);
-        });
-    },
-    $endDrawLine: function () {
-      if (this.linePosition.x2 != this.linePosition.x1) {
-        let fromCol = Math.floor(
-          this.linePosition.x1 / this.matrixMixin_getRectSize()
-        );
+let editStarted = false;
+let notationType = "";
+let linePosition: LinePosition | Record<string, never> = {};
 
-        let toCol = Math.ceil(
-          this.linePosition.x2 / this.matrixMixin_getRectSize()
-        );
+let lineLeft = computed(() => Math.min(linePosition.x1, linePosition.x2));
+let lineRight = computed(() => Math.max(linePosition.x1, linePosition.x2));
+let lineTop = computed(() => linePosition.y);
 
-        let row = Math.round(
-          this.linePosition.y / this.matrixMixin_getRectSize()
-        );
-        this.$saveLine(row, fromCol, toCol);
-        this.$emit("drawLineEnded"); // signal parent
-      }
-      this.reset();
-    },
-    reset: function () {
-      this.linePosition.x1 = this.linePosition.x2 = this.linePosition.y = 0;
-      this.editStarted = false;
-    },
-    registerSvgMouseMove: function () {
-      document
-        .getElementById(this.svgId)
-        .addEventListener("mousemove", this.handleSvgMouseMove);
-    },
-    registerSvgMouseDown: function (e) {
-      document
-        .getElementById(this.svgId)
-        .addEventListener("mousedown", this.handleMouseDown);
-    },
-    registerSvgMouseUp: function () {
-      document
-        .getElementById(this.svgId)
-        .addEventListener("mouseup", this.handleMouseUp);
-    },
-    leftHandleMouseDown() {
-      this.editStarted = true;
-    },
-    rightHandleMouseDown() {
-      this.editStarted = true;
-    },
-    handleMouseDown(e) {
-      if (e.buttons !== 1) {
-        // ignore right button
-        return;
-      }
+watch(() => activeCell, (newActivecell) => {
+  if (newActivecell) reset();
+});
 
-      if (!!this.editStarted) {
-        return;
-      }
 
-      if (
-        this.getCurrentEditMode() === EditMode.FRACTION ||
-        this.getCurrentEditMode() === EditMode.SQRT
-      ) {
-        // new line
-        this.notationType =
-          this.getCurrentEditMode() === EditMode.FRACTION
-            ? NotationType.FRACTION
-            : NotationType.SQRT;
+/// TODO unregister upon destroy
+onMounted(() => {
+  registerSvgMouseDown();
+  registerSvgMouseMove();
+  registerSvgMouseUp();
+});
 
-        this.startLineDrawing({ x: e.offsetX, y: e.offsetY });
-      }
-
-      let fraction = this.$findFractionLineAtClickedPosition(e);
-      if (!!fraction) {
-        //select existing fraction
-        this.notationType = NotationType.FRACTION;
-        this.$selectLine(fraction.id);
-        return;
-      }
-
-      let sqrt = this.$findSqrtLineAtClickedPosition(e);
-      if (!!sqrt) {
-        //select existing sqrt
-        this.notationType = NotationType.SQRT;
-        this.$selectLine(sqrt.id);
-      }
-    },
-    handleSvgMouseMove(e) {
-      // left button is pressed
-      if (e.buttons !== 1) {
-        return;
-      }
-
-      if (this.linePosition.x1 === 0 && this.linePosition.x2 === 0) {
-        return;
-      }
-
-      if (!this.editStarted) {
-        return;
-      }
-
-      this.$setLine(e.offsetX);
-    },
-    handleMouseUp() {
-      if (this.linePosition.x1 === 0 && this.linePosition.x2 === 0) {
-        return;
-      }
-      if (!this.editStarted) {
-        return;
-      }
-
-      this.$endDrawLine();
-    },
-    $findFractionLineAtClickedPosition(e) {
-      return this.matrixMixin_findClickedObject(
-        {
-          x: e.clientX,
-          y: e.clientY,
-        },
-        "foreignObject",
-        "fraction"
-      );
-    },
-    $findSqrtLineAtClickedPosition(e) {
-      return this.matrixMixin_findClickedObject(
-        {
-          x: e.clientX,
-          y: e.clientY,
-        },
-        "foreignObject",
-        "sqrt"
-      );
-    },
-  },
+function registerSvgMouseMove() {
+  document?.getElementById(props.svgId!)?.addEventListener("mousemove", handleSvgMouseMove);
 };
+
+function registerSvgMouseDown() {
+  document?.getElementById(props.svgId!)?.addEventListener("mousedown", handleMouseDown);
+};
+
+function registerSvgMouseUp() {
+  document?.getElementById(props.svgId!)?.addEventListener("mouseup", handleMouseUp);
+};
+
+function leftHandleMouseDown() {
+  editStarted = true;
+};
+
+function rightHandleMouseDown() {
+  editStarted = true;
+};
+
+function handleMouseDown(e: MouseEvent) {
+  if (e.buttons !== 1) {
+    // ignore right button
+    return;
+  }
+
+  if (editStarted) {
+    return;
+  }
+
+  if (
+    notationStore.editMode === EditMode.FRACTION ||
+    notationStore.editMode === EditMode.SQRT
+  ) {
+    // new line
+    notationType =
+      notationStore.editMode === EditMode.FRACTION
+        ? NotationType.FRACTION
+        : NotationType.SQRT;
+
+    startLineDrawing({ x: e.offsetX, y: e.offsetY });
+  }
+
+  let fraction = findFractionLineAtClickedPosition(e);
+  if (fraction) {
+    //select existing fraction
+    notationType = NotationType.FRACTION;
+    selectLine(fraction.id);
+    return;
+  }
+
+  let sqrt = findSqrtLineAtClickedPosition(e);
+  if (sqrt) {
+    //select existing sqrt
+    notationType = NotationType.SQRT;
+    selectLine(sqrt.id);
+  }
+};
+
+function handleSvgMouseMove(e: MouseEvent) {
+  // left button is pressed
+  if (e.buttons !== 1) {
+    return;
+  }
+
+  if (linePosition.x1 === 0 && linePosition.x2 === 0) {
+    return;
+  }
+
+  if (!editStarted) {
+    return;
+  }
+
+  setLine(e.offsetX);
+};
+
+function handleMouseUp() {
+  if (linePosition.x1 === 0 && linePosition.x2 === 0) {
+    return;
+  }
+  if (editStarted) {
+    return;
+  }
+
+  endDrawLine();
+};
+
+/// TODO move to global
+function getNearestRow (clickedYPos: number) {
+  let clickedRow = Math.round(clickedYPos /  matrixHelper.rectSize);
+  return clickedRow * matrixHelper.rectSize;
+};
+
+function startLineDrawing (position: DotPosition) {
+  editStarted = true;
+  linePosition.x2 = linePosition.x1 = position.x;
+  linePosition.y = getNearestRow(position.y);
+};
+
+function selectLine (notationUUId: string) {
+
+      let notation = notationStore.notations.get(notationUUId) as LineNotation;
+
+      linePosition.x1 = matrixHelper.getNotationXposByCol(notation.fromCol);
+
+      linePosition.x2 =
+        linePosition.x1 +
+        (notation.toCol - notation.fromCol) * matrixHelper.rectSize;
+
+      linePosition.y = matrixHelper.getNotationYposByRow(notation.row);
+      notationMutateHelper.setActiveNotation(notation);
+};
+
+function setLine (xPos: number) {
+  if (xPos < linePosition.x1) {
+    linePosition.x1 = xPos;
+  }
+  if (xPos > linePosition.x1) {
+    linePosition.x2 = xPos;
+  }
+};
+
+function saveLine(lineCoordinates: LineCoordinates) {
+
+  if (notationType == NotationType.FRACTION)
+    notationMutateHelper.addFractiontNotation(lineCoordinates);
+  else if (notationType == NotationType.SQRT)
+    notationMutateHelper.addSqrtNotation(lineCoordinates);
+  else {
+    throw (notationType + ":is not a valid line type")
+  }
+};
+
+function endDrawLine() {
+  if (linePosition.x2 == linePosition.x1) return
+  let fromCol = Math.floor(
+    linePosition.x1 / matrixHelper.rectSize
+  );
+
+  let toCol = Math.ceil(
+    linePosition.x2 / matrixHelper.rectSize
+  );
+
+  let row = Math.round(
+    linePosition.y / matrixHelper.rectSize
+  );
+
+  let lineCoordinates: LineCoordinates = { fromCol: fromCol, toCol: toCol, row: row };
+
+  saveLine(lineCoordinates);
+  eventBus.emit("drawLineEnded"); // signal parent
+  reset();
+};
+
+function reset() {
+  linePosition.x1 = linePosition.x2 = linePosition.y = 0;
+  editStarted = false;
+};
+
+function findFractionLineAtClickedPosition(e: MouseEvent) {
+  return matrixHelper.findClickedObject(
+    {
+      x: e.clientX,
+      y: e.clientY,
+    },
+    "foreignObject",
+    NotationType.FRACTION
+  );
+};
+
+function findSqrtLineAtClickedPosition(e: MouseEvent) {
+  return matrixHelper.findClickedObject(
+    {
+      x: e.clientX,
+      y: e.clientY,
+    },
+    "foreignObject",
+    NotationType.SQRT
+  );
+};
+
+
 </script>
 
 <style>

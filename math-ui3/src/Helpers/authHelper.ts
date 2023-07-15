@@ -2,8 +2,8 @@ import { getCookie, setCookie, removeCookie } from "typescript-cookie";
 import { useUserStore } from "../store/pinia/userStore";
 import { useNotationStore } from "../store/pinia/notationStore";
 import { BoardType } from "../../../math-common/src/enum";
+import User from "../../../math-db/src/models/user.model";
 import useDbHelper from "./dbHelper";
-
 
 const userStore = useUserStore();
 const notationStore = useNotationStore();
@@ -11,6 +11,19 @@ const dbHelper = useDbHelper();
 
 
 export default function useAuthHelper() {
+
+  function setUser(user: User) {
+    userStore.setUser(user)
+  }
+
+  function registerUser(firstName: string, lastName: string, password: string, email: string) {
+    let user = new User();
+    user.firstName = firstName;
+    user.lastName = lastName;
+    user.email = email;
+    user.password = password;
+    userStore.registerUser(user);
+  }
 
   function canEdit() {
     return (
@@ -63,6 +76,8 @@ export default function useAuthHelper() {
     } else {
       removeCookie("access_token");
     }
+
+    userStore.currentUser = null;
   }
 
   /*async function  getGoogleUser() {
@@ -81,12 +96,14 @@ export default function useAuthHelper() {
 
   return {
     //getGoogleUser,
+    setUser,
+    registerUser,
+    authLocalUserByToken,
+    authLocalUserByUserAndPassword,
     signOut,
     signedInLocally,
     signedInWithGoogle,
     getToken,
-    authLocalUserByToken,
-    authLocalUserByUserAndPassword,
     authGoogleUser,
     canEdit,
   };

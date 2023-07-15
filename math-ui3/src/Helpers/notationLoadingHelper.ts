@@ -3,7 +3,7 @@ import {
   PointNotation,
   LineNotation,
   RectNotation,
-} from "../Helpers/responseTypes";
+} from "../helpers/responseTypes";
 import useDbHelper from "./dbHelper";
 import { useNotationStore } from "../store/pinia/notationStore";
 import { useLessonStore } from "../store/pinia/lessonStore";

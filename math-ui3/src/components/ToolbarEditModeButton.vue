@@ -1,7 +1,7 @@
 <template>
   <div>
     <v-tooltip top hidden>
-      <template v-slot:activator="{ on, attrs }">
+      <template  v-slot:activator="{ props }">
         <v-btn-toggle
           v-model="active"
           background-color="transparent"
@@ -10,11 +10,9 @@
           <v-btn
             color="yellow"
             icon
-            v-on="on"
-            v-bind="attrs"
-            v-on:click="$toggleEditMode"
+            v-on:click="toggleEditMode"
             x-small
-            ><v-icon v-bind:name="">iconMDIName</v-icon></v-btn
+            ><v-icon v-bind:name="iconMDIName">iconMDIName</v-icon></v-btn
           >
         </v-btn-toggle>
       </template>
@@ -23,55 +21,40 @@
   </div>
 </template>
 
-<script>
-import { mapGetters, mapState, mapActions } from "vuex";
-export default {
-  props: {
-    iconName: "",
-    editMode: "",
-  },
-  methods: {
-    ...mapGetters({
-      getCurrentEditMode: "getCurrentEditMode",
-    }),
-    ...mapActions({
-      setCurrentEditMode: "setCurrentEditMode",
-    }),
+<script setup lang="ts">
 
-    async $toggleEditMode() {
-      if (this.getCurrentEditMode() === this.editMode) {
-        await this.setCurrentEditMode(EditMode.SYMBOL);
-        //        active = 1;
-      } else {
-        await this.setCurrentEditMode(this.editMode);
-        active = 0;
-      }
-    },
-  },
-  computed: {
-    iconMDIName: function () {
-      return "mdi-" + this.iconName;
-    },
-    ...mapState({
-      currentEditMode: (state) => {
-        return state.lessonStore.operationMode.editMode;
-      },
-    }),
-  },
-  watch: {
-    currentEditMode: {
-      deep: true,
-      handler(newVal) {
-        if (newVal !== this.editMode) {
-          this.active = 1;
-        }
-      },
-    },
-  },
-  data: function () {
-    return {
-      active: 1,
-    };
-  },
+import { watch, ref, PropType } from "vue"
+import { EditMode } from "../../../math-common/src/enum";
+import { useNotationStore } from "../store/pinia/notationStore";
+import { computed } from "vue";
+
+const notationStore = useNotationStore();
+
+const props = defineProps({
+  iconName: { type: String },
+  editMode: { type: Object as PropType<EditMode> },
+});
+
+
+const iconMDIName = computed(() => "mdi-" + props.iconName);
+const currentEditMode = computed(() => notationStore.editMode);
+let active = ref(0);
+
+
+function toggleEditMode() {
+  if (notationStore.editMode === props.editMode) {
+    notationStore.editMode = EditMode.SYMBOL;
+    //        active = 1;
+  } else {
+    notationStore.editMode = props.editMode!;
+    active.value = 0;
+  }
 };
+
+
+watch(() => currentEditMode, (newVal) => {
+  if (newVal.value != props.editMode) {
+    active.value = 1;
+  }});
+
 </script>

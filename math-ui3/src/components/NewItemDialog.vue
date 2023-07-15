@@ -38,29 +38,24 @@
   </v-row>
 </template>
 
-<script>
-export default {
-  props: {
-    dialog: { show: false, name: "", title: "" },
-  },
-  watch: {
-    dialog(val) {
-      this.show = val.show;
-      this.name = val.name;
-      this.title = val.title;
-    },
-  },
-  data() {
-    return {
-      name: "",
-      show: false,
-      title: "",
-    };
-  },
-  methods: {
-    save() {
-      this.$emit("save", { name: this.name });
-    },
-  },
+<script setup lang="ts">
+import { ref, watch } from "vue";
+import useEventBus from "../helpers/eventBus";
+const eventBus = useEventBus();
+
+const props = defineProps({
+  dialog: Boolean,
+  title: String
+});
+
+watch(()=> props.dialog, (show: boolean) => {
+  show = show;
+})
+
+let show = ref(false);
+let name = ref("");
+function save() {
+  eventBus.emit("newItemDialogSave", name);
 };
+
 </script>

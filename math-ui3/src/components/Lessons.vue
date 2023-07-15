@@ -1,7 +1,8 @@
 <template>
   <v-container>
     <NewItemDialog
-      :dialog="lessonDialog"
+      :dialog = "lessonDialog"
+      :title = "lessonDialogTitle"
       v-on="{ save: saveLesson }"
     ></NewItemDialog>
     <v-card class="mx-auto" max-width="800" min-height="600">
@@ -32,88 +33,70 @@
     </v-card>
   </v-container>
 </template>
-<script>
-import { mapActions } from "vuex";
-import { mapGetters } from "vuex";
+<script setup lang="ts">
 import NewItemDialog from "./NewItemDialog.vue";
+import Lesson from "../../../math-db/src/models/lesson/lesson.model";
+import { computed, ref } from "vue"
+import { useUserStore } from "../store/pinia/userStore";
+import { useLessonStore } from "../store/pinia/lessonStore";
+import { watch } from 'vue'
+import { useRouter } from 'vue-router'
+import { useRoute } from 'vue-router'
+const router = useRouter()
+const route = useRoute()
+const userStore = useUserStore();
+const lessonStore = useLessonStore();
+const title = computed(() => { return userStore.isTeacher() ? "My Lessons" : "Lessons Shared with me" })
+let lessonDialog = false;
+let lessonDialogTitle = "<span>Please specify <strong>lesson</strong> title</span";
+let search = ref("");
+const menu = [
+  { icon: "plus", title: "Add" },
+  { icon: "remove", title: "Remove" },
+];
 
-export default {
-  components: { NewItemDialog },
-  name: "Lessons",
-  mounted() {
-    this.title = this.isTeacher() ? "My Lessons" : "Lessons Shared with me";
-    this.loadLessons(this.isTeacher()).then((lessons) => {
-      if (this.isTeacher() && !lessons) {
-        this.openLessonDialog();
-      }
-    });
-  },
-  methods: {
-    ...mapActions({
-      loadLessons: "loadLessons",
-      addLesson: "addLesson",
-      loadLesson: "loadLesson",
-      setCurrentLesson: "setCurrentLesson",
-    }),
-    ...mapGetters({
-      getLessons: "getLessons",
-      isTeacher: "isTeacher",
-    }),
-    openLessonDialog() {
-      this.lessonDialog = {
-        show: true,
-        name: "",
-        title: "<span>Please specify <strong>lesson</strong> title</span",
-      };
-    },
-    async saveLesson(newLesson) {
-      let savedLesson = await this.addLesson(newLesson);
-      await this.setCurrentLesson(savedLesson);
-      this.$router.push({
+
+watch(route, (to) => {
+  lessonStore.loadLessons();
+  if (userStore.isTeacher()  && !lessonStore.lessons) {
+    openLessonDialog();
+  }
+}, { flush: 'pre', immediate: true, deep: true });
+
+function openLessonDialog() {
+  lessonDialog = true;
+};
+
+async function saveLesson(newLesson: Lesson) {
+      lessonDialog = false;
+      let savedLesson =  await lessonStore.addLesson(newLesson);
+      router.push({
         path: "/lesson/" + savedLesson.uuid,
       });
-    },
-    async seletctLesson(lesson, b) {
-      this.loadLesson(lesson.uuid).then(() =>
-        this.$router.push({
-          path: "/lesson/" + lesson.uuid,
-        })
-      );
-    },
-  },
-  computed: {
-    headers: () => [
-      {
-        text: "Name",
-        value: "name",
-      },
-      {
-        text: "Created At",
-        value: "createdAt",
-      },
-    ],
-    lessons: function () {
-      return this.getLessons().map((l) => {
-        return {
-          uuid: l.uuid,
-          name: l.name,
-          createdAt: new Date(l.createdAt),
-        };
-      });
-    },
-  },
-  data() {
-    return {
-      search: "",
-      title: "",
-      lessonDialog: { show: false, name: "" },
-      menu: [
-        { icon: "plus", title: "Add" },
-        { icon: "remove", title: "Remove" },
-      ],
-    };
-  },
 };
+
+async function seletctLesson(lesson: Lesson) {
+  router.push({
+    path: "/lesson/" + lesson.uuid,
+  });
+};
+
+const headers = computed(() => [
+  {
+    text: "Name",
+    value: "name",
+  },
+  {
+    text: "Created At",
+    value: "createdAt",
+  },
+]);
+
+const lessons = computed(() => {
+  return Object.entries(lessonStore.lessons).map((l: Lesson[]) => l[1]).map((l: Lesson) => {
+    return { uuid: l.uuid, name: l.name, createdAt: l.createdAt }
+});
+
 </script>
 
 <style>
