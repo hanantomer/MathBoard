@@ -95,6 +95,7 @@ const headers = computed(() => [
 const lessons = computed(() => {
   return Object.entries(lessonStore.lessons).map((l: Lesson[]) => l[1]).map((l: Lesson) => {
     return { uuid: l.uuid, name: l.name, createdAt: l.createdAt }
+  })
 });
 
 </script>

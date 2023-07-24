@@ -1,9 +1,16 @@
+import { BaseNotation } from "../../../math-db/src/models/baseNotation";
+import { PointAttributes } from "../../../math-db/src/models/pointAttributes";
+import { LineAttributes } from "../../../math-db/src/models/lineAttributes";
+import { RectAttributes } from "../../../math-db/src/models/rectAttributes";
+
 import {
-  Notation,
-  PointNotation,
-  LineNotation,
-  RectNotation,
-} from "../helpers/responseTypes";
+  PointNotationAttributes,
+  LineNotationAttributes,
+  RectNotationAttributes
+} from "../../../math-db/src/models/notationAttributes";
+
+
+
 import useDbHelper from "./dbHelper";
 import { useNotationStore } from "../store/pinia/notationStore";
 import { useLessonStore } from "../store/pinia/lessonStore";
@@ -36,9 +43,9 @@ export default function notationLoadingHelper() {
   }
 
   // e.g get lesson notations
-  async function loadNotationsByBoard(): Promise<Map<string, Notation>> {
+  async function loadNotationsByBoard(): Promise<Map<string, BaseNotation>> {
 
-    let notationsMap = new Map<string, Notation>();
+    let notationsMap = new Map<string, BaseNotation>();
 
     for (const nt in NotationType) {
       let notations = await loadNotationsByType(NotationType[nt as keyof typeof NotationType]);
@@ -53,17 +60,17 @@ export default function notationLoadingHelper() {
   // e.g. load lesson symbols
   async function loadNotationsByType(
     notationType: NotationType
-  ): Promise<Notation[]> {
+  ): Promise<BaseNotation[]> {
     let boardType = notationStore.parent.type;
     let parentUUId = notationStore.parent.uuid;
     switch (notationType) {
       case NotationType.SYMBOL:
       case NotationType.SIGN:
       case NotationType.POWER:
-        return await dbHelper.getNotations<PointNotation>(notationType, boardType, parentUUId);
+        return await dbHelper.getNotations<PointNotationAttributes>(notationType, boardType, parentUUId);
       case NotationType.FRACTION:
       case NotationType.SQRT:
-        return await dbHelper.getNotations<LineNotation>(
+        return await dbHelper.getNotations<LineNotationAttributes>(
           notationType,
           boardType,
           parentUUId
@@ -71,7 +78,7 @@ export default function notationLoadingHelper() {
       case NotationType.GEO:
       case NotationType.IMAGE:
       case NotationType.TEXT:
-        return await dbHelper.getNotations<RectNotation>(
+        return await dbHelper.getNotations<RectNotationAttributes>(
           notationType,
           boardType,
           parentUUId

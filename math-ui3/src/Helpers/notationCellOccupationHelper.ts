@@ -1,13 +1,13 @@
-import { PointNotation, LineNotation } from "./responseTypes";
-import { RectCoordinates } from "../../../math-common/src/globals";
+import { PointAttributes } from "../../../math-db/src/models/pointAttributes";
+import { LineAttributes } from "../../../math-db/src/models/lineAttributes";
+import { RectAttributes } from "../../../math-db/src/models/rectAttributes";
+
 import { useNotationStore } from "../store/pinia/notationStore";
 import { onMounted } from "vue";
 
 const notationStore = useNotationStore();
 
-
 export default function notationCellOccupationHelper() {
-
   onMounted(() => {
     notationStore.$subscribe((mutation, state) => {
       console.log("a change happened");
@@ -17,18 +17,18 @@ export default function notationCellOccupationHelper() {
 
   function removePointFromOccupationMatrix(
     matrix: any,
-    pointNotation: PointNotation
+    pointNotation: PointAttributes
   ) {
     matrix[pointNotation.row][pointNotation.col] = null;
   }
 
-  function removeLineFromOccupationMatrix(matrix: any, line: LineNotation) {
+  function removeLineFromOccupationMatrix(matrix: any, line: LineAttributes) {
     for (let col: number = line.fromCol; col <= line.toCol; col++) {
       matrix[line.row][col] = null;
     }
   }
 
-  function removeRectFromOccupationMatrix(matrix: any, rect: RectCoordinates) {
+  function removeRectFromOccupationMatrix(matrix: any, rect: RectAttributes) {
     for (let row = rect.fromRow; row <= rect.toRow; row++) {
       for (let col = rect.fromCol; col <= rect.toCol; col++) {
         matrix[row][col] = null;
@@ -36,17 +36,17 @@ export default function notationCellOccupationHelper() {
     }
   }
 
-  function addPointToOccupationMatrix(matrix: any, notation: PointNotation) {
+  function addPointToOccupationMatrix(matrix: any, notation: PointAttributes) {
     matrix[notation.row][notation.col] = notation;
   }
 
-  // addToOccupationMatrix: function (matrix: any, notation: LineNotation) {
+  // addToOccupationMatrix: function (matrix: any, notation: LineAttributes) {
   //   for (let col = notation.fromCol; col <= notation.toCol; col++) {
   //     matrix[notation.row][col] = notation;
   //   }
   // },
 
-  function addRectToOccupationMatrix(matrix: any, notation: RectCoordinates) {
+  function addRectToOccupationMatrix(matrix: any, notation: RectAttributes) {
     for (let row = notation.fromRow; row <= notation.toRow; row++) {
       for (let col = notation.fromCol; col <= notation.toCol; col++) {
         matrix[row][col] = notation;

@@ -4,9 +4,13 @@ import { UUID, UUIDV4 } from "sequelize/types/data-types";
 import User from "../../user.model";
 import Question from "../question.model";
 import QuestionDecorator from "../questionDecorator";
+import { QuestionLineAttributes,QuestionLineCreationAttributes } from "@/models/question/line/questionLineAttributes";
 
 @QuestionDecorator("QuestionSqrt")
-export default class QuestionSqrt extends Model {
+export default class QuestionSqrt extends Model<
+    QuestionLineAttributes,
+    QuestionLineCreationAttributes
+> {
     notationType = NotationType.SQRT;
     boardType = BoardType.QUESTION;
     value = null;

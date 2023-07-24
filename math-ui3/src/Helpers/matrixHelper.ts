@@ -1,11 +1,20 @@
 export { }
 
 import { BoardType, NotationType, NotationTypeShape, NotationShape } from "../../../math-common/src/enum";
-import { Point, CellCoordinates, getDefaultFontSize } from "../../../math-common/src/globals";
+import { DotPosition, getDefaultFontSize } from "../../../math-common/src/globals";
 import * as d3 from "d3";
 import { useNotationStore } from "../store/pinia/notationStore"
-import { useLessonStore } from "../store/pinia/lessonStore"
-import { Notation, PointNotation, LineNotation, RectNotation, TextNotation } from "./responseTypes";
+import { BaseNotation } from "../../../math-db/src/models/baseNotation";
+import { PointAttributes } from "../../../math-db/src/models/pointAttributes";
+import { LineAttributes } from "../../../math-db/src/models/lineAttributes";
+import { RectAttributes } from "../../../math-db/src/models/rectAttributes";
+import {
+  LineNotationAttributes,
+  PointNotationAttributes,
+  RectNotationAttributes,
+  TextNotationAttributes
+} from "../../../math-db/src/models/notationAttributes";
+
 import { useUserStore } from "../store/pinia/userStore";
 
 const notationStore = useNotationStore();
@@ -16,9 +25,8 @@ export default function useMatrixHelper() {
   const colsNum: number = 35;
   const rowsNum: number = 20;
   let rectSize: number = 25; ///TODO: ceck if initial value is of any value
-  const lineHeight: number = 4;
   let topLevelGroup: any = null;
-  const svgns: string = "http://www.w3.org/2000/svg";
+
   const svgWidth: string = "1400px";
   const svgHeight: string = "700px";
   let matrix: any[];
@@ -108,13 +116,13 @@ export default function useMatrixHelper() {
 
   //https://stackoverflow.com/questions/22428484/get-element-from-point-when-you-have-overlapping-elements
   function findClickedObject(
-    point: Point,
+    dotPosition: DotPosition,
     tagName: string,
     notationType: NotationType | null
-  ) : Element {
+  ): Element {
     var elements = [];
     var display = [];
-    var item = document.elementFromPoint(point.x, point.y) as any; // must be any to accept window
+    var item = document.elementFromPoint(dotPosition.x, dotPosition.y) as any; // must be any to accept window
     var prevItem = null;
     var idx = 0;
 
@@ -131,7 +139,7 @@ export default function useMatrixHelper() {
       display.push(item.style.display);
       item.style.display = "none";
       prevItem = item;
-      item = document.elementFromPoint(point.x, point.y);
+      item = document.elementFromPoint(dotPosition.x, dotPosition.y);
     }
     for (var i = 0; i < elements.length; i++) {
       elements[i].style.display = display[i];
@@ -200,7 +208,7 @@ export default function useMatrixHelper() {
   function getNextRect(
     horizontalStep: number,
     verticalStep: number
-  ): CellCoordinates | undefined {
+  ): PointAttributes | undefined {
     if (!notationStore.activeCell?.col || notationStore.activeCell?.row) {
       return;
     }
@@ -231,6 +239,7 @@ export default function useMatrixHelper() {
     return {
       col: nextCol,
       row: nextRow,
+      value: ""
     };
   }
 
@@ -250,18 +259,18 @@ export default function useMatrixHelper() {
     }
   }
 
-  function findRect(point: CellCoordinates): HTMLElement | undefined | null {
+  function findRect(point: PointAttributes): HTMLElement | undefined | null {
     return document
       ?.querySelector(`g[row='${point.row}']`)
       ?.querySelector(`rect[col='${point.col}']`);
   }
 
-  function removeNotation(n: Notation) {
-    document?.getElementById(n.id + n.notationType)?.remove();
+  function removeNotation(n: BaseNotation) {
+    document?.getElementById(n.uuid + n.notationType)?.remove();
   }
 
-  function enrichNotations(notations: Notation[]) {
-    let enrichedNotations: Notation[] = [];
+  function enrichNotations(notations: BaseNotation[]) {
+    let enrichedNotations: BaseNotation[] = [];
     for (const key in notations) {
       if (Object.hasOwnProperty.call(notations, key)) {
         const notation = notations[key];
@@ -290,7 +299,7 @@ export default function useMatrixHelper() {
   }
 
   function refreshScreen(
-    notations: Notation[],
+    notations: BaseNotation[],
     svgId: string,
     el: HTMLElement
   ) {
@@ -313,16 +322,16 @@ export default function useMatrixHelper() {
       );
   }
 
-  function height(n: Notation): number | null {
+  function height(n: BaseNotation): number | null {
     switch (NotationTypeShape.get(n.notationType)) {
       case NotationShape.POINT: {
-        return pointNotationHeight(n as PointNotation);
+        return pointNotationHeight(n as PointNotationAttributes);
       }
       case NotationShape.LINE: {
-        return lineNotationHeight(n as LineNotation);
+        return lineNotationHeight(n as LineNotationAttributes);
       }
       case NotationShape.RECT: {
-        return rectNotationHeight(n as RectNotation);
+        return rectNotationHeight(n as RectNotationAttributes);
       }
     }
     return null;
@@ -333,49 +342,49 @@ export default function useMatrixHelper() {
     return (
       enter
         .append("foreignObject")
-        .attr("type", (n: Notation) => {
+        .attr("type", (n: BaseNotation) => {
           return n.notationType;
         })
-        .attr("id", (n: Notation) => {
+        .attr("id", (n: BaseNotation) => {
           return id(n);
         })
-        .attr("col", (n: PointNotation) => {
+        .attr("col", (n: PointAttributes) => {
           return n?.col;
         })
-        .attr("fromCol", (n: LineNotation | RectNotation) => {
+        .attr("fromCol", (n: LineAttributes | RectAttributes) => {
           return n?.fromCol;
         })
-        .attr("toCol", (n: LineNotation | RectNotation) => {
+        .attr("toCol", (n: LineAttributes | RectAttributes) => {
           return n?.toCol;
         })
-        .attr("row", (n: PointNotation) => {
+        .attr("row", (n: PointAttributes) => {
           return n?.row;
         })
-        .attr("fromRow", (n: RectNotation) => {
+        .attr("fromRow", (n: RectAttributes) => {
           return n?.fromRow;
         })
-        .attr("toRow", (n: RectNotation) => {
+        .attr("toRow", (n: RectAttributes) => {
           return n?.toRow;
         })
-        .attr("x", (n: Notation) => {
+        .attr("x", (n: BaseNotation) => {
           return x(n);
         })
-        .attr("y", (n: Notation) => {
+        .attr("y", (n: BaseNotation) => {
           return y(n);
         })
-        .attr("width", (n: Notation) => {
+        .attr("width", (n: BaseNotation) => {
           return width(n);
         })
-        .attr("height", (n: Notation) => {
+        .attr("height", (n: BaseNotation) => {
           return height(n);
         })
-        .style("font-size", (n: Notation) => {
+        .style("font-size", (n: BaseNotation) => {
           return fontSize(n, el);
         })
         //.style("color", (n) => {
         //  return this.$color(n);
         //})
-        .html((n: Notation) => {
+        .html((n: BaseNotation) => {
           return html(n);
         })
     );
@@ -387,22 +396,22 @@ export default function useMatrixHelper() {
         //.style("color", (n) => {
         //  return this.$color(n);
         //})
-        .attr("x", (n: Notation) => {
+        .attr("x", (n: BaseNotation) => {
           return x(n);
         })
-        .attr("y", (n: Notation) => {
+        .attr("y", (n: BaseNotation) => {
           return y(n);
         })
-        .attr("col", (n: Notation) => {
+        .attr("col", (n: BaseNotation) => {
           return col(n);
         })
-        .attr("row", (n: Notation) => {
+        .attr("row", (n: BaseNotation) => {
           return row(n);
         })
-        .attr("width", (n: Notation) => {
+        .attr("width", (n: BaseNotation) => {
           return width(n);
         })
-        .html((n: Notation) => {
+        .html((n: BaseNotation) => {
           return html(n);
         })
     );
@@ -420,37 +429,37 @@ export default function useMatrixHelper() {
       });
   }
 
-  function id(n: Notation) {
-    return n.notationType + n.id;
+  function id(n: BaseNotation) {
+    return n.notationType + n.uuid;
   }
 
-  function col(n: Notation) : number | null{
+  function col(n: BaseNotation) : number | null{
     switch (NotationTypeShape.get(n.notationType)) {
       case NotationShape.POINT: {
-        return (n as PointNotation).col;
+        return (n as PointNotationAttributes).col;
       }
       case NotationShape.LINE:
       case NotationShape.RECT: {
-        return (n as LineNotation).fromCol;
+        return (n as LineNotationAttributes).fromCol;
       }
     }
     return null;
   }
 
-  function row(n: Notation) {
+  function row(n: BaseNotation) {
     switch (NotationTypeShape.get(n.notationType)) {
       case NotationShape.POINT:
       case NotationShape.LINE: {
-        return (n as PointNotation | LineNotation).row;
+        return (n as LineNotationAttributes).row;
       }
       case NotationShape.RECT: {
-        return (n as RectNotation).fromRow;
+        return (n as RectNotationAttributes).fromRow;
       }
     }
     return null;
   }
 
-  function x(n: Notation) : number | null {
+  function x(n: BaseNotation) : number | null {
     let colIdx = col(n);
     let deltaX =
       n.notationType === NotationType.SQRTSYMBOL ||
@@ -461,7 +470,7 @@ export default function useMatrixHelper() {
     return colIdx ? getNotationXposByCol(colIdx) + deltaX : null;
   }
 
-  function y(n: Notation) {
+  function y(n: BaseNotation) {
     let rowIdx = row(n);
     let deltaY =
       n.notationType === NotationType.POWER
@@ -474,30 +483,30 @@ export default function useMatrixHelper() {
     return this.getNotationYposByRow(rowIdx) + deltaY;
   }
 
-  function width(n: Notation): number | null {
+  function width(n: BaseNotation): number | null {
     switch (NotationTypeShape.get(n.notationType)) {
       case NotationShape.POINT: {
-        return pointNotationWidth(n as PointNotation);
+        return pointNotationWidth(n as PointNotationAttributes);
       }
       case NotationShape.LINE: {
-        return lineNotationWidth(n as LineNotation);
+        return lineNotationWidth(n as LineNotationAttributes);
       }
       case NotationShape.RECT: {
-        return rectNotationWidth(n as RectNotation);
+        return rectNotationWidth(n as RectNotationAttributes);
       }
     }
     return null;
   }
 
-  function pointNotationWidth(n: PointNotation): number {
+  function pointNotationWidth(n: PointAttributes): number {
     return rectSize;
   }
 
-  function lineNotationWidth(n: LineNotation): number {
+  function lineNotationWidth(n: LineAttributes): number {
     return (n.toCol - n.fromCol) * rectSize + 5;
   }
 
-  function rectNotationWidth(n: RectNotation): number {
+  function rectNotationWidth(n: RectAttributes): number {
     // if (n.notationType === NotationType.TEXT) {
     //   return (
     //     (<any>window).textMeasurementCtx.measureText(n.value).width +
@@ -507,19 +516,19 @@ export default function useMatrixHelper() {
     return (n.toCol - n.fromCol) * rectSize + 5;
   }
 
-  function pointNotationHeight(n: PointNotation): number {
+  function pointNotationHeight(n: PointAttributes): number {
     return rectSize;
   }
 
-  function lineNotationHeight(n: LineNotation): number {
+  function lineNotationHeight(n: LineAttributes): number {
     return rectSize;
   }
 
-  function rectNotationHeight(n: RectNotation): number {
+  function rectNotationHeight(n: RectAttributes): number {
     return (n.toRow - n.fromRow) * rectSize + 5;
   }
 
-  function fontSize(n: Notation, el: HTMLElement) {
+  function fontSize(n: BaseNotation, el: HTMLElement) {
     return n.notationType === NotationType.POWER
       ? powerFontSize()
       : n.notationType === NotationType.TEXT
@@ -529,18 +538,18 @@ export default function useMatrixHelper() {
       : regularFontSize;
   }
 
-  function html(n: Notation) {
+  function html(n: BaseNotation) {
     if (n.notationType === NotationType.FRACTION) {
-      n = n as LineNotation;
+      let n1 = n as LineNotationAttributes;
       return `<span class=line style='width:${
-        (n.toCol - n.fromCol) * rectSize
+        (n1.toCol - n1.fromCol) * rectSize
       }px;'></span>`;
     }
 
     if (n.notationType === NotationType.SQRT) {
-      n = n as LineNotation;
+      let n1 = n as LineNotationAttributes;
       return `<span class=line style='position:relative;left:9px;width:${
-        (n.toCol - n.fromCol) * rectSize - 8
+        (n1.toCol - n1.fromCol) * rectSize - 8
       }px;'></span>`;
     }
 
@@ -549,30 +558,39 @@ export default function useMatrixHelper() {
     }
 
     if (n.notationType === NotationType.TEXT) {
-      n = n as RectNotation;
+      let n1 = n as TextNotationAttributes;
 
       let bColor = borderColor(n === notationStore.activeNotation);
-      return `<pre style='border:groove 2px;border-color:${bColor};background-color:${bColor}'>${n.value}</pre>`;
+      return `<pre style='border:groove 2px;border-color:${bColor};background-color:${bColor}'>${n1.value}</pre>`;
     }
 
     if (n.notationType === NotationType.IMAGE) {
-      n = n as RectNotation;
+      let n1 = n as TextNotationAttributes;
       let bColor = borderColor(n === notationStore.activeNotation);
-      return `<img style='border:groove 2px;border-color:${borderColor}' src='${n.value}'>`;
+      return `<img style='border:groove 2px;border-color:${borderColor}' src='${n1.value}'>`;
+    }
+
+    if (n.notationType === NotationType.SYMBOL) {
+      let n1 = n as TextNotationAttributes;
+      let bColor = borderColor(n === notationStore.activeNotation);
+      return `<img style='border:groove 2px;border-color:${borderColor}' src='${n1.value}'>`;
     }
 
 
+
+    let n1 = n as PointNotationAttributes;
+
     let fontWeight =
-      userStore.currentUser.uuid == n.user.uuid ? "bold" : "normal";
+      userStore.currentUser?.uuid == n.user.uuid ? "bold" : "normal";
 
     let color = (notationStore.selectedNotations.indexOf(n.uuid))
       ? "red"
       : this.getParent().boardType === BoardType.ANSWER &&
-        this.getUser().id != n.userId
+        this.getUser().uuid != n.user.uuid
       ? "purple"
       : "black";
 
-    return `<p style='color:${color};font-weight:${fontWeight};margin-left:8px;font-size:1.1em'>${n.value}</p>`;
+    return `<p style='color:${color};font-weight:${fontWeight};margin-left:8px;font-size:1.1em'>${n1.value}</p>`;
   }
 
   function getNotationXposByCol(col: number): number {

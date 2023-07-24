@@ -1,4 +1,7 @@
 {
+  "ts-node": {
+    "require": ["tsconfig-paths/register"]
+  },
   "compilerOptions": {
     "sourceMap": true,
     "outDir": "build",
@@ -21,7 +24,7 @@
     "noImplicitThis": false,
     "paths": {
       "@/*": ["src/*"],
-      "@db/*": ["../../../math-db/src/*"]
+      "@db/*": ["../math-db/src/*"]
     }
   },
   "include": ["src/**/*.ts", "src/**/*.d.ts", "src/**/*.tsx", "src/**/*.vue"],

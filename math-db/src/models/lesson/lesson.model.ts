@@ -1,9 +1,23 @@
 import { Model, Column, DataType, BelongsTo, ForeignKey } from "sequelize-typescript";
+import { Optional } from "sequelize";
 import BoardDecorator from "../boardDecorator";
 import User from "../user.model";
 
+export interface LessonAttributes {
+    id: number;
+    user: User;
+    uuid: string;
+    name: string;
+}
+
+interface LessonCreationAttributes
+    extends Optional<LessonAttributes, "id"> {}
+
+
 @BoardDecorator("lesson")
-export default class Lesson extends Model {
+export default class Lesson extends Model<
+    LessonAttributes,
+    LessonCreationAttributes> {
 
     @ForeignKey(() => User)
     userId!: number;

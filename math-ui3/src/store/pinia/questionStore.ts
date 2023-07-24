@@ -1,6 +1,6 @@
 //  questions of current lesson
 import { defineStore } from "pinia";
-import Question from "../../../../math-db/src/models/question/question.model";
+import Question, { QuestionAttributes } from "../../../../math-db/src/models/question/question.model";
 import useDbHelper  from "../../helpers/dbHelper";
 import { useLessonStore } from "./lessonStore";
 
@@ -12,8 +12,8 @@ const db = useDbHelper();
 
 export const useQuestionStore = defineStore("answer", ()=> {
 
-  let questions: Map<String, Question> = new Map();
-  let currentQuestion: Question = new Question();
+  let questions: Map<String, QuestionAttributes> = new Map();
+  let currentQuestion = <QuestionAttributes>{};
 
   async function loadQuestion(questionUUId: string) {
       currentQuestion = await db.getQuestion(questionUUId);
@@ -25,13 +25,13 @@ export const useQuestionStore = defineStore("answer", ()=> {
     }
 
     let questionsFromDb = await db.getQuestions(lessonStore.currentLesson.uuid);
-    questionsFromDb.forEach((q: Question) => {
+    questionsFromDb.forEach((q: QuestionAttributes) => {
       this.questions.set(q.uuid, q);
     });
   };
 
-  async function addQuestion(question: Question) {
-    question.lesson  = lessonStore.currentLesson;
+  async function addQuestion(question: QuestionAttributes) {
+    question.lessonUUID  = lessonStore.currentLesson.uuid;
     question = await db.addQuestion(question);
     this.questions.set(question.uuid, question);
     currentQuestion = question;

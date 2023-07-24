@@ -17,7 +17,7 @@ export interface QuestionAttributes {
 interface QuestionCreationAttributes
     extends Optional<QuestionAttributes, "id"> {}
 
-@BoardDecorator("lesson")
+@BoardDecorator("question")
 export default class Question extends Model<
     QuestionAttributes,
     QuestionCreationAttributes

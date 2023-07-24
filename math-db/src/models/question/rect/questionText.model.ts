@@ -1,12 +1,18 @@
 import { Model, Column, BelongsTo, ForeignKey } from "sequelize-typescript";
 import { NotationType, BoardType } from "../../../../../math-common/src/enum";
 import { UUID, UUIDV4 } from "sequelize/types/data-types";
+import {
+    QuestionRectAttributes,
+    QuestionRectCreationAttributes,
+} from "@/models/question/rect/questionRectAttributes";
 import QuestionDecorator from "../questionDecorator";
 import User from "../../user.model";
 import Question from "../question.model";
 
 @QuestionDecorator("QuestionText")
-export default class QuestionText extends Model {
+export default class QuestionText extends Model<
+    QuestionRectAttributes,
+    QuestionRectCreationAttributes> {
     notationType = NotationType.TEXT;
     boardType = BoardType.QUESTION;
 

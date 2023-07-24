@@ -1,13 +1,17 @@
 import { Model, Column, BelongsTo, ForeignKey } from "sequelize-typescript";
 import { NotationType, BoardType } from "../../../../../math-common/src/enum";
 import { UUID, UUIDV4 } from "sequelize/types/data-types";
-import { BaseModel } from "../../baseModel";
-import User from "../../user.model";
-import Lesson from "../lesson.model";
-import LessonDecorator from "../lessonDecorator";
+import { LessonLineAttributes, LessonLineCreationAttributes } from "@/models/lesson/line/lessonLineAttributes"
+import User from "@/models/user.model";
+import Lesson from "@/models/lesson/lesson.model";
+import LessonDecorator from "@/models/lesson/lessonDecorator";
+
 
 @LessonDecorator("LessonFraction")
-export default class LessonFraction extends Model implements BaseModel {
+export default class LessonFraction extends Model<
+    LessonLineAttributes,
+    LessonLineCreationAttributes
+> {
     notationType = NotationType.FRACTION;
     boardType = BoardType.LESSON;
     value = null;

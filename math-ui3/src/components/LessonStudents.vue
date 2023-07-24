@@ -40,7 +40,7 @@
 import { computed } from "vue"
 import { useStudentStore } from "../store/pinia/studentStore";
 import { useLessonStore } from "../store/pinia/lessonStore";
-import User from "@math-db/models/user.model";
+import User from "@db/models/user.model";
 import UseUserOutgoingOperations from "../helpers/userOutgoingOperationsHelper";
 
 const studentStore = useStudentStore();

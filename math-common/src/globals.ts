@@ -1,33 +1,31 @@
-const messagingHost = "http://localhost:3030";
-const apiHost = "http://localhost:8080";
-
-const matrixDimensions = {
+export const messagingHost = "http://localhost:3030";
+export const apiHost = "http://localhost:8080";
+export const matrixDimensions = {
   rowsNum: 24,
   colsNum: 44,
 };
 
-const signList = ["=", "+", "-", "*", "/", "\\", "(", ")", "[", "]"];
+export const signList = ["=", "+", "-", "*", "/", "\\", "(", ")", "[", "]"];
 
-const activeCellColor = "lightcyan";
+export const activeCellColor = "lightcyan";
 
-const heartBeatInterval = 5000;
+export const heartBeatInterval = 5000;
 
-type CellCoordinates = {col: number, row:number};
+export type CellCoordinates = {col: number, row:number};
 
-type LineCoordinates = {fromCol: number, toCol: number, row:number};
+//export type LineCoordinates = {fromCol: number, toCol: number, row:number};
 
-type RectCoordinates = {fromCol: number, toCol: number, fromRow:number, toRow:number};
+//export type RectCoordinates = {fromCol: number, toCol: number, fromRow:number, toRow:number};
 
-type DotPosition = {x: number, y:number};
+export type DotPosition = {x: number, y:number};
 
-type LinePosition =  {
+export type LinePosition =  {
   x1: number;
   x2: number;
   y: number;
 };
 
-
-function getDefaultFontSize() : number {
+export function getDefaultFontSize() : number {
   var style  = 
     window!.getComputedStyle(document!.body)!;
 
@@ -38,18 +36,3 @@ function getDefaultFontSize() : number {
     
  
 
-export {
-  heartBeatInterval, 
-  messagingHost, 
-  apiHost, 
-  activeCellColor, 
-  matrixDimensions, 
-  signList, 
-  CellCoordinates, 
-  LineCoordinates, 
-  RectCoordinates, 
-  DotPosition as Point,
-  getDefaultFontSize,
-  LinePosition,
-  DotPosition
-}

@@ -1,12 +1,12 @@
 
 import { watch } from "vue"
 import { EditMode, NotationShape, NotationType } from "../../../math-common/src/enum";
-import { RectNotation, LineNotation } from "./responseTypes";
 import { useNotationStore } from "../store/pinia/notationStore";
-import {
-  CellCoordinates,
-  activeCellColor,
-} from "../../../math-common/src/globals";
+import { activeCellColor, CellCoordinates } from "../../../math-common/src/globals";
+import { RectAttributes } from "../../../math-db/src/models/rectAttributes";
+import { PointNotationAttributes, LineNotationAttributes, RectNotationAttributes } from "../../../math-db/src/models/notationAttributes";
+
+import { PointAttributes } from "../../../math-db/src/models/pointAttributes";
 import { storeToRefs } from 'pinia'
 import useMatrixHelper from "./matrixHelper"
 import useNotationMutateHelper from "./notationMutateHelper"
@@ -52,7 +52,7 @@ export default function activateObjectHelper() {
     }
 
     // no underlying elements found, activate single cell
-    let cellToActivate = {
+    let cellToActivate: CellCoordinates = {
       col: getElementCoordinateValue(clickedRect, "col"),
       row: getElementCoordinateValue(clickedRect, "row"),
     };
@@ -72,16 +72,18 @@ export default function activateObjectHelper() {
     return val  ? Number.parseInt(val) : -1;
   }
 
-  function getOverlappedRectNotation(e: MouseEvent): RectNotation | null | undefined {
+  function getOverlappedRectNotation(e: MouseEvent): RectNotationAttributes | null | undefined {
     let rectElement = matrixHelper.findTextAtClickedPosition(e);
     if (!rectElement) return null;
 
-    return notationStore.getNotations<RectNotation>(NotationShape.RECT).find((n: RectNotation) => {
-      getElementCoordinateValue(rectElement, "fromCol") >= n.fromCol &&
-      getElementCoordinateValue(rectElement, "toCol") <= n.toCol &&
-      getElementCoordinateValue(rectElement, "fromRow") >= n.fromRow &&
-      getElementCoordinateValue(rectElement, "toRow") >= n.toRow
-    });
+    return notationStore
+      .getNotations<RectNotationAttributes>(NotationShape.RECT)
+      .find((n: RectNotationAttributes) => {
+        getElementCoordinateValue(rectElement, "fromCol") >= n.fromCol &&
+          getElementCoordinateValue(rectElement, "toCol") <= n.toCol &&
+          getElementCoordinateValue(rectElement, "fromRow") >= n.fromRow &&
+          getElementCoordinateValue(rectElement, "toRow") >= n.toRow;
+      });
   }
 
   function getOverlappedLineNotation(e: MouseEvent) {
@@ -97,8 +99,8 @@ export default function activateObjectHelper() {
     if (!fractionElement) return;
 
     return notationStore
-      .getNotations <LineNotation>(NotationShape.LINE)
-      .find((n: LineNotation) => {
+      .getNotations<LineNotationAttributes>(NotationShape.LINE)
+      .find((n: LineNotationAttributes) => {
         getElementCoordinateValue(fractionElement, "fromCol") >= n.fromCol &&
           getElementCoordinateValue(fractionElement, "toCol") <= n.toCol &&
           getElementCoordinateValue(fractionElement, "row") >= n.row &&

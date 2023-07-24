@@ -83,15 +83,15 @@
       <!-- user image or name -->
       <v-tooltip bottom hidden>
         <template v-slot:activator="{ props }">
-          <v-avatar v-show="user.imageUrl" size="36px"
-            ><img v-bind:src="user.imageUrl"
+          <v-avatar v-show="user!.imageUrl" size="36px"
+            ><img v-bind:src="user!.imageUrl"
           /></v-avatar>
         </template>
-        <span v-show="user.firstName">{{ user.firstName }}</span>
+        <span v-show="user!.firstName">{{ user!.firstName }}</span>
       </v-tooltip>
 
-      <span v-show="user.firstName && !user.imageUrl"
-        >Hello {{ user.firstName }}</span
+      <span v-show="user!.firstName && !user!.imageUrl"
+        >Hello {{ user!.firstName }}</span
       >
 
       <v-tooltip bottom hidden>
@@ -134,13 +134,13 @@ const authHelper = useAuthHelper();
 const userStore = useUserStore();
 
 onMounted(() => {
-    window.removeEventListener("keyup", onKeyUp);
+    window.addEventListener("keyup", onKeyUp);
     document.addEventListener("paste", onPaste);
 });
 
 onUnmounted(() => {
     window.removeEventListener("keyup", onKeyUp);
-    window.removeEventListener("paste", onPaste);
+    document.removeEventListener("paste", onPaste);
 });
 
 let loginDialog = ref(false);

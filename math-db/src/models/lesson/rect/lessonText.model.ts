@@ -1,13 +1,16 @@
 import { Model, Column, BelongsTo, ForeignKey } from "sequelize-typescript";
 import { NotationType, BoardType } from "../../../../../math-common/src/enum";
 import { UUID, UUIDV4 } from "sequelize/types/data-types";
-import { BaseModel } from "../../baseModel";
-import LessonDecorator from "../lessonDecorator";
-import User from "../../user.model";
-import Lesson from "../lesson.model";
+import LessonDecorator from "@/models/lesson/lessonDecorator";
+import User from "@/models/user.model";
+import Lesson from "@/models/lesson/lesson.model";
+import { LessonRectAttributes, LessonRectCreationAttributes } from "@/models/lesson/rect/lessonRectAttributes";
 
 @LessonDecorator("LessonText")
-export default class LessonText extends Model implements BaseModel {
+export default class LessonText extends Model<
+    LessonRectAttributes,
+    LessonRectCreationAttributes
+> {
     notationType = NotationType.TEXT;
     boardType = BoardType.LESSON;
 

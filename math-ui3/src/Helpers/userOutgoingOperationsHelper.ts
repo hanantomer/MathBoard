@@ -1,6 +1,6 @@
 
-import {  CellCoordinates } from "../../../math-common/src/globals";
-import { Notation } from "./responseTypes";
+import { CellCoordinates } from "../../../math-common/src/globals";
+import { BaseNotation } from "../../../math-db/src/models/baseNotation";
 import { useNotationStore } from "../store/pinia/notationStore";
 
 import useFeathersHelper from "./feathersHelper";
@@ -29,23 +29,18 @@ export default function userOutgoingOperations() {
         .update({}, { activeCell: activeCell }, {});
   };
 
-  function syncOutgoingSaveNotation(notation: Notation) {
-      client
-        .service("notationSync")
-        .create({ notation: notation }, {});
+  function syncOutgoingSaveNotation(notation: BaseNotation) {
+    client.service("notationSync").create({ notation: notation }, {});
   };
 
-  function syncOutgoingRemoveNotation(notation: Notation) {
-      client
-        .service("notationSync")
-        .remove({ notation: notation }, {});
+  function syncOutgoingRemoveNotation(notation: BaseNotation) {
+    client.service("notationSync").remove({ notation: notation }, {});
   };
 
-  function syncOutgoingUpdateSelectedNotation (selectedNotation: Notation)
-     {
-      client
-        .service("notationSync")
-        .update({}, { notation: selectedNotation }, {});
+  function syncOutgoingUpdateSelectedNotation(selectedNotation: BaseNotation) {
+    client
+      .service("notationSync")
+      .update({}, { notation: selectedNotation }, {});
   };
 
   function syncOutgoingHeartBeat(LessonUUId: string) {

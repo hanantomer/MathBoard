@@ -1,16 +1,16 @@
 import { Model, Column, DataType, BelongsTo, ForeignKey } from "sequelize-typescript";
 import BoardDecorator from "../boardDecorator";
-import User  from "../user.model";
-import Question  from "../question/question.model";
+import User, { UserAttributes }  from "../user.model";
+import Question, { QuestionAttributes }  from "../question/question.model";
 import { Optional } from "sequelize";
 
 export interface AnswerAttributes {
     id: number;
     userId: number;
     uuid: string;
-    user: User
+    user: UserAttributes
     name: string;
-    question: Question;
+    question: QuestionAttributes;
 }
 
 interface AnswerCreationAttributes extends Optional<AnswerAttributes, "id"> {}

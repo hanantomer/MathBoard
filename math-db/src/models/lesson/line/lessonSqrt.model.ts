@@ -2,13 +2,18 @@ import LessonDecorator from "../lessonDecorator";
 import { Model, Column, BelongsTo, ForeignKey } from "sequelize-typescript";
 import { NotationType, BoardType } from "../../../../../math-common/src/enum";
 import { UUID, UUIDV4 } from "sequelize/types/data-types";
-import { BaseModel } from "../../baseModel";
-import User from "../../user.model";
-import Lesson from "../lesson.model";
-
+import {
+    LessonLineAttributes,
+    LessonLineCreationAttributes,
+} from "@/models/lesson/line/lessonLineAttributes";
+import User from "@/models/user.model";
+import Lesson from "@/models/lesson/lesson.model";
 
 @LessonDecorator("LessonSqrt")
-export default class LessonSqrt extends Model implements BaseModel {
+export default class LessonSqrt extends Model<
+    LessonLineAttributes,
+    LessonLineCreationAttributes
+> {
     notationType = NotationType.SQRT;
     boardType = BoardType.LESSON;
     value = null;

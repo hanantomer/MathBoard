@@ -1,13 +1,16 @@
 import { Model, Column, BelongsTo, ForeignKey } from "sequelize-typescript";
 import { NotationType, BoardType } from "../../../../../math-common/src/enum";
 import { UUID, UUIDV4 } from "sequelize/types/data-types";
-import { BaseModel } from "../../baseModel";
-import User from "../../user.model";
-import Question from "../question.model";
-import QuestionDecorator from "../questionDecorator";
+import { QuestionLineAttributes, QuestionLineCreationAttributes } from "@/models/question/line/questionLineAttributes";
+import User from "@/models/user.model";
+import Question from "@/models/question/question.model";
+import QuestionDecorator from "@/models/question/questionDecorator";
 
 @QuestionDecorator("LessonFraction")
-export default class QuestionFraction extends Model implements BaseModel {
+export default class QuestionFraction extends Model<
+    QuestionLineAttributes,
+    QuestionLineCreationAttributes
+> {
     notationType = NotationType.FRACTION;
     boardType = BoardType.QUESTION;
     value = null;

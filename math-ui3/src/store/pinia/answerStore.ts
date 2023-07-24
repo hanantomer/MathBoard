@@ -1,6 +1,6 @@
 import { defineStore } from "pinia";
-import Answer from "../../../../math-db/src/models/answer/answer.model";
-import Question from "../../../../math-db/src/models/question/question.model";
+import { AnswerAttributes } from "../../../../math-db/src/models/answer/answer.model";
+import { QuestionAttributes } from "../../../../math-db/src/models/question/question.model";
 import  useDbHelper  from "../../helpers/dbHelper";
 import { useQuestionStore } from "./questionStore";
 import { useUserStore } from "./userStore";
@@ -11,12 +11,12 @@ const db = useDbHelper();
 
 export const useAnswerStore = defineStore("answer", () => {
 
-  let answers: Map<String, Answer> = new Map();
-  let currentAnswer: Answer =  new Answer();
+  let answers: Map<String, AnswerAttributes> = new Map();
+  let currentAnswer = <AnswerAttributes>{};
 
   async function loadAnswer(answerUUId: string) {
-      const answer: Answer = await db.getAnswer(answerUUId);
-      const question: Question = await db.getQuestion(answer.question.id);
+      const answer = await db.getAnswer(answerUUId);
+      const question = await db.getQuestion(answer.question.uuid);
 
       if (answer) {
         answers.set(answer.uuid, answer);
@@ -31,34 +31,36 @@ export const useAnswerStore = defineStore("answer", () => {
     }
 
     const answersFromDb = await db.getAnswers(questionStore.currentQuestion.uuid );
-    answersFromDb.forEach((a: Answer) => {
+    answersFromDb.forEach((a: AnswerAttributes) => {
       answers.set(a.uuid, a);
     });
   };
 
+  // answer is initially empty
   async function addAnswer() {
-      let answerForCurrentQuestion: Answer|null = null;
-      answers.forEach((a : Answer)  => {
+      let answerForCurrentQuestion: AnswerAttributes|null = null;
+      answers.forEach((a : AnswerAttributes)  => {
         if (a.question.uuid == questionStore.currentQuestion.uuid) {
           answerForCurrentQuestion = a;
           return;
         }
       });
-      if (answerForCurrentQuestion) return answerForCurrentQuestion;
+      if (answerForCurrentQuestion) return;
 
-      let answer = <Answer>{};
-      answer.question = questionStore.currentQuestion;
-      answer.user = userStore.currentUser;
+      let answer = <AnswerAttributes>{};
+      answer.question  = questionStore.currentQuestion;
+      answer.user = userStore.currentUser!;
+
       answer = await db.addAnswer(answer);
       answers.set(answer.uuid, answer);
       setCurrentAnswer(answer)
   };
 
-  function setCurrentAnswer(answer: Answer) {
+  function setCurrentAnswer(answer: AnswerAttributes) {
     currentAnswer = answer;
   };
 
-  function removeAnswer(answer: Answer) {
+  function removeAnswer(answer: AnswerAttributes) {
     answers.delete(answer.uuid);
   };
 

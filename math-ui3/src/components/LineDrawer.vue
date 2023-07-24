@@ -46,8 +46,9 @@ import useNotationMutateHelper from "../helpers/notationMutateHelper";
 import { watch, onMounted, computed } from "vue"
 import { useNotationStore } from "../store/pinia/notationStore";
 import { EditMode, NotationType } from "../../../math-common/src/enum";
-import { LineCoordinates, LinePosition, DotPosition  } from "../../../math-common/src/globals";
-import { LineNotation } from "../helpers/responseTypes";
+import { LinePosition, DotPosition  } from "../../../math-common/src/globals";
+import { LineNotationAttributes } from "../../../math-db/src/models/notationAttributes";
+import { LineAttributes } from "../../../math-db/src/models/lineAttributes";
 import { storeToRefs } from 'pinia'
 import useEventBus from "../helpers/eventBus";
 
@@ -183,7 +184,7 @@ function startLineDrawing (position: DotPosition) {
 
 function selectLine (notationUUId: string) {
 
-      let notation = notationStore.notations.get(notationUUId) as LineNotation;
+      let notation = notationStore.notations.get(notationUUId) as LineNotationAttributes;
 
       linePosition.x1 = matrixHelper.getNotationXposByCol(notation.fromCol);
 
@@ -204,12 +205,12 @@ function setLine (xPos: number) {
   }
 };
 
-function saveLine(lineCoordinates: LineCoordinates) {
+function saveLine(lineAttributes: LineAttributes) {
 
   if (notationType == NotationType.FRACTION)
-    notationMutateHelper.addFractiontNotation(lineCoordinates);
+    notationMutateHelper.addFractiontNotation(lineAttributes);
   else if (notationType == NotationType.SQRT)
-    notationMutateHelper.addSqrtNotation(lineCoordinates);
+    notationMutateHelper.addSqrtNotation(lineAttributes);
   else {
     throw (notationType + ":is not a valid line type")
   }
@@ -229,9 +230,9 @@ function endDrawLine() {
     linePosition.y / matrixHelper.rectSize
   );
 
-  let lineCoordinates: LineCoordinates = { fromCol: fromCol, toCol: toCol, row: row };
+  let lineAttributes: LineAttributes  = { fromCol: fromCol, toCol: toCol, row: row  };
 
-  saveLine(lineCoordinates);
+  saveLine(lineAttributes);
   eventBus.emit("drawLineEnded"); // signal parent
   reset();
 };

@@ -1,8 +1,8 @@
 // notations of current board(lesson, question or answers)
 //  questions of current lesson
 import { defineStore } from "pinia";
-import { Notation} from "../../helpers/responseTypes";
 import { CellCoordinates, matrixDimensions } from "../../../../math-common/src/globals";
+import { BaseNotation} from "../../../../math-db/src/models/baseNotation";
 import { EditMode, BoardType, NotationShape, NotationTypeShape } from "../../../../math-common/src/enum";
 import { reactive, ref } from "vue";
 
@@ -18,11 +18,14 @@ type Board = {
 
 export const useNotationStore = defineStore("notation", () => {
 
-  const cellOccupationMatrix: (Notation | null)[][] = createCellOccupationMatrix();
+  const cellOccupationMatrix: (BaseNotation | null)[][] =
+    createCellOccupationMatrix();
   let parent: Board = reactive<Board>({ type: BoardType.LESSON, uuid: "" });
-  let notations: Map<String, Notation> = reactive(<Map<String, Notation>>{});
+  let notations: Map<String, BaseNotation> = reactive(
+    <Map<String, BaseNotation>>{}
+  );
   let activeCell: CellCoordinates | null =  <CellCoordinates | null>{};
-  let activeNotation: Notation | null = <Notation | null>{};
+  let activeNotation: BaseNotation | null = <BaseNotation | null>{};
   let selectedNotations: string[] = [];
   let editMode = ref(EditMode.SYMBOL);
 
@@ -44,8 +47,8 @@ export const useNotationStore = defineStore("notation", () => {
     editMode.value = newEditMode;
   }
 
-  function createCellOccupationMatrix(): (Notation | null)[][] {
-    let matrix: (Notation | null)[][] = new Array();
+  function createCellOccupationMatrix(): (BaseNotation | null)[][] {
+    let matrix: (BaseNotation | null)[][] = new Array();
     for (let i = 0; i < matrixDimensions.rowsNum; i++) {
       for (let j = 0; j < matrixDimensions.colsNum; j++) {
         matrix[i][j] = null;

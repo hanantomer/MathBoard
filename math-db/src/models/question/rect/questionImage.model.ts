@@ -1,12 +1,16 @@
 import { Model, Column, BelongsTo, ForeignKey } from "sequelize-typescript";
 import { NotationType, BoardType } from "../../../../../math-common/src/enum";
 import { UUID, UUIDV4 } from "sequelize/types/data-types";
-import QuestionDecorator from "../questionDecorator";
-import User from "../../user.model";
-import Question from "../question.model";
+import QuestionDecorator from "@/models/question/questionDecorator";
+import User from "@/models/user.model";
+import Question from "@/models/question/question.model";
+import { QuestionRectAttributes,QuestionRectCreationAttributes } from "@/models/question/rect/questionRectAttributes";
 
 @QuestionDecorator("QuestionImage")
-export default class QuestionImage extends Model {
+export default class QuestionImage extends Model<
+    QuestionRectAttributes,
+    QuestionRectCreationAttributes
+> {
     notationType = NotationType.IMAGE;
     boardType = BoardType.QUESTION;
     selected = false;

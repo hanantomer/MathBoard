@@ -16,9 +16,10 @@ export const useLessonStore = defineStore("lesson", () => {
   // }
 
   async function loadLessons() {
+    if (userStore.currentUser == undefined) return;
     let lessonsFromDB = userStore.isTeacher()
-      ? await db.getTeacherLessons(userStore.currentUser?.uuid)
-      : await db.getStudentLessons(userStore.currentUser?.uuid);
+      ? await db.getTeacherLessons(userStore.currentUser.uuid)
+      : await db.getStudentLessons(userStore.currentUser.uuid);
 
     lessonsFromDB.forEach((l: Lesson) => {
       lessons.set(l.uuid, l);
@@ -44,7 +45,7 @@ export const useLessonStore = defineStore("lesson", () => {
   async function addLessonToSharedLessons() {
     await db.addLessonToSharedLessons(
       currentLesson.uuid,
-      userStore.currentUser.id
+      userStore.currentUser!.uuid
     );
   }
 

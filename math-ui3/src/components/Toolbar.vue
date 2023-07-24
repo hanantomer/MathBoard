@@ -5,7 +5,7 @@
 
     <v-toolbar color="primary" dark class="vertical-toolbar">
       <!-- create access link -->
-      <v-tooltip top hidden v-if="editEnabled" v-model="showAccessTooltip">
+      <v-tooltip top hidden v-model="showAccessTooltip">
         <template v-slot:activator="{ props }">
           <v-btn
             v-bind="props"
@@ -251,7 +251,6 @@ let powerButtonActive = ref(1);
 
 let accessLinkDialogOpen = ref(false);
 let freeTextDialogOpen = ref(false);
-let deleteButtonActive = ref(1);
 let textButtonActive = ref(1);
 
 let showFractionLineTooltip = ref(false);
@@ -268,7 +267,7 @@ const editEnabled = computed(() => {
 });
 
 const hasActiveCell = computed(() => {
-  return notationStore.activeCell?.col || notationStore.activeNotation?.id;
+  return notationStore.activeNotation?.user;
 });
 
 const answerCheckMode = computed(() => {

@@ -2,12 +2,15 @@ import AnswerDecorator from "../answerDecorator";
 import { Model, Column, BelongsTo, ForeignKey } from "sequelize-typescript";
 import { NotationType, BoardType } from "../../../../../math-common/src/enum";
 import { UUID, UUIDV4 } from "sequelize/types/data-types";
-import { BaseModel } from "../../baseModel";
-import User from "../../user.model";
-import Answer from "../answer.model";
+import User from "@/models/user.model";
+import Answer from "@/models/answer/answer.model";
+import {
+    AnswerLineAttributes,
+    AnswerLineCreationAttributes,
+} from "@/models/answer/line/answerLineAttributes";
 
 @AnswerDecorator("AnswerRoot")
-export default class AnswerRoot extends Model implements BaseModel {
+export default class AnswerRoot extends Model<AnswerLineAttributes, AnswerLineCreationAttributes> {
     notationType = NotationType.SQRT;
     boardType = BoardType.ANSWER;
     value = null;

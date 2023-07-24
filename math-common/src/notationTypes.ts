@@ -52,7 +52,7 @@ export type Rect = {
 };
 
 
-export class PointNotation extends Notation implements Point {
+export class PointAttributes extends Notation implements Point {
   //lessonUUId: string;
   col: number;
   row: number;
@@ -73,7 +73,7 @@ export class PointNotation extends Notation implements Point {
   }
 };
 
-export class LineNotation extends Notation implements Line {
+export class LineAttributes extends Notation implements Line {
   
   fromCol: number;
   toCol: number;
@@ -97,7 +97,7 @@ export class LineNotation extends Notation implements Line {
   }
 };
 
-export class RectNotation extends Notation implements Rect {
+export class RectAttributes extends Notation implements Rect {
   
   fromCol: number;
   toCol: number;
@@ -124,7 +124,7 @@ export class RectNotation extends Notation implements Rect {
   }
 };
 
-export class LessonPointNotation extends PointNotation  {
+export class LessonPointNotation extends PointAttributes  {
 
   constructor(
     id: number,
@@ -141,7 +141,7 @@ export class LessonPointNotation extends PointNotation  {
 };
 
 
-export class LessonLineNotation extends LineNotation  {
+export class LessonLineNotation extends LineAttributes  {
   lessonUUId: string;
 
   constructor(
@@ -161,7 +161,7 @@ export class LessonLineNotation extends LineNotation  {
   }
 };
 
-export class LessonRectNotation extends RectNotation  {
+export class LessonRectNotation extends RectAttributes  {
   lessonUUId: string;
 
   constructor(
@@ -182,7 +182,7 @@ export class LessonRectNotation extends RectNotation  {
   }
 };
 
-export class AnswerPointNotation extends PointNotation  {
+export class AnswerPointNotation extends PointAttributes  {
   answerUUId: string;
 
   constructor(
@@ -201,7 +201,7 @@ export class AnswerPointNotation extends PointNotation  {
   }
 };
 
-export class AnswerLineNotation extends LineNotation  {
+export class AnswerLineNotation extends LineAttributes  {
   answerUUId: string;
 
   constructor(
@@ -221,7 +221,7 @@ export class AnswerLineNotation extends LineNotation  {
   }
 };
 
-export class AnswerRectNotation extends RectNotation {
+export class AnswerRectNotation extends RectAttributes {
   answerUUId: string;
   
   constructor(
@@ -242,7 +242,7 @@ export class AnswerRectNotation extends RectNotation {
   }
 };
 
-export class QuestionPointNotation extends PointNotation  {
+export class QuestionPointNotation extends PointAttributes  {
   questionUUId: string;
 
   constructor(
@@ -261,7 +261,7 @@ export class QuestionPointNotation extends PointNotation  {
   }
 };
 
-export class QuestionLineNotation extends LineNotation {
+export class QuestionLineNotation extends LineAttributes {
   questionUUId: string;
 
   constructor(
@@ -281,7 +281,7 @@ export class QuestionLineNotation extends LineNotation {
   }
 };
 
-export class QuestionRectNotation extends RectNotation {
+export class QuestionRectNotation extends RectAttributes {
   questionUUId: string;
 
   constructor(

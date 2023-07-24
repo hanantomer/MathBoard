@@ -2,15 +2,17 @@ import { BoardType, NotationType } from "../../../math-common/src/enum";
 import axios from "axios";
 import axiosHelper from "./axiosHelper";
 import { onMounted } from "vue";
-import User from "../../../math-db/src/models/user.model";
-import Lesson from "../../../math-db/src/models/lesson/lesson.model";
-import Question from "../../../math-db/src/models/question/question.model";
-import Answer from "../../../math-db/src/models/answer/answer.model";
+import { UserAttributes } from "../../../math-db/src/models/user.model";
+import Lesson, { LessonAttributes } from "../../../math-db/src/models/lesson/lesson.model";
+import Question, { QuestionAttributes } from "../../../math-db/src/models/question/question.model";
+import Answer, { AnswerAttributes } from "../../../math-db/src/models/answer/answer.model";
 
-import {
-  Notation,
-  Response
-} from "./responseTypes";
+
+import { BaseNotation, BaseCreateNotation } from "../../../math-db/src/models/baseNotation";
+
+export interface Response<T> {
+  data: T[];
+}
 
 const {baseURL, initAxiosInterceptors } = axiosHelper();
 
@@ -37,48 +39,51 @@ export default function useDbHelper() {
     return parentFieldName;
   }
 
-  async function authGoogleUser(): Promise<User>  {
-      const { data } = await axios.get<Response<User>>(baseURL + "/users");
+  async function authGoogleUser(): Promise<UserAttributes>  {
+      const { data } = await axios.get<Response<UserAttributes>>(
+        baseURL + "/users"
+      );
       return data.data[0];
   }
   // token is taken from cookie. see interceptor at the top of the page
-  async function authLocalUserByToken(): Promise<User> {
-      const { data } = await axios.get<Response<User>>(baseURL + "/users");
+  async function authLocalUserByToken(): Promise<UserAttributes> {
+      const { data } = await axios.get<Response<UserAttributes>>(
+        baseURL + "/users"
+      );
       return data.data[0];
   }
 
   async function authLocalUserByPassword(
     email: string,
     password: string
-  ): Promise<User> {
-    const { data } = await axios.get<Response<User>>(
+  ): Promise<UserAttributes> {
+    const { data } = await axios.get<Response<UserAttributes>>(
       baseURL + `/users?email=${email}&password=${password}`
     );
     return data.data[0];
   }
 
-  async function registerUser(user: User) : Promise<User> {
-      const { data } = await axios.post<Response<User>>(
-        baseURL + "/users",
-        user
-      );
-      return data.data[0];
+  async function registerUser(user: UserAttributes): Promise<UserAttributes> {
+    const { data } = await axios.post<Response<UserAttributes>>(
+      baseURL + "/users",
+      user
+    );
+    return data.data[0];
   }
 
 
-  async function addLessonToSharedLessons(lessonUUId: string, userId: number) {
+  async function addLessonToSharedLessons(lessonUUId: string, userUUId: string) {
 
       // check if exists
       const studentLesson = await axios.get(
-        `/studentlessons?LessonUUId=${lessonUUId}&UserId=${userId}`
+        `/studentlessons?LessonUUId=${lessonUUId}&UserUUId=${userUUId}`
       );
-      console.debug(studentLesson);
 
       if (studentLesson.data.length) return;
 
       await axios.post(baseURL  + "/studentlessons", {
         LessonUUId: lessonUUId,
-        UserId: userId,
+        UserUUId: userUUId,
       });
   }
 
@@ -90,24 +95,24 @@ export default function useDbHelper() {
       return data.data[0];
   }
 
-  async function addQuestion(question: Question): Promise<Question> {
-      const { data } = await axios.post<Response<Question>>(
+  async function addQuestion(question: QuestionAttributes): Promise<QuestionAttributes> {
+      const { data } = await axios.post<Response<QuestionAttributes>>(
         baseURL + "/questions",
         question
       );
       return data.data[0];
   }
 
-  async function addAnswer(answer: Answer) : Promise<Answer> {
-      const { data } = await axios.post<Response<Answer>>(
+  async function addAnswer(answer: AnswerAttributes) : Promise<AnswerAttributes> {
+      const { data } = await axios.post<Response<AnswerAttributes>>(
         baseURL + "/answers",
         answer
       );
       return data.data[0];
   }
 
-  async function addNotation(notation: Notation): Promise<Notation> {
-    const { data } = await axios.post<Response<Notation>>(
+  async function addNotation(notation: BaseCreateNotation): Promise<BaseNotation> {
+    const { data } = await axios.post<Response<BaseNotation>>(
       baseURL +
         `/${notation.boardType}${notation.notationType.toLowerCase()}s/`,
       notation
@@ -116,68 +121,70 @@ export default function useDbHelper() {
   }
 
 
-  async function updateNotation(notation: Notation): Promise<Notation> {
-    const { data } = await axios.put<Response<Notation>>(
+  async function updateNotation(notation: BaseNotation): Promise<BaseNotation> {
+    const { data } = await axios.put<Response<BaseNotation>>(
       baseURL +
         `/${notation.boardType}${notation.notationType.toLowerCase()}s/${
-          notation.id
+          notation.uuid
         }`,
       notation
     );
     return data.data[0];
   }
 
-  async function getLesson(LessonUUId: string) : Promise<Lesson> {
-    const { data } = await axios.get<Response<Lesson>>(baseURL + "/lessons?uuid=" + LessonUUId);
+  async function getLesson(LessonUUId: string) : Promise<LessonAttributes> {
+    const { data } = await axios.get<Response<LessonAttributes>>(baseURL + "/lessons?uuid=" + LessonUUId);
     return data.data[0];
   }
 
-  async function getQuestion(questionUUId: string): Promise<Question> {
-    const { data } = await axios.get<Response<Question>>(
+  async function getQuestion(questionUUId: string): Promise<QuestionAttributes> {
+    const { data } = await axios.get<Response<QuestionAttributes>>(
       baseURL + "/questions?uuid=" + questionUUId
     );
     return data.data[0];
   }
 
-  async function getAnswer(answerUUId: string) : Promise<Answer>{
-      const { data } = await axios.get<Response<Answer>>(baseURL  + "/answers?uuid=" + answerUUId);
+  async function getAnswer(answerUUId: string) : Promise<AnswerAttributes>{
+      const { data } = await axios.get<Response<AnswerAttributes>>(baseURL  + "/answers?uuid=" + answerUUId);
       return data.data[0];
   }
 
-  async function getTeacherLessons(userUUId: string) : Promise<Lesson[]>{
-     const { data } = await axios.get<Response<Lesson>>(
+  async function getTeacherLessons(userUUId: string) : Promise<LessonAttributes[]>{
+     const { data } = await axios.get<Response<LessonAttributes>>(
        baseURL + "/lessons?UserUUId=" + userUUId
     );
 
     return data.data;
   }
 
-  async function getStudentLessons(userUUId: string): Promise<Lesson[]> {
-    const { data } = await axios.get<Response<Lesson>>(
+  async function getStudentLessons(userUUId: string): Promise<LessonAttributes[]> {
+    const { data } = await axios.get<Response<LessonAttributes>>(
       baseURL + "/studentlessons?UserUUId=" + userUUId
     );
 
     return data.data;
   }
 
-  async function getQuestions(lessonUUId: string) : Promise<Question[]> {
-    const { data } = await axios.get<Response<Question>>(baseURL  + "/questions?LessonUUId=" + lessonUUId)
+  async function getQuestions(lessonUUId: string) : Promise<QuestionAttributes[]> {
+    const { data } = await axios.get<Response<QuestionAttributes>>(baseURL  + "/questions?LessonUUId=" + lessonUUId)
     return data.data;
   }
 
-  async function getAnswers(questionUUId: string): Promise<Answer[]> {
-    const { data } = await axios.get<Response<Answer>>(
+  async function getAnswers(questionUUId: string): Promise<AnswerAttributes[]> {
+    const { data } = await axios.get<Response<AnswerAttributes>>(
       baseURL + "/answers?QuestionUUId=" + questionUUId
     );
 
     return data.data;
   }
 
-  async function removeNotation(notation: Notation) {
-    axios.delete(`${notation.boardType}${notation.notationType}s/${notation.id}`); // e.g lessonsymbols/1)
+  async function removeNotation(notation: BaseNotation) {
+    axios.delete(
+      `${notation.boardType}${notation.notationType}s/${notation.uuid}`
+    ); // e.g lessonsymbols/1)
   }
 
-  async function getNotations<T extends Notation>(
+  async function getNotations<T extends BaseNotation>(
     notationType: NotationType,
     boardType: BoardType,
     parentUUId: string

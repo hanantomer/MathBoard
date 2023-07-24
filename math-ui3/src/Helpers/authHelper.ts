@@ -1,8 +1,8 @@
 import { getCookie, setCookie, removeCookie } from "typescript-cookie";
 import { useUserStore } from "../store/pinia/userStore";
 import { useNotationStore } from "../store/pinia/notationStore";
-import { BoardType } from "../../../math-common/src/enum";
-import User from "../../../math-db/src/models/user.model";
+import { BoardType, UesrType } from "../../../math-common/src/enum";
+import { UserAttributes } from "../../../math-db/src/models/user.model";
 import useDbHelper from "./dbHelper";
 
 const userStore = useUserStore();
@@ -12,16 +12,22 @@ const dbHelper = useDbHelper();
 
 export default function useAuthHelper() {
 
-  function setUser(user: User) {
-    userStore.setUser(user)
+  function setUser(user: UserAttributes) {
+    userStore.setUser(user);
   }
 
-  function registerUser(firstName: string, lastName: string, password: string, email: string) {
-    let user = new User();
-    user.firstName = firstName;
-    user.lastName = lastName;
-    user.email = email;
-    user.password = password;
+  function registerUser(firstName: string, lastName: string, password: string, email: string, userType: UesrType) {
+    let user: UserAttributes = {
+      uuid: "",
+      authorized: false,
+      userType: userType,
+      firstName: firstName,
+      lastName: lastName,
+      email: email,
+      password: password,
+      access_token: "",
+      imageUrl: ""
+    };
     userStore.registerUser(user);
   }
 
@@ -44,7 +50,7 @@ export default function useAuthHelper() {
   async function authLocalUserByUserAndPassword(
     email: string,
     password: string
-  ) {
+  ): Promise<UserAttributes> {
     return await dbHelper.authLocalUserByPassword(email, password);
   }
 
@@ -77,7 +83,7 @@ export default function useAuthHelper() {
       removeCookie("access_token");
     }
 
-    userStore.currentUser = null;
+    userStore.currentUser = undefined;
   }
 
   /*async function  getGoogleUser() {

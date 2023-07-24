@@ -150,7 +150,7 @@
 </template>
 
 <script setup lang="ts">
-import { LoginType } from "../../../math-common/src/enum"
+import { LoginType, UesrType } from "../../../math-common/src/enum"
 import useAuthHelper from "../helpers/authHelper";
 import { ref, computed, watch } from "vue";
 import { useCookies } from "vue3-cookies";
@@ -235,7 +235,7 @@ function googleOnSuccess() {
 
 function validateRegister() {
   if (registerForm.value.validate()) {
-    authHelper.registerUser(firstName, lastName, email, password);
+    authHelper.registerUser(firstName, lastName, email, password, UesrType.STUDENT);
     registerForm.value = null;
     loginForm.value = null;
     tab = 0; /*redirect to login*/

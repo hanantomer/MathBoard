@@ -9,21 +9,25 @@ import {
 } from "sequelize-typescript";
 
 import { Optional } from "sequelize";
-
+import { UesrType } from "../../../math-common/src/enum";
 
 export interface UserAttributes {
     id: number;
     uuid: string;
     firstName: string;
     lastName: string;
+    email: string;
     password: string;
     access_token: string;
     imageUrl: string;
-    userType: string; ///TODU use enum
+    userType: UesrType;
     authorized: boolean;
 }
 
-interface UserCreationAttributes extends Optional<UserAttributes, 'id'> {}
+export interface UserCreationAttributes extends Optional<UserAttributes, "id"> { }
+
+
+//interface UserCreationAttributes extends Optional<UserAttributes, 'id'> {}
 
 @DefaultScope(() => ({
     attributes: {

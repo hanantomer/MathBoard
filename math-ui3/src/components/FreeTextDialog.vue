@@ -53,6 +53,7 @@ import { watch, ref } from "vue"
 import { useNotationStore } from "../store/pinia/notationStore";
 import { NotationType } from "../../../math-common/src/enum";
 import useEventBus from "../helpers/eventBus";
+import { TextNotationAttributes } from "@db/models/notationAttributes";
 
 const notationStore = useNotationStore();
 const eventBus = useEventBus();
@@ -71,8 +72,8 @@ watch(() => props.show,(newVal) => {
 
 function setInitalTextValue() {
   if (notationStore.activeNotation?.notationType == NotationType.TEXT
-    && notationStore.activeNotation?.value)
-    textValue.value = notationStore.activeNotation.value;
+    && (notationStore.activeNotation as TextNotationAttributes).value)
+    textValue.value = (notationStore.activeNotation as TextNotationAttributes).value;
 }
 
 function submit() {
