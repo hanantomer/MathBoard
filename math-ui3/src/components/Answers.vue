@@ -21,7 +21,7 @@ import { computed } from "vue"
 import { useLessonStore } from "../store/pinia/lessonStore";
 import { useQuestionStore } from "../store/pinia/questionStore";
 import { useAnswerStore } from "../store/pinia/answerStore";
-import Answer from '../../../math-db/src/models/answer/answer.model';
+import { AnswerAttributes } from '../../../math-db/src/models/answer/answer.model';
 
 const route = useRoute();
 const router = useRouter();
@@ -63,13 +63,13 @@ const questions = computed(() => {
 
 
 const answers = computed(() => {
-  return Array.from(answerStore.answers).map(([key, value]) => {
+  return Array.from(answerStore.answers).map(([key, answer]) => {
     return {
-      uuid: value.uuid,
-      lesson: value.question.lesson.name,
-      question: value.question.name,
-      student: value.user.firstName + " " + value.user.lastName,
-      createdAt: new Date(value.createdAt),
+      uuid: answer.uuid,
+      lesson: answer.question.lesson.name,
+      question: answer.question.name,
+      student: answer.user.firstName + " " + answer.user.lastName,
+      createdAt: new Date(answer.createdAt),
     };
   });
 });
@@ -79,7 +79,7 @@ async function load() {
       await this.loadQuestions();
       await this.loadAnswers();
 };
-async function selectAnswer(answer: Answer) {
+async function selectAnswer(answer: AnswerAttributes) {
   answerStore.setCurrentAnswer(answer);
   router.push({ path: "/answer/" + answer.uuid });
 };

@@ -4,9 +4,6 @@
       "path": "math-server"
     },
     {
-      "path": "math-ui"
-    },
-    {
       "path": "math-auth"
     },
     {

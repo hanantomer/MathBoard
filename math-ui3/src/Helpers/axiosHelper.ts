@@ -14,6 +14,9 @@ export default function axiosHelper() {
       console.log(error.response.data);
       console.log(error.response.status);
       console.log(error.response.headers);
+      error.response.data?.errors.forEach((error: any) => {
+          console.log(error);
+      });
     } else if (error.request) {
       // The request was made but no response was received
       // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
@@ -35,7 +38,9 @@ export default function axiosHelper() {
       }
     );
 
-    axios.interceptors.request.use(function (config: any) {
+    axios.interceptors.request.use(
+
+      function (config: any) {
       // const isOAuth =
       //   gapi.auth2.getAuthInstance() != null &&
       //   gapi.auth2.getAuthInstance().currentUser != null &&

@@ -24,10 +24,15 @@ export interface UserAttributes {
     authorized: boolean;
 }
 
-export interface UserCreationAttributes extends Optional<UserAttributes, "id"> { }
+export interface UserCreateAttributes {
+    firstName: string;
+    lastName: string;
+    email: string;
+    password: string;
+    imageUrl: string;
+    userType: UesrType;
+}
 
-
-//interface UserCreationAttributes extends Optional<UserAttributes, 'id'> {}
 
 @DefaultScope(() => ({
     attributes: {
@@ -47,7 +52,7 @@ export interface UserCreationAttributes extends Optional<UserAttributes, "id"> {
 })
 export default class User extends Model<
     UserAttributes,
-    UserCreationAttributes
+    UserCreateAttributes
     > {
     authorized!: boolean;
     lastHeartbeatTime!: Date;

@@ -3,19 +3,6 @@ import { EditMode } from "../../../math-common/src/enum";
 import useDbHelper from "../helpers/dbHelper";
 
 import {
-  LessonLineCreationAttributes, LessonLineAttributes
-} from "../../../math-db/src/models/lesson/line/lessonLineAttributes"
-
-import {
-  LessonPointCreationAttributes, LessonPointAttributes,
-} from "../../../math-db/src/models/lesson/point/lessonPointAttributes";
-
-
-import {
-  LessonRectCreationAttributes, LessonRectAttributes,
-} from "../../../math-db/src/models/lesson/rect/lessonRectAttributes";
-
-import {
   PointNotationCreateAttributes,
   LineNotationCreateAttributes,
   RectNotationCreateAttributes,
@@ -33,7 +20,6 @@ import {
 
 import { BoardType, NotationType } from "../../../math-common/src/enum";
 import { useUserStore } from "../store/pinia/userStore";
-import { error } from "console";
 import { useNotationStore } from "../store/pinia/notationStore";
 import { onMounted } from "vue"
 
@@ -590,10 +576,11 @@ export default function notationMutateHelper() {
     existingNotation: BaseCreateNotation,
     notation: BaseCreateNotation
   ) {
-    if (existingNotation.notationType != notation.notationType)
-      throw error(
-        "setNotationAttributes arguments must be of the same notation type"
-      );
+
+    //if (existingNotation.notationType != notation.notationType)
+    //  throw error(
+    //    "setNotationAttributes arguments must be of the same notation type"
+    //  );
 
     switch (NotationTypeShape.get(existingNotation.notationType)) {
       case NotationShape.POINT: {

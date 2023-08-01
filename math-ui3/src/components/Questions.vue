@@ -42,7 +42,7 @@
 
 <script setup lang="ts">
 import NewQuestionDialog from "./NewQuestionDialog.vue";
-import Question from "../../../math-db/src/models/question/question.model";
+import {QuestionAttributes} from "../../../math-db/src/models/question/question.model";
 import { watch, onMounted, computed, ref, reactive } from "vue"
 import { useQuestionStore } from "../store/pinia/questionStore";
 import { useLessonStore } from "../store/pinia/lessonStore";
@@ -127,14 +127,14 @@ function openQuestionDialog() {
   };
 };
 
-function saveQuestion(question: Question) {
+function saveQuestion(question: QuestionAttributes) {
   questionStore.addQuestion(question);
   router.push({
     path: "/question/" + questionStore.currentQuestion.uuid,
   });
 };
 
-function seletctQuestion(question: Question) {
+function seletctQuestion(question: QuestionAttributes) {
   if (userStore.isTeacher()) {
     questionStore.setCurrentQuestion(question.uuid);
     router.push({

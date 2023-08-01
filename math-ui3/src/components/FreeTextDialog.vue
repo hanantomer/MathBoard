@@ -53,7 +53,6 @@ import { watch, ref } from "vue"
 import { useNotationStore } from "../store/pinia/notationStore";
 import { NotationType } from "../../../math-common/src/enum";
 import useEventBus from "../helpers/eventBus";
-import { TextNotationAttributes } from "@db/models/notationAttributes";
 
 const notationStore = useNotationStore();
 const eventBus = useEventBus();

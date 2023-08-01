@@ -8,5 +8,5 @@ export interface LessonRectAttributes
         RectAttributes,
         LessonNotationAttributes {}
 
-export interface LessonRectCreationAttributes
+export interface LessonRectCreateAttributes
     extends Optional<LessonRectAttributes, "id"> {}

@@ -1,11 +1,10 @@
 import { BoardType, NotationType } from "../../../math-common/src/enum";
 import axios from "axios";
 import axiosHelper from "./axiosHelper";
-import { onMounted } from "vue";
-import { UserAttributes } from "../../../math-db/src/models/user.model";
-import Lesson, { LessonAttributes } from "../../../math-db/src/models/lesson/lesson.model";
-import Question, { QuestionAttributes } from "../../../math-db/src/models/question/question.model";
-import Answer, { AnswerAttributes } from "../../../math-db/src/models/answer/answer.model";
+import { UserAttributes, UserCreateAttributes } from "../../../math-db/src/models/user.model";
+import { LessonAttributes, LessonCreateAttributes } from "../../../math-db/src/models/lesson/lesson.model";
+import { QuestionAttributes, QuestionCreateAttributes } from "../../../math-db/src/models/question/question.model";
+import { AnswerAttributes, AnswerCreateAttributes } from "../../../math-db/src/models/answer/answer.model";
 
 
 import { BaseNotation, BaseCreateNotation } from "../../../math-db/src/models/baseNotation";
@@ -14,14 +13,9 @@ export interface Response<T> {
   data: T[];
 }
 
-const {baseURL, initAxiosInterceptors } = axiosHelper();
+const { baseURL } = axiosHelper();
 
 export default function useDbHelper() {
-
-  ///TODO: move to main
-  onMounted(() => {
-    initAxiosInterceptors();
-  });
 
   function getParentFieldName(boardType: BoardType) : string | null {
     const parentFieldName =
@@ -63,12 +57,14 @@ export default function useDbHelper() {
     return data.data[0];
   }
 
-  async function registerUser(user: UserAttributes): Promise<UserAttributes> {
-    const { data } = await axios.post<Response<UserAttributes>>(
+  async function registerUser(
+    user: UserCreateAttributes
+  ): Promise<Response<UserCreateAttributes>> {
+    const { data } = await axios.post<Response<UserCreateAttributes>>(
       baseURL + "/users",
       user
     );
-    return data.data[0];
+    return data;
   }
 
 
@@ -87,15 +83,17 @@ export default function useDbHelper() {
       });
   }
 
-  async function addLesson(lesson: Lesson): Promise<Lesson> {
-      const { data } = await axios.post<Response<Lesson>>(
-        baseURL + "/lessons",
-        lesson
-      );
-      return data.data[0];
+  async function addLesson(
+    lesson: LessonCreateAttributes
+  ): Promise<LessonAttributes> {
+    const { data } = await axios.post<Response<LessonAttributes>>(
+      baseURL + "/lessons",
+      lesson
+    );
+    return data.data[0];
   }
 
-  async function addQuestion(question: QuestionAttributes): Promise<QuestionAttributes> {
+  async function addQuestion(question: QuestionCreateAttributes): Promise<QuestionAttributes> {
       const { data } = await axios.post<Response<QuestionAttributes>>(
         baseURL + "/questions",
         question
@@ -103,7 +101,7 @@ export default function useDbHelper() {
       return data.data[0];
   }
 
-  async function addAnswer(answer: AnswerAttributes) : Promise<AnswerAttributes> {
+  async function addAnswer(answer: AnswerCreateAttributes) : Promise<AnswerAttributes> {
       const { data } = await axios.post<Response<AnswerAttributes>>(
         baseURL + "/answers",
         answer

@@ -8,16 +8,17 @@ export interface AnswerAttributes {
     id: number;
     userId: number;
     uuid: string;
-    user: UserAttributes
+    user: UserAttributes;
     name: string;
     question: QuestionAttributes;
+    createdAt: Date;
 }
 
-interface AnswerCreationAttributes extends Optional<AnswerAttributes, "id"> {}
+export interface AnswerCreateAttributes extends Optional<AnswerAttributes, "id"> {}
 @BoardDecorator("answer")
 export default class Answer extends Model<
     AnswerAttributes,
-    AnswerCreationAttributes
+    AnswerCreateAttributes
 > {
     @ForeignKey(() => User)
     userId!: number;

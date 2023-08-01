@@ -17,8 +17,8 @@
     ></v-card>
   </div>
 </template>
-<script setup lang="ts">
 
+<script setup lang="ts">
 import { watch, computed, ref } from "vue"
 import {
   EditMode, AreaSelectionMode

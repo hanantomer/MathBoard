@@ -38,7 +38,7 @@
         "npm-run-all": "^4.1.5"
     },
     "scripts": {
-        "dev": "nodemon app.ts",
+        "dev": "node ./build/app.js",
         "seed": "C:\\dev\\MathBoard\\math-db\\seeders\\seed.bat",
         "test": "echo \"Error: no test specified\" && exit 1",
         "start": "node ./node_modules/.bin/ts-node -- ./app.ts"

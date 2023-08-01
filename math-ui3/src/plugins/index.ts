@@ -15,8 +15,6 @@ import type { App } from 'vue'
 
 export function registerPlugins (app: App) {
   loadFonts()
-  app
-    .use(vuetify)
-    .use(router)
-    .use(pinia)
+  app.use(pinia).use(vuetify).use(router);
+
 }

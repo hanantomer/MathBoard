@@ -15,4 +15,5 @@ export interface BaseNotation {
     userUUId: string;
     notationType: NotationType;
     boardType: BoardType;
+    createdAt: Date;
 }

@@ -1,5 +1,5 @@
 import { defineStore } from "pinia";
-import { UserAttributes } from "../../../../math-db/src/models/user.model";
+import { UserAttributes, UserCreateAttributes } from "../../../../math-db/src/models/user.model";
 import dbHelper  from "../../helpers/dbHelper";
 import { UesrType } from "../../../../math-common/src/enum";
 const db = dbHelper();
@@ -20,7 +20,7 @@ export const useUserStore = defineStore("user", () => {
     currentUser = user;
   }
 
-  function registerUser(user: UserAttributes) {
+  function registerUser(user: UserCreateAttributes) {
     db.registerUser(user);
   }
 

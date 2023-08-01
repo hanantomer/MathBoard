@@ -10,14 +10,14 @@ export interface LessonAttributes {
     name: string;
 }
 
-interface LessonCreationAttributes
+export interface LessonCreateAttributes
     extends Optional<LessonAttributes, "id"> {}
 
 
 @BoardDecorator("lesson")
 export default class Lesson extends Model<
     LessonAttributes,
-    LessonCreationAttributes> {
+    LessonCreateAttributes> {
 
     @ForeignKey(() => User)
     userId!: number;

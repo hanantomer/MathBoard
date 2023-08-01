@@ -1,5 +1,10 @@
 <template>
   <div style="width: 100%">
+    <login :dialog = showLoginDialog
+    ></login>
+    <Register :dialog = showRegisterDialog
+    ></Register>
+
     <v-row>
       <v-col class="text-center" cols="12">
         <v-card flat>
@@ -7,21 +12,19 @@
             <h3>Teach MATH online with Mathboard</h3>
           </v-card-title>
           <v-card-actions class="justify-center">
-            <v-btn color="orange" v-on:click="openLoginDialog"
+            <v-btn color="orange" v-on:click="showLoginDialog=true"
               >Get Started</v-btn
             >
           </v-card-actions>
         </v-card>
         <v-card flat class="justify-center">
           <v-list class="justify-center">
-            <v-list-item-content>
-              <v-list-item v-for="b in bullets" :key="b">
-                <v-list-item-title>
-                  <v-icon>mdi-check</v-icon>
-                  {{ b }}
-                </v-list-item-title>
-              </v-list-item>
-            </v-list-item-content>
+            <v-list-item v-for="b in bullets" :key="b">
+              <v-list-item-title>
+                <v-icon>mdi-check</v-icon>
+                {{ b }}
+              </v-list-item-title>
+            </v-list-item>
           </v-list>
         </v-card>
       </v-col>
@@ -30,24 +33,31 @@
 </template>
 
 <script setup lang="ts">
+import { ref,watch } from "vue";
+import Login from "./Login.vue";
+import Register from "./Register.vue";
 
-import { useRouter } from 'vue-router'
-const router = useRouter();
+const props = defineProps({
+  login: {
+    type: String,
+    default: 'login',
+  },
+});
+
+let showLoginDialog = ref(false);
+let showRegisterDialog = ref(false);
+
+watch(() => props.login, (val) => {
+   val === 'login'?  showLoginDialog.value = true : showRegisterDialog.value = true
+});
 
 
-function openLoginDialog() {
-  router.push({
-    path: "/login",
-  });
-};
-
-let loginDialog = { dialog: false, tab: "Register" };
-  const bullets = [
-    "Editable notations",
-    "Board sharing with students",
-    "Virtually call a student to the board",
-    "Dispatch exercises and submit feedback"
-  ];
+const bullets = [
+  "Editable notations",
+  "Board sharing with students",
+  "Virtually call a student to the board",
+  "Dispatch exercises and submit feedback",
+];
 </script>
 <style>
 .v-list-item__content {

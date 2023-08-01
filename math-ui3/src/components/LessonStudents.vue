@@ -16,13 +16,11 @@
                 <v-list-item-avatar>
                   <v-img :src="student.imageUrl"></v-img>
                 </v-list-item-avatar>
-                <v-list-item-content>
-                  <v-list-item-title
-                    style="font-size: 0.9vw"
-                    v-text="getStudentDisplayName(student)"
-                  >
-                  </v-list-item-title>
-                </v-list-item-content>
+                <v-list-item-title
+                  style="font-size: 0.9vw"
+                  v-text="getStudentDisplayName(student)"
+                >
+                </v-list-item-title>
                 <v-btn class="[mx-2]" fab dark x-small color="green">
                   <v-icon dark> mdi-pencil </v-icon>
                 </v-btn>
@@ -37,7 +35,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from "vue"
+import { computed } from "vue";
 import { useStudentStore } from "../store/pinia/studentStore";
 import { useLessonStore } from "../store/pinia/lessonStore";
 import User from "@db/models/user.model";
@@ -52,9 +50,8 @@ const students = computed(() => {
 });
 
 function getStudentDisplayName(student: User) {
- return student.firstName + " " + student.lastName;
-};
-
+  return student.firstName + " " + student.lastName;
+}
 
 function toggleStudentAuthorization(student: User) {
   let currentAuthorizedStudentUUId = studentStore.authorizedStudentUUId;
@@ -63,12 +60,8 @@ function toggleStudentAuthorization(student: User) {
     studentStore.authorizedStudentUUId,
     currentAuthorizedStudentUUId,
     lessonStore.currentLesson.uuid
-  )
-};
-
-
-
-
+  );
+}
 </script>
 
 <style>

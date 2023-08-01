@@ -1,6 +1,9 @@
 //  questions of current lesson
 import { defineStore } from "pinia";
-import Question, { QuestionAttributes } from "../../../../math-db/src/models/question/question.model";
+import {
+  QuestionAttributes,
+  QuestionCreateAttributes,
+} from "../../../../math-db/src/models/question/question.model";
 import useDbHelper  from "../../helpers/dbHelper";
 import { useLessonStore } from "./lessonStore";
 
@@ -26,15 +29,15 @@ export const useQuestionStore = defineStore("answer", ()=> {
 
     let questionsFromDb = await db.getQuestions(lessonStore.currentLesson.uuid);
     questionsFromDb.forEach((q: QuestionAttributes) => {
-      this.questions.set(q.uuid, q);
+      questions.set(q.uuid, q);
     });
   };
 
-  async function addQuestion(question: QuestionAttributes) {
-    question.lessonUUID  = lessonStore.currentLesson.uuid;
-    question = await db.addQuestion(question);
-    this.questions.set(question.uuid, question);
-    currentQuestion = question;
+  async function addQuestion(question: QuestionCreateAttributes) {
+    question.lesson  = lessonStore.currentLesson;
+    let createdQuestion = await db.addQuestion(question);
+    questions.set(createdQuestion.uuid, createdQuestion);
+    currentQuestion = createdQuestion;
     return question;
   };
 
@@ -48,8 +51,8 @@ export const useQuestionStore = defineStore("answer", ()=> {
     }
   };
 
-  function removeQuestion(question: Question) {
-      this.questions.delete(question.uuid);
+  function removeQuestion(question: QuestionAttributes) {
+    questions.delete(question.uuid);
   };
 
   return {

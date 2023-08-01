@@ -1,5 +1,5 @@
 //  questions of current lesson
-import Lesson from "../../../../math-db/src/models/lesson/lesson.model";
+import { LessonAttributes, LessonCreateAttributes } from "../../../../math-db/src/models/lesson/lesson.model";
 import { defineStore } from "pinia";
 import dbHelper from "../../helpers/dbHelper";
 import { useUserStore } from "./userStore";
@@ -8,8 +8,8 @@ const userStore = useUserStore();
 
 
 export const useLessonStore = defineStore("lesson", () => {
-  let lessons: Map<String, Lesson> = new Map();
-  let currentLesson: Lesson = new Lesson();
+  let lessons: Map<String, LessonAttributes> = new Map();
+  let currentLesson = <LessonAttributes>{};
 
   // async function loadCurrentLesson(): Promise<void> {
   //   currentLesson = await db.getLesson(LessonUUId);
@@ -21,7 +21,7 @@ export const useLessonStore = defineStore("lesson", () => {
       ? await db.getTeacherLessons(userStore.currentUser.uuid)
       : await db.getStudentLessons(userStore.currentUser.uuid);
 
-    lessonsFromDB.forEach((l: Lesson) => {
+    lessonsFromDB.forEach((l: LessonAttributes) => {
       lessons.set(l.uuid, l);
     });
   }
@@ -35,11 +35,13 @@ export const useLessonStore = defineStore("lesson", () => {
     }
   }
 
-  async function addLesson(lesson: Lesson) : Promise<Lesson>{
-    lesson = await db.addLesson(lesson);
-    lessons.set(lesson.uuid, lesson);
-    setCurrentLesson(lesson.uuid);
-    return lesson;
+  async function addLesson(
+    lesson: LessonCreateAttributes
+  ): Promise<LessonAttributes> {
+    let createdLesson = await db.addLesson(lesson);
+    lessons.set(lesson.uuid, createdLesson);
+    setCurrentLesson(createdLesson.uuid);
+    return createdLesson;
   }
 
   async function addLessonToSharedLessons() {
@@ -52,7 +54,7 @@ export const useLessonStore = defineStore("lesson", () => {
 
 
   function removeLesson(lessonUUId: string) {
-    lessons.forEach((l: Lesson) => {
+    lessons.forEach((l: LessonAttributes) => {
       if (l.uuid === lessonUUId) lessons.delete(l.uuid);
     });
   }

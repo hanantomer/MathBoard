@@ -1,65 +1,67 @@
-
-
 import { createRouter, createWebHistory } from 'vue-router'
-
-import store from "../store/pinia/indexStore";
-import useAuthHelper from "../helpers/authHelper";
-const authHelper = useAuthHelper();
-
+import  useAuthHelper  from "../helpers/authHelper";
 import { useUserStore } from "../store/pinia/userStore";
-const userStore = useUserStore();
 
+const authHelper = useAuthHelper();
 
 const routes = [
   {
-    path: '/',
-    component: () => import('@/components/Welcome.vue'),
+    path: "/",
+    component: () => import("@/components/Welcome.vue"),
     name: "main",
     meta: { requiresAuth: false },
   },
   {
-    path: '/login',
-    component: () => import('@/components/Login.vue'),
+    path: "/:login",
+    component: () => import("@/components/Welcome.vue"),
     name: "login",
     meta: { requiresAuth: false },
+    props: true,
   },
   {
-    path: '/lessons',
-    component: () => import('@/components/Lessons.vue'),
+    path: "/:register",
+    component: () => import("@/components/Welcome.vue"),
+    name: "register",
+    meta: { requiresAuth: false },
+    props: true,
+  },
+  {
+    path: "/lessons",
+    component: () => import("@/components/Lessons.vue"),
     name: "lessons",
     meta: { requiresAuth: true },
   },
   {
-    path: '/lesson/lessonUUId',
-    component: () => import('@/components/Lesson.vue'),
+    path: "/lesson/lessonUUId",
+    component: () => import("@/components/Lesson.vue"),
     name: "lesson",
     meta: { requiresAuth: true },
   },
   {
-    path: '/questions',
-    component: () => import('@/components/Questions.vue'),
+    path: "/questions",
+    component: () => import("@/components/Questions.vue"),
     name: "questions",
     meta: { requiresAuth: true },
   },
   {
     path: "/question/:questionUUId",
-    component: () => import('@/components/Question.vue'),
+    component: () => import("@/components/Question.vue"),
     name: "question",
     meta: { requiresAuth: true },
   },
   {
-    path: '/answers',
-    component: () => import('@/components/Answers.vue'),
+    path: "/answers",
+    component: () => import("@/components/Answers.vue"),
     name: "answers",
     meta: { requiresAuth: true },
   },
   {
     path: "/answer/:answerUUId",
-    component: () => import('@/components/Answer.vue'),
+    component: () => import("@/components/Answer.vue"),
     name: "answer",
     meta: { requiresAuth: true },
   },
-]
+];
 
 const router = createRouter({
   history: createWebHistory(process.env.BASE_URL),
@@ -67,6 +69,7 @@ const router = createRouter({
 })
 
 router.beforeEach(async (to, from) => {
+  const userStore = useUserStore();
   if (!to.matched.some((record) => record.meta.requiresAuth)) {
     // auth not required
     return;
@@ -81,11 +84,14 @@ router.beforeEach(async (to, from) => {
   //let access_token = window.$cookies.get("access_token");
   //console.log(access_token);
   //if (!!access_token) {
+
+
   const user = await authHelper.authLocalUserByToken();
   if (user) {
     userStore.setUser(user);
     return;
   }
+
 
   return "/login";
 

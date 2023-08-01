@@ -2,36 +2,37 @@ import { getCookie, setCookie, removeCookie } from "typescript-cookie";
 import { useUserStore } from "../store/pinia/userStore";
 import { useNotationStore } from "../store/pinia/notationStore";
 import { BoardType, UesrType } from "../../../math-common/src/enum";
-import { UserAttributes } from "../../../math-db/src/models/user.model";
+import { UserCreateAttributes, UserAttributes } from "../../../math-db/src/models/user.model";
 import useDbHelper from "./dbHelper";
 
-const userStore = useUserStore();
-const notationStore = useNotationStore();
+//const userStore = useUserStore();
+//const notationStore = useNotationStore();
 const dbHelper = useDbHelper();
 
 
 export default function useAuthHelper() {
 
   function setUser(user: UserAttributes) {
+    const userStore = useUserStore();
     userStore.setUser(user);
   }
 
   function registerUser(firstName: string, lastName: string, password: string, email: string, userType: UesrType) {
-    let user: UserAttributes = {
-      uuid: "",
-      authorized: false,
+    const userStore = useUserStore();
+    let user: UserCreateAttributes = {
       userType: userType,
       firstName: firstName,
       lastName: lastName,
       email: email,
       password: password,
-      access_token: "",
       imageUrl: ""
     };
     userStore.registerUser(user);
   }
 
   function canEdit() {
+    const userStore = useUserStore();
+    const notationStore = useNotationStore();
     return (
       userStore.isTeacher || // teacher in lesson or question
       userStore.authorized || // student in lesson when authorized by teacher
@@ -77,12 +78,12 @@ export default function useAuthHelper() {
   }
 
   async function signOut() {
+    const userStore = useUserStore();
     if (this.signedInWithGoogle()) {
       gapi.auth2.getAuthInstance().signOut();
     } else {
       removeCookie("access_token");
     }
-
     userStore.currentUser = undefined;
   }
 

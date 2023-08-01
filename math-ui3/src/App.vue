@@ -1,10 +1,6 @@
 <template>
   <v-app id="app" full-height>
-    <Login
-      :dialog="loginDialog"
-      :dialogType="loginType"
-      @closed="closeLoginDialog"
-    ></Login>
+
     <v-app-bar
       style="max-height: 80px; padding-right: 30px"
       color="primary"
@@ -68,14 +64,14 @@
       </v-tooltip>
 
       <!-- sign in / register -->
-      <v-btn v-show="!user" icon v-on:click="showLoginDialog(LoginType.LOGIN)">
+      <v-btn v-show="!user" icon v-on:click="showLoginDialog()">
         <v-icon>mdi-account</v-icon>
         <span style="font-size: 0.7em">Sign In</span>
       </v-btn>
 
       <v-divider class="mx-6" vertical></v-divider>
 
-      <v-btn v-show="!user" icon v-on:click="showLoginDialog(LoginType.REGISTER)">
+      <v-btn v-show="!user" icon v-on:click="showRegisterDialog()">
         <v-icon>mdi-account-outline</v-icon>
         <span style="font-size: 0.7em">Register</span>
       </v-btn>
@@ -83,15 +79,15 @@
       <!-- user image or name -->
       <v-tooltip bottom hidden>
         <template v-slot:activator="{ props }">
-          <v-avatar v-show="user!.imageUrl" size="36px"
-            ><img v-bind:src="user!.imageUrl"
+          <v-avatar v-show="user?.imageUrl" size="36px"
+            ><img v-bind:src="user?.imageUrl"
           /></v-avatar>
         </template>
-        <span v-show="user!.firstName">{{ user!.firstName }}</span>
+        <span v-show="user?.firstName">{{ user?.firstName }}</span>
       </v-tooltip>
 
-      <span v-show="user!.firstName && !user!.imageUrl"
-        >Hello {{ user!.firstName }}</span
+      <span v-show="user?.firstName && !user?.imageUrl"
+        >Hello {{ user?.firstName }}</span
       >
 
       <v-tooltip bottom hidden>
@@ -121,41 +117,38 @@
 <script setup lang="ts">
 import { useRouter } from 'vue-router'
 import { onMounted, onUnmounted, ref } from "vue";
-import { LoginType } from "../../math-common/src/enum"
-import Login from "./components/Login.vue";
 import useAuthHelper from "./helpers/authHelper";
 import useEventBus from "./helpers/eventBus";
+import useAxiosHelper from "./helpers/axiosHelper";
 import { useUserStore } from "./store/pinia/userStore";
 import { computed } from 'vue';
 
+const { initAxiosInterceptors } = useAxiosHelper();
 const router = useRouter();
 const eventBus = useEventBus();
 const authHelper = useAuthHelper();
 const userStore = useUserStore();
 
 onMounted(() => {
-    window.addEventListener("keyup", onKeyUp);
-    document.addEventListener("paste", onPaste);
+  initAxiosInterceptors();
+  window.addEventListener("keyup", onKeyUp);
+  document.addEventListener("paste", onPaste);
 });
 
 onUnmounted(() => {
-    window.removeEventListener("keyup", onKeyUp);
-    document.removeEventListener("paste", onPaste);
+  window.removeEventListener("keyup", onKeyUp);
+  document.removeEventListener("paste", onPaste);
 });
-
-let loginDialog = ref(false);
-let loginType = ref(LoginType.LOGIN);
 
 const user = computed(() => userStore.currentUser);
 const isTeacher  = computed(() => userStore.isTeacher);
 
-function showLoginDialog(lType: LoginType) {
-  loginType.value = lType;
-  loginDialog.value = true;
+function showLoginDialog() {
+  router.push("/:login");
 };
 
-function closeLoginDialog() {
-  loginDialog.value = false;
+function showRegisterDialog() {
+  router.push("/:register");
 };
 
 function onKeyUp (key: KeyboardEvent) {

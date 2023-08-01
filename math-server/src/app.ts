@@ -1,10 +1,10 @@
-import express from "express";
-import cors from "cors";
-import bodyParser from "body-parser";
-import finale from "finale-rest";
+import * as express from "express";
+import * as cors from "cors";
+import * as bodyParser from "body-parser";
+import * as finale from "finale-rest";
 import db from "../../math-db/build/models/index";
 import authMiddleware from "../../math-auth/build/authMiddleware";
-import addAccesstokenToResponseMiddleware from "./middleware/addAccesstokenToResponse";
+import addAccessTokenToResponseMiddleware from "./middleware/addAccessTokenToResponse";
 import createLessonChildMiddleware from "./middleware/createLessonChild";
 import getLessonChildrenMiddleware from "./middleware/getLessonChildren";
 import updateLessonChildMiddleware from "./middleware/updateLessonChild";
@@ -71,7 +71,7 @@ let userResource = finale.resource({
     endpoints: ["/users", "/users/:id"],
 });
 userResource.use(authMiddleware);
-userResource.use(addAccesstokenToResponseMiddleware);
+userResource.use(addAccessTokenToResponseMiddleware);
 
 // lesson
 
