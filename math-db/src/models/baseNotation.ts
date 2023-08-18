@@ -1,5 +1,5 @@
 import { NotationType, BoardType } from "../../../math-common/src/enum";
-import UserAttributes from "./user.model";
+import { UserAttributes } from "./user.model";
 
 
 export interface BaseCreateNotation {

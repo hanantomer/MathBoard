@@ -2,7 +2,7 @@ import { Model, Column, BelongsTo, ForeignKey } from "sequelize-typescript";
 import { NotationType, BoardType } from "../../../../../math-common/src/enum";
 import { UUID, UUIDV4 } from "sequelize/types/data-types";
 import AnswerDecorator from "../answerDecorator";
-import User from "../../user.model";
+import { User } from "../../user.model";
 import Answer from "../answer.model";
 import {
     AnswerPointAttributes,

@@ -2,7 +2,7 @@ import LessonDecorator from "../lessonDecorator";
 import { Model, Column, BelongsTo, ForeignKey } from "sequelize-typescript";
 import { NotationType, BoardType } from "../../../../../math-common/src/enum";
 import { UUID, UUIDV4 } from "sequelize/types/data-types";
-import User from "@/models/user.model";
+import { User } from "@/models/user.model";
 import Lesson from "@/models/lesson/lesson.model";
 import {
     LessonLineAttributes,

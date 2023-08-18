@@ -1,5 +1,5 @@
 import { Sequelize } from "sequelize-typescript";
-declare const _default: {
+declare const  _default: {
     Sequelize: typeof Sequelize;
     sequelize: Sequelize;
 };

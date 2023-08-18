@@ -1,49 +1,49 @@
-import * as express from "express";
+import express, { Request, Response } from "express";
 import * as cors from "cors";
 import * as bodyParser from "body-parser";
-import * as finale from "finale-rest";
-import db from "../../math-db/build/models/index";
-import authMiddleware from "../../math-auth/build/authMiddleware";
-import addAccessTokenToResponseMiddleware from "./middleware/addAccessTokenToResponse";
-import createLessonChildMiddleware from "./middleware/createLessonChild";
-import getLessonChildrenMiddleware from "./middleware/getLessonChildren";
-import updateLessonChildMiddleware from "./middleware/updateLessonChild";
-import createQuestionChildMiddleware from "./middleware/createQuestionChild";
-import getQuestionChildrenMiddleware from "./middleware/getQuestionChildren";
-import updateQuestionChildMiddleware from "./middleware/updateQuestionChild";
-import createAnswerChildMiddleware from "./middleware/createAnswerChild";
-import createAnswerMiddleware from "./middleware/createAnswer";
-import updateAnswerChildMiddleware from "./middleware/updateAnswerChild";
-import createQuestionMiddleware from "./middleware/createQuestion";
-import { BoardType, NotationType } from "../../math-common/build/enum"
-import { capitalize } from "../../math-common/build/utils"
+//import db from "../../math-db/src/models/index";
+// import authMiddleware from "../../math-auth/build/authMiddleware";
+// import addAccessTokenToResponseMiddleware from "./middleware/addAccessTokenToResponse";
+// import createLessonChildMiddleware from "./middleware/createLessonChild";
+// import getLessonChildrenMiddleware from "./middleware/getLessonChildren";
+// import updateLessonChildMiddleware from "./middleware/updateLessonChild";
+// import createQuestionChildMiddleware from "./middleware/createQuestionChild";
+// import getQuestionChildrenMiddleware from "./middleware/getQuestionChildren";
+// import updateQuestionChildMiddleware from "./middleware/updateQuestionChild";
+// import createAnswerChildMiddleware from "./middleware/createAnswerChild";
+// import createAnswerMiddleware from "./middleware/createAnswer";
+// import updateAnswerChildMiddleware from "./middleware/updateAnswerChild";
+// import createQuestionMiddleware from "./middleware/createQuestion";
+//import { BoardType, NotationType } from "../../math-common/build/enum"
+//import { capitalize } from "../../math-common/build/utils"
+
+import db from "../../math-db/src/dbUtil"
 
 
+// const boardTypesMilddleware = new Map<String, [Object[]]>() 
 
-const boardTypesMilddleware = new Map<String, [Object[]]>() 
+// boardTypesMilddleware.set(BoardType.lesson.toString(), [
+//     [
+//         createLessonChildMiddleware,
+//         updateLessonChildMiddleware,
+//         getLessonChildrenMiddleware
+//     ]
+// ]);
 
-boardTypesMilddleware.set(BoardType.lesson.toString(), [
-    [
-        createLessonChildMiddleware,
-        updateLessonChildMiddleware,
-        getLessonChildrenMiddleware
-    ]
-]);
+// boardTypesMilddleware.set(BoardType.question.toString(), [
+//     [
+//        createQuestionChildMiddleware,
+//        updateQuestionChildMiddleware,
+//        getQuestionChildrenMiddleware,
+//     ]
+// ]);
 
-boardTypesMilddleware.set(BoardType.question.toString(), [
-    [
-       createQuestionChildMiddleware,
-       updateQuestionChildMiddleware,
-       getQuestionChildrenMiddleware,
-    ]
-]);
-
-boardTypesMilddleware.set(BoardType.answer.toString(), [
-    [
-        createAnswerChildMiddleware,
-        updateAnswerChildMiddleware,
-    ]
-]);
+// boardTypesMilddleware.set(BoardType.answer.toString(), [
+//     [
+//         createAnswerChildMiddleware,
+//         updateAnswerChildMiddleware,
+//     ]
+// ]);
 
 
 let app = express();
@@ -59,19 +59,40 @@ app.use(
     })
 );
 
-finale.initialize({
-    app: app,
-    sequelize: db.sequelize,
-});
+// finale.initialize({
+//     app: app,
+//     sequelize: db.sequelize,
+// });
 
 // user
 
-let userResource = finale.resource({
-    model: db.sequelize.models["User"],
-    endpoints: ["/users", "/users/:id"],
-});
-userResource.use(authMiddleware);
-userResource.use(addAccessTokenToResponseMiddleware);
+// let userResource = finale.resource({
+//     model: db.sequelize.models["User"],
+//     endpoints: ["/users", "/users/:id"],
+// });
+
+// userResource.use(authMiddleware);
+// userResource.use(addAccessTokenToResponseMiddleware);
+
+app.get(
+    "/users/:uuid",
+    async (req: Request, res: Response): Promise<Response> => {
+        const { uuid } = req.params;
+        const user = db.getUser(uuid);
+        return res.status(200).json(user);
+    }
+);
+
+app.get(
+    "/users/:email/:password",
+    async (req: Request, res: Response): Promise<Response> => {
+        const { email, password } = req.params;
+        const user = db.getUser(email, password);
+        return res.status(200).json(user);
+    }
+);
+
+
 
 // lesson
 

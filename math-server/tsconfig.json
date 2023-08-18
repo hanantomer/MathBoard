@@ -4,7 +4,7 @@
         "emitDecoratorMetadata": true,
         "target": "es6",
         "module": "CommonJS",
-        "lib": ["es6"],
+        "lib": ["ES2021","ESNext"],
         "outDir": "build",
         "rootDir": "src",
         "strict": true,
@@ -15,6 +15,10 @@
             "*": ["../node_modules/@types"]
         },
         "sourceMap": true
+    },
+     "ts-node": {
+        // Tell ts-node CLI to install the --loader automatically
+        "esm": true
     },
     "files": [],
     "references": [

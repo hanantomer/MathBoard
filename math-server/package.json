@@ -2,7 +2,6 @@
     "name": "math-server",
     "version": "1.0.0",
     "description": "",
-    "main": "index.js",
     "dependencies": {
         "anymatch": "^3.1.1",
         "axios": "^0.21.1",
@@ -24,24 +23,22 @@
         "readdirp": "^3.5.0",
         "reflect-metadata": "^0.1.13",
         "responselike": "^1.0.2",
-        "sequelize": "^6.31.1",
-        "sequelize-typescript": "^2.1.5",
         "ts-node": "^10.9.1",
         "tsconfig-paths": "^4.2.0",
-        "typescript": "^5.0.4"
+        "typescript": "^5.0.4",
+        "vue3-cookies": "^1.0.6"
     },
     "devDependencies": {
         "@types/cors": "^2.8.13",
-        "@types/node": "^20.1.0",
-        "@types/validator": "^13.7.15",
-        "jest": "^29.5.0",
+        "@types/node": "^20.5.0",
+        "@types/validator": "^13.11.1",
         "npm-run-all": "^4.1.5"
     },
     "scripts": {
         "dev": "node ./build/app.js",
         "seed": "C:\\dev\\MathBoard\\math-db\\seeders\\seed.bat",
         "test": "echo \"Error: no test specified\" && exit 1",
-        "start": "node ./node_modules/.bin/ts-node -- ./app.ts"
+        "start": "node --loader ./node_modules/.bin/ts-node/esm  -- ./src/app.ts"
     },
     "author": "",
     "license": "ISC"

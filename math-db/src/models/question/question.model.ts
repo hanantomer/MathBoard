@@ -1,7 +1,7 @@
 import { Model, Column, DataType, BelongsTo, ForeignKey } from "sequelize-typescript";
 import { Optional } from "sequelize";
 import BoardDecorator from "../boardDecorator";
-import User from "../user.model";
+import { User } from "../user.model";
 import Lesson, { LessonAttributes } from "../lesson/lesson.model";
 
 

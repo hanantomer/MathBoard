@@ -6,7 +6,7 @@ import {
     LessonLineAttributes,
     LessonLineCreationAttributes,
 } from "@/models/lesson/line/lessonLineAttributes";
-import User from "@/models/user.model";
+import { User } from "@/models/user.model";
 import Lesson from "@/models/lesson/lesson.model";
 
 @LessonDecorator("LessonSqrt")

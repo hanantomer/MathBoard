@@ -71,10 +71,10 @@
 
       <v-divider class="mx-6" vertical></v-divider>
 
-      <v-btn v-show="!user" icon v-on:click="showRegisterDialog()">
+      <!-- <v-btn v-show="!user" icon v-on:click="showRegisterDialog()">
         <v-icon>mdi-account-outline</v-icon>
         <span style="font-size: 0.7em">Register</span>
-      </v-btn>
+      </v-btn> -->
 
       <!-- user image or name -->
       <v-tooltip bottom hidden>
@@ -108,7 +108,7 @@
     </v-container>
     <v-footer color="primary" padless dense>
       <v-col class="text-center" cols="12">
-        <p style="color: white">© Copyright 2022 www.mathboard.com</p>
+        <p style="color: white">© Copyright 2023 www.mathboard.com</p>
       </v-col>
     </v-footer>
   </v-app>
@@ -116,7 +116,7 @@
 
 <script setup lang="ts">
 import { useRouter } from 'vue-router'
-import { onMounted, onUnmounted, ref } from "vue";
+import { onMounted, onUnmounted, watch } from "vue";
 import useAuthHelper from "./helpers/authHelper";
 import useEventBus from "./helpers/eventBus";
 import useAxiosHelper from "./helpers/axiosHelper";
@@ -144,12 +144,9 @@ const user = computed(() => userStore.currentUser);
 const isTeacher  = computed(() => userStore.isTeacher);
 
 function showLoginDialog() {
-  router.push("/:login");
+  eventBus.emit("login");
 };
 
-function showRegisterDialog() {
-  router.push("/:register");
-};
 
 function onKeyUp (key: KeyboardEvent) {
   eventBus.emit("keyup", key);

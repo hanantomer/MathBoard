@@ -1,9 +1,6 @@
 <template>
   <v-dialog v-model="show" persistent width="600" height="600">
     <v-card height="550">
-      <v-card-title background-color="primary">
-        <span class="text-h5">Sign Up To Mathboard</span>
-      </v-card-title>
       <v-card-text>
         <v-form ref="registerForm" v-model="valid" lazy-validation>
           <v-row>
@@ -36,7 +33,6 @@
             <v-col cols="12">
               <v-text-field
                 v-model="password"
-                :append-icon="show1 ? 'mdi-eye' : 'mdi-eye-off'"
                 :rules="[rules.required, rules.min]"
                 :type="show1 ? 'text' : 'password'"
                 label="Password"
@@ -49,17 +45,21 @@
               <v-text-field
                 block
                 v-model="verify"
-                :append-icon="show1 ? 'mdi-eye' : 'mdi-eye-off'"
                 :rules="[rules.required, passwordMatch]"
-                :type="show1 ? 'text' : 'password'"
+                :type="'password'"
                 label="Confirm Password"
                 counter
-                @click:append="show1 = !show1"
               ></v-text-field>
             </v-col>
             <v-spacer></v-spacer>
-            <v-col class="d-flex ml-auto" cols="12" sm="3" xsm="12">
-              <v-btn x-large block @click="register">Sign Up</v-btn>
+            <v-col class="d-flex" cols="12" align-end>
+              <v-btn
+                class="text-none mb-4"
+                color="indigo-darken-3"
+                size="x-large"
+                variant="flat"
+                @click="register"
+              >Sign Up</v-btn>
             </v-col>
           </v-row>
         </v-form>
@@ -79,7 +79,7 @@ const router = useRouter();
 
 let registerForm = ref(null);
 
-let show = false;
+let show = ref(false);
 let valid = ref(false);
 let firstName = ref("hanan");
 let lastName = ref("tomer");
@@ -90,7 +90,7 @@ const emailRules = [
   (v: string) => !!v || "Required",
   (v: string) => /.+@.+\..+/.test(v) || "E-mail must be valid",
 ];
-let show1 = false;
+let show1 = ref(false);
 let rules = {
   required: (value: string) => !!value || "Required.",
   min: (v: string) => (v && v.length >= 8) || "Min 8 characters",
@@ -108,7 +108,7 @@ const props = defineProps({
 });
 
 watch(() => props.dialog, (val) => {
-  show = val
+  show.value = val
 });
 
 async function register() {
@@ -123,7 +123,7 @@ async function register() {
     );
 
     registerForm.value = null;
-    show = false;
+    show.value = false;
     router.push("/login");
   }
 }

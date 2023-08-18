@@ -36,21 +36,21 @@
 import { ref,watch } from "vue";
 import Login from "./Login.vue";
 import Register from "./Register.vue";
-
-const props = defineProps({
-  login: {
-    type: String,
-    default: 'login',
-  },
-});
+import { useRoute } from 'vue-router'
+import useEventBus from "../helpers/eventBus";
+const eventBus = useEventBus();
+const route = useRoute();
 
 let showLoginDialog = ref(false);
 let showRegisterDialog = ref(false);
 
-watch(() => props.login, (val) => {
-   val === 'login'?  showLoginDialog.value = true : showRegisterDialog.value = true
+watch(() => eventBus.bus.value.get("login"), () => {
+  showLoginDialog.value = true;
 });
 
+watch(() => eventBus.bus.value.get("register"), () => {
+  showRegisterDialog.value = true;
+});
 
 const bullets = [
   "Editable notations",

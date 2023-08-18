@@ -10,21 +10,22 @@ const routes = [
     component: () => import("@/components/Welcome.vue"),
     name: "main",
     meta: { requiresAuth: false },
-  },
-  {
-    path: "/:login",
-    component: () => import("@/components/Welcome.vue"),
-    name: "login",
-    meta: { requiresAuth: false },
     props: true,
   },
-  {
-    path: "/:register",
-    component: () => import("@/components/Welcome.vue"),
-    name: "register",
-    meta: { requiresAuth: false },
-    props: true,
-  },
+  // {
+  //   path: "/login",
+  //   component: () => import("@/components/Welcome.vue"),
+  //   name: "login",
+  //   meta: { requiresAuth: false },
+  //   props: { login: true },
+  // },
+  // {
+  //   path: "/register",
+  //   component: () => import("@/components/Welcome.vue"),
+  //   name: "register",
+  //   meta: { requiresAuth: false },
+  //   props: { register: true },
+  // },
   {
     path: "/lessons",
     component: () => import("@/components/Lessons.vue"),
@@ -66,16 +67,16 @@ const routes = [
 const router = createRouter({
   history: createWebHistory(process.env.BASE_URL),
   routes,
-})
+});
 
 router.beforeEach(async (to, from) => {
-  const userStore = useUserStore();
   if (!to.matched.some((record) => record.meta.requiresAuth)) {
     // auth not required
     return;
   }
 
   // already signed in
+  const userStore = useUserStore();
   if (userStore.currentUser?.uuid) {
     return;
   }

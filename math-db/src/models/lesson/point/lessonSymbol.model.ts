@@ -3,7 +3,7 @@ import { NotationType, BoardType } from "../../../../../math-common/src/enum";
 import { UUID, UUIDV4 } from "sequelize";
 import { LessonPointAttributes, LessonPointCreationAttributes } from "@/models/lesson/point/lessonPointAttributes";
 import LessonDecorator from "@/models/lesson/lessonDecorator";
-import User from "@/models/user.model";
+import { User } from "@/models/user.model";
 import Lesson from "@/models/lesson/lesson.model";
 
 

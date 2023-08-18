@@ -6,7 +6,7 @@ import {
     QuestionRectCreationAttributes,
 } from "@/models/question/rect/questionRectAttributes";
 import QuestionDecorator from "../questionDecorator";
-import User from "../../user.model";
+import { User } from "../../user.model";
 import Question from "../question.model";
 
 @QuestionDecorator("QuestionText")

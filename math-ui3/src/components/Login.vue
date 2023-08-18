@@ -1,9 +1,7 @@
 <template>
-  <v-dialog v-model="show" persistent width="600" height="600">
-    <v-card  height="350">
-      <v-card-title color="light-greeen">
-        <span class="text-h5">Sign In</span>
-      </v-card-title>
+  <v-dialog v-model="show" persistent width="350" >
+    <v-card height="400">
+      <!-- <v-card-title class="text-center" primary-title>Log In</v-card-title> -->
       <v-card-text>
         <v-form ref="loginForm" v-model="valid" lazy-validation>
           <v-row>
@@ -18,16 +16,16 @@
             <v-col cols="12">
               <v-text-field
                 v-model="loginPassword"
-                :append-icon="show1 ? 'eye' : 'eye-off'"
                 :rules="[rules.required, rules.min]"
-                :type="show1 ? 'text' : 'password'"
+                :type="'password'"
                 name="input-10-1"
                 label="Password"
                 hint="At least 8 characters"
-                value="12345678"
                 counter
-                @click:append="show1 = !show1"
               ></v-text-field>
+            </v-col>
+
+          <v-col cols="12">
               <v-text-field
                 class="alerttext"
                 prepend-icon="mdi-account-alert"
@@ -39,17 +37,23 @@
                 prepend-inner-icon="mdi-error"
               ></v-text-field>
             </v-col>
-            <v-col class="d-flex" cols="12" sm="6" xsm="12"> </v-col>
-            <v-spacer></v-spacer>
-            <v-col class="d-flex" cols="12" sm="3" xsm="12" align-end>
+
+
+
+            <v-col class="d-flex" cols="12" align-end>
               <v-btn
-                x-large
-                block
-                color="grey-lighten-3"
+                class="text-none mb-4"
+                color="indigo-darken-3"
+                size="x-large"
+                variant="flat"
                 @click="validateLogin"
               >
-                Sign In
+                Log In
               </v-btn>
+            </v-col>
+            <v-col class="d-flex text-start text-body2" cols="12">
+              <span style="margin-right: 10px;">don't have an account?</span>
+              <v-btn prepend-icon="mdi-account"  v-on:click="register" size="x-small">Sign Up</v-btn>
             </v-col>
           </v-row>
         </v-form>
@@ -64,8 +68,9 @@ import useAuthHelper from "../helpers/authHelper";
 import { ref, watch } from "vue";
 import { useCookies } from "vue3-cookies";
 import { useRouter, useRoute, RouteLocationRaw } from "vue-router";
+import useEventBus from "../helpers/eventBus";
 
-
+const eventBus = useEventBus();
 const cookies = useCookies().cookies;
 const authHelper = useAuthHelper();
 
@@ -74,7 +79,7 @@ const route = useRoute();
 
 let loginForm = ref();
 let loginFailed = false;
-let show = false;
+let show = ref(false);
 let valid = true;
 
 let loginPassword = "12345678"; ///TODO remove those magic values
@@ -83,7 +88,7 @@ let loginEmailRules = [
   (v: string) => v || "Required",
   (v: string) => /.+@.+\..+/.test(v) || "E-mail must be valid",
 ];
-let show1 = false;
+let show1 = ref(false);
 let rules = {
   required: (value: string) => !!value || "Required.",
   min: (v: string) => (v && v.length >= 8) || "Min 8 characters",
@@ -96,12 +101,13 @@ const props = defineProps({
   },
 });
 
-watch(() => props.dialog, (val) => { show = val });
+watch(() => props.dialog, (val) => {
+  show.value = val
+});
 
-//watch(route, (to) => {
-//    show = true;
-//  });
-
+function register() {
+  eventBus.emit("register");
+}
 
 //mounted() {
 //    if (!show) show = true;
@@ -116,9 +122,10 @@ watch(() => props.dialog, (val) => { show = val });
 // }
 //},
 function googleOnSuccess() {
-  show = false;
+  show.value = false;
   cookies.remove("access_token");
 }
+
 
 
 async function validateLogin() {

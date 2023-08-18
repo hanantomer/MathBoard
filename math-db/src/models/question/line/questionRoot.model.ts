@@ -2,7 +2,7 @@ import { Model, Column, BelongsTo, ForeignKey } from "sequelize-typescript";
 import { NotationType, BoardType } from "../../../../../math-common/src/enum";
 import { UUID, UUIDV4 } from "sequelize/types/data-types";
 import { QuestionLineAttributes,QuestionLineCreationAttributes } from "@/models/question/line/questionLineAttributes";
-import User from "@/models/user.model";
+import { User } from "@/models/user.model";
 import Question from "@/models/question/question.model";
 import QuestionDecorator from "@/models/question/questionDecorator";
 

@@ -4,7 +4,7 @@
         "emitDecoratorMetadata": true,
         "target": "es6",
         "module": "commonjs",
-        "lib": ["es6"],
+        "lib": ["ES2021.String"],
         "outDir": "build",
         "rootDir": "./",
         "strict": true,

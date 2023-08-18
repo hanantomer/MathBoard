@@ -8,7 +8,6 @@ import {
     
 } from "sequelize-typescript";
 
-import { Optional } from "sequelize";
 import { UesrType } from "../../../math-common/src/enum";
 
 export interface UserAttributes {
@@ -50,13 +49,10 @@ export interface UserCreateAttributes {
         },
     ],
 })
-export default class User extends Model<
-    UserAttributes,
-    UserCreateAttributes
-    > {
+export default class User extends Model<UserAttributes, UserCreateAttributes> {
     authorized!: boolean;
     lastHeartbeatTime!: Date;
-    
+
     @Column({
         type: DataType.UUID,
         defaultValue: DataType.UUIDV4,

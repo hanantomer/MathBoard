@@ -1,11 +1,12 @@
-import {
-    Model
-} from "sequelize-typescript";
+import "reflect-metadata";
+import { Model } from "sequelize-typescript";
+import Lesson from "./models/lesson/lesson.model"
+import Question from "./models/question/question.model";
+import Answer from "./models/answer/answer.model";
+import User from "./models/user.model";
 
-import LessonModel from "./models/lesson/lesson.model"
+import db from "./models/index";
 
-const db = require("./models/index");
-const { Op } = require("sequelize");
 
 const boardType = Object.freeze({
     LESSON: "lesson",
@@ -22,10 +23,106 @@ Object.defineProperty(String.prototype, "capitalize", {
 });
 
 export default {
-    isTeacher: async function (userId: number, lessonId: number) {
-        let lessonModel: LessonModel = await db.sequelize.models["Lesson"].findByPk(lessonId);
-        return lessonModel && lessonModel.user.id === userId;
+    getIdByUUId: async function (
+        model: string,
+        uuid: string
+    ): Promise<number | null> {
+        let res = await db.sequelize.models[model].findOne({
+            attributes: {
+                include: ["id"],
+            },
+            where: {
+                uuid: uuid,
+            },
+        });
+
+        return res?.get("id") as number;
     },
+
+    isTeacher: async function (
+        userUUId: string,
+        lessonUUId: string
+    ): Promise<boolean> {
+        let lessonId = await this.getIdByUUId("Lesson", lessonUUId);
+        if (!lessonId) return false;
+
+        let userId = await this.getIdByUUId("User", userUUId);
+        if (!userId) return false;
+
+        let lesson = await Lesson.findByPk(lessonId);
+
+        return lesson?.user.id === userId;
+    },
+
+    getUser: async function (
+        userUUId: string,
+    
+    ): Promise<User | null> {
+        let userId = await this.getIdByUUId("User",userUUId);
+        if (!userId) return null;
+
+        return await User.findByPk(userId);
+    },
+
+    getUserByEmailAndPassword: async function (
+        email: string,
+        password: string
+    ): Promise<User | null> {
+        
+        const user = User.findOne({
+            where: {
+                email: email
+            }
+        })
+    },
+        
+
+    getUserAnswer: async function (
+        userUUId: string,
+        questionUUId: string
+    ): Promise<Answer | null> {
+        let questionId = await this.getIdByUUId("Question", questionUUId);
+        if (!questionId) return null;
+
+        let userId = await this.getIdByUUId("User", userUUId);
+        if (!userId) return null;
+
+        return await Answer.findOne({
+            where: {
+                userId: userId,
+                questionId: questionId,
+            },
+        });
+    },
+    
+    async getLesson(lessonUUId: string): Promise<Lesson | null>{
+        let lessonId = await this.getIdByUUId("Lesson", lessonUUId);
+        if (!lessonId) return null;
+
+        return await Lesson.findByPk(lessonId),
+    },
+
+    // async getUUIDById(model: string, id: number) {
+    //     let res = await db.sequelize.models[model].findOne({
+    //         where: {
+    //             id: id,
+    //         },
+    //     });
+
+    //     return res?.uuid;
+    // },
+
+    async getNotation(id: number, url: string) {
+        const model = Object.values(db.sequelize.models).find(
+            (m: any) => m.name.toLowerCase() == url.substring(1, url.length - 3)
+        ) as Model;
+
+        /// TODO : repale createdat with name
+        let notation = await db.sequelize.models[model.createdAt].findByPk(id);
+        return notation;
+    },
+};
+
 
     // findRectOverlapsWithNewRect(
     //     boardType,
@@ -334,57 +431,3 @@ export default {
     //         },
     //     });
     // },
-
-    async findUserAnswer(userId: number, questionId: number) {
-        let answer = await db.sequelize.models["Answer"]
-            .scope("existsScope")
-            .findOne({
-                where: {
-                    UserId: userId,
-                    QuestionId: questionId,
-                },
-            });
-        return answer;
-    },
-
-    async getIdByUUID(model: string, uuid: string) {
-        let res = await db.sequelize.models[model].findOne({
-            attributes: {
-                include: ["id"],
-            },
-            where: {
-                uuid: uuid,
-            },
-        });
-
-        return res?.id;
-    },
-    async getUUIDById(model: string, id: number) {
-        let res = await db.sequelize.models[model].findOne({
-            where: {
-                id: id,
-            },
-        });
-
-        return res?.uuid;
-    },
-
-    async getLesson(lessonUUId: string) {
-        return await db.sequelize.models["Lesson"].findOne({
-            where: {
-                uuid: lessonUUId,
-            },
-        });
-    },
-
-    async getNotation(id: number, url: string) {
-        
-        const model = Object.values(db.sequelize.models).find(
-            (m: any) => m.name.toLowerCase() == url.substring(1, url.length - 3)
-        ) as Model;
-
-        /// TODO : repale createdat with name
-        let notation = await db.sequelize.models[model.createdAt].findByPk(id);
-        return notation;
-    },
-};

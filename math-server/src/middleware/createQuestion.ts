@@ -1,5 +1,5 @@
 "use strict";
-const dbUtil = require("../../../math-db/build/dbUtil");
+const dbUtil = require("../../../math-db/src/dbUtil");
 
 export default {
     create: {

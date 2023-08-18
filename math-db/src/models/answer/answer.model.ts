@@ -1,6 +1,6 @@
 import { Model, Column, DataType, BelongsTo, ForeignKey } from "sequelize-typescript";
 import BoardDecorator from "../boardDecorator";
-import User, { UserAttributes }  from "../user.model";
+import {User, UserAttributes }  from "../user.model";
 import Question, { QuestionAttributes }  from "../question/question.model";
 import { Optional } from "sequelize";
 
@@ -10,6 +10,7 @@ export interface AnswerAttributes {
     uuid: string;
     user: UserAttributes;
     name: string;
+    questionId: number;
     question: QuestionAttributes;
     createdAt: Date;
 }
