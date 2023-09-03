@@ -36,10 +36,10 @@
         </v-card-text>
         <v-card-actions>
           <v-spacer></v-spacer>
-          <v-btn color="blue darken-1" text @click="dialog = false">
+          <v-btn color="blue darken-1" @click="dialog = false">
             Close
           </v-btn>
-          <v-btn color="blue darken-1" text @click="submit">
+          <v-btn color="blue darken-1" @click="submit">
             Submit text
           </v-btn>
         </v-card-actions>
@@ -53,6 +53,10 @@ import { watch, ref } from "vue"
 import { useNotationStore } from "../store/pinia/notationStore";
 import { NotationType } from "../../../math-common/src/enum";
 import useEventBus from "../helpers/eventBus";
+import {
+    RectNotationAttributes
+} from "../../../math-common/build/notationTypes";
+
 
 const notationStore = useNotationStore();
 const eventBus = useEventBus();
@@ -71,8 +75,8 @@ watch(() => props.show,(newVal) => {
 
 function setInitalTextValue() {
   if (notationStore.activeNotation?.notationType == NotationType.TEXT
-    && (notationStore.activeNotation as TextNotationAttributes).value)
-    textValue.value = (notationStore.activeNotation as TextNotationAttributes).value;
+    && (notationStore.activeNotation as RectNotationAttributes).value)
+    textValue.value = (notationStore.activeNotation as RectNotationAttributes).value;
 }
 
 function submit() {

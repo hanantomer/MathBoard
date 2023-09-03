@@ -1,12 +1,19 @@
 
 import { watch } from "vue"
-import { EditMode, NotationShape, NotationType } from "../../../math-common/src/enum";
+import {
+  EditMode,
+  NotationShape,
+  NotationType,
+} from "../../../math-common/src/enum";
+import {
+  LineNotationAttributes,
+  RectNotationAttributes,
+} from "../../../math-common/src/notationTypes";
 import { useNotationStore } from "../store/pinia/notationStore";
-import { activeCellColor, CellCoordinates } from "../../../math-common/src/globals";
-import { RectAttributes } from "../../../math-db/src/models/rectAttributes";
-import { PointNotationAttributes, LineNotationAttributes, RectNotationAttributes } from "../../../math-db/src/models/notationAttributes";
-
-import { PointAttributes } from "../../../math-db/src/models/pointAttributes";
+import {
+  activeCellColor,
+  CellCoordinates,
+} from "../../../math-common/src/globals";
 import { storeToRefs } from 'pinia'
 import useMatrixHelper from "./matrixHelper"
 import useNotationMutateHelper from "./notationMutateHelper"

@@ -1,5 +1,8 @@
 //  questions of current lesson
-import { LessonAttributes, LessonCreateAttributes } from "../../../../math-db/src/models/lesson/lesson.model";
+import {
+  LessonAttributes,
+  LessonCreateAttributes,
+} from "../../../../math-common/build/notationTypes";
 import { defineStore } from "pinia";
 import dbHelper from "../../helpers/dbHelper";
 import { useUserStore } from "./userStore";

@@ -24,18 +24,18 @@
       </v-card-title>
       <v-data-table
         :search="search"
-        :headers="headers"
+        :v-bind:headers="headers"
         :items="lessons"
         :items-per-page="10"
         class="elevation-1"
-        @click:row="seletctLesson"
+        click:row="seletctLesson"
       ></v-data-table>
     </v-card>
   </v-container>
 </template>
 <script setup lang="ts">
 import NewItemDialog from "./NewItemDialog.vue";
-import Lesson from "../../../math-db/src/models/lesson/lesson.model";
+import { LessonAttributes } from "../../../math-common/build/notationTypes";
 import { computed, ref } from "vue"
 import { useUserStore } from "../store/pinia/userStore";
 import { useLessonStore } from "../store/pinia/lessonStore";
@@ -67,7 +67,7 @@ function openLessonDialog() {
   lessonDialog = true;
 };
 
-async function saveLesson(newLesson: Lesson) {
+async function saveLesson(newLesson: LessonAttributes) {
       lessonDialog = false;
       let savedLesson =  await lessonStore.addLesson(newLesson);
       router.push({
@@ -75,7 +75,7 @@ async function saveLesson(newLesson: Lesson) {
       });
 };
 
-async function seletctLesson(lesson: Lesson) {
+async function seletctLesson(lesson: LessonAttributes) {
   router.push({
     path: "/lesson/" + lesson.uuid,
   });
@@ -93,7 +93,7 @@ const headers = computed(() => [
 ]);
 
 const lessons = computed(() => {
-  return Object.entries(lessonStore.lessons).map((l: Lesson[]) => l[1]).map((l: Lesson) => {
+  return Object.entries(lessonStore.lessons).map((l: LessonAttributes[]) => l[1]).map((l: LessonAttributes) => {
     return { uuid: l.uuid, name: l.name, createdAt: l.createdAt }
   })
 });

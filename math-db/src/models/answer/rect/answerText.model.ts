@@ -1,22 +1,25 @@
-import { Model, Column, BelongsTo, ForeignKey } from "sequelize-typescript";
-import { NotationType, BoardType } from "../../../../../math-common/src/enum";
+import { Model, Column, BelongsTo, ForeignKey, DataType } from "sequelize-typescript";
+import { NotationType, BoardType } from "../../../../../math-common/build/enum";
 import { UUID, UUIDV4 } from "sequelize/types/data-types";
-import AnswerDecorator from "@/models/answer/answerDecorator";
-import { User } from "@/models/user.model";
-import Answer from "@/models/answer/answer.model";
+import AnswerDecorator from "../../answer/answerDecorator";
+import User from "../../user.model";
+import Answer from "../../answer/answer.model";
 import {
     AnswerRectAttributes,
     AnswerRectCreationAttributes,
-} from "@/models/answer/rect/answerRectAttributes";
+} from "../../../../../math-common/build/notationTypes";
 
 
 
 @AnswerDecorator("AnswerText")
-export default class AnswerText extends Model<AnswerRectAttributes, AnswerRectCreationAttributes> {
+export default class AnswerText extends Model<
+    AnswerRectAttributes,
+    AnswerRectCreationAttributes
+> {
     notationType = NotationType.TEXT;
     boardType = BoardType.ANSWER;
 
-    @Column({ type: UUID, defaultValue: UUIDV4 })
+    @Column({ type: DataType.UUID, defaultValue: DataType.UUIDV4 })
     uuid!: string;
 
     @ForeignKey(() => User)
@@ -31,18 +34,18 @@ export default class AnswerText extends Model<AnswerRectAttributes, AnswerRectCr
     @BelongsTo(() => Answer)
     answer!: Answer;
 
-    @Column
+    @Column({ type: DataType.INTEGER })
     fromCol!: number;
 
-    @Column
+    @Column({ type: DataType.INTEGER })
     toCol!: number;
 
-    @Column
+    @Column({ type: DataType.INTEGER })
     fromRow!: number;
 
-    @Column
+    @Column({ type: DataType.INTEGER })
     toRow!: number;
 
-    @Column
+    @Column({ type: DataType.STRING })
     value!: string;
 }

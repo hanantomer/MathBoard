@@ -1,21 +1,9 @@
 import { Model, Column, DataType, BelongsTo, ForeignKey } from "sequelize-typescript";
 import BoardDecorator from "../boardDecorator";
-import {User, UserAttributes }  from "../user.model";
-import Question, { QuestionAttributes }  from "../question/question.model";
-import { Optional } from "sequelize";
+import User from "../user.model";
+import Question from "../question/question.model";
+import { AnswerAttributes, AnswerCreateAttributes } from "../../../../math-common/build/notationTypes";
 
-export interface AnswerAttributes {
-    id: number;
-    userId: number;
-    uuid: string;
-    user: UserAttributes;
-    name: string;
-    questionId: number;
-    question: QuestionAttributes;
-    createdAt: Date;
-}
-
-export interface AnswerCreateAttributes extends Optional<AnswerAttributes, "id"> {}
 @BoardDecorator("answer")
 export default class Answer extends Model<
     AnswerAttributes,

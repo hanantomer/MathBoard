@@ -1,11 +1,9 @@
 {
     "compilerOptions": {
-        "experimentalDecorators": true,
-        "emitDecoratorMetadata": true,
-        "target": "es6",
+        "target": "ES6",
         "module": "CommonJS",
         "lib": ["ES2021","ESNext"],
-        "outDir": "build",
+        "outDir": "./build",
         "rootDir": "src",
         "strict": true,
         "noImplicitAny": true,
@@ -14,13 +12,14 @@
         "paths": {
             "*": ["../node_modules/@types"]
         },
-        "sourceMap": true
+        "sourceMap": true,
+        "resolveJsonModule": true
     },
      "ts-node": {
         // Tell ts-node CLI to install the --loader automatically
         "esm": true
     },
-    "files": [],
+    "files": ["./src/app.ts"],
     "references": [
         { "path": "../math-db" },
         { "path": "../math-auth" },

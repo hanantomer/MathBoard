@@ -24,7 +24,10 @@
     "jest.disabledWorkspaceFolders": [
       "math-ui3",
       "math-ui",
-      "math-common"
+      "math-common",
+      "math-auth",
+      "math-server",
+      "math-messages"
     ],
     "typescript.tsdk": "math-server\\node_modules\\typescript\\lib"
   },

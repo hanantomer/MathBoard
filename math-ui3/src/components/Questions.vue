@@ -11,7 +11,7 @@
         <v-card-actions>
           <v-spacer></v-spacer>
 
-          <v-btn color="green darken-1" text @click="navToLessons"> OK </v-btn>
+          <v-btn color="green darken-1"  @click="navToLessons"> OK </v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
@@ -30,11 +30,11 @@
         </v-btn>
       </v-toolbar>
       <v-data-table
-        :headers="headers"
+        :v-bind:headers="headers"
         :items="questions"
         :items-per-page="10"
         class="elevation-1"
-        @click:row="seletctQuestion"
+        click:row="seletctQuestion"
       ></v-data-table>
     </v-card>
   </v-container>
@@ -42,7 +42,7 @@
 
 <script setup lang="ts">
 import NewQuestionDialog from "./NewQuestionDialog.vue";
-import {QuestionAttributes} from "../../../math-db/src/models/question/question.model";
+import {QuestionAttributes} from "../../../math-common/build/notationTypes";
 import { watch, onMounted, computed, ref, reactive } from "vue"
 import { useQuestionStore } from "../store/pinia/questionStore";
 import { useLessonStore } from "../store/pinia/lessonStore";

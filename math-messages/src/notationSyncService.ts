@@ -1,8 +1,9 @@
 import util from "./util.js";
+import { Application } from "@feathersjs/feathers";
 
 export default class notationSyncService {
-  app: any;
-  constructor(app: any) {
+  app: Application;
+  constructor(app: Application) {
     this.app = app;
   }
 

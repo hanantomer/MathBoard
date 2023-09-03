@@ -1,27 +1,25 @@
 {
     "compilerOptions": {
-        "sourceMap": true,
-        "outDir": "build",
-        "emitDecoratorMetadata": true,
-        "experimentalDecorators": true,
-        "allowJs": true,
-        "baseUrl": "./",
-        "target": "ESNext",
-        "useDefineForClassFields": true,
-        "module": "ESNext",
-        "moduleResolution": "Node",
+        "composite": true,
+        "target": "esnext",
+        "module": "CommonJS",
+        "lib": ["ESNext"],
+        "outDir": "./build",
+        "rootDir": "./src",
         "strict": true,
-        "jsx": "preserve",
-        "resolveJsonModule": true,
-        "isolatedModules": true,
+        "noImplicitAny": true,
         "esModuleInterop": true,
-        "lib": ["ESNext","ES2021", "ES2021.String"],
-        "skipLibCheck": true,
-        "noEmit": true,
+        "experimentalDecorators": true,
+        "baseUrl": ".",
         "paths": {
-            "@/*": ["src/*"]
-        }
+            "*": ["../node_modules/@types"]
+        },
+        "sourceMap": true,
+        "resolveJsonModule": true
     },
-    "include": ["src/**/*.ts", "src/**/*.d.ts", "src/**/*.tsx", "src/**/*.vue"],
-    "exclude": ["node_modules"]
+    "compileOnSave": true,
+    //"files": ["./src/dbUtil.ts"],
+    "include": ["./src/**/*"],
+    "references": [{ "path": "../math-common" }],
+    "exclude": ["node_modules", "build/**/*"]
 }

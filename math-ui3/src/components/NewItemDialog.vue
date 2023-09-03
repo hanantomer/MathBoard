@@ -26,7 +26,6 @@
             <v-btn
               data-cy="button-login"
               color="blue darken-1"
-              text
               type="submit"
             >
               Save

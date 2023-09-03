@@ -15,7 +15,7 @@
                 "--loader",
                 "ts-node/esm"
             ],
-            "args": ["${workspaceFolder}\\src\\app.ts"],
+            "args": ["${workspaceFolder}\\build\\app.js"],
             "preLaunchTask": "tsc: build - tsconfig.json",
             "outFiles": ["${workspaceFolder}/build/**/*.js"],
             "skipFiles": ["<node_internals>/**"]

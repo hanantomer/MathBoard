@@ -1,27 +1,25 @@
 {
     "compilerOptions": {
-        "sourceMap": true,
-        "outDir": "build",
-        "emitDecoratorMetadata": true,
-        "experimentalDecorators": true,
-        "allowJs": true,
-        "baseUrl": "./",
-        "target": "ESNext",
-        "useDefineForClassFields": true,
-        "module": "ESNext",
-        "moduleResolution": "Node",
+        "composite": true,
+        "target": "ES6",
+        "module": "CommonJS",
+        "lib": ["ES2021", "ESNext"],
+        "outDir": "./build",
+        "rootDir": "src",
         "strict": true,
-        "jsx": "preserve",
-        "resolveJsonModule": true,
-        "isolatedModules": true,
+        "noImplicitAny": true,
         "esModuleInterop": true,
-        "lib": ["ESNext", "DOM"],
-        "skipLibCheck": true,
-        "noEmit": true,
+        "baseUrl": ".",
         "paths": {
-            "@/*": ["src/*"]
-        }
+            "*": ["../node_modules/@types"]
+        },
+        "sourceMap": true,
+        "resolveJsonModule": true
     },
-    "include": ["src/**/*.ts", "src/**/*.d.ts", "src/**/*.tsx", "src/**/*.vue"],
-    "exclude": ["node_modules"]
+    "references": [
+        { "path": "../math-db" },
+        { "path": "../math-common" }
+    ],
+    "files": ["./src/authUtil.ts", "./src/client_secret.json"],
+    "exclude": ["node_modules", "build/**/*"]
 }

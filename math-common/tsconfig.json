@@ -1,21 +1,23 @@
 {
     "compilerOptions": {
-        "experimentalDecorators": true,
-        "emitDecoratorMetadata": true,
-        "target": "es6",
-        "module": "commonjs",
-        "lib": ["ES2021.String"],
+        "composite": true,
+        "target": "ESNext",
+        "module": "CommonJS",
+        "lib": ["ESNext","DOM"],
         "outDir": "build",
-        "rootDir": "./",
+        "rootDir": "src",
         "strict": true,
         "noImplicitAny": true,
         "esModuleInterop": true,
+        "baseUrl": ".",
+        "paths": {
+            "*": ["../node_modules/@types"]
+        },
+        "sourceMap": true,
         "resolveJsonModule": true,
-        "composite": true,
-        "sourceMap": true
+
     },
+    "compileOnSave": true,
+    "include": ["./src/**/*"],
     "exclude": ["node_modules", "build/**/*"]
 }
-
-
-

@@ -1,8 +1,9 @@
 import util from "./util.js";
+import { Application } from "@feathersjs/feathers";
 
 class activeCellSyncService {
-  app: any;
-  constructor(app: any) {
+  app: Application;
+  constructor(app: Application) {
     this.app = app;
   }
   async update(id: number, data: any, params: any) {

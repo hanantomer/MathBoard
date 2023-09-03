@@ -1,13 +1,13 @@
 import LessonDecorator from "../lessonDecorator";
-import { Model, Column, BelongsTo, ForeignKey } from "sequelize-typescript";
-import { NotationType, BoardType } from "../../../../../math-common/src/enum";
+import { Model, Column, BelongsTo, ForeignKey, DataType } from "sequelize-typescript";
+import { NotationType, BoardType } from "../../../../../math-common/build/enum";
 import { UUID, UUIDV4 } from "sequelize/types/data-types";
-import { User } from "@/models/user.model";
-import Lesson from "@/models/lesson/lesson.model";
+import User from "../../user.model";
+import Lesson from "../../lesson/lesson.model";
 import {
     LessonLineAttributes,
     LessonLineCreationAttributes,
-} from "@/models/lesson/line/lessonLineAttributes";
+} from "../../../../../math-common/build/notationTypes";
 @LessonDecorator("LessonRoot")
 export default class LessonRoot extends Model<
     LessonLineAttributes,
@@ -17,7 +17,7 @@ export default class LessonRoot extends Model<
     boardType = BoardType.LESSON;
     value = null;
 
-    @Column({ type: UUID, defaultValue: UUIDV4 })
+    @Column({ type: DataType.UUID, defaultValue: DataType.UUIDV4 })
     uuid!: string;
 
     @ForeignKey(() => User)
@@ -32,12 +32,12 @@ export default class LessonRoot extends Model<
     @BelongsTo(() => Lesson)
     lesson!: Lesson;
 
-    @Column
+    @Column({ type: DataType.INTEGER })
     fromCol!: number;
 
-    @Column
+    @Column({ type: DataType.INTEGER })
     toCol!: number;
 
-    @Column
+    @Column({ type: DataType.INTEGER })
     row!: number;
 }

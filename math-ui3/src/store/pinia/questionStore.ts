@@ -3,7 +3,7 @@ import { defineStore } from "pinia";
 import {
   QuestionAttributes,
   QuestionCreateAttributes,
-} from "../../../../math-db/src/models/question/question.model";
+} from "../../../../math-common/build/notationTypes";
 import useDbHelper  from "../../helpers/dbHelper";
 import { useLessonStore } from "./lessonStore";
 

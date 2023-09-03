@@ -6,7 +6,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const feathers_1 = __importDefault(require("@feathersjs/feathers"));
 const socketio_1 = __importDefault(require("@feathersjs/socketio"));
 const constants_1 = __importDefault(require("./constants"));
-const app = (0, feathers_1.default)();
+const app = feathers_1.default.feathers();
 app.configure((0, socketio_1.default)());
 const authorizationService_1 = __importDefault(require("./authorizationService"));
 const authenticationService_1 = __importDefault(require("./authenticationService"));
@@ -26,7 +26,7 @@ app.service("authorization").publish("updated", (authorization, ctx) => {
             authorization.UserId),
     ];
 });
-app.service("authentication").publish("created", (authentication, ctx) => {
+app.service("authentication").on("created", (authentication, ctx) => {
     return [
         app.channel(constants_1.default.LESSON_CHANNEL_PREFIX +
             authentication.LessonUUId +
@@ -42,7 +42,7 @@ app.service("heartbeat").publish("updated", (heartbeat, ctx) => {
             heartbeat.userId),
     ];
 });
-app.service("activeCell").publish("updated", (position, ctx) => {
+app.service("activeCell").on("updated", (position, ctx) => {
     return [app.channel(constants_1.default.LESSON_CHANNEL_PREFIX + position.LessonUUId)];
 });
 app.service("notationSync").publish("created", (notation, ctx) => {
@@ -54,8 +54,7 @@ app.service("notationSync").publish("updated", (notation, ctx) => {
 app.service("notationSync").publish("removed", (notation, ctx) => {
     return [app.channel(constants_1.default.LESSON_CHANNEL_PREFIX + notation.LessonUUId)];
 });
+app.addListener("listening", () => console.log(`server running on port ${PORT}`));
 const PORT = Number(process.env.PORT) || 3030;
-app
-    .listen(PORT)
-    .on("listening", () => console.log(`server running on port ${PORT}`));
+app.listen(PORT);
 //# sourceMappingURL=app.js.map

@@ -1,10 +1,12 @@
-import { Model, Column, BelongsTo, ForeignKey } from "sequelize-typescript";
-import { NotationType, BoardType } from "../../../../../math-common/src/enum";
-import { UUID, UUIDV4 } from "sequelize/types/data-types";
+import { Model, Column, BelongsTo, ForeignKey, DataType } from "sequelize-typescript";
+import { NotationType, BoardType } from "../../../../../math-common/build/enum";
 import QuestionDecorator from "../questionDecorator";
-import { User } from "../../user.model";
+import User from "../../user.model";
 import Question from "../question.model";
-import { QuestionPointAttributes, QuestionPointCreationAttributes } from "@/models/question/point/questionPointAttributes";
+import {
+    QuestionPointAttributes,
+    QuestionPointCreationAttributes,
+} from "../../../../../math-common/build/notationTypes";
 
 @QuestionDecorator("QuestionSign")
 export default class QuestionSign extends Model<
@@ -14,7 +16,7 @@ export default class QuestionSign extends Model<
     notationType = NotationType.SIGN;
     boardType = BoardType.QUESTION;
 
-    @Column({ type: UUID, defaultValue: UUIDV4 })
+    @Column({ type: DataType.UUID, defaultValue: DataType.UUIDV4 })
     uuid!: string;
 
     @ForeignKey(() => User)
@@ -29,12 +31,12 @@ export default class QuestionSign extends Model<
     @BelongsTo(() => Question)
     question!: Question;
 
-    @Column
+    @Column({ type: DataType.INTEGER })
     col!: number;
 
-    @Column
+    @Column({ type: DataType.INTEGER })
     row!: number;
 
-    @Column
+    @Column({ type: DataType.STRING })
     value!: string;
 }

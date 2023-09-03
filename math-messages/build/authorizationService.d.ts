@@ -1,7 +1,8 @@
+import { Application } from "@feathersjs/feathers";
 export default class AuhorizationService {
-    app: any;
+    app: Application;
     lessonAuthorizedUsers: number[][];
-    constructor(app: any);
-    get(id: number, data: any, params: any): Promise<boolean | undefined>;
+    constructor(app: Application);
+    get(id: number, params: any): Promise<boolean | undefined>;
     update(id: number, data: any, params: any): Promise<any>;
 }

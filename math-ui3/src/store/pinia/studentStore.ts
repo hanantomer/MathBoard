@@ -1,12 +1,12 @@
 import { defineStore } from "pinia";
-import User from "../../../../math-db/src/models/user.model";
+import { UserAttributes } from "../../../../math-common/build/notationTypes";
 import { reactive, ref } from "vue";
-import dbHelper from "../../helpers/dbHelper";
-const db = dbHelper();
 
 export const useStudentStore = defineStore("studentanswer", () => {
 
-  let students: Map<String, User> = reactive(<Map<String, User>>{});
+  let students: Map<String, UserAttributes> = reactive(
+    <Map<String, UserAttributes>>{}
+  );
   let authorizedStudentUUId = ref("");
 
 

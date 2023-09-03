@@ -8,17 +8,17 @@
 import { createApp } from 'vue'
 import { createPinia } from "pinia";
 // Plugins
-import { registerPlugins } from '@/plugins'
+import { registerPlugins } from './plugins'
 // Components
 import App from './App.vue'
 
-//import  store  from "./store/pinia/indexStore";
+import  store  from "./store/pinia/indexStore";
 
 const pinia = createPinia();
 const app = createApp(App);
-//app.use(pinia);
+app.use(pinia);
 
 registerPlugins(app)
 
-//app.use(store);
+app.use(store);
 app.mount('#app')

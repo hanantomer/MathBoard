@@ -3,15 +3,12 @@ import { EditMode } from "../../../math-common/src/enum";
 import useDbHelper from "../helpers/dbHelper";
 
 import {
-  PointNotationCreateAttributes,
-  LineNotationCreateAttributes,
-  RectNotationCreateAttributes,
   PointNotationAttributes,
   LineNotationAttributes,
   RectNotationAttributes,
-} from "../../../math-db/src/models/notationAttributes";
+} from "../../../math-common/build/notationTypes";
 
-import { CellCoordinates } from "../../../math-common/src/globals";
+import { CellCoordinates } from "../../../math-common/build/globals";
 
 import {
   NotationShape,
@@ -27,9 +24,11 @@ import useAuthHelper from "./authHelper";
 import useUserOutgoingOperations from "./userOutgoingOperationsHelper";
 import useMatrixHelper from "../helpers/matrixHelper";
 
-import { LineAttributes } from "@db/models/lineAttributes";
-import { RectAttributes } from "@db/models/rectAttributes";
-import { BaseNotation, BaseCreateNotation } from "@db/models/baseNotation";
+import {
+  BaseNotation,
+  LineAttributes,
+  RectAttributes,
+} from "../../../math-common/build/notationTypes";
 
 
 const matrixHelper = useMatrixHelper();
@@ -285,7 +284,7 @@ export default function notationMutateHelper() {
   }
 
   function findOverlapNotationsOfSameType(
-    notation: BaseCreateNotation
+    notation: BaseNotation
   ): BaseNotation | undefined {
     let notationsMap = notationStore.notations;
     return Object.entries(notationsMap)
@@ -321,7 +320,7 @@ export default function notationMutateHelper() {
   }
 
   function findOverlapNotationsOfAnyType(
-    notation: BaseCreateNotation
+    notation: BaseNotation
   ): BaseNotation | undefined {
     let notationsMap = notationStore.notations;
     return Object.entries(notationsMap)
@@ -441,7 +440,7 @@ export default function notationMutateHelper() {
     if (!authHelper.canEdit)
       return;
 
-    notationStore.selectedNotations.forEach(async (uuid) => {
+    notationStore.selectedNotations.forEach(async (uuid: string) => {
       let n = notationStore.notations.get(uuid);
       if (!n) return;
       await dbHelper.removeNotation(n);
@@ -461,9 +460,9 @@ export default function notationMutateHelper() {
 
   // move without persistence - called during  mouse move  - don't bother the database during move
   async function moveSelectedNotations(deltaX: number, deltaY: number) {
-    notationStore.selectedNotations.forEach((uuid) => {
+    notationStore.selectedNotations.forEach((uuid: string) => {
       let n = notationStore.notations.get(uuid);
-      if (!n) return;
+      if (!n?.notationType) return;
       switch (NotationTypeShape.get(n.notationType)) {
         case NotationShape.POINT: {
           (n as PointNotationAttributes).col += deltaX;
@@ -490,7 +489,7 @@ export default function notationMutateHelper() {
   // move selected notations with persistence - called upon muose up
   async function updateSelectedNotationCoordinates() {
     // disallow update during answer if any notation overlaps question area
-    notationStore.selectedNotations.forEach((uuid) => {
+    notationStore.selectedNotations.forEach((uuid: string) => {
       let n = notationStore.notations.get(uuid);
       if (!n) return;
       if (isNotationInQuestionArea(n)) {
@@ -498,7 +497,7 @@ export default function notationMutateHelper() {
       }
     });
 
-    notationStore.selectedNotations.forEach(async (uuid) => {
+    notationStore.selectedNotations.forEach(async (uuid: string) => {
       let n = notationStore.notations.get(uuid);
 
       if (!n) return;
@@ -523,7 +522,7 @@ export default function notationMutateHelper() {
     notationStore.notations.set(notation.uuid, notation);
   }
 
-  async function addNotation<T extends BaseCreateNotation>(
+  async function addNotation<T extends BaseNotation>(
     notation: T
   ): Promise<BaseNotation | null> {
 
@@ -573,14 +572,10 @@ export default function notationMutateHelper() {
   }
 
   function setNotationAttributes(
-    existingNotation: BaseCreateNotation,
-    notation: BaseCreateNotation
+    existingNotation: BaseNotation,
+    notation: BaseNotation
   ) {
 
-    //if (existingNotation.notationType != notation.notationType)
-    //  throw error(
-    //    "setNotationAttributes arguments must be of the same notation type"
-    //  );
 
     switch (NotationTypeShape.get(existingNotation.notationType)) {
       case NotationShape.POINT: {
@@ -590,9 +585,6 @@ export default function notationMutateHelper() {
         (existingNotation as PointNotationAttributes).row = (
           notation as PointNotationAttributes
         ).row;
-        //(existingNotation as PointNotationCreateAttributes).value = (
-        //  notation as PointNotationCreateAttributes
-        //).value;
         if (existingNotation.notationType == NotationType.SYMBOL) {
          ///TODO: update symbol or power values (create corresponding types in advance)
         }
@@ -719,10 +711,10 @@ export default function notationMutateHelper() {
 
   function isCellInQuestionArea(
     CellCoordinates: CellCoordinates | null
-  ): boolean {
+  ): boolean | null{
     return (
       notationStore.parent.type == BoardType.ANSWER &&
-      !userStore.isTeacher &&
+      !userStore.isTeacher() &&
       CellCoordinates &&
       notationStore.cellOccupationMatrix
         .at(CellCoordinates.row)
@@ -798,7 +790,7 @@ export default function notationMutateHelper() {
     base64Value: string
   ) {
 
-    let notation: RectNotationCreateAttributes = {
+    let notation: RectNotationAttributes = {
       fromCol: fromCol,
       toCol: toCol,
       fromRow: fromRow,
@@ -806,7 +798,10 @@ export default function notationMutateHelper() {
       value: base64Value,
       boardType: notationStore.parent.type,
       notationType: NotationType.IMAGE,
-      userUUId: userStore.currentUser!.uuid,
+      user: userStore.currentUser,
+      createdAt: new Date(),
+      id: -1,
+      uuid: "",
     };
 
     addNotation(notation);
@@ -830,7 +825,7 @@ export default function notationMutateHelper() {
    value: string)
  {
 
-   let notation: RectNotationCreateAttributes = {
+   let notation: RectNotationAttributes = {
      fromCol: fromCol,
      toCol: toCol,
      fromRow: fromRow,
@@ -838,7 +833,10 @@ export default function notationMutateHelper() {
      value: value,
      boardType: notationStore.parent.type,
      notationType: NotationType.TEXT,
-     userUUId: userStore.currentUser!.uuid,
+     user: userStore.currentUser,
+     createdAt: new Date(),
+     id: -1,
+     uuid: ""
    };
 
    addNotation(notation)
@@ -850,13 +848,16 @@ export default function notationMutateHelper() {
   function addSymbolNotation(value: string) {
     if (!notationStore.activeCell) return;
 
-    let notation: PointNotationCreateAttributes = {
+    let notation: PointNotationAttributes = {
       col: notationStore.activeCell.col,
       row: notationStore.activeCell.row,
       value: value,
       boardType: notationStore.parent.type,
       notationType: NotationType.SYMBOL,
-      userUUId: userStore.currentUser!.uuid,
+      user: userStore.currentUser,
+      createdAt: new Date(),
+      id: -1,
+      uuid: "",
     };
 
     addNotation(notation);
@@ -871,13 +872,16 @@ export default function notationMutateHelper() {
 
   function addSqrtNotation(coordinates: LineAttributes) {
 
-    let notation: LineNotationCreateAttributes = {
+    let notation: LineNotationAttributes = {
       fromCol: coordinates.fromCol,
       toCol: coordinates.fromCol,
       row: coordinates.row,
       boardType: notationStore.parent.type,
       notationType: NotationType.SQRT,
-      userUUId: userStore.currentUser!.uuid,
+      user: userStore.currentUser,
+      createdAt: new Date(),
+      id: -1,
+      uuid: "",
     };
 
     addNotation(notation);
@@ -887,13 +891,16 @@ export default function notationMutateHelper() {
   }
 
   function addFractiontNotation(coordinates: LineAttributes)  {
-    let notation: LineNotationCreateAttributes = {
+    let notation: LineNotationAttributes = {
       fromCol: coordinates.fromCol,
       toCol: coordinates.fromCol,
       row: coordinates.row,
       boardType: notationStore.parent.type,
       notationType: NotationType.FRACTION,
-      userUUId: userStore.currentUser!.uuid,
+      user: userStore.currentUser,
+      createdAt: new Date(),
+      id: -1,
+      uuid: "",
     };
     addNotation(notation);
       // if (notationStore.parent.type === BoardType.LESSON) {

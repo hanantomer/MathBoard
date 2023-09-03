@@ -7,16 +7,18 @@ const authUtil_1 = __importDefault(require("../../math-auth/build/authUtil"));
 const dbUtil_1 = __importDefault(require("../../math-db/build/dbUtil"));
 const util_1 = __importDefault(require("./util"));
 const constants_1 = __importDefault(require("./constants"));
+const authUtil = (0, authUtil_1.default)();
+const dbUtil = (0, dbUtil_1.default)();
 class AuthenticationService {
     constructor(app) {
         this.app = app;
         this.lessonAdminConnection = new Map(); // key lesson, value: userId/connection(1 only)
         this.lessonStudentConnection = new Map(); // key lesson, value: set where key:userId
     }
-    async authUserByToken(access_token) {
-        let user = await authUtil_1.default.authByLocalToken(access_token);
+    async get(id, params) {
+        let user = await authUtil.authByLocalToken(params.access_token);
         if (!user) {
-            console.error(`access_token:${access_token} not accociated with any user`);
+            console.error(`access_token:${params.access_token} not accociated with any user`);
             return;
         }
         return user;
@@ -27,20 +29,21 @@ class AuthenticationService {
         if (!user) {
             return;
         }
-        let lessonId = await dbUtil_1.default.getIdByUUID("Lesson", data.LessonUUId);
-        if (!lessonId) {
+        if (!data.LessonUUId) {
             return;
         }
-        let isTeacher = await dbUtil_1.default.isTeacher(user.id, lessonId);
+        let isTeacher = await dbUtil.isTeacher(user.id, data.LessonUUId);
         if (isTeacher) {
             // store admin connection when she logs on
-            this.lessonAdminConnection.set(lessonId, {
+            this.lessonAdminConnection.set(data.LessonUUId, {
                 userId: user.id,
                 connection: params.connection,
             });
             // join admin to existing student channels
-            if (this.lessonStudentConnection.has(lessonId)) {
-                this.lessonStudentConnection.get(lessonId).forEach((student) => {
+            if (this.lessonStudentConnection.has(data.LessonUUId)) {
+                this.lessonStudentConnection
+                    .get(data.LessonUUId)
+                    .forEach((student) => {
                     // join admin to all student channels
                     this.app
                         .channel(constants_1.default.LESSON_CHANNEL_PREFIX +
@@ -53,10 +56,10 @@ class AuthenticationService {
             }
         }
         else {
-            if (!this.lessonStudentConnection.has(lessonId)) {
-                this.lessonStudentConnection.set(lessonId, new Set());
+            if (!this.lessonStudentConnection.has(data.LessonUUId)) {
+                this.lessonStudentConnection.set(data.LessonUUId, new Set());
             }
-            this.lessonStudentConnection.get(lessonId).add(user.id);
+            this.lessonStudentConnection.get(data.LessonUUId).add(user.id);
             // join studnet to student channel
             this.app
                 .channel(constants_1.default.LESSON_CHANNEL_PREFIX +
@@ -64,23 +67,23 @@ class AuthenticationService {
                 constants_1.default.USER_CHANNEL_PREFIX +
                 user.id)
                 .join(params.connection);
-            console.log(`subscribing student: ${user.email} to lesson: ${lessonId}`);
+            console.log(`subscribing student: ${user.email} to lesson: ${data.LessonUUId}`);
             // join admin to student channel
-            if (this.lessonAdminConnection.has(lessonId)) {
+            if (this.lessonAdminConnection.has(data.LessonUUId)) {
                 console.log(`subscribing admin: ${user.email} to student: ${user.id}`);
                 this.app
                     .channel(constants_1.default.LESSON_CHANNEL_PREFIX +
                     data.LessonUUId +
                     constants_1.default.USER_CHANNEL_PREFIX +
                     user.id)
-                    .join(this.lessonAdminConnection.get(lessonId).connection);
+                    .join(this.lessonAdminConnection.get(data.LessonUUId).connection);
             }
         }
         // either teacher or student join lesson channel
         this.app
             .channel(constants_1.default.LESSON_CHANNEL_PREFIX + data.LessonUUId)
             .join(params.connection);
-        console.log(`subscribing user: ${user.email} to lesson: ${lessonId}`);
+        console.log(`subscribing user: ${user.email} to lesson: ${data.LessonUUId}`);
     }
 }
 exports.default = AuthenticationService;

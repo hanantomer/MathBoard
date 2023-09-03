@@ -1,6 +1,7 @@
+import { Application } from "@feathersjs/feathers";
 export default class HeartbeatService {
-    app: any;
-    constructor(app: any);
+    app: Application;
+    constructor(app: Application);
     update(id: number, data: any, params: any): Promise<{
         LessonUUId: any;
         userId: any;

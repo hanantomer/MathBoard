@@ -2,7 +2,9 @@ import { getCookie, setCookie, removeCookie } from "typescript-cookie";
 import { useUserStore } from "../store/pinia/userStore";
 import { useNotationStore } from "../store/pinia/notationStore";
 import { BoardType, UesrType } from "../../../math-common/src/enum";
-import { UserCreateAttributes, UserAttributes } from "../../../math-db/src/models/user.model";
+import {
+  UserAttributes,
+} from "../../../math-common/build/notationTypes";
 import useDbHelper from "./dbHelper";
 
 //const userStore = useUserStore();
@@ -19,13 +21,17 @@ export default function useAuthHelper() {
 
   function registerUser(firstName: string, lastName: string, password: string, email: string, userType: UesrType) {
     const userStore = useUserStore();
-    let user: UserCreateAttributes = {
+    let user: UserAttributes = {
       userType: userType,
       firstName: firstName,
       lastName: lastName,
       email: email,
       password: password,
-      imageUrl: ""
+      imageUrl: "",
+      access_token: "",
+      authorized: false,
+      uuid: "",
+      lastHeartbeatTime: new Date(),
     };
     userStore.registerUser(user);
   }
@@ -84,7 +90,7 @@ export default function useAuthHelper() {
     } else {
       removeCookie("access_token");
     }
-    userStore.currentUser = undefined;
+    userStore.currentUser = new Object() as UserAttributes;
   }
 
   /*async function  getGoogleUser() {

@@ -1,19 +1,23 @@
-import { Model, Column, BelongsTo, ForeignKey } from "sequelize-typescript";
-import { NotationType, BoardType } from "../../../../../math-common/src/enum";
-import { UUID, UUIDV4 } from "sequelize";
-import { LessonPointAttributes, LessonPointCreationAttributes } from "@/models/lesson/point/lessonPointAttributes";
-import LessonDecorator from "@/models/lesson/lessonDecorator";
-import { User } from "@/models/user.model";
-import Lesson from "@/models/lesson/lesson.model";
+import { Model, Column, BelongsTo, ForeignKey, DataType } from "sequelize-typescript";
+import { NotationType, BoardType } from "../../../../../math-common/build/enum";
+import {
+    LessonPointAttributes,
+    LessonPointCreationAttributes,
+} from "../../../../../math-common/build/notationTypes";
+import LessonDecorator from "../../lesson/lessonDecorator";
+import User from "../../user.model";
+import Lesson from "../../lesson/lesson.model";
 
 
 @LessonDecorator("LessonSymbol")
-export default class LessonSymbol extends Model<LessonPointAttributes, LessonPointCreationAttributes>
-{
+export default class LessonSymbol extends Model<
+    LessonPointAttributes,
+    LessonPointCreationAttributes
+> {
     notationType = NotationType.SYMBOL;
     boardType = BoardType.LESSON;
 
-    @Column({ type: UUID, defaultValue: UUIDV4 })
+    @Column({ type: DataType.UUID, defaultValue: DataType.UUIDV4 })
     uuid!: string;
 
     @ForeignKey(() => User)
@@ -28,12 +32,12 @@ export default class LessonSymbol extends Model<LessonPointAttributes, LessonPoi
     @BelongsTo(() => Lesson)
     lesson!: Lesson;
 
-    @Column
+    @Column({ type: DataType.INTEGER })
     col!: number;
 
-    @Column
+    @Column({ type: DataType.INTEGER })
     row!: number;
 
-    @Column
+    @Column({ type: DataType.STRING })
     value!: string;
 }

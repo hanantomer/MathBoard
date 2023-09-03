@@ -1,6 +1,5 @@
 import { defineStore } from "pinia";
-import { AnswerAttributes } from "../../../../math-db/src/models/answer/answer.model";
-import { QuestionAttributes } from "../../../../math-db/src/models/question/question.model";
+import { AnswerAttributes } from "../../../../math-common/build/notationTypes";
 import  useDbHelper  from "../../helpers/dbHelper";
 import { useQuestionStore } from "./questionStore";
 import { useUserStore } from "./userStore";

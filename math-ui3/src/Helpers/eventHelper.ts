@@ -1,7 +1,6 @@
 import { BoardType, EditMode } from "../../../math-common/src/enum";
 import { useUserStore } from "../store/pinia/userStore"
 import { useNotationStore } from "../store/pinia/notationStore"
-import {BaseNotation } from "../../../math-db/src/models/baseNotation";
 
 
 import useMatrixHelper from "./matrixHelper";

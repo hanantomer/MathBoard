@@ -1,4 +1,3 @@
-
 import {
     Table,
     DefaultScope,
@@ -8,29 +7,11 @@ import {
     
 } from "sequelize-typescript";
 
-import { UesrType } from "../../../math-common/src/enum";
-
-export interface UserAttributes {
-    id: number;
-    uuid: string;
-    firstName: string;
-    lastName: string;
-    email: string;
-    password: string;
-    access_token: string;
-    imageUrl: string;
-    userType: UesrType;
-    authorized: boolean;
-}
-
-export interface UserCreateAttributes {
-    firstName: string;
-    lastName: string;
-    email: string;
-    password: string;
-    imageUrl: string;
-    userType: UesrType;
-}
+import { UesrType } from "../../../math-common/build/enum";
+import {
+    UserAttributes,
+    UserCreateAttributes,
+} from "../../../math-common/build/notationTypes";
 
 
 @DefaultScope(() => ({
@@ -99,5 +80,5 @@ export default class User extends Model<UserAttributes, UserCreateAttributes> {
         type: DataType.STRING,
         allowNull: true,
     })
-    userType!: string;
+    userType!: UesrType;
 }

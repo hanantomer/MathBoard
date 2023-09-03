@@ -1,7 +1,12 @@
 import { Model } from "sequelize-typescript";
+import { NotationType, BoardType } from "../../../../../math-common/build/enum";
 import User from "../../user.model";
 import Question from "../question.model";
-export default class QuestionPower extends Model {
+import { QuestionPointAttributes, QuestionPointCreationAttributes } from "../../../../../math-common/build/notationTypes";
+export default class QuestionPower extends Model<QuestionPointAttributes, QuestionPointCreationAttributes> {
+    notationType: NotationType;
+    boardType: BoardType;
+    uuid: string;
     userId: number;
     user: User;
     questionId: number;

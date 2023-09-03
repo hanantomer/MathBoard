@@ -1,4 +1,4 @@
-export enum BoardType{
+export enum BoardType {
   LESSON,
   QUESTION,
   ANSWER

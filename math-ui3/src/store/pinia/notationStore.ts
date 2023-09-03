@@ -2,7 +2,7 @@
 //  questions of current lesson
 import { defineStore } from "pinia";
 import { CellCoordinates, matrixDimensions } from "../../../../math-common/src/globals";
-import { BaseNotation} from "../../../../math-db/src/models/baseNotation";
+import { BaseNotation } from "../../../../math-common/src/notationTypes";
 import { EditMode, BoardType, NotationShape, NotationTypeShape } from "../../../../math-common/src/enum";
 import { reactive, ref } from "vue";
 
@@ -59,7 +59,8 @@ export const useNotationStore = defineStore("notation", () => {
 
   function getNotations<T>(notationShape: NotationShape): T[] {
     return Array.from(notations.values()).filter((n) => {
-      NotationTypeShape.get(n.notationType) == notationShape;
+      n.notationType &&
+      NotationTypeShape.get(n.notationType.valueOf()) == notationShape;
     }) as T[];
   }
 

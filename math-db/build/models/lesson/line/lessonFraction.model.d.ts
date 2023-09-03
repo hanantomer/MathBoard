@@ -1,7 +1,13 @@
 import { Model } from "sequelize-typescript";
+import { NotationType, BoardType } from "../../../../../math-common/build/enum";
+import { LessonLineAttributes, LessonLineCreationAttributes } from "../../../../../math-common/build/notationTypes";
 import User from "../../user.model";
-import Lesson from "../lesson.model";
-export default class LessonFraction extends Model {
+import Lesson from "../../lesson/lesson.model";
+export default class LessonFraction extends Model<LessonLineAttributes, LessonLineCreationAttributes> {
+    notationType: NotationType;
+    boardType: BoardType;
+    value: null;
+    uuid: string;
     userId: number;
     user: User;
     lessonId: number;

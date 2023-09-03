@@ -1,13 +1,15 @@
 
-import { CellCoordinates } from "../../../math-common/src/globals";
-import { BaseNotation } from "../../../math-db/src/models/baseNotation";
+import { CellCoordinates } from "../../../math-common/build/globals";
+import { BaseNotation } from "../../../math-common/build/notationTypes";
 import { useNotationStore } from "../store/pinia/notationStore";
 
 import useFeathersHelper from "./feathersHelper";
-const { client } = useFeathersHelper();
 const notationStore = useNotationStore();
+const feathersHelper = useFeathersHelper();
 
 export default function userOutgoingOperations() {
+
+    const feathersClient = feathersHelper.init();
 
     ///TODO - watch internal notation mutations and dsiaptch to other users
     notationStore.$subscribe((mutation, state) => {
@@ -24,29 +26,29 @@ export default function userOutgoingOperations() {
 
   function syncOutgoingActiveCell (activeCell: CellCoordinates) {
       //activeCell.LessonUUId = this.getCurrentLesson().uuid;
-      client
+      feathersClient
         .service("activeCell")
-        .update({}, { activeCell: activeCell }, {});
+        .update(null, { activeCell: activeCell }, {});
   };
 
   function syncOutgoingSaveNotation(notation: BaseNotation) {
-    client.service("notationSync").create({ notation: notation }, {});
+    feathersClient.service("notationSync").create({ notation: notation }, {});
   };
 
   function syncOutgoingRemoveNotation(notation: BaseNotation) {
-    client.service("notationSync").remove({ notation: notation }, {});
+    feathersClient.service("notationSync").remove( notation.uuid , {});
   };
 
   function syncOutgoingUpdateSelectedNotation(selectedNotation: BaseNotation) {
-    client
+    feathersClient
       .service("notationSync")
-      .update({}, { notation: selectedNotation }, {});
+      .update(null, { notation: selectedNotation }, {});
   };
 
   function syncOutgoingHeartBeat(LessonUUId: string) {
-      client
+      feathersClient
         .service("heartbeat")
-        .update({}, { LessonUUId: LessonUUId }, {});
+        .update(null, { LessonUUId: LessonUUId }, {});
   };
     // inform students that he is eligible to edit
   function syncOutgoingAuthUser (
@@ -55,8 +57,8 @@ export default function userOutgoingOperations() {
       LessonUUId: string
     ) {
       if (authorizedStudentUUId)
-        client.service("authorization").update(
-          {},
+        feathersClient.service("authorization").update(
+          null,
           {
             LessonUUId: LessonUUId,
             UserUUId: authorizedStudentUUId,
@@ -65,8 +67,8 @@ export default function userOutgoingOperations() {
           {}
         );
       if (revokedStudentUUId)
-        client.service("authorization").update(
-          {},
+        feathersClient.service("authorization").update(
+          null,
           {
             LessonUUId: LessonUUId,
             userUUId: revokedStudentUUId,

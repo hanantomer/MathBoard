@@ -6,6 +6,9 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@feathersjs/feathers": "^5.0.8",
+    "@feathersjs/socketio": "^5.0.8",
+    "@types/feathersjs__feathers": "^3.1.10",
     "axios": "^0.21.4",
     "eslint": "^7.32.0",
     "eslint-config-prettier": "^8.3.0",

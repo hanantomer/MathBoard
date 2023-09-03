@@ -1,7 +1,7 @@
-export default class AuthUtils {
-    userCache: Map<any, any>;
-    static userCache: any;
-    static authByLocalPassword(email: string, password: string): Promise<any>;
-    static authByLocalToken(access_token: string): Promise<any>;
-    static authByGoogleToken(access_token: string): Promise<any>;
-}
+import User from "../../math-db/build/models/user.model";
+import { UserAttributes } from "../../math-common/build/notationTypes";
+export default function useAuthUtils(): {
+    authByLocalPassword: (email: string, password: string) => Promise<UserAttributes | null>;
+    authByGoogleToken: (access_token: string) => Promise<User | null | undefined>;
+    authByLocalToken: (access_token: string) => Promise<UserAttributes | undefined>;
+};

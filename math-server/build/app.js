@@ -1,127 +1,148 @@
 "use strict";
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
-var express = require("express");
-var cors = require("cors");
-var bodyParser = require("body-parser");
-var finale = require("finale-rest");
-var index_1 = require("../../math-db/build/models/index");
-var authMiddleware_1 = require("../../math-auth/build/authMiddleware");
-var addAccessTokenToResponse_1 = require("./middleware/addAccessTokenToResponse");
-var createLessonChild_1 = require("./middleware/createLessonChild");
-var getLessonChildren_1 = require("./middleware/getLessonChildren");
-var updateLessonChild_1 = require("./middleware/updateLessonChild");
-var createQuestionChild_1 = require("./middleware/createQuestionChild");
-var getQuestionChildren_1 = require("./middleware/getQuestionChildren");
-var updateQuestionChild_1 = require("./middleware/updateQuestionChild");
-var createAnswerChild_1 = require("./middleware/createAnswerChild");
-var createAnswer_1 = require("./middleware/createAnswer");
-var updateAnswerChild_1 = require("./middleware/updateAnswerChild");
-var createQuestion_1 = require("./middleware/createQuestion");
-var enum_1 = require("../../math-common/build/enum");
-var utils_1 = require("../../math-common/build/utils");
-var boardTypesMilddleware = new Map();
-boardTypesMilddleware.set(enum_1.BoardType.lesson.toString(), [
-    [
-        createLessonChild_1.default,
-        updateLessonChild_1.default,
-        getLessonChildren_1.default
-    ]
-]);
-boardTypesMilddleware.set(enum_1.BoardType.question.toString(), [
-    [
-        createQuestionChild_1.default,
-        updateQuestionChild_1.default,
-        getQuestionChildren_1.default,
-    ]
-]);
-boardTypesMilddleware.set(enum_1.BoardType.answer.toString(), [
-    [
-        createAnswerChild_1.default,
-        updateAnswerChild_1.default,
-    ]
-]);
-var app = express();
-app.use(cors());
-app.use(express.json());
-app.use(bodyParser.json({ limit: "10mb" }));
-app.use(bodyParser.urlencoded({
+const express_1 = __importDefault(require("express"));
+const cors_1 = __importDefault(require("cors"));
+const body_parser_1 = __importDefault(require("body-parser"));
+const authUtil_1 = __importDefault(require("../../math-auth/build/authUtil"));
+const dbUtil_1 = __importDefault(require("../../math-db/build/dbUtil"));
+const index_1 = __importDefault(require("../../math-db/build/models/index"));
+const enum_1 = require("../../math-common/build/enum");
+const authUtil = (0, authUtil_1.default)();
+const db = (0, dbUtil_1.default)();
+let app = (0, express_1.default)();
+function auth(req, res, next) {
+    return __awaiter(this, void 0, void 0, function* () {
+        // omit authorization enforcement, when signing in.
+        if (req.url.indexOf("/users/") > 0) {
+            next();
+        }
+        // verify authorization
+        if (!(yield validateHeaderAuthentication(req, res))) {
+            return;
+        }
+        next();
+    });
+}
+app.use(auth);
+app.use((0, cors_1.default)());
+app.use(express_1.default.json());
+app.use(body_parser_1.default.json({ limit: "10mb" }));
+app.use(body_parser_1.default.urlencoded({
     limit: "10mb",
     extended: true,
     parameterLimit: 5000,
 }));
-finale.initialize({
-    app: app,
-    sequelize: index_1.default.sequelize,
-});
-// user
-var userResource = finale.resource({
-    model: index_1.default.sequelize.models["User"],
-    endpoints: ["/users", "/users/:id"],
-});
-userResource.use(authMiddleware_1.default);
-userResource.use(addAccessTokenToResponse_1.default);
+/*verifies that authenitication header exists and the it denotes a valid user
+if yes, set header userUUId
+*/
+function validateHeaderAuthentication(req, res) {
+    return __awaiter(this, void 0, void 0, function* () {
+        if (!req.headers.authentication) {
+            res = res.status(401).json("unauthorized");
+            return false;
+        }
+        const user = yield authUtil.authByLocalToken(req.headers.authentication.toString());
+        if (!user) {
+            res = res.status(401).json("invalid token");
+        }
+        req.headers.userUUId = user === null || user === void 0 ? void 0 : user.uuid;
+        return true;
+    });
+}
+app.get("/users", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const uuid = req.headers.userUUId;
+    const user = db.getUser(uuid);
+    return res.status(200).json(user);
+}));
+app.get("/users/:email/:password", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { email, password } = req.params;
+    const user = authUtil.authByLocalPassword(email, password);
+    if (!user) {
+        return res.status(401).json("invalid user or passord");
+    }
+    return res.status(200).json(user);
+}));
 // lesson
-var lessonResource = finale.resource({
-    model: index_1.default.sequelize.models["Lesson"],
-    endpoints: ["/lessons", "/lessons/:uuid"],
-});
-lessonResource.use(authMiddleware_1.default);
+app.get("/lessons", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    return res.status(200).json(db.getLessons(req.params.userUUId));
+}));
+app.get("/lessons/:uuid", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    return res.status(200).json(db.getLesson(req.params.uuid));
+}));
+app.post("/lessons", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    return res.status(200).json(db.createLesson(req.body));
+}));
 // question
-var questionResource = finale.resource({
-    model: index_1.default.sequelize.models["Question"],
-    endpoints: ["/questions", "/questions/:uuid"],
-});
-questionResource.use(authMiddleware_1.default);
-questionResource.use(createLessonChild_1.default);
-questionResource.use(getLessonChildren_1.default);
-questionResource.use(createQuestion_1.default);
+app.get("/questions/:lessonUUId", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    return res.status(200).json(db.getQuestions(req.params.lessonUUId));
+}));
+app.get("/questions/:uuid", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    return res.status(200).json(db.getQuestion(req.params.uuid));
+}));
+app.get("/lessons/:uuid", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    return res.status(200).json(db.getLesson(req.params.uuid));
+}));
+app.post("/questions", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    return res.status(200).json(db.createQuestion(req.body));
+}));
 // answer
-var answerResource = finale.resource({
-    model: index_1.default.sequelize.models["Answer"],
-    endpoints: ["/answers", "/answers/:uuid"],
-});
-answerResource.use(authMiddleware_1.default);
-answerResource.use(createQuestionChild_1.default);
-answerResource.use(getQuestionChildren_1.default);
-answerResource.use(createAnswer_1.default);
+app.get("/answers/:uuid", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    return res.status(200).json(db.getAnswer(req.params.uuid));
+}));
+app.get("/answers/:questionUUId", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    return res.status(200).json(db.getAnswers(req.params.uuid));
+}));
+app.post("/answers", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    return res.status(200).json(db.createAnswer(req.body));
+}));
+// student lesson
+app.get("/studentlessons/:lessonUUId", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    return res
+        .status(200)
+        .json(db.getStudentLessons(req.params.lessonUUId));
+}));
+app.post("/studentlessons", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    return res.status(200).json(db.createStudentLesson(req.body));
+}));
 // notations
-for (var boardType in enum_1.BoardType) {
+for (const boardType in enum_1.BoardType) {
     if (!Number.isNaN(Number(boardType)))
         continue; // typescript retuen a list of keys 
-    // then the values so we need to get values only
-    for (var notationType in enum_1.NotationType) {
+    // then the values, we need to get values only
+    for (const notationType in enum_1.NotationType) {
         if (!Number.isNaN(Number(notationType)))
             continue;
-        var resource = finale.resource({
-            model: index_1.default.sequelize.models[(0, utils_1.capitalize)(boardType) +
-                (0, utils_1.capitalize)(notationType)],
-            endpoints: [
-                "/".concat(boardType).concat(notationType, "s"),
-                "/".concat(boardType).concat(notationType, "s/:id"),
-            ],
-        });
-        resource.use(authMiddleware_1.default);
-        for (var middleware in boardTypesMilddleware.get(boardType)) {
-            resource.use(middleware);
-        }
+        app.get(`/${boardType}${notationType}s`, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+            return res.status(200).json(db.getNotations(boardType, notationType, req.params.uuid));
+        }));
+        app.post(`/${boardType}${notationType}s`, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+            return res
+                .status(200)
+                .json(db.createNotation(boardType, notationType, req.body));
+        }));
     }
 }
 ;
-// student lessons relation
-var studentsLessonResource = finale.resource({
-    model: index_1.default.sequelize.models["StudentLesson"],
-    endpoints: ["/studentlessons", "/studentlessons/:id"],
-});
-studentsLessonResource.use(authMiddleware_1.default);
-studentsLessonResource.use(createLessonChild_1.default);
 // Resets the database and launches the express app on :8081
-index_1.default.sequelize.sync({ force: true }).then(function () {
-    app.listen(8081, function () {
+index_1.default.sequelize.sync({ force: true }).then(() => {
+    app.listen(8081, () => {
         console.log("listening to port localhost:8081");
         var spawn = require("child_process").spawn;
         var ls = spawn("cmd.exe", [
             "/c",
-            "C:/dev/MathBoard/math-db/seeders/seed.bat",
+            "../math-db/seeders/seed.bat",
         ]);
         ls.stdout.on("data", function (data) {
             console.log("stdout: " + data);
@@ -134,3 +155,4 @@ index_1.default.sequelize.sync({ force: true }).then(function () {
         });
     });
 });
+//# sourceMappingURL=app.js.map

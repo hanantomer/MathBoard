@@ -12,7 +12,7 @@ class HeartbeatService {
         let access_token = await util_1.default.getAccessTokenFromCookie(params.headers.cookie);
         let user = await this.app
             .service("authentication")
-            .authUserByToken(access_token);
+            .get(access_token);
         if (!!user) {
             return {
                 LessonUUId: data.LessonUUId,

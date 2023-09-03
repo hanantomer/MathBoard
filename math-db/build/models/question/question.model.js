@@ -5,9 +5,6 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
@@ -15,32 +12,41 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const sequelize_typescript_1 = require("sequelize-typescript");
 const boardDecorator_1 = __importDefault(require("../boardDecorator"));
 const user_model_1 = __importDefault(require("../user.model"));
+const lesson_model_1 = __importDefault(require("../lesson/lesson.model"));
 let Question = class Question extends sequelize_typescript_1.Model {
+    userId;
+    user;
+    lessonId;
+    lesson;
+    uuid;
+    name;
 };
 __decorate([
-    (0, sequelize_typescript_1.ForeignKey)(() => user_model_1.default),
-    __metadata("design:type", Number)
+    (0, sequelize_typescript_1.ForeignKey)(() => user_model_1.default)
 ], Question.prototype, "userId", void 0);
 __decorate([
-    (0, sequelize_typescript_1.BelongsTo)(() => user_model_1.default),
-    __metadata("design:type", user_model_1.default)
+    (0, sequelize_typescript_1.BelongsTo)(() => user_model_1.default)
 ], Question.prototype, "user", void 0);
+__decorate([
+    (0, sequelize_typescript_1.ForeignKey)(() => lesson_model_1.default)
+], Question.prototype, "lessonId", void 0);
+__decorate([
+    (0, sequelize_typescript_1.BelongsTo)(() => lesson_model_1.default)
+], Question.prototype, "lesson", void 0);
 __decorate([
     (0, sequelize_typescript_1.Column)({
         type: sequelize_typescript_1.DataType.UUID,
         defaultValue: sequelize_typescript_1.DataType.UUIDV4,
-    }),
-    __metadata("design:type", String)
+    })
 ], Question.prototype, "uuid", void 0);
 __decorate([
     (0, sequelize_typescript_1.Column)({
         type: sequelize_typescript_1.DataType.UUID,
         defaultValue: sequelize_typescript_1.DataType.UUIDV4,
-    }),
-    __metadata("design:type", String)
+    })
 ], Question.prototype, "name", void 0);
 Question = __decorate([
-    (0, boardDecorator_1.default)("lesson")
+    (0, boardDecorator_1.default)("question")
 ], Question);
 exports.default = Question;
 //# sourceMappingURL=question.model.js.map

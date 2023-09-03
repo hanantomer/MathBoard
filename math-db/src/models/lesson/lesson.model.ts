@@ -1,17 +1,11 @@
 import { Model, Column, DataType, BelongsTo, ForeignKey } from "sequelize-typescript";
-import { Optional } from "sequelize";
 import BoardDecorator from "../boardDecorator";
-import { User } from "../user.model";
+import  User  from "../user.model";
+import {
+    LessonAttributes,
+    LessonCreateAttributes,
+} from "../../../../math-common/build/notationTypes";
 
-export interface LessonAttributes {
-    id: number;
-    user: User;
-    uuid: string;
-    name: string;
-}
-
-export interface LessonCreateAttributes
-    extends Optional<LessonAttributes, "id"> {}
 
 
 @BoardDecorator("lesson")

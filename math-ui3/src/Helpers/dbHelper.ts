@@ -1,13 +1,17 @@
 import { BoardType, NotationType } from "../../../math-common/src/enum";
 import axios from "axios";
 import axiosHelper from "./axiosHelper";
-import { UserAttributes, UserCreateAttributes } from "../../../math-db/src/models/user.model";
-import { LessonAttributes, LessonCreateAttributes } from "../../../math-db/src/models/lesson/lesson.model";
-import { QuestionAttributes, QuestionCreateAttributes } from "../../../math-db/src/models/question/question.model";
-import { AnswerAttributes, AnswerCreateAttributes } from "../../../math-db/src/models/answer/answer.model";
+import {
+  BaseNotation,
+  UserAttributes,
+  LessonAttributes,
+  LessonCreateAttributes,
+  QuestionAttributes,
+  QuestionCreateAttributes,
+  AnswerAttributes,
+  AnswerCreateAttributes,
+} from "../../../math-common/build/notationTypes";
 
-
-import { BaseNotation, BaseCreateNotation } from "../../../math-db/src/models/baseNotation";
 
 export interface Response<T> {
   data: T[];
@@ -58,9 +62,9 @@ export default function useDbHelper() {
   }
 
   async function registerUser(
-    user: UserCreateAttributes
-  ): Promise<Response<UserCreateAttributes>> {
-    const { data } = await axios.post<Response<UserCreateAttributes>>(
+    user: UserAttributes
+  ): Promise<Response<UserAttributes>> {
+    const { data } = await axios.post<Response<UserAttributes>>(
       baseURL + "/users",
       user
     );
@@ -109,7 +113,7 @@ export default function useDbHelper() {
       return data.data[0];
   }
 
-  async function addNotation(notation: BaseCreateNotation): Promise<BaseNotation> {
+  async function addNotation(notation: BaseNotation): Promise<BaseNotation> {
     const { data } = await axios.post<Response<BaseNotation>>(
       baseURL +
         `/${notation.boardType}${notation.notationType.toLowerCase()}s/`,

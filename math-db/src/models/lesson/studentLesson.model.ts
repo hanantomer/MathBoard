@@ -1,5 +1,5 @@
-import { User } from "../user.model";
-import Lesson  from "./lesson.model";
+import  User  from "../user.model";
+import Lesson from "./lesson.model";
 import {
     Table,
     DefaultScope,
@@ -7,6 +7,14 @@ import {
     BelongsTo,
     ForeignKey,
 } from "sequelize-typescript";
+
+
+import {
+    StudentLessonAttributes,
+    StudentLessonCreateAttributes,
+} from "../../../../math-common/build/notationTypes";
+
+
 
 @Table({
     timestamps: true,
@@ -24,7 +32,9 @@ import {
         exclude: ["LessonId"],
     },
 }))
-export default class StudentLesson extends Model {
+export default class StudentLesson extends Model<
+    StudentLessonAttributes,
+    StudentLessonCreateAttributes> {
     @ForeignKey(() => User)
     userId!: number;
 

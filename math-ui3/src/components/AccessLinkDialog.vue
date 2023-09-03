@@ -21,10 +21,10 @@
         </v-card-text>
         <v-card-actions>
           <v-spacer></v-spacer>
-          <v-btn color="blue darken-1" text @click="show = false">
+          <v-btn color="blue darken-1"  @click="show = false">
             Close
           </v-btn>
-          <v-btn color="blue darken-1" text @click="copy">
+          <v-btn color="blue darken-1"  @click="copy">
             Copy To Clipboard
           </v-btn>
         </v-card-actions>

@@ -1,15 +1,9 @@
-import { BaseNotation } from "../../../math-db/src/models/baseNotation";
-import { PointAttributes } from "../../../math-db/src/models/pointAttributes";
-import { LineAttributes } from "../../../math-db/src/models/lineAttributes";
-import { RectAttributes } from "../../../math-db/src/models/rectAttributes";
-
 import {
+  BaseNotation,
   PointNotationAttributes,
   LineNotationAttributes,
   RectNotationAttributes
-} from "../../../math-db/src/models/notationAttributes";
-
-
+} from "../../../math-common/build/notationTypes";
 
 import useDbHelper from "./dbHelper";
 import { useNotationStore } from "../store/pinia/notationStore";

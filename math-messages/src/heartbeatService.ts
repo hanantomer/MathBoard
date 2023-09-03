@@ -1,8 +1,9 @@
 import util from "./util";
+import { Application } from "@feathersjs/feathers";
 
 export default class HeartbeatService {
-  app: any;
-  constructor(app: any ) {
+  app: Application;
+  constructor(app: Application) {
     this.app = app;
   }
   async update(id: number, data: any, params: any) {
@@ -12,7 +13,7 @@ export default class HeartbeatService {
 
     let user = await this.app
       .service("authentication")
-      .authUserByToken(access_token);
+      .get(access_token);
 
     if (!!user) {
       return {

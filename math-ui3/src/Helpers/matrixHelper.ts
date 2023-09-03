@@ -1,19 +1,26 @@
 export { }
 
-import { BoardType, NotationType, NotationTypeShape, NotationShape } from "../../../math-common/src/enum";
-import { DotPosition, getDefaultFontSize } from "../../../math-common/src/globals";
+import {
+  BoardType,
+  NotationType,
+  NotationTypeShape,
+  NotationShape,
+} from "../../../math-common/src/enum";
+import { DotPosition, getDefaultFontSize } from "../../../math-common/build/globals";
 import * as d3 from "d3";
 import { useNotationStore } from "../store/pinia/notationStore"
-import { BaseNotation } from "../../../math-db/src/models/baseNotation";
-import { PointAttributes } from "../../../math-db/src/models/pointAttributes";
-import { LineAttributes } from "../../../math-db/src/models/lineAttributes";
-import { RectAttributes } from "../../../math-db/src/models/rectAttributes";
+
+
 import {
+  BaseNotation,
+  PointAttributes,
+  LineAttributes,
+  RectAttributes,
   LineNotationAttributes,
   PointNotationAttributes,
   RectNotationAttributes,
-  TextNotationAttributes
-} from "../../../math-db/src/models/notationAttributes";
+} from "../../../math-common/build/notationTypes";
+
 
 import { useUserStore } from "../store/pinia/userStore";
 
@@ -25,7 +32,6 @@ export default function useMatrixHelper() {
   const colsNum: number = 35;
   const rowsNum: number = 20;
   let rectSize: number = 25; ///TODO: ceck if initial value is of any value
-  let topLevelGroup: any = null;
 
   const svgWidth: string = "1400px";
   const svgHeight: string = "700px";
@@ -173,7 +179,7 @@ export default function useMatrixHelper() {
     }
 
     // render rectangles
-    topLevelGroup = d3
+    d3
       .select("#" + svgId)
       .selectAll("g")
       .data(matrix)
@@ -558,20 +564,20 @@ export default function useMatrixHelper() {
     }
 
     if (n.notationType === NotationType.TEXT) {
-      let n1 = n as TextNotationAttributes;
+      let n1 = n as RectNotationAttributes;
 
       let bColor = borderColor(n === notationStore.activeNotation);
       return `<pre style='border:groove 2px;border-color:${bColor};background-color:${bColor}'>${n1.value}</pre>`;
     }
 
     if (n.notationType === NotationType.IMAGE) {
-      let n1 = n as TextNotationAttributes;
+      let n1 = n as RectNotationAttributes;
       let bColor = borderColor(n === notationStore.activeNotation);
       return `<img style='border:groove 2px;border-color:${borderColor}' src='${n1.value}'>`;
     }
 
     if (n.notationType === NotationType.SYMBOL) {
-      let n1 = n as TextNotationAttributes;
+      let n1 = n as RectNotationAttributes;
       let bColor = borderColor(n === notationStore.activeNotation);
       return `<img style='border:groove 2px;border-color:${borderColor}' src='${n1.value}'>`;
     }

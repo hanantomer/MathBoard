@@ -8,21 +8,22 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
-const db = require("../../math-db/build/models/index");
-const jwt = require("jsonwebtoken");
-const bcryptjs = require("bcryptjs");
-const { OAuth2Client } = require("google-auth-library");
-const clientSecretData = require("../client_secret.json");
-const oAuth2client = new OAuth2Client(clientSecretData.web.client_id);
-class AuthUtils {
-    constructor() {
-        this.userCache = new Map();
-    }
-    static authByLocalPassword(email, password) {
+const jsonwebtoken_1 = require("jsonwebtoken");
+const bcryptjs_1 = require("bcryptjs");
+const google_auth_library_1 = require("google-auth-library");
+const client_secret_json_1 = __importDefault(require("./client_secret.json"));
+const user_model_1 = __importDefault(require("../../math-db/build/models/user.model"));
+const oAuth2client = new google_auth_library_1.OAuth2Client(client_secret_json_1.default.web.client_id);
+const userCache = new Map();
+function useAuthUtils() {
+    function authByLocalPassword(email, password) {
         return __awaiter(this, void 0, void 0, function* () {
             //TODO add caching
-            let user = yield db.sequelize.models["User"].findOne({
+            let user = yield user_model_1.default.findOne({
                 where: { email: email },
                 attributes: { include: ["password"] },
             });
@@ -30,44 +31,54 @@ class AuthUtils {
                 return null;
             }
             // validate password
-            let passwordMatched = !!user && (yield bcryptjs.compare(password, user.password));
+            let passwordMatched = !!user && (yield (0, bcryptjs_1.compare)(password, user.password));
             if (passwordMatched) {
-                let access_token = jwt.sign({ email: user.email }, clientSecretData.client_secret, { expiresIn: 86400 * 30 });
+                let access_token = (0, jsonwebtoken_1.sign)({ email: user.email }, client_secret_json_1.default.client_secret, { expiresIn: 86400 * 30 });
                 user.access_token = access_token;
-                user.password = null;
+                user.password = "";
                 return user;
             }
             return null;
         });
     }
-    static authByLocalToken(access_token) {
+    ;
+    function authByLocalToken(access_token) {
         return __awaiter(this, void 0, void 0, function* () {
-            let decodedToken = jwt.verify(access_token, clientSecretData.client_secret);
+            let decodedToken = (0, jsonwebtoken_1.verify)(access_token, client_secret_json_1.default.client_secret);
             // TODO - check expiration
-            if (!this.userCache.get(decodedToken.email)) {
-                this.userCache.set(decodedToken.email, yield db.sequelize.models["User"].findOne({
+            if (!userCache.get(decodedToken.email)) {
+                let user = yield user_model_1.default.findOne({
                     where: { email: decodedToken.email },
-                }));
+                });
+                if (user) {
+                    userCache.set(decodedToken.email, user);
+                }
             }
-            return this.userCache.get(decodedToken.email);
+            return userCache.get(decodedToken.email);
         });
     }
-    static authByGoogleToken(access_token) {
+    ;
+    function authByGoogleToken(access_token) {
         return __awaiter(this, void 0, void 0, function* () {
             const ticket = yield oAuth2client
                 .verifyIdToken({
                 idToken: access_token.replace("Bearer ", ""),
-                audience: clientSecretData.web.client_id,
+                audience: client_secret_json_1.default.web.client_id,
             })
                 .catch(console.error); //TODO log error
-            if (!!ticket) {
-                let user = yield db.sequelize.models["User"].findOne({
+            if (ticket) {
+                let user = yield user_model_1.default.findOne({
                     where: { email: ticket.payload.email },
                 });
                 return user;
             }
         });
     }
+    return {
+        authByLocalPassword,
+        authByGoogleToken,
+        authByLocalToken
+    };
 }
-exports.default = AuthUtils;
+exports.default = useAuthUtils;
 //# sourceMappingURL=authUtil.js.map

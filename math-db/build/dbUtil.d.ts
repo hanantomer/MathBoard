@@ -1,9 +1,27 @@
-declare const _default: {
-    isTeacher: (userId: number, lessonId: number) => Promise<boolean>;
-    findUserAnswer(userId: number, questionId: number): Promise<any>;
-    getIdByUUID(model: string, uuid: string): Promise<any>;
-    getUUIDById(model: string, id: number): Promise<any>;
-    getLesson(lessonUUId: string): Promise<any>;
-    getNotation(id: number, url: string): Promise<any>;
+import "reflect-metadata";
+import Lesson from "./models/lesson/lesson.model";
+import StudentLesson from "./models/lesson/studentLesson.model";
+import Question from "./models/question/question.model";
+import Answer from "./models/answer/answer.model";
+import User from "./models/user.model";
+import { BaseNotation, AnswerAttributes, AnswerCreateAttributes, QuestionAttributes, StudentLessonCreateAttributes, LessonAttributes } from "../../math-common/build/notationTypes";
+export default function dbUtil(): {
+    getIdByUUId: (model: string, uuid: string) => Promise<number | null>;
+    isTeacher: (userUUId: string, lessonUUId: string) => Promise<boolean>;
+    getUser: (userUUId: string) => Promise<User | null>;
+    getUserByEmailAndPassword: (email: string, password: string) => Promise<User | null>;
+    getUserAnswer: (userUUId: string, questionUUId: string) => Promise<Answer | null>;
+    getLesson: (lessonUUId: string) => Promise<Lesson | null>;
+    getLessons: (userUUId: string) => Promise<Lesson[] | null>;
+    createLesson: (lesson: LessonAttributes) => Promise<Lesson>;
+    getQuestion: (questionUUId: string) => Promise<Question | null>;
+    getQuestions: (lessonUUId: string) => Promise<Question[] | null>;
+    createQuestion: (question: QuestionAttributes) => Promise<Question>;
+    getAnswer: (answerUUId: string) => Promise<AnswerAttributes | null>;
+    getAnswers: (questionUUId: string) => Promise<Answer[] | null>;
+    createAnswer: (answer: AnswerCreateAttributes) => Promise<Answer>;
+    getNotations: (boardType: String, notationType: String, parentUUId: string) => Promise<import("sequelize").Model<any, any>[] | null>;
+    createNotation: (boardType: String, notationType: String, notation: BaseNotation) => Promise<import("sequelize").Model<any, any>>;
+    getStudentLessons: (lessonUUId: string) => Promise<StudentLesson[] | null>;
+    createStudentLesson: (lesson: StudentLessonCreateAttributes) => Promise<StudentLesson>;
 };
-export default _default;

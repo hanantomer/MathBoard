@@ -1,37 +1,19 @@
-import { BoardType, NotationType } from "./enum";
+import { BoardType, NotationType, UesrType } from "./enum";
+
+export type Optional<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>; // copied from sequlize
 
 
-// we dont have a notation model
-export abstract class Notation  {
+
+
+export interface BaseNotation {
   id: number;
   uuid: string;
-  type: NotationType;
+  user: UserAttributes;
+  notationType: NotationType;
   boardType: BoardType;
-  selected: boolean;
-  userId: number;
-  value: string;
-  background_color: string;
+  createdAt: Date;
+}
 
-  constructor(
-    id: number,
-    uuid: string,
-    type: NotationType,
-    boardType: BoardType,
-    selected: boolean,
-    userId: number,
-    value: string = "",
-    background_color: string =""
-) {
-    this.id = id
-    this.uuid = uuid
-    this.type = type
-    this.boardType = boardType
-    this.selected = selected
-    this.userId = userId
-    this.value = value;
-    this.background_color = background_color;
-  }
-};
 
 export type Point =  {
   col: number;
@@ -52,255 +34,176 @@ export type Rect = {
 };
 
 
-export class PointAttributes extends Notation implements Point {
-  //lessonUUId: string;
-  col: number;
-  row: number;
 
-  constructor(
-    id: number,
-    uuid: string,
-    type: NotationType,
-    boardType: BoardType,
-    selected: boolean,
-    userId: number,
-    col: number,
-    row: number,
-  ) {
-    super(id, uuid, type, boardType, selected, userId);
-    this.col = col;
-    this.row = row;
-  }
-};
-
-export class LineAttributes extends Notation implements Line {
-  
-  fromCol: number;
-  toCol: number;
-  row: number;
-  
-  constructor(
-    id: number,
-    uuid: string,
-    type: NotationType,
-    boardType: BoardType,
-    selected: boolean,
-    userId: number,
-    fromCol: number,
-    toCol: number,
-    row: number
-  ) {
-    super(id, uuid, type, boardType, selected, userId);
-    this.fromCol = fromCol;
-    this.toCol = toCol;
-    this.row = row;
-  }
-};
-
-export class RectAttributes extends Notation implements Rect {
-  
+export interface RectAttributes {
   fromCol: number;
   toCol: number;
   fromRow: number;
   toRow: number;
+  value: string;
+}
+
+export interface LineAttributes {
+  fromCol: number;
+  toCol: number;
+  row: number;
+}    
+
+export interface PointAttributes  {
+  col: number;
+  row: number;
+  value: string;
+}
+
+// user
+export interface UserAttributes {
+  id?: number;
+  uuid: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  password: string;
+  access_token: string;
+  imageUrl: string;
+  userType: UesrType;
+  authorized: boolean;
+  lastHeartbeatTime: Date;
+}
+
+export interface UserCreateAttributes extends Optional<UserAttributes, "id"> {
+}
+export interface AnswerAttributes extends BaseNotation{
+  name: string;
+  questionId: number;
+  question: QuestionAttributes;
+}
+
+export interface AnswerCreateAttributes extends Optional<AnswerAttributes, "id"> {}
+
+export interface AnswerNotationAttributes {
+  answer: AnswerAttributes;
+}
+
+export interface AnswerLineAttributes
+    extends BaseNotation, 
+        LineAttributes,
+        AnswerNotationAttributes {}
+
+export interface AnswerLineCreationAttributes
+    extends Optional<AnswerLineAttributes, "id"> {}
+
+  export interface AnswerPointAttributes extends BaseNotation, PointAttributes, AnswerNotationAttributes {
+  }
+  export interface AnswerPointCreationAttributes extends Optional<AnswerPointAttributes, "id"> {
+  }
   
-  constructor(
-    id: number,
-    uuid: string,
-    type: NotationType,
-    boardType: BoardType,
-    selected: boolean,
-    userId: number,
-    fromCol: number,
-    toCol: number,
-    fromRow: number,
-    toRow: number
-  ) {
-    super(id, uuid, type, boardType, selected, userId);
-    this.fromCol = fromCol;
-    this.toCol = toCol;
-    this.fromRow = fromRow;
-    this.toRow = toRow;
-  }
-};
+  export interface AnswerRectAttributes
+  extends BaseNotation,
+      RectAttributes,
+      AnswerNotationAttributes {}
 
-export class LessonPointNotation extends PointAttributes  {
+export interface AnswerRectCreationAttributes
+  extends Optional<AnswerRectAttributes, "id"> {}
 
-  constructor(
-    id: number,
-    uuid: string,
-    type: NotationType,
-    boardType: BoardType,
-    selected: boolean,
-    userId: number,
-    col: number,
-    row: number,
-  ) {
-    super(id, uuid, type, boardType, selected, userId, col, row);
-  }
-};
+// question
+
+export interface QuestionNotationAttributes {
+  question: QuestionAttributes;
+}
 
 
-export class LessonLineNotation extends LineAttributes  {
-  lessonUUId: string;
+export interface QuestionAttributes extends BaseNotation {
+  lessonId: number;
+  lesson: LessonAttributes;
+  name: string;
+}
 
-  constructor(
-    id: number,
-    uuid: string,
-    type: NotationType,
-    boardType: BoardType,
-    selected: boolean,
-    userId: number,
-    lessonUUId: string,
-    fromCol: number,
-    toCol: number,
-    row: number
-  ) {
-    super(id, uuid, type, boardType, selected, userId, fromCol, toCol, row);
-    this.lessonUUId = lessonUUId;
-  }
-};
+export interface QuestionCreateAttributes
+  extends Optional<QuestionAttributes, "id"> {}
 
-export class LessonRectNotation extends RectAttributes  {
-  lessonUUId: string;
+  export interface QuestionLineAttributes
+  extends BaseNotation,
+      LineAttributes,
+      QuestionNotationAttributes {}
 
-  constructor(
-    id: number,
-    uuid: string,
-    type: NotationType,
-    boardType: BoardType,
-    selected: boolean,
-    userId: number,
-    lessonUUId: string,
-    fromCol: number,
-    toCol: number,
-    fromRow: number,
-    toRow: number,
-  ) {
-    super(id, uuid, type, boardType, selected, userId, fromCol, toCol, fromRow, toRow);
-    this.lessonUUId = lessonUUId;
-  }
-};
+export interface QuestionLineCreationAttributes
+  extends Optional<QuestionLineAttributes, "id"> {}
 
-export class AnswerPointNotation extends PointAttributes  {
-  answerUUId: string;
+  export interface QuestionPointAttributes
+  extends BaseNotation,
+      PointAttributes,
+      QuestionNotationAttributes {}
 
-  constructor(
-    id: number,
-    uuid: string,
-    type: NotationType,
-    boardType: BoardType,
-    selected: boolean,
-    userId: number,
-    answerUUId: string,
-    col: number,
-    row: number,
-  ) {
-    super(id, uuid, type, boardType, selected, userId, col, row);
-    this.answerUUId = answerUUId;
-  }
-};
+export interface QuestionPointCreationAttributes
+  extends Optional<QuestionPointAttributes, "id"> {}
 
-export class AnswerLineNotation extends LineAttributes  {
-  answerUUId: string;
+export interface QuestionRectAttributes
+  extends BaseNotation,
+      RectAttributes,
+      QuestionNotationAttributes {}
 
-  constructor(
-    id: number,
-    uuid: string,
-    type: NotationType,
-    boardType: BoardType,
-    selected: boolean,
-    userId: number,
-    answerUUId: string,
-    fromCol: number,
-    toCol: number,
-    row: number
-  ) {
-    super(id, uuid, type, boardType, selected, userId, fromCol, toCol, row);
-    this.answerUUId = answerUUId;
-  }
-};
+export interface QuestionRectCreationAttributes
+  extends Optional<QuestionRectAttributes, "id"> {}
 
-export class AnswerRectNotation extends RectAttributes {
-  answerUUId: string;
-  
-  constructor(
-    id: number,
-    uuid: string,
-    type: NotationType,
-    boardType: BoardType,
-    selected: boolean,
-    userId: number,
-    answerUUId: string,
-    fromCol: number,
-    toCol: number,
-    fromRow: number,
-    toRow: number,
-  ) {
-    super(id, uuid, type, boardType, selected, userId, fromCol, toCol, fromRow, toRow);
-    this.answerUUId = answerUUId;
-  }
-};
 
-export class QuestionPointNotation extends PointAttributes  {
-  questionUUId: string;
 
-  constructor(
-    id: number,
-    uuid: string,
-    type: NotationType,
-    boardType: BoardType,
-    selected: boolean,
-    userId: number,
-    questionUUId: string,
-    col: number,
-    row: number,
-  ) {
-    super(id, uuid, type, boardType, selected, userId, col, row);
-    this.questionUUId = questionUUId;
-  }
-};
+// lesson
 
-export class QuestionLineNotation extends LineAttributes {
-  questionUUId: string;
+export interface LessonNotationAttributes {
+  lesson: LessonAttributes;
+}
 
-  constructor(
-    id: number,
-    uuid: string,
-    type: NotationType,
-    boardType: BoardType,
-    selected: boolean,
-    userId: number,
-    questionUUId: string,
-    fromCol: number,
-    toCol: number,
-    row: number
-  ) {
-    super(id, uuid, type, boardType, selected, userId, fromCol, toCol, row);
-    this.questionUUId = questionUUId;
-  }
-};
+export interface LessonAttributes extends BaseNotation{
+  name: string;
+}
+export interface LessonCreateAttributes extends Optional<LessonAttributes, "id"> {
+}
 
-export class QuestionRectNotation extends RectAttributes {
-  questionUUId: string;
+export interface LessonLineAttributes extends BaseNotation,
+    LineAttributes,
+    LessonNotationAttributes {}
 
-  constructor(
-    id: number,
-    uuid: string,
-    type: NotationType,
-    boardType: BoardType,
-    selected: boolean,
-    userId: number,
-    questionUUId: string,
-    fromCol: number,
-    toCol: number,
-    fromRow: number,
-    toRow: number,
-  ) {
-    super(id, uuid, type, boardType, selected, userId, fromCol, toCol, fromRow, toRow);
-    this.questionUUId = questionUUId;
-  }
-};
+export interface LessonLineCreationAttributes
+  extends Optional<LessonLineAttributes, "id"> {}
+
+
+export interface LessonPointAttributes
+  extends BaseNotation,
+      PointAttributes,
+      LessonNotationAttributes {}
+
+export interface LessonPointCreationAttributes
+  extends Optional<LessonPointAttributes, "id"> {}
+
+
+export interface LessonRectAttributes
+  extends BaseNotation,
+      RectAttributes,
+      LessonNotationAttributes {}
+
+export interface LessonRectCreateAttributes
+  extends Optional<LessonRectAttributes, "id"> {}
+
+// student lesson
+export interface StudentLessonAttributes {
+    id?: number;
+    user: UserAttributes;
+    userId: number;
+    lessonId: number;
+    lesson: LessonAttributes;
+}
+
+export interface StudentLessonCreateAttributes
+    extends Optional<StudentLessonAttributes, "id"> {}
+
+
+
+
+export type PointNotationAttributes = BaseNotation & PointAttributes;
+export type LineNotationAttributes = BaseNotation & LineAttributes;
+export type RectNotationAttributes = BaseNotation & RectAttributes;
+
+
 
 
 

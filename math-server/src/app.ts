@@ -1,53 +1,31 @@
-import express, { Request, Response } from "express";
-import * as cors from "cors";
-import * as bodyParser from "body-parser";
-//import db from "../../math-db/src/models/index";
-// import authMiddleware from "../../math-auth/build/authMiddleware";
-// import addAccessTokenToResponseMiddleware from "./middleware/addAccessTokenToResponse";
-// import createLessonChildMiddleware from "./middleware/createLessonChild";
-// import getLessonChildrenMiddleware from "./middleware/getLessonChildren";
-// import updateLessonChildMiddleware from "./middleware/updateLessonChild";
-// import createQuestionChildMiddleware from "./middleware/createQuestionChild";
-// import getQuestionChildrenMiddleware from "./middleware/getQuestionChildren";
-// import updateQuestionChildMiddleware from "./middleware/updateQuestionChild";
-// import createAnswerChildMiddleware from "./middleware/createAnswerChild";
-// import createAnswerMiddleware from "./middleware/createAnswer";
-// import updateAnswerChildMiddleware from "./middleware/updateAnswerChild";
-// import createQuestionMiddleware from "./middleware/createQuestion";
-//import { BoardType, NotationType } from "../../math-common/build/enum"
-//import { capitalize } from "../../math-common/build/utils"
-
-import db from "../../math-db/src/dbUtil"
+import express, { Request, Response, NextFunction } from "express";
+import cors from "cors";
+import bodyParser from "body-parser";
+import useAuthUtil  from "../../math-auth/build/authUtil";
+import useDb from "../../math-db/build/dbUtil"
+import connection from "../../math-db/build/models/index";
+import { BoardType, NotationType } from "../../math-common/build/enum"
 
 
-// const boardTypesMilddleware = new Map<String, [Object[]]>() 
-
-// boardTypesMilddleware.set(BoardType.lesson.toString(), [
-//     [
-//         createLessonChildMiddleware,
-//         updateLessonChildMiddleware,
-//         getLessonChildrenMiddleware
-//     ]
-// ]);
-
-// boardTypesMilddleware.set(BoardType.question.toString(), [
-//     [
-//        createQuestionChildMiddleware,
-//        updateQuestionChildMiddleware,
-//        getQuestionChildrenMiddleware,
-//     ]
-// ]);
-
-// boardTypesMilddleware.set(BoardType.answer.toString(), [
-//     [
-//         createAnswerChildMiddleware,
-//         updateAnswerChildMiddleware,
-//     ]
-// ]);
-
-
+const authUtil = useAuthUtil();
+const db = useDb();
 let app = express();
 
+async function auth(req: Request, res: Response, next: NextFunction) {
+    // omit authorization enforcement, when signing in.
+    if (req.url.indexOf("/users/") > 0) {
+        next();
+    }
+
+    // verify authorization
+    if (!await validateHeaderAuthentication(req, res)) {
+        return;
+    }
+
+    next();
+}
+
+app.use(auth);
 app.use(cors());
 app.use(express.json());
 app.use(bodyParser.json({ limit: "10mb" }));
@@ -59,26 +37,30 @@ app.use(
     })
 );
 
-// finale.initialize({
-//     app: app,
-//     sequelize: db.sequelize,
-// });
-
-// user
-
-// let userResource = finale.resource({
-//     model: db.sequelize.models["User"],
-//     endpoints: ["/users", "/users/:id"],
-// });
-
-// userResource.use(authMiddleware);
-// userResource.use(addAccessTokenToResponseMiddleware);
+/*verifies that authenitication header exists and the it denotes a valid user
+if yes, set header userUUId
+*/
+async function validateHeaderAuthentication(req: Request, res: Response) : Promise<boolean>{
+    if (!req.headers.authentication) {
+        res = res.status(401).json("unauthorized");
+        return false;
+    }
+    const user = await authUtil.authByLocalToken(
+        req.headers.authentication.toString()
+    );
+    if (!user) {
+        res = res.status(401).json("invalid token");
+    }
+    
+    req.headers.userUUId = user?.uuid;
+    return true;
+}
 
 app.get(
-    "/users/:uuid",
+    "/users",
     async (req: Request, res: Response): Promise<Response> => {
-        const { uuid } = req.params;
-        const user = db.getUser(uuid);
+        const  uuid  = req.headers.userUUId;
+        const user = db.getUser(uuid as string);
         return res.status(200).json(user);
     }
 );
@@ -87,7 +69,10 @@ app.get(
     "/users/:email/:password",
     async (req: Request, res: Response): Promise<Response> => {
         const { email, password } = req.params;
-        const user = db.getUser(email, password);
+        const user = authUtil.authByLocalPassword(email, password);
+        if (!user) {
+            return res.status(401).json("invalid user or passord");
+        }
         return res.status(200).json(user);
     }
 );
@@ -95,82 +80,134 @@ app.get(
 
 
 // lesson
-
-let lessonResource = finale.resource({
-    model: db.sequelize.models["Lesson"],
-    endpoints: ["/lessons", "/lessons/:uuid"],
+app.get("/lessons", async (req: Request, res: Response): Promise<Response> => {
+    return res.status(200).json(db.getLessons(req.params.userUUId));
 });
-lessonResource.use(authMiddleware);
+
+app.get("/lessons/:uuid", async (req: Request, res: Response): Promise<Response> => {
+    return res.status(200).json(db.getLesson(req.params.uuid));
+});
+
+app.post(
+    "/lessons",
+    async (req: Request, res: Response): Promise<Response> => {
+        return res.status(200).json(db.createLesson(req.body));
+    }
+);
 
 // question
 
-let questionResource = finale.resource({
-    model: db.sequelize.models["Question"],
-    endpoints: ["/questions", "/questions/:uuid"],
+app.get("/questions/:lessonUUId", async (req: Request, res: Response): Promise<Response> => {
+    return res.status(200).json(db.getQuestions (req.params.lessonUUId));
 });
-questionResource.use(authMiddleware);
-questionResource.use(createLessonChildMiddleware);
-questionResource.use(getLessonChildrenMiddleware);
-questionResource.use(createQuestionMiddleware);
+
+app.get(
+    "/questions/:uuid",
+    async (req: Request, res: Response): Promise<Response> => {
+        return res.status(200).json(db.getQuestion(req.params.uuid));
+    }
+);
+
+
+app.get(
+    "/lessons/:uuid",
+    async (req: Request, res: Response): Promise<Response> => {
+        return res.status(200).json(db.getLesson(req.params.uuid));
+    }
+);
+
+app.post("/questions", async (req: Request, res: Response): Promise<Response> => {
+    return res.status(200).json(db.createQuestion(req.body));
+});
+
 
 // answer
 
-let answerResource = finale.resource({
-    model: db.sequelize.models["Answer"],
-    endpoints: ["/answers", "/answers/:uuid"],
+app.get(
+    "/answers/:uuid",
+    async (req: Request, res: Response): Promise<Response> => {
+        return res.status(200).json(db.getAnswer(req.params.uuid));
+    }
+);
+
+app.get(
+    "/answers/:questionUUId",
+    async (req: Request, res: Response): Promise<Response> => {
+        return res.status(200).json(db.getAnswers(req.params.uuid));
+    }
+);
+
+app.post("/answers", async (req: Request, res: Response): Promise<Response> => {
+    return res.status(200).json(db.createAnswer(req.body));
 });
-answerResource.use(authMiddleware);
-answerResource.use(createQuestionChildMiddleware);
-answerResource.use(getQuestionChildrenMiddleware);
-answerResource.use(createAnswerMiddleware);
+
+
+// student lesson
+
+app.get(
+    "/studentlessons/:lessonUUId",
+    async (req: Request, res: Response): Promise<Response> => {
+        return res
+            .status(200)
+            .json(db.getStudentLessons(req.params.lessonUUId));
+    }
+);
+
+app.post(
+    "/studentlessons",
+    async (req: Request, res: Response): Promise<Response> => {
+        return res.status(200).json(db.createStudentLesson(req.body));
+    }
+);
+
+
+
 
 // notations
-
 
 
 for (const boardType in BoardType) {    
 
     if (!Number.isNaN(Number(boardType))) continue; // typescript retuen a list of keys 
-                                                    // then the values so we need to get values only
+                                                    // then the values, we need to get values only
     for (const notationType in NotationType) {
 
         if (!Number.isNaN(Number(notationType))) continue;
 
-        let resource = finale.resource({
-            model: db.sequelize.models[
-                capitalize(boardType) +
-                    capitalize(notationType)
-            ],
-            endpoints: [
-                `/${boardType}${notationType}s`,
-                `/${boardType}${notationType}s/:id`,
-            ],
-        });
-        resource.use(authMiddleware);
+        app.get(
+            `/${boardType}${notationType}s`,
+            async (req: Request, res: Response): Promise<Response> => {
+                return res.status(200).json(db.getNotations(boardType, notationType, req.params.uuid));
+            }
+        );
 
-        for (const middleware in boardTypesMilddleware.get(boardType)) {
-            resource.use(middleware);
-        }
+        app.post(
+            `/${boardType}${notationType}s`,
+            async (req: Request, res: Response): Promise<Response> => {
+                return res
+                    .status(200)
+                    .json(
+                        db.createNotation(
+                            boardType,
+                            notationType,
+                            req.body
+                        )
+                    );
+            }
+        );
     }
 };    
 
-// student lessons relation
-let studentsLessonResource = finale.resource({
-    model: db.sequelize.models["StudentLesson"],
-    endpoints: ["/studentlessons", "/studentlessons/:id"],
-});
-studentsLessonResource.use(authMiddleware);
-studentsLessonResource.use(createLessonChildMiddleware);
 
 // Resets the database and launches the express app on :8081
-db.sequelize.sync({ force: true }).then(() => {
+connection.sequelize.sync({ force: true }).then(() => {
     app.listen(8081, () => {
         console.log("listening to port localhost:8081");
 
         var spawn = require("child_process").spawn;
         var ls = spawn("cmd.exe", [
             "/c",
-            "C:/dev/MathBoard/math-db/seeders/seed.bat",
+            "../math-db/seeders/seed.bat",
         ]);
 
         ls.stdout.on("data", function (data: any) {

@@ -5,11 +5,11 @@
         <v-toolbar-title>Answers</v-toolbar-title>
       </v-toolbar>
       <v-data-table
-        :headers="headers"
+        :v-bind.headers="headers"
         :items="answers"
         :items-per-page="10"
         class="elevation-1"
-        @click:row="selectAnswer"
+        click:row="selectAnswer"
       ></v-data-table>
     </v-card>
   </v-container>
@@ -21,7 +21,7 @@ import { computed } from "vue"
 import { useLessonStore } from "../store/pinia/lessonStore";
 import { useQuestionStore } from "../store/pinia/questionStore";
 import { useAnswerStore } from "../store/pinia/answerStore";
-import { AnswerAttributes } from '../../../math-db/src/models/answer/answer.model';
+import { AnswerAttributes } from '../../../math-common/build/notationTypes';
 
 const route = useRoute();
 const router = useRouter();
@@ -69,7 +69,6 @@ const answers = computed(() => {
       lesson: answer.question.lesson.name,
       question: answer.question.name,
       student: answer.user.firstName + " " + answer.user.lastName,
-      createdAt: new Date(answer.createdAt),
     };
   });
 });

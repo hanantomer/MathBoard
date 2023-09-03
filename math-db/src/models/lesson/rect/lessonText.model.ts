@@ -1,10 +1,12 @@
-import { Model, Column, BelongsTo, ForeignKey } from "sequelize-typescript";
-import { NotationType, BoardType } from "../../../../../math-common/src/enum";
-import { UUID, UUIDV4 } from "sequelize/types/data-types";
-import LessonDecorator from "@/models/lesson/lessonDecorator";
-import { User } from "@/models/user.model";
-import Lesson from "@/models/lesson/lesson.model";
-import { LessonRectAttributes, LessonRectCreateAttributes } from "@/models/lesson/rect/lessonRectAttributes";
+import { Model, Column, BelongsTo, ForeignKey, DataType } from "sequelize-typescript";
+import { NotationType, BoardType } from "../../../../../math-common/build/enum";
+import LessonDecorator from "../../lesson/lessonDecorator";
+import User from "../../user.model";
+import Lesson from "../../lesson/lesson.model";
+import {
+    LessonRectAttributes,
+    LessonRectCreateAttributes,
+} from "../../../../../math-common/build/notationTypes";
 
 @LessonDecorator("LessonText")
 export default class LessonText extends Model<
@@ -14,7 +16,7 @@ export default class LessonText extends Model<
     notationType = NotationType.TEXT;
     boardType = BoardType.LESSON;
 
-    @Column({ type: UUID, defaultValue: UUIDV4 })
+    @Column({ type: DataType.UUID, defaultValue: DataType.UUIDV4 })
     uuid!: string;
 
     @ForeignKey(() => User)
@@ -29,18 +31,18 @@ export default class LessonText extends Model<
     @BelongsTo(() => Lesson)
     lesson!: Lesson;
 
-    @Column
+    @Column({ type: DataType.INTEGER })
     fromCol!: number;
 
-    @Column
+    @Column({ type: DataType.INTEGER })
     toCol!: number;
 
-    @Column
+    @Column({ type: DataType.INTEGER })
     fromRow!: number;
 
-    @Column
+    @Column({ type: DataType.INTEGER })
     toRow!: number;
 
-    @Column
+    @Column({ type: DataType.STRING })
     value!: string;
 }

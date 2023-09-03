@@ -1,8 +1,22 @@
-import feathers from "@feathersjs/feathers";
+import feathers, { Application } from "@feathersjs/feathers";
 import socketio from "@feathersjs/socketio";
+
+
+
 import constants from "./constants";
 
-const app: any = feathers();
+type ServiceTypes = {
+  // Add services path to type mapping here
+  
+};
+
+// app.get and app.set can be typed when initializing the app
+type Configuration = {
+  port: number;
+};
+
+
+const app: any  = feathers.feathers();
 app.configure(socketio());
 
 import AuthorizationService from "./authorizationService";
@@ -28,7 +42,7 @@ app.service("authorization").publish("updated", (authorization: any, ctx: any) =
   ];
 });
 
-app.service("authentication").publish("created", (authentication: any, ctx: any) => {
+app.service("authentication").on("created", (authentication: any, ctx: any) => {
   return [
     app.channel(
       constants.LESSON_CHANNEL_PREFIX +
@@ -50,7 +64,7 @@ app.service("heartbeat").publish("updated", (heartbeat: any, ctx: any) => {
   ];
 });
 
-app.service("activeCell").publish("updated", (position: any, ctx: any) => {
+app.service("activeCell").on("updated", (position: any, ctx: any) => {
   return [app.channel(constants.LESSON_CHANNEL_PREFIX + position.LessonUUId)];
 });
 
@@ -66,7 +80,7 @@ app.service("notationSync").publish("removed", (notation: any, ctx: any) => {
   return [app.channel(constants.LESSON_CHANNEL_PREFIX + notation.LessonUUId)];
 });
 
+app.addListener("listening", () => console.log(`server running on port ${PORT}`));
+
 const PORT: number = Number(process.env.PORT) || 3030;
-app
-  .listen(PORT)
-  .on("listening", () => console.log(`server running on port ${PORT}`));
+app.listen(PORT);

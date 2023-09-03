@@ -47,8 +47,7 @@ import { watch, onMounted, computed } from "vue"
 import { useNotationStore } from "../store/pinia/notationStore";
 import { EditMode, NotationType } from "../../../math-common/src/enum";
 import { LinePosition, DotPosition  } from "../../../math-common/src/globals";
-import { LineNotationAttributes } from "../../../math-db/src/models/notationAttributes";
-import { LineAttributes } from "../../../math-db/src/models/lineAttributes";
+import { LineAttributes, LineNotationAttributes } from "../../../math-common/build/notationTypes";
 import { storeToRefs } from 'pinia'
 import useEventBus from "../helpers/eventBus";
 

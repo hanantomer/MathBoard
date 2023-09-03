@@ -1,6 +1,8 @@
-import { PointAttributes } from "../../../math-db/src/models/pointAttributes";
-import { LineAttributes } from "../../../math-db/src/models/lineAttributes";
-import { RectAttributes } from "../../../math-db/src/models/rectAttributes";
+import {
+  PointAttributes,
+  LineAttributes,
+  RectAttributes,
+} from "../../../math-common/build/notationTypes";
 
 import { useNotationStore } from "../store/pinia/notationStore";
 import { onMounted } from "vue";

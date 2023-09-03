@@ -4,30 +4,25 @@
   },
   "compilerOptions": {
     "sourceMap": true,
-    "outDir": "build",
-    "emitDecoratorMetadata": true,
-    "experimentalDecorators": true,
-    "allowJs": true,
+    "outDir": "./build",
     "baseUrl": "./",
-    "target": "ESNext",
+    "rootDir": "./src",
+    "target": "esnext",
     "useDefineForClassFields": true,
-    "module": "ESNext",
+    "module": "esnext",
     "moduleResolution": "Node",
     "strict": true,
     "jsx": "preserve",
     "resolveJsonModule": true,
-    "isolatedModules": true,
     "esModuleInterop": true,
     "lib": ["ESNext", "DOM"],
     "skipLibCheck": true,
-    "noEmit": true,
-    "noImplicitThis": false,
-    "paths": {
-      "@/*": ["src/*"],
-      "@db/*": ["../math-db/src/*"]
-    }
+    "noImplicitThis": false
+  },
+  "paths" : {
+    "@common/*" : ["./math-common/build/*"]
   },
   "include": ["src/**/*.ts", "src/**/*.d.ts", "src/**/*.tsx", "src/**/*.vue"],
-  "references": [{ "path": "./tsconfig.node.json" }], 
+  "references": [{ "path": "./tsconfig.node.json" },{ "path": "../math-common" }],
   "exclude": ["node_modules"]
 }

@@ -1,15 +1,15 @@
 import { defineStore } from "pinia";
-import { UserAttributes, UserCreateAttributes } from "../../../../math-db/src/models/user.model";
+import { UserAttributes } from "../../../../math-common/src/notationTypes";
 import dbHelper  from "../../helpers/dbHelper";
 import { UesrType } from "../../../../math-common/src/enum";
 const db = dbHelper();
 
 export const useUserStore = defineStore("user", () => {
-  let currentUser: UserAttributes | undefined;
+  let currentUser: UserAttributes = new Object() as UserAttributes;
   let authorized = false;
 
   function isTeacher(): boolean {
-    return currentUser?.userType === UesrType.TEACHER;
+    return currentUser.userType === UesrType.TEACHER;
   }
 
   function setUserWriteAuthorization(isAauthorized: boolean) {
@@ -20,7 +20,7 @@ export const useUserStore = defineStore("user", () => {
     currentUser = user;
   }
 
-  function registerUser(user: UserCreateAttributes) {
+  function registerUser(user: UserAttributes) {
     db.registerUser(user);
   }
 
