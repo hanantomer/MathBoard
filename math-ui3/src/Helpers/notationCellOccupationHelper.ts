@@ -2,7 +2,7 @@ import {
   PointAttributes,
   LineAttributes,
   RectAttributes,
-} from "../../../math-common/build/notationTypes";
+} from "common/notationTypes";
 
 import { useNotationStore } from "../store/pinia/notationStore";
 import { onMounted } from "vue";

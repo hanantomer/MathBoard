@@ -22,6 +22,8 @@ const userCache = new Map();
 function useAuthUtils() {
     function authByLocalPassword(email, password) {
         return __awaiter(this, void 0, void 0, function* () {
+            if (!email || !password)
+                return null;
             //TODO add caching
             let user = yield user_model_1.default.findOne({
                 where: { email: email },

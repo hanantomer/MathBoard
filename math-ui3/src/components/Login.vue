@@ -150,13 +150,17 @@ async function validateLogin() {
 
   if (window.navigator.cookieEnabled) {
     cookies.set("access_token", authenticatedUser.access_token);
+  } else {
+    alert("cookies not enabled. you must enable cookies to continue")
   }
   loginForm.value = null;
 
   if (route.query.from) {
-    let r: RouteLocationRaw = route.query.from as string;
-    router.replace(r);
+    let routeFrom: RouteLocationRaw = route.query.from as string;
+    router.replace(routeFrom);
   }
+
+  router.push({ path: "/lessons" });
 }
 </script>
 <style>

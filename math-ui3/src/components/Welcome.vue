@@ -44,11 +44,22 @@ const route = useRoute();
 let showLoginDialog = ref(false);
 let showRegisterDialog = ref(false);
 
-watch(() => eventBus.bus.value.get("login"), () => {
-  showLoginDialog.value = true;
+const props = defineProps({
+  login: Boolean
 });
 
+watch(route, (to) => {
+  if (props.login) {
+    showLoginDialog.value = true;
+  }}, {flush: 'pre', immediate: true, deep: true})
+
+// login via button
+//watch(() => eventBus.bus.value.get("login"), () => {
+//  showLoginDialog.value = true;
+//});
+
 watch(() => eventBus.bus.value.get("register"), () => {
+  showLoginDialog.value = false;
   showRegisterDialog.value = true;
 });
 

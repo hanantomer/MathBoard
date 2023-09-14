@@ -1,0 +1,20 @@
+export {};
+import { NotationType } from "common/enum";
+import { DotPosition } from "common/globals";
+import { BaseNotation, PointAttributes } from "common/notationTypes";
+export default function useMatrixHelper(): {
+    svgWidth: string;
+    svgHeight: string;
+    setMatrix: (svgId: string) => void;
+    showNotations: (enter: any, el: HTMLElement) => any;
+    rectSize: number;
+    findClickedObject: (dotPosition: DotPosition, tagName: string, notationType: NotationType | null) => Element;
+    findRect: (point: PointAttributes) => HTMLElement | undefined | null;
+    findTextAtClickedPosition: (e: MouseEvent) => Element;
+    setNextRect: (horizontalStep: number, verticalStep: number) => void;
+    freeTextRectWidth: (text: string) => number;
+    freeTextRectHeight: (text: string) => number;
+    getNotationXposByCol: (col: number) => number;
+    getNotationYposByRow: (row: number) => number;
+    refreshScreen: (notations: BaseNotation[], svgId: string, el: HTMLElement) => void;
+};

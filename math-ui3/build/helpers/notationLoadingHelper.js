@@ -3,7 +3,7 @@ import { useNotationStore } from "../store/pinia/notationStore";
 import { useLessonStore } from "../store/pinia/lessonStore";
 import { useQuestionStore } from "../store/pinia/questionStore";
 import { useAnswerStore } from "../store/pinia/answerStore";
-import { NotationType } from "../../../math-common/src/enum";
+import { BoardType, NotationType } from "common/enum";
 import { reactive } from "vue";
 const notationStore = useNotationStore();
 const lessonStore = useLessonStore();
@@ -12,15 +12,15 @@ const answerStore = useAnswerStore();
 const dbHelper = useDbHelper();
 export default function notationLoadingHelper() {
     async function loadLessonNotations() {
-        notationStore.setParent(lessonStore.currentLesson?.uuid, 0 /* BoardType.LESSON */);
+        notationStore.setParent(lessonStore.currentLesson?.uuid, BoardType.LESSON);
         notationStore.notations = reactive(await loadNotationsByBoard());
     }
     async function loadQuestionNotations() {
-        notationStore.setParent(questionStore.currentQuestion?.uuid, 1 /* BoardType.QUESTION */);
+        notationStore.setParent(questionStore.currentQuestion?.uuid, BoardType.QUESTION);
         notationStore.notations = reactive(await loadNotationsByBoard());
     }
     async function loadAnswerNotations() {
-        notationStore.setParent(answerStore.currentAnswer?.uuid, 2 /* BoardType.ANSWER */);
+        notationStore.setParent(answerStore.currentAnswer?.uuid, BoardType.ANSWER);
         notationStore.notations = reactive(await loadNotationsByBoard());
     }
     // e.g get lesson notations

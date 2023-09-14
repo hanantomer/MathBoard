@@ -1,0 +1,23 @@
+import { BoardType, NotationType } from "common/enum";
+import { BaseNotation, UserAttributes, LessonAttributes, LessonCreateAttributes, QuestionAttributes, QuestionCreateAttributes, AnswerAttributes, AnswerCreateAttributes } from "common/notationTypes";
+export default function useDbHelper(): {
+    getNotations: <T extends BaseNotation>(notationType: NotationType, boardType: BoardType, parentUUId: string) => Promise<T[]>;
+    getAnswers: (questionUUId: string) => Promise<AnswerAttributes[]>;
+    getQuestions: (lessonUUId: string) => Promise<QuestionAttributes[]>;
+    getStudentLessons: (userUUId: string) => Promise<LessonAttributes[]>;
+    getTeacherLessons: (userUUId: string) => Promise<LessonAttributes[]>;
+    getAnswer: (answerUUId: string) => Promise<AnswerAttributes>;
+    getQuestion: (questionUUId: string) => Promise<QuestionAttributes>;
+    getLesson: (LessonUUId: string) => Promise<LessonAttributes>;
+    authGoogleUser: () => Promise<UserAttributes>;
+    authLocalUserByToken: () => Promise<UserAttributes | undefined>;
+    authLocalUserByPassword: (email: string, password: string) => Promise<UserAttributes | null>;
+    registerUser: (user: UserAttributes) => Promise<UserAttributes>;
+    addLesson: (lesson: LessonCreateAttributes) => Promise<LessonAttributes>;
+    addLessonToSharedLessons: (lessonUUId: string, userUUId: string) => Promise<void>;
+    addQuestion: (question: QuestionCreateAttributes) => Promise<QuestionAttributes>;
+    addAnswer: (answer: AnswerCreateAttributes) => Promise<AnswerAttributes>;
+    addNotation: (notation: BaseNotation) => Promise<BaseNotation>;
+    updateNotation: (notation: BaseNotation) => Promise<BaseNotation>;
+    removeNotation: (notation: BaseNotation) => Promise<void>;
+};

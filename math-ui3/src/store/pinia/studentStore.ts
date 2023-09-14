@@ -1,5 +1,5 @@
 import { defineStore } from "pinia";
-import { UserAttributes } from "../../../../math-common/build/notationTypes";
+import { UserAttributes } from "common/notationTypes";
 import { reactive, ref } from "vue";
 
 export const useStudentStore = defineStore("studentanswer", () => {

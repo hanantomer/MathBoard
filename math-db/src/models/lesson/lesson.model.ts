@@ -26,8 +26,7 @@ export default class Lesson extends Model<
     uuid!: string;
 
     @Column({
-        type: DataType.UUID,
-        defaultValue: DataType.UUIDV4,
+        type: DataType.STRING,
     })
     name!: string;
 }

@@ -1,4 +1,4 @@
-export const enum BoardType {
+export declare enum BoardType {
     LESSON = 0,
     QUESTION = 1,
     ANSWER = 2

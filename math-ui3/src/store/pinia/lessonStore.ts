@@ -2,12 +2,12 @@
 import {
   LessonAttributes,
   LessonCreateAttributes,
-} from "../../../../math-common/build/notationTypes";
+} from "common/notationTypes";
 import { defineStore } from "pinia";
 import dbHelper from "../../helpers/dbHelper";
 import { useUserStore } from "./userStore";
 const db = dbHelper();
-const userStore = useUserStore();
+
 
 
 export const useLessonStore = defineStore("lesson", () => {
@@ -19,10 +19,11 @@ export const useLessonStore = defineStore("lesson", () => {
   // }
 
   async function loadLessons() {
-    if (userStore.currentUser == undefined) return;
+    const userStore = useUserStore();
+    //if (userStore.currentUser == undefined) return;
     let lessonsFromDB = userStore.isTeacher()
-      ? await db.getTeacherLessons(userStore.currentUser.uuid)
-      : await db.getStudentLessons(userStore.currentUser.uuid);
+      ? await db.getTeacherLessons(userStore.getCurrentUser().uuid)
+      : await db.getStudentLessons(userStore.getCurrentUser().uuid);
 
     lessonsFromDB.forEach((l: LessonAttributes) => {
       lessons.set(l.uuid, l);
@@ -48,13 +49,12 @@ export const useLessonStore = defineStore("lesson", () => {
   }
 
   async function addLessonToSharedLessons() {
+    const userStore = useUserStore();
     await db.addLessonToSharedLessons(
       currentLesson.uuid,
-      userStore.currentUser!.uuid
+      userStore.getCurrentUser().uuid
     );
   }
-
-
 
   function removeLesson(lessonUUId: string) {
     lessons.forEach((l: LessonAttributes) => {

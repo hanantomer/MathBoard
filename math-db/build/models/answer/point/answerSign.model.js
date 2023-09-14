@@ -5,6 +5,9 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
@@ -15,40 +18,43 @@ const answerDecorator_1 = __importDefault(require("../answerDecorator"));
 const user_model_1 = __importDefault(require("../../user.model"));
 const answer_model_1 = __importDefault(require("../answer.model"));
 let AnswerSign = class AnswerSign extends sequelize_typescript_1.Model {
-    notationType = enum_1.NotationType.SIGN;
-    boardType = enum_1.BoardType.ANSWER;
-    uuid;
-    userId;
-    user;
-    answerId;
-    answer;
-    col;
-    row;
-    value;
+    constructor() {
+        super(...arguments);
+        this.notationType = enum_1.NotationType.SIGN;
+        this.boardType = enum_1.BoardType.ANSWER;
+    }
 };
 __decorate([
-    (0, sequelize_typescript_1.Column)({ type: sequelize_typescript_1.DataType.UUID, defaultValue: sequelize_typescript_1.DataType.UUIDV4 })
+    (0, sequelize_typescript_1.Column)({ type: sequelize_typescript_1.DataType.UUID, defaultValue: sequelize_typescript_1.DataType.UUIDV4 }),
+    __metadata("design:type", String)
 ], AnswerSign.prototype, "uuid", void 0);
 __decorate([
-    (0, sequelize_typescript_1.ForeignKey)(() => user_model_1.default)
+    (0, sequelize_typescript_1.ForeignKey)(() => user_model_1.default),
+    __metadata("design:type", Number)
 ], AnswerSign.prototype, "userId", void 0);
 __decorate([
-    (0, sequelize_typescript_1.BelongsTo)(() => user_model_1.default)
+    (0, sequelize_typescript_1.BelongsTo)(() => user_model_1.default),
+    __metadata("design:type", user_model_1.default)
 ], AnswerSign.prototype, "user", void 0);
 __decorate([
-    (0, sequelize_typescript_1.ForeignKey)(() => answer_model_1.default)
+    (0, sequelize_typescript_1.ForeignKey)(() => answer_model_1.default),
+    __metadata("design:type", Number)
 ], AnswerSign.prototype, "answerId", void 0);
 __decorate([
-    (0, sequelize_typescript_1.BelongsTo)(() => answer_model_1.default)
+    (0, sequelize_typescript_1.BelongsTo)(() => answer_model_1.default),
+    __metadata("design:type", answer_model_1.default)
 ], AnswerSign.prototype, "answer", void 0);
 __decorate([
-    (0, sequelize_typescript_1.Column)({ type: sequelize_typescript_1.DataType.INTEGER })
+    (0, sequelize_typescript_1.Column)({ type: sequelize_typescript_1.DataType.INTEGER }),
+    __metadata("design:type", Number)
 ], AnswerSign.prototype, "col", void 0);
 __decorate([
-    (0, sequelize_typescript_1.Column)({ type: sequelize_typescript_1.DataType.INTEGER })
+    (0, sequelize_typescript_1.Column)({ type: sequelize_typescript_1.DataType.INTEGER }),
+    __metadata("design:type", Number)
 ], AnswerSign.prototype, "row", void 0);
 __decorate([
-    (0, sequelize_typescript_1.Column)({ type: sequelize_typescript_1.DataType.STRING })
+    (0, sequelize_typescript_1.Column)({ type: sequelize_typescript_1.DataType.STRING }),
+    __metadata("design:type", String)
 ], AnswerSign.prototype, "value", void 0);
 AnswerSign = __decorate([
     (0, answerDecorator_1.default)("AnswerSign")

@@ -1,36 +1,43 @@
 import { defineStore } from "pinia";
-import { UserAttributes } from "../../../../math-common/src/notationTypes";
+import { UserAttributes } from "common/notationTypes";
 import dbHelper  from "../../helpers/dbHelper";
-import { UesrType } from "../../../../math-common/src/enum";
+import { UesrType } from "common/enum";
 const db = dbHelper();
 
 export const useUserStore = defineStore("user", () => {
   let currentUser: UserAttributes = new Object() as UserAttributes;
   let authorized = false;
 
+  function getCurrentUser(): UserAttributes {
+    return currentUser;
+  }
+
   function isTeacher(): boolean {
-    return currentUser.userType === UesrType.TEACHER;
+    return currentUser.userType.toString() === UesrType[UesrType.TEACHER].toString();
   }
 
-  function setUserWriteAuthorization(isAauthorized: boolean) {
-    authorized = isAauthorized;
+  function getAuthorized(): boolean {
+    return authorized;
   }
 
-  function setUser(user: UserAttributes) {
+  function setAuthorized(authorized: boolean) {
+    return authorized = authorized;
+  }
+
+  function setCurrentUser(user: UserAttributes) {
     currentUser = user;
   }
 
   function registerUser(user: UserAttributes) {
-    db.registerUser(user);
+    db.registerUser(user); /// todo set to current
   }
 
-
   return {
-    currentUser,
-    authorized,
-    setUserWriteAuthorization,
+    getCurrentUser,
+    getAuthorized,
+    setAuthorized,
     isTeacher,
-    setUser,
+    setCurrentUser,
     registerUser,
   };
 });

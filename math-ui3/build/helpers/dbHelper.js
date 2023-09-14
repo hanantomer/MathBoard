@@ -1,13 +1,14 @@
+import { BoardType } from "common/enum";
 import axios from "axios";
 import axiosHelper from "./axiosHelper";
 const { baseURL } = axiosHelper();
 export default function useDbHelper() {
     function getParentFieldName(boardType) {
-        const parentFieldName = boardType == 0 /* BoardType.LESSON */
+        const parentFieldName = boardType == BoardType.LESSON
             ? "LessonUUId"
-            : boardType == 1 /* BoardType.QUESTION */
+            : boardType == BoardType.QUESTION
                 ? "QuestionUUId"
-                : boardType == 2 /* BoardType.ANSWER */
+                : boardType == BoardType.ANSWER
                     ? "AnswerUUId" : null;
         if (boardType == null) {
             throw new Error("Invalid boardType:" + boardType);
@@ -16,20 +17,20 @@ export default function useDbHelper() {
     }
     async function authGoogleUser() {
         const { data } = await axios.get(baseURL + "/users");
-        return data.data[0];
+        return data;
     }
     // token is taken from cookie. see interceptor at the top of the page
     async function authLocalUserByToken() {
-        const { data } = await axios.get(baseURL + "/users");
-        return data.data[0];
+        const res = await axios.get(baseURL + "/users");
+        return res?.data;
     }
     async function authLocalUserByPassword(email, password) {
-        const { data } = await axios.get(baseURL + `/users?email=${email}&password=${password}`);
-        return data.data[0];
+        const res = await axios.get(baseURL + `/users?email=${email}&password=${password}`);
+        return res?.data;
     }
     async function registerUser(user) {
-        const { data } = await axios.post(baseURL + "/users", user);
-        return data;
+        const res = await axios.post(baseURL + "/users", user);
+        return res?.data;
     }
     async function addLessonToSharedLessons(lessonUUId, userUUId) {
         // check if exists
@@ -43,53 +44,53 @@ export default function useDbHelper() {
     }
     async function addLesson(lesson) {
         const { data } = await axios.post(baseURL + "/lessons", lesson);
-        return data.data[0];
+        return data;
     }
     async function addQuestion(question) {
         const { data } = await axios.post(baseURL + "/questions", question);
-        return data.data[0];
+        return data;
     }
     async function addAnswer(answer) {
         const { data } = await axios.post(baseURL + "/answers", answer);
-        return data.data[0];
+        return data;
     }
     async function addNotation(notation) {
         const { data } = await axios.post(baseURL +
             `/${notation.boardType}${notation.notationType.toLowerCase()}s/`, notation);
-        return data.data[0];
+        return data;
     }
     async function updateNotation(notation) {
         const { data } = await axios.put(baseURL +
             `/${notation.boardType}${notation.notationType.toLowerCase()}s/${notation.uuid}`, notation);
-        return data.data[0];
+        return data;
     }
     async function getLesson(LessonUUId) {
         const { data } = await axios.get(baseURL + "/lessons?uuid=" + LessonUUId);
-        return data.data[0];
+        return data;
     }
     async function getQuestion(questionUUId) {
         const { data } = await axios.get(baseURL + "/questions?uuid=" + questionUUId);
-        return data.data[0];
+        return data;
     }
     async function getAnswer(answerUUId) {
         const { data } = await axios.get(baseURL + "/answers?uuid=" + answerUUId);
-        return data.data[0];
+        return data;
     }
     async function getTeacherLessons(userUUId) {
         const { data } = await axios.get(baseURL + "/lessons?UserUUId=" + userUUId);
-        return data.data;
+        return data;
     }
     async function getStudentLessons(userUUId) {
         const { data } = await axios.get(baseURL + "/studentlessons?UserUUId=" + userUUId);
-        return data.data;
+        return data;
     }
     async function getQuestions(lessonUUId) {
         const { data } = await axios.get(baseURL + "/questions?LessonUUId=" + lessonUUId);
-        return data.data;
+        return data;
     }
     async function getAnswers(questionUUId) {
         const { data } = await axios.get(baseURL + "/answers?QuestionUUId=" + questionUUId);
-        return data.data;
+        return data;
     }
     async function removeNotation(notation) {
         axios.delete(`${notation.boardType}${notation.notationType}s/${notation.uuid}`); // e.g lessonsymbols/1)
@@ -99,7 +100,7 @@ export default function useDbHelper() {
         const parentFieldName = getParentFieldName(boardType);
         const uri = `${boardType}${notationType}s?${parentFieldName}=${parentUUId}`;
         const { data } = (await axios.get(uri));
-        return data.data;
+        return data;
     }
     return {
         getNotations,

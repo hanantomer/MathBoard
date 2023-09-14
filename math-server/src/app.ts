@@ -2,29 +2,21 @@ import express, { Request, Response, NextFunction } from "express";
 import cors from "cors";
 import bodyParser from "body-parser";
 import useAuthUtil  from "../../math-auth/build/authUtil";
-import useDb from "../../math-db/build/dbUtil"
+import useDb from  "../../math-db/build/dbUtil"
 import connection from "../../math-db/build/models/index";
-import { BoardType, NotationType } from "../../math-common/build/enum"
+import { /*BoardType,*/ NotationType } from "../../math-common/build/enum"
+
+enum BoardType { // declaring local to allow iteration
+  LESSON,
+  QUESTION,
+  ANSWER
+};
+
 
 
 const authUtil = useAuthUtil();
 const db = useDb();
 let app = express();
-
-async function auth(req: Request, res: Response, next: NextFunction) {
-    // omit authorization enforcement, when signing in.
-    if (req.url.indexOf("/users/") > 0) {
-        next();
-    }
-
-    // verify authorization
-    if (!await validateHeaderAuthentication(req, res)) {
-        return;
-    }
-
-    next();
-}
-
 app.use(auth);
 app.use(cors());
 app.use(express.json());
@@ -36,6 +28,26 @@ app.use(
         parameterLimit: 5000,
     })
 );
+
+
+
+
+
+async function auth(req: Request, res: Response, next: NextFunction) {
+    // omit authorization enforcement, when signing in.
+    if (req.url.indexOf("/api/users?email") == 0) {
+        next();
+        return;
+    }
+
+    // verify authorization
+    if (!await validateHeaderAuthentication(req, res)) {
+        return;
+    }
+
+    next();
+}
+
 
 /*verifies that authenitication header exists and the it denotes a valid user
 if yes, set header userUUId
@@ -52,26 +64,42 @@ async function validateHeaderAuthentication(req: Request, res: Response) : Promi
         res = res.status(401).json("invalid token");
     }
     
-    req.headers.userUUId = user?.uuid;
+    //res.json(user);
     return true;
 }
 
-app.get(
+/*app.get(
     "/users",
     async (req: Request, res: Response): Promise<Response> => {
-        const  uuid  = req.headers.userUUId;
-        const user = db.getUser(uuid as string);
+        // token already validate by interceptor. see validateHeaderAuthentication
+        if (req.headers.token) {
+            return res.status(200);
+        }
+        // by email/password
+        const { email, password } = req.query;
+
+        if (!email || !password) {
+            return res.status(401).json("missing user or password");
+        }
+
+        const user = await authUtil.authByLocalPassword(
+            email as string,
+            password as string
+        );
+        if (!user) {
+            return res.status(401);
+        }
         return res.status(200).json(user);
     }
-);
+);*/
 
 app.get(
-    "/users/:email/:password",
+    "/api/users",
     async (req: Request, res: Response): Promise<Response> => {
-        const { email, password } = req.params;
-        const user = authUtil.authByLocalPassword(email, password);
+        const { email, password } = req.query;
+        const user = await authUtil.authByLocalPassword(email as string, password as string);
         if (!user) {
-            return res.status(401).json("invalid user or passord");
+            return res.status(401);
         }
         return res.status(200).json(user);
     }
@@ -80,31 +108,32 @@ app.get(
 
 
 // lesson
-app.get("/lessons", async (req: Request, res: Response): Promise<Response> => {
-    return res.status(200).json(db.getLessons(req.params.userUUId));
+app.get("/api/lessons", async (req: Request, res: Response): Promise<Response> => {
+    const { userUUId } = req.query;
+    return res.status(200).json(await db.getLessons(userUUId as string));
 });
 
-app.get("/lessons/:uuid", async (req: Request, res: Response): Promise<Response> => {
-    return res.status(200).json(db.getLesson(req.params.uuid));
-});
+//app.get("/lessons/:uuid", async (req: Request, res: Response): Promise<Response> => {
+//    return res.status(200).json(db.getLesson(req.params.uuid));
+//});
 
 app.post(
     "/lessons",
     async (req: Request, res: Response): Promise<Response> => {
-        return res.status(200).json(db.createLesson(req.body));
+        return res.status(200).json(await db.createLesson(req.body));
     }
 );
 
 // question
 
 app.get("/questions/:lessonUUId", async (req: Request, res: Response): Promise<Response> => {
-    return res.status(200).json(db.getQuestions (req.params.lessonUUId));
+    return res.status(200).json(await db.getQuestions(req.params.lessonUUId));
 });
 
 app.get(
     "/questions/:uuid",
     async (req: Request, res: Response): Promise<Response> => {
-        return res.status(200).json(db.getQuestion(req.params.uuid));
+        return res.status(200).json(await db.getQuestion(req.params.uuid));
     }
 );
 
@@ -112,12 +141,12 @@ app.get(
 app.get(
     "/lessons/:uuid",
     async (req: Request, res: Response): Promise<Response> => {
-        return res.status(200).json(db.getLesson(req.params.uuid));
+        return res.status(200).json(await db.getLesson(req.params.uuid));
     }
 );
 
 app.post("/questions", async (req: Request, res: Response): Promise<Response> => {
-    return res.status(200).json(db.createQuestion(req.body));
+    return res.status(200).json(await db.createQuestion(req.body));
 });
 
 
@@ -126,37 +155,37 @@ app.post("/questions", async (req: Request, res: Response): Promise<Response> =>
 app.get(
     "/answers/:uuid",
     async (req: Request, res: Response): Promise<Response> => {
-        return res.status(200).json(db.getAnswer(req.params.uuid));
+        return res.status(200).json(await db.getAnswer(req.params.uuid));
     }
 );
 
 app.get(
     "/answers/:questionUUId",
     async (req: Request, res: Response): Promise<Response> => {
-        return res.status(200).json(db.getAnswers(req.params.uuid));
+        return res.status(200).json(await db.getAnswers(req.params.uuid));
     }
 );
 
 app.post("/answers", async (req: Request, res: Response): Promise<Response> => {
-    return res.status(200).json(db.createAnswer(req.body));
+    return res.status(200).json(await db.createAnswer(req.body));
 });
 
 
 // student lesson
 
 app.get(
-    "/studentlessons/:lessonUUId",
+    "/api/studentlessons/:lessonUUId",
     async (req: Request, res: Response): Promise<Response> => {
         return res
             .status(200)
-            .json(db.getStudentLessons(req.params.lessonUUId));
+            .json(await db.getStudentLessons(req.params.lessonUUId));
     }
 );
 
 app.post(
-    "/studentlessons",
+    "/api/studentlessons",
     async (req: Request, res: Response): Promise<Response> => {
-        return res.status(200).json(db.createStudentLesson(req.body));
+        return res.status(200).json(await db.createStudentLesson(req.body));
     }
 );
 
@@ -165,19 +194,24 @@ app.post(
 
 // notations
 
-
-for (const boardType in BoardType) {    
-
-    if (!Number.isNaN(Number(boardType))) continue; // typescript retuen a list of keys 
-                                                    // then the values, we need to get values only
+for (const boardType in Object.keys(BoardType)) {
+    //if (!Number.isNaN(Number(boardType))) continue; // typescript retuen a list of keys
+    // then the values, we need to get values only
     for (const notationType in NotationType) {
-
         if (!Number.isNaN(Number(notationType))) continue;
 
         app.get(
             `/${boardType}${notationType}s`,
             async (req: Request, res: Response): Promise<Response> => {
-                return res.status(200).json(db.getNotations(boardType, notationType, req.params.uuid));
+                return res
+                    .status(200)
+                    .json(
+                        await db.getNotations(
+                            boardType,
+                            notationType,
+                            req.params.uuid
+                        )
+                    );
             }
         );
 
@@ -187,7 +221,7 @@ for (const boardType in BoardType) {
                 return res
                     .status(200)
                     .json(
-                        db.createNotation(
+                        await db.createNotation(
                             boardType,
                             notationType,
                             req.body
@@ -205,10 +239,7 @@ connection.sequelize.sync({ force: true }).then(() => {
         console.log("listening to port localhost:8081");
 
         var spawn = require("child_process").spawn;
-        var ls = spawn("cmd.exe", [
-            "/c",
-            "../math-db/seeders/seed.bat",
-        ]);
+        var ls = spawn("cmd.exe", ["/c", "seed.bat"]);
 
         ls.stdout.on("data", function (data: any) {
             console.log("stdout: " + data);

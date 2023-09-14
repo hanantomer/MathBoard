@@ -2,10 +2,10 @@ import { BaseNotation } from "../../../math-common/src/notationTypes";
 import { useUserStore } from "../store/pinia/userStore";
 import { useStudentStore } from "../store/pinia/studentStore";
 import { useNotationStore } from "../store/pinia/notationStore";
-import { BoardType } from "../../../math-common/src/enum";
-import { UserAttributes } from "../../../math-common/src/notationTypes";
+import { BoardType } from "common/enum";
+import { UserAttributes } from "common/notationTypes";
 import useFeathersHelper from "./feathersHelper";
-import { PointAttributes } from "../../../math-common/src/notationTypes";
+import { PointAttributes } from "common/notationTypes";
 
 const notationStore = useNotationStore();
 const userStore = useUserStore();

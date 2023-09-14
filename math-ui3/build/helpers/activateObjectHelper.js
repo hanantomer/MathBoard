@@ -1,7 +1,7 @@
 import { watch } from "vue";
-import { EditMode, NotationShape, NotationType, } from "../../../math-common/src/enum";
+import { EditMode, NotationShape, NotationType, } from "common/enum";
 import { useNotationStore } from "../store/pinia/notationStore";
-import { activeCellColor, } from "../../../math-common/src/globals";
+import { activeCellColor, } from "common/globals";
 import { storeToRefs } from 'pinia';
 import useMatrixHelper from "./matrixHelper";
 import useNotationMutateHelper from "./notationMutateHelper";

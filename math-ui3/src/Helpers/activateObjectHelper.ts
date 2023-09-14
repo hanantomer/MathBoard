@@ -4,16 +4,16 @@ import {
   EditMode,
   NotationShape,
   NotationType,
-} from "../../../math-common/src/enum";
+} from "common/enum";
 import {
   LineNotationAttributes,
   RectNotationAttributes,
-} from "../../../math-common/src/notationTypes";
+} from "common/notationTypes";
 import { useNotationStore } from "../store/pinia/notationStore";
 import {
   activeCellColor,
   CellCoordinates,
-} from "../../../math-common/src/globals";
+} from "common/globals";
 import { storeToRefs } from 'pinia'
 import useMatrixHelper from "./matrixHelper"
 import useNotationMutateHelper from "./notationMutateHelper"

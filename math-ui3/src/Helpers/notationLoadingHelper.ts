@@ -3,14 +3,14 @@ import {
   PointNotationAttributes,
   LineNotationAttributes,
   RectNotationAttributes
-} from "../../../math-common/build/notationTypes";
+} from "common/notationTypes";
 
 import useDbHelper from "./dbHelper";
 import { useNotationStore } from "../store/pinia/notationStore";
 import { useLessonStore } from "../store/pinia/lessonStore";
 import { useQuestionStore } from "../store/pinia/questionStore";
 import { useAnswerStore } from "../store/pinia/answerStore";
-import { BoardType, NotationType } from "../../../math-common/src/enum";
+import { BoardType, NotationType } from "common/enum";
 import { reactive } from "vue";
 
 const notationStore = useNotationStore();

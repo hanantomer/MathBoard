@@ -1,7 +1,7 @@
 import { verify, sign } from "jsonwebtoken";
 import { compare } from "bcryptjs";
 import { OAuth2Client } from "google-auth-library";
-import  clientSecretData   from "./client_secret.json";
+import clientSecretData   from "./client_secret.json";
 import User from "../../math-db/build/models/user.model";
 import { UserAttributes } from "../../math-common/build/notationTypes";
 
@@ -13,6 +13,9 @@ export default function useAuthUtils() {
         email: string,
         password: string
     ): Promise<UserAttributes | null> {
+        
+        if (!email || !password) return null;
+
         //TODO add caching
         let user = await User.findOne<User>({
             where: { email: email },

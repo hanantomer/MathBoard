@@ -5,7 +5,7 @@ const { cookies } = useCookies();
 
 export default function axiosHelper() {
   ///TODO: take from enviroment\
-  const baseURL = "http://localhost:8081";
+  const baseURL = "/api";
 
   function handleError(error: any) {
     if (error.response) {
@@ -14,9 +14,9 @@ export default function axiosHelper() {
       console.log(error.response.data);
       console.log(error.response.status);
       console.log(error.response.headers);
-      error.response.data?.errors.forEach((error: any) => {
-          console.log(error);
-      });
+      //error.response.data?.errors.forEach((error: any) => {
+      //    console.log(error);
+      //});
     } else if (error.request) {
       // The request was made but no response was received
       // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
@@ -27,7 +27,7 @@ export default function axiosHelper() {
       console.log("Error", error.message);
     }
     console.log(error.config);
-    return null;
+    return error;
   }
 
   function initAxiosInterceptors() {

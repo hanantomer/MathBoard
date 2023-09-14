@@ -1,4 +1,4 @@
-import { EditMode } from "../../../math-common/src/enum";
+import { BoardType, EditMode } from "common/enum";
 import { useUserStore } from "../store/pinia/userStore";
 import { useNotationStore } from "../store/pinia/notationStore";
 import useMatrixHelper from "./matrixHelper";
@@ -103,7 +103,7 @@ export default function eventHelper() {
             return;
         }
         let activeCell = activateObjectHelper.activateClickedObject(e);
-        if (activeCell && notationStore.parent.type == 0 /* BoardType.LESSON */) {
+        if (activeCell && notationStore.parent.type == BoardType.LESSON) {
             userOutgoingOperations.syncOutgoingActiveCell(activeCell);
         }
         if (notationStore.editMode === EditMode.CHECKMARK ||

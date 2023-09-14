@@ -1,4 +1,13 @@
 "use strict";
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
@@ -12,164 +21,200 @@ const user_model_1 = __importDefault(require("./models/user.model"));
 const index_1 = __importDefault(require("./models/index"));
 const utils_1 = require("../../math-common/build/utils");
 function dbUtil() {
-    // utility
-    async function getIdByUUId(model, uuid) {
-        let res = await index_1.default.sequelize.models[model].findOne({
-            attributes: {
-                include: ["id"],
-            },
-            where: {
-                uuid: uuid,
-            },
+    function getIdByUUId(model, uuid) {
+        return __awaiter(this, void 0, void 0, function* () {
+            let res = yield index_1.default.sequelize.models[model].findOne({
+                attributes: {
+                    include: ["id"],
+                },
+                where: {
+                    uuid: uuid,
+                },
+            });
+            return res === null || res === void 0 ? void 0 : res.get("id");
         });
-        return res?.get("id");
     }
     // user
-    async function isTeacher(userUUId, lessonUUId) {
-        let lessonId = await getIdByUUId("Lesson", lessonUUId);
-        if (!lessonId)
-            return false;
-        let userId = await getIdByUUId("User", userUUId);
-        if (!userId)
-            return false;
-        let lesson = await lesson_model_1.default.findByPk(lessonId);
-        return lesson?.user.id === userId;
-    }
-    async function getUser(userUUId) {
-        let userId = await getIdByUUId("User", userUUId);
-        if (!userId)
-            return null;
-        return await user_model_1.default.findByPk(userId);
-    }
-    async function getUserByEmailAndPassword(email, password) {
-        return user_model_1.default.findOne({
-            where: {
-                email: email,
-                password: password,
-            },
+    function isTeacher(userUUId, lessonUUId) {
+        return __awaiter(this, void 0, void 0, function* () {
+            let lessonId = yield getIdByUUId("Lesson", lessonUUId);
+            if (!lessonId)
+                return false;
+            let userId = yield getIdByUUId("User", userUUId);
+            if (!userId)
+                return false;
+            let lesson = yield lesson_model_1.default.findByPk(lessonId);
+            return (lesson === null || lesson === void 0 ? void 0 : lesson.user.id) === userId;
         });
     }
-    async function createUser(user) {
-        return await user_model_1.default.create(user);
+    function getUser(userUUId) {
+        return __awaiter(this, void 0, void 0, function* () {
+            let userId = yield getIdByUUId("User", userUUId);
+            if (!userId)
+                return null;
+            return yield user_model_1.default.findByPk(userId);
+        });
+    }
+    function getUserByEmailAndPassword(email, password) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return user_model_1.default.findOne({
+                where: {
+                    email: email,
+                    password: password,
+                },
+            });
+        });
+    }
+    function createUser(user) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return yield user_model_1.default.create(user);
+        });
     }
     // lesson
-    async function getLesson(lessonUUId) {
-        let lessonId = await getIdByUUId("Lesson", lessonUUId);
-        if (!lessonId)
-            return null;
-        return await lesson_model_1.default.findByPk(lessonId);
-    }
-    async function getLessons(userUUId) {
-        let userId = await getIdByUUId("User", userUUId);
-        if (!userId)
-            return null;
-        return await lesson_model_1.default.findAll({
-            where: {
-                user: {
-                    id: userId,
-                },
-            },
+    function getLesson(lessonUUId) {
+        return __awaiter(this, void 0, void 0, function* () {
+            let lessonId = yield getIdByUUId("Lesson", lessonUUId);
+            if (!lessonId)
+                return null;
+            return yield lesson_model_1.default.findByPk(lessonId);
         });
     }
-    async function createLesson(lesson) {
-        return await lesson_model_1.default.create(lesson);
+    function getLessons(userUUId) {
+        return __awaiter(this, void 0, void 0, function* () {
+            let userId = yield getIdByUUId("User", userUUId);
+            if (!userId)
+                return null;
+            return yield lesson_model_1.default.findAll({
+                include: [{ model: user_model_1.default }],
+                where: {
+                    '$user.id$': 1
+                }
+            });
+        });
+    }
+    function createLesson(lesson) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return yield lesson_model_1.default.create(lesson);
+        });
     }
     // student lesson
-    async function getStudentLessons(lessonUUId) {
-        let lessonId = await getIdByUUId("Lesson", lessonUUId);
-        if (!lessonId)
-            return null;
-        return await studentLesson_model_1.default.findAll({
-            where: {
-                lessonId: lessonId,
-            },
+    function getStudentLessons(lessonUUId) {
+        return __awaiter(this, void 0, void 0, function* () {
+            let lessonId = yield getIdByUUId("Lesson", lessonUUId);
+            if (!lessonId)
+                return null;
+            return yield studentLesson_model_1.default.findAll({
+                where: {
+                    lessonId: lessonId,
+                },
+            });
         });
     }
-    async function createStudentLesson(lesson) {
-        return await studentLesson_model_1.default.create(lesson);
+    function createStudentLesson(lesson) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return yield studentLesson_model_1.default.create(lesson);
+        });
     }
     // question
-    async function getQuestion(questionUUId) {
-        let questionId = await getIdByUUId("Question", questionUUId);
-        if (!questionId)
-            return null;
-        return await question_model_1.default.findByPk(questionId);
-    }
-    async function getQuestions(lessonUUId) {
-        let lessonId = await getIdByUUId("Lesson", lessonUUId);
-        if (!lessonId)
-            return null;
-        return await question_model_1.default.findAll({
-            where: {
-                lessonId: lessonId,
-            },
+    function getQuestion(questionUUId) {
+        return __awaiter(this, void 0, void 0, function* () {
+            let questionId = yield getIdByUUId("Question", questionUUId);
+            if (!questionId)
+                return null;
+            return yield question_model_1.default.findByPk(questionId);
         });
     }
-    async function createQuestion(question) {
-        return await question_model_1.default.create(question);
+    function getQuestions(lessonUUId) {
+        return __awaiter(this, void 0, void 0, function* () {
+            let lessonId = yield getIdByUUId("Lesson", lessonUUId);
+            if (!lessonId)
+                return null;
+            return yield question_model_1.default.findAll({
+                where: {
+                    lessonId: lessonId,
+                },
+            });
+        });
+    }
+    function createQuestion(question) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return yield question_model_1.default.create(question);
+        });
     }
     // answer
-    async function getAnswer(answerUUId) {
-        let answerId = await getIdByUUId("Answer", answerUUId);
-        if (!answerId)
-            return null;
-        return await answer_model_1.default.findByPk(answerId);
-    }
-    async function getAnswers(questionUUId) {
-        let questionId = await getIdByUUId("Question", questionUUId);
-        if (!questionId)
-            return null;
-        return await answer_model_1.default.findAll({
-            where: {
-                questionId: questionId,
-            },
+    function getAnswer(answerUUId) {
+        return __awaiter(this, void 0, void 0, function* () {
+            let answerId = yield getIdByUUId("Answer", answerUUId);
+            if (!answerId)
+                return null;
+            return yield answer_model_1.default.findByPk(answerId);
         });
     }
-    async function createAnswer(answer) {
-        return await answer_model_1.default.create(answer);
-    }
-    async function getUserAnswer(userUUId, questionUUId) {
-        let questionId = await getIdByUUId("Question", questionUUId);
-        if (!questionId)
-            return null;
-        let userId = await getIdByUUId("User", userUUId);
-        if (!userId)
-            return null;
-        return await answer_model_1.default.findOne({
-            where: {
-                user: {
-                    Id: userId,
+    function getAnswers(questionUUId) {
+        return __awaiter(this, void 0, void 0, function* () {
+            let questionId = yield getIdByUUId("Question", questionUUId);
+            if (!questionId)
+                return null;
+            return yield answer_model_1.default.findAll({
+                where: {
+                    questionId: questionId,
                 },
-                question: {
-                    Id: questionId,
-                }
-            },
+            });
         });
     }
-    async function getNotations(boardType, notationType, parentUUId) {
-        const boardPrefix = boardType.toString().toLowerCase();
-        const boardPrefixIdFieldName = boardType.toString().toLowerCase() + "Id";
-        const boardPrefixCapitalized = (0, utils_1.capitalize)(boardPrefix);
-        const notationTypeSuffix = notationType.toString().toLowerCase();
-        const notationTypeSuffixCapitalized = (0, utils_1.capitalize)(notationTypeSuffix);
-        const notationName = boardPrefixCapitalized + notationTypeSuffixCapitalized;
-        let parentId = await getIdByUUId(boardPrefixCapitalized, parentUUId);
-        if (!parentId)
-            return null;
-        return await index_1.default.sequelize.models[notationName].findAll({
-            where: {
-                [boardPrefixIdFieldName]: parentId,
-            },
+    function createAnswer(answer) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return yield answer_model_1.default.create(answer);
         });
     }
-    async function createNotation(boardType, notationType, notation) {
-        ///TODO : move to utility function
-        const boardPrefix = boardType.toString().toLowerCase();
-        const boardPrefixCapitalized = (0, utils_1.capitalize)(boardPrefix);
-        const notationTypeSuffix = notationType.toString().toLowerCase();
-        const notationTypeSuffixCapitalized = (0, utils_1.capitalize)(notationTypeSuffix);
-        const notationName = boardPrefixCapitalized + notationTypeSuffixCapitalized;
-        return await index_1.default.sequelize.models[notationName].create(notation);
+    function getUserAnswer(userUUId, questionUUId) {
+        return __awaiter(this, void 0, void 0, function* () {
+            let questionId = yield getIdByUUId("Question", questionUUId);
+            if (!questionId)
+                return null;
+            let userId = yield getIdByUUId("User", userUUId);
+            if (!userId)
+                return null;
+            return yield answer_model_1.default.findOne({
+                where: {
+                    user: {
+                        Id: userId,
+                    },
+                    question: {
+                        Id: questionId,
+                    }
+                },
+            });
+        });
+    }
+    function getNotations(boardType, notationType, parentUUId) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const boardPrefix = boardType.toString().toLowerCase();
+            const boardPrefixIdFieldName = boardType.toString().toLowerCase() + "Id";
+            const boardPrefixCapitalized = (0, utils_1.capitalize)(boardPrefix);
+            const notationTypeSuffix = notationType.toString().toLowerCase();
+            const notationTypeSuffixCapitalized = (0, utils_1.capitalize)(notationTypeSuffix);
+            const notationName = boardPrefixCapitalized + notationTypeSuffixCapitalized;
+            let parentId = yield getIdByUUId(boardPrefixCapitalized, parentUUId);
+            if (!parentId)
+                return null;
+            return yield index_1.default.sequelize.models[notationName].findAll({
+                where: {
+                    [boardPrefixIdFieldName]: parentId,
+                },
+            });
+        });
+    }
+    function createNotation(boardType, notationType, notation) {
+        return __awaiter(this, void 0, void 0, function* () {
+            ///TODO : move to utility function
+            const boardPrefix = boardType.toString().toLowerCase();
+            const boardPrefixCapitalized = (0, utils_1.capitalize)(boardPrefix);
+            const notationTypeSuffix = notationType.toString().toLowerCase();
+            const notationTypeSuffixCapitalized = (0, utils_1.capitalize)(notationTypeSuffix);
+            const notationName = boardPrefixCapitalized + notationTypeSuffixCapitalized;
+            return yield index_1.default.sequelize.models[notationName].create(notation);
+        });
     }
     return {
         getIdByUUId,
@@ -189,7 +234,7 @@ function dbUtil() {
         getNotations,
         createNotation,
         getStudentLessons,
-        createStudentLesson
+        createStudentLesson,
     };
 }
 exports.default = dbUtil;

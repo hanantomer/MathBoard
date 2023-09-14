@@ -16,8 +16,6 @@ import { capitalize } from "../../math-common/build/utils";
 
 
 export default function dbUtil() {
-    // utility
-
     async function getIdByUUId(
         model: string,
         uuid: string
@@ -93,11 +91,10 @@ export default function dbUtil() {
         let userId = await getIdByUUId("User", userUUId);
         if (!userId) return null;
         return await Lesson.findAll({
+            include: [{model: User}] ,
             where: {
-                user: {
-                    id: userId,
-                },
-            },
+              '$user.id$' : 1
+            }                 
         });
     }
 
@@ -263,6 +260,6 @@ export default function dbUtil() {
         getNotations,
         createNotation,
         getStudentLessons,
-        createStudentLesson
+        createStudentLesson,
     };
 }

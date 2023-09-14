@@ -19,12 +19,31 @@ export default defineConfig({
   ],
   define: { "process.env": {} },
   resolve: {
-    alias: {
-      "@": fileURLToPath(new URL("./src", import.meta.url)),
-    },
-    extensions: [".js", ".json", ".jsx", ".mjs", ".ts", ".tsx", ".vue"],
+    alias: [
+      //"@": fileURLToPath(new URL("./src", import.meta.url)),
+      //common: fileURLToPath(new URL("../math-common/src/*", import.meta.url)),
+      {
+        find: "@",
+        replacement: fileURLToPath(new URL("./src", import.meta.url)),
+      },
+      {
+        find: "common",
+        replacement: fileURLToPath(
+          new URL("../math-common/src", import.meta.url)
+        ),
+      },
+    ],
   },
+  //extensions: [".js", ".json", ".jsx", ".mjs", ".ts", ".tsx", ".vue"],
+
   server: {
     port: 3000,
+    proxy: {
+      "/api": {
+        target: "http://localhost:8081",
+        changeOrigin: true,
+        secure: false,
+      },
+    },
   },
 });

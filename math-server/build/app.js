@@ -19,22 +19,16 @@ const authUtil_1 = __importDefault(require("../../math-auth/build/authUtil"));
 const dbUtil_1 = __importDefault(require("../../math-db/build/dbUtil"));
 const index_1 = __importDefault(require("../../math-db/build/models/index"));
 const enum_1 = require("../../math-common/build/enum");
+var BoardType;
+(function (BoardType) {
+    BoardType[BoardType["LESSON"] = 0] = "LESSON";
+    BoardType[BoardType["QUESTION"] = 1] = "QUESTION";
+    BoardType[BoardType["ANSWER"] = 2] = "ANSWER";
+})(BoardType || (BoardType = {}));
+;
 const authUtil = (0, authUtil_1.default)();
 const db = (0, dbUtil_1.default)();
 let app = (0, express_1.default)();
-function auth(req, res, next) {
-    return __awaiter(this, void 0, void 0, function* () {
-        // omit authorization enforcement, when signing in.
-        if (req.url.indexOf("/users/") > 0) {
-            next();
-        }
-        // verify authorization
-        if (!(yield validateHeaderAuthentication(req, res))) {
-            return;
-        }
-        next();
-    });
-}
 app.use(auth);
 app.use((0, cors_1.default)());
 app.use(express_1.default.json());
@@ -44,6 +38,20 @@ app.use(body_parser_1.default.urlencoded({
     extended: true,
     parameterLimit: 5000,
 }));
+function auth(req, res, next) {
+    return __awaiter(this, void 0, void 0, function* () {
+        // omit authorization enforcement, when signing in.
+        if (req.url.indexOf("/api/users?email") == 0) {
+            next();
+            return;
+        }
+        // verify authorization
+        if (!(yield validateHeaderAuthentication(req, res))) {
+            return;
+        }
+        next();
+    });
+}
 /*verifies that authenitication header exists and the it denotes a valid user
 if yes, set header userUUId
 */
@@ -57,80 +65,101 @@ function validateHeaderAuthentication(req, res) {
         if (!user) {
             res = res.status(401).json("invalid token");
         }
-        req.headers.userUUId = user === null || user === void 0 ? void 0 : user.uuid;
+        //res.json(user);
         return true;
     });
 }
-app.get("/users", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const uuid = req.headers.userUUId;
-    const user = db.getUser(uuid);
-    return res.status(200).json(user);
-}));
-app.get("/users/:email/:password", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const { email, password } = req.params;
-    const user = authUtil.authByLocalPassword(email, password);
+/*app.get(
+    "/users",
+    async (req: Request, res: Response): Promise<Response> => {
+        // token already validate by interceptor. see validateHeaderAuthentication
+        if (req.headers.token) {
+            return res.status(200);
+        }
+        // by email/password
+        const { email, password } = req.query;
+
+        if (!email || !password) {
+            return res.status(401).json("missing user or password");
+        }
+
+        const user = await authUtil.authByLocalPassword(
+            email as string,
+            password as string
+        );
+        if (!user) {
+            return res.status(401);
+        }
+        return res.status(200).json(user);
+    }
+);*/
+app.get("/api/users", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { email, password } = req.query;
+    const user = yield authUtil.authByLocalPassword(email, password);
     if (!user) {
-        return res.status(401).json("invalid user or passord");
+        return res.status(401);
     }
     return res.status(200).json(user);
 }));
 // lesson
-app.get("/lessons", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    return res.status(200).json(db.getLessons(req.params.userUUId));
+app.get("/api/lessons", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { userUUId } = req.query;
+    return res.status(200).json(yield db.getLessons(userUUId));
 }));
-app.get("/lessons/:uuid", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    return res.status(200).json(db.getLesson(req.params.uuid));
-}));
+//app.get("/lessons/:uuid", async (req: Request, res: Response): Promise<Response> => {
+//    return res.status(200).json(db.getLesson(req.params.uuid));
+//});
 app.post("/lessons", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    return res.status(200).json(db.createLesson(req.body));
+    return res.status(200).json(yield db.createLesson(req.body));
 }));
 // question
 app.get("/questions/:lessonUUId", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    return res.status(200).json(db.getQuestions(req.params.lessonUUId));
+    return res.status(200).json(yield db.getQuestions(req.params.lessonUUId));
 }));
 app.get("/questions/:uuid", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    return res.status(200).json(db.getQuestion(req.params.uuid));
+    return res.status(200).json(yield db.getQuestion(req.params.uuid));
 }));
 app.get("/lessons/:uuid", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    return res.status(200).json(db.getLesson(req.params.uuid));
+    return res.status(200).json(yield db.getLesson(req.params.uuid));
 }));
 app.post("/questions", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    return res.status(200).json(db.createQuestion(req.body));
+    return res.status(200).json(yield db.createQuestion(req.body));
 }));
 // answer
 app.get("/answers/:uuid", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    return res.status(200).json(db.getAnswer(req.params.uuid));
+    return res.status(200).json(yield db.getAnswer(req.params.uuid));
 }));
 app.get("/answers/:questionUUId", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    return res.status(200).json(db.getAnswers(req.params.uuid));
+    return res.status(200).json(yield db.getAnswers(req.params.uuid));
 }));
 app.post("/answers", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    return res.status(200).json(db.createAnswer(req.body));
+    return res.status(200).json(yield db.createAnswer(req.body));
 }));
 // student lesson
-app.get("/studentlessons/:lessonUUId", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+app.get("/api/studentlessons/:lessonUUId", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     return res
         .status(200)
-        .json(db.getStudentLessons(req.params.lessonUUId));
+        .json(yield db.getStudentLessons(req.params.lessonUUId));
 }));
-app.post("/studentlessons", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    return res.status(200).json(db.createStudentLesson(req.body));
+app.post("/api/studentlessons", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    return res.status(200).json(yield db.createStudentLesson(req.body));
 }));
 // notations
-for (const boardType in enum_1.BoardType) {
-    if (!Number.isNaN(Number(boardType)))
-        continue; // typescript retuen a list of keys 
+for (const boardType in Object.keys(BoardType)) {
+    //if (!Number.isNaN(Number(boardType))) continue; // typescript retuen a list of keys
     // then the values, we need to get values only
     for (const notationType in enum_1.NotationType) {
         if (!Number.isNaN(Number(notationType)))
             continue;
         app.get(`/${boardType}${notationType}s`, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-            return res.status(200).json(db.getNotations(boardType, notationType, req.params.uuid));
+            return res
+                .status(200)
+                .json(yield db.getNotations(boardType, notationType, req.params.uuid));
         }));
         app.post(`/${boardType}${notationType}s`, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
             return res
                 .status(200)
-                .json(db.createNotation(boardType, notationType, req.body));
+                .json(yield db.createNotation(boardType, notationType, req.body));
         }));
     }
 }
@@ -140,10 +169,7 @@ index_1.default.sequelize.sync({ force: true }).then(() => {
     app.listen(8081, () => {
         console.log("listening to port localhost:8081");
         var spawn = require("child_process").spawn;
-        var ls = spawn("cmd.exe", [
-            "/c",
-            "../math-db/seeders/seed.bat",
-        ]);
+        var ls = spawn("cmd.exe", ["/c", "seed.bat"]);
         ls.stdout.on("data", function (data) {
             console.log("stdout: " + data);
         });

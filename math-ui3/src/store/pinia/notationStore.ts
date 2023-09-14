@@ -1,9 +1,9 @@
 // notations of current board(lesson, question or answers)
 //  questions of current lesson
 import { defineStore } from "pinia";
-import { CellCoordinates, matrixDimensions } from "../../../../math-common/src/globals";
-import { BaseNotation } from "../../../../math-common/src/notationTypes";
-import { EditMode, BoardType, NotationShape, NotationTypeShape } from "../../../../math-common/src/enum";
+import { CellCoordinates, matrixDimensions } from "common/globals";
+import { BaseNotation } from "common/notationTypes";
+import { EditMode, BoardType, NotationShape, NotationTypeShape } from "common/enum";
 import { reactive, ref } from "vue";
 
 type Board = {

@@ -1,21 +1,21 @@
 //  questions of current lesson
-import { EditMode } from "../../../math-common/src/enum";
+import { EditMode } from "common/enum";
 import useDbHelper from "../helpers/dbHelper";
 
 import {
   PointNotationAttributes,
   LineNotationAttributes,
   RectNotationAttributes,
-} from "../../../math-common/build/notationTypes";
+} from "common/notationTypes";
 
-import { CellCoordinates } from "../../../math-common/build/globals";
+import { CellCoordinates } from "common/globals";
 
 import {
   NotationShape,
   NotationTypeShape,
-} from "../../../math-common/src/enum";
+} from "common/enum";
 
-import { BoardType, NotationType } from "../../../math-common/src/enum";
+import { BoardType, NotationType } from "common/enum";
 import { useUserStore } from "../store/pinia/userStore";
 import { useNotationStore } from "../store/pinia/notationStore";
 import { onMounted } from "vue"
@@ -28,7 +28,7 @@ import {
   BaseNotation,
   LineAttributes,
   RectAttributes,
-} from "../../../math-common/build/notationTypes";
+} from "common/notationTypes";
 
 
 const matrixHelper = useMatrixHelper();

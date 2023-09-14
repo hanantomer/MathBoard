@@ -5,8 +5,8 @@ import {
   NotationType,
   NotationTypeShape,
   NotationShape,
-} from "../../../math-common/src/enum";
-import { DotPosition, getDefaultFontSize } from "../../../math-common/build/globals";
+} from "common/enum";
+import { DotPosition, getDefaultFontSize } from "common/globals";
 import * as d3 from "d3";
 import { useNotationStore } from "../store/pinia/notationStore"
 
@@ -19,7 +19,7 @@ import {
   LineNotationAttributes,
   PointNotationAttributes,
   RectNotationAttributes,
-} from "../../../math-common/build/notationTypes";
+} from "common/notationTypes";
 
 
 import { useUserStore } from "../store/pinia/userStore";

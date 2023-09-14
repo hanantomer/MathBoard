@@ -6,7 +6,7 @@
     "target": "es2020",
     "module": "commonjs",
     "outDir": "./build",
-    "rootDir": "./src",
+    "rootDir": "src",
     "declaration": true,
     "strict": true,
     "esModuleInterop": true,

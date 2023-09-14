@@ -1,5 +1,5 @@
-import { NotationType, NotationTypeShape, NotationShape, } from "../../../math-common/src/enum";
-import { getDefaultFontSize } from "../../../math-common/build/globals";
+import { BoardType, NotationType, NotationTypeShape, NotationShape, } from "common/enum";
+import { getDefaultFontSize } from "common/globals";
 import * as d3 from "d3";
 import { useNotationStore } from "../store/pinia/notationStore";
 import { useUserStore } from "../store/pinia/userStore";
@@ -462,7 +462,7 @@ export default function useMatrixHelper() {
         let fontWeight = userStore.currentUser?.uuid == n.user.uuid ? "bold" : "normal";
         let color = (notationStore.selectedNotations.indexOf(n.uuid))
             ? "red"
-            : this.getParent().boardType === 2 /* BoardType.ANSWER */ &&
+            : this.getParent().boardType === BoardType.ANSWER &&
                 this.getUser().uuid != n.user.uuid
                 ? "purple"
                 : "black";

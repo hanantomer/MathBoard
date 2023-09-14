@@ -1,13 +1,14 @@
 import { getCookie, removeCookie } from "typescript-cookie";
 import { useUserStore } from "../store/pinia/userStore";
 import { useNotationStore } from "../store/pinia/notationStore";
+import { BoardType } from "common/enum";
 import useDbHelper from "./dbHelper";
 //const userStore = useUserStore();
 //const notationStore = useNotationStore();
 const dbHelper = useDbHelper();
 export default function useAuthHelper() {
     function setUser(user) {
-        const userStore = useUserStore();
+        const userStore = useUserStore(); // initilize lazy here to allow loading of module before [inia has initialized
         userStore.setUser(user);
     }
     function registerUser(firstName, lastName, password, email, userType) {
@@ -31,7 +32,7 @@ export default function useAuthHelper() {
         const notationStore = useNotationStore();
         return (userStore.isTeacher || // teacher in lesson or question
             userStore.authorized || // student in lesson when authorized by teacher
-            notationStore.parent.type == 2 /* BoardType.ANSWER */ // student writing an  answer
+            notationStore.parent.type == BoardType.ANSWER // student writing an  answer
         );
     }
     async function authGoogleUser() {

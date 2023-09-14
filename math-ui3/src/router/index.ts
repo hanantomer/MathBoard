@@ -1,8 +1,10 @@
-import { createRouter, createWebHistory } from 'vue-router'
+import { createRouter, createWebHistory, RouteLocationNormalized, RouteLocationRaw } from 'vue-router'
 import  useAuthHelper  from "../helpers/authHelper";
 import { useUserStore } from "../store/pinia/userStore";
+import { useCookies } from "vue3-cookies";
 
 const authHelper = useAuthHelper();
+const cookies = useCookies().cookies;
 
 const routes = [
   {
@@ -12,13 +14,13 @@ const routes = [
     meta: { requiresAuth: false },
     props: true,
   },
-  // {
-  //   path: "/login",
-  //   component: () => import("@/components/Welcome.vue"),
-  //   name: "login",
-  //   meta: { requiresAuth: false },
-  //   props: { login: true },
-  // },
+   {
+     path: "/login",
+     component: () => import("@/components/Welcome.vue"),
+     name: "login",
+     meta: { requiresAuth: false },
+     props: { login: true },
+   },
   // {
   //   path: "/register",
   //   component: () => import("@/components/Welcome.vue"),
@@ -70,36 +72,31 @@ const router = createRouter({
 });
 
 router.beforeEach(async (to, from) => {
+  const userStore = useUserStore();
+
   if (!to.matched.some((record) => record.meta.requiresAuth)) {
     // auth not required
     return;
   }
 
-  // already signed in
-  const userStore = useUserStore();
-  if (userStore.currentUser?.uuid) {
+  if (userStore.getCurrentUser()) {
+    // already authenticated
     return;
   }
 
-  // local access token is present
-  //let access_token = window.$cookies.get("access_token");
-  //console.log(access_token);
-  //if (!!access_token) {
+  //const user = await authHelper.authLocalUserByToken();
+  //if (user) {
+  //  userStore.setCurrentUser(user);
+  //  return;
+  //}
 
 
-  const user = await authHelper.authLocalUserByToken();
-  if (user) {
-    userStore.setUser(user);
-    return;
-  }
+  return { path: "/login", query: { from: to.path } };
 
 
-  return "/login";
-
-  // next({
-  //   name: "login",
-  //   params: { dialog: true, type: "Login" },
-  //   query: { from: window.location.pathname },
+  //next({
+  //  query: { from: window.location.pathname },
+  //  path: "/login",
   //});
   //}
 

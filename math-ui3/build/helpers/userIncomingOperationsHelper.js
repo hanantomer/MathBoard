@@ -1,6 +1,7 @@
 import { useUserStore } from "../store/pinia/userStore";
 import { useStudentStore } from "../store/pinia/studentStore";
 import { useNotationStore } from "../store/pinia/notationStore";
+import { BoardType } from "common/enum";
 import useFeathersHelper from "./feathersHelper";
 const notationStore = useNotationStore();
 const userStore = useUserStore();
@@ -17,7 +18,7 @@ export default function userIncomingOperations() {
             .service("notationSync")
             .on("created", (notation) => {
             if (notation.uuid !== userStore.currentUser.uuid &&
-                notationStore.parent.type == 0 /* BoardType.LESSON */) {
+                notationStore.parent.type == BoardType.LESSON) {
                 notationStore.notations.set(notation.uuid, notation);
             }
         });
@@ -42,7 +43,7 @@ export default function userIncomingOperations() {
             .on("updated", (activeCell) => {
             if (
             //activeCell.UserId !== this.getUser().id &&
-            notationStore.parent.type === 0 /* BoardType.LESSON */) {
+            notationStore.parent.type === BoardType.LESSON) {
                 notationStore.setActiveCell(activeCell);
             }
         });
@@ -62,7 +63,7 @@ export default function userIncomingOperations() {
                 .service("heartbeat")
                 .on("updated", (user) => {
                 if (user.uuid != userStore.currentUser.uuid &&
-                    notationStore.parent.type === 0 /* BoardType.LESSON */) {
+                    notationStore.parent.type === BoardType.LESSON) {
                     studentStore.setStudentHeartbeat(user.uuid);
                 }
             });

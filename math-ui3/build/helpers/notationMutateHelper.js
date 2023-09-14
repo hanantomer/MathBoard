@@ -1,8 +1,8 @@
 //  questions of current lesson
-import { EditMode } from "../../../math-common/src/enum";
+import { EditMode } from "common/enum";
 import useDbHelper from "../helpers/dbHelper";
-import { NotationShape, NotationTypeShape, } from "../../../math-common/src/enum";
-import { NotationType } from "../../../math-common/src/enum";
+import { NotationShape, NotationTypeShape, } from "common/enum";
+import { BoardType, NotationType } from "common/enum";
 import { useUserStore } from "../store/pinia/userStore";
 import { useNotationStore } from "../store/pinia/notationStore";
 import { onMounted } from "vue";
@@ -359,19 +359,19 @@ export default function notationMutateHelper() {
         switch (NotationTypeShape.get(notation.notationType)) {
             case NotationShape.POINT: {
                 let pointNotation = notation;
-                return (notation?.boardType === 2 /* BoardType.ANSWER */ &&
+                return (notation?.boardType === BoardType.ANSWER &&
                     !userStore.isTeacher &&
                     notationStore.cellOccupationMatrix
                         .at(pointNotation.row)
-                        ?.at(pointNotation.col)?.boardType == 1 /* BoardType.QUESTION */);
+                        ?.at(pointNotation.col)?.boardType == BoardType.QUESTION);
             }
             case NotationShape.LINE: {
                 let lineNotation = notation;
                 for (let i = lineNotation.fromCol; i <= lineNotation.toCol; i++) {
-                    if (notation?.boardType === 2 /* BoardType.ANSWER */ &&
+                    if (notation?.boardType === BoardType.ANSWER &&
                         !userStore.isTeacher &&
                         notationStore.cellOccupationMatrix.at(lineNotation.row)?.at(i)
-                            ?.boardType == 1 /* BoardType.QUESTION */)
+                            ?.boardType == BoardType.QUESTION)
                         return true;
                 }
             }
@@ -379,10 +379,10 @@ export default function notationMutateHelper() {
                 let rectNotation = notation;
                 for (let i = rectNotation.fromCol; i <= rectNotation.toCol; i++) {
                     for (let j = rectNotation.fromRow; i <= rectNotation.toRow; j++) {
-                        if (notation?.boardType === 2 /* BoardType.ANSWER */ &&
+                        if (notation?.boardType === BoardType.ANSWER &&
                             !userStore.isTeacher &&
                             notationStore.cellOccupationMatrix.at(j)?.at(i)?.boardType ==
-                                1 /* BoardType.QUESTION */)
+                                BoardType.QUESTION)
                             return true;
                     }
                 }
@@ -418,12 +418,12 @@ export default function notationMutateHelper() {
         });
     }
     function isCellInQuestionArea(CellCoordinates) {
-        return (notationStore.parent.type == 2 /* BoardType.ANSWER */ &&
+        return (notationStore.parent.type == BoardType.ANSWER &&
             !userStore.isTeacher() &&
             CellCoordinates &&
             notationStore.cellOccupationMatrix
                 .at(CellCoordinates.row)
-                ?.at(CellCoordinates.col)?.boardType == 1 /* BoardType.QUESTION */);
+                ?.at(CellCoordinates.col)?.boardType == BoardType.QUESTION);
     }
     function addMarkNotation() {
         if (notationStore.editMode == EditMode.CHECKMARK) {

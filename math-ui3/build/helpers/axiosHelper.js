@@ -11,9 +11,9 @@ export default function axiosHelper() {
             console.log(error.response.data);
             console.log(error.response.status);
             console.log(error.response.headers);
-            error.response.data?.errors.forEach((error) => {
-                console.log(error);
-            });
+            //error.response.data?.errors.forEach((error: any) => {
+            //    console.log(error);
+            //});
         }
         else if (error.request) {
             // The request was made but no response was received
@@ -26,7 +26,7 @@ export default function axiosHelper() {
             console.log("Error", error.message);
         }
         console.log(error.config);
-        return null;
+        return error;
     }
     function initAxiosInterceptors() {
         axios.interceptors.response.use((response) => response, (error) => {

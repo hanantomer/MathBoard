@@ -56,8 +56,8 @@ export enum EditMode {
 };
 
 export enum UesrType {
-  TEACHER,
-  STUDENT
+  TEACHER, 
+  STUDENT 
 };
 
 

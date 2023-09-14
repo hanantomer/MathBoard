@@ -1,10 +1,10 @@
 import { getCookie, setCookie, removeCookie } from "typescript-cookie";
 import { useUserStore } from "../store/pinia/userStore";
 import { useNotationStore } from "../store/pinia/notationStore";
-import { BoardType, UesrType } from "../../../math-common/src/enum";
+import { BoardType, UesrType } from "common/enum";
 import {
   UserAttributes,
-} from "../../../math-common/build/notationTypes";
+} from "common/notationTypes";
 import useDbHelper from "./dbHelper";
 
 //const userStore = useUserStore();
@@ -15,8 +15,8 @@ const dbHelper = useDbHelper();
 export default function useAuthHelper() {
 
   function setUser(user: UserAttributes) {
-    const userStore = useUserStore();
-    userStore.setUser(user);
+    const userStore = useUserStore(); // initilize lazy here to allow loading of module before [inia has initialized
+    userStore.setCurrentUser(user);
   }
 
   function registerUser(firstName: string, lastName: string, password: string, email: string, userType: UesrType) {
@@ -40,9 +40,9 @@ export default function useAuthHelper() {
     const userStore = useUserStore();
     const notationStore = useNotationStore();
     return (
-      userStore.isTeacher || // teacher in lesson or question
-      userStore.authorized || // student in lesson when authorized by teacher
-      notationStore.parent.type == BoardType.ANSWER // student writing an  answer
+      userStore.isTeacher() || // teacher in lesson or question
+      userStore.getAuthorized() || // student in lesson when authorized by teacher
+      notationStore.parent.type.toString() == BoardType.ANSWER.toString() // student writing an  answer
     );
   }
 
@@ -57,7 +57,7 @@ export default function useAuthHelper() {
   async function authLocalUserByUserAndPassword(
     email: string,
     password: string
-  ): Promise<UserAttributes> {
+  ): Promise<UserAttributes | null> {
     return await dbHelper.authLocalUserByPassword(email, password);
   }
 
@@ -90,7 +90,7 @@ export default function useAuthHelper() {
     } else {
       removeCookie("access_token");
     }
-    userStore.currentUser = new Object() as UserAttributes;
+    userStore.setCurrentUser(new Object() as UserAttributes);
   }
 
   /*async function  getGoogleUser() {

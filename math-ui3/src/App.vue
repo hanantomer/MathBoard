@@ -144,7 +144,7 @@ const user = computed(() => userStore.currentUser);
 const isTeacher  = computed(() => userStore.isTeacher);
 
 function showLoginDialog() {
-  eventBus.emit("login");
+  router.push("/login");
 };
 
 

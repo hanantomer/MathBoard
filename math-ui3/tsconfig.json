@@ -1,28 +1,22 @@
 {
+  "extends": "../tsconfig.json",
   "ts-node": {
     "require": ["tsconfig-paths/register"]
   },
   "compilerOptions": {
-    "sourceMap": true,
     "outDir": "./build",
-    "baseUrl": "./",
+    "baseUrl": ".",
     "rootDir": "./src",
-    "target": "esnext",
-    "useDefineForClassFields": true,
-    "module": "esnext",
-    "moduleResolution": "Node",
-    "strict": true,
-    "jsx": "preserve",
-    "resolveJsonModule": true,
-    "esModuleInterop": true,
     "lib": ["ESNext", "DOM"],
-    "skipLibCheck": true,
-    "noImplicitThis": false
+    "paths": {
+      "common/*": ["../math-common/src/*"]
+    }
   },
-  "paths" : {
-    "@common/*" : ["./math-common/build/*"]
-  },
+  "compileOnSave": true,
   "include": ["src/**/*.ts", "src/**/*.d.ts", "src/**/*.tsx", "src/**/*.vue"],
-  "references": [{ "path": "./tsconfig.node.json" },{ "path": "../math-common" }],
-  "exclude": ["node_modules"]
+  "references": [
+    { "path": "./tsconfig.node.json" },
+    { "path": "../math-common" }
+  ],
+  "exclude": ["node_modules", "build/**/*"]
 }

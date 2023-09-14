@@ -1,6 +1,6 @@
 import { defineStore } from "pinia";
 import dbHelper from "../../helpers/dbHelper";
-import { UesrType } from "../../../../math-common/src/enum";
+import { UesrType } from "common/enum";
 const db = dbHelper();
 export const useUserStore = defineStore("user", () => {
     let currentUser = new Object();

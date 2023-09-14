@@ -1,4 +1,4 @@
-import { BoardType, EditMode } from "../../../math-common/src/enum";
+import { BoardType, EditMode } from "common/enum";
 import { useUserStore } from "../store/pinia/userStore"
 import { useNotationStore } from "../store/pinia/notationStore"
 

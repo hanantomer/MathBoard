@@ -16,10 +16,8 @@
         "sourceMap": true,
         "resolveJsonModule": true
     },
-    "references": [
-        { "path": "../math-db" },
-        { "path": "../math-common" }
-    ],
-    "files": ["./src/authUtil.ts", "./src/client_secret.json"],
+    "files": ["./src/client_secret.json"],
+    "references": [{ "path": "../math-common" }],
+    "include": ["src/**/*"],
     "exclude": ["node_modules", "build/**/*"]
 }
