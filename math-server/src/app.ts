@@ -1,4 +1,4 @@
-import express, { Request, Response, NextFunction } from "express";
+import express, { Request, Response, NextFunction, json } from "express";
 import cors from "cors";
 import bodyParser from "body-parser";
 import useAuthUtil  from "../../math-auth/build/authUtil";
@@ -53,26 +53,29 @@ async function auth(req: Request, res: Response, next: NextFunction) {
 if yes, set header userUUId
 */
 async function validateHeaderAuthentication(req: Request, res: Response) : Promise<boolean>{
-    if (!req.headers.authentication) {
+    if (!req.headers.authorization) {
         res = res.status(401).json("unauthorized");
         return false;
     }
     const user = await authUtil.authByLocalToken(
-        req.headers.authentication.toString()
+        req.headers.authorization.toString()
     );
     if (!user) {
         res = res.status(401).json("invalid token");
     }
     
-    //res.json(user);
+    if (req.url.indexOf("/api/users") == 0) {
+        res.json(user);
+    }
+    
     return true;
 }
 
-/*app.get(
-    "/users",
+app.get(
+    "/api/users",
     async (req: Request, res: Response): Promise<Response> => {
         // token already validate by interceptor. see validateHeaderAuthentication
-        if (req.headers.token) {
+        if (req.headers.authorization) {
             return res.status(200);
         }
         // by email/password
@@ -91,19 +94,19 @@ async function validateHeaderAuthentication(req: Request, res: Response) : Promi
         }
         return res.status(200).json(user);
     }
-);*/
-
-app.get(
-    "/api/users",
-    async (req: Request, res: Response): Promise<Response> => {
-        const { email, password } = req.query;
-        const user = await authUtil.authByLocalPassword(email as string, password as string);
-        if (!user) {
-            return res.status(401);
-        }
-        return res.status(200).json(user);
-    }
 );
+
+// app.get(
+//     "/api/users",
+//     async (req: Request, res: Response): Promise<Response> => {
+//         const { email, password } = req.query;
+//         const user = await authUtil.authByLocalPassword(email as string, password as string);
+//         if (!user) {
+//             return res.status(401);
+//         }
+//         return res.status(200).json(user);
+//     }
+// );
 
 
 

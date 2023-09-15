@@ -79,16 +79,17 @@ router.beforeEach(async (to, from) => {
     return;
   }
 
-  if (userStore.getCurrentUser()) {
+  if (userStore.getCurrentUser().id) {
     // already authenticated
     return;
   }
 
-  //const user = await authHelper.authLocalUserByToken();
-  //if (user) {
-  //  userStore.setCurrentUser(user);
-  //  return;
-  //}
+  const user = await authHelper.authLocalUserByToken();
+  if (user) {
+    // has valid token
+    userStore.setCurrentUser(user);
+    return;
+  }
 
 
   return { path: "/login", query: { from: to.path } };

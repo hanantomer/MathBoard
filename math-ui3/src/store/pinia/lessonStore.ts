@@ -14,9 +14,13 @@ export const useLessonStore = defineStore("lesson", () => {
   let lessons: Map<String, LessonAttributes> = new Map();
   let currentLesson = <LessonAttributes>{};
 
-  // async function loadCurrentLesson(): Promise<void> {
-  //   currentLesson = await db.getLesson(LessonUUId);
-  // }
+  function getCurrentLesson() {
+    return currentLesson;
+  }
+
+  function getLessons() {
+    return lessons;
+  }
 
   async function loadLessons() {
     const userStore = useUserStore();
@@ -63,8 +67,8 @@ export const useLessonStore = defineStore("lesson", () => {
   }
 
   return {
-    lessons,
-    currentLesson,
+    getLessons,
+    getCurrentLesson,
     loadLessons,
     setCurrentLesson,
     addLesson,

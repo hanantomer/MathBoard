@@ -140,11 +140,11 @@ onUnmounted(() => {
   document.removeEventListener("paste", onPaste);
 });
 
-const user = computed(() => userStore.currentUser);
-const isTeacher  = computed(() => userStore.isTeacher);
+const user = computed(() => userStore.getCurrentUser());
+const isTeacher  = computed(() => userStore.isTeacher());
 
 function showLoginDialog() {
-  router.push("/login");
+  router.replace("/login");
 };
 
 

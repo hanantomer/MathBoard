@@ -187,7 +187,7 @@ export default function notationMutateHelper() {
   }
 
   function findNotationsByCellCoordinates(cellCoordinates: CellCoordinates) {
-    let userUUId = userStore.currentUser!.uuid;
+    let userUUId = userStore.getCurrentUser().uuid;
     let notationsMap = notationStore.notations;
     return Object.entries(notationsMap)
       .map((n: BaseNotation[]) => n[1])
@@ -231,20 +231,20 @@ export default function notationMutateHelper() {
           ? pointAtRectCoordinates(
               n as PointNotationAttributes,
               rectCoordinates,
-              userStore.currentUser!.uuid
+              userStore.getCurrentUser().uuid
             )
           : n.notationType == NotationType.FRACTION ||
             n.notationType == NotationType.SQRT
           ? lineAtRectCoordinates(
               n as LineNotationAttributes,
               rectCoordinates,
-              userStore.currentUser!.uuid
+              userStore.getCurrentUser().uuid
             )
           : n.notationType == NotationType.TEXT
           ? rectAtRectCoordinates(
               n as RectNotationAttributes,
               rectCoordinates,
-              userStore.currentUser!.uuid
+              userStore.getCurrentUser().uuid
             )
           : false
       );
@@ -264,20 +264,20 @@ export default function notationMutateHelper() {
           ? pointAtLineCoordinates(
               n as PointNotationAttributes,
               lineCoordinates,
-              userStore.currentUser!.uuid
+              userStore.getCurrentUser().uuid
             )
           : n.notationType == NotationType.FRACTION ||
             n.notationType == NotationType.SQRT
           ? lineAtLineCoordinates(
               n as LineNotationAttributes,
               lineCoordinates,
-              userStore.currentUser!.uuid
+              userStore.getCurrentUser().uuid
             )
           : n.notationType == NotationType.TEXT
           ? rectAtLineCoordinates(
               n as RectNotationAttributes,
               lineCoordinates,
-              userStore.currentUser!.uuid
+              userStore.getCurrentUser().uuid
             )
           : false
       );
@@ -298,14 +298,14 @@ export default function notationMutateHelper() {
             return pointAtCellCoordinates(
               notation as PointNotationAttributes,
               n2 as PointNotationAttributes,
-              userStore.currentUser!.uuid
+              userStore.getCurrentUser().uuid
             );
           case NotationType.FRACTION:
           case NotationType.SQRT:
             return lineAtLineCoordinates(
               notation as LineNotationAttributes,
               n2 as LineNotationAttributes,
-              userStore.currentUser!.uuid
+              userStore.getCurrentUser().uuid
             );
           case NotationType.TEXT:
           case NotationType.IMAGE:
@@ -313,7 +313,7 @@ export default function notationMutateHelper() {
             return rectAtRectCoordinates(
               notation as RectNotationAttributes,
               n2 as RectNotationAttributes,
-              userStore.currentUser!.uuid
+              userStore.getCurrentUser().uuid
             );
         }
       });
@@ -333,17 +333,17 @@ export default function notationMutateHelper() {
               pointAtCellCoordinates(
                 notation as PointNotationAttributes,
                 n2 as PointNotationAttributes,
-                userStore.currentUser!.uuid
+                userStore.getCurrentUser().uuid
               ) ??
               lineAtCellCoordinates(
                 notation as LineNotationAttributes,
                 n2 as PointNotationAttributes,
-                userStore.currentUser!.uuid
+                userStore.getCurrentUser().uuid
               ) ??
               rectAtCellCoordinates(
                 notation as RectNotationAttributes,
                 n2 as PointNotationAttributes,
-                userStore.currentUser!.uuid
+                userStore.getCurrentUser().uuid
               )
             );
           case NotationType.FRACTION:
@@ -352,17 +352,17 @@ export default function notationMutateHelper() {
               lineAtCellCoordinates(
                 notation as LineNotationAttributes,
                 n2 as PointNotationAttributes,
-                userStore.currentUser!.uuid
+                userStore.getCurrentUser().uuid
               ) ??
               lineAtLineCoordinates(
                 notation as LineNotationAttributes,
                 n2 as LineNotationAttributes,
-                userStore.currentUser!.uuid
+                userStore.getCurrentUser().uuid
               ) ??
               lineAtRectCoordinates(
                 notation as LineNotationAttributes,
                 n2 as RectNotationAttributes,
-                userStore.currentUser!.uuid
+                userStore.getCurrentUser().uuid
               )
             );
 
@@ -373,17 +373,17 @@ export default function notationMutateHelper() {
               pointAtRectCoordinates(
                 notation as PointNotationAttributes,
                 n2 as RectNotationAttributes,
-                userStore.currentUser!.uuid
+                userStore.getCurrentUser().uuid
               ) ??
               lineAtRectCoordinates(
                 notation as LineNotationAttributes,
                 n2 as RectNotationAttributes,
-                userStore.currentUser!.uuid
+                userStore.getCurrentUser().uuid
               ) ??
               rectAtRectCoordinates(
                 notation as RectNotationAttributes,
                 n2 as RectNotationAttributes,
-                userStore.currentUser!.uuid
+                userStore.getCurrentUser().uuid
               )
             );
         }
@@ -526,7 +526,7 @@ export default function notationMutateHelper() {
     notation: T
   ): Promise<BaseNotation | null> {
 
-    //notation.user.uuid = userStore.currentUser!.uuid;
+    //notation.user.uuid = userStore.getCurrentUser().uuid;
 
     let overlappedSameTypeNotation = findOverlapNotationsOfSameType(notation);
 
@@ -626,7 +626,7 @@ export default function notationMutateHelper() {
         let pointNotation = notation as PointNotationAttributes;
         return (
           notation?.boardType === BoardType.ANSWER &&
-          !userStore.isTeacher &&
+          !userStore.isTeacher() &&
           notationStore.cellOccupationMatrix
             .at(pointNotation.row)
             ?.at(pointNotation.col)?.boardType == BoardType.QUESTION
@@ -641,7 +641,7 @@ export default function notationMutateHelper() {
         ) {
           if (
             notation?.boardType === BoardType.ANSWER &&
-            !userStore.isTeacher &&
+            !userStore.isTeacher() &&
             notationStore.cellOccupationMatrix.at(lineNotation.row)?.at(i)
               ?.boardType == BoardType.QUESTION
           )
@@ -662,7 +662,7 @@ export default function notationMutateHelper() {
           ) {
             if (
               notation?.boardType === BoardType.ANSWER &&
-              !userStore.isTeacher &&
+              !userStore.isTeacher() &&
               notationStore.cellOccupationMatrix.at(j)?.at(i)?.boardType ==
                 BoardType.QUESTION
             )
@@ -798,7 +798,7 @@ export default function notationMutateHelper() {
       value: base64Value,
       boardType: notationStore.parent.type,
       notationType: NotationType.IMAGE,
-      user: userStore.currentUser,
+      user: userStore.getCurrentUser(),
       createdAt: new Date(),
       id: -1,
       uuid: "",
@@ -833,10 +833,10 @@ export default function notationMutateHelper() {
      value: value,
      boardType: notationStore.parent.type,
      notationType: NotationType.TEXT,
-     user: userStore.currentUser,
+     user: userStore.getCurrentUser(),
      createdAt: new Date(),
      id: -1,
-     uuid: ""
+     uuid: "",
    };
 
    addNotation(notation)
@@ -854,7 +854,7 @@ export default function notationMutateHelper() {
       value: value,
       boardType: notationStore.parent.type,
       notationType: NotationType.SYMBOL,
-      user: userStore.currentUser,
+      user: userStore.getCurrentUser(),
       createdAt: new Date(),
       id: -1,
       uuid: "",
@@ -878,7 +878,7 @@ export default function notationMutateHelper() {
       row: coordinates.row,
       boardType: notationStore.parent.type,
       notationType: NotationType.SQRT,
-      user: userStore.currentUser,
+      user: userStore.getCurrentUser(),
       createdAt: new Date(),
       id: -1,
       uuid: "",
@@ -897,7 +897,7 @@ export default function notationMutateHelper() {
       row: coordinates.row,
       boardType: notationStore.parent.type,
       notationType: NotationType.FRACTION,
-      user: userStore.currentUser,
+      user: userStore.getCurrentUser(),
       createdAt: new Date(),
       id: -1,
       uuid: "",

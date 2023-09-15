@@ -13,7 +13,7 @@ export const useUserStore = defineStore("user", () => {
   }
 
   function isTeacher(): boolean {
-    return currentUser.userType.toString() === UesrType[UesrType.TEACHER].toString();
+    return currentUser?.userType?.toString() === UesrType[UesrType.TEACHER].toString();
   }
 
   function getAuthorized(): boolean {

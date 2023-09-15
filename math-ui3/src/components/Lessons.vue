@@ -47,7 +47,7 @@ const route = useRoute()
 const userStore = useUserStore();
 const lessonStore = useLessonStore();
 const title = computed(() => { return userStore.isTeacher() ? "My Lessons" : "Lessons Shared with me" })
-let lessonDialog = false;
+let lessonDialog = ref(false);
 let lessonDialogTitle = "<span>Please specify <strong>lesson</strong> title</span";
 let search = ref("");
 const menu = [
@@ -58,17 +58,17 @@ const menu = [
 
 watch(route, (to) => {
   lessonStore.loadLessons();
-  if (userStore.isTeacher()  && !lessonStore.lessons) {
+  if (userStore.isTeacher()  && !lessonStore.getLessons()) {
     openLessonDialog();
   }
 }, { flush: 'pre', immediate: true, deep: true });
 
 function openLessonDialog() {
-  lessonDialog = true;
+  lessonDialog.value = true;
 };
 
 async function saveLesson(newLesson: LessonAttributes) {
-      lessonDialog = false;
+      lessonDialog.value = false;
       let savedLesson =  await lessonStore.addLesson(newLesson);
       router.push({
         path: "/lesson/" + savedLesson.uuid,
@@ -93,7 +93,7 @@ const headers = computed(() => [
 ]);
 
 const lessons = computed(() => {
-  return Object.entries(lessonStore.lessons).map((l: LessonAttributes[]) => l[1]).map((l: LessonAttributes) => {
+  return Object.entries(lessonStore.getLessons()).map((l: LessonAttributes[]) => l[1]).map((l: LessonAttributes) => {
     return { uuid: l.uuid, name: l.name, createdAt: l.createdAt }
   })
 });

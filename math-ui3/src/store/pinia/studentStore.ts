@@ -10,20 +10,28 @@ export const useStudentStore = defineStore("studentanswer", () => {
   let authorizedStudentUUId = ref("");
 
 
-  function setStudentHeartbeat(uuid: string): void {
+  function getStudents() {
+    return students;
+  }
+
+  function getAuthorizedStudentUUId() {
+    return authorizedStudentUUId;
+  }
+
+  function setStudentHeartbeat(uuid: string){
     let student = students.get(uuid);
     if (student) {
       student.lastHeartbeatTime = new Date();
     }
   };
 
-  function toggleAuthorization(userUUId: string) {
-    authorizedStudentUUId.value = userUUId;
-  };
+  function setAuthorizedStudentUUId(authorizedStudentUUId : string) {
+    return authorizedStudentUUId = authorizedStudentUUId;
+  }
 
   return {
-    students,
-    authorizedStudentUUId,
+    getStudents,
+    getAuthorizedStudentUUId,
     setStudentHeartbeat,
   };
 });

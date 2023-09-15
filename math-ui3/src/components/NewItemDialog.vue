@@ -41,17 +41,22 @@
 import { ref, watch } from "vue";
 import useEventBus from "../helpers/eventBus";
 const eventBus = useEventBus();
+let show = ref(false);
 
 const props = defineProps({
-  dialog: Boolean,
-  title: String
-});
+  dialog: {
+    type: Boolean,
+    default: false,
+  },
+  title: {
+  type: String
+}});
 
-watch(()=> props.dialog, (show: boolean) => {
-  show = show;
+watch(()=> props.dialog, (val: boolean) => {
+  show.value  = val;
 })
 
-let show = ref(false);
+
 let name = ref("");
 function save() {
   eventBus.emit("newItemDialogSave", name);

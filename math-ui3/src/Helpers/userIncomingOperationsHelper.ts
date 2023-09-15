@@ -28,7 +28,7 @@ export default function userIncomingOperations() {
       .service("notationSync")
       .on("created", (notation: BaseNotation) => {
         if (
-          notation.uuid !== userStore.currentUser!.uuid &&
+          notation.uuid !== userStore.getCurrentUser().uuid &&
           notationStore.parent.type == BoardType.LESSON
         ) {
           notationStore.notations.set(notation.uuid, notation);
@@ -39,7 +39,7 @@ export default function userIncomingOperations() {
       .service("notationSync")
       .on("updated", (notation: BaseNotation) => {
         if (
-          notation.user.uuid !== userStore.currentUser!.uuid &&
+          notation.user.uuid !== userStore.getCurrentUser().uuid &&
           this.getParent().boardType === "lesson"
         ) {
           notationStore.notations.set(notation.uuid, notation);
@@ -49,7 +49,7 @@ export default function userIncomingOperations() {
       .service("notationSync")
       .on("removed", (notation: BaseNotation) => {
         if (
-          notation.user.uuid !== userStore.currentUser!.uuid &&
+          notation.user.uuid !== userStore.getCurrentUser().uuid &&
           this.getParent().boardType === "lesson"
         ) {
           notationStore.notations.set(notation.uuid, notation);
@@ -70,10 +70,10 @@ export default function userIncomingOperations() {
         .service("authorization")
         .on("updated", (user: UserAttributes) => {
           if (
-            user.uuid === userStore.currentUser!.uuid //&&
+            user.uuid === userStore.getCurrentUser()!.uuid //&&
             //this.getCurrentLesson().uuid === authData.LessonUUId : TODO check if neccesary since massages are listned by lesson
           ) {
-            userStore.setUserWriteAuthorization(user.authorized);
+            userStore.setAuthorized(user.authorized);
           }
         });
     }
@@ -82,7 +82,7 @@ export default function userIncomingOperations() {
         .service("heartbeat")
         .on("updated", (user: UserAttributes) => {
           if (
-            user.uuid != userStore.currentUser!.uuid &&
+            user.uuid != userStore.getCurrentUser()!.uuid &&
             notationStore.parent.type === BoardType.LESSON
           ) {
             studentStore.setStudentHeartbeat(user.uuid);

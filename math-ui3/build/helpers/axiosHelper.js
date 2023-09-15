@@ -54,7 +54,7 @@ export default function axiosHelper() {
                 : null;
             if (access_token != null) {
                 console.debug(`sending access_token:${access_token}`);
-                config.headers.authentication = access_token;
+                config.headers.authorization = access_token;
             }
             return config;
         });
