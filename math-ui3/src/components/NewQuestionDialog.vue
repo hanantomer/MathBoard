@@ -72,13 +72,14 @@ function save() {
   eventBus.emit("save", name );
 };
 
-const lessons = computed(() => Array.from(lessonStore.lessons).map(([key, value]) => { return value }));
+const lessons = computed(() => Array.from(lessonStore.getLessons()).map(([key, value]) => { return value }));
+
 const selectedLesson = computed({
   get() {
-    return lessonStore.currentLesson;
+    return lessonStore.getCurrentLesson().name;
   },
-  set(selectedLesson) {
-    lessonStore.currentLesson = selectedLesson;
+  set(selectedLessonUUId: string) {
+    lessonStore.setCurrentLesson(selectedLessonUUId);
   }
 });
 

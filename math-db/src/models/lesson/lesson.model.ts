@@ -4,7 +4,7 @@ import  User  from "../user.model";
 import {
     LessonAttributes,
     LessonCreateAttributes,
-} from "../../../../math-common/build/notationTypes";
+} from "../../../../math-common/build/lessonTypes";
 
 
 

@@ -35,7 +35,7 @@ const routes = [
     meta: { requiresAuth: true },
   },
   {
-    path: "/lesson/lessonUUId",
+    path: "/lesson/:lessonUUId",
     component: () => import("@/components/Lesson.vue"),
     name: "lesson",
     meta: { requiresAuth: true },

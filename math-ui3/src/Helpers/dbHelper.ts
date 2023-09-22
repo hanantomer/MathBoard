@@ -1,18 +1,12 @@
 import { BoardType, NotationType } from "common/enum";
+import { capitalize } from "common/utils";
 import axios from "axios";
 import axiosHelper from "./axiosHelper";
-import {
-  BaseNotation,
-  UserAttributes,
-  LessonAttributes,
-  LessonCreateAttributes,
-  QuestionAttributes,
-  QuestionCreateAttributes,
-  AnswerAttributes,
-  AnswerCreateAttributes,
-} from "common/notationTypes";
-
-
+import { BaseNotation } from "common/baseTypes";
+import { UserAttributes, UserCreationAttributes } from "common/userTypes";
+import { LessonAttributes, LessonCreateAttributes } from "common/lessonTypes";
+import { QuestionAttributes, QuestionCreateAttributes } from "common/questionTypes";
+import { AnswerAttributes, AnswerCreateAttributes } from "common/answerTypes";
 const { baseURL } = axiosHelper();
 
 export default function useDbHelper() {
@@ -58,8 +52,7 @@ export default function useDbHelper() {
   }
 
   async function registerUser(
-    user: UserAttributes
-  ): Promise<UserAttributes> {
+    user: UserCreationAttributes ): Promise<UserAttributes> {
     const res = await axios.post<UserAttributes>(
       baseURL + "/users",
       user
@@ -86,11 +79,11 @@ export default function useDbHelper() {
   async function addLesson(
     lesson: LessonCreateAttributes
   ): Promise<LessonAttributes> {
-    const { data } = await axios.post<LessonAttributes>(
+    const savedLesson = await axios.post<LessonAttributes>(
       baseURL + "/lessons",
       lesson
     );
-    return data;
+    return savedLesson.data;
   }
 
   async function addQuestion(question: QuestionCreateAttributes): Promise<QuestionAttributes> {
@@ -112,7 +105,9 @@ export default function useDbHelper() {
   async function addNotation(notation: BaseNotation): Promise<BaseNotation> {
     const { data } = await axios.post<BaseNotation>(
       baseURL +
-        `/${notation.boardType}${notation.notationType.toLowerCase()}s/`,
+        `/${
+          notation.boardType
+        }${NotationType[notation.notationType].toLowerCase()}s/`,
       notation
     );
     return data;
@@ -122,7 +117,7 @@ export default function useDbHelper() {
   async function updateNotation(notation: BaseNotation): Promise<BaseNotation> {
     const { data } = await axios.put<BaseNotation>(
       baseURL +
-        `/${notation.boardType}${notation.notationType.toLowerCase()}s/${
+        `/${notation.boardType}${NotationType[notation.notationType].toLowerCase()}s/${
           notation.uuid
         }`,
       notation
@@ -188,8 +183,12 @@ export default function useDbHelper() {
     parentUUId: string
   ): Promise<T[]> {
     // e.g lessonsymbols?LessonUUId=1
-    const parentFieldName = getParentFieldName(boardType);
-    const uri = `${boardType}${notationType}s?${parentFieldName}=${parentUUId}`;
+    //const parentFieldName = getParentFieldName(boardType);
+    const uri = baseURL +`/${BoardType[boardType]
+      .toString()
+      .toLowerCase()}${notationType
+      .toString()
+      .toLocaleLowerCase()}s?uuid=${parentUUId}`;
     const { data } = (await axios.get<T[]>(uri));
     return data;
   }

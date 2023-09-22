@@ -6,7 +6,7 @@ import Answer from "../../answer/answer.model";
 import {
     AnswerLineAttributes,
     AnswerLineCreationAttributes,
-} from "../../../../../math-common/build/notationTypes";
+} from "../../../../../math-common/build/answerTypes";
 
 @AnswerDecorator("AnswerRoot")
 export default class AnswerRoot extends Model<

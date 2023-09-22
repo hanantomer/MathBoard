@@ -1,8 +1,8 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getDefaultFontSize = exports.heartBeatInterval = exports.activeCellColor = exports.signList = exports.matrixDimensions = exports.apiHost = exports.messagingHost = void 0;
-exports.messagingHost = "http://localhost:3030";
-exports.apiHost = "http://localhost:8080";
+exports.getDefaultFontSize = exports.heartBeatInterval = exports.activeCellColor = exports.signList = exports.matrixDimensions = exports.messagingHost = void 0;
+exports.messagingHost = "/msg"; // see proxy configuration in vite.config.ts
+//export const apiHost = "http://localhost:8080";
 exports.matrixDimensions = {
     rowsNum: 24,
     colsNum: 44,

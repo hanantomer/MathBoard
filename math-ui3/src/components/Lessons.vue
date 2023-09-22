@@ -3,7 +3,6 @@
     <NewItemDialog
       :dialog = "lessonDialog"
       :title = "lessonDialogTitle"
-      v-on="{ save: saveLesson }"
     ></NewItemDialog>
     <v-card class="mx-auto" max-width="800" min-height="600">
       <v-toolbar color="primary" dark>
@@ -35,13 +34,15 @@
 </template>
 <script setup lang="ts">
 import NewItemDialog from "./NewItemDialog.vue";
-import { LessonAttributes } from "../../../math-common/build/notationTypes";
+import { LessonAttributes } from "../../../math-common/build/lessonTypes";
 import { computed, ref } from "vue"
 import { useUserStore } from "../store/pinia/userStore";
 import { useLessonStore } from "../store/pinia/lessonStore";
 import { watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { useRoute } from 'vue-router'
+import useEventBus from "../helpers/eventBus";
+const eventBus = useEventBus();
 const router = useRouter()
 const route = useRoute()
 const userStore = useUserStore();
@@ -55,7 +56,6 @@ const menu = [
   { icon: "remove", title: "Remove" },
 ];
 
-
 watch(route, (to) => {
   lessonStore.loadLessons();
   if (userStore.isTeacher()  && !lessonStore.getLessons()) {
@@ -67,9 +67,13 @@ function openLessonDialog() {
   lessonDialog.value = true;
 };
 
-async function saveLesson(newLesson: LessonAttributes) {
+watch(() => eventBus.bus.value.get("newItemDialogSave"), (val: string) => {
+  saveLesson(val[0]);
+});
+
+async function saveLesson(lessonName: string) {
       lessonDialog.value = false;
-      let savedLesson =  await lessonStore.addLesson(newLesson);
+      let savedLesson =  await lessonStore.addLesson(lessonName);
       router.push({
         path: "/lesson/" + savedLesson.uuid,
       });

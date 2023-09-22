@@ -37,7 +37,7 @@ onMounted(() => {
 
 
 const students = computed(() => {
-  return Array.from(answerStore.answers).map(([uuid, answer]) => {
+  return Array.from(answerStore.getAnswers()).map(([uuid, answer]) => {
     return {
       text: `${answer.user.firstName} ${answer.user.lastName}`,
       value: answer.user.id,
@@ -46,7 +46,7 @@ const students = computed(() => {
 });
 
 const questionTitle = computed(() => {
-  return questionStore.currentQuestion.name;
+  return questionStore.getCurrentQuestion().name;
 });
 
 watch(route, (to) => {

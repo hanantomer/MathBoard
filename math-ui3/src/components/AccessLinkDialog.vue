@@ -62,7 +62,7 @@ let show = ref(false);
 //});
 
 const link = computed(() => {
-  return apiHost + "/lesson/" + lessonStore.currentLesson.uuid;
+  return apiHost + "/lesson/" + lessonStore.getCurrentLesson().uuid;
 });
 
 function copy() {

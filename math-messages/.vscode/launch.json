@@ -3,13 +3,27 @@
     "configurations": [
         
         {
-            "name": "Launch Program",
-            "program": "${workspaceFolder}/build/app.js",
+            // "name": "Launch Program",
+            // "program": "${workspaceFolder}/build/app.js",
+            // "request": "launch",
+            // "skipFiles": [
+            //     "<node_internals>/**"
+            // ],
+            // "type": "node"
+            "type": "node",
             "request": "launch",
-            "skipFiles": [
-                "<node_internals>/**"
-            ],
-            "type": "node"
+            "name": "Launch Feathers",
+            "program": "${workspaceFolder}/build/app.js",
+            // "runtimeArgs": [
+            //     "-r",
+            //     "ts-node/register",
+            //     "--loader",
+            //     "ts-node/esm"
+            // ],
+//            "args": ["${workspaceFolder}\\build\\app.js"],
+            "preLaunchTask": "tsc: build - tsconfig.json",
+            "outFiles": ["${workspaceFolder}/build/**/*.js"],
+            "skipFiles": ["<node_internals>/**"]
         },
    ]
 }

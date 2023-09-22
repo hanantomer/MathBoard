@@ -1,7 +1,7 @@
 export {};
 import { NotationType } from "common/enum";
 import { DotPosition } from "common/globals";
-import { BaseNotation, PointAttributes } from "common/notationTypes";
+import { BaseNotation, PointAttributes } from "common/baseTypes";
 export default function useMatrixHelper(): {
     svgWidth: string;
     svgHeight: string;

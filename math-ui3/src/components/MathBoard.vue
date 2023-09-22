@@ -46,7 +46,7 @@ const eventBus = useEventBus();
 const matrixHelper = UseMatrixHelper();
 const activateObjectHelper = UseActivateObjectHelper();
 const eventHelper = UseEventHelper();
-const { notations } = storeToRefs(notationStore)
+//const { notations } = storeToRefs(notationStore)
 
 const props = defineProps({
   svgId: { type: String , default: null},
@@ -68,14 +68,14 @@ watch(() => eventBus.bus.value.get("paste"), (e: ClipboardEvent) => {
 
 watch(() => props.loaded, (loaded: Boolean) => {
   if (loaded) load();
-});
+}, {immediate: true});
 
-watch(() => notations, () => {
+watch(() => notationStore.getNotations(), () => {
   matrixHelper.refreshScreen(
-    Array.from(notations.value).map(([key, value]) => { return value }),
+    Array.from(notationStore.getNotations()).map(([key, value]) => { return value }),
     props.svgId,
     document!.getElementById(props.svgId)!)
-}, {deep:true});
+}, {immediate :true, deep:true});
 
 function load() {
   activateObjectHelper.reset();

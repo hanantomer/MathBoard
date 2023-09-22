@@ -55,7 +55,7 @@ import { NotationType } from "../../../math-common/src/enum";
 import useEventBus from "../helpers/eventBus";
 import {
     RectNotationAttributes
-} from "../../../math-common/build/notationTypes";
+} from "../../../math-common/build/baseTypes";
 
 
 const notationStore = useNotationStore();

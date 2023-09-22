@@ -2,7 +2,7 @@
 //  questions of current lesson
 import { defineStore } from "pinia";
 import { CellCoordinates, matrixDimensions } from "common/globals";
-import { BaseNotation } from "common/notationTypes";
+import { BaseNotation } from "common/baseTypes";
 import { EditMode, BoardType, NotationShape, NotationTypeShape } from "common/enum";
 import { reactive, ref } from "vue";
 
@@ -29,12 +29,54 @@ export const useNotationStore = defineStore("notation", () => {
   let selectedNotations: string[] = [];
   let editMode = ref(EditMode.SYMBOL);
 
+  function getEditMode() {
+    return editMode;
+  }
 
-  async function setActiveCell(newActiveCell: CellCoordinates | null) {
+  function getSelectedNotations() {
+    return selectedNotations;
+  }
+
+  function getActiveNotation() {
+    return activeNotation;
+  }
+
+  function getActiveCell() {
+    return activeCell;
+  }
+
+  function getParent() {
+    return parent;
+  }
+
+  function getCellOccupationMatrix() {
+    return cellOccupationMatrix;
+  }
+
+  function getNotationsByShape<T>(notationShape: NotationShape): T[] {
+    return Array.from(notations.values()).filter((n) => {
+      n.notationType &&
+      NotationTypeShape.get(n.notationType.valueOf()) == notationShape;
+    }) as T[];
+  }
+
+  function getNotations() {
+    return notations;
+  }
+
+  function setActiveNotation(notation: BaseNotation | null) {
+    activeNotation = notation;
+  }
+
+  function setNotations(notations: Map<String, BaseNotation>) {
+    notations = notations;
+  }
+
+  function setActiveCell(newActiveCell: CellCoordinates | null) {
     activeCell = newActiveCell;
   }
 
-  async function setParent(parentUUID: string, boardType: BoardType) {
+  function setParent(parentUUID: string, boardType: BoardType) {
     parent.uuid = parentUUID;
     parent.type = boardType;
   }
@@ -43,6 +85,11 @@ export const useNotationStore = defineStore("notation", () => {
     activeCell = { col: -1, row: -1 };
   }
 
+  function resetSelectedNotations() {
+    selectedNotations.length = 0;
+  }
+
+
   function setCurrentEditMode(newEditMode: EditMode) {
     editMode.value = newEditMode;
   }
@@ -50,6 +97,7 @@ export const useNotationStore = defineStore("notation", () => {
   function createCellOccupationMatrix(): (BaseNotation | null)[][] {
     let matrix: (BaseNotation | null)[][] = new Array();
     for (let i = 0; i < matrixDimensions.rowsNum; i++) {
+      matrix.push([]);
       for (let j = 0; j < matrixDimensions.colsNum; j++) {
         matrix[i][j] = null;
       }
@@ -57,26 +105,25 @@ export const useNotationStore = defineStore("notation", () => {
     return matrix;
   }
 
-  function getNotations<T>(notationShape: NotationShape): T[] {
-    return Array.from(notations.values()).filter((n) => {
-      n.notationType &&
-      NotationTypeShape.get(n.notationType.valueOf()) == notationShape;
-    }) as T[];
-  }
 
   return {
     getNotations,
-    editMode,
+    getNotationsByShape,
+    getEditMode,
+    getCellOccupationMatrix,
+    getActiveCell,
+    getActiveNotation,
+    getSelectedNotations,
+    getParent,
+    setNotations,
+    setActiveNotation,
     setCurrentEditMode,
-    parent,
-    notations,
-    cellOccupationMatrix,
-    activeCell,
-    activeNotation,
+    setParent,
     setActiveCell,
-    selectedNotations,
     resetActiveCell,
-    setParent
+    resetSelectedNotations,
+    activeCell,
+    activeNotation
   };
 });
 

@@ -94,6 +94,7 @@ function dbUtil() {
     }
     function createLesson(lesson) {
         return __awaiter(this, void 0, void 0, function* () {
+            lesson.userId = (yield getIdByUUId("User", lesson.user.uuid));
             return yield lesson_model_1.default.create(lesson);
         });
     }
@@ -112,6 +113,7 @@ function dbUtil() {
     }
     function createStudentLesson(lesson) {
         return __awaiter(this, void 0, void 0, function* () {
+            lesson.userId = (yield getIdByUUId("User", lesson.user.uuid));
             return yield studentLesson_model_1.default.create(lesson);
         });
     }
@@ -131,13 +133,15 @@ function dbUtil() {
                 return null;
             return yield question_model_1.default.findAll({
                 where: {
-                    lessonId: lessonId,
+                    '$lesson.id$': 1
                 },
             });
         });
     }
     function createQuestion(question) {
         return __awaiter(this, void 0, void 0, function* () {
+            question.userId = (yield getIdByUUId("User", question.user.uuid));
+            question.lessonId = (yield getIdByUUId("Lesson", question.lesson.uuid));
             return yield question_model_1.default.create(question);
         });
     }
@@ -157,13 +161,15 @@ function dbUtil() {
                 return null;
             return yield answer_model_1.default.findAll({
                 where: {
-                    questionId: questionId,
+                    '$question.id$': 1
                 },
             });
         });
     }
     function createAnswer(answer) {
         return __awaiter(this, void 0, void 0, function* () {
+            answer.userId = (yield getIdByUUId("User", answer.user.uuid));
+            answer.questionId = (yield getIdByUUId("Question", answer.question.uuid));
             return yield answer_model_1.default.create(answer);
         });
     }
@@ -220,6 +226,7 @@ function dbUtil() {
         getIdByUUId,
         isTeacher,
         getUser,
+        createUser,
         getUserByEmailAndPassword,
         getUserAnswer,
         getLesson,

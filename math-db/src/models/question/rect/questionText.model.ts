@@ -3,7 +3,7 @@ import { NotationType, BoardType } from "../../../../../math-common/build/enum";
 import {
     QuestionRectAttributes,
     QuestionRectCreationAttributes,
-} from "../../../../../math-common/build/notationTypes";
+} from "../../../../../math-common/build/questionTypes";
 import QuestionDecorator from "../questionDecorator";
 import User from "../../user.model";
 import Question from "../question.model";

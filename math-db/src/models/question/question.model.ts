@@ -5,7 +5,7 @@ import Lesson from "../lesson/lesson.model";
 import {
     QuestionAttributes,
     QuestionCreateAttributes,
-} from "../../../../math-common/build/notationTypes";
+} from "../../../../math-common/build/questionTypes";
 
 
 @BoardDecorator("question")

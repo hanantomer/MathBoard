@@ -37,16 +37,16 @@ const props = defineProps({
 
 
 const iconMDIName = computed(() => "mdi-" + props.iconName);
-const currentEditMode = computed(() => notationStore.editMode);
+const currentEditMode = computed(() => notationStore.getEditMode().value);
 let active = ref(0);
 
 
 function toggleEditMode() {
-  if (notationStore.editMode === props.editMode) {
-    notationStore.editMode = EditMode.SYMBOL;
+  if (notationStore.getEditMode().value === props.editMode) {
+    notationStore.getEditMode().value = EditMode.SYMBOL;
     //        active = 1;
   } else {
-    notationStore.editMode = props.editMode!;
+    notationStore.getEditMode().value = props.editMode!;
     active.value = 0;
   }
 };

@@ -3,7 +3,7 @@ import {
   PointNotationAttributes,
   LineNotationAttributes,
   RectNotationAttributes
-} from "common/notationTypes";
+} from "common/baseTypes";
 
 import useDbHelper from "./dbHelper";
 import { useNotationStore } from "../store/pinia/notationStore";
@@ -22,18 +22,18 @@ const dbHelper = useDbHelper();
 export default function notationLoadingHelper() {
 
   async function loadLessonNotations() {
-    notationStore.setParent(lessonStore.currentLesson?.uuid, BoardType.LESSON);
-    notationStore.notations = reactive(await loadNotationsByBoard());
+    notationStore.setParent(lessonStore.getCurrentLesson()?.uuid, BoardType.LESSON);
+    notationStore.setNotations(reactive(await loadNotationsByBoard()));
   }
 
   async function loadQuestionNotations() {
-    notationStore.setParent(questionStore.currentQuestion?.uuid, BoardType.QUESTION);
-    notationStore.notations = reactive(await loadNotationsByBoard());
+    notationStore.setParent(questionStore.getCurrentQuestion()?.uuid, BoardType.QUESTION);
+    notationStore.setNotations(reactive(await loadNotationsByBoard()));
   }
 
   async function loadAnswerNotations() {
-    notationStore.setParent(answerStore.currentAnswer?.uuid, BoardType.ANSWER);
-    notationStore.notations = reactive(await loadNotationsByBoard());
+    notationStore.setParent(answerStore.getCurrentAnswer()?.uuid, BoardType.ANSWER);
+    notationStore.setNotations(reactive(await loadNotationsByBoard()));
   }
 
   // e.g get lesson notations
@@ -55,8 +55,8 @@ export default function notationLoadingHelper() {
   async function loadNotationsByType(
     notationType: NotationType
   ): Promise<BaseNotation[]> {
-    let boardType = notationStore.parent.type;
-    let parentUUId = notationStore.parent.uuid;
+    let boardType = notationStore.getParent().type;
+    let parentUUId = notationStore.getParent().uuid;
     switch (notationType) {
       case NotationType.SYMBOL:
       case NotationType.SIGN:

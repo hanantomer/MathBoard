@@ -1,26 +1,26 @@
-import { LessonAttributes, LessonCreateAttributes } from "common/notationTypes";
+import { LessonAttributes } from "common/lessonTypes";
 export declare const useLessonStore: import("pinia").StoreDefinition<"lesson", import("pinia")._UnwrapAll<Pick<{
-    lessons: Map<String, LessonAttributes>;
-    currentLesson: LessonAttributes;
+    getLessons: () => Map<String, LessonAttributes>;
+    getCurrentLesson: () => LessonAttributes;
     loadLessons: () => Promise<void>;
     setCurrentLesson: (lessonUUId: string) => Promise<void>;
-    addLesson: (lesson: LessonCreateAttributes) => Promise<LessonAttributes>;
+    addLesson: (lessonName: string) => Promise<LessonAttributes>;
     addLessonToSharedLessons: () => Promise<void>;
     removeLesson: (lessonUUId: string) => void;
-}, "lessons" | "currentLesson">>, Pick<{
-    lessons: Map<String, LessonAttributes>;
-    currentLesson: LessonAttributes;
+}, never>>, Pick<{
+    getLessons: () => Map<String, LessonAttributes>;
+    getCurrentLesson: () => LessonAttributes;
     loadLessons: () => Promise<void>;
     setCurrentLesson: (lessonUUId: string) => Promise<void>;
-    addLesson: (lesson: LessonCreateAttributes) => Promise<LessonAttributes>;
+    addLesson: (lessonName: string) => Promise<LessonAttributes>;
     addLessonToSharedLessons: () => Promise<void>;
     removeLesson: (lessonUUId: string) => void;
 }, never>, Pick<{
-    lessons: Map<String, LessonAttributes>;
-    currentLesson: LessonAttributes;
+    getLessons: () => Map<String, LessonAttributes>;
+    getCurrentLesson: () => LessonAttributes;
     loadLessons: () => Promise<void>;
     setCurrentLesson: (lessonUUId: string) => Promise<void>;
-    addLesson: (lesson: LessonCreateAttributes) => Promise<LessonAttributes>;
+    addLesson: (lessonName: string) => Promise<LessonAttributes>;
     addLessonToSharedLessons: () => Promise<void>;
     removeLesson: (lessonUUId: string) => void;
-}, "loadLessons" | "setCurrentLesson" | "addLesson" | "addLessonToSharedLessons" | "removeLesson">>;
+}, "getLessons" | "getCurrentLesson" | "loadLessons" | "setCurrentLesson" | "addLesson" | "addLessonToSharedLessons" | "removeLesson">>;

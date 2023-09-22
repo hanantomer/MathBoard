@@ -4,7 +4,8 @@ import bodyParser from "body-parser";
 import useAuthUtil  from "../../math-auth/build/authUtil";
 import useDb from  "../../math-db/build/dbUtil"
 import connection from "../../math-db/build/models/index";
-import { /*BoardType,*/ NotationType } from "../../math-common/build/enum"
+import { NotationType } from "../../math-common/build/enum"
+import { capitalize } from "../../math-common/build/utils";
 
 enum BoardType { // declaring local to allow iteration
   LESSON,
@@ -96,17 +97,12 @@ app.get(
     }
 );
 
-// app.get(
-//     "/api/users",
-//     async (req: Request, res: Response): Promise<Response> => {
-//         const { email, password } = req.query;
-//         const user = await authUtil.authByLocalPassword(email as string, password as string);
-//         if (!user) {
-//             return res.status(401);
-//         }
-//         return res.status(200).json(user);
-//     }
-// );
+app.post(
+    "/api/users",
+    async (req: Request, res: Response): Promise<Response> => {
+        return res.status(200).json(await db.createUser(req.body));
+    }
+);
 
 
 
@@ -116,12 +112,9 @@ app.get("/api/lessons", async (req: Request, res: Response): Promise<Response> =
     return res.status(200).json(await db.getLessons(userUUId as string));
 });
 
-//app.get("/lessons/:uuid", async (req: Request, res: Response): Promise<Response> => {
-//    return res.status(200).json(db.getLesson(req.params.uuid));
-//});
 
 app.post(
-    "/lessons",
+    "/api/lessons",
     async (req: Request, res: Response): Promise<Response> => {
         return res.status(200).json(await db.createLesson(req.body));
     }
@@ -129,59 +122,52 @@ app.post(
 
 // question
 
-app.get("/questions/:lessonUUId", async (req: Request, res: Response): Promise<Response> => {
-    return res.status(200).json(await db.getQuestions(req.params.lessonUUId));
-});
-
 app.get(
-    "/questions/:uuid",
+    "/api/questions",
     async (req: Request, res: Response): Promise<Response> => {
-        return res.status(200).json(await db.getQuestion(req.params.uuid));
+        const { lessonUUId } = req.query;
+        return res
+            .status(200)
+            .json(await db.getQuestions(lessonUUId as string));
     }
 );
 
-
-app.get(
-    "/lessons/:uuid",
+app.post(
+    "/api/questions",
     async (req: Request, res: Response): Promise<Response> => {
-        return res.status(200).json(await db.getLesson(req.params.uuid));
+        return res.status(200).json(await db.createQuestion(req.body));
     }
 );
-
-app.post("/questions", async (req: Request, res: Response): Promise<Response> => {
-    return res.status(200).json(await db.createQuestion(req.body));
-});
 
 
 // answer
 
+
 app.get(
-    "/answers/:uuid",
+    "/api/answers",
     async (req: Request, res: Response): Promise<Response> => {
-        return res.status(200).json(await db.getAnswer(req.params.uuid));
+        const { questionUUId } = req.query;
+        return res.status(200).json(await db.getAnswers(questionUUId as string));
     }
 );
 
-app.get(
-    "/answers/:questionUUId",
+app.post(
+    "/api/answers",
     async (req: Request, res: Response): Promise<Response> => {
-        return res.status(200).json(await db.getAnswers(req.params.uuid));
+        return res.status(200).json(await db.createAnswer(req.body));
     }
 );
-
-app.post("/answers", async (req: Request, res: Response): Promise<Response> => {
-    return res.status(200).json(await db.createAnswer(req.body));
-});
 
 
 // student lesson
 
 app.get(
-    "/api/studentlessons/:lessonUUId",
+    "/api/studentlessons",
     async (req: Request, res: Response): Promise<Response> => {
+        const { lessonUUId } = req.query;
         return res
             .status(200)
-            .json(await db.getStudentLessons(req.params.lessonUUId));
+            .json(await db.getStudentLessons(lessonUUId as string));
     }
 );
 
@@ -197,29 +183,31 @@ app.post(
 
 // notations
 
-for (const boardType in Object.keys(BoardType)) {
-    //if (!Number.isNaN(Number(boardType))) continue; // typescript retuen a list of keys
-    // then the values, we need to get values only
+for (const boardType in BoardType) {
+    // typescript retuen a list of keys followed by
+    // values, we need to get the values only
+    if (!Number.isNaN(Number(boardType))) continue;
     for (const notationType in NotationType) {
         if (!Number.isNaN(Number(notationType))) continue;
-
+        console.debug(`/api/${boardType.toLowerCase()}${notationType.toLowerCase()}s`);
         app.get(
-            `/${boardType}${notationType}s`,
+            `/api/${boardType.toLowerCase()}${notationType.toLowerCase()}s`,
             async (req: Request, res: Response): Promise<Response> => {
+                const { uuid } = req.query;
                 return res
                     .status(200)
                     .json(
                         await db.getNotations(
                             boardType,
                             notationType,
-                            req.params.uuid
+                            uuid as string
                         )
                     );
             }
         );
 
         app.post(
-            `/${boardType}${notationType}s`,
+            `/api/${boardType.toLowerCase()}${notationType.toLowerCase()}s`,
             async (req: Request, res: Response): Promise<Response> => {
                 return res
                     .status(200)

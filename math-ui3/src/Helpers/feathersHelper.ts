@@ -6,9 +6,9 @@ import { messagingHost } from "../../../math-common/src/globals";
 export default function feathersHelper() {
 
   function init(): Application {
-    const socket = io(messagingHost);
+//    const socket = io("/msg");
     const app = feathers();
-    app.configure(socketio(socket));
+//    app.configure(socketio(socket));
     return app;
   };
 

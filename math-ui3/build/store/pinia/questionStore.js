@@ -8,22 +8,28 @@ const db = useDbHelper();
 export const useQuestionStore = defineStore("answer", () => {
     let questions = new Map();
     let currentQuestion = {};
+    function getQuestions() {
+        return questions;
+    }
+    function getCurrentQuestion() {
+        return currentQuestion;
+    }
     async function loadQuestion(questionUUId) {
         currentQuestion = await db.getQuestion(questionUUId);
     }
     ;
     async function loadQuestions() {
-        if (!lessonStore.lessons.size) {
+        if (!lessonStore.getLessons()) {
             lessonStore.loadLessons();
         }
-        let questionsFromDb = await db.getQuestions(lessonStore.currentLesson.uuid);
+        let questionsFromDb = await db.getQuestions(lessonStore.getCurrentLesson().uuid);
         questionsFromDb.forEach((q) => {
             questions.set(q.uuid, q);
         });
     }
     ;
     async function addQuestion(question) {
-        question.lesson = lessonStore.currentLesson;
+        question.lesson = lessonStore.getCurrentLesson();
         let createdQuestion = await db.addQuestion(question);
         questions.set(createdQuestion.uuid, createdQuestion);
         currentQuestion = createdQuestion;
@@ -44,8 +50,8 @@ export const useQuestionStore = defineStore("answer", () => {
     }
     ;
     return {
-        questions,
-        currentQuestion,
+        getQuestions,
+        getCurrentQuestion,
         loadQuestions,
         loadQuestion,
         addQuestion,

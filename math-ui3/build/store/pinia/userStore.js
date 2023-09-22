@@ -5,24 +5,30 @@ const db = dbHelper();
 export const useUserStore = defineStore("user", () => {
     let currentUser = new Object();
     let authorized = false;
+    function getCurrentUser() {
+        return currentUser;
+    }
     function isTeacher() {
-        return currentUser.userType === UesrType.TEACHER;
+        return currentUser?.userType?.toString() === UesrType[UesrType.TEACHER].toString();
     }
-    function setUserWriteAuthorization(isAauthorized) {
-        authorized = isAauthorized;
+    function getAuthorized() {
+        return authorized;
     }
-    function setUser(user) {
+    function setAuthorized(authorized) {
+        return authorized = authorized;
+    }
+    function setCurrentUser(user) {
         currentUser = user;
     }
     function registerUser(user) {
-        db.registerUser(user);
+        db.registerUser(user); /// todo set to current
     }
     return {
-        currentUser,
-        authorized,
-        setUserWriteAuthorization,
+        getCurrentUser,
+        getAuthorized,
+        setAuthorized,
         isTeacher,
-        setUser,
+        setCurrentUser,
         registerUser,
     };
 });

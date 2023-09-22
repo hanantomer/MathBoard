@@ -42,7 +42,7 @@
 
 <script setup lang="ts">
 import NewQuestionDialog from "./NewQuestionDialog.vue";
-import {QuestionAttributes} from "../../../math-common/build/notationTypes";
+import {QuestionAttributes} from "../../../math-common/build/questionTypes";
 import { watch, onMounted, computed, ref, reactive } from "vue"
 import { useQuestionStore } from "../store/pinia/questionStore";
 import { useLessonStore } from "../store/pinia/lessonStore";
@@ -89,7 +89,7 @@ const headers = [
 ];
 
 const questions = computed(() => {
-  return Array.from(questionStore.questions.entries()).map(([key, question]) => {
+  return Array.from(questionStore.getQuestions().entries()).map(([key, question]) => {
     return {
       uuid: question.uuid,
       name: question.name,
@@ -107,14 +107,14 @@ function navToLessons() {
 };
 
 function load() {
-  let lessonCount = lessonStore.lessons.size;
+  let lessonCount = lessonStore.getLessons().size;
   if (!lessonCount) {
     noLessonDialog.value = true;
     return;
   }
 
   questionStore.loadQuestions();
-  if (!questionStore.questions.size) {
+  if (!questionStore.getQuestions().size) {
     openQuestionDialog();
   }
 }
@@ -130,7 +130,7 @@ function openQuestionDialog() {
 function saveQuestion(question: QuestionAttributes) {
   questionStore.addQuestion(question);
   router.push({
-    path: "/question/" + questionStore.currentQuestion.uuid,
+    path: "/question/" + questionStore.getCurrentQuestion().uuid,
   });
 };
 
@@ -145,7 +145,7 @@ function seletctQuestion(question: QuestionAttributes) {
     // add student answer when question is first selected
     answerStore.addAnswer();
     router.push({
-      path: "/answer/" + answerStore.currentAnswer.uuid,
+      path: "/answer/" + answerStore.getCurrentAnswer().uuid,
     });
   }
 };

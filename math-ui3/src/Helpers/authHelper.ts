@@ -2,9 +2,7 @@ import { getCookie, setCookie, removeCookie } from "typescript-cookie";
 import { useUserStore } from "../store/pinia/userStore";
 import { useNotationStore } from "../store/pinia/notationStore";
 import { BoardType, UesrType } from "common/enum";
-import {
-  UserAttributes,
-} from "common/notationTypes";
+import { UserAttributes, UserCreationAttributes } from "common/userTypes";
 import useDbHelper from "./dbHelper";
 
 //const userStore = useUserStore();
@@ -21,7 +19,7 @@ export default function useAuthHelper() {
 
   function registerUser(firstName: string, lastName: string, password: string, email: string, userType: UesrType) {
     const userStore = useUserStore();
-    let user: UserAttributes = {
+    let user: UserCreationAttributes = {
       userType: userType,
       firstName: firstName,
       lastName: lastName,
@@ -30,7 +28,6 @@ export default function useAuthHelper() {
       imageUrl: "",
       access_token: "",
       authorized: false,
-      uuid: "",
       lastHeartbeatTime: new Date(),
     };
     userStore.registerUser(user);
@@ -42,7 +39,7 @@ export default function useAuthHelper() {
     return (
       userStore.isTeacher() || // teacher in lesson or question
       userStore.getAuthorized() || // student in lesson when authorized by teacher
-      notationStore.parent.type.toString() == BoardType.ANSWER.toString() // student writing an  answer
+      notationStore.getParent().type.toString() == BoardType.ANSWER.toString() // student writing an  answer
     );
   }
 

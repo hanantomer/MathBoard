@@ -1,9 +1,9 @@
 import { defineStore } from "pinia";
-import { AnswerAttributes } from "common/notationTypes";
-import  useDbHelper  from "../../helpers/dbHelper";
+import { AnswerAttributes } from "common/answerTypes";
 import { useQuestionStore } from "./questionStore";
 import { useUserStore } from "./userStore";
 
+import useDbHelper from "../../helpers/dbHelper";
 const questionStore = useQuestionStore();
 const userStore = useUserStore();
 const db = useDbHelper();

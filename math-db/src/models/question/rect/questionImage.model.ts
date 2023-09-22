@@ -6,7 +6,7 @@ import Question from "../../question/question.model";
 import {
     QuestionRectAttributes,
     QuestionRectCreationAttributes,
-} from "../../../../../math-common/build/notationTypes";
+} from "../../../../../math-common/build/questionTypes";
 
 @QuestionDecorator("QuestionImage")
 export default class QuestionImage extends Model<

@@ -87,73 +87,62 @@ app.get("/api/users", (req, res) => __awaiter(void 0, void 0, void 0, function* 
     }
     return res.status(200).json(user);
 }));
-// app.get(
-//     "/api/users",
-//     async (req: Request, res: Response): Promise<Response> => {
-//         const { email, password } = req.query;
-//         const user = await authUtil.authByLocalPassword(email as string, password as string);
-//         if (!user) {
-//             return res.status(401);
-//         }
-//         return res.status(200).json(user);
-//     }
-// );
+app.post("/api/users", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    return res.status(200).json(yield db.createUser(req.body));
+}));
 // lesson
 app.get("/api/lessons", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { userUUId } = req.query;
     return res.status(200).json(yield db.getLessons(userUUId));
 }));
-//app.get("/lessons/:uuid", async (req: Request, res: Response): Promise<Response> => {
-//    return res.status(200).json(db.getLesson(req.params.uuid));
-//});
-app.post("/lessons", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+app.post("/api/lessons", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     return res.status(200).json(yield db.createLesson(req.body));
 }));
 // question
-app.get("/questions/:lessonUUId", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    return res.status(200).json(yield db.getQuestions(req.params.lessonUUId));
+app.get("/api/questions", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { lessonUUId } = req.query;
+    return res
+        .status(200)
+        .json(yield db.getQuestions(lessonUUId));
 }));
-app.get("/questions/:uuid", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    return res.status(200).json(yield db.getQuestion(req.params.uuid));
-}));
-app.get("/lessons/:uuid", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    return res.status(200).json(yield db.getLesson(req.params.uuid));
-}));
-app.post("/questions", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+app.post("/api/questions", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     return res.status(200).json(yield db.createQuestion(req.body));
 }));
 // answer
-app.get("/answers/:uuid", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    return res.status(200).json(yield db.getAnswer(req.params.uuid));
+app.get("/api/answers", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { questionUUId } = req.query;
+    return res.status(200).json(yield db.getAnswers(questionUUId));
 }));
-app.get("/answers/:questionUUId", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    return res.status(200).json(yield db.getAnswers(req.params.uuid));
-}));
-app.post("/answers", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+app.post("/api/answers", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     return res.status(200).json(yield db.createAnswer(req.body));
 }));
 // student lesson
-app.get("/api/studentlessons/:lessonUUId", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+app.get("/api/studentlessons", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { lessonUUId } = req.query;
     return res
         .status(200)
-        .json(yield db.getStudentLessons(req.params.lessonUUId));
+        .json(yield db.getStudentLessons(lessonUUId));
 }));
 app.post("/api/studentlessons", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     return res.status(200).json(yield db.createStudentLesson(req.body));
 }));
 // notations
-for (const boardType in Object.keys(BoardType)) {
-    //if (!Number.isNaN(Number(boardType))) continue; // typescript retuen a list of keys
-    // then the values, we need to get values only
+for (const boardType in BoardType) {
+    // typescript retuen a list of keys followed by
+    // values, we need to get the values only
+    if (!Number.isNaN(Number(boardType)))
+        continue;
     for (const notationType in enum_1.NotationType) {
         if (!Number.isNaN(Number(notationType)))
             continue;
-        app.get(`/${boardType}${notationType}s`, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+        console.debug(`/api/${boardType.toLowerCase()}${notationType.toLowerCase()}s`);
+        app.get(`/api/${boardType.toLowerCase()}${notationType.toLowerCase()}s`, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+            const { uuid } = req.query;
             return res
                 .status(200)
-                .json(yield db.getNotations(boardType, notationType, req.params.uuid));
+                .json(yield db.getNotations(boardType, notationType, uuid));
         }));
-        app.post(`/${boardType}${notationType}s`, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+        app.post(`/api/${boardType.toLowerCase()}${notationType.toLowerCase()}s`, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
             return res
                 .status(200)
                 .json(yield db.createNotation(boardType, notationType, req.body));

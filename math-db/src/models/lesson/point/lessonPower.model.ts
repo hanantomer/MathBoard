@@ -4,7 +4,7 @@ import { UUID, UUIDV4 } from "sequelize/types/data-types";
 import {
     LessonPointAttributes,
     LessonPointCreationAttributes,
-} from "../../../../../math-common/build/notationTypes";
+} from "../../../../../math-common/build/lessonTypes";
 import LessonDecorator from "../../lesson/lessonDecorator";
 import User from "../../user.model";
 import Lesson from "../../lesson/lesson.model";

@@ -33,7 +33,7 @@
     ></v-divider>
     <p
       style="left: -2px; position: relative; z-index: 99; border: solid 1px"
-      v-if="notationType === 'SQRT'"
+      v-if="notationType === NotationType.SQRT"
     >
       &#x221A;
     </p>
@@ -43,12 +43,11 @@
 
 import useMatrixHelper from "../helpers/matrixHelper";
 import useNotationMutateHelper from "../helpers/notationMutateHelper";
-import { watch, onMounted, computed } from "vue"
+import { watch, onMounted, computed, ref } from "vue"
 import { useNotationStore } from "../store/pinia/notationStore";
 import { EditMode, NotationType } from "../../../math-common/src/enum";
 import { LinePosition, DotPosition  } from "../../../math-common/src/globals";
-import { LineAttributes, LineNotationAttributes } from "../../../math-common/build/notationTypes";
-import { storeToRefs } from 'pinia'
+import { LineAttributes, LineNotationAttributes } from "../../../math-common/build/baseTypes";
 import useEventBus from "../helpers/eventBus";
 
 const eventBus = useEventBus();
@@ -56,21 +55,20 @@ const matrixHelper = useMatrixHelper();
 const notationMutateHelper = useNotationMutateHelper();
 const notationStore = useNotationStore();
 
-const { activeCell } = storeToRefs(notationStore);
 
 const props = defineProps({
   svgId: { type: String }
 });
 
-let editStarted = false;
-let notationType = "";
-let linePosition: LinePosition | Record<string, never> = {};
+let editStarted = ref(false);
+let notationType = ref(NotationType.SYMBOL);
+let linePosition  = ref(<LinePosition | Record<string, never>>{});
 
-let lineLeft = computed(() => Math.min(linePosition.x1, linePosition.x2));
-let lineRight = computed(() => Math.max(linePosition.x1, linePosition.x2));
-let lineTop = computed(() => linePosition.y);
+let lineLeft = computed(() => Math.min(linePosition.value.x1, linePosition.value.x2));
+let lineRight = computed(() => Math.max(linePosition.value.x1, linePosition.value.x2));
+let lineTop = computed(() => linePosition.value.y);
 
-watch(() => activeCell, (newActivecell) => {
+watch(() => notationStore.getActiveCell(), (newActivecell) => {
   if (newActivecell) reset();
 });
 
@@ -95,11 +93,11 @@ function registerSvgMouseUp() {
 };
 
 function leftHandleMouseDown() {
-  editStarted = true;
+  editStarted.value = true;
 };
 
 function rightHandleMouseDown() {
-  editStarted = true;
+  editStarted.value = true;
 };
 
 function handleMouseDown(e: MouseEvent) {
@@ -113,12 +111,12 @@ function handleMouseDown(e: MouseEvent) {
   }
 
   if (
-    notationStore.editMode === EditMode.FRACTION ||
-    notationStore.editMode === EditMode.SQRT
+    notationStore.getEditMode().value === EditMode.FRACTION ||
+    notationStore.getEditMode().value === EditMode.SQRT
   ) {
     // new line
-    notationType =
-      notationStore.editMode === EditMode.FRACTION
+    notationType.value =
+      notationStore.getEditMode().value === EditMode.FRACTION
         ? NotationType.FRACTION
         : NotationType.SQRT;
 
@@ -128,7 +126,7 @@ function handleMouseDown(e: MouseEvent) {
   let fraction = findFractionLineAtClickedPosition(e);
   if (fraction) {
     //select existing fraction
-    notationType = NotationType.FRACTION;
+    notationType.value = NotationType.FRACTION;
     selectLine(fraction.id);
     return;
   }
@@ -136,7 +134,7 @@ function handleMouseDown(e: MouseEvent) {
   let sqrt = findSqrtLineAtClickedPosition(e);
   if (sqrt) {
     //select existing sqrt
-    notationType = NotationType.SQRT;
+    notationType.value = NotationType.SQRT;
     selectLine(sqrt.id);
   }
 };
@@ -147,7 +145,7 @@ function handleSvgMouseMove(e: MouseEvent) {
     return;
   }
 
-  if (linePosition.x1 === 0 && linePosition.x2 === 0) {
+  if (linePosition.value.x1 === 0 && linePosition.value.x2 === 0) {
     return;
   }
 
@@ -159,7 +157,7 @@ function handleSvgMouseMove(e: MouseEvent) {
 };
 
 function handleMouseUp() {
-  if (linePosition.x1 === 0 && linePosition.x2 === 0) {
+  if (linePosition.value.x1 === 0 && linePosition.value.x2 === 0) {
     return;
   }
   if (editStarted) {
@@ -176,39 +174,39 @@ function getNearestRow (clickedYPos: number) {
 };
 
 function startLineDrawing (position: DotPosition) {
-  editStarted = true;
-  linePosition.x2 = linePosition.x1 = position.x;
-  linePosition.y = getNearestRow(position.y);
+  editStarted.value = true;
+  linePosition.value.x2 = linePosition.value.x1 = position.x;
+  linePosition.value.y = getNearestRow(position.y);
 };
 
 function selectLine (notationUUId: string) {
 
-      let notation = notationStore.notations.get(notationUUId) as LineNotationAttributes;
+      let notation = notationStore.getNotations().get(notationUUId) as LineNotationAttributes;
 
-      linePosition.x1 = matrixHelper.getNotationXposByCol(notation.fromCol);
+      linePosition.value.x1 = matrixHelper.getNotationXposByCol(notation.fromCol);
 
-      linePosition.x2 =
-        linePosition.x1 +
+      linePosition.value.x2 =
+        linePosition.value.x1 +
         (notation.toCol - notation.fromCol) * matrixHelper.rectSize;
 
-      linePosition.y = matrixHelper.getNotationYposByRow(notation.row);
+      linePosition.value.y = matrixHelper.getNotationYposByRow(notation.row);
       notationMutateHelper.setActiveNotation(notation);
 };
 
 function setLine (xPos: number) {
-  if (xPos < linePosition.x1) {
-    linePosition.x1 = xPos;
+  if (xPos < linePosition.value.x1) {
+    linePosition.value.x1 = xPos;
   }
-  if (xPos > linePosition.x1) {
-    linePosition.x2 = xPos;
+  if (xPos > linePosition.value.x1) {
+    linePosition.value.x2 = xPos;
   }
 };
 
 function saveLine(lineAttributes: LineAttributes) {
 
-  if (notationType == NotationType.FRACTION)
+  if (notationType.value == NotationType.FRACTION)
     notationMutateHelper.addFractiontNotation(lineAttributes);
-  else if (notationType == NotationType.SQRT)
+  else if (notationType.value == NotationType.SQRT)
     notationMutateHelper.addSqrtNotation(lineAttributes);
   else {
     throw (notationType + ":is not a valid line type")
@@ -216,17 +214,17 @@ function saveLine(lineAttributes: LineAttributes) {
 };
 
 function endDrawLine() {
-  if (linePosition.x2 == linePosition.x1) return
+  if (linePosition.value.x2 == linePosition.value.x1) return
   let fromCol = Math.floor(
-    linePosition.x1 / matrixHelper.rectSize
+    linePosition.value.x1 / matrixHelper.rectSize
   );
 
   let toCol = Math.ceil(
-    linePosition.x2 / matrixHelper.rectSize
+    linePosition.value.x2 / matrixHelper.rectSize
   );
 
   let row = Math.round(
-    linePosition.y / matrixHelper.rectSize
+    linePosition.value.y / matrixHelper.rectSize
   );
 
   let lineAttributes: LineAttributes  = { fromCol: fromCol, toCol: toCol, row: row  };
@@ -237,8 +235,8 @@ function endDrawLine() {
 };
 
 function reset() {
-  linePosition.x1 = linePosition.x2 = linePosition.y = 0;
-  editStarted = false;
+  linePosition.value.x1 = linePosition.value.x2 = linePosition.value.y = 0;
+  editStarted.value = false;
 };
 
 function findFractionLineAtClickedPosition(e: MouseEvent) {

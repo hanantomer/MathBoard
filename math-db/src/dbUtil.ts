@@ -3,15 +3,14 @@ import Lesson  from "./models/lesson/lesson.model"
 import StudentLesson  from "./models/lesson/studentLesson.model";
 import Question  from "./models/question/question.model";
 import Answer  from "./models/answer/answer.model";
-import User  from "./models/user.model";
-
-import {
-    BaseNotation, UserAttributes,  AnswerAttributes, AnswerCreateAttributes,
-    QuestionAttributes, QuestionCreateAttributes, StudentLessonAttributes, StudentLessonCreateAttributes,
-    LessonAttributes, LessonCreateAttributes 
-} from "../../math-common/build/notationTypes";
-
+import User from "./models/user.model";
 import db from "./models/index";
+
+import { BaseNotation } from "../../math-common/build/baseTypes";
+import { UserAttributes, StudentLessonCreateAttributes} from "../../math-common/build/userTypes";
+import { LessonCreateAttributes } from "../../math-common/build/lessonTypes";
+import { QuestionAttributes } from "../../math-common/build/questionTypes";
+import { AnswerAttributes, AnswerCreateAttributes } from "../../math-common/build/answerTypes";
 import { capitalize } from "../../math-common/build/utils";
 
 
@@ -99,8 +98,9 @@ export default function dbUtil() {
     }
 
     async function createLesson(
-        lesson: LessonAttributes
+        lesson: LessonCreateAttributes
     ): Promise<Lesson> {
+        (lesson as Lesson).userId = await getIdByUUId("User", lesson.user.uuid) as number;
         return await Lesson.create(lesson);
     }
 
@@ -122,6 +122,7 @@ export default function dbUtil() {
     async function createStudentLesson(
         lesson: StudentLessonCreateAttributes
     ): Promise<StudentLesson> {
+        lesson.userId = (await getIdByUUId("User", lesson.user.uuid)) as number;
         return await StudentLesson.create(lesson);
     }
 
@@ -143,7 +144,7 @@ export default function dbUtil() {
         if (!lessonId) return null;
         return await Question.findAll({
             where: {
-                lessonId: lessonId,
+                '$lesson.id$' : 1
             },
         });
     }
@@ -151,6 +152,17 @@ export default function dbUtil() {
     async function createQuestion(
         question: QuestionAttributes
     ): Promise<Question> {
+
+        (question as Question).userId = (await getIdByUUId(
+            "User",
+            question.user.uuid
+        )) as number;
+
+        (question as Question).lessonId = (await getIdByUUId(
+            "Lesson",
+            question.lesson.uuid
+        )) as number;
+
         return await Question.create(question);
     }
 
@@ -169,7 +181,7 @@ export default function dbUtil() {
         if (!questionId) return null;
         return await Answer.findAll({
             where: {
-                questionId: questionId,
+                '$question.id$' : 1
             },
         });
     }
@@ -177,6 +189,17 @@ export default function dbUtil() {
     async function createAnswer(
         answer: AnswerCreateAttributes
     ): Promise<Answer> {
+        
+        (answer as Answer).userId = (await getIdByUUId(
+            "User",
+            answer.user.uuid
+        )) as number;
+        
+        (answer as Answer).questionId = (await getIdByUUId(
+            "Question",
+            answer.question.uuid
+        )) as number;
+        
         return await Answer.create(answer);
     }
 
@@ -246,6 +269,7 @@ export default function dbUtil() {
         getIdByUUId,
         isTeacher,
         getUser,
+        createUser,
         getUserByEmailAndPassword,
         getUserAnswer,
         getLesson,

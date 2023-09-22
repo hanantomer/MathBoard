@@ -271,7 +271,7 @@ const hasActiveCell = computed(() => {
 });
 
 const answerCheckMode = computed(() => {
-  return notationStore.parent.type == BoardType.ANSWER && userStore.isTeacher;
+  return notationStore.getParent().type == BoardType.ANSWER && userStore.isTeacher;
 });
 
 watch(() => eventBus.bus.value.get("resetToolbarState"), () => {
@@ -309,7 +309,7 @@ function reset() {
 
 function toggleFractionMode() {
   reset();
-  if (notationStore.editMode == EditMode.FRACTION) {
+  if (notationStore.getEditMode().value == EditMode.FRACTION) {
     reset();
   } else {
     startFractionMode();
@@ -324,7 +324,7 @@ function startFractionMode() {
 
 function toggleSqrtMode() {
   reset();
-  if (notationStore.editMode == EditMode.SQRT) {
+  if (notationStore.getEditMode().value == EditMode.SQRT) {
     reset();
   } else {
     startSqrtMode();
@@ -339,7 +339,7 @@ function startSqrtMode() {
 
 function togglePowerMode() {
   reset();
-  if (notationStore.editMode == EditMode.POWER) {
+  if (notationStore.getEditMode().value == EditMode.POWER) {
     endPowerMode();
   } else {
       startPowerMode();
@@ -367,7 +367,7 @@ function endTextMode() {
 };
 
 function toggleSelectionMode() {
-      if (notationStore.editMode == EditMode.SELECT) {
+      if (notationStore.getEditMode().value == EditMode.SELECT) {
         endSelectionMode();
       } else {
         startSelectionMode();
@@ -386,7 +386,7 @@ function endSelectionMode() {
 };
 
 function toggleCheckmarkMode() {
-      if (notationStore.editMode == EditMode.CHECKMARK) {
+      if (notationStore.getEditMode().value == EditMode.CHECKMARK) {
         reset();
         notationMutateHelper.setCurrentEditMode(EditMode.SYMBOL);
       } else {
@@ -401,7 +401,7 @@ function startCheckmarkMode() {
 };
 
 function toggleSemiCheckmarkMode() {
-      if (notationStore.editMode == EditMode.SEMICHECKMARK) {
+      if (notationStore.getEditMode().value == EditMode.SEMICHECKMARK) {
         reset();
         notationMutateHelper.setCurrentEditMode(EditMode.SYMBOL);
       } else {
@@ -416,7 +416,7 @@ function startSemiCheckmarkMode() {
 };
 
 function toggleXmarkMode() {
-      if (notationStore.editMode == EditMode.XMARK) {
+      if (notationStore.getEditMode().value == EditMode.XMARK) {
         reset();
         notationMutateHelper.setCurrentEditMode(EditMode.SYMBOL);
       } else {

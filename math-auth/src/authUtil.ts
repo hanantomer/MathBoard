@@ -3,7 +3,7 @@ import { compare } from "bcryptjs";
 import { OAuth2Client } from "google-auth-library";
 import clientSecretData   from "./client_secret.json";
 import User from "../../math-db/build/models/user.model";
-import { UserAttributes } from "../../math-common/build/notationTypes";
+import { UserAttributes } from "../../math-common/build/userTypes";
 
 const oAuth2client = new OAuth2Client(clientSecretData.web.client_id);
 const userCache = new Map<string, UserAttributes>();
@@ -35,7 +35,7 @@ export default function useAuthUtils() {
             );
             user.access_token = access_token;
             user.password = "";
-            return user;
+            return user as UserAttributes;
         }
         return null;
     };
@@ -53,7 +53,7 @@ export default function useAuthUtils() {
             });
             
             if (user) {
-                userCache.set(decodedToken.email, user);
+                userCache.set(decodedToken.email,  user as UserAttributes);
             }
         }
 

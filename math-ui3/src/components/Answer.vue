@@ -34,10 +34,10 @@ const svgId = "answerSvg";
 
 let answerTitle = computed (() => {
   return userStore.isTeacher() ?
-    answerStore.currentAnswer?.user?.firstName +
+    answerStore.getCurrentAnswer()?.user?.firstName +
     " " +
-    answerStore.currentAnswer?.user?.lastName
-    : answerStore.currentAnswer?.name;
+    answerStore.getCurrentAnswer()?.user?.lastName
+    : answerStore.getCurrentAnswer()?.name;
 });
 
 watch(route, (to) => {

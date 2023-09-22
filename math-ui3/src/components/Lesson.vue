@@ -39,31 +39,29 @@ const userOutgoingOperations = useUserOutgoingOperations();
 let loaded = ref(false);
 const svgId = "lessonSvg";
 const isTeacher = computed(() => { return userStore.isTeacher() });
-const lessonTitle = computed(() => { return lessonStore.currentLesson.name });
+const lessonTitle = computed(() => { return lessonStore.getCurrentLesson().name });
 
 watch(route, (to) => {
-  loadLesson(to.params.lessonUUId[0]);
+  loadLesson(to.params.lessonUUId as string);
   loaded.value = true;
-}, { flush: 'pre', immediate: true, deep: true });
+}, {immediate: true });
 
-function loadLesson (lessonUUID: string) {
+async function loadLesson (lessonUUID: string) {
 
   activateObjectHelper.reset();
   matrixHelper.setMatrix(svgId);
-  lessonStore.setCurrentLesson(lessonUUID);
+  await lessonStore.setCurrentLesson(lessonUUID);
 
   // if student, send heartbeat to teacher
-  if (!isTeacher) {
+  if (!userStore.isTeacher()) {
     setInterval(
       userOutgoingOperations.syncOutgoingHeartBeat,
       heartBeatInterval,
-      lessonStore.currentLesson.uuid
+      lessonStore.getCurrentLesson().uuid
     );
   }
 
   // load notations
-  notationLoadingHelper.loadLessonNotations();
-
-  loaded.value = true; // signal child
+  await notationLoadingHelper.loadLessonNotations();
 };
 </script>

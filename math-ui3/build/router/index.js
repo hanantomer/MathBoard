@@ -33,7 +33,7 @@ const routes = [
         meta: { requiresAuth: true },
     },
     {
-        path: "/lesson/lessonUUId",
+        path: "/lesson/:lessonUUId",
         component: () => import("@/components/Lesson.vue"),
         name: "lesson",
         meta: { requiresAuth: true },
@@ -73,17 +73,14 @@ router.beforeEach(async (to, from) => {
         // auth not required
         return;
     }
-    // already signed in
-    //if (cookies.get("access_token")) {
-    //  return;
-    //}
-    // local access token is present
-    //let access_token = window.$cookies.get("access_token");
-    //console.log(access_token);
-    //if (!!access_token) {
+    if (userStore.getCurrentUser().id) {
+        // already authenticated
+        return;
+    }
     const user = await authHelper.authLocalUserByToken();
     if (user) {
-        userStore.setUser(user);
+        // has valid token
+        userStore.setCurrentUser(user);
         return;
     }
     return { path: "/login", query: { from: to.path } };

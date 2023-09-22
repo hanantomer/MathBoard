@@ -3,7 +3,7 @@ import { useCookies } from "vue3-cookies";
 const { cookies } = useCookies();
 export default function axiosHelper() {
     ///TODO: take from enviroment\
-    const baseURL = "http://localhost:8081";
+    const baseURL = "/api";
     function handleError(error) {
         if (error.response) {
             // The request was made and the server responded with a status code

@@ -59,7 +59,7 @@ watch(()=> props.dialog, (val: boolean) => {
 
 let name = ref("");
 function save() {
-  eventBus.emit("newItemDialogSave", name);
+  eventBus.emit("newItemDialogSave", name.value);
 };
 
 </script>

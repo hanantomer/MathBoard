@@ -19,7 +19,7 @@ import {
   LineNotationAttributes,
   PointNotationAttributes,
   RectNotationAttributes,
-} from "common/notationTypes";
+} from "common/baseTypes";
 
 
 import { useUserStore } from "../store/pinia/userStore";
@@ -35,7 +35,7 @@ export default function useMatrixHelper() {
 
   const svgWidth: string = "1400px";
   const svgHeight: string = "700px";
-  let matrix: any[];
+  let matrix: any[] = [];
 
   function borderColor(selected: boolean): string {
     return selected ? "red" : "transparent";
@@ -587,9 +587,9 @@ export default function useMatrixHelper() {
     let n1 = n as PointNotationAttributes;
 
     let fontWeight =
-      userStore.currentUser?.uuid == n.user.uuid ? "bold" : "normal";
+      userStore.getCurrentUser()?.uuid == n.user.uuid ? "bold" : "normal";
 
-    let color = (notationStore.selectedNotations.indexOf(n.uuid))
+    let color = (notationStore.getSelectedNotations().indexOf(n.uuid))
       ? "red"
       : this.getParent().boardType === BoardType.ANSWER &&
         this.getUser().uuid != n.user.uuid

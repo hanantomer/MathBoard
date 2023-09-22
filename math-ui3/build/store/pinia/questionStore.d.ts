@@ -1,26 +1,26 @@
-import { QuestionAttributes, QuestionCreateAttributes } from "common/notationTypes";
+import { QuestionAttributes, QuestionCreateAttributes } from "common/questionTypes";
 export declare const useQuestionStore: import("pinia").StoreDefinition<"answer", import("pinia")._UnwrapAll<Pick<{
-    questions: Map<String, QuestionAttributes>;
-    currentQuestion: QuestionAttributes;
+    getQuestions: () => Map<String, QuestionAttributes>;
+    getCurrentQuestion: () => QuestionAttributes;
     loadQuestions: () => Promise<void>;
     loadQuestion: (questionUUId: string) => Promise<void>;
     addQuestion: (question: QuestionCreateAttributes) => Promise<QuestionCreateAttributes>;
     setCurrentQuestion: (questionUUId: string) => void;
     removeQuestion: (question: QuestionAttributes) => void;
-}, "questions" | "currentQuestion">>, Pick<{
-    questions: Map<String, QuestionAttributes>;
-    currentQuestion: QuestionAttributes;
+}, never>>, Pick<{
+    getQuestions: () => Map<String, QuestionAttributes>;
+    getCurrentQuestion: () => QuestionAttributes;
     loadQuestions: () => Promise<void>;
     loadQuestion: (questionUUId: string) => Promise<void>;
     addQuestion: (question: QuestionCreateAttributes) => Promise<QuestionCreateAttributes>;
     setCurrentQuestion: (questionUUId: string) => void;
     removeQuestion: (question: QuestionAttributes) => void;
 }, never>, Pick<{
-    questions: Map<String, QuestionAttributes>;
-    currentQuestion: QuestionAttributes;
+    getQuestions: () => Map<String, QuestionAttributes>;
+    getCurrentQuestion: () => QuestionAttributes;
     loadQuestions: () => Promise<void>;
     loadQuestion: (questionUUId: string) => Promise<void>;
     addQuestion: (question: QuestionCreateAttributes) => Promise<QuestionCreateAttributes>;
     setCurrentQuestion: (questionUUId: string) => void;
     removeQuestion: (question: QuestionAttributes) => void;
-}, "loadQuestions" | "loadQuestion" | "addQuestion" | "setCurrentQuestion" | "removeQuestion">>;
+}, "getQuestions" | "getCurrentQuestion" | "loadQuestions" | "loadQuestion" | "addQuestion" | "setCurrentQuestion" | "removeQuestion">>;

@@ -58,7 +58,7 @@ __decorate([
     __metadata("design:type", Number)
 ], QuestionFraction.prototype, "row", void 0);
 QuestionFraction = __decorate([
-    (0, questionDecorator_1.default)("LessonFraction")
+    (0, questionDecorator_1.default)("QuestionFraction")
 ], QuestionFraction);
 exports.default = QuestionFraction;
 //# sourceMappingURL=questionFraction.model.js.map

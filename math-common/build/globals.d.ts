@@ -1,5 +1,4 @@
-export declare const messagingHost = "http://localhost:3030";
-export declare const apiHost = "http://localhost:8080";
+export declare const messagingHost = "/msg";
 export declare const matrixDimensions: {
     rowsNum: number;
     colsNum: number;

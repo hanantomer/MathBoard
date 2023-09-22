@@ -7,13 +7,13 @@ import User from "../../user.model";
 import Lesson from "../../lesson/lesson.model";
 import {
     LessonRectAttributes,
-    LessonRectCreateAttributes,
-} from "../../../../../math-common/build/notationTypes";
+    LessonRectCreationAttributes,
+} from "../../../../../math-common/build/lessonTypes";
 
 @LessonDecorator("LessonImage")
 export default class LessonImage extends Model<
     LessonRectAttributes,
-    LessonRectCreateAttributes
+    LessonRectCreationAttributes
 > {
     notationType = NotationType.IMAGE;
     boardType = BoardType.LESSON;

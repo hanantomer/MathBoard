@@ -1,6 +1,6 @@
 import { EditMode } from "common/enum";
 import { CellCoordinates } from "common/globals";
-import { BaseNotation, LineAttributes } from "common/notationTypes";
+import { BaseNotation, LineAttributes } from "common/baseTypes";
 export default function notationMutateHelper(): {
     selectNotation: (CellCoordinates: CellCoordinates) => Promise<void>;
     setActiveCell: (newActiveCell: CellCoordinates | null) => Promise<void>;

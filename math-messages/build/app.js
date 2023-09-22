@@ -54,7 +54,10 @@ app.service("notationSync").publish("updated", (notation, ctx) => {
 app.service("notationSync").publish("removed", (notation, ctx) => {
     return [app.channel(constants_1.default.LESSON_CHANNEL_PREFIX + notation.LessonUUId)];
 });
-app.addListener("listening", () => console.log(`server running on port ${PORT}`));
 const PORT = Number(process.env.PORT) || 3030;
+//app.on("listening", () => {
+//  console.log(`server running on port ${PORT}`)
+//});
 app.listen(PORT);
+console.log(`server running on port ${PORT}`);
 //# sourceMappingURL=app.js.map

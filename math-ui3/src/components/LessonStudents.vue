@@ -38,7 +38,7 @@
 import { computed } from "vue";
 import { useStudentStore } from "../store/pinia/studentStore";
 import { useLessonStore } from "../store/pinia/lessonStore";
-import { UserAttributes } from "../../../math-common/build/notationTypes";
+import { UserAttributes } from "../../../math-common/build/userTypes";
 import UseUserOutgoingOperations from "../helpers/userOutgoingOperationsHelper";
 
 const studentStore = useStudentStore();
@@ -46,7 +46,7 @@ const lessonStore = useLessonStore();
 const userOutgoingOperations = UseUserOutgoingOperations();
 
 const students = computed(() => {
-  return Array.from(studentStore.students.values());
+  return Array.from(studentStore.getStudents().values());
 });
 
 function getStudentDisplayName(student: UserAttributes) {
@@ -54,12 +54,12 @@ function getStudentDisplayName(student: UserAttributes) {
 }
 
 function toggleStudentAuthorization(student: UserAttributes) {
-  let currentAuthorizedStudentUUId = studentStore.authorizedStudentUUId;
-  studentStore.authorizedStudentUUId = student.uuid;
+  studentStore.setAuthorizedStudentUUId(student.uuid);
+
   userOutgoingOperations.syncOutgoingAuthUser(
-    studentStore.authorizedStudentUUId,
-    currentAuthorizedStudentUUId,
-    lessonStore.currentLesson.uuid
+    studentStore.getAuthorizedStudentUUId().value,
+    studentStore.getAuthorizedStudentUUId().value,
+    lessonStore.getCurrentLesson().uuid
   );
 }
 </script>

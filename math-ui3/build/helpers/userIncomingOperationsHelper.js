@@ -17,25 +17,25 @@ export default function userIncomingOperations() {
         feathersClient
             .service("notationSync")
             .on("created", (notation) => {
-            if (notation.uuid !== userStore.currentUser.uuid &&
-                notationStore.parent.type == BoardType.LESSON) {
-                notationStore.notations.set(notation.uuid, notation);
+            if (notation.uuid !== userStore.getCurrentUser().uuid &&
+                notationStore.getParent().type == BoardType.LESSON) {
+                notationStore.getNotations().set(notation.uuid, notation);
             }
         });
         feathersClient
             .service("notationSync")
             .on("updated", (notation) => {
-            if (notation.user.uuid !== userStore.currentUser.uuid &&
+            if (notation.user.uuid !== userStore.getCurrentUser().uuid &&
                 this.getParent().boardType === "lesson") {
-                notationStore.notations.set(notation.uuid, notation);
+                notationStore.getNotations().set(notation.uuid, notation);
             }
         });
         feathersClient
             .service("notationSync")
             .on("removed", (notation) => {
-            if (notation.user.uuid !== userStore.currentUser.uuid &&
+            if (notation.user.uuid !== userStore.getCurrentUser().uuid &&
                 this.getParent().boardType === "lesson") {
-                notationStore.notations.set(notation.uuid, notation);
+                notationStore.getNotations().set(notation.uuid, notation);
             }
         });
         feathersClient
@@ -43,7 +43,7 @@ export default function userIncomingOperations() {
             .on("updated", (activeCell) => {
             if (
             //activeCell.UserId !== this.getUser().id &&
-            notationStore.parent.type === BoardType.LESSON) {
+            notationStore.getParent().type === BoardType.LESSON) {
                 notationStore.setActiveCell(activeCell);
             }
         });
@@ -51,10 +51,10 @@ export default function userIncomingOperations() {
             feathersClient
                 .service("authorization")
                 .on("updated", (user) => {
-                if (user.uuid === userStore.currentUser.uuid //&&
+                if (user.uuid === userStore.getCurrentUser().uuid //&&
                 //this.getCurrentLesson().uuid === authData.LessonUUId : TODO check if neccesary since massages are listned by lesson
                 ) {
-                    userStore.setUserWriteAuthorization(user.authorized);
+                    userStore.setAuthorized(user.authorized);
                 }
             });
         }
@@ -62,8 +62,8 @@ export default function userIncomingOperations() {
             feathersClient
                 .service("heartbeat")
                 .on("updated", (user) => {
-                if (user.uuid != userStore.currentUser.uuid &&
-                    notationStore.parent.type === BoardType.LESSON) {
+                if (user.uuid != userStore.getCurrentUser().uuid &&
+                    notationStore.getParent().type === BoardType.LESSON) {
                     studentStore.setStudentHeartbeat(user.uuid);
                 }
             });

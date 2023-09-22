@@ -12,7 +12,7 @@ import {
 import {
     StudentLessonAttributes,
     StudentLessonCreateAttributes,
-} from "../../../../math-common/build/notationTypes";
+} from "../../../../math-common/build/userTypes";
 
 
 

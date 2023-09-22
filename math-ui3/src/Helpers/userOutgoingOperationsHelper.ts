@@ -1,6 +1,6 @@
 
 import { CellCoordinates } from "common/globals";
-import { BaseNotation } from "common/notationTypes";
+import { BaseNotation } from "common/baseTypes";
 import { useNotationStore } from "../store/pinia/notationStore";
 
 import useFeathersHelper from "./feathersHelper";

@@ -1,6 +1,6 @@
 import { Model, Column, BelongsTo, ForeignKey, DataType } from "sequelize-typescript";
 import { NotationType, BoardType } from "../../../../../math-common/build/enum";
-import {LessonLineAttributes, LessonLineCreationAttributes} from "../../../../../math-common/build/notationTypes";
+import {LessonLineAttributes, LessonLineCreationAttributes} from "../../../../../math-common/build/lessonTypes";
 import User from "../../user.model";
 import Lesson from "../../lesson/lesson.model";
 import LessonDecorator from "../../lesson/lessonDecorator";

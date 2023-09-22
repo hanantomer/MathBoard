@@ -15,15 +15,51 @@ export const useNotationStore = defineStore("notation", () => {
     let activeNotation = {};
     let selectedNotations = [];
     let editMode = ref(EditMode.SYMBOL);
-    async function setActiveCell(newActiveCell) {
+    function getEditMode() {
+        return editMode;
+    }
+    function getSelectedNotations() {
+        return selectedNotations;
+    }
+    function getActiveNotation() {
+        return activeNotation;
+    }
+    function getActiveCell() {
+        return activeCell;
+    }
+    function getParent() {
+        return parent;
+    }
+    function getCellOccupationMatrix() {
+        return cellOccupationMatrix;
+    }
+    function getNotationsByShape(notationShape) {
+        return Array.from(notations.values()).filter((n) => {
+            n.notationType &&
+                NotationTypeShape.get(n.notationType.valueOf()) == notationShape;
+        });
+    }
+    function getNotations() {
+        return notations;
+    }
+    function setActiveNotation(notation) {
+        activeNotation = notation;
+    }
+    function setNotations(notations) {
+        notations = notations;
+    }
+    function setActiveCell(newActiveCell) {
         activeCell = newActiveCell;
     }
-    async function setParent(parentUUID, boardType) {
+    function setParent(parentUUID, boardType) {
         parent.uuid = parentUUID;
         parent.type = boardType;
     }
     function resetActiveCell() {
         activeCell = { col: -1, row: -1 };
+    }
+    function resetSelectedNotations() {
+        selectedNotations.length = 0;
     }
     function setCurrentEditMode(newEditMode) {
         editMode.value = newEditMode;
@@ -31,31 +67,31 @@ export const useNotationStore = defineStore("notation", () => {
     function createCellOccupationMatrix() {
         let matrix = new Array();
         for (let i = 0; i < matrixDimensions.rowsNum; i++) {
+            matrix.push([]);
             for (let j = 0; j < matrixDimensions.colsNum; j++) {
                 matrix[i][j] = null;
             }
         }
         return matrix;
     }
-    function getNotations(notationShape) {
-        return Array.from(notations.values()).filter((n) => {
-            n.notationType &&
-                NotationTypeShape.get(n.notationType.valueOf()) == notationShape;
-        });
-    }
     return {
         getNotations,
-        editMode,
+        getNotationsByShape,
+        getEditMode,
+        getCellOccupationMatrix,
+        getActiveCell,
+        getActiveNotation,
+        getSelectedNotations,
+        getParent,
+        setNotations,
+        setActiveNotation,
         setCurrentEditMode,
-        parent,
-        notations,
-        cellOccupationMatrix,
-        activeCell,
-        activeNotation,
+        setParent,
         setActiveCell,
-        selectedNotations,
         resetActiveCell,
-        setParent
+        resetSelectedNotations,
+        activeCell,
+        activeNotation
     };
 });
 //# sourceMappingURL=notationStore.js.map

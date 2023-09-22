@@ -1,7 +1,7 @@
 import { Model } from "sequelize-typescript";
 import { UesrType } from "../../../math-common/build/enum";
-import { UserAttributes, UserCreateAttributes } from "../../../math-common/build/notationTypes";
-export default class User extends Model<UserAttributes, UserCreateAttributes> {
+import { UserAttributes, UserCreationAttributes } from "../../../math-common/build/userTypes";
+export default class User extends Model<UserAttributes, UserCreationAttributes> {
     authorized: boolean;
     lastHeartbeatTime: Date;
     uuid: string;

@@ -1,6 +1,6 @@
 import { Model } from "sequelize-typescript";
 import { NotationType, BoardType } from "../../../../../math-common/build/enum";
-import { LessonPointAttributes, LessonPointCreationAttributes } from "../../../../../math-common/build/notationTypes";
+import { LessonPointAttributes, LessonPointCreationAttributes } from "../../../../../math-common/build/lessonTypes";
 import User from "../../user.model";
 import Lesson from "../../lesson/lesson.model";
 export default class LessonSign extends Model<LessonPointAttributes, LessonPointCreationAttributes> {

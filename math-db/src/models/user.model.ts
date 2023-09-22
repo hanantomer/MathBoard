@@ -10,8 +10,8 @@ import {
 import { UesrType } from "../../../math-common/build/enum";
 import {
     UserAttributes,
-    UserCreateAttributes,
-} from "../../../math-common/build/notationTypes";
+    UserCreationAttributes,
+} from "../../../math-common/build/userTypes";
 
 
 @DefaultScope(() => ({
@@ -30,7 +30,7 @@ import {
         },
     ],
 })
-export default class User extends Model<UserAttributes, UserCreateAttributes> {
+export default class User extends Model<UserAttributes, UserCreationAttributes> {
     authorized!: boolean;
     lastHeartbeatTime!: Date;
 

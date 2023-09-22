@@ -2,7 +2,7 @@ import { Model } from "sequelize-typescript";
 import { NotationType, BoardType } from "../../../../../math-common/build/enum";
 import User from "../../user.model";
 import Answer from "../../answer/answer.model";
-import { AnswerLineAttributes, AnswerLineCreationAttributes } from "../../../../../math-common/build/notationTypes";
+import { AnswerLineAttributes, AnswerLineCreationAttributes } from "../../../../../math-common/build/answerTypes";
 export default class AnswerFraction extends Model<AnswerLineAttributes, AnswerLineCreationAttributes> {
     notationType: NotationType;
     boardType: BoardType;

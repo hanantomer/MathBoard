@@ -1,13 +1,9 @@
 import feathers, { Application } from "@feathersjs/feathers";
 import socketio from "@feathersjs/socketio";
-
-
-
 import constants from "./constants";
 
 type ServiceTypes = {
   // Add services path to type mapping here
-  
 };
 
 // app.get and app.set can be typed when initializing the app
@@ -80,7 +76,9 @@ app.service("notationSync").publish("removed", (notation: any, ctx: any) => {
   return [app.channel(constants.LESSON_CHANNEL_PREFIX + notation.LessonUUId)];
 });
 
-app.addListener("listening", () => console.log(`server running on port ${PORT}`));
-
 const PORT: number = Number(process.env.PORT) || 3030;
+//app.on("listening", () => {
+//  console.log(`server running on port ${PORT}`)
+//});
 app.listen(PORT);
+console.log(`server running on port ${PORT}`);

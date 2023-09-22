@@ -5,13 +5,13 @@ import User from "../../user.model";
 import Lesson from "../../lesson/lesson.model";
 import {
     LessonRectAttributes,
-    LessonRectCreateAttributes,
-} from "../../../../../math-common/build/notationTypes";
+    LessonRectCreationAttributes,
+} from "../../../../../math-common/build/lessonTypes";
 
 @LessonDecorator("LessonText")
 export default class LessonText extends Model<
     LessonRectAttributes,
-    LessonRectCreateAttributes
+    LessonRectCreationAttributes
 > {
     notationType = NotationType.TEXT;
     boardType = BoardType.LESSON;

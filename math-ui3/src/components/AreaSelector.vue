@@ -132,7 +132,7 @@ function handleMouseMove(e : MouseEvent) {
         return;
       }
 
-      if (notationStore.editMode != EditMode.SELECT) {
+      if (notationStore.getEditMode().value != EditMode.SELECT) {
         return;
       }
 
@@ -148,7 +148,7 @@ function handleMouseMove(e : MouseEvent) {
 };
 
 function handleMouseUp(e: MouseEvent) {
-      if (notationStore.editMode !== EditMode.SELECT) {
+      if (notationStore.getEditMode().value !== EditMode.SELECT) {
         return;
       }
       if (selectionMode === AreaSelectionMode.SELECTING) {
@@ -273,10 +273,10 @@ function moveSelection(e: MouseEvent) {
 };
 
 function endMoveSelection(e: MouseEvent) {
-  let selectedNotationKeys = notationStore.selectedNotations;
+  let selectedNotationKeys = notationStore.getSelectedNotations();
   notationMutateHelper.updateSelectedNotationCoordinates();
   selectedNotationKeys.forEach((notationKey) => {
-    let notation = notationStore.notations.get(notationKey);
+    let notation = notationStore.getNotations().get(notationKey);
     if (notation) {
       userOutgoingOperationsSyncHelper.
         syncOutgoingUpdateSelectedNotation(notation)
@@ -290,7 +290,7 @@ function resetSelection() {
       dragPosition.value.y = 0;
       selectionPosition.value.x1 = selectionPosition.value.x2 = selectionPosition.value.y1 = selectionPosition.value.y2 = 0;
       selectionMode = AreaSelectionMode.SELECTING;
-      notationStore.editMode = EditMode.SYMBOL;
+      notationStore.getEditMode().value = EditMode.SYMBOL;
       //$store.dispatch("unselectAllNotations");
 };
 

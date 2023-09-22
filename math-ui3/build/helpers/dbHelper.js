@@ -1,4 +1,5 @@
-import { BoardType } from "common/enum";
+import { BoardType, NotationType } from "common/enum";
+import { capitalize } from "common/utils";
 import axios from "axios";
 import axiosHelper from "./axiosHelper";
 const { baseURL } = axiosHelper();
@@ -43,8 +44,8 @@ export default function useDbHelper() {
         });
     }
     async function addLesson(lesson) {
-        const { data } = await axios.post(baseURL + "/lessons", lesson);
-        return data;
+        const savedLesson = await axios.post(baseURL + "/lessons", lesson);
+        return savedLesson.data;
     }
     async function addQuestion(question) {
         const { data } = await axios.post(baseURL + "/questions", question);
@@ -56,12 +57,12 @@ export default function useDbHelper() {
     }
     async function addNotation(notation) {
         const { data } = await axios.post(baseURL +
-            `/${notation.boardType}${notation.notationType.toLowerCase()}s/`, notation);
+            `/${notation.boardType}${NotationType[notation.notationType].toLowerCase()}s/`, notation);
         return data;
     }
     async function updateNotation(notation) {
         const { data } = await axios.put(baseURL +
-            `/${notation.boardType}${notation.notationType.toLowerCase()}s/${notation.uuid}`, notation);
+            `/${notation.boardType}${NotationType[notation.notationType].toLowerCase()}s/${notation.uuid}`, notation);
         return data;
     }
     async function getLesson(LessonUUId) {
@@ -77,11 +78,11 @@ export default function useDbHelper() {
         return data;
     }
     async function getTeacherLessons(userUUId) {
-        const { data } = await axios.get(baseURL + "/lessons?UserUUId=" + userUUId);
+        const { data } = await axios.get(baseURL + "/lessons?userUUId=" + userUUId);
         return data;
     }
     async function getStudentLessons(userUUId) {
-        const { data } = await axios.get(baseURL + "/studentlessons?UserUUId=" + userUUId);
+        const { data } = await axios.get(baseURL + "/studentlessons?userUUId=" + userUUId);
         return data;
     }
     async function getQuestions(lessonUUId) {
@@ -98,7 +99,7 @@ export default function useDbHelper() {
     async function getNotations(notationType, boardType, parentUUId) {
         // e.g lessonsymbols?LessonUUId=1
         const parentFieldName = getParentFieldName(boardType);
-        const uri = `${boardType}${notationType}s?${parentFieldName}=${parentUUId}`;
+        const uri = `${capitalize(BoardType[boardType].toString())}${capitalize(notationType.toString())}s?${parentFieldName}=${parentUUId}`;
         const { data } = (await axios.get(uri));
         return data;
     }

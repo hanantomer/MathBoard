@@ -1,12 +1,11 @@
-import { BaseNotation } from "../../../math-common/src/notationTypes";
+import { BaseNotation } from "common/baseTypes";
 import { useUserStore } from "../store/pinia/userStore";
 import { useStudentStore } from "../store/pinia/studentStore";
 import { useNotationStore } from "../store/pinia/notationStore";
 import { BoardType } from "common/enum";
-import { UserAttributes } from "common/notationTypes";
+import { UserAttributes } from "common/userTypes";
+import { PointAttributes } from "common/baseTypes";
 import useFeathersHelper from "./feathersHelper";
-import { PointAttributes } from "common/notationTypes";
-
 const notationStore = useNotationStore();
 const userStore = useUserStore();
 const studentStore = useStudentStore();
@@ -29,9 +28,9 @@ export default function userIncomingOperations() {
       .on("created", (notation: BaseNotation) => {
         if (
           notation.uuid !== userStore.getCurrentUser().uuid &&
-          notationStore.parent.type == BoardType.LESSON
+          notationStore.getParent().type == BoardType.LESSON
         ) {
-          notationStore.notations.set(notation.uuid, notation);
+          notationStore.getNotations().set(notation.uuid, notation);
         }
       });
 
@@ -42,7 +41,7 @@ export default function userIncomingOperations() {
           notation.user.uuid !== userStore.getCurrentUser().uuid &&
           this.getParent().boardType === "lesson"
         ) {
-          notationStore.notations.set(notation.uuid, notation);
+          notationStore.getNotations().set(notation.uuid, notation);
         }
       });
     feathersClient
@@ -52,7 +51,7 @@ export default function userIncomingOperations() {
           notation.user.uuid !== userStore.getCurrentUser().uuid &&
           this.getParent().boardType === "lesson"
         ) {
-          notationStore.notations.set(notation.uuid, notation);
+          notationStore.getNotations().set(notation.uuid, notation);
         }
       });
     feathersClient
@@ -60,7 +59,7 @@ export default function userIncomingOperations() {
       .on("updated", (activeCell: PointAttributes) => {
         if (
           //activeCell.UserId !== this.getUser().id &&
-          notationStore.parent.type === BoardType.LESSON
+          notationStore.getParent().type === BoardType.LESSON
         ) {
           notationStore.setActiveCell(activeCell);
         }
@@ -83,7 +82,7 @@ export default function userIncomingOperations() {
         .on("updated", (user: UserAttributes) => {
           if (
             user.uuid != userStore.getCurrentUser()!.uuid &&
-            notationStore.parent.type === BoardType.LESSON
+            notationStore.getParent().type === BoardType.LESSON
           ) {
             studentStore.setStudentHeartbeat(user.uuid);
           }

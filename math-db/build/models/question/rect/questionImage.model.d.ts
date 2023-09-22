@@ -2,7 +2,7 @@ import { Model } from "sequelize-typescript";
 import { NotationType, BoardType } from "../../../../../math-common/build/enum";
 import User from "../../user.model";
 import Question from "../../question/question.model";
-import { QuestionRectAttributes, QuestionRectCreationAttributes } from "../../../../../math-common/build/notationTypes";
+import { QuestionRectAttributes, QuestionRectCreationAttributes } from "../../../../../math-common/build/questionTypes";
 export default class QuestionImage extends Model<QuestionRectAttributes, QuestionRectCreationAttributes> {
     notationType: NotationType;
     boardType: BoardType;

@@ -16,15 +16,15 @@ var NotationShape;
 })(NotationShape || (exports.NotationShape = NotationShape = {}));
 var NotationType;
 (function (NotationType) {
-    NotationType["SYMBOL"] = "SYMBOL";
-    NotationType["SIGN"] = "SIGN";
-    NotationType["POWER"] = "POWER";
-    NotationType["FRACTION"] = "FRACTION";
-    NotationType["SQRT"] = "SQRT";
-    NotationType["SQRTSYMBOL"] = "SQRTSYMBOL";
-    NotationType["TEXT"] = "TEXT";
-    NotationType["IMAGE"] = "IMAGE";
-    NotationType["GEO"] = "GEO";
+    NotationType[NotationType["SYMBOL"] = 0] = "SYMBOL";
+    NotationType[NotationType["SIGN"] = 1] = "SIGN";
+    NotationType[NotationType["POWER"] = 2] = "POWER";
+    NotationType[NotationType["FRACTION"] = 3] = "FRACTION";
+    NotationType[NotationType["SQRT"] = 4] = "SQRT";
+    NotationType[NotationType["SQRTSYMBOL"] = 5] = "SQRTSYMBOL";
+    NotationType[NotationType["TEXT"] = 6] = "TEXT";
+    NotationType[NotationType["IMAGE"] = 7] = "IMAGE";
+    NotationType[NotationType["GEO"] = 8] = "GEO";
 })(NotationType || (exports.NotationType = NotationType = {}));
 ;
 exports.NotationTypeShape = new Map([

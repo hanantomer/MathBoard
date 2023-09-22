@@ -9,7 +9,7 @@ const dbHelper = useDbHelper();
 export default function useAuthHelper() {
     function setUser(user) {
         const userStore = useUserStore(); // initilize lazy here to allow loading of module before [inia has initialized
-        userStore.setUser(user);
+        userStore.setCurrentUser(user);
     }
     function registerUser(firstName, lastName, password, email, userType) {
         const userStore = useUserStore();
@@ -22,7 +22,6 @@ export default function useAuthHelper() {
             imageUrl: "",
             access_token: "",
             authorized: false,
-            uuid: "",
             lastHeartbeatTime: new Date(),
         };
         userStore.registerUser(user);
@@ -30,9 +29,9 @@ export default function useAuthHelper() {
     function canEdit() {
         const userStore = useUserStore();
         const notationStore = useNotationStore();
-        return (userStore.isTeacher || // teacher in lesson or question
-            userStore.authorized || // student in lesson when authorized by teacher
-            notationStore.parent.type == BoardType.ANSWER // student writing an  answer
+        return (userStore.isTeacher() || // teacher in lesson or question
+            userStore.getAuthorized() || // student in lesson when authorized by teacher
+            notationStore.getParent().type.toString() == BoardType.ANSWER.toString() // student writing an  answer
         );
     }
     async function authGoogleUser() {
@@ -69,7 +68,7 @@ export default function useAuthHelper() {
         else {
             removeCookie("access_token");
         }
-        userStore.currentUser = new Object();
+        userStore.setCurrentUser(new Object());
     }
     /*async function  getGoogleUser() {
         let auth2 = await gapi.auth2.init();

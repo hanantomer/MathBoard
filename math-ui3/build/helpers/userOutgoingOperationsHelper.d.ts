@@ -1,5 +1,5 @@
 import { CellCoordinates } from "common/globals";
-import { BaseNotation } from "common/notationTypes";
+import { BaseNotation } from "common/baseTypes";
 export default function userOutgoingOperations(): {
     syncOutgoingUpdateSelectedNotation: (selectedNotation: BaseNotation) => void;
     syncOutgoingActiveCell: (activeCell: CellCoordinates) => void;

@@ -12,7 +12,7 @@ export default function useMatrixHelper() {
     let rectSize = 25; ///TODO: ceck if initial value is of any value
     const svgWidth = "1400px";
     const svgHeight = "700px";
-    let matrix;
+    let matrix = [];
     function borderColor(selected) {
         return selected ? "red" : "transparent";
     }
@@ -459,8 +459,8 @@ export default function useMatrixHelper() {
             return `<img style='border:groove 2px;border-color:${borderColor}' src='${n1.value}'>`;
         }
         let n1 = n;
-        let fontWeight = userStore.currentUser?.uuid == n.user.uuid ? "bold" : "normal";
-        let color = (notationStore.selectedNotations.indexOf(n.uuid))
+        let fontWeight = userStore.getCurrentUser()?.uuid == n.user.uuid ? "bold" : "normal";
+        let color = (notationStore.getSelectedNotations().indexOf(n.uuid))
             ? "red"
             : this.getParent().boardType === BoardType.ANSWER &&
                 this.getUser().uuid != n.user.uuid

@@ -1,6 +1,6 @@
 import { Model } from "sequelize-typescript";
 import { NotationType, BoardType } from "../../../../../math-common/build/enum";
-import { QuestionLineAttributes, QuestionLineCreationAttributes } from "../../../../../math-common/build/notationTypes";
+import { QuestionLineAttributes, QuestionLineCreationAttributes } from "../../../../../math-common/build/questionTypes";
 import User from "../../user.model";
 import Question from "../../question/question.model";
 export default class QuestionRoot extends Model<QuestionLineAttributes, QuestionLineCreationAttributes> {

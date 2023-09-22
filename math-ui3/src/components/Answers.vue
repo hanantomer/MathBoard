@@ -21,7 +21,7 @@ import { computed } from "vue"
 import { useLessonStore } from "../store/pinia/lessonStore";
 import { useQuestionStore } from "../store/pinia/questionStore";
 import { useAnswerStore } from "../store/pinia/answerStore";
-import { AnswerAttributes } from '../../../math-common/build/notationTypes';
+import { AnswerAttributes } from '../../../math-common/build/answerTypes';
 
 const route = useRoute();
 const router = useRouter();
@@ -54,16 +54,16 @@ let headers = computed(() => [
 ]);
 
 const lessons = computed(() => {
-  return lessonStore.lessons
+  return lessonStore.getLessons()
 });
 
 const questions = computed(() => {
-  return questionStore.questions;
+  return questionStore.getQuestions();
 });
 
 
 const answers = computed(() => {
-  return Array.from(answerStore.answers).map(([key, answer]) => {
+  return Array.from(answerStore.getAnswers()).map(([key, answer]) => {
     return {
       uuid: answer.uuid,
       lesson: answer.question.lesson.name,

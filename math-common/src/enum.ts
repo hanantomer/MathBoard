@@ -13,18 +13,18 @@ export enum NotationShape {
 
 
 export enum NotationType { // TODO move to class with static readonly fields and set type family to each type
-  SYMBOL      = "SYMBOL",
-  SIGN        = "SIGN",
-  POWER       = "POWER",
-  FRACTION    = "FRACTION",
-  SQRT        = "SQRT",
-  SQRTSYMBOL  = "SQRTSYMBOL",
-  TEXT        = "TEXT",
-  IMAGE       = "IMAGE",
-  GEO         = "GEO"
+  SYMBOL,
+  SIGN,
+  POWER,
+  FRACTION,
+  SQRT,
+  SQRTSYMBOL,
+  TEXT,
+  IMAGE,
+  GEO
 };
 
-export const NotationTypeShape = new Map<string, number> ([
+export const NotationTypeShape = new Map<number, number> ([
   [NotationType.SYMBOL, NotationShape.POINT],
   [NotationType.SIGN, NotationShape.POINT],
   [NotationType.POWER, NotationShape.POINT],

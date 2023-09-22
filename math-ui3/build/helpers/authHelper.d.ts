@@ -1,5 +1,5 @@
 import { UesrType } from "common/enum";
-import { UserAttributes } from "common/notationTypes";
+import { UserAttributes } from "common/userTypes";
 export default function useAuthHelper(): {
     setUser: (user: UserAttributes) => void;
     registerUser: (firstName: string, lastName: string, password: string, email: string, userType: UesrType) => void;
@@ -10,5 +10,5 @@ export default function useAuthHelper(): {
     signedInWithGoogle: () => boolean;
     getToken: () => string;
     authGoogleUser: () => Promise<UserAttributes>;
-    canEdit: () => () => boolean;
+    canEdit: () => boolean;
 };

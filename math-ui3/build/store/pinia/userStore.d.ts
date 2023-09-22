@@ -1,23 +1,23 @@
-import { UserAttributes } from "common/notationTypes";
+import { UserAttributes, UserCreationAttributes } from "common/userTypes";
 export declare const useUserStore: import("pinia").StoreDefinition<"user", import("pinia")._UnwrapAll<Pick<{
-    currentUser: UserAttributes;
-    authorized: boolean;
-    setUserWriteAuthorization: (isAauthorized: boolean) => void;
+    getCurrentUser: () => UserAttributes;
+    getAuthorized: () => boolean;
+    setAuthorized: (authorized: boolean) => boolean;
     isTeacher: () => boolean;
-    setUser: (user: UserAttributes) => void;
-    registerUser: (user: UserAttributes) => void;
-}, "currentUser" | "authorized">>, Pick<{
-    currentUser: UserAttributes;
-    authorized: boolean;
-    setUserWriteAuthorization: (isAauthorized: boolean) => void;
+    setCurrentUser: (user: UserAttributes) => void;
+    registerUser: (user: UserCreationAttributes) => void;
+}, never>>, Pick<{
+    getCurrentUser: () => UserAttributes;
+    getAuthorized: () => boolean;
+    setAuthorized: (authorized: boolean) => boolean;
     isTeacher: () => boolean;
-    setUser: (user: UserAttributes) => void;
-    registerUser: (user: UserAttributes) => void;
+    setCurrentUser: (user: UserAttributes) => void;
+    registerUser: (user: UserCreationAttributes) => void;
 }, never>, Pick<{
-    currentUser: UserAttributes;
-    authorized: boolean;
-    setUserWriteAuthorization: (isAauthorized: boolean) => void;
+    getCurrentUser: () => UserAttributes;
+    getAuthorized: () => boolean;
+    setAuthorized: (authorized: boolean) => boolean;
     isTeacher: () => boolean;
-    setUser: (user: UserAttributes) => void;
-    registerUser: (user: UserAttributes) => void;
-}, "setUserWriteAuthorization" | "isTeacher" | "setUser" | "registerUser">>;
+    setCurrentUser: (user: UserAttributes) => void;
+    registerUser: (user: UserCreationAttributes) => void;
+}, "getCurrentUser" | "getAuthorized" | "setAuthorized" | "isTeacher" | "setCurrentUser" | "registerUser">>;

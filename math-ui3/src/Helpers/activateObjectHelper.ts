@@ -8,25 +8,24 @@ import {
 import {
   LineNotationAttributes,
   RectNotationAttributes,
-} from "common/notationTypes";
+} from "common/baseTypes";
 import { useNotationStore } from "../store/pinia/notationStore";
 import {
   activeCellColor,
   CellCoordinates,
 } from "common/globals";
-import { storeToRefs } from 'pinia'
 import useMatrixHelper from "./matrixHelper"
 import useNotationMutateHelper from "./notationMutateHelper"
 
 const notationMutateHelper = useNotationMutateHelper();
 const matrixHelper = useMatrixHelper();
 const notationStore = useNotationStore();
-const { activeCell } = storeToRefs(notationStore)
 
 export default function activateObjectHelper() {
 
-  watch(activeCell, (oldActiveCell, newActiveCell) => {
-    activateCell(newActiveCell, oldActiveCell);
+  watch(notationStore.activeCell!, (oldActiveCell, newActiveCell) => {
+    if(newActiveCell)
+      activateCell(newActiveCell, oldActiveCell);
   })
 
   // called via mouse click
@@ -84,7 +83,7 @@ export default function activateObjectHelper() {
     if (!rectElement) return null;
 
     return notationStore
-      .getNotations<RectNotationAttributes>(NotationShape.RECT)
+      .getNotationsByShape<RectNotationAttributes>(NotationShape.RECT)
       .find((n: RectNotationAttributes) => {
         getElementCoordinateValue(rectElement, "fromCol") >= n.fromCol &&
           getElementCoordinateValue(rectElement, "toCol") <= n.toCol &&
@@ -106,7 +105,7 @@ export default function activateObjectHelper() {
     if (!fractionElement) return;
 
     return notationStore
-      .getNotations<LineNotationAttributes>(NotationShape.LINE)
+      .getNotationsByShape<LineNotationAttributes>(NotationShape.LINE)
       .find((n: LineNotationAttributes) => {
         getElementCoordinateValue(fractionElement, "fromCol") >= n.fromCol &&
           getElementCoordinateValue(fractionElement, "toCol") <= n.toCol &&

@@ -9,17 +9,17 @@ export declare enum NotationShape {
     RECT = 2
 }
 export declare enum NotationType {
-    SYMBOL = "SYMBOL",
-    SIGN = "SIGN",
-    POWER = "POWER",
-    FRACTION = "FRACTION",
-    SQRT = "SQRT",
-    SQRTSYMBOL = "SQRTSYMBOL",
-    TEXT = "TEXT",
-    IMAGE = "IMAGE",
-    GEO = "GEO"
+    SYMBOL = 0,
+    SIGN = 1,
+    POWER = 2,
+    FRACTION = 3,
+    SQRT = 4,
+    SQRTSYMBOL = 5,
+    TEXT = 6,
+    IMAGE = 7,
+    GEO = 8
 }
-export declare const NotationTypeShape: Map<string, number>;
+export declare const NotationTypeShape: Map<number, number>;
 export declare enum AreaSelectionMode {
     SELECTING = 0,
     MOVE = 1

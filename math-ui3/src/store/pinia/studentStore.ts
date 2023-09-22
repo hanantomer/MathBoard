@@ -1,5 +1,5 @@
 import { defineStore } from "pinia";
-import { UserAttributes } from "common/notationTypes";
+import { UserAttributes } from "common/userTypes";
 import { reactive, ref } from "vue";
 
 export const useStudentStore = defineStore("studentanswer", () => {
@@ -33,5 +33,6 @@ export const useStudentStore = defineStore("studentanswer", () => {
     getStudents,
     getAuthorizedStudentUUId,
     setStudentHeartbeat,
+    setAuthorizedStudentUUId,
   };
 });

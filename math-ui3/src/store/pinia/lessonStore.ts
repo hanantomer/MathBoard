@@ -2,7 +2,7 @@
 import {
   LessonAttributes,
   LessonCreateAttributes,
-} from "common/notationTypes";
+} from "common/lessonTypes";
 import { defineStore } from "pinia";
 import dbHelper from "../../helpers/dbHelper";
 import { useUserStore } from "./userStore";
@@ -24,10 +24,12 @@ export const useLessonStore = defineStore("lesson", () => {
 
   async function loadLessons() {
     const userStore = useUserStore();
-    //if (userStore.currentUser == undefined) return;
-    let lessonsFromDB = userStore.isTeacher()
-      ? await db.getTeacherLessons(userStore.getCurrentUser().uuid)
-      : await db.getStudentLessons(userStore.getCurrentUser().uuid);
+    let lessonsFromDB = null;
+
+    if (userStore.isTeacher())
+      lessonsFromDB = await db.getTeacherLessons(userStore.getCurrentUser().uuid);
+    else
+      lessonsFromDB = await db.getStudentLessons(userStore.getCurrentUser().uuid );
 
     lessonsFromDB.forEach((l: LessonAttributes) => {
       lessons.set(l.uuid, l);
@@ -35,20 +37,25 @@ export const useLessonStore = defineStore("lesson", () => {
   }
 
   async function setCurrentLesson(lessonUUId: string) {
+    // store might not be loaded yet
     if (!lessons.get(lessonUUId)) {
-      loadLessons();
+      await loadLessons();
     }
-    if (lessons.get(lessonUUId)) {
-      currentLesson = lessons.get(lessonUUId)!;
+
+    if (!lessons.get(lessonUUId)) {
+      throw TypeError("invalid lesson:" + lessonUUId)
     }
+    currentLesson = lessons.get(lessonUUId)!;
   }
 
   async function addLesson(
-    lesson: LessonCreateAttributes
+    lessonName: string
   ): Promise<LessonAttributes> {
+    const userStore = useUserStore();
+    let lesson: LessonCreateAttributes = {name: lessonName, user: userStore.getCurrentUser()};
     let createdLesson = await db.addLesson(lesson);
-    lessons.set(lesson.uuid, createdLesson);
-    setCurrentLesson(createdLesson.uuid);
+    lessons.set(createdLesson.uuid, createdLesson);
+    await setCurrentLesson(createdLesson.uuid);
     return createdLesson;
   }
 

@@ -97,18 +97,18 @@ export default function eventHelper() {
     }
     ;
     function mouseDown(e) {
-        if (notationStore.editMode === EditMode.FRACTION ||
-            notationStore.editMode === EditMode.SQRT ||
-            notationStore.editMode === EditMode.SELECT) {
+        if (notationStore.getEditMode().value === EditMode.FRACTION ||
+            notationStore.getEditMode().value === EditMode.SQRT ||
+            notationStore.getEditMode().value === EditMode.SELECT) {
             return;
         }
         let activeCell = activateObjectHelper.activateClickedObject(e);
-        if (activeCell && notationStore.parent.type == BoardType.LESSON) {
+        if (activeCell && notationStore.getParent().type == BoardType.LESSON) {
             userOutgoingOperations.syncOutgoingActiveCell(activeCell);
         }
-        if (notationStore.editMode === EditMode.CHECKMARK ||
-            notationStore.editMode === EditMode.SEMICHECKMARK ||
-            notationStore.editMode === EditMode.XMARK) {
+        if (notationStore.getEditMode().value === EditMode.CHECKMARK ||
+            notationStore.getEditMode().value === EditMode.SEMICHECKMARK ||
+            notationStore.getEditMode().value === EditMode.XMARK) {
             notationMutationHelper.addMarkNotation();
             return;
         }

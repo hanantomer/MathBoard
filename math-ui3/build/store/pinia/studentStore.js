@@ -3,6 +3,12 @@ import { reactive, ref } from "vue";
 export const useStudentStore = defineStore("studentanswer", () => {
     let students = reactive({});
     let authorizedStudentUUId = ref("");
+    function getStudents() {
+        return students;
+    }
+    function getAuthorizedStudentUUId() {
+        return authorizedStudentUUId;
+    }
     function setStudentHeartbeat(uuid) {
         let student = students.get(uuid);
         if (student) {
@@ -10,14 +16,14 @@ export const useStudentStore = defineStore("studentanswer", () => {
         }
     }
     ;
-    function toggleAuthorization(userUUId) {
-        authorizedStudentUUId.value = userUUId;
+    function setAuthorizedStudentUUId(authorizedStudentUUId) {
+        return authorizedStudentUUId = authorizedStudentUUId;
     }
-    ;
     return {
-        students,
-        authorizedStudentUUId,
+        getStudents,
+        getAuthorizedStudentUUId,
         setStudentHeartbeat,
+        setAuthorizedStudentUUId,
     };
 });
 //# sourceMappingURL=studentStore.js.map

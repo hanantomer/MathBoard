@@ -1,26 +1,26 @@
-import { AnswerAttributes } from "common/notationTypes";
+import { AnswerAttributes } from "common/answerTypes";
 export declare const useAnswerStore: import("pinia").StoreDefinition<"answer", import("pinia")._UnwrapAll<Pick<{
-    answers: Map<String, AnswerAttributes>;
-    currentAnswer: AnswerAttributes;
+    getAnswers: () => Map<String, AnswerAttributes>;
+    getCurrentAnswer: () => AnswerAttributes;
     loadAnswer: (answerUUId: string) => Promise<void>;
     loadAnswers: () => Promise<void>;
     addAnswer: () => Promise<void>;
     setCurrentAnswer: (answer: AnswerAttributes) => void;
     removeAnswer: (answer: AnswerAttributes) => void;
-}, "answers" | "currentAnswer">>, Pick<{
-    answers: Map<String, AnswerAttributes>;
-    currentAnswer: AnswerAttributes;
+}, never>>, Pick<{
+    getAnswers: () => Map<String, AnswerAttributes>;
+    getCurrentAnswer: () => AnswerAttributes;
     loadAnswer: (answerUUId: string) => Promise<void>;
     loadAnswers: () => Promise<void>;
     addAnswer: () => Promise<void>;
     setCurrentAnswer: (answer: AnswerAttributes) => void;
     removeAnswer: (answer: AnswerAttributes) => void;
 }, never>, Pick<{
-    answers: Map<String, AnswerAttributes>;
-    currentAnswer: AnswerAttributes;
+    getAnswers: () => Map<String, AnswerAttributes>;
+    getCurrentAnswer: () => AnswerAttributes;
     loadAnswer: (answerUUId: string) => Promise<void>;
     loadAnswers: () => Promise<void>;
     addAnswer: () => Promise<void>;
     setCurrentAnswer: (answer: AnswerAttributes) => void;
     removeAnswer: (answer: AnswerAttributes) => void;
-}, "loadAnswer" | "loadAnswers" | "addAnswer" | "setCurrentAnswer" | "removeAnswer">>;
+}, "getAnswers" | "getCurrentAnswer" | "loadAnswer" | "loadAnswers" | "addAnswer" | "setCurrentAnswer" | "removeAnswer">>;

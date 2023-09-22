@@ -8,7 +8,7 @@ import AnswerDecorator from "../../answer/answerDecorator";
 import {
     AnswerLineAttributes,
     AnswerLineCreationAttributes,
-} from "../../../../../math-common/build/notationTypes";
+} from "../../../../../math-common/build/answerTypes";
 
 @AnswerDecorator("AnswerFraction")
 export default class AnswerFraction extends Model<
