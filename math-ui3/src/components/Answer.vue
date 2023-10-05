@@ -20,6 +20,8 @@ import { useUserStore } from "../store/pinia/userStore";
 import { useAnswerStore } from "../store/pinia/answerStore";
 import { watch } from 'vue'
 import { useRoute } from 'vue-router'
+import { BoardType } from "../../../math-common/build/enum";
+import { useNotationStore } from "../store/pinia/notationStore";
 
 const route = useRoute();
 const matrixHelper = useMatrixHelper();
@@ -27,6 +29,7 @@ const activateObjectHelper = useActivateObjectHelper();
 const userStore = useUserStore();
 const answerStore = useAnswerStore();
 const notationLoadingHelper = useNotationLoadingHelper();
+const notationStore = useNotationStore();
 
 
 let loaded = ref(false);
@@ -48,6 +51,9 @@ watch(route, (to) => {
 async function markAnswerAsChecked() { }; // not implemented yet
 
 async function loadAnswer(answerUUId: string) {
+
+  notationStore.setParent(answerStore.getCurrentAnswer()?.uuid, "ANSWER");
+
   activateObjectHelper.reset();
   matrixHelper.setMatrix(svgId);
 
@@ -55,8 +61,8 @@ async function loadAnswer(answerUUId: string) {
   answerStore.loadAnswer(answerUUId);
 
   // load notations
-  notationLoadingHelper.loadQuestionNotations();
-  notationLoadingHelper.loadAnswerNotations();
+  notationLoadingHelper.loadNotations();
+  notationLoadingHelper.loadNotations();
 
   loaded.value = true; // signal child
 };

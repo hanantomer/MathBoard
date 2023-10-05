@@ -1,4 +1,5 @@
 "use strict";
+//snyk.io/advisor/npm-package/sequelize-typescript/functions/sequelize-typescript.Scopes
 Object.defineProperty(exports, "__esModule", { value: true });
 const sequelize_typescript_1 = require("sequelize-typescript");
 function BoardDecorator(tableName) {

@@ -1,9 +1,8 @@
 import { Model } from "sequelize-typescript";
-import { UesrType } from "../../../math-common/build/enum";
+import { UesrType } from "../../../math-common/src/unions";
 import { UserAttributes, UserCreationAttributes } from "../../../math-common/build/userTypes";
+import Answer from "./answer/answer.model";
 export default class User extends Model<UserAttributes, UserCreationAttributes> {
-    authorized: boolean;
-    lastHeartbeatTime: Date;
     uuid: string;
     firstName: string;
     lastName: string;
@@ -12,4 +11,5 @@ export default class User extends Model<UserAttributes, UserCreationAttributes> 
     password: string;
     access_token: string;
     userType: UesrType;
+    answers: Answer[];
 }

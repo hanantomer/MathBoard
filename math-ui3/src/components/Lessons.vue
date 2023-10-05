@@ -12,7 +12,7 @@
           <v-icon>mdi-plus</v-icon>
         </v-btn>
       </v-toolbar>
-      <v-card-title>
+      <!-- <v-card-title>
         <v-text-field
           v-model="search"
           append-icon="mdi-magnify"
@@ -20,28 +20,40 @@
           single-line
           hide-details
         ></v-text-field>
-      </v-card-title>
+      </v-card-title> -->
       <v-data-table
+        v-model:items-per-page="itemsPerPage"
+        :headers="headers"
+        :items="lessons"
+        item-value="name"
+        class="elevation-1"
+        @click:row ="selectLesson"
+        :hide-no-data="true"
+        :hover="true"
+      ></v-data-table>
+      <!-- <v-data-table
+
         :search="search"
         :v-bind:headers="headers"
-        :items="lessons"
-        :items-per-page="10"
+        item-value="name"
+        :items="lessons1"
+        v-model:items-per-page="itemsPerPage"
         class="elevation-1"
         click:row="seletctLesson"
-      ></v-data-table>
+      ></v-data-table> -->
     </v-card>
   </v-container>
 </template>
 <script setup lang="ts">
 import NewItemDialog from "./NewItemDialog.vue";
 import { LessonAttributes } from "../../../math-common/build/lessonTypes";
-import { computed, ref } from "vue"
 import { useUserStore } from "../store/pinia/userStore";
 import { useLessonStore } from "../store/pinia/lessonStore";
-import { watch } from 'vue'
+import { ref, computed, watch, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useRoute } from 'vue-router'
 import useEventBus from "../helpers/eventBus";
+let lessonsLoaded = ref(false)
 const eventBus = useEventBus();
 const router = useRouter()
 const route = useRoute()
@@ -53,23 +65,63 @@ let lessonDialogTitle = "<span>Please specify <strong>lesson</strong> title</spa
 let search = ref("");
 const menu = [
   { icon: "plus", title: "Add" },
-  { icon: "remove", title: "Remove" },
+  //{ icon: "remove", title: "Remove" },
 ];
+let itemsPerPage = 10;
 
-watch(route, (to) => {
-  lessonStore.loadLessons();
-  if (userStore.isTeacher()  && !lessonStore.getLessons()) {
+// watch(route, (to)  => {
+//   lessonStore.loadLessons();
+//   if (userStore.isTeacher()  && !lessonStore.getLessons()) {
+//     openLessonDialog();
+//   }
+// }, { flush: 'pre', immediate: true, deep: true });
+
+onMounted(() =>  loadLessons());
+
+watch(() => eventBus.bus.value.get("newItemDialogSave"), (val: string) => {
+  saveLesson(val[0]);
+});
+
+const headers = computed(() => [
+  {
+    title: "Name",
+    key: "name",
+    sortable: false,
+  },
+  {
+    title: "Created At",
+    key: "createdAt",
+    sortable: false,
+  },
+]);
+
+
+const lessons = computed(() => {
+  let rows = Array.from(lessonStore.getLessons().value.values()).map((l: LessonAttributes) => {
+    return {
+      uuid: l.uuid,
+      name: l.name,
+      createdAt:
+        l.createdAt ?
+        new Date(l.createdAt).toLocaleDateString('en-us', { weekday: "long", year: "numeric", month: "short", day: "numeric" }) :
+        ""
+    }
+  })
+  return rows;
+});
+
+async function loadLessons() {
+  await lessonStore.loadLessons();
+  if (userStore.isTeacher()  && lessonStore.getLessons().value.size ===  0) {
     openLessonDialog();
   }
-}, { flush: 'pre', immediate: true, deep: true });
+  lessonsLoaded.value = true;
+}
 
 function openLessonDialog() {
   lessonDialog.value = true;
 };
 
-watch(() => eventBus.bus.value.get("newItemDialogSave"), (val: string) => {
-  saveLesson(val[0]);
-});
 
 async function saveLesson(lessonName: string) {
       lessonDialog.value = false;
@@ -79,28 +131,11 @@ async function saveLesson(lessonName: string) {
       });
 };
 
-async function seletctLesson(lesson: LessonAttributes) {
+async function selectLesson(e:PointerEvent, row: any) {
   router.push({
-    path: "/lesson/" + lesson.uuid,
+    path: "/lesson/" + row.item.uuid,
   });
 };
-
-const headers = computed(() => [
-  {
-    text: "Name",
-    value: "name",
-  },
-  {
-    text: "Created At",
-    value: "createdAt",
-  },
-]);
-
-const lessons = computed(() => {
-  return Object.entries(lessonStore.getLessons()).map((l: LessonAttributes[]) => l[1]).map((l: LessonAttributes) => {
-    return { uuid: l.uuid, name: l.name, createdAt: l.createdAt }
-  })
-});
 
 </script>
 

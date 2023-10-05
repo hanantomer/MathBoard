@@ -1,5 +1,5 @@
-import { Model, Column, BelongsTo, ForeignKey, DataType } from "sequelize-typescript";
-import { NotationType, BoardType } from "../../../../../math-common/build/enum";
+import { Model, Column, BelongsTo, ForeignKey, DataType, AllowNull } from "sequelize-typescript";
+import { NotationType, BoardType } from "../../../../../math-common/src/unions";
 import {
     LessonPointAttributes,
     LessonPointCreationAttributes,
@@ -13,30 +13,42 @@ export default class LessonSign extends Model<
     LessonPointAttributes,
     LessonPointCreationAttributes
 > {
-    notationType = NotationType.SIGN;
-    boardType = BoardType.LESSON;
+    notationType = "SIGN";
+    boardType = "LESSON";
 
+    @AllowNull(false)
     @Column({ type: DataType.UUID, defaultValue: DataType.UUIDV4 })
     uuid!: string;
 
     @ForeignKey(() => User)
     userId!: number;
 
-    @BelongsTo(() => User)
+    @BelongsTo(() => User, {
+        foreignKey: {
+            allowNull: false,
+        },
+    })
     user!: User;
 
     @ForeignKey(() => Lesson)
     lessonId!: number;
 
-    @BelongsTo(() => Lesson)
+    @BelongsTo(() => Lesson, {
+        foreignKey: {
+            allowNull: false,
+        },
+    })
     lesson!: Lesson;
 
+    @AllowNull(false)
     @Column({ type: DataType.INTEGER })
     col!: number;
 
+    @AllowNull(false)
     @Column({ type: DataType.INTEGER })
     row!: number;
 
+    @AllowNull(false)
     @Column({ type: DataType.STRING })
     value!: string;
 }

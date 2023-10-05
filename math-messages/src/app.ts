@@ -2,14 +2,14 @@ import feathers, { Application } from "@feathersjs/feathers";
 import socketio from "@feathersjs/socketio";
 import constants from "./constants";
 
-type ServiceTypes = {
-  // Add services path to type mapping here
-};
+//type ServiceTypes = {
+//  // Add services path to type mapping here
+//};
 
 // app.get and app.set can be typed when initializing the app
-type Configuration = {
-  port: number;
-};
+//type Configuration = {
+//  port: number;
+//};
 
 
 const app: any  = feathers.feathers();

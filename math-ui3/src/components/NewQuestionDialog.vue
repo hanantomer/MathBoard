@@ -72,7 +72,7 @@ function save() {
   eventBus.emit("save", name );
 };
 
-const lessons = computed(() => Array.from(lessonStore.getLessons()).map(([key, value]) => { return value }));
+const lessons = computed(() => Array.from(lessonStore.getLessons().value).map(([key, value]) => { return value }));
 
 const selectedLesson = computed({
   get() {

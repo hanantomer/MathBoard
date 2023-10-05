@@ -1,5 +1,5 @@
-export const messagingHost = "/msg";  // see proxy configuration in vite.config.ts
-//export const apiHost = "http://localhost:8080";
+//export const messagingHost = "/msg";  // see proxy configuration in vite.config.ts
+//export const apiHost = "/api";
 export const matrixDimensions = {
   rowsNum: 24,
   colsNum: 44,

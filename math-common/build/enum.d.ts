@@ -24,18 +24,11 @@ export declare enum AreaSelectionMode {
     SELECTING = 0,
     MOVE = 1
 }
-export declare enum EditMode {
-    SYMBOL = 0,
-    POWER = 1,
-    TEXT = 2,
-    FRACTION = 3,
-    SQRT = 4,
-    DELETING = 5,
-    SELECT = 6,
-    CHECKMARK = 7,
-    SEMICHECKMARK = 8,
-    XMARK = 9
-}
+export type EditMode = "SYMBOL" | "POWER" | "TEXT" | "FRACTION" | "SQRT" | "DELETING" | // mouse clicked following delete button pressed
+"SELECT" | //  after select button pressed
+"CHECKMARK" | // after checkmark button pressed
+"SEMICHECKMARK" | // after semicheck button pressed
+"XMARK";
 export declare enum UesrType {
     TEACHER = 0,
     STUDENT = 1

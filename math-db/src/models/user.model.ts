@@ -4,14 +4,16 @@ import {
     Model,
     Column,
     DataType,
-    
+    AllowNull,
+    HasMany
 } from "sequelize-typescript";
 
-import { UesrType } from "../../../math-common/build/enum";
+import { UesrType } from "../../../math-common/src/unions";
 import {
     UserAttributes,
     UserCreationAttributes,
 } from "../../../math-common/build/userTypes";
+import Answer from "./answer/answer.model";
 
 
 @DefaultScope(() => ({
@@ -30,28 +32,32 @@ import {
         },
     ],
 })
-export default class User extends Model<UserAttributes, UserCreationAttributes> {
-    authorized!: boolean;
-    lastHeartbeatTime!: Date;
-
+export default class User extends Model<
+    UserAttributes,
+    UserCreationAttributes
+> {
+    @AllowNull(false)
     @Column({
         type: DataType.UUID,
         defaultValue: DataType.UUIDV4,
     })
     uuid!: string;
 
+    @AllowNull(false)
     @Column({
         type: DataType.STRING,
         allowNull: false,
     })
     firstName!: string;
 
+    @AllowNull(false)
     @Column({
         type: DataType.STRING,
         allowNull: false,
     })
     lastName!: string;
 
+    @AllowNull(false)
     @Column({
         type: DataType.STRING,
         allowNull: false,
@@ -64,6 +70,7 @@ export default class User extends Model<UserAttributes, UserCreationAttributes> 
     })
     imageUrl!: string;
 
+    @AllowNull(false)
     @Column({
         type: DataType.STRING,
         allowNull: false,
@@ -76,9 +83,15 @@ export default class User extends Model<UserAttributes, UserCreationAttributes> 
     })
     access_token!: string;
 
+    @AllowNull(false)
     @Column({
         type: DataType.STRING,
         allowNull: true,
     })
     userType!: UesrType;
+
+    @HasMany(() => Answer, {
+        foreignKey: "answerId",
+    })
+    answers!: Answer[];
 }

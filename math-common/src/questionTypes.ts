@@ -1,47 +1,45 @@
-import { UserAttributes } from "./userTypes";
 import { LessonAttributes } from "./lessonTypes";
-import { BaseEntity, BaseNotation, LineAttributes, PointAttributes, RectAttributes } from "./baseTypes";
+import { 
+  LineAttributes, 
+  PointAttributes, 
+  RectAttributes, 
+  SingleValueAttributes,
+  BoardAttributes,
+  EntityAttributes,
+  NotationAttributes
+} from "./baseTypes";
 
 // question
 
-export interface QuestionAttributes extends BaseEntity{
-  name: string;
-  user: UserAttributes;
+export type QuestionAttributes = EntityAttributes & BoardAttributes & {
+
   lesson: LessonAttributes;
+  lessonId: number; // redendunt bu required sequelize to build correct sql
 }
 
-export type QuestionCreateAttributes = Omit<QuestionAttributes, keyof BaseEntity> 
+export type QuestionCreateAttributes = Omit<QuestionAttributes, keyof EntityAttributes>
 
-// question notations
+// every question notations has a lesson as parent
 
-interface QuestionNotationAttributes {
+type QuestionNotationAttributes = {
   question: QuestionAttributes;
 }
 
 // line
 
-export interface QuestionLineAttributes extends 
-    BaseNotation,
-    LineAttributes,
-    QuestionNotationAttributes {}
+export type  QuestionLineAttributes = EntityAttributes & NotationAttributes & LineAttributes &  QuestionNotationAttributes;
 
-export type QuestionLineCreationAttributes = Omit<QuestionLineAttributes, keyof BaseEntity> 
+export type QuestionLineCreationAttributes = Omit<QuestionLineAttributes, keyof EntityAttributes> 
   
 // point
 
-export interface QuestionPointAttributes extends 
-    BaseNotation,
-    PointAttributes,
-    QuestionNotationAttributes {}
+export type QuestionPointAttributes = EntityAttributes & NotationAttributes & PointAttributes &  QuestionNotationAttributes & SingleValueAttributes;
 
-export type QuestionPointCreationAttributes = Omit<QuestionPointAttributes, keyof BaseEntity>     
+export type QuestionPointCreationAttributes = Omit<QuestionPointAttributes, keyof EntityAttributes>     
 
 // rect
 
-export interface QuestionRectAttributes extends 
-    BaseNotation,
-    RectAttributes,
-    QuestionNotationAttributes {}
+export type QuestionRectAttributes = EntityAttributes & NotationAttributes & RectAttributes &  QuestionNotationAttributes;
 
-export type QuestionRectCreationAttributes = Omit<QuestionRectAttributes, keyof BaseEntity>         
+export type QuestionRectCreationAttributes = Omit<QuestionRectAttributes, keyof EntityAttributes>     
 

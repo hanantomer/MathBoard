@@ -11,7 +11,7 @@ import {
 
 import {
     StudentLessonAttributes,
-    StudentLessonCreateAttributes,
+    StudentLessonCreationAttributes,
 } from "../../../../math-common/build/userTypes";
 
 
@@ -34,17 +34,26 @@ import {
 }))
 export default class StudentLesson extends Model<
     StudentLessonAttributes,
-    StudentLessonCreateAttributes> {
+    StudentLessonCreationAttributes
+> {
     @ForeignKey(() => User)
     userId!: number;
 
-    @BelongsTo(() => User)
+    @BelongsTo(() => User, {
+        foreignKey: {
+            allowNull: false,
+        },
+    })
     user!: User;
 
     @ForeignKey(() => Lesson)
     lessonId!: number;
 
-    @BelongsTo(() => Lesson)
+    @BelongsTo(() => Lesson, {
+        foreignKey: {
+            allowNull: false,
+        },
+    })
     lesson!: Lesson;
 };
 

@@ -99,7 +99,7 @@ export default function useMatrixHelper() {
             elements[i].style.display = display[i];
         }
         return elements.find((item) => item.tagName == tagName &&
-            (!notationType || notationType == item.attributes.notationType.value));
+            (!notationType || notationType == item.attributes.notationType?.value));
     }
     //TODO: call from component onmount with SVGID as paameter
     //onMounted(() => {
@@ -175,7 +175,6 @@ export default function useMatrixHelper() {
         return {
             col: nextCol,
             row: nextRow,
-            value: ""
         };
     }
     function setNextRect(horizontalStep, verticalStep) {

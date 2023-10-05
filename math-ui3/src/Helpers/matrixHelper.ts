@@ -5,14 +5,14 @@ import {
   NotationType,
   NotationTypeShape,
   NotationShape,
-} from "common/enum";
+} from "common/unions";
 import { DotPosition, getDefaultFontSize } from "common/globals";
 import * as d3 from "d3";
 import { useNotationStore } from "../store/pinia/notationStore"
 
 
 import {
-  BaseNotation,
+  NotationAttributes,
   PointAttributes,
   LineAttributes,
   RectAttributes,
@@ -89,10 +89,10 @@ export default function useMatrixHelper() {
 
   /// call from component mount
 
-  function init(el: HTMLElement, svgId: string) {
-    setRectSize(svgId);
-    setTextMeasurementCtx(el);
-  }
+  // function init(el: HTMLElement, svgId: string) {
+  //   setRectSize(svgId);
+  //   setTextMeasurementCtx(el);
+  // }
 
   function freeTextRectWidth(text: string) {
     return (<any>window).textMeasurementCtx.measureText(text).width / rectSize;
@@ -105,16 +105,16 @@ export default function useMatrixHelper() {
 
   //   $isRect(notationType) {
   //     return (
-  //       notationType === NotationType.TEXT ||
-  //       notationType === NotationType.IMAGE
+  //       notationType === "TEXT" ||
+  //       notationType === "IMAGE"
   //     );
   // },
 
   //   $isLine(notationType) {
   //     return (
-  //       notationType === NotationType.FRACTION ||
-  //       notationType === NotationType.SQRT ||
-  //       notationType === NotationType.SQRTSYMBOL ||
+  //       notationType === "FRACTION" ||
+  //       notationType === "SQRT" ||
+  //       notationType === "SQRTSYMBOL" ||
   //       notationType === NotationType.LEFT_HANDLE ||
   //       notationType === NotationType.RIGHT_HANDLE
   //     );
@@ -153,7 +153,7 @@ export default function useMatrixHelper() {
     return elements.find(
       (item) =>
         item.tagName == tagName &&
-        (!notationType || notationType == item.attributes.notationType.value)
+        (!notationType || notationType == item.attributes.notationType?.value)
     );
   }
 
@@ -173,14 +173,18 @@ export default function useMatrixHelper() {
   //   }),
 
   function setMatrix(svgId: string) {
+    const el = document.getElementById(svgId);
+    if (!el) return;
+    setRectSize(svgId);
+    setTextMeasurementCtx(el);
+
     // render rows
     for (var row = 0; row < rowsNum; row++) {
       matrix.push(d3.range(colsNum));
     }
 
     // render rectangles
-    d3
-      .select("#" + svgId)
+    d3.select("#" + svgId)
       .selectAll("g")
       .data(matrix)
       .enter()
@@ -215,7 +219,7 @@ export default function useMatrixHelper() {
     horizontalStep: number,
     verticalStep: number
   ): PointAttributes | undefined {
-    if (!notationStore.activeCell?.col || notationStore.activeCell?.row) {
+    if (notationStore.activeCell?.col == null || !notationStore.activeCell?.row == null) {
       return;
     }
 
@@ -245,7 +249,6 @@ export default function useMatrixHelper() {
     return {
       col: nextCol,
       row: nextRow,
-      value: ""
     };
   }
 
@@ -259,7 +262,7 @@ export default function useMatrixHelper() {
       notationStore.setActiveCell(nextRect);
 
       //TODO: move to caller
-      //if (notationStore.this.getParent().boardType === BoardType.LESSON) {
+      //if (notationStore.this.getParent().boardType === "LESSON") {
       //  this.userOperationsMixin_syncOutgoingActiveCell(nextRect);
       //}
     }
@@ -271,24 +274,24 @@ export default function useMatrixHelper() {
       ?.querySelector(`rect[col='${point.col}']`);
   }
 
-  function removeNotation(n: BaseNotation) {
+  function removeNotation(n: NotationAttributes) {
     document?.getElementById(n.uuid + n.notationType)?.remove();
   }
 
-  function enrichNotations(notations: BaseNotation[]) {
-    let enrichedNotations: BaseNotation[] = [];
+  function enrichNotations(notations: NotationAttributes[]) {
+    let enrichedNotations: NotationAttributes[] = [];
     for (const key in notations) {
       if (Object.hasOwnProperty.call(notations, key)) {
         const notation = notations[key];
         enrichedNotations.push(notation);
         // add sqrt symbol
-        if (notation.notationType === NotationType.SQRT) {
+        if (notation.notationType === "SQRT") {
           let sqrtNotation = notation;
-          sqrtNotation.notationType = NotationType.SQRTSYMBOL;
+          sqrtNotation.notationType = "SQRTSYMBOL";
           enrichedNotations.push(sqrtNotation);
         }
         // calculate image dimensions
-        // if (element.type === NotationType.IMAGE) {
+        // if (element.type === "IMAGE") {
         //   let image = new Image();
         //   this.loadImage(image, element.value);
         //   element.toCol = Math.round(
@@ -305,7 +308,7 @@ export default function useMatrixHelper() {
   }
 
   function refreshScreen(
-    notations: BaseNotation[],
+    notations: NotationAttributes[],
     svgId: string,
     el: HTMLElement
   ) {
@@ -328,15 +331,15 @@ export default function useMatrixHelper() {
       );
   }
 
-  function height(n: BaseNotation): number | null {
+  function height(n: NotationAttributes): number | null {
     switch (NotationTypeShape.get(n.notationType)) {
-      case NotationShape.POINT: {
+      case "POINT": {
         return pointNotationHeight(n as PointNotationAttributes);
       }
-      case NotationShape.LINE: {
+      case "LINE": {
         return lineNotationHeight(n as LineNotationAttributes);
       }
-      case NotationShape.RECT: {
+      case "RECT": {
         return rectNotationHeight(n as RectNotationAttributes);
       }
     }
@@ -348,10 +351,10 @@ export default function useMatrixHelper() {
     return (
       enter
         .append("foreignObject")
-        .attr("type", (n: BaseNotation) => {
+        .attr("type", (n: NotationAttributes) => {
           return n.notationType;
         })
-        .attr("id", (n: BaseNotation) => {
+        .attr("id", (n: NotationAttributes) => {
           return id(n);
         })
         .attr("col", (n: PointAttributes) => {
@@ -372,25 +375,25 @@ export default function useMatrixHelper() {
         .attr("toRow", (n: RectAttributes) => {
           return n?.toRow;
         })
-        .attr("x", (n: BaseNotation) => {
+        .attr("x", (n: NotationAttributes) => {
           return x(n);
         })
-        .attr("y", (n: BaseNotation) => {
+        .attr("y", (n: NotationAttributes) => {
           return y(n);
         })
-        .attr("width", (n: BaseNotation) => {
+        .attr("width", (n: NotationAttributes) => {
           return width(n);
         })
-        .attr("height", (n: BaseNotation) => {
+        .attr("height", (n: NotationAttributes) => {
           return height(n);
         })
-        .style("font-size", (n: BaseNotation) => {
+        .style("font-size", (n: NotationAttributes) => {
           return fontSize(n, el);
         })
         //.style("color", (n) => {
         //  return this.$color(n);
         //})
-        .html((n: BaseNotation) => {
+        .html((n: NotationAttributes) => {
           return html(n);
         })
     );
@@ -402,22 +405,22 @@ export default function useMatrixHelper() {
         //.style("color", (n) => {
         //  return this.$color(n);
         //})
-        .attr("x", (n: BaseNotation) => {
+        .attr("x", (n: NotationAttributes) => {
           return x(n);
         })
-        .attr("y", (n: BaseNotation) => {
+        .attr("y", (n: NotationAttributes) => {
           return y(n);
         })
-        .attr("col", (n: BaseNotation) => {
+        .attr("col", (n: NotationAttributes) => {
           return col(n);
         })
-        .attr("row", (n: BaseNotation) => {
+        .attr("row", (n: NotationAttributes) => {
           return row(n);
         })
-        .attr("width", (n: BaseNotation) => {
+        .attr("width", (n: NotationAttributes) => {
           return width(n);
         })
-        .html((n: BaseNotation) => {
+        .html((n: NotationAttributes) => {
           return html(n);
         })
     );
@@ -435,69 +438,70 @@ export default function useMatrixHelper() {
       });
   }
 
-  function id(n: BaseNotation) {
+  function id(n: NotationAttributes) {
     return n.notationType + n.uuid;
   }
 
-  function col(n: BaseNotation) : number | null{
+  function col(n: NotationAttributes) : number | null{
     switch (NotationTypeShape.get(n.notationType)) {
-      case NotationShape.POINT: {
+      case "POINT": {
         return (n as PointNotationAttributes).col;
       }
-      case NotationShape.LINE:
-      case NotationShape.RECT: {
+      case "LINE":
+      case "RECT": {
         return (n as LineNotationAttributes).fromCol;
       }
     }
     return null;
   }
 
-  function row(n: BaseNotation) {
+  function row(n: NotationAttributes) {
     switch (NotationTypeShape.get(n.notationType)) {
-      case NotationShape.POINT:
-      case NotationShape.LINE: {
+      case "POINT":
+      case "LINE": {
         return (n as LineNotationAttributes).row;
       }
-      case NotationShape.RECT: {
+      case "RECT": {
         return (n as RectNotationAttributes).fromRow;
       }
     }
     return null;
   }
 
-  function x(n: BaseNotation) : number | null {
+  function x(n: NotationAttributes) : number | null {
     let colIdx = col(n);
     let deltaX =
-      n.notationType === NotationType.SQRTSYMBOL ||
-      n.notationType === NotationType.POWER
-        ? Math.round(this.rectSize / 3) * -1
+      n.notationType === "SQRTSYMBOL" ||
+      n.notationType === "POWER"
+        ? Math.round(rectSize / 3) * -1
         : 0;
 
     return colIdx ? getNotationXposByCol(colIdx) + deltaX : null;
   }
 
-  function y(n: BaseNotation) {
+  function y(n: NotationAttributes) {
     let rowIdx = row(n);
+    if (!rowIdx) return null;
     let deltaY =
-      n.notationType === NotationType.POWER
+      n.notationType === "POWER"
         ? -5
-        : n.notationType === NotationType.FRACTION ||
-          n.notationType === NotationType.SQRT
+        : n.notationType === "FRACTION" ||
+          n.notationType === "SQRT"
         ? -4
         : 0;
 
-    return this.getNotationYposByRow(rowIdx) + deltaY;
+    return getNotationYposByRow(rowIdx) + deltaY;
   }
 
-  function width(n: BaseNotation): number | null {
+  function width(n: NotationAttributes): number | null {
     switch (NotationTypeShape.get(n.notationType)) {
-      case NotationShape.POINT: {
+      case "POINT": {
         return pointNotationWidth(n as PointNotationAttributes);
       }
-      case NotationShape.LINE: {
+      case "LINE": {
         return lineNotationWidth(n as LineNotationAttributes);
       }
-      case NotationShape.RECT: {
+      case "RECT": {
         return rectNotationWidth(n as RectNotationAttributes);
       }
     }
@@ -513,7 +517,7 @@ export default function useMatrixHelper() {
   }
 
   function rectNotationWidth(n: RectAttributes): number {
-    // if (n.notationType === NotationType.TEXT) {
+    // if (n.notationType === "TEXT") {
     //   return (
     //     (<any>window).textMeasurementCtx.measureText(n.value).width +
     //     1 * n.value.length
@@ -534,54 +538,47 @@ export default function useMatrixHelper() {
     return (n.toRow - n.fromRow) * rectSize + 5;
   }
 
-  function fontSize(n: BaseNotation, el: HTMLElement) {
-    return n.notationType === NotationType.POWER
+  function fontSize(n: NotationAttributes, el: HTMLElement) {
+    return n.notationType === "POWER"
       ? powerFontSize()
-      : n.notationType === NotationType.TEXT
+      : n.notationType === "TEXT"
       ? textFontSize(el)
-      : n.notationType === NotationType.SIGN
+      : n.notationType === "SIGN"
       ? signFontSize()
       : regularFontSize;
   }
 
-  function html(n: BaseNotation) {
-    if (n.notationType === NotationType.FRACTION) {
+  function html(n: NotationAttributes) {
+    if (n.notationType === "FRACTION") {
       let n1 = n as LineNotationAttributes;
       return `<span class=line style='width:${
         (n1.toCol - n1.fromCol) * rectSize
       }px;'></span>`;
     }
 
-    if (n.notationType === NotationType.SQRT) {
+    if (n.notationType === "SQRT") {
       let n1 = n as LineNotationAttributes;
       return `<span class=line style='position:relative;left:9px;width:${
         (n1.toCol - n1.fromCol) * rectSize - 8
       }px;'></span>`;
     }
 
-    if (n.notationType === NotationType.SQRTSYMBOL) {
+    if (n.notationType === "SQRTSYMBOL") {
       return `<p style='position:relative;left:5px; font-size:1.4em'>&#x221A;</p>`;
     }
 
-    if (n.notationType === NotationType.TEXT) {
+    if (n.notationType === "TEXT") {
       let n1 = n as RectNotationAttributes;
 
       let bColor = borderColor(n === notationStore.activeNotation);
       return `<pre style='border:groove 2px;border-color:${bColor};background-color:${bColor}'>${n1.value}</pre>`;
     }
 
-    if (n.notationType === NotationType.IMAGE) {
+    if (n.notationType === "IMAGE") {
       let n1 = n as RectNotationAttributes;
       let bColor = borderColor(n === notationStore.activeNotation);
       return `<img style='border:groove 2px;border-color:${borderColor}' src='${n1.value}'>`;
     }
-
-    if (n.notationType === NotationType.SYMBOL) {
-      let n1 = n as RectNotationAttributes;
-      let bColor = borderColor(n === notationStore.activeNotation);
-      return `<img style='border:groove 2px;border-color:${borderColor}' src='${n1.value}'>`;
-    }
-
 
 
     let n1 = n as PointNotationAttributes;
@@ -591,8 +588,8 @@ export default function useMatrixHelper() {
 
     let color = (notationStore.getSelectedNotations().indexOf(n.uuid))
       ? "red"
-      : this.getParent().boardType === BoardType.ANSWER &&
-        this.getUser().uuid != n.user.uuid
+      : notationStore.getParent().value.type === "ANSWER" &&
+        userStore.getCurrentUser().uuid != n.user.uuid
       ? "purple"
       : "black";
 
@@ -614,7 +611,7 @@ export default function useMatrixHelper() {
         y: e.clientY,
       },
       "foreignObject",
-      NotationType.TEXT
+      "TEXT"
     );
   }
 

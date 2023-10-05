@@ -1,5 +1,5 @@
-import { Model, Column, BelongsTo, ForeignKey, DataType } from "sequelize-typescript";
-import { NotationType, BoardType } from "../../../../../math-common/build/enum";
+import { Model, Column, BelongsTo, ForeignKey, DataType, AllowNull } from "sequelize-typescript";
+import { NotationType, BoardType } from "../../../../../math-common/src/unions";
 import { UUID, UUIDV4 } from "sequelize/types/data-types";
 
 import LessonDecorator from "../../lesson/lessonDecorator";
@@ -15,36 +15,50 @@ export default class LessonImage extends Model<
     LessonRectAttributes,
     LessonRectCreationAttributes
 > {
-    notationType = NotationType.IMAGE;
-    boardType = BoardType.LESSON;
+    notationType = "IMAGE";
+    boardType = "LESSON";
 
+    @AllowNull(false)
     @Column({ type: DataType.UUID, defaultValue: DataType.UUIDV4 })
     uuid!: string;
 
     @ForeignKey(() => User)
     userId!: number;
 
-    @BelongsTo(() => User)
+    @BelongsTo(() => User, {
+        foreignKey: {
+            allowNull: false,
+        },
+    })
     user!: User;
 
     @ForeignKey(() => Lesson)
     lessonId!: number;
 
-    @BelongsTo(() => Lesson)
+    @BelongsTo(() => Lesson, {
+        foreignKey: {
+            allowNull: false,
+        },
+    })
     lesson!: Lesson;
 
+    @AllowNull(false)
     @Column({ type: DataType.INTEGER })
     fromCol!: number;
 
+    @AllowNull(false)
     @Column({ type: DataType.INTEGER })
     toCol!: number;
 
+    @AllowNull(false)
     @Column({ type: DataType.INTEGER })
     fromRow!: number;
 
+    @AllowNull(false)
     @Column({ type: DataType.INTEGER })
     toRow!: number;
 
+    @AllowNull(false)
     @Column({ type: DataType.STRING })
     value!: string;
 }

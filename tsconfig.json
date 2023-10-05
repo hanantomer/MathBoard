@@ -9,7 +9,6 @@
     "module": "esnext",
     "moduleResolution": "Node",
     "strict": true,
-    "jsx": "preserve",
     "resolveJsonModule": true,
     "esModuleInterop": true,
     "lib": ["ESNext"],

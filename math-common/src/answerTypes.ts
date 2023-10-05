@@ -1,47 +1,45 @@
-import { UserAttributes } from "./userTypes";
 import { QuestionAttributes } from "./questionTypes";
-import { BaseEntity, BaseNotation, LineAttributes, PointAttributes, RectAttributes } from "./baseTypes";
+import { 
+  LineAttributes, 
+  PointAttributes, 
+  RectAttributes, 
+  SingleValueAttributes,
+  BoardAttributes,
+  EntityAttributes,
+  NotationAttributes
+} from "./baseTypes";
 
 // answer
 
-export interface AnswerAttributes extends BaseEntity{
-  name: string;
-  user: UserAttributes;
+export type AnswerAttributes = EntityAttributes & BoardAttributes & {
+
   question: QuestionAttributes;
+  //questionId: number; // redundant but required for sequelize to build correct sql
 }
 
-export type AnswerCreateAttributes = Omit<AnswerAttributes, keyof BaseEntity> 
+export type AnswerCreateAttributes = Omit<AnswerAttributes, keyof EntityAttributes>
 
-// answer notations
+// every answer notations has an answer as parent
 
-interface AnswerNotationAttributes {
+type AnswerNotationAttributes = {
   answer: AnswerAttributes;
 }
 
 // line
 
-export interface AnswerLineAttributes extends 
-    BaseNotation,
-    LineAttributes,
-    AnswerNotationAttributes {}
+export type  AnswerLineAttributes = EntityAttributes & NotationAttributes & LineAttributes &  AnswerNotationAttributes;
 
-export type AnswerLineCreationAttributes = Omit<AnswerLineAttributes, keyof BaseEntity> 
+export type AnswerLineCreationAttributes = Omit<AnswerLineAttributes, keyof EntityAttributes> 
   
 // point
 
-export interface AnswerPointAttributes extends 
-    BaseNotation,
-    PointAttributes,
-    AnswerNotationAttributes {}
+export type AnswerPointAttributes = EntityAttributes & NotationAttributes & PointAttributes &  AnswerNotationAttributes & SingleValueAttributes;
 
-export type AnswerPointCreationAttributes = Omit<AnswerPointAttributes, keyof BaseEntity>     
+export type AnswerPointCreationAttributes = Omit<AnswerPointAttributes, keyof EntityAttributes>     
 
 // rect
 
-export interface AnswerRectAttributes extends 
-    BaseNotation,
-    RectAttributes,
-    AnswerNotationAttributes {}
+export type AnswerRectAttributes = EntityAttributes & NotationAttributes & RectAttributes &  AnswerNotationAttributes;
 
-export type AnswerRectCreationAttributes = Omit<AnswerRectAttributes, keyof BaseEntity>         
+export type AnswerRectCreationAttributes = Omit<AnswerRectAttributes, keyof EntityAttributes>     
 

@@ -4,9 +4,9 @@
     "require": ["tsconfig-paths/register"]
   },
   "compilerOptions": {
-    "outDir": "./build",
+    "noEmit": true,
     "baseUrl": ".",
-    "rootDir": "./src",
+    "rootDir": "src",
     "lib": ["ESNext", "DOM"],
     "paths": {
       "common/*": ["../math-common/src/*"]

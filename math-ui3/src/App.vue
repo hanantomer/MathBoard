@@ -103,10 +103,12 @@
         <span>Sign Out</span>
       </v-tooltip>
     </v-app-bar>
-    <v-container no-gutters fluid class="fill-height">
+
+    <v-main>
       <router-view></router-view>
-    </v-container>
-    <v-footer color="primary" padless dense>
+    </v-main>
+
+    <v-footer color="primary" padless dense style="max-height: 60px;">
       <v-col class="text-center" cols="12">
         <p style="color: white">© Copyright 2023 www.mathboard.com</p>
       </v-col>

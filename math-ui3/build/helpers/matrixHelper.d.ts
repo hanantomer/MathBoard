@@ -1,7 +1,7 @@
 export {};
-import { NotationType } from "common/enum";
+import { NotationType } from "common/unions";
 import { DotPosition } from "common/globals";
-import { BaseNotation, PointAttributes } from "common/baseTypes";
+import { NotationAttributes, PointAttributes } from "common/baseTypes";
 export default function useMatrixHelper(): {
     svgWidth: string;
     svgHeight: string;
@@ -16,5 +16,5 @@ export default function useMatrixHelper(): {
     freeTextRectHeight: (text: string) => number;
     getNotationXposByCol: (col: number) => number;
     getNotationYposByRow: (row: number) => number;
-    refreshScreen: (notations: BaseNotation[], svgId: string, el: HTMLElement) => void;
+    refreshScreen: (notations: NotationAttributes[], svgId: string, el: HTMLElement) => void;
 };

@@ -9,16 +9,28 @@ export default class Answer extends Model<
     AnswerAttributes,
     AnswerCreateAttributes
 > {
-    @ForeignKey(() => User)
-    userId!: number;
+    //    @ForeignKey(() => User)
+    //    userId!: number;
 
-    @BelongsTo(() => User)
+    @BelongsTo(() => User, {
+        foreignKey: {
+            field: "userId",
+            allowNull: false,
+            name: "userIdFk",
+        },
+    })
     user!: User;
 
-    @ForeignKey(() => Question)
-    questionId!: number;
+    //@ForeignKey(() => Question)
+    //questionId!: number;
 
-    @BelongsTo(() => Question)
+    @BelongsTo(() => Question, {
+        foreignKey: {
+            field: "questionId",
+            allowNull: false,
+            name: "questionIdFk",
+        },
+    })
     question!: Question;
 
     @Column({

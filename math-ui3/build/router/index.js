@@ -73,7 +73,7 @@ router.beforeEach(async (to, from) => {
         // auth not required
         return;
     }
-    if (userStore.getCurrentUser().id) {
+    if (userStore.getCurrentUser().uuid) {
         // already authenticated
         return;
     }

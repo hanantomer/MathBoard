@@ -22,7 +22,7 @@
 import { watch, computed, ref } from "vue"
 import {
   EditMode, AreaSelectionMode
-} from "../../../math-common/src/enum";
+} from "../../../math-common/src/unions";
 import { useNotationStore } from "../store/pinia/notationStore";
 import * as d3 from "d3";
 import useMatrixHelper from "../helpers/matrixHelper";
@@ -41,7 +41,7 @@ const props = defineProps({
   svgId: { type: String, default: "" }
 })
 
-let selectionMode :AreaSelectionMode = AreaSelectionMode.SELECTING;
+let selectionMode :AreaSelectionMode = "SELECTING";
 
 let selectionPosition = ref({
   x1: 0,
@@ -132,30 +132,30 @@ function handleMouseMove(e : MouseEvent) {
         return;
       }
 
-      if (notationStore.getEditMode().value != EditMode.SELECT) {
+      if (notationStore.getEditMode().value != 'SELECT') {
         return;
       }
 
-      if (selectionMode == AreaSelectionMode.SELECTING) {
+      if (selectionMode == "SELECTING") {
         updateSelectionArea(e);
         return;
       }
 
-      if (selectionMode === AreaSelectionMode.MOVE) {
+      if (selectionMode === "MOVE") {
         moveSelection(e);
         return;
       }
 };
 
 function handleMouseUp(e: MouseEvent) {
-      if (notationStore.getEditMode().value !== EditMode.SELECT) {
+      if (notationStore.getEditMode().value !== 'SELECT') {
         return;
       }
-      if (selectionMode === AreaSelectionMode.SELECTING) {
+      if (selectionMode === "SELECTING") {
         endSelect();
         return;
       }
-      if (selectionMode === AreaSelectionMode.MOVE) {
+      if (selectionMode === "MOVE") {
         endMoveSelection(e);
         return;
       }
@@ -204,7 +204,7 @@ function updateSelectionArea(e: MouseEvent) {
 };
 
 function endSelect() {
-      selectionMode = AreaSelectionMode.MOVE;
+      selectionMode = "MOVE";
       if (selectionPosition.value.x2 != selectionPosition.value.x1) {
         normalizeSelection();
 
@@ -276,7 +276,7 @@ function endMoveSelection(e: MouseEvent) {
   let selectedNotationKeys = notationStore.getSelectedNotations();
   notationMutateHelper.updateSelectedNotationCoordinates();
   selectedNotationKeys.forEach((notationKey) => {
-    let notation = notationStore.getNotations().get(notationKey);
+    let notation = notationStore.getNotations().value.get(notationKey);
     if (notation) {
       userOutgoingOperationsSyncHelper.
         syncOutgoingUpdateSelectedNotation(notation)
@@ -289,8 +289,8 @@ function resetSelection() {
       dragPosition.value.x = 0;
       dragPosition.value.y = 0;
       selectionPosition.value.x1 = selectionPosition.value.x2 = selectionPosition.value.y1 = selectionPosition.value.y2 = 0;
-      selectionMode = AreaSelectionMode.SELECTING;
-      notationStore.getEditMode().value = EditMode.SYMBOL;
+      selectionMode = "SELECTING";
+      notationStore.getEditMode().value = 'SYMBOL';
       //$store.dispatch("unselectAllNotations");
 };
 

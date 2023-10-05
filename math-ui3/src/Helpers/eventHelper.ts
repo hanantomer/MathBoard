@@ -1,7 +1,5 @@
-import { BoardType, EditMode } from "common/enum";
 import { useUserStore } from "../store/pinia/userStore"
 import { useNotationStore } from "../store/pinia/notationStore"
-
 
 import useMatrixHelper from "./matrixHelper";
 import useNotationMutationHelper from "./notationMutateHelper";
@@ -51,64 +49,65 @@ export default function eventHelper() {
     reader.readAsDataURL(item?.getAsFile() as Blob);
   };
 
-  function keyUp(e: KeyboardEvent) {
-      if (e.ctrlKey || e.altKey) {
+  function keyUp(e: KeyboardEvent[]) {
+    const { ctrlKey, altKey, code, key } = e[0];
+      if (ctrlKey || altKey) {
         return;
       }
 
       if (
         !(
-          e.code.startsWith("Digit") ||
-          e.code.startsWith("Key") ||
-          e.code.startsWith("Numpad") ||
-          e.code === "Minus" ||
-          e.code === "Delete" ||
-          e.code === "Backspace" ||
-          e.code === "Plus" ||
-          e.code === "Equal" ||
-          e.code === "Period" ||
-          e.code === "ArrowLeft" ||
-          e.code === "ArrowRight" ||
-          e.code === "ArrowUp" ||
-          e.code === "ArrowDown" ||
-          e.code === "Space"
+          code.startsWith("Digit") ||
+          code.startsWith("Key") ||
+          code.startsWith("Numpad") ||
+          code === "Minus" ||
+          code === "Delete" ||
+          code === "Backspace" ||
+          code === "Plus" ||
+          code === "Equal" ||
+          code === "Period" ||
+          code === "ArrowLeft" ||
+          code === "ArrowRight" ||
+          code === "ArrowUp" ||
+          code === "ArrowDown" ||
+          code === "Space"
         )
       ) {
         return;
       }
 
-      if (e.code === "Backspace") {
+      if (code === "Backspace") {
         notationMutationHelper.removeActiveOrSelectedNotations();
         matrixHelper.setNextRect(-1, 0);
         return;
       }
 
-      if (e.code === "Delete") {
+      if (code === "Delete") {
         notationMutationHelper.removeActiveOrSelectedNotations();
         return;
       }
 
-      if (e.code === "ArrowLeft") {
+      if (code === "ArrowLeft") {
         matrixHelper.setNextRect(-1, 0);
         return;
       }
 
-      if (e.code === "ArrowRight" || e.code === "Space") {
+      if (code === "ArrowRight" || code === "Space") {
         matrixHelper.setNextRect(1, 0);
         return;
       }
 
-      if (e.code === "ArrowUp") {
+      if (code === "ArrowUp") {
         matrixHelper.setNextRect(0, -1);
         return;
       }
 
-      if (e.code === "ArrowDown") {
-        matrixHelper.setNextRect(0, -1);
+      if (code === "ArrowDown") {
+        matrixHelper.setNextRect(0, 1);
         return;
       }
 
-      if (e.code === "Enter") {
+      if (code === "Enter") {
         matrixHelper.setNextRect(0, -1);
         return;
       }
@@ -117,27 +116,30 @@ export default function eventHelper() {
         return;
       }
 
-      notationMutationHelper.addSymbolNotation(e.key);
+      notationMutationHelper.addSymbolNotation(key);
   };
 
   function mouseDown(e: MouseEvent) {
       if (
-        notationStore.getEditMode().value === EditMode.FRACTION ||
-        notationStore.getEditMode().value === EditMode.SQRT ||
-        notationStore.getEditMode().value === EditMode.SELECT
+        notationStore.getEditMode().value === "FRACTION" ||
+        notationStore.getEditMode().value === "SQRT" ||
+        notationStore.getEditMode().value === "SELECT"
       ) {
         return;
       }
 
       let activeCell = activateObjectHelper.activateClickedObject(e);
-      if (activeCell && notationStore.getParent().type == BoardType.LESSON) {
-        userOutgoingOperations.syncOutgoingActiveCell(activeCell);
+      if (
+        activeCell &&
+        notationStore.getParent().value.type == "LESSON"
+      ) {
+        //TODO: uncheck        userOutgoingOperations.syncOutgoingActiveCell(activeCell);
       }
 
       if (
-        notationStore.getEditMode().value === EditMode.CHECKMARK ||
-        notationStore.getEditMode().value === EditMode.SEMICHECKMARK ||
-        notationStore.getEditMode().value === EditMode.XMARK
+        notationStore.getEditMode().value === "CHECKMARK" ||
+        notationStore.getEditMode().value === "SEMICHECKMARK" ||
+        notationStore.getEditMode().value === "XMARK"
       ) {
         notationMutationHelper.addMarkNotation();
         return;

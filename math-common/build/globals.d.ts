@@ -1,4 +1,3 @@
-export declare const messagingHost = "/msg";
 export declare const matrixDimensions: {
     rowsNum: number;
     colsNum: number;

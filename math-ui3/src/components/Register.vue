@@ -69,7 +69,6 @@
 </template>
 
 <script setup lang="ts">
-import { UesrType } from "../../../math-common/src/enum";
 import useAuthHelper from "../helpers/authHelper";
 import { ref, computed, watch } from "vue";
 import { useRouter } from "vue-router";
@@ -119,7 +118,7 @@ async function register() {
       lastName.value,
       email.value,
       password.value,
-      UesrType.STUDENT
+      "STUDENT"
     );
 
     registerForm.value = null;

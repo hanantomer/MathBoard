@@ -31,7 +31,8 @@ export default function useAuthHelper() {
         const notationStore = useNotationStore();
         return (userStore.isTeacher() || // teacher in lesson or question
             userStore.getAuthorized() || // student in lesson when authorized by teacher
-            notationStore.getParent().type.toString() == BoardType.ANSWER.toString() // student writing an  answer
+            notationStore.getParent().value.type.toString() ==
+                BoardType.ANSWER.toString() // student writing an  answer
         );
     }
     async function authGoogleUser() {

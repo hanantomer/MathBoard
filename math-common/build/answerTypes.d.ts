@@ -1,22 +1,16 @@
-import { UserAttributes } from "./userTypes";
 import { QuestionAttributes } from "./questionTypes";
-import { BaseEntity, BaseNotation, LineAttributes, PointAttributes, RectAttributes } from "./baseTypes";
-export interface AnswerAttributes extends BaseEntity {
-    name: string;
-    user: UserAttributes;
+import { LineAttributes, PointAttributes, RectAttributes, SingleValueAttributes, BoardAttributes, EntityAttributes, NotationAttributes } from "./baseTypes";
+export type AnswerAttributes = EntityAttributes & BoardAttributes & {
     question: QuestionAttributes;
-}
-export type AnswerCreateAttributes = Omit<AnswerAttributes, keyof BaseEntity>;
-interface AnswerNotationAttributes {
+};
+export type AnswerCreateAttributes = Omit<AnswerAttributes, keyof EntityAttributes>;
+type AnswerNotationAttributes = {
     answer: AnswerAttributes;
-}
-export interface AnswerLineAttributes extends BaseNotation, LineAttributes, AnswerNotationAttributes {
-}
-export type AnswerLineCreationAttributes = Omit<AnswerLineAttributes, keyof BaseEntity>;
-export interface AnswerPointAttributes extends BaseNotation, PointAttributes, AnswerNotationAttributes {
-}
-export type AnswerPointCreationAttributes = Omit<AnswerPointAttributes, keyof BaseEntity>;
-export interface AnswerRectAttributes extends BaseNotation, RectAttributes, AnswerNotationAttributes {
-}
-export type AnswerRectCreationAttributes = Omit<AnswerRectAttributes, keyof BaseEntity>;
+};
+export type AnswerLineAttributes = EntityAttributes & NotationAttributes & LineAttributes & AnswerNotationAttributes;
+export type AnswerLineCreationAttributes = Omit<AnswerLineAttributes, keyof EntityAttributes>;
+export type AnswerPointAttributes = EntityAttributes & NotationAttributes & PointAttributes & AnswerNotationAttributes & SingleValueAttributes;
+export type AnswerPointCreationAttributes = Omit<AnswerPointAttributes, keyof EntityAttributes>;
+export type AnswerRectAttributes = EntityAttributes & NotationAttributes & RectAttributes & AnswerNotationAttributes;
+export type AnswerRectCreationAttributes = Omit<AnswerRectAttributes, keyof EntityAttributes>;
 export {};

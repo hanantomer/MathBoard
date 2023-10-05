@@ -4,7 +4,7 @@
   "scripts": {
     "host": "vite --host",
     "dev": "vite",
-    "build": "vue-tsc --noEmit && vite build",
+    "build": "vue-tsc && vite build",
     "preview": "vite preview",
     "lint": "eslint . --fix --ignore-path .gitignore"
   },
@@ -30,7 +30,7 @@
     "vue-cookies": "^1.8.3",
     "vue-router": "^4.2.4",
     "vue3-cookies": "^1.0.6",
-    "vuetify": "^3.0.0",
+    "vuetify": "^3.3.20",
     "webfontloader": "^1.0.0"
   },
   "devDependencies": {

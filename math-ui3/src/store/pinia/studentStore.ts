@@ -4,11 +4,11 @@ import { reactive, ref } from "vue";
 
 export const useStudentStore = defineStore("studentanswer", () => {
 
-  let students: Map<String, UserAttributes> = reactive(
+  let students = ref<Map<String, UserAttributes>>(
     <Map<String, UserAttributes>>{}
   );
-  let authorizedStudentUUId = ref("");
 
+  let authorizedStudentUUId = ref("");
 
   function getStudents() {
     return students;

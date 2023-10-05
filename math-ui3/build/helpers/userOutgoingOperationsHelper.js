@@ -16,7 +16,6 @@ export default function userOutgoingOperations() {
     //   );
     // };
     function syncOutgoingActiveCell(activeCell) {
-        //activeCell.LessonUUId = this.getCurrentLesson().uuid;
         feathersClient
             .service("activeCell")
             .update(null, { activeCell: activeCell }, {});
@@ -26,8 +25,8 @@ export default function userOutgoingOperations() {
         feathersClient.service("notationSync").create({ notation: notation }, {});
     }
     ;
-    function syncOutgoingRemoveNotation(notation) {
-        feathersClient.service("notationSync").remove(notation.uuid, {});
+    function syncOutgoingRemoveNotation(uuid) {
+        feathersClient.service("notationSync").remove(uuid, {});
     }
     ;
     function syncOutgoingUpdateSelectedNotation(selectedNotation) {

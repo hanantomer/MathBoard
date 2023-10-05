@@ -6,12 +6,13 @@ import Answer  from "./models/answer/answer.model";
 import User from "./models/user.model";
 import db from "./models/index";
 
-import { BaseNotation } from "../../math-common/build/baseTypes";
-import { UserAttributes, StudentLessonCreateAttributes} from "../../math-common/build/userTypes";
-import { LessonCreateAttributes } from "../../math-common/build/lessonTypes";
+import { NotationAttributes } from "../../math-common/build/baseTypes";
+import { UserAttributes, StudentLessonCreationAttributes} from "../../math-common/build/userTypes";
+import { LessonCreationAttributes } from "../../math-common/build/lessonTypes";
 import { QuestionAttributes } from "../../math-common/build/questionTypes";
 import { AnswerAttributes, AnswerCreateAttributes } from "../../math-common/build/answerTypes";
 import { capitalize } from "../../math-common/build/utils";
+import models from "./models/index";
 
 
 export default function dbUtil() {
@@ -98,9 +99,9 @@ export default function dbUtil() {
     }
 
     async function createLesson(
-        lesson: LessonCreateAttributes
+        lesson: LessonCreationAttributes
     ): Promise<Lesson> {
-        (lesson as Lesson).userId = await getIdByUUId("User", lesson.user.uuid) as number;
+        (lesson as any).userId = await getIdByUUId("User", lesson .user.uuid) as number;
         return await Lesson.create(lesson);
     }
 
@@ -114,16 +115,21 @@ export default function dbUtil() {
         if (!lessonId) return null;
         return await StudentLesson.findAll({
             where: {
-                lessonId: lessonId,
+                '$lesson.id$' : lessonId
             },
         });
     }
 
+    // connect user to lesson
     async function createStudentLesson(
-        lesson: StudentLessonCreateAttributes
+        studentLesson: StudentLessonCreationAttributes
     ): Promise<StudentLesson> {
-        lesson.userId = (await getIdByUUId("User", lesson.user.uuid)) as number;
-        return await StudentLesson.create(lesson);
+        studentLesson.user.id = (await getIdByUUId(
+            "User",
+            studentLesson.user.uuid
+        )) as number;
+
+        return await StudentLesson.create(studentLesson);
     }
 
     // question
@@ -144,21 +150,21 @@ export default function dbUtil() {
         if (!lessonId) return null;
         return await Question.findAll({
             where: {
-                '$lesson.id$' : 1
+                '$lesson.id$' : lessonId
             },
         });
     }
 
     async function createQuestion(
-        question: QuestionAttributes
+        question: QuestionAttributes 
     ): Promise<Question> {
 
-        (question as Question).userId = (await getIdByUUId(
+        question.user.id  = (await getIdByUUId(
             "User",
             question.user.uuid
         )) as number;
 
-        (question as Question).lessonId = (await getIdByUUId(
+        question.lessonId = (await getIdByUUId(
             "Lesson",
             question.lesson.uuid
         )) as number;
@@ -190,12 +196,12 @@ export default function dbUtil() {
         answer: AnswerCreateAttributes
     ): Promise<Answer> {
         
-        (answer as Answer).userId = (await getIdByUUId(
+        answer.user.id = (await getIdByUUId(
             "User",
             answer.user.uuid
         )) as number;
         
-        (answer as Answer).questionId = (await getIdByUUId(
+        answer.question.id = (await getIdByUUId(
             "Question",
             answer.question.uuid
         )) as number;
@@ -230,39 +236,60 @@ export default function dbUtil() {
         notationType: String,
         parentUUId: string
     ) {
-        const boardPrefix = boardType.toString().toLowerCase();
-        const boardPrefixIdFieldName =
-            boardType.toString().toLowerCase() + "Id";
-        const boardPrefixCapitalized = capitalize(boardPrefix);
-        const notationTypeSuffix = notationType.toString().toLowerCase();
-        const notationTypeSuffixCapitalized = capitalize(notationTypeSuffix);
-        const notationName =
-            boardPrefixCapitalized + notationTypeSuffixCapitalized;
+        
+        const boardName = boardType.toString().toLowerCase(); // e.g lesson
+        const boardFieldIdFieldName =
+                    boardType.toString().toLowerCase() + "Id";
+        const boardModelName = capitalize(boardName); // e.g Lesson
+        const notationTypeName = notationType.toString().toLowerCase(); // e.g. symbol
+        const notationTypeNameCapitalized = capitalize(notationTypeName); // e.g. Symbol
+        const modelName = boardModelName + notationTypeNameCapitalized; // e.g. LessonSymbol
 
-        let parentId = await getIdByUUId(boardPrefixCapitalized, parentUUId);
+        let parentId = await getIdByUUId(boardModelName, parentUUId);
         if (!parentId) return null;
 
-        return await db.sequelize.models[notationName].findAll({
+        return await db.sequelize.models[modelName].findAll({
             where: {
-                [boardPrefixIdFieldName]: parentId,
+                [boardFieldIdFieldName]: parentId,
             },
+            include: [
+                User,
+                db.sequelize.models[boardModelName],
+            ] /*e.g. include user*/,
         });
     }
 
     async function createNotation(
         boardType: String,
         notationType: String,
-        notation: BaseNotation
+        notation: NotationAttributes
     ) {
-        ///TODO : move to utility function
-        const boardPrefix = boardType.toString().toLowerCase();
-        const boardPrefixCapitalized = capitalize(boardPrefix);
-        const notationTypeSuffix = notationType.toString().toLowerCase();
-        const notationTypeSuffixCapitalized = capitalize(notationTypeSuffix);
-        const notationName =
-            boardPrefixCapitalized + notationTypeSuffixCapitalized;
+        
+        const boardName = boardType.toString().toLowerCase(); // e.g lesson
+        const boardModelName = capitalize(boardName); // e.g Lesson
+        const notationTypeName = notationType.toString().toLowerCase(); // e.g. symbol
+        const notationTypeNameCapitalized = capitalize(notationTypeName); // e.g. Symbol
+        const modelName =
+            boardModelName + notationTypeNameCapitalized; // e.g. LessonSymbol
+        
+        (notation as any).userId = (await getIdByUUId(
+            "User",
+            notation.user.uuid
+        )) as number;
 
-        return await db.sequelize.models[notationName].create(notation as any);
+        (notation as any)[boardName + "Id"] = (await getIdByUUId(
+            boardModelName,
+            notation.parentUUId
+        )) as number;
+
+        const res  = await db.sequelize.models[modelName].create(
+            notation as any
+        );
+        
+        return await db.sequelize.models[modelName].findByPk(
+            res.dataValues.id,
+            { include: [User, db.sequelize.models[boardModelName]] /*e.g. include Lesson*/ }
+        );
     }
 
     return {

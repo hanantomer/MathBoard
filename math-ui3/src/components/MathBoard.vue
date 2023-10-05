@@ -1,52 +1,58 @@
 <template>
-  <div class="fill-height" style="width: 100%; position: relative">
-    <v-row dense style="max-height: 25px">
+    <v-row>
       <v-col cols="12" class="d-flex justify-center">
         <slot name="title"></slot>
       </v-col>
     </v-row>
-    <v-row style="height: 100%">
+    <v-row class="fill-height">
       <v-col colls="1">
         <toolbar></toolbar>
       </v-col>
       <v-col cols="11">
-        <div style="overflow: auto; height: 100%; position: relative">
           <lineDrawer
             :svgId="svgId"
           ></lineDrawer>
           <areaSelector :svgId="svgId"></areaSelector>
           <svg
             v-bind:id="svgId"
-            v-bind:width="matrixHelper.svgHeight"
-            v-bind:height="matrixHelper.svgWidth"
             v-on:mousedown="eventHelper.mouseDown"
+            x="0"
+            y="0"
+            width="100%"
+            height="100%"
           ></svg>
-        </div>
       </v-col>
-      <slot name="students"></slot>
     </v-row>
-  </div>
 </template>
 
 <script setup  lang="ts">
 
-import { useNotationStore } from "../store/pinia/notationStore";
 import UseMatrixHelper from "../helpers/matrixHelper";
 import UseActivateObjectHelper from "../helpers/activateObjectHelper";
 import UseEventHelper from "../helpers/eventHelper";
 import toolbar from "./Toolbar.vue";
 import areaSelector from "./AreaSelector.vue";
 import lineDrawer from "./LineDrawer.vue";
-import { watch } from "vue"
-import { storeToRefs } from 'pinia'
 import useEventBus from "../helpers/eventBus";
+import { watch, computed } from "vue"
+import { storeToRefs } from "pinia";
+import { CellCoordinates } from "common/globals";
+import { useNotationStore } from "../store/pinia/notationStore";
 
 const notationStore = useNotationStore();
 const eventBus = useEventBus();
 const matrixHelper = UseMatrixHelper();
 const activateObjectHelper = UseActivateObjectHelper();
 const eventHelper = UseEventHelper();
-//const { notations } = storeToRefs(notationStore)
+const { activeCell } = storeToRefs(notationStore);
+
+
+watch(
+  () => activeCell.value as CellCoordinates ,
+  (newActiveCell: CellCoordinates, oldActiveCell: CellCoordinates | undefined) => {
+    if (!newActiveCell) return;
+    activateObjectHelper.activateCell(props.svgId, oldActiveCell, newActiveCell)
+  }, {immediate:true, deep:true});
 
 const props = defineProps({
   svgId: { type: String , default: null},
@@ -58,7 +64,7 @@ const props = defineProps({
 //              drawLineEnded: eventManager_lineDrawEnded,
 //}"
 
-watch(() => eventBus.bus.value.get("keyup"), (e: KeyboardEvent) => {
+watch(() => eventBus.bus.value.get("keyup"), (e: KeyboardEvent[]) => {
    eventHelper.keyUp(e);
 });
 
@@ -70,9 +76,10 @@ watch(() => props.loaded, (loaded: Boolean) => {
   if (loaded) load();
 }, {immediate: true});
 
+
 watch(() => notationStore.getNotations(), () => {
   matrixHelper.refreshScreen(
-    Array.from(notationStore.getNotations()).map(([key, value]) => { return value }),
+    Array.from(notationStore.getNotations().value).map(([key, value]) => { return value }),
     props.svgId,
     document!.getElementById(props.svgId)!)
 }, {immediate :true, deep:true});

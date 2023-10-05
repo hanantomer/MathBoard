@@ -1,45 +1,34 @@
-import { UserAttributes } from "./userTypes";
-import { BaseEntity, BaseNotation, LineAttributes, PointAttributes, RectAttributes } from "./baseTypes";
+import { 
+  LineAttributes, 
+  PointAttributes, 
+  RectAttributes, 
+  SingleValueAttributes,
+  BoardAttributes,
+  EntityAttributes,
+  NotationAttributes
+} from "./baseTypes";
 
 // lesson
 
-export interface LessonAttributes extends BaseEntity{
-  name: string;
-  user: UserAttributes;
-}
+export type LessonAttributes = EntityAttributes & BoardAttributes 
 
-export type LessonCreateAttributes = Omit<LessonAttributes, keyof BaseEntity> 
-
-// lesson notations
-
-interface LessonNotationAttributes {
-  lesson: LessonAttributes;
-}
+export type LessonCreationAttributes = Omit<LessonAttributes, keyof EntityAttributes>
 
 // line
 
-export interface LessonLineAttributes extends 
-    BaseNotation,
-    LineAttributes,
-    LessonNotationAttributes {}
+export type  LessonLineAttributes = EntityAttributes & NotationAttributes & LineAttributes ;
 
-export type LessonLineCreationAttributes = Omit<LessonLineAttributes, keyof BaseEntity> 
+export type LessonLineCreationAttributes = Omit<LessonLineAttributes, keyof EntityAttributes> 
   
 // point
 
-export interface LessonPointAttributes extends 
-    BaseNotation,
-    PointAttributes,
-    LessonNotationAttributes {}
+export type LessonPointAttributes = EntityAttributes & NotationAttributes & PointAttributes &  SingleValueAttributes;
 
-export type LessonPointCreationAttributes = Omit<LessonPointAttributes, keyof BaseEntity>     
+export type LessonPointCreationAttributes = Omit<LessonPointAttributes, keyof EntityAttributes>     
 
 // rect
 
-export interface LessonRectAttributes extends 
-    BaseNotation,
-    RectAttributes,
-    LessonNotationAttributes {}
+export type LessonRectAttributes = EntityAttributes & NotationAttributes & RectAttributes ;
 
-export type LessonRectCreationAttributes = Omit<LessonRectAttributes, keyof BaseEntity>         
+export type LessonRectCreationAttributes = Omit<LessonRectAttributes, keyof EntityAttributes>     
 

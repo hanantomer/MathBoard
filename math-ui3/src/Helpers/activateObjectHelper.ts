@@ -1,51 +1,36 @@
-
-import { watch } from "vue"
-import {
-  EditMode,
-  NotationShape,
-  NotationType,
-} from "common/enum";
-import {
-  LineNotationAttributes,
-  RectNotationAttributes,
-} from "common/baseTypes";
+import { EditMode,  NotationShape,  NotationType} from "common/unions";
+import { LineNotationAttributes,  RectNotationAttributes } from "common/baseTypes";
 import { useNotationStore } from "../store/pinia/notationStore";
-import {
-  activeCellColor,
-  CellCoordinates,
-} from "common/globals";
-import useMatrixHelper from "./matrixHelper"
-import useNotationMutateHelper from "./notationMutateHelper"
+import { activeCellColor, CellCoordinates } from "common/globals";
+import { NotationAttributes } from "common/baseTypes";
 
-const notationMutateHelper = useNotationMutateHelper();
+import  useNotationMutateHelper  from "./notationMutateHelper";
+import useMatrixHelper from "./matrixHelper"
+
 const matrixHelper = useMatrixHelper();
 const notationStore = useNotationStore();
+const notationMutateHelper = useNotationMutateHelper();
 
 export default function activateObjectHelper() {
-
-  watch(notationStore.activeCell!, (oldActiveCell, newActiveCell) => {
-    if(newActiveCell)
-      activateCell(newActiveCell, oldActiveCell);
-  })
 
   // called via mouse click
   function activateClickedObject(e: MouseEvent): CellCoordinates | null {
     let clickedRect = matrixHelper.findClickedObject(
       e,
       "rect",
-      NotationType.TEXT
+      null
     );
 
-    if (!clickedRect) {
+    if (!clickedRect?.parentElement) {
       return null;
     }
 
     // activate notation
     let overlapRectNotation = getOverlappedRectNotation(e);
     if (overlapRectNotation) {
-      notationMutateHelper.setActiveNotation(overlapRectNotation).then(() => {
-        if (overlapRectNotation?.notationType == NotationType.TEXT) {
-          notationStore.setCurrentEditMode(EditMode.TEXT);
+      setActiveNotation(overlapRectNotation).then(() => {
+        if (overlapRectNotation?.notationType == "TEXT") {
+          notationStore.setCurrentEditMode("TEXT");
         }
       });
       return null;
@@ -60,17 +45,39 @@ export default function activateObjectHelper() {
     // no underlying elements found, activate single cell
     let cellToActivate: CellCoordinates = {
       col: getElementCoordinateValue(clickedRect, "col"),
-      row: getElementCoordinateValue(clickedRect, "row"),
+      row: getElementCoordinateValue(clickedRect.parentElement!, "row"),
     };
 
     notationStore.setActiveCell(cellToActivate);
-    notationStore.setCurrentEditMode(EditMode.SYMBOL);
+    notationStore.setCurrentEditMode("SYMBOL");
     return cellToActivate;
   }
 
+  async function setActiveNotation(activeNotation: NotationAttributes | null) {
+    // disallow activation of question rows for student
+    if (notationMutateHelper.isNotationInQuestionArea(activeNotation)) return;
+    notationStore.setActiveNotation(activeNotation);
+  }
+
+  async function setActiveCell(newActiveCell: CellCoordinates | null) {
+    if (notationStore.getActiveCell().value != newActiveCell) {
+      return;
+    }
+
+    if (
+      // disallow activation of question cells for student
+      notationMutateHelper.isCellInQuestionArea(newActiveCell)
+    ) {
+      return;
+    }
+
+    notationStore.setActiveCell(newActiveCell);
+  }
+
+
   function reset() {
-    notationMutateHelper.setActiveCell(null);
-    notationMutateHelper.setActiveNotation(null);
+    setActiveCell(null);
+    setActiveNotation(null);
   }
 
   function getElementCoordinateValue(element: Element, attrName: string): number{
@@ -83,7 +90,7 @@ export default function activateObjectHelper() {
     if (!rectElement) return null;
 
     return notationStore
-      .getNotationsByShape<RectNotationAttributes>(NotationShape.RECT)
+      .getNotationsByShape<RectNotationAttributes>("RECT")
       .find((n: RectNotationAttributes) => {
         getElementCoordinateValue(rectElement, "fromCol") >= n.fromCol &&
           getElementCoordinateValue(rectElement, "toCol") <= n.toCol &&
@@ -99,13 +106,13 @@ export default function activateObjectHelper() {
         y: e.clientY,
       },
       "foreignObject",
-      NotationType.FRACTION
+      "FRACTION"
     );
 
     if (!fractionElement) return;
 
     return notationStore
-      .getNotationsByShape<LineNotationAttributes>(NotationShape.LINE)
+      .getNotationsByShape<LineNotationAttributes>("LINE")
       .find((n: LineNotationAttributes) => {
         getElementCoordinateValue(fractionElement, "fromCol") >= n.fromCol &&
           getElementCoordinateValue(fractionElement, "toCol") <= n.toCol &&
@@ -117,19 +124,32 @@ export default function activateObjectHelper() {
 
   // called by store watcher
   function activateCell(
-    activeCell: CellCoordinates | null,
-    prevActiveCell: CellCoordinates | null
+    svgId: string,
+    prevActiveCell: CellCoordinates | undefined,
+    activeCell: CellCoordinates
   ) {
-    this.activateObjectMixin_unselectPreviouslyActiveCell(prevActiveCell);
-    if (!activeCell?.col) return;
 
-    let rectElm = document
-      ?.querySelector<HTMLElement>(
-        `svg[id="${this.svgId}"] g[row="${activeCell.row}"]`
-      )
-      ?.querySelector<HTMLElement>(`rect[col="${activeCell.col}"]`);
+    if (prevActiveCell?.col) {
 
-    if (rectElm?.style) rectElm.style.fill = activeCellColor;
+      let prevRectElm = document
+        ?.querySelector<HTMLElement>(
+          `svg[id="${svgId}"] g[row="${prevActiveCell.row}"]`
+        )
+        ?.querySelector<HTMLElement>(`rect[col="${prevActiveCell.col}"]`);
+
+      if (prevRectElm?.style) prevRectElm.style.fill = "";
+    }
+
+    if (activeCell?.col) {
+
+      let rectElm = document
+        ?.querySelector<HTMLElement>(
+          `svg[id="${svgId}"] g[row="${activeCell.row}"]`
+        )
+        ?.querySelector<HTMLElement>(`rect[col="${activeCell.col}"]`);
+
+      if (rectElm?.style) rectElm.style.fill = activeCellColor;
+    }
   }
 
   return { activateCell, reset, activateClickedObject };

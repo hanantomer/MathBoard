@@ -1,5 +1,4 @@
 import { BoardType, NotationType } from "common/enum";
-import { capitalize } from "common/utils";
 import axios from "axios";
 import axiosHelper from "./axiosHelper";
 const { baseURL } = axiosHelper();
@@ -56,13 +55,13 @@ export default function useDbHelper() {
         return data;
     }
     async function addNotation(notation) {
-        const { data } = await axios.post(baseURL +
-            `/${notation.boardType}${NotationType[notation.notationType].toLowerCase()}s/`, notation);
-        return data;
+        const res = await axios.post(baseURL +
+            `/${BoardType[notation.boardType].toLowerCase()}${NotationType[notation.notationType].toLowerCase()}s/`, notation);
+        return res.data;
     }
     async function updateNotation(notation) {
         const { data } = await axios.put(baseURL +
-            `/${notation.boardType}${NotationType[notation.notationType].toLowerCase()}s/${notation.uuid}`, notation);
+            `/${BoardType[notation.boardType].toLowerCase()}${NotationType[notation.notationType].toLowerCase()}s/${notation.uuid}`, notation);
         return data;
     }
     async function getLesson(LessonUUId) {
@@ -98,8 +97,10 @@ export default function useDbHelper() {
     }
     async function getNotations(notationType, boardType, parentUUId) {
         // e.g lessonsymbols?LessonUUId=1
-        const parentFieldName = getParentFieldName(boardType);
-        const uri = `${capitalize(BoardType[boardType].toString())}${capitalize(notationType.toString())}s?${parentFieldName}=${parentUUId}`;
+        //const parentFieldName = getParentFieldName(boardType);
+        const uri = baseURL + `/${BoardType[boardType]
+            .toLowerCase()}${NotationType[notationType]
+            .toLowerCase()}s?uuid=${parentUUId}`;
         const { data } = (await axios.get(uri));
         return data;
     }

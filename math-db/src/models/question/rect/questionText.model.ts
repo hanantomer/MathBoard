@@ -1,5 +1,5 @@
-import { Model, Column, BelongsTo, ForeignKey, DataType } from "sequelize-typescript";
-import { NotationType, BoardType } from "../../../../../math-common/build/enum";
+import { Model, Column, BelongsTo, ForeignKey, DataType, AllowNull } from "sequelize-typescript";
+import { NotationType, BoardType } from "../../../../../math-common/src/unions";
 import {
     QuestionRectAttributes,
     QuestionRectCreationAttributes,
@@ -13,36 +13,50 @@ export default class QuestionText extends Model<
     QuestionRectAttributes,
     QuestionRectCreationAttributes
 > {
-    notationType = NotationType.TEXT;
-    boardType = BoardType.QUESTION;
+    notationType = "TEXT";
+    boardType = "QUESTION";
 
+    @AllowNull(false)
     @Column({ type: DataType.UUID, defaultValue: DataType.UUIDV4 })
     uuid!: string;
 
     @ForeignKey(() => User)
     userId!: number;
 
-    @BelongsTo(() => User)
+    @BelongsTo(() => User, {
+        foreignKey: {
+            allowNull: false,
+        },
+    })
     user!: User;
 
     @ForeignKey(() => Question)
     questionId!: number;
 
-    @BelongsTo(() => Question)
+    @BelongsTo(() => Question, {
+        foreignKey: {
+            allowNull: false,
+        },
+    })
     question!: Question;
 
+    @AllowNull(false)
     @Column({ type: DataType.INTEGER })
     fromCol!: number;
 
+    @AllowNull(false)
     @Column({ type: DataType.INTEGER })
     toCol!: number;
 
+    @AllowNull(false)
     @Column({ type: DataType.INTEGER })
     fromRow!: number;
 
+    @AllowNull(false)
     @Column({ type: DataType.INTEGER })
     toRow!: number;
 
+    @AllowNull(false)
     @Column({ type: DataType.STRING })
     value!: string;
 }

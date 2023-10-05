@@ -1,27 +1,17 @@
 import useDbHelper from "./dbHelper";
 import { useNotationStore } from "../store/pinia/notationStore";
-import { useLessonStore } from "../store/pinia/lessonStore";
-import { useQuestionStore } from "../store/pinia/questionStore";
-import { useAnswerStore } from "../store/pinia/answerStore";
-import { BoardType, NotationType } from "common/enum";
-import { reactive } from "vue";
+import { NotationType } from "common/enum";
 const notationStore = useNotationStore();
-const lessonStore = useLessonStore();
-const questionStore = useQuestionStore();
-const answerStore = useAnswerStore();
 const dbHelper = useDbHelper();
 export default function notationLoadingHelper() {
     async function loadLessonNotations() {
-        notationStore.setParent(lessonStore.getCurrentLesson()?.uuid, BoardType.LESSON);
-        notationStore.setNotations(reactive(await loadNotationsByBoard()));
+        notationStore.setNotations(await loadNotationsByBoard());
     }
     async function loadQuestionNotations() {
-        notationStore.setParent(questionStore.getCurrentQuestion()?.uuid, BoardType.QUESTION);
-        notationStore.setNotations(reactive(await loadNotationsByBoard()));
+        notationStore.setNotations(await loadNotationsByBoard());
     }
     async function loadAnswerNotations() {
-        notationStore.setParent(answerStore.getCurrentAnswer()?.uuid, BoardType.ANSWER);
-        notationStore.setNotations(reactive(await loadNotationsByBoard()));
+        notationStore.setNotations(await loadNotationsByBoard());
     }
     // e.g get lesson notations
     async function loadNotationsByBoard() {
@@ -36,8 +26,8 @@ export default function notationLoadingHelper() {
     }
     // e.g. load lesson symbols
     async function loadNotationsByType(notationType) {
-        let boardType = notationStore.getParent().type;
-        let parentUUId = notationStore.getParent().uuid;
+        let boardType = notationStore.getParent().value.type;
+        let parentUUId = notationStore.getParent().value.uuid;
         switch (notationType) {
             case NotationType.SYMBOL:
             case NotationType.SIGN:

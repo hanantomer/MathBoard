@@ -1,10 +1,12 @@
-import { EditMode } from "common/enum";
+import { EditMode } from "common/unions";
+import { RectNotationAttributes } from "common/baseTypes";
 import { CellCoordinates } from "common/globals";
-import { BaseNotation, LineAttributes } from "common/baseTypes";
+import { NotationAttributes, LineAttributes } from "common/baseTypes";
 export default function notationMutateHelper(): {
     selectNotation: (CellCoordinates: CellCoordinates) => Promise<void>;
-    setActiveCell: (newActiveCell: CellCoordinates | null) => Promise<void>;
-    setActiveNotation: (activeNotation: BaseNotation | null) => Promise<void>;
+    isNotationInQuestionArea: (notation: NotationAttributes | null) => boolean;
+    isCellInQuestionArea: (CellCoordinates: CellCoordinates | null) => boolean | null;
+    removeNotationsByRect: (rectNotaion: RectNotationAttributes) => Promise<void>;
     addSymbolNotation: (value: string) => void;
     addMarkNotation: () => void;
     addImageNotation: (fromCol: number, toCol: number, fromRow: number, toRow: number, base64Value: string) => void;

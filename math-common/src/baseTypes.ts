@@ -1,64 +1,57 @@
-import { BoardType, NotationType } from "./enum";
+import { BoardType, NotationType } from "./unions";
 import { UserAttributes } from "./userTypes";
 
-export interface BaseEntity {
-  id: number;
+export type EntityAttributes = {  
+  id?: number; 
   uuid: string;
-  createdAt: Date;
+  createdAt?: Date;
+  updatedAt?: Date;
 }
 
-export interface BaseNotation extends BaseEntity{
+export type NotationAttributes = {
+  uuid: string;
+  parentUUId: string;
   user: UserAttributes;
   notationType: NotationType;
   boardType: BoardType;
 }
 
-export type Point =  {
+export type NotationCreationAttributes = Omit<NotationAttributes, "uuid">
+
+
+export type SingleValueAttributes =  {
+  value: any;
+};
+
+export type PointAttributes =  {
   col: number;
   row: number;
 };
 
-export type Line =  {
+export type LineAttributes =  {
   fromCol: number;
   toCol: number;
   row: number;
 };
 
-export type Rect = {
+export type RectAttributes = {
   fromCol: number;
   fromRow: number;
   toCol: number;
   toRow: number;
 };
 
-
-export interface RectAttributes {
-  fromCol: number;
-  toCol: number;
-  fromRow: number;
-  toRow: number;
-  value: string;
-}
-
-export interface LineAttributes {
-  fromCol: number;
-  toCol: number;
-  row: number;
-}    
-
-export interface PointAttributes  {
-  col: number;
-  row: number;
-  value: string;
-}
+export type BoardAttributes = {
+  name: string;
+  user: UserAttributes;
+  //userId: number // redundant but required for sequelize to build correct sql
+};
 
 
-export type PointNotationAttributes = BaseNotation & PointAttributes;
-export type LineNotationAttributes = BaseNotation & LineAttributes;
-export type RectNotationAttributes = BaseNotation & RectAttributes;
+export type PointNotationAttributes = EntityAttributes &  NotationAttributes & PointAttributes & SingleValueAttributes;
+export type LineNotationAttributes = EntityAttributes & NotationAttributes & LineAttributes & SingleValueAttributes;
+export type RectNotationAttributes = EntityAttributes & NotationAttributes & RectAttributes & SingleValueAttributes;
 
-
-
-
-
-
+export type PointNotationCreationAttributes = Omit<NotationAttributes & PointAttributes & SingleValueAttributes, "uuid">;
+export type LineNotationCreationAttributes = Omit<NotationAttributes & LineAttributes, "uuid">;
+export type RectNotationCreationAttributes = Omit<NotationAttributes & RectAttributes & SingleValueAttributes, "uuid">;

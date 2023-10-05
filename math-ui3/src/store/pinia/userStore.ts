@@ -1,7 +1,7 @@
 import { defineStore } from "pinia";
 import { UserAttributes, UserCreationAttributes } from "common/userTypes";
 import dbHelper  from "../../helpers/dbHelper";
-import { UesrType } from "common/enum";
+import { UesrType } from "common/unions";
 const db = dbHelper();
 
 export const useUserStore = defineStore("user", () => {
@@ -13,7 +13,7 @@ export const useUserStore = defineStore("user", () => {
   }
 
   function isTeacher(): boolean {
-    return currentUser?.userType?.toString() === UesrType[UesrType.TEACHER].toString();
+    return currentUser?.userType === "TEACHER";
   }
 
   function getAuthorized(): boolean {

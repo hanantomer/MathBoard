@@ -8,12 +8,16 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 const sequelize_typescript_1 = require("sequelize-typescript");
-const enum_1 = require("../../../math-common/build/enum");
+const answer_model_1 = __importDefault(require("./answer/answer.model"));
 let User = class User extends sequelize_typescript_1.Model {
 };
 __decorate([
+    (0, sequelize_typescript_1.AllowNull)(false),
     (0, sequelize_typescript_1.Column)({
         type: sequelize_typescript_1.DataType.UUID,
         defaultValue: sequelize_typescript_1.DataType.UUIDV4,
@@ -21,6 +25,7 @@ __decorate([
     __metadata("design:type", String)
 ], User.prototype, "uuid", void 0);
 __decorate([
+    (0, sequelize_typescript_1.AllowNull)(false),
     (0, sequelize_typescript_1.Column)({
         type: sequelize_typescript_1.DataType.STRING,
         allowNull: false,
@@ -28,6 +33,7 @@ __decorate([
     __metadata("design:type", String)
 ], User.prototype, "firstName", void 0);
 __decorate([
+    (0, sequelize_typescript_1.AllowNull)(false),
     (0, sequelize_typescript_1.Column)({
         type: sequelize_typescript_1.DataType.STRING,
         allowNull: false,
@@ -35,6 +41,7 @@ __decorate([
     __metadata("design:type", String)
 ], User.prototype, "lastName", void 0);
 __decorate([
+    (0, sequelize_typescript_1.AllowNull)(false),
     (0, sequelize_typescript_1.Column)({
         type: sequelize_typescript_1.DataType.STRING,
         allowNull: false,
@@ -49,6 +56,7 @@ __decorate([
     __metadata("design:type", String)
 ], User.prototype, "imageUrl", void 0);
 __decorate([
+    (0, sequelize_typescript_1.AllowNull)(false),
     (0, sequelize_typescript_1.Column)({
         type: sequelize_typescript_1.DataType.STRING,
         allowNull: false,
@@ -63,12 +71,19 @@ __decorate([
     __metadata("design:type", String)
 ], User.prototype, "access_token", void 0);
 __decorate([
+    (0, sequelize_typescript_1.AllowNull)(false),
     (0, sequelize_typescript_1.Column)({
         type: sequelize_typescript_1.DataType.STRING,
         allowNull: true,
     }),
-    __metadata("design:type", Number)
+    __metadata("design:type", String)
 ], User.prototype, "userType", void 0);
+__decorate([
+    (0, sequelize_typescript_1.HasMany)(() => answer_model_1.default, {
+        foreignKey: "answerId",
+    }),
+    __metadata("design:type", Array)
+], User.prototype, "answers", void 0);
 User = __decorate([
     (0, sequelize_typescript_1.DefaultScope)(() => ({
         attributes: {

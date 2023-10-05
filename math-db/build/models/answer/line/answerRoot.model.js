@@ -14,18 +14,18 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const answerDecorator_1 = __importDefault(require("../answerDecorator"));
 const sequelize_typescript_1 = require("sequelize-typescript");
-const enum_1 = require("../../../../../math-common/build/enum");
 const user_model_1 = __importDefault(require("../../user.model"));
 const answer_model_1 = __importDefault(require("../../answer/answer.model"));
 let AnswerRoot = class AnswerRoot extends sequelize_typescript_1.Model {
     constructor() {
         super(...arguments);
-        this.notationType = enum_1.NotationType.SQRT;
-        this.boardType = enum_1.BoardType.ANSWER;
+        this.notationType = "SQRT";
+        this.boardType = "ANSWER";
         this.value = null;
     }
 };
 __decorate([
+    (0, sequelize_typescript_1.AllowNull)(false),
     (0, sequelize_typescript_1.Column)({ type: sequelize_typescript_1.DataType.UUID, defaultValue: sequelize_typescript_1.DataType.UUIDV4 }),
     __metadata("design:type", String)
 ], AnswerRoot.prototype, "uuid", void 0);
@@ -34,7 +34,11 @@ __decorate([
     __metadata("design:type", Number)
 ], AnswerRoot.prototype, "userId", void 0);
 __decorate([
-    (0, sequelize_typescript_1.BelongsTo)(() => user_model_1.default),
+    (0, sequelize_typescript_1.BelongsTo)(() => user_model_1.default, {
+        foreignKey: {
+            allowNull: false,
+        },
+    }),
     __metadata("design:type", user_model_1.default)
 ], AnswerRoot.prototype, "user", void 0);
 __decorate([
@@ -42,18 +46,25 @@ __decorate([
     __metadata("design:type", Number)
 ], AnswerRoot.prototype, "answerId", void 0);
 __decorate([
-    (0, sequelize_typescript_1.BelongsTo)(() => answer_model_1.default),
+    (0, sequelize_typescript_1.BelongsTo)(() => answer_model_1.default, {
+        foreignKey: {
+            allowNull: false,
+        },
+    }),
     __metadata("design:type", answer_model_1.default)
 ], AnswerRoot.prototype, "answer", void 0);
 __decorate([
+    (0, sequelize_typescript_1.AllowNull)(false),
     (0, sequelize_typescript_1.Column)({ type: sequelize_typescript_1.DataType.INTEGER }),
     __metadata("design:type", Number)
 ], AnswerRoot.prototype, "fromCol", void 0);
 __decorate([
+    (0, sequelize_typescript_1.AllowNull)(false),
     (0, sequelize_typescript_1.Column)({ type: sequelize_typescript_1.DataType.INTEGER }),
     __metadata("design:type", Number)
 ], AnswerRoot.prototype, "toCol", void 0);
 __decorate([
+    (0, sequelize_typescript_1.AllowNull)(false),
     (0, sequelize_typescript_1.Column)({ type: sequelize_typescript_1.DataType.INTEGER }),
     __metadata("design:type", Number)
 ], AnswerRoot.prototype, "row", void 0);

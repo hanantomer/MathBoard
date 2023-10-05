@@ -106,15 +106,16 @@ function dbUtil() {
                 return null;
             return yield studentLesson_model_1.default.findAll({
                 where: {
-                    lessonId: lessonId,
+                    '$lesson.id$': lessonId
                 },
             });
         });
     }
-    function createStudentLesson(lesson) {
+    // connect user to lesson
+    function createStudentLesson(studentLesson) {
         return __awaiter(this, void 0, void 0, function* () {
-            lesson.userId = (yield getIdByUUId("User", lesson.user.uuid));
-            return yield studentLesson_model_1.default.create(lesson);
+            studentLesson.user.id = (yield getIdByUUId("User", studentLesson.user.uuid));
+            return yield studentLesson_model_1.default.create(studentLesson);
         });
     }
     // question
@@ -133,14 +134,14 @@ function dbUtil() {
                 return null;
             return yield question_model_1.default.findAll({
                 where: {
-                    '$lesson.id$': 1
+                    '$lesson.id$': lessonId
                 },
             });
         });
     }
     function createQuestion(question) {
         return __awaiter(this, void 0, void 0, function* () {
-            question.userId = (yield getIdByUUId("User", question.user.uuid));
+            question.user.id = (yield getIdByUUId("User", question.user.uuid));
             question.lessonId = (yield getIdByUUId("Lesson", question.lesson.uuid));
             return yield question_model_1.default.create(question);
         });
@@ -168,8 +169,8 @@ function dbUtil() {
     }
     function createAnswer(answer) {
         return __awaiter(this, void 0, void 0, function* () {
-            answer.userId = (yield getIdByUUId("User", answer.user.uuid));
-            answer.questionId = (yield getIdByUUId("Question", answer.question.uuid));
+            answer.user.id = (yield getIdByUUId("User", answer.user.uuid));
+            answer.question.id = (yield getIdByUUId("Question", answer.question.uuid));
             return yield answer_model_1.default.create(answer);
         });
     }
@@ -195,31 +196,37 @@ function dbUtil() {
     }
     function getNotations(boardType, notationType, parentUUId) {
         return __awaiter(this, void 0, void 0, function* () {
-            const boardPrefix = boardType.toString().toLowerCase();
-            const boardPrefixIdFieldName = boardType.toString().toLowerCase() + "Id";
-            const boardPrefixCapitalized = (0, utils_1.capitalize)(boardPrefix);
-            const notationTypeSuffix = notationType.toString().toLowerCase();
-            const notationTypeSuffixCapitalized = (0, utils_1.capitalize)(notationTypeSuffix);
-            const notationName = boardPrefixCapitalized + notationTypeSuffixCapitalized;
-            let parentId = yield getIdByUUId(boardPrefixCapitalized, parentUUId);
+            const boardName = boardType.toString().toLowerCase(); // e.g lesson
+            const boardFieldIdFieldName = boardType.toString().toLowerCase() + "Id";
+            const boardModelName = (0, utils_1.capitalize)(boardName); // e.g Lesson
+            const notationTypeName = notationType.toString().toLowerCase(); // e.g. symbol
+            const notationTypeNameCapitalized = (0, utils_1.capitalize)(notationTypeName); // e.g. Symbol
+            const modelName = boardModelName + notationTypeNameCapitalized; // e.g. LessonSymbol
+            let parentId = yield getIdByUUId(boardModelName, parentUUId);
             if (!parentId)
                 return null;
-            return yield index_1.default.sequelize.models[notationName].findAll({
+            return yield index_1.default.sequelize.models[modelName].findAll({
                 where: {
-                    [boardPrefixIdFieldName]: parentId,
+                    [boardFieldIdFieldName]: parentId,
                 },
+                include: [
+                    user_model_1.default,
+                    index_1.default.sequelize.models[boardModelName],
+                ] /*e.g. include user*/,
             });
         });
     }
     function createNotation(boardType, notationType, notation) {
         return __awaiter(this, void 0, void 0, function* () {
-            ///TODO : move to utility function
-            const boardPrefix = boardType.toString().toLowerCase();
-            const boardPrefixCapitalized = (0, utils_1.capitalize)(boardPrefix);
-            const notationTypeSuffix = notationType.toString().toLowerCase();
-            const notationTypeSuffixCapitalized = (0, utils_1.capitalize)(notationTypeSuffix);
-            const notationName = boardPrefixCapitalized + notationTypeSuffixCapitalized;
-            return yield index_1.default.sequelize.models[notationName].create(notation);
+            const boardName = boardType.toString().toLowerCase(); // e.g lesson
+            const boardModelName = (0, utils_1.capitalize)(boardName); // e.g Lesson
+            const notationTypeName = notationType.toString().toLowerCase(); // e.g. symbol
+            const notationTypeNameCapitalized = (0, utils_1.capitalize)(notationTypeName); // e.g. Symbol
+            const modelName = boardModelName + notationTypeNameCapitalized; // e.g. LessonSymbol
+            notation.userId = (yield getIdByUUId("User", notation.user.uuid));
+            notation[boardName + "Id"] = (yield getIdByUUId(boardModelName, notation.parentUUId));
+            const res = yield index_1.default.sequelize.models[modelName].create(notation);
+            return yield index_1.default.sequelize.models[modelName].findByPk(res.dataValues.id, { include: [user_model_1.default, index_1.default.sequelize.models[boardModelName]] /*e.g. include Lesson*/ });
         });
     }
     return {

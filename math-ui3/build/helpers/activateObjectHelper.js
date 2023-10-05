@@ -1,29 +1,24 @@
-import { watch } from "vue";
-import { EditMode, NotationShape, NotationType, } from "common/enum";
+import { EditMode, NotationShape, NotationType } from "common/enum";
 import { useNotationStore } from "../store/pinia/notationStore";
-import { activeCellColor, } from "common/globals";
-import useMatrixHelper from "./matrixHelper";
+import { activeCellColor } from "common/globals";
 import useNotationMutateHelper from "./notationMutateHelper";
-const notationMutateHelper = useNotationMutateHelper();
+import useMatrixHelper from "./matrixHelper";
 const matrixHelper = useMatrixHelper();
 const notationStore = useNotationStore();
+const notationMutateHelper = useNotationMutateHelper();
 export default function activateObjectHelper() {
-    watch(notationStore.activeCell, (oldActiveCell, newActiveCell) => {
-        if (newActiveCell)
-            activateCell(newActiveCell, oldActiveCell);
-    });
     // called via mouse click
     function activateClickedObject(e) {
-        let clickedRect = matrixHelper.findClickedObject(e, "rect", NotationType.TEXT);
-        if (!clickedRect) {
+        let clickedRect = matrixHelper.findClickedObject(e, "rect", null);
+        if (!clickedRect?.parentElement) {
             return null;
         }
         // activate notation
         let overlapRectNotation = getOverlappedRectNotation(e);
         if (overlapRectNotation) {
-            notationMutateHelper.setActiveNotation(overlapRectNotation).then(() => {
+            setActiveNotation(overlapRectNotation).then(() => {
                 if (overlapRectNotation?.notationType == NotationType.TEXT) {
-                    notationStore.setCurrentEditMode(EditMode.TEXT);
+                    notationStore.setCurrentEditMode("TEXT");
                 }
             });
             return null;
@@ -36,15 +31,32 @@ export default function activateObjectHelper() {
         // no underlying elements found, activate single cell
         let cellToActivate = {
             col: getElementCoordinateValue(clickedRect, "col"),
-            row: getElementCoordinateValue(clickedRect, "row"),
+            row: getElementCoordinateValue(clickedRect.parentElement, "row"),
         };
         notationStore.setActiveCell(cellToActivate);
-        notationStore.setCurrentEditMode(EditMode.SYMBOL);
+        notationStore.setCurrentEditMode("SYMBOL");
         return cellToActivate;
     }
+    async function setActiveNotation(activeNotation) {
+        // disallow activation of question rows for student
+        if (notationMutateHelper.isNotationInQuestionArea(activeNotation))
+            return;
+        notationStore.setActiveNotation(activeNotation);
+    }
+    async function setActiveCell(newActiveCell) {
+        if (notationStore.getActiveCell().value != newActiveCell) {
+            return;
+        }
+        if (
+        // disallow activation of question cells for student
+        notationMutateHelper.isCellInQuestionArea(newActiveCell)) {
+            return;
+        }
+        notationStore.setActiveCell(newActiveCell);
+    }
     function reset() {
-        notationMutateHelper.setActiveCell(null);
-        notationMutateHelper.setActiveNotation(null);
+        setActiveCell(null);
+        setActiveNotation(null);
     }
     function getElementCoordinateValue(element, attrName) {
         let val = element.attributes.getNamedItem(attrName)?.value;
@@ -80,15 +92,21 @@ export default function activateObjectHelper() {
         });
     }
     // called by store watcher
-    function activateCell(activeCell, prevActiveCell) {
-        this.activateObjectMixin_unselectPreviouslyActiveCell(prevActiveCell);
-        if (!activeCell?.col)
-            return;
-        let rectElm = document
-            ?.querySelector(`svg[id="${this.svgId}"] g[row="${activeCell.row}"]`)
-            ?.querySelector(`rect[col="${activeCell.col}"]`);
-        if (rectElm?.style)
-            rectElm.style.fill = activeCellColor;
+    function activateCell(svgId, prevActiveCell, activeCell) {
+        if (prevActiveCell?.col) {
+            let prevRectElm = document
+                ?.querySelector(`svg[id="${svgId}"] g[row="${prevActiveCell.row}"]`)
+                ?.querySelector(`rect[col="${prevActiveCell.col}"]`);
+            if (prevRectElm?.style)
+                prevRectElm.style.fill = "";
+        }
+        if (activeCell?.col) {
+            let rectElm = document
+                ?.querySelector(`svg[id="${svgId}"] g[row="${activeCell.row}"]`)
+                ?.querySelector(`rect[col="${activeCell.col}"]`);
+            if (rectElm?.style)
+                rectElm.style.fill = activeCellColor;
+        }
     }
     return { activateCell, reset, activateClickedObject };
 }

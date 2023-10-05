@@ -222,7 +222,7 @@
 
 <script setup lang="ts">
 import { watch, ref } from "vue"
-import { BoardType, EditMode } from "../../../math-common/src/enum";
+import { BoardType, EditMode } from "../../../math-common/src/unions";
 import useMatrixHelper from "../helpers/matrixHelper";
 import useAuthHelper from "../helpers/authHelper";
 import accessLinkDialog from "./AccessLinkDialog.vue";
@@ -271,7 +271,7 @@ const hasActiveCell = computed(() => {
 });
 
 const answerCheckMode = computed(() => {
-  return notationStore.getParent().type == BoardType.ANSWER && userStore.isTeacher;
+  return notationStore.getParent().value.type == "ANSWER" && userStore.isTeacher;
 });
 
 watch(() => eventBus.bus.value.get("resetToolbarState"), () => {
@@ -304,12 +304,12 @@ function reset() {
   fractionButtonActive.value = 1;
   squareRootButtonActive.value = 1;
   powerButtonActive.value = 1;
-  notationMutateHelper.setCurrentEditMode(EditMode.SYMBOL);
+  notationMutateHelper.setCurrentEditMode('SYMBOL');
 }
 
 function toggleFractionMode() {
   reset();
-  if (notationStore.getEditMode().value == EditMode.FRACTION) {
+  if (notationStore.getEditMode().value == "FRACTION") {
     reset();
   } else {
     startFractionMode();
@@ -319,12 +319,12 @@ function toggleFractionMode() {
 function startFractionMode() {
   reset();
   fractionButtonActive.value = 0;
-  notationMutateHelper.setCurrentEditMode(EditMode.FRACTION);
+  notationMutateHelper.setCurrentEditMode("FRACTION");
 };
 
 function toggleSqrtMode() {
   reset();
-  if (notationStore.getEditMode().value == EditMode.SQRT) {
+  if (notationStore.getEditMode().value == "SQRT") {
     reset();
   } else {
     startSqrtMode();
@@ -334,12 +334,12 @@ function toggleSqrtMode() {
 function startSqrtMode() {
   reset();
   squareRootButtonActive.value = 0;
-  notationMutateHelper.setCurrentEditMode(EditMode.SQRT);
+  notationMutateHelper.setCurrentEditMode("SQRT");
 };
 
 function togglePowerMode() {
   reset();
-  if (notationStore.getEditMode().value == EditMode.POWER) {
+  if (notationStore.getEditMode().value == "POWER") {
     endPowerMode();
   } else {
       startPowerMode();
@@ -349,7 +349,7 @@ function togglePowerMode() {
 function startPowerMode() {
   reset();
   powerButtonActive.value = 0;
-  notationMutateHelper.setCurrentEditMode(EditMode.POWER);
+  notationMutateHelper.setCurrentEditMode("POWER");
 };
 
 function endPowerMode() {
@@ -359,7 +359,7 @@ function endPowerMode() {
 function startTextMode() {
   reset();
   textButtonActive.value = 0;
-  notationMutateHelper.setCurrentEditMode(EditMode.TEXT);
+  notationMutateHelper.setCurrentEditMode("TEXT");
 };
 
 function endTextMode() {
@@ -367,7 +367,7 @@ function endTextMode() {
 };
 
 function toggleSelectionMode() {
-      if (notationStore.getEditMode().value == EditMode.SELECT) {
+      if (notationStore.getEditMode().value == 'SELECT') {
         endSelectionMode();
       } else {
         startSelectionMode();
@@ -377,18 +377,18 @@ function toggleSelectionMode() {
 function startSelectionMode() {
       reset();
       selectionButtonActive.value = 0;
-      notationMutateHelper.setCurrentEditMode(EditMode.SELECT);
+      notationMutateHelper.setCurrentEditMode('SELECT');
 };
 
 function endSelectionMode() {
       reset();
-      notationMutateHelper.setCurrentEditMode(EditMode.SYMBOL);
+      notationMutateHelper.setCurrentEditMode('SYMBOL');
 };
 
 function toggleCheckmarkMode() {
-      if (notationStore.getEditMode().value == EditMode.CHECKMARK) {
+      if (notationStore.getEditMode().value == "CHECKMARK") {
         reset();
-        notationMutateHelper.setCurrentEditMode(EditMode.SYMBOL);
+        notationMutateHelper.setCurrentEditMode('SYMBOL');
       } else {
         startCheckmarkMode();
       }
@@ -397,13 +397,13 @@ function toggleCheckmarkMode() {
 function startCheckmarkMode() {
       reset();
       checkmarkButtonActive.value = 0;
-      notationMutateHelper.setCurrentEditMode(EditMode.CHECKMARK);
+      notationMutateHelper.setCurrentEditMode("CHECKMARK");
 };
 
 function toggleSemiCheckmarkMode() {
-      if (notationStore.getEditMode().value == EditMode.SEMICHECKMARK) {
+      if (notationStore.getEditMode().value == "SEMICHECKMARK") {
         reset();
-        notationMutateHelper.setCurrentEditMode(EditMode.SYMBOL);
+        notationMutateHelper.setCurrentEditMode('SYMBOL');
       } else {
         startSemiCheckmarkMode();
       }
@@ -412,13 +412,13 @@ function toggleSemiCheckmarkMode() {
 function startSemiCheckmarkMode() {
       reset();
       semicheckmarkButtonActive.value = 0;
-      notationMutateHelper.setCurrentEditMode(EditMode.SEMICHECKMARK);
+      notationMutateHelper.setCurrentEditMode("SEMICHECKMARK");
 };
 
 function toggleXmarkMode() {
-      if (notationStore.getEditMode().value == EditMode.XMARK) {
+      if (notationStore.getEditMode().value == "XMARK") {
         reset();
-        notationMutateHelper.setCurrentEditMode(EditMode.SYMBOL);
+        notationMutateHelper.setCurrentEditMode('SYMBOL');
       } else {
         startXmarkMode();
       }
@@ -427,16 +427,16 @@ function toggleXmarkMode() {
 function startXmarkMode() {
       reset();
       xmarkButtonActive.value = 0;
-      notationMutateHelper.setCurrentEditMode(EditMode.XMARK);
+      notationMutateHelper.setCurrentEditMode("XMARK");
 };
 
 
 /*
 
     // $symbolButtonPressed(e) {
-    //   if (getCurrentEditMode() === EditMode.SYMBOL)
+    //   if (getCurrentEditMode() === 'SYMBOL')
     //     notationMixin_addNotation(e.currentTarget.innerText, "symbol");
-    //   else if (getCurrentEditMode() === EditMode.POWER) {
+    //   else if (getCurrentEditMode() === "POWER) {
     //     notationMixin_addNotation(e.currentTarget.innerText, "power");
     //   }
     // },
@@ -458,7 +458,7 @@ function startXmarkMode() {
     currentEditMode: {
       deep: true,
       handler(newVal) {
-        if (newVal == EditMode.SYMBOL) {
+        if (newVal == 'SYMBOL') {
           resetButtonsState();
         }
       },

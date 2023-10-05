@@ -1,7 +1,7 @@
 //  questions of current lesson
 import { EditMode } from "common/enum";
 import useDbHelper from "../helpers/dbHelper";
-import { NotationShape, NotationTypeShape, } from "common/enum";
+import { NotationShape, NotationTypeShape } from "common/enum";
 import { BoardType, NotationType } from "common/enum";
 import { useUserStore } from "../store/pinia/userStore";
 import { useNotationStore } from "../store/pinia/notationStore";
@@ -191,7 +191,7 @@ export default function notationMutateHelper() {
         symbolsAtCell.forEach(async (n) => {
             await dbHelper
                 .removeNotation(n)
-                .then(() => notationStore.getNotations().delete(n.uuid));
+                .then(() => notationStore.getNotations().value.delete(n.uuid));
         });
         return symbolsAtCell;
     }
@@ -200,29 +200,33 @@ export default function notationMutateHelper() {
         if (!authHelper.canEdit()) {
             return null;
         }
-        if (notationStore.getActiveNotation() == null)
+        if (!notationStore.getActiveNotation())
             return null;
         await dbHelper.removeNotation(notationStore.getActiveNotation());
-        notationStore.getNotations().delete(notationStore.getActiveNotation().uuid);
+        notationStore
+            .getNotations().value
+            .delete(notationStore.getActiveNotation().uuid);
         let deletedNotationUUId = notationStore.getActiveNotation()?.uuid;
         notationStore.setActiveNotation(null);
         if (!deletedNotationUUId)
             return null;
-        let deletedNotation = notationStore.getNotations().get(deletedNotationUUId);
+        let deletedNotation = notationStore
+            .getNotations().value
+            .get(deletedNotationUUId);
         if (deletedNotation)
-            userOutgoingOperations.syncOutgoingRemoveNotation(deletedNotation);
+            userOutgoingOperations.syncOutgoingRemoveNotation(deletedNotation.uuid);
         return deletedNotation ? deletedNotation : null;
     }
     async function removeSelectedNotations() {
         if (!authHelper.canEdit)
             return;
         notationStore.getSelectedNotations().forEach(async (uuid) => {
-            let n = notationStore.getNotations().get(uuid);
+            let n = notationStore.getNotations().value.get(uuid);
             if (!n)
                 return;
             await dbHelper.removeNotation(n);
-            notationStore.getNotations().delete(uuid);
-            userOutgoingOperations.syncOutgoingRemoveNotation(n);
+            notationStore.getNotations().value.delete(uuid);
+            userOutgoingOperations.syncOutgoingRemoveNotation(n.uuid);
         });
         this.resetSelectedNotations();
     }
@@ -235,7 +239,7 @@ export default function notationMutateHelper() {
     // move without persistence - called during  mouse move  - don't bother the database during move
     async function moveSelectedNotations(deltaX, deltaY) {
         notationStore.getSelectedNotations().forEach((uuid) => {
-            let n = notationStore.getNotations().get(uuid);
+            let n = notationStore.getNotations().value.get(uuid);
             if (!n?.notationType)
                 return;
             switch (NotationTypeShape.get(n.notationType)) {
@@ -264,7 +268,7 @@ export default function notationMutateHelper() {
     async function updateSelectedNotationCoordinates() {
         // disallow update during answer if any notation overlaps question area
         notationStore.getSelectedNotations().forEach((uuid) => {
-            let n = notationStore.getNotations().get(uuid);
+            let n = notationStore.getNotations().value.get(uuid);
             if (!n)
                 return;
             if (isNotationInQuestionArea(n)) {
@@ -272,7 +276,7 @@ export default function notationMutateHelper() {
             }
         });
         notationStore.getSelectedNotations().forEach(async (uuid) => {
-            let n = notationStore.getNotations().get(uuid);
+            let n = notationStore.getNotations().value.get(uuid);
             if (!n)
                 return;
             if (isNotationInQuestionArea(n))
@@ -288,7 +292,7 @@ export default function notationMutateHelper() {
             return;
         }
         await dbHelper.updateNotation(notation);
-        notationStore.getNotations().set(notation.uuid, notation);
+        notationStore.getNotations().value.set(notation.uuid, notation);
     }
     async function addNotation(notation) {
         //notation.user.uuid = userStore.getCurrentUser().uuid;
@@ -296,7 +300,9 @@ export default function notationMutateHelper() {
         if (overlappedSameTypeNotation) {
             setNotationAttributes(overlappedSameTypeNotation, notation);
             await dbHelper.updateNotation(overlappedSameTypeNotation);
-            notationStore.getNotations().set(overlappedSameTypeNotation.uuid, overlappedSameTypeNotation);
+            notationStore
+                .getNotations().value
+                .set(overlappedSameTypeNotation.uuid, overlappedSameTypeNotation);
             return overlappedSameTypeNotation;
         }
         let overlappedAnyTypeNotation = findOverlapNotationsOfAnyType(notation);
@@ -306,20 +312,20 @@ export default function notationMutateHelper() {
         }
         // no overlapping -> add
         let newNotation = await dbHelper.addNotation(notation);
-        notationStore.getNotations().set(newNotation.uuid, newNotation);
+        notationStore.addNotation(newNotation);
         return newNotation;
     }
     async function syncIncomingAddedNotation(notation) {
-        notationStore.getNotations().set(notation.uuid, notation);
+        notationStore.getNotations().value.set(notation.uuid, notation);
     }
     async function syncIncomingRemovedNotation(notation) {
-        notationStore.getNotations().delete(notation.uuid);
+        notationStore.getNotations().value.delete(notation.uuid);
     }
     async function syncIncomingUpdatedtNotation(notation) {
-        notationStore.getNotations().set(notation.uuid, notation);
+        notationStore.getNotations().value.set(notation.uuid, notation);
     }
     async function removeAllNotations() {
-        notationStore.getNotations().clear();
+        notationStore.getNotations().value.clear();
     }
     function setNotationAttributes(existingNotation, notation) {
         switch (NotationTypeShape.get(existingNotation.notationType)) {
@@ -356,7 +362,8 @@ export default function notationMutateHelper() {
                 let pointNotation = notation;
                 return (notation?.boardType === BoardType.ANSWER &&
                     !userStore.isTeacher() &&
-                    notationStore.getCellOccupationMatrix()
+                    notationStore
+                        .getCellOccupationMatrix()
                         .at(pointNotation.row)
                         ?.at(pointNotation.col)?.boardType == BoardType.QUESTION);
             }
@@ -385,51 +392,36 @@ export default function notationMutateHelper() {
         }
         return false;
     }
-    async function setActiveNotation(activeNotation) {
-        // disallow activation of question rows for student
-        if (isNotationInQuestionArea(activeNotation))
-            return;
-        notationStore.setActiveNotation(activeNotation);
-    }
-    async function setActiveCell(newActiveCell) {
-        if (notationStore.getActiveCell() != newActiveCell) {
-            return;
-        }
-        if ( // disallow activation of question cells for student
-        isCellInQuestionArea(newActiveCell)) {
-            return;
-        }
-        notationStore.setActiveCell(newActiveCell);
-    }
     async function removeNotationsByRect(rectNotaion) {
-        let notationsAtRectCoordinates = findNotationsByRectCoordinates(notationStore.getNotations(), rectNotaion);
+        let notationsAtRectCoordinates = findNotationsByRectCoordinates(notationStore.getNotations().value, rectNotaion);
         if (!notationsAtRectCoordinates)
             return;
         notationsAtRectCoordinates.forEach(async (n) => {
-            n.boardType = notationStore.getParent().type;
+            n.boardType = notationStore.getParent().value.type;
             await dbHelper
                 .removeNotation(n)
-                .then(() => notationStore.getNotations().delete(n.uuid));
+                .then(() => notationStore.getNotations().value.delete(n.uuid));
         });
     }
     function isCellInQuestionArea(CellCoordinates) {
-        return (notationStore.getParent().type == BoardType.ANSWER &&
+        return (notationStore.getParent().value.type == BoardType.ANSWER &&
             !userStore.isTeacher() &&
             CellCoordinates &&
-            notationStore.getCellOccupationMatrix()
+            notationStore
+                .getCellOccupationMatrix()
                 .at(CellCoordinates.row)
-                ?.at(CellCoordinates.col)?.boardType == BoardType.QUESTION);
+                ?.at(CellCoordinates.col)?.boardType == "QUESTION");
     }
     function addMarkNotation() {
-        if (notationStore.getEditMode().value == EditMode.CHECKMARK) {
+        if (notationStore.getEditMode().value == "CHECKMARK") {
             addSymbolNotation("&#x2714");
             return;
         }
-        if (notationStore.getEditMode().value == EditMode.SEMICHECKMARK) {
+        if (notationStore.getEditMode().value == "SEMICHECKMARK") {
             addSymbolNotation("&#x237B");
             return;
         }
-        if (notationStore.getEditMode().value == EditMode.XMARK) {
+        if (notationStore.getEditMode().value == "XMARK") {
             addSymbolNotation("&#x2718");
             return;
         }
@@ -458,13 +450,13 @@ export default function notationMutateHelper() {
         }
     }
     async function removeActiveCellNotations() {
-        if (!notationStore.getActiveCell())
+        if (!notationStore.getActiveCell().value)
             return;
-        let notationsToDelete = await removeSymbolsByCell(notationStore.getActiveCell());
+        let notationsToDelete = await removeSymbolsByCell(notationStore.getActiveCell().value);
         if (!notationsToDelete)
             return;
         notationsToDelete.forEach((notation) => {
-            userOutgoingOperations.syncOutgoingRemoveNotation(notation);
+            userOutgoingOperations.syncOutgoingRemoveNotation(notation.uuid);
         });
     }
     function addImageNotation(fromCol, toCol, fromRow, toRow, base64Value) {
@@ -474,12 +466,9 @@ export default function notationMutateHelper() {
             fromRow: fromRow,
             toRow: toRow,
             value: base64Value,
-            boardType: notationStore.getParent().type,
+            boardType: notationStore.getParent().value.type,
             notationType: NotationType.IMAGE,
             user: userStore.getCurrentUser(),
-            createdAt: new Date(),
-            id: -1,
-            uuid: "",
         };
         addNotation(notation);
         // .then(() => {
@@ -499,36 +488,29 @@ export default function notationMutateHelper() {
             fromRow: fromRow,
             toRow: toRow,
             value: value,
-            boardType: notationStore.getParent().type,
+            boardType: notationStore.getParent().value.type,
             notationType: NotationType.TEXT,
             user: userStore.getCurrentUser(),
-            createdAt: new Date(),
-            id: -1,
-            uuid: "",
         };
         addNotation(notation);
         // notationStore.resetActiveCell();
     }
-    ;
     function addSymbolNotation(value) {
         if (!notationStore.getActiveCell())
             return;
         let notation = {
-            col: notationStore.getActiveCell().col,
-            row: notationStore.getActiveCell().row,
+            col: notationStore.getActiveCell().value.col,
+            row: notationStore.getActiveCell().value.row,
             value: value,
-            boardType: notationStore.getParent().type,
+            boardType: notationStore.getParent().value.type,
             notationType: NotationType.SYMBOL,
             user: userStore.getCurrentUser(),
-            createdAt: new Date(),
-            id: -1,
-            uuid: "",
         };
         addNotation(notation);
         // if (notationStore.getParent().type === BoardType.LESSON) {
         //   userOutgoingOperations.syncOutgoingSaveNotation(notation);
         // }
-        if (notationStore.getEditMode().value == EditMode.SYMBOL) {
+        if (notationStore.getEditMode().value == "SYMBOL") {
             matrixHelper.setNextRect(1, 0);
         }
     }
@@ -537,12 +519,9 @@ export default function notationMutateHelper() {
             fromCol: coordinates.fromCol,
             toCol: coordinates.fromCol,
             row: coordinates.row,
-            boardType: notationStore.getParent().type,
+            boardType: notationStore.getParent().value.type,
             notationType: NotationType.SQRT,
             user: userStore.getCurrentUser(),
-            createdAt: new Date(),
-            id: -1,
-            uuid: "",
         };
         addNotation(notation);
         //if (notationStore.getParent().type === BoardType.LESSON) {
@@ -554,12 +533,9 @@ export default function notationMutateHelper() {
             fromCol: coordinates.fromCol,
             toCol: coordinates.fromCol,
             row: coordinates.row,
-            boardType: notationStore.getParent().type,
+            boardType: notationStore.getParent().value.type,
             notationType: NotationType.FRACTION,
             user: userStore.getCurrentUser(),
-            createdAt: new Date(),
-            id: -1,
-            uuid: "",
         };
         addNotation(notation);
         // if (notationStore.getParent().type === BoardType.LESSON) {
@@ -571,8 +547,9 @@ export default function notationMutateHelper() {
     }
     return {
         selectNotation,
-        setActiveCell,
-        setActiveNotation,
+        isNotationInQuestionArea,
+        isCellInQuestionArea,
+        removeNotationsByRect,
         addSymbolNotation,
         addMarkNotation,
         addImageNotation,
@@ -582,7 +559,7 @@ export default function notationMutateHelper() {
         removeActiveOrSelectedNotations,
         moveSelectedNotations,
         updateSelectedNotationCoordinates,
-        setCurrentEditMode
+        setCurrentEditMode,
     };
 }
 //# sourceMappingURL=notationMutateHelper.js.map

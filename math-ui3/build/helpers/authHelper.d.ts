@@ -1,4 +1,4 @@
-import { UesrType } from "common/enum";
+import { UesrType } from "common/unions";
 import { UserAttributes } from "common/userTypes";
 export default function useAuthHelper(): {
     setUser: (user: UserAttributes) => void;

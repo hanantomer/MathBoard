@@ -22,7 +22,7 @@
             // ],
 //            "args": ["${workspaceFolder}\\build\\app.js"],
             "preLaunchTask": "tsc: build - tsconfig.json",
-            "outFiles": ["${workspaceFolder}/build/**/*.js"],
+            //"outFiles": ["${workspaceFolder}/build/**/*.js"],
             "skipFiles": ["<node_internals>/**"]
         },
    ]

@@ -1,5 +1,5 @@
 import {
-  BaseNotation,
+  NotationAttributes,
   PointNotationAttributes,
   LineNotationAttributes,
   RectNotationAttributes
@@ -7,71 +7,61 @@ import {
 
 import useDbHelper from "./dbHelper";
 import { useNotationStore } from "../store/pinia/notationStore";
-import { useLessonStore } from "../store/pinia/lessonStore";
-import { useQuestionStore } from "../store/pinia/questionStore";
-import { useAnswerStore } from "../store/pinia/answerStore";
-import { BoardType, NotationType } from "common/enum";
-import { reactive } from "vue";
+import { BoardType, NotationType, NotationTypeValues } from "common/unions";
 
 const notationStore = useNotationStore();
-const lessonStore = useLessonStore();
-const questionStore = useQuestionStore();
-const answerStore = useAnswerStore();
 const dbHelper = useDbHelper();
 
 export default function notationLoadingHelper() {
 
-  async function loadLessonNotations() {
-    notationStore.setParent(lessonStore.getCurrentLesson()?.uuid, BoardType.LESSON);
-    notationStore.setNotations(reactive(await loadNotationsByBoard()));
-  }
-
-  async function loadQuestionNotations() {
-    notationStore.setParent(questionStore.getCurrentQuestion()?.uuid, BoardType.QUESTION);
-    notationStore.setNotations(reactive(await loadNotationsByBoard()));
-  }
-
-  async function loadAnswerNotations() {
-    notationStore.setParent(answerStore.getCurrentAnswer()?.uuid, BoardType.ANSWER);
-    notationStore.setNotations(reactive(await loadNotationsByBoard()));
-  }
-
   // e.g get lesson notations
-  async function loadNotationsByBoard(): Promise<Map<string, BaseNotation>> {
+  async function loadNotations(boardType?: BoardType) {
 
-    let notationsMap = new Map<string, BaseNotation>();
+    let notationsMap = new Map<string, NotationAttributes>();
 
-    for (const nt in NotationType) {
-      let notations = await loadNotationsByType(NotationType[nt as keyof typeof NotationType]);
-      notations.forEach((n) => {
-        notationsMap.set(n.uuid, n);
-      });
+    for (let i = 0; i < NotationTypeValues.length; i++) {
+
+      const nt = NotationTypeValues[i];
+      let notations = await loadNotationsByType(boardType, nt as NotationType);
+
+      for (let j = 0; j < notations.length; j++) {
+        const n = notations[j];
+        notationsMap.set(n.uuid, {
+          ...n,
+          notationType: nt as NotationType,
+        });
+      }
     }
 
-    return notationsMap;
+    notationStore.setNotations(notationsMap);
   }
 
   // e.g. load lesson symbols
   async function loadNotationsByType(
+    boardType: BoardType | undefined,
     notationType: NotationType
-  ): Promise<BaseNotation[]> {
-    let boardType = notationStore.getParent().type;
-    let parentUUId = notationStore.getParent().uuid;
+  ): Promise<NotationAttributes[]> {
+    if(! boardType) boardType = notationStore.getParent().value.type;
+    let parentUUId = notationStore.getParent().value.uuid;
     switch (notationType) {
-      case NotationType.SYMBOL:
-      case NotationType.SIGN:
-      case NotationType.POWER:
-        return await dbHelper.getNotations<PointNotationAttributes>(notationType, boardType, parentUUId);
-      case NotationType.FRACTION:
-      case NotationType.SQRT:
+      case "SYMBOL":
+      case "SIGN":
+      case "POWER":
+        return await dbHelper.getNotations<PointNotationAttributes>(
+          notationType,
+          boardType,
+          parentUUId
+        );
+      case "FRACTION":
+      case "SQRT":
         return await dbHelper.getNotations<LineNotationAttributes>(
           notationType,
           boardType,
           parentUUId
         );
-      case NotationType.GEO:
-      case NotationType.IMAGE:
-      case NotationType.TEXT:
+      case "GEO":
+      case "IMAGE":
+      case "TEXT":
         return await dbHelper.getNotations<RectNotationAttributes>(
           notationType,
           boardType,
@@ -83,8 +73,6 @@ export default function notationLoadingHelper() {
   }
 
   return {
-    loadAnswerNotations,
-    loadLessonNotations,
-    loadQuestionNotations
+    loadNotations,
   };
 }

@@ -7,13 +7,13 @@ export default function LessonDecorator(tableName: string) {
         BoardDecorator(tableName)(target);
         DefaultScope(() => ({
             attributes: {
-                exclude: ["LessonId"],
+                exclude: ["lessonId", "userId"],
             },
         }))(target);
         Table({
             indexes: [
                 {
-                    fields: ["LessonId"],
+                    fields: ["lessonId"],
                 },
             ],
         })(target);

@@ -1,17 +1,18 @@
 //  questions of current lesson
 import {
   LessonAttributes,
-  LessonCreateAttributes,
+  LessonCreationAttributes,
 } from "common/lessonTypes";
 import { defineStore } from "pinia";
 import dbHelper from "../../helpers/dbHelper";
 import { useUserStore } from "./userStore";
+import { ref } from "vue"
 const db = dbHelper();
 
 
 
 export const useLessonStore = defineStore("lesson", () => {
-  let lessons: Map<String, LessonAttributes> = new Map();
+  let lessons = ref<Map<String, LessonAttributes>>(new Map());
   let currentLesson = <LessonAttributes>{};
 
   function getCurrentLesson() {
@@ -32,29 +33,29 @@ export const useLessonStore = defineStore("lesson", () => {
       lessonsFromDB = await db.getStudentLessons(userStore.getCurrentUser().uuid );
 
     lessonsFromDB.forEach((l: LessonAttributes) => {
-      lessons.set(l.uuid, l);
+      lessons.value.set(l.uuid, l);
     });
   }
 
   async function setCurrentLesson(lessonUUId: string) {
     // store might not be loaded yet
-    if (!lessons.get(lessonUUId)) {
+    if (!lessons.value.get(lessonUUId)) {
       await loadLessons();
     }
 
-    if (!lessons.get(lessonUUId)) {
-      throw TypeError("invalid lesson:" + lessonUUId)
+    if (!lessons.value.get(lessonUUId)) {
+      throw TypeError("invalid lesson:" + lessonUUId);
     }
-    currentLesson = lessons.get(lessonUUId)!;
+    currentLesson = lessons.value.get(lessonUUId)!;
   }
 
   async function addLesson(
     lessonName: string
   ): Promise<LessonAttributes> {
     const userStore = useUserStore();
-    let lesson: LessonCreateAttributes = {name: lessonName, user: userStore.getCurrentUser()};
+    let lesson: LessonCreationAttributes = {name: lessonName, user: userStore.getCurrentUser()};
     let createdLesson = await db.addLesson(lesson);
-    lessons.set(createdLesson.uuid, createdLesson);
+    lessons.value.set(createdLesson.uuid, createdLesson);
     await setCurrentLesson(createdLesson.uuid);
     return createdLesson;
   }
@@ -68,8 +69,8 @@ export const useLessonStore = defineStore("lesson", () => {
   }
 
   function removeLesson(lessonUUId: string) {
-    lessons.forEach((l: LessonAttributes) => {
-      if (l.uuid === lessonUUId) lessons.delete(l.uuid);
+    lessons.value.forEach((l: LessonAttributes) => {
+      if (l.uuid === lessonUUId) lessons.value.delete(l.uuid);
     });
   }
 

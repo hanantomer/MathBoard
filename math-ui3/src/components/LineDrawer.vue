@@ -33,7 +33,7 @@
     ></v-divider>
     <p
       style="left: -2px; position: relative; z-index: 99; border: solid 1px"
-      v-if="notationType === NotationType.SQRT"
+      v-if="notationType === 'SQRT'"
     >
       &#x221A;
     </p>
@@ -45,7 +45,7 @@ import useMatrixHelper from "../helpers/matrixHelper";
 import useNotationMutateHelper from "../helpers/notationMutateHelper";
 import { watch, onMounted, computed, ref } from "vue"
 import { useNotationStore } from "../store/pinia/notationStore";
-import { EditMode, NotationType } from "../../../math-common/src/enum";
+import { EditMode, NotationType } from "../../../math-common/src/unions";
 import { LinePosition, DotPosition  } from "../../../math-common/src/globals";
 import { LineAttributes, LineNotationAttributes } from "../../../math-common/build/baseTypes";
 import useEventBus from "../helpers/eventBus";
@@ -61,7 +61,7 @@ const props = defineProps({
 });
 
 let editStarted = ref(false);
-let notationType = ref(NotationType.SYMBOL);
+let notationType = ref("SYMBOL");
 let linePosition  = ref(<LinePosition | Record<string, never>>{});
 
 let lineLeft = computed(() => Math.min(linePosition.value.x1, linePosition.value.x2));
@@ -111,14 +111,14 @@ function handleMouseDown(e: MouseEvent) {
   }
 
   if (
-    notationStore.getEditMode().value === EditMode.FRACTION ||
-    notationStore.getEditMode().value === EditMode.SQRT
+    notationStore.getEditMode().value === "FRACTION" ||
+    notationStore.getEditMode().value === "SQRT"
   ) {
     // new line
     notationType.value =
-      notationStore.getEditMode().value === EditMode.FRACTION
-        ? NotationType.FRACTION
-        : NotationType.SQRT;
+      notationStore.getEditMode().value === "FRACTION"
+        ? "FRACTION"
+        : "SQRT";
 
     startLineDrawing({ x: e.offsetX, y: e.offsetY });
   }
@@ -126,7 +126,7 @@ function handleMouseDown(e: MouseEvent) {
   let fraction = findFractionLineAtClickedPosition(e);
   if (fraction) {
     //select existing fraction
-    notationType.value = NotationType.FRACTION;
+    notationType.value = "FRACTION";
     selectLine(fraction.id);
     return;
   }
@@ -134,7 +134,7 @@ function handleMouseDown(e: MouseEvent) {
   let sqrt = findSqrtLineAtClickedPosition(e);
   if (sqrt) {
     //select existing sqrt
-    notationType.value = NotationType.SQRT;
+    notationType.value = "SQRT";
     selectLine(sqrt.id);
   }
 };
@@ -181,7 +181,7 @@ function startLineDrawing (position: DotPosition) {
 
 function selectLine (notationUUId: string) {
 
-      let notation = notationStore.getNotations().get(notationUUId) as LineNotationAttributes;
+      let notation = notationStore.getNotations().value.get(notationUUId) as LineNotationAttributes;
 
       linePosition.value.x1 = matrixHelper.getNotationXposByCol(notation.fromCol);
 
@@ -190,7 +190,7 @@ function selectLine (notationUUId: string) {
         (notation.toCol - notation.fromCol) * matrixHelper.rectSize;
 
       linePosition.value.y = matrixHelper.getNotationYposByRow(notation.row);
-      notationMutateHelper.setActiveNotation(notation);
+      notationStore.setActiveNotation(notation);
 };
 
 function setLine (xPos: number) {
@@ -204,9 +204,9 @@ function setLine (xPos: number) {
 
 function saveLine(lineAttributes: LineAttributes) {
 
-  if (notationType.value == NotationType.FRACTION)
+  if (notationType.value == "FRACTION")
     notationMutateHelper.addFractiontNotation(lineAttributes);
-  else if (notationType.value == NotationType.SQRT)
+  else if (notationType.value == "SQRT")
     notationMutateHelper.addSqrtNotation(lineAttributes);
   else {
     throw (notationType + ":is not a valid line type")
@@ -246,7 +246,7 @@ function findFractionLineAtClickedPosition(e: MouseEvent) {
       y: e.clientY,
     },
     "foreignObject",
-    NotationType.FRACTION
+    "FRACTION"
   );
 };
 
@@ -257,7 +257,7 @@ function findSqrtLineAtClickedPosition(e: MouseEvent) {
       y: e.clientY,
     },
     "foreignObject",
-    NotationType.SQRT
+    "SQRT"
   );
 };
 

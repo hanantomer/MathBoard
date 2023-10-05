@@ -1,6 +1,6 @@
 
 import { CellCoordinates } from "common/globals";
-import { BaseNotation } from "common/baseTypes";
+import { NotationAttributes } from "common/baseTypes";
 import { useNotationStore } from "../store/pinia/notationStore";
 
 import useFeathersHelper from "./feathersHelper";
@@ -25,21 +25,20 @@ export default function userOutgoingOperations() {
     // };
 
   function syncOutgoingActiveCell (activeCell: CellCoordinates) {
-      //activeCell.LessonUUId = this.getCurrentLesson().uuid;
       feathersClient
         .service("activeCell")
         .update(null, { activeCell: activeCell }, {});
   };
 
-  function syncOutgoingSaveNotation(notation: BaseNotation) {
+  function syncOutgoingSaveNotation(notation: NotationAttributes) {
     feathersClient.service("notationSync").create({ notation: notation }, {});
   };
 
-  function syncOutgoingRemoveNotation(notation: BaseNotation) {
-    feathersClient.service("notationSync").remove( notation.uuid , {});
+  function syncOutgoingRemoveNotation(uuid: string) {
+    feathersClient.service("notationSync").remove( uuid , {});
   };
 
-  function syncOutgoingUpdateSelectedNotation(selectedNotation: BaseNotation) {
+  function syncOutgoingUpdateSelectedNotation(selectedNotation: NotationAttributes) {
     feathersClient
       .service("notationSync")
       .update(null, { notation: selectedNotation }, {});

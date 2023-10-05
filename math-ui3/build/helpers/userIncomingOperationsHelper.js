@@ -18,8 +18,8 @@ export default function userIncomingOperations() {
             .service("notationSync")
             .on("created", (notation) => {
             if (notation.uuid !== userStore.getCurrentUser().uuid &&
-                notationStore.getParent().type == BoardType.LESSON) {
-                notationStore.getNotations().set(notation.uuid, notation);
+                notationStore.getParent().value.type == BoardType.LESSON) {
+                notationStore.getNotations().value.set(notation.uuid, notation);
             }
         });
         feathersClient
@@ -27,7 +27,7 @@ export default function userIncomingOperations() {
             .on("updated", (notation) => {
             if (notation.user.uuid !== userStore.getCurrentUser().uuid &&
                 this.getParent().boardType === "lesson") {
-                notationStore.getNotations().set(notation.uuid, notation);
+                notationStore.getNotations().value.set(notation.uuid, notation);
             }
         });
         feathersClient
@@ -35,7 +35,7 @@ export default function userIncomingOperations() {
             .on("removed", (notation) => {
             if (notation.user.uuid !== userStore.getCurrentUser().uuid &&
                 this.getParent().boardType === "lesson") {
-                notationStore.getNotations().set(notation.uuid, notation);
+                notationStore.getNotations().value.set(notation.uuid, notation);
             }
         });
         feathersClient
@@ -43,7 +43,7 @@ export default function userIncomingOperations() {
             .on("updated", (activeCell) => {
             if (
             //activeCell.UserId !== this.getUser().id &&
-            notationStore.getParent().type === BoardType.LESSON) {
+            notationStore.getParent().value.type === BoardType.LESSON) {
                 notationStore.setActiveCell(activeCell);
             }
         });
@@ -63,7 +63,7 @@ export default function userIncomingOperations() {
                 .service("heartbeat")
                 .on("updated", (user) => {
                 if (user.uuid != userStore.getCurrentUser().uuid &&
-                    notationStore.getParent().type === BoardType.LESSON) {
+                    notationStore.getParent().value.type === BoardType.LESSON) {
                     studentStore.setStudentHeartbeat(user.uuid);
                 }
             });

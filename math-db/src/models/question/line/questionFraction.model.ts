@@ -1,5 +1,5 @@
-import { Model, Column, BelongsTo, ForeignKey, DataType } from "sequelize-typescript";
-import { NotationType, BoardType } from "../../../../../math-common/build/enum";
+import { Model, Column, BelongsTo, ForeignKey, DataType, AllowNull } from "sequelize-typescript";
+import { NotationType, BoardType } from "../../../../../math-common/src/unions";
 import {
     QuestionLineAttributes,
     QuestionLineCreationAttributes,
@@ -13,31 +13,43 @@ export default class QuestionFraction extends Model<
     QuestionLineAttributes,
     QuestionLineCreationAttributes
 > {
-    notationType = NotationType.FRACTION;
-    boardType = BoardType.QUESTION;
+    notationType = "FRACTION";
+    boardType = "QUESTION";
     value = null;
 
+    @AllowNull(false)
     @Column({ type: DataType.UUID, defaultValue: DataType.UUIDV4 })
     uuid!: string;
 
     @ForeignKey(() => User)
     userId!: number;
 
-    @BelongsTo(() => User)
+    @BelongsTo(() => User, {
+        foreignKey: {
+            allowNull: false,
+        },
+    })
     user!: User;
 
     @ForeignKey(() => Question)
     questionId!: number;
 
-    @BelongsTo(() => Question)
+    @BelongsTo(() => Question, {
+        foreignKey: {
+            allowNull: false,
+        },
+    })
     question!: Question;
 
+    @AllowNull(false)
     @Column({ type: DataType.INTEGER })
     fromCol!: number;
 
+    @AllowNull(false)
     @Column({ type: DataType.INTEGER })
     toCol!: number;
 
+    @AllowNull(false)
     @Column({ type: DataType.INTEGER })
     row!: number;
 }

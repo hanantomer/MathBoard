@@ -30,13 +30,12 @@
         </v-card-actions>
       </v-card>
     </v-dialog>
-  </v-row>i
+  </v-row>
 </template>
 
 <script setup lang="ts">
 
 import { computed, ref, watch } from "vue"
-import { apiHost } from "../../../math-common/src/globals";
 import { useLessonStore } from "../store/pinia/lessonStore";
 
 const lessonStore = useLessonStore();
@@ -62,7 +61,7 @@ let show = ref(false);
 //});
 
 const link = computed(() => {
-  return apiHost + "/lesson/" + lessonStore.getCurrentLesson().uuid;
+  return "/api/lesson/" + lessonStore.getCurrentLesson().uuid;
 });
 
 function copy() {

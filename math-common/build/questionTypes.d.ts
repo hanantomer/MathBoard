@@ -1,22 +1,17 @@
-import { UserAttributes } from "./userTypes";
 import { LessonAttributes } from "./lessonTypes";
-import { BaseEntity, BaseNotation, LineAttributes, PointAttributes, RectAttributes } from "./baseTypes";
-export interface QuestionAttributes extends BaseEntity {
-    name: string;
-    user: UserAttributes;
+import { LineAttributes, PointAttributes, RectAttributes, SingleValueAttributes, BoardAttributes, EntityAttributes, NotationAttributes } from "./baseTypes";
+export type QuestionAttributes = EntityAttributes & BoardAttributes & {
     lesson: LessonAttributes;
-}
-export type QuestionCreateAttributes = Omit<QuestionAttributes, keyof BaseEntity>;
-interface QuestionNotationAttributes {
+    lessonId: number;
+};
+export type QuestionCreateAttributes = Omit<QuestionAttributes, keyof EntityAttributes>;
+type QuestionNotationAttributes = {
     question: QuestionAttributes;
-}
-export interface QuestionLineAttributes extends BaseNotation, LineAttributes, QuestionNotationAttributes {
-}
-export type QuestionLineCreationAttributes = Omit<QuestionLineAttributes, keyof BaseEntity>;
-export interface QuestionPointAttributes extends BaseNotation, PointAttributes, QuestionNotationAttributes {
-}
-export type QuestionPointCreationAttributes = Omit<QuestionPointAttributes, keyof BaseEntity>;
-export interface QuestionRectAttributes extends BaseNotation, RectAttributes, QuestionNotationAttributes {
-}
-export type QuestionRectCreationAttributes = Omit<QuestionRectAttributes, keyof BaseEntity>;
+};
+export type QuestionLineAttributes = EntityAttributes & NotationAttributes & LineAttributes & QuestionNotationAttributes;
+export type QuestionLineCreationAttributes = Omit<QuestionLineAttributes, keyof EntityAttributes>;
+export type QuestionPointAttributes = EntityAttributes & NotationAttributes & PointAttributes & QuestionNotationAttributes & SingleValueAttributes;
+export type QuestionPointCreationAttributes = Omit<QuestionPointAttributes, keyof EntityAttributes>;
+export type QuestionRectAttributes = EntityAttributes & NotationAttributes & RectAttributes & QuestionNotationAttributes;
+export type QuestionRectCreationAttributes = Omit<QuestionRectAttributes, keyof EntityAttributes>;
 export {};

@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.LoginType = exports.UesrType = exports.EditMode = exports.AreaSelectionMode = exports.NotationTypeShape = exports.NotationType = exports.NotationShape = exports.BoardType = void 0;
+exports.LoginType = exports.UesrType = exports.AreaSelectionMode = exports.NotationTypeShape = exports.NotationType = exports.NotationShape = exports.BoardType = void 0;
 var BoardType;
 (function (BoardType) {
     BoardType[BoardType["LESSON"] = 0] = "LESSON";
@@ -42,20 +42,6 @@ var AreaSelectionMode;
     AreaSelectionMode[AreaSelectionMode["SELECTING"] = 0] = "SELECTING";
     AreaSelectionMode[AreaSelectionMode["MOVE"] = 1] = "MOVE";
 })(AreaSelectionMode || (exports.AreaSelectionMode = AreaSelectionMode = {}));
-;
-var EditMode;
-(function (EditMode) {
-    EditMode[EditMode["SYMBOL"] = 0] = "SYMBOL";
-    EditMode[EditMode["POWER"] = 1] = "POWER";
-    EditMode[EditMode["TEXT"] = 2] = "TEXT";
-    EditMode[EditMode["FRACTION"] = 3] = "FRACTION";
-    EditMode[EditMode["SQRT"] = 4] = "SQRT";
-    EditMode[EditMode["DELETING"] = 5] = "DELETING";
-    EditMode[EditMode["SELECT"] = 6] = "SELECT";
-    EditMode[EditMode["CHECKMARK"] = 7] = "CHECKMARK";
-    EditMode[EditMode["SEMICHECKMARK"] = 8] = "SEMICHECKMARK";
-    EditMode[EditMode["XMARK"] = 9] = "XMARK";
-})(EditMode || (exports.EditMode = EditMode = {}));
 ;
 var UesrType;
 (function (UesrType) {

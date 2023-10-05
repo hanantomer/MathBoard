@@ -94,7 +94,7 @@ const questions = computed(() => {
       uuid: question.uuid,
       name: question.name,
       lessonName: question.lesson.name,
-      createdAt: new Date(question.createdAt),
+      createdAt: question.createdAt,
     };
   });
 });
@@ -107,8 +107,7 @@ function navToLessons() {
 };
 
 function load() {
-  let lessonCount = lessonStore.getLessons().size;
-  if (!lessonCount) {
+  if (!lessonStore.getLessons().value) {
     noLessonDialog.value = true;
     return;
   }

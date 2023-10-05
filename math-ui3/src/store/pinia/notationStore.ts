@@ -2,9 +2,9 @@
 //  questions of current lesson
 import { defineStore } from "pinia";
 import { CellCoordinates, matrixDimensions } from "common/globals";
-import { BaseNotation } from "common/baseTypes";
-import { EditMode, BoardType, NotationShape, NotationTypeShape } from "common/enum";
-import { reactive, ref } from "vue";
+import { NotationAttributes } from "common/baseTypes";
+import { EditMode, BoardType, NotationShape, NotationTypeShape } from "common/unions";
+import { ref } from "vue";
 
 type Board = {
   uuid: string;
@@ -18,16 +18,18 @@ type Board = {
 
 export const useNotationStore = defineStore("notation", () => {
 
-  const cellOccupationMatrix: (BaseNotation | null)[][] =
+  const cellOccupationMatrix: (NotationAttributes | null)[][] =
     createCellOccupationMatrix();
-  let parent: Board = reactive<Board>({ type: BoardType.LESSON, uuid: "" });
-  let notations: Map<String, BaseNotation> = reactive(
-    <Map<String, BaseNotation>>{}
+  let parent = ref<Board>({uuid:"", type: "LESSON"});
+  let notations = ref(
+    <Map<String, NotationAttributes>>new Map()
   );
-  let activeCell: CellCoordinates | null =  <CellCoordinates | null>{};
-  let activeNotation: BaseNotation | null = <BaseNotation | null>{};
+  let activeCell = ref(<CellCoordinates | null> null);
+  let activeNotation: NotationAttributes | null = <
+    NotationAttributes | null
+  >{};
   let selectedNotations: string[] = [];
-  let editMode = ref(EditMode.SYMBOL);
+  let editMode = ref<EditMode>("SYMBOL");
 
   function getEditMode() {
     return editMode;
@@ -54,9 +56,9 @@ export const useNotationStore = defineStore("notation", () => {
   }
 
   function getNotationsByShape<T>(notationShape: NotationShape): T[] {
-    return Array.from(notations.values()).filter((n) => {
+    return Array.from(notations.value.values()).filter((n) => {
       n.notationType &&
-      NotationTypeShape.get(n.notationType.valueOf()) == notationShape;
+      NotationTypeShape.get(n.notationType) == notationShape;
     }) as T[];
   }
 
@@ -64,25 +66,30 @@ export const useNotationStore = defineStore("notation", () => {
     return notations;
   }
 
-  function setActiveNotation(notation: BaseNotation | null) {
+  function setNotations(notationsToSet: Map<String, NotationAttributes>) {
+    notations.value = new Map(notationsToSet);
+  }
+
+  function addNotation(notation: NotationAttributes) {
+    notations.value.set(notation.uuid, notation);
+  }
+
+  function setActiveNotation(notation: NotationAttributes | null) {
     activeNotation = notation;
   }
 
-  function setNotations(notations: Map<String, BaseNotation>) {
-    notations = notations;
-  }
 
   function setActiveCell(newActiveCell: CellCoordinates | null) {
-    activeCell = newActiveCell;
+    activeCell.value = newActiveCell;
   }
 
   function setParent(parentUUID: string, boardType: BoardType) {
-    parent.uuid = parentUUID;
-    parent.type = boardType;
+    parent.value.uuid = parentUUID;
+    parent.value.type = boardType;
   }
 
   function resetActiveCell() {
-    activeCell = { col: -1, row: -1 };
+    activeCell.value = { col: -1, row: -1 };
   }
 
   function resetSelectedNotations() {
@@ -94,8 +101,8 @@ export const useNotationStore = defineStore("notation", () => {
     editMode.value = newEditMode;
   }
 
-  function createCellOccupationMatrix(): (BaseNotation | null)[][] {
-    let matrix: (BaseNotation | null)[][] = new Array();
+  function createCellOccupationMatrix(): (NotationAttributes | null)[][] {
+    let matrix: (NotationAttributes | null)[][] = new Array();
     for (let i = 0; i < matrixDimensions.rowsNum; i++) {
       matrix.push([]);
       for (let j = 0; j < matrixDimensions.colsNum; j++) {
@@ -115,6 +122,7 @@ export const useNotationStore = defineStore("notation", () => {
     getActiveNotation,
     getSelectedNotations,
     getParent,
+    addNotation,
     setNotations,
     setActiveNotation,
     setCurrentEditMode,

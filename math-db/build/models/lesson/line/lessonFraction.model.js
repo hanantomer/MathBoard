@@ -13,19 +13,19 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const sequelize_typescript_1 = require("sequelize-typescript");
-const enum_1 = require("../../../../../math-common/build/enum");
 const user_model_1 = __importDefault(require("../../user.model"));
 const lesson_model_1 = __importDefault(require("../../lesson/lesson.model"));
 const lessonDecorator_1 = __importDefault(require("../../lesson/lessonDecorator"));
 let LessonFraction = class LessonFraction extends sequelize_typescript_1.Model {
     constructor() {
         super(...arguments);
-        this.notationType = enum_1.NotationType.FRACTION;
-        this.boardType = enum_1.BoardType.LESSON;
+        this.notationType = "FRACTION";
+        this.boardType = "LESSON";
         this.value = null;
     }
 };
 __decorate([
+    (0, sequelize_typescript_1.AllowNull)(false),
     (0, sequelize_typescript_1.Column)({ type: sequelize_typescript_1.DataType.UUID, defaultValue: sequelize_typescript_1.DataType.UUIDV4 }),
     __metadata("design:type", String)
 ], LessonFraction.prototype, "uuid", void 0);
@@ -34,7 +34,11 @@ __decorate([
     __metadata("design:type", Number)
 ], LessonFraction.prototype, "userId", void 0);
 __decorate([
-    (0, sequelize_typescript_1.BelongsTo)(() => user_model_1.default),
+    (0, sequelize_typescript_1.BelongsTo)(() => user_model_1.default, {
+        foreignKey: {
+            allowNull: false,
+        },
+    }),
     __metadata("design:type", user_model_1.default)
 ], LessonFraction.prototype, "user", void 0);
 __decorate([
@@ -42,18 +46,25 @@ __decorate([
     __metadata("design:type", Number)
 ], LessonFraction.prototype, "lessonId", void 0);
 __decorate([
-    (0, sequelize_typescript_1.BelongsTo)(() => lesson_model_1.default),
+    (0, sequelize_typescript_1.BelongsTo)(() => lesson_model_1.default, {
+        foreignKey: {
+            allowNull: false,
+        },
+    }),
     __metadata("design:type", lesson_model_1.default)
 ], LessonFraction.prototype, "lesson", void 0);
 __decorate([
+    (0, sequelize_typescript_1.AllowNull)(false),
     (0, sequelize_typescript_1.Column)({ type: sequelize_typescript_1.DataType.INTEGER }),
     __metadata("design:type", Number)
 ], LessonFraction.prototype, "fromCol", void 0);
 __decorate([
+    (0, sequelize_typescript_1.AllowNull)(false),
     (0, sequelize_typescript_1.Column)({ type: sequelize_typescript_1.DataType.INTEGER }),
     __metadata("design:type", Number)
 ], LessonFraction.prototype, "toCol", void 0);
 __decorate([
+    (0, sequelize_typescript_1.AllowNull)(false),
     (0, sequelize_typescript_1.Column)({ type: sequelize_typescript_1.DataType.INTEGER }),
     __metadata("design:type", Number)
 ], LessonFraction.prototype, "row", void 0);

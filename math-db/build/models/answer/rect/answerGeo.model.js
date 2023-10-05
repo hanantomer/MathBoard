@@ -13,18 +13,18 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const sequelize_typescript_1 = require("sequelize-typescript");
-const enum_1 = require("../../../../../math-common/build/enum");
 const answerDecorator_1 = __importDefault(require("../../answer/answerDecorator"));
 const user_model_1 = __importDefault(require("../../user.model"));
 const answer_model_1 = __importDefault(require("../../answer/answer.model"));
 let AnswerGeo = class AnswerGeo extends sequelize_typescript_1.Model {
     constructor() {
         super(...arguments);
-        this.notationType = enum_1.NotationType.TEXT;
-        this.boardType = enum_1.BoardType.ANSWER;
+        this.notationType = "TEXT";
+        this.boardType = "ANSWER";
     }
 };
 __decorate([
+    (0, sequelize_typescript_1.AllowNull)(false),
     (0, sequelize_typescript_1.Column)({ type: sequelize_typescript_1.DataType.UUID, defaultValue: sequelize_typescript_1.DataType.UUIDV4 }),
     __metadata("design:type", String)
 ], AnswerGeo.prototype, "uuid", void 0);
@@ -33,7 +33,11 @@ __decorate([
     __metadata("design:type", Number)
 ], AnswerGeo.prototype, "userId", void 0);
 __decorate([
-    (0, sequelize_typescript_1.BelongsTo)(() => user_model_1.default),
+    (0, sequelize_typescript_1.BelongsTo)(() => user_model_1.default, {
+        foreignKey: {
+            allowNull: false,
+        },
+    }),
     __metadata("design:type", user_model_1.default)
 ], AnswerGeo.prototype, "user", void 0);
 __decorate([
@@ -41,26 +45,35 @@ __decorate([
     __metadata("design:type", Number)
 ], AnswerGeo.prototype, "answerId", void 0);
 __decorate([
-    (0, sequelize_typescript_1.BelongsTo)(() => answer_model_1.default),
+    (0, sequelize_typescript_1.BelongsTo)(() => answer_model_1.default, {
+        foreignKey: {
+            allowNull: false,
+        },
+    }),
     __metadata("design:type", answer_model_1.default)
 ], AnswerGeo.prototype, "answer", void 0);
 __decorate([
+    (0, sequelize_typescript_1.AllowNull)(false),
     (0, sequelize_typescript_1.Column)({ type: sequelize_typescript_1.DataType.INTEGER }),
     __metadata("design:type", Number)
 ], AnswerGeo.prototype, "fromCol", void 0);
 __decorate([
+    (0, sequelize_typescript_1.AllowNull)(false),
     (0, sequelize_typescript_1.Column)({ type: sequelize_typescript_1.DataType.INTEGER }),
     __metadata("design:type", Number)
 ], AnswerGeo.prototype, "toCol", void 0);
 __decorate([
+    (0, sequelize_typescript_1.AllowNull)(false),
     (0, sequelize_typescript_1.Column)({ type: sequelize_typescript_1.DataType.INTEGER }),
     __metadata("design:type", Number)
 ], AnswerGeo.prototype, "fromRow", void 0);
 __decorate([
+    (0, sequelize_typescript_1.AllowNull)(false),
     (0, sequelize_typescript_1.Column)({ type: sequelize_typescript_1.DataType.INTEGER }),
     __metadata("design:type", Number)
 ], AnswerGeo.prototype, "toRow", void 0);
 __decorate([
+    (0, sequelize_typescript_1.AllowNull)(false),
     (0, sequelize_typescript_1.Column)({ type: sequelize_typescript_1.DataType.STRING }),
     __metadata("design:type", String)
 ], AnswerGeo.prototype, "value", void 0);

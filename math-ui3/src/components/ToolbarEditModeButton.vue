@@ -24,7 +24,7 @@
 <script setup lang="ts">
 
 import { watch, ref, PropType } from "vue"
-import { EditMode } from "../../../math-common/src/enum";
+import { EditMode } from "../../../math-common/src/unions";
 import { useNotationStore } from "../store/pinia/notationStore";
 import { computed } from "vue";
 
@@ -43,7 +43,7 @@ let active = ref(0);
 
 function toggleEditMode() {
   if (notationStore.getEditMode().value === props.editMode) {
-    notationStore.getEditMode().value = EditMode.SYMBOL;
+    notationStore.getEditMode().value = 'SYMBOL';
     //        active = 1;
   } else {
     notationStore.getEditMode().value = props.editMode!;

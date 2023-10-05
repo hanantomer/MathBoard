@@ -10,13 +10,13 @@ function LessonDecorator(tableName) {
         (0, boardDecorator_1.default)(tableName)(target);
         (0, sequelize_typescript_1.DefaultScope)(() => ({
             attributes: {
-                exclude: ["LessonId"],
+                exclude: ["lessonId", "userId"],
             },
         }))(target);
         (0, sequelize_typescript_1.Table)({
             indexes: [
                 {
-                    fields: ["LessonId"],
+                    fields: ["lessonId"],
                 },
             ],
         })(target);

@@ -7,15 +7,15 @@
       <v-card-text>
         <template v-if="students">
           <v-list>
-            <v-list-item-group active-class="activestudent" color="indigo">
+            <v-list-group active-class="activestudent" color="indigo">
               <v-list-item
                 v-for="student in students"
-                :key="student.id"
+                :key="student.uuid"
                 v-on:click="toggleStudentAuthorization(student)"
               >
-                <v-list-item-avatar>
+                <v-avatar>
                   <v-img :src="student.imageUrl"></v-img>
-                </v-list-item-avatar>
+                </v-avatar>
                 <v-list-item-title
                   style="font-size: 0.9vw"
                   v-text="getStudentDisplayName(student)"
@@ -25,7 +25,7 @@
                   <v-icon dark> mdi-pencil </v-icon>
                 </v-btn>
               </v-list-item>
-            </v-list-item-group>
+            </v-list-group>
           </v-list>
         </template>
         <p v-else>No stuedents have yet shown up to this class</p>
@@ -46,7 +46,7 @@ const lessonStore = useLessonStore();
 const userOutgoingOperations = UseUserOutgoingOperations();
 
 const students = computed(() => {
-  return Array.from(studentStore.getStudents().values());
+  return Array.from(studentStore.getStudents().value).map(([key, value]) => { return value });
 });
 
 function getStudentDisplayName(student: UserAttributes) {

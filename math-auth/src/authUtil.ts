@@ -35,7 +35,7 @@ export default function useAuthUtils() {
             );
             user.access_token = access_token;
             user.password = "";
-            return user as UserAttributes;
+            return user;
         }
         return null;
     };
@@ -53,7 +53,7 @@ export default function useAuthUtils() {
             });
             
             if (user) {
-                userCache.set(decodedToken.email,  user as UserAttributes);
+                userCache.set(decodedToken.email,  user);
             }
         }
 

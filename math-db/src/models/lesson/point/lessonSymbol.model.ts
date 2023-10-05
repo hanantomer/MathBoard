@@ -1,5 +1,4 @@
-import { Model, Column, BelongsTo, ForeignKey, DataType } from "sequelize-typescript";
-import { NotationType, BoardType } from "../../../../../math-common/build/enum";
+import { Model, Column, BelongsTo, ForeignKey, DataType, AllowNull, Unique } from "sequelize-typescript";
 import {
     LessonPointAttributes,
     LessonPointCreationAttributes,
@@ -8,36 +7,52 @@ import LessonDecorator from "../../lesson/lessonDecorator";
 import User from "../../user.model";
 import Lesson from "../../lesson/lesson.model";
 
-
 @LessonDecorator("LessonSymbol")
 export default class LessonSymbol extends Model<
     LessonPointAttributes,
     LessonPointCreationAttributes
 > {
-    notationType = NotationType.SYMBOL;
-    boardType = BoardType.LESSON;
+    notationType = "SYMBOL";
+    boardType = "LESSON";
 
+    @AllowNull(false)
     @Column({ type: DataType.UUID, defaultValue: DataType.UUIDV4 })
     uuid!: string;
 
     @ForeignKey(() => User)
     userId!: number;
 
-    @BelongsTo(() => User)
+    @BelongsTo(() => User, {
+        foreignKey: {
+            allowNull: false,
+        },
+    })
     user!: User;
 
     @ForeignKey(() => Lesson)
+    @Column({
+        field: "lessonId",
+        type: DataType.NUMBER,
+        unique: "active_unique",
+    })
     lessonId!: number;
 
-    @BelongsTo(() => Lesson)
+    @BelongsTo(() => Lesson, {
+        foreignKey: {
+            allowNull: false,
+        },
+    })
     lesson!: Lesson;
 
-    @Column({ type: DataType.INTEGER })
+    @AllowNull(false)
+    @Column({ type: DataType.INTEGER, unique: "active_unique" })
     col!: number;
 
-    @Column({ type: DataType.INTEGER })
+    @AllowNull(false)
+    @Column({ type: DataType.INTEGER, unique: "active_unique" })
     row!: number;
 
+    @AllowNull(false)
     @Column({ type: DataType.STRING })
     value!: string;
 }

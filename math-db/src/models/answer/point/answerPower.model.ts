@@ -1,5 +1,4 @@
-import { Model, Column, BelongsTo, ForeignKey, DataType } from "sequelize-typescript";
-import { NotationType, BoardType } from "../../../../../math-common/build/enum";
+import { Model, Column, BelongsTo, ForeignKey, DataType, AllowNull } from "sequelize-typescript";
 import AnswerDecorator from "../../answer/answerDecorator";
 import  User from "../../user.model";
 import Answer from "../../answer/answer.model";
@@ -15,30 +14,42 @@ export default class AnswerPower extends Model<
     AnswerPointAttributes,
     AnswerPointCreationAttributes
 > {
-    notationType = NotationType.POWER;
-    boardType = BoardType.ANSWER;
+    notationType = "POWER";
+    boardType = "ANSWER";
 
+    @AllowNull(false)
     @Column({ type: DataType.UUID, defaultValue: DataType.UUIDV4 })
     uuid!: string;
 
     @ForeignKey(() => User)
     userId!: number;
 
-    @BelongsTo(() => User)
+    @BelongsTo(() => User, {
+        foreignKey: {
+            allowNull: false,
+        },
+    })
     user!: User;
 
     @ForeignKey(() => Answer)
     answerId!: number;
 
-    @BelongsTo(() => Answer)
+    @BelongsTo(() => Answer, {
+        foreignKey: {
+            allowNull: false,
+        },
+    })
     answer!: Answer;
 
+    @AllowNull(false)
     @Column({ type: DataType.INTEGER })
     col!: number;
 
+    @AllowNull(false)
     @Column({ type: DataType.INTEGER })
     row!: number;
 
+    @AllowNull(false)
     @Column({ type: DataType.INTEGER })
     value!: string;
 }

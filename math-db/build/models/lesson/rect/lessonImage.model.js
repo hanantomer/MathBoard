@@ -13,18 +13,18 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const sequelize_typescript_1 = require("sequelize-typescript");
-const enum_1 = require("../../../../../math-common/build/enum");
 const lessonDecorator_1 = __importDefault(require("../../lesson/lessonDecorator"));
 const user_model_1 = __importDefault(require("../../user.model"));
 const lesson_model_1 = __importDefault(require("../../lesson/lesson.model"));
 let LessonImage = class LessonImage extends sequelize_typescript_1.Model {
     constructor() {
         super(...arguments);
-        this.notationType = enum_1.NotationType.IMAGE;
-        this.boardType = enum_1.BoardType.LESSON;
+        this.notationType = "IMAGE";
+        this.boardType = "LESSON";
     }
 };
 __decorate([
+    (0, sequelize_typescript_1.AllowNull)(false),
     (0, sequelize_typescript_1.Column)({ type: sequelize_typescript_1.DataType.UUID, defaultValue: sequelize_typescript_1.DataType.UUIDV4 }),
     __metadata("design:type", String)
 ], LessonImage.prototype, "uuid", void 0);
@@ -33,7 +33,11 @@ __decorate([
     __metadata("design:type", Number)
 ], LessonImage.prototype, "userId", void 0);
 __decorate([
-    (0, sequelize_typescript_1.BelongsTo)(() => user_model_1.default),
+    (0, sequelize_typescript_1.BelongsTo)(() => user_model_1.default, {
+        foreignKey: {
+            allowNull: false,
+        },
+    }),
     __metadata("design:type", user_model_1.default)
 ], LessonImage.prototype, "user", void 0);
 __decorate([
@@ -41,26 +45,35 @@ __decorate([
     __metadata("design:type", Number)
 ], LessonImage.prototype, "lessonId", void 0);
 __decorate([
-    (0, sequelize_typescript_1.BelongsTo)(() => lesson_model_1.default),
+    (0, sequelize_typescript_1.BelongsTo)(() => lesson_model_1.default, {
+        foreignKey: {
+            allowNull: false,
+        },
+    }),
     __metadata("design:type", lesson_model_1.default)
 ], LessonImage.prototype, "lesson", void 0);
 __decorate([
+    (0, sequelize_typescript_1.AllowNull)(false),
     (0, sequelize_typescript_1.Column)({ type: sequelize_typescript_1.DataType.INTEGER }),
     __metadata("design:type", Number)
 ], LessonImage.prototype, "fromCol", void 0);
 __decorate([
+    (0, sequelize_typescript_1.AllowNull)(false),
     (0, sequelize_typescript_1.Column)({ type: sequelize_typescript_1.DataType.INTEGER }),
     __metadata("design:type", Number)
 ], LessonImage.prototype, "toCol", void 0);
 __decorate([
+    (0, sequelize_typescript_1.AllowNull)(false),
     (0, sequelize_typescript_1.Column)({ type: sequelize_typescript_1.DataType.INTEGER }),
     __metadata("design:type", Number)
 ], LessonImage.prototype, "fromRow", void 0);
 __decorate([
+    (0, sequelize_typescript_1.AllowNull)(false),
     (0, sequelize_typescript_1.Column)({ type: sequelize_typescript_1.DataType.INTEGER }),
     __metadata("design:type", Number)
 ], LessonImage.prototype, "toRow", void 0);
 __decorate([
+    (0, sequelize_typescript_1.AllowNull)(false),
     (0, sequelize_typescript_1.Column)({ type: sequelize_typescript_1.DataType.STRING }),
     __metadata("design:type", String)
 ], LessonImage.prototype, "value", void 0);

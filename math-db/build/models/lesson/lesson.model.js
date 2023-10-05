@@ -18,14 +18,22 @@ const user_model_1 = __importDefault(require("../user.model"));
 let Lesson = class Lesson extends sequelize_typescript_1.Model {
 };
 __decorate([
-    (0, sequelize_typescript_1.ForeignKey)(() => user_model_1.default),
+    (0, sequelize_typescript_1.Column)({
+        type: sequelize_typescript_1.DataType.NUMBER,
+    }),
     __metadata("design:type", Number)
 ], Lesson.prototype, "userId", void 0);
 __decorate([
-    (0, sequelize_typescript_1.BelongsTo)(() => user_model_1.default),
+    (0, sequelize_typescript_1.BelongsTo)(() => user_model_1.default, {
+        foreignKey: {
+            field: "userId",
+            name: "userIdFK",
+        },
+    }),
     __metadata("design:type", user_model_1.default)
 ], Lesson.prototype, "user", void 0);
 __decorate([
+    (0, sequelize_typescript_1.AllowNull)(false),
     (0, sequelize_typescript_1.Column)({
         type: sequelize_typescript_1.DataType.UUID,
         defaultValue: sequelize_typescript_1.DataType.UUIDV4,
@@ -33,6 +41,7 @@ __decorate([
     __metadata("design:type", String)
 ], Lesson.prototype, "uuid", void 0);
 __decorate([
+    (0, sequelize_typescript_1.AllowNull)(false),
     (0, sequelize_typescript_1.Column)({
         type: sequelize_typescript_1.DataType.STRING,
     }),

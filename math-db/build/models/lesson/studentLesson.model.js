@@ -22,7 +22,11 @@ __decorate([
     __metadata("design:type", Number)
 ], StudentLesson.prototype, "userId", void 0);
 __decorate([
-    (0, sequelize_typescript_1.BelongsTo)(() => user_model_1.default),
+    (0, sequelize_typescript_1.BelongsTo)(() => user_model_1.default, {
+        foreignKey: {
+            allowNull: false,
+        },
+    }),
     __metadata("design:type", user_model_1.default)
 ], StudentLesson.prototype, "user", void 0);
 __decorate([
@@ -30,7 +34,11 @@ __decorate([
     __metadata("design:type", Number)
 ], StudentLesson.prototype, "lessonId", void 0);
 __decorate([
-    (0, sequelize_typescript_1.BelongsTo)(() => lesson_model_1.default),
+    (0, sequelize_typescript_1.BelongsTo)(() => lesson_model_1.default, {
+        foreignKey: {
+            allowNull: false,
+        },
+    }),
     __metadata("design:type", lesson_model_1.default)
 ], StudentLesson.prototype, "lesson", void 0);
 StudentLesson = __decorate([

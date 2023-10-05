@@ -51,7 +51,7 @@
 <script setup lang="ts">
 import { watch, ref } from "vue"
 import { useNotationStore } from "../store/pinia/notationStore";
-import { NotationType } from "../../../math-common/src/enum";
+import { NotationType } from "../../../math-common/src/unions";
 import useEventBus from "../helpers/eventBus";
 import {
     RectNotationAttributes
@@ -74,7 +74,7 @@ watch(() => props.show,(newVal) => {
 })
 
 function setInitalTextValue() {
-  if (notationStore.activeNotation?.notationType == NotationType.TEXT
+  if (notationStore.activeNotation?.notationType == "TEXT"
     && (notationStore.activeNotation as RectNotationAttributes).value)
     textValue.value = (notationStore.activeNotation as RectNotationAttributes).value;
 }

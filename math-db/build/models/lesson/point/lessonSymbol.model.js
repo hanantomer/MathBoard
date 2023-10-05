@@ -13,18 +13,18 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const sequelize_typescript_1 = require("sequelize-typescript");
-const enum_1 = require("../../../../../math-common/build/enum");
 const lessonDecorator_1 = __importDefault(require("../../lesson/lessonDecorator"));
 const user_model_1 = __importDefault(require("../../user.model"));
 const lesson_model_1 = __importDefault(require("../../lesson/lesson.model"));
 let LessonSymbol = class LessonSymbol extends sequelize_typescript_1.Model {
     constructor() {
         super(...arguments);
-        this.notationType = enum_1.NotationType.SYMBOL;
-        this.boardType = enum_1.BoardType.LESSON;
+        this.notationType = "SYMBOL";
+        this.boardType = "LESSON";
     }
 };
 __decorate([
+    (0, sequelize_typescript_1.AllowNull)(false),
     (0, sequelize_typescript_1.Column)({ type: sequelize_typescript_1.DataType.UUID, defaultValue: sequelize_typescript_1.DataType.UUIDV4 }),
     __metadata("design:type", String)
 ], LessonSymbol.prototype, "uuid", void 0);
@@ -33,26 +33,42 @@ __decorate([
     __metadata("design:type", Number)
 ], LessonSymbol.prototype, "userId", void 0);
 __decorate([
-    (0, sequelize_typescript_1.BelongsTo)(() => user_model_1.default),
+    (0, sequelize_typescript_1.BelongsTo)(() => user_model_1.default, {
+        foreignKey: {
+            allowNull: false,
+        },
+    }),
     __metadata("design:type", user_model_1.default)
 ], LessonSymbol.prototype, "user", void 0);
 __decorate([
     (0, sequelize_typescript_1.ForeignKey)(() => lesson_model_1.default),
+    (0, sequelize_typescript_1.Column)({
+        field: "lessonId",
+        type: sequelize_typescript_1.DataType.NUMBER,
+        unique: "active_unique",
+    }),
     __metadata("design:type", Number)
 ], LessonSymbol.prototype, "lessonId", void 0);
 __decorate([
-    (0, sequelize_typescript_1.BelongsTo)(() => lesson_model_1.default),
+    (0, sequelize_typescript_1.BelongsTo)(() => lesson_model_1.default, {
+        foreignKey: {
+            allowNull: false,
+        },
+    }),
     __metadata("design:type", lesson_model_1.default)
 ], LessonSymbol.prototype, "lesson", void 0);
 __decorate([
-    (0, sequelize_typescript_1.Column)({ type: sequelize_typescript_1.DataType.INTEGER }),
+    (0, sequelize_typescript_1.AllowNull)(false),
+    (0, sequelize_typescript_1.Column)({ type: sequelize_typescript_1.DataType.INTEGER, unique: "active_unique" }),
     __metadata("design:type", Number)
 ], LessonSymbol.prototype, "col", void 0);
 __decorate([
-    (0, sequelize_typescript_1.Column)({ type: sequelize_typescript_1.DataType.INTEGER }),
+    (0, sequelize_typescript_1.AllowNull)(false),
+    (0, sequelize_typescript_1.Column)({ type: sequelize_typescript_1.DataType.INTEGER, unique: "active_unique" }),
     __metadata("design:type", Number)
 ], LessonSymbol.prototype, "row", void 0);
 __decorate([
+    (0, sequelize_typescript_1.AllowNull)(false),
     (0, sequelize_typescript_1.Column)({ type: sequelize_typescript_1.DataType.STRING }),
     __metadata("design:type", String)
 ], LessonSymbol.prototype, "value", void 0);

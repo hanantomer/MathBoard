@@ -1,11 +1,10 @@
 import { Model } from "sequelize-typescript";
-import { NotationType, BoardType } from "../../../../../math-common/build/enum";
 import { LessonLineAttributes, LessonLineCreationAttributes } from "../../../../../math-common/build/lessonTypes";
 import User from "../../user.model";
 import Lesson from "../../lesson/lesson.model";
 export default class LessonSqrt extends Model<LessonLineAttributes, LessonLineCreationAttributes> {
-    notationType: NotationType;
-    boardType: BoardType;
+    notationType: string;
+    boardType: string;
     value: null;
     uuid: string;
     userId: number;

@@ -3,18 +3,18 @@
 import { defineStore } from "pinia";
 import { matrixDimensions } from "common/globals";
 import { EditMode, BoardType, NotationTypeShape } from "common/enum";
-import { reactive, ref } from "vue";
+import { ref } from "vue";
 ///TODO complete setters
 ///TODO watch notations and sync occupation mattrix
 ///TODO watch notations and sync user operations (avoid circular updates)
 export const useNotationStore = defineStore("notation", () => {
     const cellOccupationMatrix = createCellOccupationMatrix();
-    let parent = reactive({ type: BoardType.LESSON, uuid: "" });
-    let notations = reactive({});
-    let activeCell = {};
+    let parent = ref({ uuid: "", type: BoardType.LESSON });
+    let notations = ref(new Map());
+    let activeCell = ref(null);
     let activeNotation = {};
     let selectedNotations = [];
-    let editMode = ref(EditMode.SYMBOL);
+    let editMode = ref<EditMode>("SYMBOL");
     function getEditMode() {
         return editMode;
     }
@@ -34,7 +34,7 @@ export const useNotationStore = defineStore("notation", () => {
         return cellOccupationMatrix;
     }
     function getNotationsByShape(notationShape) {
-        return Array.from(notations.values()).filter((n) => {
+        return Array.from(notations.value.values()).filter((n) => {
             n.notationType &&
                 NotationTypeShape.get(n.notationType.valueOf()) == notationShape;
         });
@@ -42,21 +42,24 @@ export const useNotationStore = defineStore("notation", () => {
     function getNotations() {
         return notations;
     }
-    function setActiveNotation(notation) {
-        activeNotation = notation;
-    }
     function setNotations(notations) {
         notations = notations;
     }
+    function addNotation(notation) {
+        notations.value.set(notation.uuid, notation);
+    }
+    function setActiveNotation(notation) {
+        activeNotation = notation;
+    }
     function setActiveCell(newActiveCell) {
-        activeCell = newActiveCell;
+        activeCell.value = newActiveCell;
     }
     function setParent(parentUUID, boardType) {
-        parent.uuid = parentUUID;
-        parent.type = boardType;
+        parent.value.uuid = parentUUID;
+        parent.value.type = boardType;
     }
     function resetActiveCell() {
-        activeCell = { col: -1, row: -1 };
+        activeCell.value = { col: -1, row: -1 };
     }
     function resetSelectedNotations() {
         selectedNotations.length = 0;
@@ -83,6 +86,7 @@ export const useNotationStore = defineStore("notation", () => {
         getActiveNotation,
         getSelectedNotations,
         getParent,
+        addNotation,
         setNotations,
         setActiveNotation,
         setCurrentEditMode,

@@ -19,19 +19,23 @@ const question_model_1 = __importDefault(require("../question/question.model"));
 let Answer = class Answer extends sequelize_typescript_1.Model {
 };
 __decorate([
-    (0, sequelize_typescript_1.ForeignKey)(() => user_model_1.default),
-    __metadata("design:type", Number)
-], Answer.prototype, "userId", void 0);
-__decorate([
-    (0, sequelize_typescript_1.BelongsTo)(() => user_model_1.default),
+    (0, sequelize_typescript_1.BelongsTo)(() => user_model_1.default, {
+        foreignKey: {
+            field: "userId",
+            allowNull: false,
+            name: "userIdFk",
+        },
+    }),
     __metadata("design:type", user_model_1.default)
 ], Answer.prototype, "user", void 0);
 __decorate([
-    (0, sequelize_typescript_1.ForeignKey)(() => question_model_1.default),
-    __metadata("design:type", Number)
-], Answer.prototype, "questionId", void 0);
-__decorate([
-    (0, sequelize_typescript_1.BelongsTo)(() => question_model_1.default),
+    (0, sequelize_typescript_1.BelongsTo)(() => question_model_1.default, {
+        foreignKey: {
+            field: "questionId",
+            allowNull: false,
+            name: "questionIdFk",
+        },
+    }),
     __metadata("design:type", question_model_1.default)
 ], Answer.prototype, "question", void 0);
 __decorate([

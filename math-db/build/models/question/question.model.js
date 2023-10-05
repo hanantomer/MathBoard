@@ -19,22 +19,27 @@ const lesson_model_1 = __importDefault(require("../lesson/lesson.model"));
 let Question = class Question extends sequelize_typescript_1.Model {
 };
 __decorate([
-    (0, sequelize_typescript_1.ForeignKey)(() => user_model_1.default),
-    __metadata("design:type", Number)
-], Question.prototype, "userId", void 0);
-__decorate([
-    (0, sequelize_typescript_1.BelongsTo)(() => user_model_1.default),
+    (0, sequelize_typescript_1.BelongsTo)(() => user_model_1.default, {
+        foreignKey: {
+            allowNull: false,
+            field: "userId",
+            name: "userIdFK",
+        },
+    }),
     __metadata("design:type", user_model_1.default)
 ], Question.prototype, "user", void 0);
 __decorate([
-    (0, sequelize_typescript_1.ForeignKey)(() => lesson_model_1.default),
-    __metadata("design:type", Number)
-], Question.prototype, "lessonId", void 0);
-__decorate([
-    (0, sequelize_typescript_1.BelongsTo)(() => lesson_model_1.default),
+    (0, sequelize_typescript_1.BelongsTo)(() => lesson_model_1.default, {
+        foreignKey: {
+            allowNull: false,
+            field: "lessonId",
+            name: "lessonIdFK",
+        },
+    }),
     __metadata("design:type", lesson_model_1.default)
 ], Question.prototype, "lesson", void 0);
 __decorate([
+    (0, sequelize_typescript_1.AllowNull)(false),
     (0, sequelize_typescript_1.Column)({
         type: sequelize_typescript_1.DataType.UUID,
         defaultValue: sequelize_typescript_1.DataType.UUIDV4,
@@ -42,6 +47,7 @@ __decorate([
     __metadata("design:type", String)
 ], Question.prototype, "uuid", void 0);
 __decorate([
+    (0, sequelize_typescript_1.AllowNull)(false),
     (0, sequelize_typescript_1.Column)({
         type: sequelize_typescript_1.DataType.UUID,
         defaultValue: sequelize_typescript_1.DataType.UUIDV4,
