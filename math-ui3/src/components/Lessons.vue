@@ -131,7 +131,7 @@ async function saveLesson(lessonName: string) {
       });
 };
 
-async function selectLesson(e:PointerEvent, row: any) {
+async function selectLesson(e:any, row: any) {
   router.push({
     path: "/lesson/" + row.item.uuid,
   });

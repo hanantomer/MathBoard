@@ -19,7 +19,7 @@ export const useStudentStore = defineStore("studentanswer", () => {
   }
 
   function setStudentHeartbeat(uuid: string){
-    let student = students.get(uuid);
+    let student = students.value.get(uuid);
     if (student) {
       student.lastHeartbeatTime = new Date();
     }

@@ -104,7 +104,7 @@
       </v-tooltip>
     </v-app-bar>
 
-    <v-main>
+    <v-main class="mt-4">
       <router-view></router-view>
     </v-main>
 
@@ -118,7 +118,7 @@
 
 <script setup lang="ts">
 import { useRouter } from 'vue-router'
-import { onMounted, onUnmounted, watch } from "vue";
+import { onMounted } from "vue";
 import useAuthHelper from "./helpers/authHelper";
 import useEventBus from "./helpers/eventBus";
 import useAxiosHelper from "./helpers/axiosHelper";
@@ -133,14 +133,8 @@ const userStore = useUserStore();
 
 onMounted(() => {
   initAxiosInterceptors();
-  window.addEventListener("keyup", onKeyUp);
-  document.addEventListener("paste", onPaste);
 });
 
-onUnmounted(() => {
-  window.removeEventListener("keyup", onKeyUp);
-  document.removeEventListener("paste", onPaste);
-});
 
 const user = computed(() => userStore.getCurrentUser());
 const isTeacher  = computed(() => userStore.isTeacher());
@@ -149,14 +143,6 @@ function showLoginDialog() {
   router.replace("/login");
 };
 
-
-function onKeyUp (key: KeyboardEvent) {
-  eventBus.emit("keyup", key);
-};
-
-function onPaste(e: ClipboardEvent) {
-  eventBus.emit("paste", e);
-};
 
 function signOut() {
   authHelper.signOut();

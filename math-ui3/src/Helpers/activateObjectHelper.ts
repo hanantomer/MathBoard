@@ -30,7 +30,7 @@ export default function activateObjectHelper() {
     if (overlapRectNotation) {
       setActiveNotation(overlapRectNotation).then(() => {
         if (overlapRectNotation?.notationType == "TEXT") {
-          notationStore.setCurrentEditMode("TEXT");
+          notationStore.setEditMode("TEXT");
         }
       });
       return null;
@@ -49,7 +49,7 @@ export default function activateObjectHelper() {
     };
 
     notationStore.setActiveCell(cellToActivate);
-    notationStore.setCurrentEditMode("SYMBOL");
+    notationStore.setEditMode("SYMBOL");
     return cellToActivate;
   }
 
@@ -129,7 +129,7 @@ export default function activateObjectHelper() {
     activeCell: CellCoordinates
   ) {
 
-    if (prevActiveCell?.col) {
+    if (prevActiveCell?.col != null) {
 
       let prevRectElm = document
         ?.querySelector<HTMLElement>(
@@ -140,7 +140,7 @@ export default function activateObjectHelper() {
       if (prevRectElm?.style) prevRectElm.style.fill = "";
     }
 
-    if (activeCell?.col) {
+    if (activeCell?.col != null) {
 
       let rectElm = document
         ?.querySelector<HTMLElement>(

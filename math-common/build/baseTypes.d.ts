@@ -12,6 +12,7 @@ export type NotationAttributes = {
     user: UserAttributes;
     notationType: NotationType;
     boardType: BoardType;
+    selected?: boolean;
 };
 export type NotationCreationAttributes = Omit<NotationAttributes, "uuid">;
 export type SingleValueAttributes = {

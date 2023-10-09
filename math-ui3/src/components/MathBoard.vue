@@ -15,7 +15,6 @@
           <areaSelector :svgId="svgId"></areaSelector>
           <svg
             v-bind:id="svgId"
-            v-on:mousedown="eventHelper.mouseDown"
             x="0"
             y="0"
             width="100%"
@@ -34,8 +33,7 @@ import toolbar from "./Toolbar.vue";
 import areaSelector from "./AreaSelector.vue";
 import lineDrawer from "./LineDrawer.vue";
 import useEventBus from "../helpers/eventBus";
-import { watch, computed } from "vue"
-import { storeToRefs } from "pinia";
+import { onMounted, onUnmounted, watch,  } from "vue"
 import { CellCoordinates } from "common/globals";
 import { useNotationStore } from "../store/pinia/notationStore";
 
@@ -44,38 +42,39 @@ const eventBus = useEventBus();
 const matrixHelper = UseMatrixHelper();
 const activateObjectHelper = UseActivateObjectHelper();
 const eventHelper = UseEventHelper();
-const { activeCell } = storeToRefs(notationStore);
 
+onMounted(() => {
+  // eventBus uses vue ref to implement pub sub mechanisim
+  eventHelper.registerSvgMouseDown(props.svgId);
+  eventHelper.registerSvgMouseMove(props.svgId);
+  eventHelper.registerSvgMouseUp(props.svgId);
+  eventHelper.registerKeyUp();
+  eventHelper.registerPaste();
+});
 
-watch(
-  () => activeCell.value as CellCoordinates ,
-  (newActiveCell: CellCoordinates, oldActiveCell: CellCoordinates | undefined) => {
-    if (!newActiveCell) return;
-    activateObjectHelper.activateCell(props.svgId, oldActiveCell, newActiveCell)
-  }, {immediate:true, deep:true});
+onUnmounted(() => {
+  eventHelper.unregisterSvgMouseDown(props.svgId);
+  eventHelper.unregisterSvgMouseMove(props.svgId);
+  eventHelper.unregisterSvgMouseUp(props.svgId);
+  eventHelper.unregisterKeyUp();
+  eventHelper.unregisterPaste();
+});
 
 const props = defineProps({
-  svgId: { type: String , default: null},
+  svgId: { type: String , default: ""},
   loaded: { type: Boolean, default: false }
 })
 
-///todo: implement via eventbus
-//            v-on="{
-//              drawLineEnded: eventManager_lineDrawEnded,
-//}"
-
-watch(() => eventBus.bus.value.get("keyup"), (e: KeyboardEvent[]) => {
-   eventHelper.keyUp(e);
-});
-
-watch(() => eventBus.bus.value.get("paste"), (e: ClipboardEvent) => {
-   eventHelper.paste(e);
-});
+watch(
+  () => notationStore.getActiveCell().value as CellCoordinates ,
+  (newActiveCell: CellCoordinates, oldActiveCell: CellCoordinates | undefined) => {
+    if (!newActiveCell) return;
+    activateObjectHelper.activateCell(props.svgId, oldActiveCell, newActiveCell)
+}, {immediate:true, deep:true});
 
 watch(() => props.loaded, (loaded: Boolean) => {
   if (loaded) load();
 }, {immediate: true});
-
 
 watch(() => notationStore.getNotations(), () => {
   matrixHelper.refreshScreen(
@@ -90,7 +89,7 @@ function load() {
 };
 
 function resetToolbarState() {
-  eventBus.emit("resetToolbarState");
+  eventBus.emit("resetToolbarState", null);
 }
 
 </script>

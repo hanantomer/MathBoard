@@ -3,8 +3,8 @@ const bus = ref(new Map());
 
 export default function() {
 
-    function emit(event: string, ...args: any) {
-        bus.value.set(event, args);
+    function emit(event: string, arg?: any) {
+        bus.value.set(event, arg);
     }
 
     return {

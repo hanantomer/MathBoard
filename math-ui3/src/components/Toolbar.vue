@@ -1,228 +1,168 @@
 <template>
-  <div>
-    <accessLinkDialog :dialog="accessLinkDialogOpen"></accessLinkDialog>
-    <freeTextDialog v-model="freeTextDialogOpen"></freeTextDialog>
+  <accessLinkDialog :dialog="accessLinkDialogOpen"></accessLinkDialog>
+  <freeTextDialog v-model="freeTextDialogOpen"></freeTextDialog>
 
-    <v-toolbar color="primary" dark class="vertical-toolbar">
-      <!-- create access link -->
-      <v-tooltip top hidden v-model="showAccessTooltip">
-        <template v-slot:activator="{ props }">
-          <v-btn
-            v-bind="props"
-            icon
-            @click.stop="accessLinkDialogOpen = true"
-            color="white"
-            x-small
-            fab
-            dark
-            ><v-icon>mdi-account-plus</v-icon></v-btn
-          >
-        </template>
-        <span>Create Access Link</span>
-      </v-tooltip>
-      <!-- text tool  -->
-      <v-tooltip top hidden>
-        <template v-slot:activator="{ props }">
-          <v-btn-toggle
-            v-model="textButtonActive"
-            background-color="transparent"
-            active-class="iconActive"
-          >
-            <v-btn
-              v-bind="props"
-              icon
-              :disabled="!editEnabled || !hasActiveCell"
-              v-on:click="startTextMode"
-              @click.stop="freeTextDialogOpen = true"
-              x-small
-              ><v-icon>mdi-text</v-icon></v-btn
-            >
-          </v-btn-toggle>
-        </template>
-        <span>Free Text</span>
-      </v-tooltip>
+  <v-toolbar color="primary" dark class="vertical-toolbar" height="500">
+    <!-- create access link -->
+    <v-tooltip text="<span>Create Access Link</span>">
+      <template v-slot:activator="{ props }">
+        <v-btn
+          v-bind="props"
+          icon
+          @click.stop="accessLinkDialogOpen = true"
+          color="white"
+          x-small
+          fab
+          dark
+          ><v-icon>mdi-account-plus</v-icon></v-btn
+        >
+      </template>
+    </v-tooltip>
 
-      <!-- selection button -->
-      <v-tooltip top hidden>
-        <template v-slot:activator="{ props }">
-          <v-btn-toggle
-            v-model="selectionButtonActive"
-            background-color="transparent"
-            active-class="iconActive"
-          >
-            <v-btn
-              v-bind="props"
-              color="yellow"
-              icon
-              :disabled="!editEnabled"
-              v-on:click="toggleSelectionMode"
-              x-small
-              ><v-icon>mdi-selection</v-icon></v-btn
-            >
-          </v-btn-toggle>
-        </template>
-        <span>Selection</span>
-      </v-tooltip>
+    <!-- text tool  -->
+    <v-tooltip text="Free Text">
+      <template v-slot:activator="{ props }">
+        <v-btn
+          v-bind="props"
+          icon
+          :disabled="!editEnabled || !hasActiveCell"
+          v-on:click="startTextMode"
+          @click.stop="freeTextDialogOpen = true"
+          ><v-icon>mdi-text</v-icon></v-btn
+        >
+      </template>
+    </v-tooltip>
 
-      <!-- fraction line-->
-      <v-tooltip top hidden v-model="showFractionLineTooltip">
-        <template v-slot:activator="{ props }">
-          <v-btn-toggle
-            v-model="fractionButtonActive"
-            background-color="transparent"
-            active-class="iconActive"
-          >
-            <v-btn
-              v-bind="props"
-              icon
-              color="white"
-              x-small
-              fab
-              dark
-              v-on:click="toggleFractionMode"
-              :disabled="!editEnabled"
-            >
-              <v-icon>mdi-tooltip-minus-outline</v-icon>
-            </v-btn>
-          </v-btn-toggle>
-        </template>
-        <span>Draw fraction line</span>
-      </v-tooltip>
+    <!-- selection button -->
+    <v-tooltip text="Selection">
+      <template v-slot:activator="{ props }">
+        <v-btn
+          v-bind="props"
+          :color="selectionButtonActive ? 'white' : 'yellow'"
+          icon
+          :disabled="!editEnabled"
+          @click="toggleSelectionMode"
+          x-small
+          ><v-icon>mdi-selection</v-icon></v-btn
+        >
+      </template>
+    </v-tooltip>
 
-      <!-- sqrt line-->
-      <v-tooltip top hidden v-model="showSquareRootTooltip">
-        <template v-slot:activator="{ props }">
-          <v-btn-toggle
-            v-model="squareRootButtonActive"
-            background-color="transparent"
-            active-class="iconActive"
-          >
-            <v-btn
-              v-bind="props"
-              icon
-              color="white"
-              x-small
-              fab
-              dark
-              v-on:click="toggleSqrtMode"
-              :disabled="!editEnabled"
-            >
-              <v-icon>mdi-square-root</v-icon>
-            </v-btn>
-          </v-btn-toggle>
-        </template>
-        <span>Draw sqrt line</span>
-      </v-tooltip>
+    <!-- fraction line-->
+    <v-tooltip text="Draw fraction line">
+      <template v-slot:activator="{ props }">
+        <v-btn
+          v-bind="props"
+          icon
+          :color="fractionButtonActive ? 'white' : 'yellow'"
+          x-small
+          fab
+          dark
+          v-on:click="toggleFractionMode"
+          :disabled="!editEnabled"
+        >
+          <v-icon>mdi-tooltip-minus-outline</v-icon>
+        </v-btn>
+      </template>
+    </v-tooltip>
 
-      <!-- power-->
-      <v-tooltip top hidden v-model="showPowerTooltip">
-        <template v-slot:activator="{ props }">
-          <v-btn-toggle
-            v-model="powerButtonActive"
-            background-color="transparent"
-            active-class="iconActive"
-          >
-            <v-btn
-              v-bind="props"
-              icon
-              color="white"
-              x-small
-              fab
-              dark
-              v-on:click="togglePowerMode"
-              :disabled="!editEnabled"
-            >
-              <v-icon>mdi-exponent</v-icon>
-            </v-btn>
-          </v-btn-toggle>
-        </template>
-        <span>Power</span>
-      </v-tooltip>
+    <!-- sqrt line-->
+    <v-tooltip text="Draw sqrt line">
+      <template v-slot:activator="{ props }">
+        <v-btn
+          v-bind="props"
+          icon
+          :color="squareRootButtonActive ? 'white' : 'yellow'"
+          x-small
+          fab
+          dark
+          v-on:click="toggleSqrtMode"
+          :disabled="!editEnabled"
+        >
+          <v-icon>mdi-square-root</v-icon>
+        </v-btn>
+      </template>
+    </v-tooltip>
 
-      <!-- checkmark-->
-      <v-tooltip top hidden v-model="showCheckmarkTooltip">
-        <template v-slot:activator="{ props }">
-          <v-btn-toggle
-            v-model="checkmarkButtonActive"
-            background-color="transparent"
-            active-class="iconActive"
-          >
-            <v-btn
-              v-bind="props"
-              v-if="answerCheckMode"
-              icon
-              color="white"
-              x-small
-              fab
-              dark
-              v-on:click="toggleCheckmarkMode"
-            >
-              <v-icon>mdi-checkbox-marked-circle-outline</v-icon>
-            </v-btn>
-          </v-btn-toggle>
-        </template>
-        <span>Correct</span>
-      </v-tooltip>
+    <!-- power-->
+    <v-tooltip text="power">
+      <template v-slot:activator="{ props }">
+        <v-btn
+          v-bind="props"
+          icon
+          :color="powerButtonActive ? 'white' : 'yellow'"
+          x-small
+          fab
+          dark
+          v-on:click="togglePowerMode"
+          :disabled="!editEnabled"
+        >
+          <v-icon>mdi-exponent</v-icon>
+        </v-btn>
+      </template>
+    </v-tooltip>
 
-      <!-- semicheckmark-->
-      <v-tooltip top hidden v-model="showSemicheckmarkTooltip">
-        <template v-slot:activator="{ props }">
-          <v-btn-toggle
-            v-model="semicheckmarkButtonActive"
-            background-color="transparent"
-            active-class="iconActive"
-          >
-            <v-btn
-              v-bind="props"
-              v-if="answerCheckMode"
-              icon
-              color="white"
-              x-small
-              fab
-              dark
-              v-on:click="toggleSemiCheckmarkMode"
-            >
-              <v-icon style="position: relative; left: 8px">mdi-check</v-icon>
-              <v-icon style="position: relative; left: -8px; top: -1px"
-                >mdi-minus</v-icon
-              >
-            </v-btn>
-          </v-btn-toggle>
-        </template>
-        <span>Half Correct</span>
-      </v-tooltip>
+    <!-- checkmark-->
+    <v-tooltip text="Correct">
+      <template v-slot:activator="{ props }">
+        <v-btn
+          v-bind="props"
+          v-if="answerCheckMode"
+          icon
+          :color="checkmarkButtonActive ? 'white' : 'yellow'"
+          x-small
+          fab
+          dark
+          v-on:click="toggleCheckmarkMode"
+        >
+          <v-icon>mdi-checkbox-marked-circle-outline</v-icon>
+        </v-btn>
+      </template>
+    </v-tooltip>
 
-      <!-- xmark-->
-      <v-tooltip top hidden v-model="showXmarkTooltip">
-        <template v-slot:activator="{ props }"  >
-          <v-btn-toggle
-            v-model="xmarkButtonActive"
-            background-color="transparent"
-            active-class="iconActive"
+    <!-- semicheckmark-->
+    <v-tooltip text="Half Correct">
+      <template v-slot:activator="{ props }">
+        <v-btn
+          v-bind="props"
+          v-if="answerCheckMode"
+          icon
+          :color="semicheckmarkButtonActive ? 'white' : 'yellow'"
+          x-small
+          fab
+          dark
+          v-on:click="toggleSemiCheckmarkMode"
+        >
+          <v-icon style="position: relative; left: 8px">mdi-check</v-icon>
+          <v-icon style="position: relative; left: -8px; top: -1px"
+            >mdi-minus</v-icon
           >
-            <v-btn
-              v-bind="props"
-              v-if="answerCheckMode"
-              icon
-              color="white"
-              x-small
-              fab
-              dark
-              v-on:click="toggleXmarkMode"
-            >
-              <v-icon>mdi-close-outline</v-icon>
-            </v-btn>
-          </v-btn-toggle>
-        </template>
-        <span>Incorrect</span>
-      </v-tooltip>
-    </v-toolbar>
-  </div>
+        </v-btn>
+      </template>
+    </v-tooltip>
+
+    <!-- xmark-->
+    <v-tooltip text="Incorrect">
+      <template v-slot:activator="{ props }">
+        <v-btn
+          v-bind="props"
+          v-if="answerCheckMode"
+          icon
+          :color="xmarkButtonActive ? 'white' : 'yellow'"
+          x-small
+          fab
+          dark
+          v-on:click="toggleXmarkMode"
+        >
+          <v-icon>mdi-close-outline</v-icon>
+        </v-btn>
+      </template>
+    </v-tooltip>
+  </v-toolbar>
 </template>
 
 <script setup lang="ts">
-import { watch, ref } from "vue"
-import { BoardType, EditMode } from "../../../math-common/src/unions";
+import { watch, ref } from "vue";
 import useMatrixHelper from "../helpers/matrixHelper";
 import useAuthHelper from "../helpers/authHelper";
 import accessLinkDialog from "./AccessLinkDialog.vue";
@@ -232,7 +172,6 @@ import useNotationMutateHelper from "../helpers/notationMutateHelper";
 import { useNotationStore } from "../store/pinia/notationStore";
 import { computed } from "vue";
 import { useUserStore } from "../store/pinia/userStore";
-
 
 const matrixHelper = useMatrixHelper();
 const authHelper = useAuthHelper();
@@ -253,15 +192,6 @@ let accessLinkDialogOpen = ref(false);
 let freeTextDialogOpen = ref(false);
 let textButtonActive = ref(1);
 
-let showFractionLineTooltip = ref(false);
-let showSquareRootTooltip = ref(false);
-let showPowerTooltip = ref(false);
-let showAccessTooltip = ref(false);
-let showCheckmarkTooltip = ref(false);
-let showSemicheckmarkTooltip = ref(false);
-let showXmarkTooltip = ref(false);
-
-
 const editEnabled = computed(() => {
   return authHelper.canEdit;
 });
@@ -271,30 +201,39 @@ const hasActiveCell = computed(() => {
 });
 
 const answerCheckMode = computed(() => {
-  return notationStore.getParent().value.type == "ANSWER" && userStore.isTeacher;
+  return (
+    notationStore.getParent().value.type == "ANSWER" && userStore.isTeacher
+  );
 });
 
-watch(() => eventBus.bus.value.get("resetToolbarState"), () => {
-  reset();
-});
+let toggle_exclusive = 10;
 
-watch(() => eventBus.bus.value.get("resetToolbarState"), (value: string) => {
-  submitText(value);
-});
+watch(
+  () => eventBus.bus.value.get("resetToolbarState"),
+  () => {
+    reset();
+  },
+);
 
-
+watch(
+  () => eventBus.bus.value.get("resetToolbarState"),
+  (value: string) => {
+    submitText(value);
+  },
+);
 
 function submitText(value: string) {
   let activeCell = notationStore.activeCell;
   if (!activeCell) return;
 
   let fromCol = activeCell.col;
-  let toCol = activeCell.col + Math.floor(matrixHelper.freeTextRectWidth(value));
+  let toCol =
+    activeCell.col + Math.floor(matrixHelper.freeTextRectWidth(value));
   let fromRow = activeCell.row;
-  let toRow = activeCell.row + Math.floor(matrixHelper.freeTextRectHeight(value));
-  notationMutateHelper.addTextNotation(fromCol, toCol, fromRow, toRow, value)
-};
-
+  let toRow =
+    activeCell.row + Math.floor(matrixHelper.freeTextRectHeight(value));
+  notationMutateHelper.addTextNotation(fromCol, toCol, fromRow, toRow, value);
+}
 
 function reset() {
   checkmarkButtonActive.value = 1;
@@ -304,7 +243,7 @@ function reset() {
   fractionButtonActive.value = 1;
   squareRootButtonActive.value = 1;
   powerButtonActive.value = 1;
-  notationMutateHelper.setCurrentEditMode('SYMBOL');
+  notationStore.setEditMode("SYMBOL");
 }
 
 function toggleFractionMode() {
@@ -314,13 +253,13 @@ function toggleFractionMode() {
   } else {
     startFractionMode();
   }
-};
+}
 
 function startFractionMode() {
   reset();
   fractionButtonActive.value = 0;
-  notationMutateHelper.setCurrentEditMode("FRACTION");
-};
+  notationStore.setEditMode("FRACTION");
+}
 
 function toggleSqrtMode() {
   reset();
@@ -329,107 +268,106 @@ function toggleSqrtMode() {
   } else {
     startSqrtMode();
   }
-};
+}
 
 function startSqrtMode() {
   reset();
   squareRootButtonActive.value = 0;
-  notationMutateHelper.setCurrentEditMode("SQRT");
-};
+  notationStore.setEditMode("SQRT");
+}
 
 function togglePowerMode() {
   reset();
   if (notationStore.getEditMode().value == "POWER") {
     endPowerMode();
   } else {
-      startPowerMode();
+    startPowerMode();
   }
-};
+}
 
 function startPowerMode() {
   reset();
   powerButtonActive.value = 0;
-  notationMutateHelper.setCurrentEditMode("POWER");
-};
+  notationStore.setEditMode("POWER");
+}
 
 function endPowerMode() {
   reset();
-};
+}
 
 function startTextMode() {
   reset();
   textButtonActive.value = 0;
-  notationMutateHelper.setCurrentEditMode("TEXT");
-};
+  notationStore.setEditMode("TEXT");
+}
 
 function endTextMode() {
-      reset();
-};
+  reset();
+}
 
 function toggleSelectionMode() {
-      if (notationStore.getEditMode().value == 'SELECT') {
-        endSelectionMode();
-      } else {
-        startSelectionMode();
-      }
-};
+  if (notationStore.getEditMode().value == "SELECT") {
+    endSelectionMode();
+  } else {
+    startSelectionMode();
+  }
+}
 
 function startSelectionMode() {
-      reset();
-      selectionButtonActive.value = 0;
-      notationMutateHelper.setCurrentEditMode('SELECT');
-};
+  reset();
+  selectionButtonActive.value = 0;
+  notationStore.setEditMode("SELECT");
+}
 
 function endSelectionMode() {
-      reset();
-      notationMutateHelper.setCurrentEditMode('SYMBOL');
-};
+  reset();
+  notationStore.setEditMode("SYMBOL");
+}
 
 function toggleCheckmarkMode() {
-      if (notationStore.getEditMode().value == "CHECKMARK") {
-        reset();
-        notationMutateHelper.setCurrentEditMode('SYMBOL');
-      } else {
-        startCheckmarkMode();
-      }
-};
+  if (notationStore.getEditMode().value == "CHECKMARK") {
+    reset();
+    notationStore.setEditMode("SYMBOL");
+  } else {
+    startCheckmarkMode();
+  }
+}
 
 function startCheckmarkMode() {
-      reset();
-      checkmarkButtonActive.value = 0;
-      notationMutateHelper.setCurrentEditMode("CHECKMARK");
-};
+  reset();
+  checkmarkButtonActive.value = 0;
+  notationStore.setEditMode("CHECKMARK");
+}
 
 function toggleSemiCheckmarkMode() {
-      if (notationStore.getEditMode().value == "SEMICHECKMARK") {
-        reset();
-        notationMutateHelper.setCurrentEditMode('SYMBOL');
-      } else {
-        startSemiCheckmarkMode();
-      }
-};
+  if (notationStore.getEditMode().value == "SEMICHECKMARK") {
+    reset();
+    notationStore.setEditMode("SYMBOL");
+  } else {
+    startSemiCheckmarkMode();
+  }
+}
 
 function startSemiCheckmarkMode() {
-      reset();
-      semicheckmarkButtonActive.value = 0;
-      notationMutateHelper.setCurrentEditMode("SEMICHECKMARK");
-};
+  reset();
+  semicheckmarkButtonActive.value = 0;
+  notationStore.setEditMode("SEMICHECKMARK");
+}
 
 function toggleXmarkMode() {
-      if (notationStore.getEditMode().value == "XMARK") {
-        reset();
-        notationMutateHelper.setCurrentEditMode('SYMBOL');
-      } else {
-        startXmarkMode();
-      }
-};
+  if (notationStore.getEditMode().value == "XMARK") {
+    reset();
+    notationStore.setEditMode("SYMBOL");
+  } else {
+    startXmarkMode();
+  }
+}
 
 function startXmarkMode() {
-      reset();
-      xmarkButtonActive.value = 0;
-      notationMutateHelper.setCurrentEditMode("XMARK");
-};
-
+  reset();
+  xmarkButtonActive.value = 0;
+  notationStore.setEditMode("XMARK");
+}
 
 /*
 
@@ -471,7 +409,6 @@ function startXmarkMode() {
   },
 };
 */
-
 </script>
 
 <style>

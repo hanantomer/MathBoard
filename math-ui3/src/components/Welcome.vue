@@ -1,9 +1,10 @@
 <template>
-  <div style="width: 100%">
     <login :dialog = showLoginDialog
     ></login>
     <Register :dialog = showRegisterDialog
     ></Register>
+
+    <v-main>
 
     <v-row>
       <v-col class="text-center" cols="12">
@@ -29,7 +30,7 @@
         </v-card>
       </v-col>
     </v-row>
-  </div>
+    </v-main>
 </template>
 
 <script setup lang="ts">
