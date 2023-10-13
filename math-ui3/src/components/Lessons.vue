@@ -1,8 +1,8 @@
 <template>
   <v-container>
     <NewItemDialog
-      :dialog = "lessonDialog"
-      :title = "lessonDialogTitle"
+      :dialog="lessonDialog"
+      :title="lessonDialogTitle"
     ></NewItemDialog>
     <v-card class="mx-auto" max-width="800" min-height="600">
       <v-toolbar color="primary" dark>
@@ -27,7 +27,7 @@
         :items="lessons"
         item-value="name"
         class="elevation-1"
-        @click:row ="selectLesson"
+        @click:row="selectLesson"
         :hide-no-data="true"
         :hover="true"
       ></v-data-table>
@@ -49,19 +49,22 @@ import NewItemDialog from "./NewItemDialog.vue";
 import { LessonAttributes } from "../../../math-common/build/lessonTypes";
 import { useUserStore } from "../store/pinia/userStore";
 import { useLessonStore } from "../store/pinia/lessonStore";
-import { ref, computed, watch, onMounted } from 'vue'
-import { useRouter } from 'vue-router'
-import { useRoute } from 'vue-router'
+import { ref, computed, watch, onMounted } from "vue";
+import { useRouter } from "vue-router";
+import { useRoute } from "vue-router";
 import useEventBus from "../helpers/eventBus";
-let lessonsLoaded = ref(false)
+let lessonsLoaded = ref(false);
 const eventBus = useEventBus();
-const router = useRouter()
-const route = useRoute()
+const router = useRouter();
+const route = useRoute();
 const userStore = useUserStore();
 const lessonStore = useLessonStore();
-const title = computed(() => { return userStore.isTeacher() ? "My Lessons" : "Lessons Shared with me" })
+const title = computed(() => {
+  return userStore.isTeacher() ? "My Lessons" : "Lessons Shared with me";
+});
 let lessonDialog = ref(false);
-let lessonDialogTitle = "<span>Please specify <strong>lesson</strong> title</span";
+let lessonDialogTitle =
+  "<span>Please specify <strong>lesson</strong> title</span";
 let search = ref("");
 const menu = [
   { icon: "plus", title: "Add" },
@@ -76,11 +79,14 @@ let itemsPerPage = 10;
 //   }
 // }, { flush: 'pre', immediate: true, deep: true });
 
-onMounted(() =>  loadLessons());
+onMounted(() => loadLessons());
 
-watch(() => eventBus.bus.value.get("newItemDialogSave"), (val: string) => {
-  saveLesson(val[0]);
-});
+watch(
+  () => eventBus.bus.value.get("newItemDialogSave"),
+  (val: string) => {
+    addLesson(val);
+  },
+);
 
 const headers = computed(() => [
   {
@@ -95,24 +101,29 @@ const headers = computed(() => [
   },
 ]);
 
-
 const lessons = computed(() => {
-  let rows = Array.from(lessonStore.getLessons().value.values()).map((l: LessonAttributes) => {
-    return {
-      uuid: l.uuid,
-      name: l.name,
-      createdAt:
-        l.createdAt ?
-        new Date(l.createdAt).toLocaleDateString('en-us', { weekday: "long", year: "numeric", month: "short", day: "numeric" }) :
-        ""
-    }
-  })
+  let rows = Array.from(lessonStore.getLessons().value.values()).map(
+    (l: LessonAttributes) => {
+      return {
+        uuid: l.uuid,
+        name: l.name,
+        createdAt: l.createdAt
+          ? new Date(l.createdAt).toLocaleDateString("en-us", {
+              weekday: "long",
+              year: "numeric",
+              month: "short",
+              day: "numeric",
+            })
+          : "",
+      };
+    },
+  );
   return rows;
 });
 
 async function loadLessons() {
   await lessonStore.loadLessons();
-  if (userStore.isTeacher()  && lessonStore.getLessons().value.size ===  0) {
+  if (userStore.isTeacher() && lessonStore.getLessons().value.size === 0) {
     openLessonDialog();
   }
   lessonsLoaded.value = true;
@@ -120,23 +131,21 @@ async function loadLessons() {
 
 function openLessonDialog() {
   lessonDialog.value = true;
-};
+}
 
+async function addLesson(lessonName: string) {
+  lessonDialog.value = false;
+  let savedLesson = await lessonStore.addLesson(lessonName);
+  router.push({
+    path: "/lesson/" + savedLesson.uuid,
+  });
+}
 
-async function saveLesson(lessonName: string) {
-      lessonDialog.value = false;
-      let savedLesson =  await lessonStore.addLesson(lessonName);
-      router.push({
-        path: "/lesson/" + savedLesson.uuid,
-      });
-};
-
-async function selectLesson(e:any, row: any) {
+async function selectLesson(e: any, row: any) {
   router.push({
     path: "/lesson/" + row.item.uuid,
   });
-};
-
+}
 </script>
 
 <style>

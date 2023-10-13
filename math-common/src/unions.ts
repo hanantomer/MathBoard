@@ -1,7 +1,6 @@
-export type BoardType =
-  "LESSON" |
-  "QUESTION" |
-  "ANSWER"
+export const BoardTypeValues = ["LESSON","QUESTION","ANSWER"] as const;
+
+export type BoardType = typeof BoardTypeValues[number];
 
 export type NotationShape = "POINT" |  "LINE" |  "RECT"
 

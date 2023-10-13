@@ -1,6 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.NotationTypeShape = exports.NotationTypeValues = void 0;
+exports.NotationTypeShape = exports.NotationTypeValues = exports.BoardTypeValues = void 0;
+exports.BoardTypeValues = ["LESSON", "QUESTION", "ANSWER"];
 exports.NotationTypeValues = ["SYMBOL", "SIGN", "POWER", "FRACTION", "SQRT", "SQRTSYMBOL", "TEXT", "IMAGE", "GEO"];
 exports.NotationTypeShape = new Map([
     ["SYMBOL", "POINT"],

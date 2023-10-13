@@ -4,15 +4,7 @@ import bodyParser from "body-parser";
 import useAuthUtil  from "../../math-auth/build/authUtil";
 import useDb from  "../../math-db/build/dbUtil"
 import connection from "../../math-db/build/models/index";
-import { NotationType } from "../../math-common/build/enum"
-import { capitalize } from "../../math-common/build/utils";
-
-enum BoardType { // declaring local to allow iteration
-  LESSON,
-  QUESTION,
-  ANSWER
-};
-
+import { BoardTypeValues, NotationTypeValues } from "../../math-common/build/unions"
 
 
 const authUtil = useAuthUtil();
@@ -182,14 +174,9 @@ app.post(
 
 
 // notations
-
-for (const boardType in BoardType) {
-    // typescript retuen a list of keys followed by
-    // values, we need to get the values only
-    if (!Number.isNaN(Number(boardType))) continue;
-    for (const notationType in NotationType) {
-        if (!Number.isNaN(Number(notationType))) continue;
-        console.debug(`/api/${boardType.toLowerCase()}${notationType.toLowerCase()}s`);
+BoardTypeValues.forEach((boardType) => {
+    NotationTypeValues.forEach((notationType) => {
+        //console.debug(`/api/${boardType.toLowerCase()}${notationType.toLowerCase()}s`);
         app.get(
             `/api/${boardType.toLowerCase()}${notationType.toLowerCase()}s`,
             async (req: Request, res: Response): Promise<Response> => {
@@ -220,8 +207,27 @@ for (const boardType in BoardType) {
                     );
             }
         );
-    }
-};    
+
+        app.put(
+            `/api/${boardType.toLowerCase()}${notationType.toLowerCase()}s`,
+            async (req: Request, res: Response): Promise<Response> => {
+                await db.updateNotation(
+                    boardType,
+                    notationType,
+                    req.body.uuid,
+                    // all keys but uuid
+                    Object.fromEntries(
+                        Object.entries(req.body).filter(
+                            (o) => o[0] != "uuid"
+                        )
+                    )
+                );
+                return res.status(200);
+            }
+        );
+    })
+});
+    
 
 
 // Resets the database and launches the express app on :8081

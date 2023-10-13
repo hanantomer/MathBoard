@@ -1,4 +1,5 @@
-export type BoardType = "LESSON" | "QUESTION" | "ANSWER";
+export declare const BoardTypeValues: readonly ["LESSON", "QUESTION", "ANSWER"];
+export type BoardType = typeof BoardTypeValues[number];
 export type NotationShape = "POINT" | "LINE" | "RECT";
 export declare const NotationTypeValues: readonly ["SYMBOL", "SIGN", "POWER", "FRACTION", "SQRT", "SQRTSYMBOL", "TEXT", "IMAGE", "GEO"];
 export type NotationType = typeof NotationTypeValues[number];

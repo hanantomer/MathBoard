@@ -1,5 +1,6 @@
 <template>
   <v-card
+    variant="outlined"
     id="selection"
     class="selection"
     v-bind:style="{
@@ -9,6 +10,7 @@
       height: selectionRectHeight + 'px',
     }"
     v-if="show"
+    @mouseup="mouseup"
   ></v-card>
 </template>
 
@@ -103,6 +105,10 @@ watch(
   },
 );
 
+function mouseup(e: KeyboardEvent) {
+  eventBus.emit("svgmouseup", e);
+}
+
 function keyUp(e: KeyboardEvent) {
   if (e.code === "Backspace" || e.code === "Delete") {
     // actual deletion is handled by eventManager
@@ -132,41 +138,53 @@ function handleMouseMove(e: MouseEvent) {
 
 function handleMouseUp(e: MouseEvent) {
   if (notationStore.getEditMode().value !== "SELECT") {
+    resetSelection();
     return;
   }
   if (selectionMode === "SELECTING") {
     endSelect();
-    return;
-  }
-  if (selectionMode === "MOVE") {
+  } else if (selectionMode === "MOVE") {
     endMoveSelection(e);
-    return;
   }
-
-  resetSelection();
 }
 
-function noramalizeLeftOrTop(value: number) {
+function noramalizeLeft(value: number) {
   return (
-    Math.floor(value / matrixHelper.getRectSize()) * matrixHelper.getRectSize()
+    svgDimensions.value.x +
+    Math.floor((value - svgDimensions.value.x) / matrixHelper.getRectSize()) *
+      matrixHelper.getRectSize()
   );
 }
 
-function noramalizeRightOrBottom(value: number) {
+function noramalizeTop(value: number) {
   return (
-    Math.ceil(value / matrixHelper.getRectSize()) * matrixHelper.getRectSize()
+    svgDimensions.value.y +
+    Math.floor((value - svgDimensions.value.y) / matrixHelper.getRectSize()) *
+      matrixHelper.getRectSize()
+  );
+}
+
+function noramalizeRight(value: number) {
+  return (
+    svgDimensions.value.x +
+    Math.ceil((value - svgDimensions.value.x) / matrixHelper.getRectSize()) *
+      matrixHelper.getRectSize()
+  );
+}
+
+function noramalizeBottom(value: number) {
+  return (
+    svgDimensions.value.y +
+    Math.ceil((value - svgDimensions.value.y) / matrixHelper.getRectSize()) *
+      matrixHelper.getRectSize()
   );
 }
 
 function normalizeSelection() {
-  selectionPosition.value.x1 = noramalizeLeftOrTop(selectionPosition.value.x1);
-  selectionPosition.value.y1 = noramalizeLeftOrTop(selectionPosition.value.y1);
-  selectionPosition.value.x2 = noramalizeRightOrBottom(
-    selectionPosition.value.x2,
-  );
-  selectionPosition.value.y2 = noramalizeRightOrBottom(
-    selectionPosition.value.y2,
-  );
+  selectionPosition.value.x1 = noramalizeLeft(selectionPosition.value.x1);
+  selectionPosition.value.y1 = noramalizeTop(selectionPosition.value.y1);
+  selectionPosition.value.x2 = noramalizeRight(selectionPosition.value.x2);
+  selectionPosition.value.y2 = noramalizeBottom(selectionPosition.value.y2);
 }
 
 // extend or shrink selection area from inner mouse move
@@ -182,9 +200,10 @@ function updateSelectionArea(e: MouseEvent) {
 }
 
 function endSelect() {
+  eventBus.emit("resetToolbarState", null);
   selectionMode = "MOVE";
   if (selectionPosition.value.x2 != selectionPosition.value.x1) {
-    normalizeSelection();
+    //normalizeSelection();
 
     d3.select("#" + props.svgId)
       .selectAll("foreignObject")
@@ -250,7 +269,6 @@ function moveSelection(e: MouseEvent) {
 }
 
 function endMoveSelection(e: MouseEvent) {
-  //let selectedNotationKeys = notationStore.getSelectedNotations();
   notationMutateHelper.updateSelectedNotationCoordinates();
   notationStore.getSelectedNotations().forEach((notation) => {
     if (notation) {
@@ -263,15 +281,16 @@ function endMoveSelection(e: MouseEvent) {
 }
 
 function resetSelection() {
-  dragPosition.value.x = 0;
-  dragPosition.value.y = 0;
-  selectionPosition.value.x1 =
+  dragPosition.value.x =
+    dragPosition.value.y =
+    selectionPosition.value.x1 =
     selectionPosition.value.x2 =
     selectionPosition.value.y1 =
     selectionPosition.value.y2 =
       0;
+
   selectionMode = "SELECTING";
-  notationStore.getEditMode().value = "SYMBOL";
+  notationStore.setEditMode("SYMBOL");
 }
 </script>
 

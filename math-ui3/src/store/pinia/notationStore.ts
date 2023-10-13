@@ -28,7 +28,7 @@ export const useNotationStore = defineStore("notation", () => {
 
   let parent = ref<Board>({ uuid: "", type: "LESSON" });
 
-  let notations = ref(<Map<String, NotationAttributes>>new Map());
+  let  notations = ref(<Map<String, NotationAttributes>>new Map());
 
   let activeCell = ref(<CellCoordinates | null>null);
 
@@ -80,11 +80,14 @@ export const useNotationStore = defineStore("notation", () => {
     return notations;
   }
 
-  function setNotations(notationsToSet: Map<String, NotationAttributes>) {
-    notations.value = new Map(notationsToSet);
+  function setNotations(notations: NotationAttributes[]) {
+    notations.forEach((n) => {
+      addNotation(n);
+    });
   }
 
   function addNotation(notation: NotationAttributes) {
+    notation.boardType = parent.value.type;
     notations.value.set(notation.uuid, notation);
   }
 
@@ -96,7 +99,7 @@ export const useNotationStore = defineStore("notation", () => {
     activeCell.value = newActiveCell;
   }
 
-  function setSelectedNotation(uuid: string) {
+  function selectNotation(uuid: string) {
     const notation = notations.value.get(uuid);
     if (notation) notation.selected = true;
   }
@@ -140,7 +143,7 @@ export const useNotationStore = defineStore("notation", () => {
     getParent,
     addNotation,
     setNotations,
-    setSelectedNotation,
+    setSelectedNotation: selectNotation,
     setActiveNotation,
     setEditMode,
     setParent,

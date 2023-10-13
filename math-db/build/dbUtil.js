@@ -229,6 +229,17 @@ function dbUtil() {
             return yield index_1.default.sequelize.models[modelName].findByPk(res.dataValues.id, { include: [user_model_1.default, index_1.default.sequelize.models[boardModelName]] /*e.g. include Lesson*/ });
         });
     }
+    function updateNotation(boardType, notationType, uuid, attributes) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const boardName = boardType.toString().toLowerCase(); // e.g lesson
+            const boardModelName = (0, utils_1.capitalize)(boardName); // e.g Lesson
+            const notationTypeName = notationType.toString().toLowerCase(); // e.g. symbol
+            const notationTypeNameCapitalized = (0, utils_1.capitalize)(notationTypeName); // e.g. Symbol
+            const modelName = boardModelName + notationTypeNameCapitalized; // e.g. LessonSymbol
+            const id = (yield getIdByUUId(modelName, uuid));
+            yield index_1.default.sequelize.models[modelName].update(attributes, { where: { id: id } });
+        });
+    }
     return {
         getIdByUUId,
         isTeacher,
@@ -249,6 +260,7 @@ function dbUtil() {
         createNotation,
         getStudentLessons,
         createStudentLesson,
+        updateNotation,
     };
 }
 exports.default = dbUtil;

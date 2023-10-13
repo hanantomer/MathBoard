@@ -18,14 +18,7 @@ const body_parser_1 = __importDefault(require("body-parser"));
 const authUtil_1 = __importDefault(require("../../math-auth/build/authUtil"));
 const dbUtil_1 = __importDefault(require("../../math-db/build/dbUtil"));
 const index_1 = __importDefault(require("../../math-db/build/models/index"));
-const enum_1 = require("../../math-common/build/enum");
-var BoardType;
-(function (BoardType) {
-    BoardType[BoardType["LESSON"] = 0] = "LESSON";
-    BoardType[BoardType["QUESTION"] = 1] = "QUESTION";
-    BoardType[BoardType["ANSWER"] = 2] = "ANSWER";
-})(BoardType || (BoardType = {}));
-;
+const unions_1 = require("../../math-common/build/unions");
 const authUtil = (0, authUtil_1.default)();
 const db = (0, dbUtil_1.default)();
 let app = (0, express_1.default)();
@@ -127,15 +120,9 @@ app.post("/api/studentlessons", (req, res) => __awaiter(void 0, void 0, void 0, 
     return res.status(200).json(yield db.createStudentLesson(req.body));
 }));
 // notations
-for (const boardType in BoardType) {
-    // typescript retuen a list of keys followed by
-    // values, we need to get the values only
-    if (!Number.isNaN(Number(boardType)))
-        continue;
-    for (const notationType in enum_1.NotationType) {
-        if (!Number.isNaN(Number(notationType)))
-            continue;
-        console.debug(`/api/${boardType.toLowerCase()}${notationType.toLowerCase()}s`);
+unions_1.BoardTypeValues.forEach((boardType) => {
+    unions_1.NotationTypeValues.forEach((notationType) => {
+        //console.debug(`/api/${boardType.toLowerCase()}${notationType.toLowerCase()}s`);
         app.get(`/api/${boardType.toLowerCase()}${notationType.toLowerCase()}s`, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
             const { uuid } = req.query;
             return res
@@ -147,9 +134,14 @@ for (const boardType in BoardType) {
                 .status(200)
                 .json(yield db.createNotation(boardType, notationType, req.body));
         }));
-    }
-}
-;
+        app.put(`/api/${boardType.toLowerCase()}${notationType.toLowerCase()}s`, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+            yield db.updateNotation(boardType, notationType, req.body.uuid, 
+            // all keys but uuid
+            Object.fromEntries(Object.entries(req.body).filter((o) => o[0] != "uuid")));
+            return res.status(200);
+        }));
+    });
+});
 // Resets the database and launches the express app on :8081
 index_1.default.sequelize.sync({ force: true }).then(() => {
     app.listen(8081, () => {

@@ -12,7 +12,7 @@ import { LessonCreationAttributes } from "../../math-common/build/lessonTypes";
 import { QuestionAttributes } from "../../math-common/build/questionTypes";
 import { AnswerAttributes, AnswerCreateAttributes } from "../../math-common/build/answerTypes";
 import { capitalize } from "../../math-common/build/utils";
-import models from "./models/index";
+import { BoardType, NotationType } from "../../math-common/src/unions";
 
 
 export default function dbUtil() {
@@ -292,6 +292,23 @@ export default function dbUtil() {
         );
     }
 
+    async function updateNotation(
+        boardType: BoardType,
+        notationType: NotationType,
+        uuid: string,
+        attributes: Object
+    ) {
+        const boardName = boardType.toString().toLowerCase(); // e.g lesson
+        const boardModelName = capitalize(boardName); // e.g Lesson
+        const notationTypeName = notationType.toString().toLowerCase(); // e.g. symbol
+        const notationTypeNameCapitalized = capitalize(notationTypeName); // e.g. Symbol
+        const modelName = boardModelName + notationTypeNameCapitalized; // e.g. LessonSymbol
+        const id = (await getIdByUUId(modelName, uuid)) as number;
+        await db.sequelize.models[modelName].update(attributes, { where: {id: id} });
+    }
+
+
+
     return {
         getIdByUUId,
         isTeacher,
@@ -312,5 +329,6 @@ export default function dbUtil() {
         createNotation,
         getStudentLessons,
         createStudentLesson,
+        updateNotation,
     };
 }

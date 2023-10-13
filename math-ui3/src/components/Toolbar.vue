@@ -206,12 +206,10 @@ const answerCheckMode = computed(() => {
   );
 });
 
-let toggle_exclusive = 10;
-
 watch(
   () => eventBus.bus.value.get("resetToolbarState"),
   () => {
-    reset();
+    resetButtonsState();
   },
 );
 
@@ -235,7 +233,7 @@ function submitText(value: string) {
   notationMutateHelper.addTextNotation(fromCol, toCol, fromRow, toRow, value);
 }
 
-function reset() {
+function resetButtonsState() {
   checkmarkButtonActive.value = 1;
   semicheckmarkButtonActive.value = 1;
   xmarkButtonActive.value = 1;
@@ -243,41 +241,41 @@ function reset() {
   fractionButtonActive.value = 1;
   squareRootButtonActive.value = 1;
   powerButtonActive.value = 1;
-  notationStore.setEditMode("SYMBOL");
+  //notationStore.setEditMode("SYMBOL");
 }
 
 function toggleFractionMode() {
-  reset();
+  resetButtonsState();
   if (notationStore.getEditMode().value == "FRACTION") {
-    reset();
+    resetButtonsState();
   } else {
     startFractionMode();
   }
 }
 
 function startFractionMode() {
-  reset();
+  resetButtonsState();
   fractionButtonActive.value = 0;
   notationStore.setEditMode("FRACTION");
 }
 
 function toggleSqrtMode() {
-  reset();
+  resetButtonsState();
   if (notationStore.getEditMode().value == "SQRT") {
-    reset();
+    resetButtonsState();
   } else {
     startSqrtMode();
   }
 }
 
 function startSqrtMode() {
-  reset();
+  resetButtonsState();
   squareRootButtonActive.value = 0;
   notationStore.setEditMode("SQRT");
 }
 
 function togglePowerMode() {
-  reset();
+  resetButtonsState();
   if (notationStore.getEditMode().value == "POWER") {
     endPowerMode();
   } else {
@@ -286,23 +284,23 @@ function togglePowerMode() {
 }
 
 function startPowerMode() {
-  reset();
+  resetButtonsState();
   powerButtonActive.value = 0;
   notationStore.setEditMode("POWER");
 }
 
 function endPowerMode() {
-  reset();
+  resetButtonsState();
 }
 
 function startTextMode() {
-  reset();
+  resetButtonsState();
   textButtonActive.value = 0;
   notationStore.setEditMode("TEXT");
 }
 
 function endTextMode() {
-  reset();
+  resetButtonsState();
 }
 
 function toggleSelectionMode() {
@@ -314,19 +312,19 @@ function toggleSelectionMode() {
 }
 
 function startSelectionMode() {
-  reset();
+  resetButtonsState();
   selectionButtonActive.value = 0;
   notationStore.setEditMode("SELECT");
 }
 
 function endSelectionMode() {
-  reset();
+  resetButtonsState();
   notationStore.setEditMode("SYMBOL");
 }
 
 function toggleCheckmarkMode() {
   if (notationStore.getEditMode().value == "CHECKMARK") {
-    reset();
+    resetButtonsState();
     notationStore.setEditMode("SYMBOL");
   } else {
     startCheckmarkMode();
@@ -334,14 +332,14 @@ function toggleCheckmarkMode() {
 }
 
 function startCheckmarkMode() {
-  reset();
+  resetButtonsState();
   checkmarkButtonActive.value = 0;
   notationStore.setEditMode("CHECKMARK");
 }
 
 function toggleSemiCheckmarkMode() {
   if (notationStore.getEditMode().value == "SEMICHECKMARK") {
-    reset();
+    resetButtonsState();
     notationStore.setEditMode("SYMBOL");
   } else {
     startSemiCheckmarkMode();
@@ -349,14 +347,14 @@ function toggleSemiCheckmarkMode() {
 }
 
 function startSemiCheckmarkMode() {
-  reset();
+  resetButtonsState();
   semicheckmarkButtonActive.value = 0;
   notationStore.setEditMode("SEMICHECKMARK");
 }
 
 function toggleXmarkMode() {
   if (notationStore.getEditMode().value == "XMARK") {
-    reset();
+    resetButtonsState();
     notationStore.setEditMode("SYMBOL");
   } else {
     startXmarkMode();
@@ -364,7 +362,7 @@ function toggleXmarkMode() {
 }
 
 function startXmarkMode() {
-  reset();
+  resetButtonsState();
   xmarkButtonActive.value = 0;
   notationStore.setEditMode("XMARK");
 }

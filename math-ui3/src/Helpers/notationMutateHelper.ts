@@ -445,8 +445,6 @@ export default function notationMutateHelper() {
   }
 
   async function selectNotation(CellCoordinates: CellCoordinates) {
-    notationStore.resetSelectedNotations();
-
     findNotationsByCellCoordinates(CellCoordinates).forEach(
       (n: NotationAttributes) => {
         notationStore.setSelectedNotation(n.uuid);
@@ -496,7 +494,7 @@ export default function notationMutateHelper() {
 
       if (isNotationInQuestionArea(n)) return;
 
-      await dbHelper.updateNotation(n);
+      await dbHelper.updateNotationCoordinates(n);
 
       userOutgoingOperations.syncOutgoingUpdateSelectedNotation(n);
     });
@@ -504,15 +502,15 @@ export default function notationMutateHelper() {
     notationStore.resetSelectedNotations();
   }
 
-  async function updateNotation(notation: NotationAttributes) {
-    // disallow update for student in question area
-    if (isNotationInQuestionArea(notation)) {
-      return;
-    }
+  // async function updateNotation(notation: NotationAttributes) {
+  //   // disallow update for student in question area
+  //   if (isNotationInQuestionArea(notation)) {
+  //     return;
+  //   }
 
-    await dbHelper.updateNotation(notation);
-    notationStore.getNotations().value.set(notation.uuid, notation);
-  }
+  //   await dbHelper.updateNotation(notation);
+  //   notationStore.getNotations().value.set(notation.uuid, notation);
+  // }
 
   async function addNotation<T extends NotationCreationAttributes>(
     notation: T,
@@ -522,7 +520,7 @@ export default function notationMutateHelper() {
     if (overlappedSameTypeNotation) {
       setNotationAttributes(overlappedSameTypeNotation, notation);
 
-      await dbHelper.updateNotation(overlappedSameTypeNotation);
+      await dbHelper.updateNotationValue(overlappedSameTypeNotation);
       notationStore
         .getNotations()
         .value.set(overlappedSameTypeNotation.uuid, overlappedSameTypeNotation);

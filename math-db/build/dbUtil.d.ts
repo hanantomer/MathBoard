@@ -9,6 +9,7 @@ import { UserAttributes, StudentLessonCreationAttributes } from "../../math-comm
 import { LessonCreationAttributes } from "../../math-common/build/lessonTypes";
 import { QuestionAttributes } from "../../math-common/build/questionTypes";
 import { AnswerAttributes, AnswerCreateAttributes } from "../../math-common/build/answerTypes";
+import { BoardType, NotationType } from "../../math-common/src/unions";
 export default function dbUtil(): {
     getIdByUUId: (model: string, uuid: string) => Promise<number | null>;
     isTeacher: (userUUId: string, lessonUUId: string) => Promise<boolean>;
@@ -29,4 +30,5 @@ export default function dbUtil(): {
     createNotation: (boardType: String, notationType: String, notation: NotationAttributes) => Promise<import("sequelize").Model<any, any> | null>;
     getStudentLessons: (lessonUUId: string) => Promise<StudentLesson[] | null>;
     createStudentLesson: (studentLesson: StudentLessonCreationAttributes) => Promise<StudentLesson>;
+    updateNotation: (boardType: BoardType, notationType: NotationType, uuid: string, attributes: Object) => Promise<void>;
 };
