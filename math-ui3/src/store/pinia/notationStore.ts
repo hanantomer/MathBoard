@@ -36,6 +36,10 @@ export const useNotationStore = defineStore("notation", () => {
 
   let editMode = ref<EditMode>("SYMBOL");
 
+  function isLineMode() {
+    return editMode.value == "FRACTION" || editMode.value == "SQRT";
+  }
+
   function getRectSize() {
     return rectSize.value!;
   }
@@ -143,9 +147,10 @@ export const useNotationStore = defineStore("notation", () => {
     getParent,
     addNotation,
     setNotations,
-    setSelectedNotation: selectNotation,
+    selectNotation,
     setActiveNotation,
     setEditMode,
+    isLineMode,
     setParent,
     setActiveCell,
     resetActiveCell,

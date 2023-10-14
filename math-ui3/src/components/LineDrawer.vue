@@ -8,7 +8,7 @@
         top: lineTop + 'px',
       }"
       v-on:mousedown="leftHandleMouseDown"
-      v-on:mouseup="handleMouseUp"
+      v-on:mouseup="mouseup"
     ></v-card>
     <v-card
       id="lineRightHandle"
@@ -18,7 +18,7 @@
         top: lineTop + 'px',
       }"
       v-on:mousedown="rightHandleMouseDown"
-      v-on:mouseup="handleMouseUp"
+      v-on:mouseup="mouseup"
     ></v-card>
     <v-divider
       style="color: red; z-index: 9999; height: 10px"
@@ -29,7 +29,7 @@
         top: lineTop + 'px',
         width: lineRight - lineLeft + 'px',
       }"
-      v-on:mouseup="handleMouseUp"
+      v-on:mouseup="mouseup"
     ></v-divider>
     <p
       style="left: -2px; position: relative; z-index: 99; border: solid 1px"
@@ -42,7 +42,7 @@
 <script setup lang="ts">
 import useMatrixHelper from "../helpers/matrixHelper";
 import useNotationMutateHelper from "../helpers/notationMutateHelper";
-import { watch, onMounted, computed, ref } from "vue";
+import { watch, computed, ref } from "vue";
 import { useNotationStore } from "../store/pinia/notationStore";
 import { LinePosition, DotPosition } from "../../../math-common/src/globals";
 import {
@@ -79,30 +79,51 @@ watch(
   },
 );
 
+watch(
+  () => eventBus.bus.value.get("svgmouseup"),
+  () => {
+    handleMouseUp();
+  },
+);
+
+watch(
+  () => eventBus.bus.value.get("svgmousemove"),
+  (e: MouseEvent) => {
+    handleMouseMove(e);
+  },
+);
+
+watch(
+  () => eventBus.bus.value.get("svgmousedown"),
+  (e: MouseEvent) => {
+    handleMouseDown(e);
+  },
+);
+
 /// TODO unregister upon destroy
-onMounted(() => {
-  registerSvgMouseDown();
-  registerSvgMouseMove();
-  registerSvgMouseUp();
-});
+// onMounted(() => {
+//   registerSvgMouseDown();
+//   registerSvgMouseMove();
+//   registerSvgMouseUp();
+// });
 
-function registerSvgMouseMove() {
-  document
-    ?.getElementById(props.svgId!)
-    ?.addEventListener("mousemove", handleSvgMouseMove);
-}
+// function registerSvgMouseMove() {
+//   document
+//     ?.getElementById(props.svgId!)
+//     ?.addEventListener("mousemove", handleSvgMouseMove);
+// }
 
-function registerSvgMouseDown() {
-  document
-    ?.getElementById(props.svgId!)
-    ?.addEventListener("mousedown", handleMouseDown);
-}
+// function registerSvgMouseDown() {
+//   document
+//     ?.getElementById(props.svgId!)
+//     ?.addEventListener("mousedown", handleMouseDown);
+// }
 
-function registerSvgMouseUp() {
-  document
-    ?.getElementById(props.svgId!)
-    ?.addEventListener("mouseup", handleMouseUp);
-}
+// function registerSvgMouseUp() {
+//   document
+//     ?.getElementById(props.svgId!)
+//     ?.addEventListener("mouseup", handleMouseUp);
+// }
 
 function leftHandleMouseDown() {
   editStarted.value = true;
@@ -118,14 +139,11 @@ function handleMouseDown(e: MouseEvent) {
     return;
   }
 
-  if (editStarted) {
+  if (editStarted.value === true) {
     return;
   }
 
-  if (
-    notationStore.getEditMode().value === "FRACTION" ||
-    notationStore.getEditMode().value === "SQRT"
-  ) {
+  if (notationStore.isLineMode()) {
     // new line
     notationType.value =
       notationStore.getEditMode().value === "FRACTION" ? "FRACTION" : "SQRT";
@@ -149,7 +167,12 @@ function handleMouseDown(e: MouseEvent) {
   }
 }
 
-function handleSvgMouseMove(e: MouseEvent) {
+function handleMouseMove(e: MouseEvent) {
+  // not related to line drawing
+  if (!notationStore.isLineMode()) {
+    return;
+  }
+
   // left button is pressed
   if (e.buttons !== 1) {
     return;
@@ -166,10 +189,22 @@ function handleSvgMouseMove(e: MouseEvent) {
   setLine(e.offsetX);
 }
 
+function mouseup(e: KeyboardEvent) {
+  eventBus.emit("svgmouseup", e);
+}
+
 function handleMouseUp() {
+  // not related to line drawing
+  if (!notationStore.isLineMode()) {
+    return;
+  }
+
+  // drawing not started
   if (linePosition.value.x1 === 0 && linePosition.value.x2 === 0) {
     return;
   }
+
+  // during edit line
   if (editStarted) {
     return;
   }

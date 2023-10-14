@@ -92,9 +92,7 @@ watch(
 watch(
   () => eventBus.bus.value.get("svgmousemove"),
   (e: MouseEvent) => {
-    if (notationStore.getEditMode().value == "SELECT") {
-      handleMouseMove(e);
-    }
+    handleMouseMove(e);
   },
 );
 
@@ -109,6 +107,7 @@ function mouseup(e: KeyboardEvent) {
   eventBus.emit("svgmouseup", e);
 }
 
+/// TODO send to event helper
 function keyUp(e: KeyboardEvent) {
   if (e.code === "Backspace" || e.code === "Delete") {
     // actual deletion is handled by eventManager
@@ -117,6 +116,10 @@ function keyUp(e: KeyboardEvent) {
 }
 
 function handleMouseMove(e: MouseEvent) {
+  if (notationStore.getEditMode().value !== "SELECT") {
+    return;
+  }
+
   if (e.buttons !== 1) {
     return;
   }
@@ -138,7 +141,7 @@ function handleMouseMove(e: MouseEvent) {
 
 function handleMouseUp(e: MouseEvent) {
   if (notationStore.getEditMode().value !== "SELECT") {
-    resetSelection();
+    //resetSelection();
     return;
   }
   if (selectionMode === "SELECTING") {

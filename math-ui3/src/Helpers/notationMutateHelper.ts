@@ -447,7 +447,7 @@ export default function notationMutateHelper() {
   async function selectNotation(CellCoordinates: CellCoordinates) {
     findNotationsByCellCoordinates(CellCoordinates).forEach(
       (n: NotationAttributes) => {
-        notationStore.setSelectedNotation(n.uuid);
+        notationStore.selectNotation(n.uuid);
       },
     );
   }
@@ -483,7 +483,7 @@ export default function notationMutateHelper() {
   async function updateSelectedNotationCoordinates() {
     // disallow update during answer if any notation overlaps question area
     notationStore.getSelectedNotations().forEach((n) => {
-          if (!n) return;
+      if (!n) return;
       if (isNotationInQuestionArea(n)) {
         return;
       }
