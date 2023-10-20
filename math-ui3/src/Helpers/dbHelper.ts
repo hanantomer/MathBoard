@@ -2,10 +2,9 @@ import { BoardType, NotationType } from "common/unions";
 import axios from "axios";
 import axiosHelper from "./axiosHelper";
 import {
-  PointAttributes,
+  LineNotationAttributes,
   NotationAttributes,
   NotationCreationAttributes,
-  SingleValueAttributes,
 } from "common/baseTypes";
 import { UserAttributes, UserCreationAttributes } from "common/userTypes";
 import { LessonAttributes, LessonCreationAttributes } from "common/lessonTypes";
@@ -167,6 +166,18 @@ export default function useDbHelper() {
     return data;
   }
 
+  async function updateLineAttributes(lineNotation: LineNotationAttributes) {
+    axios.put(
+      baseURL +
+        `/${lineNotation.boardType.toLowerCase()}${lineNotation.notationType.toLowerCase()}s`,
+      {
+        uuid: lineNotation.uuid,
+        fromCol: lineNotation.fromCol,
+        toCol: lineNotation.toCol,
+      },
+    );
+  }
+
   async function getLesson(LessonUUId: string): Promise<LessonAttributes> {
     const { data } = await axios.get<LessonAttributes>(
       baseURL + "/lessons?uuid=" + LessonUUId,
@@ -267,6 +278,7 @@ export default function useDbHelper() {
     addQuestion,
     addAnswer,
     addNotation,
+    updateLineAttributes,
     updateNotationValue,
     updateNotationCoordinates,
     removeNotation,

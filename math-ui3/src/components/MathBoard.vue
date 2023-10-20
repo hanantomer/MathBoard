@@ -88,9 +88,7 @@ function load() {
   matrixHelper.setMatrix(props.svgId);
 };
 
-function resetToolbarState() {
-  eventBus.emit("resetToolbarState", null);
-}
+
 
 </script>
 

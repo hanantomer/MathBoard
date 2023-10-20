@@ -1,5 +1,7 @@
+//
 //  questions of current lesson
-import { EditMode } from "common/unions";
+//
+
 import useDbHelper from "../helpers/dbHelper";
 
 import {
@@ -14,7 +16,7 @@ import {
 
 import { CellCoordinates } from "common/globals";
 
-import { NotationTypeShape } from "common/unions";
+import { NotationType, NotationTypeShape } from "common/unions";
 
 import { useUserStore } from "../store/pinia/userStore";
 import { useNotationStore } from "../store/pinia/notationStore";
@@ -502,15 +504,15 @@ export default function notationMutateHelper() {
     notationStore.resetSelectedNotations();
   }
 
-  // async function updateNotation(notation: NotationAttributes) {
-  //   // disallow update for student in question area
-  //   if (isNotationInQuestionArea(notation)) {
-  //     return;
-  //   }
+  async function updateLineNotation(lineNotation: LineNotationAttributes) {
+    // disallow update for student in question area
+    if (isLineNotationInQuestionArea(lineNotation)) {
+      return;
+    }
 
-  //   await dbHelper.updateNotation(notation);
-  //   notationStore.getNotations().value.set(notation.uuid, notation);
-  // }
+    await dbHelper.updateLineAttributes(lineNotation);
+    notationStore.setNotation(lineNotation.uuid, lineNotation);
+  }
 
   async function addNotation<T extends NotationCreationAttributes>(
     notation: T,
@@ -606,7 +608,22 @@ export default function notationMutateHelper() {
       }
     }
   }
-  /// TODO move board type check outside
+
+  function isLineNotationInQuestionArea(
+    lineNotation: LineNotationAttributes,
+  ): boolean {
+    for (let i: number = lineNotation.fromCol; i <= lineNotation.toCol; i++) {
+      if (
+        lineNotation.boardType === "ANSWER" &&
+        !userStore.isTeacher() &&
+        notationStore.getCellOccupationMatrix().at(lineNotation.row)?.at(i)
+          ?.boardType == "QUESTION"
+      )
+        return true;
+    }
+    return false;
+  }
+
   // return true for student in question and point coordinates are within question area
   function isNotationInQuestionArea(
     notation: NotationAttributes | null,
@@ -624,22 +641,7 @@ export default function notationMutateHelper() {
             ?.at(pointNotation.col)?.boardType == "QUESTION"
         );
       }
-      case "LINE": {
-        let lineNotation = notation as LineNotationAttributes;
-        for (
-          let i: number = lineNotation.fromCol;
-          i <= lineNotation.toCol;
-          i++
-        ) {
-          if (
-            notation?.boardType === "ANSWER" &&
-            !userStore.isTeacher() &&
-            notationStore.getCellOccupationMatrix().at(lineNotation.row)?.at(i)
-              ?.boardType == "QUESTION"
-          )
-            return true;
-        }
-      }
+
       case "RECT": {
         let rectNotation = notation as RectNotationAttributes;
         for (
@@ -853,14 +855,17 @@ export default function notationMutateHelper() {
     // }
   }
 
-  function addFractiontNotation(coordinates: LineAttributes) {
+  function addLineNotation(
+    coordinates: LineAttributes,
+    notationType: NotationType,
+  ) {
     let notation: LineNotationCreationAttributes = {
       fromCol: coordinates.fromCol,
-      toCol: coordinates.fromCol,
+      toCol: coordinates.toCol,
       row: coordinates.row,
       boardType: notationStore.getParent().value.type,
       parentUUId: notationStore.getParent().value.uuid,
-      notationType: "FRACTION",
+      notationType: notationType,
       user: userStore.getCurrentUser(),
     };
 
@@ -879,10 +884,10 @@ export default function notationMutateHelper() {
     addMarkNotation,
     addImageNotation,
     addTextNotation,
-    addFractiontNotation,
-    addSqrtNotation,
+    addLineNotation,
     removeActiveOrSelectedNotations,
     moveSelectedNotations,
     updateSelectedNotationCoordinates,
+    updateLineNotation,
   };
 }

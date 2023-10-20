@@ -203,7 +203,7 @@ function updateSelectionArea(e: MouseEvent) {
 }
 
 function endSelect() {
-  eventBus.emit("resetToolbarState", null);
+  notationStore.resetEditMode();
   selectionMode = "MOVE";
   if (selectionPosition.value.x2 != selectionPosition.value.x1) {
     //normalizeSelection();

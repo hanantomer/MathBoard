@@ -1,5 +1,5 @@
 <template>
-  <v-card v-show="editStarted">
+  <div v-show="show">
     <v-card
       id="lineLeftHandle"
       class="lineHandle"
@@ -21,13 +21,14 @@
       v-on:mouseup="mouseup"
     ></v-card>
     <v-divider
-      style="color: red; z-index: 9999; height: 10px"
+      style="color: darkred; z-index: 9999"
       id="line"
       class="line"
       v-bind:style="{
         left: lineLeft + 'px',
         top: lineTop + 'px',
         width: lineRight - lineLeft + 'px',
+        height: '5px',
       }"
       v-on:mouseup="mouseup"
     ></v-divider>
@@ -37,7 +38,7 @@
     >
       &#x221A;
     </p>
-  </v-card>
+  </div>
 </template>
 <script setup lang="ts">
 import useMatrixHelper from "../helpers/matrixHelper";
@@ -50,34 +51,64 @@ import {
   LineNotationAttributes,
 } from "../../../math-common/build/baseTypes";
 import useEventBus from "../helpers/eventBus";
+import { NotationType } from "common/unions";
 
 const eventBus = useEventBus();
 const matrixHelper = useMatrixHelper();
 const notationMutateHelper = useNotationMutateHelper();
 const notationStore = useNotationStore();
 
+// props
+
 const props = defineProps({
-  svgId: { type: String },
+  svgId: { type: String, default: "" },
 });
 
-let editStarted = ref(false);
-let notationType = ref("SYMBOL");
+// vars
+
+let selectedLine: LineNotationAttributes | null = null;
 let linePosition = ref(<LinePosition | Record<string, never>>{});
 
-let lineLeft = computed(() =>
-  Math.min(linePosition.value.x1, linePosition.value.x2),
-);
-let lineRight = computed(() =>
-  Math.max(linePosition.value.x1, linePosition.value.x2),
-);
-let lineTop = computed(() => linePosition.value.y);
+// computed
 
-watch(
-  () => notationStore.getActiveCell(),
-  (newActivecell) => {
-    if (newActivecell) reset();
-  },
-);
+//let notationType: NotationType = "SYMBOL";
+
+const notationType = computed(() => {
+  return notationStore.getEditMode().value == "FRACTION" ||
+    notationStore.getEditMode().value == "FRACTION_DRAWING" ||
+    notationStore.getEditMode().value == "FRACTION_SELECTING"
+    ? "FRACTION"
+    : "SQRT";
+});
+
+const show = computed(() => {
+  return notationStore.getEditMode().value == "FRACTION_DRAWING";
+});
+
+const svgDimensions = computed(() => {
+  return document.getElementById(props.svgId)?.getBoundingClientRect()!;
+});
+
+let lineLeft = computed(() => {
+  return Math.min(linePosition.value.x1, linePosition.value.x2);
+});
+
+let lineRight = computed(() => {
+  return Math.max(linePosition.value.x1, linePosition.value.x2);
+});
+
+let lineTop = computed(() => {
+  return linePosition.value.y;
+});
+
+// watch
+
+//watch(
+//  () => notationStore.getActiveCell(),
+//  (newActivecell) => {
+//    if (newActivecell) resetLineDrawing();
+//  },
+//);
 
 watch(
   () => eventBus.bus.value.get("svgmouseup"),
@@ -100,61 +131,76 @@ watch(
   },
 );
 
-/// TODO unregister upon destroy
-// onMounted(() => {
-//   registerSvgMouseDown();
-//   registerSvgMouseMove();
-//   registerSvgMouseUp();
-// });
+watch(
+  () => eventBus.bus.value.get("lineSelected"),
+  (line: LineNotationAttributes) => {
+    handleSelectedLine(line);
+  },
+);
 
-// function registerSvgMouseMove() {
-//   document
-//     ?.getElementById(props.svgId!)
-//     ?.addEventListener("mousemove", handleSvgMouseMove);
-// }
+// event emitters
 
-// function registerSvgMouseDown() {
-//   document
-//     ?.getElementById(props.svgId!)
-//     ?.addEventListener("mousedown", handleMouseDown);
-// }
+function mouseup(e: KeyboardEvent) {
+  eventBus.emit("svgmouseup", e);
+}
 
-// function registerSvgMouseUp() {
-//   document
-//     ?.getElementById(props.svgId!)
-//     ?.addEventListener("mouseup", handleMouseUp);
-// }
+// event handlers
+
+function handleSelectedLine(line: LineNotationAttributes) {
+  //if (drawStarted.value) {
+  //    return;
+  // }
+
+  notationStore.setEditMode(
+    notationType.value == "FRACTION" ? "FRACTION" : "SQRT",
+  );
+
+  selectedLine = line; // store for later save
+
+  startLineEditing(line);
+}
 
 function leftHandleMouseDown() {
-  editStarted.value = true;
+  notationStore.setEditMode(
+    notationType.value == "FRACTION" ? "FRACTION_DRAWING" : "SQRT_DRAWING",
+  );
 }
 
 function rightHandleMouseDown() {
-  editStarted.value = true;
+  notationStore.setEditMode("FRACTION_DRAWING");
 }
 
+// emitted by event manager
 function handleMouseDown(e: MouseEvent) {
   if (e.buttons !== 1) {
     // ignore right button
     return;
   }
 
-  if (editStarted.value === true) {
-    return;
+  // user clicked elsewere after start drawing
+  if (
+    notationStore.isLineDrawingMode() ||
+    notationStore.isLineEditingMode() ||
+    notationStore.isLineSelectionMode()
+  ) {
+    resetLineDrawing();
   }
 
   if (notationStore.isLineMode()) {
     // new line
-    notationType.value =
-      notationStore.getEditMode().value === "FRACTION" ? "FRACTION" : "SQRT";
+    //    notationType.value =
+    //      notationStore.getEditMode().value === "FRACTION" ? "FRACTION" : "SQRT";
 
-    startLineDrawing({ x: e.offsetX, y: e.offsetY });
+    startLineDrawing({
+      x: e.offsetX,
+      y: e.offsetY,
+    });
   }
 
   let fraction = findFractionLineAtClickedPosition(e);
   if (fraction) {
     //select existing fraction
-    notationType.value = "FRACTION";
+    //notationType = "FRACTION";
     selectLine(fraction.id);
     return;
   }
@@ -162,35 +208,31 @@ function handleMouseDown(e: MouseEvent) {
   let sqrt = findSqrtLineAtClickedPosition(e);
   if (sqrt) {
     //select existing sqrt
-    notationType.value = "SQRT";
+    //notationType = "SQRT";
     selectLine(sqrt.id);
   }
 }
 
 function handleMouseMove(e: MouseEvent) {
-  // not related to line drawing
-  if (!notationStore.isLineMode()) {
-    return;
-  }
-
-  // left button is pressed
+  // ignore right button
   if (e.buttons !== 1) {
     return;
   }
 
+  // nothing done
   if (linePosition.value.x1 === 0 && linePosition.value.x2 === 0) {
     return;
   }
 
-  if (!editStarted) {
+  if (
+    !notationStore.isLineMode() &&
+    !notationStore.isLineDrawingMode() &&
+    !notationStore.isLineEditingMode()
+  ) {
     return;
   }
 
-  setLine(e.offsetX);
-}
-
-function mouseup(e: KeyboardEvent) {
-  eventBus.emit("svgmouseup", e);
+  setLineWidth(e.offsetX);
 }
 
 function handleMouseUp() {
@@ -204,27 +246,48 @@ function handleMouseUp() {
     return;
   }
 
-  // during edit line
-  if (editStarted) {
+  // line yet not modified
+  if (
+    !notationStore.isLineDrawingMode() &&
+    !notationStore.isLineEditingMode()
+  ) {
     return;
   }
 
   endDrawLine();
 }
 
-/// TODO move to global
-function getNearestRow(clickedYPos: number) {
-  let clickedRow = Math.round(clickedYPos / notationStore.getRectSize());
-  return clickedRow * notationStore.getRectSize();
-}
+// methods
 
 function startLineDrawing(position: DotPosition) {
-  editStarted.value = true;
-  linePosition.value.x2 = linePosition.value.x1 = position.x;
-  linePosition.value.y = getNearestRow(position.y);
+  notationStore.setEditMode(
+    notationType.value === "FRACTION" ? "FRACTION_DRAWING" : "SQRT_DRAWING",
+  );
+
+  linePosition.value.x2 = linePosition.value.x1 =
+    position.x + svgDimensions.value.left;
+  linePosition.value.y = getNearestRow(position.y) + svgDimensions.value.top;
+}
+
+// called after line selection
+function startLineEditing(line: LineAttributes) {
+  notationStore.setEditMode(
+    notationType.value === "FRACTION" ? "FRACTION_EDITITING" : "SQRT_EDITITING",
+  );
+
+  linePosition.value.x1 =
+    svgDimensions.value.left + line.fromCol * notationStore.getRectSize();
+  linePosition.value.x2 =
+    svgDimensions.value.left + line.toCol * notationStore.getRectSize();
+  linePosition.value.y =
+    svgDimensions.value.top + line.row * notationStore.getRectSize();
 }
 
 function selectLine(notationUUId: string) {
+  notationStore.setEditMode(
+    notationType.value === "FRACTION" ? "FRACTION_SELECTING" : "SQRT_SELECTING",
+  );
+
   let notation = notationStore
     .getNotations()
     .value.get(notationUUId) as LineNotationAttributes;
@@ -239,7 +302,9 @@ function selectLine(notationUUId: string) {
   notationStore.setActiveNotation(notation);
 }
 
-function setLine(xPos: number) {
+function setLineWidth(xPos: number) {
+  xPos += svgDimensions.value.left;
+
   if (xPos < linePosition.value.x1) {
     linePosition.value.x1 = xPos;
   }
@@ -248,23 +313,24 @@ function setLine(xPos: number) {
   }
 }
 
-function saveLine(lineAttributes: LineAttributes) {
-  if (notationType.value == "FRACTION")
-    notationMutateHelper.addFractiontNotation(lineAttributes);
-  else if (notationType.value == "SQRT")
-    notationMutateHelper.addSqrtNotation(lineAttributes);
-  else {
-    throw notationType + ":is not a valid line type";
-  }
-}
-
 function endDrawLine() {
   if (linePosition.value.x2 == linePosition.value.x1) return;
-  let fromCol = Math.floor(linePosition.value.x1 / notationStore.getRectSize());
 
-  let toCol = Math.ceil(linePosition.value.x2 / notationStore.getRectSize());
+  let fromCol = Math.ceil(
+    (linePosition.value.x1 - svgDimensions.value.left) /
+      notationStore.getRectSize(),
+  );
 
-  let row = Math.round(linePosition.value.y / notationStore.getRectSize());
+  let toCol = Math.ceil(
+    (linePosition.value.x2 - svgDimensions.value.left) /
+      notationStore.getRectSize() -
+      1,
+  );
+
+  let row = Math.round(
+    (linePosition.value.y - svgDimensions.value.top) /
+      notationStore.getRectSize(),
+  );
 
   let lineAttributes: LineAttributes = {
     fromCol: fromCol,
@@ -272,14 +338,23 @@ function endDrawLine() {
     row: row,
   };
 
+  if (selectedLine) selectedLine = { ...selectedLine, ...lineAttributes };
+
   saveLine(lineAttributes);
-  eventBus.emit("drawLineEnded"); // signal parent
-  reset();
+  notationStore.resetEditMode();
+  if (selectedLine) {
+    notationStore.getHiddenLineElement()!.style.display = "block";
+  }
 }
 
-function reset() {
+function saveLine(lineAttributes: LineAttributes) {
+  if (selectedLine) notationMutateHelper.updateLineNotation(selectedLine);
+  else notationMutateHelper.addLineNotation(lineAttributes, notationType.value);
+}
+
+function resetLineDrawing() {
   linePosition.value.x1 = linePosition.value.x2 = linePosition.value.y = 0;
-  editStarted.value = false;
+  notationStore.setEditMode(notationStore.getDefaultEditMode());
 }
 
 function findFractionLineAtClickedPosition(e: MouseEvent) {
@@ -303,6 +378,11 @@ function findSqrtLineAtClickedPosition(e: MouseEvent) {
     "SQRT",
   );
 }
+
+function getNearestRow(clickedYPos: number) {
+  let clickedRow = Math.round(clickedYPos / notationStore.getRectSize());
+  return clickedRow * notationStore.getRectSize();
+}
 </script>
 
 <style>
@@ -323,8 +403,8 @@ foreignObject[type="sqrt"] {
   display: block;
   position: absolute;
   z-index: 999;
-  width: 6px;
-  height: 6px;
+  width: 12px;
+  height: 12px;
   border: 1, 1, 1, 1;
 }
 </style>

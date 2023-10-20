@@ -167,7 +167,6 @@ import useMatrixHelper from "../helpers/matrixHelper";
 import useAuthHelper from "../helpers/authHelper";
 import accessLinkDialog from "./AccessLinkDialog.vue";
 import freeTextDialog from "./FreeTextDialog.vue";
-import useEventBus from "../helpers/eventBus";
 import useNotationMutateHelper from "../helpers/notationMutateHelper";
 import { useNotationStore } from "../store/pinia/notationStore";
 import { computed } from "vue";
@@ -175,7 +174,6 @@ import { useUserStore } from "../store/pinia/userStore";
 
 const matrixHelper = useMatrixHelper();
 const authHelper = useAuthHelper();
-const eventBus = useEventBus();
 const notationMutateHelper = useNotationMutateHelper();
 const notationStore = useNotationStore();
 const userStore = useUserStore();
@@ -207,17 +205,25 @@ const answerCheckMode = computed(() => {
 });
 
 watch(
-  () => eventBus.bus.value.get("resetToolbarState"),
-  () => {
-    resetButtonsState();
-  },
-);
+  () => notationStore.getEditMode(),
+  (editMode) => {
+    if (editMode.value === notationStore.getDefaultEditMode()) {
+      resetButtonsState();
+    }
 
-watch(
-  () => eventBus.bus.value.get("resetToolbarState"),
-  (value: string) => {
-    submitText(value);
+    if (editMode.value === "FRACTION") {
+      fractionButtonActive.value = 0;
+    }
+
+    if (editMode.value === "SQRT") {
+      squareRootButtonActive.value = 0;
+    }
+
+    if (editMode.value === notationStore.getDefaultEditMode()) {
+      resetButtonsState();
+    }
   },
+  { immediate: true, deep: true },
 );
 
 function submitText(value: string) {
@@ -241,7 +247,6 @@ function resetButtonsState() {
   fractionButtonActive.value = 1;
   squareRootButtonActive.value = 1;
   powerButtonActive.value = 1;
-  //notationStore.setEditMode("SYMBOL");
 }
 
 function toggleFractionMode() {

@@ -1,25 +1,26 @@
-import { EditMode,  NotationShape,  NotationType} from "common/unions";
-import { LineNotationAttributes,  RectNotationAttributes } from "common/baseTypes";
+import { EditMode, NotationShape, NotationType } from "common/unions";
+import {
+  LineNotationAttributes,
+  RectNotationAttributes,
+} from "common/baseTypes";
 import { useNotationStore } from "../store/pinia/notationStore";
 import { activeCellColor, CellCoordinates } from "common/globals";
 import { NotationAttributes } from "common/baseTypes";
 
-import  useNotationMutateHelper  from "./notationMutateHelper";
-import useMatrixHelper from "./matrixHelper"
+import useNotationMutateHelper from "./notationMutateHelper";
+import useMatrixHelper from "./matrixHelper";
+import useEventBus from "./eventBus";
 
+const eventBus = useEventBus();
 const matrixHelper = useMatrixHelper();
 const notationStore = useNotationStore();
 const notationMutateHelper = useNotationMutateHelper();
 
+///TODO : split function to shorter blocks
 export default function activateObjectHelper() {
-
   // called via mouse click
   function activateClickedObject(e: MouseEvent): CellCoordinates | null {
-    let clickedRect = matrixHelper.findClickedObject(
-      e,
-      "rect",
-      null
-    );
+    let clickedRect = matrixHelper.findClickedObject(e, "rect", null);
 
     if (!clickedRect?.parentElement) {
       return null;
@@ -36,10 +37,29 @@ export default function activateObjectHelper() {
       return null;
     }
 
-    let overlapLineNotation = getOverlappedLineNotation(e);
-    if (overlapLineNotation) {
-      // selection of line is handled in LineDrawer.vue, here we just reset previous activated element
-      return null;
+    let lineElement = getOverlappedLineElement(e, "FRACTION");
+    if (!lineElement) lineElement = getOverlappedLineElement(e, "SQRT");
+    if (lineElement) {
+      lineElement.style.display = "none";
+      notationStore.setHiddenLineElement(lineElement);
+      const lineNotation = getOverlappedLineNotation(lineElement);
+      if (lineNotation) {
+        // signal LineDrawer.vue
+        eventBus.emit("lineSelected", lineNotation);
+        return null;
+      }
+    }
+
+    const sqrtElement = getOverlappedLineElement(e, "SQRT");
+    if (sqrtElement) {
+      sqrtElement.style.display = "none";
+      const sqrtNotation = getOverlappedLineNotation(sqrtElement);
+      if (sqrtNotation) {
+        // signal line drawer
+        // selection of line is handled in LineDrawer.vue
+        eventBus.emit("lineSelected", sqrtNotation);
+        return null;
+      }
     }
 
     // no underlying elements found, activate single cell
@@ -74,18 +94,22 @@ export default function activateObjectHelper() {
     notationStore.setActiveCell(newActiveCell);
   }
 
-
   function reset() {
     setActiveCell(null);
     setActiveNotation(null);
   }
 
-  function getElementCoordinateValue(element: Element, attrName: string): number{
+  function getElementCoordinateValue(
+    element: Element,
+    attrName: string,
+  ): number {
     let val = element.attributes.getNamedItem(attrName)?.value;
-    return val  ? Number.parseInt(val) : -1;
+    return val ? Number.parseInt(val) : -1;
   }
 
-  function getOverlappedRectNotation(e: MouseEvent): RectNotationAttributes | null | undefined {
+  function getOverlappedRectNotation(
+    e: MouseEvent,
+  ): RectNotationAttributes | null | undefined {
     let rectElement = matrixHelper.findTextAtClickedPosition(e);
     if (!rectElement) return null;
 
@@ -99,41 +123,47 @@ export default function activateObjectHelper() {
       });
   }
 
-  function getOverlappedLineNotation(e: MouseEvent) {
-    let fractionElement =  matrixHelper.findClickedObject(
+  function getOverlappedLineElement(
+    e: MouseEvent,
+    notationType: NotationType,
+  ): HTMLElement | null {
+    let lineElement = matrixHelper.findClickedObject(
       {
         x: e.clientX,
         y: e.clientY,
       },
       "foreignObject",
-      "FRACTION"
+      notationType,
     );
 
-    if (!fractionElement) return;
-
-    return notationStore
-      .getNotationsByShape<LineNotationAttributes>("LINE")
-      .find((n: LineNotationAttributes) => {
-        getElementCoordinateValue(fractionElement, "fromCol") >= n.fromCol &&
-          getElementCoordinateValue(fractionElement, "toCol") <= n.toCol &&
-          getElementCoordinateValue(fractionElement, "row") >= n.row &&
-          getElementCoordinateValue(fractionElement, "row") >= n.row;
-      });
+    return lineElement;
   }
 
+  function getOverlappedLineNotation(
+    lineElement: Element,
+  ): NotationAttributes | undefined {
+    const lineNotations =
+      notationStore.getNotationsByShape<LineNotationAttributes>("LINE");
+
+    return lineNotations.find((n: LineNotationAttributes) => {
+      return (
+        getElementCoordinateValue(lineElement, "fromCol") >= n.fromCol &&
+        getElementCoordinateValue(lineElement, "toCol") <= n.toCol &&
+        getElementCoordinateValue(lineElement, "row") == n.row
+      );
+    });
+  }
 
   // called by store watcher
   function activateCell(
     svgId: string,
     prevActiveCell: CellCoordinates | undefined,
-    activeCell: CellCoordinates
+    activeCell: CellCoordinates,
   ) {
-
     if (prevActiveCell?.col != null) {
-
       let prevRectElm = document
         ?.querySelector<HTMLElement>(
-          `svg[id="${svgId}"] g[row="${prevActiveCell.row}"]`
+          `svg[id="${svgId}"] g[row="${prevActiveCell.row}"]`,
         )
         ?.querySelector<HTMLElement>(`rect[col="${prevActiveCell.col}"]`);
 
@@ -141,10 +171,9 @@ export default function activateObjectHelper() {
     }
 
     if (activeCell?.col != null) {
-
       let rectElm = document
         ?.querySelector<HTMLElement>(
-          `svg[id="${svgId}"] g[row="${activeCell.row}"]`
+          `svg[id="${svgId}"] g[row="${activeCell.row}"]`,
         )
         ?.querySelector<HTMLElement>(`rect[col="${activeCell.col}"]`);
 

@@ -1,5 +1,4 @@
-
-import {  NotationType,  NotationTypeShape} from "common/unions";
+import { NotationType, NotationTypeShape } from "common/unions";
 import { DotPosition, getDefaultFontSize } from "common/globals";
 import * as d3 from "d3";
 import { useNotationStore } from "../store/pinia/notationStore";
@@ -64,10 +63,12 @@ export default function useMatrixHelper() {
 
     if (!clientWidth || !clientHeight) return;
 
-    notationStore.setRectSize( Math.min(
-      Math.floor(clientWidth / colsNum),
-      Math.floor(clientHeight / rowsNum),
-    ));
+    notationStore.setRectSize(
+      Math.min(
+        Math.floor(clientWidth / colsNum),
+        Math.floor(clientHeight / rowsNum),
+      ),
+    );
   }
 
   function setTextMeasurementCtx(el: HTMLElement) {
@@ -87,13 +88,16 @@ export default function useMatrixHelper() {
 
   function freeTextRectWidth(text: string) {
     return (
-      (<any>window).textMeasurementCtx.measureText(text).width / notationStore.getRectSize()
+      (<any>window).textMeasurementCtx.measureText(text).width /
+      notationStore.getRectSize()
     );
   }
 
   function freeTextRectHeight(text: string) {
     let fontSize = getDefaultFontSize();
-    return (fontSize * text.split(/\r*\n/).length) / notationStore.getRectSize();
+    return (
+      (fontSize * text.split(/\r*\n/).length) / notationStore.getRectSize()
+    );
   }
 
   //   $isRect(notationType) {
@@ -118,7 +122,7 @@ export default function useMatrixHelper() {
     dotPosition: DotPosition,
     tagName: string,
     notationType: NotationType | null,
-  ): Element {
+  ): HTMLElement {
     var elements = [];
     var display = [];
     var item = document.elementFromPoint(dotPosition.x, dotPosition.y) as any; // must be any to accept window
@@ -146,24 +150,9 @@ export default function useMatrixHelper() {
     return elements.find(
       (item) =>
         item.tagName == tagName &&
-        (!notationType || notationType == item.attributes.notationType?.value),
+        (!notationType || notationType == item.attributes.type?.value),
     );
   }
-
-  //TODO: call from component onmount with SVGID as paameter
-  //onMounted(() => {
-
-  //});
-
-  // methods: {
-  //   ...mapGetters({
-  //     getActiveNotation: "getActiveNotation",
-  //     getCurrentLesson: "getCurrentLesson",
-  //     getParent: "getParent",
-  //   }),
-  //   ...mapActions({
-  //     setPrevActiveCell: "setPrevActiveCell",
-  //   }),
 
   function setMatrix(svgId: string) {
     const el = document.getElementById(svgId);
@@ -597,7 +586,7 @@ export default function useMatrixHelper() {
     return row * notationStore.getRectSize();
   }
 
-  function getRectSize() : number {
+  function getRectSize(): number {
     return notationStore.getRectSize();
   }
 

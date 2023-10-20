@@ -167,13 +167,6 @@ export default function eventHelper() {
     }
   }
 
-  function lineDrawEnded() {
-    // see toolbar.vue
-    eventBus.emit("resetToolbarState", null);
-    activateObjectHelper.reset();
-    // activateObjectMixin_unselectPreviouslyActiveCell();
-  }
-
   function emitSvgMouseDown(e: MouseEvent) {
     eventBus.emit("svgmousedown", e);
   }
@@ -250,7 +243,6 @@ export default function eventHelper() {
     paste,
     keyUp,
     mouseDown,
-    lineDrawEnded,
     registerSvgMouseDown,
     unregisterSvgMouseDown,
     registerSvgMouseMove,

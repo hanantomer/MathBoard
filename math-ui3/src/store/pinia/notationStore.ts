@@ -21,6 +21,8 @@ type Board = {
 ///TODO watch notations and sync user operations (avoid circular updates)
 
 export const useNotationStore = defineStore("notation", () => {
+  let hiddenLineElement: HTMLElement | null;
+
   let rectSize = ref<number>();
 
   const cellOccupationMatrix: (NotationAttributes | null)[][] =
@@ -28,7 +30,7 @@ export const useNotationStore = defineStore("notation", () => {
 
   let parent = ref<Board>({ uuid: "", type: "LESSON" });
 
-  let  notations = ref(<Map<String, NotationAttributes>>new Map());
+  let notations = ref(<Map<String, NotationAttributes>>new Map());
 
   let activeCell = ref(<CellCoordinates | null>null);
 
@@ -36,8 +38,30 @@ export const useNotationStore = defineStore("notation", () => {
 
   let editMode = ref<EditMode>("SYMBOL");
 
+  const defaultEditMode: EditMode = "SYMBOL";
+
   function isLineMode() {
     return editMode.value == "FRACTION" || editMode.value == "SQRT";
+  }
+
+  function isLineDrawingMode() {
+    return (
+      editMode.value == "FRACTION_DRAWING" || editMode.value == "SQRT_DRAWING"
+    );
+  }
+
+  function isLineEditingMode() {
+    return (
+      editMode.value == "FRACTION_EDITITING" ||
+      editMode.value == "SQRT_EDITITING"
+    );
+  }
+
+  function isLineSelectionMode() {
+    return (
+      editMode.value == "FRACTION_SELECTING" ||
+      editMode.value == "SQRT_SELECTING"
+    );
   }
 
   function getRectSize() {
@@ -50,6 +74,10 @@ export const useNotationStore = defineStore("notation", () => {
 
   function getEditMode() {
     return editMode;
+  }
+
+  function getDefaultEditMode() {
+    return defaultEditMode;
   }
 
   function getSelectedNotations() {
@@ -76,7 +104,9 @@ export const useNotationStore = defineStore("notation", () => {
 
   function getNotationsByShape<T>(notationShape: NotationShape): T[] {
     return Array.from(notations.value.values()).filter((n) => {
-      n.notationType && NotationTypeShape.get(n.notationType) == notationShape;
+      return (
+        n.notationType && NotationTypeShape.get(n.notationType) == notationShape
+      );
     }) as T[];
   }
 
@@ -88,6 +118,10 @@ export const useNotationStore = defineStore("notation", () => {
     notations.forEach((n) => {
       addNotation(n);
     });
+  }
+
+  function setNotation(uuid: string, notation: NotationAttributes) {
+    notations.value.set(notation.uuid, notation);
   }
 
   function addNotation(notation: NotationAttributes) {
@@ -125,6 +159,10 @@ export const useNotationStore = defineStore("notation", () => {
     editMode.value = newEditMode;
   }
 
+  function resetEditMode() {
+    editMode.value = "SYMBOL";
+  }
+
   function createCellOccupationMatrix(): (NotationAttributes | null)[][] {
     let matrix: (NotationAttributes | null)[][] = new Array();
     for (let i = 0; i < matrixDimensions.rowsNum; i++) {
@@ -136,10 +174,19 @@ export const useNotationStore = defineStore("notation", () => {
     return matrix;
   }
 
+  function setHiddenLineElement(el: HTMLElement) {
+    hiddenLineElement = el;
+  }
+
+  function getHiddenLineElement() {
+    return hiddenLineElement;
+  }
+
   return {
     getNotations,
     getNotationsByShape,
     getEditMode,
+    getDefaultEditMode,
     getCellOccupationMatrix,
     getActiveCell,
     getActiveNotation,
@@ -147,10 +194,15 @@ export const useNotationStore = defineStore("notation", () => {
     getParent,
     addNotation,
     setNotations,
+    setNotation,
     selectNotation,
     setActiveNotation,
     setEditMode,
+    resetEditMode,
     isLineMode,
+    isLineDrawingMode,
+    isLineEditingMode,
+    isLineSelectionMode,
     setParent,
     setActiveCell,
     resetActiveCell,
@@ -159,5 +211,7 @@ export const useNotationStore = defineStore("notation", () => {
     activeNotation,
     getRectSize,
     setRectSize,
+    getHiddenLineElement,
+    setHiddenLineElement,
   };
 });
