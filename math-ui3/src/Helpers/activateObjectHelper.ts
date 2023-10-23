@@ -1,4 +1,5 @@
-import { EditMode, NotationShape, NotationType } from "common/unions";
+import { watch } from "vue";
+import { NotationType } from "common/unions";
 import {
   LineNotationAttributes,
   RectNotationAttributes,
@@ -18,8 +19,21 @@ const notationMutateHelper = useNotationMutateHelper();
 
 ///TODO : split function to shorter blocks
 export default function activateObjectHelper() {
+  watch(
+    () => eventBus.bus.value.get("svgmousedown"),
+    (e: MouseEvent) => {
+      activateClickedObject(e);
+    },
+  );
+
   // called via mouse click
+  /// TODO: simplify method
   function activateClickedObject(e: MouseEvent): CellCoordinates | null {
+    // dont active object after click of toolbar fraction or sqrt
+    if (notationStore.isLineMode()) {
+      return null;
+    }
+
     let clickedRect = matrixHelper.findClickedObject(e, "rect", null);
 
     if (!clickedRect?.parentElement) {
@@ -38,7 +52,13 @@ export default function activateObjectHelper() {
     }
 
     let lineElement = getOverlappedLineElement(e, "FRACTION");
-    if (!lineElement) lineElement = getOverlappedLineElement(e, "SQRT");
+    if (lineElement) notationStore.setEditMode("FRACTION_SELECTING");
+
+    if (!lineElement) {
+      lineElement = getOverlappedLineElement(e, "SQRT");
+      notationStore.setEditMode("SQRT_SELECTING");
+    }
+
     if (lineElement) {
       lineElement.style.display = "none";
       notationStore.setHiddenLineElement(lineElement);
@@ -69,7 +89,12 @@ export default function activateObjectHelper() {
     };
 
     notationStore.setActiveCell(cellToActivate);
-    notationStore.setEditMode("SYMBOL");
+    notationStore.resetEditMode();
+
+    if (notationStore.getParent().value.type == "LESSON") {
+      //TODO: uncheck        userOutgoingOperations.syncOutgoingActiveCell(activeCell);
+    }
+
     return cellToActivate;
   }
 

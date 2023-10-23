@@ -27,12 +27,14 @@ export type EditMode =
   "TEXT"              | // text button pressed
   "FRACTION"          | // fraction button pressed
   "FRACTION_DRAWING"  | // fraction drawing started
-  "FRACTION_SELECTING"| // fraction selected
+  "FRACTION_SELECTING"| // fraction selecting
+  "FRACTION_SELECTED" | // fraction selected
   "FRACTION_EDITITING"| // fraction selected and edit started
   "SQRT"              | // sqrt button pressed
   "SQRT_DRAWING"      | // sqrt drawing started
   "SQRT_SELECTING"    | // sqrt selected
   "SQRT_EDITITING"    | // sqrt selected and edit started
+  "SQRT_SELECTED"     | // sqrt selected  
   "DELETING"          | // mouse clicked following delete button pressed
   "SELECT"            | // select button pressed
   "CHECKMARK"         | // checkmark button pressed

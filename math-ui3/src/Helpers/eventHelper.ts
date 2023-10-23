@@ -5,9 +5,7 @@ import { watch } from "vue";
 import useMatrixHelper from "./matrixHelper";
 import useNotationMutationHelper from "./notationMutateHelper";
 import useAuthHelper from "./authHelper";
-import useActivateObjectHelper from "./activateObjectHelper";
 import useEventBus from "../helpers/eventBus";
-import useUserOutgoingOperations from "./userOutgoingOperationsHelper";
 
 const userStore = useUserStore();
 const notationStore = useNotationStore();
@@ -15,16 +13,8 @@ const matrixHelper = useMatrixHelper();
 const notationMutationHelper = useNotationMutationHelper();
 const authHelper = useAuthHelper();
 const eventBus = useEventBus();
-const activateObjectHelper = useActivateObjectHelper();
-const userOutgoingOperations = useUserOutgoingOperations();
 
 export default function eventHelper() {
-  watch(
-    () => eventBus.bus.value.get("svgmousedown"),
-    (e: MouseEvent) => {
-      mouseDown(e);
-    },
-  );
 
   watch(
     () => eventBus.bus.value.get("keyup"),
@@ -152,10 +142,6 @@ export default function eventHelper() {
       return;
     }
 
-    let activeCell = activateObjectHelper.activateClickedObject(e);
-    if (activeCell && notationStore.getParent().value.type == "LESSON") {
-      //TODO: uncheck        userOutgoingOperations.syncOutgoingActiveCell(activeCell);
-    }
 
     if (
       notationStore.getEditMode().value === "CHECKMARK" ||
@@ -256,55 +242,4 @@ export default function eventHelper() {
   };
 }
 
-/*
 
-    registerSvgMouseMove: function () {
-      document
-        .getElementById(this.svgId)
-        .parentElement.addEventListener("mousemove", this.handleMouseMove);
-    },
-
-    registerSvgMouseUp: function () {
-      document
-        .getElementById(this.svgId)
-        .addEventListener("mouseup", this.handleMouseUp);
-    },
-
-    handleMouseMove(e) {
-      if (e.buttons !== 1) {
-        return;
-      }
-
-      if (this.getCurrentEditMode() !== EditMode.SELECT) {
-        return;
-      }
-
-      if (this.selectionMode === SelectionMode.SELECTING) {
-        this.updateSelectionArea(e);
-        return;
-      }
-
-      if (this.selectionMode === SelectionMode.MOVE) {
-        this.moveSelection(e);
-        return;
-      }
-    },
-    handleMouseUp() {
-      if (this.getCurrentEditMode() !== EditMode.SELECT) {
-        return;
-      }
-      if (this.selectionMode === SelectionMode.SELECTING) {
-        this.endSelect();
-        return;
-      }
-      if (this.selectionMode === SelectionMode.MOVE) {
-        this.endMoveSelection();
-        return;
-      }
-
-      this.resetSelection();
-    },
-
-
-
-*/

@@ -293,7 +293,7 @@ function resetSelection() {
       0;
 
   selectionMode = "SELECTING";
-  notationStore.setEditMode("SYMBOL");
+  notationStore.resetEditMode();
 }
 </script>
 

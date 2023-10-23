@@ -13,19 +13,16 @@
 <script setup lang="ts">
 import mathBoard from "./MathBoard.vue";
 import useMatrixHelper from "../helpers/matrixHelper";
-import useActivateObjectHelper from "../helpers/activateObjectHelper";
 import useNotationLoadingHelper from "../helpers/notationLoadingHelper";
 import { computed, ref } from "vue"
 import { useUserStore } from "../store/pinia/userStore";
 import { useAnswerStore } from "../store/pinia/answerStore";
 import { watch } from 'vue'
 import { useRoute } from 'vue-router'
-import { BoardType } from "../../../math-common/build/enum";
 import { useNotationStore } from "../store/pinia/notationStore";
 
 const route = useRoute();
 const matrixHelper = useMatrixHelper();
-const activateObjectHelper = useActivateObjectHelper();
 const userStore = useUserStore();
 const answerStore = useAnswerStore();
 const notationLoadingHelper = useNotationLoadingHelper();
@@ -54,7 +51,6 @@ async function loadAnswer(answerUUId: string) {
 
   notationStore.setParent(answerStore.getCurrentAnswer()?.uuid, "ANSWER");
 
-  activateObjectHelper.reset();
   matrixHelper.setMatrix(svgId);
 
   // load from db to store

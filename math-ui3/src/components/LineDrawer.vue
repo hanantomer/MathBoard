@@ -1,14 +1,15 @@
 <template>
   <div v-show="show">
     <v-card
+      v-if="!sqrtMode"
       id="lineLeftHandle"
       class="lineHandle"
       v-bind:style="{
         left: lineLeft - 5 + 'px',
         top: lineTop + 'px',
       }"
-      v-on:mousedown="leftHandleMouseDown"
       v-on:mouseup="mouseup"
+      v-on:mousedown="onHandleMouseDown"
     ></v-card>
     <v-card
       id="lineRightHandle"
@@ -17,8 +18,8 @@
         left: lineRight + 'px',
         top: lineTop + 'px',
       }"
-      v-on:mousedown="rightHandleMouseDown"
       v-on:mouseup="mouseup"
+      v-on:mousedown="onHandleMouseDown"
     ></v-card>
     <v-divider
       style="color: darkred; z-index: 9999"
@@ -33,16 +34,21 @@
       v-on:mouseup="mouseup"
     ></v-divider>
     <p
-      style="left: -2px; position: relative; z-index: 99; border: solid 1px"
-      v-if="notationType === 'SQRT'"
+      class="lineHandle"
+      v-bind:style="{
+        left: lineLeft - 12 + 'px',
+        top: lineTop + 'px',
+        zIndex: 99,
+      }"
+      v-if="sqrtMode"
     >
       &#x221A;
     </p>
   </div>
 </template>
 <script setup lang="ts">
-import useMatrixHelper from "../helpers/matrixHelper";
 import useNotationMutateHelper from "../helpers/notationMutateHelper";
+import useStateMachine from "../helpers/stateMachine";
 import { watch, computed, ref } from "vue";
 import { useNotationStore } from "../store/pinia/notationStore";
 import { LinePosition, DotPosition } from "../../../math-common/src/globals";
@@ -51,12 +57,11 @@ import {
   LineNotationAttributes,
 } from "../../../math-common/build/baseTypes";
 import useEventBus from "../helpers/eventBus";
-import { NotationType } from "common/unions";
 
 const eventBus = useEventBus();
-const matrixHelper = useMatrixHelper();
 const notationMutateHelper = useNotationMutateHelper();
 const notationStore = useNotationStore();
+const stateMachine = useStateMachine();
 
 // props
 
@@ -71,18 +76,17 @@ let linePosition = ref(<LinePosition | Record<string, never>>{});
 
 // computed
 
-//let notationType: NotationType = "SYMBOL";
-
-const notationType = computed(() => {
-  return notationStore.getEditMode().value == "FRACTION" ||
-    notationStore.getEditMode().value == "FRACTION_DRAWING" ||
-    notationStore.getEditMode().value == "FRACTION_SELECTING"
-    ? "FRACTION"
-    : "SQRT";
+const sqrtMode = computed(() => {
+  return notationStore.isSqrtMode();
 });
 
 const show = computed(() => {
-  return notationStore.getEditMode().value == "FRACTION_DRAWING";
+  return (
+    notationStore.isLineDrawingMode() ||
+    notationStore.isLineEditingMode() ||
+    notationStore.isLineSelectedMode() ||
+    notationStore.isLineSelectingMode()
+  );
 });
 
 const svgDimensions = computed(() => {
@@ -103,39 +107,33 @@ let lineTop = computed(() => {
 
 // watch
 
-//watch(
-//  () => notationStore.getActiveCell(),
-//  (newActivecell) => {
-//    if (newActivecell) resetLineDrawing();
-//  },
-//);
-
 watch(
   () => eventBus.bus.value.get("svgmouseup"),
   () => {
-    handleMouseUp();
+    onMouseUp();
   },
 );
 
 watch(
   () => eventBus.bus.value.get("svgmousemove"),
   (e: MouseEvent) => {
-    handleMouseMove(e);
+    onMouseMove(e);
   },
 );
 
 watch(
   () => eventBus.bus.value.get("svgmousedown"),
   (e: MouseEvent) => {
-    handleMouseDown(e);
+    onMouseDown(e);
   },
 );
 
 watch(
   () => eventBus.bus.value.get("lineSelected"),
   (line: LineNotationAttributes) => {
-    handleSelectedLine(line);
+    if (line) onSelectedLine(line);
   },
+  { immediate: true },
 );
 
 // event emitters
@@ -146,74 +144,46 @@ function mouseup(e: KeyboardEvent) {
 
 // event handlers
 
-function handleSelectedLine(line: LineNotationAttributes) {
-  //if (drawStarted.value) {
-  //    return;
-  // }
-
-  notationStore.setEditMode(
-    notationType.value == "FRACTION" ? "FRACTION" : "SQRT",
-  );
-
-  selectedLine = line; // store for later save
-
-  startLineEditing(line);
+function onSelectedLine(line: LineNotationAttributes) {
+  selectLine(line);
 }
 
-function leftHandleMouseDown() {
-  notationStore.setEditMode(
-    notationType.value == "FRACTION" ? "FRACTION_DRAWING" : "SQRT_DRAWING",
-  );
-}
-
-function rightHandleMouseDown() {
-  notationStore.setEditMode("FRACTION_DRAWING");
+function onHandleMouseDown(e: MouseEvent) {
+  stateMachine.setNextEditMode();
 }
 
 // emitted by event manager
-function handleMouseDown(e: MouseEvent) {
+function onMouseDown(e: MouseEvent) {
   if (e.buttons !== 1) {
     // ignore right button
     return;
   }
 
+  // ignore mouse down during selection
+  if (notationStore.isLineSelectingMode()) {
+    return;
+  }
+
   // user clicked elsewere after start drawing
-  if (
-    notationStore.isLineDrawingMode() ||
-    notationStore.isLineEditingMode() ||
-    notationStore.isLineSelectionMode()
-  ) {
+  if (notationStore.isLineDrawingMode() || notationStore.isLineEditingMode()) {
     resetLineDrawing();
   }
 
   if (notationStore.isLineMode()) {
     // new line
-    //    notationType.value =
-    //      notationStore.getEditMode().value === "FRACTION" ? "FRACTION" : "SQRT";
-
     startLineDrawing({
       x: e.offsetX,
       y: e.offsetY,
     });
   }
 
-  let fraction = findFractionLineAtClickedPosition(e);
-  if (fraction) {
-    //select existing fraction
-    //notationType = "FRACTION";
-    selectLine(fraction.id);
-    return;
-  }
-
-  let sqrt = findSqrtLineAtClickedPosition(e);
-  if (sqrt) {
-    //select existing sqrt
-    //notationType = "SQRT";
-    selectLine(sqrt.id);
+  // retore selected line
+  if (selectedLine && !notationStore.isLineSelectedMode()) {
+    notationStore.getHiddenLineElement()!.style.display = "block";
   }
 }
 
-function handleMouseMove(e: MouseEvent) {
+function onMouseMove(e: MouseEvent) {
   // ignore right button
   if (e.buttons !== 1) {
     return;
@@ -227,7 +197,8 @@ function handleMouseMove(e: MouseEvent) {
   if (
     !notationStore.isLineMode() &&
     !notationStore.isLineDrawingMode() &&
-    !notationStore.isLineEditingMode()
+    !notationStore.isLineEditingMode() &&
+    !notationStore.isLineSelectedMode()
   ) {
     return;
   }
@@ -235,12 +206,7 @@ function handleMouseMove(e: MouseEvent) {
   setLineWidth(e.offsetX);
 }
 
-function handleMouseUp() {
-  // not related to line drawing
-  if (!notationStore.isLineMode()) {
-    return;
-  }
-
+function onMouseUp() {
   // drawing not started
   if (linePosition.value.x1 === 0 && linePosition.value.x2 === 0) {
     return;
@@ -260,46 +226,31 @@ function handleMouseUp() {
 // methods
 
 function startLineDrawing(position: DotPosition) {
-  notationStore.setEditMode(
-    notationType.value === "FRACTION" ? "FRACTION_DRAWING" : "SQRT_DRAWING",
-  );
+  stateMachine.setNextEditMode();
 
   linePosition.value.x2 = linePosition.value.x1 =
     position.x + svgDimensions.value.left;
   linePosition.value.y = getNearestRow(position.y) + svgDimensions.value.top;
 }
 
-// called after line selection
-function startLineEditing(line: LineAttributes) {
-  notationStore.setEditMode(
-    notationType.value === "FRACTION" ? "FRACTION_EDITITING" : "SQRT_EDITITING",
-  );
+function selectLine(lineNotation: LineNotationAttributes) {
+  selectedLine = lineNotation; // store for later save
+
+  stateMachine.setNextEditMode();
 
   linePosition.value.x1 =
-    svgDimensions.value.left + line.fromCol * notationStore.getRectSize();
+    svgDimensions.value.left +
+    lineNotation.fromCol * notationStore.getRectSize();
+
   linePosition.value.x2 =
-    svgDimensions.value.left + line.toCol * notationStore.getRectSize();
+    svgDimensions.value.left + lineNotation.toCol * notationStore.getRectSize();
+
   linePosition.value.y =
-    svgDimensions.value.top + line.row * notationStore.getRectSize();
-}
+    svgDimensions.value.top + lineNotation.row * notationStore.getRectSize();
 
-function selectLine(notationUUId: string) {
-  notationStore.setEditMode(
-    notationType.value === "FRACTION" ? "FRACTION_SELECTING" : "SQRT_SELECTING",
-  );
+  notationStore.setActiveNotation(lineNotation);
 
-  let notation = notationStore
-    .getNotations()
-    .value.get(notationUUId) as LineNotationAttributes;
-
-  linePosition.value.x1 = matrixHelper.getNotationXposByCol(notation.fromCol);
-
-  linePosition.value.x2 =
-    linePosition.value.x1 +
-    (notation.toCol - notation.fromCol) * notationStore.getRectSize();
-
-  linePosition.value.y = matrixHelper.getNotationYposByRow(notation.row);
-  notationStore.setActiveNotation(notation);
+  eventBus.emit("lineSelected", null); // to enable re selection
 }
 
 function setLineWidth(xPos: number) {
@@ -349,34 +300,16 @@ function endDrawLine() {
 
 function saveLine(lineAttributes: LineAttributes) {
   if (selectedLine) notationMutateHelper.updateLineNotation(selectedLine);
-  else notationMutateHelper.addLineNotation(lineAttributes, notationType.value);
+  else
+    notationMutateHelper.addLineNotation(
+      lineAttributes,
+      notationStore.isFractionMode() ? "FRACTION" : "SQRT",
+    );
 }
 
 function resetLineDrawing() {
   linePosition.value.x1 = linePosition.value.x2 = linePosition.value.y = 0;
   notationStore.setEditMode(notationStore.getDefaultEditMode());
-}
-
-function findFractionLineAtClickedPosition(e: MouseEvent) {
-  return matrixHelper.findClickedObject(
-    {
-      x: e.clientX,
-      y: e.clientY,
-    },
-    "foreignObject",
-    "FRACTION",
-  );
-}
-
-function findSqrtLineAtClickedPosition(e: MouseEvent) {
-  return matrixHelper.findClickedObject(
-    {
-      x: e.clientX,
-      y: e.clientY,
-    },
-    "foreignObject",
-    "SQRT",
-  );
 }
 
 function getNearestRow(clickedYPos: number) {

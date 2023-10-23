@@ -44,6 +44,26 @@ export const useNotationStore = defineStore("notation", () => {
     return editMode.value == "FRACTION" || editMode.value == "SQRT";
   }
 
+  function isFractionMode() {
+    return (
+      editMode.value == "FRACTION" ||
+      editMode.value == "FRACTION_DRAWING" ||
+      editMode.value == "FRACTION_EDITITING" ||
+      editMode.value == "FRACTION_SELECTING" ||
+      editMode.value == "FRACTION_SELECTED"
+    );
+  }
+
+  function isSqrtMode() {
+    return (
+      editMode.value == "SQRT" ||
+      editMode.value == "SQRT_DRAWING" ||
+      editMode.value == "SQRT_EDITITING" ||
+      editMode.value == "SQRT_SELECTING" ||
+      editMode.value == "SQRT_SELECTED"
+    );
+  }
+
   function isLineDrawingMode() {
     return (
       editMode.value == "FRACTION_DRAWING" || editMode.value == "SQRT_DRAWING"
@@ -57,10 +77,16 @@ export const useNotationStore = defineStore("notation", () => {
     );
   }
 
-  function isLineSelectionMode() {
+  function isLineSelectingMode() {
     return (
       editMode.value == "FRACTION_SELECTING" ||
       editMode.value == "SQRT_SELECTING"
+    );
+  }
+
+  function isLineSelectedMode() {
+    return (
+      editMode.value == "FRACTION_SELECTED" || editMode.value == "SQRT_SELECTED"
     );
   }
 
@@ -160,7 +186,7 @@ export const useNotationStore = defineStore("notation", () => {
   }
 
   function resetEditMode() {
-    editMode.value = "SYMBOL";
+    setEditMode("SYMBOL");
   }
 
   function createCellOccupationMatrix(): (NotationAttributes | null)[][] {
@@ -202,7 +228,10 @@ export const useNotationStore = defineStore("notation", () => {
     isLineMode,
     isLineDrawingMode,
     isLineEditingMode,
-    isLineSelectionMode,
+    isLineSelectedMode,
+    isLineSelectingMode,
+    isFractionMode,
+    isSqrtMode,
     setParent,
     setActiveCell,
     resetActiveCell,
