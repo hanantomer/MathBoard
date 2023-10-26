@@ -1,7 +1,3 @@
-//
-//  questions of current lesson
-//
-
 import useDbHelper from "../helpers/dbHelper";
 
 import {
@@ -25,6 +21,7 @@ import { onMounted } from "vue";
 import useAuthHelper from "./authHelper";
 import useUserOutgoingOperations from "./userOutgoingOperationsHelper";
 import useMatrixHelper from "../helpers/matrixHelper";
+import useElementFinderHelper from "../helpers/elementFinderHelper";
 
 import {
   NotationAttributes,
@@ -33,6 +30,7 @@ import {
 } from "common/baseTypes";
 
 const matrixHelper = useMatrixHelper();
+const elementFinderHelper = useElementFinderHelper();
 const userStore = useUserStore();
 const dbHelper = useDbHelper();
 const notationStore = useNotationStore();
@@ -716,7 +714,7 @@ export default function notationMutateHelper() {
   }
 
   function removeNotationsAtMousePosition(e: MouseEvent) {
-    let rectAtMousePosition: any = matrixHelper.findClickedObject(
+    let rectAtMousePosition: any = elementFinderHelper.findClickedObject(
       {
         x: e.clientX,
         y: e.clientY,

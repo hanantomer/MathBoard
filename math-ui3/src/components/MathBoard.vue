@@ -1,31 +1,22 @@
 <template>
-    <v-row>
-      <v-col cols="12" class="d-flex justify-center">
-        <slot name="title"></slot>
-      </v-col>
-    </v-row>
-    <v-row class="fill-height">
-      <v-col colls="1">
-        <toolbar></toolbar>
-      </v-col>
-      <v-col cols="11">
-          <lineDrawer
-            :svgId="svgId"
-          ></lineDrawer>
-          <areaSelector :svgId="svgId"></areaSelector>
-          <svg
-            v-bind:id="svgId"
-            x="0"
-            y="0"
-            width="100%"
-            height="100%"
-          ></svg>
-      </v-col>
-    </v-row>
+  <v-row>
+    <v-col cols="12" class="d-flex justify-center">
+      <slot name="title"></slot>
+    </v-col>
+  </v-row>
+  <v-row class="fill-height">
+    <v-col colls="1">
+      <toolbar></toolbar>
+    </v-col>
+    <v-col cols="11">
+      <lineDrawer :svgId="svgId"></lineDrawer>
+      <areaSelector :svgId="svgId"></areaSelector>
+      <svg v-bind:id="svgId" x="0" y="0" width="100%" height="100%"></svg>
+    </v-col>
+  </v-row>
 </template>
 
-<script setup  lang="ts">
-
+<script setup lang="ts">
 import UseMatrixHelper from "../helpers/matrixHelper";
 import UseActivateObjectHelper from "../helpers/activateObjectHelper";
 import UseEventHelper from "../helpers/eventHelper";
@@ -33,7 +24,7 @@ import toolbar from "./Toolbar.vue";
 import areaSelector from "./AreaSelector.vue";
 import lineDrawer from "./LineDrawer.vue";
 import useEventBus from "../helpers/eventBus";
-import { onMounted, onUnmounted, watch,  } from "vue"
+import { onMounted, onUnmounted, watch } from "vue";
 import { CellCoordinates } from "common/globals";
 import { useNotationStore } from "../store/pinia/notationStore";
 
@@ -61,35 +52,59 @@ onUnmounted(() => {
 });
 
 const props = defineProps({
-  svgId: { type: String , default: ""},
-  loaded: { type: Boolean, default: false }
-})
+  svgId: { type: String, default: "" },
+  loaded: { type: Boolean, default: false },
+});
 
 watch(
-  () => notationStore.getActiveCell().value as CellCoordinates ,
-  (newActiveCell: CellCoordinates, oldActiveCell: CellCoordinates | undefined) => {
+  () => notationStore.getActiveCell().value as CellCoordinates,
+  (
+    newActiveCell: CellCoordinates,
+    oldActiveCell: CellCoordinates | undefined,
+  ) => {
     if (!newActiveCell) return;
-    activateObjectHelper.activateCell(props.svgId, oldActiveCell, newActiveCell)
-}, {immediate:true, deep:true});
+    activateObjectHelper.activateCell(
+      props.svgId,
+      oldActiveCell,
+      newActiveCell,
+    );
+  },
+  { immediate: true, deep: true },
+);
 
-watch(() => props.loaded, (loaded: Boolean) => {
-  if (loaded) load();
-}, {immediate: true});
+watch(
+  () => props.loaded,
+  (loaded: Boolean) => {
+    if (loaded) load();
+  },
+  { immediate: true },
+);
 
-watch(() => notationStore.getNotations(), () => {
-  matrixHelper.refreshScreen(
-    Array.from(notationStore.getNotations().value).map(([key, value]) => { return value }),
-    props.svgId,
-    document!.getElementById(props.svgId)!)
-}, {immediate :true, deep:true});
+watch(
+  () => notationStore.getNotations(),
+  () => {
+    matrixHelper.refreshScreen(
+      Array.from(notationStore.getNotations().value).map(([key, value]) => {
+        return value;
+      }),
+      props.svgId,
+      document!.getElementById(props.svgId)!,
+    );
+  },
+  { immediate: true, deep: true },
+);
+
+watch(
+  () => eventBus.bus.value.get("svgmousedown"),
+  (e: MouseEvent) => {
+    activateObjectHelper.activateClickedObject(e);
+  },
+);
 
 function load() {
   activateObjectHelper.reset();
   matrixHelper.setMatrix(props.svgId);
-};
-
-
-
+}
 </script>
 
 <style>

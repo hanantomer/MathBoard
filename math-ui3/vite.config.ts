@@ -6,22 +6,22 @@ import vuetify, { transformAssetUrls } from "vite-plugin-vuetify";
 import { defineConfig } from "vite";
 import { fileURLToPath, URL } from "node:url";
 
-// https://vitejs.dev/config/
 export default defineConfig({
+  build: {
+    sourcemap:true
+  },
   plugins: [
     vue({
       template: { transformAssetUrls },
     }),
-    // https://github.com/vuetifyjs/vuetify-loader/tree/next/packages/vite-plugin
     vuetify({
       autoImport: true,
     }),
   ],
   define: { "process.env": {} },
+
   resolve: {
     alias: [
-      //"@": fileURLToPath(new URL("./src", import.meta.url)),
-      //common: fileURLToPath(new URL("../math-common/src/*", import.meta.url)),
       {
         find: "@",
         replacement: fileURLToPath(new URL("./src", import.meta.url)),
@@ -29,12 +29,11 @@ export default defineConfig({
       {
         find: "common",
         replacement: fileURLToPath(
-          new URL("../math-common/src", import.meta.url)
+          new URL("../math-common/src", import.meta.url),
         ),
       },
     ],
   },
-  //extensions: [".js", ".json", ".jsx", ".mjs", ".ts", ".tsx", ".vue"],
 
   server: {
     port: 3000,

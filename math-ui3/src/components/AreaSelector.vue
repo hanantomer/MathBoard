@@ -16,25 +16,26 @@
 
 <script setup lang="ts">
 import { watch, computed, ref } from "vue";
-import { AreaSelectionMode } from "../../../math-common/src/unions";
 import { useNotationStore } from "../store/pinia/notationStore";
 import * as d3 from "d3";
 import useMatrixHelper from "../helpers/matrixHelper";
 import useNotationMutateHelper from "../helpers/notationMutateHelper";
 import useEventBus from "../helpers/eventBus";
 import UseUserOutgoingOperationsSyncHelper from "../helpers/userOutgoingOperationsHelper";
+import useStateMachine from "../helpers/stateMachine";
 
 const eventBus = useEventBus();
 const notationStore = useNotationStore();
 const matrixHelper = useMatrixHelper();
 const notationMutateHelper = useNotationMutateHelper();
 const userOutgoingOperationsSyncHelper = UseUserOutgoingOperationsSyncHelper();
+const stateMachine = useStateMachine();
 
 const props = defineProps({
   svgId: { type: String, default: "" },
 });
 
-let selectionMode: AreaSelectionMode = "SELECTING";
+//let selectionMode: AreaSelectionMode = "SELECTING";
 
 let selectionPosition = ref({
   x1: 0,
@@ -90,6 +91,13 @@ watch(
 );
 
 watch(
+  () => eventBus.bus.value.get("svgmousedown"),
+  (e: MouseEvent) => {
+    handleMouseDown(e);
+  },
+);
+
+watch(
   () => eventBus.bus.value.get("svgmousemove"),
   (e: MouseEvent) => {
     handleMouseMove(e);
@@ -115,40 +123,52 @@ function keyUp(e: KeyboardEvent) {
   }
 }
 
-function handleMouseMove(e: MouseEvent) {
-  if (notationStore.getEditMode().value !== "SELECT") {
-    return;
-  }
-
+function handleMouseDown(e: MouseEvent) {
   if (e.buttons !== 1) {
     return;
   }
 
-  if (notationStore.getEditMode().value != "SELECT") {
+  const editMode = notationStore.getEditMode().value;
+
+  if (editMode == "SELECT") {
+    stateMachine.setNextEditMode();
+  }
+}
+
+function handleMouseMove(e: MouseEvent) {
+  if (e.buttons !== 1) {
     return;
   }
 
-  if (selectionMode == "SELECTING") {
+  const editMode = notationStore.getEditMode().value;
+
+  if (editMode == "SELECTING") {
     updateSelectionArea(e);
     return;
   }
 
-  if (selectionMode === "MOVE") {
+  if (editMode === "MOVING") {
     moveSelection(e);
     return;
   }
 }
 
 function handleMouseUp(e: MouseEvent) {
-  if (notationStore.getEditMode().value !== "SELECT") {
-    //resetSelection();
+  const editMode = notationStore.getEditMode().value;
+
+  if (editMode == "SELECTING") {
+    endSelect();
+    stateMachine.setNextEditMode();
     return;
   }
-  if (selectionMode === "SELECTING") {
-    endSelect();
-  } else if (selectionMode === "MOVE") {
+
+  if (editMode == "MOVING") {
     endMoveSelection(e);
+    stateMachine.setNextEditMode();
+    return;
   }
+
+  resetSelection();
 }
 
 function noramalizeLeft(value: number) {
@@ -203,8 +223,7 @@ function updateSelectionArea(e: MouseEvent) {
 }
 
 function endSelect() {
-  notationStore.resetEditMode();
-  selectionMode = "MOVE";
+  //notationStore.resetEditMode();
   if (selectionPosition.value.x2 != selectionPosition.value.x1) {
     //normalizeSelection();
 
@@ -292,7 +311,6 @@ function resetSelection() {
     selectionPosition.value.y2 =
       0;
 
-  selectionMode = "SELECTING";
   notationStore.resetEditMode();
 }
 </script>

@@ -64,10 +64,10 @@
 </template>
 
 <script setup lang="ts">
-import useAuthHelper from "../helpers/authHelper";
 import { ref, watch } from "vue";
 import { useCookies } from "vue3-cookies";
 import { useRouter, useRoute, RouteLocationRaw } from "vue-router";
+import useAuthHelper from "../helpers/authHelper";
 import useEventBus from "../helpers/eventBus";
 
 const eventBus = useEventBus();

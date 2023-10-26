@@ -1,5 +1,5 @@
 import { watch } from "vue";
-import { NotationType } from "common/unions";
+import { NotationType, NotationTypeEditMode } from "common/unions";
 import {
   LineNotationAttributes,
   RectNotationAttributes,
@@ -7,95 +7,37 @@ import {
 import { useNotationStore } from "../store/pinia/notationStore";
 import { activeCellColor, CellCoordinates } from "common/globals";
 import { NotationAttributes } from "common/baseTypes";
-
+import useElementFinderHelper from "./elementFinderHelper";
 import useNotationMutateHelper from "./notationMutateHelper";
-import useMatrixHelper from "./matrixHelper";
 import useEventBus from "./eventBus";
 
 const eventBus = useEventBus();
-const matrixHelper = useMatrixHelper();
 const notationStore = useNotationStore();
 const notationMutateHelper = useNotationMutateHelper();
+const elementFinderHelper = useElementFinderHelper();
 
 ///TODO : split function to shorter blocks
 export default function activateObjectHelper() {
-  watch(
-    () => eventBus.bus.value.get("svgmousedown"),
-    (e: MouseEvent) => {
-      activateClickedObject(e);
-    },
-  );
-
   // called via mouse click
   /// TODO: simplify method
-  function activateClickedObject(e: MouseEvent): CellCoordinates | null {
-    // dont active object after click of toolbar fraction or sqrt
+  function activateClickedObject(e: MouseEvent) {
+    // dont active object after click on toolbar fraction or sqrt
     if (notationStore.isLineMode()) {
-      return null;
+      return;
     }
 
-    let clickedRect = matrixHelper.findClickedObject(e, "rect", null);
-
-    if (!clickedRect?.parentElement) {
-      return null;
+    if (notationStore.isSelectionMode()) {
+      return;
     }
 
-    // activate notation
-    let overlapRectNotation = getOverlappedRectNotation(e);
-    if (overlapRectNotation) {
-      setActiveNotation(overlapRectNotation).then(() => {
-        if (overlapRectNotation?.notationType == "TEXT") {
-          notationStore.setEditMode("TEXT");
-        }
-      });
-      return null;
-    }
+    if (setActiveRect(e)) return;
 
-    let lineElement = getOverlappedLineElement(e, "FRACTION");
-    if (lineElement) notationStore.setEditMode("FRACTION_SELECTING");
+    if (setActiveFraction(e)) return;
 
-    if (!lineElement) {
-      lineElement = getOverlappedLineElement(e, "SQRT");
-      notationStore.setEditMode("SQRT_SELECTING");
-    }
-
-    if (lineElement) {
-      lineElement.style.display = "none";
-      notationStore.setHiddenLineElement(lineElement);
-      const lineNotation = getOverlappedLineNotation(lineElement);
-      if (lineNotation) {
-        // signal LineDrawer.vue
-        eventBus.emit("lineSelected", lineNotation);
-        return null;
-      }
-    }
-
-    const sqrtElement = getOverlappedLineElement(e, "SQRT");
-    if (sqrtElement) {
-      sqrtElement.style.display = "none";
-      const sqrtNotation = getOverlappedLineNotation(sqrtElement);
-      if (sqrtNotation) {
-        // signal line drawer
-        // selection of line is handled in LineDrawer.vue
-        eventBus.emit("lineSelected", sqrtNotation);
-        return null;
-      }
-    }
+    if (setActiveSqrt(e)) return;
 
     // no underlying elements found, activate single cell
-    let cellToActivate: CellCoordinates = {
-      col: getElementCoordinateValue(clickedRect, "col"),
-      row: getElementCoordinateValue(clickedRect.parentElement!, "row"),
-    };
-
-    notationStore.setActiveCell(cellToActivate);
-    notationStore.resetEditMode();
-
-    if (notationStore.getParent().value.type == "LESSON") {
-      //TODO: uncheck        userOutgoingOperations.syncOutgoingActiveCell(activeCell);
-    }
-
-    return cellToActivate;
+    setActiveCell1(e);
   }
 
   async function setActiveNotation(activeNotation: NotationAttributes | null) {
@@ -104,79 +46,46 @@ export default function activateObjectHelper() {
     notationStore.setActiveNotation(activeNotation);
   }
 
-  async function setActiveCell(newActiveCell: CellCoordinates | null) {
-    if (notationStore.getActiveCell().value != newActiveCell) {
-      return;
-    }
+  // async function setActiveCell(newActiveCell: CellCoordinates | null) {
+  //   if (notationStore.getActiveCell().value != newActiveCell) {
+  //     return;
+  //   }
 
-    if (
-      // disallow activation of question cells for student
-      notationMutateHelper.isCellInQuestionArea(newActiveCell)
-    ) {
-      return;
-    }
+  //   if (
+  //     // disallow activation of question cells for student
+  //     notationMutateHelper.isCellInQuestionArea(newActiveCell)
+  //   ) {
+  //     return;
+  //   }
 
-    notationStore.setActiveCell(newActiveCell);
-  }
+  //   notationStore.setActiveCell(newActiveCell);
+  // }
 
   function reset() {
-    setActiveCell(null);
+    notationStore.setActiveCell(null);
     setActiveNotation(null);
-  }
-
-  function getElementCoordinateValue(
-    element: Element,
-    attrName: string,
-  ): number {
-    let val = element.attributes.getNamedItem(attrName)?.value;
-    return val ? Number.parseInt(val) : -1;
   }
 
   function getOverlappedRectNotation(
     e: MouseEvent,
   ): RectNotationAttributes | null | undefined {
-    let rectElement = matrixHelper.findTextAtClickedPosition(e);
+    let rectElement = elementFinderHelper.findRectAtClickedPosition(e);
     if (!rectElement) return null;
 
     return notationStore
       .getNotationsByShape<RectNotationAttributes>("RECT")
       .find((n: RectNotationAttributes) => {
-        getElementCoordinateValue(rectElement, "fromCol") >= n.fromCol &&
-          getElementCoordinateValue(rectElement, "toCol") <= n.toCol &&
-          getElementCoordinateValue(rectElement, "fromRow") >= n.fromRow &&
-          getElementCoordinateValue(rectElement, "toRow") >= n.toRow;
+        elementFinderHelper.getElementAttributeValue(rectElement, "fromCol") >=
+          n.fromCol &&
+          elementFinderHelper.getElementAttributeValue(rectElement, "toCol") <=
+            n.toCol &&
+          elementFinderHelper.getElementAttributeValue(
+            rectElement,
+            "fromRow",
+          ) >= n.fromRow &&
+          elementFinderHelper.getElementAttributeValue(rectElement, "toRow") >=
+            n.toRow;
       });
-  }
-
-  function getOverlappedLineElement(
-    e: MouseEvent,
-    notationType: NotationType,
-  ): HTMLElement | null {
-    let lineElement = matrixHelper.findClickedObject(
-      {
-        x: e.clientX,
-        y: e.clientY,
-      },
-      "foreignObject",
-      notationType,
-    );
-
-    return lineElement;
-  }
-
-  function getOverlappedLineNotation(
-    lineElement: Element,
-  ): NotationAttributes | undefined {
-    const lineNotations =
-      notationStore.getNotationsByShape<LineNotationAttributes>("LINE");
-
-    return lineNotations.find((n: LineNotationAttributes) => {
-      return (
-        getElementCoordinateValue(lineElement, "fromCol") >= n.fromCol &&
-        getElementCoordinateValue(lineElement, "toCol") <= n.toCol &&
-        getElementCoordinateValue(lineElement, "row") == n.row
-      );
-    });
   }
 
   // called by store watcher
@@ -206,5 +115,115 @@ export default function activateObjectHelper() {
     }
   }
 
-  return { activateCell, reset, activateClickedObject };
+  function getOverlappedLineNotation(
+    lineElement: Element,
+  ): NotationAttributes | undefined {
+    const lineNotations =
+      notationStore.getNotationsByShape<LineNotationAttributes>("LINE");
+
+    return lineNotations.find((n: LineNotationAttributes) => {
+      return (
+        elementFinderHelper.getElementAttributeValue(lineElement, "fromCol") >=
+          n.fromCol &&
+        elementFinderHelper.getElementAttributeValue(lineElement, "toCol") <=
+          n.toCol &&
+        elementFinderHelper.getElementAttributeValue(lineElement, "row") ==
+          n.row
+      );
+    });
+  }
+
+  function setActiveRect(e: MouseEvent) {
+    let overlapRectNotation = getOverlappedRectNotation(e);
+    if (overlapRectNotation) {
+      setActiveNotation(overlapRectNotation).then(() => {
+        const editMode = NotationTypeEditMode.get(
+          overlapRectNotation!.notationType,
+        );
+        if (editMode) {
+          notationStore.setEditMode(editMode);
+        }
+      });
+
+      return true;
+    }
+    return false;
+  }
+
+  function setActiveFraction(e: MouseEvent) {
+    const fractionElement = elementFinderHelper.findClickedObject(
+      {
+        x: e.clientX,
+        y: e.clientY,
+      },
+      "foreignObject",
+      ["FRACTION"],
+    );
+
+    notationStore.setEditMode("FRACTION_SELECTING");
+
+    if (fractionElement) {
+      //      fractionElement.style.display = "none";
+      //notationStore.setHiddenLineElement(fractionElement);
+      const fractionNotation = getOverlappedLineNotation(fractionElement);
+      if (fractionNotation) {
+        // signal LineDrawer.vue
+        eventBus.emit("lineSelected", fractionNotation);
+        return true;
+      }
+    }
+
+    return false;
+  }
+
+  function setActiveSqrt(e: MouseEvent) {
+    const sqrtElement = elementFinderHelper.findClickedObject(
+      {
+        x: e.clientX,
+        y: e.clientY,
+      },
+      "foreignObject",
+      ["SQRT"],
+    );
+
+    notationStore.setEditMode("SQRT_SELECTING");
+
+    if (sqrtElement) {
+      //sqrtElement.style.display = "none";
+      //notationStore.setHiddenLineElement(sqrtElement);
+      const sqrtNotation = getOverlappedLineNotation(sqrtElement);
+      if (sqrtNotation) {
+        // signal LineDrawer.vue
+        eventBus.emit("lineSelected", sqrtNotation);
+        return true;
+      }
+    }
+
+    return false;
+  }
+
+  function setActiveCell1(e: MouseEvent) {
+    let clickedCell = elementFinderHelper.findClickedObject(e, "rect", null);
+
+    if (!clickedCell?.parentElement) {
+      return null;
+    }
+
+    let cellToActivate: CellCoordinates = {
+      col: elementFinderHelper.getElementAttributeValue(clickedCell, "col"),
+      row: elementFinderHelper.getElementAttributeValue(
+        clickedCell.parentElement!,
+        "row",
+      ),
+    };
+
+    notationStore.setActiveCell(cellToActivate);
+    notationStore.resetEditMode();
+
+    if (notationStore.getParent().value.type == "LESSON") {
+      //TODO: uncheck        userOutgoingOperations.syncOutgoingActiveCell(activeCell);
+    }
+  }
+
+  return { activateCell, activateClickedObject, reset };
 }

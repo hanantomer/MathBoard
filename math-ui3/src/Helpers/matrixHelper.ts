@@ -100,60 +100,6 @@ export default function useMatrixHelper() {
     );
   }
 
-  //   $isRect(notationType) {
-  //     return (
-  //       notationType === "TEXT" ||
-  //       notationType === "IMAGE"
-  //     );
-  // },
-
-  //   $isLine(notationType) {
-  //     return (
-  //       notationType === "FRACTION" ||
-  //       notationType === "SQRT" ||
-  //       notationType === "SQRTSYMBOL" ||
-  //       notationType === NotationType.LEFT_HANDLE ||
-  //       notationType === NotationType.RIGHT_HANDLE
-  //     );
-  // },
-
-  //https://stackoverflow.com/questions/22428484/get-element-from-point-when-you-have-overlapping-elements
-  function findClickedObject(
-    dotPosition: DotPosition,
-    tagName: string,
-    notationType: NotationType | null,
-  ): HTMLElement {
-    var elements = [];
-    var display = [];
-    var item = document.elementFromPoint(dotPosition.x, dotPosition.y) as any; // must be any to accept window
-    var prevItem = null;
-    var idx = 0;
-
-    while (
-      idx++ < 50 &&
-      item &&
-      (!prevItem || item != prevItem) &&
-      item != document.body &&
-      item != window &&
-      item != document &&
-      item != document.documentElement
-    ) {
-      elements.push(item);
-      display.push(item.style.display);
-      item.style.display = "none";
-      prevItem = item;
-      item = document.elementFromPoint(dotPosition.x, dotPosition.y);
-    }
-    for (var i = 0; i < elements.length; i++) {
-      elements[i].style.display = display[i];
-    }
-    return elements.find(
-      (item) =>
-        item.tagName == tagName &&
-        (!notationType || notationType == item.attributes.type?.value),
-    );
-  }
-
   function setMatrix(svgId: string) {
     const el = document.getElementById(svgId);
     if (!el) return;
@@ -268,7 +214,7 @@ export default function useMatrixHelper() {
         enrichedNotations.push(notation);
         // add sqrt symbol
         if (notation.notationType === "SQRT") {
-          let sqrtNotation = notation;
+          let sqrtNotation = { ...notation };
           sqrtNotation.notationType = "SQRTSYMBOL";
           enrichedNotations.push(sqrtNotation);
         }
@@ -466,7 +412,9 @@ export default function useMatrixHelper() {
     let deltaY =
       n.notationType === "POWER"
         ? -5
-        : n.notationType === "FRACTION" || n.notationType === "SQRT"
+        : n.notationType === "FRACTION" ||
+          n.notationType === "SQRT" ||
+          n.notationType === "SQRTSYMBOL"
         ? -4
         : 0;
 
@@ -474,6 +422,10 @@ export default function useMatrixHelper() {
   }
 
   function width(n: NotationAttributes): number | null {
+    if (n.notationType === "SQRTSYMBOL") {
+      return notationStore.getRectSize();
+    }
+
     switch (NotationTypeShape.get(n.notationType)) {
       case "POINT": {
         return pointNotationWidth(n as PointNotationAttributes);
@@ -529,22 +481,35 @@ export default function useMatrixHelper() {
   }
 
   function html(n: NotationAttributes) {
+    let fontWeight =
+      userStore.getCurrentUser()?.uuid == n.user.uuid ? "bold" : "normal";
+
+    let color =
+      Array.from(notationStore.getSelectedNotations())
+        .map((n) => n.uuid)
+        .indexOf(n.uuid) >= 0
+        ? "red"
+        : notationStore.getParent().value.type === "ANSWER" &&
+          userStore.getCurrentUser().uuid != n.user.uuid
+        ? "purple"
+        : "black";
+
     if (n.notationType === "FRACTION") {
       let n1 = n as LineNotationAttributes;
-      return `<span class=line style='width:${
+      return `<span class=line style='color:${color};width:${
         (n1.toCol - n1.fromCol) * notationStore.getRectSize()
       }px;'></span>`;
     }
 
     if (n.notationType === "SQRT") {
       let n1 = n as LineNotationAttributes;
-      return `<span class=line style='position:relative;left:9px;width:${
+      return `<span class=line style='color:${color};position:relative;left:9px;width:${
         (n1.toCol - n1.fromCol) * notationStore.getRectSize() - 8
       }px;'></span>`;
     }
 
     if (n.notationType === "SQRTSYMBOL") {
-      return `<p style='position:relative;left:5px; font-size:1.4em'>&#x221A;</p>`;
+      return `<p class='sqrtsymbol'>&#x221A;</p>`;
     }
 
     if (n.notationType === "TEXT") {
@@ -561,20 +526,6 @@ export default function useMatrixHelper() {
     }
 
     let n1 = n as PointNotationAttributes;
-
-    let fontWeight =
-      userStore.getCurrentUser()?.uuid == n.user.uuid ? "bold" : "normal";
-
-    let color =
-      Array.from(notationStore.getSelectedNotations())
-        .map((n) => n.uuid)
-        .indexOf(n.uuid) >= 0
-        ? "red"
-        : notationStore.getParent().value.type === "ANSWER" &&
-          userStore.getCurrentUser().uuid != n.user.uuid
-        ? "purple"
-        : "black";
-
     return `<p style='color:${color};font-weight:${fontWeight};margin-left:8px;font-size:1.1em'>${n1.value}</p>`;
   }
 
@@ -590,26 +541,13 @@ export default function useMatrixHelper() {
     return notationStore.getRectSize();
   }
 
-  function findTextAtClickedPosition(e: MouseEvent): Element {
-    return findClickedObject(
-      {
-        x: e.clientX,
-        y: e.clientY,
-      },
-      "foreignObject",
-      "TEXT",
-    );
-  }
-
   return {
     svgWidth,
     svgHeight,
     setMatrix,
     showNotations,
     getRectSize,
-    findClickedObject,
     findRect,
-    findTextAtClickedPosition,
     setNextRect,
     freeTextRectWidth,
     freeTextRectHeight,

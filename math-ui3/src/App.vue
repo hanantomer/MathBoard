@@ -120,14 +120,12 @@
 import { useRouter } from 'vue-router'
 import { onMounted } from "vue";
 import useAuthHelper from "./helpers/authHelper";
-import useEventBus from "./helpers/eventBus";
 import useAxiosHelper from "./helpers/axiosHelper";
 import { useUserStore } from "./store/pinia/userStore";
 import { computed } from 'vue';
 
 const { initAxiosInterceptors } = useAxiosHelper();
 const router = useRouter();
-const eventBus = useEventBus();
 const authHelper = useAuthHelper();
 const userStore = useUserStore();
 

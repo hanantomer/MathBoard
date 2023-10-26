@@ -13,13 +13,20 @@ export const NotationTypeShape = new Map<NotationType, NotationShape> ([
   ["SIGN", "POINT"],
   ["POWER", "POINT"],
   ["SQRT", "LINE"],
+  ["SQRTSYMBOL", "LINE"],
   ["FRACTION", "LINE"],
   ["TEXT", "RECT"],
   ["IMAGE", "RECT"],
   ["GEO", "RECT"]
 ])
 
-export type  AreaSelectionMode = "SELECTING" | "MOVE"
+export const NotationTypeEditMode = new Map<NotationType, EditMode> ([
+  ["SYMBOL", "SYMBOL"],
+  ["FRACTION", "FRACTION"],
+  ["SQRT", "SQRT"],
+  ["TEXT", "TEXT"],
+])
+
 
 export type EditMode = 
   "SYMBOL"            | // default mode
@@ -37,6 +44,8 @@ export type EditMode =
   "SQRT_SELECTED"     | // sqrt selected  
   "DELETING"          | // mouse clicked following delete button pressed
   "SELECT"            | // select button pressed
+  "SELECTING"         | // user stared selecting area
+  "MOVING"            | // user grabbed the selection area after select button pressed
   "CHECKMARK"         | // checkmark button pressed
   "SEMICHECKMARK"     | // semicheck button pressed
   "XMARK"               // xmark button pressed

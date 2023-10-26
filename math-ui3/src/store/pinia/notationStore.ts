@@ -6,6 +6,7 @@ import { NotationAttributes } from "common/baseTypes";
 import {
   EditMode,
   BoardType,
+  NotationType,
   NotationShape,
   NotationTypeShape,
 } from "common/unions";
@@ -21,7 +22,7 @@ type Board = {
 ///TODO watch notations and sync user operations (avoid circular updates)
 
 export const useNotationStore = defineStore("notation", () => {
-  let hiddenLineElement: HTMLElement | null;
+  //let hiddenLineElement: HTMLElement | null;
 
   let rectSize = ref<number>();
 
@@ -39,6 +40,15 @@ export const useNotationStore = defineStore("notation", () => {
   let editMode = ref<EditMode>("SYMBOL");
 
   const defaultEditMode: EditMode = "SYMBOL";
+
+  function isSelectionMode() {
+    return (
+      editMode.value == "SELECT" ||
+      editMode.value == "SELECTING" ||
+      editMode.value == "MOVING"
+    );
+  }
+
 
   function isLineMode() {
     return editMode.value == "FRACTION" || editMode.value == "SQRT";
@@ -62,6 +72,14 @@ export const useNotationStore = defineStore("notation", () => {
       editMode.value == "SQRT_SELECTING" ||
       editMode.value == "SQRT_SELECTED"
     );
+  }
+
+  function isDefaultEditMode() {
+    return editMode.value === defaultEditMode;
+  }
+
+  function isSqrtEditMode() {
+    return editMode.value === "SQRT_DRAWING";
   }
 
   function isLineDrawingMode() {
@@ -200,13 +218,13 @@ export const useNotationStore = defineStore("notation", () => {
     return matrix;
   }
 
-  function setHiddenLineElement(el: HTMLElement) {
-    hiddenLineElement = el;
-  }
+  // function setHiddenLineElement(el: HTMLElement) {
+  //   hiddenLineElement = el;
+  // }
 
-  function getHiddenLineElement() {
-    return hiddenLineElement;
-  }
+  // function getHiddenLineElement() {
+  //   return hiddenLineElement;
+  // }
 
   return {
     getNotations,
@@ -225,6 +243,7 @@ export const useNotationStore = defineStore("notation", () => {
     setActiveNotation,
     setEditMode,
     resetEditMode,
+    isSelectionMode,
     isLineMode,
     isLineDrawingMode,
     isLineEditingMode,
@@ -232,6 +251,8 @@ export const useNotationStore = defineStore("notation", () => {
     isLineSelectingMode,
     isFractionMode,
     isSqrtMode,
+    isSqrtEditMode,
+    isDefaultEditMode,
     setParent,
     setActiveCell,
     resetActiveCell,
@@ -240,7 +261,5 @@ export const useNotationStore = defineStore("notation", () => {
     activeNotation,
     getRectSize,
     setRectSize,
-    getHiddenLineElement,
-    setHiddenLineElement,
   };
 });

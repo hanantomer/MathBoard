@@ -1,7 +1,7 @@
 <template>
   <div v-show="show">
     <v-card
-      v-if="!sqrtMode"
+      v-if="fractionMode"
       id="lineLeftHandle"
       class="lineHandle"
       v-bind:style="{
@@ -21,26 +21,26 @@
       v-on:mouseup="mouseup"
       v-on:mousedown="onHandleMouseDown"
     ></v-card>
-    <v-divider
-      style="color: darkred; z-index: 9999"
+    <v-card
       id="line"
       class="line"
       v-bind:style="{
-        left: lineLeft + 'px',
+        color: 'black',
+        left: lineLeft + 8 + 'px',
         top: lineTop + 'px',
         width: lineRight - lineLeft + 'px',
-        height: '5px',
+        height: '1px',
       }"
       v-on:mouseup="mouseup"
-    ></v-divider>
+    ></v-card>
     <p
-      class="lineHandle"
+      style="position: absolute"
+      class="sqrtsymbol"
       v-bind:style="{
-        left: lineLeft - 12 + 'px',
+        left: lineLeft - 11 + 'px',
         top: lineTop + 'px',
-        zIndex: 99,
       }"
-      v-if="sqrtMode"
+      v-if="sqrtEditMode"
     >
       &#x221A;
     </p>
@@ -48,6 +48,7 @@
 </template>
 <script setup lang="ts">
 import useNotationMutateHelper from "../helpers/notationMutateHelper";
+
 import useStateMachine from "../helpers/stateMachine";
 import { watch, computed, ref } from "vue";
 import { useNotationStore } from "../store/pinia/notationStore";
@@ -55,7 +56,7 @@ import { LinePosition, DotPosition } from "../../../math-common/src/globals";
 import {
   LineAttributes,
   LineNotationAttributes,
-} from "../../../math-common/build/baseTypes";
+} from "../../../math-common/src/baseTypes";
 import useEventBus from "../helpers/eventBus";
 
 const eventBus = useEventBus();
@@ -76,8 +77,12 @@ let linePosition = ref(<LinePosition | Record<string, never>>{});
 
 // computed
 
-const sqrtMode = computed(() => {
-  return notationStore.isSqrtMode();
+const fractionMode = computed(() => {
+  return notationStore.isFractionMode();
+});
+
+const sqrtEditMode = computed(() => {
+  return notationStore.isSqrtEditMode();
 });
 
 const show = computed(() => {
@@ -159,11 +164,6 @@ function onMouseDown(e: MouseEvent) {
     return;
   }
 
-  // ignore mouse down during selection
-  if (notationStore.isLineSelectingMode()) {
-    return;
-  }
-
   // user clicked elsewere after start drawing
   if (notationStore.isLineDrawingMode() || notationStore.isLineEditingMode()) {
     resetLineDrawing();
@@ -178,9 +178,10 @@ function onMouseDown(e: MouseEvent) {
   }
 
   // retore selected line
-  if (selectedLine && !notationStore.isLineSelectedMode()) {
-    notationStore.getHiddenLineElement()!.style.display = "block";
-  }
+  // if (selectedLine && notationStore.isDefaultEditMode()) {
+  //   notationStore.getHiddenLineElement()!.style.display = "block";
+  //   selectedLine = null;
+  // }
 }
 
 function onMouseMove(e: MouseEvent) {
@@ -195,10 +196,10 @@ function onMouseMove(e: MouseEvent) {
   }
 
   if (
-    !notationStore.isLineMode() &&
+    //!notationStore.isLineMode() &&
     !notationStore.isLineDrawingMode() &&
-    !notationStore.isLineEditingMode() &&
-    !notationStore.isLineSelectedMode()
+    !notationStore.isLineEditingMode() //&&
+    //!notationStore.isLineSelectedMode()
   ) {
     return;
   }
@@ -234,7 +235,7 @@ function startLineDrawing(position: DotPosition) {
 }
 
 function selectLine(lineNotation: LineNotationAttributes) {
-  selectedLine = lineNotation; // store for later save
+  //selectedLine = lineNotation; // store for later save
 
   stateMachine.setNextEditMode();
 
@@ -289,13 +290,14 @@ function endDrawLine() {
     row: row,
   };
 
-  if (selectedLine) selectedLine = { ...selectedLine, ...lineAttributes };
+  //if (selectedLine) selectedLine = { ...selectedLine, ...lineAttributes };
 
   saveLine(lineAttributes);
   notationStore.resetEditMode();
-  if (selectedLine) {
-    notationStore.getHiddenLineElement()!.style.display = "block";
-  }
+  // if (selectedLine) {
+  //   notationStore.getHiddenLineElement()!.style.display = "block";
+  //   selectedLine = null;
+  // }
 }
 
 function saveLine(lineAttributes: LineAttributes) {
@@ -327,6 +329,7 @@ foreignObject[type="sqrt"] {
 }
 .line {
   position: absolute;
+  color: black;
   display: block;
   border-bottom: solid 1px;
   border-top: solid 1px;
@@ -339,5 +342,12 @@ foreignObject[type="sqrt"] {
   width: 12px;
   height: 12px;
   border: 1, 1, 1, 1;
+}
+
+.sqrtsymbol {
+  margin-left: 10px;
+  z-index: 999;
+  font-weight: bold;
+  font-size: 1.4em;
 }
 </style>

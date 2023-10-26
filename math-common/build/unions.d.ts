@@ -4,6 +4,7 @@ export type NotationShape = "POINT" | "LINE" | "RECT";
 export declare const NotationTypeValues: readonly ["SYMBOL", "SIGN", "POWER", "FRACTION", "SQRT", "SQRTSYMBOL", "TEXT", "IMAGE", "GEO"];
 export type NotationType = typeof NotationTypeValues[number];
 export declare const NotationTypeShape: Map<"SYMBOL" | "SIGN" | "POWER" | "FRACTION" | "SQRT" | "SQRTSYMBOL" | "TEXT" | "IMAGE" | "GEO", NotationShape>;
+export declare const NotationTypeEditMode: Map<"SYMBOL" | "SIGN" | "POWER" | "FRACTION" | "SQRT" | "SQRTSYMBOL" | "TEXT" | "IMAGE" | "GEO", EditMode>;
 export type AreaSelectionMode = "SELECTING" | "MOVE";
 export type EditMode = "SYMBOL" | // default mode
 "POWER" | // power button pressed

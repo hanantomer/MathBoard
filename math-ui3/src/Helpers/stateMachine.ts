@@ -18,6 +18,12 @@ export default function () {
         return notationStore.setEditMode("FRACTION_SELECTED");
       case "SQRT_SELECTING":
         return notationStore.setEditMode("SQRT_SELECTED");
+      case "SELECT":
+        return notationStore.setEditMode("SELECTING");
+      case "SELECTING":
+        return notationStore.setEditMode("MOVING");
+      case "MOVING":
+        return notationStore.resetEditMode();
     }
   }
 
