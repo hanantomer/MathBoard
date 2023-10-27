@@ -401,9 +401,9 @@ export default function notationMutateHelper() {
       return null;
     }
 
-    if (!notationStore.getActiveNotation()) return null;
+    const activeNotation = notationStore.getActiveNotation().value;
 
-    const activeNotation = notationStore.getActiveNotation().value!;
+    if (!activeNotation) return null;
 
     // from db
     await dbHelper.removeNotation(activeNotation);
@@ -441,7 +441,7 @@ export default function notationMutateHelper() {
       userOutgoingOperations.syncOutgoingRemoveNotation(n.uuid);
     });
 
-    this.resetSelectedNotations();
+    //resetSelectedNotations();
   }
 
   async function selectNotation(CellCoordinates: CellCoordinates) {
@@ -732,14 +732,17 @@ export default function notationMutateHelper() {
   }
 
   function removeActiveOrSelectedNotations() {
-    if (notationStore.getActiveCell()) {
+    if (notationStore.getActiveCell().value) {
       removeActiveCellNotations();
+      return;
     }
-    if (notationStore.getActiveNotation()) {
+    if (notationStore.getActiveNotation().value) {
       removeActiveNotation();
+      return;
     }
-    if (notationStore.getActiveNotation()) {
+    if (notationStore.getSelectedNotations()) {
       removeSelectedNotations();
+      return;
     }
   }
 
@@ -834,23 +837,6 @@ export default function notationMutateHelper() {
     if (notationStore.getEditMode().value == "SYMBOL") {
       matrixHelper.setNextRect(1, 0);
     }
-  }
-
-  function addSqrtNotation(coordinates: LineAttributes) {
-    let notation: LineNotationCreationAttributes = {
-      fromCol: coordinates.fromCol,
-      toCol: coordinates.fromCol,
-      row: coordinates.row,
-      boardType: notationStore.getParent().value.type,
-      parentUUId: notationStore.getParent().value.uuid,
-      notationType: "SQRT",
-      user: userStore.getCurrentUser(),
-    };
-
-    addNotation(notation);
-    //if (notationStore.getParent().type === "LESSON") {
-    //   userOutgoingOperations.syncOutgoingSaveNotation(notation);
-    // }
   }
 
   function addLineNotation(

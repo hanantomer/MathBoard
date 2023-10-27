@@ -49,7 +49,6 @@ export const useNotationStore = defineStore("notation", () => {
     );
   }
 
-
   function isLineMode() {
     return editMode.value == "FRACTION" || editMode.value == "SQRT";
   }
@@ -200,11 +199,12 @@ export const useNotationStore = defineStore("notation", () => {
   }
 
   function setEditMode(newEditMode: EditMode) {
+    console.debug("new edit mode:" + newEditMode);
     editMode.value = newEditMode;
   }
 
   function resetEditMode() {
-    setEditMode("SYMBOL");
+     setEditMode("SYMBOL");
   }
 
   function createCellOccupationMatrix(): (NotationAttributes | null)[][] {

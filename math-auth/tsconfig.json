@@ -17,7 +17,9 @@
         "resolveJsonModule": true
     },
     "files": ["./src/client_secret.json"],
-    "references": [{ "path": "../math-common" }],
+    "references": [
+        { "path": "../math-common" }, 
+        { "path": "../math-db" }],
     "include": ["src/**/*"],
     "exclude": ["node_modules", "build/**/*"]
 }

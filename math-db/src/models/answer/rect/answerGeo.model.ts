@@ -6,7 +6,7 @@ import Answer from "../../answer/answer.model";
 import {
     AnswerRectAttributes,
     AnswerRectCreationAttributes,
-} from "../../../../../math-common/build/answerTypes";
+} from "../../../../../math-common/src/answerTypes";
 
 
 

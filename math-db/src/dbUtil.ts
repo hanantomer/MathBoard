@@ -6,9 +6,9 @@ import Answer  from "./models/answer/answer.model";
 import User from "./models/user.model";
 import db from "./models/index";
 
-import { NotationAttributes } from "../../math-common/build/baseTypes";
+import { NotationAttributes } from "../../math-common/src/baseTypes";
 import { UserAttributes, StudentLessonCreationAttributes} from "../../math-common/build/userTypes";
-import { LessonCreationAttributes } from "../../math-common/build/lessonTypes";
+import { LessonCreationAttributes } from "../../math-common/src/lessonTypes";
 import { QuestionAttributes } from "../../math-common/build/questionTypes";
 import { AnswerAttributes, AnswerCreateAttributes } from "../../math-common/build/answerTypes";
 import { capitalize } from "../../math-common/build/utils";
@@ -259,6 +259,7 @@ export default function dbUtil() {
         });
     }
 
+    /// TODO: use getModelName and reduce boilerplate
     async function createNotation(
         boardType: String,
         notationType: String,
@@ -298,15 +299,25 @@ export default function dbUtil() {
         uuid: string,
         attributes: Object
     ) {
-        const boardName = boardType.toString().toLowerCase(); // e.g lesson
-        const boardModelName = capitalize(boardName); // e.g Lesson
-        const notationTypeName = notationType.toString().toLowerCase(); // e.g. symbol
-        const notationTypeNameCapitalized = capitalize(notationTypeName); // e.g. Symbol
-        const modelName = boardModelName + notationTypeNameCapitalized; // e.g. LessonSymbol
+        const modelName = getModelName(boardType, notationType); // e.g. LessonSymbol
         const id = (await getIdByUUId(modelName, uuid)) as number;
-        await db.sequelize.models[modelName].update(attributes, { where: {id: id} });
+        await db.sequelize.models[modelName].update(attributes, {
+            where: { id: id },
+        });
     }
 
+    async function deleteNotation(
+        boardType: BoardType,
+        notationType: NotationType,
+        uuid: string
+    ) {
+        
+        const modelName = getModelName(boardType, notationType); // e.g. LessonSymbol
+        const id = (await getIdByUUId(modelName, uuid)) as number;
+        await db.sequelize.models[modelName].destroy({
+            where: { id: id },
+        });
+    }
 
 
     return {
@@ -330,5 +341,15 @@ export default function dbUtil() {
         getStudentLessons,
         createStudentLesson,
         updateNotation,
+        deleteNotation
     };
 }
+function getModelName(boardType: string, notationType: string) {
+    const boardName = boardType.toString().toLowerCase(); // e.g lesson
+    const boardModelName = capitalize(boardName); // e.g Lesson
+    const notationTypeName = notationType.toString().toLowerCase(); // e.g. symbol
+    const notationTypeNameCapitalized = capitalize(notationTypeName); // e.g. Symbol
+    const modelName = boardModelName + notationTypeNameCapitalized; // e.g. LessonSymbol
+    return modelName;
+}
+

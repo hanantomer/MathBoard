@@ -5,7 +5,7 @@ import Answer from "../../answer/answer.model";
 import {
     AnswerPointAttributes,
     AnswerPointCreationAttributes,
-} from "../../../../../math-common/build/answerTypes";
+} from "../../../../../math-common/src/answerTypes";
 
 
 

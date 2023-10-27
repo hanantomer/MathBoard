@@ -1,9 +1,8 @@
 import { Model, Column, BelongsTo, ForeignKey, DataType, AllowNull } from "sequelize-typescript";
-import { NotationType, BoardType } from "../../../../../math-common/src/unions";
 import {
     QuestionRectAttributes,
     QuestionRectCreationAttributes,
-} from "../../../../../math-common/build/questionTypes";
+} from "../../../../../math-common/src/questionTypes";
 import QuestionDecorator from "../questionDecorator";
 import User from "../../user.model";
 import Question from "../question.model";

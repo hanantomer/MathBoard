@@ -7,7 +7,7 @@ import Answer from "../answer.model";
 import {
     AnswerPointAttributes,
     AnswerPointCreationAttributes,
-} from "../../../../../math-common/build/answerTypes";
+} from "../../../../../math-common/src/answerTypes";
 
 
 @AnswerDecorator("AnswerSign")

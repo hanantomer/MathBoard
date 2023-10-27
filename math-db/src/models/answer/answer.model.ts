@@ -2,7 +2,10 @@ import { Model, Column, DataType, BelongsTo, ForeignKey } from "sequelize-typesc
 import BoardDecorator from "../boardDecorator";
 import User from "../user.model";
 import Question from "../question/question.model";
-import { AnswerAttributes, AnswerCreateAttributes } from "../../../../math-common/build/answerTypes";
+import {
+    AnswerAttributes,
+    AnswerCreateAttributes,
+} from "../../../../math-common/src/answerTypes";
 
 @BoardDecorator("answer")
 export default class Answer extends Model<

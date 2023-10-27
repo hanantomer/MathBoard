@@ -16,19 +16,6 @@ const eventBus = useEventBus();
 
 export default function eventHelper() {
 
-  watch(
-    () => eventBus.bus.value.get("keyup"),
-    (e: KeyboardEvent) => {
-      keyUp(e);
-    },
-  );
-
-  watch(
-    () => eventBus.bus.value.get("paste"),
-    (e: ClipboardEvent) => {
-      paste(e);
-    },
-  );
 
   async function paste(e: ClipboardEvent) {
     // disallow adding image by student

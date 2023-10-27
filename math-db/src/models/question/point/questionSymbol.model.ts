@@ -1,12 +1,11 @@
 import { Model, Column, BelongsTo, ForeignKey, DataType, AllowNull } from "sequelize-typescript";
-import { NotationType, BoardType } from "../../../../../math-common/src/unions";
 import QuestionDecorator from "../../question/questionDecorator";
 import User from "../../user.model";
 import Question from "../../question/question.model";
 import {
     QuestionPointAttributes,
     QuestionPointCreationAttributes,
-} from "../../../../../math-common/build/questionTypes";
+} from "../../../../../math-common/src/questionTypes";
 
 
 @QuestionDecorator("QuestionSymbol")

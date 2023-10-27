@@ -3,7 +3,7 @@ import { NotationType, BoardType } from "../../../../../math-common/src/unions";
 import {
     LessonPointAttributes,
     LessonPointCreationAttributes,
-} from "../../../../../math-common/build/lessonTypes";
+} from "../../../../../math-common/src/lessonTypes";
 import LessonDecorator from "../../lesson/lessonDecorator";
 import User from "../../user.model";
 import Lesson from "../../lesson/lesson.model";

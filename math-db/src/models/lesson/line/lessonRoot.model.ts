@@ -7,7 +7,7 @@ import Lesson from "../../lesson/lesson.model";
 import {
     LessonLineAttributes,
     LessonLineCreationAttributes,
-} from "../../../../../math-common/build/lessonTypes";
+} from "../../../../../math-common/src/lessonTypes";
 @LessonDecorator("LessonRoot")
 export default class LessonRoot extends Model<
     LessonLineAttributes,

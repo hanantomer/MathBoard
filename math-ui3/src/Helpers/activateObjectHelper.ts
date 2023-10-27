@@ -46,21 +46,6 @@ export default function activateObjectHelper() {
     notationStore.setActiveNotation(activeNotation);
   }
 
-  // async function setActiveCell(newActiveCell: CellCoordinates | null) {
-  //   if (notationStore.getActiveCell().value != newActiveCell) {
-  //     return;
-  //   }
-
-  //   if (
-  //     // disallow activation of question cells for student
-  //     notationMutateHelper.isCellInQuestionArea(newActiveCell)
-  //   ) {
-  //     return;
-  //   }
-
-  //   notationStore.setActiveCell(newActiveCell);
-  // }
-
   function reset() {
     notationStore.setActiveCell(null);
     setActiveNotation(null);

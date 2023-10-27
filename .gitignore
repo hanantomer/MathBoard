@@ -6,3 +6,4 @@ math-ui/yarn.lock
 math-ui/yarn.lock
 math-ui/package-lock.json
 math-server/math.db
+**/build

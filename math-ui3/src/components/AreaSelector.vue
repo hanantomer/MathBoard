@@ -156,6 +156,10 @@ function handleMouseMove(e: MouseEvent) {
 function handleMouseUp(e: MouseEvent) {
   const editMode = notationStore.getEditMode().value;
 
+  if (!notationStore.isSelectionMode()) {
+    return;
+  }
+
   if (editMode == "SELECTING") {
     endSelect();
     stateMachine.setNextEditMode();

@@ -2,7 +2,7 @@ import { Model, Column, BelongsTo, ForeignKey, DataType, AllowNull, Unique } fro
 import {
     LessonPointAttributes,
     LessonPointCreationAttributes,
-} from "../../../../../math-common/build/lessonTypes";
+} from "../../../../../math-common/src/lessonTypes";
 import LessonDecorator from "../../lesson/lessonDecorator";
 import User from "../../user.model";
 import Lesson from "../../lesson/lesson.model";

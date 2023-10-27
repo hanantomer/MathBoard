@@ -240,7 +240,11 @@ export default function useDbHelper() {
 
   async function removeNotation(notation: NotationAttributes) {
     axios.delete(
-      `${notation.boardType}${notation.notationType}s/${notation.uuid}`,
+      baseURL +
+        `/${notation.boardType.toString().toLowerCase()}${notation.notationType
+          .toString()
+          .toLowerCase()}s`,
+      { data: notation },
     ); // e.g lessonsymbols/1)
   }
 

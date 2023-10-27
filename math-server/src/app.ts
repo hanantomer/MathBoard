@@ -225,6 +225,18 @@ BoardTypeValues.forEach((boardType) => {
                 return res.status(200);
             }
         );
+
+         app.delete(
+             `/api/${boardType.toLowerCase()}${notationType.toLowerCase()}s`,
+             async (req: Request, res: Response): Promise<Response> => {
+                 await db.deleteNotation(
+                     boardType,
+                     notationType,
+                     req.body.uuid,
+                 );
+                 return res.status(200);
+             }
+         );
     })
 });
     

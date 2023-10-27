@@ -8,7 +8,7 @@ import Lesson from "../../lesson/lesson.model";
 import {
     LessonRectAttributes,
     LessonRectCreationAttributes,
-} from "../../../../../math-common/build/lessonTypes";
+} from "../../../../../math-common/src/lessonTypes";
 
 @LessonDecorator("LessonImage")
 export default class LessonImage extends Model<

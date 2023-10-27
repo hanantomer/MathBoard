@@ -12,7 +12,7 @@ import {
 import {
     StudentLessonAttributes,
     StudentLessonCreationAttributes,
-} from "../../../../math-common/build/userTypes";
+} from "../../../../math-common/src/userTypes";
 
 
 

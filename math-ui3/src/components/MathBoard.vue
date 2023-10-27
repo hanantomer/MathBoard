@@ -57,6 +57,20 @@ const props = defineProps({
 });
 
 watch(
+  () => eventBus.bus.value.get("keyup"),
+  (e: KeyboardEvent) => {
+    eventHelper.keyUp(e);
+  },
+);
+
+watch(
+  () => eventBus.bus.value.get("paste"),
+  (e: ClipboardEvent) => {
+    eventHelper.paste(e);
+  },
+);
+
+watch(
   () => notationStore.getActiveCell().value as CellCoordinates,
   (
     newActiveCell: CellCoordinates,

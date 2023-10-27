@@ -176,12 +176,6 @@ function onMouseDown(e: MouseEvent) {
       y: e.offsetY,
     });
   }
-
-  // retore selected line
-  // if (selectedLine && notationStore.isDefaultEditMode()) {
-  //   notationStore.getHiddenLineElement()!.style.display = "block";
-  //   selectedLine = null;
-  // }
 }
 
 function onMouseMove(e: MouseEvent) {
@@ -214,14 +208,9 @@ function onMouseUp() {
   }
 
   // line yet not modified
-  if (
-    !notationStore.isLineDrawingMode() &&
-    !notationStore.isLineEditingMode()
-  ) {
-    return;
+  if (notationStore.isLineDrawingMode() || notationStore.isLineEditingMode()) {
+    endDrawLine();
   }
-
-  endDrawLine();
 }
 
 // methods

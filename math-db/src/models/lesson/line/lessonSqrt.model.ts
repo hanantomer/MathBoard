@@ -5,7 +5,7 @@ import { UUID, UUIDV4 } from "sequelize/types/data-types";
 import {
     LessonLineAttributes,
     LessonLineCreationAttributes,
-} from "../../../../../math-common/build/lessonTypes";
+} from "../../../../../math-common/src/lessonTypes";
 import User from "../../user.model";
 import Lesson from "../../lesson/lesson.model";
 
