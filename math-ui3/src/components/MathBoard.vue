@@ -77,7 +77,7 @@ watch(
     oldActiveCell: CellCoordinates | undefined,
   ) => {
     if (!newActiveCell) return;
-    activateObjectHelper.activateCell(
+    activateObjectHelper.showActiveCell(
       props.svgId,
       oldActiveCell,
       newActiveCell,

@@ -38,13 +38,6 @@ const authHelper = useAuthHelper();
 const userOutgoingOperations = useUserOutgoingOperations();
 
 export default function notationMutateHelper() {
-  /// TODO deal with mutations which originate from user incoming synchronisation
-  onMounted(() => {
-    notationStore.$subscribe((mutation, state) => {
-      console.log("a change happened");
-      console.log(mutation, state);
-    });
-  });
 
   function pointAtCellCoordinates(
     n1: PointNotationAttributes,
@@ -440,8 +433,6 @@ export default function notationMutateHelper() {
       // publish
       userOutgoingOperations.syncOutgoingRemoveNotation(n.uuid);
     });
-
-    //resetSelectedNotations();
   }
 
   async function selectNotation(CellCoordinates: CellCoordinates) {
@@ -492,11 +483,9 @@ export default function notationMutateHelper() {
     notationStore.getSelectedNotations().forEach(async (n) => {
       if (!n) return;
 
-      if (isNotationInQuestionArea(n)) return;
-
       await dbHelper.updateNotationCoordinates(n);
 
-      userOutgoingOperations.syncOutgoingUpdateSelectedNotation(n);
+      userOutgoingOperations.syncOutgoingUpdateNotation(n);
     });
 
     notationStore.resetSelectedNotations();
@@ -541,6 +530,12 @@ export default function notationMutateHelper() {
       ...newNotation,
       notationType: notation.notationType,
     });
+
+    // sync to other participants
+    if (notationStore.getParent().value.type === "LESSON") {
+      userOutgoingOperations.syncOutgoingAddNotation(newNotation);
+    }
+
     return newNotation;
   }
 
@@ -780,14 +775,6 @@ export default function notationMutateHelper() {
     };
 
     addNotation(notation);
-    // .then(() => {
-    //   if (notationStore.getParent().type === "LESSON") {
-    //     userOutgoingOperations.syncOutgoingSaveNotation(notation);
-    //   }
-    // })
-    // .catch((e) => {
-    //   console.error(e);
-    // });
 
     notationStore.resetActiveCell();
   }
@@ -830,9 +817,6 @@ export default function notationMutateHelper() {
     };
 
     addNotation(notation);
-    // if (notationStore.getParent().type === "LESSON") {
-    //   userOutgoingOperations.syncOutgoingSaveNotation(notation);
-    // }
 
     if (notationStore.getEditMode().value == "SYMBOL") {
       matrixHelper.setNextRect(1, 0);
@@ -854,9 +838,6 @@ export default function notationMutateHelper() {
     };
 
     addNotation(notation);
-    // if (notationStore.getParent().type === "LESSON") {
-    //   userOutgoingOperations.syncOutgoingSaveNotation(notation);
-    // }
   }
 
   return {

@@ -21,14 +21,12 @@ import * as d3 from "d3";
 import useMatrixHelper from "../helpers/matrixHelper";
 import useNotationMutateHelper from "../helpers/notationMutateHelper";
 import useEventBus from "../helpers/eventBus";
-import UseUserOutgoingOperationsSyncHelper from "../helpers/userOutgoingOperationsHelper";
 import useStateMachine from "../helpers/stateMachine";
 
 const eventBus = useEventBus();
 const notationStore = useNotationStore();
 const matrixHelper = useMatrixHelper();
 const notationMutateHelper = useNotationMutateHelper();
-const userOutgoingOperationsSyncHelper = UseUserOutgoingOperationsSyncHelper();
 const stateMachine = useStateMachine();
 
 const props = defineProps({
@@ -296,13 +294,6 @@ function moveSelection(e: MouseEvent) {
 
 function endMoveSelection(e: MouseEvent) {
   notationMutateHelper.updateSelectedNotationCoordinates();
-  notationStore.getSelectedNotations().forEach((notation) => {
-    if (notation) {
-      userOutgoingOperationsSyncHelper.syncOutgoingUpdateSelectedNotation(
-        notation,
-      );
-    }
-  });
   resetSelection();
 }
 

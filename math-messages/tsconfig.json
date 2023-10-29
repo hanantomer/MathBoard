@@ -17,5 +17,9 @@
   ],
   "exclude": [
     "test"
-  ]
+  ],
+    "references": [
+      { "path": "../math-auth" },
+      { "path": "../math-common" }
+  ],
 }

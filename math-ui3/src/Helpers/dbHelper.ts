@@ -1,18 +1,11 @@
 import { BoardType, NotationType } from "common/unions";
-import axios from "axios";
-import axiosHelper from "./axiosHelper";
-import {
-  LineNotationAttributes,
-  NotationAttributes,
-  NotationCreationAttributes,
-} from "common/baseTypes";
+import { LineNotationAttributes,  NotationAttributes,  NotationCreationAttributes } from "common/baseTypes";
 import { UserAttributes, UserCreationAttributes } from "common/userTypes";
 import { LessonAttributes, LessonCreationAttributes } from "common/lessonTypes";
-import {
-  QuestionAttributes,
-  QuestionCreateAttributes,
-} from "common/questionTypes";
+import { QuestionAttributes, QuestionCreateAttributes } from "common/questionTypes";
 import { AnswerAttributes, AnswerCreateAttributes } from "common/answerTypes";
+import axios from "axios";
+import axiosHelper from "./axiosHelper";
 const { baseURL } = axiosHelper();
 
 export default function useDbHelper() {
@@ -71,7 +64,7 @@ export default function useDbHelper() {
 
     if (studentLesson.data.length) return;
 
-    await axios.post(baseURL + "/studentlessons", {
+    return await axios.post(baseURL + "/studentlessons", {
       LessonUUId: lessonUUId,
       UserUUId: userUUId,
     });
@@ -144,7 +137,7 @@ export default function useDbHelper() {
 
     if (!attributes) return;
 
-    await axios.put<NotationAttributes>(
+    return await axios.put<NotationAttributes>(
       baseURL +
         `/${notation.boardType.toLowerCase()}${notation.notationType.toLowerCase()}s`,
       { uuid: notation.uuid, ...attributes },
@@ -167,7 +160,7 @@ export default function useDbHelper() {
   }
 
   async function updateLineAttributes(lineNotation: LineNotationAttributes) {
-    axios.put(
+    return axios.put(
       baseURL +
         `/${lineNotation.boardType.toLowerCase()}${lineNotation.notationType.toLowerCase()}s`,
       {
@@ -239,7 +232,7 @@ export default function useDbHelper() {
   }
 
   async function removeNotation(notation: NotationAttributes) {
-    axios.delete(
+    return axios.delete(
       baseURL +
         `/${notation.boardType.toString().toLowerCase()}${notation.notationType
           .toString()

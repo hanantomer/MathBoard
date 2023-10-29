@@ -1,4 +1,4 @@
-import feathers, { Application } from "@feathersjs/feathers";
+import feathers from "@feathersjs/feathers";
 import socketio from "@feathersjs/socketio";
 import constants from "./constants";
 
@@ -61,6 +61,7 @@ app.service("heartbeat").publish("updated", (heartbeat: any, ctx: any) => {
 });
 
 app.service("activeCell").on("updated", (position: any, ctx: any) => {
+  console.debug('on activeCell updated');
   return [app.channel(constants.LESSON_CHANNEL_PREFIX + position.LessonUUId)];
 });
 
@@ -80,5 +81,13 @@ const PORT: number = Number(process.env.PORT) || 3030;
 //app.on("listening", () => {
 //  console.log(`server running on port ${PORT}`)
 //});
-app.listen(PORT);
-console.log(`server running on port ${PORT}`);
+
+
+app
+  .listen(PORT)
+  .then(() =>
+    console.log(
+      "Feathers server listening on localhost:3030"
+    )
+  );
+

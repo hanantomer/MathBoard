@@ -44,6 +44,15 @@ const lessonTitle = computed(() => {
 });
 let lessonUUID = ref("");
 
+/// TODO deal with mutations which originate from user incoming synchronisation
+onMounted(() => {
+  notationStore.$subscribe((mutation, state) => {
+    console.log("a change happened");
+    console.log(mutation, state);
+  });
+});
+
+
 watch(
   route,
   (to) => {

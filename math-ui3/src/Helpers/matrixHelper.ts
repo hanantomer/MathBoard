@@ -1,5 +1,5 @@
-import { NotationType, NotationTypeShape } from "common/unions";
-import { DotPosition, getDefaultFontSize } from "common/globals";
+import { NotationTypeShape } from "common/unions";
+import { getDefaultFontSize } from "common/globals";
 import * as d3 from "d3";
 import { useNotationStore } from "../store/pinia/notationStore";
 
@@ -188,11 +188,6 @@ export default function useMatrixHelper() {
     if (nextRect) {
       nextRect.notationType = "rect";
       notationStore.setActiveCell(nextRect);
-
-      //TODO: move to caller
-      //if (notationStore.this.getParent().boardType === "LESSON") {
-      //  this.userOperationsMixin_syncOutgoingActiveCell(nextRect);
-      //}
     }
   }
 

@@ -222,7 +222,7 @@ BoardTypeValues.forEach((boardType) => {
                         )
                     )
                 );
-                return res.status(200);
+                return res.status(200).send();
             }
         );
 
@@ -234,7 +234,7 @@ BoardTypeValues.forEach((boardType) => {
                      notationType,
                      req.body.uuid,
                  );
-                 return res.status(200);
+                 return res.status(200).send();
              }
          );
     })
@@ -245,7 +245,6 @@ BoardTypeValues.forEach((boardType) => {
 // Resets the database and launches the express app on :8081
 connection.sequelize.sync({ force: true }).then(() => {
     app.listen(8081, () => {
-        console.log("listening to port localhost:8081");
 
         var spawn = require("child_process").spawn;
         var ls = spawn("cmd.exe", ["/c", "seed.bat"]);
@@ -261,5 +260,6 @@ connection.sequelize.sync({ force: true }).then(() => {
         ls.on("exit", function (code: any) {
             console.log("child process exited with code " + code);
         });
+        process.stdout.write("listening to port localhost:8081");
     });
 });

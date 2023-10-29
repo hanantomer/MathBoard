@@ -301,7 +301,7 @@ export default function dbUtil() {
     ) {
         const modelName = getModelName(boardType, notationType); // e.g. LessonSymbol
         const id = (await getIdByUUId(modelName, uuid)) as number;
-        await db.sequelize.models[modelName].update(attributes, {
+        return await db.sequelize.models[modelName].update(attributes, {
             where: { id: id },
         });
     }
@@ -314,7 +314,7 @@ export default function dbUtil() {
         
         const modelName = getModelName(boardType, notationType); // e.g. LessonSymbol
         const id = (await getIdByUUId(modelName, uuid)) as number;
-        await db.sequelize.models[modelName].destroy({
+        return await db.sequelize.models[modelName].destroy({
             where: { id: id },
         });
     }

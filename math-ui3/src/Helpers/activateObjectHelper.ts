@@ -1,5 +1,4 @@
-import { watch } from "vue";
-import { NotationType, NotationTypeEditMode } from "common/unions";
+import { NotationTypeEditMode } from "common/unions";
 import {
   LineNotationAttributes,
   RectNotationAttributes,
@@ -9,17 +8,17 @@ import { activeCellColor, CellCoordinates } from "common/globals";
 import { NotationAttributes } from "common/baseTypes";
 import useElementFinderHelper from "./elementFinderHelper";
 import useNotationMutateHelper from "./notationMutateHelper";
+import useUserOutgoingOperationsHelper from "./userOutgoingOperationsHelper";
 import useEventBus from "./eventBus";
-
 const eventBus = useEventBus();
 const notationStore = useNotationStore();
 const notationMutateHelper = useNotationMutateHelper();
 const elementFinderHelper = useElementFinderHelper();
+const userOutgoingOperationsHelper = useUserOutgoingOperationsHelper();
 
 ///TODO : split function to shorter blocks
 export default function activateObjectHelper() {
   // called via mouse click
-  /// TODO: simplify method
   function activateClickedObject(e: MouseEvent) {
     // dont active object after click on toolbar fraction or sqrt
     if (notationStore.isLineMode()) {
@@ -37,7 +36,7 @@ export default function activateObjectHelper() {
     if (setActiveSqrt(e)) return;
 
     // no underlying elements found, activate single cell
-    setActiveCell1(e);
+    setActiveCell(e);
   }
 
   async function setActiveNotation(activeNotation: NotationAttributes | null) {
@@ -73,8 +72,8 @@ export default function activateObjectHelper() {
       });
   }
 
-  // called by store watcher
-  function activateCell(
+  // called by store watcher. see mathboard.vue
+  function showActiveCell(
     svgId: string,
     prevActiveCell: CellCoordinates | undefined,
     activeCell: CellCoordinates,
@@ -187,7 +186,8 @@ export default function activateObjectHelper() {
     return false;
   }
 
-  function setActiveCell1(e: MouseEvent) {
+  // update, store active cell
+  function setActiveCell(e: MouseEvent) {
     let clickedCell = elementFinderHelper.findClickedObject(e, "rect", null);
 
     if (!clickedCell?.parentElement) {
@@ -206,9 +206,9 @@ export default function activateObjectHelper() {
     notationStore.resetEditMode();
 
     if (notationStore.getParent().value.type == "LESSON") {
-      //TODO: uncheck        userOutgoingOperations.syncOutgoingActiveCell(activeCell);
+      userOutgoingOperationsHelper.syncOutgoingActiveCell(cellToActivate);
     }
   }
 
-  return { activateCell, activateClickedObject, reset };
+  return { showActiveCell, setActiveCell, activateClickedObject, reset };
 }
