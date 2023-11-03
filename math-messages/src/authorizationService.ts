@@ -1,4 +1,4 @@
-import feathers, { Application } from "@feathersjs/feathers";
+import { Application } from "@feathersjs/feathers";
 import useDbUtil from "../../math-db/build/dbUtil";
 import util from "./util";
 const dbUtil = useDbUtil();
@@ -14,23 +14,31 @@ export default class AuhorizationService {
 
   async get(id: number, params: any) {
     let user = await util.getUserFromCookie(params.headers.cookie, this.app);
+    if (!user) return;
 
-    if (!!user) {
-      user.lessonId = await dbUtil.getIdByUUId("Lesson", params.LessonUUId);
+    const lessonId = await dbUtil.getIdByUUId("Lesson", params.LessonUUId);
+    if (!lessonId) return;
 
-      return (
-        !!this.lessonAuthorizedUsers[user.lessonId] &&
-        this.lessonAuthorizedUsers[user.lessonId].indexOf(user.id) >= 0
-      );
-    }
+    return (
+      this.lessonAuthorizedUsers[lessonId] &&
+      this.lessonAuthorizedUsers[lessonId].indexOf(user.id!) >= 0
+    );
   }
 
   async update(id: number, data: any, params: any) {
     let user = await util.getUserFromCookie(params.headers.cookie, this.app);
-    let lessonId = await dbUtil.getIdByUUId("Lesson", data.LessonUUId);
-    let isTeacher = await dbUtil.isTeacher(user.id, data.LessonUUId);
+    if (!user) return;
+    
+    let isTeacher = await dbUtil.isTeacher(user.uuid, data.LessonUUId);
     if (!isTeacher) return;
 
-    return data;
+    let lessonId = await dbUtil.getIdByUUId(
+      "Lesson",
+      data.LessonUUId
+    );
+
+    if (!lessonId) return;
+
+    this.lessonAuthorizedUsers[lessonId].push(user.id!);
   }
 }

@@ -15,8 +15,8 @@
 
 <script setup lang="ts">
 import mathBoard from "./MathBoard.vue";
-import useNotationLoadingHelper from "../helpers/notationLoadingHelper";
 import useUserOutgoingOperations from "../helpers/userOutgoingOperationsHelper";
+import useUserIncomingOperations from "../helpers/userIncomingOperationsHelper";
 import { computed, ref } from "vue";
 import { useUserStore } from "../store/pinia/userStore";
 import { useLessonStore } from "../store/pinia/lessonStore";
@@ -31,8 +31,8 @@ const route = useRoute();
 const userStore = useUserStore();
 const lessonStore = useLessonStore();
 const notationStore = useNotationStore();
-const notationLoadingHelper = useNotationLoadingHelper();
 const userOutgoingOperations = useUserOutgoingOperations();
+const userIncomingOperations = useUserIncomingOperations();
 
 let loaded = ref(false);
 const svgId = "lessonSvg";
@@ -42,34 +42,31 @@ const isTeacher = computed(() => {
 const lessonTitle = computed(() => {
   return lessonStore.getCurrentLesson().name;
 });
-let lessonUUID = ref("");
+//let lessonUUID = ref("");
 
 /// TODO deal with mutations which originate from user incoming synchronisation
-onMounted(() => {
-  notationStore.$subscribe((mutation, state) => {
-    console.log("a change happened");
-    console.log(mutation, state);
-  });
-});
 
+//onMounted(() => {
+// notationStore.$subscribe((mutation, state) => {
+//   console.log("a change happened");
+//   console.log(mutation, state);
+// });
+//});
 
 watch(
   route,
-  (to) => {
-    lessonUUID.value = to.params.lessonUUId as string;
+  async (to) => {
+    await lessonStore.setCurrentLesson(to.params.lessonUUId as string);
+    await loadLesson(lessonStore.getCurrentLesson().uuid);
+    loaded.value = true;
   },
   { immediate: true },
 );
 
-onMounted(() => {
-  loadLesson(lessonUUID.value);
-  loaded.value = true;
-});
+onMounted(() => {});
 
 async function loadLesson(lessonUUID: string) {
   notationStore.setParent(lessonUUID, "LESSON");
-
-  await lessonStore.setCurrentLesson(lessonUUID);
 
   // if student, send heartbeat to teacher
   if (!userStore.isTeacher()) {
@@ -80,7 +77,6 @@ async function loadLesson(lessonUUID: string) {
     );
   }
 
-  // load notations
-  await notationLoadingHelper.loadNotations();
+  userIncomingOperations.syncIncomingUserOperations();
 }
 </script>

@@ -1,11 +1,29 @@
+import useAuthUtil from "../../math-auth/build/authUtil";
+const authUtil = useAuthUtil();
+
 export default {
-  getAccessTokenFromCookie: async function (cookie: any) {
+
+  getAccessTokenFromCookie: async function (
+    cookie: any
+  ) {
     if (!!cookie)
-      return cookie.match("(^|;)\\s*access_token\\s*=\\s*([^;]+)")?.pop() || "";
+      return (
+        cookie
+          .match(
+            "(^|;)\\s*access_token\\s*=\\s*([^;]+)"
+          )
+          ?.pop() || ""
+      );
   },
-  getUserFromCookie: async function (cookie: any, app: any) {
+
+  getUserFromCookie: async function (
+    cookie: any,
+    app: any
+  ) {
     if (!cookie) return;
-    let access_token = await this.getAccessTokenFromCookie(cookie);
-    return await app.service("authentication").authUserByToken(access_token);
+    let access_token =
+      await this.getAccessTokenFromCookie(cookie);
+    
+    return await authUtil.authByLocalToken(access_token);
   },
 };

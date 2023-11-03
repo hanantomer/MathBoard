@@ -15,7 +15,7 @@ export default class notationSyncService {
 
   async create(data: any, params: any) {
     let user = await util.getUserFromCookie(params.headers.cookie, this.app);
-    if (!!user) {
+    if (user?.id) {
       this.enrichNotation(data.notation.data, user.id);
     }
     return data.notation;
@@ -23,7 +23,7 @@ export default class notationSyncService {
 
   async update(id: number, data: any, params: any) {
     let user = await util.getUserFromCookie(params.headers.cookie, this.app);
-    if (!!user) {
+    if (user?.id) {
       this.enrichNotation(data.notation, user.id);
       return data.notation;
     }
@@ -31,7 +31,7 @@ export default class notationSyncService {
 
   async remove(data: any, params: any) {
     let user = await util.getUserFromCookie(params.headers.cookie, this.app);
-    if (!!user) {
+    if (user?.id) {
       this.enrichNotation(data.notation, user.id);
       return data.notation;
     }

@@ -1,15 +1,10 @@
 import { CellCoordinates } from "common/globals";
 import { NotationAttributes } from "common/baseTypes";
-import { Application } from "@feathersjs/feathers";
-
-import useFeathersHelper from "./feathersHelper";
-const feathersHelper = useFeathersHelper();
-let feathersClient: Application | null = null;
+import { FeathersHelper } from "./feathersHelper";
 
 export default function userOutgoingOperations() {
-  if (feathersClient == null) {
-    feathersClient = feathersHelper.init();
-  }
+
+
 
   // function signedInWithGoogle() {
   //   return (
@@ -18,40 +13,35 @@ export default function userOutgoingOperations() {
   //   );
   // };
 
-  function syncOutgoingActiveCell(activeCell: CellCoordinates) {
-    if (!feathersHelper.isActive) return;
-    feathersClient!
-      .service("activeCell")
-      .update(null, { activeCell: activeCell }, {})
-      .then(() => {})
-      .then((val: any) => {
-        console.error("rejected:" + val);
-      })
-      .catch((error: any) => {
-        console.error(error);
-      });
+  async function syncOutgoingActiveCell(activeCell: CellCoordinates) {
+    const feathersClient = FeathersHelper.getInstance();
+    try {
+      let t = await feathersClient!
+        .service("activeCell")
+        .update(null, { activeCell: activeCell }, {});
+
+      return t;
+    } catch (error) {
+      console.log(error);
+    }
   }
 
   function syncOutgoingAddNotation(notation: NotationAttributes) {
-    if (!feathersHelper.isActive) return;
-    feathersClient!.service("notationSync").create({ notation: notation }, {});
+     FeathersHelper.getInstance().service("notationSync").create({ notation: notation }, {});
   }
 
   function syncOutgoingRemoveNotation(uuid: string) {
-    if (!feathersHelper.isActive) return;
-    feathersClient!.service("notationSync").remove(uuid, {});
+    FeathersHelper.getInstance().service("notationSync").remove(uuid, {});
   }
 
   function syncOutgoingUpdateNotation(selectedNotation: NotationAttributes) {
-    if (!feathersHelper.isActive) return;
-    feathersClient!
+    FeathersHelper.getInstance()
       .service("notationSync")
       .update(null, { notation: selectedNotation }, {});
   }
 
   function syncOutgoingHeartBeat(LessonUUId: string) {
-    if (!feathersHelper.isActive) return;
-    feathersClient!
+    FeathersHelper.getInstance()
       .service("heartbeat")
       .update(null, { LessonUUId: LessonUUId }, {});
   }
@@ -61,9 +51,9 @@ export default function userOutgoingOperations() {
     revokedStudentUUId: string,
     LessonUUId: string,
   ) {
-    if (!feathersHelper.isActive) return;
+
     if (authorizedStudentUUId)
-      feathersClient!.service("authorization").update(
+      FeathersHelper.getInstance().service("authorization").update(
         null,
         {
           LessonUUId: LessonUUId,
@@ -73,7 +63,7 @@ export default function userOutgoingOperations() {
         {},
       );
     if (revokedStudentUUId)
-      feathersClient!.service("authorization").update(
+      FeathersHelper.getInstance().service("authorization").update(
         null,
         {
           LessonUUId: LessonUUId,

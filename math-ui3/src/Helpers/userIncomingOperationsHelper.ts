@@ -2,13 +2,14 @@ import { NotationAttributes } from "common/baseTypes";
 import { useUserStore } from "../store/pinia/userStore";
 import { useStudentStore } from "../store/pinia/studentStore";
 import { useNotationStore } from "../store/pinia/notationStore";
+import { useLessonStore } from "../store/pinia/lessonStore";
 import { UserAttributes } from "common/userTypes";
 import { PointAttributes } from "common/baseTypes";
-import useFeathersHelper from "./feathersHelper";
+import { FeathersHelper } from "./feathersHelper";
 const notationStore = useNotationStore();
+const lessonStore = useLessonStore();
 const userStore = useUserStore();
 const studentStore = useStudentStore();
-const feathersHelper = useFeathersHelper();
 
 export default function userIncomingOperations() {
   // sync incoming changes only if in Lesson and not initiated by me
@@ -19,12 +20,16 @@ export default function userIncomingOperations() {
   }
 
   async function syncIncomingUserOperations() {
-    const feathersClient = feathersHelper.init();
+    const feathersClient = FeathersHelper.getInstance();
 
-    // this is the gate to route all below events
-    await feathersClient.service("authentication").create({
-      LessonUUId: this.getCurrentLesson().uuid,
-    });
+    // this is the gate to consume all the below events
+    try {
+      const t = await feathersClient.service("authentication").create({
+        LessonUUId: lessonStore.getCurrentLesson().uuid,
+      });
+    } catch (error) {
+      console.debug(error);
+    }
 
     feathersClient
       .service("notationSync")

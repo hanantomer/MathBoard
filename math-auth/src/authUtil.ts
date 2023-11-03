@@ -8,7 +8,8 @@ import { UserAttributes } from "../../math-common/build/userTypes";
 const oAuth2client = new OAuth2Client(clientSecretData.web.client_id);
 const userCache = new Map<string, UserAttributes>();
 
-export default function useAuthUtils() {
+export default function authUtils() {
+    
     async function authByLocalPassword(
         email: string,
         password: string

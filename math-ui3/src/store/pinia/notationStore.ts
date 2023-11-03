@@ -11,6 +11,7 @@ import {
   NotationTypeShape,
 } from "common/unions";
 import { ref } from "vue";
+import { error } from "console";
 
 type Board = {
   uuid: string;
@@ -108,7 +109,8 @@ export const useNotationStore = defineStore("notation", () => {
   }
 
   function getRectSize() {
-    return rectSize.value!;
+    if (!rectSize.value) throw new Error("rectSize.value is null");
+    return rectSize.value;
   }
 
   function setRectSize(size: number) {

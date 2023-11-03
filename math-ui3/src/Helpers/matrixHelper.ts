@@ -235,6 +235,8 @@ export default function useMatrixHelper() {
     svgId: string,
     el: HTMLElement,
   ) {
+    setMatrix(svgId);
+
     try {
       notations = enrichNotations(notations);
     } catch {} // cant check if observer has properties
@@ -539,8 +541,8 @@ export default function useMatrixHelper() {
   return {
     svgWidth,
     svgHeight,
-    setMatrix,
-    showNotations,
+    //    setMatrix,
+    //    showNotations,
     getRectSize,
     findRect,
     setNextRect,

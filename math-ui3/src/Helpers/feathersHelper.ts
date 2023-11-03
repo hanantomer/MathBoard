@@ -3,17 +3,18 @@ import socketio from "@feathersjs/socketio-client";
 import io from "socket.io-client";
 
 //import { messagingHost } from "../../../math-common/src/globals";
-export default function feathersHelper() {
-  const isActive = true;
+export class FeathersHelper {
 
-  function init(): Application {
-    const app = feathers();
-    if (isActive) {
-      const socket = io("/msg");
-      app.configure(socketio(socket));
+  private constructor() { };
+
+  private static instance : Application;
+
+  public static getInstance() {
+    if (!this.instance) {
+        this.instance = feathers();
+        const socket = io();
+        this.instance.configure(socketio(socket));
     }
-    return app;
+    return this.instance;
   }
-
-  return { init, isActive };
 }

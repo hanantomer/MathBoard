@@ -48,6 +48,7 @@ export default function dbUtil() {
 
         return lesson?.user.id === userId;
     }
+    
 
     async function getUser(userUUId: string): Promise<User | null> {
         let userId = await getIdByUUId("User", userUUId);

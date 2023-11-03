@@ -15,13 +15,7 @@
             "request": "launch",
             "name": "Launch Feathers",
             "program": "${workspaceFolder}/build/app.js",
-            // "runtimeArgs": [
-            //     "-r",
-            //     "ts-node/register",
-            //     "--loader",
-            //     "ts-node/esm"
-            // ],
-//            "args": ["${workspaceFolder}\\build\\app.js"],
+            "args": [" --inspect-brk "],
             "preLaunchTask": "tsc: build - tsconfig.json",
             //"outFiles": ["${workspaceFolder}/build/**/*.js"],
             "skipFiles": ["<node_internals>/**"]

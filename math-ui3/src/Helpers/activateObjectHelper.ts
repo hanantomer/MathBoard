@@ -187,7 +187,7 @@ export default function activateObjectHelper() {
   }
 
   // update, store active cell
-  function setActiveCell(e: MouseEvent) {
+  async function setActiveCell(e: MouseEvent) {
     let clickedCell = elementFinderHelper.findClickedObject(e, "rect", null);
 
     if (!clickedCell?.parentElement) {
@@ -206,7 +206,11 @@ export default function activateObjectHelper() {
     notationStore.resetEditMode();
 
     if (notationStore.getParent().value.type == "LESSON") {
-      userOutgoingOperationsHelper.syncOutgoingActiveCell(cellToActivate);
+      let t =
+        await userOutgoingOperationsHelper.syncOutgoingActiveCell(
+          cellToActivate,
+        );
+      console.log(t);
     }
   }
 

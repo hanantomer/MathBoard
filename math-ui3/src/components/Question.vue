@@ -62,7 +62,7 @@ watch(
 
 async function loadQuestion(questionUUId: string) {
   notationStore.setParent(answerStore.getCurrentAnswer()?.uuid, "QUESTION");
-  matrixHelper.setMatrix(svgId);
+  //matrixHelper.setMatrix(svgId);
 
   // load from db to store
   questionStore.loadQuestion(questionUUId);

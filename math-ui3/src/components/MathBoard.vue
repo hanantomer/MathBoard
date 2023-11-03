@@ -17,6 +17,7 @@
 </template>
 
 <script setup lang="ts">
+import useNotationLoadingHelper from "../helpers/notationLoadingHelper";
 import UseMatrixHelper from "../helpers/matrixHelper";
 import UseActivateObjectHelper from "../helpers/activateObjectHelper";
 import UseEventHelper from "../helpers/eventHelper";
@@ -28,6 +29,7 @@ import { onMounted, onUnmounted, watch } from "vue";
 import { CellCoordinates } from "common/globals";
 import { useNotationStore } from "../store/pinia/notationStore";
 
+const notationLoadingHelper = useNotationLoadingHelper();
 const notationStore = useNotationStore();
 const eventBus = useEventBus();
 const matrixHelper = UseMatrixHelper();
@@ -35,7 +37,6 @@ const activateObjectHelper = UseActivateObjectHelper();
 const eventHelper = UseEventHelper();
 
 onMounted(() => {
-  // eventBus uses vue ref to implement pub sub mechanisim
   eventHelper.registerSvgMouseDown(props.svgId);
   eventHelper.registerSvgMouseMove(props.svgId);
   eventHelper.registerSvgMouseUp(props.svgId);
@@ -86,6 +87,7 @@ watch(
   { immediate: true, deep: true },
 );
 
+// wait for child(e.g lesson) signal
 watch(
   () => props.loaded,
   (loaded: Boolean) => {
@@ -117,7 +119,8 @@ watch(
 
 function load() {
   activateObjectHelper.reset();
-  matrixHelper.setMatrix(props.svgId);
+  // load notations
+  notationLoadingHelper.loadNotations(notationStore.getParent().value.type);
 }
 </script>
 
