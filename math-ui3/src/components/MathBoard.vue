@@ -72,7 +72,7 @@ watch(
 );
 
 watch(
-  () => notationStore.getActiveCell().value as CellCoordinates,
+  () => notationStore.getActiveCell() as CellCoordinates,
   (
     newActiveCell: CellCoordinates,
     oldActiveCell: CellCoordinates | undefined,
@@ -99,13 +99,8 @@ watch(
 watch(
   () => notationStore.getNotations(),
   () => {
-    matrixHelper.refreshScreen(
-      Array.from(notationStore.getNotations().value).map(([key, value]) => {
-        return value;
-      }),
-      props.svgId,
-      document!.getElementById(props.svgId)!,
-    );
+
+    matrixHelper.refreshScreen(notationStore.getNotations(), props.svgId);
   },
   { immediate: true, deep: true },
 );
@@ -120,7 +115,9 @@ watch(
 function load() {
   activateObjectHelper.reset();
   // load notations
-  notationLoadingHelper.loadNotations(notationStore.getParent().value.type);
+  notationLoadingHelper.loadNotations(notationStore.getParent().type);
+
+  matrixHelper.setMatrix(props.svgId);
 }
 </script>
 

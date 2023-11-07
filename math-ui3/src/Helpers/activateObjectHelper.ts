@@ -10,11 +10,13 @@ import useElementFinderHelper from "./elementFinderHelper";
 import useNotationMutateHelper from "./notationMutateHelper";
 import useUserOutgoingOperationsHelper from "./userOutgoingOperationsHelper";
 import useEventBus from "./eventBus";
+import { useLessonStore } from "../store/pinia/lessonStore";
 const eventBus = useEventBus();
 const notationStore = useNotationStore();
 const notationMutateHelper = useNotationMutateHelper();
 const elementFinderHelper = useElementFinderHelper();
 const userOutgoingOperationsHelper = useUserOutgoingOperationsHelper();
+const lessonStore = useLessonStore();
 
 ///TODO : split function to shorter blocks
 export default function activateObjectHelper() {
@@ -199,16 +201,16 @@ export default function activateObjectHelper() {
       row: elementFinderHelper.getElementAttributeValue(
         clickedCell.parentElement!,
         "row",
-      ),
+      )
     };
 
     notationStore.setActiveCell(cellToActivate);
     notationStore.resetEditMode();
 
-    if (notationStore.getParent().value.type == "LESSON") {
+    if (notationStore.getParent().type == "LESSON") {
       let t =
         await userOutgoingOperationsHelper.syncOutgoingActiveCell(
-          cellToActivate,
+          cellToActivate, lessonStore.getCurrentLesson().uuid
         );
       console.log(t);
     }

@@ -148,14 +148,14 @@ export default function useMatrixHelper() {
     verticalStep: number,
   ): PointAttributes | undefined {
     if (
-      notationStore.activeCell?.col == null ||
-      !notationStore.activeCell?.row == null
+      notationStore.getActiveCell()?.col == null ||
+      !notationStore.getActiveCell()?.row == null
     ) {
       return;
     }
 
-    let col = notationStore.activeCell?.col;
-    let row = notationStore.activeCell?.row;
+    let col = notationStore.getActiveCell()?.col || 0;
+    let row = notationStore.getActiveCell()?.row || 0;
     let nextCol = col;
     let nextRow = row;
 
@@ -233,19 +233,21 @@ export default function useMatrixHelper() {
   function refreshScreen(
     notations: NotationAttributes[],
     svgId: string,
-    el: HTMLElement,
   ) {
+    const svgElement = document!.getElementById(svgId);
+
     setMatrix(svgId);
 
     try {
       notations = enrichNotations(notations);
     } catch {} // cant check if observer has properties
+
     d3.select("#" + svgId)
       .selectAll("foreignObject")
       .data(Object.values(notations))
       .join(
         (enter) => {
-          return showNotations(enter, el);
+          return showNotations(enter, svgElement!);
         },
         (update) => {
           return updateNotations(update);
@@ -486,7 +488,7 @@ export default function useMatrixHelper() {
         .map((n) => n.uuid)
         .indexOf(n.uuid) >= 0
         ? "red"
-        : notationStore.getParent().value.type === "ANSWER" &&
+        : notationStore.getParent().type === "ANSWER" &&
           userStore.getCurrentUser().uuid != n.user.uuid
         ? "purple"
         : "black";
@@ -512,13 +514,13 @@ export default function useMatrixHelper() {
     if (n.notationType === "TEXT") {
       let n1 = n as RectNotationAttributes;
 
-      let bColor = borderColor(n === notationStore.activeNotation);
+      let bColor = borderColor(n === notationStore.getActiveNotation());
       return `<pre style='border:groove 2px;border-color:${bColor};background-color:${bColor}'>${n1.value}</pre>`;
     }
 
     if (n.notationType === "IMAGE") {
       let n1 = n as RectNotationAttributes;
-      let bColor = borderColor(n === notationStore.activeNotation);
+      let bColor = borderColor(n === notationStore.getActiveNotation());
       return `<img style='border:groove 2px;border-color:${borderColor}' src='${n1.value}'>`;
     }
 
@@ -551,5 +553,6 @@ export default function useMatrixHelper() {
     getNotationXposByCol,
     getNotationYposByRow,
     refreshScreen,
+    setMatrix
   };
 }

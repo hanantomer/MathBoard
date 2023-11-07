@@ -38,29 +38,29 @@ export default class AuthenticationService {
       return;
     }
 
-    if (!data.LessonUUId) {
+    if (!data.lessonUUId) {
       return;
     }
 
-    let isTeacher: boolean = await dbUtil.isTeacher(user.id, data.LessonUUId);
+    let isTeacher: boolean = await dbUtil.isTeacher(user.id, data.lessonUUId);
 
     if (isTeacher) {
       // store admin connection when she logs on
-      this.lessonAdminConnection.set(data.LessonUUId, {
+      this.lessonAdminConnection.set(data.lessonUUId, {
         userId: user.id,
         connection: params.connection,
       });
 
       // join admin to existing student channels
-      if (this.lessonStudentConnection.has(data.LessonUUId)) {
+      if (this.lessonStudentConnection.has(data.lessonUUId)) {
         this.lessonStudentConnection
-          .get(data.LessonUUId)
+          .get(data.lessonUUId)
           .forEach((student: number) => {
             // join admin to all student channels
             this.app
               .channel(
                 constants.LESSON_CHANNEL_PREFIX +
-                  data.LessonUUId +
+                  data.lessonUUId +
                   constants.USER_CHANNEL_PREFIX +
                   student
               )
@@ -71,44 +71,44 @@ export default class AuthenticationService {
           });
       }
     } else {
-      if (!this.lessonStudentConnection.has(data.LessonUUId)) {
-        this.lessonStudentConnection.set(data.LessonUUId, new Set());
+      if (!this.lessonStudentConnection.has(data.lessonUUId)) {
+        this.lessonStudentConnection.set(data.lessonUUId, new Set());
       }
-      this.lessonStudentConnection.get(data.LessonUUId).add(user.id);
+      this.lessonStudentConnection.get(data.lessonUUId).add(user.id);
 
       // join studnet to student channel
       this.app
         .channel(
           constants.LESSON_CHANNEL_PREFIX +
-            data.LessonUUId +
+            data.lessonUUId +
             constants.USER_CHANNEL_PREFIX +
             user.id
         )
         .join(params.connection);
       console.log(
-        `subscribing student: ${user.email} to lesson: ${data.LessonUUId}`
+        `subscribing student: ${user.email} to lesson: ${data.lessonUUId}`
       );
 
       // join admin to student channel
-      if (this.lessonAdminConnection.has(data.LessonUUId)) {
+      if (this.lessonAdminConnection.has(data.lessonUUId)) {
         console.log(`subscribing admin: ${user.email} to student: ${user.id}`);
         this.app
           .channel(
             constants.LESSON_CHANNEL_PREFIX +
-              data.LessonUUId +
+              data.lessonUUId +
               constants.USER_CHANNEL_PREFIX +
               user.id
           )
-          .join(this.lessonAdminConnection.get(data.LessonUUId).connection);
+          .join(this.lessonAdminConnection.get(data.lessonUUId).connection);
       }
     }
 
     // either teacher or student join lesson channel
     this.app
-      .channel(constants.LESSON_CHANNEL_PREFIX + data.LessonUUId)
+      .channel(constants.LESSON_CHANNEL_PREFIX + data.lessonUUId)
       .join(params.connection);
     console.log(
-      `subscribing user: ${user.email} to lesson: ${data.LessonUUId}`
+      `subscribing user: ${user.email} to lesson: ${data.lessonUUId}`
     );
   }
 }

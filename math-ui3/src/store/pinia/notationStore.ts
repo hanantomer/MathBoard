@@ -6,12 +6,12 @@ import { NotationAttributes } from "common/baseTypes";
 import {
   EditMode,
   BoardType,
-  NotationType,
   NotationShape,
   NotationTypeShape,
 } from "common/unions";
 import { ref } from "vue";
-import { error } from "console";
+import useUserOutgoingOperations from "../../helpers/userOutgoingOperationsHelper";
+const userOutgoingOperations = useUserOutgoingOperations();
 
 type Board = {
   uuid: string;
@@ -20,11 +20,7 @@ type Board = {
 
 ///TODO complete setters
 ///TODO watch notations and sync occupation mattrix
-///TODO watch notations and sync user operations (avoid circular updates)
-
 export const useNotationStore = defineStore("notation", () => {
-  //let hiddenLineElement: HTMLElement | null;
-
   let rectSize = ref<number>();
 
   const cellOccupationMatrix: (NotationAttributes | null)[][] =
@@ -132,15 +128,15 @@ export const useNotationStore = defineStore("notation", () => {
   }
 
   function getActiveNotation() {
-    return activeNotation;
+    return activeNotation.value;
   }
 
   function getActiveCell() {
-    return activeCell;
+    return activeCell.value;
   }
 
   function getParent() {
-    return parent;
+    return parent.value;
   }
 
   function getCellOccupationMatrix() {
@@ -155,8 +151,8 @@ export const useNotationStore = defineStore("notation", () => {
     }) as T[];
   }
 
-  function getNotations() {
-    return notations;
+  function getNotations(): NotationAttributes[] {
+    return Array.from(notations.value.values());
   }
 
   function setNotations(notations: NotationAttributes[]) {
@@ -165,8 +161,23 @@ export const useNotationStore = defineStore("notation", () => {
     });
   }
 
-  function setNotation(uuid: string, notation: NotationAttributes) {
+  function getNotation(uuid: String) {
+    return notations.value.get(uuid);
+  }
+
+  function setNotation(notation: NotationAttributes) {
     notations.value.set(notation.uuid, notation);
+  }
+
+  function removeNotation(uuid: string) {
+    notations.value.delete(uuid);
+    if (getParent().type === "LESSON") {
+      userOutgoingOperations.syncOutgoingRemoveNotation(uuid, getParent().uuid);
+    }
+  }
+
+  function removeAllNotations() {
+    notations.value.clear();
   }
 
   function addNotation(notation: NotationAttributes) {
@@ -206,7 +217,7 @@ export const useNotationStore = defineStore("notation", () => {
   }
 
   function resetEditMode() {
-     setEditMode("SYMBOL");
+    setEditMode("SYMBOL");
   }
 
   function createCellOccupationMatrix(): (NotationAttributes | null)[][] {
@@ -229,6 +240,8 @@ export const useNotationStore = defineStore("notation", () => {
   // }
 
   return {
+    addNotation,
+    getNotation,
     getNotations,
     getNotationsByShape,
     getEditMode,
@@ -238,13 +251,8 @@ export const useNotationStore = defineStore("notation", () => {
     getActiveNotation,
     getSelectedNotations,
     getParent,
-    addNotation,
-    setNotations,
-    setNotation,
-    selectNotation,
-    setActiveNotation,
-    setEditMode,
-    resetEditMode,
+    getRectSize,
+
     isSelectionMode,
     isLineMode,
     isLineDrawingMode,
@@ -255,13 +263,24 @@ export const useNotationStore = defineStore("notation", () => {
     isSqrtMode,
     isSqrtEditMode,
     isDefaultEditMode,
-    setParent,
+
+    setNotations,
+    setNotation,
+    selectNotation,
+    setActiveNotation,
     setActiveCell,
+    setEditMode,
+    setParent,
+    setRectSize,
+
+    resetEditMode,
+
     resetActiveCell,
     resetSelectedNotations,
-    activeCell,
-    activeNotation,
-    getRectSize,
-    setRectSize,
+    removeNotation,
+    removeAllNotations,
+
+    //activeCell,
+    //activeNotation,
   };
 });

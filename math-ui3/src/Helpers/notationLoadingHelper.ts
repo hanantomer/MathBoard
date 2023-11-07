@@ -40,8 +40,8 @@ export default function notationLoadingHelper() {
     boardType: BoardType | undefined,
     notationType: NotationType,
   ): Promise<NotationAttributes[]> {
-    if (!boardType) boardType = notationStore.getParent().value.type;
-    let parentUUId = notationStore.getParent().value.uuid;
+    if (!boardType) boardType = notationStore.getParent().type;
+    let parentUUId = notationStore.getParent().uuid;
     switch (notationType) {
       case "SYMBOL":
       case "SIGN":

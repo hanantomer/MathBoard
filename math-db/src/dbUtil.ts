@@ -10,7 +10,7 @@ import { NotationAttributes } from "../../math-common/src/baseTypes";
 import { UserAttributes, StudentLessonCreationAttributes} from "../../math-common/build/userTypes";
 import { LessonCreationAttributes } from "../../math-common/src/lessonTypes";
 import { QuestionAttributes } from "../../math-common/build/questionTypes";
-import { AnswerAttributes, AnswerCreateAttributes } from "../../math-common/build/answerTypes";
+import { AnswerAttributes, AnswerCreationAttributes } from "../../math-common/build/answerTypes";
 import { capitalize } from "../../math-common/build/utils";
 import { BoardType, NotationType } from "../../math-common/src/unions";
 
@@ -35,18 +35,17 @@ export default function dbUtil() {
     // user
 
     async function isTeacher(
-        userUUId: string,
+        userId: number,
         lessonUUId: string
     ): Promise<boolean> {
         let lessonId = await getIdByUUId("Lesson", lessonUUId);
         if (!lessonId) return false;
-
-        let userId = await getIdByUUId("User", userUUId);
-        if (!userId) return false;
-
+        
         let lesson = await Lesson.findByPk(lessonId);
+        if (!lesson)
+            return false;
 
-        return lesson?.user.id === userId;
+        return lesson.userId === userId;
     }
     
 
@@ -194,7 +193,7 @@ export default function dbUtil() {
     }
 
     async function createAnswer(
-        answer: AnswerCreateAttributes
+        answer: AnswerCreationAttributes
     ): Promise<Answer> {
         
         answer.user.id = (await getIdByUUId(

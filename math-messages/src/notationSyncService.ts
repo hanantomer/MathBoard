@@ -1,3 +1,4 @@
+import { LessonNotationAttributes } from "../../math-common/src/lessonTypes";
 import util from "./util.js";
 import { Application } from "@feathersjs/feathers";
 
@@ -7,34 +8,52 @@ export default class notationSyncService {
     this.app = app;
   }
 
-  async enrichNotation(notation: any, userId: number) {
-    if (!!notation) {
-      notation.UserId = userId;
-    }
+  async getUserUUIdFromCookie(
+    cookie: string
+  ): Promise<string> {
+    let user = await util.getUserFromCookie(
+      cookie,
+      this.app
+    );
+
+    if (!user) return "";
+
+    return user.uuid;
   }
 
-  async create(data: any, params: any) {
-    let user = await util.getUserFromCookie(params.headers.cookie, this.app);
-    if (user?.id) {
-      this.enrichNotation(data.notation.data, user.id);
-    }
-    return data.notation;
+  async create(
+    notation: LessonNotationAttributes,
+    params: any
+  ) {
+    notation.user.uuid =
+      await this.getUserUUIdFromCookie(
+        params.headers.cookie
+      );
+    return notation;
   }
 
-  async update(id: number, data: any, params: any) {
-    let user = await util.getUserFromCookie(params.headers.cookie, this.app);
-    if (user?.id) {
-      this.enrichNotation(data.notation, user.id);
-      return data.notation;
-    }
+  async update(
+    id: number,
+    notation: LessonNotationAttributes,
+    params: any
+  ) {
+    notation.user.uuid =
+      await this.getUserUUIdFromCookie(
+        params.headers.cookie
+      );
+    return notation;
   }
 
-  async remove(data: any, params: any) {
-    let user = await util.getUserFromCookie(params.headers.cookie, this.app);
-    if (user?.id) {
-      this.enrichNotation(data.notation, user.id);
-      return data.notation;
+  async remove(
+    notationUUId: string,
+    params: any
+  ) {
+    let notation: unknown = {
+      uuid: notationUUId,
+      user: { id: await this.getUserUUIdFromCookie(params.headers.cookie) },
+      lesson: {uuid: params.query.lessonUUId}
     }
+    return notation;
   }
 }
 

@@ -38,7 +38,6 @@ const authHelper = useAuthHelper();
 const userOutgoingOperations = useUserOutgoingOperations();
 
 export default function notationMutateHelper() {
-
   function pointAtCellCoordinates(
     n1: PointNotationAttributes,
     n2: CellCoordinates,
@@ -170,62 +169,62 @@ export default function notationMutateHelper() {
 
   function findNotationsByCellCoordinates(cellCoordinates: CellCoordinates) {
     let userUUId = userStore.getCurrentUser().uuid;
-    let notationsMap = notationStore.getNotations().value;
-    return Array.from(notationsMap.values()).filter((n: NotationAttributes) =>
-      n.notationType == "SYMBOL" ||
-      n.notationType == "POWER" ||
-      n.notationType == "SIGN"
-        ? pointAtCellCoordinates(
-            n as PointNotationAttributes,
-            cellCoordinates,
-            userUUId,
-          )
-        : n.notationType == "FRACTION" || n.notationType == "SQRT"
-        ? lineAtCellCoordinates(
-            n as LineNotationAttributes,
-            cellCoordinates,
-            userUUId,
-          )
-        : n.notationType == "TEXT"
-        ? rectAtCellCoordinates(
-            n as RectNotationAttributes,
-            cellCoordinates,
-            userUUId,
-          )
-        : false,
-    );
-  }
 
-  // return a list of notations wich overlap given rect coordinates
-  function findNotationsByRectCoordinates(
-    notationsMap: Map<String, NotationAttributes>,
-    rectCoordinates: RectAttributes,
-  ) {
-    return Object.entries(notationsMap)
-      .map((n: NotationAttributes[]) => n[1])
+    return notationStore
+      .getNotations()
       .filter((n: NotationAttributes) =>
         n.notationType == "SYMBOL" ||
         n.notationType == "POWER" ||
         n.notationType == "SIGN"
-          ? pointAtRectCoordinates(
+          ? pointAtCellCoordinates(
               n as PointNotationAttributes,
-              rectCoordinates,
-              userStore.getCurrentUser().uuid,
+              cellCoordinates,
+              userUUId,
             )
           : n.notationType == "FRACTION" || n.notationType == "SQRT"
-          ? lineAtRectCoordinates(
+          ? lineAtCellCoordinates(
               n as LineNotationAttributes,
-              rectCoordinates,
-              userStore.getCurrentUser().uuid,
+              cellCoordinates,
+              userUUId,
             )
           : n.notationType == "TEXT"
-          ? rectAtRectCoordinates(
+          ? rectAtCellCoordinates(
               n as RectNotationAttributes,
-              rectCoordinates,
-              userStore.getCurrentUser().uuid,
+              cellCoordinates,
+              userUUId,
             )
           : false,
       );
+  }
+
+  // return a list of notations wich overlap given rect coordinates
+  function findNotationsByRectCoordinates(
+    notations: NotationAttributes[],
+    rectCoordinates: RectAttributes,
+  ) {
+    return notations.filter((n: NotationAttributes) =>
+      n.notationType == "SYMBOL" ||
+      n.notationType == "POWER" ||
+      n.notationType == "SIGN"
+        ? pointAtRectCoordinates(
+            n as PointNotationAttributes,
+            rectCoordinates,
+            userStore.getCurrentUser().uuid,
+          )
+        : n.notationType == "FRACTION" || n.notationType == "SQRT"
+        ? lineAtRectCoordinates(
+            n as LineNotationAttributes,
+            rectCoordinates,
+            userStore.getCurrentUser().uuid,
+          )
+        : n.notationType == "TEXT"
+        ? rectAtRectCoordinates(
+            n as RectNotationAttributes,
+            rectCoordinates,
+            userStore.getCurrentUser().uuid,
+          )
+        : false,
+    );
   }
 
   // return a list of notations wich overlap given line coordinates
@@ -263,9 +262,8 @@ export default function notationMutateHelper() {
   function findOverlapNotationsOfSameType(
     notation: NotationCreationAttributes,
   ): NotationAttributes | undefined {
-    let notationsMap = notationStore.getNotations();
-    return Object.entries(notationsMap)
-      .map((n: NotationAttributes[]) => n[1])
+    return notationStore
+      .getNotations()
       .filter(
         (n1: NotationAttributes) => n1.notationType === notation.notationType,
       )
@@ -301,72 +299,69 @@ export default function notationMutateHelper() {
   function findOverlapNotationsOfAnyType(
     notation: NotationCreationAttributes,
   ): NotationAttributes | undefined {
-    let notationsMap = notationStore.getNotations();
-    return Object.entries(notationsMap)
-      .map((n: NotationAttributes[]) => n[1])
-      .find((n2: NotationAttributes) => {
-        switch (notation.notationType) {
-          case "SYMBOL":
-          case "POWER":
-            return (
-              pointAtCellCoordinates(
-                notation as PointNotationAttributes,
-                n2 as PointNotationAttributes,
-                userStore.getCurrentUser().uuid,
-              ) ??
-              lineAtCellCoordinates(
-                notation as LineNotationAttributes,
-                n2 as PointNotationAttributes,
-                userStore.getCurrentUser().uuid,
-              ) ??
-              rectAtCellCoordinates(
-                notation as RectNotationAttributes,
-                n2 as PointNotationAttributes,
-                userStore.getCurrentUser().uuid,
-              )
-            );
-          case "FRACTION":
-          case "SQRT":
-            return (
-              lineAtCellCoordinates(
-                notation as LineNotationAttributes,
-                n2 as PointNotationAttributes,
-                userStore.getCurrentUser().uuid,
-              ) ??
-              lineAtLineCoordinates(
-                notation as LineNotationAttributes,
-                n2 as LineNotationAttributes,
-                userStore.getCurrentUser().uuid,
-              ) ??
-              lineAtRectCoordinates(
-                notation as LineNotationAttributes,
-                n2 as RectNotationAttributes,
-                userStore.getCurrentUser().uuid,
-              )
-            );
+    return notationStore.getNotations().find((n2: NotationAttributes) => {
+      switch (notation.notationType) {
+        case "SYMBOL":
+        case "POWER":
+          return (
+            pointAtCellCoordinates(
+              notation as PointNotationAttributes,
+              n2 as PointNotationAttributes,
+              userStore.getCurrentUser().uuid,
+            ) ??
+            lineAtCellCoordinates(
+              notation as LineNotationAttributes,
+              n2 as PointNotationAttributes,
+              userStore.getCurrentUser().uuid,
+            ) ??
+            rectAtCellCoordinates(
+              notation as RectNotationAttributes,
+              n2 as PointNotationAttributes,
+              userStore.getCurrentUser().uuid,
+            )
+          );
+        case "FRACTION":
+        case "SQRT":
+          return (
+            lineAtCellCoordinates(
+              notation as LineNotationAttributes,
+              n2 as PointNotationAttributes,
+              userStore.getCurrentUser().uuid,
+            ) ??
+            lineAtLineCoordinates(
+              notation as LineNotationAttributes,
+              n2 as LineNotationAttributes,
+              userStore.getCurrentUser().uuid,
+            ) ??
+            lineAtRectCoordinates(
+              notation as LineNotationAttributes,
+              n2 as RectNotationAttributes,
+              userStore.getCurrentUser().uuid,
+            )
+          );
 
-          case "TEXT":
-          case "IMAGE":
-          case "GEO":
-            return (
-              pointAtRectCoordinates(
-                notation as PointNotationAttributes,
-                n2 as RectNotationAttributes,
-                userStore.getCurrentUser().uuid,
-              ) ??
-              lineAtRectCoordinates(
-                notation as LineNotationAttributes,
-                n2 as RectNotationAttributes,
-                userStore.getCurrentUser().uuid,
-              ) ??
-              rectAtRectCoordinates(
-                notation as RectNotationAttributes,
-                n2 as RectNotationAttributes,
-                userStore.getCurrentUser().uuid,
-              )
-            );
-        }
-      });
+        case "TEXT":
+        case "IMAGE":
+        case "GEO":
+          return (
+            pointAtRectCoordinates(
+              notation as PointNotationAttributes,
+              n2 as RectNotationAttributes,
+              userStore.getCurrentUser().uuid,
+            ) ??
+            lineAtRectCoordinates(
+              notation as LineNotationAttributes,
+              n2 as RectNotationAttributes,
+              userStore.getCurrentUser().uuid,
+            ) ??
+            rectAtRectCoordinates(
+              notation as RectNotationAttributes,
+              n2 as RectNotationAttributes,
+              userStore.getCurrentUser().uuid,
+            )
+          );
+      }
+    });
   }
 
   async function removeSymbolsByCell(
@@ -382,7 +377,7 @@ export default function notationMutateHelper() {
     symbolsAtCell.forEach(async (n: NotationAttributes) => {
       await dbHelper
         .removeNotation(n)
-        .then(() => notationStore.getNotations().value.delete(n.uuid));
+        .then(() => notationStore.removeNotation(n.uuid));
     });
 
     return symbolsAtCell;
@@ -394,7 +389,7 @@ export default function notationMutateHelper() {
       return null;
     }
 
-    const activeNotation = notationStore.getActiveNotation().value;
+    const activeNotation = notationStore.getActiveNotation();
 
     if (!activeNotation) return null;
 
@@ -408,9 +403,7 @@ export default function notationMutateHelper() {
 
     if (!deletedNotationUUId) return null;
 
-    let deletedNotation = notationStore
-      .getNotations()
-      .value.get(deletedNotationUUId!);
+    let deletedNotation = notationStore.getNotation(deletedNotationUUId);
 
     // publish
     if (deletedNotation)
@@ -428,7 +421,7 @@ export default function notationMutateHelper() {
       await dbHelper.removeNotation(n);
 
       //from store
-      notationStore.getNotations().value.delete(n.uuid);
+      notationStore.removeNotation(n.uuid);
 
       // publish
       userOutgoingOperations.syncOutgoingRemoveNotation(n.uuid);
@@ -498,22 +491,24 @@ export default function notationMutateHelper() {
     }
 
     await dbHelper.updateLineAttributes(lineNotation);
-    notationStore.setNotation(lineNotation.uuid, lineNotation);
+    notationStore.setNotation(lineNotation);
   }
 
   async function addNotation<T extends NotationCreationAttributes>(
     notation: T,
-  ): Promise<NotationAttributes | null> {
+  ) {
     let overlappedSameTypeNotation = findOverlapNotationsOfSameType(notation);
 
     if (overlappedSameTypeNotation) {
       setNotationAttributes(overlappedSameTypeNotation, notation);
 
       await dbHelper.updateNotationValue(overlappedSameTypeNotation);
-      notationStore
-        .getNotations()
-        .value.set(overlappedSameTypeNotation.uuid, overlappedSameTypeNotation);
-      return overlappedSameTypeNotation;
+
+      notationStore.setNotation(overlappedSameTypeNotation);
+
+      userOutgoingOperations.syncOutgoingUpdateNotation(
+        overlappedSameTypeNotation,
+      );
     }
 
     let overlappedAnyTypeNotation: NotationAttributes | undefined =
@@ -521,10 +516,11 @@ export default function notationMutateHelper() {
 
     // don't allow override of other type notation
     if (overlappedAnyTypeNotation) {
-      return null;
+      return;
     }
 
     // no overlapping -> add
+    // TODO divert and typify lesson, question, answer
     let newNotation = await dbHelper.addNotation(notation);
     notationStore.addNotation({
       ...newNotation,
@@ -532,27 +528,25 @@ export default function notationMutateHelper() {
     });
 
     // sync to other participants
-    if (notationStore.getParent().value.type === "LESSON") {
+    if (notationStore.getParent().type === "LESSON") {
       userOutgoingOperations.syncOutgoingAddNotation(newNotation);
     }
-
-    return newNotation;
   }
 
   async function syncIncomingAddedNotation(notation: NotationAttributes) {
-    notationStore.getNotations().value.set(notation.uuid, notation);
+    notationStore.setNotation(notation);
   }
 
   async function syncIncomingRemovedNotation(notation: NotationAttributes) {
-    notationStore.getNotations().value.delete(notation.uuid);
+    notationStore.removeNotation(notation.uuid);
   }
 
   async function syncIncomingUpdatedtNotation(notation: NotationAttributes) {
-    notationStore.getNotations().value.set(notation.uuid, notation);
+    notationStore.setNotation(notation);
   }
 
   async function removeAllNotations() {
-    notationStore.getNotations().value.clear();
+    notationStore.removeAllNotations();
   }
 
   function setNotationAttributes(
@@ -567,36 +561,47 @@ export default function notationMutateHelper() {
         (existingNotation as PointNotationAttributes).row = (
           notation as PointNotationAttributes
         ).row;
-        if (existingNotation.notationType == "SYMBOL") {
-          ///TODO: update symbol or power values (create corresponding types in advance)
-        }
+        (existingNotation as PointNotationAttributes).value = (
+          notation as PointNotationAttributes
+        ).value;
         break;
       }
       case "LINE": {
         (existingNotation as LineNotationAttributes).fromCol = (
           notation as LineNotationAttributes
         ).fromCol;
+
         (existingNotation as LineNotationAttributes).toCol = (
           notation as LineNotationAttributes
         ).toCol;
+
         (existingNotation as LineNotationAttributes).row = (
           notation as LineNotationAttributes
         ).row;
+
         break;
       }
       case "RECT": {
         (existingNotation as RectNotationAttributes).fromCol = (
           notation as RectNotationAttributes
         ).fromCol;
+
         (existingNotation as RectNotationAttributes).toCol = (
           notation as RectNotationAttributes
         ).toCol;
+
         (existingNotation as RectNotationAttributes).fromRow = (
           notation as RectNotationAttributes
         ).fromRow;
+
         (existingNotation as RectNotationAttributes).toRow = (
           notation as RectNotationAttributes
         ).toRow;
+
+        (existingNotation as RectNotationAttributes).value = (
+          notation as RectNotationAttributes
+        ).value;
+
         break;
       }
     }
@@ -617,7 +622,7 @@ export default function notationMutateHelper() {
     return false;
   }
 
-  // return true for student in question and point coordinates are within question area
+  // return true for 1. student in question and 2. point coordinates are within question area
   function isNotationInQuestionArea(
     notation: NotationAttributes | null,
   ): boolean {
@@ -663,17 +668,17 @@ export default function notationMutateHelper() {
 
   async function removeNotationsByRect(rectNotaion: RectNotationAttributes) {
     let notationsAtRectCoordinates = findNotationsByRectCoordinates(
-      notationStore.getNotations().value,
+      notationStore.getNotations(),
       rectNotaion,
     );
 
     if (!notationsAtRectCoordinates) return;
 
     notationsAtRectCoordinates.forEach(async (n: NotationAttributes) => {
-      n.boardType = notationStore.getParent().value.type;
+      n.boardType = notationStore.getParent().type;
       await dbHelper
         .removeNotation(n)
-        .then(() => notationStore.getNotations().value.delete(n.uuid));
+        .then(() => notationStore.removeNotation(n.uuid));
     });
   }
 
@@ -681,7 +686,7 @@ export default function notationMutateHelper() {
     CellCoordinates: CellCoordinates | null,
   ): boolean | null {
     return (
-      notationStore.getParent().value.type == "ANSWER" &&
+      notationStore.getParent().type == "ANSWER" &&
       !userStore.isTeacher() &&
       CellCoordinates &&
       notationStore
@@ -727,11 +732,11 @@ export default function notationMutateHelper() {
   }
 
   function removeActiveOrSelectedNotations() {
-    if (notationStore.getActiveCell().value) {
+    if (notationStore.getActiveCell()) {
       removeActiveCellNotations();
       return;
     }
-    if (notationStore.getActiveNotation().value) {
+    if (notationStore.getActiveNotation()) {
       removeActiveNotation();
       return;
     }
@@ -742,10 +747,10 @@ export default function notationMutateHelper() {
   }
 
   async function removeActiveCellNotations() {
-    if (!notationStore.getActiveCell().value) return;
+    if (!notationStore.getActiveCell()) return;
 
     let notationsToDelete = await removeSymbolsByCell(
-      notationStore.getActiveCell().value!,
+      notationStore.getActiveCell()!,
     );
 
     if (!notationsToDelete) return;
@@ -768,8 +773,8 @@ export default function notationMutateHelper() {
       fromRow: fromRow,
       toRow: toRow,
       value: base64Value,
-      boardType: notationStore.getParent().value.type,
-      parentUUId: notationStore.getParent().value.uuid,
+      boardType: notationStore.getParent().type,
+      parentUUId: notationStore.getParent().uuid,
       notationType: "IMAGE",
       user: userStore.getCurrentUser(),
     };
@@ -792,8 +797,8 @@ export default function notationMutateHelper() {
       fromRow: fromRow,
       toRow: toRow,
       value: value,
-      boardType: notationStore.getParent().value.type,
-      parentUUId: notationStore.getParent().value.uuid,
+      boardType: notationStore.getParent().type,
+      parentUUId: notationStore.getParent().uuid,
       notationType: "TEXT",
       user: userStore.getCurrentUser(),
     };
@@ -804,14 +809,14 @@ export default function notationMutateHelper() {
   }
 
   function addSymbolNotation(value: string) {
-    if (!notationStore.getActiveCell().value) return;
+    if (!notationStore.getActiveCell()) return;
 
     let notation: PointNotationCreationAttributes = {
-      col: notationStore.getActiveCell().value!.col,
-      row: notationStore.getActiveCell().value!.row,
+      col: notationStore.getActiveCell()!.col,
+      row: notationStore.getActiveCell()!.row,
       value: value,
-      boardType: notationStore.getParent().value.type,
-      parentUUId: notationStore.getParent().value.uuid,
+      boardType: notationStore.getParent().type,
+      parentUUId: notationStore.getParent().uuid,
       notationType: "SYMBOL",
       user: userStore.getCurrentUser(),
     };
@@ -831,8 +836,8 @@ export default function notationMutateHelper() {
       fromCol: coordinates.fromCol,
       toCol: coordinates.toCol,
       row: coordinates.row,
-      boardType: notationStore.getParent().value.type,
-      parentUUId: notationStore.getParent().value.uuid,
+      boardType: notationStore.getParent().type,
+      parentUUId: notationStore.getParent().uuid,
       notationType: notationType,
       user: userStore.getCurrentUser(),
     };

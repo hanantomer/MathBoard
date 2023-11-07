@@ -21,13 +21,18 @@ export type NotationCreationAttributes = Omit<NotationAttributes, "uuid">
 
 
 export type SingleValueAttributes =  {
-  value: any;
+  value: string;
 };
 
 export type PointAttributes =  {
   col: number;
   row: number;
 };
+
+export type ActiveCell  = PointAttributes & {
+  userUUId: string;
+  lessonUUId: number;
+}
 
 export type LineAttributes =  {
   fromCol: number;
@@ -45,7 +50,6 @@ export type RectAttributes = {
 export type BoardAttributes = {
   name: string;
   user: UserAttributes;
-  //userId: number // redundant but required for sequelize to build correct sql
 };
 
 

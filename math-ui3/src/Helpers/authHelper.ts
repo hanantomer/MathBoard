@@ -39,7 +39,7 @@ export default function useAuthHelper() {
     return (
       userStore.isTeacher() || // teacher in lesson or question
       userStore.getAuthorized() || // student in lesson when authorized by teacher
-      notationStore.getParent().value.type.toString() ==
+      notationStore.getParent().type.toString() ==
         "ANSWER".toString() // student writing an  answer
     );
   }

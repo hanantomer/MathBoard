@@ -4,13 +4,13 @@ import User from "../user.model";
 import Question from "../question/question.model";
 import {
     AnswerAttributes,
-    AnswerCreateAttributes,
+    AnswerCreationAttributes,
 } from "../../../../math-common/src/answerTypes";
 
 @BoardDecorator("answer")
 export default class Answer extends Model<
     AnswerAttributes,
-    AnswerCreateAttributes
+    AnswerCreationAttributes
 > {
     //    @ForeignKey(() => User)
     //    userId!: number;

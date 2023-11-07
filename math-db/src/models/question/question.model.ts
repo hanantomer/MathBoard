@@ -4,14 +4,14 @@ import User from "../user.model";
 import Lesson from "../lesson/lesson.model";
 import {
     QuestionAttributes,
-    QuestionCreateAttributes,
+    QuestionCreationAttributes,
 } from "../../../../math-common/src/questionTypes";
 
 
 @BoardDecorator("question")
 export default class Question extends Model<
     QuestionAttributes,
-    QuestionCreateAttributes
+    QuestionCreationAttributes
 > {
     @BelongsTo(() => User, {
         foreignKey: {

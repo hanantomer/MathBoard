@@ -17,7 +17,7 @@ export type QuestionAttributes = EntityAttributes & BoardAttributes & {
   lessonId: number; // redendunt bu required sequelize to build correct sql
 }
 
-export type QuestionCreateAttributes = Omit<QuestionAttributes, keyof EntityAttributes>
+export type QuestionCreationAttributes = Omit<QuestionAttributes, keyof EntityAttributes>
 
 // every question notations has a lesson as parent
 

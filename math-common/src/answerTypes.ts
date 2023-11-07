@@ -17,7 +17,7 @@ export type AnswerAttributes = EntityAttributes & BoardAttributes & {
   //questionId: number; // redundant but required for sequelize to build correct sql
 }
 
-export type AnswerCreateAttributes = Omit<AnswerAttributes, keyof EntityAttributes>
+export type AnswerCreationAttributes = Omit<AnswerAttributes, keyof EntityAttributes>
 
 // every answer notations has an answer as parent
 

@@ -195,12 +195,12 @@ const editEnabled = computed(() => {
 });
 
 const hasActiveCell = computed(() => {
-  return notationStore.activeNotation?.user;
+  return notationStore.getActiveNotation()?.user;
 });
 
 const answerCheckMode = computed(() => {
   return (
-    notationStore.getParent().value.type == "ANSWER" && userStore.isTeacher
+    notationStore.getParent().type == "ANSWER" && userStore.isTeacher
   );
 });
 
@@ -227,7 +227,7 @@ watch(
 );
 
 function submitText(value: string) {
-  let activeCell = notationStore.activeCell;
+  let activeCell = notationStore.getActiveCell();
   if (!activeCell) return;
 
   let fromCol = activeCell.col;

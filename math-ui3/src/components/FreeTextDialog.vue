@@ -74,9 +74,9 @@ watch(() => props.show,(newVal) => {
 })
 
 function setInitalTextValue() {
-  if (notationStore.activeNotation?.notationType == "TEXT"
-    && (notationStore.activeNotation as RectNotationAttributes).value)
-    textValue.value = (notationStore.activeNotation as RectNotationAttributes).value;
+  if (notationStore.getActiveNotation()?.notationType == "TEXT" )
+    //&& (notationStore.getActiveNotation() as RectNotationAttributes).value)
+    textValue.value = (notationStore.getActiveNotation() as RectNotationAttributes).value;
 }
 
 function submit() {

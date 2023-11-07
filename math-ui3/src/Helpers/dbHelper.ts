@@ -1,9 +1,16 @@
 import { BoardType, NotationType } from "common/unions";
-import { LineNotationAttributes,  NotationAttributes,  NotationCreationAttributes } from "common/baseTypes";
+import {
+  LineNotationAttributes,
+  NotationAttributes,
+  NotationCreationAttributes,
+} from "common/baseTypes";
 import { UserAttributes, UserCreationAttributes } from "common/userTypes";
 import { LessonAttributes, LessonCreationAttributes } from "common/lessonTypes";
-import { QuestionAttributes, QuestionCreateAttributes } from "common/questionTypes";
-import { AnswerAttributes, AnswerCreateAttributes } from "common/answerTypes";
+import {
+  QuestionAttributes,
+  QuestionCreationAttributes,
+} from "common/questionTypes";
+import { AnswerAttributes, AnswerCreationAttributes } from "common/answerTypes";
 import axios from "axios";
 import axiosHelper from "./axiosHelper";
 const { baseURL } = axiosHelper();
@@ -12,7 +19,7 @@ export default function useDbHelper() {
   function getParentFieldName(boardType: BoardType): string | null {
     const parentFieldName =
       boardType == "LESSON"
-        ? "LessonUUId"
+        ? "lessonUUId"
         : boardType == "QUESTION"
         ? "QuestionUUId"
         : boardType == "ANSWER"
@@ -59,13 +66,13 @@ export default function useDbHelper() {
   ) {
     // check if exists
     const studentLesson = await axios.get(
-      `/studentlessons?LessonUUId=${lessonUUId}&UserUUId=${userUUId}`,
+      `/studentlessons?lessonUUId=${lessonUUId}&UserUUId=${userUUId}`,
     );
 
     if (studentLesson.data.length) return;
 
     return await axios.post(baseURL + "/studentlessons", {
-      LessonUUId: lessonUUId,
+      lessonUUId: lessonUUId,
       UserUUId: userUUId,
     });
   }
@@ -81,7 +88,7 @@ export default function useDbHelper() {
   }
 
   async function addQuestion(
-    question: QuestionCreateAttributes,
+    question: QuestionCreationAttributes,
   ): Promise<QuestionAttributes> {
     const { data } = await axios.post<QuestionAttributes>(
       baseURL + "/questions",
@@ -91,7 +98,7 @@ export default function useDbHelper() {
   }
 
   async function addAnswer(
-    answer: AnswerCreateAttributes,
+    answer: AnswerCreationAttributes,
   ): Promise<AnswerAttributes> {
     const { data } = await axios.post<AnswerAttributes>(
       baseURL + "/answers",
@@ -144,11 +151,9 @@ export default function useDbHelper() {
     );
   }
 
-  async function updateNotationValue(
-    notation: NotationAttributes,
-  ): Promise<NotationAttributes | null> {
+  async function updateNotationValue(notation: NotationAttributes) {
     if ("value" in notation === false) return null;
-    const { data } = await axios.put<NotationAttributes>(
+    await axios.put<NotationAttributes>(
       baseURL +
         `/${notation.boardType.toLowerCase()}${notation.notationType.toLowerCase()}s`,
       {
@@ -156,7 +161,6 @@ export default function useDbHelper() {
         value: (notation as any)["value"],
       },
     );
-    return data;
   }
 
   async function updateLineAttributes(lineNotation: LineNotationAttributes) {
@@ -171,9 +175,9 @@ export default function useDbHelper() {
     );
   }
 
-  async function getLesson(LessonUUId: string): Promise<LessonAttributes> {
+  async function getLesson(lessonUUId: string): Promise<LessonAttributes> {
     const { data } = await axios.get<LessonAttributes>(
-      baseURL + "/lessons?uuid=" + LessonUUId,
+      baseURL + "/lessons?uuid=" + lessonUUId,
     );
     return data;
   }
@@ -218,7 +222,7 @@ export default function useDbHelper() {
     lessonUUId: string,
   ): Promise<QuestionAttributes[]> {
     const { data } = await axios.get<QuestionAttributes[]>(
-      baseURL + "/questions?LessonUUId=" + lessonUUId,
+      baseURL + "/questions?lessonUUId=" + lessonUUId,
     );
     return data;
   }
@@ -246,7 +250,7 @@ export default function useDbHelper() {
     boardType: string,
     parentUUId: string,
   ): Promise<T[]> {
-    // e.g lessonsymbols?LessonUUId=1
+    // e.g lessonsymbols?lessonUUId=1
     //const parentFieldName = getParentFieldName(boardType);
     const uri =
       baseURL +

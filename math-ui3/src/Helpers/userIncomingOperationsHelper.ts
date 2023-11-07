@@ -1,4 +1,4 @@
-import { NotationAttributes } from "common/baseTypes";
+import { ActiveCell, NotationAttributes } from "common/baseTypes";
 import { useUserStore } from "../store/pinia/userStore";
 import { useStudentStore } from "../store/pinia/studentStore";
 import { useNotationStore } from "../store/pinia/notationStore";
@@ -12,69 +12,76 @@ const userStore = useUserStore();
 const studentStore = useStudentStore();
 
 export default function userIncomingOperations() {
-  // sync incoming changes only if in Lesson and not initiated by me
+  // check if in Lesson and not initiated by me
   function isRelevant(notation: NotationAttributes) {
-    if (notation.uuid === userStore.getCurrentUser().uuid) return false;
-    if (notationStore.getParent().value.type !== "LESSON") return false;
+    if (notation.user.uuid === userStore.getCurrentUser().uuid) return false;
+    if (notationStore.getParent().type !== "LESSON") return false;
     return true;
   }
 
   async function syncIncomingUserOperations() {
     const feathersClient = FeathersHelper.getInstance();
 
-    // this is the gate to consume all the below events
-    try {
-      const t = await feathersClient.service("authentication").create({
-        LessonUUId: lessonStore.getCurrentLesson().uuid,
-      });
-    } catch (error) {
-      console.debug(error);
-    }
+    // send auth token to server and register to accept messsages.
+    // see also AuthenticationService
+    feathersClient.service("authentication").create({
+      lessonUUId: lessonStore.getCurrentLesson().uuid,
+    });
 
+    // sync created notations
     feathersClient
       .service("notationSync")
       .on("created", (notation: NotationAttributes) => {
         if (!isRelevant(notation)) return;
-        notationStore.setNotation(notation.uuid, notation);
+        notationStore.setNotation(notation);
       });
 
+    // sync updated notations
     feathersClient
       .service("notationSync")
       .on("updated", (notation: NotationAttributes) => {
         if (!isRelevant(notation)) return;
-        notationStore.getNotations().value.set(notation.uuid, notation);
+        notationStore.setNotation(notation);
       });
+
+    // sync removed notations
     feathersClient
       .service("notationSync")
       .on("removed", (notation: NotationAttributes) => {
         if (!isRelevant(notation)) return;
-        notationStore.getNotations().value.set(notation.uuid, notation);
+        notationStore.removeNotation(notation.uuid);
       });
+
+    // sync active cell with teacher or write authorized student
     feathersClient
       .service("activeCell")
-      .on("updated", (activeCell: PointAttributes) => {
-        if (notationStore.getParent().value.type !== "LESSON") return;
+      .on("updated", (activeCell: ActiveCell) => {
+        if (notationStore.getParent().type !== "LESSON") return;
+        if (activeCell.userUUId == userStore.getCurrentUser().uuid) return;
         notationStore.setActiveCell(activeCell);
       });
-    if (!this.isTeacher()) {
+
+    // accept write authorization as student in lesson
+    if (!userStore.isTeacher()) {
       feathersClient
         .service("authorization")
         .on("updated", (user: UserAttributes) => {
           if (
             user.uuid === userStore.getCurrentUser()!.uuid //&&
-            //this.getCurrentLesson().uuid === authData.LessonUUId : TODO check if neccesary since massages are listned by lesson
           ) {
             userStore.setAuthorized(user.authorized ? true : false);
           }
         });
     }
-    if (this.isTeacher()) {
+
+    // get heartbeat signals from students
+    if (userStore.isTeacher()) {
       feathersClient
         .service("heartbeat")
         .on("updated", (user: UserAttributes) => {
           if (
             user.uuid != userStore.getCurrentUser()!.uuid &&
-            notationStore.getParent().value.type === "LESSON"
+            notationStore.getParent().type === "LESSON"
           ) {
             studentStore.setStudentHeartbeat(user.uuid);
           }

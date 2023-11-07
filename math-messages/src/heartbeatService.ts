@@ -6,6 +6,9 @@ export default class HeartbeatService {
   constructor(app: Application) {
     this.app = app;
   }
+
+  // student sends heartbeat messgae
+  // return hartbeat data 
   async update(id: number, data: any, params: any) {
     let access_token = await util.getAccessTokenFromCookie(
       params.headers.cookie
@@ -17,7 +20,7 @@ export default class HeartbeatService {
 
     if (!!user) {
       return {
-        LessonUUId: data.LessonUUId,
+        lessonUUId: data.lessonUUId,
         userId: user.id,
         firstName: user.firstName,
         lastName: user.lastName,

@@ -2,9 +2,9 @@
 import { defineStore } from "pinia";
 import {
   QuestionAttributes,
-  QuestionCreateAttributes,
+  QuestionCreationAttributes,
 } from "common/questionTypes";
-import useDbHelper  from "../../helpers/dbHelper";
+import useDbHelper from "../../helpers/dbHelper";
 import { useLessonStore } from "./lessonStore";
 
 const lessonStore = useLessonStore();
@@ -12,8 +12,7 @@ const db = useDbHelper();
 
 ///TODO: create convention for all crud operation for all stores
 
-export const useQuestionStore = defineStore("answer", ()=> {
-
+export const useQuestionStore = defineStore("answer", () => {
   let questions: Map<String, QuestionAttributes> = new Map();
   let currentQuestion = <QuestionAttributes>{};
 
@@ -26,41 +25,42 @@ export const useQuestionStore = defineStore("answer", ()=> {
   }
 
   async function loadQuestion(questionUUId: string) {
-      currentQuestion = await db.getQuestion(questionUUId);
-  };
+    currentQuestion = await db.getQuestion(questionUUId);
+  }
 
   async function loadQuestions() {
     if (!lessonStore.getLessons()) {
       lessonStore.loadLessons();
     }
 
-    let questionsFromDb = await db.getQuestions(lessonStore.getCurrentLesson().uuid);
+    let questionsFromDb = await db.getQuestions(
+      lessonStore.getCurrentLesson().uuid,
+    );
     questionsFromDb.forEach((q: QuestionAttributes) => {
       questions.set(q.uuid, q);
     });
-  };
+  }
 
-  async function addQuestion(question: QuestionCreateAttributes) {
-    question.lesson  = lessonStore.getCurrentLesson();
+  async function addQuestion(question: QuestionCreationAttributes) {
+    question.lesson = lessonStore.getCurrentLesson();
     let createdQuestion = await db.addQuestion(question);
     questions.set(createdQuestion.uuid, createdQuestion);
     currentQuestion = createdQuestion;
     return question;
-  };
+  }
 
   function setCurrentQuestion(questionUUId: string) {
-
     if (!questions.get(questionUUId)) {
       loadQuestions();
     }
     if (questions.get(questionUUId)) {
       currentQuestion = questions.get(questionUUId)!;
     }
-  };
+  }
 
   function removeQuestion(question: QuestionAttributes) {
     questions.delete(question.uuid);
-  };
+  }
 
   return {
     getQuestions,
@@ -69,6 +69,6 @@ export const useQuestionStore = defineStore("answer", ()=> {
     loadQuestion,
     addQuestion,
     setCurrentQuestion,
-    removeQuestion
+    removeQuestion,
   };
 });
