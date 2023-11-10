@@ -1,6 +1,11 @@
 <template>
   <v-row justify="center">
-    <v-dialog v-model="show" max-width="400px" @keydown.esc="show = false">
+    <v-dialog
+      persistent
+      v-model="dialog"
+      max-width="400px"
+      @keydown.esc="closeDialog"
+    >
       <v-card>
         <v-card-title>
           <span class="headline">Lesson Access Link</span>
@@ -12,7 +17,6 @@
                 <v-text-field
                   v-model="link"
                   label="Access Link"
-                  value=""
                   readonly
                 ></v-text-field>
               </v-col>
@@ -21,12 +25,8 @@
         </v-card-text>
         <v-card-actions>
           <v-spacer></v-spacer>
-          <v-btn color="blue darken-1"  @click="show = false">
-            Close
-          </v-btn>
-          <v-btn color="blue darken-1"  @click="copy">
-            Copy To Clipboard
-          </v-btn>
+          <v-btn color="blue darken-1" @click="closeDialog"> Close </v-btn>
+          <v-btn color="blue darken-1" @click="copy"> Copy To Clipboard </v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
@@ -34,39 +34,36 @@
 </template>
 
 <script setup lang="ts">
-
-import { computed, ref, watch } from "vue"
+import { computed, ref, watch } from "vue";
 import { useLessonStore } from "../store/pinia/lessonStore";
+
+const emit = defineEmits(["close"]);
 
 const lessonStore = useLessonStore();
 
 const props = defineProps({
-  dialog: Boolean
+  show: { type: Boolean },
 });
 
-watch(()=> props.dialog, (show: boolean) => {
-  show = show;
-})
+let dialog = ref(false);
 
-let show = ref(false);
-
-//let show = computed({
-//    get() : boolean {
-//      return props.value;
- // }
-  //,
-   // set(value: boolean) {
-   //   emit("input", value);
-   // },
-//});
+watch(
+  () => props.show,
+  (newVal) => {
+    dialog.value = newVal;
+  },
+);
 
 const link = computed(() => {
-  return "/api/lesson/" + lessonStore.getCurrentLesson().uuid;
+  return window.location.href;
 });
 
 function copy() {
-    navigator.clipboard.writeText(link.value);
-    show.value = false;
-};
+  navigator.clipboard.writeText(link.value);
+  closeDialog();
+}
 
+function closeDialog() {
+  emit("close");
+}
 </script>

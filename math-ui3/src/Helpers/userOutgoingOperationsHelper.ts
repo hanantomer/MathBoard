@@ -1,7 +1,7 @@
 import { CellCoordinates } from "common/globals";
 import { NotationAttributes } from "common/baseTypes";
 import { FeathersHelper } from "./feathersHelper";
-import {Params } from "@feathersjs/feathers";
+import { Params } from "@feathersjs/feathers";
 
 export default function userOutgoingOperations() {
   // function signedInWithGoogle() {
@@ -32,8 +32,8 @@ export default function userOutgoingOperations() {
   }
 
   function syncOutgoingRemoveNotation(uuid: string, lessonUUId: string) {
-    let params: Params = {   query: {lessonUUId: lessonUUId} }
-    FeathersHelper.getInstance().service("notationSync").remove(uuid, {});
+    let params: Params = { query: { lessonUUId: lessonUUId } };
+    FeathersHelper.getInstance().service("notationSync").remove(uuid, params);
   }
 
   function syncOutgoingUpdateNotation(notation: NotationAttributes) {

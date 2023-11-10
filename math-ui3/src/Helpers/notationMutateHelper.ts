@@ -384,7 +384,7 @@ export default function notationMutateHelper() {
   }
 
   ///TODO - check if needs to return notation
-  async function removeActiveNotation(): Promise<NotationAttributes | null> {
+  /*async function removeActiveNotation(): Promise<NotationAttributes | null> {
     if (!authHelper.canEdit()) {
       return null;
     }
@@ -407,10 +407,13 @@ export default function notationMutateHelper() {
 
     // publish
     if (deletedNotation)
-      userOutgoingOperations.syncOutgoingRemoveNotation(deletedNotation.uuid);
+      userOutgoingOperations.syncOutgoingRemoveNotation(
+        deletedNotation.uuid,
+        deletedNotation.parentUUId,
+      );
 
     return deletedNotation ? deletedNotation : null;
-  }
+  }*/
 
   async function removeSelectedNotations() {
     if (!authHelper.canEdit) return;
@@ -424,7 +427,7 @@ export default function notationMutateHelper() {
       notationStore.removeNotation(n.uuid);
 
       // publish
-      userOutgoingOperations.syncOutgoingRemoveNotation(n.uuid);
+      userOutgoingOperations.syncOutgoingRemoveNotation(n.uuid, n.parentUUId);
     });
   }
 
@@ -697,17 +700,17 @@ export default function notationMutateHelper() {
   }
 
   function addMarkNotation() {
-    if (notationStore.getEditMode().value == "CHECKMARK") {
+    if (notationStore.getEditMode() == "CHECKMARK") {
       addSymbolNotation("&#x2714");
       return;
     }
 
-    if (notationStore.getEditMode().value == "SEMICHECKMARK") {
+    if (notationStore.getEditMode() == "SEMICHECKMARK") {
       addSymbolNotation("&#x237B");
       return;
     }
 
-    if (notationStore.getEditMode().value == "XMARK") {
+    if (notationStore.getEditMode() == "XMARK") {
       addSymbolNotation("&#x2718");
       return;
     }
@@ -736,10 +739,10 @@ export default function notationMutateHelper() {
       removeActiveCellNotations();
       return;
     }
-    if (notationStore.getActiveNotation()) {
-      removeActiveNotation();
-      return;
-    }
+    //if (notationStore.getActiveNotation()) {
+   //   removeActiveNotation();
+   //   return;
+    //}
     if (notationStore.getSelectedNotations()) {
       removeSelectedNotations();
       return;
@@ -756,7 +759,10 @@ export default function notationMutateHelper() {
     if (!notationsToDelete) return;
 
     notationsToDelete.forEach((notation: NotationAttributes) => {
-      userOutgoingOperations.syncOutgoingRemoveNotation(notation.uuid);
+      userOutgoingOperations.syncOutgoingRemoveNotation(
+        notation.uuid,
+        notation.parentUUId,
+      );
     });
   }
 
@@ -784,13 +790,17 @@ export default function notationMutateHelper() {
     notationStore.resetActiveCell();
   }
 
-  function addTextNotation(
-    fromCol: number,
-    toCol: number,
-    fromRow: number,
-    toRow: number,
-    value: string,
-  ) {
+  function addTextNotation(value: string) {
+    let activeCell = notationStore.getActiveCell();
+    if (!activeCell) return;
+
+    let fromCol = activeCell.col;
+    let toCol =
+      activeCell.col + Math.floor(matrixHelper.freeTextRectWidth(value));
+    let fromRow = activeCell.row;
+    let toRow =
+      activeCell.row + Math.floor(matrixHelper.freeTextRectHeight(value));
+
     let notation: RectNotationCreationAttributes = {
       fromCol: fromCol,
       toCol: toCol,
@@ -823,7 +833,7 @@ export default function notationMutateHelper() {
 
     addNotation(notation);
 
-    if (notationStore.getEditMode().value == "SYMBOL") {
+    if (notationStore.getEditMode() == "SYMBOL") {
       matrixHelper.setNextRect(1, 0);
     }
   }

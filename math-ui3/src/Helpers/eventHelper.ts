@@ -15,8 +15,6 @@ const authHelper = useAuthHelper();
 const eventBus = useEventBus();
 
 export default function eventHelper() {
-
-
   async function paste(e: ClipboardEvent) {
     // disallow adding image by student
     if (!userStore.isTeacher) return;
@@ -35,8 +33,10 @@ export default function eventHelper() {
         if (!base64data) return;
         let fromCol = parseInt(that.getActiveCell().col);
         let fromRow = parseInt(that.getActiveCell().row);
-        let toCol = Math.ceil(image.width / matrixHelper.getRectSize()) + fromCol;
-        let toRow = Math.ceil(image.height / matrixHelper.getRectSize()) + fromRow;
+        let toCol =
+          Math.ceil(image.width / matrixHelper.getRectSize()) + fromCol;
+        let toRow =
+          Math.ceil(image.height / matrixHelper.getRectSize()) + fromRow;
         notationMutationHelper.addImageNotation(
           fromCol,
           toCol,
@@ -52,6 +52,11 @@ export default function eventHelper() {
 
   function keyUp(e: KeyboardEvent) {
     const { ctrlKey, altKey, code, key } = e;
+
+    if (notationStore.getEditMode() !== "SYMBOL") {
+      return;
+    }
+
     if (ctrlKey || altKey) {
       return;
     }
@@ -122,18 +127,17 @@ export default function eventHelper() {
 
   function mouseDown(e: MouseEvent) {
     if (
-      notationStore.getEditMode().value === "FRACTION" ||
-      notationStore.getEditMode().value === "SQRT" ||
-      notationStore.getEditMode().value === "SELECT"
+      notationStore.getEditMode() === "FRACTION" ||
+      notationStore.getEditMode() === "SQRT" ||
+      notationStore.getEditMode() === "SELECT"
     ) {
       return;
     }
 
-
     if (
-      notationStore.getEditMode().value === "CHECKMARK" ||
-      notationStore.getEditMode().value === "SEMICHECKMARK" ||
-      notationStore.getEditMode().value === "XMARK"
+      notationStore.getEditMode() === "CHECKMARK" ||
+      notationStore.getEditMode() === "SEMICHECKMARK" ||
+      notationStore.getEditMode() === "XMARK"
     ) {
       notationMutationHelper.addMarkNotation();
       return;
@@ -228,5 +232,3 @@ export default function eventHelper() {
     unregisterPaste,
   };
 }
-
-

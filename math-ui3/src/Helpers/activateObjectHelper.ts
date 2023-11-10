@@ -41,15 +41,16 @@ export default function activateObjectHelper() {
     setActiveCell(e);
   }
 
-  async function setActiveNotation(activeNotation: NotationAttributes | null) {
+  function selectNotation(activeNotation: NotationAttributes) {
     // disallow activation of question rows for student
     if (notationMutateHelper.isNotationInQuestionArea(activeNotation)) return;
-    notationStore.setActiveNotation(activeNotation);
+
+    notationStore.selectNotation(activeNotation?.uuid);
   }
 
   function reset() {
     notationStore.setActiveCell(null);
-    setActiveNotation(null);
+    notationStore.resetSelectedNotations();
   }
 
   function getOverlappedRectNotation(
@@ -58,23 +59,29 @@ export default function activateObjectHelper() {
     let rectElement = elementFinderHelper.findRectAtClickedPosition(e);
     if (!rectElement) return null;
 
-    return notationStore
+    const rectNotation: RectNotationAttributes | undefined = notationStore
       .getNotationsByShape<RectNotationAttributes>("RECT")
       .find((n: RectNotationAttributes) => {
-        elementFinderHelper.getElementAttributeValue(rectElement, "fromCol") >=
-          n.fromCol &&
-          elementFinderHelper.getElementAttributeValue(rectElement, "toCol") <=
+        return (
+          elementFinderHelper.getElementAttributeValue(
+            rectElement,
+            "fromCol",
+          ) == n.fromCol &&
+          elementFinderHelper.getElementAttributeValue(rectElement, "toCol") ==
             n.toCol &&
           elementFinderHelper.getElementAttributeValue(
             rectElement,
             "fromRow",
-          ) >= n.fromRow &&
-          elementFinderHelper.getElementAttributeValue(rectElement, "toRow") >=
-            n.toRow;
+          ) == n.fromRow &&
+          elementFinderHelper.getElementAttributeValue(rectElement, "toRow") ==
+            n.toRow
+        );
       });
+
+    return rectNotation;
   }
 
-  // called by store watcher. see mathboard.vue
+  // called by store watcher. see mathboard.vue  /// TODO - move to dom helper
   function showActiveCell(
     svgId: string,
     prevActiveCell: CellCoordinates | undefined,
@@ -101,6 +108,7 @@ export default function activateObjectHelper() {
     }
   }
 
+
   function getOverlappedLineNotation(
     lineElement: Element,
   ): NotationAttributes | undefined {
@@ -119,24 +127,24 @@ export default function activateObjectHelper() {
     });
   }
 
-  function setActiveRect(e: MouseEvent) {
+  function setActiveRect(e: MouseEvent): boolean {
     let overlapRectNotation = getOverlappedRectNotation(e);
     if (overlapRectNotation) {
-      setActiveNotation(overlapRectNotation).then(() => {
-        const editMode = NotationTypeEditMode.get(
-          overlapRectNotation!.notationType,
-        );
-        if (editMode) {
-          notationStore.setEditMode(editMode);
-        }
-      });
+      selectNotation(overlapRectNotation);
 
+      const editMode = NotationTypeEditMode.get(
+        overlapRectNotation!.notationType,
+      );
+
+      if (editMode) {
+        notationStore.setEditMode(editMode);
+      }
       return true;
     }
     return false;
   }
 
-  function setActiveFraction(e: MouseEvent) {
+  function setActiveFraction(e: MouseEvent): boolean {
     const fractionElement = elementFinderHelper.findClickedObject(
       {
         x: e.clientX,
@@ -162,7 +170,7 @@ export default function activateObjectHelper() {
     return false;
   }
 
-  function setActiveSqrt(e: MouseEvent) {
+  function setActiveSqrt(e: MouseEvent): boolean {
     const sqrtElement = elementFinderHelper.findClickedObject(
       {
         x: e.clientX,
@@ -201,20 +209,25 @@ export default function activateObjectHelper() {
       row: elementFinderHelper.getElementAttributeValue(
         clickedCell.parentElement!,
         "row",
-      )
+      ),
     };
 
     notationStore.setActiveCell(cellToActivate);
     notationStore.resetEditMode();
 
     if (notationStore.getParent().type == "LESSON") {
-      let t =
-        await userOutgoingOperationsHelper.syncOutgoingActiveCell(
-          cellToActivate, lessonStore.getCurrentLesson().uuid
-        );
+      let t = await userOutgoingOperationsHelper.syncOutgoingActiveCell(
+        cellToActivate,
+        lessonStore.getCurrentLesson().uuid,
+      );
       console.log(t);
     }
   }
 
-  return { showActiveCell, setActiveCell, activateClickedObject, reset };
+  return {
+    showActiveCell,
+    setActiveCell,
+    activateClickedObject,
+    reset,
+  };
 }

@@ -32,9 +32,8 @@ export const useNotationStore = defineStore("notation", () => {
 
   let activeCell = ref(<CellCoordinates | null>null);
 
-  let activeNotation = ref(<NotationAttributes | null>null);
 
-  let editMode = ref<EditMode>("SYMBOL");
+  let editMode = ref<EditMode>();
 
   const defaultEditMode: EditMode = "SYMBOL";
 
@@ -114,21 +113,17 @@ export const useNotationStore = defineStore("notation", () => {
   }
 
   function getEditMode() {
-    return editMode;
+    return editMode.value;
   }
 
   function getDefaultEditMode() {
     return defaultEditMode;
   }
 
-  function getSelectedNotations() {
+  function getSelectedNotations() : NotationAttributes[]{
     return Array.from(notations.value.values()).filter(
       (n) => n.selected === true,
     );
-  }
-
-  function getActiveNotation() {
-    return activeNotation.value;
   }
 
   function getActiveCell() {
@@ -185,10 +180,7 @@ export const useNotationStore = defineStore("notation", () => {
     notations.value.set(notation.uuid, notation);
   }
 
-  function setActiveNotation(notation: NotationAttributes | null) {
-    activeNotation.value = notation;
-  }
-
+  
   function setActiveCell(newActiveCell: CellCoordinates | null) {
     activeCell.value = newActiveCell;
   }
@@ -248,7 +240,6 @@ export const useNotationStore = defineStore("notation", () => {
     getDefaultEditMode,
     getCellOccupationMatrix,
     getActiveCell,
-    getActiveNotation,
     getSelectedNotations,
     getParent,
     getRectSize,
@@ -267,20 +258,14 @@ export const useNotationStore = defineStore("notation", () => {
     setNotations,
     setNotation,
     selectNotation,
-    setActiveNotation,
     setActiveCell,
     setEditMode,
     setParent,
     setRectSize,
-
     resetEditMode,
-
     resetActiveCell,
     resetSelectedNotations,
     removeNotation,
     removeAllNotations,
-
-    //activeCell,
-    //activeNotation,
   };
 });

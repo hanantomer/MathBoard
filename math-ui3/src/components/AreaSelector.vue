@@ -126,7 +126,7 @@ function handleMouseDown(e: MouseEvent) {
     return;
   }
 
-  const editMode = notationStore.getEditMode().value;
+  const editMode = notationStore.getEditMode();
 
   if (editMode == "SELECT") {
     stateMachine.setNextEditMode();
@@ -138,7 +138,7 @@ function handleMouseMove(e: MouseEvent) {
     return;
   }
 
-  const editMode = notationStore.getEditMode().value;
+  const editMode = notationStore.getEditMode();
 
   if (editMode == "SELECTING") {
     updateSelectionArea(e);
@@ -152,7 +152,7 @@ function handleMouseMove(e: MouseEvent) {
 }
 
 function handleMouseUp(e: MouseEvent) {
-  const editMode = notationStore.getEditMode().value;
+  const editMode = notationStore.getEditMode();
 
   if (!notationStore.isSelectionMode()) {
     return;

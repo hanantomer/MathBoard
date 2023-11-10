@@ -1,15 +1,21 @@
 <template>
-  <accessLinkDialog :dialog="accessLinkDialogOpen"></accessLinkDialog>
-  <freeTextDialog v-model="freeTextDialogOpen"></freeTextDialog>
+  <accessLinkDialog
+    :show="showAccessLinkDialog"
+    @close="closeAccessLinkDialog"
+  ></accessLinkDialog>
+  <freeTextDialog
+    :show="showFreeTextDialog"
+    @close="closeFreeTextDialog"
+  ></freeTextDialog>
 
   <v-toolbar color="primary" dark class="vertical-toolbar" height="500">
     <!-- create access link -->
-    <v-tooltip text="<span>Create Access Link</span>">
+    <v-tooltip text="Create Access Link">
       <template v-slot:activator="{ props }">
         <v-btn
           v-bind="props"
           icon
-          @click.stop="accessLinkDialogOpen = true"
+          @click.stop="openAccessLinkDialog"
           color="white"
           x-small
           fab
@@ -27,7 +33,7 @@
           icon
           :disabled="!editEnabled || !hasActiveCell"
           v-on:click="startTextMode"
-          @click.stop="freeTextDialogOpen = true"
+          @click.stop="openFreeTextDialog"
           ><v-icon>mdi-text</v-icon></v-btn
         >
       </template>
@@ -171,12 +177,14 @@ import useNotationMutateHelper from "../helpers/notationMutateHelper";
 import { useNotationStore } from "../store/pinia/notationStore";
 import { computed } from "vue";
 import { useUserStore } from "../store/pinia/userStore";
+import useEventBus from "../helpers/eventBus";
 
 const matrixHelper = useMatrixHelper();
 const authHelper = useAuthHelper();
 const notationMutateHelper = useNotationMutateHelper();
 const notationStore = useNotationStore();
 const userStore = useUserStore();
+const eventBus = useEventBus();
 
 let checkmarkButtonActive = ref(1);
 let semicheckmarkButtonActive = ref(1);
@@ -186,58 +194,67 @@ let fractionButtonActive = ref(1);
 let squareRootButtonActive = ref(1);
 let powerButtonActive = ref(1);
 
-let accessLinkDialogOpen = ref(false);
-let freeTextDialogOpen = ref(false);
+let showAccessLinkDialog = ref(false);
+let showFreeTextDialog = ref(false);
 let textButtonActive = ref(1);
 
+// emitted by eventHelper
+watch(
+  () => eventBus.bus.value.get("freeTextSubmited"),
+  (value: string) => {
+    notationMutateHelper.addTextNotation(value);
+  },
+);
+
+function openFreeTextDialog() {
+  showFreeTextDialog.value = true;
+}
+
+function closeFreeTextDialog() {
+  showFreeTextDialog.value = false;
+}
+
+function openAccessLinkDialog() {
+  showAccessLinkDialog.value = true;
+}
+
+function closeAccessLinkDialog() {
+  showAccessLinkDialog.value = false;
+}
+
 const editEnabled = computed(() => {
-  return authHelper.canEdit;
+  return authHelper.canEdit();
 });
 
 const hasActiveCell = computed(() => {
-  return notationStore.getActiveNotation()?.user;
+  return notationStore.getActiveCell();
 });
 
 const answerCheckMode = computed(() => {
-  return (
-    notationStore.getParent().type == "ANSWER" && userStore.isTeacher
-  );
+  return notationStore.getParent().type == "ANSWER" && userStore.isTeacher;
 });
 
 watch(
   () => notationStore.getEditMode(),
   (editMode) => {
-    if (editMode.value === notationStore.getDefaultEditMode()) {
+    if (editMode === notationStore.getDefaultEditMode()) {
       resetButtonsState();
     }
 
-    if (editMode.value === "FRACTION") {
+    if (editMode === "FRACTION") {
       fractionButtonActive.value = 0;
     }
 
-    if (editMode.value === "SQRT") {
+    if (editMode === "SQRT") {
       squareRootButtonActive.value = 0;
     }
 
-    if (editMode.value === notationStore.getDefaultEditMode()) {
+    if (editMode === notationStore.getDefaultEditMode()) {
       resetButtonsState();
     }
   },
   { immediate: true, deep: true },
 );
-
-function submitText(value: string) {
-  let activeCell = notationStore.getActiveCell();
-  if (!activeCell) return;
-
-  let fromCol = activeCell.col;
-  let toCol =
-    activeCell.col + Math.floor(matrixHelper.freeTextRectWidth(value));
-  let fromRow = activeCell.row;
-  let toRow =
-    activeCell.row + Math.floor(matrixHelper.freeTextRectHeight(value));
-  notationMutateHelper.addTextNotation(fromCol, toCol, fromRow, toRow, value);
-}
 
 function resetButtonsState() {
   checkmarkButtonActive.value = 1;
@@ -251,7 +268,7 @@ function resetButtonsState() {
 
 function toggleFractionMode() {
   resetButtonsState();
-  if (notationStore.getEditMode().value == "FRACTION") {
+  if (notationStore.getEditMode() == "FRACTION") {
     resetButtonsState();
   } else {
     startFractionMode();
@@ -266,7 +283,7 @@ function startFractionMode() {
 
 function toggleSqrtMode() {
   resetButtonsState();
-  if (notationStore.getEditMode().value == "SQRT") {
+  if (notationStore.getEditMode() == "SQRT") {
     resetButtonsState();
   } else {
     startSqrtMode();
@@ -281,7 +298,7 @@ function startSqrtMode() {
 
 function togglePowerMode() {
   resetButtonsState();
-  if (notationStore.getEditMode().value == "POWER") {
+  if (notationStore.getEditMode() == "POWER") {
     endPowerMode();
   } else {
     startPowerMode();
@@ -309,7 +326,7 @@ function endTextMode() {
 }
 
 function toggleSelectionMode() {
-  if (notationStore.getEditMode().value == "SELECT") {
+  if (notationStore.getEditMode() == "SELECT") {
     endSelectionMode();
   } else {
     startSelectionMode();
@@ -328,7 +345,7 @@ function endSelectionMode() {
 }
 
 function toggleCheckmarkMode() {
-  if (notationStore.getEditMode().value == "CHECKMARK") {
+  if (notationStore.getEditMode() == "CHECKMARK") {
     resetButtonsState();
     notationStore.setEditMode("SYMBOL");
   } else {
@@ -343,7 +360,7 @@ function startCheckmarkMode() {
 }
 
 function toggleSemiCheckmarkMode() {
-  if (notationStore.getEditMode().value == "SEMICHECKMARK") {
+  if (notationStore.getEditMode() == "SEMICHECKMARK") {
     resetButtonsState();
     notationStore.setEditMode("SYMBOL");
   } else {
@@ -358,7 +375,7 @@ function startSemiCheckmarkMode() {
 }
 
 function toggleXmarkMode() {
-  if (notationStore.getEditMode().value == "XMARK") {
+  if (notationStore.getEditMode() == "XMARK") {
     resetButtonsState();
     notationStore.setEditMode("SYMBOL");
   } else {

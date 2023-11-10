@@ -28,6 +28,7 @@ import useEventBus from "../helpers/eventBus";
 import { onMounted, onUnmounted, watch } from "vue";
 import { CellCoordinates } from "common/globals";
 import { useNotationStore } from "../store/pinia/notationStore";
+import { NotationAttributes } from "common/baseTypes";
 
 const notationLoadingHelper = useNotationLoadingHelper();
 const notationStore = useNotationStore();
@@ -87,6 +88,7 @@ watch(
   { immediate: true, deep: true },
 );
 
+
 // wait for child(e.g lesson) signal
 watch(
   () => props.loaded,
@@ -99,7 +101,6 @@ watch(
 watch(
   () => notationStore.getNotations(),
   () => {
-
     matrixHelper.refreshScreen(notationStore.getNotations(), props.svgId);
   },
   { immediate: true, deep: true },

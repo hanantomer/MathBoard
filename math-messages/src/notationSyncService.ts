@@ -50,7 +50,7 @@ export default class notationSyncService {
   ) {
     let notation: unknown = {
       uuid: notationUUId,
-      user: { id: await this.getUserUUIdFromCookie(params.headers.cookie) },
+      user: { uuid: await this.getUserUUIdFromCookie(params.headers.cookie) },
       lesson: {uuid: params.query.lessonUUId}
     }
     return notation;

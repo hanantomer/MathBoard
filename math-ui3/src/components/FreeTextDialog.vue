@@ -1,6 +1,11 @@
 <template>
   <v-row justify="center">
-    <v-dialog v-model="dialog" max-width="800px" @keydown.esc="dialog = false">
+    <v-dialog
+      persistant
+      v-model="dialog"
+      max-width="800px"
+      @keydown.esc="closeDialog"
+    >
       <v-card>
         <v-card-title>
           <span class="headline">Compose free text</span>
@@ -36,12 +41,8 @@
         </v-card-text>
         <v-card-actions>
           <v-spacer></v-spacer>
-          <v-btn color="blue darken-1" @click="dialog = false">
-            Close
-          </v-btn>
-          <v-btn color="blue darken-1" @click="submit">
-            Submit text
-          </v-btn>
+          <v-btn color="blue darken-1" @click="closeDialog"> Close </v-btn>
+          <v-btn color="blue darken-1" @click="submit"> Submit text </v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
@@ -49,77 +50,48 @@
 </template>
 
 <script setup lang="ts">
-import { watch, ref } from "vue"
+import { watch, ref } from "vue";
 import { useNotationStore } from "../store/pinia/notationStore";
-import { NotationType } from "../../../math-common/src/unions";
 import useEventBus from "../helpers/eventBus";
-import {
-    RectNotationAttributes
-} from "../../../math-common/build/baseTypes";
-
+import { RectNotationAttributes } from "../../../math-common/build/baseTypes";
 
 const notationStore = useNotationStore();
 const eventBus = useEventBus();
 
+const emit = defineEmits(["close"]);
+
 const props = defineProps({
   show: { type: Boolean },
-})
+});
 
 let dialog = ref(false);
+
+watch(
+  () => props.show,
+  (newVal) => {
+    dialog.value = newVal;
+    setInitalTextValue();
+  },
+  { immediate: true },
+);
+
 let textValue = ref("");
 
-watch(() => props.show,(newVal) => {
-  dialog.value = newVal;
-  setInitalTextValue();
-})
-
 function setInitalTextValue() {
-  if (notationStore.getActiveNotation()?.notationType == "TEXT" )
-    //&& (notationStore.getActiveNotation() as RectNotationAttributes).value)
-    textValue.value = (notationStore.getActiveNotation() as RectNotationAttributes).value;
+  if (
+    notationStore.getSelectedNotations().length === 1 &&
+    notationStore.getSelectedNotations()[0].notationType == "TEXT")
+    textValue.value = (
+      notationStore.getSelectedNotations()[0] as RectNotationAttributes
+    ).value;
 }
 
 function submit() {
-  dialog.value = false;
-  //this.$emit("submitText", this.text, this.background_color);
-  //this.$emit("submitText", this.text, "lightYellow");
-  textValue.value = "";
-  eventBus.emit("textAdded", textValue.value);
+  eventBus.emit("freeTextSubmited", textValue.value);
+  closeDialog();
 }
 
-//const show = computed(() => {
-//  return
-  //get() {
-  //  return props.value;
-  //},
-  //set(value) {
-  //  emit(value);
-  //},
-//});
-
-//watch: {
- //   show(val) {
- //     if (val && !!this.getActiveNotation()?.value) {
- //       this.text = this.getActiveNotation().value;
-//      }
-//    },
-//  },
-//  data() {
-//    return {
-//      text: "",
-      //background_color: "#000001",
-//    };
-//  },
-//  methods: {
-//    ...mapGetters({
-//      getActiveNotation: "getActiveNotation",
-///    }),
-    // submit: function () {
-    //   this.show = false;
-    //   //this.$emit("submitText", this.text, this.background_color);
-    //   this.$emit("submitText", this.text, "lightYellow");
-    //   this.text = "";
-    // },
-  //},
-//};
+function closeDialog() {
+  emit("close");
+}
 </script>

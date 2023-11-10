@@ -86,14 +86,14 @@ export default function useMatrixHelper() {
   //   setTextMeasurementCtx(el);
   // }
 
-  function freeTextRectWidth(text: string) {
+  function getFreeTextRectWidth(text: string) {
     return (
       (<any>window).textMeasurementCtx.measureText(text).width /
       notationStore.getRectSize()
     );
   }
 
-  function freeTextRectHeight(text: string) {
+  function getFreeTextRectHeight(text: string) {
     let fontSize = getDefaultFontSize();
     return (
       (fontSize * text.split(/\r*\n/).length) / notationStore.getRectSize()
@@ -230,10 +230,7 @@ export default function useMatrixHelper() {
     return enrichedNotations;
   }
 
-  function refreshScreen(
-    notations: NotationAttributes[],
-    svgId: string,
-  ) {
+  function refreshScreen(notations: NotationAttributes[], svgId: string) {
     const svgElement = document!.getElementById(svgId);
 
     setMatrix(svgId);
@@ -454,7 +451,7 @@ export default function useMatrixHelper() {
     //     1 * n.value.length
     //   );
     // }
-    return (n.toCol - n.fromCol) * notationStore.getRectSize() + 5;
+    return (n.toCol - n.fromCol + 1) * notationStore.getRectSize() + 5;
   }
 
   function pointNotationHeight(n: PointAttributes): number {
@@ -466,7 +463,7 @@ export default function useMatrixHelper() {
   }
 
   function rectNotationHeight(n: RectAttributes): number {
-    return (n.toRow - n.fromRow) * notationStore.getRectSize() + 5;
+    return (n.toRow - n.fromRow + 1) * notationStore.getRectSize() + 5;
   }
 
   function fontSize(n: NotationAttributes, el: HTMLElement) {
@@ -514,13 +511,13 @@ export default function useMatrixHelper() {
     if (n.notationType === "TEXT") {
       let n1 = n as RectNotationAttributes;
 
-      let bColor = borderColor(n === notationStore.getActiveNotation());
+      let bColor = borderColor(n.selected ?? false);
       return `<pre style='border:groove 2px;border-color:${bColor};background-color:${bColor}'>${n1.value}</pre>`;
     }
 
     if (n.notationType === "IMAGE") {
       let n1 = n as RectNotationAttributes;
-      let bColor = borderColor(n === notationStore.getActiveNotation());
+      let bColor = borderColor(n.selected ?? false);
       return `<img style='border:groove 2px;border-color:${borderColor}' src='${n1.value}'>`;
     }
 
@@ -548,11 +545,11 @@ export default function useMatrixHelper() {
     getRectSize,
     findRect,
     setNextRect,
-    freeTextRectWidth,
-    freeTextRectHeight,
+    freeTextRectWidth: getFreeTextRectWidth,
+    freeTextRectHeight: getFreeTextRectHeight,
     getNotationXposByCol,
     getNotationYposByRow,
     refreshScreen,
-    setMatrix
+    setMatrix,
   };
 }

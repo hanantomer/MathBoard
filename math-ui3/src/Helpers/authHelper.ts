@@ -9,15 +9,19 @@ import useDbHelper from "./dbHelper";
 //const notationStore = useNotationStore();
 const dbHelper = useDbHelper();
 
-
 export default function useAuthHelper() {
-
   function setUser(user: UserAttributes) {
     const userStore = useUserStore(); // initilize lazy here to allow loading of module before [inia has initialized
     userStore.setCurrentUser(user);
   }
 
-  function registerUser(firstName: string, lastName: string, password: string, email: string, userType: UesrType) {
+  function registerUser(
+    firstName: string,
+    lastName: string,
+    password: string,
+    email: string,
+    userType: UesrType,
+  ) {
     const userStore = useUserStore();
     let user: UserCreationAttributes = {
       userType: userType,
@@ -39,8 +43,7 @@ export default function useAuthHelper() {
     return (
       userStore.isTeacher() || // teacher in lesson or question
       userStore.getAuthorized() || // student in lesson when authorized by teacher
-      notationStore.getParent().type.toString() ==
-        "ANSWER".toString() // student writing an  answer
+      notationStore.getParent().type == "ANSWER" // student writing an answer
     );
   }
 
@@ -54,7 +57,7 @@ export default function useAuthHelper() {
 
   async function authLocalUserByUserAndPassword(
     email: string,
-    password: string
+    password: string,
   ): Promise<UserAttributes | null> {
     return await dbHelper.authLocalUserByPassword(email, password);
   }
@@ -118,4 +121,4 @@ export default function useAuthHelper() {
     authGoogleUser,
     canEdit,
   };
-};
+}

@@ -3,7 +3,7 @@ const notationStore = useNotationStore();
 
 export default function () {
   function setNextEditMode() {
-    const editMode = notationStore.getEditMode().value;
+    const editMode = notationStore.getEditMode();
 
     switch (editMode) {
       case "FRACTION":
