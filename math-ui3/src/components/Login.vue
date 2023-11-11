@@ -1,5 +1,5 @@
 <template>
-  <v-dialog v-model="show" persistent width="350" >
+  <v-dialog v-model="show" persistent width="350">
     <v-card height="400">
       <!-- <v-card-title class="text-center" primary-title>Log In</v-card-title> -->
       <v-card-text>
@@ -25,7 +25,7 @@
               ></v-text-field>
             </v-col>
 
-          <v-col cols="12">
+            <v-col cols="12">
               <v-text-field
                 class="alerttext"
                 prepend-icon="mdi-account-alert"
@@ -37,8 +37,6 @@
                 prepend-inner-icon="mdi-error"
               ></v-text-field>
             </v-col>
-
-
 
             <v-col class="d-flex" cols="12" align-end>
               <v-btn
@@ -52,8 +50,13 @@
               </v-btn>
             </v-col>
             <v-col class="d-flex text-start text-body2" cols="12">
-              <span style="margin-right: 10px;">don't have an account?</span>
-              <v-btn prepend-icon="mdi-account"  v-on:click="register" size="x-small">Sign Up</v-btn>
+              <span style="margin-right: 10px">don't have an account?</span>
+              <v-btn
+                prepend-icon="mdi-account"
+                v-on:click="register"
+                size="x-small"
+                >Sign Up</v-btn
+              >
             </v-col>
           </v-row>
         </v-form>
@@ -68,7 +71,7 @@ import { ref, watch } from "vue";
 import { useCookies } from "vue3-cookies";
 import { useRouter, useRoute, RouteLocationRaw } from "vue-router";
 import useAuthHelper from "../helpers/authHelper";
-import useEventBus from "../helpers/eventBus";
+import useEventBus from "../helpers/eventBusHelper";
 
 const eventBus = useEventBus();
 const cookies = useCookies().cookies;
@@ -101,9 +104,12 @@ const props = defineProps({
   },
 });
 
-watch(() => props.dialog, (val) => {
-  show.value = val
-});
+watch(
+  () => props.dialog,
+  (val) => {
+    show.value = val;
+  },
+);
 
 function register() {
   eventBus.emit("register");
@@ -126,8 +132,6 @@ function googleOnSuccess() {
   cookies.remove("access_token");
 }
 
-
-
 async function validateLogin() {
   let formVlidated: any = await (loginForm.value as any).validate();
   if (!formVlidated) {
@@ -136,7 +140,7 @@ async function validateLogin() {
 
   let authenticatedUser = await authHelper.authLocalUserByUserAndPassword(
     loginEmail,
-    loginPassword
+    loginPassword,
   );
 
   if (!authenticatedUser) {
@@ -151,7 +155,7 @@ async function validateLogin() {
   if (window.navigator.cookieEnabled) {
     cookies.set("access_token", authenticatedUser.access_token);
   } else {
-    alert("cookies not enabled. you must enable cookies to continue")
+    alert("cookies not enabled. you must enable cookies to continue");
   }
   loginForm.value = null;
 

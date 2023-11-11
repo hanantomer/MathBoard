@@ -19,15 +19,18 @@ import { watch, computed, ref } from "vue";
 import { useNotationStore } from "../store/pinia/notationStore";
 import * as d3 from "d3";
 import useMatrixHelper from "../helpers/matrixHelper";
+import useSelectionHelper from "../helpers/selectionHelper";
 import useNotationMutateHelper from "../helpers/notationMutateHelper";
-import useEventBus from "../helpers/eventBus";
+import useEventBus from "../helpers/eventBusHelper";
 import useStateMachine from "../helpers/stateMachine";
+import { CellCoordinates } from "common/globals";
 
 const eventBus = useEventBus();
 const notationStore = useNotationStore();
 const matrixHelper = useMatrixHelper();
 const notationMutateHelper = useNotationMutateHelper();
 const stateMachine = useStateMachine();
+const selectionHelper = useSelectionHelper();
 
 const props = defineProps({
   svgId: { type: String, default: "" },
@@ -92,6 +95,9 @@ watch(
   () => eventBus.bus.value.get("svgmousedown"),
   (e: MouseEvent) => {
     handleMouseDown(e);
+
+    ///TODO- embed     selectionHelper.activateClickedObject(e);
+
   },
 );
 
@@ -109,6 +115,25 @@ watch(
   },
 );
 
+watch(
+  () => notationStore.getActiveCell() as CellCoordinates,
+  (
+    newActiveCell: CellCoordinates,
+    oldActiveCell: CellCoordinates | undefined,
+  ) => {
+
+    if (!newActiveCell) return;
+
+    selectionHelper.showSelectedCell(
+      props.svgId,
+      oldActiveCell,
+      newActiveCell,
+    );
+  },
+  { immediate: true, deep: true },
+);
+
+
 function mouseup(e: KeyboardEvent) {
   eventBus.emit("svgmouseup", e);
 }
@@ -122,15 +147,17 @@ function keyUp(e: KeyboardEvent) {
 }
 
 function handleMouseDown(e: MouseEvent) {
+
   if (e.buttons !== 1) {
     return;
   }
 
-  const editMode = notationStore.getEditMode();
-
-  if (editMode == "SELECT") {
+  if (notationStore.getEditMode() == "SELECT") {
     stateMachine.setNextEditMode();
+    return;
   }
+
+  selectionHelper.selectClickedObject(e);
 }
 
 function handleMouseMove(e: MouseEvent) {

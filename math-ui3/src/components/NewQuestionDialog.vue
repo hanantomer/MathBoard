@@ -36,11 +36,7 @@
           </v-card-text>
           <v-card-actions>
             <v-spacer></v-spacer>
-            <v-btn
-              data-cy="button-login"
-              color="blue darken-1"
-              type="submit"
-            >
+            <v-btn data-cy="button-login" color="blue darken-1" type="submit">
               Save
             </v-btn>
           </v-card-actions>
@@ -53,7 +49,7 @@
 <script setup lang="ts">
 import { ref, computed, watch } from "vue";
 import { useLessonStore } from "../store/pinia/lessonStore";
-import useEventBus from "../helpers/eventBus";
+import useEventBus from "../helpers/eventBusHelper";
 
 const lessonStore = useLessonStore();
 const eventBus = useEventBus();
@@ -62,17 +58,31 @@ const name = ref();
 
 const props = defineProps({
   dialog: Boolean,
-  name: String
+  name: String,
 });
 
-watch(() => props.dialog, (val) => { show.value = val })
-watch(() => props.name, (val) => { name.value = val })
+watch(
+  () => props.dialog,
+  (val) => {
+    show.value = val;
+  },
+);
+watch(
+  () => props.name,
+  (val) => {
+    name.value = val;
+  },
+);
 
 function save() {
-  eventBus.emit("save", name );
-};
+  eventBus.emit("save", name);
+}
 
-const lessons = computed(() => Array.from(lessonStore.getLessons().value).map(([key, value]) => { return value }));
+const lessons = computed(() =>
+  Array.from(lessonStore.getLessons().value).map(([key, value]) => {
+    return value;
+  }),
+);
 
 const selectedLesson = computed({
   get() {
@@ -80,7 +90,6 @@ const selectedLesson = computed({
   },
   set(selectedLessonUUId: string) {
     lessonStore.setCurrentLesson(selectedLessonUUId);
-  }
+  },
 });
-
 </script>

@@ -57,7 +57,7 @@ import {
   LineAttributes,
   LineNotationAttributes,
 } from "../../../math-common/src/baseTypes";
-import useEventBus from "../helpers/eventBus";
+import useEventBus from "../helpers/eventBusHelper";
 
 const eventBus = useEventBus();
 const notationMutateHelper = useNotationMutateHelper();
@@ -238,7 +238,7 @@ function selectLine(lineNotation: LineNotationAttributes) {
   linePosition.value.y =
     svgDimensions.value.top + lineNotation.row * notationStore.getRectSize();
 
-  notationStore.setActiveNotation(lineNotation);
+  notationStore.selectNotation(lineNotation.uuid);
 
   eventBus.emit("lineSelected", null); // to enable re selection
 }

@@ -383,38 +383,6 @@ export default function notationMutateHelper() {
     return symbolsAtCell;
   }
 
-  ///TODO - check if needs to return notation
-  /*async function removeActiveNotation(): Promise<NotationAttributes | null> {
-    if (!authHelper.canEdit()) {
-      return null;
-    }
-
-    const activeNotation = notationStore.getActiveNotation();
-
-    if (!activeNotation) return null;
-
-    // from db
-    await dbHelper.removeNotation(activeNotation);
-
-    let deletedNotationUUId = activeNotation.uuid;
-
-    // from store
-    notationStore.setActiveNotation(null);
-
-    if (!deletedNotationUUId) return null;
-
-    let deletedNotation = notationStore.getNotation(deletedNotationUUId);
-
-    // publish
-    if (deletedNotation)
-      userOutgoingOperations.syncOutgoingRemoveNotation(
-        deletedNotation.uuid,
-        deletedNotation.parentUUId,
-      );
-
-    return deletedNotation ? deletedNotation : null;
-  }*/
-
   async function removeSelectedNotations() {
     if (!authHelper.canEdit) return;
 
@@ -646,19 +614,19 @@ export default function notationMutateHelper() {
       case "RECT": {
         let rectNotation = notation as RectNotationAttributes;
         for (
-          let i: number = rectNotation.fromCol;
-          i <= rectNotation.toCol;
-          i++
+          let col: number = rectNotation.fromCol;
+          col <= rectNotation.toCol;
+          col++
         ) {
           for (
-            let j: number = rectNotation.fromRow;
-            i <= rectNotation.toRow;
-            j++
+            let row: number = rectNotation.fromRow;
+            row <= rectNotation.toRow;
+            row++
           ) {
             if (
               notation?.boardType === "ANSWER" &&
               !userStore.isTeacher() &&
-              notationStore.getCellOccupationMatrix().at(j)?.at(i)?.boardType ==
+              notationStore.getCellOccupationMatrix().at(row)?.at(col)?.boardType ==
                 "QUESTION"
             )
               return true;
@@ -740,8 +708,8 @@ export default function notationMutateHelper() {
       return;
     }
     //if (notationStore.getActiveNotation()) {
-   //   removeActiveNotation();
-   //   return;
+    //   removeActiveNotation();
+    //   return;
     //}
     if (notationStore.getSelectedNotations()) {
       removeSelectedNotations();
@@ -796,10 +764,10 @@ export default function notationMutateHelper() {
 
     let fromCol = activeCell.col;
     let toCol =
-      activeCell.col + Math.floor(matrixHelper.freeTextRectWidth(value));
+      activeCell.col + Math.floor(matrixHelper.getFreeTextRectWidth(value));
     let fromRow = activeCell.row;
     let toRow =
-      activeCell.row + Math.floor(matrixHelper.freeTextRectHeight(value));
+      activeCell.row + Math.floor(matrixHelper.getFreeTextRectHeight(value));
 
     let notation: RectNotationCreationAttributes = {
       fromCol: fromCol,

@@ -5,7 +5,7 @@ import { watch } from "vue";
 import useMatrixHelper from "./matrixHelper";
 import useNotationMutationHelper from "./notationMutateHelper";
 import useAuthHelper from "./authHelper";
-import useEventBus from "../helpers/eventBus";
+import useEventBus from "../helpers/eventBusHelper";
 
 const userStore = useUserStore();
 const notationStore = useNotationStore();

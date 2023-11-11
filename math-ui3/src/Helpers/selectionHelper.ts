@@ -9,7 +9,7 @@ import { NotationAttributes } from "common/baseTypes";
 import useElementFinderHelper from "./elementFinderHelper";
 import useNotationMutateHelper from "./notationMutateHelper";
 import useUserOutgoingOperationsHelper from "./userOutgoingOperationsHelper";
-import useEventBus from "./eventBus";
+import useEventBus from "./eventBusHelper";
 import { useLessonStore } from "../store/pinia/lessonStore";
 const eventBus = useEventBus();
 const notationStore = useNotationStore();
@@ -19,9 +19,9 @@ const userOutgoingOperationsHelper = useUserOutgoingOperationsHelper();
 const lessonStore = useLessonStore();
 
 ///TODO : split function to shorter blocks
-export default function activateObjectHelper() {
+export default function selectionHelper() {
   // called via mouse click
-  function activateClickedObject(e: MouseEvent) {
+  function selectClickedObject(e: MouseEvent) {
     // dont active object after click on toolbar fraction or sqrt
     if (notationStore.isLineMode()) {
       return;
@@ -31,11 +31,11 @@ export default function activateObjectHelper() {
       return;
     }
 
-    if (setActiveRect(e)) return;
+    if (setActiveRectNotation(e)) return;
 
-    if (setActiveFraction(e)) return;
+    if (setActiveFractionNotation(e)) return;
 
-    if (setActiveSqrt(e)) return;
+    if (setActiveSqrtNotation(e)) return;
 
     // no underlying elements found, activate single cell
     setActiveCell(e);
@@ -81,8 +81,9 @@ export default function activateObjectHelper() {
     return rectNotation;
   }
 
-  // called by store watcher. see mathboard.vue  /// TODO - move to dom helper
-  function showActiveCell(
+  // called by store watcher. see mathboard.vue
+  /// TODO - move to dom helper or matrix helper
+  function showSelectedCell(
     svgId: string,
     prevActiveCell: CellCoordinates | undefined,
     activeCell: CellCoordinates,
@@ -108,7 +109,6 @@ export default function activateObjectHelper() {
     }
   }
 
-
   function getOverlappedLineNotation(
     lineElement: Element,
   ): NotationAttributes | undefined {
@@ -127,11 +127,12 @@ export default function activateObjectHelper() {
     });
   }
 
-  function setActiveRect(e: MouseEvent): boolean {
+  function setActiveRectNotation(e: MouseEvent): boolean {
     let overlapRectNotation = getOverlappedRectNotation(e);
     if (overlapRectNotation) {
       selectNotation(overlapRectNotation);
 
+      /// TODO move to state machine i.e set state by selected notation
       const editMode = NotationTypeEditMode.get(
         overlapRectNotation!.notationType,
       );
@@ -144,7 +145,7 @@ export default function activateObjectHelper() {
     return false;
   }
 
-  function setActiveFraction(e: MouseEvent): boolean {
+  function setActiveFractionNotation(e: MouseEvent): boolean {
     const fractionElement = elementFinderHelper.findClickedObject(
       {
         x: e.clientX,
@@ -170,7 +171,7 @@ export default function activateObjectHelper() {
     return false;
   }
 
-  function setActiveSqrt(e: MouseEvent): boolean {
+  function setActiveSqrtNotation(e: MouseEvent): boolean {
     const sqrtElement = elementFinderHelper.findClickedObject(
       {
         x: e.clientX,
@@ -225,9 +226,9 @@ export default function activateObjectHelper() {
   }
 
   return {
-    showActiveCell,
-    setActiveCell,
-    activateClickedObject,
-    reset,
+    showSelectedCell,
+    //setActiveCell,
+    selectClickedObject,
+    //reset,
   };
 }

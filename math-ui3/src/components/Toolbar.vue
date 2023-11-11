@@ -177,7 +177,7 @@ import useNotationMutateHelper from "../helpers/notationMutateHelper";
 import { useNotationStore } from "../store/pinia/notationStore";
 import { computed } from "vue";
 import { useUserStore } from "../store/pinia/userStore";
-import useEventBus from "../helpers/eventBus";
+import useEventBus from "../helpers/eventBusHelper";
 
 const matrixHelper = useMatrixHelper();
 const authHelper = useAuthHelper();

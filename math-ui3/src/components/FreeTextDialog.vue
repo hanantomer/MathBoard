@@ -52,7 +52,7 @@
 <script setup lang="ts">
 import { watch, ref } from "vue";
 import { useNotationStore } from "../store/pinia/notationStore";
-import useEventBus from "../helpers/eventBus";
+import useEventBus from "../helpers/eventBusHelper";
 import { RectNotationAttributes } from "../../../math-common/build/baseTypes";
 
 const notationStore = useNotationStore();
@@ -80,7 +80,8 @@ let textValue = ref("");
 function setInitalTextValue() {
   if (
     notationStore.getSelectedNotations().length === 1 &&
-    notationStore.getSelectedNotations()[0].notationType == "TEXT")
+    notationStore.getSelectedNotations()[0].notationType == "TEXT"
+  )
     textValue.value = (
       notationStore.getSelectedNotations()[0] as RectNotationAttributes
     ).value;

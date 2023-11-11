@@ -23,11 +23,7 @@
           </v-card-text>
           <v-card-actions>
             <v-spacer></v-spacer>
-            <v-btn
-              data-cy="button-login"
-              color="blue darken-1"
-              type="submit"
-            >
+            <v-btn data-cy="button-login" color="blue darken-1" type="submit">
               Save
             </v-btn>
           </v-card-actions>
@@ -39,7 +35,7 @@
 
 <script setup lang="ts">
 import { ref, watch } from "vue";
-import useEventBus from "../helpers/eventBus";
+import useEventBus from "../helpers/eventBusHelper";
 const eventBus = useEventBus();
 let show = ref(false);
 
@@ -49,17 +45,19 @@ const props = defineProps({
     default: false,
   },
   title: {
-  type: String
-}});
+    type: String,
+  },
+});
 
-watch(()=> props.dialog, (val: boolean) => {
-  show.value  = val;
-})
-
+watch(
+  () => props.dialog,
+  (val: boolean) => {
+    show.value = val;
+  },
+);
 
 let name = ref("");
 function save() {
   eventBus.emit("newItemDialogSave", name.value);
-};
-
+}
 </script>

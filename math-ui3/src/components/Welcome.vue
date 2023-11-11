@@ -1,11 +1,8 @@
 <template>
-    <login :dialog = showLoginDialog
-    ></login>
-    <Register :dialog = showRegisterDialog
-    ></Register>
+  <login :dialog="showLoginDialog"></login>
+  <Register :dialog="showRegisterDialog"></Register>
 
-    <v-main>
-
+  <v-main>
     <v-row>
       <v-col class="text-center" cols="12">
         <v-card flat>
@@ -13,7 +10,7 @@
             <h3>Teach MATH online with Mathboard</h3>
           </v-card-title>
           <v-card-actions class="justify-center">
-            <v-btn color="orange" v-on:click="showLoginDialog=true"
+            <v-btn color="orange" v-on:click="showLoginDialog = true"
               >Get Started</v-btn
             >
           </v-card-actions>
@@ -30,15 +27,15 @@
         </v-card>
       </v-col>
     </v-row>
-    </v-main>
+  </v-main>
 </template>
 
 <script setup lang="ts">
-import { ref,watch } from "vue";
+import { ref, watch } from "vue";
 import Login from "./Login.vue";
 import Register from "./Register.vue";
-import { useRoute } from 'vue-router'
-import useEventBus from "../helpers/eventBus";
+import { useRoute } from "vue-router";
+import useEventBus from "../helpers/eventBusHelper";
 const eventBus = useEventBus();
 const route = useRoute();
 
@@ -46,23 +43,31 @@ let showLoginDialog = ref(false);
 let showRegisterDialog = ref(false);
 
 const props = defineProps({
-  login: Boolean
+  login: Boolean,
 });
 
-watch(route, (to) => {
-  if (props.login) {
-    showLoginDialog.value = true;
-  }}, {flush: 'pre', immediate: true, deep: true})
+watch(
+  route,
+  (to) => {
+    if (props.login) {
+      showLoginDialog.value = true;
+    }
+  },
+  { flush: "pre", immediate: true, deep: true },
+);
 
 // login via button
 //watch(() => eventBus.bus.value.get("login"), () => {
 //  showLoginDialog.value = true;
 //});
 
-watch(() => eventBus.bus.value.get("register"), () => {
-  showLoginDialog.value = false;
-  showRegisterDialog.value = true;
-});
+watch(
+  () => eventBus.bus.value.get("register"),
+  () => {
+    showLoginDialog.value = false;
+    showRegisterDialog.value = true;
+  },
+);
 
 const bullets = [
   "Editable notations",

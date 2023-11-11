@@ -52,7 +52,7 @@ import { useLessonStore } from "../store/pinia/lessonStore";
 import { ref, computed, watch, onMounted } from "vue";
 import { useRouter } from "vue-router";
 import { useRoute } from "vue-router";
-import useEventBus from "../helpers/eventBus";
+import useEventBus from "../helpers/eventBusHelper";
 let lessonsLoaded = ref(false);
 const eventBus = useEventBus();
 const router = useRouter();

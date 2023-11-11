@@ -19,22 +19,21 @@
 <script setup lang="ts">
 import useNotationLoadingHelper from "../helpers/notationLoadingHelper";
 import UseMatrixHelper from "../helpers/matrixHelper";
-import UseActivateObjectHelper from "../helpers/activateObjectHelper";
+//import UseSelectionHelper from "../helpers/selectionHelper";
 import UseEventHelper from "../helpers/eventHelper";
 import toolbar from "./Toolbar.vue";
 import areaSelector from "./AreaSelector.vue";
 import lineDrawer from "./LineDrawer.vue";
-import useEventBus from "../helpers/eventBus";
+import useEventBus from "../helpers/eventBusHelper";
 import { onMounted, onUnmounted, watch } from "vue";
-import { CellCoordinates } from "common/globals";
+
 import { useNotationStore } from "../store/pinia/notationStore";
-import { NotationAttributes } from "common/baseTypes";
 
 const notationLoadingHelper = useNotationLoadingHelper();
 const notationStore = useNotationStore();
 const eventBus = useEventBus();
 const matrixHelper = UseMatrixHelper();
-const activateObjectHelper = UseActivateObjectHelper();
+//const selectionHelper = UseSelectionHelper();
 const eventHelper = UseEventHelper();
 
 onMounted(() => {
@@ -72,22 +71,13 @@ watch(
   },
 );
 
-watch(
-  () => notationStore.getActiveCell() as CellCoordinates,
-  (
-    newActiveCell: CellCoordinates,
-    oldActiveCell: CellCoordinates | undefined,
-  ) => {
-    if (!newActiveCell) return;
-    activateObjectHelper.showActiveCell(
-      props.svgId,
-      oldActiveCell,
-      newActiveCell,
-    );
-  },
-  { immediate: true, deep: true },
-);
 
+// watch(
+//   () => eventBus.bus.value.get("svgmousedown"),
+//   (e: MouseEvent) => {
+
+//   },
+// );
 
 // wait for child(e.g lesson) signal
 watch(
@@ -106,20 +96,16 @@ watch(
   { immediate: true, deep: true },
 );
 
-watch(
-  () => eventBus.bus.value.get("svgmousedown"),
-  (e: MouseEvent) => {
-    activateObjectHelper.activateClickedObject(e);
-  },
-);
 
 function load() {
-  activateObjectHelper.reset();
+  //selectionHelper.reset();
+
   // load notations
   notationLoadingHelper.loadNotations(notationStore.getParent().type);
 
   matrixHelper.setMatrix(props.svgId);
 }
+
 </script>
 
 <style>

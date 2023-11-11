@@ -484,7 +484,7 @@ export default function useMatrixHelper() {
       Array.from(notationStore.getSelectedNotations())
         .map((n) => n.uuid)
         .indexOf(n.uuid) >= 0
-        ? "red"
+        ? "gray"
         : notationStore.getParent().type === "ANSWER" &&
           userStore.getCurrentUser().uuid != n.user.uuid
         ? "purple"
@@ -512,7 +512,7 @@ export default function useMatrixHelper() {
       let n1 = n as RectNotationAttributes;
 
       let bColor = borderColor(n.selected ?? false);
-      return `<pre style='border:groove 2px;border-color:${bColor};background-color:${bColor}'>${n1.value}</pre>`;
+      return `<pre style='border:groove 2px;border-color:${bColor};'>${n1.value}</pre>`;
     }
 
     if (n.notationType === "IMAGE") {
@@ -540,13 +540,11 @@ export default function useMatrixHelper() {
   return {
     svgWidth,
     svgHeight,
-    //    setMatrix,
-    //    showNotations,
     getRectSize,
     findRect,
     setNextRect,
-    freeTextRectWidth: getFreeTextRectWidth,
-    freeTextRectHeight: getFreeTextRectHeight,
+    getFreeTextRectWidth,
+    getFreeTextRectHeight,
     getNotationXposByCol,
     getNotationYposByRow,
     refreshScreen,
