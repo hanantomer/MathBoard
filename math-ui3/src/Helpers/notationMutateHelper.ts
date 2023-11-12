@@ -626,8 +626,8 @@ export default function notationMutateHelper() {
             if (
               notation?.boardType === "ANSWER" &&
               !userStore.isTeacher() &&
-              notationStore.getCellOccupationMatrix().at(row)?.at(col)?.boardType ==
-                "QUESTION"
+              notationStore.getCellOccupationMatrix().at(row)?.at(col)
+                ?.boardType == "QUESTION"
             )
               return true;
           }
@@ -703,8 +703,8 @@ export default function notationMutateHelper() {
   }
 
   function removeActiveOrSelectedNotations() {
-    if (notationStore.getActiveCell()) {
-      removeActiveCellNotations();
+    if (notationStore.getSelectedCell()) {
+      removeSelectedCellNotations();
       return;
     }
     //if (notationStore.getActiveNotation()) {
@@ -717,11 +717,11 @@ export default function notationMutateHelper() {
     }
   }
 
-  async function removeActiveCellNotations() {
-    if (!notationStore.getActiveCell()) return;
+  async function removeSelectedCellNotations() {
+    if (!notationStore.getSelectedCell()) return;
 
     let notationsToDelete = await removeSymbolsByCell(
-      notationStore.getActiveCell()!,
+      notationStore.getSelectedCell()!,
     );
 
     if (!notationsToDelete) return;
@@ -755,19 +755,19 @@ export default function notationMutateHelper() {
 
     addNotation(notation);
 
-    notationStore.resetActiveCell();
+    notationStore.resetSelectedCell();
   }
 
   function addTextNotation(value: string) {
-    let activeCell = notationStore.getActiveCell();
-    if (!activeCell) return;
+    let selectedCell = notationStore.getSelectedCell();
+    if (!selectedCell) return;
 
-    let fromCol = activeCell.col;
+    let fromCol = selectedCell.col;
     let toCol =
-      activeCell.col + Math.floor(matrixHelper.getFreeTextRectWidth(value));
-    let fromRow = activeCell.row;
+      selectedCell.col + Math.floor(matrixHelper.getFreeTextRectWidth(value));
+    let fromRow = selectedCell.row;
     let toRow =
-      activeCell.row + Math.floor(matrixHelper.getFreeTextRectHeight(value));
+      selectedCell.row + Math.floor(matrixHelper.getFreeTextRectHeight(value));
 
     let notation: RectNotationCreationAttributes = {
       fromCol: fromCol,
@@ -783,15 +783,15 @@ export default function notationMutateHelper() {
 
     addNotation(notation);
 
-    // notationStore.resetActiveCell();
+    // notationStore.resetSelectedCell();
   }
 
   function addSymbolNotation(value: string) {
-    if (!notationStore.getActiveCell()) return;
+    if (!notationStore.getSelectedCell()) return;
 
     let notation: PointNotationCreationAttributes = {
-      col: notationStore.getActiveCell()!.col,
-      row: notationStore.getActiveCell()!.row,
+      col: notationStore.getSelectedCell()!.col,
+      row: notationStore.getSelectedCell()!.row,
       value: value,
       boardType: notationStore.getParent().type,
       parentUUId: notationStore.getParent().uuid,

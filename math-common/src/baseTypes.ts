@@ -29,7 +29,7 @@ export type PointAttributes =  {
   row: number;
 };
 
-export type ActiveCell  = PointAttributes & {
+export type SelectedCell  = PointAttributes & {
   userUUId: string;
   lessonUUId: number;
 }

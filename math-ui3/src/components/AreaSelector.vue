@@ -97,7 +97,6 @@ watch(
     handleMouseDown(e);
 
     ///TODO- embed     selectionHelper.activateClickedObject(e);
-
   },
 );
 
@@ -116,23 +115,21 @@ watch(
 );
 
 watch(
-  () => notationStore.getActiveCell() as CellCoordinates,
+  () => notationStore.getSelectedCell() as CellCoordinates,
   (
-    newActiveCell: CellCoordinates,
-    oldActiveCell: CellCoordinates | undefined,
+    newSelectedCell: CellCoordinates,
+    oldSelectedCell: CellCoordinates | undefined,
   ) => {
-
-    if (!newActiveCell) return;
+    if (!newSelectedCell) return;
 
     selectionHelper.showSelectedCell(
       props.svgId,
-      oldActiveCell,
-      newActiveCell,
+      oldSelectedCell,
+      newSelectedCell,
     );
   },
   { immediate: true, deep: true },
 );
-
 
 function mouseup(e: KeyboardEvent) {
   eventBus.emit("svgmouseup", e);
@@ -147,10 +144,11 @@ function keyUp(e: KeyboardEvent) {
 }
 
 function handleMouseDown(e: MouseEvent) {
-
   if (e.buttons !== 1) {
     return;
   }
+
+  selectionHelper.resetSelection();
 
   if (notationStore.getEditMode() == "SELECT") {
     stateMachine.setNextEditMode();

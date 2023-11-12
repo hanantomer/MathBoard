@@ -31,7 +31,7 @@
         <v-btn
           v-bind="props"
           icon
-          :disabled="!editEnabled || !hasActiveCell"
+          :disabled="!editEnabled || !hasSelectedCell"
           v-on:click="startTextMode"
           @click.stop="openFreeTextDialog"
           ><v-icon>mdi-text</v-icon></v-btn
@@ -226,8 +226,8 @@ const editEnabled = computed(() => {
   return authHelper.canEdit();
 });
 
-const hasActiveCell = computed(() => {
-  return notationStore.getActiveCell();
+const hasSelectedCell = computed(() => {
+  return notationStore.getSelectedCell();
 });
 
 const answerCheckMode = computed(() => {

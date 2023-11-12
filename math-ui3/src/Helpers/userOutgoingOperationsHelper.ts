@@ -11,15 +11,15 @@ export default function userOutgoingOperations() {
   //   );
   // };
 
-  async function syncOutgoingActiveCell(
-    activeCell: CellCoordinates,
+  async function syncOutgoingSelectedCell(
+    selectedCell: CellCoordinates,
     lessonUUId: string,
   ) {
     const feathersClient = FeathersHelper.getInstance();
     try {
       let t = await feathersClient!
-        .service("activeCell")
-        .update(null, { ...activeCell, lessonUUId: lessonUUId }, {});
+        .service("selectedCell")
+        .update(null, { ...selectedCell, lessonUUId: lessonUUId }, {});
 
       return t;
     } catch (error) {
@@ -77,7 +77,7 @@ export default function userOutgoingOperations() {
 
   return {
     syncOutgoingUpdateNotation,
-    syncOutgoingActiveCell,
+    syncOutgoingSelectedCell,
     syncOutgoingAuthUser,
     syncOutgoingHeartBeat,
     syncOutgoingRemoveNotation,

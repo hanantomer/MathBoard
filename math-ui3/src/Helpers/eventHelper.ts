@@ -31,8 +31,8 @@ export default function eventHelper() {
       image.src = base64data;
       image.onload = () => {
         if (!base64data) return;
-        let fromCol = parseInt(that.getActiveCell().col);
-        let fromRow = parseInt(that.getActiveCell().row);
+        let fromCol = parseInt(that.getSelectedCell().col);
+        let fromRow = parseInt(that.getSelectedCell().row);
         let toCol =
           Math.ceil(image.width / matrixHelper.getRectSize()) + fromCol;
         let toRow =

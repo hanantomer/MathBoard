@@ -30,8 +30,7 @@ export const useNotationStore = defineStore("notation", () => {
 
   let notations = ref(<Map<String, NotationAttributes>>new Map());
 
-  let activeCell = ref(<CellCoordinates | null>null);
-
+  let selectedCell = ref(<CellCoordinates | null>null);
 
   let editMode = ref<EditMode>();
 
@@ -120,14 +119,14 @@ export const useNotationStore = defineStore("notation", () => {
     return defaultEditMode;
   }
 
-  function getSelectedNotations() : NotationAttributes[]{
+  function getSelectedNotations(): NotationAttributes[] {
     return Array.from(notations.value.values()).filter(
       (n) => n.selected === true,
     );
   }
 
-  function getActiveCell() {
-    return activeCell.value;
+  function getSelectedCell() {
+    return selectedCell.value;
   }
 
   function getParent() {
@@ -180,9 +179,8 @@ export const useNotationStore = defineStore("notation", () => {
     notations.value.set(notation.uuid, notation);
   }
 
-  
-  function setActiveCell(newActiveCell: CellCoordinates | null) {
-    activeCell.value = newActiveCell;
+  function setSelectedCell(newSelectedCell: CellCoordinates | null) {
+    selectedCell.value = newSelectedCell;
   }
 
   function selectNotation(uuid: string) {
@@ -195,8 +193,8 @@ export const useNotationStore = defineStore("notation", () => {
     parent.value.type = boardType;
   }
 
-  function resetActiveCell() {
-    activeCell.value = { col: -1, row: -1 };
+  function resetSelectedCell() {
+    selectedCell.value = { col: -1, row: -1 };
   }
 
   function resetSelectedNotations() {
@@ -239,7 +237,7 @@ export const useNotationStore = defineStore("notation", () => {
     getEditMode,
     getDefaultEditMode,
     getCellOccupationMatrix,
-    getActiveCell,
+    getSelectedCell,
     getSelectedNotations,
     getParent,
     getRectSize,
@@ -258,12 +256,12 @@ export const useNotationStore = defineStore("notation", () => {
     setNotations,
     setNotation,
     selectNotation,
-    setActiveCell,
+    setSelectedCell,
     setEditMode,
     setParent,
     setRectSize,
     resetEditMode,
-    resetActiveCell,
+    resetSelectedCell,
     resetSelectedNotations,
     removeNotation,
     removeAllNotations,

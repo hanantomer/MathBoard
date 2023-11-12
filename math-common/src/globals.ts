@@ -7,7 +7,7 @@ export const matrixDimensions = {
 
 export const signList = ["=", "+", "-", "*", "/", "\\", "(", ")", "[", "]"];
 
-export const activeCellColor = "lightcyan";
+export const selectedCellColor = "lightcyan";
 
 export const heartBeatInterval = 5000;
 

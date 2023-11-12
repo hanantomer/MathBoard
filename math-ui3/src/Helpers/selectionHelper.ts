@@ -4,7 +4,7 @@ import {
   RectNotationAttributes,
 } from "common/baseTypes";
 import { useNotationStore } from "../store/pinia/notationStore";
-import { activeCellColor, CellCoordinates } from "common/globals";
+import { selectedCellColor, CellCoordinates } from "common/globals";
 import { NotationAttributes } from "common/baseTypes";
 import useElementFinderHelper from "./elementFinderHelper";
 import useNotationMutateHelper from "./notationMutateHelper";
@@ -38,7 +38,7 @@ export default function selectionHelper() {
     if (setActiveSqrtNotation(e)) return;
 
     // no underlying elements found, activate single cell
-    setActiveCell(e);
+    setSelectedCell(e);
   }
 
   function selectNotation(activeNotation: NotationAttributes) {
@@ -48,8 +48,8 @@ export default function selectionHelper() {
     notationStore.selectNotation(activeNotation?.uuid);
   }
 
-  function reset() {
-    notationStore.setActiveCell(null);
+  function resetSelection() {
+    notationStore.setSelectedCell(null);
     notationStore.resetSelectedNotations();
   }
 
@@ -85,27 +85,27 @@ export default function selectionHelper() {
   /// TODO - move to dom helper or matrix helper
   function showSelectedCell(
     svgId: string,
-    prevActiveCell: CellCoordinates | undefined,
-    activeCell: CellCoordinates,
+    prevSelectedCell: CellCoordinates | undefined,
+    selectedCell: CellCoordinates,
   ) {
-    if (prevActiveCell?.col != null) {
+    if (prevSelectedCell?.col != null) {
       let prevRectElm = document
         ?.querySelector<HTMLElement>(
-          `svg[id="${svgId}"] g[row="${prevActiveCell.row}"]`,
+          `svg[id="${svgId}"] g[row="${prevSelectedCell.row}"]`,
         )
-        ?.querySelector<HTMLElement>(`rect[col="${prevActiveCell.col}"]`);
+        ?.querySelector<HTMLElement>(`rect[col="${prevSelectedCell.col}"]`);
 
       if (prevRectElm?.style) prevRectElm.style.fill = "";
     }
 
-    if (activeCell?.col != null) {
+    if (selectedCell?.col != null) {
       let rectElm = document
         ?.querySelector<HTMLElement>(
-          `svg[id="${svgId}"] g[row="${activeCell.row}"]`,
+          `svg[id="${svgId}"] g[row="${selectedCell.row}"]`,
         )
-        ?.querySelector<HTMLElement>(`rect[col="${activeCell.col}"]`);
+        ?.querySelector<HTMLElement>(`rect[col="${selectedCell.col}"]`);
 
-      if (rectElm?.style) rectElm.style.fill = activeCellColor;
+      if (rectElm?.style) rectElm.style.fill = selectedCellColor;
     }
   }
 
@@ -198,7 +198,7 @@ export default function selectionHelper() {
   }
 
   // update, store active cell
-  async function setActiveCell(e: MouseEvent) {
+  async function setSelectedCell(e: MouseEvent) {
     let clickedCell = elementFinderHelper.findClickedObject(e, "rect", null);
 
     if (!clickedCell?.parentElement) {
@@ -213,11 +213,11 @@ export default function selectionHelper() {
       ),
     };
 
-    notationStore.setActiveCell(cellToActivate);
+    notationStore.setSelectedCell(cellToActivate);
     notationStore.resetEditMode();
 
     if (notationStore.getParent().type == "LESSON") {
-      let t = await userOutgoingOperationsHelper.syncOutgoingActiveCell(
+      let t = await userOutgoingOperationsHelper.syncOutgoingSelectedCell(
         cellToActivate,
         lessonStore.getCurrentLesson().uuid,
       );
@@ -227,8 +227,8 @@ export default function selectionHelper() {
 
   return {
     showSelectedCell,
-    //setActiveCell,
+    //setSelectedCell,
     selectClickedObject,
-    //reset,
+    resetSelection,
   };
 }

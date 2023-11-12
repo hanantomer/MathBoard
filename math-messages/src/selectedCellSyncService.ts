@@ -1,13 +1,13 @@
 import util from "./util.js";
 import { Application } from "@feathersjs/feathers";
-import { ActiveCell } from "../../math-common/build/baseTypes";
+import { SelectedCell } from "../../math-common/build/baseTypes";
 
-class activeCellSyncService {
+class selectedCellSyncService {
   app: Application;
   constructor(app: Application) {
     this.app = app;
   }
-  async update(id: number, data: ActiveCell, params: any) {
+  async update(id: number, data: SelectedCell, params: any) {
     let user = await util.getUserFromCookie(
       params.headers.cookie,
       this.app
@@ -25,4 +25,4 @@ class activeCellSyncService {
     }
   }
 }
-export default activeCellSyncService;
+export default selectedCellSyncService;

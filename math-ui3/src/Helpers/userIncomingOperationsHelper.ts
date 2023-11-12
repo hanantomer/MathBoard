@@ -1,4 +1,4 @@
-import { ActiveCell, NotationAttributes } from "common/baseTypes";
+import { SelectedCell, NotationAttributes } from "common/baseTypes";
 import { useUserStore } from "../store/pinia/userStore";
 import { useStudentStore } from "../store/pinia/studentStore";
 import { useNotationStore } from "../store/pinia/notationStore";
@@ -54,11 +54,11 @@ export default function userIncomingOperations() {
 
     // sync active cell with teacher or write authorized student
     feathersClient
-      .service("activeCell")
-      .on("updated", (activeCell: ActiveCell) => {
+      .service("selectedCell")
+      .on("updated", (selectedCell: SelectedCell) => {
         if (notationStore.getParent().type !== "LESSON") return;
-        if (activeCell.userUUId == userStore.getCurrentUser().uuid) return;
-        notationStore.setActiveCell(activeCell);
+        if (selectedCell.userUUId == userStore.getCurrentUser().uuid) return;
+        notationStore.setSelectedCell(selectedCell);
       });
 
     // accept write authorization as student in lesson

@@ -6,9 +6,9 @@ import constants from "./constants";
 import AuthorizationService from "./authorizationService";
 import AuthenticationService from "./authenticationService";
 import HeartbeatService from "./heartbeatService";
-import activeCellSyncService from "./activeCellSyncService";
+import selectedCellSyncService from "./selectedCellSyncService";
 import NotationSyncService from "./notationSyncService";
-import { ActiveCell } from "../../math-common/src/baseTypes";
+import { SelectedCell } from "../../math-common/src/baseTypes";
 import { LessonNotationAttributes } from "../../math-common/src/lessonTypes";
 
 
@@ -25,7 +25,7 @@ type ServiceTypes = {
   authorization: AuthorizationService,
   authentication: AuthenticationService,
   heartbeat: HeartbeatService,
-  activeCell: activeCellSyncService,
+  selectedCell: selectedCellSyncService,
   notationSync: NotationSyncService
 };
 
@@ -46,7 +46,7 @@ app.configure(
 app.use("authorization", new AuthorizationService(app));
 app.use("authentication", new AuthenticationService(app));
 app.use("heartbeat", new HeartbeatService(app));
-app.use("activeCell", new activeCellSyncService(app));
+app.use("selectedCell", new selectedCellSyncService(app));
 app.use("notationSync", new NotationSyncService(app));
 
 //app.on('connection', (connection: RealTimeConnection) => {
@@ -93,8 +93,8 @@ app.service("heartbeat").publish("updated", (heartbeat: any, ctx: any) => {
   ];
 });
 
-app.service("activeCell").publish("updated", (activeCell: ActiveCell, ctx: any) => {
-  return app.channel( constants.LESSON_CHANNEL_PREFIX + activeCell.lessonUUId );
+app.service("selectedCell").publish("updated", (selectedCell: SelectedCell, ctx: any) => {
+  return app.channel( constants.LESSON_CHANNEL_PREFIX + selectedCell.lessonUUId );
 });
 
 app.service("notationSync").publish("created", (notation: LessonNotationAttributes, ctx: any) => {

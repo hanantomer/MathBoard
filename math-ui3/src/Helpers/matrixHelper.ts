@@ -148,14 +148,14 @@ export default function useMatrixHelper() {
     verticalStep: number,
   ): PointAttributes | undefined {
     if (
-      notationStore.getActiveCell()?.col == null ||
-      !notationStore.getActiveCell()?.row == null
+      notationStore.getSelectedCell()?.col == null ||
+      !notationStore.getSelectedCell()?.row == null
     ) {
       return;
     }
 
-    let col = notationStore.getActiveCell()?.col || 0;
-    let row = notationStore.getActiveCell()?.row || 0;
+    let col = notationStore.getSelectedCell()?.col || 0;
+    let row = notationStore.getSelectedCell()?.row || 0;
     let nextCol = col;
     let nextRow = row;
 
@@ -187,7 +187,7 @@ export default function useMatrixHelper() {
     let nextRect: any = getNextRect(horizontalStep, verticalStep);
     if (nextRect) {
       nextRect.notationType = "rect";
-      notationStore.setActiveCell(nextRect);
+      notationStore.setSelectedCell(nextRect);
     }
   }
 
