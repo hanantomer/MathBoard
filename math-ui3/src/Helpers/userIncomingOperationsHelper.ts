@@ -58,7 +58,7 @@ export default function userIncomingOperations() {
       .on("updated", (selectedCell: SelectedCell) => {
         if (notationStore.getParent().type !== "LESSON") return;
         if (selectedCell.userUUId == userStore.getCurrentUser().uuid) return;
-        notationStore.setSelectedCell(selectedCell);
+        notationStore.selectCell(selectedCell);
       });
 
     // accept write authorization as student in lesson

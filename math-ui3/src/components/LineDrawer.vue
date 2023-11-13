@@ -300,7 +300,7 @@ function saveLine(lineAttributes: LineAttributes) {
 
 function resetLineDrawing() {
   linePosition.value.x1 = linePosition.value.x2 = linePosition.value.y = 0;
-  notationStore.setEditMode(notationStore.getDefaultEditMode());
+  notationStore.resetEditMode();
 }
 
 function getNearestRow(clickedYPos: number) {

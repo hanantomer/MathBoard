@@ -27,8 +27,8 @@ export default function useMatrixHelper() {
   const svgHeight: string = "700px";
   let matrix: any[] = [];
 
-  function borderColor(selected: boolean): string {
-    return selected ? "red" : "transparent";
+  function borderColor(notation: NotationAttributes): string {
+    return notation.selected ? "gray" : "transparent";
   }
 
   function backgroundColor(selected: boolean): string {
@@ -87,10 +87,15 @@ export default function useMatrixHelper() {
   // }
 
   function getFreeTextRectWidth(text: string) {
-    return (
-      (<any>window).textMeasurementCtx.measureText(text).width /
-      notationStore.getRectSize()
+    const textArr = text.split("\n");
+
+    const maxWidth = Math.max(
+      ...textArr.map((t) =>
+        parseFloat((<any>window).textMeasurementCtx.measureText(t).width),
+      ),
     );
+
+    return maxWidth / notationStore.getRectSize();
   }
 
   function getFreeTextRectHeight(text: string) {
@@ -187,7 +192,7 @@ export default function useMatrixHelper() {
     let nextRect: any = getNextRect(horizontalStep, verticalStep);
     if (nextRect) {
       nextRect.notationType = "rect";
-      notationStore.setSelectedCell(nextRect);
+      notationStore.selectCell(nextRect);
     }
   }
 
@@ -511,13 +516,13 @@ export default function useMatrixHelper() {
     if (n.notationType === "TEXT") {
       let n1 = n as RectNotationAttributes;
 
-      let bColor = borderColor(n.selected ?? false);
+      let bColor = borderColor(n ?? false);
       return `<pre style='border:groove 2px;border-color:${bColor};'>${n1.value}</pre>`;
     }
 
     if (n.notationType === "IMAGE") {
       let n1 = n as RectNotationAttributes;
-      let bColor = borderColor(n.selected ?? false);
+      let bColor = borderColor(n ?? false);
       return `<img style='border:groove 2px;border-color:${borderColor}' src='${n1.value}'>`;
     }
 

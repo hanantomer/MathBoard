@@ -31,14 +31,16 @@ export default function selectionHelper() {
       return;
     }
 
-    if (setActiveRectNotation(e)) return;
+    resetSelection();
 
-    if (setActiveFractionNotation(e)) return;
+    if (selectRectNotation(e)) return;
 
-    if (setActiveSqrtNotation(e)) return;
+    if (selectFractionNotation(e)) return;
+
+    if (selectSqrtNotation(e)) return;
 
     // no underlying elements found, activate single cell
-    setSelectedCell(e);
+    selectCell(e);
   }
 
   function selectNotation(activeNotation: NotationAttributes) {
@@ -49,7 +51,7 @@ export default function selectionHelper() {
   }
 
   function resetSelection() {
-    notationStore.setSelectedCell(null);
+    notationStore.selectCell(null);
     notationStore.resetSelectedNotations();
   }
 
@@ -85,25 +87,25 @@ export default function selectionHelper() {
   /// TODO - move to dom helper or matrix helper
   function showSelectedCell(
     svgId: string,
-    prevSelectedCell: CellCoordinates | undefined,
-    selectedCell: CellCoordinates,
+    newSelectedCell: CellCoordinates | null | undefined,
+    oldSelectedCell: CellCoordinates | null | undefined,
   ) {
-    if (prevSelectedCell?.col != null) {
+    if (oldSelectedCell?.col != null) {
       let prevRectElm = document
         ?.querySelector<HTMLElement>(
-          `svg[id="${svgId}"] g[row="${prevSelectedCell.row}"]`,
+          `svg[id="${svgId}"] g[row="${oldSelectedCell.row}"]`,
         )
-        ?.querySelector<HTMLElement>(`rect[col="${prevSelectedCell.col}"]`);
+        ?.querySelector<HTMLElement>(`rect[col="${oldSelectedCell.col}"]`);
 
       if (prevRectElm?.style) prevRectElm.style.fill = "";
     }
 
-    if (selectedCell?.col != null) {
+    if (newSelectedCell?.col != null) {
       let rectElm = document
         ?.querySelector<HTMLElement>(
-          `svg[id="${svgId}"] g[row="${selectedCell.row}"]`,
+          `svg[id="${svgId}"] g[row="${newSelectedCell.row}"]`,
         )
-        ?.querySelector<HTMLElement>(`rect[col="${selectedCell.col}"]`);
+        ?.querySelector<HTMLElement>(`rect[col="${newSelectedCell.col}"]`);
 
       if (rectElm?.style) rectElm.style.fill = selectedCellColor;
     }
@@ -127,25 +129,34 @@ export default function selectionHelper() {
     });
   }
 
-  function setActiveRectNotation(e: MouseEvent): boolean {
+  function selectRectNotation(e: MouseEvent): boolean {
+    const rectElement = elementFinderHelper.findClickedObject(
+      {
+        x: e.clientX,
+        y: e.clientY,
+      },
+      "foreignObject",
+      ["TEXT", "IMAGE", "GEO"],
+    );
+    if (!rectElement) return false;
+
     let overlapRectNotation = getOverlappedRectNotation(e);
-    if (overlapRectNotation) {
-      selectNotation(overlapRectNotation);
+    if (!overlapRectNotation) return false;
 
-      /// TODO move to state machine i.e set state by selected notation
-      const editMode = NotationTypeEditMode.get(
-        overlapRectNotation!.notationType,
-      );
+    selectNotation(overlapRectNotation);
 
-      if (editMode) {
-        notationStore.setEditMode(editMode);
-      }
-      return true;
+    /// TODO move to state machine i.e set state by selected notation
+    const editMode = NotationTypeEditMode.get(
+      overlapRectNotation!.notationType,
+    );
+    if (editMode) {
+      notationStore.setEditMode(editMode);
     }
-    return false;
+
+    return true;
   }
 
-  function setActiveFractionNotation(e: MouseEvent): boolean {
+  function selectFractionNotation(e: MouseEvent): boolean {
     const fractionElement = elementFinderHelper.findClickedObject(
       {
         x: e.clientX,
@@ -154,24 +165,19 @@ export default function selectionHelper() {
       "foreignObject",
       ["FRACTION"],
     );
+    if (!fractionElement) return false;
+
+    const fractionNotation = getOverlappedLineNotation(fractionElement);
+    if (!fractionNotation) return false;
 
     notationStore.setEditMode("FRACTION_SELECTING");
 
-    if (fractionElement) {
-      //      fractionElement.style.display = "none";
-      //notationStore.setHiddenLineElement(fractionElement);
-      const fractionNotation = getOverlappedLineNotation(fractionElement);
-      if (fractionNotation) {
-        // signal LineDrawer.vue
-        eventBus.emit("lineSelected", fractionNotation);
-        return true;
-      }
-    }
-
-    return false;
+    // signal LineDrawer.vue
+    eventBus.emit("lineSelected", fractionNotation);
+    return true;
   }
 
-  function setActiveSqrtNotation(e: MouseEvent): boolean {
+  function selectSqrtNotation(e: MouseEvent): boolean {
     const sqrtElement = elementFinderHelper.findClickedObject(
       {
         x: e.clientX,
@@ -180,25 +186,19 @@ export default function selectionHelper() {
       "foreignObject",
       ["SQRT"],
     );
+    if (!sqrtElement) return false;
+
+    const sqrtNotation = getOverlappedLineNotation(sqrtElement);
+    if (!sqrtNotation) return false;
 
     notationStore.setEditMode("SQRT_SELECTING");
-
-    if (sqrtElement) {
-      //sqrtElement.style.display = "none";
-      //notationStore.setHiddenLineElement(sqrtElement);
-      const sqrtNotation = getOverlappedLineNotation(sqrtElement);
-      if (sqrtNotation) {
-        // signal LineDrawer.vue
-        eventBus.emit("lineSelected", sqrtNotation);
-        return true;
-      }
-    }
-
-    return false;
+    // signal LineDrawer.vue
+    eventBus.emit("lineSelected", sqrtNotation);
+    return true;
   }
 
   // update, store active cell
-  async function setSelectedCell(e: MouseEvent) {
+  async function selectCell(e: MouseEvent) {
     let clickedCell = elementFinderHelper.findClickedObject(e, "rect", null);
 
     if (!clickedCell?.parentElement) {
@@ -213,7 +213,7 @@ export default function selectionHelper() {
       ),
     };
 
-    notationStore.setSelectedCell(cellToActivate);
+    notationStore.selectCell(cellToActivate);
     notationStore.resetEditMode();
 
     if (notationStore.getParent().type == "LESSON") {
@@ -227,7 +227,6 @@ export default function selectionHelper() {
 
   return {
     showSelectedCell,
-    //setSelectedCell,
     selectClickedObject,
     resetSelection,
   };

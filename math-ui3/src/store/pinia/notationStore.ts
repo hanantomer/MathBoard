@@ -177,9 +177,10 @@ export const useNotationStore = defineStore("notation", () => {
   function addNotation(notation: NotationAttributes) {
     notation.boardType = parent.value.type;
     notations.value.set(notation.uuid, notation);
+    resetSelectedCell();
   }
 
-  function setSelectedCell(newSelectedCell: CellCoordinates | null) {
+  function selectCell(newSelectedCell: CellCoordinates | null) {
     selectedCell.value = newSelectedCell;
   }
 
@@ -207,7 +208,7 @@ export const useNotationStore = defineStore("notation", () => {
   }
 
   function resetEditMode() {
-    setEditMode("SYMBOL");
+    setEditMode(defaultEditMode);
   }
 
   function createCellOccupationMatrix(): (NotationAttributes | null)[][] {
@@ -256,7 +257,7 @@ export const useNotationStore = defineStore("notation", () => {
     setNotations,
     setNotation,
     selectNotation,
-    setSelectedCell,
+    selectCell,
     setEditMode,
     setParent,
     setRectSize,

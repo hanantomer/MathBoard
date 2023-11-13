@@ -117,15 +117,13 @@ watch(
 watch(
   () => notationStore.getSelectedCell() as CellCoordinates,
   (
-    newSelectedCell: CellCoordinates,
-    oldSelectedCell: CellCoordinates | undefined,
+    newSelectedCell: CellCoordinates | undefined | null,
+    oldSelectedCell: CellCoordinates | undefined | null,
   ) => {
-    if (!newSelectedCell) return;
-
     selectionHelper.showSelectedCell(
       props.svgId,
-      oldSelectedCell,
       newSelectedCell,
+      oldSelectedCell,
     );
   },
   { immediate: true, deep: true },
@@ -250,7 +248,6 @@ function updateSelectionArea(e: MouseEvent) {
 }
 
 function endSelect() {
-  //notationStore.resetEditMode();
   if (selectionPosition.value.x2 != selectionPosition.value.x1) {
     //normalizeSelection();
 
