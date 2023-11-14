@@ -83,13 +83,13 @@ export default function eventHelper() {
     }
 
     if (code === "Backspace") {
-      notationMutationHelper.removeActiveOrSelectedNotations();
+      notationMutationHelper.removeSelectedNotations();
       matrixHelper.setNextRect(-1, 0);
       return;
     }
 
     if (code === "Delete") {
-      notationMutationHelper.removeActiveOrSelectedNotations();
+      notationMutationHelper.removeSelectedNotations();
       return;
     }
 

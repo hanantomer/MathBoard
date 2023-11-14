@@ -99,9 +99,11 @@ export default function useMatrixHelper() {
   }
 
   function getFreeTextRectHeight(text: string) {
-    let fontSize = getDefaultFontSize();
+    const fontSize = getDefaultFontSize();
+    const margin = 5;
     return (
-      (fontSize * text.split(/\r*\n/).length) / notationStore.getRectSize()
+      ((fontSize + margin) * text.split(/\r*\n/).length) /
+      notationStore.getRectSize()
     );
   }
 

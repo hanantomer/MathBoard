@@ -146,12 +146,12 @@ export default function selectionHelper() {
     selectNotation(overlapRectNotation);
 
     /// TODO move to state machine i.e set state by selected notation
-    const editMode = NotationTypeEditMode.get(
+    /*const editMode = NotationTypeEditMode.get(
       overlapRectNotation!.notationType,
     );
     if (editMode) {
       notationStore.setEditMode(editMode);
-    }
+    }*/
 
     return true;
   }

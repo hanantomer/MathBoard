@@ -383,22 +383,6 @@ export default function notationMutateHelper() {
     return symbolsAtCell;
   }
 
-  async function removeSelectedNotations() {
-    if (!authHelper.canEdit) return;
-
-    notationStore.getSelectedNotations().forEach(async (n) => {
-      if (!n) return;
-      // from db
-      await dbHelper.removeNotation(n);
-
-      //from store
-      notationStore.removeNotation(n.uuid);
-
-      // publish
-      userOutgoingOperations.syncOutgoingRemoveNotation(n.uuid, n.parentUUId);
-    });
-  }
-
   async function selectNotation(CellCoordinates: CellCoordinates) {
     findNotationsByCellCoordinates(CellCoordinates).forEach(
       (n: NotationAttributes) => {
@@ -702,19 +686,24 @@ export default function notationMutateHelper() {
     });
   }
 
-  function removeActiveOrSelectedNotations() {
+  function removeSelectedNotations() {
+    if (!authHelper.canEdit) return;
+
     if (notationStore.getSelectedCell()) {
       removeSelectedCellNotations();
       return;
     }
-    //if (notationStore.getActiveNotation()) {
-    //   removeActiveNotation();
-    //   return;
-    //}
-    if (notationStore.getSelectedNotations()) {
-      removeSelectedNotations();
-      return;
-    }
+    notationStore.getSelectedNotations().forEach(async (n) => {
+      if (!n) return;
+      // from db
+      await dbHelper.removeNotation(n);
+
+      //from store
+      notationStore.removeNotation(n.uuid);
+
+      // publish
+      userOutgoingOperations.syncOutgoingRemoveNotation(n.uuid, n.parentUUId);
+    });
   }
 
   async function removeSelectedCellNotations() {
@@ -783,7 +772,6 @@ export default function notationMutateHelper() {
 
     addNotation(notation);
 
-    // notationStore.resetSelectedCell();
   }
 
   function addSymbolNotation(value: string) {
@@ -833,7 +821,7 @@ export default function notationMutateHelper() {
     addImageNotation,
     addTextNotation,
     addLineNotation,
-    removeActiveOrSelectedNotations,
+    removeSelectedNotations,
     moveSelectedNotations,
     updateSelectedNotationCoordinates,
     updateLineNotation,
