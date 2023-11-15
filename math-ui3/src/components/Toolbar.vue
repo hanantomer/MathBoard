@@ -175,15 +175,16 @@ import accessLinkDialog from "./AccessLinkDialog.vue";
 import freeTextDialog from "./FreeTextDialog.vue";
 import useNotationMutateHelper from "../helpers/notationMutateHelper";
 import { useNotationStore } from "../store/pinia/notationStore";
+import { useEditModeStore } from "../store/pinia/editModeStore";
 import { computed } from "vue";
 import { useUserStore } from "../store/pinia/userStore";
 import useEventBus from "../helpers/eventBusHelper";
 
-const matrixHelper = useMatrixHelper();
 const authHelper = useAuthHelper();
 const notationMutateHelper = useNotationMutateHelper();
 const notationStore = useNotationStore();
 const userStore = useUserStore();
+const editModeStore = useEditModeStore();
 const eventBus = useEventBus();
 
 let checkmarkButtonActive = ref(1);
@@ -197,6 +198,30 @@ let powerButtonActive = ref(1);
 let showAccessLinkDialog = ref(false);
 let showFreeTextDialog = ref(false);
 let textButtonActive = ref(1);
+
+watch(
+  () => editModeStore.getEditMode(),
+  (editMode) => {
+    if (editMode === editModeStore.getDefaultEditMode()) {
+      resetButtonsState();
+    }
+
+    if (editMode === "FRACTION") {
+      fractionButtonActive.value = 0;
+    }
+
+    if (editMode === "SQRT") {
+      squareRootButtonActive.value = 0;
+    }
+
+    if (editMode === editModeStore.getDefaultEditMode()) {
+      resetButtonsState();
+    }
+  },
+  { immediate: true, deep: true },
+);
+
+
 
 // emitted by eventHelper
 watch(
@@ -234,27 +259,6 @@ const answerCheckMode = computed(() => {
   return notationStore.getParent().type == "ANSWER" && userStore.isTeacher;
 });
 
-watch(
-  () => notationStore.getEditMode(),
-  (editMode) => {
-    if (editMode === notationStore.getDefaultEditMode()) {
-      resetButtonsState();
-    }
-
-    if (editMode === "FRACTION") {
-      fractionButtonActive.value = 0;
-    }
-
-    if (editMode === "SQRT") {
-      squareRootButtonActive.value = 0;
-    }
-
-    if (editMode === notationStore.getDefaultEditMode()) {
-      resetButtonsState();
-    }
-  },
-  { immediate: true, deep: true },
-);
 
 function resetButtonsState() {
   checkmarkButtonActive.value = 1;
@@ -268,7 +272,7 @@ function resetButtonsState() {
 
 function toggleFractionMode() {
   resetButtonsState();
-  if (notationStore.getEditMode() == "FRACTION") {
+  if (editModeStore.getEditMode() == "FRACTION") {
     resetButtonsState();
   } else {
     startFractionMode();
@@ -278,12 +282,12 @@ function toggleFractionMode() {
 function startFractionMode() {
   resetButtonsState();
   fractionButtonActive.value = 0;
-  notationStore.setEditMode("FRACTION");
+  editModeStore.setEditMode("FRACTION");
 }
 
 function toggleSqrtMode() {
   resetButtonsState();
-  if (notationStore.getEditMode() == "SQRT") {
+  if (editModeStore.getEditMode() == "SQRT") {
     resetButtonsState();
   } else {
     startSqrtMode();
@@ -293,12 +297,12 @@ function toggleSqrtMode() {
 function startSqrtMode() {
   resetButtonsState();
   squareRootButtonActive.value = 0;
-  notationStore.setEditMode("SQRT");
+  editModeStore.setEditMode("SQRT");
 }
 
 function togglePowerMode() {
   resetButtonsState();
-  if (notationStore.getEditMode() == "POWER") {
+  if (editModeStore.getEditMode() == "POWER") {
     endPowerMode();
   } else {
     startPowerMode();
@@ -308,7 +312,7 @@ function togglePowerMode() {
 function startPowerMode() {
   resetButtonsState();
   powerButtonActive.value = 0;
-  notationStore.setEditMode("POWER");
+  editModeStore.setEditMode("POWER");
 }
 
 function endPowerMode() {
@@ -318,7 +322,7 @@ function endPowerMode() {
 function startTextMode() {
   resetButtonsState();
   textButtonActive.value = 0;
-  notationStore.setEditMode("TEXT");
+  editModeStore.setEditMode("TEXT");
 }
 
 function endTextMode() {
@@ -326,7 +330,7 @@ function endTextMode() {
 }
 
 function toggleSelectionMode() {
-  if (notationStore.getEditMode() == "SELECT") {
+  if (editModeStore.getEditMode() == "SELECT") {
     endSelectionMode();
   } else {
     startSelectionMode();
@@ -336,18 +340,18 @@ function toggleSelectionMode() {
 function startSelectionMode() {
   resetButtonsState();
   selectionButtonActive.value = 0;
-  notationStore.setEditMode("SELECT");
+  editModeStore.setEditMode("SELECT");
 }
 
 function endSelectionMode() {
   resetButtonsState();
-  notationStore.setEditMode("SYMBOL");
+  editModeStore.setEditMode("SYMBOL");
 }
 
 function toggleCheckmarkMode() {
-  if (notationStore.getEditMode() == "CHECKMARK") {
+  if (editModeStore.getEditMode() == "CHECKMARK") {
     resetButtonsState();
-    notationStore.setEditMode("SYMBOL");
+    editModeStore.setEditMode("SYMBOL");
   } else {
     startCheckmarkMode();
   }
@@ -356,13 +360,13 @@ function toggleCheckmarkMode() {
 function startCheckmarkMode() {
   resetButtonsState();
   checkmarkButtonActive.value = 0;
-  notationStore.setEditMode("CHECKMARK");
+  editModeStore.setEditMode("CHECKMARK");
 }
 
 function toggleSemiCheckmarkMode() {
-  if (notationStore.getEditMode() == "SEMICHECKMARK") {
+  if (editModeStore.getEditMode() == "SEMICHECKMARK") {
     resetButtonsState();
-    notationStore.setEditMode("SYMBOL");
+    editModeStore.setEditMode("SYMBOL");
   } else {
     startSemiCheckmarkMode();
   }
@@ -371,13 +375,13 @@ function toggleSemiCheckmarkMode() {
 function startSemiCheckmarkMode() {
   resetButtonsState();
   semicheckmarkButtonActive.value = 0;
-  notationStore.setEditMode("SEMICHECKMARK");
+  editModeStore.setEditMode("SEMICHECKMARK");
 }
 
 function toggleXmarkMode() {
-  if (notationStore.getEditMode() == "XMARK") {
+  if (editModeStore.getEditMode() == "XMARK") {
     resetButtonsState();
-    notationStore.setEditMode("SYMBOL");
+    editModeStore.setEditMode("SYMBOL");
   } else {
     startXmarkMode();
   }
@@ -386,7 +390,7 @@ function toggleXmarkMode() {
 function startXmarkMode() {
   resetButtonsState();
   xmarkButtonActive.value = 0;
-  notationStore.setEditMode("XMARK");
+  editModeStore.setEditMode("XMARK");
 }
 
 /*

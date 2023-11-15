@@ -49,20 +49,18 @@
 <script setup lang="ts">
 import useNotationMutateHelper from "../helpers/notationMutateHelper";
 
-import useStateMachine from "../helpers/stateMachine";
 import { watch, computed, ref } from "vue";
 import { useNotationStore } from "../store/pinia/notationStore";
+import { useEditModeStore } from "../store/pinia/editModeStore";
 import { LinePosition, DotPosition } from "../../../math-common/src/globals";
-import {
-  LineAttributes,
-  LineNotationAttributes,
-} from "../../../math-common/src/baseTypes";
+import { LineAttributes, LineNotationAttributes} from "../../../math-common/src/baseTypes";
 import useEventBus from "../helpers/eventBusHelper";
 
 const eventBus = useEventBus();
 const notationMutateHelper = useNotationMutateHelper();
 const notationStore = useNotationStore();
-const stateMachine = useStateMachine();
+const editModeStore = useEditModeStore();
+
 
 // props
 
@@ -78,19 +76,19 @@ let linePosition = ref(<LinePosition | Record<string, never>>{});
 // computed
 
 const fractionMode = computed(() => {
-  return notationStore.isFractionMode();
+  return editModeStore.isFractionMode();
 });
 
 const sqrtEditMode = computed(() => {
-  return notationStore.isSqrtEditMode();
+  return editModeStore.isSqrtEditMode();
 });
 
 const show = computed(() => {
   return (
-    notationStore.isLineDrawingMode() ||
-    notationStore.isLineEditingMode() ||
-    notationStore.isLineSelectedMode() ||
-    notationStore.isLineSelectingMode()
+    editModeStore.isLineEditingMode() ||
+    editModeStore.isLineDrawingMode() ||
+    editModeStore.isLineSelectedMode() ||
+    editModeStore.isLineSelectingMode()
   );
 });
 
@@ -154,7 +152,7 @@ function onSelectedLine(line: LineNotationAttributes) {
 }
 
 function onHandleMouseDown(e: MouseEvent) {
-  stateMachine.setNextEditMode();
+  editModeStore.setNextEditMode();
 }
 
 // emitted by event manager
@@ -165,11 +163,11 @@ function onMouseDown(e: MouseEvent) {
   }
 
   // user clicked elsewere after start drawing
-  if (notationStore.isLineDrawingMode() || notationStore.isLineEditingMode()) {
+  if (editModeStore.isLineDrawingMode() || editModeStore.isLineEditingMode()) {
     resetLineDrawing();
   }
 
-  if (notationStore.isLineMode()) {
+  if (editModeStore.isLineMode()) {
     // new line
     startLineDrawing({
       x: e.offsetX,
@@ -191,8 +189,8 @@ function onMouseMove(e: MouseEvent) {
 
   if (
     //!notationStore.isLineMode() &&
-    !notationStore.isLineDrawingMode() &&
-    !notationStore.isLineEditingMode() //&&
+    !editModeStore.isLineDrawingMode() &&
+    !editModeStore.isLineEditingMode() //&&
     //!notationStore.isLineSelectedMode()
   ) {
     return;
@@ -208,7 +206,7 @@ function onMouseUp() {
   }
 
   // line yet not modified
-  if (notationStore.isLineDrawingMode() || notationStore.isLineEditingMode()) {
+  if (editModeStore.isLineDrawingMode() || editModeStore.isLineEditingMode()) {
     endDrawLine();
   }
 }
@@ -216,7 +214,7 @@ function onMouseUp() {
 // methods
 
 function startLineDrawing(position: DotPosition) {
-  stateMachine.setNextEditMode();
+  editModeStore.setNextEditMode();
 
   linePosition.value.x2 = linePosition.value.x1 =
     position.x + svgDimensions.value.left;
@@ -226,7 +224,7 @@ function startLineDrawing(position: DotPosition) {
 function selectLine(lineNotation: LineNotationAttributes) {
   //selectedLine = lineNotation; // store for later save
 
-  stateMachine.setNextEditMode();
+  editModeStore.setNextEditMode();
 
   linePosition.value.x1 =
     svgDimensions.value.left +
@@ -282,7 +280,7 @@ function endDrawLine() {
   //if (selectedLine) selectedLine = { ...selectedLine, ...lineAttributes };
 
   saveLine(lineAttributes);
-  notationStore.resetEditMode();
+  editModeStore.resetEditMode();
   // if (selectedLine) {
   //   notationStore.getHiddenLineElement()!.style.display = "block";
   //   selectedLine = null;
@@ -294,13 +292,13 @@ function saveLine(lineAttributes: LineAttributes) {
   else
     notationMutateHelper.addLineNotation(
       lineAttributes,
-      notationStore.isFractionMode() ? "FRACTION" : "SQRT",
+      editModeStore.isFractionMode() ? "FRACTION" : "SQRT",
     );
 }
 
 function resetLineDrawing() {
   linePosition.value.x1 = linePosition.value.x2 = linePosition.value.y = 0;
-  notationStore.resetEditMode();
+  editModeStore.resetEditMode();
 }
 
 function getNearestRow(clickedYPos: number) {

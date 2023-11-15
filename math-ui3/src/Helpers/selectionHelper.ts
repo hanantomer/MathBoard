@@ -11,23 +11,25 @@ import useNotationMutateHelper from "./notationMutateHelper";
 import useUserOutgoingOperationsHelper from "./userOutgoingOperationsHelper";
 import useEventBus from "./eventBusHelper";
 import { useLessonStore } from "../store/pinia/lessonStore";
+import { useEditModeStore } from "../store/pinia/editModeStore";
 const eventBus = useEventBus();
 const notationStore = useNotationStore();
 const notationMutateHelper = useNotationMutateHelper();
 const elementFinderHelper = useElementFinderHelper();
 const userOutgoingOperationsHelper = useUserOutgoingOperationsHelper();
 const lessonStore = useLessonStore();
+const editModeStore = useEditModeStore();
 
 ///TODO : split function to shorter blocks
 export default function selectionHelper() {
   // called via mouse click
   function selectClickedObject(e: MouseEvent) {
     // dont active object after click on toolbar fraction or sqrt
-    if (notationStore.isLineMode()) {
+    if (editModeStore.isLineMode()) {
       return;
     }
 
-    if (notationStore.isSelectionMode()) {
+    if (editModeStore.isSelectionMode()) {
       return;
     }
 
@@ -170,7 +172,7 @@ export default function selectionHelper() {
     const fractionNotation = getOverlappedLineNotation(fractionElement);
     if (!fractionNotation) return false;
 
-    notationStore.setEditMode("FRACTION_SELECTING");
+    editModeStore.setEditMode("FRACTION_SELECTING");
 
     // signal LineDrawer.vue
     eventBus.emit("lineSelected", fractionNotation);
@@ -191,7 +193,7 @@ export default function selectionHelper() {
     const sqrtNotation = getOverlappedLineNotation(sqrtElement);
     if (!sqrtNotation) return false;
 
-    notationStore.setEditMode("SQRT_SELECTING");
+    editModeStore.setEditMode("SQRT_SELECTING");
     // signal LineDrawer.vue
     eventBus.emit("lineSelected", sqrtNotation);
     return true;
@@ -214,7 +216,7 @@ export default function selectionHelper() {
     };
 
     notationStore.selectCell(cellToActivate);
-    notationStore.resetEditMode();
+    editModeStore.resetEditMode();
 
     if (notationStore.getParent().type == "LESSON") {
       let t = await userOutgoingOperationsHelper.syncOutgoingSelectedCell(

@@ -11,12 +11,10 @@ import {
 } from "common/baseTypes";
 
 import { CellCoordinates } from "common/globals";
-
 import { NotationType, NotationTypeShape } from "common/unions";
-
 import { useUserStore } from "../store/pinia/userStore";
 import { useNotationStore } from "../store/pinia/notationStore";
-import { onMounted } from "vue";
+import { useEditModeStore } from "../store/pinia/editModeStore";
 
 import useAuthHelper from "./authHelper";
 import useUserOutgoingOperations from "./userOutgoingOperationsHelper";
@@ -34,6 +32,7 @@ const elementFinderHelper = useElementFinderHelper();
 const userStore = useUserStore();
 const dbHelper = useDbHelper();
 const notationStore = useNotationStore();
+const editModeStore = useEditModeStore();
 const authHelper = useAuthHelper();
 const userOutgoingOperations = useUserOutgoingOperations();
 
@@ -577,7 +576,7 @@ export default function notationMutateHelper() {
     return false;
   }
 
-  // return true for 1. student in question and 2. point coordinates are within question area
+  // return true for 1. student in question and 2. notation coordinates are within question area
   function isNotationInQuestionArea(
     notation: NotationAttributes | null,
   ): boolean {
@@ -652,17 +651,17 @@ export default function notationMutateHelper() {
   }
 
   function addMarkNotation() {
-    if (notationStore.getEditMode() == "CHECKMARK") {
+    if (editModeStore.getEditMode() == "CHECKMARK") {
       addSymbolNotation("&#x2714");
       return;
     }
 
-    if (notationStore.getEditMode() == "SEMICHECKMARK") {
+    if (editModeStore.getEditMode() == "SEMICHECKMARK") {
       addSymbolNotation("&#x237B");
       return;
     }
 
-    if (notationStore.getEditMode() == "XMARK") {
+    if (editModeStore.getEditMode() == "XMARK") {
       addSymbolNotation("&#x2718");
       return;
     }
@@ -771,7 +770,7 @@ export default function notationMutateHelper() {
     };
 
     addNotation(notation);
-
+    notationStore.resetSelectedCell();
   }
 
   function addSymbolNotation(value: string) {
@@ -789,8 +788,8 @@ export default function notationMutateHelper() {
 
     addNotation(notation);
 
-    if (notationStore.getEditMode() == "SYMBOL") {
-      matrixHelper.setNextRect(1, 0);
+    if (editModeStore.getEditMode() == "SYMBOL") {
+      matrixHelper.setNextCell(1, 0);
     }
   }
 

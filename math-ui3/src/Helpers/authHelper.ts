@@ -4,9 +4,6 @@ import { useNotationStore } from "../store/pinia/notationStore";
 import { BoardType, UesrType } from "common/unions";
 import { UserAttributes, UserCreationAttributes } from "common/userTypes";
 import useDbHelper from "./dbHelper";
-
-//const userStore = useUserStore();
-//const notationStore = useNotationStore();
 const dbHelper = useDbHelper();
 
 export default function useAuthHelper() {

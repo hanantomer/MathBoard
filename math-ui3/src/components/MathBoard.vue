@@ -19,21 +19,21 @@
 <script setup lang="ts">
 import useNotationLoadingHelper from "../helpers/notationLoadingHelper";
 import UseMatrixHelper from "../helpers/matrixHelper";
-//import UseSelectionHelper from "../helpers/selectionHelper";
 import UseEventHelper from "../helpers/eventHelper";
 import toolbar from "./Toolbar.vue";
 import areaSelector from "./AreaSelector.vue";
 import lineDrawer from "./LineDrawer.vue";
 import useEventBus from "../helpers/eventBusHelper";
+import { CellCoordinates } from "common/globals";
 import { onMounted, onUnmounted, watch } from "vue";
-
 import { useNotationStore } from "../store/pinia/notationStore";
+import useSelectionHelper from "../helpers/selectionHelper";
 
 const notationLoadingHelper = useNotationLoadingHelper();
 const notationStore = useNotationStore();
 const eventBus = useEventBus();
 const matrixHelper = UseMatrixHelper();
-//const selectionHelper = UseSelectionHelper();
+const selectionHelper = useSelectionHelper();
 const eventHelper = UseEventHelper();
 
 onMounted(() => {
@@ -58,6 +58,21 @@ const props = defineProps({
 });
 
 watch(
+  () => notationStore.getSelectedCell() as CellCoordinates,
+  (
+    newSelectedCell: CellCoordinates | undefined | null,
+    oldSelectedCell: CellCoordinates | undefined | null,
+  ) => {
+    selectionHelper.showSelectedCell(
+      props.svgId,
+      newSelectedCell,
+      oldSelectedCell,
+    );
+  },
+  { immediate: true, deep: true },
+);
+
+watch(
   () => eventBus.bus.value.get("keyup"),
   (e: KeyboardEvent) => {
     eventHelper.keyUp(e);
@@ -70,14 +85,6 @@ watch(
     eventHelper.paste(e);
   },
 );
-
-
-// watch(
-//   () => eventBus.bus.value.get("svgmousedown"),
-//   (e: MouseEvent) => {
-
-//   },
-// );
 
 // wait for child(e.g lesson) signal
 watch(
@@ -96,16 +103,12 @@ watch(
   { immediate: true, deep: true },
 );
 
-
 function load() {
-  //selectionHelper.reset();
-
   // load notations
   notationLoadingHelper.loadNotations(notationStore.getParent().type);
 
   matrixHelper.setMatrix(props.svgId);
 }
-
 </script>
 
 <style>

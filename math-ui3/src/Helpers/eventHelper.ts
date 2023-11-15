@@ -1,6 +1,7 @@
 import { useUserStore } from "../store/pinia/userStore";
 import { useNotationStore } from "../store/pinia/notationStore";
-import { watch } from "vue";
+import { useEditModeStore } from "../store/pinia/editModeStore";
+
 
 import useMatrixHelper from "./matrixHelper";
 import useNotationMutationHelper from "./notationMutateHelper";
@@ -9,6 +10,7 @@ import useEventBus from "../helpers/eventBusHelper";
 
 const userStore = useUserStore();
 const notationStore = useNotationStore();
+const editModeStore = useEditModeStore();
 const matrixHelper = useMatrixHelper();
 const notationMutationHelper = useNotationMutationHelper();
 const authHelper = useAuthHelper();
@@ -53,7 +55,7 @@ export default function eventHelper() {
   function keyUp(e: KeyboardEvent) {
     const { ctrlKey, altKey, code, key } = e;
 
-    if (notationStore.getEditMode() !== "SYMBOL") {
+    if (editModeStore.getEditMode() !== "SYMBOL") {
       return;
     }
 
@@ -84,7 +86,7 @@ export default function eventHelper() {
 
     if (code === "Backspace") {
       notationMutationHelper.removeSelectedNotations();
-      matrixHelper.setNextRect(-1, 0);
+      matrixHelper.setNextCell(-1, 0);
       return;
     }
 
@@ -94,27 +96,27 @@ export default function eventHelper() {
     }
 
     if (code === "ArrowLeft") {
-      matrixHelper.setNextRect(-1, 0);
+      matrixHelper.setNextCell(-1, 0);
       return;
     }
 
     if (code === "ArrowRight" || code === "Space") {
-      matrixHelper.setNextRect(1, 0);
+      matrixHelper.setNextCell(1, 0);
       return;
     }
 
     if (code === "ArrowUp") {
-      matrixHelper.setNextRect(0, -1);
+      matrixHelper.setNextCell(0, -1);
       return;
     }
 
     if (code === "ArrowDown") {
-      matrixHelper.setNextRect(0, 1);
+      matrixHelper.setNextCell(0, 1);
       return;
     }
 
     if (code === "Enter") {
-      matrixHelper.setNextRect(0, -1);
+      matrixHelper.setNextCell(0, -1);
       return;
     }
 
@@ -127,17 +129,17 @@ export default function eventHelper() {
 
   function mouseDown(e: MouseEvent) {
     if (
-      notationStore.getEditMode() === "FRACTION" ||
-      notationStore.getEditMode() === "SQRT" ||
-      notationStore.getEditMode() === "SELECT"
+      editModeStore.getEditMode() === "FRACTION" ||
+      editModeStore.getEditMode() === "SQRT" ||
+      editModeStore.getEditMode() === "SELECT"
     ) {
       return;
     }
 
     if (
-      notationStore.getEditMode() === "CHECKMARK" ||
-      notationStore.getEditMode() === "SEMICHECKMARK" ||
-      notationStore.getEditMode() === "XMARK"
+      editModeStore.getEditMode() === "CHECKMARK" ||
+      editModeStore.getEditMode() === "SEMICHECKMARK" ||
+      editModeStore.getEditMode() === "XMARK"
     ) {
       notationMutationHelper.addMarkNotation();
       return;

@@ -17,26 +17,25 @@
 <script setup lang="ts">
 import { watch, computed, ref } from "vue";
 import { useNotationStore } from "../store/pinia/notationStore";
+import { useEditModeStore } from "../store/pinia/editModeStore";
 import * as d3 from "d3";
 import useMatrixHelper from "../helpers/matrixHelper";
 import useSelectionHelper from "../helpers/selectionHelper";
 import useNotationMutateHelper from "../helpers/notationMutateHelper";
 import useEventBus from "../helpers/eventBusHelper";
-import useStateMachine from "../helpers/stateMachine";
-import { CellCoordinates } from "common/globals";
+
 
 const eventBus = useEventBus();
-const notationStore = useNotationStore();
+const editModeStore = useEditModeStore();
 const matrixHelper = useMatrixHelper();
 const notationMutateHelper = useNotationMutateHelper();
-const stateMachine = useStateMachine();
+
 const selectionHelper = useSelectionHelper();
 
 const props = defineProps({
   svgId: { type: String, default: "" },
 });
 
-//let selectionMode: AreaSelectionMode = "SELECTING";
 
 let selectionPosition = ref({
   x1: 0,
@@ -114,20 +113,7 @@ watch(
   },
 );
 
-watch(
-  () => notationStore.getSelectedCell() as CellCoordinates,
-  (
-    newSelectedCell: CellCoordinates | undefined | null,
-    oldSelectedCell: CellCoordinates | undefined | null,
-  ) => {
-    selectionHelper.showSelectedCell(
-      props.svgId,
-      newSelectedCell,
-      oldSelectedCell,
-    );
-  },
-  { immediate: true, deep: true },
-);
+
 
 function mouseup(e: KeyboardEvent) {
   eventBus.emit("svgmouseup", e);
@@ -148,8 +134,8 @@ function handleMouseDown(e: MouseEvent) {
 
   selectionHelper.resetSelection();
 
-  if (notationStore.getEditMode() == "SELECT") {
-    stateMachine.setNextEditMode();
+  if (editModeStore.getEditMode() == "SELECT") {
+    editModeStore.setNextEditMode();
     return;
   }
 
@@ -161,7 +147,7 @@ function handleMouseMove(e: MouseEvent) {
     return;
   }
 
-  const editMode = notationStore.getEditMode();
+  const editMode = editModeStore.getEditMode();
 
   if (editMode == "SELECTING") {
     updateSelectionArea(e);
@@ -175,21 +161,21 @@ function handleMouseMove(e: MouseEvent) {
 }
 
 function handleMouseUp(e: MouseEvent) {
-  const editMode = notationStore.getEditMode();
+  const editMode = editModeStore.getEditMode();
 
-  if (!notationStore.isSelectionMode()) {
+  if (!editModeStore.isSelectionMode()) {
     return;
   }
 
   if (editMode == "SELECTING") {
     endSelect();
-    stateMachine.setNextEditMode();
+    editModeStore.setNextEditMode();
     return;
   }
 
   if (editMode == "MOVING") {
     endMoveSelection(e);
-    stateMachine.setNextEditMode();
+    editModeStore.setNextEditMode();
     return;
   }
 
@@ -328,7 +314,7 @@ function resetSelection() {
     selectionPosition.value.y2 =
       0;
 
-  notationStore.resetEditMode();
+  editModeStore.resetEditMode();
 }
 </script>
 

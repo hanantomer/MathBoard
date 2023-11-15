@@ -18,7 +18,6 @@ type Board = {
   type: BoardType;
 };
 
-///TODO complete setters
 ///TODO watch notations and sync occupation mattrix
 export const useNotationStore = defineStore("notation", () => {
   let rectSize = ref<number>();
@@ -32,75 +31,6 @@ export const useNotationStore = defineStore("notation", () => {
 
   let selectedCell = ref(<CellCoordinates | null>null);
 
-  let editMode = ref<EditMode>();
-
-  const defaultEditMode: EditMode = "SYMBOL";
-
-  function isSelectionMode() {
-    return (
-      editMode.value == "SELECT" ||
-      editMode.value == "SELECTING" ||
-      editMode.value == "MOVING"
-    );
-  }
-
-  function isLineMode() {
-    return editMode.value == "FRACTION" || editMode.value == "SQRT";
-  }
-
-  function isFractionMode() {
-    return (
-      editMode.value == "FRACTION" ||
-      editMode.value == "FRACTION_DRAWING" ||
-      editMode.value == "FRACTION_EDITITING" ||
-      editMode.value == "FRACTION_SELECTING" ||
-      editMode.value == "FRACTION_SELECTED"
-    );
-  }
-
-  function isSqrtMode() {
-    return (
-      editMode.value == "SQRT" ||
-      editMode.value == "SQRT_DRAWING" ||
-      editMode.value == "SQRT_EDITITING" ||
-      editMode.value == "SQRT_SELECTING" ||
-      editMode.value == "SQRT_SELECTED"
-    );
-  }
-
-  function isDefaultEditMode() {
-    return editMode.value === defaultEditMode;
-  }
-
-  function isSqrtEditMode() {
-    return editMode.value === "SQRT_DRAWING";
-  }
-
-  function isLineDrawingMode() {
-    return (
-      editMode.value == "FRACTION_DRAWING" || editMode.value == "SQRT_DRAWING"
-    );
-  }
-
-  function isLineEditingMode() {
-    return (
-      editMode.value == "FRACTION_EDITITING" ||
-      editMode.value == "SQRT_EDITITING"
-    );
-  }
-
-  function isLineSelectingMode() {
-    return (
-      editMode.value == "FRACTION_SELECTING" ||
-      editMode.value == "SQRT_SELECTING"
-    );
-  }
-
-  function isLineSelectedMode() {
-    return (
-      editMode.value == "FRACTION_SELECTED" || editMode.value == "SQRT_SELECTED"
-    );
-  }
 
   function getRectSize() {
     if (!rectSize.value) throw new Error("rectSize.value is null");
@@ -111,13 +41,6 @@ export const useNotationStore = defineStore("notation", () => {
     rectSize.value = size;
   }
 
-  function getEditMode() {
-    return editMode.value;
-  }
-
-  function getDefaultEditMode() {
-    return defaultEditMode;
-  }
 
   function getSelectedNotations(): NotationAttributes[] {
     return Array.from(notations.value.values()).filter(
@@ -177,7 +100,6 @@ export const useNotationStore = defineStore("notation", () => {
   function addNotation(notation: NotationAttributes) {
     notation.boardType = parent.value.type;
     notations.value.set(notation.uuid, notation);
-    resetSelectedCell();
   }
 
   function selectCell(newSelectedCell: CellCoordinates | null) {
@@ -202,14 +124,6 @@ export const useNotationStore = defineStore("notation", () => {
     Array.from(getSelectedNotations()).forEach((n) => (n.selected = false));
   }
 
-  function setEditMode(newEditMode: EditMode) {
-    console.debug("new edit mode:" + newEditMode);
-    editMode.value = newEditMode;
-  }
-
-  function resetEditMode() {
-    setEditMode(defaultEditMode);
-  }
 
   function createCellOccupationMatrix(): (NotationAttributes | null)[][] {
     let matrix: (NotationAttributes | null)[][] = new Array();
@@ -235,33 +149,17 @@ export const useNotationStore = defineStore("notation", () => {
     getNotation,
     getNotations,
     getNotationsByShape,
-    getEditMode,
-    getDefaultEditMode,
     getCellOccupationMatrix,
     getSelectedCell,
     getSelectedNotations,
     getParent,
     getRectSize,
-
-    isSelectionMode,
-    isLineMode,
-    isLineDrawingMode,
-    isLineEditingMode,
-    isLineSelectedMode,
-    isLineSelectingMode,
-    isFractionMode,
-    isSqrtMode,
-    isSqrtEditMode,
-    isDefaultEditMode,
-
     setNotations,
     setNotation,
     selectNotation,
     selectCell,
-    setEditMode,
     setParent,
     setRectSize,
-    resetEditMode,
     resetSelectedCell,
     resetSelectedNotations,
     removeNotation,

@@ -190,11 +190,10 @@ export default function useMatrixHelper() {
     };
   }
 
-  function setNextRect(horizontalStep: number, verticalStep: number) {
-    let nextRect: any = getNextRect(horizontalStep, verticalStep);
-    if (nextRect) {
-      nextRect.notationType = "rect";
-      notationStore.selectCell(nextRect);
+  function setNextCell(horizontalStep: number, verticalStep: number) {
+    let nextCell = getNextRect(horizontalStep, verticalStep);
+    if (nextCell) {
+      notationStore.selectCell(nextCell);
     }
   }
 
@@ -285,6 +284,9 @@ export default function useMatrixHelper() {
         .attr("type", (n: NotationAttributes) => {
           return n.notationType;
         })
+        .attr("boardType", (n: NotationAttributes) => {
+          return n.boardType;
+        })
         .attr("id", (n: NotationAttributes) => {
           return id(n);
         })
@@ -370,7 +372,7 @@ export default function useMatrixHelper() {
   }
 
   function id(n: NotationAttributes) {
-    return n.notationType + n.uuid;
+    return n.uuid;
   }
 
   function col(n: NotationAttributes): number | null {
@@ -549,7 +551,7 @@ export default function useMatrixHelper() {
     svgHeight,
     getRectSize,
     findRect,
-    setNextRect,
+    setNextCell,
     getFreeTextRectWidth,
     getFreeTextRectHeight,
     getNotationXposByCol,
