@@ -41,14 +41,17 @@ export default function selectionHelper() {
 
     if (selectSqrtNotation(e)) return;
 
-    // no underlying elements found, activate single cell
+    selectSymbolNotation(e);
+
+    // select single cell if no element but a symbol is selected
     selectCell(e);
   }
 
   function selectNotation(activeNotation: NotationAttributes) {
-    // disallow activation of question rows for student
+    // disallow selection of question notations for student
     if (notationMutateHelper.isNotationInQuestionArea(activeNotation)) return;
 
+    editModeStore.setEditMode("AREA_SELECTED");
     notationStore.selectNotation(activeNotation?.uuid);
   }
 
@@ -70,15 +73,23 @@ export default function selectionHelper() {
           elementFinderHelper.getElementAttributeValue(
             rectElement,
             "fromCol",
-          ) == n.fromCol &&
-          elementFinderHelper.getElementAttributeValue(rectElement, "toCol") ==
-            n.toCol &&
-          elementFinderHelper.getElementAttributeValue(
-            rectElement,
-            "fromRow",
-          ) == n.fromRow &&
-          elementFinderHelper.getElementAttributeValue(rectElement, "toRow") ==
-            n.toRow
+          ) ||
+          (-1 == n.fromCol &&
+            elementFinderHelper.getElementAttributeValue(
+              rectElement,
+              "toCol",
+            )) ||
+          (-1 == n.toCol &&
+            elementFinderHelper.getElementAttributeValue(
+              rectElement,
+              "fromRow",
+            )) ||
+          (-1 == n.fromRow &&
+            elementFinderHelper.getElementAttributeValue(
+              rectElement,
+              "toRow",
+            )) ||
+          -1 == n.toRow
         );
       });
 
@@ -121,12 +132,12 @@ export default function selectionHelper() {
 
     return lineNotations.find((n: LineNotationAttributes) => {
       return (
-        elementFinderHelper.getElementAttributeValue(lineElement, "fromCol") >=
-          n.fromCol &&
-        elementFinderHelper.getElementAttributeValue(lineElement, "toCol") <=
-          n.toCol &&
-        elementFinderHelper.getElementAttributeValue(lineElement, "row") ==
-          n.row
+        elementFinderHelper.getElementAttributeValue(lineElement, "fromCol") ||
+        (-1 >= n.fromCol &&
+          elementFinderHelper.getElementAttributeValue(lineElement, "toCol")) ||
+        (-1 <= n.toCol &&
+          elementFinderHelper.getElementAttributeValue(lineElement, "row")) ||
+        -1 == n.row
       );
     });
   }
@@ -169,13 +180,16 @@ export default function selectionHelper() {
     );
     if (!fractionElement) return false;
 
-    const fractionNotation = getOverlappedLineNotation(fractionElement);
-    if (!fractionNotation) return false;
+    const fractionUUId = elementFinderHelper.getElementAttributeValue(
+      fractionElement,
+      "id",
+    );
 
-    editModeStore.setEditMode("FRACTION_SELECTING");
+    editModeStore.setEditMode("FRACTION_SELECTED");
 
-    // signal LineDrawer.vue
-    eventBus.emit("lineSelected", fractionNotation);
+    // signal LineDrawer.vue to perform store and visual selection
+    eventBus.emit("lineSelected", notationStore.getNotation(fractionUUId!));
+
     return true;
   }
 
@@ -190,12 +204,35 @@ export default function selectionHelper() {
     );
     if (!sqrtElement) return false;
 
-    const sqrtNotation = getOverlappedLineNotation(sqrtElement);
-    if (!sqrtNotation) return false;
+    const sqrtUUId = elementFinderHelper.getElementAttributeValue(
+      sqrtElement,
+      "id",
+    );
 
-    editModeStore.setEditMode("SQRT_SELECTING");
-    // signal LineDrawer.vue
-    eventBus.emit("lineSelected", sqrtNotation);
+    editModeStore.setEditMode("SQRT_SELECTED");
+
+    // signal LineDrawer.vue to perform store and visual selection
+    eventBus.emit("lineSelected", notationStore.getNotation(sqrtUUId!));
+
+    return true;
+  }
+
+  function selectSymbolNotation(e: MouseEvent): boolean {
+    const symbolElement = elementFinderHelper.findClickedObject(
+      {
+        x: e.clientX,
+        y: e.clientY,
+      },
+      "foreignObject",
+      ["SYMBOL"],
+    );
+    if (!symbolElement) return false;
+
+    const uuid = symbolElement.attributes.getNamedItem("id")?.value;
+    const symbolNotation = notationStore.getNotation(uuid!);
+
+    selectNotation(symbolNotation!);
+
     return true;
   }
 
@@ -207,23 +244,28 @@ export default function selectionHelper() {
       return null;
     }
 
+    const col = elementFinderHelper.getElementAttributeValue(
+      clickedCell,
+      "col",
+    );
+    const row = elementFinderHelper.getElementAttributeValue(
+      clickedCell.parentElement,
+      "row",
+    );
+
     let cellToActivate: CellCoordinates = {
-      col: elementFinderHelper.getElementAttributeValue(clickedCell, "col"),
-      row: elementFinderHelper.getElementAttributeValue(
-        clickedCell.parentElement!,
-        "row",
-      ),
+      col: parseInt(col || "-1"),
+      row: parseInt(row || "-1"),
     };
 
     notationStore.selectCell(cellToActivate);
-    editModeStore.resetEditMode();
+    editModeStore.setEditMode("CELL_SELECTED");
 
     if (notationStore.getParent().type == "LESSON") {
       let t = await userOutgoingOperationsHelper.syncOutgoingSelectedCell(
         cellToActivate,
         lessonStore.getCurrentLesson().uuid,
       );
-      console.log(t);
     }
   }
 

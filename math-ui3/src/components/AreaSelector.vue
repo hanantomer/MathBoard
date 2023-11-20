@@ -10,20 +10,17 @@
       height: selectionRectHeight + 'px',
     }"
     v-if="show"
-    @mouseup="mouseup"
   ></v-card>
 </template>
 
 <script setup lang="ts">
 import { watch, computed, ref } from "vue";
-import { useNotationStore } from "../store/pinia/notationStore";
 import { useEditModeStore } from "../store/pinia/editModeStore";
 import * as d3 from "d3";
 import useMatrixHelper from "../helpers/matrixHelper";
 import useSelectionHelper from "../helpers/selectionHelper";
 import useNotationMutateHelper from "../helpers/notationMutateHelper";
 import useEventBus from "../helpers/eventBusHelper";
-
 
 const eventBus = useEventBus();
 const editModeStore = useEditModeStore();
@@ -35,7 +32,6 @@ const selectionHelper = useSelectionHelper();
 const props = defineProps({
   svgId: { type: String, default: "" },
 });
-
 
 let selectionPosition = ref({
   x1: 0,
@@ -94,8 +90,6 @@ watch(
   () => eventBus.bus.value.get("svgmousedown"),
   (e: MouseEvent) => {
     handleMouseDown(e);
-
-    ///TODO- embed     selectionHelper.activateClickedObject(e);
   },
 );
 
@@ -113,13 +107,10 @@ watch(
   },
 );
 
+//function mouseup(e: MouseEvent) {
+//  eventBus.emit("svgmouseup", e);
+//}
 
-
-function mouseup(e: KeyboardEvent) {
-  eventBus.emit("svgmouseup", e);
-}
-
-/// TODO send to event helper
 function keyUp(e: KeyboardEvent) {
   if (e.code === "Backspace" || e.code === "Delete") {
     // actual deletion is handled by eventManager
@@ -134,7 +125,7 @@ function handleMouseDown(e: MouseEvent) {
 
   selectionHelper.resetSelection();
 
-  if (editModeStore.getEditMode() == "SELECT") {
+  if (editModeStore.getEditMode() == "AREA_SELECT") {
     editModeStore.setNextEditMode();
     return;
   }
@@ -149,7 +140,12 @@ function handleMouseMove(e: MouseEvent) {
 
   const editMode = editModeStore.getEditMode();
 
-  if (editMode == "SELECTING") {
+  if (editMode == "AREA_SELECTED") {
+    editModeStore.setNextEditMode();
+    return;
+  }
+
+  if (editMode == "AREA_SELECTING") {
     updateSelectionArea(e);
     return;
   }
@@ -167,7 +163,7 @@ function handleMouseUp(e: MouseEvent) {
     return;
   }
 
-  if (editMode == "SELECTING") {
+  if (editMode == "AREA_SELECTING") {
     endSelect();
     editModeStore.setNextEditMode();
     return;
@@ -180,45 +176,6 @@ function handleMouseUp(e: MouseEvent) {
   }
 
   resetSelection();
-}
-
-function noramalizeLeft(value: number) {
-  return (
-    svgDimensions.value.x +
-    Math.floor((value - svgDimensions.value.x) / matrixHelper.getRectSize()) *
-      matrixHelper.getRectSize()
-  );
-}
-
-function noramalizeTop(value: number) {
-  return (
-    svgDimensions.value.y +
-    Math.floor((value - svgDimensions.value.y) / matrixHelper.getRectSize()) *
-      matrixHelper.getRectSize()
-  );
-}
-
-function noramalizeRight(value: number) {
-  return (
-    svgDimensions.value.x +
-    Math.ceil((value - svgDimensions.value.x) / matrixHelper.getRectSize()) *
-      matrixHelper.getRectSize()
-  );
-}
-
-function noramalizeBottom(value: number) {
-  return (
-    svgDimensions.value.y +
-    Math.ceil((value - svgDimensions.value.y) / matrixHelper.getRectSize()) *
-      matrixHelper.getRectSize()
-  );
-}
-
-function normalizeSelection() {
-  selectionPosition.value.x1 = noramalizeLeft(selectionPosition.value.x1);
-  selectionPosition.value.y1 = noramalizeTop(selectionPosition.value.y1);
-  selectionPosition.value.x2 = noramalizeRight(selectionPosition.value.x2);
-  selectionPosition.value.y2 = noramalizeBottom(selectionPosition.value.y2);
 }
 
 // extend or shrink selection area from inner mouse move
@@ -243,13 +200,13 @@ function endSelect() {
         let row = datum.row ?? datum.fromRow;
         let col = datum.col ?? datum.fromCol;
         if (
-          matrixHelper.getRectSize() * col + svgDimensions.value.x >=
+          matrixHelper.getCellSize() * col + svgDimensions.value.x >=
             selectionPosition.value.x1 &&
-          matrixHelper.getRectSize() * col + svgDimensions.value.x <=
+          matrixHelper.getCellSize() * col + svgDimensions.value.x <=
             selectionPosition.value.x2 &&
-          matrixHelper.getRectSize() * row + svgDimensions.value.y >=
+          matrixHelper.getCellSize() * row + svgDimensions.value.y >=
             selectionPosition.value.y1 &&
-          matrixHelper.getRectSize() * row + svgDimensions.value.y <=
+          matrixHelper.getCellSize() * row + svgDimensions.value.y <=
             selectionPosition.value.y2
         ) {
           notationMutateHelper.selectNotation({
@@ -272,29 +229,29 @@ function moveSelection(e: MouseEvent) {
   // movement is still too small
   if (
     Math.abs(e.clientX - svgDimensions.value.x - dragPosition.value.x) <
-      matrixHelper.getRectSize() &&
+      matrixHelper.getCellSize() &&
     Math.abs(e.clientY - svgDimensions.value.y - dragPosition.value.y) <
-      matrixHelper.getRectSize()
+      matrixHelper.getCellSize()
   ) {
     return;
   }
 
   const rectDeltaX = Math.round(
     (e.clientX - svgDimensions.value.x - dragPosition.value.x) /
-      matrixHelper.getRectSize(),
+      matrixHelper.getCellSize(),
   );
   const rectDeltaY = Math.round(
     (e.clientY - svgDimensions.value.y - dragPosition.value.y) /
-      matrixHelper.getRectSize(),
+      matrixHelper.getCellSize(),
   );
 
   if (rectDeltaX != 0 || rectDeltaY != 0) {
     notationMutateHelper.moveSelectedNotations(rectDeltaX, rectDeltaY);
 
-    selectionPosition.value.x1 += rectDeltaX * matrixHelper.getRectSize();
-    selectionPosition.value.y1 += rectDeltaY * matrixHelper.getRectSize();
-    selectionPosition.value.x2 += rectDeltaX * matrixHelper.getRectSize();
-    selectionPosition.value.y2 += rectDeltaY * matrixHelper.getRectSize();
+    selectionPosition.value.x1 += rectDeltaX * matrixHelper.getCellSize();
+    selectionPosition.value.y1 += rectDeltaY * matrixHelper.getCellSize();
+    selectionPosition.value.x2 += rectDeltaX * matrixHelper.getCellSize();
+    selectionPosition.value.y2 += rectDeltaY * matrixHelper.getCellSize();
     dragPosition.value.x = e.clientX - svgDimensions.value.x;
     dragPosition.value.y = e.clientY - svgDimensions.value.y;
   }

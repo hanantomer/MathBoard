@@ -376,7 +376,7 @@ export default function notationMutateHelper() {
     symbolsAtCell.forEach(async (n: NotationAttributes) => {
       await dbHelper
         .removeNotation(n)
-        .then(() => notationStore.removeNotation(n.uuid));
+        .then(() => notationStore.deleteNotation(n.uuid));
     });
 
     return symbolsAtCell;
@@ -448,11 +448,15 @@ export default function notationMutateHelper() {
     notationStore.setNotation(lineNotation);
   }
 
-  async function addNotation<T extends NotationCreationAttributes>(
+  async function upsertNotation<T extends NotationCreationAttributes>(
     notation: T,
   ) {
+    editModeStore.resetEditMode();
+    notationStore.resetSelectedNotations();
+
     let overlappedSameTypeNotation = findOverlapNotationsOfSameType(notation);
 
+    // update
     if (overlappedSameTypeNotation) {
       setNotationAttributes(overlappedSameTypeNotation, notation);
 
@@ -473,8 +477,7 @@ export default function notationMutateHelper() {
       return;
     }
 
-    // no overlapping -> add
-    // TODO divert and typify lesson, question, answer
+    // no overlapping -> insert
     let newNotation = await dbHelper.addNotation(notation);
     notationStore.addNotation({
       ...newNotation,
@@ -492,7 +495,7 @@ export default function notationMutateHelper() {
   }
 
   async function syncIncomingRemovedNotation(notation: NotationAttributes) {
-    notationStore.removeNotation(notation.uuid);
+    notationStore.deleteNotation(notation.uuid);
   }
 
   async function syncIncomingUpdatedtNotation(notation: NotationAttributes) {
@@ -500,7 +503,7 @@ export default function notationMutateHelper() {
   }
 
   async function removeAllNotations() {
-    notationStore.removeAllNotations();
+    notationStore.deleteAllNotations();
   }
 
   function setNotationAttributes(
@@ -620,22 +623,6 @@ export default function notationMutateHelper() {
     return false;
   }
 
-  async function removeNotationsByRect(rectNotaion: RectNotationAttributes) {
-    let notationsAtRectCoordinates = findNotationsByRectCoordinates(
-      notationStore.getNotations(),
-      rectNotaion,
-    );
-
-    if (!notationsAtRectCoordinates) return;
-
-    notationsAtRectCoordinates.forEach(async (n: NotationAttributes) => {
-      n.boardType = notationStore.getParent().type;
-      await dbHelper
-        .removeNotation(n)
-        .then(() => notationStore.removeNotation(n.uuid));
-    });
-  }
-
   function isCellInQuestionArea(
     CellCoordinates: CellCoordinates | null,
   ): boolean | null {
@@ -652,75 +639,57 @@ export default function notationMutateHelper() {
 
   function addMarkNotation() {
     if (editModeStore.getEditMode() == "CHECKMARK") {
-      addSymbolNotation("&#x2714");
+      upsertSymbolNotation("&#x2714");
       return;
     }
 
     if (editModeStore.getEditMode() == "SEMICHECKMARK") {
-      addSymbolNotation("&#x237B");
+      upsertSymbolNotation("&#x237B");
       return;
     }
 
     if (editModeStore.getEditMode() == "XMARK") {
-      addSymbolNotation("&#x2718");
+      upsertSymbolNotation("&#x2718");
       return;
     }
   }
 
-  function removeNotationsAtMousePosition(e: MouseEvent) {
-    let rectAtMousePosition: any = elementFinderHelper.findClickedObject(
-      {
-        x: e.clientX,
-        y: e.clientY,
-      },
-      "rect",
-      null,
-    );
-
-    if (!rectAtMousePosition) return;
-
-    removeSymbolsByCell({
-      row: rectAtMousePosition.parentNode?.attributes?.row.value,
-      col: rectAtMousePosition.attributes.col.value,
-    });
-  }
-
-  function removeSelectedNotations() {
+  function deleteSelectedNotations() {
     if (!authHelper.canEdit) return;
 
-    if (notationStore.getSelectedCell()) {
-      removeSelectedCellNotations();
-      return;
-    }
+    //if (notationStore.getSelectedCell()) {
+    //  removeSelectedCellNotations();
+    //  return;
+    //}
     notationStore.getSelectedNotations().forEach(async (n) => {
       if (!n) return;
       // from db
       await dbHelper.removeNotation(n);
 
       //from store
-      notationStore.removeNotation(n.uuid);
+      notationStore.deleteNotation(n.uuid);
 
       // publish
       userOutgoingOperations.syncOutgoingRemoveNotation(n.uuid, n.parentUUId);
     });
   }
 
-  async function removeSelectedCellNotations() {
-    if (!notationStore.getSelectedCell()) return;
+  // async function removeSelectedCellNotations() {
+  //   if (!notationStore.getSelectedCell()) return;
 
-    let notationsToDelete = await removeSymbolsByCell(
-      notationStore.getSelectedCell()!,
-    );
+  //   let notationsToDelete = await removeSymbolsByCell(
+  //     notationStore.getSelectedCell()!,
+  //   );
 
-    if (!notationsToDelete) return;
+  //   if (!notationsToDelete) return;
 
-    notationsToDelete.forEach((notation: NotationAttributes) => {
-      userOutgoingOperations.syncOutgoingRemoveNotation(
-        notation.uuid,
-        notation.parentUUId,
-      );
-    });
-  }
+  //   notationsToDelete.forEach((notation: NotationAttributes) => {
+  //     userOutgoingOperations.syncOutgoingRemoveNotation(
+  //       notation.uuid,
+  //       notation.parentUUId,
+  //     );
+  //   });
+  // }
 
   function addImageNotation(
     fromCol: number,
@@ -741,21 +710,21 @@ export default function notationMutateHelper() {
       user: userStore.getCurrentUser(),
     };
 
-    addNotation(notation);
+    upsertNotation(notation);
 
     notationStore.resetSelectedCell();
   }
 
-  function addTextNotation(value: string) {
-    let selectedCell = notationStore.getSelectedCell();
-    if (!selectedCell) return;
+  function upsertTextNotation(value: string) {
+    const rectCell = getRectCell();
+    if (!rectCell) return;
 
-    let fromCol = selectedCell.col;
+    let fromCol = rectCell.col;
     let toCol =
-      selectedCell.col + Math.floor(matrixHelper.getFreeTextRectWidth(value));
-    let fromRow = selectedCell.row;
+      rectCell.col + Math.floor(matrixHelper.getFreeTextRectWidth(value));
+    let fromRow = rectCell.row;
     let toRow =
-      selectedCell.row + Math.floor(matrixHelper.getFreeTextRectHeight(value));
+      rectCell.row + Math.floor(matrixHelper.getFreeTextRectHeight(value));
 
     let notation: RectNotationCreationAttributes = {
       fromCol: fromCol,
@@ -769,16 +738,16 @@ export default function notationMutateHelper() {
       user: userStore.getCurrentUser(),
     };
 
-    addNotation(notation);
-    notationStore.resetSelectedCell();
+    upsertNotation(notation);
   }
 
-  function addSymbolNotation(value: string) {
-    if (!notationStore.getSelectedCell()) return;
+  function upsertSymbolNotation(value: string) {
+    const symbolCell = getSymbolCell();
+    if (!symbolCell) return;
 
     let notation: PointNotationCreationAttributes = {
-      col: notationStore.getSelectedCell()!.col,
-      row: notationStore.getSelectedCell()!.row,
+      col: symbolCell.col,
+      row: symbolCell.row,
       value: value,
       boardType: notationStore.getParent().type,
       parentUUId: notationStore.getParent().uuid,
@@ -786,11 +755,29 @@ export default function notationMutateHelper() {
       user: userStore.getCurrentUser(),
     };
 
-    addNotation(notation);
+    upsertNotation(notation);
 
-    if (editModeStore.getEditMode() == "SYMBOL") {
-      matrixHelper.setNextCell(1, 0);
+    matrixHelper.setNextCell(1, 0);
+  }
+
+  function getSymbolCell(): CellCoordinates | null {
+    if (notationStore.getSelectedNotations().length) {
+      let point =
+        notationStore.getSelectedNotations()[0] as PointNotationAttributes;
+      return { col: point.col, row: point.row };
     }
+
+    return notationStore.getSelectedCell();
+  }
+
+  function getRectCell(): CellCoordinates | null {
+    if (notationStore.getSelectedNotations().length) {
+      const rect =
+        notationStore.getSelectedNotations()[0] as RectNotationAttributes;
+      return { col: rect.fromCol, row: rect.fromRow };
+    }
+
+    return notationStore.getSelectedCell();
   }
 
   function addLineNotation(
@@ -807,20 +794,19 @@ export default function notationMutateHelper() {
       user: userStore.getCurrentUser(),
     };
 
-    addNotation(notation);
+    upsertNotation(notation);
   }
 
   return {
     selectNotation,
     isNotationInQuestionArea,
     isCellInQuestionArea,
-    removeNotationsByRect,
-    addSymbolNotation,
+    upsertSymbolNotation,
     addMarkNotation,
     addImageNotation,
-    addTextNotation,
+    upsertTextNotation,
     addLineNotation,
-    removeSelectedNotations,
+    deleteSelectedNotations,
     moveSelectedNotations,
     updateSelectedNotationCoordinates,
     updateLineNotation,

@@ -49,7 +49,7 @@ export default function userIncomingOperations() {
       .service("notationSync")
       .on("removed", (notation: NotationAttributes) => {
         if (!isRelevant(notation)) return;
-        notationStore.removeNotation(notation.uuid);
+        notationStore.deleteNotation(notation.uuid);
       });
 
     // sync active cell with teacher or write authorized student

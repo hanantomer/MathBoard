@@ -9,14 +9,22 @@ export const useEditModeStore = defineStore("editMode", () => {
 
   function isSelectionMode() {
     return (
-      editMode.value == "SELECT" ||
-      editMode.value == "SELECTING" ||
+      editMode.value == "AREA_SELECT" ||
+      editMode.value == "AREA_SELECTING" ||
       editMode.value == "MOVING"
     );
   }
 
+  function isSelectedMode() {
+    return (
+      editMode.value == "AREA_SELECTED" ||
+      editMode.value == "FRACTION_SELECTED" ||
+      editMode.value == "SQRT_SELECTED"
+    );
+  }
+
   function isLineMode() {
-    return editMode.value == "FRACTION" || editMode.value == "SQRT";
+    return isFractionMode() || isSqrtMode();
   }
 
   function isFractionMode() {
@@ -73,6 +81,10 @@ export const useEditModeStore = defineStore("editMode", () => {
     );
   }
 
+  function isTextMode() {
+    return editMode.value == "TEXT";
+  }
+
   function getEditMode() {
     return editMode.value;
   }
@@ -104,9 +116,11 @@ export const useEditModeStore = defineStore("editMode", () => {
         return setEditMode("FRACTION_SELECTED");
       case "SQRT_SELECTING":
         return setEditMode("SQRT_SELECTED");
-      case "SELECT":
-        return setEditMode("SELECTING");
-      case "SELECTING":
+      case "AREA_SELECT":
+        return setEditMode("AREA_SELECTING");
+      case "AREA_SELECTING":
+        return setEditMode("AREA_SELECTED");
+      case "AREA_SELECTED":
         return setEditMode("MOVING");
       case "MOVING":
         return resetEditMode();
@@ -122,10 +136,12 @@ export const useEditModeStore = defineStore("editMode", () => {
     isLineEditingMode,
     isLineSelectedMode,
     isLineSelectingMode,
+    isSelectedMode,
     isFractionMode,
     isSqrtMode,
     isSqrtEditMode,
     isDefaultEditMode,
+    isTextMode,
     setEditMode,
     setNextEditMode,
     resetEditMode,

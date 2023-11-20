@@ -11,7 +11,7 @@ export const selectedCellColor = "lightcyan";
 
 export const heartBeatInterval = 5000;
 
-export type CellCoordinates = {col: number, row:number};
+export type CellCoordinates = {col: number, row: number};
 
 //export type LineCoordinates = {fromCol: number, toCol: number, row:number};
 

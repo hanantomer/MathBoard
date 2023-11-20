@@ -31,7 +31,7 @@
         <v-btn
           v-bind="props"
           icon
-          :disabled="!editEnabled || !hasSelectedCell"
+          :disabled="!textEnabled"
           v-on:click="startTextMode"
           @click.stop="openFreeTextDialog"
           ><v-icon>mdi-text</v-icon></v-btn
@@ -221,13 +221,11 @@ watch(
   { immediate: true, deep: true },
 );
 
-
-
 // emitted by eventHelper
 watch(
   () => eventBus.bus.value.get("freeTextSubmited"),
   (value: string) => {
-    notationMutateHelper.addTextNotation(value);
+    notationMutateHelper.upsertTextNotation(value);
   },
 );
 
@@ -251,14 +249,18 @@ const editEnabled = computed(() => {
   return authHelper.canEdit();
 });
 
-const hasSelectedCell = computed(() => {
-  return notationStore.getSelectedCell();
+const textEnabled = computed(() => {
+  if (!editEnabled) return false;
+
+  return (
+    notationStore.getSelectedCell() ||
+    notationStore.getSelectedNotations()?.at(0)?.notationType === "TEXT"
+  );
 });
 
 const answerCheckMode = computed(() => {
   return notationStore.getParent().type == "ANSWER" && userStore.isTeacher;
 });
-
 
 function resetButtonsState() {
   checkmarkButtonActive.value = 1;
@@ -325,12 +327,8 @@ function startTextMode() {
   editModeStore.setEditMode("TEXT");
 }
 
-function endTextMode() {
-  resetButtonsState();
-}
-
 function toggleSelectionMode() {
-  if (editModeStore.getEditMode() == "SELECT") {
+  if (editModeStore.getEditMode() == "AREA_SELECT") {
     endSelectionMode();
   } else {
     startSelectionMode();
@@ -340,7 +338,7 @@ function toggleSelectionMode() {
 function startSelectionMode() {
   resetButtonsState();
   selectionButtonActive.value = 0;
-  editModeStore.setEditMode("SELECT");
+  editModeStore.setEditMode("AREA_SELECT");
 }
 
 function endSelectionMode() {

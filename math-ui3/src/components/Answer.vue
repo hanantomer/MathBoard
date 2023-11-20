@@ -51,7 +51,6 @@ async function loadAnswer(answerUUId: string) {
 
   notationStore.setParent(answerStore.getCurrentAnswer()?.uuid, "ANSWER");
 
-  //matrixHelper.setMatrix(svgId);
 
   // load from db to store
   answerStore.loadAnswer(answerUUId);

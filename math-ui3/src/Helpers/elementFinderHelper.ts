@@ -66,10 +66,9 @@ export default function elementFinderHelper() {
 
   function getElementAttributeValue(
     element: Element,
-    attrName: string,
-  ): number {
-    let val = element.attributes.getNamedItem(attrName)?.value;
-    return val ? Number.parseInt(val) : -1;
+    attrName: string ,
+  ): string | undefined{
+    return element.attributes.getNamedItem(attrName)?.value;
   }
 
   return {

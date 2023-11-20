@@ -20,7 +20,7 @@ type Board = {
 
 ///TODO watch notations and sync occupation mattrix
 export const useNotationStore = defineStore("notation", () => {
-  let rectSize = ref<number>();
+  let cellSize = ref<number>();
 
   const cellOccupationMatrix: (NotationAttributes | null)[][] =
     createCellOccupationMatrix();
@@ -31,16 +31,14 @@ export const useNotationStore = defineStore("notation", () => {
 
   let selectedCell = ref(<CellCoordinates | null>null);
 
-
-  function getRectSize() {
-    if (!rectSize.value) throw new Error("rectSize.value is null");
-    return rectSize.value;
+  function getCellSize() {
+    if (!cellSize.value) throw new Error("cellSize.value is null");
+    return cellSize.value;
   }
 
-  function setRectSize(size: number) {
-    rectSize.value = size;
+  function setCellSize(size: number) {
+    cellSize.value = size;
   }
-
 
   function getSelectedNotations(): NotationAttributes[] {
     return Array.from(notations.value.values()).filter(
@@ -86,20 +84,21 @@ export const useNotationStore = defineStore("notation", () => {
     notations.value.set(notation.uuid, notation);
   }
 
-  function removeNotation(uuid: string) {
+  /// TODO: join them
+  function addNotation(notation: NotationAttributes) {
+    notation.boardType = parent.value.type;
+    notations.value.set(notation.uuid, notation);
+  }
+
+  function deleteNotation(uuid: string) {
     notations.value.delete(uuid);
     if (getParent().type === "LESSON") {
       userOutgoingOperations.syncOutgoingRemoveNotation(uuid, getParent().uuid);
     }
   }
 
-  function removeAllNotations() {
+  function deleteAllNotations() {
     notations.value.clear();
-  }
-
-  function addNotation(notation: NotationAttributes) {
-    notation.boardType = parent.value.type;
-    notations.value.set(notation.uuid, notation);
   }
 
   function selectCell(newSelectedCell: CellCoordinates | null) {
@@ -123,7 +122,6 @@ export const useNotationStore = defineStore("notation", () => {
   function resetSelectedNotations() {
     Array.from(getSelectedNotations()).forEach((n) => (n.selected = false));
   }
-
 
   function createCellOccupationMatrix(): (NotationAttributes | null)[][] {
     let matrix: (NotationAttributes | null)[][] = new Array();
@@ -153,16 +151,16 @@ export const useNotationStore = defineStore("notation", () => {
     getSelectedCell,
     getSelectedNotations,
     getParent,
-    getRectSize,
+    getCellSize,
     setNotations,
     setNotation,
     selectNotation,
     selectCell,
     setParent,
-    setRectSize,
+    setCellSize,
     resetSelectedCell,
     resetSelectedNotations,
-    removeNotation,
-    removeAllNotations,
+    deleteNotation,
+    deleteAllNotations,
   };
 });

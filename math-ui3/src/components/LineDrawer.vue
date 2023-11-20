@@ -1,7 +1,6 @@
 <template>
   <div v-show="show">
     <v-card
-      v-if="fractionMode"
       id="lineLeftHandle"
       class="lineHandle"
       v-bind:style="{
@@ -53,14 +52,16 @@ import { watch, computed, ref } from "vue";
 import { useNotationStore } from "../store/pinia/notationStore";
 import { useEditModeStore } from "../store/pinia/editModeStore";
 import { LinePosition, DotPosition } from "../../../math-common/src/globals";
-import { LineAttributes, LineNotationAttributes} from "../../../math-common/src/baseTypes";
+import {
+  LineAttributes,
+  LineNotationAttributes,
+} from "../../../math-common/src/baseTypes";
 import useEventBus from "../helpers/eventBusHelper";
 
 const eventBus = useEventBus();
 const notationMutateHelper = useNotationMutateHelper();
 const notationStore = useNotationStore();
 const editModeStore = useEditModeStore();
-
 
 // props
 
@@ -75,8 +76,8 @@ let linePosition = ref(<LinePosition | Record<string, never>>{});
 
 // computed
 
-const fractionMode = computed(() => {
-  return editModeStore.isFractionMode();
+const lineMode = computed(() => {
+  return editModeStore.isLineMode();
 });
 
 const sqrtEditMode = computed(() => {
@@ -134,7 +135,7 @@ watch(
 watch(
   () => eventBus.bus.value.get("lineSelected"),
   (line: LineNotationAttributes) => {
-    if (line) onSelectedLine(line);
+    if (line) onLineSelected(line);
   },
   { immediate: true },
 );
@@ -147,8 +148,22 @@ function mouseup(e: KeyboardEvent) {
 
 // event handlers
 
-function onSelectedLine(line: LineNotationAttributes) {
-  selectLine(line);
+function onLineSelected(lineNotation: LineNotationAttributes) {
+  //editModeStore.setNextEditMode();
+
+  linePosition.value.x1 =
+    svgDimensions.value.left +
+    lineNotation.fromCol * notationStore.getCellSize();
+
+  linePosition.value.x2 =
+    svgDimensions.value.left + lineNotation.toCol * notationStore.getCellSize();
+
+  linePosition.value.y =
+    svgDimensions.value.top + lineNotation.row * notationStore.getCellSize();
+
+  notationStore.selectNotation(lineNotation.uuid);
+
+  eventBus.emit("lineSelected", null); // to enable re selection
 }
 
 function onHandleMouseDown(e: MouseEvent) {
@@ -221,26 +236,6 @@ function startLineDrawing(position: DotPosition) {
   linePosition.value.y = getNearestRow(position.y) + svgDimensions.value.top;
 }
 
-function selectLine(lineNotation: LineNotationAttributes) {
-  //selectedLine = lineNotation; // store for later save
-
-  editModeStore.setNextEditMode();
-
-  linePosition.value.x1 =
-    svgDimensions.value.left +
-    lineNotation.fromCol * notationStore.getRectSize();
-
-  linePosition.value.x2 =
-    svgDimensions.value.left + lineNotation.toCol * notationStore.getRectSize();
-
-  linePosition.value.y =
-    svgDimensions.value.top + lineNotation.row * notationStore.getRectSize();
-
-  notationStore.selectNotation(lineNotation.uuid);
-
-  eventBus.emit("lineSelected", null); // to enable re selection
-}
-
 function setLineWidth(xPos: number) {
   xPos += svgDimensions.value.left;
 
@@ -257,18 +252,18 @@ function endDrawLine() {
 
   let fromCol = Math.ceil(
     (linePosition.value.x1 - svgDimensions.value.left) /
-      notationStore.getRectSize(),
+      notationStore.getCellSize(),
   );
 
   let toCol = Math.ceil(
     (linePosition.value.x2 - svgDimensions.value.left) /
-      notationStore.getRectSize() -
+      notationStore.getCellSize() -
       1,
   );
 
   let row = Math.round(
     (linePosition.value.y - svgDimensions.value.top) /
-      notationStore.getRectSize(),
+      notationStore.getCellSize(),
   );
 
   let lineAttributes: LineAttributes = {
@@ -302,8 +297,8 @@ function resetLineDrawing() {
 }
 
 function getNearestRow(clickedYPos: number) {
-  let clickedRow = Math.round(clickedYPos / notationStore.getRectSize());
-  return clickedRow * notationStore.getRectSize();
+  let clickedRow = Math.round(clickedYPos / notationStore.getCellSize());
+  return clickedRow * notationStore.getCellSize();
 }
 </script>
 
@@ -332,9 +327,9 @@ foreignObject[type="sqrt"] {
 }
 
 .sqrtsymbol {
-  margin-left: 10px;
+  margin-left: 6px;
   z-index: 999;
   font-weight: bold;
-  font-size: 1.4em;
+  font-size: 1.8em;
 }
 </style>

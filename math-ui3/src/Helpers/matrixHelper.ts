@@ -36,7 +36,7 @@ export default function useMatrixHelper() {
   }
 
   function regularFontSize() {
-    return `${notationStore.getRectSize() / 25}em`;
+    return `${notationStore.getCellSize() / 25}em`;
   }
 
   function textFontSize(el: HTMLElement): string {
@@ -44,18 +44,18 @@ export default function useMatrixHelper() {
   }
 
   function powerFontSize() {
-    return `${notationStore.getRectSize() / 50}em`;
+    return `${notationStore.getCellSize() / 50}em`;
   }
 
   function signFontSize() {
-    return `${notationStore.getRectSize() / 28}em`;
+    return `${notationStore.getCellSize() / 28}em`;
   }
 
   function sqrtFontSize() {
-    return `${notationStore.getRectSize() / 20}em`;
+    return `${notationStore.getCellSize() / 20}em`;
   }
 
-  function setRectSize(svgId: string) {
+  function setCellSize(svgId: string) {
     let clientWidth: number | undefined =
       document.getElementById(svgId)?.clientWidth;
     let clientHeight: number | undefined =
@@ -63,7 +63,7 @@ export default function useMatrixHelper() {
 
     if (!clientWidth || !clientHeight) return;
 
-    notationStore.setRectSize(
+    notationStore.setCellSize(
       Math.min(
         Math.floor(clientWidth / colsNum),
         Math.floor(clientHeight / rowsNum),
@@ -82,7 +82,7 @@ export default function useMatrixHelper() {
   /// call from component mount
 
   // function init(el: HTMLElement, svgId: string) {
-  //   setRectSize(svgId);
+  //   setCellSize(svgId);
   //   setTextMeasurementCtx(el);
   // }
 
@@ -95,7 +95,7 @@ export default function useMatrixHelper() {
       ),
     );
 
-    return maxWidth / notationStore.getRectSize();
+    return maxWidth / notationStore.getCellSize();
   }
 
   function getFreeTextRectHeight(text: string) {
@@ -103,14 +103,14 @@ export default function useMatrixHelper() {
     const margin = 5;
     return (
       ((fontSize + margin) * text.split(/\r*\n/).length) /
-      notationStore.getRectSize()
+      notationStore.getCellSize()
     );
   }
 
   function setMatrix(svgId: string) {
     const el = document.getElementById(svgId);
     if (!el) return;
-    setRectSize(svgId);
+    setCellSize(svgId);
     setTextMeasurementCtx(el);
 
     // render rows
@@ -118,7 +118,7 @@ export default function useMatrixHelper() {
       matrix.push(d3.range(colsNum));
     }
 
-    // render rectangles
+    // render cells
     d3.select("#" + svgId)
       .selectAll("g")
       .data(matrix)
@@ -129,9 +129,9 @@ export default function useMatrixHelper() {
       })
       .lower()
       .attr("transform", (d, i) => {
-        return "translate(0, " + notationStore.getRectSize() * i + ")";
+        return "translate(0, " + notationStore.getCellSize() * i + ")";
       })
-      .selectAll("rect")
+      .selectAll("cell")
       .data((r) => r)
       .enter()
       .append("rect")
@@ -144,13 +144,13 @@ export default function useMatrixHelper() {
         return i;
       })
       .attr("x", (d, i) => {
-        return i * notationStore.getRectSize();
+        return i * notationStore.getCellSize();
       })
-      .attr("width", notationStore.getRectSize())
-      .attr("height", notationStore.getRectSize());
+      .attr("width", notationStore.getCellSize())
+      .attr("height", notationStore.getCellSize());
   }
 
-  function getNextRect(
+  function getNextCell(
     horizontalStep: number,
     verticalStep: number,
   ): PointAttributes | undefined {
@@ -191,7 +191,7 @@ export default function useMatrixHelper() {
   }
 
   function setNextCell(horizontalStep: number, verticalStep: number) {
-    let nextCell = getNextRect(horizontalStep, verticalStep);
+    let nextCell = getNextCell(horizontalStep, verticalStep);
     if (nextCell) {
       notationStore.selectCell(nextCell);
     }
@@ -200,11 +200,7 @@ export default function useMatrixHelper() {
   function findRect(point: PointAttributes): HTMLElement | undefined | null {
     return document
       ?.querySelector(`g[row='${point.row}']`)
-      ?.querySelector(`rect[col='${point.col}']`);
-  }
-
-  function removeNotation(n: NotationAttributes) {
-    document?.getElementById(n.uuid + n.notationType)?.remove();
+      ?.querySelector(`cell[col='${point.col}']`);
   }
 
   function enrichNotations(notations: NotationAttributes[]) {
@@ -239,7 +235,7 @@ export default function useMatrixHelper() {
   function refreshScreen(notations: NotationAttributes[], svgId: string) {
     const svgElement = document!.getElementById(svgId);
 
-    setMatrix(svgId);
+    //setMatrix(svgId);
 
     try {
       notations = enrichNotations(notations);
@@ -405,7 +401,7 @@ export default function useMatrixHelper() {
     let colIdx = col(n);
     let deltaX =
       n.notationType === "SQRTSYMBOL" || n.notationType === "POWER"
-        ? Math.round(notationStore.getRectSize() / 3) * -1
+        ? Math.round(notationStore.getCellSize() / 3) * -1
         : 0;
 
     return colIdx ? getNotationXposByCol(colIdx) + deltaX : null;
@@ -428,7 +424,7 @@ export default function useMatrixHelper() {
 
   function width(n: NotationAttributes): number | null {
     if (n.notationType === "SQRTSYMBOL") {
-      return notationStore.getRectSize();
+      return notationStore.getCellSize();
     }
 
     switch (NotationTypeShape.get(n.notationType)) {
@@ -446,11 +442,11 @@ export default function useMatrixHelper() {
   }
 
   function pointNotationWidth(n: PointAttributes): number {
-    return notationStore.getRectSize();
+    return notationStore.getCellSize();
   }
 
   function lineNotationWidth(n: LineAttributes): number {
-    return (n.toCol - n.fromCol) * notationStore.getRectSize() + 5;
+    return (n.toCol - n.fromCol) * notationStore.getCellSize() + 5;
   }
 
   function rectNotationWidth(n: RectAttributes): number {
@@ -460,19 +456,19 @@ export default function useMatrixHelper() {
     //     1 * n.value.length
     //   );
     // }
-    return (n.toCol - n.fromCol + 1) * notationStore.getRectSize() + 5;
+    return (n.toCol - n.fromCol + 1) * notationStore.getCellSize() + 5;
   }
 
   function pointNotationHeight(n: PointAttributes): number {
-    return notationStore.getRectSize();
+    return notationStore.getCellSize();
   }
 
   function lineNotationHeight(n: LineAttributes): number {
-    return notationStore.getRectSize();
+    return notationStore.getCellSize();
   }
 
   function rectNotationHeight(n: RectAttributes): number {
-    return (n.toRow - n.fromRow + 1) * notationStore.getRectSize() + 5;
+    return (n.toRow - n.fromRow + 1) * notationStore.getCellSize() + 5;
   }
 
   function fontSize(n: NotationAttributes, el: HTMLElement) {
@@ -502,14 +498,14 @@ export default function useMatrixHelper() {
     if (n.notationType === "FRACTION") {
       let n1 = n as LineNotationAttributes;
       return `<span class=line style='color:${color};width:${
-        (n1.toCol - n1.fromCol) * notationStore.getRectSize()
+        (n1.toCol - n1.fromCol) * notationStore.getCellSize()
       }px;'></span>`;
     }
 
     if (n.notationType === "SQRT") {
       let n1 = n as LineNotationAttributes;
       return `<span class=line style='color:${color};position:relative;left:9px;width:${
-        (n1.toCol - n1.fromCol) * notationStore.getRectSize() - 8
+        (n1.toCol - n1.fromCol) * notationStore.getCellSize() - 8
       }px;'></span>`;
     }
 
@@ -535,21 +531,21 @@ export default function useMatrixHelper() {
   }
 
   function getNotationXposByCol(col: number): number {
-    return col * notationStore.getRectSize();
+    return col * notationStore.getCellSize();
   }
 
   function getNotationYposByRow(row: number): number {
-    return row * notationStore.getRectSize();
+    return row * notationStore.getCellSize();
   }
 
-  function getRectSize(): number {
-    return notationStore.getRectSize();
+  function getCellSize(): number {
+    return notationStore.getCellSize();
   }
 
   return {
     svgWidth,
     svgHeight,
-    getRectSize,
+    getCellSize,
     findRect,
     setNextCell,
     getFreeTextRectWidth,

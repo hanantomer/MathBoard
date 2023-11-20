@@ -1,7 +1,5 @@
 import { useUserStore } from "../store/pinia/userStore";
-import { useNotationStore } from "../store/pinia/notationStore";
 import { useEditModeStore } from "../store/pinia/editModeStore";
-
 
 import useMatrixHelper from "./matrixHelper";
 import useNotationMutationHelper from "./notationMutateHelper";
@@ -9,12 +7,13 @@ import useAuthHelper from "./authHelper";
 import useEventBus from "../helpers/eventBusHelper";
 
 const userStore = useUserStore();
-const notationStore = useNotationStore();
 const editModeStore = useEditModeStore();
 const matrixHelper = useMatrixHelper();
 const notationMutationHelper = useNotationMutationHelper();
 const authHelper = useAuthHelper();
 const eventBus = useEventBus();
+
+type keyType = "SYMBOL" | "MOVEMENT" | "DELETION";
 
 export default function eventHelper() {
   async function paste(e: ClipboardEvent) {
@@ -36,9 +35,9 @@ export default function eventHelper() {
         let fromCol = parseInt(that.getSelectedCell().col);
         let fromRow = parseInt(that.getSelectedCell().row);
         let toCol =
-          Math.ceil(image.width / matrixHelper.getRectSize()) + fromCol;
+          Math.ceil(image.width / matrixHelper.getCellSize()) + fromCol;
         let toRow =
-          Math.ceil(image.height / matrixHelper.getRectSize()) + fromRow;
+          Math.ceil(image.height / matrixHelper.getCellSize()) + fromRow;
         notationMutationHelper.addImageNotation(
           fromCol,
           toCol,
@@ -54,84 +53,97 @@ export default function eventHelper() {
 
   function keyUp(e: KeyboardEvent) {
     const { ctrlKey, altKey, code, key } = e;
+    if (ctrlKey || altKey) return;
 
-    if (editModeStore.getEditMode() !== "SYMBOL") {
-      return;
+    if (!authHelper.canEdit) return;
+
+    if (editModeStore.isTextMode()) return;
+
+    switch (classifyKeyCode(code)) {
+      case "DELETION": {
+        return handleDeletionKey(code);
+      }
+
+      case "MOVEMENT": {
+        return handleMovementKey(code);
+      }
+
+      case "SYMBOL": {
+        return notationMutationHelper.upsertSymbolNotation(key);
+      }
+    }
+  }
+
+  function handleDeletionKey(key: string) {
+    //if (!editModeStore.isSelectedMode()) return;
+
+    notationMutationHelper.deleteSelectedNotations();
+
+    if (key === "Backspace") {
+      matrixHelper.setNextCell(-1, 0);
     }
 
-    if (ctrlKey || altKey) {
-      return;
-    }
+    editModeStore.resetEditMode();
+  }
 
-    if (
-      !(
-        code.startsWith("Digit") ||
-        code.startsWith("Key") ||
-        code.startsWith("Numpad") ||
-        code === "Minus" ||
-        code === "Delete" ||
-        code === "Backspace" ||
-        code === "Plus" ||
-        code === "Equal" ||
-        code === "Period" ||
-        code === "ArrowLeft" ||
-        code === "ArrowRight" ||
-        code === "ArrowUp" ||
-        code === "ArrowDown" ||
-        code === "Space"
-      )
-    ) {
-      return;
-    }
-
-    if (code === "Backspace") {
-      notationMutationHelper.removeSelectedNotations();
+  function handleMovementKey(key: string) {
+    if (key === "ArrowLeft") {
       matrixHelper.setNextCell(-1, 0);
       return;
     }
 
-    if (code === "Delete") {
-      notationMutationHelper.removeSelectedNotations();
-      return;
-    }
-
-    if (code === "ArrowLeft") {
-      matrixHelper.setNextCell(-1, 0);
-      return;
-    }
-
-    if (code === "ArrowRight" || code === "Space") {
+    if (key === "ArrowRight" || key === "Space") {
       matrixHelper.setNextCell(1, 0);
       return;
     }
 
-    if (code === "ArrowUp") {
+    if (key === "ArrowUp") {
       matrixHelper.setNextCell(0, -1);
       return;
     }
 
-    if (code === "ArrowDown") {
+    if (key === "ArrowDown") {
       matrixHelper.setNextCell(0, 1);
       return;
     }
 
-    if (code === "Enter") {
+    if (key === "Enter") {
       matrixHelper.setNextCell(0, -1);
       return;
     }
+  }
 
-    if (!authHelper.canEdit) {
-      return;
-    }
+  function classifyKeyCode(code: string): keyType | null {
+    if (
+      code === "ArrowLeft" ||
+      code === "ArrowRight" ||
+      code === "ArrowUp" ||
+      code === "ArrowDown" ||
+      code === "Space"
+    )
+      return "MOVEMENT";
 
-    notationMutationHelper.addSymbolNotation(key);
+    if (
+      code.startsWith("Digit") ||
+      code.startsWith("Key") ||
+      code.startsWith("Numpad") ||
+      code === "Minus" ||
+      code === "Plus" ||
+      code === "Equal" ||
+      code === "Period"
+    )
+      return "SYMBOL";
+
+    if (code === "Delete" || code === "Backspace") return "DELETION";
+
+    return null;
   }
 
   function mouseDown(e: MouseEvent) {
     if (
       editModeStore.getEditMode() === "FRACTION" ||
       editModeStore.getEditMode() === "SQRT" ||
-      editModeStore.getEditMode() === "SELECT"
+      editModeStore.getEditMode() === "AREA_SELECT"
     ) {
       return;
     }

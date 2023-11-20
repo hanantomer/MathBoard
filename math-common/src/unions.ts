@@ -32,6 +32,7 @@ export type EditMode =
   "SYMBOL"            | // default mode
   "POWER"             | // power button pressed
   "TEXT"              | // text button pressed
+  "CELL_SELECTED"     | // user clicked on a cell or navigated via keys
   "FRACTION"          | // fraction button pressed
   "FRACTION_DRAWING"  | // fraction drawing started
   "FRACTION_SELECTING"| // fraction selecting
@@ -43,8 +44,9 @@ export type EditMode =
   "SQRT_EDITITING"    | // sqrt selected and edit started
   "SQRT_SELECTED"     | // sqrt selected  
   "DELETING"          | // mouse clicked following delete button pressed
-  "SELECT"            | // select button pressed
-  "SELECTING"         | // user stared selecting area
+  "AREA_SELECT"       | // select button pressed
+  "AREA_SELECTING"    | // user stared selecting area
+  "AREA_SELECTED"     | // user finished selecting area
   "MOVING"            | // user grabbed the selection area after select button pressed
   "CHECKMARK"         | // checkmark button pressed
   "SEMICHECKMARK"     | // semicheck button pressed

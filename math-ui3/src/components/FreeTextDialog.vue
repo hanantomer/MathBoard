@@ -55,6 +55,9 @@ import { useNotationStore } from "../store/pinia/notationStore";
 import useEventBus from "../helpers/eventBusHelper";
 import { RectNotationAttributes } from "../../../math-common/build/baseTypes";
 
+let textValue = ref("");
+let dialog = ref(false);
+
 const notationStore = useNotationStore();
 const eventBus = useEventBus();
 
@@ -64,24 +67,17 @@ const props = defineProps({
   show: { type: Boolean },
 });
 
-let dialog = ref(false);
-
 watch(
   () => props.show,
   (newVal) => {
     dialog.value = newVal;
     setInitalTextValue();
   },
-  { immediate: true },
 );
 
-let textValue = ref("");
-
 function setInitalTextValue() {
-  if (
-    notationStore.getSelectedNotations().length === 1 &&
-    notationStore.getSelectedNotations()[0].notationType == "TEXT"
-  )
+  textValue.value = "";
+  if (notationStore.getSelectedNotations()[0]?.notationType == "TEXT")
     textValue.value = (
       notationStore.getSelectedNotations()[0] as RectNotationAttributes
     ).value;
