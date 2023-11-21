@@ -1,5 +1,5 @@
 import { NotationType, NotationTypeValues } from "common/unions";
-import { DotPosition, CellCoordinates } from "common/globals";
+import { DotPosition } from "common/globals";
 
 export default function elementFinderHelper() {
   //https://stackoverflow.com/questions/22428484/get-element-from-point-when-you-have-overlapping-elements
@@ -40,22 +40,22 @@ export default function elementFinderHelper() {
     );
   }
 
-  function findRectAtClickedPosition(e: MouseEvent): Element {
+  function findRectAtClickedPosition(position: DotPosition): Element {
     return findClickedObject(
       {
-        x: e.clientX,
-        y: e.clientY,
+        x: position.x,
+        y: position.y,
       },
       "foreignObject",
       ["TEXT", "GEO", "IMAGE"],
     );
   }
 
-  function findNotationAtClickedPosition(e: MouseEvent): Element {
+  function findNotationAtClickedPosition(position: DotPosition): Element {
     const el = findClickedObject(
       {
-        x: e.clientX,
-        y: e.clientY,
+        x: position.x,
+        y: position.y,
       },
       "foreignObject",
       NotationTypeValues,

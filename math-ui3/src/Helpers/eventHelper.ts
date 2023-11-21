@@ -1,17 +1,21 @@
 import { useUserStore } from "../store/pinia/userStore";
 import { useEditModeStore } from "../store/pinia/editModeStore";
+import { useNotationStore } from "../store/pinia/notationStore";
 
 import useMatrixHelper from "./matrixHelper";
 import useNotationMutationHelper from "./notationMutateHelper";
 import useAuthHelper from "./authHelper";
 import useEventBus from "../helpers/eventBusHelper";
+import useSelectionHelper from "./selectionHelper";
 
 const userStore = useUserStore();
 const editModeStore = useEditModeStore();
+const notationStore = useNotationStore();
 const matrixHelper = useMatrixHelper();
 const notationMutationHelper = useNotationMutationHelper();
 const authHelper = useAuthHelper();
 const eventBus = useEventBus();
+const selectionHelper = useSelectionHelper();
 
 type keyType = "SYMBOL" | "MOVEMENT" | "DELETION";
 
@@ -51,7 +55,7 @@ export default function eventHelper() {
     reader.readAsDataURL(item?.getAsFile() as Blob);
   }
 
-  function keyUp(e: KeyboardEvent) {
+  function keyUp(e: KeyboardEvent, svgId: string) {
     const { ctrlKey, altKey, code, key } = e;
     if (ctrlKey || altKey) return;
 
@@ -65,7 +69,7 @@ export default function eventHelper() {
       }
 
       case "MOVEMENT": {
-        return handleMovementKey(code);
+        return handleMovementKey(code, svgId);
       }
 
       case "SYMBOL": {
@@ -86,31 +90,38 @@ export default function eventHelper() {
     editModeStore.resetEditMode();
   }
 
-  function handleMovementKey(key: string) {
+  function handleMovementKey(key: string, svgId: string) {
     if (key === "ArrowLeft") {
       matrixHelper.setNextCell(-1, 0);
-      return;
     }
 
     if (key === "ArrowRight" || key === "Space") {
       matrixHelper.setNextCell(1, 0);
-      return;
     }
 
     if (key === "ArrowUp") {
       matrixHelper.setNextCell(0, -1);
-      return;
     }
 
     if (key === "ArrowDown") {
       matrixHelper.setNextCell(0, 1);
-      return;
     }
 
     if (key === "Enter") {
       matrixHelper.setNextCell(0, -1);
-      return;
     }
+
+    // select a notation occupied by seleted cell
+    const svgBounds = document.getElementById(svgId)?.getBoundingClientRect()!;
+
+    selectionHelper.selectClickedNotation({
+      x:
+        svgBounds.left +
+        notationStore.getSelectedCell()?.col! * notationStore.getCellSize(),
+      y:
+        svgBounds.left +
+        notationStore.getSelectedCell()?.row! * notationStore.getCellSize(),
+    });
   }
 
   function classifyKeyCode(code: string): keyType | null {

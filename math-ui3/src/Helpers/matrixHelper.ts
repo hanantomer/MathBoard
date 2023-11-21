@@ -246,7 +246,7 @@ export default function useMatrixHelper() {
       .data(Object.values(notations))
       .join(
         (enter) => {
-          return showNotations(enter, svgElement!);
+          return addNotations(enter, svgElement!);
         },
         (update) => {
           return updateNotations(update);
@@ -273,7 +273,7 @@ export default function useMatrixHelper() {
   }
 
   /// TODO: treat notation types divertly
-  function showNotations(enter: any, el: HTMLElement) {
+  function addNotations(enter: any, el: HTMLElement) {
     return (
       enter
         .append("foreignObject")
@@ -356,15 +356,15 @@ export default function useMatrixHelper() {
   }
 
   function removeNotations(exit: any) {
-    return exit
-      .transition()
-      .duration(10)
-      .attr("r", 0)
-      .style("opacity", 0)
-      .attr("cx", 1000)
-      .on("end", () => {
-        d3.select(this).remove();
-      });
+    return exit.remove();
+    //.transition()
+    //.duration(1)
+    //.attr("r", 0)
+    //.style("opacity", 0)
+    //.attr("cx", 1000)
+    //.on("end", () => {
+    //  d3.select(this).remove();
+    //});
   }
 
   function id(n: NotationAttributes) {

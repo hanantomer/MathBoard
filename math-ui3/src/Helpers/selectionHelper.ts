@@ -4,7 +4,11 @@ import {
   RectNotationAttributes,
 } from "common/baseTypes";
 import { useNotationStore } from "../store/pinia/notationStore";
-import { selectedCellColor, CellCoordinates } from "common/globals";
+import {
+  selectedCellColor,
+  CellCoordinates,
+  DotPosition,
+} from "common/globals";
 import { NotationAttributes } from "common/baseTypes";
 import useElementFinderHelper from "./elementFinderHelper";
 import useNotationMutateHelper from "./notationMutateHelper";
@@ -23,28 +27,19 @@ const editModeStore = useEditModeStore();
 ///TODO : split function to shorter blocks
 export default function selectionHelper() {
   // called via mouse click
-  function selectClickedObject(e: MouseEvent) {
-    // dont active object after click on toolbar fraction or sqrt
-    if (editModeStore.isLineMode()) {
+  function selectClickedNotation(position: DotPosition) {
+    notationStore.resetSelectedNotations();
+
+    if (
+      selectRectNotation(position) ||
+      selectFractionNotation(position) ||
+      selectSqrtNotation(position)
+    ) {
+      notationStore.selectCell(null);
       return;
     }
 
-    if (editModeStore.isSelectionMode()) {
-      return;
-    }
-
-    resetSelection();
-
-    if (selectRectNotation(e)) return;
-
-    if (selectFractionNotation(e)) return;
-
-    if (selectSqrtNotation(e)) return;
-
-    selectSymbolNotation(e);
-
-    // select single cell if no element but a symbol is selected
-    selectCell(e);
+    selectSymbolNotation(position);
   }
 
   function selectNotation(activeNotation: NotationAttributes) {
@@ -55,15 +50,10 @@ export default function selectionHelper() {
     notationStore.selectNotation(activeNotation?.uuid);
   }
 
-  function resetSelection() {
-    notationStore.selectCell(null);
-    notationStore.resetSelectedNotations();
-  }
-
   function getOverlappedRectNotation(
-    e: MouseEvent,
+    position: DotPosition,
   ): RectNotationAttributes | null | undefined {
-    let rectElement = elementFinderHelper.findRectAtClickedPosition(e);
+    let rectElement = elementFinderHelper.findRectAtClickedPosition(position);
     if (!rectElement) return null;
 
     const rectNotation: RectNotationAttributes | undefined = notationStore
@@ -142,38 +132,30 @@ export default function selectionHelper() {
     });
   }
 
-  function selectRectNotation(e: MouseEvent): boolean {
+  function selectRectNotation(position: DotPosition): boolean {
     const rectElement = elementFinderHelper.findClickedObject(
       {
-        x: e.clientX,
-        y: e.clientY,
+        x: position.x,
+        y: position.y,
       },
       "foreignObject",
       ["TEXT", "IMAGE", "GEO"],
     );
     if (!rectElement) return false;
 
-    let overlapRectNotation = getOverlappedRectNotation(e);
+    let overlapRectNotation = getOverlappedRectNotation(position);
     if (!overlapRectNotation) return false;
 
     selectNotation(overlapRectNotation);
 
-    /// TODO move to state machine i.e set state by selected notation
-    /*const editMode = NotationTypeEditMode.get(
-      overlapRectNotation!.notationType,
-    );
-    if (editMode) {
-      notationStore.setEditMode(editMode);
-    }*/
-
     return true;
   }
 
-  function selectFractionNotation(e: MouseEvent): boolean {
+  function selectFractionNotation(position: DotPosition): boolean {
     const fractionElement = elementFinderHelper.findClickedObject(
       {
-        x: e.clientX,
-        y: e.clientY,
+        x: position.x,
+        y: position.y,
       },
       "foreignObject",
       ["FRACTION"],
@@ -193,11 +175,11 @@ export default function selectionHelper() {
     return true;
   }
 
-  function selectSqrtNotation(e: MouseEvent): boolean {
+  function selectSqrtNotation(position: DotPosition): boolean {
     const sqrtElement = elementFinderHelper.findClickedObject(
       {
-        x: e.clientX,
-        y: e.clientY,
+        x: position.x,
+        y: position.y,
       },
       "foreignObject",
       ["SQRT"],
@@ -217,11 +199,11 @@ export default function selectionHelper() {
     return true;
   }
 
-  function selectSymbolNotation(e: MouseEvent): boolean {
+  function selectSymbolNotation(position: DotPosition): boolean {
     const symbolElement = elementFinderHelper.findClickedObject(
       {
-        x: e.clientX,
-        y: e.clientY,
+        x: position.x,
+        y: position.y,
       },
       "foreignObject",
       ["SYMBOL"],
@@ -237,8 +219,12 @@ export default function selectionHelper() {
   }
 
   // update, store active cell
-  async function selectCell(e: MouseEvent) {
-    let clickedCell = elementFinderHelper.findClickedObject(e, "rect", null);
+  async function selectCell(position: DotPosition) {
+    let clickedCell = elementFinderHelper.findClickedObject(
+      position,
+      "rect",
+      null,
+    );
 
     if (!clickedCell?.parentElement) {
       return null;
@@ -271,7 +257,7 @@ export default function selectionHelper() {
 
   return {
     showSelectedCell,
-    selectClickedObject,
-    resetSelection,
+    selectCell,
+    selectClickedNotation,
   };
 }

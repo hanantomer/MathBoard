@@ -123,6 +123,14 @@ export const useNotationStore = defineStore("notation", () => {
     Array.from(getSelectedNotations()).forEach((n) => (n.selected = false));
   }
 
+  function isLineOrRectSelected() {
+    return getSelectedNotations().find(
+      (n) =>
+        NotationTypeShape.get(n.notationType) == "LINE" ||
+        NotationTypeShape.get(n.notationType) == "RECT",
+    );
+  }
+
   function createCellOccupationMatrix(): (NotationAttributes | null)[][] {
     let matrix: (NotationAttributes | null)[][] = new Array();
     for (let i = 0; i < matrixDimensions.rowsNum; i++) {
@@ -134,14 +142,6 @@ export const useNotationStore = defineStore("notation", () => {
     return matrix;
   }
 
-  // function setHiddenLineElement(el: HTMLElement) {
-  //   hiddenLineElement = el;
-  // }
-
-  // function getHiddenLineElement() {
-  //   return hiddenLineElement;
-  // }
-
   return {
     addNotation,
     getNotation,
@@ -152,6 +152,7 @@ export const useNotationStore = defineStore("notation", () => {
     getSelectedNotations,
     getParent,
     getCellSize,
+    isLineOrRectSelected,
     setNotations,
     setNotation,
     selectNotation,

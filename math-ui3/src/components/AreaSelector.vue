@@ -18,7 +18,6 @@ import { watch, computed, ref } from "vue";
 import { useEditModeStore } from "../store/pinia/editModeStore";
 import * as d3 from "d3";
 import useMatrixHelper from "../helpers/matrixHelper";
-import useSelectionHelper from "../helpers/selectionHelper";
 import useNotationMutateHelper from "../helpers/notationMutateHelper";
 import useEventBus from "../helpers/eventBusHelper";
 
@@ -27,7 +26,6 @@ const editModeStore = useEditModeStore();
 const matrixHelper = useMatrixHelper();
 const notationMutateHelper = useNotationMutateHelper();
 
-const selectionHelper = useSelectionHelper();
 
 const props = defineProps({
   svgId: { type: String, default: "" },
@@ -86,12 +84,6 @@ watch(
   },
 );
 
-watch(
-  () => eventBus.bus.value.get("svgmousedown"),
-  (e: MouseEvent) => {
-    handleMouseDown(e);
-  },
-);
 
 watch(
   () => eventBus.bus.value.get("svgmousemove"),
@@ -118,20 +110,6 @@ function keyUp(e: KeyboardEvent) {
   }
 }
 
-function handleMouseDown(e: MouseEvent) {
-  if (e.buttons !== 1) {
-    return;
-  }
-
-  selectionHelper.resetSelection();
-
-  if (editModeStore.getEditMode() == "AREA_SELECT") {
-    editModeStore.setNextEditMode();
-    return;
-  }
-
-  selectionHelper.selectClickedObject(e);
-}
 
 function handleMouseMove(e: MouseEvent) {
   if (e.buttons !== 1) {

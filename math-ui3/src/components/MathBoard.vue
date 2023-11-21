@@ -28,6 +28,7 @@ import { CellCoordinates } from "common/globals";
 import { onMounted, onUnmounted, watch } from "vue";
 import { useNotationStore } from "../store/pinia/notationStore";
 import useSelectionHelper from "../helpers/selectionHelper";
+import { useEditModeStore } from "../store/pinia/editModeStore";
 
 const notationLoadingHelper = useNotationLoadingHelper();
 const notationStore = useNotationStore();
@@ -35,6 +36,7 @@ const eventBus = useEventBus();
 const matrixHelper = UseMatrixHelper();
 const selectionHelper = useSelectionHelper();
 const eventHelper = UseEventHelper();
+const editModeStore = useEditModeStore();
 
 onMounted(() => {
   eventHelper.registerSvgMouseDown(props.svgId);
@@ -58,6 +60,13 @@ const props = defineProps({
 });
 
 watch(
+  () => eventBus.bus.value.get("svgmousedown"),
+  (e: MouseEvent) => {
+    handleMouseDown(e);
+  },
+);
+
+watch(
   () => notationStore.getSelectedCell() as CellCoordinates,
   (
     newSelectedCell: CellCoordinates | undefined | null,
@@ -75,7 +84,7 @@ watch(
 watch(
   () => eventBus.bus.value.get("keyup"),
   (e: KeyboardEvent) => {
-    eventHelper.keyUp(e);
+    eventHelper.keyUp(e, props.svgId);
   },
 );
 
@@ -108,6 +117,35 @@ function load() {
   notationLoadingHelper.loadNotations(notationStore.getParent().type);
 
   matrixHelper.setMatrix(props.svgId);
+}
+
+function handleMouseDown(e: MouseEvent) {
+  if (e.buttons !== 1) {
+    return;
+  }
+
+  if (editModeStore.isLineMode()) {
+    return;
+  }
+
+  if (editModeStore.isSelectionMode()) {
+    return;
+  }
+
+  //selectionHelper.resetSelection();
+
+  if (editModeStore.getEditMode() == "AREA_SELECT") {
+    editModeStore.setNextEditMode();
+    return;
+  }
+
+  const position = { x: e.clientX, y: e.clientY };
+
+  selectionHelper.selectClickedNotation(position);
+
+  if (notationStore.isLineOrRectSelected()) return;
+
+  selectionHelper.selectCell(position);
 }
 </script>
 
