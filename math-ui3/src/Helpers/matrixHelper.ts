@@ -277,7 +277,7 @@ export default function useMatrixHelper() {
     return (
       enter
         .append("foreignObject")
-        .attr("type", (n: NotationAttributes) => {
+        .attr("notationType", (n: NotationAttributes) => {
           return n.notationType;
         })
         .attr("boardType", (n: NotationAttributes) => {

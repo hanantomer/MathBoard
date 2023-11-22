@@ -28,23 +28,11 @@ export const useEditModeStore = defineStore("editMode", () => {
   }
 
   function isFractionMode() {
-    return (
-      editMode.value == "FRACTION" ||
-      editMode.value == "FRACTION_DRAWING" ||
-      editMode.value == "FRACTION_EDITITING" ||
-      editMode.value == "FRACTION_SELECTING" ||
-      editMode.value == "FRACTION_SELECTED"
-    );
+    return editMode.value == "FRACTION" || editMode.value == "FRACTION_DRAWING";
   }
 
   function isSqrtMode() {
-    return (
-      editMode.value == "SQRT" ||
-      editMode.value == "SQRT_DRAWING" ||
-      editMode.value == "SQRT_EDITITING" ||
-      editMode.value == "SQRT_SELECTING" ||
-      editMode.value == "SQRT_SELECTED"
-    );
+    return editMode.value == "SQRT" || editMode.value == "SQRT_DRAWING";
   }
 
   function isDefaultEditMode() {
@@ -58,20 +46,6 @@ export const useEditModeStore = defineStore("editMode", () => {
   function isLineDrawingMode() {
     return (
       editMode.value == "FRACTION_DRAWING" || editMode.value == "SQRT_DRAWING"
-    );
-  }
-
-  function isLineEditingMode() {
-    return (
-      editMode.value == "FRACTION_EDITITING" ||
-      editMode.value == "SQRT_EDITITING"
-    );
-  }
-
-  function isLineSelectingMode() {
-    return (
-      editMode.value == "FRACTION_SELECTING" ||
-      editMode.value == "SQRT_SELECTING"
     );
   }
 
@@ -112,10 +86,6 @@ export const useEditModeStore = defineStore("editMode", () => {
         return setEditMode("FRACTION_DRAWING");
       case "SQRT_SELECTED":
         return setEditMode("SQRT_DRAWING");
-      case "FRACTION_SELECTING":
-        return setEditMode("FRACTION_SELECTED");
-      case "SQRT_SELECTING":
-        return setEditMode("SQRT_SELECTED");
       case "AREA_SELECT":
         return setEditMode("AREA_SELECTING");
       case "AREA_SELECTING":
@@ -133,9 +103,7 @@ export const useEditModeStore = defineStore("editMode", () => {
     isSelectionMode,
     isLineMode,
     isLineDrawingMode,
-    isLineEditingMode,
     isLineSelectedMode,
-    isLineSelectingMode,
     isSelectedMode,
     isFractionMode,
     isSqrtMode,

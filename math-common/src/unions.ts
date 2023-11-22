@@ -35,13 +35,9 @@ export type EditMode =
   "CELL_SELECTED"     | // user clicked on a cell or navigated via keys
   "FRACTION"          | // fraction button pressed
   "FRACTION_DRAWING"  | // fraction drawing started
-  "FRACTION_SELECTING"| // fraction selecting
   "FRACTION_SELECTED" | // fraction selected
-  "FRACTION_EDITITING"| // fraction selected and edit started
   "SQRT"              | // sqrt button pressed
   "SQRT_DRAWING"      | // sqrt drawing started
-  "SQRT_SELECTING"    | // sqrt selected
-  "SQRT_EDITITING"    | // sqrt selected and edit started
   "SQRT_SELECTED"     | // sqrt selected  
   "DELETING"          | // mouse clicked following delete button pressed
   "AREA_SELECT"       | // select button pressed

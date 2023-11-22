@@ -36,7 +36,7 @@ export default function elementFinderHelper() {
       (item) =>
         item.tagName == tagName &&
         (!notationTypes ||
-          notationTypes?.includes(item.attributes.type?.value)),
+          notationTypes?.includes(item.attributes.notationType?.value)),
     );
   }
 
@@ -66,8 +66,8 @@ export default function elementFinderHelper() {
 
   function getElementAttributeValue(
     element: Element,
-    attrName: string ,
-  ): string | undefined{
+    attrName: string,
+  ): string | undefined {
     return element.attributes.getNamedItem(attrName)?.value;
   }
 

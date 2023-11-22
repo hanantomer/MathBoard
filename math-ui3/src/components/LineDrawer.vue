@@ -86,10 +86,7 @@ const sqrtEditMode = computed(() => {
 
 const show = computed(() => {
   return (
-    editModeStore.isLineEditingMode() ||
-    editModeStore.isLineDrawingMode() ||
-    editModeStore.isLineSelectedMode() ||
-    editModeStore.isLineSelectingMode()
+    editModeStore.isLineDrawingMode() || editModeStore.isLineSelectedMode()
   );
 });
 
@@ -149,8 +146,6 @@ function mouseup(e: KeyboardEvent) {
 // event handlers
 
 function onLineSelected(lineNotation: LineNotationAttributes) {
-  //editModeStore.setNextEditMode();
-
   linePosition.value.x1 =
     svgDimensions.value.left +
     lineNotation.fromCol * notationStore.getCellSize();
@@ -178,16 +173,20 @@ function onMouseDown(e: MouseEvent) {
   }
 
   // user clicked elsewere after start drawing
-  if (editModeStore.isLineDrawingMode() || editModeStore.isLineEditingMode()) {
+  if (editModeStore.isLineDrawingMode()) {
     resetLineDrawing();
   }
 
-  if (editModeStore.isLineMode()) {
-    // new line
+  // new line
+  if (
+    editModeStore.getEditMode() === "FRACTION" ||
+    editModeStore.getEditMode() === "SQRT"
+  ) {
     startLineDrawing({
       x: e.offsetX,
       y: e.offsetY,
     });
+    editModeStore.setNextEditMode();
   }
 }
 
@@ -202,12 +201,7 @@ function onMouseMove(e: MouseEvent) {
     return;
   }
 
-  if (
-    //!notationStore.isLineMode() &&
-    !editModeStore.isLineDrawingMode() &&
-    !editModeStore.isLineEditingMode() //&&
-    //!notationStore.isLineSelectedMode()
-  ) {
+  if (!editModeStore.isLineDrawingMode()) {
     return;
   }
 
@@ -221,7 +215,7 @@ function onMouseUp() {
   }
 
   // line yet not modified
-  if (editModeStore.isLineDrawingMode() || editModeStore.isLineEditingMode()) {
+  if (editModeStore.isLineDrawingMode()) {
     endDrawLine();
   }
 }
@@ -229,8 +223,6 @@ function onMouseUp() {
 // methods
 
 function startLineDrawing(position: DotPosition) {
-  editModeStore.setNextEditMode();
-
   linePosition.value.x2 = linePosition.value.x1 =
     position.x + svgDimensions.value.left;
   linePosition.value.y = getNearestRow(position.y) + svgDimensions.value.top;
@@ -310,6 +302,7 @@ foreignObject[type="sqrt"] {
   cursor: pointer;
 }
 .line {
+  top: 4px;
   position: absolute;
   color: black;
   display: block;

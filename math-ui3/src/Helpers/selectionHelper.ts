@@ -1,4 +1,9 @@
-import { NotationTypeEditMode } from "common/unions";
+import {
+  NotationType,
+  NotationTypeEditMode,
+  NotationTypeShape,
+  NotationTypeValues,
+} from "common/unions";
 import {
   LineNotationAttributes,
   RectNotationAttributes,
@@ -30,16 +35,51 @@ export default function selectionHelper() {
   function selectClickedNotation(position: DotPosition) {
     notationStore.resetSelectedNotations();
 
-    if (
-      selectRectNotation(position) ||
-      selectFractionNotation(position) ||
-      selectSqrtNotation(position)
-    ) {
-      notationStore.selectCell(null);
+    const el = elementFinderHelper.findClickedObject(
+      {
+        x: position.x,
+        y: position.y,
+      },
+      "foreignObject",
+      NotationTypeValues,
+    );
+    if (!el) {
+      selectCell(position);
       return;
     }
 
-    selectSymbolNotation(position);
+    const notationType: NotationType =
+      elementFinderHelper.getElementAttributeValue(
+        el,
+        "notationType",
+      ) as NotationType;
+
+    const uuid: string = elementFinderHelper.getElementAttributeValue(
+      el,
+      "id",
+    ) as string;
+
+    const notation = notationStore.getNotation(uuid);
+    if (!notation) return;
+
+    switch (NotationTypeShape.get(notationType)) {
+      case "LINE": {
+        if (notationType == "FRACTION") selectFractionNotation(notation);
+        if (notationType == "SQRT") selectSqrtNotation(notation);
+        notationStore.selectCell(null);
+        return;
+      }
+      case "RECT": {
+        selectNotation(notation);
+        notationStore.selectCell(null);
+        return;
+      }
+      case "POINT": {
+        selectNotation(notation);
+        selectCell(position);
+        return;
+      }
+    }
   }
 
   function selectNotation(activeNotation: NotationAttributes) {
@@ -48,42 +88,6 @@ export default function selectionHelper() {
 
     editModeStore.setEditMode("AREA_SELECTED");
     notationStore.selectNotation(activeNotation?.uuid);
-  }
-
-  function getOverlappedRectNotation(
-    position: DotPosition,
-  ): RectNotationAttributes | null | undefined {
-    let rectElement = elementFinderHelper.findRectAtClickedPosition(position);
-    if (!rectElement) return null;
-
-    const rectNotation: RectNotationAttributes | undefined = notationStore
-      .getNotationsByShape<RectNotationAttributes>("RECT")
-      .find((n: RectNotationAttributes) => {
-        return (
-          elementFinderHelper.getElementAttributeValue(
-            rectElement,
-            "fromCol",
-          ) ||
-          (-1 == n.fromCol &&
-            elementFinderHelper.getElementAttributeValue(
-              rectElement,
-              "toCol",
-            )) ||
-          (-1 == n.toCol &&
-            elementFinderHelper.getElementAttributeValue(
-              rectElement,
-              "fromRow",
-            )) ||
-          (-1 == n.fromRow &&
-            elementFinderHelper.getElementAttributeValue(
-              rectElement,
-              "toRow",
-            )) ||
-          -1 == n.toRow
-        );
-      });
-
-    return rectNotation;
   }
 
   // called by store watcher. see mathboard.vue
@@ -114,108 +118,18 @@ export default function selectionHelper() {
     }
   }
 
-  function getOverlappedLineNotation(
-    lineElement: Element,
-  ): NotationAttributes | undefined {
-    const lineNotations =
-      notationStore.getNotationsByShape<LineNotationAttributes>("LINE");
-
-    return lineNotations.find((n: LineNotationAttributes) => {
-      return (
-        elementFinderHelper.getElementAttributeValue(lineElement, "fromCol") ||
-        (-1 >= n.fromCol &&
-          elementFinderHelper.getElementAttributeValue(lineElement, "toCol")) ||
-        (-1 <= n.toCol &&
-          elementFinderHelper.getElementAttributeValue(lineElement, "row")) ||
-        -1 == n.row
-      );
-    });
-  }
-
-  function selectRectNotation(position: DotPosition): boolean {
-    const rectElement = elementFinderHelper.findClickedObject(
-      {
-        x: position.x,
-        y: position.y,
-      },
-      "foreignObject",
-      ["TEXT", "IMAGE", "GEO"],
-    );
-    if (!rectElement) return false;
-
-    let overlapRectNotation = getOverlappedRectNotation(position);
-    if (!overlapRectNotation) return false;
-
-    selectNotation(overlapRectNotation);
-
-    return true;
-  }
-
-  function selectFractionNotation(position: DotPosition): boolean {
-    const fractionElement = elementFinderHelper.findClickedObject(
-      {
-        x: position.x,
-        y: position.y,
-      },
-      "foreignObject",
-      ["FRACTION"],
-    );
-    if (!fractionElement) return false;
-
-    const fractionUUId = elementFinderHelper.getElementAttributeValue(
-      fractionElement,
-      "id",
-    );
-
+  function selectFractionNotation(notation: NotationAttributes) {
     editModeStore.setEditMode("FRACTION_SELECTED");
 
     // signal LineDrawer.vue to perform store and visual selection
-    eventBus.emit("lineSelected", notationStore.getNotation(fractionUUId!));
-
-    return true;
+    eventBus.emit("lineSelected", notation);
   }
 
-  function selectSqrtNotation(position: DotPosition): boolean {
-    const sqrtElement = elementFinderHelper.findClickedObject(
-      {
-        x: position.x,
-        y: position.y,
-      },
-      "foreignObject",
-      ["SQRT"],
-    );
-    if (!sqrtElement) return false;
-
-    const sqrtUUId = elementFinderHelper.getElementAttributeValue(
-      sqrtElement,
-      "id",
-    );
-
+  function selectSqrtNotation(notation: NotationAttributes) {
     editModeStore.setEditMode("SQRT_SELECTED");
 
     // signal LineDrawer.vue to perform store and visual selection
-    eventBus.emit("lineSelected", notationStore.getNotation(sqrtUUId!));
-
-    return true;
-  }
-
-  function selectSymbolNotation(position: DotPosition): boolean {
-    const symbolElement = elementFinderHelper.findClickedObject(
-      {
-        x: position.x,
-        y: position.y,
-      },
-      "foreignObject",
-      ["SYMBOL"],
-    );
-    if (!symbolElement) return false;
-
-    const uuid = symbolElement.attributes.getNamedItem("id")?.value;
-    const symbolNotation = notationStore.getNotation(uuid!);
-
-    selectNotation(symbolNotation!);
-
-    return true;
+    eventBus.emit("lineSelected", notation);
   }
 
   // update, store active cell

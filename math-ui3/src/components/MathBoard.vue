@@ -143,9 +143,9 @@ function handleMouseDown(e: MouseEvent) {
 
   selectionHelper.selectClickedNotation(position);
 
-  if (notationStore.isLineOrRectSelected()) return;
+  //if (notationStore.isLineOrRectSelected()) return;
 
-  selectionHelper.selectCell(position);
+  //selectionHelper.selectCell(position);
 }
 </script>
 
