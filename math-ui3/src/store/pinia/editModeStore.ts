@@ -7,6 +7,12 @@ export const useEditModeStore = defineStore("editMode", () => {
 
   const defaultEditMode: EditMode = "SYMBOL";
 
+  function isAreaSelectionMode() {
+    return (
+      editMode.value == "AREA_SELECTING" || editMode.value == "AREA_SELECTED"
+    );
+  }
+
   function isSelectionMode() {
     return (
       editMode.value == "AREA_SELECT" ||
@@ -68,7 +74,7 @@ export const useEditModeStore = defineStore("editMode", () => {
   }
 
   function setEditMode(newEditMode: EditMode) {
-    console.debug("new edit mode:" + newEditMode);
+    //console.debug("new edit mode:" + newEditMode);
     editMode.value = newEditMode;
   }
 
@@ -100,6 +106,7 @@ export const useEditModeStore = defineStore("editMode", () => {
   return {
     getEditMode,
     getDefaultEditMode,
+    isAreaSelectionMode,
     isSelectionMode,
     isLineMode,
     isLineDrawingMode,

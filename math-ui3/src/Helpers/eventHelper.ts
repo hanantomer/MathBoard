@@ -150,7 +150,7 @@ export default function eventHelper() {
     return null;
   }
 
-  function mouseDown(e: MouseEvent) {
+ /* function mouseDown(e: MouseEvent) {
     if (
       editModeStore.getEditMode() === "FRACTION" ||
       editModeStore.getEditMode() === "SQRT" ||
@@ -167,7 +167,7 @@ export default function eventHelper() {
       notationMutationHelper.addMarkNotation();
       return;
     }
-  }
+  }*/
 
   function emitSvgMouseDown(e: MouseEvent) {
     eventBus.emit("svgmousedown", e);
@@ -244,7 +244,7 @@ export default function eventHelper() {
   return {
     paste,
     keyUp,
-    mouseDown,
+//    mouseDown,
     registerSvgMouseDown,
     unregisterSvgMouseDown,
     registerSvgMouseMove,

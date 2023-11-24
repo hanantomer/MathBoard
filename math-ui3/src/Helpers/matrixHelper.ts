@@ -243,7 +243,7 @@ export default function useMatrixHelper() {
 
     d3.select("#" + svgId)
       .selectAll("foreignObject")
-      .data(Object.values(notations))
+      .data(Object.values(notations), (d: any) => d.uuid)
       .join(
         (enter) => {
           return addNotations(enter, svgElement!);
@@ -283,8 +283,8 @@ export default function useMatrixHelper() {
         .attr("boardType", (n: NotationAttributes) => {
           return n.boardType;
         })
-        .attr("id", (n: NotationAttributes) => {
-          return id(n);
+        .attr("uuid", (n: NotationAttributes) => {
+          return n.uuid;
         })
         .attr("col", (n: PointAttributes) => {
           return n?.col;
@@ -365,10 +365,6 @@ export default function useMatrixHelper() {
     //.on("end", () => {
     //  d3.select(this).remove();
     //});
-  }
-
-  function id(n: NotationAttributes) {
-    return n.uuid;
   }
 
   function col(n: NotationAttributes): number | null {

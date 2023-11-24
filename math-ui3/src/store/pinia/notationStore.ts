@@ -80,11 +80,6 @@ export const useNotationStore = defineStore("notation", () => {
     return notations.value.get(uuid);
   }
 
-  function setNotation(notation: NotationAttributes) {
-    notations.value.set(notation.uuid, notation);
-  }
-
-  /// TODO: join them
   function addNotation(notation: NotationAttributes) {
     notation.boardType = parent.value.type;
     notations.value.set(notation.uuid, notation);
@@ -107,7 +102,8 @@ export const useNotationStore = defineStore("notation", () => {
 
   function selectNotation(uuid: string) {
     const notation = notations.value.get(uuid);
-    if (notation) notation.selected = true;
+    if (!notation) return;
+    notation.selected = true;
   }
 
   function setParent(parentUUID: string, boardType: BoardType) {
@@ -154,7 +150,6 @@ export const useNotationStore = defineStore("notation", () => {
     getCellSize,
     isLineOrRectSelected,
     setNotations,
-    setNotation,
     selectNotation,
     selectCell,
     setParent,

@@ -56,7 +56,7 @@ export default function selectionHelper() {
 
     const uuid: string = elementFinderHelper.getElementAttributeValue(
       el,
-      "id",
+      "uuid",
     ) as string;
 
     const notation = notationStore.getNotation(uuid);

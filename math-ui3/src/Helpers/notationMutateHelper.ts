@@ -445,7 +445,7 @@ export default function notationMutateHelper() {
     }
 
     await dbHelper.updateLineAttributes(lineNotation);
-    notationStore.setNotation(lineNotation);
+    notationStore.addNotation(lineNotation);
   }
 
   async function upsertNotation<T extends NotationCreationAttributes>(
@@ -462,7 +462,7 @@ export default function notationMutateHelper() {
 
       await dbHelper.updateNotationValue(overlappedSameTypeNotation);
 
-      notationStore.setNotation(overlappedSameTypeNotation);
+      notationStore.addNotation(overlappedSameTypeNotation);
 
       userOutgoingOperations.syncOutgoingUpdateNotation(
         overlappedSameTypeNotation,
@@ -491,7 +491,7 @@ export default function notationMutateHelper() {
   }
 
   async function syncIncomingAddedNotation(notation: NotationAttributes) {
-    notationStore.setNotation(notation);
+    notationStore.addNotation(notation);
   }
 
   async function syncIncomingRemovedNotation(notation: NotationAttributes) {
@@ -499,7 +499,7 @@ export default function notationMutateHelper() {
   }
 
   async function syncIncomingUpdatedtNotation(notation: NotationAttributes) {
-    notationStore.setNotation(notation);
+    notationStore.addNotation(notation);
   }
 
   async function removeAllNotations() {
@@ -745,13 +745,16 @@ export default function notationMutateHelper() {
     const symbolCell = getSymbolCell();
     if (!symbolCell) return;
 
+    const notationType: NotationType =
+      editModeStore.getEditMode() == "POWER" ? "POWER" : "SYMBOL";
+
     let notation: PointNotationCreationAttributes = {
       col: symbolCell.col,
       row: symbolCell.row,
       value: value,
       boardType: notationStore.getParent().type,
       parentUUId: notationStore.getParent().uuid,
-      notationType: "SYMBOL",
+      notationType: notationType,
       user: userStore.getCurrentUser(),
     };
 

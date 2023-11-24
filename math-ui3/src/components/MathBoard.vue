@@ -62,8 +62,10 @@ const props = defineProps({
 watch(
   () => eventBus.bus.value.get("svgmousedown"),
   (e: MouseEvent) => {
+    if (!e) return;
     handleMouseDown(e);
   },
+  { immediate: true  },
 );
 
 watch(
@@ -128,24 +130,19 @@ function handleMouseDown(e: MouseEvent) {
     return;
   }
 
-  if (editModeStore.isSelectionMode()) {
-    return;
-  }
-
-  //selectionHelper.resetSelection();
-
   if (editModeStore.getEditMode() == "AREA_SELECT") {
     editModeStore.setNextEditMode();
     return;
   }
 
+  // during area selection
+  //if (editModeStore.isSelectionMode()) {
+  //  return;
+  //}
+
   const position = { x: e.clientX, y: e.clientY };
 
   selectionHelper.selectClickedNotation(position);
-
-  //if (notationStore.isLineOrRectSelected()) return;
-
-  //selectionHelper.selectCell(position);
 }
 </script>
 
