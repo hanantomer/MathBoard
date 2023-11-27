@@ -7,6 +7,10 @@
     :show="showFreeTextDialog"
     @close="closeFreeTextDialog"
   ></freeTextDialog>
+  <exponentDialog
+    :show="showExponentDialog"
+    @close="closeExponentDialog"
+  ></exponentDialog>
 
   <v-toolbar color="primary" dark class="vertical-toolbar" height="500">
     <!-- create access link -->
@@ -90,18 +94,19 @@
       </template>
     </v-tooltip>
 
-    <!-- power-->
-    <v-tooltip text="power">
+    <!-- exponent-->
+    <v-tooltip text="exponent">
       <template v-slot:activator="{ props }">
         <v-btn
           v-bind="props"
           icon
-          :color="powerButtonActive ? 'white' : 'yellow'"
+          :color="exponentButtonActive ? 'white' : 'yellow'"
           x-small
           fab
           dark
-          v-on:click="togglePowerMode"
+          v-on:click="toggleExponentMode"
           :disabled="!editEnabled"
+          @click.stop="openExponentDialog"
         >
           <v-icon>mdi-exponent</v-icon>
         </v-btn>
@@ -169,16 +174,17 @@
 
 <script setup lang="ts">
 import { watch, ref } from "vue";
-import useMatrixHelper from "../helpers/matrixHelper";
 import useAuthHelper from "../helpers/authHelper";
 import accessLinkDialog from "./AccessLinkDialog.vue";
 import freeTextDialog from "./FreeTextDialog.vue";
+import exponentDialog from "./ExponentDialog.vue";
 import useNotationMutateHelper from "../helpers/notationMutateHelper";
 import { useNotationStore } from "../store/pinia/notationStore";
 import { useEditModeStore } from "../store/pinia/editModeStore";
 import { computed } from "vue";
 import { useUserStore } from "../store/pinia/userStore";
 import useEventBus from "../helpers/eventBusHelper";
+import { ExponentAttributes } from "common/baseTypes";
 
 const authHelper = useAuthHelper();
 const notationMutateHelper = useNotationMutateHelper();
@@ -193,10 +199,12 @@ let xmarkButtonActive = ref(1);
 let selectionButtonActive = ref(1);
 let fractionButtonActive = ref(1);
 let squareRootButtonActive = ref(1);
-let powerButtonActive = ref(1);
+let exponentButtonActive = ref(1);
 
 let showAccessLinkDialog = ref(false);
 let showFreeTextDialog = ref(false);
+let showExponentDialog = ref(false);
+
 let textButtonActive = ref(1);
 
 watch(
@@ -221,7 +229,15 @@ watch(
   { immediate: true, deep: true },
 );
 
-// emitted by eventHelper
+// emitted by exponent dialog
+watch(
+  () => eventBus.bus.value.get("exponentSubmited"),
+  (exponent: ExponentAttributes) => {
+    notationMutateHelper.upsertExponentNotation(exponent);
+  },
+);
+
+// emitted by free text dialog
 watch(
   () => eventBus.bus.value.get("freeTextSubmited"),
   (value: string) => {
@@ -243,6 +259,14 @@ function openAccessLinkDialog() {
 
 function closeAccessLinkDialog() {
   showAccessLinkDialog.value = false;
+}
+
+function openExponentDialog() {
+  showExponentDialog.value = true;
+}
+
+function closeExponentDialog() {
+  showExponentDialog.value = false;
 }
 
 const editEnabled = computed(() => {
@@ -269,7 +293,7 @@ function resetButtonsState() {
   selectionButtonActive.value = 1;
   fractionButtonActive.value = 1;
   squareRootButtonActive.value = 1;
-  powerButtonActive.value = 1;
+  exponentButtonActive.value = 1;
 }
 
 function toggleFractionMode() {
@@ -302,22 +326,22 @@ function startSqrtMode() {
   editModeStore.setEditMode("SQRT");
 }
 
-function togglePowerMode() {
+function toggleExponentMode() {
   resetButtonsState();
-  if (editModeStore.getEditMode() == "POWER") {
-    endPowerMode();
+  if (editModeStore.getEditMode() == "EXPONENT") {
+    endExponentMode();
   } else {
-    startPowerMode();
+    startExponentMode();
   }
 }
 
-function startPowerMode() {
+function startExponentMode() {
   resetButtonsState();
-  powerButtonActive.value = 0;
-  editModeStore.setEditMode("POWER");
+  exponentButtonActive.value = 0;
+  editModeStore.setEditMode("EXPONENT");
 }
 
-function endPowerMode() {
+function endExponentMode() {
   resetButtonsState();
 }
 
@@ -396,8 +420,8 @@ function startXmarkMode() {
     // $symbolButtonPressed(e) {
     //   if (getCurrentEditMode() === 'SYMBOL')
     //     notationMixin_addNotation(e.currentTarget.innerText, "symbol");
-    //   else if (getCurrentEditMode() === "POWER) {
-    //     notationMixin_addNotation(e.currentTarget.innerText, "power");
+    //   else if (getCurrentEditMode() === "EXPONENT) {
+    //     notationMixin_addNotation(e.currentTarget.innerText, "exponent");
     //   }
     // },
     $checkmark() {

@@ -63,6 +63,8 @@ export default function eventHelper() {
 
     if (editModeStore.isTextMode()) return;
 
+    if (editModeStore.isExponentMode()) return;
+
     switch (classifyKeyCode(code)) {
       case "DELETION": {
         return handleDeletionKey(code);

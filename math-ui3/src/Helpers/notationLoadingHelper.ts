@@ -45,12 +45,6 @@ export default function notationLoadingHelper() {
     switch (notationType) {
       case "SYMBOL":
       case "SIGN":
-      case "POWER":
-        return await dbHelper.getNotations<PointNotationAttributes>(
-          notationType,
-          boardType,
-          parentUUId,
-        );
       case "FRACTION":
       case "SQRT":
         return await dbHelper.getNotations<LineNotationAttributes>(
@@ -58,6 +52,7 @@ export default function notationLoadingHelper() {
           boardType,
           parentUUId,
         );
+      case "EXPONENT":
       case "GEO":
       case "IMAGE":
       case "TEXT":

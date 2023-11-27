@@ -4,14 +4,14 @@ export type BoardType = typeof BoardTypeValues[number];
 
 export type NotationShape = "POINT" |  "LINE" |  "RECT"
 
-export const NotationTypeValues = ["SYMBOL","SIGN","POWER","FRACTION","SQRT","SQRTSYMBOL","TEXT","IMAGE","GEO"] as const;
+export const NotationTypeValues = ["SYMBOL","SIGN","EXPONENT","FRACTION","SQRT","SQRTSYMBOL","TEXT","IMAGE","GEO"] as const;
 
 export type NotationType = typeof NotationTypeValues[number]
   
 export const NotationTypeShape = new Map<NotationType, NotationShape> ([
   ["SYMBOL", "POINT"],
   ["SIGN", "POINT"],
-  ["POWER", "POINT"],
+  ["EXPONENT", "POINT"],
   ["SQRT", "LINE"],
   ["SQRTSYMBOL", "LINE"],
   ["FRACTION", "LINE"],
@@ -30,7 +30,7 @@ export const NotationTypeEditMode = new Map<NotationType, EditMode> ([
 
 export type EditMode = 
   "SYMBOL"            | // default mode
-  "POWER"             | // power button pressed
+  "EXPONENT"          | // exponent button pressed
   "TEXT"              | // text button pressed
   "CELL_SELECTED"     | // user clicked on a cell or navigated via keys
   "FRACTION"          | // fraction button pressed

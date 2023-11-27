@@ -55,6 +55,7 @@ import { useNotationStore } from "../store/pinia/notationStore";
 import useEventBus from "../helpers/eventBusHelper";
 import { RectNotationAttributes } from "../../../math-common/build/baseTypes";
 
+
 let textValue = ref("");
 let dialog = ref(false);
 

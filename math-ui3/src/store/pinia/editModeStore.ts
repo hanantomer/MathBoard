@@ -7,9 +7,11 @@ export const useEditModeStore = defineStore("editMode", () => {
 
   const defaultEditMode: EditMode = "SYMBOL";
 
-  function isAreaSelectionMode() {
+  function isAreaSelectionOrMovingMode() {
     return (
-      editMode.value == "AREA_SELECTING" || editMode.value == "AREA_SELECTED"
+      editMode.value == "AREA_SELECTING" ||
+      editMode.value == "AREA_SELECTED" ||
+      editMode.value == "MOVING"
     );
   }
 
@@ -65,6 +67,10 @@ export const useEditModeStore = defineStore("editMode", () => {
     return editMode.value == "TEXT";
   }
 
+  function isExponentMode() {
+    return editMode.value == "EXPONENT";
+  }
+
   function getEditMode() {
     return editMode.value;
   }
@@ -74,7 +80,7 @@ export const useEditModeStore = defineStore("editMode", () => {
   }
 
   function setEditMode(newEditMode: EditMode) {
-    //console.debug("new edit mode:" + newEditMode);
+    console.debug("new edit mode:" + newEditMode);
     editMode.value = newEditMode;
   }
 
@@ -106,7 +112,7 @@ export const useEditModeStore = defineStore("editMode", () => {
   return {
     getEditMode,
     getDefaultEditMode,
-    isAreaSelectionMode,
+    isAreaSelectionOrMovingMode,
     isSelectionMode,
     isLineMode,
     isLineDrawingMode,
@@ -115,6 +121,7 @@ export const useEditModeStore = defineStore("editMode", () => {
     isFractionMode,
     isSqrtMode,
     isSqrtEditMode,
+    isExponentMode,
     isDefaultEditMode,
     isTextMode,
     setEditMode,

@@ -43,3 +43,10 @@ export type QuestionRectAttributes = EntityAttributes & NotationAttributes & Rec
 
 export type QuestionRectCreationAttributes = Omit<QuestionRectAttributes, keyof EntityAttributes>     
 
+// exponent
+
+export type QuestionExponentAttributes = EntityAttributes & NotationAttributes & PointAttributes & QuestionAttributes &  QuestionNotationAttributes;
+
+export type QuestionExponentCreationAttributes = Omit<QuestionExponentAttributes, keyof EntityAttributes>     
+
+

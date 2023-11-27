@@ -44,7 +44,7 @@ let dragPosition = ref({
 
 const show = computed(() => {
   return (
-    editModeStore.isAreaSelectionMode() &&
+    editModeStore.isAreaSelectionOrMovingMode() &&
     selectionPosition.value.x1 != selectionPosition.value.x2 &&
     selectionPosition.value.y1 != selectionPosition.value.y2
   );
@@ -134,10 +134,6 @@ function handleMouseMove(e: MouseEvent) {
 
 function handleMouseUp(e: MouseEvent) {
   const editMode = editModeStore.getEditMode();
-
-  //if (!editModeStore.isSelectionMode()) {
-  //  return;
-  //}
 
   if (editMode == "AREA_SELECTING") {
     endSelect();
@@ -247,7 +243,7 @@ function resetSelection() {
     selectionPosition.value.y2 =
       0;
 
-  editModeStore.resetEditMode();
+  //editModeStore.resetEditMode();
 }
 </script>
 

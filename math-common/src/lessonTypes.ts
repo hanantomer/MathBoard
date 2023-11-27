@@ -32,6 +32,14 @@ export type LessonRectAttributes = EntityAttributes & NotationAttributes & RectA
 
 export type LessonRectCreationAttributes = Omit<LessonRectAttributes, keyof EntityAttributes>     
 
+
+// exponent
+
+export type LessonExponentAttributes = EntityAttributes & NotationAttributes & PointAttributes & LessonAttributes &  LessonNotationAttributes;
+
+export type LessonExponentCreationAttributes = Omit<LessonExponentAttributes, keyof EntityAttributes>     
+
+
 export type LessonNotationAttributes = NotationAttributes &  {
   lesson:  LessonAttributes
 }

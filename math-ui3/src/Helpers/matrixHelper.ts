@@ -6,6 +6,7 @@ import { useNotationStore } from "../store/pinia/notationStore";
 import {
   NotationAttributes,
   PointAttributes,
+  ExponentNotationAttributes,
   LineAttributes,
   RectAttributes,
   LineNotationAttributes,
@@ -43,8 +44,8 @@ export default function useMatrixHelper() {
     return window.getComputedStyle(el, null).getPropertyValue("font-size");
   }
 
-  function powerFontSize() {
-    return `${notationStore.getCellSize() / 50}em`;
+  function exponentBaseFontSize() {
+    return `${notationStore.getCellSize() / 28}em`;
   }
 
   function signFontSize() {
@@ -396,7 +397,7 @@ export default function useMatrixHelper() {
   function x(n: NotationAttributes): number | null {
     let colIdx = col(n);
     let deltaX =
-      n.notationType === "SQRTSYMBOL" || n.notationType === "POWER"
+      n.notationType === "SQRTSYMBOL" /*|| n.notationType === "EXPONENT"*/
         ? Math.round(notationStore.getCellSize() / 3) * -1
         : 0;
 
@@ -407,11 +408,11 @@ export default function useMatrixHelper() {
     let rowIdx = row(n);
     if (!rowIdx) return null;
     let deltaY =
-      n.notationType === "POWER"
-        ? -5
-        : n.notationType === "FRACTION" ||
-          n.notationType === "SQRT" ||
-          n.notationType === "SQRTSYMBOL"
+      //n.notationType === "EXPONENT"
+      //  ? -5
+      n.notationType === "FRACTION" ||
+      n.notationType === "SQRT" ||
+      n.notationType === "SQRTSYMBOL"
         ? -4
         : 0;
 
@@ -421,6 +422,12 @@ export default function useMatrixHelper() {
   function width(n: NotationAttributes): number | null {
     if (n.notationType === "SQRTSYMBOL") {
       return notationStore.getCellSize();
+    }
+
+    if (n.notationType === "EXPONENT") {
+      const n1 = n as ExponentNotationAttributes;
+      return notationStore.getCellSize(); //* n1.base.toString().length +
+      //(notationStore.getCellSize() / 2) * n1.exponent.toString().length
     }
 
     switch (NotationTypeShape.get(n.notationType)) {
@@ -460,7 +467,7 @@ export default function useMatrixHelper() {
   }
 
   function lineNotationHeight(n: LineAttributes): number {
-    return notationStore.getCellSize();
+    return 8;
   }
 
   function rectNotationHeight(n: RectAttributes): number {
@@ -468,9 +475,7 @@ export default function useMatrixHelper() {
   }
 
   function fontSize(n: NotationAttributes, el: HTMLElement) {
-    return n.notationType === "POWER"
-      ? powerFontSize()
-      : n.notationType === "TEXT"
+    return n.notationType === "TEXT"
       ? textFontSize(el)
       : n.notationType === "SIGN"
       ? signFontSize()
@@ -520,6 +525,13 @@ export default function useMatrixHelper() {
       let n1 = n as RectNotationAttributes;
       let bColor = borderColor(n ?? false);
       return `<img style='border:groove 2px;border-color:${borderColor}' src='${n1.value}'>`;
+    }
+
+    if (n.notationType === "EXPONENT") {
+      let n1 = n as ExponentNotationAttributes;
+      return `</span><span style='color:${color};font-weight:${fontWeight};font-size:1.1em'>${n1.base}</span>
+       <span style='position:relative;bottom:6px;color:${color};font-weight:${fontWeight};font-size:0.8em'>${n1.exponent}`;
+      //return `<p style='color:${color};font-weight:${fontWeight};margin-left:8px;font-size:1.1em'>${n1.base}</p>`;
     }
 
     let n1 = n as PointNotationAttributes;

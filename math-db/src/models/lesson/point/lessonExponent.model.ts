@@ -1,21 +1,19 @@
 import { Model, Column, BelongsTo, ForeignKey, DataType, AllowNull } from "sequelize-typescript";
-import AnswerDecorator from "../../answer/answerDecorator";
-import  User from "../../user.model";
-import Answer from "../../answer/answer.model";
 import {
-    AnswerPointAttributes,
-    AnswerPointCreationAttributes,
-} from "../../../../../math-common/src/answerTypes";
+    LessonExponentAttributes,
+    LessonExponentCreationAttributes,
+} from "../../../../../math-common/src/lessonTypes";
+import LessonDecorator from "../../lesson/lessonDecorator";
+import User from "../../user.model";
+import Lesson from "../../lesson/lesson.model";
 
-
-
-@AnswerDecorator("AnswerPower")
-export default class AnswerPower extends Model<
-    AnswerPointAttributes,
-    AnswerPointCreationAttributes
+@LessonDecorator("LessonExponent")
+export default class LessonExponent extends Model<
+    LessonExponentAttributes,
+    LessonExponentCreationAttributes
 > {
-    notationType = "POWER";
-    boardType = "ANSWER";
+    notationType = "EXPONENT";
+    boardType = "LESSON";
 
     @AllowNull(false)
     @Column({ type: DataType.UUID, defaultValue: DataType.UUIDV4 })
@@ -31,15 +29,15 @@ export default class AnswerPower extends Model<
     })
     user!: User;
 
-    @ForeignKey(() => Answer)
-    answerId!: number;
+    @ForeignKey(() => Lesson)
+    lessonId!: number;
 
-    @BelongsTo(() => Answer, {
+    @BelongsTo(() => Lesson, {
         foreignKey: {
             allowNull: false,
         },
     })
-    answer!: Answer;
+    lesson!: Lesson;
 
     @AllowNull(false)
     @Column({ type: DataType.INTEGER })
@@ -51,5 +49,9 @@ export default class AnswerPower extends Model<
 
     @AllowNull(false)
     @Column({ type: DataType.INTEGER })
-    value!: string;
+    base!: string;
+
+    @AllowNull(false)
+    @Column({ type: DataType.INTEGER })
+    exponent!: string;
 }

@@ -24,6 +24,12 @@ export type SingleValueAttributes =  {
   value: string;
 };
 
+export type ExponentAttributes =  {
+  base: string;
+  exponent: string;
+};
+
+
 export type PointAttributes =  {
   col: number;
   row: number;
@@ -56,7 +62,10 @@ export type BoardAttributes = {
 export type PointNotationAttributes = EntityAttributes &  NotationAttributes & PointAttributes & SingleValueAttributes;
 export type LineNotationAttributes = EntityAttributes & NotationAttributes & LineAttributes & SingleValueAttributes;
 export type RectNotationAttributes = EntityAttributes & NotationAttributes & RectAttributes & SingleValueAttributes;
+export type ExponentNotationAttributes = EntityAttributes &  NotationAttributes & PointAttributes & ExponentAttributes;
 
+// ommiting uuid from creation attributed since created by the databse
 export type PointNotationCreationAttributes = Omit<NotationAttributes & PointAttributes & SingleValueAttributes, "uuid">;
 export type LineNotationCreationAttributes = Omit<NotationAttributes & LineAttributes, "uuid">;
 export type RectNotationCreationAttributes = Omit<NotationAttributes & RectAttributes & SingleValueAttributes, "uuid">;
+export type ExponentNotationCreationAttributes = Omit<EntityAttributes &  NotationAttributes & PointAttributes & ExponentAttributes, "uuid">;

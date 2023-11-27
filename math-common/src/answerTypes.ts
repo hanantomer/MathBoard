@@ -4,6 +4,7 @@ import {
   PointAttributes, 
   RectAttributes, 
   SingleValueAttributes,
+  ExponentAttributes,
   BoardAttributes,
   EntityAttributes,
   NotationAttributes
@@ -12,9 +13,7 @@ import {
 // answer
 
 export type AnswerAttributes = EntityAttributes & BoardAttributes & {
-
   question: QuestionAttributes;
-  //questionId: number; // redundant but required for sequelize to build correct sql
 }
 
 export type AnswerCreationAttributes = Omit<AnswerAttributes, keyof EntityAttributes>
@@ -42,4 +41,11 @@ export type AnswerPointCreationAttributes = Omit<AnswerPointAttributes, keyof En
 export type AnswerRectAttributes = EntityAttributes & NotationAttributes & RectAttributes &  AnswerNotationAttributes;
 
 export type AnswerRectCreationAttributes = Omit<AnswerRectAttributes, keyof EntityAttributes>     
+
+// exponent
+
+export type AnswerExponentAttributes = EntityAttributes & NotationAttributes & PointAttributes & ExponentAttributes &  AnswerNotationAttributes;
+
+export type AnswerExponentCreationAttributes = Omit<AnswerExponentAttributes, keyof EntityAttributes>     
+
 

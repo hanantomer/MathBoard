@@ -8,6 +8,7 @@ import {
   LineNotationCreationAttributes,
   RectNotationCreationAttributes,
   NotationCreationAttributes,
+  ExponentAttributes,
 } from "common/baseTypes";
 
 import { CellCoordinates } from "common/globals";
@@ -25,6 +26,7 @@ import {
   NotationAttributes,
   LineAttributes,
   RectAttributes,
+  ExponentNotationCreationAttributes
 } from "common/baseTypes";
 
 const matrixHelper = useMatrixHelper();
@@ -173,7 +175,7 @@ export default function notationMutateHelper() {
       .getNotations()
       .filter((n: NotationAttributes) =>
         n.notationType == "SYMBOL" ||
-        n.notationType == "POWER" ||
+        n.notationType == "EXPONENT" ||
         n.notationType == "SIGN"
           ? pointAtCellCoordinates(
               n as PointNotationAttributes,
@@ -203,7 +205,7 @@ export default function notationMutateHelper() {
   ) {
     return notations.filter((n: NotationAttributes) =>
       n.notationType == "SYMBOL" ||
-      n.notationType == "POWER" ||
+      n.notationType == "EXPONENT" ||
       n.notationType == "SIGN"
         ? pointAtRectCoordinates(
             n as PointNotationAttributes,
@@ -235,7 +237,7 @@ export default function notationMutateHelper() {
       .map((n: NotationAttributes[]) => n[1])
       .filter((n: NotationAttributes) =>
         n.notationType == "SYMBOL" ||
-        n.notationType == "POWER" ||
+        n.notationType == "EXPONENT" ||
         n.notationType == "SIGN"
           ? pointAtLineCoordinates(
               n as PointNotationAttributes,
@@ -270,7 +272,7 @@ export default function notationMutateHelper() {
         switch (notation.notationType) {
           case "SYMBOL":
           case "SIGN":
-          case "POWER":
+          case "EXPONENT":
             return pointAtCellCoordinates(
               notation as PointNotationAttributes,
               n2 as PointNotationAttributes,
@@ -301,7 +303,7 @@ export default function notationMutateHelper() {
     return notationStore.getNotations().find((n2: NotationAttributes) => {
       switch (notation.notationType) {
         case "SYMBOL":
-        case "POWER":
+        case "EXPONENT":
           return (
             pointAtCellCoordinates(
               notation as PointNotationAttributes,
@@ -741,12 +743,29 @@ export default function notationMutateHelper() {
     upsertNotation(notation);
   }
 
+  function upsertExponentNotation(exponent: ExponentAttributes) {
+
+    const exponentCell = getSymbolCell();
+    if (!exponentCell) return;
+
+
+    let notation: ExponentNotationCreationAttributes = {
+      col: exponentCell.col,
+      row: exponentCell.row,
+      base: exponent.base,
+      exponent: exponent.exponent,
+      boardType: notationStore.getParent().type,
+      parentUUId: notationStore.getParent().uuid,
+      notationType: "EXPONENT",
+      user: userStore.getCurrentUser(),
+    };
+
+    upsertNotation(notation);
+  }
+
   function upsertSymbolNotation(value: string) {
     const symbolCell = getSymbolCell();
     if (!symbolCell) return;
-
-    const notationType: NotationType =
-      editModeStore.getEditMode() == "POWER" ? "POWER" : "SYMBOL";
 
     let notation: PointNotationCreationAttributes = {
       col: symbolCell.col,
@@ -754,7 +773,7 @@ export default function notationMutateHelper() {
       value: value,
       boardType: notationStore.getParent().type,
       parentUUId: notationStore.getParent().uuid,
-      notationType: notationType,
+      notationType: "SYMBOL",
       user: userStore.getCurrentUser(),
     };
 
@@ -808,6 +827,7 @@ export default function notationMutateHelper() {
     addMarkNotation,
     addImageNotation,
     upsertTextNotation,
+    upsertExponentNotation,
     addLineNotation,
     deleteSelectedNotations,
     moveSelectedNotations,
