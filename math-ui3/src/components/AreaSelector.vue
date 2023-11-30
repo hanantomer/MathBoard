@@ -9,6 +9,7 @@
       width: selectionRectWidth + 'px',
       height: selectionRectHeight + 'px',
     }"
+    v-on:mouseup="mouseup"
     v-if="show"
   ></v-card>
 </template>
@@ -98,9 +99,9 @@ watch(
   },
 );
 
-//function mouseup(e: MouseEvent) {
-//  eventBus.emit("svgmouseup", e);
-//}
+function mouseup(e: MouseEvent) {
+  eventBus.emit("svgmouseup", e);
+}
 
 function keyUp(e: KeyboardEvent) {
   if (e.code === "Backspace" || e.code === "Delete") {

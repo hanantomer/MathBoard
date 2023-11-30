@@ -4,7 +4,6 @@ import { defineStore } from "pinia";
 import { CellCoordinates, matrixDimensions } from "common/globals";
 import { NotationAttributes } from "common/baseTypes";
 import {
-  EditMode,
   BoardType,
   NotationShape,
   NotationTypeShape,

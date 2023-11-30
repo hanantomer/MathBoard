@@ -56,7 +56,6 @@ import useEventBus from "../helpers/eventBusHelper";
 let lessonsLoaded = ref(false);
 const eventBus = useEventBus();
 const router = useRouter();
-const route = useRoute();
 const userStore = useUserStore();
 const lessonStore = useLessonStore();
 const title = computed(() => {
@@ -82,7 +81,7 @@ let itemsPerPage = 10;
 onMounted(() => loadLessons());
 
 watch(
-  () => eventBus.bus.value.get("newItemDialogSave"),
+  () => eventBus.bus.value.get("newItemSave"),
   (val: string) => {
     addLesson(val);
   },

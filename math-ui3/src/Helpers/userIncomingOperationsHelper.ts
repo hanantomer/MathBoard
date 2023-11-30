@@ -14,7 +14,7 @@ const studentStore = useStudentStore();
 export default function userIncomingOperations() {
   // check if in Lesson and not initiated by me
   function isRelevant(notation: NotationAttributes) {
-    if (notation.user.uuid === userStore.getCurrentUser().uuid) return false;
+    if (notation.user.uuid === userStore.getCurrentUser()!.uuid) return false;
     if (notationStore.getParent().type !== "LESSON") return false;
     return true;
   }
@@ -25,7 +25,7 @@ export default function userIncomingOperations() {
     // send auth token to server and register to accept messsages.
     // see also AuthenticationService
     feathersClient.service("authentication").create({
-      lessonUUId: lessonStore.getCurrentLesson().uuid,
+      lessonUUId: lessonStore.getCurrentLesson()!.uuid,
     });
 
     // sync created notations
@@ -57,7 +57,7 @@ export default function userIncomingOperations() {
       .service("selectedCell")
       .on("updated", (selectedCell: SelectedCell) => {
         if (notationStore.getParent().type !== "LESSON") return;
-        if (selectedCell.userUUId == userStore.getCurrentUser().uuid) return;
+        if (selectedCell.userUUId == userStore.getCurrentUser()!.uuid) return;
         notationStore.selectCell(selectedCell);
       });
 

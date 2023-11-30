@@ -210,7 +210,10 @@ let textButtonActive = ref(1);
 watch(
   () => editModeStore.getEditMode(),
   (editMode) => {
-    if (editMode === editModeStore.getDefaultEditMode()) {
+    if (
+      editMode === editModeStore.getDefaultEditMode() ||
+      editMode == "AREA_SELECTED"
+    ) {
       resetButtonsState();
     }
 
@@ -367,6 +370,7 @@ function startSelectionMode() {
 
 function endSelectionMode() {
   resetButtonsState();
+  selectionButtonActive.value = 1;
   editModeStore.setEditMode("SYMBOL");
 }
 

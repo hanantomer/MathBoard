@@ -14,10 +14,11 @@ import {
 export type QuestionAttributes = EntityAttributes & BoardAttributes & {
 
   lesson: LessonAttributes;
-  lessonId: number; // redendunt bu required sequelize to build correct sql
 }
 
-export type QuestionCreationAttributes = Omit<QuestionAttributes, keyof EntityAttributes>
+export type QuestionCreationAttributes = 
+  {lessonUUId: string} &
+  Omit<QuestionAttributes, keyof EntityAttributes>
 
 // every question notations has a lesson as parent
 

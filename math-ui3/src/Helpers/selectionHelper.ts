@@ -164,7 +164,7 @@ export default function selectionHelper() {
     if (notationStore.getParent().type == "LESSON") {
       let t = await userOutgoingOperationsHelper.syncOutgoingSelectedCell(
         cellToActivate,
-        lessonStore.getCurrentLesson().uuid,
+        lessonStore.getCurrentLesson()!.uuid,
       );
     }
   }

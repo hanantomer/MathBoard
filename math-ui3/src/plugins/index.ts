@@ -10,10 +10,12 @@ import vuetify from "./vuetify";
 //import pinia from "../store/pinia/indexStore"
 import router from "../router";
 
+import store from "../store/pinia/indexStore";
+
 // Types
 import type { App } from "vue";
 
 export function registerPlugins(app: App) {
   loadFonts();
-  app.use(vuetify).use(router);
+  app.use(store).use(vuetify).use(router);
 }

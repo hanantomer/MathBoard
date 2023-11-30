@@ -23,25 +23,26 @@ export default function eventHelper() {
   async function paste(e: ClipboardEvent) {
     // disallow adding image by student
     if (!userStore.isTeacher) return;
+    if (!notationStore.getSelectedCell()) return;
 
     const dT = e.clipboardData; /*|| window.Clipboard*/
     const item = dT?.items[0];
 
     var reader = new FileReader();
-    var that = this;
     reader.addEventListener("load", () => {
       const base64data = reader.result;
-
-      let image: any = new Image();
-      image.src = base64data;
+      if (!base64data) return;
+      let image: HTMLImageElement = new Image();
+      image.src = base64data?.toString();
       image.onload = () => {
-        if (!base64data) return;
-        let fromCol = parseInt(that.getSelectedCell().col);
-        let fromRow = parseInt(that.getSelectedCell().row);
+        let fromCol = notationStore.getSelectedCell()?.col;
+        let fromRow = notationStore.getSelectedCell()?.row;
+        if (!fromCol || !fromRow) return;
         let toCol =
           Math.ceil(image.width / matrixHelper.getCellSize()) + fromCol;
         let toRow =
           Math.ceil(image.height / matrixHelper.getCellSize()) + fromRow;
+
         notationMutationHelper.addImageNotation(
           fromCol,
           toCol,
@@ -152,7 +153,7 @@ export default function eventHelper() {
     return null;
   }
 
- /* function mouseDown(e: MouseEvent) {
+  /* function mouseDown(e: MouseEvent) {
     if (
       editModeStore.getEditMode() === "FRACTION" ||
       editModeStore.getEditMode() === "SQRT" ||
@@ -246,7 +247,7 @@ export default function eventHelper() {
   return {
     paste,
     keyUp,
-//    mouseDown,
+    //    mouseDown,
     registerSvgMouseDown,
     unregisterSvgMouseDown,
     registerSvgMouseMove,

@@ -16,8 +16,8 @@
       </v-card>
     </v-dialog>
     <NewQuestionDialog
-      :dialog="questionDialog.show"
-      v-on="{ save: saveQuestion }"
+      :dialog="questionDialog"
+      v-on="{ save: addQuestion }"
     ></NewQuestionDialog>
     <v-card class="mx-auto" max-width="800" min-height="600">
       <v-toolbar color="primary" dark>
@@ -49,6 +49,7 @@ import { useLessonStore } from "../store/pinia/lessonStore";
 import { useAnswerStore } from "../store/pinia/answerStore";
 import { useUserStore } from "../store/pinia/userStore";
 import { useRoute, useRouter } from 'vue-router'
+import useEventBus from "../helpers/eventBusHelper";
 
 const questionStore = useQuestionStore();
 const lessonStore = useLessonStore();
@@ -56,9 +57,11 @@ const answerStore = useAnswerStore();
 const userStore = useUserStore();
 const route = useRoute();
 const router = useRouter();
+const eventBus = useEventBus();
 
 const noLessonDialog = ref(false);
-let questionDialog = reactive({ show: false, name: "", title: "" });
+//let questionDialog = reactive({ show: false, name: "", title: "" });
+let questionDialog = ref(false);
 
 const menu = [
   { icon: "plus", title: "Add" },
@@ -66,11 +69,19 @@ const menu = [
 ];
 
 onMounted(() => {
-  load();
+  loadQuestions();
 })
 
+watch(
+  () => eventBus.bus.value.get("newQuestionSave"),
+  (questionName: string) => {
+    addQuestion(questionName);
+  },
+);
+
+
 watch(route, () => {
-  load();
+  loadQuestions();
   },{ flush: 'pre', immediate: true, deep: true });
 
 const headers = [
@@ -106,7 +117,7 @@ function navToLessons() {
   });
 };
 
-function load() {
+function loadQuestions() {
   if (!lessonStore.getLessons().value) {
     noLessonDialog.value = true;
     return;
@@ -119,15 +130,17 @@ function load() {
 }
 
 function openQuestionDialog() {
-  questionDialog = {
-    show: true,
-    name: "",
-    title: "<span>Please specify <strong>question</strong> title</span",
-  };
+  questionDialog.value = true;
+
+ // {
+ //   show: true,
+ //   name: "",
+ //   title: "<span>Please specify <strong>question</strong> title</span",
+ // };
 };
 
-function saveQuestion(question: QuestionAttributes) {
-  questionStore.addQuestion(question);
+function addQuestion(name: string) {
+  questionStore.addQuestion(name);
   router.push({
     path: "/question/" + questionStore.getCurrentQuestion().uuid,
   });

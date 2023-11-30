@@ -1,5 +1,10 @@
-import { createRouter, createWebHistory, RouteLocationNormalized, RouteLocationRaw } from 'vue-router'
-import  useAuthHelper  from "../helpers/authHelper";
+import {
+  createRouter,
+  createWebHistory,
+  RouteLocationNormalized,
+  RouteLocationRaw,
+} from "vue-router";
+import useAuthHelper from "../helpers/authHelper";
 import { useUserStore } from "../store/pinia/userStore";
 import { useCookies } from "vue3-cookies";
 
@@ -14,13 +19,13 @@ const routes = [
     meta: { requiresAuth: false },
     props: true,
   },
-   {
-     path: "/login",
-     component: () => import("@/components/Welcome.vue"),
-     name: "login",
-     meta: { requiresAuth: false },
-     props: { login: true },
-   },
+  {
+    path: "/login",
+    component: () => import("@/components/Welcome.vue"),
+    name: "login",
+    meta: { requiresAuth: false },
+    props: { login: true },
+  },
   // {
   //   path: "/register",
   //   component: () => import("@/components/Welcome.vue"),
@@ -74,16 +79,6 @@ const router = createRouter({
 router.beforeEach(async (to, from) => {
   const userStore = useUserStore();
 
-  if (!to.matched.some((record) => record.meta.requiresAuth)) {
-    // auth not required
-    return;
-  }
-
-  if (userStore.getCurrentUser().uuid) {
-    // already authenticated
-    return;
-  }
-
   const user = await authHelper.authLocalUserByToken();
   if (user) {
     // has valid token
@@ -91,9 +86,17 @@ router.beforeEach(async (to, from) => {
     return;
   }
 
+  if (!to.matched.some((record) => record.meta.requiresAuth)) {
+    // auth not required
+    return;
+  }
+
+  //if (userStore.getCurrentUser().uuid) {
+  // already authenticated
+  //return;
+  //}
 
   return { path: "/login", query: { from: to.path } };
-
 
   //next({
   //  query: { from: window.location.pathname },
@@ -119,4 +122,4 @@ router.beforeEach(async (to, from) => {
   // could not find user info -> login/register
 });
 
-export default router
+export default router;

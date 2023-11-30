@@ -169,7 +169,7 @@ export default function notationMutateHelper() {
   }
 
   function findNotationsByCellCoordinates(cellCoordinates: CellCoordinates) {
-    let userUUId = userStore.getCurrentUser().uuid;
+    let userUUId = getUserUUId();
 
     return notationStore
       .getNotations()
@@ -210,19 +210,19 @@ export default function notationMutateHelper() {
         ? pointAtRectCoordinates(
             n as PointNotationAttributes,
             rectCoordinates,
-            userStore.getCurrentUser().uuid,
+            getUserUUId(),
           )
         : n.notationType == "FRACTION" || n.notationType == "SQRT"
         ? lineAtRectCoordinates(
             n as LineNotationAttributes,
             rectCoordinates,
-            userStore.getCurrentUser().uuid,
+            getUserUUId(),
           )
         : n.notationType == "TEXT"
         ? rectAtRectCoordinates(
             n as RectNotationAttributes,
             rectCoordinates,
-            userStore.getCurrentUser().uuid,
+            getUserUUId(),
           )
         : false,
     );
@@ -242,19 +242,19 @@ export default function notationMutateHelper() {
           ? pointAtLineCoordinates(
               n as PointNotationAttributes,
               lineCoordinates,
-              userStore.getCurrentUser().uuid,
+              getUserUUId(),
             )
           : n.notationType == "FRACTION" || n.notationType == "SQRT"
           ? lineAtLineCoordinates(
               n as LineNotationAttributes,
               lineCoordinates,
-              userStore.getCurrentUser().uuid,
+              getUserUUId(),
             )
           : n.notationType == "TEXT"
           ? rectAtLineCoordinates(
               n as RectNotationAttributes,
               lineCoordinates,
-              userStore.getCurrentUser().uuid,
+              getUserUUId(),
             )
           : false,
       );
@@ -276,14 +276,14 @@ export default function notationMutateHelper() {
             return pointAtCellCoordinates(
               notation as PointNotationAttributes,
               n2 as PointNotationAttributes,
-              userStore.getCurrentUser().uuid,
+              getUserUUId(),
             );
           case "FRACTION":
           case "SQRT":
             return lineAtLineCoordinates(
               notation as LineNotationAttributes,
               n2 as LineNotationAttributes,
-              userStore.getCurrentUser().uuid,
+              getUserUUId(),
             );
           case "TEXT":
           case "IMAGE":
@@ -291,7 +291,7 @@ export default function notationMutateHelper() {
             return rectAtRectCoordinates(
               notation as RectNotationAttributes,
               n2 as RectNotationAttributes,
-              userStore.getCurrentUser().uuid,
+              getUserUUId(),
             );
         }
       });
@@ -308,17 +308,17 @@ export default function notationMutateHelper() {
             pointAtCellCoordinates(
               notation as PointNotationAttributes,
               n2 as PointNotationAttributes,
-              userStore.getCurrentUser().uuid,
+              getUserUUId(),
             ) ??
             lineAtCellCoordinates(
               notation as LineNotationAttributes,
               n2 as PointNotationAttributes,
-              userStore.getCurrentUser().uuid,
+              getUserUUId(),
             ) ??
             rectAtCellCoordinates(
               notation as RectNotationAttributes,
               n2 as PointNotationAttributes,
-              userStore.getCurrentUser().uuid,
+              getUserUUId(),
             )
           );
         case "FRACTION":
@@ -327,17 +327,17 @@ export default function notationMutateHelper() {
             lineAtCellCoordinates(
               notation as LineNotationAttributes,
               n2 as PointNotationAttributes,
-              userStore.getCurrentUser().uuid,
+              getUserUUId(),
             ) ??
             lineAtLineCoordinates(
               notation as LineNotationAttributes,
               n2 as LineNotationAttributes,
-              userStore.getCurrentUser().uuid,
+              getUserUUId(),
             ) ??
             lineAtRectCoordinates(
               notation as LineNotationAttributes,
               n2 as RectNotationAttributes,
-              userStore.getCurrentUser().uuid,
+              getUserUUId(),
             )
           );
 
@@ -348,17 +348,17 @@ export default function notationMutateHelper() {
             pointAtRectCoordinates(
               notation as PointNotationAttributes,
               n2 as RectNotationAttributes,
-              userStore.getCurrentUser().uuid,
+              getUserUUId(),
             ) ??
             lineAtRectCoordinates(
               notation as LineNotationAttributes,
               n2 as RectNotationAttributes,
-              userStore.getCurrentUser().uuid,
+              getUserUUId(),
             ) ??
             rectAtRectCoordinates(
               notation as RectNotationAttributes,
               n2 as RectNotationAttributes,
-              userStore.getCurrentUser().uuid,
+              getUserUUId(),
             )
           );
       }
@@ -709,7 +709,7 @@ export default function notationMutateHelper() {
       boardType: notationStore.getParent().type,
       parentUUId: notationStore.getParent().uuid,
       notationType: "IMAGE",
-      user: userStore.getCurrentUser(),
+      user: userStore.getCurrentUser()!,
     };
 
     upsertNotation(notation);
@@ -737,7 +737,7 @@ export default function notationMutateHelper() {
       boardType: notationStore.getParent().type,
       parentUUId: notationStore.getParent().uuid,
       notationType: "TEXT",
-      user: userStore.getCurrentUser(),
+      user: userStore.getCurrentUser()!,
     };
 
     upsertNotation(notation);
@@ -757,7 +757,7 @@ export default function notationMutateHelper() {
       boardType: notationStore.getParent().type,
       parentUUId: notationStore.getParent().uuid,
       notationType: "EXPONENT",
-      user: userStore.getCurrentUser(),
+      user: userStore.getCurrentUser()!,
     };
 
     upsertNotation(notation);
@@ -774,7 +774,7 @@ export default function notationMutateHelper() {
       boardType: notationStore.getParent().type,
       parentUUId: notationStore.getParent().uuid,
       notationType: "SYMBOL",
-      user: userStore.getCurrentUser(),
+      user: userStore.getCurrentUser()!,
     };
 
     upsertNotation(notation);
@@ -813,10 +813,14 @@ export default function notationMutateHelper() {
       boardType: notationStore.getParent().type,
       parentUUId: notationStore.getParent().uuid,
       notationType: notationType,
-      user: userStore.getCurrentUser(),
+      user: userStore.getCurrentUser()!,
     };
 
     upsertNotation(notation);
+  }
+
+  function getUserUUId() : string {
+    return userStore.getCurrentUser()!.uuid;
   }
 
   return {

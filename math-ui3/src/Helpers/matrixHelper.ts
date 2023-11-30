@@ -212,7 +212,11 @@ export default function useMatrixHelper() {
         enrichedNotations.push(notation);
         // add sqrt symbol
         if (notation.notationType === "SQRT") {
-          let sqrtNotation = { ...notation };
+          let sqrtNotation = {
+            ...notation,
+            col: (notation as LineNotationAttributes).fromCol,
+            toCol: null,
+          };
           sqrtNotation.notationType = "SQRTSYMBOL";
           enrichedNotations.push(sqrtNotation);
         }
@@ -397,7 +401,7 @@ export default function useMatrixHelper() {
   function x(n: NotationAttributes): number | null {
     let colIdx = col(n);
     let deltaX =
-      n.notationType === "SQRTSYMBOL" /*|| n.notationType === "EXPONENT"*/
+      n.notationType === "SQRTSYMBOL"
         ? Math.round(notationStore.getCellSize() / 3) * -1
         : 0;
 
@@ -492,7 +496,7 @@ export default function useMatrixHelper() {
         .indexOf(n.uuid) >= 0
         ? "gray"
         : notationStore.getParent().type === "ANSWER" &&
-          userStore.getCurrentUser().uuid != n.user.uuid
+          userStore.getCurrentUser()?.uuid != n.user.uuid
         ? "purple"
         : "black";
 

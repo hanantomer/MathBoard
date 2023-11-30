@@ -1,31 +1,32 @@
+import { ref } from "vue";
 import { defineStore } from "pinia";
 import { UserAttributes, UserCreationAttributes } from "common/userTypes";
-import dbHelper  from "../../helpers/dbHelper";
-import { UesrType } from "common/unions";
+
+import dbHelper from "../../helpers/dbHelper";
 const db = dbHelper();
 
 export const useUserStore = defineStore("user", () => {
-  let currentUser: UserAttributes = new Object() as UserAttributes;
-  let authorized = false;
+  let currentUser = ref<UserAttributes | null>();
+  let authorized = ref(false);
 
-  function getCurrentUser(): UserAttributes {
-    return currentUser;
+  function getCurrentUser(): UserAttributes | undefined | null{
+    return currentUser.value;
   }
 
   function isTeacher(): boolean {
-    return currentUser?.userType === "TEACHER";
+    return currentUser.value?.userType === "TEACHER";
   }
 
   function getAuthorized(): boolean {
-    return authorized;
+    return authorized.value;
   }
 
   function setAuthorized(authorized: boolean) {
-    return authorized = authorized;
+    return (authorized = authorized);
   }
 
-  function setCurrentUser(user: UserAttributes) {
-    currentUser = user;
+  function setCurrentUser(user: UserAttributes | null) {
+    currentUser.value = user;
   }
 
   function registerUser(user: UserCreationAttributes) {

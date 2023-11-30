@@ -13,10 +13,10 @@ const db = dbHelper();
 
 export const useLessonStore = defineStore("lesson", () => {
   let lessons = ref<Map<String, LessonAttributes>>(new Map());
-  let currentLesson = <LessonAttributes>{};
+  let currentLesson = ref<LessonAttributes>();
 
   function getCurrentLesson() {
-    return currentLesson;
+    return currentLesson.value;
   }
 
   function getLessons() {
@@ -28,9 +28,9 @@ export const useLessonStore = defineStore("lesson", () => {
     let lessonsFromDB = null;
 
     if (userStore.isTeacher())
-      lessonsFromDB = await db.getTeacherLessons(userStore.getCurrentUser().uuid);
+      lessonsFromDB = await db.getTeacherLessons(userStore.getCurrentUser()!.uuid);
     else
-      lessonsFromDB = await db.getStudentLessons(userStore.getCurrentUser().uuid );
+      lessonsFromDB = await db.getStudentLessons(userStore.getCurrentUser()!.uuid );
 
     lessonsFromDB.forEach((l: LessonAttributes) => {
       lessons.value.set(l.uuid, l);
@@ -46,14 +46,14 @@ export const useLessonStore = defineStore("lesson", () => {
     if (!lessons.value.get(lessonUUId)) {
       throw TypeError("invalid lesson:" + lessonUUId);
     }
-    currentLesson = lessons.value.get(lessonUUId)!;
+    currentLesson.value = lessons.value.get(lessonUUId)!;
   }
 
   async function addLesson(
     lessonName: string
   ): Promise<LessonAttributes> {
     const userStore = useUserStore();
-    let lesson: LessonCreationAttributes = {name: lessonName, user: userStore.getCurrentUser()};
+    let lesson: LessonCreationAttributes = {name: lessonName, user: userStore.getCurrentUser()!};
     let createdLesson = await db.addLesson(lesson);
     lessons.value.set(createdLesson.uuid, createdLesson);
     await setCurrentLesson(createdLesson.uuid);
@@ -63,8 +63,8 @@ export const useLessonStore = defineStore("lesson", () => {
   async function addLessonToSharedLessons() {
     const userStore = useUserStore();
     await db.addLessonToSharedLessons(
-      currentLesson.uuid,
-      userStore.getCurrentUser().uuid
+      currentLesson.value!.uuid,
+      userStore.getCurrentUser()!.uuid
     );
   }
 

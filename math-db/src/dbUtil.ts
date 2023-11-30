@@ -9,7 +9,7 @@ import db from "./models/index";
 import { NotationAttributes } from "../../math-common/src/baseTypes";
 import { UserAttributes, StudentLessonCreationAttributes} from "../../math-common/build/userTypes";
 import { LessonCreationAttributes } from "../../math-common/src/lessonTypes";
-import { QuestionAttributes } from "../../math-common/build/questionTypes";
+import { QuestionCreationAttributes } from "../../math-common/build/questionTypes";
 import { AnswerAttributes, AnswerCreationAttributes } from "../../math-common/build/answerTypes";
 import { capitalize } from "../../math-common/build/utils";
 import { BoardType, NotationType } from "../../math-common/src/unions";
@@ -156,7 +156,7 @@ export default function dbUtil() {
     }
 
     async function createQuestion(
-        question: QuestionAttributes 
+        question: QuestionCreationAttributes 
     ): Promise<Question> {
 
         question.user.id  = (await getIdByUUId(
@@ -164,9 +164,9 @@ export default function dbUtil() {
             question.user.uuid
         )) as number;
 
-        question.lessonId = (await getIdByUUId(
+        question.lesson.id = (await getIdByUUId(
             "Lesson",
-            question.lesson.uuid
+            question.lesson!.uuid
         )) as number;
 
         return await Question.create(question);

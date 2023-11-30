@@ -13,7 +13,7 @@ export const NotationTypeShape = new Map<NotationType, NotationShape> ([
   ["SIGN", "POINT"],
   ["EXPONENT", "POINT"],
   ["SQRT", "LINE"],
-  ["SQRTSYMBOL", "LINE"],
+  ["SQRTSYMBOL", "POINT"],
   ["FRACTION", "LINE"],
   ["TEXT", "RECT"],
   ["IMAGE", "RECT"],

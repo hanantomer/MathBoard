@@ -88,7 +88,7 @@ export default function useAuthHelper() {
     } else {
       removeCookie("access_token");
     }
-    userStore.setCurrentUser(new Object() as UserAttributes);
+    userStore.setCurrentUser(null);
   }
 
   /*async function  getGoogleUser() {

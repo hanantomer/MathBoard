@@ -59,7 +59,7 @@ function toggleStudentAuthorization(student: UserAttributes) {
   userOutgoingOperations.syncOutgoingAuthUser(
     studentStore.getAuthorizedStudentUUId().value,
     studentStore.getAuthorizedStudentUUId().value,
-    lessonStore.getCurrentLesson().uuid
+    lessonStore.getCurrentLesson()!.uuid
   );
 }
 </script>

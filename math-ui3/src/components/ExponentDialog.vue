@@ -6,7 +6,7 @@
       max-width="400px"
       @keydown.esc="close"
     >
-      <v-card>
+      <v-card ref="form">
         <v-card-title>
           <span class="headline">Exponent construction</span>
         </v-card-title>
@@ -14,10 +14,15 @@
           <v-container>
             <v-row>
               <v-col cols="6">
-                <v-text-field v-model="base" label="base"></v-text-field>
+                <v-text-field
+                  :rules="[rules.required, rules.baseMaxLength]"
+                  v-model="base"
+                  label="base"
+                ></v-text-field>
               </v-col>
               <v-col cols="6">
                 <v-text-field
+                  :rules="[rules.required, rules.baseMaxLength]"
                   v-model="exponent"
                   label="exponent"
                 ></v-text-field>
@@ -39,7 +44,10 @@
 import { ref, watch } from "vue";
 import useEventBus from "../helpers/eventBusHelper";
 import { useNotationStore } from "../store/pinia/notationStore";
-import { ExponentAttributes, ExponentNotationAttributes } from "common/baseTypes";
+import {
+  ExponentAttributes,
+  ExponentNotationAttributes,
+} from "common/baseTypes";
 
 const emit = defineEmits(["close", "save"]);
 const eventBus = useEventBus();
@@ -49,9 +57,14 @@ const props = defineProps({
   show: { type: Boolean },
 });
 
-let dialog = ref(false);
+const dialog = ref(false);
 let base = ref("");
 let exponent = ref("");
+
+const rules = {
+  required: (value: string) => !!value || "Required.",
+  baseMaxLength: (value: string) => value.length <= 2,
+};
 
 watch(
   () => props.show,
@@ -59,7 +72,6 @@ watch(
     dialog.value = newVal;
   },
 );
-
 
 watch(
   () => props.show,
@@ -83,6 +95,9 @@ function setInitalTextValue() {
 }
 
 function submit() {
+  if (base.value.length > 2 || base.value.length == 0) return;
+  if (exponent.value.length > 2 || exponent.value.length == 0) return;
+
   eventBus.emit("exponentSubmited", {
     base: base.value,
     exponent: exponent.value,

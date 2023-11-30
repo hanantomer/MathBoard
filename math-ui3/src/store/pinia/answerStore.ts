@@ -56,7 +56,7 @@ export const useAnswerStore = defineStore("answer", () => {
 
       let answer = <AnswerAttributes>{};
       answer.question  = questionStore.getCurrentQuestion();
-      answer.user = userStore.getCurrentUser();
+      answer.user = userStore.getCurrentUser()!;
 
       answer = await db.addAnswer(answer);
       answers.set(answer.uuid, answer);

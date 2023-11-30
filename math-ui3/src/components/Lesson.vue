@@ -40,7 +40,7 @@ const isTeacher = computed(() => {
   return userStore.isTeacher();
 });
 const lessonTitle = computed(() => {
-  return lessonStore.getCurrentLesson().name;
+  return lessonStore.getCurrentLesson()!.name;
 });
 //let lessonUUID = ref("");
 
@@ -57,7 +57,7 @@ watch(
   route,
   async (to) => {
     await lessonStore.setCurrentLesson(to.params.lessonUUId as string);
-    await loadLesson(lessonStore.getCurrentLesson().uuid);
+    await loadLesson(lessonStore.getCurrentLesson()!.uuid);
     loaded.value = true;
   },
   { immediate: true },
@@ -73,7 +73,7 @@ async function loadLesson(lessonUUID: string) {
     setInterval(
       userOutgoingOperations.syncOutgoingHeartBeat,
       heartBeatInterval,
-      lessonStore.getCurrentLesson().uuid,
+      lessonStore.getCurrentLesson()!.uuid,
     );
   }
 

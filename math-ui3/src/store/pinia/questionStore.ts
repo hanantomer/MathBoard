@@ -6,8 +6,10 @@ import {
 } from "common/questionTypes";
 import useDbHelper from "../../helpers/dbHelper";
 import { useLessonStore } from "./lessonStore";
+import { useUserStore } from "./userStore";
 
 const lessonStore = useLessonStore();
+const userStore = useUserStore();
 const db = useDbHelper();
 
 ///TODO: create convention for all crud operation for all stores
@@ -29,20 +31,28 @@ export const useQuestionStore = defineStore("answer", () => {
   }
 
   async function loadQuestions() {
+    if (!lessonStore.getCurrentLesson()) return;
+
     if (!lessonStore.getLessons()) {
       lessonStore.loadLessons();
     }
 
     let questionsFromDb = await db.getQuestions(
-      lessonStore.getCurrentLesson().uuid,
+      lessonStore.getCurrentLesson()!.uuid,
     );
     questionsFromDb.forEach((q: QuestionAttributes) => {
       questions.set(q.uuid, q);
     });
   }
 
-  async function addQuestion(question: QuestionCreationAttributes) {
-    question.lesson = lessonStore.getCurrentLesson();
+  async function addQuestion(questionName: string) {
+
+    let question: QuestionCreationAttributes = {
+      name: questionName,
+      user: userStore.getCurrentUser()!,
+      lessonUUId: lessonStore.getCurrentLesson()!.uuid
+    };
+
     let createdQuestion = await db.addQuestion(question);
     questions.set(createdQuestion.uuid, createdQuestion);
     currentQuestion = createdQuestion;

@@ -4,7 +4,7 @@
       <v-form @submit.prevent="save">
         <v-card>
           <v-card-title class="headline">
-            <span>Please specify question properties</span>
+            <span>Please specify question title</span>
           </v-card-title>
           <v-card-text>
             <v-container>
@@ -58,7 +58,6 @@ const name = ref();
 
 const props = defineProps({
   dialog: Boolean,
-  name: String,
 });
 
 watch(
@@ -67,15 +66,16 @@ watch(
     show.value = val;
   },
 );
-watch(
-  () => props.name,
-  (val) => {
-    name.value = val;
-  },
-);
+
+//watch(
+//  () => props.name,
+//  (val) => {
+//    name.value = val;
+//  },
+//);
 
 function save() {
-  eventBus.emit("save", name);
+  eventBus.emit("newQuestionSave", name);
 }
 
 const lessons = computed(() =>
@@ -86,7 +86,7 @@ const lessons = computed(() =>
 
 const selectedLesson = computed({
   get() {
-    return lessonStore.getCurrentLesson().name;
+    return lessonStore.getCurrentLesson()!.name;
   },
   set(selectedLessonUUId: string) {
     lessonStore.setCurrentLesson(selectedLessonUUId);

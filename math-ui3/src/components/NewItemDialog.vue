@@ -58,6 +58,6 @@ watch(
 
 let name = ref("");
 function save() {
-  eventBus.emit("newItemDialogSave", name.value);
+  eventBus.emit("newItemSave", name.value);
 }
 </script>
