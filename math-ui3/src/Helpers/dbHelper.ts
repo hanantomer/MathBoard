@@ -229,7 +229,7 @@ export default function useDbHelper() {
 
   async function getAnswers(questionUUId: string): Promise<AnswerAttributes[]> {
     const { data } = await axios.get<AnswerAttributes[]>(
-      baseURL + "/answers?QuestionUUId=" + questionUUId,
+      baseURL + "/answers?questionUUId=" + questionUUId,
     );
 
     return data;

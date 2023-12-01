@@ -26,7 +26,7 @@
                   <v-text-field
                     autofocus
                     v-model="name"
-                    label="Name*"
+                    label="Title*"
                     required
                   ></v-text-field>
                 </v-col>
@@ -57,16 +57,18 @@ const show = ref(false);
 const name = ref();
 
 const props = defineProps({
-  dialog: Boolean,
+  dialog: {
+    type: Boolean,
+    default: false,
+  },
 });
 
 watch(
   () => props.dialog,
-  (val) => {
+  (val: boolean) => {
     show.value = val;
   },
 );
-
 //watch(
 //  () => props.name,
 //  (val) => {

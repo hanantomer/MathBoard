@@ -149,6 +149,10 @@ export default function dbUtil() {
         let lessonId = await getIdByUUId("Lesson", lessonUUId);
         if (!lessonId) return null;
         return await Question.findAll({
+            include: {
+                model: Lesson,
+                attributes: ["id"]
+            },
             where: {
                 '$lesson.id$' : lessonId
             },
@@ -164,7 +168,7 @@ export default function dbUtil() {
             question.user.uuid
         )) as number;
 
-        question.lesson.id = (await getIdByUUId(
+        question.lesson!.id = (await getIdByUUId(
             "Lesson",
             question.lesson!.uuid
         )) as number;

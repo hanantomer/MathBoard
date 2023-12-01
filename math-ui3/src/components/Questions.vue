@@ -5,16 +5,17 @@
         <v-card-title class="text-h5">Attention </v-card-title>
 
         <v-card-text>
-          Please create lesson for which you can add a question
+          Please add a lesson for which you can add a question
         </v-card-text>
 
         <v-card-actions>
           <v-spacer></v-spacer>
 
-          <v-btn color="green darken-1"  @click="navToLessons"> OK </v-btn>
+          <v-btn color="green darken-1" @click="navToLessons"> OK </v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
+
     <NewQuestionDialog
       :dialog="questionDialog"
       v-on="{ save: addQuestion }"
@@ -42,13 +43,13 @@
 
 <script setup lang="ts">
 import NewQuestionDialog from "./NewQuestionDialog.vue";
-import {QuestionAttributes} from "../../../math-common/build/questionTypes";
-import { watch, onMounted, computed, ref, reactive } from "vue"
+import { QuestionAttributes } from "../../../math-common/build/questionTypes";
+import { watch, onMounted, computed, ref, reactive } from "vue";
 import { useQuestionStore } from "../store/pinia/questionStore";
 import { useLessonStore } from "../store/pinia/lessonStore";
 import { useAnswerStore } from "../store/pinia/answerStore";
 import { useUserStore } from "../store/pinia/userStore";
-import { useRoute, useRouter } from 'vue-router'
+import { useRoute, useRouter } from "vue-router";
 import useEventBus from "../helpers/eventBusHelper";
 
 const questionStore = useQuestionStore();
@@ -60,8 +61,10 @@ const router = useRouter();
 const eventBus = useEventBus();
 
 const noLessonDialog = ref(false);
-//let questionDialog = reactive({ show: false, name: "", title: "" });
+
 let questionDialog = ref(false);
+
+let dialog = ref(true);
 
 const menu = [
   { icon: "plus", title: "Add" },
@@ -70,7 +73,7 @@ const menu = [
 
 onMounted(() => {
   loadQuestions();
-})
+});
 
 watch(
   () => eventBus.bus.value.get("newQuestionSave"),
@@ -79,10 +82,13 @@ watch(
   },
 );
 
-
-watch(route, () => {
-  loadQuestions();
-  },{ flush: 'pre', immediate: true, deep: true });
+// watch(
+//   route,
+//   () => {
+//     loadQuestions();
+//   },
+//   { flush: "pre", immediate: true, deep: true },
+// );
 
 const headers = [
   {
@@ -100,14 +106,16 @@ const headers = [
 ];
 
 const questions = computed(() => {
-  return Array.from(questionStore.getQuestions().entries()).map(([key, question]) => {
-    return {
-      uuid: question.uuid,
-      name: question.name,
-      lessonName: question.lesson.name,
-      createdAt: question.createdAt,
-    };
-  });
+  return Array.from(questionStore.getQuestions().entries()).map(
+    ([key, question]) => {
+      return {
+        uuid: question.uuid,
+        name: question.name,
+        lessonName: question.lesson!.name,
+        createdAt: question.createdAt,
+      };
+    },
+  );
 });
 
 function navToLessons() {
@@ -115,7 +123,7 @@ function navToLessons() {
   router.push({
     path: "/lessons/",
   });
-};
+}
 
 function loadQuestions() {
   if (!lessonStore.getLessons().value) {
@@ -131,20 +139,14 @@ function loadQuestions() {
 
 function openQuestionDialog() {
   questionDialog.value = true;
-
- // {
- //   show: true,
- //   name: "",
- //   title: "<span>Please specify <strong>question</strong> title</span",
- // };
-};
+}
 
 function addQuestion(name: string) {
   questionStore.addQuestion(name);
   router.push({
     path: "/question/" + questionStore.getCurrentQuestion().uuid,
   });
-};
+}
 
 function seletctQuestion(question: QuestionAttributes) {
   if (userStore.isTeacher()) {
@@ -160,8 +162,7 @@ function seletctQuestion(question: QuestionAttributes) {
       path: "/answer/" + answerStore.getCurrentAnswer().uuid,
     });
   }
-};
-
+}
 </script>
 
 <style>

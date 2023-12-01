@@ -13,7 +13,7 @@ import {
 
 export type QuestionAttributes = EntityAttributes & BoardAttributes & {
 
-  lesson: LessonAttributes;
+  lesson?: LessonAttributes;
 }
 
 export type QuestionCreationAttributes = 

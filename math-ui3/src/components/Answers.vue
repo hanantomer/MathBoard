@@ -66,7 +66,7 @@ const answers = computed(() => {
   return Array.from(answerStore.getAnswers()).map(([key, answer]) => {
     return {
       uuid: answer.uuid,
-      lesson: answer.question.lesson.name,
+      lesson: answer.question!.lesson!.name,
       question: answer.question.name,
       student: answer.user.firstName + " " + answer.user.lastName,
     };
