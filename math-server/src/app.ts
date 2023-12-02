@@ -117,10 +117,15 @@ app.post(
 app.get(
     "/api/questions",
     async (req: Request, res: Response): Promise<Response> => {
-        const { lessonUUId } = req.query;
-        return res
-            .status(200)
-            .json(await db.getQuestions(lessonUUId as string));
+        const { lessonUUId, questionUUId } = req.query;
+        if(lessonUUId)
+            return res
+                .status(200)
+                .json(await db.getQuestions(lessonUUId as string));
+        if (questionUUId)
+            return res
+                .status(200)
+                .json(await db.getQuestion(questionUUId as string));
     }
 );
 

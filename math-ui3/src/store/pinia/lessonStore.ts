@@ -56,7 +56,7 @@ export const useLessonStore = defineStore("lesson", () => {
     let lesson: LessonCreationAttributes = {name: lessonName, user: userStore.getCurrentUser()!};
     let createdLesson = await db.addLesson(lesson);
     lessons.value.set(createdLesson.uuid, createdLesson);
-    await setCurrentLesson(createdLesson.uuid);
+    setCurrentLesson(createdLesson.uuid);
     return createdLesson;
   }
 

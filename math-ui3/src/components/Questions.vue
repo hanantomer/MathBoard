@@ -141,8 +141,8 @@ function openQuestionDialog() {
   questionDialog.value = true;
 }
 
-function addQuestion(name: string) {
-  questionStore.addQuestion(name);
+async function addQuestion(name: string) {
+  await questionStore.addQuestion(name);
   router.push({
     path: "/question/" + questionStore.getCurrentQuestion().uuid,
   });

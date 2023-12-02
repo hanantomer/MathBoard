@@ -22,14 +22,14 @@ export const useAnswerStore = defineStore("answer", () => {
   }
 
   async function loadAnswer(answerUUId: string) {
-      const answer = await db.getAnswer(answerUUId);
-      const question = await db.getQuestion(answer.question.uuid);
+    const answer = await db.getAnswer(answerUUId);
+    const question = await db.getQuestion(answer.question.uuid);
 
-      if (answer) {
-        answers.set(answer.uuid, answer);
-        currentAnswer = answer;
-        questionStore.loadQuestion(question.uuid);
-      }
+    if (answer) {
+      answers.set(answer.uuid, answer);
+      currentAnswer = answer;
+      questionStore.loadQuestion(question.uuid);
+    }
   };
 
   async function loadAnswers() {
@@ -45,22 +45,22 @@ export const useAnswerStore = defineStore("answer", () => {
 
   // answer is initially empty
   async function addAnswer() {
-      let answerForCurrentQuestion: AnswerAttributes|null = null;
-      answers.forEach((a : AnswerAttributes)  => {
-        if (a.question.uuid == questionStore.getCurrentQuestion().uuid) {
-          answerForCurrentQuestion = a;
-          return;
-        }
-      });
-      if (answerForCurrentQuestion) return;
+    let answerForCurrentQuestion: AnswerAttributes|null = null;
+    answers.forEach((a : AnswerAttributes)  => {
+      if (a.question.uuid == questionStore.getCurrentQuestion().uuid) {
+        answerForCurrentQuestion = a;
+        return;
+      }
+    });
+    if (answerForCurrentQuestion) return;
 
-      let answer = <AnswerAttributes>{};
-      answer.question  = questionStore.getCurrentQuestion();
-      answer.user = userStore.getCurrentUser()!;
+    let answer = <AnswerAttributes>{};
+    answer.question  = questionStore.getCurrentQuestion();
+    answer.user = userStore.getCurrentUser()!;
 
-      answer = await db.addAnswer(answer);
-      answers.set(answer.uuid, answer);
-      setCurrentAnswer(answer)
+    answer = await db.addAnswer(answer);
+    answers.set(answer.uuid, answer);
+    setCurrentAnswer(answer)
   };
 
   function setCurrentAnswer(answer: AnswerAttributes) {

@@ -13,12 +13,10 @@ import {
 
 export type QuestionAttributes = EntityAttributes & BoardAttributes & {
 
-  lesson?: LessonAttributes;
+  lesson: LessonAttributes;
 }
 
-export type QuestionCreationAttributes = 
-  {lessonUUId: string} &
-  Omit<QuestionAttributes, keyof EntityAttributes>
+export type QuestionCreationAttributes =  Omit<QuestionAttributes, keyof EntityAttributes>
 
 // every question notations has a lesson as parent
 

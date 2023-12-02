@@ -50,12 +50,12 @@ export const useQuestionStore = defineStore("answer", () => {
     let question: QuestionCreationAttributes = {
       name: questionName,
       user: userStore.getCurrentUser()!,
-      lessonUUId: lessonStore.getCurrentLesson()!.uuid
+      lesson: lessonStore.getCurrentLesson()!
     };
 
     let createdQuestion = await db.addQuestion(question);
     questions.set(createdQuestion.uuid, createdQuestion);
-    currentQuestion = createdQuestion;
+    setCurrentQuestion(createdQuestion.uuid);
     return question;
   }
 

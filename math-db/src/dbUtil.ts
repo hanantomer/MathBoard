@@ -45,7 +45,7 @@ export default function dbUtil() {
         if (!lesson)
             return false;
 
-        return lesson.userId === userId;
+        return lesson.user.id === userId;
     }
     
 
@@ -162,16 +162,6 @@ export default function dbUtil() {
     async function createQuestion(
         question: QuestionCreationAttributes 
     ): Promise<Question> {
-
-        question.user.id  = (await getIdByUUId(
-            "User",
-            question.user.uuid
-        )) as number;
-
-        question.lesson!.id = (await getIdByUUId(
-            "Lesson",
-            question.lesson!.uuid
-        )) as number;
 
         return await Question.create(question);
     }

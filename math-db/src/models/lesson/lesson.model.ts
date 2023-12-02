@@ -13,17 +13,7 @@ export default class Lesson extends Model<
     LessonAttributes,
     LessonCreationAttributes
 > {
-     @Column({
-         type: DataType.NUMBER,
-     })
-     userId!: number;
-
-    @BelongsTo(() => User, {
-        foreignKey: {
-            field: "userId",
-            name: "userIdFK",
-        },
-    })
+    @BelongsTo(() => User, "userId")
     user!: User;
 
     @AllowNull(false)
