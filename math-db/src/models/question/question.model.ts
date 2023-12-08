@@ -13,20 +13,14 @@ export default class Question extends Model<
     QuestionAttributes,
     QuestionCreationAttributes
 > {
-    // @Column({
-    //     type: DataType.NUMBER,
-    // })
-    // userId!: number;
-
-    // @Column({
-    //     type: DataType.NUMBER,
-    // })
-    // lessonId!: number;
-
-    @BelongsTo(() => User, "userId")
+    @BelongsTo(() => User, {
+        foreignKey: { name: "userId", field: "userId", allowNull: false },
+    })
     user!: User;
 
-    @BelongsTo(() => Lesson, "lessonId")
+    @BelongsTo(() => Lesson, {
+        foreignKey: { name: "lessonId", field: "lessonId", allowNull: false },
+    })
     lesson!: Lesson;
 
     @AllowNull(false)

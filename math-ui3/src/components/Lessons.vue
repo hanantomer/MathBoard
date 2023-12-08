@@ -49,11 +49,9 @@ import NewItemDialog from "./NewItemDialog.vue";
 import { LessonAttributes } from "../../../math-common/build/lessonTypes";
 import { useUserStore } from "../store/pinia/userStore";
 import { useLessonStore } from "../store/pinia/lessonStore";
-import { ref, computed, watch, onMounted } from "vue";
+import { ref, computed, watch, onMounted, onActivated } from "vue";
 import { useRouter } from "vue-router";
-import { useRoute } from "vue-router";
 import useEventBus from "../helpers/eventBusHelper";
-let lessonsLoaded = ref(false);
 const eventBus = useEventBus();
 const router = useRouter();
 const userStore = useUserStore();
@@ -71,14 +69,8 @@ const menu = [
 ];
 let itemsPerPage = 10;
 
-// watch(route, (to)  => {
-//   lessonStore.loadLessons();
-//   if (userStore.isTeacher()  && !lessonStore.getLessons()) {
-//     openLessonDialog();
-//   }
-// }, { flush: 'pre', immediate: true, deep: true });
-
 onMounted(() => loadLessons());
+//onActivated(() => loadLessons());
 
 watch(
   () => eventBus.bus.value.get("newItemSave"),
@@ -101,7 +93,7 @@ const headers = computed(() => [
 ]);
 
 const lessons = computed(() => {
-  let rows = Array.from(lessonStore.getLessons().value.values()).map(
+  let rows = Array.from(lessonStore.getLessons().values()).map(
     (l: LessonAttributes) => {
       return {
         uuid: l.uuid,
@@ -122,10 +114,9 @@ const lessons = computed(() => {
 
 async function loadLessons() {
   await lessonStore.loadLessons();
-  if (userStore.isTeacher() && lessonStore.getLessons().value.size === 0) {
+  if (userStore.isTeacher() && lessonStore.getLessons().size === 0) {
     openLessonDialog();
   }
-  lessonsLoaded.value = true;
 }
 
 function openLessonDialog() {

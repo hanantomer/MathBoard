@@ -40,6 +40,7 @@ const isTeacher = computed(() => {
   return userStore.isTeacher();
 });
 const lessonTitle = computed(() => {
+  if (!lessonStore.getCurrentLesson()) return;
   return lessonStore.getCurrentLesson()!.name;
 });
 //let lessonUUID = ref("");
@@ -56,16 +57,14 @@ const lessonTitle = computed(() => {
 watch(
   route,
   async (to) => {
-    await lessonStore.setCurrentLesson(to.params.lessonUUId as string);
-    await loadLesson(lessonStore.getCurrentLesson()!.uuid);
-    loaded.value = true;
+    await loadLesson(to.params.lessonUUId as string);
+
   },
   { immediate: true },
 );
 
-onMounted(() => {});
-
 async function loadLesson(lessonUUID: string) {
+  await lessonStore.setCurrentLesson(lessonUUID);
   notationStore.setParent(lessonUUID, "LESSON");
 
   // if student, send heartbeat to teacher
@@ -76,7 +75,7 @@ async function loadLesson(lessonUUID: string) {
       lessonStore.getCurrentLesson()!.uuid,
     );
   }
-
   userIncomingOperations.syncIncomingUserOperations();
+  loaded.value = true;
 }
 </script>

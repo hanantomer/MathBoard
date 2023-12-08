@@ -28,7 +28,7 @@ export const useAnswerStore = defineStore("answer", () => {
     if (answer) {
       answers.set(answer.uuid, answer);
       currentAnswer = answer;
-      questionStore.loadQuestion(question.uuid);
+      questionStore.setCurrentQuestion(answer.question);
     }
   };
 
@@ -37,7 +37,7 @@ export const useAnswerStore = defineStore("answer", () => {
       questionStore.loadQuestions();
     }
 
-    const answersFromDb = await db.getAnswers(questionStore.getCurrentQuestion().uuid );
+    const answersFromDb = await db.getAnswers(questionStore.getCurrentQuestion()!.uuid );
     answersFromDb.forEach((a: AnswerAttributes) => {
       answers.set(a.uuid, a);
     });
@@ -47,7 +47,7 @@ export const useAnswerStore = defineStore("answer", () => {
   async function addAnswer() {
     let answerForCurrentQuestion: AnswerAttributes|null = null;
     answers.forEach((a : AnswerAttributes)  => {
-      if (a.question.uuid == questionStore.getCurrentQuestion().uuid) {
+      if (a.question.uuid == questionStore.getCurrentQuestion()!.uuid) {
         answerForCurrentQuestion = a;
         return;
       }
@@ -55,9 +55,8 @@ export const useAnswerStore = defineStore("answer", () => {
     if (answerForCurrentQuestion) return;
 
     let answer = <AnswerAttributes>{};
-    answer.question  = questionStore.getCurrentQuestion();
+    answer.question  = questionStore.getCurrentQuestion()!;
     answer.user = userStore.getCurrentUser()!;
-
     answer = await db.addAnswer(answer);
     answers.set(answer.uuid, answer);
     setCurrentAnswer(answer)

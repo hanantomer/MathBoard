@@ -20,7 +20,7 @@ export const useLessonStore = defineStore("lesson", () => {
   }
 
   function getLessons() {
-    return lessons;
+    return lessons.value;
   }
 
   async function loadLessons() {

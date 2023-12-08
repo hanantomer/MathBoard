@@ -69,25 +69,21 @@ watch(
     show.value = val;
   },
 );
-//watch(
-//  () => props.name,
-//  (val) => {
-//    name.value = val;
-//  },
-//);
 
 function save() {
-  eventBus.emit("newQuestionSave", name);
+  show.value = false;
+  eventBus.emit("newQuestionSave", name.value);
 }
 
 const lessons = computed(() =>
-  Array.from(lessonStore.getLessons().value).map(([key, value]) => {
+  Array.from(lessonStore.getLessons()).map(([key, value]) => {
     return value;
   }),
 );
 
 const selectedLesson = computed({
   get() {
+    if (!lessonStore.getCurrentLesson()) return "";
     return lessonStore.getCurrentLesson()!.name;
   },
   set(selectedLessonUUId: string) {

@@ -65,7 +65,7 @@ watch(
     if (!e) return;
     handleMouseDown(e);
   },
-  { immediate: true  },
+  { immediate: true },
 );
 
 watch(
@@ -115,10 +115,14 @@ watch(
 );
 
 function load() {
+  matrixHelper.setMatrix(props.svgId);
   // load notations
   notationLoadingHelper.loadNotations(notationStore.getParent().type);
 
-  matrixHelper.setMatrix(props.svgId);
+  // for answer load also question notations, TODO: find better place for that
+  if (notationStore.getParent().type === "ANSWER") {
+    notationLoadingHelper.loadNotations("QUESTION");
+  }
 }
 
 function handleMouseDown(e: MouseEvent) {

@@ -117,15 +117,17 @@ app.post(
 app.get(
     "/api/questions",
     async (req: Request, res: Response): Promise<Response> => {
-        const { lessonUUId, questionUUId } = req.query;
+        const { uuid, lessonUUId } = req.query;
         if(lessonUUId)
             return res
                 .status(200)
                 .json(await db.getQuestions(lessonUUId as string));
-        if (questionUUId)
+        if (uuid)
             return res
                 .status(200)
-                .json(await db.getQuestion(questionUUId as string));
+                .json(await db.getQuestion(uuid as string));
+        
+        throw new Error("either lessonUUId or questionUUId must be supplied");
     }
 );
 

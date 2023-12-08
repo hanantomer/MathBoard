@@ -140,7 +140,9 @@ export default function dbUtil() {
         let questionId = await getIdByUUId("Question", questionUUId);
         if (!questionId) return null;
 
-        return await Question.findByPk(questionId);
+        return await Question.findByPk(questionId, {
+            include: {all: true},
+        });
     }
 
     async function getQuestions(
@@ -162,7 +164,8 @@ export default function dbUtil() {
     async function createQuestion(
         question: QuestionCreationAttributes 
     ): Promise<Question> {
-
+        (question as any).userId = question.user.id;
+        (question as any).lessonId = question.lesson.id;
         return await Question.create(question);
     }
 

@@ -12,7 +12,6 @@
 
 <script setup lang="ts">
 import mathBoard from "./MathBoard.vue";
-import useMatrixHelper from "../helpers/matrixHelper";
 import useNotationLoadingHelper from "../helpers/notationLoadingHelper";
 import { computed, ref } from "vue"
 import { useUserStore } from "../store/pinia/userStore";
@@ -20,9 +19,9 @@ import { useAnswerStore } from "../store/pinia/answerStore";
 import { watch } from 'vue'
 import { useRoute } from 'vue-router'
 import { useNotationStore } from "../store/pinia/notationStore";
+import { BoardType, NotationTypeValues } from "../../../math-common/build/unions"
 
 const route = useRoute();
-const matrixHelper = useMatrixHelper();
 const userStore = useUserStore();
 const answerStore = useAnswerStore();
 const notationLoadingHelper = useNotationLoadingHelper();
@@ -56,8 +55,8 @@ async function loadAnswer(answerUUId: string) {
   answerStore.loadAnswer(answerUUId);
 
   // load notations
-  notationLoadingHelper.loadNotations();
-  notationLoadingHelper.loadNotations();
+  notationLoadingHelper.loadNotations("QUESTION");
+  notationLoadingHelper.loadNotations("ANSWER");
 
   loaded.value = true; // signal child
 };

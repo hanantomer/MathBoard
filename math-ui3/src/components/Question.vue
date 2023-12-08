@@ -1,5 +1,5 @@
 <template>
-  <v-row>
+  <v-row class="fill-height">
     <v-col cols="12">
       <mathBoard :svgId="svgId" :loaded="loaded">
         <template #title
@@ -11,12 +11,11 @@
 </template>
 
 <script setup lang="ts">
-import { watch, onMounted, computed, ref } from "vue";
+import { watch, computed, ref, onMounted } from "vue";
 import mathBoard from "./MathBoard.vue";
 import { useQuestionStore } from "../store/pinia/questionStore";
 import { useAnswerStore } from "../store/pinia/answerStore";
 import { useNotationStore } from "../store/pinia/notationStore";
-import useNotationLoadingHelper from "../helpers/notationLoadingHelper";
 import { useRoute } from "vue-router";
 
 const questionStore = useQuestionStore();
@@ -24,17 +23,11 @@ const notationStore = useNotationStore();
 const answerStore = useAnswerStore();
 
 const route = useRoute();
-const notationLoadingHelper = useNotationLoadingHelper();
 const svgId = "questionsSvg";
 let loaded = ref(false);
 
 const props = defineProps({
   questionUUId: { type: String },
-});
-
-onMounted(() => {
-  questionStore.setCurrentQuestion(props.questionUUId!);
-  loaded.value = true; // signal child
 });
 
 const students = computed(() => {
@@ -47,26 +40,28 @@ const students = computed(() => {
 });
 
 const questionTitle = computed(() => {
-  return questionStore.getCurrentQuestion().name;
+  if (!questionStore.getCurrentQuestion()) return;
+  return questionStore.getCurrentQuestion()!.name;
 });
+
+//onMounted(() => );
 
 watch(
   route,
   (to) => {
-    //questionStore.setCurrentQuestion(to.params["questionUUId"][0]);
     loadQuestion(to.params.questionUUId as string);
   },
-  { flush: "pre", immediate: true, deep: true },
+  { immediate: true },
 );
 
 async function loadQuestion(questionUUId: string) {
-  notationStore.setParent(questionStore.getCurrentQuestion()?.uuid, "QUESTION");
+  await questionStore.loadQuestion(questionUUId);
 
-  // load from db to store
-  questionStore.loadQuestion(questionUUId);
+  if (!questionStore.getCurrentQuestion()) {
+    throw Error(`questionUUId: ${questionUUId} does not exist`);
+  }
 
-  // load notations
-  notationLoadingHelper.loadNotations();
+  notationStore.setParent(questionStore.getCurrentQuestion()!.uuid, "QUESTION");
 
   loaded.value = true; // signal child
 }

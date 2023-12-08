@@ -7,6 +7,7 @@ import {
 import useDbHelper from "../../helpers/dbHelper";
 import { useLessonStore } from "./lessonStore";
 import { useUserStore } from "./userStore";
+import { ref } from "vue";
 
 const lessonStore = useLessonStore();
 const userStore = useUserStore();
@@ -15,19 +16,25 @@ const db = useDbHelper();
 ///TODO: create convention for all crud operation for all stores
 
 export const useQuestionStore = defineStore("answer", () => {
-  let questions: Map<String, QuestionAttributes> = new Map();
-  let currentQuestion = <QuestionAttributes>{};
+  let questions = ref<Map<String, QuestionAttributes>>(new Map());
+  let currentQuestion = ref<QuestionAttributes>();
 
   function getQuestions() {
-    return questions;
+    return questions.value;
   }
 
   function getCurrentQuestion() {
-    return currentQuestion;
+    return currentQuestion.value;
   }
 
   async function loadQuestion(questionUUId: string) {
-    currentQuestion = await db.getQuestion(questionUUId);
+    let questionFromDb = await db.getQuestion(questionUUId);
+
+    if (!questionFromDb) return;
+
+    questions.value.set(questionUUId, questionFromDb);
+
+    setCurrentQuestion(questionFromDb);
   }
 
   async function loadQuestions() {
@@ -41,35 +48,30 @@ export const useQuestionStore = defineStore("answer", () => {
       lessonStore.getCurrentLesson()!.uuid,
     );
     questionsFromDb.forEach((q: QuestionAttributes) => {
-      questions.set(q.uuid, q);
+      questions.value.set(q.uuid, q);
     });
   }
 
   async function addQuestion(questionName: string) {
-
     let question: QuestionCreationAttributes = {
       name: questionName,
       user: userStore.getCurrentUser()!,
-      lesson: lessonStore.getCurrentLesson()!
+      lesson: lessonStore.getCurrentLesson()!,
     };
 
     let createdQuestion = await db.addQuestion(question);
-    questions.set(createdQuestion.uuid, createdQuestion);
-    setCurrentQuestion(createdQuestion.uuid);
+    questions.value.set(createdQuestion.uuid, createdQuestion);
+    setCurrentQuestion(createdQuestion);
     return question;
   }
 
-  function setCurrentQuestion(questionUUId: string) {
-    if (!questions.get(questionUUId)) {
-      loadQuestions();
-    }
-    if (questions.get(questionUUId)) {
-      currentQuestion = questions.get(questionUUId)!;
-    }
+  async function setCurrentQuestion(question: QuestionAttributes) {
+    currentQuestion.value = question;
+    lessonStore.setCurrentLesson(currentQuestion.value.lesson.uuid);
   }
 
   function removeQuestion(question: QuestionAttributes) {
-    questions.delete(question.uuid);
+    questions.value.delete(question.uuid);
   }
 
   return {

@@ -16,10 +16,7 @@
       </v-card>
     </v-dialog>
 
-    <NewQuestionDialog
-      :dialog="questionDialog"
-      v-on="{ save: addQuestion }"
-    ></NewQuestionDialog>
+    <NewQuestionDialog :dialog="questionDialog"></NewQuestionDialog>
     <v-card class="mx-auto" max-width="800" min-height="600">
       <v-toolbar color="primary" dark>
         <v-toolbar-title>Questions</v-toolbar-title>
@@ -44,7 +41,7 @@
 <script setup lang="ts">
 import NewQuestionDialog from "./NewQuestionDialog.vue";
 import { QuestionAttributes } from "../../../math-common/build/questionTypes";
-import { watch, onMounted, computed, ref, reactive } from "vue";
+import { watch, computed, ref, onMounted } from "vue";
 import { useQuestionStore } from "../store/pinia/questionStore";
 import { useLessonStore } from "../store/pinia/lessonStore";
 import { useAnswerStore } from "../store/pinia/answerStore";
@@ -61,19 +58,12 @@ const router = useRouter();
 const eventBus = useEventBus();
 
 const noLessonDialog = ref(false);
-
-let questionDialog = ref(false);
-
-let dialog = ref(true);
+const questionDialog = ref(false);
 
 const menu = [
   { icon: "plus", title: "Add" },
   { icon: "remove", title: "Remove" },
 ];
-
-onMounted(() => {
-  loadQuestions();
-});
 
 watch(
   () => eventBus.bus.value.get("newQuestionSave"),
@@ -82,13 +72,7 @@ watch(
   },
 );
 
-// watch(
-//   route,
-//   () => {
-//     loadQuestions();
-//   },
-//   { flush: "pre", immediate: true, deep: true },
-// );
+onMounted(() => loadQuestions());
 
 const headers = [
   {
@@ -126,13 +110,13 @@ function navToLessons() {
 }
 
 function loadQuestions() {
-  if (!lessonStore.getLessons().value) {
+  if (!lessonStore.getLessons().size) {
     noLessonDialog.value = true;
     return;
   }
 
   questionStore.loadQuestions();
-  if (!questionStore.getQuestions().size) {
+  if (questionStore.getQuestions().size === 0) {
     openQuestionDialog();
   }
 }
@@ -144,18 +128,17 @@ function openQuestionDialog() {
 async function addQuestion(name: string) {
   await questionStore.addQuestion(name);
   router.push({
-    path: "/question/" + questionStore.getCurrentQuestion().uuid,
+    path: "/question/" + questionStore.getCurrentQuestion()!.uuid,
   });
 }
 
 function seletctQuestion(question: QuestionAttributes) {
+  questionStore.setCurrentQuestion(question);
   if (userStore.isTeacher()) {
-    questionStore.setCurrentQuestion(question.uuid);
     router.push({
       path: "/question/" + question.uuid,
     });
   } else {
-    questionStore.setCurrentQuestion(question.uuid);
     // add student answer when question is first selected
     answerStore.addAnswer();
     router.push({

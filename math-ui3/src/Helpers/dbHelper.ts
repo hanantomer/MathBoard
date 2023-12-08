@@ -90,11 +90,11 @@ export default function useDbHelper() {
   async function addQuestion(
     question: QuestionCreationAttributes,
   ): Promise<QuestionAttributes> {
-    const { data } = await axios.post<QuestionAttributes>(
+    const newQuestion = await axios.post<QuestionAttributes>(
       baseURL + "/questions",
       question,
     );
-    return data;
+    return newQuestion.data;
   }
 
   async function addAnswer(
