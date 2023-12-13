@@ -26,7 +26,7 @@ const route = useRoute();
 const svgId = "questionsSvg";
 let loaded = ref(false);
 
-const props = defineProps({
+/*const props = defineProps({
   questionUUId: { type: String },
 });
 
@@ -37,14 +37,12 @@ const students = computed(() => {
       value: answer.user.uuid,
     };
   });
-});
+});*/
 
 const questionTitle = computed(() => {
   if (!questionStore.getCurrentQuestion()) return;
   return questionStore.getCurrentQuestion()!.name;
 });
-
-//onMounted(() => );
 
 watch(
   route,
@@ -66,5 +64,6 @@ async function loadQuestion(questionUUId: string) {
   loaded.value = true; // signal child
 }
 
-function markQuestionAsResolved() {}
+function markQuestionAsResolved() { }
+
 </script>

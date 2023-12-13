@@ -31,7 +31,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch } from "vue";
+import { ref, watch, onMounted } from "vue";
 import Login from "./Login.vue";
 import Register from "./Register.vue";
 import { useRoute } from "vue-router";
@@ -46,15 +46,21 @@ const props = defineProps({
   login: Boolean,
 });
 
-watch(
-  route,
-  (to) => {
-    if (props.login) {
-      showLoginDialog.value = true;
-    }
-  },
-  { flush: "pre", immediate: true, deep: true },
-);
+onMounted(() => {
+  if (props.login) {
+    showLoginDialog.value = true;
+  }
+});
+
+// watch(
+//   route,
+//   (to) => {
+//     if (props.login) {
+//       showLoginDialog.value = true;
+//     }
+//   },
+//   { flush: "pre", immediate: true, deep: true },
+// );
 
 // login via button
 //watch(() => eventBus.bus.value.get("login"), () => {

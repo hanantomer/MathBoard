@@ -177,7 +177,7 @@ export default function useDbHelper() {
 
   async function getLesson(lessonUUId: string): Promise<LessonAttributes> {
     const { data } = await axios.get<LessonAttributes>(
-      baseURL + "/lessons?uuid=" + lessonUUId,
+      baseURL + "/lessons?lessonUUId=" + lessonUUId,
     );
     return data;
   }
@@ -207,6 +207,7 @@ export default function useDbHelper() {
 
     return data;
   }
+
 
   async function getStudentLessons(
     userUUId: string,

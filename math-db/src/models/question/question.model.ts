@@ -1,4 +1,4 @@
-import { Model, Column, DataType, BelongsTo, ForeignKey, AllowNull, NotNull } from "sequelize-typescript";
+import { Model, Column, DataType, BelongsTo, AllowNull } from "sequelize-typescript";
 import BoardDecorator from "../boardDecorator";
 import User from "../user.model";
 import Lesson from "../lesson/lesson.model";

@@ -1,17 +1,12 @@
-import { getCookie, setCookie, removeCookie } from "typescript-cookie";
-import { useUserStore } from "../store/pinia/userStore";
+import { getCookie, removeCookie } from "typescript-cookie";
 import { useNotationStore } from "../store/pinia/notationStore";
-import { BoardType, UesrType } from "common/unions";
+import { UesrType } from "common/unions";
 import { UserAttributes, UserCreationAttributes } from "common/userTypes";
+import { useUserStore } from "../store/pinia/userStore";
 import useDbHelper from "./dbHelper";
 const dbHelper = useDbHelper();
 
 export default function useAuthHelper() {
-  function setUser(user: UserAttributes) {
-    const userStore = useUserStore(); // initilize lazy here to allow loading of module before [inia has initialized
-    userStore.setCurrentUser(user);
-  }
-
   function registerUser(
     firstName: string,
     lastName: string,
@@ -19,7 +14,6 @@ export default function useAuthHelper() {
     email: string,
     userType: UesrType,
   ) {
-    const userStore = useUserStore();
     let user: UserCreationAttributes = {
       userType: userType,
       firstName: firstName,
@@ -31,6 +25,7 @@ export default function useAuthHelper() {
       authorized: false,
       lastHeartbeatTime: new Date(),
     };
+    const userStore = useUserStore();
     userStore.registerUser(user);
   }
 
@@ -39,7 +34,7 @@ export default function useAuthHelper() {
     const notationStore = useNotationStore();
     return (
       userStore.isTeacher() || // teacher in lesson or question
-      userStore.getAuthorized() || // student in lesson when authorized by teacher
+      userStore.getAuthorized() || // student in lesson when authorized to edit by teacher
       notationStore.getParent().type == "ANSWER" // student writing an answer
     );
   }
@@ -107,7 +102,6 @@ export default function useAuthHelper() {
 
   return {
     //getGoogleUser,
-    setUser,
     registerUser,
     authLocalUserByToken,
     authLocalUserByUserAndPassword,

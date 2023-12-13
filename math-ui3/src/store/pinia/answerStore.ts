@@ -9,7 +9,6 @@ const userStore = useUserStore();
 const db = useDbHelper();
 
 export const useAnswerStore = defineStore("answer", () => {
-
   let answers: Map<String, AnswerAttributes> = new Map();
   let currentAnswer = <AnswerAttributes>{};
 
@@ -30,45 +29,55 @@ export const useAnswerStore = defineStore("answer", () => {
       currentAnswer = answer;
       questionStore.setCurrentQuestion(answer.question);
     }
-  };
+  }
 
   async function loadAnswers() {
     if (!questionStore.getQuestions()) {
       questionStore.loadQuestions();
     }
 
-    const answersFromDb = await db.getAnswers(questionStore.getCurrentQuestion()!.uuid );
+    const answersFromDb = await db.getAnswers(
+      questionStore.getCurrentQuestion()!.uuid,
+    );
     answersFromDb.forEach((a: AnswerAttributes) => {
       answers.set(a.uuid, a);
     });
-  };
+  }
 
   // answer is initially empty
   async function addAnswer() {
-    let answerForCurrentQuestion: AnswerAttributes|null = null;
-    answers.forEach((a : AnswerAttributes)  => {
-      if (a.question.uuid == questionStore.getCurrentQuestion()!.uuid) {
-        answerForCurrentQuestion = a;
+    // already has answer for current queestion
+    answers.forEach((answer: AnswerAttributes) => {
+      if (answer.question.uuid == questionStore.getCurrentQuestion()!.uuid) {
+        setCurrentAnswer(answer);
         return;
       }
     });
-    if (answerForCurrentQuestion) return;
 
+    // add new answer
     let answer = <AnswerAttributes>{};
-    answer.question  = questionStore.getCurrentQuestion()!;
+    answer.question = questionStore.getCurrentQuestion()!;
     answer.user = userStore.getCurrentUser()!;
     answer = await db.addAnswer(answer);
     answers.set(answer.uuid, answer);
-    setCurrentAnswer(answer)
-  };
+    setCurrentAnswer(answer);
+  }
 
   function setCurrentAnswer(answer: AnswerAttributes) {
     currentAnswer = answer;
-  };
+  }
 
   function removeAnswer(answer: AnswerAttributes) {
     answers.delete(answer.uuid);
-  };
+  }
 
-  return {getAnswers, getCurrentAnswer, loadAnswer, loadAnswers, addAnswer, setCurrentAnswer, removeAnswer}
+  return {
+    getAnswers,
+    getCurrentAnswer,
+    loadAnswer,
+    loadAnswers,
+    addAnswer,
+    setCurrentAnswer,
+    removeAnswer,
+  };
 });

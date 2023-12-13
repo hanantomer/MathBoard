@@ -1,15 +1,11 @@
 import {
   createRouter,
   createWebHistory,
-  RouteLocationNormalized,
-  RouteLocationRaw,
 } from "vue-router";
 import useAuthHelper from "../helpers/authHelper";
 import { useUserStore } from "../store/pinia/userStore";
-import { useCookies } from "vue3-cookies";
 
 const authHelper = useAuthHelper();
-const cookies = useCookies().cookies;
 
 const routes = [
   {

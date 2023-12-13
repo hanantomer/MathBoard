@@ -5,7 +5,7 @@
         <v-card-title class="text-h5">Attention </v-card-title>
 
         <v-card-text>
-          Please add a lesson for which you can add a question
+          Please select a lesson for which you can add a question
         </v-card-text>
 
         <v-card-actions>
@@ -28,11 +28,14 @@
         </v-btn>
       </v-toolbar>
       <v-data-table
-        :v-bind:headers="headers"
+        v-model:items-per-page="itemsPerPage"
         :items="questions"
-        :items-per-page="10"
+        :headers="headers"
+        item-value="name"
         class="elevation-1"
-        click:row="seletctQuestion"
+        :hide-no-data="true"
+        :hover="true"
+        @click:row="selectQuestion"
       ></v-data-table>
     </v-card>
   </v-container>
@@ -46,19 +49,20 @@ import { useQuestionStore } from "../store/pinia/questionStore";
 import { useLessonStore } from "../store/pinia/lessonStore";
 import { useAnswerStore } from "../store/pinia/answerStore";
 import { useUserStore } from "../store/pinia/userStore";
-import { useRoute, useRouter } from "vue-router";
+import { useRouter } from "vue-router";
 import useEventBus from "../helpers/eventBusHelper";
 
 const questionStore = useQuestionStore();
 const lessonStore = useLessonStore();
 const answerStore = useAnswerStore();
 const userStore = useUserStore();
-const route = useRoute();
 const router = useRouter();
 const eventBus = useEventBus();
 
 const noLessonDialog = ref(false);
 const questionDialog = ref(false);
+
+let itemsPerPage = 10;
 
 const menu = [
   { icon: "plus", title: "Add" },
@@ -74,20 +78,23 @@ watch(
 
 onMounted(() => loadQuestions());
 
-const headers = [
+const headers = computed(() => [
   {
-    text: "Lesson Name",
-    value: "lessonName",
+    title: "Lesson Name",
+    key: "lessonName",
+    sortable: false,
   },
   {
-    text: "Question Name",
-    value: "name",
+    title: "Question Name",
+    key: "name",
+    sortable: false,
   },
   {
-    text: "Created At",
-    value: "createdAt",
+    title: "Created At",
+    key: "createdAt",
+    sortable: false,
   },
-];
+]);
 
 const questions = computed(() => {
   return Array.from(questionStore.getQuestions().entries()).map(
@@ -109,13 +116,14 @@ function navToLessons() {
   });
 }
 
-function loadQuestions() {
+async function loadQuestions() {
   if (!lessonStore.getLessons().size) {
     noLessonDialog.value = true;
     return;
   }
 
-  questionStore.loadQuestions();
+  await questionStore.loadQuestions();
+
   if (questionStore.getQuestions().size === 0) {
     openQuestionDialog();
   }
@@ -132,11 +140,11 @@ async function addQuestion(name: string) {
   });
 }
 
-function seletctQuestion(question: QuestionAttributes) {
-  questionStore.setCurrentQuestion(question);
+function selectQuestion(e: any, row: any) {
+  //questionStore.setCurrentQuestion(question);
   if (userStore.isTeacher()) {
     router.push({
-      path: "/question/" + question.uuid,
+      path: "/question/" + row.item.uuid,
     });
   } else {
     // add student answer when question is first selected

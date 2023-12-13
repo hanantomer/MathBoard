@@ -100,8 +100,12 @@ app.post(
 
 // lesson
 app.get("/api/lessons", async (req: Request, res: Response): Promise<Response> => {
-    const { userUUId } = req.query;
-    return res.status(200).json(await db.getLessons(userUUId as string));
+    const { userUUId, lessonUUId } = req.query;
+    if (userUUId)
+        return res.status(200).json(await db.getLessons(userUUId as string));
+    if (lessonUUId)
+        return res.status(200).json(await db.getLesson(lessonUUId as string));
+    throw new Error("invalid arguments either userUUId or lessonUUId must be supplied");
 });
 
 
@@ -163,10 +167,10 @@ app.post(
 app.get(
     "/api/studentlessons",
     async (req: Request, res: Response): Promise<Response> => {
-        const { lessonUUId } = req.query;
+        const { userUUId } = req.query;
         return res
             .status(200)
-            .json(await db.getStudentLessons(lessonUUId as string));
+            .json(await db.getStudentLessons(userUUId as string));
     }
 );
 

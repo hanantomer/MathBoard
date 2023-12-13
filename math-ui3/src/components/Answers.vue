@@ -53,13 +53,14 @@ let headers = computed(() => [
   },
 ]);
 
-const lessons = computed(() => {
+/*const lessons = computed(() => {
   return lessonStore.getLessons()
 });
 
 const questions = computed(() => {
   return questionStore.getQuestions();
 });
+*/
 
 
 const answers = computed(() => {
@@ -78,6 +79,7 @@ async function load() {
       await this.loadQuestions();
       await this.loadAnswers();
 };
+
 async function selectAnswer(answer: AnswerAttributes) {
   answerStore.setCurrentAnswer(answer);
   router.push({ path: "/answer/" + answer.uuid });

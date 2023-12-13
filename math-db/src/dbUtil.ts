@@ -106,16 +106,16 @@ export default function dbUtil() {
     }
 
 
-    // student lesson
+    // student lessons
 
     async function getStudentLessons(
-        lessonUUId: string
+        userUUId: string
     ): Promise<StudentLesson[] | null> {
-        let lessonId = await getIdByUUId("Lesson", lessonUUId);
-        if (!lessonId) return null;
+        let userId = await getIdByUUId("Lesson", userUUId);
+        if (!userId) return null;
         return await StudentLesson.findAll({
             where: {
-                '$lesson.id$' : lessonId
+                '$user.id$' : userId
             },
         });
     }
@@ -153,7 +153,7 @@ export default function dbUtil() {
         return await Question.findAll({
             include: {
                 model: Lesson,
-                attributes: ["id"]
+                attributes: ["id", "name"]
             },
             where: {
                 '$lesson.id$' : lessonId

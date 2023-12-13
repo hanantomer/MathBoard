@@ -49,7 +49,7 @@ import NewItemDialog from "./NewItemDialog.vue";
 import { LessonAttributes } from "../../../math-common/build/lessonTypes";
 import { useUserStore } from "../store/pinia/userStore";
 import { useLessonStore } from "../store/pinia/lessonStore";
-import { ref, computed, watch, onMounted, onActivated } from "vue";
+import { ref, computed, watch, onMounted } from "vue";
 import { useRouter } from "vue-router";
 import useEventBus from "../helpers/eventBusHelper";
 const eventBus = useEventBus();
@@ -70,7 +70,6 @@ const menu = [
 let itemsPerPage = 10;
 
 onMounted(() => loadLessons());
-//onActivated(() => loadLessons());
 
 watch(
   () => eventBus.bus.value.get("newItemSave"),

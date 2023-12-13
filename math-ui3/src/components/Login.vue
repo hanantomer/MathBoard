@@ -70,12 +70,14 @@
 import { ref, watch } from "vue";
 import { useCookies } from "vue3-cookies";
 import { useRouter, useRoute, RouteLocationRaw } from "vue-router";
+import { useUserStore } from "../store/pinia/userStore";
 import useAuthHelper from "../helpers/authHelper";
 import useEventBus from "../helpers/eventBusHelper";
 
 const eventBus = useEventBus();
 const cookies = useCookies().cookies;
 const authHelper = useAuthHelper();
+const userStore = useUserStore();
 
 const router = useRouter();
 const route = useRoute();
@@ -106,7 +108,7 @@ const props = defineProps({
 
 watch(
   () => props.dialog,
-  (val) => {
+  (val: boolean) => {
     show.value = val;
   },
 );
@@ -150,7 +152,7 @@ async function validateLogin() {
 
   loginFailed = false;
 
-  authHelper.setUser(authenticatedUser);
+  userStore.setCurrentUser(authenticatedUser);
 
   if (window.navigator.cookieEnabled) {
     cookies.set("access_token", authenticatedUser.access_token);
@@ -162,6 +164,7 @@ async function validateLogin() {
   if (route.query.from) {
     let routeFrom: RouteLocationRaw = route.query.from as string;
     router.replace(routeFrom);
+    return;
   }
 
   router.push({ path: "/lessons" });

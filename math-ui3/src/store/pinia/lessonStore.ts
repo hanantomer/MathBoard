@@ -23,14 +23,28 @@ export const useLessonStore = defineStore("lesson", () => {
     return lessons.value;
   }
 
+  async function loadLesson(lessonUUId: string) {
+    let lessonFromDB = null;
+
+    lessonFromDB = await db.getLesson(lessonUUId);
+
+    if (!lessonFromDB) {
+      throw new Error(`lesson ${lessonUUId} does not exists`);
+    }
+
+    lessons.value.set(lessonFromDB.uuid, lessonFromDB);
+  }
+
+
   async function loadLessons() {
     const userStore = useUserStore();
     let lessonsFromDB = null;
+    let userUUId = userStore.getCurrentUser()!.uuid;
 
     if (userStore.isTeacher())
-      lessonsFromDB = await db.getTeacherLessons(userStore.getCurrentUser()!.uuid);
+      lessonsFromDB = await db.getTeacherLessons(userUUId);
     else
-      lessonsFromDB = await db.getStudentLessons(userStore.getCurrentUser()!.uuid );
+      lessonsFromDB = await db.getStudentLessons(userUUId);
 
     lessonsFromDB.forEach((l: LessonAttributes) => {
       lessons.value.set(l.uuid, l);
@@ -38,14 +52,14 @@ export const useLessonStore = defineStore("lesson", () => {
   }
 
   async function setCurrentLesson(lessonUUId: string) {
-    // store might not be loaded yet
-    if (!lessons.value.get(lessonUUId)) {
-      await loadLessons();
-    }
+    // // store might not be loaded yet
+    // if (!lessons.value.get(lessonUUId)) {
+    //   await loadLessons();
+    // }
 
-    if (!lessons.value.get(lessonUUId)) {
-      throw TypeError("invalid lesson:" + lessonUUId);
-    }
+    // if (!lessons.value.get(lessonUUId)) {
+    //   throw TypeError("invalid lesson:" + lessonUUId);
+    // }
     currentLesson.value = lessons.value.get(lessonUUId)!;
   }
 
@@ -77,6 +91,7 @@ export const useLessonStore = defineStore("lesson", () => {
   return {
     getLessons,
     getCurrentLesson,
+    loadLesson,
     loadLessons,
     setCurrentLesson,
     addLesson,

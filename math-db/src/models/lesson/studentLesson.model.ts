@@ -1,11 +1,10 @@
-import  User  from "../user.model";
+import BoardDecorator from "../boardDecorator";
+import User from "../user.model";
 import Lesson from "./lesson.model";
+import { Model, BelongsTo } from "sequelize-typescript";
 import {
     Table,
     DefaultScope,
-    Model,
-    BelongsTo,
-    ForeignKey,
 } from "sequelize-typescript";
 
 
@@ -14,8 +13,6 @@ import {
     StudentLessonCreationAttributes,
 } from "../../../../math-common/src/userTypes";
 
-
-
 @Table({
     timestamps: true,
     tableName: "studentLesson",
@@ -23,37 +20,22 @@ import {
     indexes: [
         {
             unique: true,
-            fields: ["LessonId", "UserId"],
+            fields: ["lessonId", "userId"],
         },
     ],
 })
 @DefaultScope(() => ({
     attributes: {
-        exclude: ["LessonId"],
+        exclude: ["lssonId, userId"],
     },
 }))
 export default class StudentLesson extends Model<
     StudentLessonAttributes,
     StudentLessonCreationAttributes
 > {
-    @ForeignKey(() => User)
-    userId!: number;
-
-    @BelongsTo(() => User, {
-        foreignKey: {
-            allowNull: false,
-        },
-    })
+    @BelongsTo(() => User, "userId")
     user!: User;
 
-    @ForeignKey(() => Lesson)
-    lessonId!: number;
-
-    @BelongsTo(() => Lesson, {
-        foreignKey: {
-            allowNull: false,
-        },
-    })
+    @BelongsTo(() => Lesson, "lessonId")
     lesson!: Lesson;
-};
-
+}

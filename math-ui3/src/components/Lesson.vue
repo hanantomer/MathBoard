@@ -58,14 +58,28 @@ watch(
   route,
   async (to) => {
     await loadLesson(to.params.lessonUUId as string);
-
   },
   { immediate: true },
 );
 
-async function loadLesson(lessonUUID: string) {
-  await lessonStore.setCurrentLesson(lessonUUID);
-  notationStore.setParent(lessonUUID, "LESSON");
+async function loadLesson(lessonUUId: string) {
+
+ // store might not be loaded yet
+  if (!lessonStore.getLessons().get(lessonUUId)) {
+    await lessonStore.loadLesson(lessonUUId);
+  }
+
+  if (!lessonStore.getLessons().get(lessonUUId)) {
+    throw TypeError("invalid lesson:" + lessonUUId);
+  }
+
+  await lessonStore.setCurrentLesson(lessonUUId);
+
+  if (!lessonStore.getCurrentLesson()) {
+    throw Error(`questionUUId: ${lessonUUId} does not exist`);
+  }
+
+  notationStore.setParent(lessonUUId, "LESSON");
 
   // if student, send heartbeat to teacher
   if (!userStore.isTeacher()) {
@@ -76,6 +90,11 @@ async function loadLesson(lessonUUID: string) {
     );
   }
   userIncomingOperations.syncIncomingUserOperations();
+
+  if (!userStore.isTeacher()) {
+    lessonStore.addLessonToSharedLessons();
+  }
+
   loaded.value = true;
 }
 </script>
