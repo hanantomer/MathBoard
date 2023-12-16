@@ -34,23 +34,10 @@ export default function dbUtil() {
 
     // user
 
-    async function isTeacher(
-        userId: number,
-        lessonUUId: string
-    ): Promise<boolean> {
-        let lessonId = await getIdByUUId("Lesson", lessonUUId);
-        if (!lessonId) return false;
-        
-        let lesson = await Lesson.findByPk(lessonId);
-        if (!lesson)
-            return false;
-
-        return lesson.user.id === userId;
-    }
     
 
-    async function getUser(userUUId: string): Promise<User | null> {
-        let userId = await getIdByUUId("User", userUUId);
+    async function getUser(uuid: string): Promise<User | null> {
+        let userId = await getIdByUUId("User", uuid);
         if (!userId) return null;
 
         return await User.findByPk(userId);
@@ -319,7 +306,6 @@ export default function dbUtil() {
 
     return {
         getIdByUUId,
-        isTeacher,
         getUser,
         createUser,
         getUserByEmailAndPassword,

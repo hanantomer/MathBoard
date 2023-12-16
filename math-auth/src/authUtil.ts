@@ -41,7 +41,7 @@ export default function authUtils() {
         return null;
     };
 
-    async function authByLocalToken(access_token: string) : Promise<UserAttributes | undefined>{
+    async function authByLocalToken(access_token: string) : Promise<UserAttributes | null>{
         let decodedToken: any = verify(
             access_token,
             clientSecretData.client_secret
@@ -58,7 +58,7 @@ export default function authUtils() {
             }
         }
 
-        return userCache.get(decodedToken.email);
+        return userCache.get(decodedToken.email) || null;
     };
 
     async function authByGoogleToken(access_token: string) {

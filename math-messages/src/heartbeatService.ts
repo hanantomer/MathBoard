@@ -21,9 +21,9 @@ export default class HeartbeatService {
     if (!!user) {
       return {
         lessonUUId: data.lessonUUId,
-        userId: user.id,
-        firstName: user.firstName,
-        lastName: user.lastName,
+        userUUId: user.uuid,
+        //firstName: user.firstName,
+        //lastName: user.lastName,
       };
     }
   }

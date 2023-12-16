@@ -78,12 +78,12 @@ export default function userIncomingOperations() {
     if (userStore.isTeacher()) {
       feathersClient
         .service("heartbeat")
-        .on("updated", (user: UserAttributes) => {
+        .on("updated", (heartbeat: any) => {
           if (
-            user.uuid != userStore.getCurrentUser()!.uuid &&
+            heartbeat.userUUId != userStore.getCurrentUser()!.uuid &&
             notationStore.getParent().type === "LESSON"
           ) {
-            studentStore.setStudentHeartbeat(user.uuid);
+            studentStore.setStudentHeartbeat(heartbeat.userUUId);
           }
         });
     }

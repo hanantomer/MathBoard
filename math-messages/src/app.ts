@@ -61,26 +61,11 @@ app.service("authorization").publish("updated", (authorization: any, ctx: any) =
       constants.LESSON_CHANNEL_PREFIX +
         authorization.lessonUUId +
         constants.USER_CHANNEL_PREFIX +
-        authorization.UserId
+        authorization.UserUUId
     ),
   ];
 });
 
-// app
-//   .service("authentication")
-//   .publish(
-//     "created",
-//     (id: any, data: any) => {
-//       return [
-//         app.channel(
-//           constants.LESSON_CHANNEL_PREFIX +
-//             data.lessonUUId +
-//             constants.USER_CHANNEL_PREFIX +
-//             data.userId
-//         ),
-//       ];
-//     }
-//   );
 
 app.service("heartbeat").publish("updated", (heartbeat: any, ctx: any) => {
   return [
@@ -88,7 +73,7 @@ app.service("heartbeat").publish("updated", (heartbeat: any, ctx: any) => {
       constants.LESSON_CHANNEL_PREFIX +
         heartbeat.lessonUUId +
         constants.USER_CHANNEL_PREFIX +
-        heartbeat.userId
+        heartbeat.userUUId
     ),
   ];
 });

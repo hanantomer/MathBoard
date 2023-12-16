@@ -111,6 +111,7 @@ watch(
   (val: boolean) => {
     show.value = val;
   },
+  { flush: "pre", immediate: true, deep: true },
 );
 
 function register() {

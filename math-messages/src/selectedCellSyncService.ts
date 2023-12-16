@@ -8,10 +8,8 @@ class selectedCellSyncService {
     this.app = app;
   }
   async update(id: number, data: SelectedCell, params: any) {
-    let user = await util.getUserFromCookie(
-      params.headers.cookie,
-      this.app
-    );
+    
+    let user = await util.getUserFromCookie(params.headers.cookie);
 
     if (user?.id) {
       data.userUUId = user.uuid;

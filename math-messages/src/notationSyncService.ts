@@ -11,10 +11,7 @@ export default class notationSyncService {
   async getUserUUIdFromCookie(
     cookie: string
   ): Promise<string> {
-    let user = await util.getUserFromCookie(
-      cookie,
-      this.app
-    );
+    let user = await util.getUserFromCookie(cookie );
 
     if (!user) return "";
 

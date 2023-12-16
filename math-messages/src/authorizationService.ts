@@ -13,7 +13,7 @@ export default class AuhorizationService {
   }
 
   async get(id: number, params: any) {
-    let user = await util.getUserFromCookie(params.headers.cookie, this.app);
+    let user = await util.getUserFromCookie(params.headers.cookie);
     if (!user) return;
 
     const lessonId = await dbUtil.getIdByUUId("Lesson", params.lessonUUId);
@@ -26,11 +26,12 @@ export default class AuhorizationService {
   }
 
   async update(id: number, data: any, params: any) {
-    let user = await util.getUserFromCookie(params.headers.cookie, this.app);
+    
+    let user = await util.getUserFromCookie(params.headers.cookie);
+    
     if (!user?.id) return;
     
-    let isTeacher = await dbUtil.isTeacher(user.id, data.lessonUUId);
-    if (!isTeacher) return;
+    if (user.userType !== "TEACHER") return;
 
     let lessonId = await dbUtil.getIdByUUId(
       "Lesson",

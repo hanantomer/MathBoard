@@ -52,15 +52,15 @@ onMounted(() => {
   }
 });
 
-// watch(
-//   route,
-//   (to) => {
-//     if (props.login) {
-//       showLoginDialog.value = true;
-//     }
-//   },
-//   { flush: "pre", immediate: true, deep: true },
-// );
+ watch(
+   route,
+   (to) => {
+     if (props.login) {
+       showLoginDialog.value = true;
+     }
+   },
+   { flush: "pre", immediate: true, deep: true },
+ );
 
 // login via button
 //watch(() => eventBus.bus.value.get("login"), () => {

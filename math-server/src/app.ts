@@ -96,6 +96,15 @@ app.post(
     }
 );
 
+// student
+app.get("/api/students", async (req: Request, res: Response): Promise<Response> => {
+    const { uuid } = req.query;
+    if (uuid) return res.status(200).json(await db.getUser(uuid as string));
+
+    throw new Error("invalid arguments userUUId  must be supplied");
+});
+
+
 
 
 // lesson

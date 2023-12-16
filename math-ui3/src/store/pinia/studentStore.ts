@@ -1,32 +1,33 @@
 import { defineStore } from "pinia";
 import { UserAttributes } from "common/userTypes";
-import { reactive, ref } from "vue";
+import { ref } from "vue";
+import dbHelper from "../../helpers/dbHelper";
+const db = dbHelper();
+
 
 export const useStudentStore = defineStore("studentanswer", () => {
-
-  let students = ref<Map<String, UserAttributes>>(
-    <Map<String, UserAttributes>>{}
-  );
+  let students = ref(<Map<String, UserAttributes>>new Map());
 
   let authorizedStudentUUId = ref("");
 
   function getStudents() {
-    return students;
+    return Array.from(students.value.values());
   }
 
   function getAuthorizedStudentUUId() {
     return authorizedStudentUUId;
   }
 
-  function setStudentHeartbeat(uuid: string){
-    let student = students.value.get(uuid);
-    if (student) {
-      student.lastHeartbeatTime = new Date();
+  async function setStudentHeartbeat(userUUId: string) {
+    if (!students.value.get(userUUId)) {
+      const user = await db.getUser(userUUId);
+      students.value.set(user.uuid, user);
     }
-  };
+    students.value.get(userUUId)!.lastHeartbeatTime = new Date();
+  }
 
-  function setAuthorizedStudentUUId(authorizedStudentUUId : string) {
-    return authorizedStudentUUId = authorizedStudentUUId;
+  function setAuthorizedStudentUUId(authorizedStudentUUId: string) {
+    return (authorizedStudentUUId = authorizedStudentUUId);
   }
 
   return {
