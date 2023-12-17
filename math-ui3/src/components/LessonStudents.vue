@@ -50,11 +50,14 @@ function getStudentDisplayName(student: UserAttributes) {
 }
 
 function toggleStudentAuthorization(student: UserAttributes) {
+  const previouslyAutorizedStudentUUId =
+    studentStore.getAuthorizedStudentUUId();
+
   studentStore.setAuthorizedStudentUUId(student.uuid);
 
   userOutgoingOperations.syncOutgoingAuthUser(
-    studentStore.getAuthorizedStudentUUId().value,
-    studentStore.getAuthorizedStudentUUId().value,
+    student.uuid,
+    previouslyAutorizedStudentUUId,
     lessonStore.getCurrentLesson()!.uuid,
   );
 }

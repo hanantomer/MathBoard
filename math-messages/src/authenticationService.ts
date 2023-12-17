@@ -4,9 +4,7 @@ import util from "./util";
 import constants from "./constants";
 
 const authUtil = useAuthUtil();
-const dbUtil = useDbUtil();
-import feathers, { Application } from "@feathersjs/feathers";
-import { UserAttributes } from "../../math-common/src/userTypes";
+import { Application } from "@feathersjs/feathers";
 
 export default class AuthenticationService {
   app: any;
@@ -34,11 +32,10 @@ export default class AuthenticationService {
 
   // manage user login, join user to lesson or user channels
   async create(data: any, params: any) {
-
     let user = await util.getUserFromCookie(
       params.headers.cookie
     );
-    
+
     if (!user) {
       return;
     }
@@ -47,90 +44,20 @@ export default class AuthenticationService {
       return;
     }
 
-
     if (user.userType === "TEACHER") {
-      // store admin connection when she logs on
-      this.lessonAdminConnection.set(
-        data.lessonUUId,
-        {
-          userUUId: user.uuid,
-          connection: params.connection,
-        }
+      this.joinTeacher(
+        params.connection,
+        user.uuid,
+        user.email,
+        data.lessonUUId
       );
-
-      // join teacher to existing student channels
-      if (
-        this.lessonStudentConnection.has(
-          data.lessonUUId
-        )
-      ) {
-        this.lessonStudentConnection
-          .get(data.lessonUUId)
-          .forEach((student: number) => {
-            // join admin to all student channels
-            this.app
-              .channel(
-                constants.LESSON_CHANNEL_PREFIX +
-                  data.lessonUUId +
-                  constants.USER_CHANNEL_PREFIX +
-                  student
-              )
-              .join(params.connection);
-            console.log(
-              `subscribing admin: ${user?.email} to student: ${student}`
-            );
-          });
-      }
     } else {
-      if (
-        !this.lessonStudentConnection.has(
-          data.lessonUUId
-        )
-      ) {
-        this.lessonStudentConnection.set(
-          data.lessonUUId,
-          new Set()
-        );
-      }
-      this.lessonStudentConnection
-        .get(data.lessonUUId)
-        .add(user.uuid);
-
-      // join studnet to student channel
-      this.app
-        .channel(
-          constants.LESSON_CHANNEL_PREFIX +
-            data.lessonUUId +
-            constants.USER_CHANNEL_PREFIX +
-            user.uuid
-        )
-        .join(params.connection);
-      console.log(
-        `subscribing student: ${user.email} to lesson: ${data.lessonUUId}`
+      this.joinStudent(
+        params.connection,
+        user.uuid,
+        user.email,
+        data.lessonUUId
       );
-
-      // join admin to student channel
-      if (
-        this.lessonAdminConnection.has(
-          data.lessonUUId
-        )
-      ) {
-        console.log(
-          `subscribing admin: ${user.email} to student: ${user.id}`
-        );
-        this.app
-          .channel(
-            constants.LESSON_CHANNEL_PREFIX +
-              data.lessonUUId +
-              constants.USER_CHANNEL_PREFIX +
-              user.uuid
-          )
-          .join(
-            this.lessonAdminConnection.get(
-              data.lessonUUId
-            ).connection
-          );
-      }
     }
 
     // either teacher or student join lesson channel
@@ -143,6 +70,98 @@ export default class AuthenticationService {
     console.log(
       `subscribing user: ${user.email} to lesson: ${data.lessonUUId}`
     );
+  }
+
+  async joinStudent(
+    connection: any,
+    userUUId: string,
+    email: string,
+    lessonUUId: string
+  ) {
+    if (
+      !this.lessonStudentConnection.has(
+        lessonUUId
+      )
+    ) {
+      this.lessonStudentConnection.set(
+        lessonUUId,
+        new Set()
+      );
+    }
+    this.lessonStudentConnection
+      .get(lessonUUId)
+      .add(userUUId);
+
+    // join studnet to student channel
+    this.app
+      .channel(
+        constants.LESSON_CHANNEL_PREFIX +
+          lessonUUId +
+          constants.USER_CHANNEL_PREFIX +
+          userUUId
+      )
+      .join(connection);
+    console.log(
+      `subscribing student: ${email} to lesson: ${lessonUUId}`
+    );
+
+    // join teacher to student channel
+    if (
+      this.lessonAdminConnection.has(
+        lessonUUId
+      )
+    ) {
+      console.log(
+        `subscribing admin: ${email} to student: ${userUUId}`
+      );
+      this.app
+        .channel(
+          constants.LESSON_CHANNEL_PREFIX +
+            lessonUUId +
+            constants.USER_CHANNEL_PREFIX +
+            userUUId
+        )
+        .join(
+          this.lessonAdminConnection.get(
+            lessonUUId
+          ).connection
+        );
+    }
+  }
+
+  async joinTeacher(
+    connection: any,
+    userUUId: string,
+    email: string,
+    lessonUUId: string
+  ) {
+    // store admin connection when she logs on
+    this.lessonAdminConnection.set(lessonUUId, {
+      userUUId: userUUId,
+      connection: connection,
+    });
+
+    // join teacher to existing student channels
+    if (
+      this.lessonStudentConnection.has(lessonUUId)
+    ) {
+      this.lessonStudentConnection
+        .get(lessonUUId)
+        .forEach((student: number) => {
+          // join admin to all student channels
+          this.app
+            .channel(
+              constants.LESSON_CHANNEL_PREFIX +
+                lessonUUId +
+                constants.USER_CHANNEL_PREFIX +
+                student
+            )
+            .join(connection);
+          console.log(
+            `subscribing admin: ${email} to student: ${student}`
+          );
+        });
+    }
   }
 }
 

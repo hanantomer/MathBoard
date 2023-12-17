@@ -58,7 +58,7 @@ export default function userOutgoingOperations() {
         null,
         {
           lessonUUId: lessonUUId,
-          UserUUId: authorizedStudentUUId,
+          userUUId: authorizedStudentUUId,
           authorized: true,
         },
         {},

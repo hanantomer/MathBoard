@@ -65,27 +65,25 @@ export default function userIncomingOperations() {
     if (!userStore.isTeacher()) {
       feathersClient
         .service("authorization")
-        .on("updated", (user: UserAttributes) => {
-          if (
-            user.uuid === userStore.getCurrentUser()!.uuid //&&
-          ) {
-            userStore.setAuthorized(user.authorized ? true : false);
+        .on("updated", (authorization: any) => {
+          if (authorization.userUUId === userStore.getCurrentUser()!.uuid) {
+            userStore.setAuthorized(authorization.authorized ? true : false);
+          } else {
+            const q = 1;
           }
         });
     }
 
     // get heartbeat signals from students
     if (userStore.isTeacher()) {
-      feathersClient
-        .service("heartbeat")
-        .on("updated", (heartbeat: any) => {
-          if (
-            heartbeat.userUUId != userStore.getCurrentUser()!.uuid &&
-            notationStore.getParent().type === "LESSON"
-          ) {
-            studentStore.setStudentHeartbeat(heartbeat.userUUId);
-          }
-        });
+      feathersClient.service("heartbeat").on("updated", (heartbeat: any) => {
+        if (
+          heartbeat.userUUId != userStore.getCurrentUser()!.uuid &&
+          notationStore.getParent().type === "LESSON"
+        ) {
+          studentStore.setStudentHeartbeat(heartbeat.userUUId);
+        }
+      });
     }
   }
 

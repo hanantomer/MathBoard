@@ -49,11 +49,6 @@ app.use("heartbeat", new HeartbeatService(app));
 app.use("selectedCell", new selectedCellSyncService(app));
 app.use("notationSync", new NotationSyncService(app));
 
-//app.on('connection', (connection: RealTimeConnection) => {
-  // On a new real-time connection, add it to the
-  // anonymous channel
- // app.channel('anonymous').join(connection)
-//})
 
 app.service("authorization").publish("updated", (authorization: any, ctx: any) => {
   return [
@@ -61,7 +56,7 @@ app.service("authorization").publish("updated", (authorization: any, ctx: any) =
       constants.LESSON_CHANNEL_PREFIX +
         authorization.lessonUUId +
         constants.USER_CHANNEL_PREFIX +
-        authorization.UserUUId
+        authorization.userUUId
     ),
   ];
 });

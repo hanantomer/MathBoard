@@ -5,33 +5,29 @@ const dbUtil = useDbUtil();
 
 export default class AuhorizationService {
   app: Application;
-  lessonAuthorizedUsers: number[][];
+  lessonAuthorizedUsers: Map<number, Set<number>>;
 
   constructor(app: Application) {
     this.app = app;
-    this.lessonAuthorizedUsers = [];
+    this.lessonAuthorizedUsers = new Map();
   }
 
   async get(id: number, params: any) {
     let user = await util.getUserFromCookie(params.headers.cookie);
-    if (!user) return;
+    if (!user?.id) return false;
 
     const lessonId = await dbUtil.getIdByUUId("Lesson", params.lessonUUId);
     if (!lessonId) return;
 
-    return (
-      this.lessonAuthorizedUsers[lessonId] &&
-      this.lessonAuthorizedUsers[lessonId].indexOf(user.id!) >= 0
-    );
+    const usersSet = this.lessonAuthorizedUsers.get(lessonId);
+    return usersSet?.has(user.id);
   }
 
   async update(id: number, data: any, params: any) {
     
-    let user = await util.getUserFromCookie(params.headers.cookie);
-    
-    if (!user?.id) return;
-    
-    if (user.userType !== "TEACHER") return;
+    let teacher = await util.getUserFromCookie(params.headers.cookie);
+    if (!teacher?.id) return;
+    if (teacher.userType !== "TEACHER") return;
 
     let lessonId = await dbUtil.getIdByUUId(
       "Lesson",
@@ -40,6 +36,27 @@ export default class AuhorizationService {
 
     if (!lessonId) return;
 
-    this.lessonAuthorizedUsers[lessonId].push(user.id!);
+    let studentUserId = await dbUtil.getIdByUUId(
+      "User",
+      data.userUUId
+    );
+
+    if (!studentUserId) return;
+
+    if (!this.lessonAuthorizedUsers.get(lessonId)) {
+      this.lessonAuthorizedUsers.set(lessonId, new Set())
+    }
+
+    if (data.authorized)
+      this.lessonAuthorizedUsers.get(lessonId)?.add(studentUserId);
+    else {
+      this.lessonAuthorizedUsers.get(lessonId)?.delete(studentUserId);
+    }
+
+    return {
+      userUUId: data.userUUId,
+      authorized: data.authorized,
+      lessonUUId: data.lessonUUId
+    };
   }
 }

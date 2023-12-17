@@ -4,7 +4,6 @@ import { ref } from "vue";
 import dbHelper from "../../helpers/dbHelper";
 const db = dbHelper();
 
-
 export const useStudentStore = defineStore("studentanswer", () => {
   let students = ref(<Map<String, UserAttributes>>new Map());
 
@@ -15,7 +14,7 @@ export const useStudentStore = defineStore("studentanswer", () => {
   }
 
   function getAuthorizedStudentUUId() {
-    return authorizedStudentUUId;
+    return authorizedStudentUUId.value;
   }
 
   async function setStudentHeartbeat(userUUId: string) {
@@ -26,8 +25,8 @@ export const useStudentStore = defineStore("studentanswer", () => {
     students.value.get(userUUId)!.lastHeartbeatTime = new Date();
   }
 
-  function setAuthorizedStudentUUId(authorizedStudentUUId: string) {
-    return (authorizedStudentUUId = authorizedStudentUUId);
+  function setAuthorizedStudentUUId(newAuthorizedStudentUUId: string) {
+    authorizedStudentUUId.value = newAuthorizedStudentUUId;
   }
 
   return {
