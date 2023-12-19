@@ -10,7 +10,7 @@ export type UserAttributes = EntityAttributes & {
   access_token: string;
   imageUrl: string;
   userType: UesrType;
-  authorized?: boolean;
+  //authorized?: boolean;
   lastHeartbeatTime?: Date;
 }
 

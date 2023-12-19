@@ -176,10 +176,17 @@ app.post(
 app.get(
     "/api/studentlessons",
     async (req: Request, res: Response): Promise<Response> => {
-        const { userUUId } = req.query;
+        const { userUUId, lessonUUId } = req.query;
+
+        if ((lessonUUId))
+            return res
+                .status(200)
+                .json(await db.getStudentLesson(userUUId as string, lessonUUId as string));
+        
         return res
             .status(200)
             .json(await db.getStudentLessons(userUUId as string));
+    
     }
 );
 

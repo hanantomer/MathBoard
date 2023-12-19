@@ -69,7 +69,7 @@
 </template>
 
 <script setup lang="ts">
-import useAuthHelper from "../helpers/authHelper";
+import useAuthHelper from "../helpers/authenticationHelper";
 import { ref, computed, watch } from "vue";
 import { useRouter } from "vue-router";
 

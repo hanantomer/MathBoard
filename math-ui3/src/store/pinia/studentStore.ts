@@ -7,7 +7,7 @@ const db = dbHelper();
 export const useStudentStore = defineStore("studentanswer", () => {
   let students = ref(<Map<String, UserAttributes>>new Map());
 
-  let authorizedStudentUUId = ref("");
+  let authorizedStudentUUId = ref<string | null>(null);
 
   function getStudents() {
     return Array.from(students.value.values());
@@ -25,7 +25,7 @@ export const useStudentStore = defineStore("studentanswer", () => {
     students.value.get(userUUId)!.lastHeartbeatTime = new Date();
   }
 
-  function setAuthorizedStudentUUId(newAuthorizedStudentUUId: string) {
+  function setAuthorizedStudentUUId(newAuthorizedStudentUUId: string | null) {
     authorizedStudentUUId.value = newAuthorizedStudentUUId;
   }
 

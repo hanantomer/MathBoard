@@ -127,18 +127,15 @@
 <script setup lang="ts">
 import { useRouter } from "vue-router";
 import { onMounted, computed } from "vue";
-import useAuthHelper from "./helpers/authHelper";
+///////import useauthenticationHelper from "./helpers/authenticationHelper";
 import useAxiosHelper from "./helpers/axiosHelper";
 import { useUserStore } from "./store/pinia/userStore";
 import { useLessonStore } from "./store/pinia/lessonStore";
-import { useQuestionStore } from "./store/pinia/questionStore";
 
 const { initAxiosInterceptors } = useAxiosHelper();
 const router = useRouter();
-const authHelper = useAuthHelper();
 const userStore = useUserStore();
 const lessonStore = useLessonStore();
-//const questionStore = useQuestionStore();
 
 onMounted(() => {
   initAxiosInterceptors();
@@ -167,7 +164,8 @@ function showLoginDialog() {
 }
 
 function signOut() {
-  authHelper.signOut();
+  //////const authenticationHelper = useauthenticationHelper();
+  ///////authenticationHelper.signOut();
   router.push("/");
 }
 

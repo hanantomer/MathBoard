@@ -1,16 +1,9 @@
-/**
- * plugins/index.ts
- *
- * Automatically included in `./build/main.ts`
- */
 
 // Plugins
 import { loadFonts } from "./webfontloader";
 import vuetify from "./vuetify";
-//import pinia from "../store/pinia/indexStore"
-import router from "../router";
-
 import store from "../store/pinia/indexStore";
+import router from "../router";
 
 // Types
 import type { App } from "vue";

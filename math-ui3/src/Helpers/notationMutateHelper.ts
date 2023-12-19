@@ -16,26 +16,23 @@ import { NotationType, NotationTypeShape } from "common/unions";
 import { useUserStore } from "../store/pinia/userStore";
 import { useNotationStore } from "../store/pinia/notationStore";
 import { useEditModeStore } from "../store/pinia/editModeStore";
-
-import useAuthHelper from "./authHelper";
+import useAuthorizationHelper from "./authorizationHelper";
 import useUserOutgoingOperations from "./userOutgoingOperationsHelper";
 import useMatrixHelper from "../helpers/matrixHelper";
-import useElementFinderHelper from "../helpers/elementFinderHelper";
 
 import {
   NotationAttributes,
   LineAttributes,
   RectAttributes,
-  ExponentNotationCreationAttributes
+  ExponentNotationCreationAttributes,
 } from "common/baseTypes";
 
 const matrixHelper = useMatrixHelper();
-const elementFinderHelper = useElementFinderHelper();
 const userStore = useUserStore();
 const dbHelper = useDbHelper();
 const notationStore = useNotationStore();
 const editModeStore = useEditModeStore();
-const authHelper = useAuthHelper();
+const authorizationHelper = useAuthorizationHelper();
 const userOutgoingOperations = useUserOutgoingOperations();
 
 export default function notationMutateHelper() {
@@ -481,10 +478,8 @@ export default function notationMutateHelper() {
 
     // no overlapping -> insert
     let newNotation = await dbHelper.addNotation(notation);
-    notationStore.addNotation({
-      ...newNotation,
-      notationType: notation.notationType,
-    });
+    newNotation.notationType = notation.notationType;
+    notationStore.addNotation(newNotation);
 
     // sync to other participants
     if (notationStore.getParent().type === "LESSON") {
@@ -657,7 +652,7 @@ export default function notationMutateHelper() {
   }
 
   function deleteSelectedNotations() {
-    if (!authHelper.canEdit) return;
+    if (!authorizationHelper.canEdit()) return;
 
     //if (notationStore.getSelectedCell()) {
     //  removeSelectedCellNotations();
@@ -744,10 +739,8 @@ export default function notationMutateHelper() {
   }
 
   function upsertExponentNotation(exponent: ExponentAttributes) {
-
     const exponentCell = getSymbolCell();
     if (!exponentCell) return;
-
 
     let notation: ExponentNotationCreationAttributes = {
       col: exponentCell.col,
@@ -819,7 +812,7 @@ export default function notationMutateHelper() {
     upsertNotation(notation);
   }
 
-  function getUserUUId() : string {
+  function getUserUUId(): string {
     return userStore.getCurrentUser()!.uuid;
   }
 

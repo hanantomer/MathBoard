@@ -34,8 +34,6 @@ export default function dbUtil() {
 
     // user
 
-    
-
     async function getUser(uuid: string): Promise<User | null> {
         let userId = await getIdByUUId("User", uuid);
         if (!userId) return null;
@@ -55,54 +53,71 @@ export default function dbUtil() {
         });
     }
 
-    async function createUser(
-        user: UserAttributes
-    ): Promise<User> {
+    async function createUser(user: UserAttributes): Promise<User> {
         return await User.create(user);
     }
 
     // lesson
 
-    async function getLesson(
-        lessonUUId: string
-    ): Promise<Lesson | null> {
+    async function getLesson(lessonUUId: string): Promise<Lesson | null> {
         let lessonId = await getIdByUUId("Lesson", lessonUUId);
         if (!lessonId) return null;
 
         return await Lesson.findByPk(lessonId);
     }
 
-    async function getLessons(
-        userUUId: string
-    ): Promise<Lesson[] | null> {
+    async function getLessons(userUUId: string): Promise<Lesson[] | null> {
         let userId = await getIdByUUId("User", userUUId);
         if (!userId) return null;
         return await Lesson.findAll({
-            include: [{model: User}] ,
+            include: [{ model: User }],
             where: {
-              '$user.id$' : 1
-            }                 
+                "$user.id$": 1,
+            },
         });
     }
 
     async function createLesson(
         lesson: LessonCreationAttributes
     ): Promise<Lesson> {
-        (lesson as any).userId = await getIdByUUId("User", lesson .user.uuid) as number;
+        (lesson as any).userId = (await getIdByUUId(
+            "User",
+            lesson.user.uuid
+        )) as number;
         return await Lesson.create(lesson);
     }
 
+    // student lesson
+
+    async function getStudentLesson(
+        userUUId: string,
+        lessonUUId: string
+    ): Promise<StudentLesson | null> {
+        let userId = await getIdByUUId("User", userUUId);
+        if (!userId) return null;
+        let lessonId = await getIdByUUId("Lesson", lessonUUId);
+        if (!lessonId) return null;
+        
+        return await StudentLesson.findOne({
+            include: [{ model: User }, {model: Lesson}],
+            where: {
+                "$user.id$": userId,
+                "$lesson.id$": lessonId,
+            },
+        });
+    }
 
     // student lessons
 
     async function getStudentLessons(
         userUUId: string
     ): Promise<StudentLesson[] | null> {
-        let userId = await getIdByUUId("Lesson", userUUId);
+        let userId = await getIdByUUId("User", userUUId);
         if (!userId) return null;
         return await StudentLesson.findAll({
+            include: [{ model: User }],
             where: {
-                '$user.id$' : userId
+                "$user.id$": userId,
             },
         });
     }
@@ -116,19 +131,22 @@ export default function dbUtil() {
             studentLesson.user.uuid
         )) as number;
 
+        studentLesson.lesson.id = (await getIdByUUId(
+            "Lesson",
+            studentLesson.lesson.uuid
+        )) as number;
+
         return await StudentLesson.create(studentLesson);
     }
 
     // question
 
-    async function getQuestion(
-        questionUUId: string
-    ): Promise<Question | null> {
+    async function getQuestion(questionUUId: string): Promise<Question | null> {
         let questionId = await getIdByUUId("Question", questionUUId);
         if (!questionId) return null;
 
         return await Question.findByPk(questionId, {
-            include: {all: true},
+            include: { all: true },
         });
     }
 
@@ -140,16 +158,16 @@ export default function dbUtil() {
         return await Question.findAll({
             include: {
                 model: Lesson,
-                attributes: ["id", "name"]
+                attributes: ["id", "name"],
             },
             where: {
-                '$lesson.id$' : lessonId
+                "$lesson.id$": lessonId,
             },
         });
     }
 
     async function createQuestion(
-        question: QuestionCreationAttributes 
+        question: QuestionCreationAttributes
     ): Promise<Question> {
         (question as any).userId = question.user.id;
         (question as any).lessonId = question.lesson.id;
@@ -163,7 +181,7 @@ export default function dbUtil() {
     ): Promise<AnswerAttributes | null> {
         let answerId = await getIdByUUId("Answer", answerUUId);
         if (!answerId) return null;
-        return await Answer.findByPk(answerId) as AnswerAttributes | null;
+        return (await Answer.findByPk(answerId)) as AnswerAttributes | null;
     }
 
     async function getAnswers(questionUUId: string): Promise<Answer[] | null> {
@@ -171,7 +189,7 @@ export default function dbUtil() {
         if (!questionId) return null;
         return await Answer.findAll({
             where: {
-                '$question.id$' : 1
+                "$question.id$": 1,
             },
         });
     }
@@ -179,17 +197,16 @@ export default function dbUtil() {
     async function createAnswer(
         answer: AnswerCreationAttributes
     ): Promise<Answer> {
-        
         answer.user.id = (await getIdByUUId(
             "User",
             answer.user.uuid
         )) as number;
-        
+
         answer.question.id = (await getIdByUUId(
             "Question",
             answer.question.uuid
         )) as number;
-        
+
         return await Answer.create(answer);
     }
 
@@ -210,7 +227,7 @@ export default function dbUtil() {
                 },
                 question: {
                     Id: questionId,
-                }
+                },
             },
         });
     }
@@ -220,10 +237,8 @@ export default function dbUtil() {
         notationType: String,
         parentUUId: string
     ) {
-        
         const boardName = boardType.toString().toLowerCase(); // e.g lesson
-        const boardFieldIdFieldName =
-                    boardType.toString().toLowerCase() + "Id";
+        const boardFieldIdFieldName = boardType.toString().toLowerCase() + "Id";
         const boardModelName = capitalize(boardName); // e.g Lesson
         const notationTypeName = notationType.toString().toLowerCase(); // e.g. symbol
         const notationTypeNameCapitalized = capitalize(notationTypeName); // e.g. Symbol
@@ -249,14 +264,12 @@ export default function dbUtil() {
         notationType: String,
         notation: NotationAttributes
     ) {
-        
         const boardName = boardType.toString().toLowerCase(); // e.g lesson
         const boardModelName = capitalize(boardName); // e.g Lesson
         const notationTypeName = notationType.toString().toLowerCase(); // e.g. symbol
         const notationTypeNameCapitalized = capitalize(notationTypeName); // e.g. Symbol
-        const modelName =
-            boardModelName + notationTypeNameCapitalized; // e.g. LessonSymbol
-        
+        const modelName = boardModelName + notationTypeNameCapitalized; // e.g. LessonSymbol
+
         (notation as any).userId = (await getIdByUUId(
             "User",
             notation.user.uuid
@@ -267,13 +280,18 @@ export default function dbUtil() {
             notation.parentUUId
         )) as number;
 
-        const res  = await db.sequelize.models[modelName].create(
+        const res = await db.sequelize.models[modelName].create(
             notation as any
         );
-        
+
         return await db.sequelize.models[modelName].findByPk(
             res.dataValues.id,
-            { include: [User, db.sequelize.models[boardModelName]] /*e.g. include Lesson*/ }
+            {
+                include: [
+                    User,
+                    db.sequelize.models[boardModelName],
+                ] /*e.g. include Lesson*/,
+            }
         );
     }
 
@@ -295,14 +313,12 @@ export default function dbUtil() {
         notationType: NotationType,
         uuid: string
     ) {
-        
         const modelName = getModelName(boardType, notationType); // e.g. LessonSymbol
         const id = (await getIdByUUId(modelName, uuid)) as number;
         return await db.sequelize.models[modelName].destroy({
             where: { id: id },
         });
     }
-
 
     return {
         getIdByUUId,
@@ -321,10 +337,11 @@ export default function dbUtil() {
         createAnswer,
         getNotations,
         createNotation,
+        getStudentLesson,
         getStudentLessons,
         createStudentLesson,
         updateNotation,
-        deleteNotation
+        deleteNotation,
     };
 }
 function getModelName(boardType: string, notationType: string) {

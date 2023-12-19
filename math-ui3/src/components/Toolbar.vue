@@ -14,7 +14,7 @@
 
   <v-toolbar color="primary" dark class="vertical-toolbar" height="500">
     <!-- create access link -->
-    <v-tooltip text="Create Access Link">
+    <v-tooltip text="Create Access Link" v-if="userStore.isTeacher()">
       <template v-slot:activator="{ props }">
         <v-btn
           v-bind="props"
@@ -174,7 +174,6 @@
 
 <script setup lang="ts">
 import { watch, ref } from "vue";
-import useAuthHelper from "../helpers/authHelper";
 import accessLinkDialog from "./AccessLinkDialog.vue";
 import freeTextDialog from "./FreeTextDialog.vue";
 import exponentDialog from "./ExponentDialog.vue";
@@ -185,8 +184,9 @@ import { computed } from "vue";
 import { useUserStore } from "../store/pinia/userStore";
 import useEventBus from "../helpers/eventBusHelper";
 import { ExponentAttributes } from "common/baseTypes";
+import useAuthorizationHelper from "../helpers/authorizationHelper";
 
-const authHelper = useAuthHelper();
+const authorizationHelper = useAuthorizationHelper();
 const notationMutateHelper = useNotationMutateHelper();
 const notationStore = useNotationStore();
 const userStore = useUserStore();
@@ -273,7 +273,7 @@ function closeExponentDialog() {
 }
 
 const editEnabled = computed(() => {
-  return authHelper.canEdit();
+  return authorizationHelper.canEdit();
 });
 
 const textEnabled = computed(() => {
@@ -286,7 +286,7 @@ const textEnabled = computed(() => {
 });
 
 const answerCheckMode = computed(() => {
-  return notationStore.getParent().type == "ANSWER" && userStore.isTeacher;
+  return notationStore.getParent().type == "ANSWER" && userStore.isTeacher();
 });
 
 function resetButtonsState() {

@@ -12,22 +12,16 @@
 
 <script setup lang="ts">
 import mathBoard from "./MathBoard.vue";
-import useNotationLoadingHelper from "../helpers/notationLoadingHelper";
 import { computed, ref } from "vue";
 import { useUserStore } from "../store/pinia/userStore";
 import { useAnswerStore } from "../store/pinia/answerStore";
 import { watch } from "vue";
 import { useRoute } from "vue-router";
 import { useNotationStore } from "../store/pinia/notationStore";
-import {
-  BoardType,
-  NotationTypeValues,
-} from "../../../math-common/build/unions";
 
 const route = useRoute();
 const userStore = useUserStore();
 const answerStore = useAnswerStore();
-const notationLoadingHelper = useNotationLoadingHelper();
 const notationStore = useNotationStore();
 
 let loaded = ref(false);

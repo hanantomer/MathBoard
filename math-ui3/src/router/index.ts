@@ -1,11 +1,6 @@
-import {
-  createRouter,
-  createWebHistory,
-} from "vue-router";
-import useAuthHelper from "../helpers/authHelper";
+import { createRouter, createWebHistory } from "vue-router";
+import useauthenticationHelper from "../helpers/authenticationHelper";
 import { useUserStore } from "../store/pinia/userStore";
-
-const authHelper = useAuthHelper();
 
 const routes = [
   {
@@ -73,9 +68,10 @@ const router = createRouter({
 });
 
 router.beforeEach(async (to, from) => {
+  const authenticationHelper = useauthenticationHelper();
   const userStore = useUserStore();
 
-  const user = await authHelper.authLocalUserByToken();
+  const user = await authenticationHelper.authLocalUserByToken();
   if (user) {
     // has valid token
     userStore.setCurrentUser(user);

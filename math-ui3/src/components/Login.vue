@@ -71,7 +71,7 @@ import { ref, watch } from "vue";
 import { useCookies } from "vue3-cookies";
 import { useRouter, useRoute, RouteLocationRaw } from "vue-router";
 import { useUserStore } from "../store/pinia/userStore";
-import useAuthHelper from "../helpers/authHelper";
+import useAuthHelper from "../helpers/authenticationHelper";
 import useEventBus from "../helpers/eventBusHelper";
 
 const eventBus = useEventBus();

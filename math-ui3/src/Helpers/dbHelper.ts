@@ -4,7 +4,12 @@ import {
   NotationAttributes,
   NotationCreationAttributes,
 } from "common/baseTypes";
-import { UserAttributes, UserCreationAttributes } from "common/userTypes";
+import {
+  UserAttributes,
+  UserCreationAttributes,
+  StudentLessonCreationAttributes,
+  StudentLessonAttributes,
+} from "common/userTypes";
 import { LessonAttributes, LessonCreationAttributes } from "common/lessonTypes";
 import {
   QuestionAttributes,
@@ -61,20 +66,20 @@ export default function useDbHelper() {
   }
 
   async function addLessonToSharedLessons(
-    lessonUUId: string,
-    userUUId: string,
+    studentLesson: StudentLessonCreationAttributes,
   ) {
     // check if exists
-    const studentLesson = await axios.get(
-      `/studentlessons?lessonUUId=${lessonUUId}&UserUUId=${userUUId}`,
+    const existingStudentLesson = await axios.get(
+      baseURL +
+        `/studentlessons?lessonUUId=${studentLesson.lesson.uuid}&userUUId=${studentLesson.user.uuid}`,
     );
 
-    if (studentLesson.data.length) return;
+    if (existingStudentLesson.data) return;
 
-    return await axios.post(baseURL + "/studentlessons", {
-      lessonUUId: lessonUUId,
-      UserUUId: userUUId,
-    });
+    return await axios.post<StudentLessonAttributes>(
+      baseURL + "/studentlessons",
+      studentLesson,
+    );
   }
 
   async function addLesson(
@@ -214,7 +219,6 @@ export default function useDbHelper() {
 
     return data;
   }
-
 
   async function getStudentLessons(
     userUUId: string,

@@ -7,6 +7,7 @@ import { defineStore } from "pinia";
 import dbHelper from "../../helpers/dbHelper";
 import { useUserStore } from "./userStore";
 import { ref } from "vue"
+import { StudentLessonCreationAttributes } from "common/userTypes";
 const db = dbHelper();
 
 
@@ -52,14 +53,7 @@ export const useLessonStore = defineStore("lesson", () => {
   }
 
   async function setCurrentLesson(lessonUUId: string) {
-    // // store might not be loaded yet
-    // if (!lessons.value.get(lessonUUId)) {
-    //   await loadLessons();
-    // }
 
-    // if (!lessons.value.get(lessonUUId)) {
-    //   throw TypeError("invalid lesson:" + lessonUUId);
-    // }
     currentLesson.value = lessons.value.get(lessonUUId)!;
   }
 
@@ -67,7 +61,7 @@ export const useLessonStore = defineStore("lesson", () => {
     lessonName: string
   ): Promise<LessonAttributes> {
     const userStore = useUserStore();
-    let lesson: LessonCreationAttributes = {name: lessonName, user: userStore.getCurrentUser()!};
+    const lesson: LessonCreationAttributes = {name: lessonName, user: userStore.getCurrentUser()!};
     let createdLesson = await db.addLesson(lesson);
     lessons.value.set(createdLesson.uuid, createdLesson);
     setCurrentLesson(createdLesson.uuid);
@@ -76,10 +70,12 @@ export const useLessonStore = defineStore("lesson", () => {
 
   async function addLessonToSharedLessons() {
     const userStore = useUserStore();
-    await db.addLessonToSharedLessons(
-      currentLesson.value!.uuid,
-      userStore.getCurrentUser()!.uuid
-    );
+    let studentLesson: StudentLessonCreationAttributes = {
+      user: userStore.getCurrentUser()!,
+      lesson: currentLesson.value!,
+    };
+
+    await db.addLessonToSharedLessons(studentLesson);
   }
 
   function removeLesson(lessonUUId: string) {

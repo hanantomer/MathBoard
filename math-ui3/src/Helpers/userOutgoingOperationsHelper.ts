@@ -48,9 +48,9 @@ export default function userOutgoingOperations() {
       .update(null, { lessonUUId: lessonUUId }, {});
   }
   // set student to be eligible to edit
-  function syncOutgoingAuthUser(
-    authorizedStudentUUId: string,
-    revokedStudentUUId: string,
+  function syncOutgoingAuthorizeUser(
+    authorizedStudentUUId: string | null,
+    revokedStudentUUId: string | null,
     lessonUUId: string,
   ) {
     if (authorizedStudentUUId)
@@ -78,7 +78,7 @@ export default function userOutgoingOperations() {
   return {
     syncOutgoingUpdateNotation,
     syncOutgoingSelectedCell,
-    syncOutgoingAuthUser,
+    syncOutgoingAuthorizeUser,
     syncOutgoingHeartBeat,
     syncOutgoingRemoveNotation,
     syncOutgoingAddNotation,

@@ -19,7 +19,13 @@
               v-text="getStudentDisplayName(student)"
             >
             </v-list-item-title>
-            <v-btn class="[mx-2]" fab dark x-small color="green">
+            <v-btn
+              class="[mx-2]"
+              fab
+              dark
+              x-small
+              :color="getStudentAuhorizationColor(student.uuid)"
+            >
               <v-icon dark> mdi-pencil </v-icon>
             </v-btn>
           </v-list-item>
@@ -49,15 +55,27 @@ function getStudentDisplayName(student: UserAttributes) {
   return student.firstName + " " + student.lastName;
 }
 
+function getStudentAuhorizationColor(studentUUId: string) {
+  return studentStore.getAuthorizedStudentUUId() === studentUUId
+    ? "blue"
+    : "green";
+}
+
 function toggleStudentAuthorization(student: UserAttributes) {
-  const previouslyAutorizedStudentUUId =
+  let studentUUId: string | null = student.uuid;
+  const previouslyAuthorizedStudentUUId: string | null =
     studentStore.getAuthorizedStudentUUId();
 
-  studentStore.setAuthorizedStudentUUId(student.uuid);
+  // clicked on authorized student
+  if (previouslyAuthorizedStudentUUId === student.uuid) {
+    studentUUId = null;
+  }
 
-  userOutgoingOperations.syncOutgoingAuthUser(
+  studentStore.setAuthorizedStudentUUId(studentUUId);
+
+  userOutgoingOperations.syncOutgoingAuthorizeUser(
     student.uuid,
-    previouslyAutorizedStudentUUId,
+    previouslyAuthorizedStudentUUId,
     lessonStore.getCurrentLesson()!.uuid,
   );
 }

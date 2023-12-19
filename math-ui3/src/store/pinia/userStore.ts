@@ -9,7 +9,7 @@ export const useUserStore = defineStore("user", () => {
   let currentUser = ref<UserAttributes | null>();
   let authorized = ref(false);
 
-  function getCurrentUser(): UserAttributes | undefined | null{
+  function getCurrentUser(): UserAttributes | undefined | null {
     return currentUser.value;
   }
 
@@ -21,8 +21,8 @@ export const useUserStore = defineStore("user", () => {
     return authorized.value;
   }
 
-  function setAuthorized(authorized: boolean) {
-    return (authorized = authorized);
+  function setAuthorized(authorizedValue: boolean) {
+    authorized.value = authorizedValue;
   }
 
   function setCurrentUser(user: UserAttributes | null) {

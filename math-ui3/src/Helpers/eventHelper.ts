@@ -4,7 +4,7 @@ import { useNotationStore } from "../store/pinia/notationStore";
 
 import useMatrixHelper from "./matrixHelper";
 import useNotationMutationHelper from "./notationMutateHelper";
-import useAuthHelper from "./authHelper";
+import useAuthorizationHelper from "./authorizationHelper";
 import useEventBus from "../helpers/eventBusHelper";
 import useSelectionHelper from "./selectionHelper";
 
@@ -13,7 +13,7 @@ const editModeStore = useEditModeStore();
 const notationStore = useNotationStore();
 const matrixHelper = useMatrixHelper();
 const notationMutationHelper = useNotationMutationHelper();
-const authHelper = useAuthHelper();
+const authorizationHelper = useAuthorizationHelper();
 const eventBus = useEventBus();
 const selectionHelper = useSelectionHelper();
 
@@ -60,7 +60,7 @@ export default function eventHelper() {
     const { ctrlKey, altKey, code, key } = e;
     if (ctrlKey || altKey) return;
 
-    if (!authHelper.canEdit) return;
+    if (!authorizationHelper.canEdit()) return;
 
     if (editModeStore.isTextMode()) return;
 

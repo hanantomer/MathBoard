@@ -1,12 +1,11 @@
 import { getCookie, removeCookie } from "typescript-cookie";
-import { useNotationStore } from "../store/pinia/notationStore";
 import { UesrType } from "common/unions";
 import { UserAttributes, UserCreationAttributes } from "common/userTypes";
 import { useUserStore } from "../store/pinia/userStore";
 import useDbHelper from "./dbHelper";
 const dbHelper = useDbHelper();
 
-export default function useAuthHelper() {
+export default function authenticationHelper() {
   function registerUser(
     firstName: string,
     lastName: string,
@@ -22,22 +21,13 @@ export default function useAuthHelper() {
       password: password,
       imageUrl: "",
       access_token: "",
-      authorized: false,
+      //authorized: false,
       lastHeartbeatTime: new Date(),
     };
     const userStore = useUserStore();
     userStore.registerUser(user);
   }
 
-  function canEdit() {
-    const userStore = useUserStore();
-    const notationStore = useNotationStore();
-    return (
-      userStore.isTeacher() || // teacher in lesson or question
-      userStore.getAuthorized() || // student in lesson when authorized to edit by teacher
-      notationStore.getParent().type == "ANSWER" // student writing an answer
-    );
-  }
 
   async function authGoogleUser() {
     return await dbHelper.authGoogleUser();
@@ -110,6 +100,5 @@ export default function useAuthHelper() {
     signedInWithGoogle,
     getToken,
     authGoogleUser,
-    canEdit,
   };
 }
