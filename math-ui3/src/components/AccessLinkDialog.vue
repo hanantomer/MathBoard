@@ -37,9 +37,8 @@
 import { computed, ref, watch } from "vue";
 import { useLessonStore } from "../store/pinia/lessonStore";
 
-const emit = defineEmits(["close"]);
-
 const lessonStore = useLessonStore();
+const emit = defineEmits(["close"]);
 
 const props = defineProps({
   show: { type: Boolean },
@@ -55,7 +54,8 @@ watch(
 );
 
 const link = computed(() => {
-  return window.location.href;
+  return `${window.location.origin}/lesson/${lessonStore.getCurrentLesson()
+    ?.uuid}`;
 });
 
 function copy() {

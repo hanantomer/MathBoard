@@ -21,7 +21,7 @@ import { computed, ref } from "vue";
 import { useUserStore } from "../store/pinia/userStore";
 import { useLessonStore } from "../store/pinia/lessonStore";
 import { useNotationStore } from "../store/pinia/notationStore";
-import { watch, onMounted } from "vue";
+import { watch } from "vue";
 import { useRoute } from "vue-router";
 import { heartBeatInterval } from "../../../math-common/src/globals";
 import lessonStudents from "./LessonStudents.vue";

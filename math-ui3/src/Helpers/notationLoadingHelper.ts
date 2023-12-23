@@ -15,7 +15,6 @@ const dbHelper = useDbHelper();
 export default function notationLoadingHelper() {
   // e.g get lesson notations
   async function loadNotations(boardType: BoardType) {
-
     let notations: NotationAttributes[] = [];
 
     for (let i = 0; i < NotationTypeValues.length; i++) {
@@ -24,6 +23,7 @@ export default function notationLoadingHelper() {
         boardType,
         nt as NotationType,
       );
+      if (!notationsFromDb) continue;
       notationsFromDb.forEach((n) => {
         notations.push({
           ...n,

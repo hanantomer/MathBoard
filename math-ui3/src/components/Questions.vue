@@ -43,7 +43,6 @@
 
 <script setup lang="ts">
 import NewQuestionDialog from "./NewQuestionDialog.vue";
-import { QuestionAttributes } from "../../../math-common/build/questionTypes";
 import { watch, computed, ref, onMounted } from "vue";
 import { useQuestionStore } from "../store/pinia/questionStore";
 import { useLessonStore } from "../store/pinia/lessonStore";
@@ -140,7 +139,7 @@ async function addQuestion(name: string) {
   });
 }
 
-function selectQuestion(e: any, row: any) {
+async function selectQuestion(e: any, row: any) {
   //questionStore.setCurrentQuestion(question);
   if (userStore.isTeacher()) {
     router.push({
@@ -148,7 +147,7 @@ function selectQuestion(e: any, row: any) {
     });
   } else {
     // add student answer when question is first selected
-    answerStore.addAnswer();
+    await answerStore.addAnswer(row.item.uuid);
     router.push({
       path: "/answer/" + answerStore.getCurrentAnswer().uuid,
     });

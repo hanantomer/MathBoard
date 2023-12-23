@@ -1,16 +1,11 @@
 //  questions of current lesson
-import {
-  LessonAttributes,
-  LessonCreationAttributes,
-} from "common/lessonTypes";
+import { LessonAttributes, LessonCreationAttributes } from "common/lessonTypes";
 import { defineStore } from "pinia";
 import dbHelper from "../../helpers/dbHelper";
 import { useUserStore } from "./userStore";
-import { ref } from "vue"
+import { ref } from "vue";
 import { StudentLessonCreationAttributes } from "common/userTypes";
 const db = dbHelper();
-
-
 
 export const useLessonStore = defineStore("lesson", () => {
   let lessons = ref<Map<String, LessonAttributes>>(new Map());
@@ -36,7 +31,6 @@ export const useLessonStore = defineStore("lesson", () => {
     lessons.value.set(lessonFromDB.uuid, lessonFromDB);
   }
 
-
   async function loadLessons() {
     const userStore = useUserStore();
     let lessonsFromDB = null;
@@ -44,8 +38,7 @@ export const useLessonStore = defineStore("lesson", () => {
 
     if (userStore.isTeacher())
       lessonsFromDB = await db.getTeacherLessons(userUUId);
-    else
-      lessonsFromDB = await db.getStudentLessons(userUUId);
+    else lessonsFromDB = await db.getStudentLessons(userUUId);
 
     lessonsFromDB.forEach((l: LessonAttributes) => {
       lessons.value.set(l.uuid, l);
@@ -53,15 +46,18 @@ export const useLessonStore = defineStore("lesson", () => {
   }
 
   async function setCurrentLesson(lessonUUId: string) {
-
+    if (!lessons.value.get(lessonUUId)) {
+      await loadLesson(lessonUUId);
+    }
     currentLesson.value = lessons.value.get(lessonUUId)!;
   }
 
-  async function addLesson(
-    lessonName: string
-  ): Promise<LessonAttributes> {
+  async function addLesson(lessonName: string): Promise<LessonAttributes> {
     const userStore = useUserStore();
-    const lesson: LessonCreationAttributes = {name: lessonName, user: userStore.getCurrentUser()!};
+    const lesson: LessonCreationAttributes = {
+      name: lessonName,
+      user: userStore.getCurrentUser()!,
+    };
     let createdLesson = await db.addLesson(lesson);
     lessons.value.set(createdLesson.uuid, createdLesson);
     setCurrentLesson(createdLesson.uuid);
@@ -92,6 +88,6 @@ export const useLessonStore = defineStore("lesson", () => {
     setCurrentLesson,
     addLesson,
     addLessonToSharedLessons,
-    removeLesson
+    removeLesson,
   };
 });

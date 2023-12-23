@@ -16,10 +16,22 @@ import { BoardType, NotationType } from "../../math-common/src/unions";
 
 
 export default function dbUtil() {
+
     async function getIdByUUId(
         model: string,
         uuid: string
     ): Promise<number | null> {
+        if (!model) {
+            throw new Error("model must not be null")
+            return null;
+        }
+
+        if (!uuid) {
+            throw new Error("uuid must not be null");
+            return null;
+        }
+
+
         let res = await db.sequelize.models[model].findOne({
             attributes: {
                 include: ["id"],
@@ -169,8 +181,14 @@ export default function dbUtil() {
     async function createQuestion(
         question: QuestionCreationAttributes
     ): Promise<Question> {
-        (question as any).userId = question.user.id;
-        (question as any).lessonId = question.lesson.id;
+        (question as any).lessonId = await getIdByUUId(
+            "Lesson",
+            question.lesson.uuid
+        );
+        (question as any).userId = await getIdByUUId(
+            "User",
+            question.user.uuid
+        );
         return await Question.create(question);
     }
 
@@ -181,7 +199,9 @@ export default function dbUtil() {
     ): Promise<AnswerAttributes | null> {
         let answerId = await getIdByUUId("Answer", answerUUId);
         if (!answerId) return null;
-        return (await Answer.findByPk(answerId)) as AnswerAttributes | null;
+        return (await Answer.findByPk(answerId, {
+            include: [Question],
+        })) as AnswerAttributes | null;
     }
 
     async function getAnswers(questionUUId: string): Promise<Answer[] | null> {
@@ -190,22 +210,16 @@ export default function dbUtil() {
         return await Answer.findAll({
             where: {
                 "$question.id$": 1,
-            },
+            }
         });
     }
 
     async function createAnswer(
         answer: AnswerCreationAttributes
     ): Promise<Answer> {
-        answer.user.id = (await getIdByUUId(
-            "User",
-            answer.user.uuid
-        )) as number;
 
-        answer.question.id = (await getIdByUUId(
-            "Question",
-            answer.question.uuid
-        )) as number;
+        (answer as any).questionId = await getIdByUUId("Question", answer.question.uuid );
+        (answer as any).userId = await getIdByUUId("User", answer.user.uuid);
 
         return await Answer.create(answer);
     }
@@ -243,6 +257,8 @@ export default function dbUtil() {
         const notationTypeName = notationType.toString().toLowerCase(); // e.g. symbol
         const notationTypeNameCapitalized = capitalize(notationTypeName); // e.g. Symbol
         const modelName = boardModelName + notationTypeNameCapitalized; // e.g. LessonSymbol
+
+        if (!parentUUId) return null;
 
         let parentId = await getIdByUUId(boardModelName, parentUUId);
         if (!parentId) return null;
@@ -320,6 +336,16 @@ export default function dbUtil() {
         });
     }
 
+    function getModelName(boardType: string, notationType: string) {
+        const boardName = boardType.toString().toLowerCase(); // e.g lesson
+        const boardModelName = capitalize(boardName); // e.g Lesson
+        const notationTypeName = notationType.toString().toLowerCase(); // e.g. symbol
+        const notationTypeNameCapitalized = capitalize(notationTypeName); // e.g. Symbol
+        const modelName = boardModelName + notationTypeNameCapitalized; // e.g. LessonSymbol
+        return modelName;
+    }
+
+
     return {
         getIdByUUId,
         getUser,
@@ -344,12 +370,3 @@ export default function dbUtil() {
         deleteNotation,
     };
 }
-function getModelName(boardType: string, notationType: string) {
-    const boardName = boardType.toString().toLowerCase(); // e.g lesson
-    const boardModelName = capitalize(boardName); // e.g Lesson
-    const notationTypeName = notationType.toString().toLowerCase(); // e.g. symbol
-    const notationTypeNameCapitalized = capitalize(notationTypeName); // e.g. Symbol
-    const modelName = boardModelName + notationTypeNameCapitalized; // e.g. LessonSymbol
-    return modelName;
-}
-

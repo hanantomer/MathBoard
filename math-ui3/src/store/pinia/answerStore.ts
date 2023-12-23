@@ -22,12 +22,11 @@ export const useAnswerStore = defineStore("answer", () => {
 
   async function loadAnswer(answerUUId: string) {
     const answer = await db.getAnswer(answerUUId);
-    const question = await db.getQuestion(answer.question.uuid);
 
     if (answer) {
       answers.set(answer.uuid, answer);
-      currentAnswer = answer;
       questionStore.setCurrentQuestion(answer.question);
+      setCurrentAnswer(answer);
     }
   }
 
@@ -45,10 +44,10 @@ export const useAnswerStore = defineStore("answer", () => {
   }
 
   // answer is initially empty
-  async function addAnswer() {
-    // already has answer for current queestion
+  async function addAnswer(questionUUId: string) {
+    // check if already has answer for current queestion
     answers.forEach((answer: AnswerAttributes) => {
-      if (answer.question.uuid == questionStore.getCurrentQuestion()!.uuid) {
+      if (answer.question.uuid == questionUUId) {
         setCurrentAnswer(answer);
         return;
       }
@@ -56,7 +55,7 @@ export const useAnswerStore = defineStore("answer", () => {
 
     // add new answer
     let answer = <AnswerAttributes>{};
-    answer.question = questionStore.getCurrentQuestion()!;
+    answer.question = questionStore.getQuestions().get(questionUUId)!;
     answer.user = userStore.getCurrentUser()!;
     answer = await db.addAnswer(answer);
     answers.set(answer.uuid, answer);

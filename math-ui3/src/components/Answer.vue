@@ -38,24 +38,20 @@ let answerTitle = computed(() => {
 watch(
   route,
   (to) => {
-    loadAnswer(to.params.answerUUId[0]);
+    loadAnswer(to.params.answerUUId as string);
   },
-  { flush: "pre", immediate: true, deep: true },
+  { immediate: true },
 );
 
 async function markAnswerAsChecked() {} // not implemented yet
 
 async function loadAnswer(answerUUId: string) {
   // load from db to store
-  answerStore.loadAnswer(answerUUId);
+  await answerStore.loadAnswer(answerUUId);
 
   if (!answerStore.getCurrentAnswer()) {
-    throw Error(`questionUUId: ${answerUUId} does not exist`);
+    throw Error(`answerUUId: ${answerUUId} does not exist`);
   }
-
-  // load notations
-  //notationLoadingHelper.loadNotations("QUESTION");
-  //notationLoadingHelper.loadNotations("ANSWER");
 
   notationStore.setParent(answerStore.getCurrentAnswer()?.uuid, "ANSWER");
 

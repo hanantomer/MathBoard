@@ -1,4 +1,4 @@
-import express, { Request, Response, NextFunction, json } from "express";
+import express, { Request, Response, NextFunction } from "express";
 import cors from "cors";
 import bodyParser from "body-parser";
 import useAuthUtil  from "../../math-auth/build/authUtil";
@@ -23,7 +23,17 @@ app.use(
 );
 
 
+const errorHandler = (
+    err: Error,
+    req: Request,
+    res: Response,
+    next: NextFunction
+) => {
+    console.error(err);
+    res.status(500).send({ errors: [{ message: "Something went wrong" }] });
+};
 
+app.use(errorHandler);
 
 
 async function auth(req: Request, res: Response, next: NextFunction) {
@@ -66,7 +76,7 @@ async function validateHeaderAuthentication(req: Request, res: Response) : Promi
 
 app.get(
     "/api/users",
-    async (req: Request, res: Response): Promise<Response> => {
+    async (req: Request, res: Response, next: NextFunction): Promise<Response | undefined> => {
         // token already validate by interceptor. see validateHeaderAuthentication
         if (req.headers.authorization) {
             return res.status(200);
@@ -78,14 +88,20 @@ app.get(
             return res.status(401).json("missing user or password");
         }
 
-        const user = await authUtil.authByLocalPassword(
-            email as string,
-            password as string
-        );
-        if (!user) {
-            return res.status(401);
+        try {
+            const user = await authUtil.authByLocalPassword(
+                email as string,
+                password as string
+            );
+            if (!user) {
+                return res.status(401);
+            }
+            return res.status(200).json(user);
         }
-        return res.status(200).json(user);
+        catch (err) {
+            next(err);
+        }
+        
     }
 );
 
@@ -158,8 +174,8 @@ app.post(
 app.get(
     "/api/answers",
     async (req: Request, res: Response): Promise<Response> => {
-        const { questionUUId } = req.query;
-        return res.status(200).json(await db.getAnswers(questionUUId as string));
+        const { uuid } = req.query;
+        return res.status(200).json(await db.getAnswers(uuid as string));
     }
 );
 
@@ -206,17 +222,31 @@ BoardTypeValues.forEach((boardType) => {
         //console.debug(`/api/${boardType.toLowerCase()}${notationType.toLowerCase()}s`);
         app.get(
             `/api/${boardType.toLowerCase()}${notationType.toLowerCase()}s`,
-            async (req: Request, res: Response): Promise<Response> => {
+            async (req: Request, res: Response, next: NextFunction): Promise<Response | undefined> => {
                 const { uuid } = req.query;
-                return res
-                    .status(200)
-                    .json(
+
+                if (!uuid) {
+                    next("invlid uuid:" + uuid);
+                    return;
+                }
+
+                let notations: any = "";
+                try {
+                    notations =
                         await db.getNotations(
                             boardType,
                             notationType,
                             uuid as string
-                        )
-                    );
+                        );
+                }
+                catch (err) {
+                    next(err);
+                    return;
+                }
+                
+                return res
+                    .status(200)
+                    .json(notations );
             }
         );
 
@@ -272,7 +302,6 @@ BoardTypeValues.forEach((boardType) => {
 // Resets the database and launches the express app on :8081
 connection.sequelize.sync({ force: true }).then(() => {
     app.listen(8081, () => {
-
         var spawn = require("child_process").spawn;
         var ls = spawn("cmd.exe", ["/c", "seed.bat"]);
 
@@ -288,5 +317,7 @@ connection.sequelize.sync({ force: true }).then(() => {
             console.log("child process exited with code " + code);
         });
         process.stdout.write("listening to port localhost:8081");
-    });
+    }).on("error", (e) => {
+        console.log("Error: ", e.message);
+    });;
 });

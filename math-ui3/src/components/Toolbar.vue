@@ -277,7 +277,7 @@ const editEnabled = computed(() => {
 });
 
 const textEnabled = computed(() => {
-  if (!editEnabled) return false;
+  if (!editEnabled.value) return false;
 
   return (
     notationStore.getSelectedCell() ||

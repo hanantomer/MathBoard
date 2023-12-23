@@ -1,4 +1,10 @@
-import { Model, Column, DataType, BelongsTo, ForeignKey } from "sequelize-typescript";
+import {
+    Model,
+    Column,
+    DataType,
+    BelongsTo,
+    AllowNull,
+} from "sequelize-typescript";
 import BoardDecorator from "../boardDecorator";
 import User from "../user.model";
 import Question from "../question/question.model";
@@ -12,39 +18,30 @@ export default class Answer extends Model<
     AnswerAttributes,
     AnswerCreationAttributes
 > {
-    //    @ForeignKey(() => User)
-    //    userId!: number;
-
     @BelongsTo(() => User, {
-        foreignKey: {
-            field: "userId",
-            allowNull: false,
-            name: "userIdFk",
-        },
+        foreignKey: { name: "userId", field: "userId", allowNull: false },
     })
     user!: User;
 
-    //@ForeignKey(() => Question)
-    //questionId!: number;
-
     @BelongsTo(() => Question, {
         foreignKey: {
+            name: "questionId",
             field: "questionId",
             allowNull: false,
-            name: "questionIdFk",
         },
     })
-    question!: Question;
+    lesson!: Question;
 
+    @AllowNull(false)
     @Column({
         type: DataType.UUID,
         defaultValue: DataType.UUIDV4,
     })
     uuid!: string;
 
-    @Column({
-        type: DataType.UUID,
-        defaultValue: DataType.UUIDV4,
-    })
-    name!: string;
+    // @Column({
+    //     type: DataType.UUID,
+    //     defaultValue: DataType.UUIDV4,
+    // })
+    // name!: string;
 }

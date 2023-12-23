@@ -11,19 +11,19 @@
 </template>
 
 <script setup lang="ts">
-import { watch, computed, ref, onMounted } from "vue";
+import { watch, computed, ref } from "vue";
 import mathBoard from "./MathBoard.vue";
 import { useQuestionStore } from "../store/pinia/questionStore";
-import { useAnswerStore } from "../store/pinia/answerStore";
+import { useLessonStore } from "../store/pinia/lessonStore";
 import { useNotationStore } from "../store/pinia/notationStore";
 import { useRoute } from "vue-router";
 
 const questionStore = useQuestionStore();
 const notationStore = useNotationStore();
-const answerStore = useAnswerStore();
+const lessonStore = useLessonStore();
 
 const route = useRoute();
-const svgId = "questionsSvg";
+const svgId = "questionSvg";
 let loaded = ref(false);
 
 /*const props = defineProps({
@@ -59,11 +59,12 @@ async function loadQuestion(questionUUId: string) {
     throw Error(`questionUUId: ${questionUUId} does not exist`);
   }
 
+  lessonStore.setCurrentLesson(questionStore.getCurrentQuestion()!.lesson.uuid);
+
   notationStore.setParent(questionStore.getCurrentQuestion()!.uuid, "QUESTION");
 
   loaded.value = true; // signal child
 }
 
-function markQuestionAsResolved() { }
-
+function markQuestionAsResolved() {}
 </script>

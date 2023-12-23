@@ -15,7 +15,7 @@ const db = useDbHelper();
 
 ///TODO: create convention for all crud operation for all stores
 
-export const useQuestionStore = defineStore("answer", () => {
+export const useQuestionStore = defineStore("question", () => {
   let questions = ref<Map<String, QuestionAttributes>>(new Map());
   let currentQuestion = ref<QuestionAttributes>();
 
