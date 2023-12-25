@@ -457,6 +457,11 @@ export default function notationMutateHelper() {
 
     // update
     if (overlappedSameTypeNotation) {
+      // dont update a question notation from within answer and vice versa
+      if (overlappedSameTypeNotation.boardType !== notation.boardType) {
+        return;
+      }
+
       setNotationAttributes(overlappedSameTypeNotation, notation);
 
       await dbHelper.updateNotationValue(overlappedSameTypeNotation);

@@ -14,20 +14,21 @@ const dbHelper = useDbHelper();
 
 export default function notationLoadingHelper() {
   // e.g get lesson notations
-  async function loadNotations(boardType: BoardType) {
+  async function loadNotations(boardType: BoardType, parentUUId: string) {
     let notations: NotationAttributes[] = [];
 
     for (let i = 0; i < NotationTypeValues.length; i++) {
-      const nt = NotationTypeValues[i];
+      const notationType = NotationTypeValues[i];
       let notationsFromDb = await loadNotationsByType(
         boardType,
-        nt as NotationType,
+        notationType as NotationType,
+        parentUUId,
       );
       if (!notationsFromDb) continue;
       notationsFromDb.forEach((n) => {
         notations.push({
           ...n,
-          notationType: nt as NotationType,
+          notationType: notationType as NotationType,
         });
       });
     }
@@ -39,9 +40,9 @@ export default function notationLoadingHelper() {
   async function loadNotationsByType(
     boardType: BoardType | undefined,
     notationType: NotationType,
+    parentUUId: string,
   ): Promise<NotationAttributes[]> {
     if (!boardType) boardType = notationStore.getParent().type;
-    let parentUUId = notationStore.getParent().uuid;
     switch (notationType) {
       case "SYMBOL":
       case "SIGN":

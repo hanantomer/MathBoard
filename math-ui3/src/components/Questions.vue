@@ -27,6 +27,12 @@
           <v-icon>mdi-plus</v-icon>
         </v-btn>
       </v-toolbar>
+      <v-autocomplete
+        label="Select Lesson"
+        :items="lessons"
+        v-model="selectedLesson"
+      >
+      </v-autocomplete>
       <v-data-table
         v-model:items-per-page="itemsPerPage"
         :items="questions"
@@ -96,17 +102,28 @@ const headers = computed(() => [
 ]);
 
 const questions = computed(() => {
-  return Array.from(questionStore.getQuestions().entries()).map(
-    ([key, question]) => {
+  return Array.from(questionStore.getQuestions().entries())
+    .filter(([key, question]) => question.lesson.uuid === selectedLesson.value)
+    .map(([key, question]) => {
       return {
         uuid: question.uuid,
         name: question.name,
         lessonName: question.lesson!.name,
         createdAt: question.createdAt,
       };
-    },
-  );
+    });
 });
+
+const lessons = computed(() => {
+  return Array.from(lessonStore.getLessons().entries()).map(([key, lesson]) => {
+    return {
+      value: lesson.uuid,
+      title: lesson.name,
+    };
+  });
+});
+
+let selectedLesson = ref();
 
 function navToLessons() {
   noLessonDialog.value = false;
@@ -125,7 +142,10 @@ async function loadQuestions() {
 
   if (questionStore.getQuestions().size === 0) {
     openQuestionDialog();
+    return;
   }
+
+  selectedLesson.value = lessonStore.getCurrentLesson()?.uuid;
 }
 
 function openQuestionDialog() {

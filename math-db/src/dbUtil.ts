@@ -138,12 +138,13 @@ export default function dbUtil() {
     async function createStudentLesson(
         studentLesson: StudentLessonCreationAttributes
     ): Promise<StudentLesson> {
-        studentLesson.user.id = (await getIdByUUId(
+
+        (studentLesson as any).userId = (await getIdByUUId(
             "User",
             studentLesson.user.uuid
         )) as number;
 
-        studentLesson.lesson.id = (await getIdByUUId(
+        (studentLesson as any).lessonId = (await getIdByUUId(
             "Lesson",
             studentLesson.lesson.uuid
         )) as number;
@@ -170,7 +171,7 @@ export default function dbUtil() {
         return await Question.findAll({
             include: {
                 model: Lesson,
-                attributes: ["id", "name"],
+                attributes: ["uuid", "name"],
             },
             where: {
                 "$lesson.id$": lessonId,
@@ -199,18 +200,24 @@ export default function dbUtil() {
     ): Promise<AnswerAttributes | null> {
         let answerId = await getIdByUUId("Answer", answerUUId);
         if (!answerId) return null;
-        return (await Answer.findByPk(answerId, {
-            include: [Question],
+        const answer = (await Answer.findByPk(answerId, {
+            include: [{ model: Question }]
         })) as AnswerAttributes | null;
+
+        return answer;
     }
 
     async function getAnswers(questionUUId: string): Promise<Answer[] | null> {
         let questionId = await getIdByUUId("Question", questionUUId);
         if (!questionId) return null;
         return await Answer.findAll({
+            include: {
+                model: Question,  include: [ Lesson ],
+                //attributes: ["uuid", "name" ],
+            },
             where: {
                 "$question.id$": 1,
-            }
+            },
         });
     }
 
@@ -270,7 +277,7 @@ export default function dbUtil() {
             include: [
                 User,
                 db.sequelize.models[boardModelName],
-            ] /*e.g. include user*/,
+            ],
         });
     }
 
@@ -319,6 +326,7 @@ export default function dbUtil() {
     ) {
         const modelName = getModelName(boardType, notationType); // e.g. LessonSymbol
         const id = (await getIdByUUId(modelName, uuid)) as number;
+        if (!id) return;
         return await db.sequelize.models[modelName].update(attributes, {
             where: { id: id },
         });

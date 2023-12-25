@@ -1,5 +1,5 @@
 <template>
-  <v-row>
+  <v-row class="fill-height">
     <v-col cols="12">
       <mathBoard :svgId="svgId" :loaded="loaded">
         <template #title

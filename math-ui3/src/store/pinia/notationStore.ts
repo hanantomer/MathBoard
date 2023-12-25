@@ -70,7 +70,7 @@ export const useNotationStore = defineStore("notation", () => {
   }
 
   function setNotations(newNotations: NotationAttributes[]) {
-    notations.value.clear();
+    //notations.value.clear();
     newNotations.forEach((n) => {
       addNotation(n);
     });

@@ -174,8 +174,17 @@ app.post(
 app.get(
     "/api/answers",
     async (req: Request, res: Response): Promise<Response> => {
-        const { uuid } = req.query;
-        return res.status(200).json(await db.getAnswers(uuid as string));
+
+        const { uuid, questionUUId } = req.query;
+        if (questionUUId)
+            return res
+                .status(200)
+                .json(await db.getAnswers(questionUUId as string));
+        
+        if (uuid)
+            return res.status(200).json(await db.getAnswer(uuid as string));
+
+        throw new Error("either uuid or questionUUId must be supplied");
     }
 );
 

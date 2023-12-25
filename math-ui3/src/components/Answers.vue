@@ -15,24 +15,27 @@
   </v-container>
 </template>
 <script setup lang="ts">
-import { watch } from 'vue'
-import { useRoute, useRouter  } from 'vue-router'
-import { computed } from "vue"
-import { useLessonStore } from "../store/pinia/lessonStore";
-import { useQuestionStore } from "../store/pinia/questionStore";
+import { watch } from "vue";
+import { useRoute, useRouter } from "vue-router";
+import { computed } from "vue";
 import { useAnswerStore } from "../store/pinia/answerStore";
-import { AnswerAttributes } from '../../../math-common/build/answerTypes';
+import { useQuestionStore } from "../store/pinia/questionStore";
+import { useLessonStore } from "../store/pinia/lessonStore";
+import { AnswerAttributes } from "../../../math-common/build/answerTypes";
 
 const route = useRoute();
 const router = useRouter();
-const lessonStore = useLessonStore();
-const questionStore = useQuestionStore();
 const answerStore = useAnswerStore();
+const questionStore = useQuestionStore();
+const lessonStore = useLessonStore();
 
-
-watch(route, (to) => {
-   load();
-},{ flush: 'pre', immediate: true, deep: true });
+watch(
+  route,
+  (to) => {
+    loadAnswers();
+  },
+  { flush: "pre", immediate: true, deep: true },
+);
 
 let headers = computed(() => [
   {
@@ -53,16 +56,6 @@ let headers = computed(() => [
   },
 ]);
 
-/*const lessons = computed(() => {
-  return lessonStore.getLessons()
-});
-
-const questions = computed(() => {
-  return questionStore.getQuestions();
-});
-*/
-
-
 const answers = computed(() => {
   return Array.from(answerStore.getAnswers()).map(([key, answer]) => {
     return {
@@ -74,17 +67,16 @@ const answers = computed(() => {
   });
 });
 
-async function load() {
-      await this.loadLessons(this.isTeacher());
-      await this.loadQuestions();
-      await this.loadAnswers();
-};
+async function loadAnswers() {
+  await lessonStore.loadLessons();
+  await questionStore.loadQuestions();
+  await answerStore.loadAnswers();
+}
 
 async function selectAnswer(answer: AnswerAttributes) {
   answerStore.setCurrentAnswer(answer);
   router.push({ path: "/answer/" + answer.uuid });
-};
-
+}
 </script>
 
 <style>

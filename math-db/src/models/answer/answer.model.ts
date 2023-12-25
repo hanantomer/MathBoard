@@ -30,7 +30,7 @@ export default class Answer extends Model<
             allowNull: false,
         },
     })
-    lesson!: Question;
+    question!: Question;
 
     @AllowNull(false)
     @Column({

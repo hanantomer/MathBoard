@@ -27,8 +27,9 @@ import useEventBus from "../helpers/eventBusHelper";
 import { CellCoordinates } from "common/globals";
 import { onMounted, onUnmounted, watch } from "vue";
 import { useNotationStore } from "../store/pinia/notationStore";
-import useSelectionHelper from "../helpers/selectionHelper";
+import { useQuestionStore } from "../store/pinia/questionStore";
 import { useEditModeStore } from "../store/pinia/editModeStore";
+import useSelectionHelper from "../helpers/selectionHelper";
 
 const notationLoadingHelper = useNotationLoadingHelper();
 const notationStore = useNotationStore();
@@ -37,6 +38,7 @@ const matrixHelper = UseMatrixHelper();
 const selectionHelper = useSelectionHelper();
 const eventHelper = UseEventHelper();
 const editModeStore = useEditModeStore();
+const questionStore = useQuestionStore();
 
 onMounted(() => {
   eventHelper.registerSvgMouseDown(props.svgId);
@@ -114,14 +116,21 @@ watch(
   { immediate: true, deep: true },
 );
 
-function load() {
+async function load() {
   matrixHelper.setMatrix(props.svgId);
-  // load notations
-  notationLoadingHelper.loadNotations(notationStore.getParent().type);
 
-  // for answer load also question notations, TODO: find better place for that
+  // load notations
+  await notationLoadingHelper.loadNotations(
+    notationStore.getParent().type,
+    notationStore.getParent().uuid,
+  );
+
+  // for answer load also question notations
   if (notationStore.getParent().type === "ANSWER") {
-    notationLoadingHelper.loadNotations("QUESTION");
+    await notationLoadingHelper.loadNotations(
+      "QUESTION",
+      questionStore.getCurrentQuestion()?.uuid!,
+    );
   }
 }
 
