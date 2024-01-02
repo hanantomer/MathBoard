@@ -94,6 +94,7 @@ export default function eventHelper() {
   }
 
   function handleMovementKey(key: string, svgId: string) {
+
     if (key === "ArrowLeft") {
       matrixHelper.setNextCell(-1, 0);
     }
@@ -114,10 +115,10 @@ export default function eventHelper() {
       matrixHelper.setNextCell(0, -1);
     }
 
-    // select a notation occupied by seleted cell
+    // select a notation occupied by selected cell
     const svgBounds = document.getElementById(svgId)?.getBoundingClientRect()!;
 
-    selectionHelper.selectClickedNotation({
+    selectionHelper.selectClickedPosition({
       x:
         svgBounds.left +
         notationStore.getSelectedCell()?.col! * notationStore.getCellSize(),
@@ -152,25 +153,6 @@ export default function eventHelper() {
 
     return null;
   }
-
-  /* function mouseDown(e: MouseEvent) {
-    if (
-      editModeStore.getEditMode() === "FRACTION" ||
-      editModeStore.getEditMode() === "SQRT" ||
-      editModeStore.getEditMode() === "AREA_SELECT"
-    ) {
-      return;
-    }
-
-    if (
-      editModeStore.getEditMode() === "CHECKMARK" ||
-      editModeStore.getEditMode() === "SEMICHECKMARK" ||
-      editModeStore.getEditMode() === "XMARK"
-    ) {
-      notationMutationHelper.addMarkNotation();
-      return;
-    }
-  }*/
 
   function emitSvgMouseDown(e: MouseEvent) {
     eventBus.emit("svgmousedown", e);

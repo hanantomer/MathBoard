@@ -44,7 +44,7 @@ async function auth(req: Request, res: Response, next: NextFunction) {
     }
 
     // verify authorization
-    if (!await validateHeaderAuthentication(req, res)) {
+    if (!await validateHeaderAuthentication(req, res, next)) {
         return;
     }
 
@@ -52,10 +52,10 @@ async function auth(req: Request, res: Response, next: NextFunction) {
 }
 
 
-/*verifies that authenitication header exists and the it denotes a valid user
+/*verifies that authenitication header exists and  denotes a valid user
 if yes, set header userUUId
 */
-async function validateHeaderAuthentication(req: Request, res: Response) : Promise<boolean>{
+async function validateHeaderAuthentication(req: Request, res: Response, next: NextFunction) : Promise<boolean>{
     if (!req.headers.authorization) {
         res = res.status(401).json("unauthorized");
         return false;
@@ -70,7 +70,8 @@ async function validateHeaderAuthentication(req: Request, res: Response) : Promi
     if (req.url.indexOf("/api/users") == 0) {
         res.json(user);
     }
-    
+
+    req.headers.userId = user?.id?.toString();
     return true;
 }
 
@@ -107,37 +108,75 @@ app.get(
 
 app.post(
     "/api/users",
-    async (req: Request, res: Response): Promise<Response> => {
-        return res.status(200).json(await db.createUser(req.body));
+    async (
+        req: Request,
+        res: Response,
+        next: NextFunction
+    ): Promise<Response | undefined> => {
+        try {
+            return res.status(200).json(await db.createUser(req.body));
+        } catch (error) {
+            next(error);
+        }
     }
 );
 
 // student
-app.get("/api/students", async (req: Request, res: Response): Promise<Response> => {
-    const { uuid } = req.query;
-    if (uuid) return res.status(200).json(await db.getUser(uuid as string));
-
-    throw new Error("invalid arguments userUUId  must be supplied");
+app.get("/api/students", async (req: Request, res: Response, next: NextFunction): Promise<Response | undefined> => {
+    try {
+        const { uuid } = req.query;
+ 
+        if (uuid) throw new Error("invalid arguments userUUId  must be supplied");
+    
+        return res.status(200).json(await db.getUser(uuid as string));
+    }
+    catch (err) {
+        next(err);
+    }
 });
-
-
-
 
 // lesson
-app.get("/api/lessons", async (req: Request, res: Response): Promise<Response> => {
-    const { userUUId, lessonUUId } = req.query;
-    if (userUUId)
-        return res.status(200).json(await db.getLessons(userUUId as string));
-    if (lessonUUId)
-        return res.status(200).json(await db.getLesson(lessonUUId as string));
-    throw new Error("invalid arguments either userUUId or lessonUUId must be supplied");
-});
+app.get(
+    "/api/lessons",
+    async (
+        req: Request,
+        res: Response,
+        next: NextFunction
+    ): Promise<Response | undefined> => {
+        try {
+            const { userUUId, lessonUUId } = req.query;
+            if (userUUId)
+                return res
+                    .status(200)
+                    .json(await db.getLessons(userUUId as string));
+            if (lessonUUId)
+                return res
+                    .status(200)
+                    .json(await db.getLesson(lessonUUId as string));
 
+            throw new Error(
+                "invalid arguments either userUUId or lessonUUId must be supplied"
+            );
+        }
+        catch (err) {
+            next(err);
+        }
+    }
+);
 
 app.post(
     "/api/lessons",
-    async (req: Request, res: Response): Promise<Response> => {
-        return res.status(200).json(await db.createLesson(req.body));
+    async (
+        req: Request,
+        res: Response,
+        next: NextFunction
+    ): Promise<Response | undefined> => {
+        try {
+            return res.status(200).json(await db.createLesson(req.body));
+        }
+        catch (err) {
+            next(err);
+        }
     }
 );
 
@@ -145,25 +184,37 @@ app.post(
 
 app.get(
     "/api/questions",
-    async (req: Request, res: Response): Promise<Response> => {
-        const { uuid, lessonUUId } = req.query;
-        if(lessonUUId)
-            return res
-                .status(200)
-                .json(await db.getQuestions(lessonUUId as string));
-        if (uuid)
-            return res
-                .status(200)
-                .json(await db.getQuestion(uuid as string));
-        
-        throw new Error("either lessonUUId or questionUUId must be supplied");
+    async (
+        req: Request,
+        res: Response,
+        next: NextFunction
+    ): Promise<Response | undefined> => {
+        try {
+            const { uuid, lessonUUId } = req.query;
+            if (lessonUUId)
+                return res
+                    .status(200)
+                    .json(await db.getQuestions(lessonUUId as string));
+            if (uuid)
+                return res.status(200).json(await db.getQuestion(uuid as string));
+
+            throw new Error("either lessonUUId or questionUUId must be supplied");
+        }
+        catch (err) {
+            next(err);
+        }
     }
 );
 
 app.post(
     "/api/questions",
-    async (req: Request, res: Response): Promise<Response> => {
-        return res.status(200).json(await db.createQuestion(req.body));
+    async (req: Request, res: Response, next: NextFunction): Promise<Response | undefined> => {
+        try {
+            return res.status(200).json(await db.createQuestion(req.body));
+        }
+        catch (err) {
+            next(err);
+        }
     }
 );
 
@@ -173,25 +224,35 @@ app.post(
 
 app.get(
     "/api/answers",
-    async (req: Request, res: Response): Promise<Response> => {
+    async (req: Request, res: Response, next: NextFunction): Promise<Response | undefined> => {
 
-        const { uuid, questionUUId } = req.query;
-        if (questionUUId)
-            return res
-                .status(200)
-                .json(await db.getAnswers(questionUUId as string));
+        try {
+            const { uuid, questionUUId } = req.query;
+            if (questionUUId)
+                return res
+                    .status(200)
+                    .json(await db.getAnswers(questionUUId as string));
         
-        if (uuid)
-            return res.status(200).json(await db.getAnswer(uuid as string));
+            if (uuid)
+                return res.status(200).json(await db.getAnswer(uuid as string));
 
-        throw new Error("either uuid or questionUUId must be supplied");
+            throw new Error("either uuid or questionUUId must be supplied");
+        }
+        catch (err) {
+            next(err);
+        }
     }
 );
 
 app.post(
     "/api/answers",
-    async (req: Request, res: Response): Promise<Response> => {
-        return res.status(200).json(await db.createAnswer(req.body));
+    async (req: Request, res: Response, next: NextFunction): Promise<Response | undefined> => {
+        try {
+            return res.status(200).json(await db.createAnswer(req.body));
+        }
+        catch (err) {
+            next(err);
+        }
     }
 );
 
@@ -200,25 +261,35 @@ app.post(
 
 app.get(
     "/api/studentlessons",
-    async (req: Request, res: Response): Promise<Response> => {
-        const { userUUId, lessonUUId } = req.query;
+    async (req: Request, res: Response, next: NextFunction): Promise<Response | undefined> => {
 
-        if ((lessonUUId))
+        try {
+            const { userUUId, lessonUUId } = req.query;
+
+            if ((lessonUUId))
+                return res
+                    .status(200)
+                    .json(await db.getStudentLesson(userUUId as string, lessonUUId as string));
+        
             return res
                 .status(200)
-                .json(await db.getStudentLesson(userUUId as string, lessonUUId as string));
-        
-        return res
-            .status(200)
-            .json(await db.getStudentLessons(userUUId as string));
-    
+                .json(await db.getStudentLessons(userUUId as string));
+        }
+        catch (err) {
+            next(err);
+        }
     }
 );
 
 app.post(
     "/api/studentlessons",
-    async (req: Request, res: Response): Promise<Response> => {
-        return res.status(200).json(await db.createStudentLesson(req.body));
+    async (req: Request, res: Response, next: NextFunction): Promise<Response | undefined> => {
+        try {
+            return res.status(200).json(await db.createStudentLesson(req.body));
+        }
+        catch (err) {
+            next(err);
+        }
     }
 );
 
@@ -228,79 +299,95 @@ app.post(
 // notations
 BoardTypeValues.forEach((boardType) => {
     NotationTypeValues.forEach((notationType) => {
-        //console.debug(`/api/${boardType.toLowerCase()}${notationType.toLowerCase()}s`);
         app.get(
             `/api/${boardType.toLowerCase()}${notationType.toLowerCase()}s`,
             async (req: Request, res: Response, next: NextFunction): Promise<Response | undefined> => {
-                const { uuid } = req.query;
-
-                if (!uuid) {
-                    next("invlid uuid:" + uuid);
-                    return;
-                }
-
-                let notations: any = "";
                 try {
-                    notations =
-                        await db.getNotations(
-                            boardType,
-                            notationType,
-                            uuid as string
-                        );
-                }
-                catch (err) {
+                    const { uuid } = req.query;
+
+                    if (!uuid) {
+                        next("invlid uuid:" + uuid);
+                        return;
+                    }
+
+                    let notations: any = "";
+
+                    notations = await db.getNotations(
+                        boardType,
+                        notationType,
+                        uuid as string
+                    );
+
+                    return res.status(200).json(notations);
+                } catch (err) {
                     next(err);
                     return;
                 }
-                
-                return res
-                    .status(200)
-                    .json(notations );
+               
             }
         );
 
         app.post(
             `/api/${boardType.toLowerCase()}${notationType.toLowerCase()}s`,
-            async (req: Request, res: Response): Promise<Response> => {
-                return res
-                    .status(200)
-                    .json(
-                        await db.createNotation(
-                            boardType,
-                            notationType,
-                            req.body
-                        )
-                    );
+            async (
+                req: Request,
+                res: Response,
+                next: NextFunction
+            ): Promise<Response | undefined> => {
+                try {
+                    return res
+                        .status(200)
+                        .json(
+                            await db.createNotation(
+                                boardType,
+                                notationType,
+                                req.body
+                            )
+                        );
+                }
+                catch (err) {
+                    next(err);
+                }
             }
         );
 
         app.put(
             `/api/${boardType.toLowerCase()}${notationType.toLowerCase()}s`,
-            async (req: Request, res: Response): Promise<Response> => {
-                await db.updateNotation(
-                    boardType,
-                    notationType,
-                    req.body.uuid,
-                    // all keys but uuid
-                    Object.fromEntries(
-                        Object.entries(req.body).filter(
-                            (o) => o[0] != "uuid"
+            async (req: Request, res: Response, next: NextFunction): Promise<Response | undefined> => {
+                try {
+                    await db.updateNotation(
+                        boardType,
+                        notationType,
+                        req.body.uuid,
+                        // all keys but uuid
+                        Object.fromEntries(
+                            Object.entries(req.body).filter(
+                                (o) => o[0] != "uuid"
+                            )
                         )
-                    )
-                );
-                return res.status(200).send();
+                    );
+                    return res.status(200).send();
+                }
+                catch (err) {
+                    next(err);
+                }
             }
         );
 
          app.delete(
              `/api/${boardType.toLowerCase()}${notationType.toLowerCase()}s`,
-             async (req: Request, res: Response): Promise<Response> => {
-                 await db.deleteNotation(
-                     boardType,
-                     notationType,
-                     req.body.uuid,
-                 );
-                 return res.status(200).send();
+             async (req: Request, res: Response, next: NextFunction): Promise<Response | undefined> => {
+                 try {
+                     await db.deleteNotation(
+                         boardType,
+                         notationType,
+                         req.body.uuid,
+                     );
+                     return res.status(200).send();
+                 }
+                 catch (err) {
+                     next(err);
+                 }
              }
          );
     })

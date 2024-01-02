@@ -4,79 +4,137 @@
       <v-toolbar color="primary" dark>
         <v-toolbar-title>Answers</v-toolbar-title>
       </v-toolbar>
+      <v-autocomplete
+        label="Select Lesson"
+        item-title="title"
+        item-value="value"
+        :items="lessons"
+        v-model="selectedLesson"
+      >
+      </v-autocomplete>
+      <v-autocomplete
+        label="Select Question"
+        item-title="title"
+        item-value="value"
+        :items="questions"
+        v-model="selectedQuestion"
+      >
+      </v-autocomplete>
       <v-data-table
-        :v-bind.headers="headers"
         :items="answers"
         :items-per-page="10"
         class="elevation-1"
-        click:row="selectAnswer"
+        :headers="headers"
+        item-value="student"
+        :hide-no-data="true"
+        :hover="true"
+        @click:row="selectAnswer"
       ></v-data-table>
     </v-card>
   </v-container>
 </template>
 <script setup lang="ts">
-import { watch } from "vue";
-import { useRoute, useRouter } from "vue-router";
+import { watch, ref, onMounted } from "vue";
+import { useRouter } from "vue-router";
 import { computed } from "vue";
 import { useAnswerStore } from "../store/pinia/answerStore";
 import { useQuestionStore } from "../store/pinia/questionStore";
 import { useLessonStore } from "../store/pinia/lessonStore";
 import { AnswerAttributes } from "../../../math-common/build/answerTypes";
 
-const route = useRoute();
 const router = useRouter();
 const answerStore = useAnswerStore();
 const questionStore = useQuestionStore();
 const lessonStore = useLessonStore();
 
-watch(
-  route,
-  (to) => {
-    loadAnswers();
-  },
-  { flush: "pre", immediate: true, deep: true },
-);
+onMounted(() => loadAnswers());
 
 let headers = computed(() => [
   {
-    text: "Lesson",
-    value: "lesson",
+    title: "Student",
+    key: "student",
   },
   {
-    text: "Question",
-    value: "question",
-  },
-  {
-    text: "Student",
-    value: "student",
-  },
-  {
-    text: "Created At",
-    value: "createdAt",
+    title: "Created At",
+    key: "createdAt",
   },
 ]);
 
-const answers = computed(() => {
-  return Array.from(answerStore.getAnswers()).map(([key, answer]) => {
+const lessons = computed(() => {
+  return Array.from(lessonStore.getLessons().values()).map((lesson) => {
     return {
-      uuid: answer.uuid,
-      lesson: answer.question!.lesson!.name,
-      question: answer.question.name,
-      student: answer.user.firstName + " " + answer.user.lastName,
-    };
-  });
+      value: lesson.uuid,
+      title: lesson.name,
+    }
+  })
+});
+
+let selectedLesson = ref();
+
+const questions = computed(() => {
+  return Array.from(questionStore.getQuestions().values())
+    .filter((question) => question.lesson.uuid === selectedLesson.value)
+    .map((question) => {
+      return {
+        value: question.uuid,
+        title: question.name,
+      };
+    });
+});
+
+let selectedQuestion = ref();
+
+const answers = computed(() => {
+  return Array.from(answerStore.getAnswers().values())
+    .filter((answer) => answer.question.uuid === selectedQuestion.value)
+    .map((answer) => {
+      return {
+        uuid: answer.uuid,
+        student: answer.user.firstName + " " + answer.user.lastName,
+        createdAt: answer.createdAt,
+      };
+    });
 });
 
 async function loadAnswers() {
-  await lessonStore.loadLessons();
-  await questionStore.loadQuestions();
-  await answerStore.loadAnswers();
+  if (!questionStore.getQuestions().size) {
+    await questionStore.loadQuestions();
+  }
+
+  if (!answerStore.getAnswers().size) {
+    await answerStore.loadAnswers();
+  }
+
+  if (lessonStore.getCurrentLesson()) {
+    selectedLesson.value = lessonStore.getCurrentLesson()?.uuid;
+  }
+
+  if (questionStore.getCurrentQuestion()) {
+    selectedQuestion.value = questionStore.getCurrentQuestion()?.uuid;
+  }
+
+  watch(
+    () => selectedLesson.value,
+    (lessonUUId: string) => {
+      lessonStore.setCurrentLesson(lessonUUId);
+      loadAnswers();
+    },
+  );
+
+  watch(
+    () => selectedQuestion.value,
+    (questionUUId: string) => {
+      questionStore.setCurrentQuestion(questionUUId);
+      loadAnswers();
+    },
+  );
 }
 
-async function selectAnswer(answer: AnswerAttributes) {
-  answerStore.setCurrentAnswer(answer);
-  router.push({ path: "/answer/" + answer.uuid });
+async function selectAnswer(e: any, row: any) {
+  answerStore.setCurrentAnswer(row.item.uuid);
+  router.push({ path: "/answer/" + row.item.uuid });
 }
+
 </script>
 
 <style>

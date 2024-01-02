@@ -27,18 +27,20 @@ import useEventBus from "../helpers/eventBusHelper";
 import { CellCoordinates } from "common/globals";
 import { onMounted, onUnmounted, watch } from "vue";
 import { useNotationStore } from "../store/pinia/notationStore";
-import { useQuestionStore } from "../store/pinia/questionStore";
 import { useEditModeStore } from "../store/pinia/editModeStore";
+import { useAnswerStore } from "../store/pinia/answerStore";
 import useSelectionHelper from "../helpers/selectionHelper";
+import useNotationMutateHelper from "../helpers/notationMutateHelper";
 
 const notationLoadingHelper = useNotationLoadingHelper();
 const notationStore = useNotationStore();
 const eventBus = useEventBus();
 const matrixHelper = UseMatrixHelper();
 const selectionHelper = useSelectionHelper();
+const notationMutateHelper = useNotationMutateHelper();
 const eventHelper = UseEventHelper();
 const editModeStore = useEditModeStore();
-const questionStore = useQuestionStore();
+const answerStore = useAnswerStore();
 
 onMounted(() => {
   eventHelper.registerSvgMouseDown(props.svgId);
@@ -117,27 +119,38 @@ watch(
 );
 
 async function load() {
+  notationStore.clearNotations();
+
   matrixHelper.setMatrix(props.svgId);
+
+  // for answer load also question notations
+  if (notationStore.getParent().type === "ANSWER") {
+    await notationLoadingHelper.loadNotations(
+      "QUESTION",
+      answerStore.getCurrentAnswer()!.question.uuid!,
+    );
+
+    await notationLoadingHelper.loadNotations(
+      "ANSWER",
+      answerStore.getCurrentAnswer()!.uuid!,
+    );
+
+    return;
+  }
 
   // load notations
   await notationLoadingHelper.loadNotations(
     notationStore.getParent().type,
     notationStore.getParent().uuid,
   );
-
-  // for answer load also question notations
-  if (notationStore.getParent().type === "ANSWER") {
-    await notationLoadingHelper.loadNotations(
-      "QUESTION",
-      questionStore.getCurrentQuestion()?.uuid!,
-    );
-  }
 }
 
 function handleMouseDown(e: MouseEvent) {
   if (e.buttons !== 1) {
     return;
   }
+
+  const position = { x: e.clientX, y: e.clientY };
 
   if (editModeStore.isLineMode()) {
     return;
@@ -148,15 +161,20 @@ function handleMouseDown(e: MouseEvent) {
     return;
   }
 
-  // during area selection
-  //if (editModeStore.isSelectionMode()) {
-  //  return;
-  //}
+    if (
+    editModeStore.getEditMode() === "CHECKMARK" ||
+    editModeStore.getEditMode() === "SEMICHECKMARK" ||
+    editModeStore.getEditMode() === "XMARK"
+    ) {
+      selectionHelper.selectCell(position);
+      notationMutateHelper.addMarkNotation();
+      return;
+  }
 
-  const position = { x: e.clientX, y: e.clientY };
 
-  selectionHelper.selectClickedNotation(position);
+  selectionHelper.selectClickedPosition(position);
 }
+
 </script>
 
 <style>

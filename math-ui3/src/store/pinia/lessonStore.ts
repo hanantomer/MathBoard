@@ -4,7 +4,10 @@ import { defineStore } from "pinia";
 import dbHelper from "../../helpers/dbHelper";
 import { useUserStore } from "./userStore";
 import { ref } from "vue";
-import { StudentLessonCreationAttributes } from "common/userTypes";
+import {
+  StudentLessonAttributes,
+  StudentLessonCreationAttributes,
+} from "common/userTypes";
 const db = dbHelper();
 
 export const useLessonStore = defineStore("lesson", () => {
@@ -20,36 +23,37 @@ export const useLessonStore = defineStore("lesson", () => {
   }
 
   async function loadLesson(lessonUUId: string) {
-    let lessonFromDB = null;
+    let lesson = null;
 
-    lessonFromDB = await db.getLesson(lessonUUId);
+    lesson = await db.getLesson(lessonUUId);
 
-    if (!lessonFromDB) {
+    if (!lesson) {
       throw new Error(`lesson ${lessonUUId} does not exists`);
     }
 
-    lessons.value.set(lessonFromDB.uuid, lessonFromDB);
+    lessons.value.set(lesson.uuid, lesson);
   }
 
   async function loadLessons() {
+    clearLessons();
     const userStore = useUserStore();
-    let lessonsFromDB = null;
     let userUUId = userStore.getCurrentUser()!.uuid;
 
-    if (userStore.isTeacher())
-      lessonsFromDB = await db.getTeacherLessons(userUUId);
-    else lessonsFromDB = await db.getStudentLessons(userUUId);
-
-    lessonsFromDB.forEach((l: LessonAttributes) => {
-      lessons.value.set(l.uuid, l);
-    });
+    if (userStore.isTeacher()) {
+      const lessonsFromDB = await db.getTeacherLessons(userUUId);
+      lessonsFromDB.forEach((l: LessonAttributes) => {
+        lessons.value.set(l.uuid, l);
+      });
+    } else {
+      const studentLessonsFromDB = await db.getStudentLessons(userUUId);
+      studentLessonsFromDB.forEach((sl: StudentLessonAttributes) => {
+        lessons.value.set(sl.lesson.uuid, sl.lesson);
+      });
+    }
   }
 
   async function setCurrentLesson(lessonUUId: string) {
-    if (!lessons.value.get(lessonUUId)) {
-      await loadLesson(lessonUUId);
-    }
-    currentLesson.value = lessons.value.get(lessonUUId)!;
+    currentLesson.value = lessons.value.get(lessonUUId);
   }
 
   async function addLesson(lessonName: string): Promise<LessonAttributes> {
@@ -80,6 +84,10 @@ export const useLessonStore = defineStore("lesson", () => {
     });
   }
 
+  function clearLessons() {
+    lessons.value.clear();
+  }
+
   return {
     getLessons,
     getCurrentLesson,
@@ -89,5 +97,6 @@ export const useLessonStore = defineStore("lesson", () => {
     addLesson,
     addLessonToSharedLessons,
     removeLesson,
+    clearLessons,
   };
 });

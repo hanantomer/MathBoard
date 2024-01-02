@@ -127,7 +127,7 @@ export default function dbUtil() {
         let userId = await getIdByUUId("User", userUUId);
         if (!userId) return null;
         return await StudentLesson.findAll({
-            include: [{ model: User }],
+            include: [{ model: User }, {model: Lesson}],
             where: {
                 "$user.id$": userId,
             },
@@ -201,7 +201,7 @@ export default function dbUtil() {
         let answerId = await getIdByUUId("Answer", answerUUId);
         if (!answerId) return null;
         const answer = (await Answer.findByPk(answerId, {
-            include: [{ model: Question }]
+            include: [{ model: Question },{ model: User }]
         })) as AnswerAttributes | null;
 
         return answer;
@@ -211,10 +211,10 @@ export default function dbUtil() {
         let questionId = await getIdByUUId("Question", questionUUId);
         if (!questionId) return null;
         return await Answer.findAll({
-            include: {
-                model: Question,  include: [ Lesson ],
-                //attributes: ["uuid", "name" ],
-            },
+            include: [
+                { model: Question, include: [{ model: Lesson }] },
+                { model: User }
+            ],
             where: {
                 "$question.id$": 1,
             },

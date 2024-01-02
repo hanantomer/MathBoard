@@ -53,11 +53,13 @@ watch(
 );
 
 async function loadQuestion(questionUUId: string) {
-  await questionStore.loadQuestion(questionUUId);
+  const question = await questionStore.loadQuestion(questionUUId);
 
-  if (!questionStore.getCurrentQuestion()) {
+  if (!question) {
     throw Error(`questionUUId: ${questionUUId} does not exist`);
   }
+
+  questionStore.setCurrentQuestion(question.uuid);
 
   lessonStore.setCurrentLesson(questionStore.getCurrentQuestion()!.lesson.uuid);
 

@@ -2,6 +2,7 @@ import { defineStore } from "pinia";
 import { AnswerAttributes } from "common/answerTypes";
 import { useQuestionStore } from "./questionStore";
 import { useUserStore } from "./userStore";
+import { ref } from "vue";
 
 import useDbHelper from "../../helpers/dbHelper";
 const questionStore = useQuestionStore();
@@ -9,66 +10,62 @@ const userStore = useUserStore();
 const db = useDbHelper();
 
 export const useAnswerStore = defineStore("answer", () => {
-  let answers: Map<String, AnswerAttributes> = new Map();
-  let currentAnswer = <AnswerAttributes>{};
+  let answers = ref<Map<String, AnswerAttributes>>(new Map());
+  let currentAnswer = ref<AnswerAttributes>();
 
   function getAnswers() {
-    return answers;
+    return answers.value;
   }
 
   function getCurrentAnswer() {
-    return currentAnswer;
+    return currentAnswer.value;
   }
 
-  async function loadAnswer(answerUUId: string) {
+  async function loadAnswer(
+    answerUUId: string,
+  ): Promise<AnswerAttributes | null> {
     const answer = await db.getAnswer(answerUUId);
 
-    if (answer) {
-      answers.set(answer.uuid, answer);
-      questionStore.setCurrentQuestion(answer.question);
-      setCurrentAnswer(answer);
-    }
+    if (!answer) return null;
+
+    answers.value.set(answerUUId, answer);
+
+    return answer;
   }
 
   async function loadAnswers() {
-    if (!questionStore.getQuestions()) {
-      questionStore.loadQuestions();
-    }
-
     const answersFromDb = await db.getAnswers(
       questionStore.getCurrentQuestion()!.uuid,
     );
     answersFromDb.forEach((a: AnswerAttributes) => {
-      answers.set(a.uuid, a);
+      answers.value.set(a.uuid, a);
     });
   }
 
-  // answer is initially empty
   async function addAnswer(questionUUId: string) {
-    // check if already has answer for current queestion
-    answers.forEach((answer: AnswerAttributes) => {
-      if (answer.question.uuid == questionUUId) {
-        setCurrentAnswer(answer);
-        return;
-      }
-    });
-
     // add new answer
     let answer = <AnswerAttributes>{};
     answer.question = questionStore.getQuestions().get(questionUUId)!;
     answer.user = userStore.getCurrentUser()!;
     answer = await db.addAnswer(answer);
-    answers.set(answer.uuid, answer);
-    setCurrentAnswer(answer);
+    answers.value.set(answer.uuid, answer);
+    setCurrentAnswer(answer.uuid);
   }
 
-  function setCurrentAnswer(answer: AnswerAttributes) {
-    currentAnswer = answer;
+  function setCurrentAnswer(answerUUId: string) {
+    currentAnswer.value = answers.value.get(answerUUId);
   }
 
   function removeAnswer(answer: AnswerAttributes) {
-    answers.delete(answer.uuid);
+    answers.value.delete(answer.uuid);
   }
+
+  function getQuestionAnswer(questionUUId: string) {
+    return Array.from(answers.value.values()).find(
+      (a) => a.question?.uuid === questionUUId,
+    );
+  }
+
 
   return {
     getAnswers,
@@ -78,5 +75,6 @@ export const useAnswerStore = defineStore("answer", () => {
     addAnswer,
     setCurrentAnswer,
     removeAnswer,
+    getQuestionAnswer,
   };
 });

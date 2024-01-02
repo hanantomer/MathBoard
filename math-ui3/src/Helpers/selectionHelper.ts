@@ -1,13 +1,8 @@
 import {
   NotationType,
-  NotationTypeEditMode,
   NotationTypeShape,
   NotationTypeValues,
 } from "common/unions";
-import {
-  LineNotationAttributes,
-  RectNotationAttributes,
-} from "common/baseTypes";
 import { useNotationStore } from "../store/pinia/notationStore";
 import {
   selectedCellColor,
@@ -32,9 +27,15 @@ const editModeStore = useEditModeStore();
 ///TODO : split function to shorter blocks
 export default function selectionHelper() {
   // called via mouse click
-  function selectClickedNotation(position: DotPosition) {
+  function selectClickedPosition(position: DotPosition) {
     notationStore.resetSelectedNotations();
 
+    const notationSelected = selectNotationAtPosition(position);
+
+    if (!notationSelected) selectCell(position);
+  }
+
+  function selectNotationAtPosition(position: DotPosition): boolean {
     const el = elementFinderHelper.findClickedObject(
       {
         x: position.x,
@@ -44,8 +45,7 @@ export default function selectionHelper() {
       NotationTypeValues,
     );
     if (!el) {
-      selectCell(position);
-      return;
+      return false;
     }
 
     const notationType: NotationType =
@@ -60,26 +60,28 @@ export default function selectionHelper() {
     ) as string;
 
     const notation = notationStore.getNotation(uuid);
-    if (!notation) return;
+    if (!notation) {
+      console.warn(`notation with uuid: ${uuid} not found`);
+      return false;
+    }
 
     switch (NotationTypeShape.get(notationType)) {
       case "LINE": {
         if (notationType == "FRACTION") selectFractionNotation(notation);
         if (notationType == "SQRT") selectSqrtNotation(notation);
         notationStore.selectCell(null);
-        return;
       }
       case "RECT": {
         selectNotation(notation);
         notationStore.selectCell(null);
-        return;
       }
       case "POINT": {
         selectNotation(notation);
         selectCell(position);
-        return;
       }
     }
+
+    return true;
   }
 
   function selectNotation(activeNotation: NotationAttributes) {
@@ -87,6 +89,7 @@ export default function selectionHelper() {
     if (notationMutateHelper.isNotationInQuestionArea(activeNotation)) return;
 
     editModeStore.setEditMode("AREA_SELECTED");
+
     notationStore.selectNotation(activeNotation?.uuid);
   }
 
@@ -132,7 +135,6 @@ export default function selectionHelper() {
     eventBus.emit("lineSelected", notation);
   }
 
-  // update, store active cell
   async function selectCell(position: DotPosition) {
     let clickedCell = elementFinderHelper.findClickedObject(
       position,
@@ -159,7 +161,10 @@ export default function selectionHelper() {
     };
 
     notationStore.selectCell(cellToActivate);
-    editModeStore.setEditMode("CELL_SELECTED");
+
+    if (!editModeStore.isCheckMode()) {
+      editModeStore.setEditMode("CELL_SELECTED");
+    }
 
     if (notationStore.getParent().type == "LESSON") {
       let t = await userOutgoingOperationsHelper.syncOutgoingSelectedCell(
@@ -171,7 +176,7 @@ export default function selectionHelper() {
 
   return {
     showSelectedCell,
+    selectClickedPosition,
     selectCell,
-    selectClickedNotation,
   };
 }

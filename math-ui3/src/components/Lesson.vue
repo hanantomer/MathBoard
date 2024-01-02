@@ -43,16 +43,6 @@ const lessonTitle = computed(() => {
   if (!lessonStore.getCurrentLesson()) return;
   return lessonStore.getCurrentLesson()!.name;
 });
-//let lessonUUID = ref("");
-
-/// TODO deal with mutations which originate from user incoming synchronisation
-
-//onMounted(() => {
-// notationStore.$subscribe((mutation, state) => {
-//   console.log("a change happened");
-//   console.log(mutation, state);
-// });
-//});
 
 watch(
   route,
@@ -70,14 +60,10 @@ async function loadLesson(lessonUUId: string) {
   }
 
   if (!lessonStore.getLessons().get(lessonUUId)) {
-    throw TypeError("invalid lesson:" + lessonUUId);
+    throw Error("invalid lesson:" + lessonUUId);
   }
 
   await lessonStore.setCurrentLesson(lessonUUId);
-
-  if (!lessonStore.getCurrentLesson()) {
-    throw Error(`questionUUId: ${lessonUUId} does not exist`);
-  }
 
   notationStore.setParent(lessonUUId, "LESSON");
 

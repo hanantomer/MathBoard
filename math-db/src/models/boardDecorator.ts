@@ -3,6 +3,18 @@
 import { Table, DefaultScope } from "sequelize-typescript";
 
 export default function BoardDecorator(tableName: string) {
+
+    const indexes = [
+        {
+            unique: true,
+            fields: ["uuid"],
+        },
+    ];
+
+    if (tableName == 'answer') {
+        indexes.push({unique: true, fields:['userId','questionId']})
+    }
+
     return function (target: Function): void {
         DefaultScope(() => ({
             attributes: {
@@ -13,12 +25,7 @@ export default function BoardDecorator(tableName: string) {
             timestamps: true,
             tableName: tableName,
             freezeTableName: true,
-            indexes: [
-                {
-                    unique: true,
-                    fields: ["uuid"],
-                },
-            ],
+            indexes
         })(target);
     };
 }

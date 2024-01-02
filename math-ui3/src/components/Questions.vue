@@ -74,14 +74,14 @@ const menu = [
   { icon: "remove", title: "Remove" },
 ];
 
+onMounted(() => loadQuestions());
+
 watch(
   () => eventBus.bus.value.get("newQuestionSave"),
   (questionName: string) => {
     addQuestion(questionName);
   },
 );
-
-onMounted(() => loadQuestions());
 
 const headers = computed(() => [
   {
@@ -101,21 +101,8 @@ const headers = computed(() => [
   },
 ]);
 
-const questions = computed(() => {
-  return Array.from(questionStore.getQuestions().entries())
-    .filter(([key, question]) => question.lesson.uuid === selectedLesson.value)
-    .map(([key, question]) => {
-      return {
-        uuid: question.uuid,
-        name: question.name,
-        lessonName: question.lesson!.name,
-        createdAt: question.createdAt,
-      };
-    });
-});
-
 const lessons = computed(() => {
-  return Array.from(lessonStore.getLessons().entries()).map(([key, lesson]) => {
+  return Array.from(lessonStore.getLessons().values()).map((lesson) => {
     return {
       value: lesson.uuid,
       title: lesson.name,
@@ -125,6 +112,18 @@ const lessons = computed(() => {
 
 let selectedLesson = ref();
 
+const questions = computed(() => {
+  return Array.from(questionStore.getQuestions().values())
+    .filter((question) => question.lesson.uuid === selectedLesson.value).map((question) => {
+      return {
+        uuid: question.uuid,
+        name: question.name,
+        lessonName: question.lesson!.name,
+        createdAt: question.createdAt
+      }
+    })
+});
+
 function navToLessons() {
   noLessonDialog.value = false;
   router.push({
@@ -133,19 +132,29 @@ function navToLessons() {
 }
 
 async function loadQuestions() {
-  if (!lessonStore.getLessons().size) {
+  await lessonStore.loadLessons();
+  if (!lessonStore.getLessons().size && userStore.isTeacher()) {
     noLessonDialog.value = true;
     return;
   }
 
   await questionStore.loadQuestions();
 
-  if (questionStore.getQuestions().size === 0) {
+  if (questionStore.getQuestions().size === 0 && userStore.isTeacher()) {
     openQuestionDialog();
     return;
   }
 
-  selectedLesson.value = lessonStore.getCurrentLesson()?.uuid;
+  if (lessonStore.getCurrentLesson())
+    selectedLesson.value = lessonStore.getCurrentLesson()?.uuid;
+
+  watch(
+    () => selectedLesson.value,
+    (lessonUUId: string) => {
+      lessonStore.setCurrentLesson(lessonUUId);
+      loadQuestions();
+    },
+  );
 }
 
 function openQuestionDialog() {
@@ -160,16 +169,25 @@ async function addQuestion(name: string) {
 }
 
 async function selectQuestion(e: any, row: any) {
-  //questionStore.setCurrentQuestion(question);
+  const questionUUId = row.item.uuid;
+
   if (userStore.isTeacher()) {
     router.push({
       path: "/question/" + row.item.uuid,
     });
   } else {
+    // check if already has answer for current queestion
+    let answer = answerStore.getQuestionAnswer(questionUUId);
+
     // add student answer when question is first selected
-    await answerStore.addAnswer(row.item.uuid);
+    if (answer) {
+      answerStore.setCurrentAnswer(answer.uuid);
+    } else {
+      await answerStore.addAnswer(questionUUId);
+    }
+
     router.push({
-      path: "/answer/" + answerStore.getCurrentAnswer().uuid,
+      path: "/answer/" + answerStore.getCurrentAnswer()?.uuid,
     });
   }
 }

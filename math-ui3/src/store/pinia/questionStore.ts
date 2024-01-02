@@ -27,20 +27,20 @@ export const useQuestionStore = defineStore("question", () => {
     return currentQuestion.value;
   }
 
-  async function loadQuestion(questionUUId: string) {
-    let questionFromDb = await db.getQuestion(questionUUId);
+  async function loadQuestion(questionUUId: string) : Promise<QuestionAttributes | null> {
+    let question = await db.getQuestion(questionUUId);
 
-    if (!questionFromDb) return;
+    if (!question) return null;
 
-    questions.value.set(questionUUId, questionFromDb);
+    questions.value.set(questionUUId, question);
 
-    setCurrentQuestion(questionFromDb);
+    return question;
   }
 
   async function loadQuestions() {
-    if (!lessonStore.getCurrentLesson()) return;
+    //if (!lessonStore.getCurrentLesson()) return;
 
-    if (!lessonStore.getLessons()) {
+    if (!lessonStore.getLessons().size) {
       lessonStore.loadLessons();
     }
 
@@ -61,13 +61,13 @@ export const useQuestionStore = defineStore("question", () => {
 
     let createdQuestion = await db.addQuestion(question);
     questions.value.set(createdQuestion.uuid, createdQuestion);
-    setCurrentQuestion(createdQuestion);
+    setCurrentQuestion(createdQuestion.uuid);
     return question;
   }
 
-  async function setCurrentQuestion(question: QuestionAttributes) {
-    currentQuestion.value = question;
-    lessonStore.setCurrentLesson(currentQuestion.value.lesson.uuid);
+  async function setCurrentQuestion(questionUUId: string) {
+    currentQuestion.value = questions.value.get(questionUUId);
+    //lessonStore.setCurrentLesson(currentQuestion.value.lesson.uuid);
   }
 
   function removeQuestion(question: QuestionAttributes) {

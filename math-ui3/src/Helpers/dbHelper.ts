@@ -222,8 +222,8 @@ export default function useDbHelper() {
 
   async function getStudentLessons(
     userUUId: string,
-  ): Promise<LessonAttributes[]> {
-    const { data } = await axios.get<LessonAttributes[]>(
+  ): Promise<StudentLessonAttributes[]> {
+    const { data } = await axios.get<StudentLessonAttributes[]>(
       baseURL + "/studentlessons?userUUId=" + userUUId,
     );
 

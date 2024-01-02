@@ -154,7 +154,7 @@ const showQuestions = computed(() => {
 });
 
 const showAnswers = computed(() => {
-  return isTeacher && lessonStore.getCurrentLesson(); //&& questionStore.getCurrentQuestion();
+  return isTeacher.value; //&& lessonStore.getCurrentLesson();
 });
 
 const isTeacher = computed(() => userStore.isTeacher());

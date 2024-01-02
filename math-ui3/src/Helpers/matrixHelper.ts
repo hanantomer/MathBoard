@@ -539,7 +539,7 @@ export default function useMatrixHelper() {
     }
 
     let n1 = n as PointNotationAttributes;
-    return `<p style='color:${color};font-weight:${fontWeight};margin-left:8px;font-size:1.1em'>${n1.value}</p>`;
+    return `<p style='color:${color};font-weight:${fontWeight}; position: absolute;top: 50%;transform: translateY(-50%);left:40%;translateX(-40%);font-size:1.1em'>${n1.value}</p>`;
   }
 
   function getNotationXposByCol(col: number): number {

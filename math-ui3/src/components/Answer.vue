@@ -49,11 +49,13 @@ async function loadAnswer(answerUUId: string) {
   // load from db to store
   await answerStore.loadAnswer(answerUUId);
 
-  if (!answerStore.getCurrentAnswer()) {
+  if (!answerStore.getAnswers().get(answerUUId)) {
     throw Error(`answerUUId: ${answerUUId} does not exist`);
   }
 
-  notationStore.setParent(answerStore.getCurrentAnswer()?.uuid, "ANSWER");
+  answerStore.setCurrentAnswer(answerUUId);
+
+  notationStore.setParent(answerUUId, "ANSWER");
 
   loaded.value = true; // signal child
 }

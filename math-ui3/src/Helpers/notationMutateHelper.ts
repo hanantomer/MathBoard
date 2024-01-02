@@ -230,8 +230,8 @@ export default function notationMutateHelper() {
     notationsMap: Map<String, NotationAttributes>,
     lineCoordinates: LineNotationAttributes,
   ) {
-    return Object.entries(notationsMap)
-      .map((n: NotationAttributes[]) => n[1])
+    return Object.values(notationsMap)
+      //.map((n: NotationAttributes[]) => n[1])
       .filter((n: NotationAttributes) =>
         n.notationType == "SYMBOL" ||
         n.notationType == "EXPONENT" ||
@@ -504,8 +504,8 @@ export default function notationMutateHelper() {
     notationStore.addNotation(notation);
   }
 
-  async function removeAllNotations() {
-    notationStore.deleteAllNotations();
+  async function clearNotations() {
+    notationStore.clearNotations();
   }
 
   function setNotationAttributes(
@@ -744,7 +744,7 @@ export default function notationMutateHelper() {
   }
 
   function upsertExponentNotation(exponent: ExponentAttributes) {
-    const exponentCell = getSymbolCell();
+    const exponentCell = getSelectedCell();
     if (!exponentCell) return;
 
     let notation: ExponentNotationCreationAttributes = {
@@ -762,7 +762,7 @@ export default function notationMutateHelper() {
   }
 
   function upsertSymbolNotation(value: string) {
-    const symbolCell = getSymbolCell();
+    const symbolCell = getSelectedCell();
     if (!symbolCell) return;
 
     let notation: PointNotationCreationAttributes = {
@@ -780,7 +780,8 @@ export default function notationMutateHelper() {
     matrixHelper.setNextCell(1, 0);
   }
 
-  function getSymbolCell(): CellCoordinates | null {
+  function getSelectedCell(): CellCoordinates | null {
+
     if (notationStore.getSelectedNotations().length) {
       let point =
         notationStore.getSelectedNotations()[0] as PointNotationAttributes;

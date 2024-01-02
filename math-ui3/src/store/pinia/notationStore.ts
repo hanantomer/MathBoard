@@ -3,11 +3,7 @@
 import { defineStore } from "pinia";
 import { CellCoordinates, matrixDimensions } from "common/globals";
 import { NotationAttributes } from "common/baseTypes";
-import {
-  BoardType,
-  NotationShape,
-  NotationTypeShape,
-} from "common/unions";
+import { BoardType, NotationShape, NotationTypeShape } from "common/unions";
 import { ref } from "vue";
 import useUserOutgoingOperations from "../../helpers/userOutgoingOperationsHelper";
 const userOutgoingOperations = useUserOutgoingOperations();
@@ -92,7 +88,7 @@ export const useNotationStore = defineStore("notation", () => {
     }
   }
 
-  function deleteAllNotations() {
+  function clearNotations() {
     notations.value.clear();
   }
 
@@ -157,6 +153,6 @@ export const useNotationStore = defineStore("notation", () => {
     resetSelectedCell,
     resetSelectedNotations,
     deleteNotation,
-    deleteAllNotations,
+    clearNotations,
   };
 });
