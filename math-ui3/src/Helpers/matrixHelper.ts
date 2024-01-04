@@ -533,9 +533,8 @@ export default function useMatrixHelper() {
 
     if (n.notationType === "EXPONENT") {
       let n1 = n as ExponentNotationAttributes;
-      return `</span><span style='color:${color};font-weight:${fontWeight};font-size:1.1em'>${n1.base}</span>
-       <span style='position:relative;bottom:6px;color:${color};font-weight:${fontWeight};font-size:0.8em'>${n1.exponent}`;
-      //return `<p style='color:${color};font-weight:${fontWeight};margin-left:8px;font-size:1.1em'>${n1.base}</p>`;
+      return `</span><span style='position: absolute;top: 50%;transform: translateY(-50%);left:10%;translateX(-10%);color:${color};font-weight:${fontWeight};font-size:1.1em'>${n1.base}</span>
+       <span style='position:relative;left:50%;bottom:6px;color:${color};font-weight:${fontWeight};font-size:0.8em'>${n1.exponent}`;
     }
 
     let n1 = n as PointNotationAttributes;

@@ -1,9 +1,9 @@
 <template>
   <v-row justify="center">
     <v-dialog
-      persistent
       v-model="dialog"
       max-width="400px"
+      persistent
       @keydown.esc="closeDialog"
     >
       <v-card>
@@ -40,11 +40,11 @@ import { useLessonStore } from "../store/pinia/lessonStore";
 const lessonStore = useLessonStore();
 const emit = defineEmits(["close"]);
 
+const dialog = ref(false);
+
 const props = defineProps({
   show: { type: Boolean },
 });
-
-let dialog = ref(false);
 
 watch(
   () => props.show,

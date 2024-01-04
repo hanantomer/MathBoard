@@ -29,20 +29,6 @@
       </template>
     </v-tooltip>
 
-    <!-- text tool  -->
-    <v-tooltip text="Free Text">
-      <template v-slot:activator="{ props }">
-        <v-btn
-          v-bind="props"
-          icon
-          :disabled="!textEnabled"
-          v-on:click="startTextMode"
-          @click.stop="openFreeTextDialog"
-          ><v-icon>mdi-text</v-icon></v-btn
-        >
-      </template>
-    </v-tooltip>
-
     <!-- selection button -->
     <v-tooltip text="Selection">
       <template v-slot:activator="{ props }">
@@ -100,16 +86,26 @@
         <v-btn
           v-bind="props"
           icon
-          :color="exponentButtonActive ? 'white' : 'yellow'"
-          x-small
-          fab
-          dark
-          v-on:click="toggleExponentMode"
-          :disabled="!editEnabled"
+          v-on:click="startExponentMode"
+          :disabled="!exponentEnabled"
           @click.stop="openExponentDialog"
         >
           <v-icon>mdi-exponent</v-icon>
         </v-btn>
+      </template>
+    </v-tooltip>
+
+    <!-- text tool  -->
+    <v-tooltip text="Free Text">
+      <template v-slot:activator="{ props }">
+        <v-btn
+          v-bind="props"
+          icon
+          v-on:click="startTextMode"
+          :disabled="!textEnabled"
+          @click.stop="openFreeTextDialog"
+          ><v-icon>mdi-text</v-icon></v-btn
+        >
       </template>
     </v-tooltip>
 
@@ -200,12 +196,11 @@ let selectionButtonActive = ref(1);
 let fractionButtonActive = ref(1);
 let squareRootButtonActive = ref(1);
 let exponentButtonActive = ref(1);
+let textButtonActive = ref(1);
 
 let showAccessLinkDialog = ref(false);
 let showFreeTextDialog = ref(false);
 let showExponentDialog = ref(false);
-
-let textButtonActive = ref(1);
 
 watch(
   () => editModeStore.getEditMode(),
@@ -285,6 +280,15 @@ const textEnabled = computed(() => {
   );
 });
 
+const exponentEnabled = computed(() => {
+  if (!editEnabled.value) return false;
+
+  return (
+    notationStore.getSelectedCell() ||
+    notationStore.getSelectedNotations()?.at(0)?.notationType === "EXPONENT"
+  );
+});
+
 const answerCheckMode = computed(() => {
   return notationStore.getParent().type == "ANSWER" && userStore.isTeacher();
 });
@@ -329,23 +333,10 @@ function startSqrtMode() {
   editModeStore.setEditMode("SQRT");
 }
 
-function toggleExponentMode() {
-  resetButtonsState();
-  if (editModeStore.getEditMode() == "EXPONENT") {
-    endExponentMode();
-  } else {
-    startExponentMode();
-  }
-}
-
 function startExponentMode() {
   resetButtonsState();
   exponentButtonActive.value = 0;
   editModeStore.setEditMode("EXPONENT");
-}
-
-function endExponentMode() {
-  resetButtonsState();
 }
 
 function startTextMode() {

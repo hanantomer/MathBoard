@@ -126,7 +126,7 @@ app.get("/api/students", async (req: Request, res: Response, next: NextFunction)
     try {
         const { uuid } = req.query;
  
-        if (uuid) throw new Error("invalid arguments userUUId  must be supplied");
+        if (!uuid) throw new Error("invalid arguments user uuid  must be supplied");
     
         return res.status(200).json(await db.getUser(uuid as string));
     }

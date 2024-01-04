@@ -1,9 +1,9 @@
 <template>
   <v-row justify="center">
     <v-dialog
-      persistant
       v-model="dialog"
       max-width="800px"
+      persistent
       @keydown.esc="closeDialog"
     >
       <v-card>
@@ -55,14 +55,13 @@ import { useNotationStore } from "../store/pinia/notationStore";
 import useEventBus from "../helpers/eventBusHelper";
 import { RectNotationAttributes } from "../../../math-common/build/baseTypes";
 
-
 let textValue = ref("");
-let dialog = ref(false);
 
 const notationStore = useNotationStore();
 const eventBus = useEventBus();
-
 const emit = defineEmits(["close"]);
+
+const dialog = ref(false);
 
 const props = defineProps({
   show: { type: Boolean },
