@@ -4,11 +4,7 @@ import {
   NotationTypeValues,
 } from "common/unions";
 import { useNotationStore } from "../store/pinia/notationStore";
-import {
-  selectedCellColor,
-  CellCoordinates,
-  DotPosition,
-} from "common/globals";
+import { CellCoordinates, DotPosition } from "common/globals";
 import { NotationAttributes } from "common/baseTypes";
 import useElementFinderHelper from "./elementFinderHelper";
 import useNotationMutateHelper from "./notationMutateHelper";
@@ -30,9 +26,15 @@ export default function selectionHelper() {
   function selectClickedPosition(position: DotPosition) {
     notationStore.resetSelectedNotations();
 
-    const notationSelected = selectNotationAtPosition(position);
+    selectNotationAtPosition(position);
 
-    if (!notationSelected) selectCell(position);
+    selectCell(position);
+
+    //if (notationSelected) {
+    //notationStore.selectCell(null);
+    //} else {
+    //selectCell(position);
+    //}
   }
 
   function selectNotationAtPosition(position: DotPosition): boolean {
@@ -42,7 +44,7 @@ export default function selectionHelper() {
         y: position.y,
       },
       "foreignObject",
-      NotationTypeValues,
+      null,
     );
     if (!el) {
       return false;
@@ -69,15 +71,13 @@ export default function selectionHelper() {
       case "LINE": {
         if (notationType == "FRACTION") selectFractionNotation(notation);
         if (notationType == "SQRT") selectSqrtNotation(notation);
-        notationStore.selectCell(null);
+        break;
       }
-      case "RECT": {
-        selectNotation(notation);
-        notationStore.selectCell(null);
-      }
+
+      case "RECT":
       case "POINT": {
         selectNotation(notation);
-        selectCell(position);
+        break;
       }
     }
 
@@ -91,34 +91,6 @@ export default function selectionHelper() {
     editModeStore.setEditMode("AREA_SELECTED");
 
     notationStore.selectNotation(activeNotation?.uuid);
-  }
-
-  // called by store watcher. see mathboard.vue
-  /// TODO - move to dom helper or matrix helper
-  function showSelectedCell(
-    svgId: string,
-    newSelectedCell: CellCoordinates | null | undefined,
-    oldSelectedCell: CellCoordinates | null | undefined,
-  ) {
-    if (oldSelectedCell?.col != null) {
-      let prevRectElm = document
-        ?.querySelector<HTMLElement>(
-          `svg[id="${svgId}"] g[row="${oldSelectedCell.row}"]`,
-        )
-        ?.querySelector<HTMLElement>(`rect[col="${oldSelectedCell.col}"]`);
-
-      if (prevRectElm?.style) prevRectElm.style.fill = "";
-    }
-
-    if (newSelectedCell?.col != null) {
-      let rectElm = document
-        ?.querySelector<HTMLElement>(
-          `svg[id="${svgId}"] g[row="${newSelectedCell.row}"]`,
-        )
-        ?.querySelector<HTMLElement>(`rect[col="${newSelectedCell.col}"]`);
-
-      if (rectElm?.style) rectElm.style.fill = selectedCellColor;
-    }
   }
 
   function selectFractionNotation(notation: NotationAttributes) {
@@ -175,7 +147,6 @@ export default function selectionHelper() {
   }
 
   return {
-    showSelectedCell,
     selectClickedPosition,
     selectCell,
   };

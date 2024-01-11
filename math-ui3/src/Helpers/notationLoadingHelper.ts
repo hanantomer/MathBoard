@@ -7,7 +7,7 @@ import {
 
 import useDbHelper from "./dbHelper";
 import { useNotationStore } from "../store/pinia/notationStore";
-import { BoardType, NotationType, NotationTypeValues } from "common/unions";
+import { BoardType, NotationType, NotationTypeShape,  NotationTypeValues } from "common/unions";
 
 const notationStore = useNotationStore();
 const dbHelper = useDbHelper();
@@ -15,7 +15,7 @@ const dbHelper = useDbHelper();
 export default function notationLoadingHelper() {
   // e.g get lesson notations
   async function loadNotations(boardType: BoardType, parentUUId: string) {
-    
+
     let notations: NotationAttributes[] = [];
 
     for (let i = 0; i < NotationTypeValues.length; i++) {
@@ -43,28 +43,30 @@ export default function notationLoadingHelper() {
     notationType: NotationType,
     parentUUId: string,
   ): Promise<NotationAttributes[]> {
+
     if (!boardType) boardType = notationStore.getParent().type;
-    switch (notationType) {
-      case "SYMBOL":
-      case "SIGN":
-      case "FRACTION":
-      case "SQRT":
+
+    switch (NotationTypeShape.get(notationType)) {
+      case "POINT":
+        return await dbHelper.getNotations<PointNotationAttributes>(
+          notationType,
+          boardType,
+          parentUUId,
+        );
+      case "LINE":
         return await dbHelper.getNotations<LineNotationAttributes>(
           notationType,
           boardType,
           parentUUId,
         );
-      case "EXPONENT":
-      case "GEO":
-      case "IMAGE":
-      case "TEXT":
+      case "RECT":
         return await dbHelper.getNotations<RectNotationAttributes>(
           notationType,
           boardType,
           parentUUId,
         );
       default:
-        return [];
+        throw new Error(`${notationType} :notation type is invalid`);
     }
   }
 

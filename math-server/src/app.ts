@@ -396,22 +396,23 @@ BoardTypeValues.forEach((boardType) => {
 
 
 // Resets the database and launches the express app on :8081
-connection.sequelize.sync({ force: true }).then(() => {
+connection.sequelize.sync({ force: false }).then(() => {
     app.listen(8081, () => {
-        var spawn = require("child_process").spawn;
-        var ls = spawn("cmd.exe", ["/c", "seed.bat"]);
+        
+        //var spawn = require("child_process").spawn;
+        //var ls = spawn("cmd.exe", ["/c", "seed.bat"]);
 
-        ls.stdout.on("data", function (data: any) {
-            console.log("stdout: " + data);
-        });
+        //ls.stdout.on("data", function (data: any) {
+        //    console.log("stdout: " + data);
+        //});
 
-        ls.stderr.on("data", function (data: any) {
-            console.log("stderr: " + data);
-        });
+        //ls.stderr.on("data", function (data: any) {
+        //    console.log("stderr: " + data);
+        //});
 
-        ls.on("exit", function (code: any) {
-            console.log("child process exited with code " + code);
-        });
+        //ls.on("exit", function (code: any) {
+        //    console.log("child process exited with code " + code);
+        //});
         process.stdout.write("listening to port localhost:8081");
     }).on("error", (e) => {
         console.log("Error: ", e.message);

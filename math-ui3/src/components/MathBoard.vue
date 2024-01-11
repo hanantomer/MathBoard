@@ -73,25 +73,27 @@ watch(
 );
 
 watch(
+  () => eventBus.bus.value.get("keyup"),
+  (e: KeyboardEvent) => {
+    eventHelper.keyUp(e, props.svgId);
+  },
+);
+
+watch(
   () => notationStore.getSelectedCell() as CellCoordinates,
   (
     newSelectedCell: CellCoordinates | undefined | null,
     oldSelectedCell: CellCoordinates | undefined | null,
   ) => {
-    selectionHelper.showSelectedCell(
-      props.svgId,
-      newSelectedCell,
-      oldSelectedCell,
-    );
+    setTimeout(() => {
+      matrixHelper.showSelectedCell(
+        props.svgId,
+        newSelectedCell,
+        oldSelectedCell,
+      );
+    }, 100);
   },
   { immediate: true, deep: true },
-);
-
-watch(
-  () => eventBus.bus.value.get("keyup"),
-  (e: KeyboardEvent) => {
-    eventHelper.keyUp(e, props.svgId);
-  },
 );
 
 watch(
@@ -115,7 +117,7 @@ watch(
   () => {
     matrixHelper.refreshScreen(notationStore.getNotations(), props.svgId);
   },
-  { immediate: true, deep: true },
+  { deep: true },
 );
 
 async function load() {
@@ -161,20 +163,18 @@ function handleMouseDown(e: MouseEvent) {
     return;
   }
 
-    if (
+  if (
     editModeStore.getEditMode() === "CHECKMARK" ||
     editModeStore.getEditMode() === "SEMICHECKMARK" ||
     editModeStore.getEditMode() === "XMARK"
-    ) {
-      selectionHelper.selectCell(position);
-      notationMutateHelper.addMarkNotation();
-      return;
+  ) {
+    selectionHelper.selectCell(position);
+    notationMutateHelper.addMarkNotation();
+    return;
   }
-
 
   selectionHelper.selectClickedPosition(position);
 }
-
 </script>
 
 <style>
@@ -200,13 +200,5 @@ function handleMouseDown(e: MouseEvent) {
 }
 .deleteButtonActive {
   cursor: URL("~@/assets/delete.jpg"), none !important;
-}
-mjx-container[jax="SVG"][display="true"] {
-  margin: auto !important;
-}
-
-mjx-line {
-  margin-top: 0.05em !important;
-  margin-bottom: 0.3em !important;
 }
 </style>

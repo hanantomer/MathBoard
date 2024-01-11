@@ -13,6 +13,7 @@ import { QuestionCreationAttributes } from "../../math-common/build/questionType
 import { AnswerAttributes, AnswerCreationAttributes } from "../../math-common/build/answerTypes";
 import { capitalize } from "../../math-common/build/utils";
 import { BoardType, NotationType } from "../../math-common/src/unions";
+import { log } from "console";
 
 
 export default function dbUtil() {
@@ -258,6 +259,7 @@ export default function dbUtil() {
         notationType: String,
         parentUUId: string
     ) {
+
         const boardName = boardType.toString().toLowerCase(); // e.g lesson
         const boardFieldIdFieldName = boardType.toString().toLowerCase() + "Id";
         const boardModelName = capitalize(boardName); // e.g Lesson
@@ -265,7 +267,20 @@ export default function dbUtil() {
         const notationTypeNameCapitalized = capitalize(notationTypeName); // e.g. Symbol
         const modelName = boardModelName + notationTypeNameCapitalized; // e.g. LessonSymbol
 
-        if (!parentUUId) return null;
+        if (!parentUUId) {
+            ///TODE: report warning to log
+            return null;
+        }
+
+        if (!db.sequelize.models[modelName]) {
+            ///TODE: report warning to log
+            return null;
+        }
+
+        if (!db.sequelize.models[boardModelName]) {
+            ///TODE: report warning to log
+            return null;
+        }
 
         let parentId = await getIdByUUId(boardModelName, parentUUId);
         if (!parentId) return null;

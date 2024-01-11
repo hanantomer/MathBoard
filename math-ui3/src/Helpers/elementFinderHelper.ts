@@ -1,4 +1,4 @@
-import { NotationType, NotationTypeValues } from "common/unions";
+import {NotationShape,  NotationTypeShape, NotationTypeValues } from "common/unions";
 import { DotPosition } from "common/globals";
 
 export default function elementFinderHelper() {
@@ -6,7 +6,7 @@ export default function elementFinderHelper() {
   function findClickedObject(
     dotPosition: DotPosition,
     tagName: string,
-    notationTypes: readonly NotationType[] | null,
+    notationShape: NotationShape | null,
   ): HTMLElement {
     var elements = [];
     var display: any = [];
@@ -35,8 +35,8 @@ export default function elementFinderHelper() {
     return elements.find(
       (item) =>
         item.tagName == tagName &&
-        (!notationTypes ||
-          notationTypes?.includes(item.attributes.notationType?.value)),
+        (!notationShape ||
+          NotationTypeShape.get(item.attributes.notationType?.value) === notationShape)
     );
   }
 
@@ -47,7 +47,7 @@ export default function elementFinderHelper() {
         y: position.y,
       },
       "foreignObject",
-      ["TEXT", "GEO", "IMAGE"],
+      "RECT",
     );
   }
 
@@ -58,7 +58,7 @@ export default function elementFinderHelper() {
         y: position.y,
       },
       "foreignObject",
-      NotationTypeValues,
+      null,
     );
 
     return el;

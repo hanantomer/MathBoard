@@ -15,7 +15,7 @@ type Board = {
 
 ///TODO watch notations and sync occupation mattrix
 export const useNotationStore = defineStore("notation", () => {
-  let cellSize = ref<number>();
+  let cellVerticalHight = ref<number>();
 
   const cellOccupationMatrix: (NotationAttributes | null)[][] =
     createCellOccupationMatrix();
@@ -24,15 +24,22 @@ export const useNotationStore = defineStore("notation", () => {
 
   let notations = ref(<Map<String, NotationAttributes>>new Map());
 
-  let selectedCell = ref(<CellCoordinates | null>null);
+  let selectedCell = ref(<CellCoordinates>{ col: 0, row: 0 });
 
-  function getCellSize() {
-    if (!cellSize.value) throw new Error("cellSize.value is null");
-    return cellSize.value;
+  function getCellVerticalHeight() {
+    if (!cellVerticalHight.value)
+      throw new Error("cellVerticalHight.value is null");
+    return cellVerticalHight.value;
   }
 
-  function setCellSize(size: number) {
-    cellSize.value = size;
+  function getCellHorizontalWidth() {
+    if (!cellVerticalHight.value)
+      throw new Error("cellVerticalHight.value is null");
+    return cellVerticalHight.value / 2;
+  }
+
+  function setCellVerticalHeight(size: number) {
+    cellVerticalHight.value = size;
   }
 
   function getSelectedNotations(): NotationAttributes[] {
@@ -92,7 +99,7 @@ export const useNotationStore = defineStore("notation", () => {
     notations.value.clear();
   }
 
-  function selectCell(newSelectedCell: CellCoordinates | null) {
+  function selectCell(newSelectedCell: CellCoordinates) {
     selectedCell.value = newSelectedCell;
   }
 
@@ -143,13 +150,14 @@ export const useNotationStore = defineStore("notation", () => {
     getSelectedCell,
     getSelectedNotations,
     getParent,
-    getCellSize,
+    getCellHorizontalWidth,
+    getCellVerticalHeight,
     isLineOrRectSelected,
     setNotations,
     selectNotation,
     selectCell,
     setParent,
-    setCellSize,
+    setCellVerticalHeight,
     resetSelectedCell,
     resetSelectedNotations,
     deleteNotation,

@@ -39,9 +39,10 @@ export default function eventHelper() {
         let fromRow = notationStore.getSelectedCell()?.row;
         if (!fromCol || !fromRow) return;
         let toCol =
-          Math.ceil(image.width / matrixHelper.getCellSize()) + fromCol;
+          Math.ceil(image.width / notationStore.getCellHorizontalWidth()) + fromCol;
         let toRow =
-          Math.ceil(image.height / matrixHelper.getCellSize()) + fromRow;
+          Math.ceil(image.height / notationStore.getCellVerticalHeight()) +
+          fromRow;
 
         notationMutationHelper.addImageNotation(
           fromCol,
@@ -121,10 +122,12 @@ export default function eventHelper() {
     selectionHelper.selectClickedPosition({
       x:
         svgBounds.left +
-        notationStore.getSelectedCell()?.col! * notationStore.getCellSize(),
+        notationStore.getSelectedCell()?.col! *
+          notationStore.getCellHorizontalWidth(),
       y:
         svgBounds.left +
-        notationStore.getSelectedCell()?.row! * notationStore.getCellSize(),
+        notationStore.getSelectedCell()?.row! *
+          notationStore.getCellVerticalHeight(),
     });
   }
 
@@ -145,6 +148,8 @@ export default function eventHelper() {
       code === "Minus" ||
       code === "Plus" ||
       code === "Equal" ||
+      code === "Slash" ||
+      code === "Backslash" ||
       code === "Period"
     )
       return "SYMBOL";
@@ -229,7 +234,6 @@ export default function eventHelper() {
   return {
     paste,
     keyUp,
-    //    mouseDown,
     registerSvgMouseDown,
     unregisterSvgMouseDown,
     registerSvgMouseMove,

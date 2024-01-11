@@ -148,13 +148,13 @@ function mouseup(e: KeyboardEvent) {
 function onLineSelected(lineNotation: LineNotationAttributes) {
   linePosition.value.x1 =
     svgDimensions.value.left +
-    lineNotation.fromCol * notationStore.getCellSize();
+    lineNotation.fromCol * notationStore.getCellHorizontalWidth();
 
   linePosition.value.x2 =
-    svgDimensions.value.left + lineNotation.toCol * notationStore.getCellSize();
+    svgDimensions.value.left + lineNotation.toCol * notationStore.getCellHorizontalWidth();
 
   linePosition.value.y =
-    svgDimensions.value.top + lineNotation.row * notationStore.getCellSize();
+    svgDimensions.value.top + lineNotation.row * notationStore.getCellVerticalHeight();
 
   notationStore.selectNotation(lineNotation.uuid);
 
@@ -242,20 +242,19 @@ function setLineWidth(xPos: number) {
 function endDrawLine() {
   if (linePosition.value.x2 == linePosition.value.x1) return;
 
-  let fromCol = Math.ceil(
+  let fromCol = Math.round(
     (linePosition.value.x1 - svgDimensions.value.left) /
-      notationStore.getCellSize(),
+      notationStore.getCellHorizontalWidth(),
   );
 
-  let toCol = Math.ceil(
+  let toCol = Math.round(
     (linePosition.value.x2 - svgDimensions.value.left) /
-      notationStore.getCellSize() -
-      1,
+      notationStore.getCellHorizontalWidth(),
   );
 
   let row = Math.round(
     (linePosition.value.y - svgDimensions.value.top) /
-      notationStore.getCellSize(),
+      notationStore.getCellVerticalHeight(),
   );
 
   let lineAttributes: LineAttributes = {
@@ -289,8 +288,8 @@ function resetLineDrawing() {
 }
 
 function getNearestRow(clickedYPos: number) {
-  let clickedRow = Math.round(clickedYPos / notationStore.getCellSize());
-  return clickedRow * notationStore.getCellSize();
+  let clickedRow = Math.round(clickedYPos / notationStore.getCellVerticalHeight());
+  return clickedRow * notationStore.getCellVerticalHeight();
 }
 </script>
 
@@ -308,6 +307,7 @@ foreignObject[type="sqrt"] {
   display: block;
   border-bottom: solid 1px;
   border-top: solid 1px;
+  z-index: 999;
 }
 .lineHandle {
   cursor: col-resize;

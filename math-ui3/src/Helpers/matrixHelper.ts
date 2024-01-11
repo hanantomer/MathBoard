@@ -1,7 +1,9 @@
 import { NotationTypeShape } from "common/unions";
-import { getDefaultFontSize } from "common/globals";
+import { getDefaultFontSize, selectedCellColor } from "common/globals";
 import * as d3 from "d3";
 import { useNotationStore } from "../store/pinia/notationStore";
+
+export type CellCoordinates = { col: number; row: number };
 
 import {
   NotationAttributes,
@@ -21,7 +23,7 @@ const userStore = useUserStore();
 
 export default function useMatrixHelper() {
   const opacity: number = 1;
-  const colsNum: number = 35;
+  const colsNum: number = 70;
   const rowsNum: number = 20;
 
   const svgWidth: string = "1400px";
@@ -32,12 +34,16 @@ export default function useMatrixHelper() {
     return notation.selected ? "gray" : "transparent";
   }
 
+  function textBorderColor(notation: NotationAttributes): string {
+    return notation.selected ? "gray" : "lighgray";
+  }
+
   function backgroundColor(selected: boolean): string {
     return selected ? "green" : "transparent";
   }
 
   function regularFontSize() {
-    return `${notationStore.getCellSize() / 25}em`;
+    return `${notationStore.getCellVerticalHeight() / 25}em`;
   }
 
   function textFontSize(el: HTMLElement): string {
@@ -45,18 +51,18 @@ export default function useMatrixHelper() {
   }
 
   function exponentBaseFontSize() {
-    return `${notationStore.getCellSize() / 28}em`;
+    return `${notationStore.getCellVerticalHeight() / 28}em`;
   }
 
   function signFontSize() {
-    return `${notationStore.getCellSize() / 28}em`;
+    return `${notationStore.getCellVerticalHeight() / 28}em`;
   }
 
   function sqrtFontSize() {
-    return `${notationStore.getCellSize() / 20}em`;
+    return `${notationStore.getCellVerticalHeight() / 20}em`;
   }
 
-  function setCellSize(svgId: string) {
+  function setCellVerticalHeight(svgId: string) {
     let clientWidth: number | undefined =
       document.getElementById(svgId)?.clientWidth;
     let clientHeight: number | undefined =
@@ -64,11 +70,11 @@ export default function useMatrixHelper() {
 
     if (!clientWidth || !clientHeight) return;
 
-    notationStore.setCellSize(
-      Math.min(
-        Math.floor(clientWidth / colsNum),
-        Math.floor(clientHeight / rowsNum),
-      ),
+    notationStore.setCellVerticalHeight(
+      //Math.min(
+      //  Math.floor(clientWidth / colsNum),
+      Math.floor(clientHeight / rowsNum),
+      //),
     );
   }
 
@@ -80,12 +86,9 @@ export default function useMatrixHelper() {
       .getPropertyValue("font");
   }
 
-  /// call from component mount
-
-  // function init(el: HTMLElement, svgId: string) {
-  //   setCellSize(svgId);
-  //   setTextMeasurementCtx(el);
-  // }
+  function getGeoRectSize() {
+    return 5; /// TODO : move to user prefernces
+  }
 
   function getFreeTextRectWidth(text: string) {
     const textArr = text.split("\n");
@@ -96,7 +99,7 @@ export default function useMatrixHelper() {
       ),
     );
 
-    return maxWidth / notationStore.getCellSize();
+    return maxWidth / notationStore.getCellVerticalHeight();
   }
 
   function getFreeTextRectHeight(text: string) {
@@ -104,14 +107,14 @@ export default function useMatrixHelper() {
     const margin = 5;
     return (
       ((fontSize + margin) * text.split(/\r*\n/).length) /
-      notationStore.getCellSize()
+      notationStore.getCellVerticalHeight()
     );
   }
 
   function setMatrix(svgId: string) {
     const el = document.getElementById(svgId);
     if (!el) return;
-    setCellSize(svgId);
+    setCellVerticalHeight(svgId);
     setTextMeasurementCtx(el);
 
     // render rows
@@ -130,7 +133,9 @@ export default function useMatrixHelper() {
       })
       .lower()
       .attr("transform", (d, i) => {
-        return "translate(0, " + notationStore.getCellSize() * i + ")";
+        return (
+          "translate(0, " + notationStore.getCellVerticalHeight() * i + ")"
+        );
       })
       .selectAll("cell")
       .data((r) => r)
@@ -145,10 +150,10 @@ export default function useMatrixHelper() {
         return i;
       })
       .attr("x", (d, i) => {
-        return i * notationStore.getCellSize();
+        return i * notationStore.getCellHorizontalWidth();
       })
-      .attr("width", notationStore.getCellSize())
-      .attr("height", notationStore.getCellSize());
+      .attr("width", notationStore.getCellHorizontalWidth())
+      .attr("height", notationStore.getCellVerticalHeight());
   }
 
   function getNextCell(
@@ -402,7 +407,7 @@ export default function useMatrixHelper() {
     let colIdx = col(n);
     let deltaX =
       n.notationType === "SQRTSYMBOL"
-        ? Math.round(notationStore.getCellSize() / 3) * -1
+        ? Math.round(notationStore.getCellHorizontalWidth() / 1.5) * -1
         : 0;
 
     return colIdx ? getNotationXposByCol(colIdx) + deltaX : null;
@@ -425,13 +430,12 @@ export default function useMatrixHelper() {
 
   function width(n: NotationAttributes): number | null {
     if (n.notationType === "SQRTSYMBOL") {
-      return notationStore.getCellSize();
+      return notationStore.getCellHorizontalWidth() * 2;
     }
 
     if (n.notationType === "EXPONENT") {
       const n1 = n as ExponentNotationAttributes;
-      return notationStore.getCellSize(); //* n1.base.toString().length +
-      //(notationStore.getCellSize() / 2) * n1.exponent.toString().length
+      return notationStore.getCellHorizontalWidth() * 2;
     }
 
     switch (NotationTypeShape.get(n.notationType)) {
@@ -449,11 +453,11 @@ export default function useMatrixHelper() {
   }
 
   function pointNotationWidth(n: PointAttributes): number {
-    return notationStore.getCellSize();
+    return notationStore.getCellHorizontalWidth();
   }
 
   function lineNotationWidth(n: LineAttributes): number {
-    return (n.toCol - n.fromCol) * notationStore.getCellSize() + 5;
+    return (n.toCol - n.fromCol) * notationStore.getCellHorizontalWidth() + 5;
   }
 
   function rectNotationWidth(n: RectAttributes): number {
@@ -463,11 +467,13 @@ export default function useMatrixHelper() {
     //     1 * n.value.length
     //   );
     // }
-    return (n.toCol - n.fromCol + 1) * notationStore.getCellSize() + 5;
+    return (
+      (n.toCol - n.fromCol + 1) * notationStore.getCellHorizontalWidth() + 5
+    );
   }
 
   function pointNotationHeight(n: PointAttributes): number {
-    return notationStore.getCellSize();
+    return notationStore.getCellVerticalHeight();
   }
 
   function lineNotationHeight(n: LineAttributes): number {
@@ -475,7 +481,9 @@ export default function useMatrixHelper() {
   }
 
   function rectNotationHeight(n: RectAttributes): number {
-    return (n.toRow - n.fromRow + 1) * notationStore.getCellSize() + 5;
+    return (
+      (n.toRow - n.fromRow + 1) * notationStore.getCellVerticalHeight() + 5
+    );
   }
 
   function fontSize(n: NotationAttributes, el: HTMLElement) {
@@ -494,7 +502,7 @@ export default function useMatrixHelper() {
       Array.from(notationStore.getSelectedNotations())
         .map((n) => n.uuid)
         .indexOf(n.uuid) >= 0
-        ? "gray"
+        ? "lightgray"
         : notationStore.getParent().type === "ANSWER" &&
           userStore.getCurrentUser()?.uuid != n.user.uuid
         ? "purple"
@@ -503,14 +511,14 @@ export default function useMatrixHelper() {
     if (n.notationType === "FRACTION") {
       let n1 = n as LineNotationAttributes;
       return `<span class=line style='color:${color};width:${
-        (n1.toCol - n1.fromCol) * notationStore.getCellSize()
+        (n1.toCol - n1.fromCol) * notationStore.getCellHorizontalWidth()
       }px;'></span>`;
     }
 
     if (n.notationType === "SQRT") {
       let n1 = n as LineNotationAttributes;
       return `<span class=line style='color:${color};position:relative;left:9px;width:${
-        (n1.toCol - n1.fromCol) * notationStore.getCellSize() - 8
+        (n1.toCol - n1.fromCol) * notationStore.getCellHorizontalWidth() - 8
       }px;'></span>`;
     }
 
@@ -521,7 +529,7 @@ export default function useMatrixHelper() {
     if (n.notationType === "TEXT") {
       let n1 = n as RectNotationAttributes;
 
-      let bColor = borderColor(n ?? false);
+      let bColor = textBorderColor(n ?? false);
       return `<pre style='border:groove 2px;border-color:${bColor};'>${n1.value}</pre>`;
     }
 
@@ -534,7 +542,7 @@ export default function useMatrixHelper() {
     if (n.notationType === "EXPONENT") {
       let n1 = n as ExponentNotationAttributes;
       return `</span><span style='position: absolute;top: 50%;transform: translateY(-50%);left:10%;translateX(-10%);color:${color};font-weight:${fontWeight};font-size:1.1em'>${n1.base}</span>
-       <span style='position:relative;left:50%;bottom:6px;color:${color};font-weight:${fontWeight};font-size:0.8em'>${n1.exponent}`;
+       <span style='position:relative;left:60%;bottom:6px;color:${color};font-weight:${fontWeight};font-size:0.8em'>${n1.exponent}`;
     }
 
     let n1 = n as PointNotationAttributes;
@@ -542,28 +550,52 @@ export default function useMatrixHelper() {
   }
 
   function getNotationXposByCol(col: number): number {
-    return col * notationStore.getCellSize();
+    return col * notationStore.getCellHorizontalWidth();
   }
 
   function getNotationYposByRow(row: number): number {
-    return row * notationStore.getCellSize();
+    return row * notationStore.getCellVerticalHeight();
   }
 
-  function getCellSize(): number {
-    return notationStore.getCellSize();
+  // called by store watcher. see mathboard.vue
+  function showSelectedCell(
+    svgId: string,
+    newSelectedCell: CellCoordinates | null | undefined,
+    oldSelectedCell: CellCoordinates | null | undefined,
+  ) {
+    if (oldSelectedCell?.col != null) {
+      let prevRectElm = document
+        ?.querySelector<HTMLElement>(
+          `svg[id="${svgId}"] g[row="${oldSelectedCell.row}"]`,
+        )
+        ?.querySelector<HTMLElement>(`rect[col="${oldSelectedCell.col}"]`);
+
+      if (prevRectElm?.style) prevRectElm.style.fill = "";
+    }
+
+    if (newSelectedCell?.col != null) {
+      let rectElm = document
+        ?.querySelector<HTMLElement>(
+          `svg[id="${svgId}"] g[row="${newSelectedCell.row}"]`,
+        )
+        ?.querySelector<HTMLElement>(`rect[col="${newSelectedCell.col}"]`);
+
+      if (rectElm?.style) rectElm.style.fill = selectedCellColor;
+    }
   }
 
   return {
     svgWidth,
     svgHeight,
-    getCellSize,
     findRect,
     setNextCell,
     getFreeTextRectWidth,
     getFreeTextRectHeight,
+    getGeoRectSize,
     getNotationXposByCol,
     getNotationYposByRow,
     refreshScreen,
     setMatrix,
+    showSelectedCell,
   };
 }

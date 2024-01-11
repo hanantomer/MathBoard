@@ -29,6 +29,11 @@ export type ExponentAttributes =  {
   exponent: string;
 };
 
+export type TriangleAttributes =  {
+  A: number;
+  B: number;
+  C: number;
+};
 
 export type PointAttributes =  {
   col: number;
@@ -63,9 +68,11 @@ export type PointNotationAttributes = EntityAttributes &  NotationAttributes & P
 export type LineNotationAttributes = EntityAttributes & NotationAttributes & LineAttributes & SingleValueAttributes;
 export type RectNotationAttributes = EntityAttributes & NotationAttributes & RectAttributes & SingleValueAttributes;
 export type ExponentNotationAttributes = EntityAttributes &  NotationAttributes & PointAttributes & ExponentAttributes;
+export type TriangleNotationAttributes = EntityAttributes &  NotationAttributes & PointAttributes & TriangleAttributes;
 
 // ommiting uuid from creation attributed since created by the databse
 export type PointNotationCreationAttributes = Omit<NotationAttributes & PointAttributes & SingleValueAttributes, "uuid">;
 export type LineNotationCreationAttributes = Omit<NotationAttributes & LineAttributes, "uuid">;
 export type RectNotationCreationAttributes = Omit<NotationAttributes & RectAttributes & SingleValueAttributes, "uuid">;
 export type ExponentNotationCreationAttributes = Omit<EntityAttributes &  NotationAttributes & PointAttributes & ExponentAttributes, "uuid">;
+export type TriangleNotationCreationAttributes = Omit<EntityAttributes &  NotationAttributes & RectAttributes & TriangleAttributes, "uuid">;

@@ -17,6 +17,7 @@
 <script setup lang="ts">
 import { watch, computed, ref } from "vue";
 import { useEditModeStore } from "../store/pinia/editModeStore";
+import { useNotationStore } from "../store/pinia/notationStore";
 import * as d3 from "d3";
 import useMatrixHelper from "../helpers/matrixHelper";
 import useNotationMutateHelper from "../helpers/notationMutateHelper";
@@ -24,6 +25,7 @@ import useEventBus from "../helpers/eventBusHelper";
 
 const eventBus = useEventBus();
 const editModeStore = useEditModeStore();
+const notationStore = useNotationStore();
 const matrixHelper = useMatrixHelper();
 const notationMutateHelper = useNotationMutateHelper();
 
@@ -173,13 +175,15 @@ function endSelect() {
         let row = datum.row ?? datum.fromRow;
         let col = datum.col ?? datum.fromCol;
         if (
-          matrixHelper.getCellSize() * col + svgDimensions.value.x >=
+          notationStore.getCellHorizontalWidth() * col +
+            svgDimensions.value.x >=
             selectionPosition.value.x1 &&
-          matrixHelper.getCellSize() * col + svgDimensions.value.x <=
+          notationStore.getCellHorizontalWidth() * col +
+            svgDimensions.value.x <=
             selectionPosition.value.x2 &&
-          matrixHelper.getCellSize() * row + svgDimensions.value.y >=
+          notationStore.getCellVerticalHeight() * row + svgDimensions.value.y >=
             selectionPosition.value.y1 &&
-          matrixHelper.getCellSize() * row + svgDimensions.value.y <=
+          notationStore.getCellVerticalHeight() * row + svgDimensions.value.y <=
             selectionPosition.value.y2
         ) {
           notationMutateHelper.selectNotation({
@@ -202,29 +206,33 @@ function moveSelection(e: MouseEvent) {
   // movement is still too small
   if (
     Math.abs(e.clientX - svgDimensions.value.x - dragPosition.value.x) <
-      matrixHelper.getCellSize() &&
+      notationStore.getCellHorizontalWidth() &&
     Math.abs(e.clientY - svgDimensions.value.y - dragPosition.value.y) <
-      matrixHelper.getCellSize()
+      notationStore.getCellVerticalHeight()
   ) {
     return;
   }
 
   const rectDeltaX = Math.round(
     (e.clientX - svgDimensions.value.x - dragPosition.value.x) /
-      matrixHelper.getCellSize(),
+      notationStore.getCellHorizontalWidth(),
   );
   const rectDeltaY = Math.round(
     (e.clientY - svgDimensions.value.y - dragPosition.value.y) /
-      matrixHelper.getCellSize(),
+      notationStore.getCellVerticalHeight(),
   );
 
   if (rectDeltaX != 0 || rectDeltaY != 0) {
     notationMutateHelper.moveSelectedNotations(rectDeltaX, rectDeltaY);
 
-    selectionPosition.value.x1 += rectDeltaX * matrixHelper.getCellSize();
-    selectionPosition.value.y1 += rectDeltaY * matrixHelper.getCellSize();
-    selectionPosition.value.x2 += rectDeltaX * matrixHelper.getCellSize();
-    selectionPosition.value.y2 += rectDeltaY * matrixHelper.getCellSize();
+    selectionPosition.value.x1 +=
+      rectDeltaX * notationStore.getCellHorizontalWidth();
+    selectionPosition.value.y1 +=
+      rectDeltaY * notationStore.getCellVerticalHeight();
+    selectionPosition.value.x2 +=
+      rectDeltaX * notationStore.getCellHorizontalWidth();
+    selectionPosition.value.y2 +=
+      rectDeltaY * notationStore.getCellVerticalHeight();
     dragPosition.value.x = e.clientX - svgDimensions.value.x;
     dragPosition.value.y = e.clientY - svgDimensions.value.y;
   }

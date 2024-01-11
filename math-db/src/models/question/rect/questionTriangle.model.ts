@@ -1,20 +1,19 @@
 import { Model, Column, BelongsTo, ForeignKey, DataType, AllowNull } from "sequelize-typescript";
-import { NotationType, BoardType } from "../../../../../math-common/src/unions";
-import LessonDecorator from "../../lesson/lessonDecorator";
-import User from "../../user.model";
-import Lesson from "../../lesson/lesson.model";
 import {
-    LessonRectAttributes,
-    LessonRectCreationAttributes,
-} from "../../../../../math-common/src/lessonTypes";
+    QuestionRectAttributes,
+    QuestionRectCreationAttributes,
+} from "../../../../../math-common/src/questionTypes";
+import QuestionDecorator from "../questionDecorator";
+import User from "../../user.model";
+import Question from "../question.model";
 
-@LessonDecorator("LessonGeo")
-export default class LessonGeo extends Model<
-    LessonRectAttributes,
-    LessonRectCreationAttributes
+@QuestionDecorator("QuestionGeo")
+export default class QuestionTriangle extends Model<
+    QuestionRectAttributes,
+    QuestionRectCreationAttributes
 > {
     notationType = "TEXT";
-    boardType = "LESSON";
+    boardType = "QUESTION";
 
     @AllowNull(false)
     @Column({ type: DataType.UUID, defaultValue: DataType.UUIDV4 })
@@ -30,15 +29,15 @@ export default class LessonGeo extends Model<
     })
     user!: User;
 
-    @ForeignKey(() => Lesson)
-    lessonId!: number;
+    @ForeignKey(() => Question)
+    questionId!: number;
 
-    @BelongsTo(() => Lesson, {
+    @BelongsTo(() => Question, {
         foreignKey: {
             allowNull: false,
         },
     })
-    lesson!: Lesson;
+    question!: Question;
 
     @AllowNull(false)
     @Column({ type: DataType.INTEGER })
@@ -57,6 +56,14 @@ export default class LessonGeo extends Model<
     toRow!: number;
 
     @AllowNull(false)
-    @Column({ type: DataType.STRING })
-    value!: string;
+    @Column({ type: DataType.INTEGER })
+    alfa!: number;
+
+    @AllowNull(false)
+    @Column({ type: DataType.INTEGER })
+    beta!: number;
+
+    @AllowNull(false)
+    @Column({ type: DataType.INTEGER })
+    gamma!: number;
 }

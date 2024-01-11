@@ -4,7 +4,7 @@ export type BoardType = typeof BoardTypeValues[number];
 
 export type NotationShape = "POINT" |  "LINE" |  "RECT"
 
-export const NotationTypeValues = ["SYMBOL","SIGN","EXPONENT","FRACTION","SQRT","SQRTSYMBOL","TEXT","IMAGE","GEO"] as const;
+export const NotationTypeValues = ["SYMBOL","SIGN","EXPONENT","FRACTION","SQRT","SQRTSYMBOL","TEXT","IMAGE","TRIANGLE"] as const;
 
 export type NotationType = typeof NotationTypeValues[number]
   
@@ -17,7 +17,8 @@ export const NotationTypeShape = new Map<NotationType, NotationShape> ([
   ["FRACTION", "LINE"],
   ["TEXT", "RECT"],
   ["IMAGE", "RECT"],
-  ["GEO", "RECT"]
+  ["TRIANGLE", "RECT"],
+
 ])
 
 export const NotationTypeEditMode = new Map<NotationType, EditMode> ([
@@ -46,7 +47,8 @@ export type EditMode =
   "MOVING"            | // user grabbed the selection area after select button pressed
   "CHECKMARK"         | // checkmark button pressed
   "SEMICHECKMARK"     | // semicheck button pressed
-  "XMARK"               // xmark button pressed
+  "XMARK"             | // xmark button pressed
+  "GEO"                 // geometry sketching
 
 export type UesrType = "TEACHER" | "STUDENT"
 

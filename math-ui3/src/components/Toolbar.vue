@@ -12,6 +12,11 @@
     @close="closeExponentDialog"
   ></exponentDialog>
 
+  <triangleDialog
+    :show="showTriangleDialog"
+    @close="closeTriangleDialog"
+  ></triangleDialog>
+
   <v-toolbar color="primary" dark class="vertical-toolbar" height="500">
     <!-- create access link -->
     <v-tooltip text="Create Access Link" v-if="userStore.isTeacher()">
@@ -165,6 +170,20 @@
         </v-btn>
       </template>
     </v-tooltip>
+
+    <!-- triangle -->
+    <v-tooltip text="Triangle">
+      <template v-slot:activator="{ props }">
+        <v-btn
+          v-bind="props"
+          icon
+          v-on:click="startTriangleMode"
+          :disabled="!triangleEnabled"
+          @click.stop="openTriangleDialog"
+          ><v-icon>mdi-triangle</v-icon></v-btn
+        >
+      </template>
+    </v-tooltip>
   </v-toolbar>
 </template>
 
@@ -173,13 +192,14 @@ import { watch, ref } from "vue";
 import accessLinkDialog from "./AccessLinkDialog.vue";
 import freeTextDialog from "./FreeTextDialog.vue";
 import exponentDialog from "./ExponentDialog.vue";
+import triangleDialog from "./TriangleDialog.vue";
 import useNotationMutateHelper from "../helpers/notationMutateHelper";
 import { useNotationStore } from "../store/pinia/notationStore";
 import { useEditModeStore } from "../store/pinia/editModeStore";
 import { computed } from "vue";
 import { useUserStore } from "../store/pinia/userStore";
 import useEventBus from "../helpers/eventBusHelper";
-import { ExponentAttributes } from "common/baseTypes";
+import { ExponentAttributes, TriangleAttributes } from "common/baseTypes";
 import useAuthorizationHelper from "../helpers/authorizationHelper";
 
 const authorizationHelper = useAuthorizationHelper();
@@ -198,6 +218,7 @@ let squareRootButtonActive = ref(1);
 let exponentButtonActive = ref(1);
 let textButtonActive = ref(1);
 
+let showTriangleDialog = ref(false);
 let showAccessLinkDialog = ref(false);
 let showFreeTextDialog = ref(false);
 let showExponentDialog = ref(false);
@@ -243,6 +264,22 @@ watch(
   },
 );
 
+// emitted by triangle dialog
+watch(
+  () => eventBus.bus.value.get("triangleSubmited"),
+  (triangle: TriangleAttributes) => {
+    notationMutateHelper.upsertTriangleNotation(triangle);
+  },
+);
+
+function openTriangleDialog() {
+  showTriangleDialog.value = true;
+}
+
+function closeTriangleDialog() {
+  showTriangleDialog.value = false;
+}
+
 function openFreeTextDialog() {
   showFreeTextDialog.value = true;
 }
@@ -286,6 +323,15 @@ const exponentEnabled = computed(() => {
   return (
     notationStore.getSelectedCell() ||
     notationStore.getSelectedNotations()?.at(0)?.notationType === "EXPONENT"
+  );
+});
+
+const triangleEnabled = computed(() => {
+  if (!editEnabled.value) return false;
+
+  return (
+    notationStore.getSelectedCell() ||
+    notationStore.getSelectedNotations()?.at(0)?.notationType === "TRIANGLE"
   );
 });
 
@@ -337,6 +383,11 @@ function startExponentMode() {
   resetButtonsState();
   exponentButtonActive.value = 0;
   editModeStore.setEditMode("EXPONENT");
+}
+
+function startTriangleMode() {
+  resetButtonsState();
+  editModeStore.setEditMode("GEO");
 }
 
 function startTextMode() {
