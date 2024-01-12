@@ -10,6 +10,7 @@
       height: selectionRectHeight + 'px',
     }"
     v-on:mouseup="mouseup"
+    v-on:mousemove="mousemove"
     v-if="show"
   ></v-card>
 </template>
@@ -103,6 +104,10 @@ watch(
 
 function mouseup(e: MouseEvent) {
   eventBus.emit("svgmouseup", e);
+}
+
+function mousemove(e: MouseEvent) {
+  eventBus.emit("svgmousemove", e);
 }
 
 function keyUp(e: KeyboardEvent) {

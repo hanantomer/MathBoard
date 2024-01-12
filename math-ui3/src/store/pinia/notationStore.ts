@@ -24,6 +24,8 @@ export const useNotationStore = defineStore("notation", () => {
 
   let notations = ref(<Map<String, NotationAttributes>>new Map());
 
+  let copiedNotations = ref(<Map<String, NotationAttributes>>new Map());
+
   let selectedCell = ref(<CellCoordinates>{ col: 0, row: 0 });
 
   function getCellVerticalHeight() {
@@ -73,9 +75,15 @@ export const useNotationStore = defineStore("notation", () => {
   }
 
   function setNotations(newNotations: NotationAttributes[]) {
-    //notations.value.clear();
     newNotations.forEach((n) => {
       addNotation(n);
+    });
+  }
+
+  function setCopiedNotations(newCopiedNotations: NotationAttributes[]) {
+    copiedNotations.value.clear();
+    newCopiedNotations.forEach((n) => {
+      addCopiedNotation(n);
     });
   }
 
@@ -86,6 +94,11 @@ export const useNotationStore = defineStore("notation", () => {
   function addNotation(notation: NotationAttributes) {
     notation.boardType = parent.value.type;
     notations.value.set(notation.uuid, notation);
+  }
+
+  function addCopiedNotation(notation: NotationAttributes) {
+    notation.boardType = parent.value.type;
+    copiedNotations.value.set(notation.uuid, notation);
   }
 
   function deleteNotation(uuid: string) {
@@ -154,6 +167,7 @@ export const useNotationStore = defineStore("notation", () => {
     getCellVerticalHeight,
     isLineOrRectSelected,
     setNotations,
+    setCopiedNotations,
     selectNotation,
     selectCell,
     setParent,

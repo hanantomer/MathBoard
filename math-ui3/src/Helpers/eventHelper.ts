@@ -17,10 +17,33 @@ const authorizationHelper = useAuthorizationHelper();
 const eventBus = useEventBus();
 const selectionHelper = useSelectionHelper();
 
-type keyType = "SYMBOL" | "MOVEMENT" | "DELETION";
+type keyType = "SYMBOL" | "MOVEMENT" | "DELETION" | "MOVEANDDELTE";
 
 export default function eventHelper() {
+  async function copy(e: ClipboardEvent) {
+    notationStore.setCopiedNotations(notationStore.getSelectedNotations());
+  }
+
   async function paste(e: ClipboardEvent) {
+    if (
+      e.clipboardData?.items.length &&
+      e.clipboardData?.items[0].kind === "string" &&
+      e.clipboardData?.types[0].match("^text/plain")
+    )
+      return pasteText(e);
+
+    if (e.clipboardData?.types[0] === "Files") return pasteImage(e);
+  }
+
+  async function pasteText(e: ClipboardEvent) {
+    e.clipboardData?.items[0].getAsString((content) => {
+      content.split("").forEach((c) => {
+        notationMutationHelper.upsertSymbolNotation(c);
+      });
+    });
+  }
+
+  async function pasteImage(e: ClipboardEvent) {
     // disallow adding image by student
     if (!userStore.isTeacher) return;
     if (!notationStore.getSelectedCell()) return;
@@ -39,7 +62,8 @@ export default function eventHelper() {
         let fromRow = notationStore.getSelectedCell()?.row;
         if (!fromCol || !fromRow) return;
         let toCol =
-          Math.ceil(image.width / notationStore.getCellHorizontalWidth()) + fromCol;
+          Math.ceil(image.width / notationStore.getCellHorizontalWidth()) +
+          fromCol;
         let toRow =
           Math.ceil(image.height / notationStore.getCellVerticalHeight()) +
           fromRow;
@@ -76,6 +100,11 @@ export default function eventHelper() {
         return handleMovementKey(code, svgId);
       }
 
+      case "MOVEANDDELTE": {
+        handleMovementKey(code, svgId);
+        return handleDeletionKey(code);
+      }
+
       case "SYMBOL": {
         return notationMutationHelper.upsertSymbolNotation(key);
       }
@@ -83,20 +112,17 @@ export default function eventHelper() {
   }
 
   function handleDeletionKey(key: string) {
-    //if (!editModeStore.isSelectedMode()) return;
+    //if (key === "Backspace") {
+    //  matrixHelper.setNextCell(-1, 0);
+    //}
 
     notationMutationHelper.deleteSelectedNotations();
-
-    if (key === "Backspace") {
-      matrixHelper.setNextCell(-1, 0);
-    }
 
     editModeStore.resetEditMode();
   }
 
   function handleMovementKey(key: string, svgId: string) {
-
-    if (key === "ArrowLeft") {
+    if (key === "ArrowLeft" || key === "Backspace") {
       matrixHelper.setNextCell(-1, 0);
     }
 
@@ -154,7 +180,9 @@ export default function eventHelper() {
     )
       return "SYMBOL";
 
-    if (code === "Delete" || code === "Backspace") return "DELETION";
+    if (code === "Delete") return "DELETION";
+
+    if (code === "Backspace") return "MOVEANDDELTE";
 
     return null;
   }
@@ -219,6 +247,18 @@ export default function eventHelper() {
     window.removeEventListener("keyup", emitKeyUp);
   }
 
+  function emitCopy(e: ClipboardEvent) {
+    eventBus.emit("copy");
+  }
+
+  function registerCopy() {
+    document.addEventListener("copy", emitCopy);
+  }
+
+  function unregisterCopy() {
+    document.removeEventListener("copy", emitCopy);
+  }
+
   function emitPaste(e: ClipboardEvent) {
     eventBus.emit("paste", e);
   }
@@ -232,6 +272,7 @@ export default function eventHelper() {
   }
 
   return {
+    copy,
     paste,
     keyUp,
     registerSvgMouseDown,
@@ -244,5 +285,7 @@ export default function eventHelper() {
     unregisterKeyUp,
     registerPaste,
     unregisterPaste,
+    registerCopy,
+    unregisterCopy,
   };
 }

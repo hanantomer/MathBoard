@@ -26,7 +26,13 @@ export default function selectionHelper() {
   function selectClickedPosition(position: DotPosition) {
     notationStore.resetSelectedNotations();
 
-    selectNotationAtPosition(position);
+    const selectedNotation = selectNotationAtPosition(position);
+    if (
+      selectedNotation &&
+      NotationTypeShape.get(selectedNotation.notationType) !== "POINT"
+    ) {
+      return;
+    }
 
     selectCell(position);
 
@@ -37,7 +43,9 @@ export default function selectionHelper() {
     //}
   }
 
-  function selectNotationAtPosition(position: DotPosition): boolean {
+  function selectNotationAtPosition(
+    position: DotPosition,
+  ): NotationAttributes | null {
     const el = elementFinderHelper.findClickedObject(
       {
         x: position.x,
@@ -47,7 +55,7 @@ export default function selectionHelper() {
       null,
     );
     if (!el) {
-      return false;
+      return null;
     }
 
     const notationType: NotationType =
@@ -64,7 +72,7 @@ export default function selectionHelper() {
     const notation = notationStore.getNotation(uuid);
     if (!notation) {
       console.warn(`notation with uuid: ${uuid} not found`);
-      return false;
+      return null;
     }
 
     switch (NotationTypeShape.get(notationType)) {
@@ -81,7 +89,7 @@ export default function selectionHelper() {
       }
     }
 
-    return true;
+    return notation;
   }
 
   function selectNotation(activeNotation: NotationAttributes) {

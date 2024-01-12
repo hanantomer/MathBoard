@@ -48,6 +48,7 @@ onMounted(() => {
   eventHelper.registerSvgMouseUp(props.svgId);
   eventHelper.registerKeyUp();
   eventHelper.registerPaste();
+  eventHelper.registerCopy();
 });
 
 onUnmounted(() => {
@@ -56,6 +57,7 @@ onUnmounted(() => {
   eventHelper.unregisterSvgMouseUp(props.svgId);
   eventHelper.unregisterKeyUp();
   eventHelper.unregisterPaste();
+  eventHelper.unregisterCopy();
 });
 
 const props = defineProps({
@@ -95,6 +97,14 @@ watch(
   },
   { immediate: true, deep: true },
 );
+
+watch(
+  () => eventBus.bus.value.get("copy"),
+  (e: ClipboardEvent) => {
+    eventHelper.copy(e);
+  },
+);
+
 
 watch(
   () => eventBus.bus.value.get("paste"),
