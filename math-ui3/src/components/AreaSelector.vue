@@ -23,6 +23,8 @@ import * as d3 from "d3";
 import useMatrixHelper from "../helpers/matrixHelper";
 import useNotationMutateHelper from "../helpers/notationMutateHelper";
 import useEventBus from "../helpers/eventBusHelper";
+import { NotationAttributes } from "common/baseTypes";
+import { NotationTypeShape } from "common/unions";
 
 const eventBus = useEventBus();
 const editModeStore = useEditModeStore();
@@ -179,17 +181,35 @@ function endSelect() {
       .each((datum: any) => {
         let row = datum.row ?? datum.fromRow;
         let col = datum.col ?? datum.fromCol;
+
+        let y_gutter = 10;
+
         if (
-          notationStore.getCellHorizontalWidth() * col +
-            svgDimensions.value.x >=
-            selectionPosition.value.x1 &&
-          notationStore.getCellHorizontalWidth() * col +
-            svgDimensions.value.x <=
-            selectionPosition.value.x2 &&
-          notationStore.getCellVerticalHeight() * row + svgDimensions.value.y >=
-            selectionPosition.value.y1 &&
-          notationStore.getCellVerticalHeight() * row + svgDimensions.value.y <=
-            selectionPosition.value.y2
+          NotationTypeShape.get(datum.notationType) === "LINE" ||
+          datum.notationType === "SQRTSYMBOL"
+        ) {
+          y_gutter = 0;
+        }
+
+        const x_gutter = 10;
+
+        if (
+          selectionPosition.value.x1 <=
+            notationStore.getCellHorizontalWidth() * col +
+              x_gutter +
+              svgDimensions.value.x &&
+          selectionPosition.value.x2 >=
+            notationStore.getCellHorizontalWidth() * (col + 1) -
+              x_gutter +
+              svgDimensions.value.x &&
+          selectionPosition.value.y1 <=
+            notationStore.getCellVerticalHeight() * row +
+              y_gutter +
+              svgDimensions.value.y &&
+          selectionPosition.value.y2 >=
+            notationStore.getCellVerticalHeight() * (row + 1) -
+              y_gutter +
+              svgDimensions.value.y
         ) {
           notationMutateHelper.selectNotation({
             col: col,

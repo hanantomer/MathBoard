@@ -1,5 +1,9 @@
 import { NotationTypeShape } from "common/unions";
-import { getDefaultFontSize, selectedCellColor } from "common/globals";
+import {
+  getDefaultFontSize,
+  selectedCellColor,
+  matrixDimensions,
+} from "common/globals";
 import * as d3 from "d3";
 import { useNotationStore } from "../store/pinia/notationStore";
 
@@ -22,10 +26,6 @@ const notationStore = useNotationStore();
 const userStore = useUserStore();
 
 export default function useMatrixHelper() {
-  const opacity: number = 1;
-  const colsNum: number = 70;
-  const rowsNum: number = 20;
-
   const svgWidth: string = "1400px";
   const svgHeight: string = "700px";
   let matrix: any[] = [];
@@ -73,7 +73,7 @@ export default function useMatrixHelper() {
     notationStore.setCellVerticalHeight(
       //Math.min(
       //  Math.floor(clientWidth / colsNum),
-      Math.floor(clientHeight / rowsNum),
+      Math.floor(clientHeight / matrixDimensions.rowsNum),
       //),
     );
   }
@@ -118,8 +118,8 @@ export default function useMatrixHelper() {
     setTextMeasurementCtx(el);
 
     // render rows
-    for (var row = 0; row < rowsNum; row++) {
-      matrix.push(d3.range(colsNum));
+    for (var row = 0; row < matrixDimensions.rowsNum; row++) {
+      matrix.push(d3.range(matrixDimensions.colsNum));
     }
 
     // render cells
@@ -144,7 +144,7 @@ export default function useMatrixHelper() {
       .attr("fill", (a, i, d) => {
         return "white";
       })
-      .attr("stroke-opacity", opacity)
+      //      .attr("stroke-opacity", opacity)
       .attr("stroke", "lightgray")
       .attr("col", (d, i) => {
         return i;
@@ -172,20 +172,32 @@ export default function useMatrixHelper() {
     let nextCol = col;
     let nextRow = row;
 
-    if (col + horizontalStep < colsNum && col + horizontalStep >= 0) {
+    if (
+      col + horizontalStep < matrixDimensions.colsNum &&
+      col + horizontalStep >= 0
+    ) {
       nextCol += horizontalStep;
     }
 
-    if (col + horizontalStep >= colsNum && row != rowsNum) {
+    if (
+      col + horizontalStep >= matrixDimensions.colsNum &&
+      row != matrixDimensions.rowsNum
+    ) {
       nextRow += 1;
       nextCol = 0;
     }
 
-    if (row + verticalStep < rowsNum && row + verticalStep >= 0) {
+    if (
+      row + verticalStep < matrixDimensions.rowsNum &&
+      row + verticalStep >= 0
+    ) {
       nextRow += verticalStep;
     }
 
-    if (row + verticalStep >= rowsNum || row + verticalStep < 0) {
+    if (
+      row + verticalStep >= matrixDimensions.rowsNum ||
+      row + verticalStep < 0
+    ) {
       nextCol = 0;
       nextRow = 0;
     }
@@ -502,7 +514,7 @@ export default function useMatrixHelper() {
       Array.from(notationStore.getSelectedNotations())
         .map((n) => n.uuid)
         .indexOf(n.uuid) >= 0
-        ? "lightgray"
+        ? "chocolate"
         : notationStore.getParent().type === "ANSWER" &&
           userStore.getCurrentUser()?.uuid != n.user.uuid
         ? "purple"
@@ -546,7 +558,7 @@ export default function useMatrixHelper() {
     }
 
     let n1 = n as PointNotationAttributes;
-    return `<p style='color:${color};font-weight:${fontWeight}; position: absolute;top: 50%;transform: translateY(-50%);left:40%;translateX(-40%);font-size:1.1em'>${n1.value}</p>`;
+    return `<p style='color:${color};font-weight:${fontWeight}; position: absolute;top: 50%;transform: translateY(-50%);left:20%;translateX(-20%);font-size:1.1em'>${n1.value}</p>`;
   }
 
   function getNotationXposByCol(col: number): number {

@@ -1,6 +1,7 @@
 import useDbHelper from "../helpers/dbHelper";
 
 import {
+  EntityAttributes,
   PointNotationAttributes,
   LineNotationAttributes,
   RectNotationAttributes,
@@ -833,6 +834,21 @@ export default function notationMutateHelper() {
     upsertNotation(notation);
   }
 
+  function cloneNotation(notation: Readonly<any>, cell: CellCoordinates) {
+    let clonedNotation = { ...notation } as any;
+
+    clonedNotation.id = undefined;
+    delete clonedNotation.uuid;
+
+    if (clonedNotation.col) clonedNotation.col = cell.col;
+    if (clonedNotation.row) clonedNotation.row = cell.row;
+    if (clonedNotation.toCol) clonedNotation.toCol = cell.col;
+    if (clonedNotation.toRow) clonedNotation.toRow = cell.row;
+    clonedNotation.parentUUId = notationStore.getParent().uuid;
+
+    upsertNotation(clonedNotation);
+  }
+
   function getUserUUId(): string {
     return userStore.getCurrentUser()!.uuid;
   }
@@ -852,5 +868,6 @@ export default function notationMutateHelper() {
     moveSelectedNotations,
     updateSelectedNotationCoordinates,
     updateLineNotation,
+    cloneNotation,
   };
 }

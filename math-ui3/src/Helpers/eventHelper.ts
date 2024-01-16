@@ -1,6 +1,7 @@
 import { useUserStore } from "../store/pinia/userStore";
 import { useEditModeStore } from "../store/pinia/editModeStore";
 import { useNotationStore } from "../store/pinia/notationStore";
+import { matrixDimensions } from "../../../math-common/src/globals";
 
 import useMatrixHelper from "./matrixHelper";
 import useNotationMutationHelper from "./notationMutateHelper";
@@ -20,11 +21,19 @@ const selectionHelper = useSelectionHelper();
 type keyType = "SYMBOL" | "MOVEMENT" | "DELETION" | "MOVEANDDELTE";
 
 export default function eventHelper() {
-  async function copy(e: ClipboardEvent) {
-    notationStore.setCopiedNotations(notationStore.getSelectedNotations());
+  async function copy() {
+    notationStore.setCopiedNotations(
+      notationStore.getSelectedNotations().sort((n1: any, n2: any) => {
+        return (n1.col | n1.fromCol) > (n2.col | n2.fromCol) ? 1 : -1;
+      }),
+    );
   }
 
   async function paste(e: ClipboardEvent) {
+    if (notationStore.getCopiedNotations().length) {
+      return pasteNotations();
+    }
+
     if (
       e.clipboardData?.items.length &&
       e.clipboardData?.items[0].kind === "string" &&
@@ -33,6 +42,23 @@ export default function eventHelper() {
       return pasteText(e);
 
     if (e.clipboardData?.types[0] === "Files") return pasteImage(e);
+  }
+
+  async function pasteNotations() {
+    const selectedCell = notationStore.getSelectedCell();
+    if (!selectedCell) return;
+
+    let cell = selectedCell;
+    let lastCol: number;
+    notationStore.getCopiedNotations().forEach((n: any) => {
+      if (cell.col <= matrixDimensions.colsNum) {
+        cell.col += n.col ? n.col - (lastCol || n.col) : n.toCol - n.fromCol;
+        notationMutationHelper.cloneNotation(n, cell);
+        lastCol = n.col || n.toCol;
+      }
+    });
+
+    notationStore.clearCopiedNotations();
   }
 
   async function pasteText(e: ClipboardEvent) {
@@ -247,8 +273,8 @@ export default function eventHelper() {
     window.removeEventListener("keyup", emitKeyUp);
   }
 
-  function emitCopy(e: ClipboardEvent) {
-    eventBus.emit("copy");
+  function emitCopy() {
+    eventBus.emit("copy", null);
   }
 
   function registerCopy() {

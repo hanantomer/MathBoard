@@ -74,6 +74,10 @@ export const useNotationStore = defineStore("notation", () => {
     return Array.from(notations.value.values());
   }
 
+  function getCopiedNotations(): NotationAttributes[] {
+    return Array.from(copiedNotations.value.values());
+  }
+
   function setNotations(newNotations: NotationAttributes[]) {
     newNotations.forEach((n) => {
       addNotation(n);
@@ -110,6 +114,10 @@ export const useNotationStore = defineStore("notation", () => {
 
   function clearNotations() {
     notations.value.clear();
+  }
+
+  function clearCopiedNotations() {
+    copiedNotations.value.clear();
   }
 
   function selectCell(newSelectedCell: CellCoordinates) {
@@ -158,6 +166,7 @@ export const useNotationStore = defineStore("notation", () => {
     addNotation,
     getNotation,
     getNotations,
+    getCopiedNotations,
     getNotationsByShape,
     getCellOccupationMatrix,
     getSelectedCell,
@@ -176,5 +185,6 @@ export const useNotationStore = defineStore("notation", () => {
     resetSelectedNotations,
     deleteNotation,
     clearNotations,
+    clearCopiedNotations,
   };
 });

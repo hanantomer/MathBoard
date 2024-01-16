@@ -100,11 +100,11 @@ watch(
 
 watch(
   () => eventBus.bus.value.get("copy"),
-  (e: ClipboardEvent) => {
-    eventHelper.copy(e);
+  () => {
+    eventHelper.copy();
+    eventBus.bus.value.delete("copy");
   },
 );
-
 
 watch(
   () => eventBus.bus.value.get("paste"),
