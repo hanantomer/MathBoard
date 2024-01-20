@@ -317,11 +317,11 @@ export default function notationMutateHelper() {
           );
         case "LINE":
           return (
-            lineAtCellCoordinates(
-              notation as LineNotationAttributes,
-              n2 as PointNotationAttributes,
-              getUserUUId(),
-            ) ??
+            // lineAtCellCoordinates(
+            //   notation as LineNotationAttributes,
+            //   n2 as PointNotationAttributes,
+            //   getUserUUId(),
+            // ) ??
             lineAtLineCoordinates(
               notation as LineNotationAttributes,
               n2 as LineNotationAttributes,
@@ -834,20 +834,14 @@ export default function notationMutateHelper() {
     upsertNotation(notation);
   }
 
-  function cloneNotation(notation: Readonly<any>, cell: CellCoordinates) {
+  function cloneNotation(notation: Readonly<NotationAttributes>) {
     let clonedNotation = { ...notation } as any;
-
     clonedNotation.id = undefined;
     delete clonedNotation.uuid;
-
-    if (clonedNotation.col) clonedNotation.col = cell.col;
-    if (clonedNotation.row) clonedNotation.row = cell.row;
-    if (clonedNotation.toCol) clonedNotation.toCol = cell.col;
-    if (clonedNotation.toRow) clonedNotation.toRow = cell.row;
-    clonedNotation.parentUUId = notationStore.getParent().uuid;
-
+    clonedNotation.parentUUId = notationStore.getParent().uuid; // in case you paste from lesson to question
     upsertNotation(clonedNotation);
   }
+
 
   function getUserUUId(): string {
     return userStore.getCurrentUser()!.uuid;

@@ -112,13 +112,13 @@
       </v-tooltip>
     </v-app-bar>
 
-    <v-main class="mt-4">
+    <v-main>
       <router-view></router-view>
     </v-main>
 
     <v-footer color="primary" padless dense style="max-height: 60px">
       <v-col class="text-center" cols="12">
-        <p style="color: white">© Copyright 2023 www.mathboard.com</p>
+        <p style="color: white">© Copyright 2024 www.mathboard.com</p>
       </v-col>
     </v-footer>
   </v-app>
@@ -127,7 +127,6 @@
 <script setup lang="ts">
 import { useRouter } from "vue-router";
 import { onMounted, computed } from "vue";
-///////import useauthenticationHelper from "./helpers/authenticationHelper";
 import useAxiosHelper from "./helpers/axiosHelper";
 import { useUserStore } from "./store/pinia/userStore";
 import { useLessonStore } from "./store/pinia/lessonStore";
@@ -150,7 +149,7 @@ const showLessons = computed(() => {
 });
 
 const showQuestions = computed(() => {
-  return userStore.getCurrentUser() && lessonStore.getCurrentLesson();
+  return userStore.getCurrentUser(); // && lessonStore.getCurrentLesson();
 });
 
 const showAnswers = computed(() => {
@@ -164,8 +163,6 @@ function showLoginDialog() {
 }
 
 function signOut() {
-  //////const authenticationHelper = useauthenticationHelper();
-  ///////authenticationHelper.signOut();
   router.push("/");
 }
 
@@ -204,5 +201,9 @@ text {
   text-anchor: start;
   cursor: pointer;
   text-anchor: middle;
+}
+html {
+  overflow-x: visible;
+  overflow-y: visible;
 }
 </style>

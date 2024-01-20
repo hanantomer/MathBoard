@@ -76,9 +76,9 @@ let linePosition = ref(<LinePosition | Record<string, never>>{});
 
 // computed
 
-const lineMode = computed(() => {
-  return editModeStore.isLineMode();
-});
+// const lineMode = computed(() => {
+//   return editModeStore.isLineMode();
+// });
 
 const sqrtEditMode = computed(() => {
   return editModeStore.isSqrtEditMode();
@@ -151,10 +151,12 @@ function onLineSelected(lineNotation: LineNotationAttributes) {
     lineNotation.fromCol * notationStore.getCellHorizontalWidth();
 
   linePosition.value.x2 =
-    svgDimensions.value.left + lineNotation.toCol * notationStore.getCellHorizontalWidth();
+    svgDimensions.value.left +
+    lineNotation.toCol * notationStore.getCellHorizontalWidth();
 
   linePosition.value.y =
-    svgDimensions.value.top + lineNotation.row * notationStore.getCellVerticalHeight();
+    svgDimensions.value.top +
+    lineNotation.row * notationStore.getCellVerticalHeight();
 
   notationStore.selectNotation(lineNotation.uuid);
 
@@ -196,7 +198,7 @@ function onMouseMove(e: MouseEvent) {
     return;
   }
 
-  // nothing done
+  // nothing done yet
   if (linePosition.value.x1 === 0 && linePosition.value.x2 === 0) {
     return;
   }
@@ -205,7 +207,7 @@ function onMouseMove(e: MouseEvent) {
     return;
   }
 
-  setLineWidth(e.offsetX);
+  setLineWidth(e.clientX);
 }
 
 function onMouseUp() {
@@ -223,15 +225,15 @@ function onMouseUp() {
 // methods
 
 function startLineDrawing(position: DotPosition) {
-  linePosition.value.x2 = linePosition.value.x1 =
-    position.x + svgDimensions.value.left;
+  linePosition.value.x1 = position.x + svgDimensions.value.left;
+
+  linePosition.value.x2 = linePosition.value.x1 + 10;
+
   linePosition.value.y = getNearestRow(position.y) + svgDimensions.value.top;
 }
 
 function setLineWidth(xPos: number) {
-  xPos += svgDimensions.value.left;
-
-  if (xPos < linePosition.value.x1) {
+  if (xPos <= linePosition.value.x1) {
     linePosition.value.x1 = xPos;
   }
   if (xPos > linePosition.value.x1) {
@@ -288,7 +290,9 @@ function resetLineDrawing() {
 }
 
 function getNearestRow(clickedYPos: number) {
-  let clickedRow = Math.round(clickedYPos / notationStore.getCellVerticalHeight());
+  let clickedRow = Math.round(
+    clickedYPos / notationStore.getCellVerticalHeight(),
+  );
   return clickedRow * notationStore.getCellVerticalHeight();
 }
 </script>

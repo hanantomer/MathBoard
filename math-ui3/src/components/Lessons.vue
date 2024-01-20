@@ -12,15 +12,6 @@
           <v-icon>mdi-plus</v-icon>
         </v-btn>
       </v-toolbar>
-      <!-- <v-card-title>
-        <v-text-field
-          v-model="search"
-          append-icon="mdi-magnify"
-          label="Search"
-          single-line
-          hide-details
-        ></v-text-field>
-      </v-card-title> -->
       <v-data-table
         v-model:items-per-page="itemsPerPage"
         :headers="headers"
@@ -31,16 +22,6 @@
         :hide-no-data="true"
         :hover="true"
       ></v-data-table>
-      <!-- <v-data-table
-
-        :search="search"
-        :v-bind:headers="headers"
-        item-value="name"
-        :items="lessons1"
-        v-model:items-per-page="itemsPerPage"
-        class="elevation-1"
-        click:row="seletctLesson"
-      ></v-data-table> -->
     </v-card>
   </v-container>
 </template>
@@ -57,7 +38,7 @@ const router = useRouter();
 const userStore = useUserStore();
 const lessonStore = useLessonStore();
 const title = computed(() => {
-  return userStore.isTeacher() ? "My Lessons" : "Lessons Shared with me";
+  return userStore.isTeacher() ? "Lessons" : "Lessons Shared with me";
 });
 let lessonDialog = ref(false);
 let lessonDialogTitle =

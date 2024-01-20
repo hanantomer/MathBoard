@@ -1,16 +1,18 @@
 <template>
-  <v-row class="fill-height">
-    <v-col cols="10">
+  <div class="d-flex mb-12">
+    <v-sheet>
       <mathBoard :svgId="svgId" :loaded="loaded">
         <template #title
-          ><p>{{ lessonTitle }}</p></template
+          ><p class="title">
+            {{ lessonTitle }}
+          </p></template
         >
       </mathBoard>
-    </v-col>
-    <v-col cols="2" v-if="isTeacher">
+    </v-sheet>
+    <v-sheet class="mt-10">
       <lessonStudents></lessonStudents>
-    </v-col>
-  </v-row>
+    </v-sheet>
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -53,8 +55,7 @@ watch(
 );
 
 async function loadLesson(lessonUUId: string) {
-
- // store might not be loaded yet
+  // store might not be loaded yet
   if (!lessonStore.getLessons().get(lessonUUId)) {
     await lessonStore.loadLesson(lessonUUId);
   }

@@ -8,6 +8,13 @@ import useNotationMutationHelper from "./notationMutateHelper";
 import useAuthorizationHelper from "./authorizationHelper";
 import useEventBus from "../helpers/eventBusHelper";
 import useSelectionHelper from "./selectionHelper";
+import {
+  LineNotationAttributes,
+  NotationAttributes,
+  PointNotationAttributes,
+  RectNotationAttributes,
+} from "common/baseTypes";
+import { NotationTypeShape } from "common/unions";
 
 const userStore = useUserStore();
 const editModeStore = useEditModeStore();
@@ -24,7 +31,10 @@ export default function eventHelper() {
   async function copy() {
     notationStore.setCopiedNotations(
       notationStore.getSelectedNotations().sort((n1: any, n2: any) => {
-        return (n1.col | n1.fromCol) > (n2.col | n2.fromCol) ? 1 : -1;
+        return (n1.row | n1.fromRow) > (n2.row | n2.fromRow) ||
+          (n1.col | n1.fromCol) > (n2.col | n2.fromCol)
+          ? 1
+          : -1;
       }),
     );
   }
@@ -47,14 +57,67 @@ export default function eventHelper() {
   async function pasteNotations() {
     const selectedCell = notationStore.getSelectedCell();
     if (!selectedCell) return;
+    //    let colIdx = 0
 
-    let cell = selectedCell;
-    let lastCol: number;
-    notationStore.getCopiedNotations().forEach((n: any) => {
-      if (cell.col <= matrixDimensions.colsNum) {
-        cell.col += n.col ? n.col - (lastCol || n.col) : n.toCol - n.fromCol;
-        notationMutationHelper.cloneNotation(n, cell);
-        lastCol = n.col || n.toCol;
+    //let cell = selectedCell;
+    //  let lastCol: number;
+    //  let lastRow: number;
+    let colShifting = 0;
+    let rowShifting = 0;
+    let lastRow: number | null = null;
+
+    notationStore.getCopiedNotations().forEach((n: NotationAttributes) => {
+      switch (NotationTypeShape.get(n.notationType)) {
+        case "POINT": {
+          let n1 = { ...n } as PointNotationAttributes;
+          n1.col += selectedCell.col - n1.col + colShifting;
+          n1.row += selectedCell.row - n1.row + rowShifting;
+          notationMutationHelper.cloneNotation(n1);
+
+          colShifting++;
+          if (!lastRow) lastRow = n1.row;
+          else if (n1.row != lastRow) {
+            lastRow = n1.row;
+            rowShifting++;
+          }
+          break;
+        }
+
+        case "LINE": {
+          let n1 = { ...n } as LineNotationAttributes;
+          const lineWidth = n1.toCol - n1.fromCol;
+          n1.fromCol += selectedCell.col - n.fromCol + colShifting;
+          n1.toCol = n1.fromCol + lineWidth;
+          n1.row += selectedCell.row - n1.row + rowShifting;
+          notationMutationHelper.cloneNotation(n1);
+
+          colShifting += n1.toCol - n1.fromCol + 1;
+          if (!lastRow) lastRow = n1.row;
+          else if (n1.row != lastRow) {
+            lastRow = n1.row;
+            rowShifting++;
+          }
+          break;
+        }
+
+        case "RECT": {
+          let n1 = { ...n } as RectNotationAttributes;
+          const rectWidth = n1.toCol - n1.fromCol;
+          const rectHeight = n1.toRow - n1.fromRow;
+          n1.fromCol += selectedCell.col - n1.fromCol + colShifting;
+          n1.toCol += n1.fromCol + rectWidth;
+          n1.fromRow += selectedCell.row - n1.fromRow + rowShifting;
+          n1.toRow = n1.fromCol + rectHeight;
+          notationMutationHelper.cloneNotation(n1);
+
+          colShifting += n1.toCol - n1.fromCol + 1;
+          if (!lastRow) lastRow = n1.fromRow;
+          else if (n1.fromRow != lastRow) {
+            lastRow = n1.fromRow;
+            rowShifting++;
+          }
+          break;
+        }
       }
     });
 
@@ -138,10 +201,6 @@ export default function eventHelper() {
   }
 
   function handleDeletionKey(key: string) {
-    //if (key === "Backspace") {
-    //  matrixHelper.setNextCell(-1, 0);
-    //}
-
     notationMutationHelper.deleteSelectedNotations();
 
     editModeStore.resetEditMode();
@@ -168,10 +227,10 @@ export default function eventHelper() {
       matrixHelper.setNextCell(0, -1);
     }
 
-    // select a notation occupied by selected cell
     const svgBounds = document.getElementById(svgId)?.getBoundingClientRect()!;
 
-    selectionHelper.selectClickedPosition({
+    // select a notation occupied by selected cell
+    selectionHelper.selectNotationAtPosition({
       x:
         svgBounds.left +
         notationStore.getSelectedCell()?.col! *

@@ -23,29 +23,23 @@ const editModeStore = useEditModeStore();
 ///TODO : split function to shorter blocks
 export default function selectionHelper() {
   // called via mouse click
-  function selectClickedPosition(position: DotPosition) {
-    notationStore.resetSelectedNotations();
+  //function selectNotationAtClickedPosition(position: DotPosition) {
+  //  notationStore.resetSelectedNotations();
 
-    const selectedNotation = selectNotationAtPosition(position);
-    if (
-      selectedNotation &&
-      NotationTypeShape.get(selectedNotation.notationType) !== "POINT"
-    ) {
-      return;
-    }
-
-    selectCell(position);
-
-    //if (notationSelected) {
-    //notationStore.selectCell(null);
-    //} else {
-    //selectCell(position);
-    //}
-  }
+    //const selectedNotation =
+  //  return selectNotationAtPosition(position);
+    // if (
+    //   selectedNotation &&
+    //   NotationTypeShape.get(selectedNotation.notationType) !== "POINT"
+    // ) {
+    //   return;
+    // }
+  //}
 
   function selectNotationAtPosition(
     position: DotPosition,
   ): NotationAttributes | null {
+    notationStore.resetSelectedNotations();
     const el = elementFinderHelper.findClickedObject(
       {
         x: position.x,
@@ -154,8 +148,15 @@ export default function selectionHelper() {
     }
   }
 
+  // selectNotationBySelectedCell() {
+  //   const { col, row } = notationStore.getSelectedCell()
+
+  //   notationStore.getNotations().find(n =>
+  //     switch(NotationTypeShape.get(n.notationType)
+  // }
+
   return {
-    selectClickedPosition,
+    selectNotationAtPosition,
     selectCell,
   };
 }

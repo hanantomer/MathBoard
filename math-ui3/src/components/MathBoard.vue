@@ -1,18 +1,18 @@
 <template>
+  <lineDrawer :svgId="svgId"></lineDrawer>
+  <areaSelector :svgId="svgId"></areaSelector>
   <v-row>
-    <v-col cols="12" class="d-flex justify-center">
-      <slot name="title"></slot>
-    </v-col>
+    <slot name="title"></slot>
   </v-row>
-  <v-row class="fill-height">
-    <v-col colls="1">
-      <toolbar></toolbar>
-    </v-col>
-    <v-col cols="11">
-      <lineDrawer :svgId="svgId"></lineDrawer>
-      <areaSelector :svgId="svgId"></areaSelector>
-      <svg v-bind:id="svgId" x="0" y="0" width="100%" height="100%"></svg>
-    </v-col>
+  <v-row align="start" class="fill-height" no-gutters>
+    <div class="d-flex">
+      <v-sheet class="mt-10 ml-1">
+        <toolbar></toolbar>
+      </v-sheet>
+      <v-sheet class="mt-10 ml-8">
+        <svg v-bind:id="svgId" x="0" y="0" width="1600" height="760"></svg>
+      </v-sheet>
+    </div>
   </v-row>
 </template>
 
@@ -31,6 +31,7 @@ import { useEditModeStore } from "../store/pinia/editModeStore";
 import { useAnswerStore } from "../store/pinia/answerStore";
 import useSelectionHelper from "../helpers/selectionHelper";
 import useNotationMutateHelper from "../helpers/notationMutateHelper";
+import { NotationTypeShape } from "common/unions";
 
 const notationLoadingHelper = useNotationLoadingHelper();
 const notationStore = useNotationStore();
@@ -183,7 +184,10 @@ function handleMouseDown(e: MouseEvent) {
     return;
   }
 
-  selectionHelper.selectClickedPosition(position);
+  const notation = selectionHelper.selectNotationAtPosition(position);
+  if (!notation || NotationTypeShape.get(notation?.notationType) === "POINT") {
+    selectionHelper.selectCell(position);
+  }
 }
 </script>
 
@@ -210,5 +214,14 @@ function handleMouseDown(e: MouseEvent) {
 }
 .deleteButtonActive {
   cursor: URL("~@/assets/delete.jpg"), none !important;
+}
+.title {
+  max-width: 300px;
+  color: white;
+  position: absolute;
+  top: 20px;
+  left: 50%;
+  text-align: center;
+  z-index: 9999;
 }
 </style>
