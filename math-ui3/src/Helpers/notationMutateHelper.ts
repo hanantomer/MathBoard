@@ -839,9 +839,9 @@ export default function notationMutateHelper() {
     clonedNotation.id = undefined;
     delete clonedNotation.uuid;
     clonedNotation.parentUUId = notationStore.getParent().uuid; // in case you paste from lesson to question
+    console.log("adding notation:" + { ...clonedNotation });
     upsertNotation(clonedNotation);
   }
-
 
   function getUserUUId(): string {
     return userStore.getCurrentUser()!.uuid;

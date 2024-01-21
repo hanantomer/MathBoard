@@ -62,41 +62,36 @@ export default function eventHelper() {
     //let cell = selectedCell;
     //  let lastCol: number;
     //  let lastRow: number;
-    let colShifting = 0;
-    let rowShifting = 0;
-    let lastRow: number | null = null;
+    //let colShifting = 0;
+    //let rowShifting = 0;
+    let firstRow: number | null = null;
+    let firstCol: number | null = null;
 
     notationStore.getCopiedNotations().forEach((n: NotationAttributes) => {
       switch (NotationTypeShape.get(n.notationType)) {
         case "POINT": {
           let n1 = { ...n } as PointNotationAttributes;
-          n1.col += selectedCell.col - n1.col + colShifting;
-          n1.row += selectedCell.row - n1.row + rowShifting;
+          if (!firstRow) firstRow = n1.row;
+          if (!firstCol) firstCol = n1.col;
+
+          n1.col = selectedCell.col + n1.col - firstCol;
+          n1.row = selectedCell.row + n1.row - firstRow;
           notationMutationHelper.cloneNotation(n1);
 
-          colShifting++;
-          if (!lastRow) lastRow = n1.row;
-          else if (n1.row != lastRow) {
-            lastRow = n1.row;
-            rowShifting++;
-          }
           break;
         }
 
         case "LINE": {
           let n1 = { ...n } as LineNotationAttributes;
           const lineWidth = n1.toCol - n1.fromCol;
-          n1.fromCol += selectedCell.col - n.fromCol + colShifting;
+          if (!firstRow) firstRow = n1.row;
+          if (!firstCol) firstCol = n1.fromCol;
+
+          n1.fromCol = selectedCell.col + n1.fromCol - firstCol;
           n1.toCol = n1.fromCol + lineWidth;
-          n1.row += selectedCell.row - n1.row + rowShifting;
+          n1.row = selectedCell.row + n1.row - firstRow;
           notationMutationHelper.cloneNotation(n1);
 
-          colShifting += n1.toCol - n1.fromCol + 1;
-          if (!lastRow) lastRow = n1.row;
-          else if (n1.row != lastRow) {
-            lastRow = n1.row;
-            rowShifting++;
-          }
           break;
         }
 
@@ -104,18 +99,15 @@ export default function eventHelper() {
           let n1 = { ...n } as RectNotationAttributes;
           const rectWidth = n1.toCol - n1.fromCol;
           const rectHeight = n1.toRow - n1.fromRow;
-          n1.fromCol += selectedCell.col - n1.fromCol + colShifting;
-          n1.toCol += n1.fromCol + rectWidth;
-          n1.fromRow += selectedCell.row - n1.fromRow + rowShifting;
-          n1.toRow = n1.fromCol + rectHeight;
+          if (!firstRow) firstRow = n1.fromRow;
+          if (!firstCol) firstCol = n1.fromCol;
+
+          n1.fromCol = selectedCell.col + n1.fromCol - firstCol;
+          n1.toCol = n1.fromCol + rectWidth;
+          n1.fromRow = selectedCell.row + n1.fromRow - firstRow;
+          n1.toRow = n1.fromRow + rectHeight;
           notationMutationHelper.cloneNotation(n1);
 
-          colShifting += n1.toCol - n1.fromCol + 1;
-          if (!lastRow) lastRow = n1.fromRow;
-          else if (n1.fromRow != lastRow) {
-            lastRow = n1.fromRow;
-            rowShifting++;
-          }
           break;
         }
       }
