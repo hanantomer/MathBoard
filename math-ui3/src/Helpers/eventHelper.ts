@@ -199,6 +199,8 @@ export default function eventHelper() {
   }
 
   function handleMovementKey(key: string, svgId: string) {
+    if (editModeStore.getEditMode() === "AREA_SELECTED") return;
+
     if (key === "ArrowLeft" || key === "Backspace") {
       matrixHelper.setNextCell(-1, 0);
     }

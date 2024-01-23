@@ -1,7 +1,6 @@
 import useDbHelper from "../helpers/dbHelper";
 
 import {
-  EntityAttributes,
   PointNotationAttributes,
   LineNotationAttributes,
   RectNotationAttributes,
@@ -14,7 +13,7 @@ import {
   TriangleAttributes,
 } from "common/baseTypes";
 
-import { CellCoordinates } from "common/globals";
+import { CellCoordinates, matrixDimensions } from "common/globals";
 import { NotationType, NotationTypeShape } from "common/unions";
 import { useUserStore } from "../store/pinia/userStore";
 import { useNotationStore } from "../store/pinia/notationStore";
@@ -375,7 +374,7 @@ export default function notationMutateHelper() {
     return symbolsAtCell;
   }
 
-  async function selectNotation(CellCoordinates: CellCoordinates) {
+  async function selectNotationByCoordinates(CellCoordinates: CellCoordinates) {
     findNotationsByCellCoordinates(CellCoordinates).forEach(
       (n: NotationAttributes) => {
         notationStore.selectNotation(n.uuid);
@@ -383,52 +382,84 @@ export default function notationMutateHelper() {
     );
   }
 
-  // move without persistence - called during  mouse move  - don't bother the database during move
-  async function moveSelectedNotations(deltaX: number, deltaY: number) {
+  async function selectNotation(uuid: string) {
+    notationStore.selectNotation(uuid);
+  }
+
+  function canMoveSelectedNotations(deltaX: number, deltaY: number): boolean {
     notationStore.getSelectedNotations().forEach((n) => {
-      if (!n?.notationType) return;
       switch (NotationTypeShape.get(n.notationType)) {
         case "POINT": {
-          (n as PointNotationAttributes).col += deltaX;
-          (n as PointNotationAttributes).row += deltaY;
+          if ((n as PointNotationAttributes).col + deltaX > matrixDimensions.colsNum) return false;
+          if ((n as PointNotationAttributes).col + deltaX < 1) return false;
+          if ((n as PointNotationAttributes).row + deltaY > matrixDimensions.rowsNum) return false;
+          if ((n as PointNotationAttributes).row + deltaY < 1) return false;
           break;
         }
         case "LINE": {
-          (n as LineNotationAttributes).fromCol += deltaX;
-          (n as LineNotationAttributes).toCol += deltaX;
-          (n as LineNotationAttributes).row += deltaY;
+          if ((n as LineNotationAttributes).toCol + deltaX > matrixDimensions.colsNum) return false;
+          if ((n as LineNotationAttributes).fromCol + deltaX < 1) return false;
+          if ((n as LineNotationAttributes).row + deltaY > matrixDimensions.rowsNum) return false;
+          if ((n as LineNotationAttributes).row + deltaY < 1) return false;
           break;
         }
         case "RECT": {
-          (n as RectNotationAttributes).fromCol += deltaX;
-          (n as RectNotationAttributes).toCol += deltaX;
-          (n as RectNotationAttributes).fromRow += deltaY;
-          (n as RectNotationAttributes).toRow += deltaY;
+          if ((n as RectNotationAttributes).toCol + deltaX > matrixDimensions.colsNum) return false;
+          if ((n as RectNotationAttributes).fromCol + deltaX < 1) return false;
+          if ((n as RectNotationAttributes).toRow + deltaY > matrixDimensions.rowsNum) return false;
+          if ((n as RectNotationAttributes).fromRow + deltaY < 1) return false;
           break;
         }
       }
     });
+
+    return true;
+  }
+  // move without persistence - called during  mouse move  - don't bother the database during move
+  async function moveSelectedNotations(deltaX: number, deltaY: number) {
+
+    if (!canMoveSelectedNotations(deltaX, deltaY)) return;
+
+    notationStore.getSelectedNotations().forEach((n) => {
+        switch (NotationTypeShape.get(n.notationType)) {
+          case "POINT": {
+            (n as PointNotationAttributes).col += deltaX;
+            (n as PointNotationAttributes).row += deltaY;
+            break;
+          }
+          case "LINE": {
+            (n as LineNotationAttributes).fromCol += deltaX;
+            (n as LineNotationAttributes).toCol += deltaX;
+            (n as LineNotationAttributes).row += deltaY;
+            break;
+          }
+          case "RECT": {
+            (n as RectNotationAttributes).fromCol += deltaX;
+            (n as RectNotationAttributes).toCol += deltaX;
+            (n as RectNotationAttributes).fromRow += deltaY;
+            (n as RectNotationAttributes).toRow += deltaY;
+            break;
+          }
+        }
+      });
   }
 
   // move selected notations with persistence - called upon muose up
   async function updateSelectedNotationCoordinates() {
     // disallow update during answer if any notation overlaps question area
     notationStore.getSelectedNotations().forEach((n) => {
-      if (!n) return;
       if (isNotationInQuestionArea(n)) {
         return;
       }
     });
 
     notationStore.getSelectedNotations().forEach(async (n) => {
-      if (!n) return;
-
       await dbHelper.updateNotationCoordinates(n);
 
       userOutgoingOperations.syncOutgoingUpdateNotation(n);
     });
 
-    notationStore.resetSelectedNotations();
+    //notationStore.resetSelectedNotations();
   }
 
   async function updateLineNotation(lineNotation: LineNotationAttributes) {
@@ -849,6 +880,7 @@ export default function notationMutateHelper() {
 
   return {
     selectNotation,
+    selectNotationByCoordinates,
     isNotationInQuestionArea,
     isCellInQuestionArea,
     upsertSymbolNotation,

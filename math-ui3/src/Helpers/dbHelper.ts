@@ -136,6 +136,7 @@ export default function useDbHelper() {
         ? {
             fromCol: (notation as any)["fromCol"],
             toCol: (notation as any)["toCol"],
+            row: (notation as any)["row"],
           }
         : // rect
         "fromRow" in notation

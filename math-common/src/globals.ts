@@ -2,7 +2,7 @@
 //export const apiHost = "/api";
 export const matrixDimensions = {
   rowsNum: 24,
-  colsNum: 88,
+  colsNum: 100,
 };
 
 export const signList = ["=", "+", "-", "*", "/", "\\", "(", ")", "[", "]"];

@@ -20,16 +20,13 @@ import { watch, computed, ref } from "vue";
 import { useEditModeStore } from "../store/pinia/editModeStore";
 import { useNotationStore } from "../store/pinia/notationStore";
 import * as d3 from "d3";
-import useMatrixHelper from "../helpers/matrixHelper";
 import useNotationMutateHelper from "../helpers/notationMutateHelper";
 import useEventBus from "../helpers/eventBusHelper";
-import { NotationAttributes } from "common/baseTypes";
 import { NotationTypeShape } from "common/unions";
 
 const eventBus = useEventBus();
 const editModeStore = useEditModeStore();
 const notationStore = useNotationStore();
-const matrixHelper = useMatrixHelper();
 const notationMutateHelper = useNotationMutateHelper();
 
 const props = defineProps({
@@ -113,10 +110,57 @@ function mousemove(e: MouseEvent) {
 }
 
 function keyUp(e: KeyboardEvent) {
-  if (e.code === "Backspace" || e.code === "Delete") {
-    // actual deletion is handled by eventManager
-    resetSelection();
+
+  if (selectionRectHeight.value === 0) return;
+
+  // switch (e.code) {
+  //   case "ArrowLeft":
+  //   case "Backspace":
+  //   case "Delete":
+  //   case "ArrowLeft":
+  //   case "ArrowRight":
+  //   case "ArrowDown":
+  //   case "ArrowUp":
+  //     resetSelection();
+  // }
+
+  switch (e.code) {
+    case "ArrowLeft":
+      notationMutateHelper.moveSelectedNotations(-1, 0);
+      moveSelectionByKey(-1, 0)
+      break;
+    case "ArrowRight":
+      notationMutateHelper.moveSelectedNotations(1, 0);
+      moveSelectionByKey(1, 0)
+      break;
+    case "ArrowDown":
+      notationMutateHelper.moveSelectedNotations(0, 1);
+      moveSelectionByKey(0, 1)
+      break;
+    case "ArrowUp":
+      notationMutateHelper.moveSelectedNotations(0, -1);
+      moveSelectionByKey(0, -1)
+      break;
   }
+
+  switch (e.code) {
+    case "ArrowLeft":
+    case "ArrowRight":
+    case "ArrowDown":
+    case "ArrowUp":
+      notationMutateHelper.updateSelectedNotationCoordinates();
+  }
+}
+
+function moveSelectionByKey(moveHorizontal: number, moveVertical: number) {
+   selectionPosition.value.x1 +=
+      moveHorizontal * notationStore.getCellHorizontalWidth();
+    selectionPosition.value.y1 +=
+      moveVertical * notationStore.getCellVerticalHeight();
+    selectionPosition.value.x2 +=
+      moveHorizontal * notationStore.getCellHorizontalWidth();
+    selectionPosition.value.y2 +=
+      moveVertical * notationStore.getCellVerticalHeight();
 }
 
 function handleMouseMove(e: MouseEvent) {
@@ -211,10 +255,7 @@ function endSelect() {
               y_gutter +
               svgDimensions.value.y
         ) {
-          notationMutateHelper.selectNotation({
-            col: col,
-            row: row,
-          });
+          notationMutateHelper.selectNotation(datum.uuid);
         }
       });
   }
@@ -265,6 +306,7 @@ function moveSelection(e: MouseEvent) {
 
 function endMoveSelection(e: MouseEvent) {
   notationMutateHelper.updateSelectedNotationCoordinates();
+  notationStore.resetSelectedNotations();
   resetSelection();
 }
 
