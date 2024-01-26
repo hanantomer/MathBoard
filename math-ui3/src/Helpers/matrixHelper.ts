@@ -257,15 +257,15 @@ export default function useMatrixHelper() {
   function refreshScreen(notations: NotationAttributes[], svgId: string) {
     const svgElement = document!.getElementById(svgId);
 
-    //setMatrix(svgId);
-
     try {
       notations = enrichNotations(notations);
     } catch {} // cant check if observer has properties
 
     d3.select("#" + svgId)
       .selectAll("foreignObject")
-      .data(Object.values(notations), (d: any) => d.uuid)
+      .data(notations, (u: any) => {
+        return (u as NotationAttributes).uuid;
+      })
       .join(
         (enter) => {
           return addNotations(enter, svgElement!);
@@ -445,10 +445,10 @@ export default function useMatrixHelper() {
       return notationStore.getCellHorizontalWidth() * 2;
     }
 
-    if (n.notationType === "EXPONENT") {
-      const n1 = n as ExponentNotationAttributes;
-      return notationStore.getCellHorizontalWidth() * 2;
-    }
+    //if (n.notationType === "EXPONENT") {
+    //  const n1 = n as ExponentNotationAttributes;
+    //  return notationStore.getCellHorizontalWidth() * 2;
+    //}
 
     switch (NotationTypeShape.get(n.notationType)) {
       case "POINT": {
@@ -552,9 +552,9 @@ export default function useMatrixHelper() {
     }
 
     if (n.notationType === "EXPONENT") {
-      let n1 = n as ExponentNotationAttributes;
-      return `</span><span style='position: absolute;top: 50%;transform: translateY(-50%);left:10%;translateX(-10%);color:${color};font-weight:${fontWeight};font-size:1.1em'>${n1.base}</span>
-       <span style='position:relative;left:60%;bottom:6px;color:${color};font-weight:${fontWeight};font-size:0.8em'>${n1.exponent}`;
+      //let n1 = n as ExponentNotationAttributes;
+      let n1 = n as PointNotationAttributes;
+      return `</span><span style='position: absolute;top: 10%;transform: translateY(-10%);left:30%;translateX(-10%);color:${color};font-weight:${fontWeight};font-size:0.75em'>${n1.value}</span>`;
     }
 
     let n1 = n as PointNotationAttributes;
@@ -597,15 +597,10 @@ export default function useMatrixHelper() {
   }
 
   return {
-    svgWidth,
-    svgHeight,
-    findRect,
     setNextCell,
     getFreeTextRectWidth,
     getFreeTextRectHeight,
     getGeoRectSize,
-    getNotationXposByCol,
-    getNotationYposByRow,
     refreshScreen,
     setMatrix,
     showSelectedCell,

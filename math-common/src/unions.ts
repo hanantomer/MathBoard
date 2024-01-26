@@ -54,5 +54,7 @@ export type UesrType = "TEACHER" | "STUDENT"
 
 export type LoginType = "LOGIN" | "REGISTER"
 
+export type MoveDirection = "LEFT" |  "RIGHT" |  "TOP" |  "BOTTOM" | "LEFTTOP" | "LEFTBOTTOM" | "RIGHTTOP" | "RIGHTBOTTOM"
+
 
 

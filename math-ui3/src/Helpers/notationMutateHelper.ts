@@ -9,12 +9,11 @@ import {
   RectNotationCreationAttributes,
   NotationCreationAttributes,
   TriangleNotationCreationAttributes,
-  ExponentAttributes,
   TriangleAttributes,
 } from "common/baseTypes";
 
 import { CellCoordinates, matrixDimensions } from "common/globals";
-import { NotationType, NotationTypeShape } from "common/unions";
+import { NotationType, NotationTypeShape, MoveDirection } from "common/unions";
 import { useUserStore } from "../store/pinia/userStore";
 import { useNotationStore } from "../store/pinia/notationStore";
 import { useEditModeStore } from "../store/pinia/editModeStore";
@@ -390,23 +389,47 @@ export default function notationMutateHelper() {
     notationStore.getSelectedNotations().forEach((n) => {
       switch (NotationTypeShape.get(n.notationType)) {
         case "POINT": {
-          if ((n as PointNotationAttributes).col + deltaX > matrixDimensions.colsNum) return false;
+          if (
+            (n as PointNotationAttributes).col + deltaX >
+            matrixDimensions.colsNum
+          )
+            return false;
           if ((n as PointNotationAttributes).col + deltaX < 1) return false;
-          if ((n as PointNotationAttributes).row + deltaY > matrixDimensions.rowsNum) return false;
+          if (
+            (n as PointNotationAttributes).row + deltaY >
+            matrixDimensions.rowsNum
+          )
+            return false;
           if ((n as PointNotationAttributes).row + deltaY < 1) return false;
           break;
         }
         case "LINE": {
-          if ((n as LineNotationAttributes).toCol + deltaX > matrixDimensions.colsNum) return false;
+          if (
+            (n as LineNotationAttributes).toCol + deltaX >
+            matrixDimensions.colsNum
+          )
+            return false;
           if ((n as LineNotationAttributes).fromCol + deltaX < 1) return false;
-          if ((n as LineNotationAttributes).row + deltaY > matrixDimensions.rowsNum) return false;
+          if (
+            (n as LineNotationAttributes).row + deltaY >
+            matrixDimensions.rowsNum
+          )
+            return false;
           if ((n as LineNotationAttributes).row + deltaY < 1) return false;
           break;
         }
         case "RECT": {
-          if ((n as RectNotationAttributes).toCol + deltaX > matrixDimensions.colsNum) return false;
+          if (
+            (n as RectNotationAttributes).toCol + deltaX >
+            matrixDimensions.colsNum
+          )
+            return false;
           if ((n as RectNotationAttributes).fromCol + deltaX < 1) return false;
-          if ((n as RectNotationAttributes).toRow + deltaY > matrixDimensions.rowsNum) return false;
+          if (
+            (n as RectNotationAttributes).toRow + deltaY >
+            matrixDimensions.rowsNum
+          )
+            return false;
           if ((n as RectNotationAttributes).fromRow + deltaY < 1) return false;
           break;
         }
@@ -417,35 +440,36 @@ export default function notationMutateHelper() {
   }
   // move without persistence - called during  mouse move  - don't bother the database during move
   async function moveSelectedNotations(deltaX: number, deltaY: number) {
-
     if (!canMoveSelectedNotations(deltaX, deltaY)) return;
 
     notationStore.getSelectedNotations().forEach((n) => {
-        switch (NotationTypeShape.get(n.notationType)) {
-          case "POINT": {
-            (n as PointNotationAttributes).col += deltaX;
-            (n as PointNotationAttributes).row += deltaY;
-            break;
-          }
-          case "LINE": {
-            (n as LineNotationAttributes).fromCol += deltaX;
-            (n as LineNotationAttributes).toCol += deltaX;
-            (n as LineNotationAttributes).row += deltaY;
-            break;
-          }
-          case "RECT": {
-            (n as RectNotationAttributes).fromCol += deltaX;
-            (n as RectNotationAttributes).toCol += deltaX;
-            (n as RectNotationAttributes).fromRow += deltaY;
-            (n as RectNotationAttributes).toRow += deltaY;
-            break;
-          }
+      switch (NotationTypeShape.get(n.notationType)) {
+        case "POINT": {
+          (n as PointNotationAttributes).col += deltaX;
+          (n as PointNotationAttributes).row += deltaY;
+          break;
         }
-      });
+        case "LINE": {
+          (n as LineNotationAttributes).fromCol += deltaX;
+          (n as LineNotationAttributes).toCol += deltaX;
+          (n as LineNotationAttributes).row += deltaY;
+          break;
+        }
+        case "RECT": {
+          (n as RectNotationAttributes).fromCol += deltaX;
+          (n as RectNotationAttributes).toCol += deltaX;
+          (n as RectNotationAttributes).fromRow += deltaY;
+          (n as RectNotationAttributes).toRow += deltaY;
+          break;
+        }
+      }
+    });
   }
 
   // move selected notations with persistence - called upon muose up
-  async function updateSelectedNotationCoordinates() {
+  async function updateSelectedNotationCoordinates(
+    moveDirection: MoveDirection,
+  ) {
     // disallow update during answer if any notation overlaps question area
     notationStore.getSelectedNotations().forEach((n) => {
       if (isNotationInQuestionArea(n)) {
@@ -453,13 +477,50 @@ export default function notationMutateHelper() {
       }
     });
 
-    notationStore.getSelectedNotations().forEach(async (n) => {
+    // sort
+
+    const selectedNotationsSorted =
+      getSelectedNotationsSortedByDirection(moveDirection);
+
+    selectedNotationsSorted.forEach(async (n) => {
       await dbHelper.updateNotationCoordinates(n);
 
       userOutgoingOperations.syncOutgoingUpdateNotation(n);
     });
 
     //notationStore.resetSelectedNotations();
+  }
+
+  // sort selected notations that we first update the outer and the the inner
+  // in order to avoid integrity constraint violation
+  // for example: if we move 2 notations to the left, we must first update the left one
+  // or the noation to the right will try to occupy the same cell of the left one.
+  function getSelectedNotationsSortedByDirection(moveDirection: MoveDirection) {
+    return moveDirection === "LEFT"
+      ? notationStore
+          .getSelectedNotations()
+          .sort((n1: any, n2: any) =>
+            n1.col || n1.fromCol < n2.col || n2.fromCol ? -1 : 1,
+          )
+      : moveDirection === "RIGHT"
+      ? notationStore
+          .getSelectedNotations()
+          .sort((n1: any, n2: any) =>
+            n1.col || n1.fromCol < n2.col || n2.fromCol ? -1 : 1,
+          )
+      : moveDirection === "TOP"
+      ? notationStore
+          .getSelectedNotations()
+          .sort((n1: any, n2: any) =>
+            n1.row || n1.fromRow > n2.row || n2.fromRow ? 1 : -1,
+          )
+      : moveDirection === "BOTTOM"
+      ? notationStore
+          .getSelectedNotations()
+          .sort((n1: any, n2: any) =>
+            n1.row || n1.fromRow < n2.row || n2.fromRow ? 1 : -1,
+          )
+      : notationStore.getSelectedNotations();
   }
 
   async function updateLineNotation(lineNotation: LineNotationAttributes) {
@@ -791,27 +852,30 @@ export default function notationMutateHelper() {
     upsertNotation(notation);
   }
 
-  function upsertExponentNotation(exponent: ExponentAttributes) {
-    const exponentCell = getSelectedCell();
-    if (!exponentCell) return;
+  // function upsertExponentNotation(exponent: ExponentAttributes) {
+  //   const exponentCell = getSelectedCell();
+  //   if (!exponentCell) return;
 
-    let notation: ExponentNotationCreationAttributes = {
-      col: exponentCell.col,
-      row: exponentCell.row,
-      base: exponent.base,
-      exponent: exponent.exponent,
-      boardType: notationStore.getParent().type,
-      parentUUId: notationStore.getParent().uuid,
-      notationType: "EXPONENT",
-      user: userStore.getCurrentUser()!,
-    };
+  //   let notation: ExponentNotationCreationAttributes = {
+  //     col: exponentCell.col,
+  //     row: exponentCell.row,
+  //     base: exponent.base,
+  //     exponent: exponent.exponent,
+  //     boardType: notationStore.getParent().type,
+  //     parentUUId: notationStore.getParent().uuid,
+  //     notationType: "EXPONENT",
+  //     user: userStore.getCurrentUser()!,
+  //   };
 
-    upsertNotation(notation);
-  }
+  //   upsertNotation(notation);
+  // }
 
   function upsertSymbolNotation(value: string) {
     const symbolCell = getSelectedCell();
     if (!symbolCell) return;
+
+    const notationType: NotationType =
+      editModeStore.getEditMode() === "EXPONENT" ? "EXPONENT" : "SYMBOL";
 
     let notation: PointNotationCreationAttributes = {
       col: symbolCell.col,
@@ -819,7 +883,7 @@ export default function notationMutateHelper() {
       value: value,
       boardType: notationStore.getParent().type,
       parentUUId: notationStore.getParent().uuid,
-      notationType: "SYMBOL",
+      notationType: notationType,
       user: userStore.getCurrentUser()!,
     };
 
@@ -888,7 +952,7 @@ export default function notationMutateHelper() {
     addImageNotation,
     upsertTextNotation,
     upsertTriangleNotation,
-    upsertExponentNotation,
+    //    upsertExponentNotation,
     addLineNotation,
     deleteSelectedNotations,
     moveSelectedNotations,

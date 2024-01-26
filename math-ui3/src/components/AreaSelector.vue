@@ -22,7 +22,7 @@ import { useNotationStore } from "../store/pinia/notationStore";
 import * as d3 from "d3";
 import useNotationMutateHelper from "../helpers/notationMutateHelper";
 import useEventBus from "../helpers/eventBusHelper";
-import { NotationTypeShape } from "common/unions";
+import { NotationTypeShape, MoveDirection } from "common/unions";
 
 const eventBus = useEventBus();
 const editModeStore = useEditModeStore();
@@ -113,17 +113,6 @@ function keyUp(e: KeyboardEvent) {
 
   if (selectionRectHeight.value === 0) return;
 
-  // switch (e.code) {
-  //   case "ArrowLeft":
-  //   case "Backspace":
-  //   case "Delete":
-  //   case "ArrowLeft":
-  //   case "ArrowRight":
-  //   case "ArrowDown":
-  //   case "ArrowUp":
-  //     resetSelection();
-  // }
-
   switch (e.code) {
     case "ArrowLeft":
       notationMutateHelper.moveSelectedNotations(-1, 0);
@@ -145,10 +134,17 @@ function keyUp(e: KeyboardEvent) {
 
   switch (e.code) {
     case "ArrowLeft":
+      notationMutateHelper.updateSelectedNotationCoordinates("LEFT");
+      break;
     case "ArrowRight":
+      notationMutateHelper.updateSelectedNotationCoordinates("RIGHT");
+      break;
     case "ArrowDown":
+      notationMutateHelper.updateSelectedNotationCoordinates("BOTTOM");
+      break;
     case "ArrowUp":
-      notationMutateHelper.updateSelectedNotationCoordinates();
+      notationMutateHelper.updateSelectedNotationCoordinates("TOP");
+      break;
   }
 }
 
@@ -305,6 +301,14 @@ function moveSelection(e: MouseEvent) {
 }
 
 function endMoveSelection(e: MouseEvent) {
+  const moveDirection: MoveDirection =
+    e.movementX > 0  && e.movementY > 0 ?
+      "RIGHTBOTTOM" :
+      e.movementX > 0 ?
+        "RIGHT" :
+        
+
+
   notationMutateHelper.updateSelectedNotationCoordinates();
   notationStore.resetSelectedNotations();
   resetSelection();

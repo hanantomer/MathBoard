@@ -21,6 +21,8 @@ export type LinePosition =  {
   y: number;
 };
 
+
+
 export function getDefaultFontSize() : number {
   var style  = 
     window!.getComputedStyle(document!.body)!;

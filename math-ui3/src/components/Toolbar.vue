@@ -7,10 +7,6 @@
     :show="showFreeTextDialog"
     @close="closeFreeTextDialog"
   ></freeTextDialog>
-  <exponentDialog
-    :show="showExponentDialog"
-    @close="closeExponentDialog"
-  ></exponentDialog>
 
   <triangleDialog
     :show="showTriangleDialog"
@@ -90,10 +86,10 @@
       <template v-slot:activator="{ props }">
         <v-btn
           v-bind="props"
+          :color="exponentButtonActive ? 'white' : 'yellow'"
           icon
-          v-on:click="startExponentMode"
+          v-on:click="toggleExponentMode"
           :disabled="!exponentEnabled"
-          @click.stop="openExponentDialog"
         >
           <v-icon>mdi-exponent</v-icon>
         </v-btn>
@@ -191,7 +187,7 @@
 import { watch, ref } from "vue";
 import accessLinkDialog from "./AccessLinkDialog.vue";
 import freeTextDialog from "./FreeTextDialog.vue";
-import exponentDialog from "./ExponentDialog.vue";
+//import exponentDialog from "./ExponentDialog.vue";
 import triangleDialog from "./TriangleDialog.vue";
 import useNotationMutateHelper from "../helpers/notationMutateHelper";
 import { useNotationStore } from "../store/pinia/notationStore";
@@ -221,7 +217,7 @@ let textButtonActive = ref(1);
 let showTriangleDialog = ref(false);
 let showAccessLinkDialog = ref(false);
 let showFreeTextDialog = ref(false);
-let showExponentDialog = ref(false);
+//let showExponentDialog = ref(false);
 
 watch(
   () => editModeStore.getEditMode(),
@@ -249,12 +245,12 @@ watch(
 );
 
 // emitted by exponent dialog
-watch(
-  () => eventBus.bus.value.get("exponentSubmited"),
-  (exponent: ExponentAttributes) => {
-    notationMutateHelper.upsertExponentNotation(exponent);
-  },
-);
+// watch(
+//   () => eventBus.bus.value.get("exponentSubmited"),
+//   (exponent: ExponentAttributes) => {
+//     notationMutateHelper.upsertExponentNotation(exponent);
+//   },
+// );
 
 // emitted by free text dialog
 watch(
@@ -296,13 +292,13 @@ function closeAccessLinkDialog() {
   showAccessLinkDialog.value = false;
 }
 
-function openExponentDialog() {
-  showExponentDialog.value = true;
-}
+// function openExponentDialog() {
+//   showExponentDialog.value = true;
+// }
 
-function closeExponentDialog() {
-  showExponentDialog.value = false;
-}
+// function closeExponentDialog() {
+//   showExponentDialog.value = false;
+// }
 
 const editEnabled = computed(() => {
   return authorizationHelper.canEdit();
@@ -370,6 +366,15 @@ function toggleSqrtMode() {
     resetButtonsState();
   } else {
     startSqrtMode();
+  }
+}
+
+function toggleExponentMode() {
+  resetButtonsState();
+  if (editModeStore.getEditMode() == "EXPONENT") {
+    resetButtonsState();
+  } else {
+    startExponentMode();
   }
 }
 

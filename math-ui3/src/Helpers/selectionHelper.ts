@@ -26,14 +26,14 @@ export default function selectionHelper() {
   //function selectNotationAtClickedPosition(position: DotPosition) {
   //  notationStore.resetSelectedNotations();
 
-    //const selectedNotation =
+  //const selectedNotation =
   //  return selectNotationAtPosition(position);
-    // if (
-    //   selectedNotation &&
-    //   NotationTypeShape.get(selectedNotation.notationType) !== "POINT"
-    // ) {
-    //   return;
-    // }
+  // if (
+  //   selectedNotation &&
+  //   NotationTypeShape.get(selectedNotation.notationType) !== "POINT"
+  // ) {
+  //   return;
+  // }
   //}
 
   function selectNotationAtPosition(
@@ -90,7 +90,7 @@ export default function selectionHelper() {
     // disallow selection of question notations for student
     if (notationMutateHelper.isNotationInQuestionArea(activeNotation)) return;
 
-    editModeStore.setEditMode("AREA_SELECTED");
+    //editModeStore.setEditMode("AREA_SELECTED");
 
     notationStore.selectNotation(activeNotation?.uuid);
   }
