@@ -499,26 +499,30 @@ export default function notationMutateHelper() {
     return moveDirection === "LEFT"
       ? notationStore
           .getSelectedNotations()
-          .sort((n1: any, n2: any) =>
-            n1.col || n1.fromCol < n2.col || n2.fromCol ? -1 : 1,
+          .sort(
+            (n1: any, n2: any) =>
+              (n1.col ?? n1.fromCol) - (n2.col ?? n2.fromCol),
           )
       : moveDirection === "RIGHT"
       ? notationStore
           .getSelectedNotations()
-          .sort((n1: any, n2: any) =>
-            n1.col || n1.fromCol < n2.col || n2.fromCol ? -1 : 1,
+          .sort(
+            (n1: any, n2: any) =>
+              (n2.col ?? n2.fromCol) - (n1.col ?? n1.fromCol),
           )
       : moveDirection === "TOP"
       ? notationStore
           .getSelectedNotations()
-          .sort((n1: any, n2: any) =>
-            n1.row || n1.fromRow > n2.row || n2.fromRow ? 1 : -1,
+          .sort(
+            (n1: any, n2: any) =>
+              (n1.row ?? n1.fromRow) - (n2.row ?? n2.fromRow),
           )
       : moveDirection === "BOTTOM"
       ? notationStore
           .getSelectedNotations()
-          .sort((n1: any, n2: any) =>
-            n1.row || n1.fromRow < n2.row || n2.fromRow ? 1 : -1,
+          .sort(
+            (n1: any, n2: any) =>
+              (n2.row ?? n2.fromRow) - (n1.row ?? n1.fromRow),
           )
       : notationStore.getSelectedNotations();
   }

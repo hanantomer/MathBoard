@@ -4,6 +4,10 @@ export type BoardType = typeof BoardTypeValues[number];
 
 export type NotationShape = "POINT" |  "LINE" |  "RECT"
 
+export type PointType = "SYMBOL" |  "EXPONENT" |  "SIGN"
+
+export type LineType = "FRACTION" |  "SQRT"
+
 export const NotationTypeValues = ["SYMBOL","SIGN","EXPONENT","FRACTION","SQRT","SQRTSYMBOL","TEXT","IMAGE","TRIANGLE"] as const;
 
 export type NotationType = typeof NotationTypeValues[number]
