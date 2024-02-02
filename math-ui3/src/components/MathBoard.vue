@@ -12,6 +12,9 @@
       <v-sheet class="mt-10 ml-8">
         <svg v-bind:id="svgId" x="0" y="0" width="1600" height="760"></svg>
       </v-sheet>
+      <v-sheet class="flex-row">
+        <editingToolbar></editingToolbar>
+      </v-sheet>
     </div>
   </v-row>
 </template>
@@ -21,6 +24,7 @@ import useNotationLoadingHelper from "../helpers/notationLoadingHelper";
 import UseMatrixHelper from "../helpers/matrixHelper";
 import UseEventHelper from "../helpers/eventHelper";
 import toolbar from "./Toolbar.vue";
+import editingToolbar from "./EditingToolbar.vue";
 import areaSelector from "./AreaSelector.vue";
 import lineDrawer from "./LineDrawer.vue";
 import useEventBus from "../helpers/eventBusHelper";
@@ -29,9 +33,10 @@ import { onMounted, onUnmounted, watch } from "vue";
 import { useNotationStore } from "../store/pinia/notationStore";
 import { useEditModeStore } from "../store/pinia/editModeStore";
 import { useAnswerStore } from "../store/pinia/answerStore";
+import { NotationTypeShape } from "common/unions";
 import useSelectionHelper from "../helpers/selectionHelper";
 import useNotationMutateHelper from "../helpers/notationMutateHelper";
-import { NotationTypeShape } from "common/unions";
+import useElementFinderHelper from "../helpers/elementFinderHelper";
 
 const notationLoadingHelper = useNotationLoadingHelper();
 const notationStore = useNotationStore();
@@ -42,6 +47,7 @@ const notationMutateHelper = useNotationMutateHelper();
 const eventHelper = UseEventHelper();
 const editModeStore = useEditModeStore();
 const answerStore = useAnswerStore();
+const elementFinderHelper = useElementFinderHelper();
 
 onMounted(() => {
   eventHelper.registerSvgMouseDown(props.svgId);
@@ -97,6 +103,34 @@ watch(
     }, 100);
   },
   { immediate: true, deep: true },
+);
+
+watch(
+  () => eventBus.bus.value.get("colorizeCell"),
+  (params) => {
+    let clickedCell = elementFinderHelper.findRectAtClickedPosition({
+      x: params.clientX,
+      y: params.clientY,
+    });
+
+    if (!clickedCell) return;
+
+    const col = elementFinderHelper.getElementAttributeValue(
+      clickedCell,
+      "col",
+    );
+    const row = elementFinderHelper.getElementAttributeValue(
+      clickedCell.parentElement!,
+      "row",
+    );
+
+    let cellToColorize: CellCoordinates = {
+      col: parseInt(col || "-1"),
+      row: parseInt(row || "-1"),
+    };
+
+    matrixHelper.colorizeCell(props.svgId, cellToColorize, params.cellColor);
+  },
 );
 
 watch(
@@ -169,10 +203,10 @@ function handleMouseDown(e: MouseEvent) {
     return;
   }
 
-  if (editModeStore.getEditMode() == "AREA_SELECT") {
-    editModeStore.setNextEditMode();
-    return;
-  }
+  //if (editModeStore.getEditMode() == "AREA_SELECT") {
+  //  editModeStore.setNextEditMode();
+  //  return;
+  //}
 
   if (
     editModeStore.getEditMode() === "CHECKMARK" ||

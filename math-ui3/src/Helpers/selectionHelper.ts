@@ -88,7 +88,7 @@ export default function selectionHelper() {
 
   function selectNotation(activeNotation: NotationAttributes) {
     // disallow selection of question notations for student
-    if (notationMutateHelper.isNotationInQuestionArea(activeNotation)) return;
+    if (notationMutateHelper.isNotationInQuestionArea(activeNotation, 0, 0)) return;
 
     //editModeStore.setEditMode("AREA_SELECTED");
 

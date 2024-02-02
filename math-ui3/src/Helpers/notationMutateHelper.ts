@@ -25,7 +25,6 @@ import {
   NotationAttributes,
   LineAttributes,
   RectAttributes,
-  ExponentNotationCreationAttributes,
 } from "common/baseTypes";
 
 const matrixHelper = useMatrixHelper();
@@ -354,25 +353,6 @@ export default function notationMutateHelper() {
     });
   }
 
-  async function removeSymbolsByCell(
-    coordinates: CellCoordinates,
-  ): Promise<NotationAttributes[]> {
-    let symbolsAtCell = findNotationsByCellCoordinates(coordinates).filter(
-      (n: NotationAttributes) =>
-        n.notationType === "SYMBOL" || n.notationType === "SIGN",
-    );
-
-    if (!symbolsAtCell) return [];
-
-    symbolsAtCell.forEach(async (n: NotationAttributes) => {
-      await dbHelper
-        .removeNotation(n)
-        .then(() => notationStore.deleteNotation(n.uuid));
-    });
-
-    return symbolsAtCell;
-  }
-
   async function selectNotationByCoordinates(CellCoordinates: CellCoordinates) {
     findNotationsByCellCoordinates(CellCoordinates).forEach(
       (n: NotationAttributes) => {
@@ -387,6 +367,8 @@ export default function notationMutateHelper() {
 
   function canMoveSelectedNotations(deltaX: number, deltaY: number): boolean {
     notationStore.getSelectedNotations().forEach((n) => {
+      if (isNotationInQuestionArea(n, deltaX, deltaY)) return false;
+
       switch (NotationTypeShape.get(n.notationType)) {
         case "POINT": {
           if (
@@ -439,8 +421,8 @@ export default function notationMutateHelper() {
     return true;
   }
   // move without persistence - called during  mouse move  - don't bother the database during move
-  async function moveSelectedNotations(deltaX: number, deltaY: number) {
-    if (!canMoveSelectedNotations(deltaX, deltaY)) return;
+  function moveSelectedNotations(deltaX: number, deltaY: number): boolean {
+    if (!canMoveSelectedNotations(deltaX, deltaY)) return false;
 
     notationStore.getSelectedNotations().forEach((n) => {
       switch (NotationTypeShape.get(n.notationType)) {
@@ -464,27 +446,18 @@ export default function notationMutateHelper() {
         }
       }
     });
+    return true;
   }
 
   // move selected notations with persistence - called upon muose up
   async function updateSelectedNotationCoordinates(
     moveDirection: MoveDirection,
   ) {
-    // disallow update during answer if any notation overlaps question area
-    notationStore.getSelectedNotations().forEach((n) => {
-      if (isNotationInQuestionArea(n)) {
-        return;
-      }
-    });
+    await dbHelper.updateNotationsCoordinates(
+      getSelectedNotationsSortedByDirection(moveDirection),
+    );
 
-    // sort
-
-    const selectedNotationsSorted =
-      getSelectedNotationsSortedByDirection(moveDirection);
-
-    selectedNotationsSorted.forEach(async (n) => {
-      await dbHelper.updateNotationCoordinates(n);
-
+    notationStore.getSelectedNotations().forEach(async (n) => {
       userOutgoingOperations.syncOutgoingUpdateNotation(n);
     });
 
@@ -674,6 +647,8 @@ export default function notationMutateHelper() {
   // return true for 1. student in question and 2. notation coordinates are within question area
   function isNotationInQuestionArea(
     notation: NotationAttributes | null,
+    delatX: number,
+    delatY: number,
   ): boolean {
     if (!notation) return false;
     switch (NotationTypeShape.get(notation.notationType)) {
@@ -684,21 +659,40 @@ export default function notationMutateHelper() {
           !userStore.isTeacher() &&
           notationStore
             .getCellOccupationMatrix()
-            .at(pointNotation.row)
-            ?.at(pointNotation.col)?.boardType == "QUESTION"
+            .at(pointNotation.row + delatY)
+            ?.at(pointNotation.col + delatX)?.boardType == "QUESTION"
         );
+      }
+
+      case "LINE": {
+        let lineNotation = notation as LineNotationAttributes;
+        for (
+          let col: number = lineNotation.fromCol + delatX;
+          col <= lineNotation.toCol + delatX;
+          col++
+        ) {
+          if (
+            notation?.boardType === "ANSWER" &&
+            !userStore.isTeacher() &&
+            notationStore
+              .getCellOccupationMatrix()
+              .at(lineNotation.row + delatY)
+              ?.at(col)?.boardType == "QUESTION"
+          )
+            return true;
+        }
       }
 
       case "RECT": {
         let rectNotation = notation as RectNotationAttributes;
         for (
-          let col: number = rectNotation.fromCol;
-          col <= rectNotation.toCol;
+          let col: number = rectNotation.fromCol + delatX;
+          col <= rectNotation.toCol + delatX;
           col++
         ) {
           for (
-            let row: number = rectNotation.fromRow;
-            row <= rectNotation.toRow;
+            let row: number = rectNotation.fromRow + delatY;
+            row <= rectNotation.toRow + delatY;
             row++
           ) {
             if (
@@ -954,9 +948,8 @@ export default function notationMutateHelper() {
     upsertSymbolNotation,
     addMarkNotation,
     addImageNotation,
-    upsertTextNotation,
+    upsertTextNotation, // text can be modified
     upsertTriangleNotation,
-    //    upsertExponentNotation,
     addLineNotation,
     deleteSelectedNotations,
     moveSelectedNotations,

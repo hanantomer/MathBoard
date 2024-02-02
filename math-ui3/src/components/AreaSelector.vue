@@ -82,8 +82,8 @@ const selectionRectHeight = computed(() => {
 // emitted by eventHelper
 watch(
   () => eventBus.bus.value.get("keyup"),
-  (e: KeyboardEvent) => {
-    keyUp(e);
+  async (e: KeyboardEvent) => {
+    await keyUp(e);
   },
 );
 
@@ -101,6 +101,13 @@ watch(
   },
 );
 
+watch(
+  () => eventBus.bus.value.get("svgmousedown"),
+  (e: MouseEvent) => {
+    handleMouseDown(e);
+  },
+);
+
 function mouseup(e: MouseEvent) {
   eventBus.emit("svgmouseup", e);
 }
@@ -114,40 +121,32 @@ async function keyUp(e: KeyboardEvent) {
 
   switch (e.code) {
     case "ArrowLeft":
-      notationMutateHelper.moveSelectedNotations(-1, 0);
-      moveSelectionByKey(-1, 0);
-      break;
-    case "ArrowRight":
-      notationMutateHelper.moveSelectedNotations(1, 0);
-      moveSelectionByKey(1, 0);
-      break;
-    case "ArrowDown":
-      notationMutateHelper.moveSelectedNotations(0, 1);
-      moveSelectionByKey(0, 1);
-      break;
-    case "ArrowUp":
-      notationMutateHelper.moveSelectedNotations(0, -1);
-      moveSelectionByKey(0, -1);
-      break;
-  }
-
-  switch (e.code) {
-    case "ArrowLeft":
+      if (!notationMutateHelper.moveSelectedNotations(-1, 0)) return;
+      await moveSelectionByKey(-1, 0);
       await notationMutateHelper.updateSelectedNotationCoordinates("LEFT");
       break;
     case "ArrowRight":
+      if (!notationMutateHelper.moveSelectedNotations(1, 0)) return;
+      moveSelectionByKey(1, 0);
       await notationMutateHelper.updateSelectedNotationCoordinates("RIGHT");
       break;
     case "ArrowDown":
+      if (!notationMutateHelper.moveSelectedNotations(0, 1)) return;
+      moveSelectionByKey(0, 1);
       await notationMutateHelper.updateSelectedNotationCoordinates("BOTTOM");
       break;
     case "ArrowUp":
+      if (!notationMutateHelper.moveSelectedNotations(0, -1)) return;
+      moveSelectionByKey(0, -1);
       await notationMutateHelper.updateSelectedNotationCoordinates("TOP");
       break;
   }
 }
 
-function moveSelectionByKey(moveHorizontal: number, moveVertical: number) {
+async function moveSelectionByKey(
+  moveHorizontal: number,
+  moveVertical: number,
+) {
   selectionPosition.value.x1 +=
     moveHorizontal * notationStore.getCellHorizontalWidth();
   selectionPosition.value.y1 +=
@@ -165,13 +164,17 @@ function handleMouseMove(e: MouseEvent) {
 
   const editMode = editModeStore.getEditMode();
 
+  if (editModeStore.isFractionMode() || editModeStore.isSqrtMode()) {
+    return;
+  }
+
   if (editMode == "AREA_SELECTED") {
-    editModeStore.setNextEditMode();
+    editModeStore.setNextEditMode(); // => moving
     return;
   }
 
   if (editMode == "AREA_SELECTING") {
-    updateSelectionArea(e);
+    updateSelectionArea(e); // =>area selected
     return;
   }
 
@@ -179,19 +182,25 @@ function handleMouseMove(e: MouseEvent) {
     moveSelection(e);
     return;
   }
+
+  editModeStore.setEditMode("AREA_SELECTING");
+}
+
+function handleMouseDown(e: MouseEvent) {
+  resetSelection();
 }
 
 function handleMouseUp(e: MouseEvent) {
   const editMode = editModeStore.getEditMode();
 
-  if (editMode == "AREA_SELECTING") {
-    endSelect();
+  if (editMode == "MOVING") {
+    endMoveSelection(e);
     editModeStore.setNextEditMode();
     return;
   }
 
-  if (editMode == "MOVING") {
-    endMoveSelection(e);
+  if (editMode == "AREA_SELECTING") {
+    endSelect();
     editModeStore.setNextEditMode();
     return;
   }
@@ -205,10 +214,23 @@ function updateSelectionArea(e: MouseEvent) {
   if (selectionPosition.value.x1 == 0) {
     selectionPosition.value.x1 = e.clientX;
     selectionPosition.value.y1 = e.clientY;
+    console.debug(`selction starting at: ${e.clientX}, ${e.clientY}`);
   }
 
   selectionPosition.value.x2 = e.clientX;
   selectionPosition.value.y2 = e.clientY;
+
+  // if (selectionPosition.value.x2 < selectionPosition.value.x1) {
+  //   const i = selectionPosition.value.x2;
+  //   selectionPosition.value.x2 = selectionPosition.value.x1;
+  //   selectionPosition.value.x1 = i;
+  // }
+
+  // if (selectionPosition.value.y2 < selectionPosition.value.y1) {
+  //   const i = selectionPosition.value.y2;
+  //   selectionPosition.value.y2 = selectionPosition.value.y1;
+  //   selectionPosition.value.y1 = i;
+  // }
 }
 
 function endSelect() {
@@ -233,19 +255,19 @@ function endSelect() {
         const x_gutter = 10;
 
         if (
-          selectionPosition.value.x1 <=
+          selectionRectLeft.value <=
             notationStore.getCellHorizontalWidth() * col +
               x_gutter +
               svgDimensions.value.x &&
-          selectionPosition.value.x2 >=
+          selectionRectLeft.value + selectionRectWidth.value >=
             notationStore.getCellHorizontalWidth() * (col + 1) -
               x_gutter +
               svgDimensions.value.x &&
-          selectionPosition.value.y1 <=
+          selectionRectTop.value <=
             notationStore.getCellVerticalHeight() * row +
               y_gutter +
               svgDimensions.value.y &&
-          selectionPosition.value.y2 >=
+          selectionRectTop.value + selectionRectHeight.value >=
             notationStore.getCellVerticalHeight() * (row + 1) -
               y_gutter +
               svgDimensions.value.y
@@ -299,7 +321,7 @@ function moveSelection(e: MouseEvent) {
   }
 }
 
-function endMoveSelection(e: MouseEvent) {
+async function endMoveSelection(e: MouseEvent) {
   const moveDirection: MoveDirection =
     e.movementX > 0 && e.movementY > 0
       ? "RIGHTBOTTOM"
@@ -313,7 +335,7 @@ function endMoveSelection(e: MouseEvent) {
       ? "LEFTTOP"
       : "LEFT";
 
-  notationMutateHelper.updateSelectedNotationCoordinates(moveDirection);
+  await notationMutateHelper.updateSelectedNotationCoordinates(moveDirection);
   notationStore.resetSelectedNotations();
   resetSelection();
 }
@@ -326,6 +348,8 @@ function resetSelection() {
     selectionPosition.value.y1 =
     selectionPosition.value.y2 =
       0;
+
+  console.debug("selection reset");
 }
 </script>
 

@@ -1,4 +1,4 @@
-import { BoardType, NotationType } from "common/unions";
+import { BoardType, NotationType, MoveDirection } from "common/unions";
 import {
   LineNotationAttributes,
   NotationAttributes,
@@ -21,6 +21,10 @@ import axiosHelper from "./axiosHelper";
 const { baseURL } = axiosHelper();
 
 export default function useDbHelper() {
+  const updateCoordinatesInterval = 2000; // while moving selection by arrow, many milis to wait before sync
+  let lastUpdateCoordinatesTime: number | null = null;
+  let updateCoordinatesHandle: number | null = null;
+
   function getParentFieldName(boardType: BoardType): string | null {
     const parentFieldName =
       boardType == "LESSON"
@@ -123,38 +127,62 @@ export default function useDbHelper() {
     return res.data;
   }
 
-  async function updateNotationCoordinates(notation: NotationAttributes) {
-    const attributes =
-      // point
-      "col" in notation
-        ? {
-            col: (notation as any)["col"],
-            row: (notation as any)["row"],
-          }
-        : // line
-        "fromCol" in notation
-        ? {
-            fromCol: (notation as any)["fromCol"],
-            toCol: (notation as any)["toCol"],
-            row: (notation as any)["row"],
-          }
-        : // rect
-        "fromRow" in notation
-        ? {
-            fromCol: (notation as any)["fromCol"],
-            toCol: (notation as any)["toCol"],
-            fromRow: (notation as any)["fromRow"],
-            toRow: (notation as any)["toRow"],
-          }
-        : null;
+  async function updateNotationsCoordinates(notations: NotationAttributes[]) {
+    const currentTime = Date.now();
+    if (
+      lastUpdateCoordinatesTime == null ||
+      lastUpdateCoordinatesTime - currentTime > updateCoordinatesInterval
+    ) {
+      if (updateCoordinatesHandle) window.clearTimeout(updateCoordinatesHandle);
 
-    if (!attributes) return;
+      updateCoordinatesHandle = window.setTimeout(
+        updateNotationsCoordinatesDelayed,
+        updateCoordinatesInterval,
+        notations,
+      );
+    }
+    lastUpdateCoordinatesTime = Date.now();
+  }
 
-    return await axios.put<NotationAttributes>(
-      baseURL +
-        `/${notation.boardType.toLowerCase()}${notation.notationType.toLowerCase()}s`,
-      { uuid: notation.uuid, ...attributes },
-    );
+  async function updateNotationsCoordinatesDelayed(
+    notations: NotationAttributes[],
+  ) {
+    console.log("updating coordinates to db");
+
+    notations.forEach(async (notation) => {
+      const attributes =
+        // point
+        "col" in notation
+          ? {
+              col: (notation as any)["col"],
+              row: (notation as any)["row"],
+            }
+          : // line
+          "fromCol" in notation
+          ? {
+              fromCol: (notation as any)["fromCol"],
+              toCol: (notation as any)["toCol"],
+              row: (notation as any)["row"],
+            }
+          : // rect
+          "fromRow" in notation
+          ? {
+              fromCol: (notation as any)["fromCol"],
+              toCol: (notation as any)["toCol"],
+              fromRow: (notation as any)["fromRow"],
+              toRow: (notation as any)["toRow"],
+            }
+          : null;
+
+      lastUpdateCoordinatesTime = null;
+
+      if (!attributes) return;
+      return await axios.put<NotationAttributes>(
+        baseURL +
+          `/${notation.boardType.toLowerCase()}${notation.notationType.toLowerCase()}s`,
+        { uuid: notation.uuid, ...attributes },
+      );
+    });
   }
 
   async function updateNotationValue(notation: NotationAttributes) {
@@ -295,7 +323,7 @@ export default function useDbHelper() {
     addNotation,
     updateLineAttributes,
     updateNotationValue,
-    updateNotationCoordinates,
+    updateNotationsCoordinates,
     removeNotation,
   };
 }

@@ -31,7 +31,7 @@
     </v-tooltip>
 
     <!-- selection button -->
-    <v-tooltip text="Selection">
+    <!-- <v-tooltip text="Selection">
       <template v-slot:activator="{ props }">
         <v-btn
           v-bind="props"
@@ -43,7 +43,7 @@
           ><v-icon>mdi-selection</v-icon></v-btn
         >
       </template>
-    </v-tooltip>
+    </v-tooltip> -->
 
     <!-- fraction line-->
     <v-tooltip text="Draw fraction line">
@@ -401,25 +401,6 @@ function startTextMode() {
   editModeStore.setEditMode("TEXT");
 }
 
-function toggleSelectionMode() {
-  if (editModeStore.getEditMode() == "AREA_SELECT") {
-    endSelectionMode();
-  } else {
-    startSelectionMode();
-  }
-}
-
-function startSelectionMode() {
-  resetButtonsState();
-  selectionButtonActive.value = 0;
-  editModeStore.setEditMode("AREA_SELECT");
-}
-
-function endSelectionMode() {
-  resetButtonsState();
-  selectionButtonActive.value = 1;
-  editModeStore.setEditMode("SYMBOL");
-}
 
 function toggleCheckmarkMode() {
   if (editModeStore.getEditMode() == "CHECKMARK") {

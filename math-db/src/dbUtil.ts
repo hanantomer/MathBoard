@@ -344,6 +344,7 @@ export default function dbUtil() {
         if (!id) return;
         return await db.sequelize.models[modelName].update(attributes, {
             where: { id: id },
+            logging: true,
         });
     }
 

@@ -38,8 +38,8 @@ export default function useMatrixHelper() {
     return notation.selected ? "gray" : "lighgray";
   }
 
-  function backgroundColor(selected: boolean): string {
-    return selected ? "green" : "transparent";
+  function textBackgroundColor(): string {
+    return "lightyellow";
   }
 
   function regularFontSize() {
@@ -47,7 +47,7 @@ export default function useMatrixHelper() {
   }
 
   function textFontSize(el: HTMLElement): string {
-    return window.getComputedStyle(el, null).getPropertyValue("font-size");
+    return getComputedStyle(document.body).getPropertyValue("font-size");
   }
 
   function exponentBaseFontSize() {
@@ -81,13 +81,16 @@ export default function useMatrixHelper() {
   function setTextMeasurementCtx(el: HTMLElement) {
     let textMeasurementEl = document.createElement("canvas");
     (<any>window).textMeasurementCtx = textMeasurementEl.getContext("2d");
-    (<any>window).textMeasurementCtx.font = window
-      .getComputedStyle(el, null)
-      .getPropertyValue("font");
+    (<any>window).textMeasurementCtx.font = getComputedStyle(
+      document.body,
+    ).font;
+    console.log(
+      "font used to measure text is:" + (<any>window).textMeasurementCtx.font,
+    );
   }
 
   function getGeoRectSize() {
-    return 5; /// TODO : move to user prefernces
+    return 5; /// TODO : move to user preferences
   }
 
   function getFreeTextRectWidth(text: string) {
@@ -99,7 +102,7 @@ export default function useMatrixHelper() {
       ),
     );
 
-    return maxWidth / notationStore.getCellVerticalHeight();
+    return maxWidth / notationStore.getCellHorizontalWidth();
   }
 
   function getFreeTextRectHeight(text: string) {
@@ -542,7 +545,10 @@ export default function useMatrixHelper() {
       let n1 = n as RectNotationAttributes;
 
       let bColor = textBorderColor(n ?? false);
-      return `<pre style='border:groove 2px;border-color:${bColor};'>${n1.value}</pre>`;
+
+      return `<pre style='background-color:${textBackgroundColor()};border:groove 2px;border-color:${bColor};'>${
+        n1.value
+      }</pre>`;
     }
 
     if (n.notationType === "IMAGE") {
@@ -567,6 +573,14 @@ export default function useMatrixHelper() {
 
   function getNotationYposByRow(row: number): number {
     return row * notationStore.getCellVerticalHeight();
+  }
+
+  function colorizeCell(svgId: string, cell: CellCoordinates, color: string) {
+    let rectElm = document
+      ?.querySelector<HTMLElement>(`svg[id="${svgId}"] g[row="${cell.row}"]`)
+      ?.querySelector<HTMLElement>(`rect[col="${cell.col}"]`);
+
+    if (rectElm?.style) rectElm.style.fill = color;
   }
 
   // called by store watcher. see mathboard.vue
@@ -604,5 +618,6 @@ export default function useMatrixHelper() {
     refreshScreen,
     setMatrix,
     showSelectedCell,
+    colorizeCell
   };
 }
