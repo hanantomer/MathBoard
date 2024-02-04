@@ -75,6 +75,10 @@ export const useEditModeStore = defineStore("editMode", () => {
     return editMode.value == "CHECKMARK" || editMode.value == "SEMICHECKMARK" || editMode.value == "XMARK";
   }
 
+  function isColorisingMode() {
+    return editMode.value === "COLORISING";
+  }
+
 
   function getEditMode() {
     return editMode.value;
@@ -127,6 +131,7 @@ export const useEditModeStore = defineStore("editMode", () => {
     isSqrtMode,
     isSqrtEditMode,
     isExponentMode,
+    isColorisingMode,
     isDefaultEditMode,
     isTextMode,
     isCheckMode,

@@ -164,7 +164,11 @@ function handleMouseMove(e: MouseEvent) {
 
   const editMode = editModeStore.getEditMode();
 
-  if (editModeStore.isFractionMode() || editModeStore.isSqrtMode()) {
+  if (
+    editModeStore.isFractionMode() ||
+    editModeStore.isSqrtMode() ||
+    editModeStore.isColorisingMode()
+  ) {
     return;
   }
 

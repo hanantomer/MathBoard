@@ -44,6 +44,7 @@ export type EditMode =
   "SQRT"              | // sqrt button pressed
   "SQRT_DRAWING"      | // sqrt drawing started
   "SQRT_SELECTED"     | // sqrt selected  
+  "COLORISING"        | // color selected
   "DELETING"          | // mouse clicked following delete button pressed
   //"AREA_SELECT"       | // select button pressed
   "AREA_SELECTING"    | // user stared selecting area

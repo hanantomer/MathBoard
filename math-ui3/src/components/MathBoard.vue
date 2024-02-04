@@ -12,10 +12,14 @@
       <v-sheet class="mt-10 ml-8">
         <svg v-bind:id="svgId" x="0" y="0" width="1600" height="760"></svg>
       </v-sheet>
-      <v-sheet class="flex-row">
-        <editingToolbar></editingToolbar>
-      </v-sheet>
     </div>
+  </v-row>
+  <v-row>
+    <v-sheet class="flex-row ml-auto mr-auto">
+      <v-toolbar dense floating>
+        <editingToolbar></editingToolbar>
+      </v-toolbar>
+    </v-sheet>
   </v-row>
 </template>
 
@@ -108,10 +112,14 @@ watch(
 watch(
   () => eventBus.bus.value.get("colorizeCell"),
   (params) => {
-    let clickedCell = elementFinderHelper.findRectAtClickedPosition({
-      x: params.clientX,
-      y: params.clientY,
-    });
+    let clickedCell = elementFinderHelper.findClickedObject(
+      {
+        x: params.clientX,
+        y: params.clientY,
+      },
+      "rect",
+      null,
+    );
 
     if (!clickedCell) return;
 
@@ -199,7 +207,7 @@ function handleMouseDown(e: MouseEvent) {
 
   const position = { x: e.clientX, y: e.clientY };
 
-  if (editModeStore.isLineMode()) {
+  if (editModeStore.isLineMode() || editModeStore.isColorisingMode()) {
     return;
   }
 

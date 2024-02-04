@@ -1,79 +1,79 @@
 <template>
   <v-toolbar
-    color="primary"
-    dark
+    color="transparent"
     class="horizontal-toolbar"
     height="50"
     width="400"
   >
-    <v-tooltip text="Colorize cell">
-      <template v-slot:activator="{ props }">
-        <v-btn
-          v-bind="props"
-          :color="'lightblue'"
-          fab
-          dark
-          v-on:click="startBlueMode"
-        >
-        </v-btn>
-      </template>
-    </v-tooltip>
-    <v-tooltip text="Colorize cell">
-      <template v-slot:activator="{ props }">
-        <v-btn
-          v-bind="props"
-          :color="'lightgreen'"
-          fab
-          dark
-          v-on:click="startGreenMode"
-        >
-        </v-btn>
-      </template>
-    </v-tooltip>
-        <v-tooltip text="Colorize cell">
-      <template v-slot:activator="{ props }">
-        <v-btn
-          v-bind="props"
-          :color="'lightpurple'"
-          fab
-          dark
-          v-on:click="startPurpleMode"
-        >
-        </v-btn>
-      </template>
-    </v-tooltip>
-    <v-tooltip text="Uncolorize">
-      <template v-slot:activator="{ props }">
-        <v-btn
-          v-bind="props"
-          :color="'transparent'"
-          fab
-          dark
-          v-on:click="startUncolorizeMode"
-        >
-        </v-btn>
-      </template>
-    </v-tooltip>
-
-
+    <div
+      class="d-flex justify-space-between"
+      style="background-color: transparent"
+    >
+      <v-btn-toggle divided>
+        <v-tooltip text="Colorize cell to blue">
+          <template v-slot:activator="{ props }">
+            <v-btn
+              size="x-small"
+              class="bg-blue-lighten-5"
+              v-bind="props"
+              v-on:click="startBlueMode"
+            >
+            </v-btn>
+          </template>
+        </v-tooltip>
+        <v-tooltip text="Colorize cell to green">
+          <template v-slot:activator="{ props }">
+            <v-btn
+              size="x-small"
+              class="bg-green-lighten-4 ml-1"
+              v-bind="props"
+              v-on:click="startGreenMode"
+            >
+            </v-btn>
+          </template>
+        </v-tooltip>
+        <v-tooltip text="Colorize cell to pink">
+          <template v-slot:activator="{ props }">
+            <v-btn
+              size="x-small"
+              class="bg-pink-lighten-4 ml-1"
+              v-bind="props"
+              v-on:click="startPurpleMode"
+            >
+            </v-btn>
+          </template>
+        </v-tooltip>
+        <v-tooltip text="Uncolorize cell">
+          <template v-slot:activator="{ props }">
+            <v-btn
+              style="border: solid 1px"
+              size="x-small"
+              class="bg-transparent ml-1"
+              v-bind="props"
+              v-on:click="startUncolorizeMode"
+            >
+            </v-btn>
+          </template>
+        </v-tooltip>
+      </v-btn-toggle>
+    </div>
   </v-toolbar>
 </template>
 
 <script setup lang="ts">
 import { watch, ref, computed } from "vue";
-import useNotationMutateHelper from "../helpers/notationMutateHelper";
 import useEventBus from "../helpers/eventBusHelper";
-import useAuthorizationHelper from "../helpers/authorizationHelper";
+import { useEditModeStore } from "../store/pinia/editModeStore";
 
-const authorizationHelper = useAuthorizationHelper();
 const eventBus = useEventBus();
+const editModeStore = useEditModeStore();
 
 let blueButtonActive = ref(1);
 let greenButtonActive = ref(1);
 let purpleButtonActive = ref(1);
 let transparentButtonActive = ref(1);
 
-type CellColor = "lightblue"|  "lightgreen" | "lightpurple" | "transparent" | "none"
+type CellColor = "lightblue" | "lightgreen" | "pink" | "transparent" | "none";
 let cellColor: CellColor = "none";
 
 watch(
@@ -102,38 +102,51 @@ function handleMouseUp(e: MouseEvent) {
 }
 
 function handleMouseDown(e: MouseEvent) {
-  eventBus.emit("colorizeCell", { ...e, cellColor });
+  if (cellColor === "none") return;
+  eventBus.emit("colorizeCell", {
+    clientX: e.clientX,
+    clientY: e.clientY,
+    cellColor,
+  });
 }
 
 function handleMouseMove(e: MouseEvent) {
-  eventBus.emit("colorizeCell", { ...e, cellColor });
+  if (cellColor === "none") return;
+  if (e.buttons !== 1) return;
+  eventBus.emit("colorizeCell", {
+    clientX: e.clientX,
+    clientY: e.clientY,
+    cellColor,
+  });
 }
 
 function startBlueMode() {
   resetButtonsState();
+  editModeStore.setEditMode("COLORISING");
   blueButtonActive.value = 0;
+  cellColor = "lightblue";
 }
 
 function startGreenMode() {
   resetButtonsState();
+  editModeStore.setEditMode("COLORISING");
   greenButtonActive.value = 0;
+  cellColor = "lightgreen";
 }
 
 function startPurpleMode() {
   resetButtonsState();
+  editModeStore.setEditMode("COLORISING");
   purpleButtonActive.value = 0;
-  cellColor = "lightpurple";
+  cellColor = "pink";
 }
 
 function startUncolorizeMode() {
   resetButtonsState();
+  editModeStore.setEditMode("COLORISING");
   transparentButtonActive.value = 0;
   cellColor = "transparent";
 }
-
-const editEnabled = computed(() => {
-  return authorizationHelper.canEdit();
-});
 
 function resetButtonsState() {
   cellColor = "none";
@@ -141,8 +154,8 @@ function resetButtonsState() {
   greenButtonActive.value = 1;
   purpleButtonActive.value = 1;
   transparentButtonActive.value = 1;
+  editModeStore.resetEditMode();
 }
-
 </script>
 
 <style>

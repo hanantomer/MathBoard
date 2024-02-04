@@ -1,8 +1,10 @@
 import { NotationTypeShape } from "common/unions";
 import {
   getDefaultFontSize,
-  selectedCellColor,
   matrixDimensions,
+  defaultdCellStroke,
+  selectedCellStroke,
+  //selectedCellStrokeWidth,
 } from "common/globals";
 import * as d3 from "d3";
 import { useNotationStore } from "../store/pinia/notationStore";
@@ -12,7 +14,6 @@ export type CellCoordinates = { col: number; row: number };
 import {
   NotationAttributes,
   PointAttributes,
-  ExponentNotationAttributes,
   LineAttributes,
   RectAttributes,
   LineNotationAttributes,
@@ -147,14 +148,13 @@ export default function useMatrixHelper() {
       .attr("fill", (a, i, d) => {
         return "white";
       })
-      //      .attr("stroke-opacity", opacity)
-      .attr("stroke", "lightgray")
+      .attr("stroke", defaultdCellStroke)
       .attr("col", (d, i) => {
         return i;
       })
-      .attr("x", (d, i) => {
-        return i * notationStore.getCellHorizontalWidth();
-      })
+       .attr("x", (d, i) => {
+         return i * (notationStore.getCellHorizontalWidth() + 1);
+       })
       .attr("width", notationStore.getCellHorizontalWidth())
       .attr("height", notationStore.getCellVerticalHeight());
   }
@@ -596,7 +596,10 @@ export default function useMatrixHelper() {
         )
         ?.querySelector<HTMLElement>(`rect[col="${oldSelectedCell.col}"]`);
 
-      if (prevRectElm?.style) prevRectElm.style.fill = "";
+      if (prevRectElm?.style) {
+        prevRectElm.style.stroke = defaultdCellStroke;
+        //prevRectElm.style.strokeWidth = "0";
+      }
     }
 
     if (newSelectedCell?.col != null) {
@@ -606,18 +609,21 @@ export default function useMatrixHelper() {
         )
         ?.querySelector<HTMLElement>(`rect[col="${newSelectedCell.col}"]`);
 
-      if (rectElm?.style) rectElm.style.fill = selectedCellColor;
+      if (rectElm?.style) {
+        rectElm.style.stroke = selectedCellStroke;
+        //rectElm.style.strokeWidth = selectedCellStrokeWidth;
+      }
     }
   }
 
   return {
-    setNextCell,
     getFreeTextRectWidth,
     getFreeTextRectHeight,
     getGeoRectSize,
-    refreshScreen,
     setMatrix,
+    setNextCell,
+    refreshScreen,
     showSelectedCell,
-    colorizeCell
+    colorizeCell,
   };
 }
