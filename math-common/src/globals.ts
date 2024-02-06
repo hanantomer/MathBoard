@@ -2,7 +2,7 @@
 //export const apiHost = "/api";
 export const matrixDimensions = {
   rowsNum: 24,
-  colsNum: 100,
+  colsNum: 96,
 };
 
 export const signList = ["=", "+", "-", "*", "/", "\\", "(", ")", "[", "]"];
@@ -13,7 +13,7 @@ export const defaultdCellStroke = "lightgray";
 
 export const heartBeatInterval = 5000;
 
-export type CellCoordinates = {col: number, row: number};
+//export type PointAttributes = {col: number, row: number};
 
 export type DotPosition = {x: number, y:number};
 

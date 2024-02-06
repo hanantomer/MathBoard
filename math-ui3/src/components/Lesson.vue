@@ -1,5 +1,5 @@
 <template>
-  <div class="d-flex mb-12">
+  <div class="d-flex">
     <v-sheet>
       <mathBoard :svgId="svgId" :loaded="loaded">
         <template #title
@@ -76,7 +76,7 @@ async function loadLesson(lessonUUId: string) {
       lessonStore.getCurrentLesson()!.uuid,
     );
   }
-  userIncomingOperations.syncIncomingUserOperations();
+  userIncomingOperations.syncIncomingUserOperations(svgId);
 
   if (!userStore.isTeacher()) {
     lessonStore.addLessonToSharedLessons();

@@ -1,15 +1,22 @@
-import { SelectedCell, NotationAttributes } from "common/baseTypes";
+import {
+  SelectedCell,
+  ColorizedCell,
+  NotationAttributes,
+  PointAttributes,
+} from "common/baseTypes";
 import { useUserStore } from "../store/pinia/userStore";
 import { useStudentStore } from "../store/pinia/studentStore";
 import { useNotationStore } from "../store/pinia/notationStore";
 import { useLessonStore } from "../store/pinia/lessonStore";
-import { UserAttributes } from "common/userTypes";
-import { PointAttributes } from "common/baseTypes";
 import { FeathersHelper } from "./feathersHelper";
+import UseMatrixHelper from "./matrixHelper";
+import { col } from "sequelize";
+
 const notationStore = useNotationStore();
 const lessonStore = useLessonStore();
 const userStore = useUserStore();
 const studentStore = useStudentStore();
+const matrixHelper = UseMatrixHelper();
 
 export default function userIncomingOperations() {
   // check if in Lesson and not initiated by me
@@ -19,7 +26,7 @@ export default function userIncomingOperations() {
     return true;
   }
 
-  async function syncIncomingUserOperations() {
+  async function syncIncomingUserOperations(svgId: string) {
     const feathersClient = FeathersHelper.getInstance();
 
     // send auth token to server and register to accept messsages.
@@ -52,7 +59,7 @@ export default function userIncomingOperations() {
         notationStore.deleteNotation(notation.uuid);
       });
 
-    // sync active cell with teacher or write authorized student
+    // sync active cell with teacher or write-authorized student
     feathersClient
       .service("selectedCell")
       .on("updated", (selectedCell: SelectedCell) => {
@@ -60,6 +67,17 @@ export default function userIncomingOperations() {
         if (selectedCell.userUUId == userStore.getCurrentUser()!.uuid) return;
         notationStore.selectCell(selectedCell);
       });
+
+    // sync cell colorizing
+    feathersClient
+      .service("colorizedCell")
+      .on("updated", (colorizedCell: ColorizedCell) => {
+        if (notationStore.getParent().type !== "LESSON") return;
+
+        if (colorizedCell.userUUId == userStore.getCurrentUser()!.uuid) return;
+
+        matrixHelper.colorizeCell(svgId, colorizedCell as PointAttributes, colorizedCell.color);
+    });
 
     // accept write authorization as student in lesson
     if (!userStore.isTeacher()) {

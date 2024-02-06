@@ -5,22 +5,24 @@
     <slot name="title"></slot>
   </v-row>
   <v-row align="start" class="fill-height" no-gutters>
-    <div class="d-flex">
+    <div style="display: flex; flex-direction: row">
       <v-sheet class="mt-10 ml-1">
         <toolbar></toolbar>
       </v-sheet>
-      <v-sheet class="mt-10 ml-8">
-        <svg v-bind:id="svgId" x="0" y="0" width="1600" height="760"></svg>
-      </v-sheet>
+      <div style="display: flex; flex-direction: column">
+        <v-sheet class="mt-10 ml-8">
+          <svg v-bind:id="svgId" x="0" y="0" width="1600" height="760"></svg>
+        </v-sheet>
+        <v-sheet class="ml-auto mr-auto">
+          <editingToolbar></editingToolbar>
+        </v-sheet>
+      </div>
     </div>
   </v-row>
-  <v-row>
+  <!-- <v-row>
     <v-sheet class="flex-row ml-auto mr-auto">
-      <v-toolbar dense floating>
-        <editingToolbar></editingToolbar>
-      </v-toolbar>
     </v-sheet>
-  </v-row>
+  </v-row> -->
 </template>
 
 <script setup lang="ts">
@@ -32,7 +34,7 @@ import editingToolbar from "./EditingToolbar.vue";
 import areaSelector from "./AreaSelector.vue";
 import lineDrawer from "./LineDrawer.vue";
 import useEventBus from "../helpers/eventBusHelper";
-import { CellCoordinates } from "common/globals";
+import { ColorizedCell, PointAttributes } from "common/baseTypes";
 import { onMounted, onUnmounted, watch } from "vue";
 import { useNotationStore } from "../store/pinia/notationStore";
 import { useEditModeStore } from "../store/pinia/editModeStore";
@@ -41,6 +43,7 @@ import { NotationTypeShape } from "common/unions";
 import useSelectionHelper from "../helpers/selectionHelper";
 import useNotationMutateHelper from "../helpers/notationMutateHelper";
 import useElementFinderHelper from "../helpers/elementFinderHelper";
+import useUserOutgoingOperations from "src/helpers/userOutgoingOperationsHelper";
 
 const notationLoadingHelper = useNotationLoadingHelper();
 const notationStore = useNotationStore();
@@ -52,6 +55,7 @@ const eventHelper = UseEventHelper();
 const editModeStore = useEditModeStore();
 const answerStore = useAnswerStore();
 const elementFinderHelper = useElementFinderHelper();
+const userOutgoingOperations = useUserOutgoingOperations();
 
 onMounted(() => {
   eventHelper.registerSvgMouseDown(props.svgId);
@@ -93,10 +97,10 @@ watch(
 );
 
 watch(
-  () => notationStore.getSelectedCell() as CellCoordinates,
+  () => notationStore.getSelectedCell() as PointAttributes,
   (
-    newSelectedCell: CellCoordinates | undefined | null,
-    oldSelectedCell: CellCoordinates | undefined | null,
+    newSelectedCell: PointAttributes | undefined | null,
+    oldSelectedCell: PointAttributes | undefined | null,
   ) => {
     setTimeout(() => {
       matrixHelper.showSelectedCell(
@@ -132,12 +136,19 @@ watch(
       "row",
     );
 
-    let cellToColorize: CellCoordinates = {
+    let cell: PointAttributes = {
       col: parseInt(col || "-1"),
-      row: parseInt(row || "-1"),
+      row: parseInt(row || "-1")
     };
 
-    matrixHelper.colorizeCell(props.svgId, cellToColorize, params.cellColor);
+    matrixHelper.colorizeCell(props.svgId, cell, params.cellColor);
+
+    userOutgoingOperations.syncOutgoingColorizedCell(
+      cell,
+      notationStore.getParent().uuid,
+      params.cellColor);
+
+    notationStore.resetSelectedCell();
   },
 );
 

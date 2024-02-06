@@ -1,8 +1,8 @@
 // notations of current board(lesson, question or answers)
 //  questions of current lesson
 import { defineStore } from "pinia";
-import { CellCoordinates, matrixDimensions } from "common/globals";
-import { NotationAttributes } from "common/baseTypes";
+import { matrixDimensions } from "common/globals";
+import { NotationAttributes, PointAttributes } from "common/baseTypes";
 import { BoardType, NotationShape, NotationTypeShape } from "common/unions";
 import { ref } from "vue";
 import useUserOutgoingOperations from "../../helpers/userOutgoingOperationsHelper";
@@ -26,7 +26,7 @@ export const useNotationStore = defineStore("notation", () => {
 
   let copiedNotations = ref(<Map<String, NotationAttributes>>new Map());
 
-  let selectedCell = ref(<CellCoordinates>{ col: 0, row: 0 });
+  let selectedCell = ref(<PointAttributes>{ col: 0, row: 0 });
 
   function getCellVerticalHeight() {
     if (!cellVerticalHight.value)
@@ -120,7 +120,7 @@ export const useNotationStore = defineStore("notation", () => {
     copiedNotations.value.clear();
   }
 
-  function selectCell(newSelectedCell: CellCoordinates) {
+  function selectCell(newSelectedCell: PointAttributes) {
     selectedCell.value = newSelectedCell;
   }
 

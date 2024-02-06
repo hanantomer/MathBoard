@@ -1,5 +1,4 @@
-import { CellCoordinates } from "common/globals";
-import { NotationAttributes } from "common/baseTypes";
+import { NotationAttributes, PointAttributes } from "common/baseTypes";
 import { FeathersHelper } from "./feathersHelper";
 import { Params } from "@feathersjs/feathers";
 
@@ -12,7 +11,7 @@ export default function userOutgoingOperations() {
   // };
 
   async function syncOutgoingSelectedCell(
-    selectedCell: CellCoordinates,
+    selectedCell: PointAttributes,
     lessonUUId: string,
   ) {
     const feathersClient = FeathersHelper.getInstance();
@@ -26,6 +25,24 @@ export default function userOutgoingOperations() {
       console.log(error);
     }
   }
+
+  async function syncOutgoingColorizedCell(
+    cell: PointAttributes,
+    lessonUUId: string,
+    color: string,
+  ) {
+    const feathersClient = FeathersHelper.getInstance();
+    try {
+      let t = await feathersClient!
+        .service("colorizedCell")
+        .update(null, { ...cell, lessonUUId: lessonUUId, color: color }, {});
+
+      return t;
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
 
   function syncOutgoingAddNotation(notation: NotationAttributes) {
     FeathersHelper.getInstance().service("notationSync").create(notation, {});
@@ -78,6 +95,7 @@ export default function userOutgoingOperations() {
   return {
     syncOutgoingUpdateNotation,
     syncOutgoingSelectedCell,
+    syncOutgoingColorizedCell,
     syncOutgoingAuthorizeUser,
     syncOutgoingHeartBeat,
     syncOutgoingRemoveNotation,

@@ -45,6 +45,13 @@ export type SelectedCell  = PointAttributes & {
   lessonUUId: number;
 }
 
+export type ColorizedCell  = PointAttributes & {
+  userUUId: string;
+  lessonUUId: number;
+  color: string;
+}
+
+
 export type LineAttributes =  {
   fromCol: number;
   toCol: number;

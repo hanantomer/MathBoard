@@ -4,12 +4,13 @@ import {
   matrixDimensions,
   defaultdCellStroke,
   selectedCellStroke,
-  //selectedCellStrokeWidth,
 } from "common/globals";
+
+import { ColorizedCell, SelectedCell } from "common/baseTypes";
+
 import * as d3 from "d3";
 import { useNotationStore } from "../store/pinia/notationStore";
 
-export type CellCoordinates = { col: number; row: number };
 
 import {
   NotationAttributes,
@@ -18,7 +19,8 @@ import {
   RectAttributes,
   LineNotationAttributes,
   PointNotationAttributes,
-  RectNotationAttributes,
+  RectNotationAttributes
+
 } from "common/baseTypes";
 
 import { useUserStore } from "../store/pinia/userStore";
@@ -27,8 +29,7 @@ const notationStore = useNotationStore();
 const userStore = useUserStore();
 
 export default function useMatrixHelper() {
-  const svgWidth: string = "1400px";
-  const svgHeight: string = "700px";
+
   let matrix: any[] = [];
 
   function borderColor(notation: NotationAttributes): string {
@@ -568,14 +569,14 @@ export default function useMatrixHelper() {
   }
 
   function getNotationXposByCol(col: number): number {
-    return col * notationStore.getCellHorizontalWidth();
+    return col * (notationStore.getCellHorizontalWidth() + 1);
   }
 
   function getNotationYposByRow(row: number): number {
     return row * notationStore.getCellVerticalHeight();
   }
 
-  function colorizeCell(svgId: string, cell: CellCoordinates, color: string) {
+  function colorizeCell(svgId: string, cell: PointAttributes, color: string) {
     let rectElm = document
       ?.querySelector<HTMLElement>(`svg[id="${svgId}"] g[row="${cell.row}"]`)
       ?.querySelector<HTMLElement>(`rect[col="${cell.col}"]`);
@@ -586,8 +587,8 @@ export default function useMatrixHelper() {
   // called by store watcher. see mathboard.vue
   function showSelectedCell(
     svgId: string,
-    newSelectedCell: CellCoordinates | null | undefined,
-    oldSelectedCell: CellCoordinates | null | undefined,
+    newSelectedCell: PointAttributes | null | undefined,
+    oldSelectedCell: PointAttributes | null | undefined,
   ) {
     if (oldSelectedCell?.col != null) {
       let prevRectElm = document

@@ -12,7 +12,8 @@ import {
   TriangleAttributes,
 } from "common/baseTypes";
 
-import { CellCoordinates, matrixDimensions } from "common/globals";
+import { matrixDimensions } from "common/globals";
+import { PointAttributes } from "common/baseTypes";
 import { NotationType, NotationTypeShape, MoveDirection } from "common/unions";
 import { useUserStore } from "../store/pinia/userStore";
 import { useNotationStore } from "../store/pinia/notationStore";
@@ -38,7 +39,7 @@ const userOutgoingOperations = useUserOutgoingOperations();
 export default function notationMutateHelper() {
   function pointAtCellCoordinates(
     n1: PointNotationAttributes,
-    n2: CellCoordinates,
+    n2: PointAttributes,
     userUUId: string,
   ) {
     return n1.col == n2.col && n1.row == n2.row && n1.user.uuid === userUUId;
@@ -74,7 +75,7 @@ export default function notationMutateHelper() {
   // line
   function lineAtCellCoordinates(
     lineCoordinates: LineNotationAttributes,
-    cellCoordinates: CellCoordinates,
+    cellCoordinates: PointAttributes,
     userUUId: string,
   ) {
     return (
@@ -119,14 +120,14 @@ export default function notationMutateHelper() {
   // rect
   function rectAtCellCoordinates(
     rectNotation: RectNotationAttributes,
-    CellCoordinates: CellCoordinates,
+    PointAttributes: PointAttributes,
     userUUId: string,
   ) {
     return (
-      rectNotation.fromCol <= CellCoordinates.col &&
-      rectNotation.toCol >= CellCoordinates.col &&
-      rectNotation.fromRow <= CellCoordinates.row &&
-      rectNotation.toRow >= CellCoordinates.row &&
+      rectNotation.fromCol <= PointAttributes.col &&
+      rectNotation.toCol >= PointAttributes.col &&
+      rectNotation.fromRow <= PointAttributes.row &&
+      rectNotation.toRow >= PointAttributes.row &&
       rectNotation.user.uuid == userUUId
     );
   }
@@ -165,7 +166,7 @@ export default function notationMutateHelper() {
     );
   }
 
-  function findNotationsByCellCoordinates(cellCoordinates: CellCoordinates) {
+  function findNotationsByCellCoordinates(cellCoordinates: PointAttributes) {
     let userUUId = getUserUUId();
 
     return notationStore
@@ -353,8 +354,8 @@ export default function notationMutateHelper() {
     });
   }
 
-  async function selectNotationByCoordinates(CellCoordinates: CellCoordinates) {
-    findNotationsByCellCoordinates(CellCoordinates).forEach(
+  async function selectNotationByCoordinates(PointAttributes: PointAttributes) {
+    findNotationsByCellCoordinates(PointAttributes).forEach(
       (n: NotationAttributes) => {
         notationStore.selectNotation(n.uuid);
       },
@@ -710,16 +711,16 @@ export default function notationMutateHelper() {
   }
 
   function isCellInQuestionArea(
-    CellCoordinates: CellCoordinates | null,
+    PointAttributes: PointAttributes | null,
   ): boolean | null {
     return (
       notationStore.getParent().type == "ANSWER" &&
       !userStore.isTeacher() &&
-      CellCoordinates &&
+      PointAttributes &&
       notationStore
         .getCellOccupationMatrix()
-        .at(CellCoordinates.row)
-        ?.at(CellCoordinates.col)?.boardType == "QUESTION"
+        .at(PointAttributes.row)
+        ?.at(PointAttributes.col)?.boardType == "QUESTION"
     );
   }
 
@@ -890,7 +891,7 @@ export default function notationMutateHelper() {
     matrixHelper.setNextCell(1, 0);
   }
 
-  function getSelectedCell(): CellCoordinates | null {
+  function getSelectedCell(): PointAttributes | null {
     if (notationStore.getSelectedNotations().length) {
       let point =
         notationStore.getSelectedNotations()[0] as PointNotationAttributes;
@@ -900,7 +901,7 @@ export default function notationMutateHelper() {
     return notationStore.getSelectedCell();
   }
 
-  function getRectCell(): CellCoordinates | null {
+  function getRectCell(): PointAttributes | null {
     if (notationStore.getSelectedNotations().length) {
       const rect =
         notationStore.getSelectedNotations()[0] as RectNotationAttributes;

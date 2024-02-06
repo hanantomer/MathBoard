@@ -98,6 +98,7 @@ watch(
 );
 
 function handleMouseUp(e: MouseEvent) {
+  if (cellColor === "none") return;
   resetButtonsState();
 }
 

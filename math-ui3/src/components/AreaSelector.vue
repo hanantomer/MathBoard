@@ -172,6 +172,8 @@ function handleMouseMove(e: MouseEvent) {
     return;
   }
 
+  notationStore.resetSelectedCell();
+
   if (editMode == "AREA_SELECTED") {
     editModeStore.setNextEditMode(); // => moving
     return;

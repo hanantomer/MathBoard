@@ -4,8 +4,8 @@ import {
   NotationTypeValues,
 } from "common/unions";
 import { useNotationStore } from "../store/pinia/notationStore";
-import { CellCoordinates, DotPosition } from "common/globals";
-import { NotationAttributes } from "common/baseTypes";
+import { DotPosition } from "common/globals";
+import { PointAttributes, NotationAttributes } from "common/baseTypes";
 import useElementFinderHelper from "./elementFinderHelper";
 import useNotationMutateHelper from "./notationMutateHelper";
 import useUserOutgoingOperationsHelper from "./userOutgoingOperationsHelper";
@@ -129,7 +129,7 @@ export default function selectionHelper() {
       "row",
     );
 
-    let cellToActivate: CellCoordinates = {
+    let cellToActivate: PointAttributes = {
       col: parseInt(col || "-1"),
       row: parseInt(row || "-1"),
     };
