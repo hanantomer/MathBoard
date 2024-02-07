@@ -34,7 +34,7 @@ import editingToolbar from "./EditingToolbar.vue";
 import areaSelector from "./AreaSelector.vue";
 import lineDrawer from "./LineDrawer.vue";
 import useEventBus from "../helpers/eventBusHelper";
-import { ColorizedCell, PointAttributes } from "common/baseTypes";
+import { PointAttributes } from "common/baseTypes";
 import { onMounted, onUnmounted, watch } from "vue";
 import { useNotationStore } from "../store/pinia/notationStore";
 import { useEditModeStore } from "../store/pinia/editModeStore";
@@ -43,7 +43,7 @@ import { NotationTypeShape } from "common/unions";
 import useSelectionHelper from "../helpers/selectionHelper";
 import useNotationMutateHelper from "../helpers/notationMutateHelper";
 import useElementFinderHelper from "../helpers/elementFinderHelper";
-import useUserOutgoingOperations from "src/helpers/userOutgoingOperationsHelper";
+import useUserOutgoingOperations from "../helpers/userOutgoingOperationsHelper";
 
 const notationLoadingHelper = useNotationLoadingHelper();
 const notationStore = useNotationStore();
