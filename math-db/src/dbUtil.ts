@@ -214,10 +214,10 @@ export default function dbUtil() {
         return await Answer.findAll({
             include: [
                 { model: Question, include: [{ model: Lesson }] },
-                { model: User }
+                { model: User },
             ],
             where: {
-                "$question.id$": 1,
+                "$question.id$": questionId,
             },
         });
     }

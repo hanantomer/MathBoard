@@ -1,21 +1,17 @@
 <template>
   <v-container>
-    <v-card class="mx-auto" max-width="600" min-height="600">
+    <v-card class="mx-auto" max-width="800" min-height="600">
       <v-toolbar color="primary" dark>
         <v-toolbar-title>Answers</v-toolbar-title>
       </v-toolbar>
       <v-autocomplete
         label="Select Lesson"
-        item-title="title"
-        item-value="value"
         :items="lessons"
         v-model="selectedLesson"
       >
       </v-autocomplete>
       <v-autocomplete
         label="Select Question"
-        item-title="title"
-        item-value="value"
         :items="questions"
         v-model="selectedQuestion"
       >
@@ -34,20 +30,22 @@
   </v-container>
 </template>
 <script setup lang="ts">
+import { formatDate } from "../../../math-common/src/globals";
 import { watch, ref, onMounted } from "vue";
 import { useRouter } from "vue-router";
 import { computed } from "vue";
 import { useAnswerStore } from "../store/pinia/answerStore";
 import { useQuestionStore } from "../store/pinia/questionStore";
 import { useLessonStore } from "../store/pinia/lessonStore";
-import { AnswerAttributes } from "../../../math-common/build/answerTypes";
 
 const router = useRouter();
 const answerStore = useAnswerStore();
 const questionStore = useQuestionStore();
 const lessonStore = useLessonStore();
 
-onMounted(() => loadAnswers());
+onMounted(() => {
+  lessonStore.loadLessons();
+});
 
 let headers = computed(() => [
   {
@@ -60,16 +58,17 @@ let headers = computed(() => [
   },
 ]);
 
+let selectedLesson = ref();
+let selectedQuestion = ref();
+
 const lessons = computed(() => {
   return Array.from(lessonStore.getLessons().values()).map((lesson) => {
     return {
       value: lesson.uuid,
       title: lesson.name,
-    }
-  })
+    };
+  });
 });
-
-let selectedLesson = ref();
 
 const questions = computed(() => {
   return Array.from(questionStore.getQuestions().values())
@@ -82,19 +81,34 @@ const questions = computed(() => {
     });
 });
 
-let selectedQuestion = ref();
-
 const answers = computed(() => {
   return Array.from(answerStore.getAnswers().values())
-    .filter((answer) => answer.question.uuid === selectedQuestion.value)
+    .filter((answer) => answer.question.uuid === selectedQuestion.value )
     .map((answer) => {
       return {
         uuid: answer.uuid,
         student: answer.user.firstName + " " + answer.user.lastName,
-        createdAt: answer.createdAt,
+        createdAt:formatDate(answer.createdAt) ,
       };
     });
 });
+
+watch(
+  () => selectedLesson.value,
+  (lessonUUId: string) => {
+    lessonStore.setCurrentLesson(lessonUUId);
+    questionStore.loadQuestions();
+  },
+);
+
+watch(
+  () => selectedQuestion.value,
+  (questionUUId: string) => {
+    questionStore.setCurrentQuestion(questionUUId);
+    //loadAnswers();
+    answerStore.loadAnswers();
+  },
+);
 
 async function loadAnswers() {
   if (!questionStore.getQuestions().size) {
@@ -106,35 +120,18 @@ async function loadAnswers() {
   }
 
   if (lessonStore.getCurrentLesson()) {
-    selectedLesson.value = lessonStore.getCurrentLesson()?.uuid;
+    selectedLesson.value = lessonStore.getCurrentLesson();
   }
 
   if (questionStore.getCurrentQuestion()) {
-    selectedQuestion.value = questionStore.getCurrentQuestion()?.uuid;
+    selectedQuestion.value = questionStore.getCurrentQuestion();
   }
-
-  watch(
-    () => selectedLesson.value,
-    (lessonUUId: string) => {
-      lessonStore.setCurrentLesson(lessonUUId);
-      loadAnswers();
-    },
-  );
-
-  watch(
-    () => selectedQuestion.value,
-    (questionUUId: string) => {
-      questionStore.setCurrentQuestion(questionUUId);
-      loadAnswers();
-    },
-  );
 }
 
 async function selectAnswer(e: any, row: any) {
   answerStore.setCurrentAnswer(row.item.uuid);
   router.push({ path: "/answer/" + row.item.uuid });
 }
-
 </script>
 
 <style>

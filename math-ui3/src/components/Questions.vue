@@ -23,7 +23,11 @@
 
         <v-spacer></v-spacer>
 
-        <v-btn icon v-on:click="openQuestionDialog">
+        <v-btn
+          icon
+          v-on:click="openQuestionDialog"
+          v-show="userStore.isTeacher()"
+        >
           <v-icon>mdi-plus</v-icon>
         </v-btn>
       </v-toolbar>
@@ -66,7 +70,6 @@ const eventBus = useEventBus();
 
 const noLessonDialog = ref(false);
 const questionDialog = ref(false);
-
 let itemsPerPage = 10;
 
 const menu = [
@@ -74,7 +77,17 @@ const menu = [
   { icon: "remove", title: "Remove" },
 ];
 
-onMounted(() => loadQuestions());
+let selectedLesson = ref();
+
+onMounted(() => lessonStore.loadLessons());
+
+watch(
+  () => selectedLesson.value,
+  (lessonUUId: string) => {
+    lessonStore.setCurrentLesson(lessonUUId);
+    loadQuestions();
+  },
+);
 
 watch(
   () => eventBus.bus.value.get("newQuestionSave"),
@@ -110,18 +123,17 @@ const lessons = computed(() => {
   });
 });
 
-let selectedLesson = ref();
-
 const questions = computed(() => {
   return Array.from(questionStore.getQuestions().values())
-    .filter((question) => question.lesson.uuid === selectedLesson.value).map((question) => {
+    .filter((question) => question.lesson.uuid === selectedLesson.value)
+    .map((question) => {
       return {
         uuid: question.uuid,
         name: question.name,
         lessonName: question.lesson!.name,
-        createdAt: question.createdAt
-      }
-    })
+        createdAt: question.createdAt,
+      };
+    });
 });
 
 function navToLessons() {
@@ -145,16 +157,9 @@ async function loadQuestions() {
     return;
   }
 
-  if (lessonStore.getCurrentLesson())
+  if (lessonStore.getCurrentLesson()) {
     selectedLesson.value = lessonStore.getCurrentLesson()?.uuid;
-
-  watch(
-    () => selectedLesson.value,
-    (lessonUUId: string) => {
-      lessonStore.setCurrentLesson(lessonUUId);
-      loadQuestions();
-    },
-  );
+  }
 }
 
 function openQuestionDialog() {

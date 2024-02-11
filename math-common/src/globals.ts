@@ -33,6 +33,16 @@ export function getDefaultFontSize() : number {
   let regex = fs.match(/\d+/);
   return Number(regex?.[0]);
 };
+
+export function formatDate(date : Date| null | undefined) {
+  return date  ? new Date(date).toLocaleDateString("en-us", {
+              weekday: "long",
+              year: "numeric",
+              month: "short",
+              day: "numeric",
+            })
+          : ""
+}
     
  
 

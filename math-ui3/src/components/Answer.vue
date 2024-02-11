@@ -3,8 +3,8 @@
     <v-col cols="12">
       <mathBoard :svgId="svgId" :loaded="loaded">
         <template #title
-          ><p>{{ answerTitle }}</p></template
-        >1
+          ><p class="title">{{ answerTitle }}</p></template
+        >
       </mathBoard>
     </v-col>
   </v-row>

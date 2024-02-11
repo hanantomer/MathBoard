@@ -149,11 +149,11 @@ const showLessons = computed(() => {
 });
 
 const showQuestions = computed(() => {
-  return userStore.getCurrentUser(); // && lessonStore.getCurrentLesson();
+  return userStore.getCurrentUser(); 
 });
 
 const showAnswers = computed(() => {
-  return isTeacher.value; //&& lessonStore.getCurrentLesson();
+  return isTeacher.value;
 });
 
 const isTeacher = computed(() => userStore.isTeacher());

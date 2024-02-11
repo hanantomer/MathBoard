@@ -1,33 +1,34 @@
 <template>
   <v-row justify="center">
-    <v-dialog v-model="show" persistent max-width="500px" min-height="500x">
-      <v-form @submit.prevent="save">
+    <v-dialog v-model="show" max-width="500px" min-height="500x">
+      <v-form @submit.prevent="save" ref="newQuestionForm">
         <v-card>
           <v-card-title class="headline">
-            <span>Please specify question title</span>
+            <span>Add new question</span>
           </v-card-title>
           <v-card-text>
             <v-container>
               <v-row>
                 <v-col cols="12">
                   <v-select
-                    v-model="selectedLesson"
-                    :items="lessons"
+                    :rules = "requiredRules"
                     item-value="uuid"
-                    item-text="name"
-                    label="lesson:"
+                    item-title="name"
+                    label="pleeas select a lesson:"
                     dense
                     outlined
+                    v-model="selectedLesson"
+                    :items="lessons"
                   ></v-select>
                 </v-col>
               </v-row>
               <v-row>
                 <v-col cols="12">
                   <v-text-field
+                    :rules = "requiredRules"
                     autofocus
                     v-model="name"
                     label="Title*"
-                    required
                   ></v-text-field>
                 </v-col>
               </v-row>
@@ -55,6 +56,9 @@ const lessonStore = useLessonStore();
 const eventBus = useEventBus();
 const show = ref(false);
 const name = ref();
+const newQuestionForm = ref(null);
+
+const requiredRules = [(v: string) =>  !!v || "required field"]
 
 const props = defineProps({
   dialog: {
@@ -67,13 +71,9 @@ watch(
   () => props.dialog,
   (val: boolean) => {
     show.value = val;
+    lessonStore.loadLessons();
   },
 );
-
-function save() {
-  show.value = false;
-  eventBus.emit("newQuestionSave", name.value);
-}
 
 const lessons = computed(() =>
   Array.from(lessonStore.getLessons()).map(([key, value]) => {
@@ -90,4 +90,13 @@ const selectedLesson = computed({
     lessonStore.setCurrentLesson(selectedLessonUUId);
   },
 });
+
+async function save() {
+  const { valid, errors } = await (newQuestionForm.value as any).validate();
+  if (valid) {
+    show.value = false;
+    eventBus.emit("newQuestionSave", name.value);
+  }
+}
+
 </script>

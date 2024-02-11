@@ -27,7 +27,8 @@
 </template>
 <script setup lang="ts">
 import NewItemDialog from "./NewItemDialog.vue";
-import { LessonAttributes } from "../../../math-common/build/lessonTypes";
+import { formatDate } from "../../../math-common/src/globals";
+import { LessonAttributes } from "../../../math-common/src/lessonTypes";
 import { useUserStore } from "../store/pinia/userStore";
 import { useLessonStore } from "../store/pinia/lessonStore";
 import { ref, computed, watch, onMounted } from "vue";
@@ -50,7 +51,7 @@ const menu = [
 ];
 let itemsPerPage = 10;
 
-onMounted(() => loadLessons());
+onMounted(() => lessonStore.loadLessons());
 
 watch(
   () => eventBus.bus.value.get("newItemSave"),
@@ -78,14 +79,7 @@ const lessons = computed(() => {
       return {
         uuid: l.uuid,
         name: l.name,
-        createdAt: l.createdAt
-          ? new Date(l.createdAt).toLocaleDateString("en-us", {
-              weekday: "long",
-              year: "numeric",
-              month: "short",
-              day: "numeric",
-            })
-          : "",
+        createdAt:formatDate(l.createdAt)
       };
     },
   );

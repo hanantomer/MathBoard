@@ -6,11 +6,19 @@
   </v-row>
   <v-row align="start" class="fill-height" no-gutters>
     <div style="display: flex; flex-direction: row">
-      <v-sheet class="mt-10 ml-1">
+      <v-sheet class="mt-14 ml-1">
         <toolbar></toolbar>
       </v-sheet>
       <div style="display: flex; flex-direction: column">
         <v-sheet class="mt-10 ml-8">
+          <v-progress-linear
+            v-show="pBar"
+            color="deep-purple-accent-4"
+            indeterminate
+            rounded
+            height="6"
+          ></v-progress-linear>
+
           <svg v-bind:id="svgId" x="0" y="0" width="1600" height="760"></svg>
         </v-sheet>
         <v-sheet class="ml-auto mr-auto">
@@ -35,7 +43,7 @@ import areaSelector from "./AreaSelector.vue";
 import lineDrawer from "./LineDrawer.vue";
 import useEventBus from "../helpers/eventBusHelper";
 import { PointAttributes } from "common/baseTypes";
-import { onMounted, onUnmounted, watch } from "vue";
+import { onMounted, onUnmounted, ref, watch } from "vue";
 import { useNotationStore } from "../store/pinia/notationStore";
 import { useEditModeStore } from "../store/pinia/editModeStore";
 import { useAnswerStore } from "../store/pinia/answerStore";
@@ -56,6 +64,7 @@ const editModeStore = useEditModeStore();
 const answerStore = useAnswerStore();
 const elementFinderHelper = useElementFinderHelper();
 const userOutgoingOperations = useUserOutgoingOperations();
+const pBar = ref(false);
 
 onMounted(() => {
   eventHelper.registerSvgMouseDown(props.svgId);
@@ -138,7 +147,7 @@ watch(
 
     let cell: PointAttributes = {
       col: parseInt(col || "-1"),
-      row: parseInt(row || "-1")
+      row: parseInt(row || "-1"),
     };
 
     matrixHelper.colorizeCell(props.svgId, cell, params.cellColor);
@@ -146,7 +155,8 @@ watch(
     userOutgoingOperations.syncOutgoingColorizedCell(
       cell,
       notationStore.getParent().uuid,
-      params.cellColor);
+      params.cellColor,
+    );
 
     notationStore.resetSelectedCell();
   },
@@ -185,30 +195,35 @@ watch(
 );
 
 async function load() {
-  notationStore.clearNotations();
+  pBar.value = true;
 
-  matrixHelper.setMatrix(props.svgId);
+  try {
+    notationStore.clearNotations();
 
-  // for answer load also question notations
-  if (notationStore.getParent().type === "ANSWER") {
+    matrixHelper.setMatrix(props.svgId);
+
+    // for answer load also question notations
+    if (notationStore.getParent().type === "ANSWER") {
+      await notationLoadingHelper.loadNotations(
+        "QUESTION",
+        answerStore.getCurrentAnswer()!.question.uuid!,
+      );
+
+      await notationLoadingHelper.loadNotations(
+        "ANSWER",
+        answerStore.getCurrentAnswer()!.uuid!,
+      );
+
+      return;
+    }
+
     await notationLoadingHelper.loadNotations(
-      "QUESTION",
-      answerStore.getCurrentAnswer()!.question.uuid!,
+      notationStore.getParent().type,
+      notationStore.getParent().uuid,
     );
-
-    await notationLoadingHelper.loadNotations(
-      "ANSWER",
-      answerStore.getCurrentAnswer()!.uuid!,
-    );
-
-    return;
+  } finally {
+    pBar.value = false;
   }
-
-  // load notations
-  await notationLoadingHelper.loadNotations(
-    notationStore.getParent().type,
-    notationStore.getParent().uuid,
-  );
 }
 
 function handleMouseDown(e: MouseEvent) {
@@ -221,11 +236,6 @@ function handleMouseDown(e: MouseEvent) {
   if (editModeStore.isLineMode() || editModeStore.isColorisingMode()) {
     return;
   }
-
-  //if (editModeStore.getEditMode() == "AREA_SELECT") {
-  //  editModeStore.setNextEditMode();
-  //  return;
-  //}
 
   if (
     editModeStore.getEditMode() === "CHECKMARK" ||
