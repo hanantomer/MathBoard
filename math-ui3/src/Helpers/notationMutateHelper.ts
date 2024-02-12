@@ -422,7 +422,7 @@ export default function notationMutateHelper() {
     return true;
   }
   // move without persistence - called during  mouse move  - don't bother the database during move
-  function moveSelectedNotations(deltaX: number, deltaY: number): boolean {
+  function moveSelectedNotations(deltaX: number, deltaY: number, keepOriginal: boolean): boolean {
     if (!canMoveSelectedNotations(deltaX, deltaY)) return false;
 
     notationStore.getSelectedNotations().forEach((n) => {

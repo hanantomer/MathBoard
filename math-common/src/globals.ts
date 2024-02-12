@@ -5,6 +5,8 @@ export const matrixDimensions = {
   colsNum: 96,
 };
 
+export const horizontalCellSpace = 1;
+
 export const signList = ["=", "+", "-", "*", "/", "\\", "(", ")", "[", "]"];
 
 export const selectedCellStroke = "red";

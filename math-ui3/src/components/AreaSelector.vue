@@ -23,6 +23,7 @@ import * as d3 from "d3";
 import useNotationMutateHelper from "../helpers/notationMutateHelper";
 import useEventBus from "../helpers/eventBusHelper";
 import { NotationTypeShape, MoveDirection } from "common/unions";
+import { horizontalCellSpace } from "common/globals";
 
 const eventBus = useEventBus();
 const editModeStore = useEditModeStore();
@@ -148,11 +149,14 @@ async function moveSelectionByKey(
   moveVertical: number,
 ) {
   selectionPosition.value.x1 +=
-    moveHorizontal * notationStore.getCellHorizontalWidth();
+    moveHorizontal *
+    (notationStore.getCellHorizontalWidth() + horizontalCellSpace);
   selectionPosition.value.y1 +=
-    moveVertical * notationStore.getCellVerticalHeight();
+    moveVertical *
+    (notationStore.getCellVerticalHeight() + horizontalCellSpace);
   selectionPosition.value.x2 +=
-    moveHorizontal * notationStore.getCellHorizontalWidth();
+    moveHorizontal *
+    (notationStore.getCellHorizontalWidth() + horizontalCellSpace);
   selectionPosition.value.y2 +=
     moveVertical * notationStore.getCellVerticalHeight();
 }
@@ -226,17 +230,6 @@ function updateSelectionArea(e: MouseEvent) {
   selectionPosition.value.x2 = e.clientX;
   selectionPosition.value.y2 = e.clientY;
 
-  // if (selectionPosition.value.x2 < selectionPosition.value.x1) {
-  //   const i = selectionPosition.value.x2;
-  //   selectionPosition.value.x2 = selectionPosition.value.x1;
-  //   selectionPosition.value.x1 = i;
-  // }
-
-  // if (selectionPosition.value.y2 < selectionPosition.value.y1) {
-  //   const i = selectionPosition.value.y2;
-  //   selectionPosition.value.y2 = selectionPosition.value.y1;
-  //   selectionPosition.value.y1 = i;
-  // }
 }
 
 function endSelect() {
@@ -262,11 +255,13 @@ function endSelect() {
 
         if (
           selectionRectLeft.value <=
-            notationStore.getCellHorizontalWidth() * col +
+            (notationStore.getCellHorizontalWidth() + horizontalCellSpace) *
+              col +
               x_gutter +
               svgDimensions.value.x &&
           selectionRectLeft.value + selectionRectWidth.value >=
-            notationStore.getCellHorizontalWidth() * (col + 1) -
+            (notationStore.getCellHorizontalWidth() + horizontalCellSpace) *
+              (col + 1) -
               x_gutter +
               svgDimensions.value.x &&
           selectionRectTop.value <=
@@ -295,7 +290,7 @@ function moveSelection(e: MouseEvent) {
   // movement is still too small
   if (
     Math.abs(e.clientX - svgDimensions.value.x - dragPosition.value.x) <
-      notationStore.getCellHorizontalWidth() &&
+      notationStore.getCellHorizontalWidth() + horizontalCellSpace &&
     Math.abs(e.clientY - svgDimensions.value.y - dragPosition.value.y) <
       notationStore.getCellVerticalHeight()
   ) {
@@ -304,8 +299,9 @@ function moveSelection(e: MouseEvent) {
 
   const rectDeltaX = Math.round(
     (e.clientX - svgDimensions.value.x - dragPosition.value.x) /
-      notationStore.getCellHorizontalWidth(),
+      (notationStore.getCellHorizontalWidth() + horizontalCellSpace),
   );
+
   const rectDeltaY = Math.round(
     (e.clientY - svgDimensions.value.y - dragPosition.value.y) /
       notationStore.getCellVerticalHeight(),
@@ -315,13 +311,16 @@ function moveSelection(e: MouseEvent) {
     notationMutateHelper.moveSelectedNotations(rectDeltaX, rectDeltaY);
 
     selectionPosition.value.x1 +=
-      rectDeltaX * notationStore.getCellHorizontalWidth();
+      rectDeltaX *
+      (notationStore.getCellHorizontalWidth() + horizontalCellSpace);
     selectionPosition.value.y1 +=
       rectDeltaY * notationStore.getCellVerticalHeight();
     selectionPosition.value.x2 +=
-      rectDeltaX * notationStore.getCellHorizontalWidth();
+      rectDeltaX *
+      (notationStore.getCellHorizontalWidth() + horizontalCellSpace);
     selectionPosition.value.y2 +=
       rectDeltaY * notationStore.getCellVerticalHeight();
+
     dragPosition.value.x = e.clientX - svgDimensions.value.x;
     dragPosition.value.y = e.clientY - svgDimensions.value.y;
   }

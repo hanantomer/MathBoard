@@ -11,6 +11,8 @@ import { ColorizedCell, SelectedCell } from "common/baseTypes";
 import * as d3 from "d3";
 import { useNotationStore } from "../store/pinia/notationStore";
 
+import { horizontalCellSpace } from "common/globals";
+
 
 import {
   NotationAttributes,
@@ -19,17 +21,16 @@ import {
   RectAttributes,
   LineNotationAttributes,
   PointNotationAttributes,
-  RectNotationAttributes
-
+  RectNotationAttributes,
 } from "common/baseTypes";
 
 import { useUserStore } from "../store/pinia/userStore";
+
 
 const notationStore = useNotationStore();
 const userStore = useUserStore();
 
 export default function useMatrixHelper() {
-
   let matrix: any[] = [];
 
   function borderColor(notation: NotationAttributes): string {
@@ -153,9 +154,11 @@ export default function useMatrixHelper() {
       .attr("col", (d, i) => {
         return i;
       })
-       .attr("x", (d, i) => {
-         return i * (notationStore.getCellHorizontalWidth() + 1);
-       })
+      .attr("x", (d, i) => {
+        return (
+          i * (notationStore.getCellHorizontalWidth() + horizontalCellSpace)
+        );
+      })
       .attr("width", notationStore.getCellHorizontalWidth())
       .attr("height", notationStore.getCellVerticalHeight());
   }
@@ -539,7 +542,7 @@ export default function useMatrixHelper() {
     }
 
     if (n.notationType === "SQRTSYMBOL") {
-      return `<p class='sqrtsymbol'>&#x221A;</p>`;
+      return `<p class='sqrtsymbol' style='color:${color}'>&#x221A;</p>`;
     }
 
     if (n.notationType === "TEXT") {

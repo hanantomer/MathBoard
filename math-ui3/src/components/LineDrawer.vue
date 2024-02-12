@@ -51,7 +51,11 @@ import useNotationMutateHelper from "../helpers/notationMutateHelper";
 import { watch, computed, ref } from "vue";
 import { useNotationStore } from "../store/pinia/notationStore";
 import { useEditModeStore } from "../store/pinia/editModeStore";
-import { LinePosition, DotPosition } from "../../../math-common/src/globals";
+import {
+  LinePosition,
+  DotPosition,
+  horizontalCellSpace,
+} from "../../../math-common/src/globals";
 import {
   LineAttributes,
   LineNotationAttributes,
@@ -73,12 +77,6 @@ const props = defineProps({
 
 let selectedLine: LineNotationAttributes | null = null;
 let linePosition = ref(<LinePosition | Record<string, never>>{});
-
-// computed
-
-// const lineMode = computed(() => {
-//   return editModeStore.isLineMode();
-// });
 
 const sqrtEditMode = computed(() => {
   return editModeStore.isSqrtEditMode();
@@ -148,11 +146,13 @@ function mouseup(e: KeyboardEvent) {
 function onLineSelected(lineNotation: LineNotationAttributes) {
   linePosition.value.x1 =
     svgDimensions.value.left +
-    lineNotation.fromCol * notationStore.getCellHorizontalWidth();
+    lineNotation.fromCol *
+      (notationStore.getCellHorizontalWidth() + horizontalCellSpace);
 
   linePosition.value.x2 =
     svgDimensions.value.left +
-    lineNotation.toCol * notationStore.getCellHorizontalWidth();
+    (lineNotation.toCol -1) *
+      (notationStore.getCellHorizontalWidth() + 1);
 
   linePosition.value.y =
     svgDimensions.value.top +
@@ -163,7 +163,7 @@ function onLineSelected(lineNotation: LineNotationAttributes) {
   eventBus.emit("lineSelected", null); // to enable re selection
 }
 
-function onHandleMouseDown(e: MouseEvent) {
+function onHandleMouseDown() {
   editModeStore.setNextEditMode();
 }
 
