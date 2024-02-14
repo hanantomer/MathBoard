@@ -425,6 +425,10 @@ export default function notationMutateHelper() {
   function moveSelectedNotations(deltaX: number, deltaY: number, keepOriginal: boolean): boolean {
     if (!canMoveSelectedNotations(deltaX, deltaY)) return false;
 
+    if (keepOriginal) {
+      notationStore.cloneSelectedNotations();
+    }
+
     notationStore.getSelectedNotations().forEach((n) => {
       switch (NotationTypeShape.get(n.notationType)) {
         case "POINT": {
@@ -451,10 +455,9 @@ export default function notationMutateHelper() {
   }
 
   // move selected notations with persistence - called upon muose up
-  async function updateSelectedNotationCoordinates(
-    moveDirection: MoveDirection,
-  ) {
-    await dbHelper.updateNotationsCoordinates(
+  async function saveMovedNotations(moveDirection: MoveDirection) {
+
+    await dbHelper.saveMovedNotations(
       getSelectedNotationsSortedByDirection(moveDirection),
     );
 
@@ -954,7 +957,7 @@ export default function notationMutateHelper() {
     addLineNotation,
     deleteSelectedNotations,
     moveSelectedNotations,
-    updateSelectedNotationCoordinates,
+    saveMovedNotations,
     updateLineNotation,
     cloneNotation,
   };

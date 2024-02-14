@@ -23,13 +23,11 @@ export default function dbUtil() {
         uuid: string
     ): Promise<number | null> {
         if (!model) {
-            throw new Error("model must not be null")
-            return null;
+            throw new Error(`model: ${model} must not be null`);
         }
 
         if (!uuid) {
-            throw new Error("uuid must not be null");
-            return null;
+            throw new Error(`uuid for model: ${model} must not be null`);
         }
 
 

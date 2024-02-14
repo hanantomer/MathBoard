@@ -50,6 +50,23 @@ export const useNotationStore = defineStore("notation", () => {
     );
   }
 
+  // create a copy set of notations from rthe selected.
+  // the new set will be selected instead of the old
+  function cloneSelectedNotations() {
+    Array.from(getSelectedNotations()).forEach((n) => {
+      if (n.uuid.indexOf("_") === 0) return; // clone only after the first movement
+      n.selected = undefined;
+      let newNotation: NotationAttributes = Object.assign(
+        { ...n },
+        {
+          uuid: "_" + n.uuid,
+          selected: true,
+        },
+      );
+      addNotation(newNotation);
+    });
+  }
+
   function getSelectedCell() {
     return selectedCell.value;
   }
@@ -186,5 +203,6 @@ export const useNotationStore = defineStore("notation", () => {
     deleteNotation,
     clearNotations,
     clearCopiedNotations,
+    cloneSelectedNotations,
   };
 });

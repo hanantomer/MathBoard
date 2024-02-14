@@ -7,7 +7,7 @@ export default function LessonDecorator(tableName: string) {
         BoardDecorator(tableName)(target);
         DefaultScope(() => ({
             attributes: {
-                exclude: ["lessonId", "userId"],
+                exclude: ["lessonId", "userId", "id", "createdAt", "updatedAt"],
             },
         }))(target);
         Table({

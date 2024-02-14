@@ -122,24 +122,24 @@ async function keyUp(e: KeyboardEvent) {
 
   switch (e.code) {
     case "ArrowLeft":
-      if (!notationMutateHelper.moveSelectedNotations(-1, 0)) return;
+      if (!notationMutateHelper.moveSelectedNotations(-1, 0, e.ctrlKey)) return;
       await moveSelectionByKey(-1, 0);
-      await notationMutateHelper.updateSelectedNotationCoordinates("LEFT");
+      await notationMutateHelper.saveMovedNotations("LEFT");
       break;
     case "ArrowRight":
-      if (!notationMutateHelper.moveSelectedNotations(1, 0)) return;
+      if (!notationMutateHelper.moveSelectedNotations(1, 0, e.ctrlKey)) return;
       moveSelectionByKey(1, 0);
-      await notationMutateHelper.updateSelectedNotationCoordinates("RIGHT");
+      await notationMutateHelper.saveMovedNotations("RIGHT");
       break;
     case "ArrowDown":
-      if (!notationMutateHelper.moveSelectedNotations(0, 1)) return;
+      if (!notationMutateHelper.moveSelectedNotations(0, 1, e.ctrlKey)) return;
       moveSelectionByKey(0, 1);
-      await notationMutateHelper.updateSelectedNotationCoordinates("BOTTOM");
+      await notationMutateHelper.saveMovedNotations("BOTTOM");
       break;
     case "ArrowUp":
-      if (!notationMutateHelper.moveSelectedNotations(0, -1)) return;
+      if (!notationMutateHelper.moveSelectedNotations(0, -1, e.ctrlKey)) return;
       moveSelectionByKey(0, -1);
-      await notationMutateHelper.updateSelectedNotationCoordinates("TOP");
+      await notationMutateHelper.saveMovedNotations("TOP");
       break;
   }
 }
@@ -308,7 +308,7 @@ function moveSelection(e: MouseEvent) {
   );
 
   if (rectDeltaX != 0 || rectDeltaY != 0) {
-    notationMutateHelper.moveSelectedNotations(rectDeltaX, rectDeltaY);
+    notationMutateHelper.moveSelectedNotations(rectDeltaX, rectDeltaY, e.ctrlKey);
 
     selectionPosition.value.x1 +=
       rectDeltaX *
@@ -340,7 +340,8 @@ async function endMoveSelection(e: MouseEvent) {
       ? "LEFTTOP"
       : "LEFT";
 
-  await notationMutateHelper.updateSelectedNotationCoordinates(moveDirection);
+  await notationMutateHelper.saveMovedNotations(moveDirection);
+
   notationStore.resetSelectedNotations();
   resetSelection();
 }

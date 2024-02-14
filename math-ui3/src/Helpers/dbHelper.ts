@@ -1,5 +1,6 @@
 import { BoardType, NotationType, MoveDirection } from "common/unions";
 import {
+  EntityAttributes,
   LineNotationAttributes,
   NotationAttributes,
   NotationCreationAttributes,
@@ -127,7 +128,8 @@ export default function useDbHelper() {
     return res.data;
   }
 
-  async function updateNotationsCoordinates(notations: NotationAttributes[]) {
+  // change mechanism to either update or create if moved with ctrl
+  async function saveMovedNotations(notations: NotationAttributes[]) {
     const currentTime = Date.now();
     if (
       lastUpdateCoordinatesTime == null ||
@@ -136,7 +138,7 @@ export default function useDbHelper() {
       if (updateCoordinatesHandle) window.clearTimeout(updateCoordinatesHandle);
 
       updateCoordinatesHandle = window.setTimeout(
-        updateNotationsCoordinatesDelayed,
+        saveMovedNotationsDelayed,
         updateCoordinatesInterval,
         notations,
       );
@@ -144,45 +146,77 @@ export default function useDbHelper() {
     lastUpdateCoordinatesTime = Date.now();
   }
 
-  async function updateNotationsCoordinatesDelayed(
-    notations: NotationAttributes[],
-  ) {
-    console.log("updating coordinates to db");
-
+  async function saveMovedNotationsDelayed(notations: NotationAttributes[]) {
     notations.forEach(async (notation) => {
-      const attributes =
-        // point
-        "col" in notation
-          ? {
-              col: (notation as any)["col"],
-              row: (notation as any)["row"],
-            }
-          : // line
-          "fromCol" in notation
-          ? {
-              fromCol: (notation as any)["fromCol"],
-              toCol: (notation as any)["toCol"],
-              row: (notation as any)["row"],
-            }
-          : // rect
-          "fromRow" in notation
-          ? {
-              fromCol: (notation as any)["fromCol"],
-              toCol: (notation as any)["toCol"],
-              fromRow: (notation as any)["fromRow"],
-              toRow: (notation as any)["toRow"],
-            }
-          : null;
+      const attributes = getNotationCoordinates(notation);
 
       lastUpdateCoordinatesTime = null;
 
       if (!attributes) return;
+
+      if (
+        notation.uuid.indexOf("_") ===
+        0 /*see cloneSelectedNotations in notationStore*/
+      ) {
+        // create new
+        const { uuid, ...newNotation } = notation;
+
+        if ((newNotation as any).lesson) {
+          (newNotation as any).parentUUId = (newNotation as any).lesson.uuid;
+          delete (newNotation as any).lesson;
+        }
+
+        if ((newNotation as any).question) {
+          (newNotation as any).parentUUId = (newNotation as any).question.uuid;
+          delete (newNotation as any).question;
+        }
+
+        if ((newNotation as any).answer) {
+          (newNotation as any).parentUUId = (newNotation as any).answer.uuid;
+          delete (newNotation as any).lesson;
+        }
+
+        return await axios.post<NotationCreationAttributes>(
+          baseURL +
+            `/${newNotation.boardType.toLowerCase()}${newNotation.notationType.toLowerCase()}s`,
+          newNotation,
+        );
+      }
+
       return await axios.put<NotationAttributes>(
         baseURL +
           `/${notation.boardType.toLowerCase()}${notation.notationType.toLowerCase()}s`,
         { uuid: notation.uuid, ...attributes },
       );
     });
+  }
+
+  function getNotationCoordinates(notation: any) {
+    const cooerdinates =
+      // point
+      "col" in notation
+        ? {
+            col: (notation as any)["col"],
+            row: (notation as any)["row"],
+          }
+        : // line
+        "fromCol" in notation
+        ? {
+            fromCol: (notation as any)["fromCol"],
+            toCol: (notation as any)["toCol"],
+            row: (notation as any)["row"],
+          }
+        : // rect
+        "fromRow" in notation
+        ? {
+            fromCol: (notation as any)["fromCol"],
+            toCol: (notation as any)["toCol"],
+            fromRow: (notation as any)["fromRow"],
+            toRow: (notation as any)["toRow"],
+          }
+        : null;
+
+    return cooerdinates;
   }
 
   async function updateNotationValue(notation: NotationAttributes) {
@@ -323,7 +357,7 @@ export default function useDbHelper() {
     addNotation,
     updateLineAttributes,
     updateNotationValue,
-    updateNotationsCoordinates,
+    saveMovedNotations,
     removeNotation,
   };
 }
