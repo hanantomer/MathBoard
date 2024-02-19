@@ -1,80 +1,49 @@
-import {NotationShape,  NotationTypeShape, NotationTypeValues } from "common/unions";
-import { DotPosition } from "common/globals";
+import {
+  NotationShape,
+  NotationTypeShape,
+} from "../../../math-common/src/unions";
+import {
+  DotPosition,
+  horizontalCellSpace,
+} from "../../../math-common/src/globals";
+import { PointAttributes } from "../../../math-common/src/baseTypes";
+import { useNotationStore } from "../store/pinia/notationStore";
+import { NotationAttributes } from "common/baseTypes";
+const notationStore = useNotationStore();
 
 export default function elementFinderHelper() {
-  //https://stackoverflow.com/questions/22428484/get-element-from-point-when-you-have-overlapping-elements
-  function findClickedObject(
+
+  function findClickedCell(
+    svgId: string,
     dotPosition: DotPosition,
-    tagName: string,
-    notationShape: NotationShape | null,
-  ): HTMLElement {
-    var elements = [];
-    var display: any = [];
-    var item = document.elementFromPoint(dotPosition.x, dotPosition.y) as any; // must be any to accept window
-    var prevItem = null;
-    var idx = 0;
+  ): PointAttributes {
+    const boundingRect = document
+      .getElementById(svgId)
+      ?.getBoundingClientRect();
 
-    while (
-      idx++ < 50 &&
-      item &&
-      (!prevItem || item != prevItem) &&
-      item != document.body &&
-      item != window &&
-      item != document &&
-      item != document.documentElement
-    ) {
-      elements.push(item);
-      display.push(item.style.display);
-      item.style.display = "none";
-      prevItem = item;
-      item = document.elementFromPoint(dotPosition.x, dotPosition.y);
-    }
-    for (var i = 0; i < elements.length; i++) {
-      elements[i].style.display = display[i];
-    }
-    return elements.find(
-      (item) =>
-        item.tagName == tagName &&
-        (!notationShape ||
-          NotationTypeShape.get(item.attributes.notationType?.value) === notationShape)
-    );
-  }
-
-  function findRectAtClickedPosition(position: DotPosition): Element {
-    return findClickedObject(
-      {
-        x: position.x,
-        y: position.y,
-      },
-      "foreignObject",
-      "RECT",
-    );
-  }
-
-  function findNotationAtClickedPosition(position: DotPosition): Element {
-    const el = findClickedObject(
-      {
-        x: position.x,
-        y: position.y,
-      },
-      "foreignObject",
-      null,
+    const clickedCellCol = Math.floor(
+      (dotPosition.x - boundingRect!.left) /
+        (notationStore.getCellHorizontalWidth() + horizontalCellSpace),
     );
 
-    return el;
+    const clickedCellRow = Math.floor(
+      (dotPosition.y - boundingRect!.top) /
+        notationStore.getCellVerticalHeight(),
+    );
+
+    return { col: clickedCellCol, row: clickedCellRow };
   }
 
-  function getElementAttributeValue(
-    element: Element,
-    attrName: string,
-  ): string | undefined {
-    return element.attributes.getNamedItem(attrName)?.value;
+  function findClickedNotation(
+    svgId: string,
+    dotPosition: DotPosition,
+  ): NotationAttributes | null {
+    const clickedCell = findClickedCell(svgId, dotPosition);
+    return notationStore.getNotationByCell(clickedCell.col, clickedCell.row);
   }
 
   return {
-    findClickedObject,
-    getElementAttributeValue,
-    findRectAtClickedPosition,
-    findNotationAtClickedPosition,
+    findClickedCell,
+    findClickedNotation,
   };
 }

@@ -21,7 +21,6 @@ export default function authenticationHelper() {
       password: password,
       imageUrl: "",
       access_token: "",
-      //authorized: false,
       lastHeartbeatTime: new Date(),
     };
     const userStore = useUserStore();

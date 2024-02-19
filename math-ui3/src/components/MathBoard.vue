@@ -27,10 +27,6 @@
       </div>
     </div>
   </v-row>
-  <!-- <v-row>
-    <v-sheet class="flex-row ml-auto mr-auto">
-    </v-sheet>
-  </v-row> -->
 </template>
 
 <script setup lang="ts">
@@ -52,7 +48,9 @@ import useSelectionHelper from "../helpers/selectionHelper";
 import useNotationMutateHelper from "../helpers/notationMutateHelper";
 import useElementFinderHelper from "../helpers/elementFinderHelper";
 import useUserOutgoingOperations from "../helpers/userOutgoingOperationsHelper";
+import useNotationCellOccupationHelper from "../helpers/notationCellOccupationHelper";
 
+const notationCellOccupationHelper = useNotationCellOccupationHelper();
 const notationLoadingHelper = useNotationLoadingHelper();
 const notationStore = useNotationStore();
 const eventBus = useEventBus();
@@ -125,7 +123,8 @@ watch(
 watch(
   () => eventBus.bus.value.get("colorizeCell"),
   (params) => {
-    let clickedCell = elementFinderHelper.findClickedObject(
+    /*
+    let clickedCell = elementFinderHelper.findClickedNotation(
       {
         x: params.clientX,
         y: params.clientY,
@@ -150,10 +149,17 @@ watch(
       row: parseInt(row || "-1"),
     };
 
-    matrixHelper.colorizeCell(props.svgId, cell, params.cellColor);
+    */
+
+    const clickedCell = elementFinderHelper.findClickedCell(props.svgId, {
+      x: params.clientX,
+      y: params.clientY,
+    });
+
+    matrixHelper.colorizeCell(props.svgId, clickedCell, params.cellColor);
 
     userOutgoingOperations.syncOutgoingColorizedCell(
-      cell,
+      clickedCell,
       notationStore.getParent().uuid,
       params.cellColor,
     );
@@ -242,14 +248,17 @@ function handleMouseDown(e: MouseEvent) {
     editModeStore.getEditMode() === "SEMICHECKMARK" ||
     editModeStore.getEditMode() === "XMARK"
   ) {
-    selectionHelper.selectCell(position);
+    selectionHelper.selectCell(props.svgId, position);
     notationMutateHelper.addMarkNotation();
     return;
   }
 
-  const notation = selectionHelper.selectNotationAtPosition(position);
+  const notation = selectionHelper.selectNotationAtPosition(
+    props.svgId,
+    position,
+  );
   if (!notation || NotationTypeShape.get(notation?.notationType) === "POINT") {
-    selectionHelper.selectCell(position);
+    selectionHelper.selectCell(props.svgId, position);
   }
 }
 </script>

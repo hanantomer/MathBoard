@@ -1,7 +1,7 @@
 import { useUserStore } from "../store/pinia/userStore";
 import { useEditModeStore } from "../store/pinia/editModeStore";
 import { useNotationStore } from "../store/pinia/notationStore";
-import { matrixDimensions } from "../../../math-common/src/globals";
+import { horizontalCellSpace } from "common/globals";
 
 import useMatrixHelper from "./matrixHelper";
 import useNotationMutationHelper from "./notationMutateHelper";
@@ -25,7 +25,7 @@ const authorizationHelper = useAuthorizationHelper();
 const eventBus = useEventBus();
 const selectionHelper = useSelectionHelper();
 
-type keyType = "SYMBOL" | "MOVEMENT" | "DELETION" | "MOVEANDDELTE";
+type keyType = "SYMBOL" | "MOVEMENT" | "DELETION" | "DELETEANDMOVE";
 
 export default function eventHelper() {
   async function copy() {
@@ -181,9 +181,9 @@ export default function eventHelper() {
         return handleMovementKey(code, svgId);
       }
 
-      case "MOVEANDDELTE": {
-        handleMovementKey(code, svgId);
-        return handleDeletionKey(code);
+      case "DELETEANDMOVE": {
+        handleDeletionKey(code);
+        return handleMovementKey(code, svgId);
       }
 
       case "SYMBOL": {
@@ -224,11 +224,13 @@ export default function eventHelper() {
     const svgBounds = document.getElementById(svgId)?.getBoundingClientRect()!;
 
     // select a notation occupied by selected cell
-    selectionHelper.selectNotationAtPosition({
+    selectionHelper.selectNotationAtPosition(
+      svgId,
+      {
       x:
         svgBounds.left +
         notationStore.getSelectedCell()?.col! *
-          notationStore.getCellHorizontalWidth(),
+          (notationStore.getCellHorizontalWidth() + horizontalCellSpace),
       y:
         svgBounds.left +
         notationStore.getSelectedCell()?.row! *
@@ -261,7 +263,7 @@ export default function eventHelper() {
 
     if (code === "Delete") return "DELETION";
 
-    if (code === "Backspace") return "MOVEANDDELTE";
+    if (code === "Backspace") return "DELETEANDMOVE";
 
     return null;
   }

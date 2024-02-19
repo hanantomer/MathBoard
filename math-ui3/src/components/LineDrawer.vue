@@ -152,7 +152,7 @@ function onLineSelected(lineNotation: LineNotationAttributes) {
   linePosition.value.x2 =
     svgDimensions.value.left +
     (lineNotation.toCol -1) *
-      (notationStore.getCellHorizontalWidth() + 1);
+      (notationStore.getCellHorizontalWidth() + horizontalCellSpace);
 
   linePosition.value.y =
     svgDimensions.value.top +
@@ -246,12 +246,12 @@ function endDrawLine() {
 
   let fromCol = Math.round(
     (linePosition.value.x1 - svgDimensions.value.left) /
-      notationStore.getCellHorizontalWidth(),
+      (notationStore.getCellHorizontalWidth() + horizontalCellSpace),
   );
 
   let toCol = Math.round(
     (linePosition.value.x2 - svgDimensions.value.left) /
-      notationStore.getCellHorizontalWidth(),
+      (notationStore.getCellHorizontalWidth()+ horizontalCellSpace),
   );
 
   let row = Math.round(

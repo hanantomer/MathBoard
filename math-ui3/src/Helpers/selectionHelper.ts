@@ -1,8 +1,4 @@
-import {
-  NotationType,
-  NotationTypeShape,
-  NotationTypeValues,
-} from "common/unions";
+import { NotationType, NotationTypeShape } from "common/unions";
 import { useNotationStore } from "../store/pinia/notationStore";
 import { DotPosition } from "common/globals";
 import { PointAttributes, NotationAttributes } from "common/baseTypes";
@@ -37,10 +33,12 @@ export default function selectionHelper() {
   //}
 
   function selectNotationAtPosition(
+    svgId: string,
     position: DotPosition,
   ): NotationAttributes | null {
     notationStore.resetSelectedNotations();
-    const el = elementFinderHelper.findClickedObject(
+    /*
+    const el = elementFinderHelper.findClickedNotation(
       {
         x: position.x,
         y: position.y,
@@ -67,18 +65,22 @@ export default function selectionHelper() {
     if (!notation) {
       console.warn(`notation with uuid: ${uuid} not found`);
       return null;
-    }
+    }*/
 
-    switch (NotationTypeShape.get(notationType)) {
+    const notation = elementFinderHelper.findClickedNotation(svgId, position);
+
+    if (!notation) return null;
+
+    switch (NotationTypeShape.get(notation!.notationType)) {
       case "LINE": {
-        if (notationType == "FRACTION") selectFractionNotation(notation);
-        if (notationType == "SQRT") selectSqrtNotation(notation);
+        if (notation!.notationType == "FRACTION")
+          selectFractionNotation(notation!);
+        if (notation!.notationType == "SQRT") selectSqrtNotation(notation!);
         break;
       }
-
       case "RECT":
       case "POINT": {
-        selectNotation(notation);
+        selectNotation(notation!);
         break;
       }
     }
@@ -88,7 +90,8 @@ export default function selectionHelper() {
 
   function selectNotation(activeNotation: NotationAttributes) {
     // disallow selection of question notations for student
-    if (notationMutateHelper.isNotationInQuestionArea(activeNotation, 0, 0)) return;
+    if (notationMutateHelper.isNotationInQuestionArea(activeNotation, 0, 0))
+      return;
 
     //editModeStore.setEditMode("AREA_SELECTED");
 
@@ -109,32 +112,30 @@ export default function selectionHelper() {
     eventBus.emit("lineSelected", notation);
   }
 
-  async function selectCell(position: DotPosition) {
-    let clickedCell = elementFinderHelper.findClickedObject(
-      position,
-      "rect",
-      null,
-    );
+  async function selectCell(svgId: string, position: DotPosition) {
+    let clickedCell = elementFinderHelper.findClickedCell(svgId, position);
 
-    if (!clickedCell?.parentElement) {
-      return null;
-    }
+    // if (!clickedCell?.parentElement) {
+    //   return null;
+    // }
 
-    const col = elementFinderHelper.getElementAttributeValue(
-      clickedCell,
-      "col",
-    );
-    const row = elementFinderHelper.getElementAttributeValue(
-      clickedCell.parentElement,
-      "row",
-    );
+    // const col = elementFinderHelper.getElementAttributeValue(
+    //   clickedCell,
+    //   "col",
+    // );
+    // const row = elementFinderHelper.getElementAttributeValue(
+    //   clickedCell.parentElement,
+    //   "row",
+    // );
 
-    let cellToActivate: PointAttributes = {
-      col: parseInt(col || "-1"),
-      row: parseInt(row || "-1"),
-    };
+    // let cellToActivate: PointAttributes = {
+    //   col: parseInt(col || "-1"),
+    //   row: parseInt(row || "-1"),
+    // };
 
-    notationStore.selectCell(cellToActivate);
+    if (!clickedCell) return;
+
+    notationStore.selectCell(clickedCell!);
 
     if (!editModeStore.isCheckMode()) {
       editModeStore.setEditMode("CELL_SELECTED");
@@ -142,7 +143,7 @@ export default function selectionHelper() {
 
     if (notationStore.getParent().type == "LESSON") {
       let t = await userOutgoingOperationsHelper.syncOutgoingSelectedCell(
-        cellToActivate,
+        clickedCell,
         lessonStore.getCurrentLesson()!.uuid,
       );
     }

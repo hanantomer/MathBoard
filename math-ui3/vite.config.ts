@@ -12,6 +12,7 @@ export default defineConfig({
   build: {
     sourcemap: true,
   },
+
   plugins: [
     Terminal(),
     vue({
@@ -71,4 +72,6 @@ export default defineConfig({
       },
     },
   },
+
+  
 });

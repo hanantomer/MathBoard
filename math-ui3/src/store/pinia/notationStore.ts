@@ -2,22 +2,26 @@
 //  questions of current lesson
 import { defineStore } from "pinia";
 import { matrixDimensions } from "common/globals";
-import { NotationAttributes, PointAttributes } from "common/baseTypes";
+import {
+  Board,
+  NotationAttributes,
+  PointAttributes,
+  PointNotationAttributes,
+  LineNotationAttributes,
+  RectNotationAttributes,
+} from "common/baseTypes";
 import { BoardType, NotationShape, NotationTypeShape } from "common/unions";
 import { ref } from "vue";
 import useUserOutgoingOperations from "../../helpers/userOutgoingOperationsHelper";
+import useNotationCellOccupationHelper from "../../helpers/notationCellOccupationHelper";
 const userOutgoingOperations = useUserOutgoingOperations();
-
-type Board = {
-  uuid: string;
-  type: BoardType;
-};
+const notationCellOccupationHelper = useNotationCellOccupationHelper();
 
 ///TODO watch notations and sync occupation mattrix
 export const useNotationStore = defineStore("notation", () => {
   let cellVerticalHight = ref<number>();
 
-  const cellOccupationMatrix: (NotationAttributes | null)[][] =
+  let cellOccupationMatrix: (NotationAttributes | null)[][] =
     createCellOccupationMatrix();
 
   let parent = ref<Board>({ uuid: "", type: "LESSON" });
@@ -36,7 +40,7 @@ export const useNotationStore = defineStore("notation", () => {
 
   function getCellHorizontalWidth() {
     if (!cellVerticalHight.value)
-      throw new Error("cellVerticalHight.value is null");
+      throw new Error("cell VerticalHight value is null");
     return cellVerticalHight.value / 2;
   }
 
@@ -50,7 +54,7 @@ export const useNotationStore = defineStore("notation", () => {
     );
   }
 
-  // create a copy set of notations from rthe selected.
+  // create a copy set of notations from the selected.
   // the new set will be selected instead of the old
   function cloneSelectedNotations() {
     Array.from(getSelectedNotations()).forEach((n) => {
@@ -91,6 +95,24 @@ export const useNotationStore = defineStore("notation", () => {
     return Array.from(notations.value.values());
   }
 
+  function getPointNotations(): PointNotationAttributes[] {
+    return Array.from(notations.value.values())
+      .filter((n) => NotationTypeShape.get(n.notationType) === "POINT")
+      .map((n) => n as PointNotationAttributes);
+  }
+
+  function getLineNotations(): LineNotationAttributes[] {
+    return Array.from(notations.value.values())
+      .filter((n) => NotationTypeShape.get(n.notationType) === "RECT")
+      .map((n) => n as LineNotationAttributes);
+  }
+
+  function getRectNotations(): RectNotationAttributes[] {
+    return Array.from(notations.value.values())
+      .filter((n) => NotationTypeShape.get(n.notationType) === "RECT")
+      .map((n) => n as RectNotationAttributes);
+  }
+
   function getCopiedNotations(): NotationAttributes[] {
     return Array.from(copiedNotations.value.values());
   }
@@ -115,6 +137,11 @@ export const useNotationStore = defineStore("notation", () => {
   function addNotation(notation: NotationAttributes) {
     notation.boardType = parent.value.type;
     notations.value.set(notation.uuid, notation);
+    notationCellOccupationHelper.updateOccupationMatrix(
+      cellOccupationMatrix,
+      notation,
+      false,
+    );
   }
 
   function addCopiedNotation(notation: NotationAttributes) {
@@ -123,7 +150,14 @@ export const useNotationStore = defineStore("notation", () => {
   }
 
   function deleteNotation(uuid: string) {
+    notationCellOccupationHelper.updateOccupationMatrix(
+      cellOccupationMatrix,
+      notations.value.get(uuid)!,
+      true,
+    );
+
     notations.value.delete(uuid);
+
     if (getParent().type === "LESSON") {
       userOutgoingOperations.syncOutgoingRemoveNotation(uuid, getParent().uuid);
     }
@@ -131,6 +165,7 @@ export const useNotationStore = defineStore("notation", () => {
 
   function clearNotations() {
     notations.value.clear();
+    cellOccupationMatrix = createCellOccupationMatrix();
   }
 
   function clearCopiedNotations() {
@@ -168,11 +203,18 @@ export const useNotationStore = defineStore("notation", () => {
     );
   }
 
+  function getNotationByCell(
+    col: number,
+    row: number,
+  ): NotationAttributes | null {
+    return cellOccupationMatrix[col][row];
+  }
+
   function createCellOccupationMatrix(): (NotationAttributes | null)[][] {
     let matrix: (NotationAttributes | null)[][] = new Array();
-    for (let i = 0; i < matrixDimensions.rowsNum; i++) {
+    for (let i = 0; i < matrixDimensions.colsNum; i++) {
       matrix.push([]);
-      for (let j = 0; j < matrixDimensions.colsNum; j++) {
+      for (let j = 0; j < matrixDimensions.rowsNum; j++) {
         matrix[i][j] = null;
       }
     }
@@ -183,9 +225,13 @@ export const useNotationStore = defineStore("notation", () => {
     addNotation,
     getNotation,
     getNotations,
+    getPointNotations,
+    getLineNotations,
+    getRectNotations,
     getCopiedNotations,
     getNotationsByShape,
-    getCellOccupationMatrix,
+    getNotationByCell,
+    //getCellOccupationMatrix,
     getSelectedCell,
     getSelectedNotations,
     getParent,

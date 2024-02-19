@@ -13,7 +13,6 @@ import { useNotationStore } from "../store/pinia/notationStore";
 
 import { horizontalCellSpace } from "common/globals";
 
-
 import {
   NotationAttributes,
   PointAttributes,
@@ -25,7 +24,6 @@ import {
 } from "common/baseTypes";
 
 import { useUserStore } from "../store/pinia/userStore";
-
 
 const notationStore = useNotationStore();
 const userStore = useUserStore();
@@ -222,12 +220,6 @@ export default function useMatrixHelper() {
     }
   }
 
-  function findRect(point: PointAttributes): HTMLElement | undefined | null {
-    return document
-      ?.querySelector(`g[row='${point.row}']`)
-      ?.querySelector(`cell[col='${point.col}']`);
-  }
-
   function enrichNotations(notations: NotationAttributes[]) {
     let enrichedNotations: NotationAttributes[] = [];
     for (const key in notations) {
@@ -244,18 +236,6 @@ export default function useMatrixHelper() {
           sqrtNotation.notationType = "SQRTSYMBOL";
           enrichedNotations.push(sqrtNotation);
         }
-        // calculate image dimensions
-        // if (element.type === "IMAGE") {
-        //   let image = new Image();
-        //   this.loadImage(image, element.value);
-        //   element.toCol = Math.round(
-        //     image.width / this.rectSize + element.fromCol
-        //   );
-
-        //   element.toRow = Math.round(
-        //     image.height / this.rectSize + element.fromRow
-        //   );
-        // }
       }
     }
     return enrichedNotations;
@@ -266,7 +246,7 @@ export default function useMatrixHelper() {
 
     try {
       notations = enrichNotations(notations);
-    } catch {} // cant check if observer has properties
+    } catch {} // can't check if observer has properties
 
     d3.select("#" + svgId)
       .selectAll("foreignObject")
@@ -303,85 +283,75 @@ export default function useMatrixHelper() {
 
   /// TODO: treat notation types divertly
   function addNotations(enter: any, el: HTMLElement) {
-    return (
-      enter
-        .append("foreignObject")
-        .attr("notationType", (n: NotationAttributes) => {
-          return n.notationType;
-        })
-        .attr("boardType", (n: NotationAttributes) => {
-          return n.boardType;
-        })
-        .attr("uuid", (n: NotationAttributes) => {
-          return n.uuid;
-        })
-        .attr("col", (n: PointAttributes) => {
-          return n?.col;
-        })
-        .attr("fromCol", (n: LineAttributes | RectAttributes) => {
-          return n?.fromCol;
-        })
-        .attr("toCol", (n: LineAttributes | RectAttributes) => {
-          return n?.toCol;
-        })
-        .attr("row", (n: PointAttributes) => {
-          return n?.row;
-        })
-        .attr("fromRow", (n: RectAttributes) => {
-          return n?.fromRow;
-        })
-        .attr("toRow", (n: RectAttributes) => {
-          return n?.toRow;
-        })
-        .attr("x", (n: NotationAttributes) => {
-          return x(n);
-        })
-        .attr("y", (n: NotationAttributes) => {
-          return y(n);
-        })
-        .attr("width", (n: NotationAttributes) => {
-          return width(n);
-        })
-        .attr("height", (n: NotationAttributes) => {
-          return height(n);
-        })
-        .style("font-size", (n: NotationAttributes) => {
-          return fontSize(n, el);
-        })
-        //.style("color", (n) => {
-        //  return this.$color(n);
-        //})
-        .html((n: NotationAttributes) => {
-          return html(n);
-        })
-    );
+    return enter
+      .append("foreignObject")
+      .attr("notationType", (n: NotationAttributes) => {
+        return n.notationType;
+      })
+      .attr("boardType", (n: NotationAttributes) => {
+        return n.boardType;
+      })
+      .attr("uuid", (n: NotationAttributes) => {
+        return n.uuid;
+      })
+      .attr("col", (n: PointAttributes) => {
+        return n?.col;
+      })
+      .attr("fromCol", (n: LineAttributes | RectAttributes) => {
+        return n?.fromCol;
+      })
+      .attr("toCol", (n: LineAttributes | RectAttributes) => {
+        return n?.toCol;
+      })
+      .attr("row", (n: PointAttributes) => {
+        return n?.row;
+      })
+      .attr("fromRow", (n: RectAttributes) => {
+        return n?.fromRow;
+      })
+      .attr("toRow", (n: RectAttributes) => {
+        return n?.toRow;
+      })
+      .attr("x", (n: NotationAttributes) => {
+        return x(n);
+      })
+      .attr("y", (n: NotationAttributes) => {
+        return y(n);
+      })
+      .attr("width", (n: NotationAttributes) => {
+        return width(n);
+      })
+      .attr("height", (n: NotationAttributes) => {
+        return height(n);
+      })
+      .style("font-size", (n: NotationAttributes) => {
+        return fontSize(n, el);
+      })
+      .html((n: NotationAttributes) => {
+        return html(n);
+      });
   }
 
   function updateNotations(update: any) {
-    return (
-      update
-        //.style("color", (n) => {
-        //  return this.$color(n);
-        //})
-        .attr("x", (n: NotationAttributes) => {
-          return x(n);
-        })
-        .attr("y", (n: NotationAttributes) => {
-          return y(n);
-        })
-        .attr("col", (n: NotationAttributes) => {
-          return col(n);
-        })
-        .attr("row", (n: NotationAttributes) => {
-          return row(n);
-        })
-        .attr("width", (n: NotationAttributes) => {
-          return width(n);
-        })
-        .html((n: NotationAttributes) => {
-          return html(n);
-        })
-    );
+    return update
+      .attr("x", (n: NotationAttributes) => {
+        return x(n);
+      })
+      .attr("y", (n: NotationAttributes) => {
+        return y(n);
+      })
+      .attr("col", (n: NotationAttributes) => {
+        return col(n);
+      })
+      .attr("row", (n: NotationAttributes) => {
+        return row(n);
+      })
+      .attr("width", (n: NotationAttributes) => {
+        return width(n);
+      })
+      .html((n: NotationAttributes) => {
+        return html(n);
+      });
   }
 
   function removeNotations(exit: any) {
@@ -451,11 +421,6 @@ export default function useMatrixHelper() {
     if (n.notationType === "SQRTSYMBOL") {
       return notationStore.getCellHorizontalWidth() * 2;
     }
-
-    //if (n.notationType === "EXPONENT") {
-    //  const n1 = n as ExponentNotationAttributes;
-    //  return notationStore.getCellHorizontalWidth() * 2;
-    //}
 
     switch (NotationTypeShape.get(n.notationType)) {
       case "POINT": {

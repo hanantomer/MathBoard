@@ -8,6 +8,7 @@ export type EntityAttributes = {
   updatedAt?: Date;
 }
 
+
 export type NotationAttributes = {
   uuid: string;
   parentUUId: string;
@@ -15,7 +16,7 @@ export type NotationAttributes = {
   notationType: NotationType;
   boardType: BoardType;
   selected?: boolean;
-}
+} 
 
 export type NotationCreationAttributes = Omit<NotationAttributes, "uuid">
 
@@ -40,7 +41,7 @@ export type PointAttributes =  {
   row: number;
 };
 
-export type SelectedCell  = PointAttributes & {
+export type SelectedCell = PointAttributes & {
   userUUId: string;
   lessonUUId: number;
 }
@@ -70,6 +71,11 @@ export type BoardAttributes = {
   user: UserAttributes;
 };
 
+export type Board = {
+  uuid: string;
+  type: BoardType;
+};
+
 
 export type PointNotationAttributes = EntityAttributes &  NotationAttributes & PointAttributes & SingleValueAttributes;
 export type LineNotationAttributes = EntityAttributes & NotationAttributes & LineAttributes & SingleValueAttributes;
@@ -82,4 +88,7 @@ export type PointNotationCreationAttributes = Omit<NotationAttributes & PointAtt
 export type LineNotationCreationAttributes = Omit<NotationAttributes & LineAttributes, "uuid">;
 export type RectNotationCreationAttributes = Omit<NotationAttributes & RectAttributes & SingleValueAttributes, "uuid">;
 export type ExponentNotationCreationAttributes = Omit<EntityAttributes &  NotationAttributes & PointAttributes & ExponentAttributes, "uuid">;
-export type TriangleNotationCreationAttributes = Omit<EntityAttributes &  NotationAttributes & RectAttributes & TriangleAttributes, "uuid">;
+export type TriangleNotationCreationAttributes = Omit<SingleValueAttributes & EntityAttributes &  NotationAttributes & RectAttributes & TriangleAttributes, "uuid">;
+
+
+

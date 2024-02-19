@@ -1,60 +1,64 @@
 import {
-  PointAttributes,
-  LineAttributes,
-  RectAttributes,
+  NotationAttributes,
+  PointNotationAttributes,
+  LineNotationAttributes,
+  RectNotationAttributes,
 } from "common/baseTypes";
 
-import { useNotationStore } from "../store/pinia/notationStore";
-import { onMounted } from "vue";
+import { NotationTypeShape } from "common/unions";
 
-const notationStore = useNotationStore();
+import { matrixDimensions } from "common/globals";
 
 export default function notationCellOccupationHelper() {
-  onMounted(() => {
-    notationStore.$subscribe((mutation, state) => {
-      console.log("a change happened");
-      console.log(mutation, state);
-    });
-  });
-
-  function removePointFromOccupationMatrix(
+  function updateOccupationMatrix(
     matrix: any,
-    pointNotation: PointAttributes
+    notation: NotationAttributes,
+    doRemove: boolean,
   ) {
-    matrix[pointNotation.row][pointNotation.col] = null;
-  }
-
-  function removeLineFromOccupationMatrix(matrix: any, line: LineAttributes) {
-    for (let col: number = line.fromCol; col <= line.toCol; col++) {
-      matrix[line.row][col] = null;
+    switch (NotationTypeShape.get(notation.notationType)) {
+      case "LINE":
+        {
+          const n = notation as LineNotationAttributes;
+          for (let i = n.fromCol; i <= n.toCol; i++) {
+            if (
+              i < matrixDimensions.colsNum &&
+              n.row < matrixDimensions.rowsNum
+            ) {
+              matrix[i][n.row] = doRemove ? null : n;
+            }
+          }
+        }
+        break;
+      case "POINT":
+        {
+          const n = notation as PointNotationAttributes;
+          if (
+            n.col < matrixDimensions.colsNum &&
+            n.row < matrixDimensions.rowsNum
+          ) {
+            matrix[n.col][n.row] = doRemove ? null : n;
+          }
+        }
+        break;
+      case "RECT":
+        {
+          const n = notation as RectNotationAttributes;
+          for (let i = n.fromCol; i <= n.toCol; i++) {
+            for (let j = n.fromRow; j <= n.toRow; j++) {
+              if (
+                i < matrixDimensions.colsNum &&
+                j < matrixDimensions.rowsNum
+              ) {
+                matrix[i][j] = doRemove ? null : n;
+              }
+            }
+          }
+        }
+        break;
     }
   }
 
-  function removeRectFromOccupationMatrix(matrix: any, rect: RectAttributes) {
-    for (let row = rect.fromRow; row <= rect.toRow; row++) {
-      for (let col = rect.fromCol; col <= rect.toCol; col++) {
-        matrix[row][col] = null;
-      }
-    }
-  }
-
-  function addPointToOccupationMatrix(matrix: any, notation: PointAttributes) {
-    matrix[notation.row][notation.col] = notation;
-  }
-
-  // addToOccupationMatrix: function (matrix: any, notation: LineAttributes) {
-  //   for (let col = notation.fromCol; col <= notation.toCol; col++) {
-  //     matrix[notation.row][col] = notation;
-  //   }
-  // },
-
-  function addRectToOccupationMatrix(matrix: any, notation: RectAttributes) {
-    for (let row = notation.fromRow; row <= notation.toRow; row++) {
-      for (let col = notation.fromCol; col <= notation.toCol; col++) {
-        matrix[row][col] = notation;
-      }
-    }
-  }
-
-  return {};
+  return {
+    updateOccupationMatrix,
+  };
 }
