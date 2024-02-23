@@ -98,11 +98,8 @@ app
       return app.channel(constants.LESSON_CHANNEL_PREFIX + notation.lesson.uuid );
  });
 
-const PORT: number = Number(process.env.PORT) || 3030;
-//app.on("listening", () => {
-//  console.log(`server running on port ${PORT}`)
-//});
-
+const PORT: number =
+  Number(process.env.MESSAGING_PORT) || 3030;
 
 app.listen(PORT).then(() =>
    console.log(

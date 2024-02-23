@@ -129,12 +129,10 @@ import { useRouter } from "vue-router";
 import { onMounted, computed } from "vue";
 import useAxiosHelper from "./helpers/axiosHelper";
 import { useUserStore } from "./store/pinia/userStore";
-import { useLessonStore } from "./store/pinia/lessonStore";
 
 const { initAxiosInterceptors } = useAxiosHelper();
 const router = useRouter();
 const userStore = useUserStore();
-const lessonStore = useLessonStore();
 
 onMounted(() => {
   initAxiosInterceptors();
@@ -149,7 +147,7 @@ const showLessons = computed(() => {
 });
 
 const showQuestions = computed(() => {
-  return userStore.getCurrentUser(); 
+  return userStore.getCurrentUser();
 });
 
 const showAnswers = computed(() => {

@@ -4,7 +4,7 @@
     "dialect": "sqlite"
   },
   "test": {
-    "storage": "C:\\dev\\MathBoard\\math-server\\math.db",
+    "storage": "C:\\dev\\MathBoard\\math-server\\mathTest.db",
     "dialect": "sqlite"
   }
 

@@ -42,36 +42,19 @@ export default defineConfig({
   server: {
     host: "0.0.0.0",
     cors: true,
-    port: 3000,
+    port: Number(process.env.WEB_PORT) || 3000,
     proxy: {
       "/api": {
-        target: "http://localhost:8081",
+        target: "http://localhost:" + process.env.API_PORT || "8081",
         changeOrigin: true,
         secure: false,
       },
       "/socket.io": {
-        target: "http://localhost:3030",
+        target: "http://localhost:" + process.env.MESSAGING_PORT || "3030",
         changeOrigin: true,
         ws: true,
         secure: false,
-        configure: (proxy, _options) => {
-          proxy.on("error", function (err, _req, _res) {
-            console.log("proxy error", err);
-          });
-          proxy.on("proxyReq", function (proxyReq, req, _res) {
-            console.log("Sending Request to the Target:", req.method, req.url);
-          });
-          proxy.on("proxyRes", function (proxyRes, req, _res) {
-            console.log(
-              "Received Response from the Target:",
-              proxyRes.statusCode,
-              req.url,
-            );
-          });
-        },
       },
     },
   },
-
-  
 });

@@ -394,12 +394,13 @@ const errorHandler = (
 
 app.use(errorHandler);
 
-    
-
-connection.sequelize.sync({ force: false }).then(() => {
-    app.listen(8081, () => {
-        process.stdout.write("listening to port localhost:8081");
+const forceDbCreate = process.env.NODE_ENV === "test";
+process.stdout.write("re create db =" + forceDbCreate);
+connection.sequelize.sync({ force: forceDbCreate }).then(() => {
+    const port = process.env.API_PORT;
+    app.listen(port, () => {
+        process.stdout.write("listening to port localhost:" + port);
     }).on("error", (e) => {
         console.log("Error: ", e.message);
-    });;
+    });
 });

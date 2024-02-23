@@ -1,14 +1,10 @@
 import {
-  NotationShape,
-  NotationTypeShape,
-} from "../../../math-common/src/unions";
-import {
   DotPosition,
   horizontalCellSpace,
 } from "../../../math-common/src/globals";
 import { PointAttributes } from "../../../math-common/src/baseTypes";
 import { useNotationStore } from "../store/pinia/notationStore";
-import { NotationAttributes } from "common/baseTypes";
+import { NotationAttributes } from "../../../math-common/src/baseTypes";
 const notationStore = useNotationStore();
 
 export default function elementFinderHelper() {

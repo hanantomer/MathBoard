@@ -38,9 +38,7 @@ const userIncomingOperations = useUserIncomingOperations();
 
 let loaded = ref(false);
 const svgId = "lessonSvg";
-const isTeacher = computed(() => {
-  return userStore.isTeacher();
-});
+
 const lessonTitle = computed(() => {
   if (!lessonStore.getCurrentLesson()) return;
   return lessonStore.getCurrentLesson()!.name;

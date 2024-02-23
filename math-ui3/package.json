@@ -38,10 +38,12 @@
   },
   "devDependencies": {
     "@testing-library/vue": "^8.0.2",
+    "@types/jest": "^29.5.12",
     "@types/node": "^18.11.9",
     "@types/webfontloader": "^1.6.35",
     "@vitejs/plugin-vue": "^4.0.0",
     "@vue/eslint-config-typescript": "^11.0.0",
+    "cypress": "^13.6.5",
     "eslint": "^8.22.0",
     "eslint-plugin-vue": "^9.3.0",
     "happy-dom": "^13.3.8",
