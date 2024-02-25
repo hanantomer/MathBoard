@@ -130,6 +130,9 @@ import { onMounted, computed } from "vue";
 import useAxiosHelper from "./helpers/axiosHelper";
 import { useUserStore } from "./store/pinia/userStore";
 
+import { useCookies } from "vue3-cookies";
+const cookies = useCookies().cookies;
+
 const { initAxiosInterceptors } = useAxiosHelper();
 const router = useRouter();
 const userStore = useUserStore();
@@ -161,6 +164,8 @@ function showLoginDialog() {
 }
 
 function signOut() {
+  userStore.setCurrentUser(null);
+  cookies.remove("access_token");
   router.push("/");
 }
 

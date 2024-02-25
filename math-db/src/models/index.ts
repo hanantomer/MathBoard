@@ -9,6 +9,9 @@ const sequelize = config.url
     ? new Sequelize(config.url, config)
     : new Sequelize(config.database, config.username, config.password, config);
 
-sequelize.addModels([__dirname.replace("/\\/g","/") + "/**/*.model.js"]);    
+sequelize.addModels([__dirname.replace("/\\/g", "/") + "/**/*.model.js"]);    
+
+console.log("db env", env);
+ console.log("db config", config);
 
 export default { sequelize };

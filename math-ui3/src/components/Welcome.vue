@@ -1,7 +1,6 @@
 <template>
-  <login :dialog="showLoginDialog"></login>
-  <Register :dialog="showRegisterDialog"></Register>
-
+  <loginDialog :dialog="showLoginDialog" @register="register"></loginDialog>
+  <registerDialog :dialog="showRegisterDialog"></registerDialog>
   <v-main>
     <v-row>
       <v-col class="text-center" cols="12">
@@ -32,11 +31,9 @@
 
 <script setup lang="ts">
 import { ref, watch, onMounted } from "vue";
-import Login from "./Login.vue";
-import Register from "./Register.vue";
+import LoginDialog from "./Login.vue";
+import RegisterDialog from "./Register.vue";
 import { useRoute } from "vue-router";
-import useEventBus from "../helpers/eventBusHelper";
-const eventBus = useEventBus();
 const route = useRoute();
 
 let showLoginDialog = ref(false);
@@ -52,28 +49,33 @@ onMounted(() => {
   }
 });
 
- watch(
-   route,
-   (to) => {
-     if (props.login) {
-       showLoginDialog.value = true;
-     }
-   },
-   { flush: "pre", immediate: true, deep: true },
- );
+watch(
+  route,
+  (to) => {
+    if (props.login) {
+      showLoginDialog.value = true;
+    }
+  },
+  { flush: "pre", immediate: true, deep: true },
+);
 
 // login via button
 //watch(() => eventBus.bus.value.get("login"), () => {
 //  showLoginDialog.value = true;
 //});
 
-watch(
-  () => eventBus.bus.value.get("register"),
-  () => {
-    showLoginDialog.value = false;
-    showRegisterDialog.value = true;
-  },
-);
+// watch(
+//   () => eventBus.bus.value.get("register"),
+//   () => {
+//     showLoginDialog.value = false;
+//     showRegisterDialog.value = true;
+//   },
+// );
+
+function register() {
+  showLoginDialog.value = false;
+  showRegisterDialog.value = true;
+}
 
 const bullets = [
   "Editable notations",

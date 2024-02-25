@@ -52,6 +52,7 @@
             <v-col class="d-flex text-start text-body2" cols="12">
               <span style="margin-right: 10px">don't have an account?</span>
               <v-btn
+                data-cy="register"
                 prepend-icon="mdi-account"
                 v-on:click="register"
                 size="x-small"
@@ -106,6 +107,8 @@ const props = defineProps({
   },
 });
 
+const emit = defineEmits(["register"]);
+
 watch(
   () => props.dialog,
   (val: boolean) => {
@@ -115,7 +118,7 @@ watch(
 );
 
 function register() {
-  eventBus.emit("register");
+  emit("register");
 }
 
 //mounted() {

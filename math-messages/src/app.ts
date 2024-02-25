@@ -13,15 +13,6 @@ import { SelectedCell, ColorizedCell } from "../../math-common/src/baseTypes";
 import { LessonNotationAttributes } from "../../math-common/src/lessonTypes";
 
 
-//type ServiceTypes = {
-//  // Add services path to type mapping here
-//};
-
-// app.get and app.set can be typed when initializing the app
-//type Configuration = {
-//  port: number;
-//};
-
 type ServiceTypes = {
   authorization: AuthorizationService;
   authentication: AuthenticationService;
@@ -34,8 +25,11 @@ type ServiceTypes = {
 
 const app: any = feathers<ServiceTypes>();
 
-app.set("origin", "localhost:3000")
 
+const WEB_PORT: number =
+  Number(process.env.WEB_PORT) || 3000;
+
+app.set("origin", "localhost:" + WEB_PORT)
 
 app.configure(
   socketio({
