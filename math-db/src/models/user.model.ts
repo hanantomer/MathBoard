@@ -30,6 +30,10 @@ import Answer from "./answer/answer.model";
             unique: true,
             fields: ["uuid"],
         },
+        {
+            unique: true,
+            fields: ["email"],
+        },
     ],
 })
 export default class User extends Model<

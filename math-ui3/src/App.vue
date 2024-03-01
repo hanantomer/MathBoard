@@ -30,6 +30,7 @@
       <v-tooltip text="Lessons" location="bottom">
         <template v-slot:activator="{ props }">
           <v-btn
+            data-cy = "lessons"
             v-show="showLessons"
             icon
             v-on:click="navToLessons"

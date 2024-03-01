@@ -1,5 +1,5 @@
 import { verify, sign } from "jsonwebtoken";
-import { compare } from "bcryptjs";
+import { compare, hash, hashSync } from "bcryptjs";
 import { OAuth2Client } from "google-auth-library";
 import clientSecretData   from "./client_secret.json";
 import User from "../../math-db/build/models/user.model";
@@ -9,6 +9,10 @@ const oAuth2client = new OAuth2Client(clientSecretData.web.client_id);
 const userCache = new Map<string, UserAttributes>();
 
 export default function authUtils() {
+
+    function encryptPasssword(password: string): string {
+        return hashSync(password, 10);
+    }
     
     async function authByLocalPassword(
         email: string,
@@ -28,13 +32,21 @@ export default function authUtils() {
         // validate password
         let passwordMatched =
             !!user && (await compare(password, user.password));
+
         if (passwordMatched) {
             let access_token = sign(
                 { email: user.email },
                 clientSecretData.client_secret,
                 { expiresIn: 86400 * 30 }
             );
+
             user.access_token = access_token;
+
+            await User.update<User>(
+                { access_token: access_token },
+                { where: { id: user.id } }
+            );    
+
             user.password = "";
             return user;
         }
@@ -80,6 +92,7 @@ export default function authUtils() {
     return {
         authByLocalPassword,
         authByGoogleToken,
-        authByLocalToken
+        authByLocalToken,
+        encryptPasssword
     }
 }

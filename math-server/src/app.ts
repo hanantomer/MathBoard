@@ -26,18 +26,24 @@ app.use(
 
 
 async function auth(req: Request, res: Response, next: NextFunction) {
-    // omit authorization enforcement, when signing in.
-    if (req.url.indexOf("/api/users?email") == 0) {
+    // omit authorization enforcement when signing in
+    if (req.method === "GET" && req.url.indexOf("/api/users?email") == 0) {
         next();
-        return;
+    }
+
+    // omit authorization enforcement when registering
+    else if (req.method === "POST" && req.url.indexOf("/api/users") == 0) {
+        next();
     }
 
     // verify authorization
-    if (!await validateHeaderAuthentication(req, res, next)) {
-        return;
+    else if (!(await validateHeaderAuthentication(req, res, next))) {
+        return; 
     }
-
-    next();
+    
+    else {
+        next();
+    }
 }
 
 
@@ -52,15 +58,18 @@ async function validateHeaderAuthentication(req: Request, res: Response, next: N
     const user = await authUtil.authByLocalToken(
         req.headers.authorization.toString()
     );
+    
     if (!user) {
         res = res.status(401).json("invalid token");
+        return false;
     }
     
-    if (req.url.indexOf("/api/users") == 0) {
-        res.json(user);
-    }
+    //if (req.url.indexOf("/api/users") == 0) {
+    //    res.json(user);
+    //}
 
     req.headers.userId = user?.id?.toString();
+    
     return true;
 }
 
@@ -68,11 +77,15 @@ app.get(
     "/api/users",
     async (req: Request, res: Response, next: NextFunction): Promise<Response | undefined> => {
         // token already validate by interceptor. see validateHeaderAuthentication
-        if (req.headers.authorization) {
-            return res.status(200);
-        }
+        //if (req.headers.authorization) {
+        //    return res.status(200);
+        //}
         // by email/password
         const { email, password } = req.query;
+
+        if (req.headers.userId) {
+            return res.status(200);
+        }
 
         if (!email || !password) {
             return res.status(401).json("missing user or password");
@@ -103,6 +116,7 @@ app.post(
         next: NextFunction
     ): Promise<Response | undefined> => {
         try {
+            req.body.password = authUtil.encryptPasssword(req.body.password);
             return res.status(200).json(await db.createUser(req.body));
         } catch (error) {
             next(error);
@@ -397,7 +411,7 @@ app.use(errorHandler);
 const forceDbCreate = process.env.NODE_ENV === "test";
 console.log("re create db =" + forceDbCreate);
 connection.sequelize.sync({ force: forceDbCreate }).then(() => {
-    const port = Number(process.env.API_PORT) | 8081;
+    const port = Number(process.env.API_PORT) || 17030;  
     app.listen(port, () => {
          console.log("listening to port localhost:" + port);
     }).on("error", (e) => {

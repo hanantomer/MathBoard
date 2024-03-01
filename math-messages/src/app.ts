@@ -26,10 +26,10 @@ type ServiceTypes = {
 const app: any = feathers<ServiceTypes>();
 
 
-const WEB_PORT: number =
-  Number(process.env.WEB_PORT) || 3000;
+// const WEB_PORT: number =
+//   Number(process.env.WEB_PORT) || 3000;
 
-app.set("origin", "localhost:" + WEB_PORT)
+// app.set("origin", "localhost:" + WEB_PORT)
 
 app.configure(
   socketio({
@@ -90,10 +90,10 @@ app
 app
   .service("notationSync").publish("removed", (notation: LessonNotationAttributes, ctx: any ) => {
       return app.channel(constants.LESSON_CHANNEL_PREFIX + notation.lesson.uuid );
- });
-
+  });
+ 
 const PORT: number =
-  Number(process.env.MESSAGING_PORT) || 3030;
+  Number(process.env.MESSAGING_PORT) || 18030;
 
 app.listen(PORT).then(() =>
    console.log(

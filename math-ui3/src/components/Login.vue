@@ -7,15 +7,17 @@
           <v-row>
             <v-col cols="12">
               <v-text-field
-                v-model="loginEmail"
-                :rules="loginEmailRules"
+                data-cy="login_email"
+                v-model="email"
+                :rules="[rules.validMail]"
                 label="E-mail"
                 required
               ></v-text-field>
             </v-col>
             <v-col cols="12">
               <v-text-field
-                v-model="loginPassword"
+                data-cy="login_password"
+                v-model="password"
                 :rules="[rules.required, rules.min]"
                 :type="'password'"
                 name="input-10-1"
@@ -40,6 +42,7 @@
 
             <v-col class="d-flex" cols="12" align-end>
               <v-btn
+                data-cy="login"
                 class="text-none mb-4"
                 color="indigo-darken-3"
                 size="x-large"
@@ -73,9 +76,7 @@ import { useCookies } from "vue3-cookies";
 import { useRouter, useRoute, RouteLocationRaw } from "vue-router";
 import { useUserStore } from "../store/pinia/userStore";
 import useAuthHelper from "../helpers/authenticationHelper";
-import useEventBus from "../helpers/eventBusHelper";
 
-const eventBus = useEventBus();
 const cookies = useCookies().cookies;
 const authHelper = useAuthHelper();
 const userStore = useUserStore();
@@ -88,16 +89,13 @@ let loginFailed = false;
 let show = ref(false);
 let valid = true;
 
-let loginPassword = "12345678"; ///TODO remove those magic values
-let loginEmail = "hanantomer@gmail.com";
-let loginEmailRules = [
-  (v: string) => v || "Required",
-  (v: string) => /.+@.+\..+/.test(v) || "E-mail must be valid",
-];
-let show1 = ref(false);
+let password = ref<string>();
+let email = ref<string>();
+
 let rules = {
   required: (value: string) => !!value || "Required.",
   min: (v: string) => (v && v.length >= 8) || "Min 8 characters",
+  validMail: (v: string) => /.+@.+\..+/.test(v) || "E-mail must be valid",
 };
 
 const props = defineProps({
@@ -112,12 +110,13 @@ const emit = defineEmits(["register"]);
 watch(
   () => props.dialog,
   (val: boolean) => {
-    show.value = val;
+    show.value = true;
   },
   { flush: "pre", immediate: true, deep: true },
 );
 
 function register() {
+  show.value = false;
   emit("register");
 }
 
@@ -139,14 +138,16 @@ function googleOnSuccess() {
 }
 
 async function validateLogin() {
+  if (!email) return;
+  if (!password) return;
   let formVlidated: any = await (loginForm.value as any).validate();
   if (!formVlidated) {
     return;
   }
 
   let authenticatedUser = await authHelper.authLocalUserByUserAndPassword(
-    loginEmail,
-    loginPassword,
+    email.value!,
+    password.value!,
   );
 
   if (!authenticatedUser) {
@@ -171,6 +172,7 @@ async function validateLogin() {
     return;
   }
 
+  show.value = false;
   router.push({ path: "/lessons" });
 }
 </script>

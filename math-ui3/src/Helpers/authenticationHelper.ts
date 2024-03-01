@@ -9,8 +9,9 @@ export default function authenticationHelper() {
   function registerUser(
     firstName: string,
     lastName: string,
-    password: string,
     email: string,
+    password: string,
+    
     userType: UesrType,
   ) {
     let user: UserCreationAttributes = {
@@ -26,7 +27,6 @@ export default function authenticationHelper() {
     const userStore = useUserStore();
     userStore.registerUser(user);
   }
-
 
   async function authGoogleUser() {
     return await dbHelper.authGoogleUser();

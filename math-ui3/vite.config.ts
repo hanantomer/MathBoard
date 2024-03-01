@@ -3,58 +3,63 @@ import vue from "@vitejs/plugin-vue";
 import vuetify, { transformAssetUrls } from "vite-plugin-vuetify";
 
 // Utilities
-import { defineConfig } from "vite";
+import { defineConfig, loadEnv } from "vite";
 import { fileURLToPath, URL } from "node:url";
 
 import Terminal from "vite-plugin-terminal";
 
-export default defineConfig({
-  build: {
-    sourcemap: true,
-  },
+export default defineConfig(({ mode }) => {
+  process.env = { ...process.env, ...loadEnv(mode, process.cwd()) };
+  return {
+    //define: { "process.env": {} },
 
-  plugins: [
-    Terminal(),
-    vue({
-      template: { transformAssetUrls },
-    }),
-    vuetify({
-      autoImport: true,
-    }),
-  ],
-  define: { "process.env": {} },
+    build: {
+      sourcemap: true,
+    },
 
-  resolve: {
-    alias: [
-      {
-        find: "@",
-        replacement: fileURLToPath(new URL("./src", import.meta.url)),
-      },
-      {
-        find: "common",
-        replacement: fileURLToPath(
-          new URL("../math-common/src", import.meta.url),
-        ),
-      },
+    plugins: [
+      Terminal(),
+      vue({
+        template: { transformAssetUrls },
+      }),
+      vuetify({
+        autoImport: true,
+      }),
     ],
-  },
 
-  server: {
-    host: "0.0.0.0",
-    cors: true,
-    port: Number(process.env.WEB_PORT) || 3000,
-    proxy: {
-      "/api": {
-        target: "http://localhost:" + process.env.API_PORT || "8081",
-        changeOrigin: true,
-        secure: false,
-      },
-      "/socket.io": {
-        target: "http://localhost:" + process.env.MESSAGING_PORT || "3030",
-        changeOrigin: true,
-        ws: true,
-        secure: false,
+    resolve: {
+      alias: [
+        {
+          find: "@",
+          replacement: fileURLToPath(new URL("./src", import.meta.url)),
+        },
+        {
+          find: "common",
+          replacement: fileURLToPath(
+            new URL("../math-common/src", import.meta.url),
+          ),
+        },
+      ],
+    },
+
+    server: {
+      host: "0.0.0.0",
+      cors: true,
+      port: Number(process.env.VITE_WEB_PORT /*see .env*/),
+      proxy: {
+        "/api": {
+          target: "http://localhost:" + process.env.VITE_API_PORT /*see .env*/,
+          changeOrigin: true,
+          secure: false,
+        },
+        "/socket.io": {
+          target:
+            "http://localhost:" + process.env.VITE_MESSAGING_PORT /*see .env*/,
+          changeOrigin: true,
+          ws: true,
+          secure: false,
+        },
       },
     },
-  },
+  };
 });

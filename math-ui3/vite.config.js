@@ -1,63 +1,67 @@
+var __assign = (this && this.__assign) || function () {
+    __assign = Object.assign || function(t) {
+        for (var s, i = 1, n = arguments.length; i < n; i++) {
+            s = arguments[i];
+            for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
+                t[p] = s[p];
+        }
+        return t;
+    };
+    return __assign.apply(this, arguments);
+};
 // Plugins
 import vue from "@vitejs/plugin-vue";
 import vuetify, { transformAssetUrls } from "vite-plugin-vuetify";
 // Utilities
-import { defineConfig } from "vite";
+import { defineConfig, loadEnv } from "vite";
 import { fileURLToPath, URL } from "node:url";
 import Terminal from "vite-plugin-terminal";
-export default defineConfig({
-    build: {
-        sourcemap: true,
-    },
-    plugins: [
-        Terminal(),
-        vue({
-            template: { transformAssetUrls: transformAssetUrls },
-        }),
-        vuetify({
-            autoImport: true,
-        }),
-    ],
-    define: { "process.env": {} },
-    resolve: {
-        alias: [
-            {
-                find: "@",
-                replacement: fileURLToPath(new URL("./src", import.meta.url)),
-            },
-            {
-                find: "common",
-                replacement: fileURLToPath(new URL("../math-common/src", import.meta.url)),
-            },
+export default defineConfig(function (_a) {
+    var mode = _a.mode;
+    process.env = __assign(__assign({}, process.env), loadEnv(mode, process.cwd()));
+    return {
+        //define: { "process.env": {} },
+        build: {
+            sourcemap: true,
+        },
+        plugins: [
+            Terminal(),
+            vue({
+                template: { transformAssetUrls: transformAssetUrls },
+            }),
+            vuetify({
+                autoImport: true,
+            }),
         ],
-    },
-    server: {
-        host: "0.0.0.0",
-        cors: true,
-        port: 3000,
-        proxy: {
-            "/api": {
-                target: "http://localhost:8081",
-                changeOrigin: true,
-                secure: false,
-            },
-            "/socket.io": {
-                target: "http://localhost:3030",
-                changeOrigin: true,
-                ws: true,
-                secure: false,
-                configure: function (proxy, _options) {
-                    proxy.on("error", function (err, _req, _res) {
-                        console.log("proxy error", err);
-                    });
-                    proxy.on("proxyReq", function (proxyReq, req, _res) {
-                        console.log("Sending Request to the Target:", req.method, req.url);
-                    });
-                    proxy.on("proxyRes", function (proxyRes, req, _res) {
-                        console.log("Received Response from the Target:", proxyRes.statusCode, req.url);
-                    });
+        resolve: {
+            alias: [
+                {
+                    find: "@",
+                    replacement: fileURLToPath(new URL("./src", import.meta.url)),
+                },
+                {
+                    find: "common",
+                    replacement: fileURLToPath(new URL("../math-common/src", import.meta.url)),
+                },
+            ],
+        },
+        server: {
+            host: "0.0.0.0",
+            cors: true,
+            port: Number(process.env.VITE_WEB_PORT),
+            proxy: {
+                "/api": {
+                    target: "http://localhost:" + process.env.VITE_API_PORT,
+                    changeOrigin: true,
+                    secure: false,
+                },
+                "/socket.io": {
+                    target: "http://localhost:" + process.env.VITE_MESSAGING_PORT,
+                    changeOrigin: true,
+                    ws: true,
+                    secure: false,
                 },
             },
         },
-    },
+    };
 });

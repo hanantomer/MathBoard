@@ -13,7 +13,6 @@ import { QuestionCreationAttributes } from "../../math-common/build/questionType
 import { AnswerAttributes, AnswerCreationAttributes } from "../../math-common/build/answerTypes";
 import { capitalize } from "../../math-common/build/utils";
 import { BoardType, NotationType } from "../../math-common/src/unions";
-import { log } from "console";
 
 
 export default function dbUtil() {

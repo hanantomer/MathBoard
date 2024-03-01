@@ -29,6 +29,6 @@
         { "path": "../math-auth" },
         { "path": "../math-common" }
     ],
-//    "include": ["../math-auth/src", "../math-db/src", "src/**/*"],
+
     "exclude": ["node_modules", "build/**/*"]
 }

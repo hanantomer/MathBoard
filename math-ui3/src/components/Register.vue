@@ -6,6 +6,7 @@
           <v-row>
             <v-col cols="12" sm="6" md="6">
               <v-text-field
+                data-cy="register_fname"
                 v-model="firstName"
                 :rules="[rules.required]"
                 label="First Name"
@@ -15,6 +16,7 @@
             </v-col>
             <v-col cols="12" sm="6" md="6">
               <v-text-field
+                data-cy="register_lname"
                 v-model="lastName"
                 :rules="[rules.required]"
                 label="Last Name"
@@ -24,6 +26,7 @@
             </v-col>
             <v-col cols="12">
               <v-text-field
+                data-cy="register_email"
                 v-model="email"
                 :rules="emailRules"
                 label="E-mail"
@@ -32,6 +35,7 @@
             </v-col>
             <v-col cols="12">
               <v-text-field
+                data-cy="register_password"
                 v-model="password"
                 :rules="[rules.required, rules.min]"
                 :type="show1 ? 'text' : 'password'"
@@ -43,6 +47,7 @@
             </v-col>
             <v-col cols="12">
               <v-text-field
+                data-cy="register_verify"
                 block
                 v-model="verify"
                 :rules="[rules.required, passwordMatch]"
@@ -54,12 +59,14 @@
             <v-spacer></v-spacer>
             <v-col class="d-flex" cols="12" align-end>
               <v-btn
+                data-cy="register_signup"
                 class="text-none mb-4"
                 color="indigo-darken-3"
                 size="x-large"
                 variant="flat"
                 @click="register"
-              >Sign Up</v-btn>
+                >Sign Up</v-btn
+              >
             </v-col>
           </v-row>
         </v-form>
@@ -80,11 +87,11 @@ let registerForm = ref(null);
 
 let show = ref(false);
 let valid = ref(false);
-let firstName = ref("hanan");
-let lastName = ref("tomer");
-let email = ref("hanantomer@gmail.com");
-let password = ref("12345678");
-let verify = ref("12345678");
+let firstName = ref("");
+let lastName = ref("");
+let email = ref("");
+let password = ref("");
+let verify = ref("");
 const emailRules = [
   (v: string) => !!v || "Required",
   (v: string) => /.+@.+\..+/.test(v) || "E-mail must be valid",
@@ -106,9 +113,12 @@ const props = defineProps({
   },
 });
 
-watch(() => props.dialog, (val) => {
-  show.value = val
-});
+watch(
+  () => props.dialog,
+  (val) => {
+    show.value = val;
+  },
+);
 
 async function register() {
   let formVlidated: any = await (registerForm.value as any).validate();
@@ -118,7 +128,7 @@ async function register() {
       lastName.value,
       email.value,
       password.value,
-      "STUDENT"
+      "STUDENT",
     );
 
     registerForm.value = null;
