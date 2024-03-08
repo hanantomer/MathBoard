@@ -4,7 +4,7 @@
       :dialog="lessonDialog"
       :title="lessonDialogTitle"
     ></NewItemDialog>
-    <v-card class="mx-auto" max-width="800" min-height="600">
+    <v-card class="mx-auto mt-4" max-width="800" min-height="600">
       <v-toolbar color="primary" dark>
         <v-toolbar-title>{{ title }}</v-toolbar-title>
         <v-spacer></v-spacer>

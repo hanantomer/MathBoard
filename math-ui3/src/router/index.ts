@@ -15,15 +15,13 @@ const routes = [
     component: () => import("@/components/Welcome.vue"),
     name: "login",
     meta: { requiresAuth: false },
-    props: { login: true },
   },
-  // {
-  //   path: "/register",
-  //   component: () => import("@/components/Welcome.vue"),
-  //   name: "register",
-  //   meta: { requiresAuth: false },
-  //   props: { register: true },
-  // },
+  {
+    path: "/register",
+    component: () => import("@/components/Welcome.vue"),
+    name: "register",
+    meta: { requiresAuth: false, props: true },
+  },
   {
     path: "/lessons",
     component: () => import("@/components/Lessons.vue"),

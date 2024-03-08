@@ -1,5 +1,5 @@
 import { getCookie, removeCookie } from "typescript-cookie";
-import { UesrType } from "common/unions";
+import { UserType } from "common/unions";
 import { UserAttributes, UserCreationAttributes } from "common/userTypes";
 import { useUserStore } from "../store/pinia/userStore";
 import useDbHelper from "./dbHelper";
@@ -11,8 +11,8 @@ export default function authenticationHelper() {
     lastName: string,
     email: string,
     password: string,
-    
-    userType: UesrType,
+
+    userType: UserType,
   ) {
     let user: UserCreationAttributes = {
       userType: userType,

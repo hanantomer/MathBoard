@@ -64,9 +64,9 @@ async function validateHeaderAuthentication(req: Request, res: Response, next: N
         return false;
     }
     
-    //if (req.url.indexOf("/api/users") == 0) {
-    //    res.json(user);
-    //}
+    if (req.url.indexOf("/api/users") == 0) {
+        res.set("user", JSON.stringify(user));
+    }
 
     req.headers.userId = user?.id?.toString();
     
@@ -84,7 +84,7 @@ app.get(
         const { email, password } = req.query;
 
         if (req.headers.userId) {
-            return res.status(200);
+            return res.status(200).send(res.get("user"));
         }
 
         if (!email || !password) {
@@ -97,7 +97,7 @@ app.get(
                 password as string
             );
             if (!user) {
-                return res.status(401);
+                return res.status(401).json("invalid user or password");
             }
             return res.status(200).json(user);
         }

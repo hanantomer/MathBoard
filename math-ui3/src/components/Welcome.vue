@@ -1,6 +1,7 @@
 <template>
-  <loginDialog :dialog="showLoginDialog" @register="register"></loginDialog>
-  <registerDialog :dialog="showRegisterDialog"></registerDialog>
+  <!-- <loginDialog :dialog="showLoginDialog" @register="register"></loginDialog> -->
+  <loginDialog @register="register"></loginDialog>
+  <registerDialog @registered="login"></registerDialog>
   <v-main>
     <v-row>
       <v-col class="text-center" cols="12">
@@ -9,9 +10,7 @@
             <h3>Teach MATH online with Mathboard</h3>
           </v-card-title>
           <v-card-actions class="justify-center">
-            <v-btn color="orange" v-on:click="showLoginDialog = true"
-              >Get Started</v-btn
-            >
+            <v-btn color="orange" v-on:click="login">Get Started</v-btn>
           </v-card-actions>
         </v-card>
         <v-card flat class="justify-center">
@@ -30,34 +29,34 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch, onMounted } from "vue";
 import LoginDialog from "./Login.vue";
 import RegisterDialog from "./Register.vue";
-import { useRoute } from "vue-router";
-const route = useRoute();
+import { useRouter } from "vue-router";
+import { useUserStore } from "../store/pinia/userStore";
 
-let showLoginDialog = ref(false);
-let showRegisterDialog = ref(false);
+const router = useRouter();
+const userStore = useUserStore();
 
 const props = defineProps({
   login: Boolean,
 });
 
-onMounted(() => {
-  if (props.login) {
-    showLoginDialog.value = true;
-  }
-});
+// onMounted(() => {
+//   if (props.login) {
+//     showLoginDialog.value = true;
+//   }
+// });
 
-watch(
-  route,
-  (to) => {
-    if (props.login) {
-      showLoginDialog.value = true;
-    }
-  },
-  { flush: "pre", immediate: true, deep: true },
-);
+// watch(
+//   route,
+//   (to) => {
+//     showLoginDialog.value = false;
+//     if (props.login) {
+//       showLoginDialog.value = true;
+//     }
+//   },
+//   { flush: "pre", immediate: true, deep: true },
+// );
 
 // login via button
 //watch(() => eventBus.bus.value.get("login"), () => {
@@ -72,9 +71,15 @@ watch(
 //   },
 // );
 
+function login() {
+  router.push("/login");
+}
+
 function register() {
-  showLoginDialog.value = false;
-  showRegisterDialog.value = true;
+  router.push({
+    name: "register",
+    query: { userType: userStore.getCurrentUser()?.userType },
+  });
 }
 
 const bullets = [

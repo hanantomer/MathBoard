@@ -1,5 +1,5 @@
 <template>
-  <v-dialog v-model="show" persistent width="350">
+  <v-dialog v-model="show" max-width="500" persistent>
     <v-card height="400">
       <!-- <v-card-title class="text-center" primary-title>Log In</v-card-title> -->
       <v-card-text>
@@ -52,13 +52,14 @@
                 Log In
               </v-btn>
             </v-col>
-            <v-col class="d-flex text-start text-body2" cols="12">
-              <span style="margin-right: 10px">don't have an account?</span>
+            <v-col cols="6">
+              <span>don't have an account?</span>
+            </v-col>
+            <v-col class="d-flex text-start text-body2" cols="6">
               <v-btn
                 data-cy="register"
                 prepend-icon="mdi-account"
                 v-on:click="register"
-                size="x-small"
                 >Sign Up</v-btn
               >
             </v-col>
@@ -107,12 +108,23 @@ const props = defineProps({
 
 const emit = defineEmits(["register"]);
 
+// watch(
+//   () => props.dialog,
+//   (val: boolean) => {
+//     if (val) show.value = true;
+//     else show.value = false;
+//   },
+//   { flush: "pre", immediate: true },
+// );
+
 watch(
-  () => props.dialog,
-  (val: boolean) => {
-    show.value = true;
+  route,
+  (to) => {
+    if (to.name === "login") {
+      show.value = true;
+    }
   },
-  { flush: "pre", immediate: true, deep: true },
+  { flush: "pre", immediate: true },
 );
 
 function register() {
@@ -173,7 +185,7 @@ async function validateLogin() {
   }
 
   show.value = false;
-  router.push({ path: "/lessons" });
+  //router.push({ path: "/lessons" });
 }
 </script>
 <style>

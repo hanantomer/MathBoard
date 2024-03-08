@@ -30,7 +30,7 @@
       <v-tooltip text="Lessons" location="bottom">
         <template v-slot:activator="{ props }">
           <v-btn
-            data-cy = "lessons"
+            data-cy="lessons"
             v-show="showLessons"
             icon
             v-on:click="navToLessons"
@@ -76,7 +76,7 @@
             v-bind="props"
             v-show="!user"
             icon
-            v-on:click="showLoginDialog()"
+            v-on:click="showLoginDialog"
           >
             <v-icon>mdi-account</v-icon>
           </v-btn>
@@ -117,10 +117,20 @@
       <router-view></router-view>
     </v-main>
 
-    <v-footer color="primary" padless dense style="max-height: 60px">
-      <v-col class="text-center" cols="12">
-        <p style="color: white">© Copyright 2024 www.mathboard.com</p>
-      </v-col>
+    <v-footer color="primary" padless dense style="max-height: 50px">
+      <div style="margin: auto">
+        <p style="color: white; display: inline">
+          © Copyright 2024 www.mathboard.com
+        </p>
+        <span style="margin-left: 10px">|</span>
+        <a
+          style="margin-left: 10px; display: inline; color: #ff9800"
+          href="../privacyPolicy.html"
+          target="_blank"
+        >
+          Privacy Policy</a
+        >
+      </div>
     </v-footer>
   </v-app>
 </template>
@@ -130,7 +140,6 @@ import { useRouter } from "vue-router";
 import { onMounted, computed } from "vue";
 import useAxiosHelper from "./helpers/axiosHelper";
 import { useUserStore } from "./store/pinia/userStore";
-
 import { useCookies } from "vue3-cookies";
 const cookies = useCookies().cookies;
 
@@ -161,7 +170,7 @@ const showAnswers = computed(() => {
 const isTeacher = computed(() => userStore.isTeacher());
 
 function showLoginDialog() {
-  router.replace("/login");
+  router.push("/login");
 }
 
 function signOut() {
@@ -206,8 +215,9 @@ text {
   cursor: pointer;
   text-anchor: middle;
 }
+
 html {
-  overflow-x: visible;
-  overflow-y: visible;
+  overflow-x: hidden;
+  overflow-y: hidden;
 }
 </style>

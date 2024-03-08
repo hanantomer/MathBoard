@@ -1,5 +1,5 @@
 import { EntityAttributes } from "./baseTypes";
-import { UesrType } from "./unions";
+import { UserType } from "./unions";
 import { LessonAttributes } from "./lessonTypes";
 
 export type UserAttributes = EntityAttributes & {
@@ -9,8 +9,7 @@ export type UserAttributes = EntityAttributes & {
   password: string;
   access_token: string;
   imageUrl: string;
-  userType: UesrType;
-  //authorized?: boolean;
+  userType: UserType;
   lastHeartbeatTime?: Date;
 }
 

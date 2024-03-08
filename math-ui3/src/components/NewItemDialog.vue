@@ -23,7 +23,7 @@
           </v-card-text>
           <v-card-actions>
             <v-spacer></v-spacer>
-            <v-btn data-cy="button-login" color="blue darken-1" type="submit">
+            <v-btn data-cy="button-save" color="blue darken-1" type="submit">
               Save
             </v-btn>
           </v-card-actions>

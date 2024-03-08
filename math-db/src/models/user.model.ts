@@ -8,7 +8,7 @@ import {
     HasMany
 } from "sequelize-typescript";
 
-import { UesrType } from "../../../math-common/src/unions";
+import { UserType } from "../../../math-common/src/unions";
 import {
     UserAttributes,
     UserCreationAttributes,
@@ -92,7 +92,7 @@ export default class User extends Model<
         type: DataType.STRING,
         allowNull: true,
     })
-    userType!: UesrType;
+    userType!: UserType;
 
     @HasMany(() => Answer, {
         foreignKey: "answerId",

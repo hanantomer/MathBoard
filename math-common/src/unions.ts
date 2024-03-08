@@ -55,9 +55,7 @@ export type EditMode =
   "XMARK"             | // xmark button pressed
   "GEO"                 // geometry sketching
 
-export type UesrType = "TEACHER" | "STUDENT"
-
-export type LoginType = "LOGIN" | "REGISTER"
+export type UserType = "TEACHER" | "STUDENT"
 
 export type MoveDirection = "LEFT" |  "RIGHT" |  "TOP" |  "BOTTOM" | "LEFTTOP" | "LEFTBOTTOM" | "RIGHTTOP" | "RIGHTBOTTOM"
 
