@@ -85,11 +85,6 @@
 
       <v-divider class="mx-6" vertical></v-divider>
 
-      <!-- <v-btn v-show="!user" icon v-on:click="showRegisterDialog()">
-        <v-icon>mdi-account-outline</v-icon>
-        <span style="font-size: 0.7em">Register</span>
-      </v-btn> -->
-
       <!-- user image or name -->
       <v-tooltip bottom hidden>
         <template v-slot:activator="{ props }">
@@ -118,19 +113,28 @@
     </v-main>
 
     <v-footer color="primary" padless dense style="max-height: 50px">
-      <div style="margin: auto">
-        <p style="color: white; display: inline">
-          © Copyright 2024 www.mathboard.com
-        </p>
-        <span style="margin-left: 10px">|</span>
-        <a
-          style="margin-left: 10px; display: inline; color: #ff9800"
+      <v-row justify="center" no-gutters>
+        <p style="color: white">© Copyright 2024 www.mathboard.com</p>
+        <v-btn
+          style="background-color: transparent; color: white"
+          class="ml-1"
+          height="25"
+          flat
           href="../privacyPolicy.html"
           target="_blank"
         >
-          Privacy Policy</a
+          Privacy Policy</v-btn
         >
-      </div>
+        <v-btn
+          style="background-color: transparent; color: white"
+          class="ml-1"
+          height="25"
+          flat
+          v-on:click="navContactUs"
+        >
+          Contact Us</v-btn
+        >
+      </v-row>
     </v-footer>
   </v-app>
 </template>
@@ -189,6 +193,10 @@ function navToQuestions() {
 
 function navToAnswers() {
   router.push("/answers");
+}
+
+function navContactUs() {
+  router.push("/contactUs");
 }
 
 // signInViaGoogleAuth: async function () {

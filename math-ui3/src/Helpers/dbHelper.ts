@@ -1,6 +1,5 @@
-import { BoardType, NotationType, MoveDirection } from "common/unions";
+import { BoardType, NotationType } from "common/unions";
 import {
-  EntityAttributes,
   LineNotationAttributes,
   NotationAttributes,
   NotationCreationAttributes,

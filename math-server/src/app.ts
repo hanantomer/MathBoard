@@ -5,6 +5,17 @@ import useAuthUtil  from "../../math-auth/build/authUtil";
 import useDb from  "../../math-db/build/dbUtil"
 import connection from "../../math-db/build/models/index";
 import { BoardTypeValues, NotationTypeValues } from "../../math-common/build/unions"
+import { createTransport } from "nodemailer";
+
+var transporter = createTransport({
+    service: "gmail",
+    auth: {
+        user: "mathboard16@gmail.com",
+        pass: "mermer1!", ///TODO use env
+    },
+});
+
+
 
 
 const authUtil = useAuthUtil();
@@ -36,12 +47,15 @@ async function auth(req: Request, res: Response, next: NextFunction) {
         next();
     }
 
+    // omit authorization enforcement for contact us
+    else if (req.method === "POST" && req.url.indexOf("/api/contactus") == 0) {
+        next();
+    }
+
     // verify authorization
     else if (!(await validateHeaderAuthentication(req, res, next))) {
-        return; 
-    }
-    
-    else {
+        return;
+    } else {
         next();
     }
 }
@@ -72,6 +86,26 @@ async function validateHeaderAuthentication(req: Request, res: Response, next: N
     
     return true;
 }
+
+app.post(
+    "/api/contactus",
+    async (req: Request, res: Response, next: NextFunction) => {
+        let mailOptions = {
+            from: req.body.email,
+            to: "mathboard16@gmail.com",
+            subject: "Message from:" + req.body.name,
+            text: req.body.message,
+        };
+        transporter.sendMail(mailOptions, function (error, info) {
+            if (error) {
+                console.log(error);
+                return res.status(500);
+            } else {
+                console.log("Email sent: " + info.response);
+                return res.status(200);
+            }
+        });
+    });
 
 app.get(
     "/api/users",

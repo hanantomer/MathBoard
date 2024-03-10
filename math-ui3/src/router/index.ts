@@ -11,6 +11,13 @@ const routes = [
     props: true,
   },
   {
+    path: "/contactUs",
+    component: () => import("@/components/ContactUs.vue"),
+    name: "contactUs",
+    meta: { requiresAuth: false },
+  },
+
+  {
     path: "/login",
     component: () => import("@/components/Welcome.vue"),
     name: "login",

@@ -8,7 +8,7 @@
       <v-toolbar color="primary" dark>
         <v-toolbar-title>{{ title }}</v-toolbar-title>
         <v-spacer></v-spacer>
-        <v-btn icon v-on:click="openLessonDialog">
+        <v-btn icon v-on:click="openLessonDialog" v-show="userStore.isTeacher()">
           <v-icon>mdi-plus</v-icon>
         </v-btn>
       </v-toolbar>
@@ -79,7 +79,7 @@ const lessons = computed(() => {
       return {
         uuid: l.uuid,
         name: l.name,
-        createdAt:formatDate(l.createdAt)
+        createdAt: formatDate(l.createdAt),
       };
     },
   );
