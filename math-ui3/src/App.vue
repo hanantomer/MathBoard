@@ -114,9 +114,12 @@
 
     <v-footer color="primary" padless dense style="max-height: 50px">
       <v-row justify="center" no-gutters>
-        <p style="color: white">© Copyright 2024 www.mathboard.com</p>
+        <p style="color: whitesmoke; margin-right: 10px">
+          © Copyright 2024 www.mathboard.com
+        </p>
+        |
         <v-btn
-          style="background-color: transparent; color: white"
+          style="background-color: transparent; color: whitesmoke"
           class="ml-1"
           height="25"
           flat
@@ -125,8 +128,9 @@
         >
           Privacy Policy</v-btn
         >
+        |
         <v-btn
-          style="background-color: transparent; color: white"
+          style="background-color: transparent; color: whitesmoke"
           class="ml-1"
           height="25"
           flat

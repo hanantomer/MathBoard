@@ -54,7 +54,7 @@ import { useEditModeStore } from "../store/pinia/editModeStore";
 import {
   LinePosition,
   DotPosition,
-  horizontalCellSpace,
+  cellSpace,
 } from "../../../math-common/src/globals";
 import {
   LineAttributes,
@@ -147,16 +147,17 @@ function onLineSelected(lineNotation: LineNotationAttributes) {
   linePosition.value.x1 =
     svgDimensions.value.left +
     lineNotation.fromCol *
-      (notationStore.getCellHorizontalWidth() + horizontalCellSpace);
+      (notationStore.getCellHorizontalWidth() + cellSpace);
 
   linePosition.value.x2 =
     svgDimensions.value.left +
     (lineNotation.toCol -1) *
-      (notationStore.getCellHorizontalWidth() + horizontalCellSpace);
+      (notationStore.getCellHorizontalWidth() + cellSpace);
 
   linePosition.value.y =
     svgDimensions.value.top +
-    lineNotation.row * notationStore.getCellVerticalHeight();
+    lineNotation.row *
+    (notationStore.getCellVerticalHeight() + cellSpace);
 
   notationStore.selectNotation(lineNotation.uuid);
 
@@ -246,17 +247,17 @@ function endDrawLine() {
 
   let fromCol = Math.round(
     (linePosition.value.x1 - svgDimensions.value.left) /
-      (notationStore.getCellHorizontalWidth() + horizontalCellSpace),
+      (notationStore.getCellHorizontalWidth() + cellSpace),
   );
 
   let toCol = Math.round(
     (linePosition.value.x2 - svgDimensions.value.left) /
-      (notationStore.getCellHorizontalWidth()+ horizontalCellSpace),
+      (notationStore.getCellHorizontalWidth()+ cellSpace),
   );
 
   let row = Math.round(
     (linePosition.value.y - svgDimensions.value.top) /
-      notationStore.getCellVerticalHeight(),
+      (notationStore.getCellVerticalHeight() + cellSpace),
   );
 
   let lineAttributes: LineAttributes = {
@@ -265,14 +266,8 @@ function endDrawLine() {
     row: row,
   };
 
-  //if (selectedLine) selectedLine = { ...selectedLine, ...lineAttributes };
-
   saveLine(lineAttributes);
   editModeStore.resetEditMode();
-  // if (selectedLine) {
-  //   notationStore.getHiddenLineElement()!.style.display = "block";
-  //   selectedLine = null;
-  // }
 }
 
 function saveLine(lineAttributes: LineAttributes) {
@@ -291,9 +286,9 @@ function resetLineDrawing() {
 
 function getNearestRow(clickedYPos: number) {
   let clickedRow = Math.round(
-    clickedYPos / notationStore.getCellVerticalHeight(),
+    clickedYPos / (notationStore.getCellVerticalHeight() + cellSpace),
   );
-  return clickedRow * notationStore.getCellVerticalHeight();
+  return clickedRow * (notationStore.getCellVerticalHeight() + cellSpace);
 }
 </script>
 

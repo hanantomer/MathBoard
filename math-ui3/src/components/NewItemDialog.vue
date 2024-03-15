@@ -1,6 +1,12 @@
 <template>
   <v-row justify="center">
-    <v-dialog v-model="show" persistent max-width="400px" min-height="400x">
+    <v-dialog
+      v-model="show"
+      max-width="400px"
+      min-height="400x"
+      transition="dialog-bottom-transition"
+      persistent
+    >
       <v-form @submit.prevent="save">
         <v-card>
           <v-card-title class="headline">
@@ -23,6 +29,13 @@
           </v-card-text>
           <v-card-actions>
             <v-spacer></v-spacer>
+            <v-btn
+              data-cy="button-close"
+              color="blue darken-1"
+              v-on:click="close"
+            >
+              Close
+            </v-btn>
             <v-btn data-cy="button-save" color="blue darken-1" type="submit">
               Save
             </v-btn>
@@ -35,8 +48,10 @@
 
 <script setup lang="ts">
 import { ref, watch } from "vue";
-import useEventBus from "../helpers/eventBusHelper";
-const eventBus = useEventBus();
+
+
+const emit = defineEmits(["close", "save"]);
+
 let show = ref(false);
 
 const props = defineProps({
@@ -58,6 +73,11 @@ watch(
 
 let name = ref("");
 function save() {
-  eventBus.emit("newItemSave", name.value);
+  emit("save", name.value);
 }
+
+function close() {
+  emit("close");
+}
+
 </script>

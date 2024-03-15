@@ -4,13 +4,13 @@
   <v-row>
     <slot name="title"></slot>
   </v-row>
-  <v-row align="start" class="fill-height" no-gutters>
+  <v-row align="start" class="fill-heigh" no-gutters>
     <div style="display: flex; flex-direction: row">
       <v-sheet class="mt-14 ml-1">
         <toolbar></toolbar>
       </v-sheet>
       <div style="display: flex; flex-direction: column">
-        <v-sheet class="mt-10 ml-8">
+        <v-sheet class="mt-10 ml-8 overflow-auto">
           <v-progress-linear
             v-show="pBar"
             color="deep-purple-accent-4"
@@ -19,7 +19,7 @@
             height="6"
           ></v-progress-linear>
 
-          <svg v-bind:id="svgId" x="0" y="0" width="1600" height="760"></svg>
+          <svg v-bind:id="svgId" width="1600" height="760"></svg>
         </v-sheet>
         <v-sheet class="ml-auto mr-auto">
           <editingToolbar></editingToolbar>
@@ -264,6 +264,10 @@ function handleMouseDown(e: MouseEvent) {
 </script>
 
 <style>
+
+html {
+  overflow: auto;
+}
 .activestudent {
   border: 2px dashed rgb(143, 26, 179);
 }

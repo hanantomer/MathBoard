@@ -11,7 +11,7 @@ import { ColorizedCell, SelectedCell } from "common/baseTypes";
 import * as d3 from "d3";
 import { useNotationStore } from "../store/pinia/notationStore";
 
-import { horizontalCellSpace } from "common/globals";
+import { cellSpace } from "common/globals";
 
 import {
   NotationAttributes,
@@ -137,9 +137,8 @@ export default function useMatrixHelper() {
       })
       .lower()
       .attr("transform", (d, i) => {
-        return (
-          "translate(0, " + notationStore.getCellVerticalHeight() * i + ")"
-        );
+        let y = (notationStore.getCellVerticalHeight() + cellSpace) * i;
+        return "translate(0, " + y + ")";
       })
       .selectAll("cell")
       .data((r) => r)
@@ -153,9 +152,7 @@ export default function useMatrixHelper() {
         return i;
       })
       .attr("x", (d, i) => {
-        return (
-          i * (notationStore.getCellHorizontalWidth() + horizontalCellSpace)
-        );
+        return i * (notationStore.getCellHorizontalWidth() + cellSpace);
       })
       .attr("width", notationStore.getCellHorizontalWidth())
       .attr("height", notationStore.getCellVerticalHeight());
@@ -281,7 +278,6 @@ export default function useMatrixHelper() {
     return null;
   }
 
-  /// TODO: treat notation types divertly
   function addNotations(enter: any, el: HTMLElement) {
     return enter
       .append("foreignObject")
@@ -411,7 +407,7 @@ export default function useMatrixHelper() {
       n.notationType === "FRACTION" ||
       n.notationType === "SQRT" ||
       n.notationType === "SQRTSYMBOL"
-        ? -4
+        ? -5
         : 0;
 
     return getNotationYposByRow(rowIdx) + deltaY;
@@ -419,7 +415,7 @@ export default function useMatrixHelper() {
 
   function width(n: NotationAttributes): number | null {
     if (n.notationType === "SQRTSYMBOL") {
-      return notationStore.getCellHorizontalWidth() * 2;
+      return (notationStore.getCellHorizontalWidth() + cellSpace) * 2;
     }
 
     switch (NotationTypeShape.get(n.notationType)) {
@@ -441,7 +437,10 @@ export default function useMatrixHelper() {
   }
 
   function lineNotationWidth(n: LineAttributes): number {
-    return (n.toCol - n.fromCol) * notationStore.getCellHorizontalWidth() + 5;
+    return (
+      (n.toCol - n.fromCol) *
+      (notationStore.getCellHorizontalWidth() + cellSpace)
+    );
   }
 
   function rectNotationWidth(n: RectAttributes): number {
@@ -452,7 +451,8 @@ export default function useMatrixHelper() {
     //   );
     // }
     return (
-      (n.toCol - n.fromCol + 1) * notationStore.getCellHorizontalWidth() + 5
+      (n.toCol - n.fromCol + 1) *
+      (notationStore.getCellHorizontalWidth() + cellSpace)
     );
   }
 
@@ -495,14 +495,17 @@ export default function useMatrixHelper() {
     if (n.notationType === "FRACTION") {
       let n1 = n as LineNotationAttributes;
       return `<span class=line style='color:${color};width:${
-        (n1.toCol - n1.fromCol) * notationStore.getCellHorizontalWidth()
+        (n1.toCol - n1.fromCol) *
+        (notationStore.getCellHorizontalWidth() + cellSpace)
       }px;'></span>`;
     }
 
     if (n.notationType === "SQRT") {
       let n1 = n as LineNotationAttributes;
       return `<span class=line style='color:${color};position:relative;left:9px;width:${
-        (n1.toCol - n1.fromCol) * notationStore.getCellHorizontalWidth() - 8
+        (n1.toCol - n1.fromCol) *
+          (notationStore.getCellHorizontalWidth() + cellSpace) -
+        8
       }px;'></span>`;
     }
 
@@ -541,7 +544,7 @@ export default function useMatrixHelper() {
   }
 
   function getNotationYposByRow(row: number): number {
-    return row * notationStore.getCellVerticalHeight();
+    return row * (notationStore.getCellVerticalHeight() + cellSpace);
   }
 
   function colorizeCell(svgId: string, cell: PointAttributes, color: string) {

@@ -53,7 +53,7 @@ let headers = computed(() => [
     key: "student",
   },
   {
-    title: "Created At",
+    title: "Created on",
     key: "createdAt",
   },
 ]);

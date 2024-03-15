@@ -108,7 +108,7 @@ const headers = computed(() => [
     sortable: false,
   },
   {
-    title: "Created At",
+    title: "Created on",
     key: "createdAt",
     sortable: false,
   },

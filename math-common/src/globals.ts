@@ -5,7 +5,7 @@ export const matrixDimensions = {
   colsNum: 96,
 };
 
-export const horizontalCellSpace = 1;
+export const cellSpace = 1;
 
 export const signList = ["=", "+", "-", "*", "/", "\\", "(", ")", "[", "]"];
 

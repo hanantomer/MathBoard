@@ -1,6 +1,6 @@
 import {
   DotPosition,
-  horizontalCellSpace,
+  cellSpace,
 } from "../../../math-common/src/globals";
 import { PointAttributes } from "../../../math-common/src/baseTypes";
 import { useNotationStore } from "../store/pinia/notationStore";
@@ -19,12 +19,12 @@ export default function elementFinderHelper() {
 
     const clickedCellCol = Math.floor(
       (dotPosition.x - boundingRect!.left) /
-        (notationStore.getCellHorizontalWidth() + horizontalCellSpace),
+        (notationStore.getCellHorizontalWidth() + cellSpace),
     );
 
     const clickedCellRow = Math.floor(
       (dotPosition.y - boundingRect!.top) /
-        notationStore.getCellVerticalHeight(),
+        (notationStore.getCellVerticalHeight() + cellSpace),
     );
 
     return { col: clickedCellCol, row: clickedCellRow };

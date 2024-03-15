@@ -3,14 +3,25 @@
     <NewItemDialog
       :dialog="lessonDialog"
       :title="lessonDialogTitle"
+      @close="lessonDialog = false"
+      @save="addLesson"
     ></NewItemDialog>
     <v-card class="mx-auto mt-4" max-width="800" min-height="600">
       <v-toolbar color="primary" dark>
         <v-toolbar-title>{{ title }}</v-toolbar-title>
         <v-spacer></v-spacer>
-        <v-btn icon v-on:click="openLessonDialog" v-show="userStore.isTeacher()">
-          <v-icon>mdi-plus</v-icon>
-        </v-btn>
+        <v-tooltip text="Create a new lesson" location="bottom">
+          <template v-slot:activator="{ props }">
+            <v-btn
+              icon
+              v-on:click="openLessonDialog"
+              v-show="userStore.isTeacher()"
+              v-bind="props"
+            >
+              <v-icon>mdi-plus</v-icon>
+            </v-btn>
+          </template>
+        </v-tooltip>
       </v-toolbar>
       <v-data-table
         v-model:items-per-page="itemsPerPage"
@@ -31,10 +42,8 @@ import { formatDate } from "../../../math-common/src/globals";
 import { LessonAttributes } from "../../../math-common/src/lessonTypes";
 import { useUserStore } from "../store/pinia/userStore";
 import { useLessonStore } from "../store/pinia/lessonStore";
-import { ref, computed, watch, onMounted } from "vue";
+import { ref, computed, onMounted } from "vue";
 import { useRouter } from "vue-router";
-import useEventBus from "../helpers/eventBusHelper";
-const eventBus = useEventBus();
 const router = useRouter();
 const userStore = useUserStore();
 const lessonStore = useLessonStore();
@@ -44,21 +53,10 @@ const title = computed(() => {
 let lessonDialog = ref(false);
 let lessonDialogTitle =
   "<span>Please specify <strong>lesson</strong> title</span";
-let search = ref("");
-const menu = [
-  { icon: "plus", title: "Add" },
-  //{ icon: "remove", title: "Remove" },
-];
+const menu = [{ icon: "plus", title: "Add" }];
 let itemsPerPage = 10;
 
 onMounted(() => lessonStore.loadLessons());
-
-watch(
-  () => eventBus.bus.value.get("newItemSave"),
-  (val: string) => {
-    addLesson(val);
-  },
-);
 
 const headers = computed(() => [
   {
@@ -67,7 +65,7 @@ const headers = computed(() => [
     sortable: false,
   },
   {
-    title: "Created At",
+    title: "Created on",
     key: "createdAt",
     sortable: false,
   },
@@ -85,13 +83,6 @@ const lessons = computed(() => {
   );
   return rows;
 });
-
-async function loadLessons() {
-  await lessonStore.loadLessons();
-  if (userStore.isTeacher() && lessonStore.getLessons().size === 0) {
-    openLessonDialog();
-  }
-}
 
 function openLessonDialog() {
   lessonDialog.value = true;

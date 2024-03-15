@@ -11,7 +11,7 @@ var transporter = createTransport({
     service: "gmail",
     auth: {
         user: "mathboard16@gmail.com",
-        pass: "mermer1!", ///TODO use env
+        pass: "uhte keto xhzb fiuz",
     },
 });
 
@@ -93,7 +93,7 @@ app.post(
         let mailOptions = {
             from: req.body.email,
             to: "mathboard16@gmail.com",
-            subject: "Message from:" + req.body.name,
+            subject: "Message from:" + req.body.name + ":" + req.body.email,
             text: req.body.message,
         };
         transporter.sendMail(mailOptions, function (error, info) {

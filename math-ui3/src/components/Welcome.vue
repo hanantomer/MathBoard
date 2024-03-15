@@ -10,7 +10,18 @@
             <h3>Teach MATH online with Mathboard</h3>
           </v-card-title>
           <v-card-actions class="justify-center">
-            <v-btn color="orange" v-on:click="login">Get Started</v-btn>
+            <v-btn
+              v-if="!userStore.getCurrentUser()"
+              color="orange"
+              v-on:click="login"
+              >Get Started</v-btn
+            >
+            <v-btn
+              v-if="userStore.getCurrentUser()"
+              color="orange"
+              v-on:click="navToLessons"
+              >Open or create a lesson</v-btn
+            >
           </v-card-actions>
         </v-card>
         <v-card flat class="justify-center">
@@ -41,38 +52,12 @@ const props = defineProps({
   login: Boolean,
 });
 
-// onMounted(() => {
-//   if (props.login) {
-//     showLoginDialog.value = true;
-//   }
-// });
-
-// watch(
-//   route,
-//   (to) => {
-//     showLoginDialog.value = false;
-//     if (props.login) {
-//       showLoginDialog.value = true;
-//     }
-//   },
-//   { flush: "pre", immediate: true, deep: true },
-// );
-
-// login via button
-//watch(() => eventBus.bus.value.get("login"), () => {
-//  showLoginDialog.value = true;
-//});
-
-// watch(
-//   () => eventBus.bus.value.get("register"),
-//   () => {
-//     showLoginDialog.value = false;
-//     showRegisterDialog.value = true;
-//   },
-// );
-
 function login() {
   router.push("/login");
+}
+
+function navToLessons() {
+  router.push("/lessons");
 }
 
 function register() {

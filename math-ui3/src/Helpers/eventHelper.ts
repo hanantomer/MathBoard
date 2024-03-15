@@ -1,7 +1,7 @@
 import { useUserStore } from "../store/pinia/userStore";
 import { useEditModeStore } from "../store/pinia/editModeStore";
 import { useNotationStore } from "../store/pinia/notationStore";
-import { horizontalCellSpace } from "common/globals";
+import { cellSpace } from "common/globals";
 
 import useMatrixHelper from "./matrixHelper";
 import useNotationMutationHelper from "./notationMutateHelper";
@@ -224,17 +224,15 @@ export default function eventHelper() {
     const svgBounds = document.getElementById(svgId)?.getBoundingClientRect()!;
 
     // select a notation occupied by selected cell
-    selectionHelper.selectNotationAtPosition(
-      svgId,
-      {
+    selectionHelper.selectNotationAtPosition(svgId, {
       x:
         svgBounds.left +
         notationStore.getSelectedCell()?.col! *
-          (notationStore.getCellHorizontalWidth() + horizontalCellSpace),
+          (notationStore.getCellHorizontalWidth() + cellSpace),
       y:
         svgBounds.left +
         notationStore.getSelectedCell()?.row! *
-          notationStore.getCellVerticalHeight(),
+          (notationStore.getCellVerticalHeight() + cellSpace),
     });
   }
 

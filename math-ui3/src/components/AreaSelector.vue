@@ -23,7 +23,7 @@ import * as d3 from "d3";
 import useNotationMutateHelper from "../helpers/notationMutateHelper";
 import useEventBus from "../helpers/eventBusHelper";
 import { NotationTypeShape, MoveDirection } from "common/unions";
-import { horizontalCellSpace } from "common/globals";
+import { cellSpace } from "common/globals";
 
 const eventBus = useEventBus();
 const editModeStore = useEditModeStore();
@@ -149,16 +149,13 @@ async function moveSelectionByKey(
   moveVertical: number,
 ) {
   selectionPosition.value.x1 +=
-    moveHorizontal *
-    (notationStore.getCellHorizontalWidth() + horizontalCellSpace);
+    moveHorizontal * (notationStore.getCellHorizontalWidth() + cellSpace);
   selectionPosition.value.y1 +=
-    moveVertical *
-    (notationStore.getCellVerticalHeight() + horizontalCellSpace);
+    moveVertical * (notationStore.getCellVerticalHeight() + cellSpace);
   selectionPosition.value.x2 +=
-    moveHorizontal *
-    (notationStore.getCellHorizontalWidth() + horizontalCellSpace);
+    moveHorizontal * (notationStore.getCellHorizontalWidth() + cellSpace);
   selectionPosition.value.y2 +=
-    moveVertical * notationStore.getCellVerticalHeight();
+    moveVertical * notationStore.getCellVerticalHeight() + cellSpace;
 }
 
 function handleMouseMove(e: MouseEvent) {
@@ -229,7 +226,6 @@ function updateSelectionArea(e: MouseEvent) {
 
   selectionPosition.value.x2 = e.clientX;
   selectionPosition.value.y2 = e.clientY;
-
 }
 
 function endSelect() {
@@ -255,21 +251,19 @@ function endSelect() {
 
         if (
           selectionRectLeft.value <=
-            (notationStore.getCellHorizontalWidth() + horizontalCellSpace) *
-              col +
+            (notationStore.getCellHorizontalWidth() + cellSpace) * col +
               x_gutter +
               svgDimensions.value.x &&
           selectionRectLeft.value + selectionRectWidth.value >=
-            (notationStore.getCellHorizontalWidth() + horizontalCellSpace) *
-              (col + 1) -
+            (notationStore.getCellHorizontalWidth() + cellSpace) * (col + 1) -
               x_gutter +
               svgDimensions.value.x &&
           selectionRectTop.value <=
-            notationStore.getCellVerticalHeight() * row +
+            (notationStore.getCellVerticalHeight() + cellSpace) * row +
               y_gutter +
               svgDimensions.value.y &&
           selectionRectTop.value + selectionRectHeight.value >=
-            notationStore.getCellVerticalHeight() * (row + 1) -
+            (notationStore.getCellVerticalHeight() + cellSpace) * (row + 1) -
               y_gutter +
               svgDimensions.value.y
         ) {
@@ -290,36 +284,38 @@ function moveSelection(e: MouseEvent) {
   // movement is still too small
   if (
     Math.abs(e.clientX - svgDimensions.value.x - dragPosition.value.x) <
-      notationStore.getCellHorizontalWidth() + horizontalCellSpace &&
+      notationStore.getCellHorizontalWidth() + cellSpace &&
     Math.abs(e.clientY - svgDimensions.value.y - dragPosition.value.y) <
-      notationStore.getCellVerticalHeight()
+      notationStore.getCellVerticalHeight() + cellSpace
   ) {
     return;
   }
 
   const rectDeltaX = Math.round(
     (e.clientX - svgDimensions.value.x - dragPosition.value.x) /
-      (notationStore.getCellHorizontalWidth() + horizontalCellSpace),
+      (notationStore.getCellHorizontalWidth() + cellSpace),
   );
 
   const rectDeltaY = Math.round(
     (e.clientY - svgDimensions.value.y - dragPosition.value.y) /
-      notationStore.getCellVerticalHeight(),
+      (notationStore.getCellVerticalHeight() + cellSpace),
   );
 
   if (rectDeltaX != 0 || rectDeltaY != 0) {
-    notationMutateHelper.moveSelectedNotations(rectDeltaX, rectDeltaY, e.ctrlKey);
+    notationMutateHelper.moveSelectedNotations(
+      rectDeltaX,
+      rectDeltaY,
+      e.ctrlKey,
+    );
 
     selectionPosition.value.x1 +=
-      rectDeltaX *
-      (notationStore.getCellHorizontalWidth() + horizontalCellSpace);
+      rectDeltaX * (notationStore.getCellHorizontalWidth() + cellSpace);
     selectionPosition.value.y1 +=
-      rectDeltaY * notationStore.getCellVerticalHeight();
+      rectDeltaY * (notationStore.getCellVerticalHeight() + cellSpace);
     selectionPosition.value.x2 +=
-      rectDeltaX *
-      (notationStore.getCellHorizontalWidth() + horizontalCellSpace);
+      rectDeltaX * (notationStore.getCellHorizontalWidth() + cellSpace);
     selectionPosition.value.y2 +=
-      rectDeltaY * notationStore.getCellVerticalHeight();
+      rectDeltaY * (notationStore.getCellVerticalHeight() + cellSpace);
 
     dragPosition.value.x = e.clientX - svgDimensions.value.x;
     dragPosition.value.y = e.clientY - svgDimensions.value.y;
@@ -341,7 +337,6 @@ async function endMoveSelection(e: MouseEvent) {
       : "LEFT";
 
   await notationMutateHelper.saveMovedNotations(moveDirection);
-
   notationStore.resetSelectedNotations();
   resetSelection();
 }
