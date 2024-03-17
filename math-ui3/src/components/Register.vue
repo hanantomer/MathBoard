@@ -218,6 +218,7 @@
           <v-row v-show="userType == 'TEACHER'">
             <v-col class="d-flex" cols="12" align-end>
               <v-checkbox
+                data-cy="register_accept_terms"
                 v-model="acceptedTerms"
                 label="I accept the above terms and condtions."
               >
