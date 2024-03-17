@@ -88,18 +88,7 @@ router.beforeEach(async (to, from) => {
     return;
   }
 
-  //if (userStore.getCurrentUser().uuid) {
-  // already authenticated
-  //return;
-  //}
-
   return { path: "/login", query: { from: to.path } };
-
-  //next({
-  //  query: { from: window.location.pathname },
-  //  path: "/login",
-  //});
-  //}
 
   /*
 

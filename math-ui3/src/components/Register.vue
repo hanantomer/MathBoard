@@ -277,15 +277,18 @@ const emit = defineEmits(["registered"]);
 
 let userType = ref<UserType>("TEACHER");
 
+let redirectAfterLogin: string = "";
+
 let registrationTitle = computed(() =>
   userType.value == "TEACHER" ? "Teacher Registration" : "Student Registration",
 );
 
 watch(
   route,
-  (to) => {
-    if (to.name === "register") {
-      userType.value = (to.query.userType?.toString() as UserType) || "STUDENT";
+  (params) => {
+    if (params.name === "register") {
+      redirectAfterLogin = params.query?.from?.toString() || "";
+      userType.value = redirectAfterLogin ? "STUDENT" : "TEACHER";
       show.value = true;
     }
   },
@@ -305,7 +308,7 @@ async function register() {
 
     registerForm.value = null;
     show.value = false;
-    emit("registered");
+    emit("registered", redirectAfterLogin);
   }
 }
 </script>

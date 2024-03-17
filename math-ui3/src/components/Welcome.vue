@@ -52,18 +52,21 @@ const props = defineProps({
   login: Boolean,
 });
 
-function login() {
-  router.push("/login");
+function login(redirectAfterLogin: string) {
+  router.push({
+    name: "login",
+    query: { from: redirectAfterLogin },
+  });
 }
 
 function navToLessons() {
   router.push("/lessons");
 }
 
-function register() {
+function register(redirectAfterLogin: string) {
   router.push({
     name: "register",
-    query: { userType: userStore.getCurrentUser()?.userType },
+    query: { from: redirectAfterLogin },
   });
 }
 

@@ -93,6 +93,8 @@ let valid = true;
 let password = ref<string>();
 let email = ref<string>();
 
+let redirectAfterLogin: string = "";
+
 let rules = {
   required: (value: string) => !!value || "Required.",
   min: (v: string) => (v && v.length >= 8) || "Min 8 characters",
@@ -119,9 +121,10 @@ const emit = defineEmits(["register"]);
 
 watch(
   route,
-  (to) => {
-    if (to.name === "login") {
+  (params) => {
+    if (params.name === "login") {
       show.value = true;
+      redirectAfterLogin = params.query?.from?.toString() || "";
     }
   },
   { flush: "pre", immediate: true },
@@ -129,7 +132,7 @@ watch(
 
 function register() {
   show.value = false;
-  emit("register");
+  emit("register", redirectAfterLogin);
 }
 
 //mounted() {
@@ -185,7 +188,6 @@ async function validateLogin() {
   }
 
   show.value = false;
-  //router.push({ path: "/lessons" });
 }
 </script>
 <style>
