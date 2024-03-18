@@ -436,7 +436,7 @@ const errorHandler = (
     res: Response,
     next: NextFunction
 ) => {
-    console.error(err);
+    console.error("unhandled error:" + err);
     res.status(500).send({ errors: [{ message: "Something went wrong" }] });
 };
 
@@ -448,7 +448,8 @@ connection.sequelize.sync({ force: forceDbCreate }).then(() => {
     const port = Number(process.env.API_PORT) || 17030;  
     app.listen(port, () => {
          console.log("listening to port localhost:" + port);
-    }).on("error", (e) => {
+    })
+    .on("error", (e) => {
         console.log("Error: ", e.message);
     });
 });

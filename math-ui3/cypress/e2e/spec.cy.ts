@@ -3,6 +3,7 @@ import type {} from "cypress";
 describe("e2e", () => {
   before(function () {});
   it("e2e", () => {
+    cy.clearCookies();
     cy.visit("http://localhost:13035");
     cy.get(".mdi-account").click({ multiple: true });
     cy.get('[data-cy="register"] > .v-btn__content').click();
@@ -20,5 +21,12 @@ describe("e2e", () => {
     cy.get(".mdi-plus").click();
     cy.focused().type("test lesson");
     cy.get('[data-cy="button-save"] > .v-btn__content').click();
+    cy.get('[row="0"] > [col="0"]')
+      .click()
+      .should("have.css", "stroke")
+      .and("include", "rgb(255, 0, 0)");
+    cy.get('[row="0"] > [col="1"]')
+      .should("have.css", "stroke")
+      .and("include", "rgb(211, 211, 211)");
   });
 });

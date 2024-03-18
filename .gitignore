@@ -7,3 +7,9 @@ math-ui/yarn.lock
 math-ui/package-lock.json
 math-server/math.db
 **/build
+math-auth/tsconfig.tsbuildinfo
+math-common/tsconfig.tsbuildinfo
+math-db/tsconfig.tsbuildinfo
+math-server/math.db
+math-server/mathTest.db
+math-server/tsconfig.tsbuildinfo
