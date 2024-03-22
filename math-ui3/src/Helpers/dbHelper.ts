@@ -48,7 +48,7 @@ export default function useDbHelper() {
   }
   // token is taken from cookie. see interceptor in axiosHelper
   async function authLocalUserByToken(): Promise<UserAttributes | undefined> {
-    const res = await axios.get<UserAttributes>(baseURL + "/users");
+    const res = await axios.get<UserAttributes>(baseURL + "/auth");
     return res?.data;
   }
 
@@ -56,8 +56,8 @@ export default function useDbHelper() {
     email: string,
     password: string,
   ): Promise<UserAttributes | null> {
-    const res = await axios.get<UserAttributes>(
-      baseURL + `/users?email=${email}&password=${password}`,
+    const res = await axios.post<UserAttributes>(
+      baseURL + `/auth`, {email:email, password:password}
     );
     return res?.data;
   }

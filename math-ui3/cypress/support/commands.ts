@@ -35,3 +35,26 @@
 //     }
 //   }
 // }
+
+
+
+
+declare namespace Cypress {
+  interface Chainable {
+    /**
+     * Custom command to select DOM element by data-cy attribute.
+     * @example cy.dataCy('greeting')
+     */
+    dataCy(value: string): Chainable<JQuery>;
+    login();
+  }
+}
+
+Cypress.Commands.add("dataCy", (value: string) => cy.get(`[data-cy="${value}"]`));
+
+
+Cypress.Commands.add("login", () => {
+  cy.dataCy("login_email").type("hanantomer@gmail.com");
+  cy.dataCy("login_password").type("12345678");
+  cy.get('[data-cy="login"] > .v-btn__content').click();
+});

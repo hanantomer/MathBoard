@@ -4,8 +4,6 @@ import {
     DataType,
     BelongsTo,
     AllowNull,
-    Unique,
-    Index,
 } from "sequelize-typescript";
 import BoardDecorator from "../boardDecorator";
 import User from "../user.model";

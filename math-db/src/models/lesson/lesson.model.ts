@@ -1,4 +1,11 @@
-import { Model, Column, DataType, BelongsTo, ForeignKey, AllowNull } from "sequelize-typescript";
+import {
+    ForeignKey,
+    Model,
+    Column,
+    DataType,
+    BelongsTo,
+    AllowNull,
+} from "sequelize-typescript";
 import BoardDecorator from "../boardDecorator";
 import  User  from "../user.model";
 import {
@@ -13,7 +20,14 @@ export default class Lesson extends Model<
     LessonAttributes,
     LessonCreationAttributes
 > {
-    @BelongsTo(() => User, "userId")
+    @ForeignKey(() => User)
+    userId!: number;
+
+    @BelongsTo(() => User, {
+        foreignKey: {
+            allowNull: false,
+        },
+    })
     user!: User;
 
     @AllowNull(false)

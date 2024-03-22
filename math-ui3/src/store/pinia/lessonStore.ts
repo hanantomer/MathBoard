@@ -41,11 +41,13 @@ export const useLessonStore = defineStore("lesson", () => {
 
     if (userStore.isTeacher()) {
       const lessonsFromDB = await db.getTeacherLessons(userUUId);
+      if (!lessonsFromDB) return;
       lessonsFromDB.forEach((l: LessonAttributes) => {
         lessons.value.set(l.uuid, l);
       });
     } else {
       const studentLessonsFromDB = await db.getStudentLessons(userUUId);
+      if (!studentLessonsFromDB) return;
       studentLessonsFromDB.forEach((sl: StudentLessonAttributes) => {
         lessons.value.set(sl.lesson.uuid, sl.lesson);
       });

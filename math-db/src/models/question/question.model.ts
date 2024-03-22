@@ -1,4 +1,11 @@
-import { Model, Column, DataType, BelongsTo, AllowNull } from "sequelize-typescript";
+import {
+    Model,
+    Column,
+    DataType,
+    BelongsTo,
+    ForeignKey,
+    AllowNull,
+} from "sequelize-typescript";
 import BoardDecorator from "../boardDecorator";
 import User from "../user.model";
 import Lesson from "../lesson/lesson.model";
@@ -7,16 +14,23 @@ import {
     QuestionCreationAttributes,
 } from "../../../../math-common/src/questionTypes";
 
-
 @BoardDecorator("question")
 export default class Question extends Model<
     QuestionAttributes,
     QuestionCreationAttributes
 > {
+    @ForeignKey(() => User)
+    userId!: number;
+
     @BelongsTo(() => User, {
-        foreignKey: { name: "userId", field: "userId", allowNull: false },
+        foreignKey: {
+            allowNull: false,
+        },
     })
     user!: User;
+
+    @ForeignKey(() => Lesson)
+    lessonId!: number;
 
     @BelongsTo(() => Lesson, {
         foreignKey: { name: "lessonId", field: "lessonId", allowNull: false },

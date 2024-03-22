@@ -38,7 +38,7 @@ app.use(
 
 async function auth(req: Request, res: Response, next: NextFunction) {
     // omit authorization enforcement when signing in
-    if (req.method === "GET" && req.url.indexOf("/api/users?email") == 0) {
+    if (req.method === "POST" && req.url.indexOf("/api/auth") == 0) {
         next();
     }
 
@@ -78,8 +78,8 @@ async function validateHeaderAuthentication(req: Request, res: Response, next: N
         return false;
     }
     
-    if (req.url.indexOf("/api/users") == 0) {
-        res.set("user", JSON.stringify(user));
+    if (req.url.indexOf("/api/auth") == 0) {
+        res.status(200).json(user);
     }
 
     req.headers.userId = user?.id?.toString();
@@ -107,19 +107,21 @@ app.post(
         });
     });
 
-app.get(
-    "/api/users",
-    async (req: Request, res: Response, next: NextFunction): Promise<Response | undefined> => {
-        // token already validate by interceptor. see validateHeaderAuthentication
-        //if (req.headers.authorization) {
-        //    return res.status(200);
-        //}
-        // by email/password
-        const { email, password } = req.query;
 
+app.post(
+    "/api/auth",
+    async (
+        req: Request,
+        res: Response,
+        next: NextFunction
+    ): Promise<Response | undefined> => {
+        // by token - already validated by auth interceptor
         if (req.headers.userId) {
-            return res.status(200).send(res.get("user"));
+            return;
         }
+
+        // by email/password
+        const { email, password } = req.body;
 
         if (!email || !password) {
             return res.status(401).json("missing user or password");
@@ -134,11 +136,9 @@ app.get(
                 return res.status(401).json("invalid user or password");
             }
             return res.status(200).json(user);
-        }
-        catch (err) {
+        } catch (err) {
             next(err);
         }
-        
     }
 );
 
@@ -157,6 +157,22 @@ app.post(
         }
     }
 );
+
+app.get(
+    "/api/auth",
+    async (
+        req: Request,
+        res: Response,
+        next: NextFunction
+    ): Promise<Response | undefined> => {
+        try {
+            return res.status(200).json(res.get("user"));
+        } catch (error) {
+            next(error);
+        }
+    }
+);
+
 
 // student
 app.get("/api/students", async (req: Request, res: Response, next: NextFunction): Promise<Response | undefined> => {
