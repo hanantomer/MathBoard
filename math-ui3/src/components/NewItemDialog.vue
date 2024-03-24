@@ -17,6 +17,7 @@
               <v-row>
                 <v-col cols="12">
                   <v-text-field
+                    data-cy="newItemName"
                     autofocus
                     v-model="name"
                     label="name*"

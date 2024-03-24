@@ -8,8 +8,7 @@ describe("e2e", () => {
     cy.login();
     cy.get('[data-cy="lessons"] > .v-btn__content').click();
     cy.get(".mdi-plus").click();
-    cy.focused().type("test lesson");
+    cy.dataCy("newItemName").type("test lesson");
     cy.get('[data-cy="button-save"] > .v-btn__content').click();
-    
   });
 });
