@@ -49,6 +49,7 @@
     <v-tooltip text="Draw fraction line">
       <template v-slot:activator="{ props }">
         <v-btn
+          data-cy="fraction"
           v-bind="props"
           icon
           :color="fractionButtonActive ? 'white' : 'yellow'"

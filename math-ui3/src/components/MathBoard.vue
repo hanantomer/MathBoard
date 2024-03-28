@@ -1,5 +1,4 @@
 <template>
-  <lineDrawer :svgId="svgId"></lineDrawer>
   <areaSelector :svgId="svgId"></areaSelector>
   <v-row>
     <slot name="title"></slot>
@@ -19,6 +18,7 @@
             height="6"
           ></v-progress-linear>
 
+          <lineDrawer :svgId="svgId"></lineDrawer>
           <svg v-bind:id="svgId" width="1600" height="760"></svg>
         </v-sheet>
         <v-sheet class="ml-auto mr-auto">
@@ -264,7 +264,6 @@ function handleMouseDown(e: MouseEvent) {
 </script>
 
 <style>
-
 html {
   overflow: auto;
 }

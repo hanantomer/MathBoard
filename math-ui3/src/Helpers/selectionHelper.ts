@@ -1,7 +1,7 @@
-import { NotationType, NotationTypeShape } from "common/unions";
+import { NotationTypeShape } from "common/unions";
 import { useNotationStore } from "../store/pinia/notationStore";
 import { DotPosition } from "common/globals";
-import { PointAttributes, NotationAttributes } from "common/baseTypes";
+import { NotationAttributes } from "common/baseTypes";
 import useElementFinderHelper from "./elementFinderHelper";
 import useNotationMutateHelper from "./notationMutateHelper";
 import useUserOutgoingOperationsHelper from "./userOutgoingOperationsHelper";
@@ -16,56 +16,13 @@ const userOutgoingOperationsHelper = useUserOutgoingOperationsHelper();
 const lessonStore = useLessonStore();
 const editModeStore = useEditModeStore();
 
-///TODO : split function to shorter blocks
 export default function selectionHelper() {
-  // called via mouse click
-  //function selectNotationAtClickedPosition(position: DotPosition) {
-  //  notationStore.resetSelectedNotations();
-
-  //const selectedNotation =
-  //  return selectNotationAtPosition(position);
-  // if (
-  //   selectedNotation &&
-  //   NotationTypeShape.get(selectedNotation.notationType) !== "POINT"
-  // ) {
-  //   return;
-  // }
-  //}
 
   function selectNotationAtPosition(
     svgId: string,
     position: DotPosition,
   ): NotationAttributes | null {
     notationStore.resetSelectedNotations();
-    /*
-    const el = elementFinderHelper.findClickedNotation(
-      {
-        x: position.x,
-        y: position.y,
-      },
-      "foreignObject",
-      null,
-    );
-    if (!el) {
-      return null;
-    }
-
-    const notationType: NotationType =
-      elementFinderHelper.getElementAttributeValue(
-        el,
-        "notationType",
-      ) as NotationType;
-
-    const uuid: string = elementFinderHelper.getElementAttributeValue(
-      el,
-      "uuid",
-    ) as string;
-
-    const notation = notationStore.getNotation(uuid);
-    if (!notation) {
-      console.warn(`notation with uuid: ${uuid} not found`);
-      return null;
-    }*/
 
     const notation = elementFinderHelper.findClickedNotation(svgId, position);
 
@@ -93,8 +50,6 @@ export default function selectionHelper() {
     if (notationMutateHelper.isNotationInQuestionArea(activeNotation, 0, 0))
       return;
 
-    //editModeStore.setEditMode("AREA_SELECTED");
-
     notationStore.selectNotation(activeNotation?.uuid);
   }
 
@@ -115,24 +70,6 @@ export default function selectionHelper() {
   async function selectCell(svgId: string, position: DotPosition) {
     let clickedCell = elementFinderHelper.findClickedCell(svgId, position);
 
-    // if (!clickedCell?.parentElement) {
-    //   return null;
-    // }
-
-    // const col = elementFinderHelper.getElementAttributeValue(
-    //   clickedCell,
-    //   "col",
-    // );
-    // const row = elementFinderHelper.getElementAttributeValue(
-    //   clickedCell.parentElement,
-    //   "row",
-    // );
-
-    // let cellToActivate: PointAttributes = {
-    //   col: parseInt(col || "-1"),
-    //   row: parseInt(row || "-1"),
-    // };
-
     if (!clickedCell) return;
 
     notationStore.selectCell(clickedCell!);
@@ -148,13 +85,6 @@ export default function selectionHelper() {
       );
     }
   }
-
-  // selectNotationBySelectedCell() {
-  //   const { col, row } = notationStore.getSelectedCell()
-
-  //   notationStore.getNotations().find(n =>
-  //     switch(NotationTypeShape.get(n.notationType)
-  // }
 
   return {
     selectNotationAtPosition,

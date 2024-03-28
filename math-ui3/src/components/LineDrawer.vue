@@ -146,18 +146,16 @@ function mouseup(e: KeyboardEvent) {
 function onLineSelected(lineNotation: LineNotationAttributes) {
   linePosition.value.x1 =
     svgDimensions.value.left +
-    lineNotation.fromCol *
-      (notationStore.getCellHorizontalWidth() + cellSpace);
+    lineNotation.fromCol * (notationStore.getCellHorizontalWidth() + cellSpace);
 
   linePosition.value.x2 =
     svgDimensions.value.left +
-    (lineNotation.toCol -1) *
+    (lineNotation.toCol - 1) *
       (notationStore.getCellHorizontalWidth() + cellSpace);
 
   linePosition.value.y =
     svgDimensions.value.top +
-    lineNotation.row *
-    (notationStore.getCellVerticalHeight() + cellSpace);
+    lineNotation.row * (notationStore.getCellVerticalHeight() + cellSpace);
 
   notationStore.selectNotation(lineNotation.uuid);
 
@@ -170,6 +168,7 @@ function onHandleMouseDown() {
 
 // emitted by event manager
 function onMouseDown(e: MouseEvent) {
+  console.debug(e);
   if (e.buttons !== 1) {
     // ignore right button
     return;
@@ -186,9 +185,10 @@ function onMouseDown(e: MouseEvent) {
     editModeStore.getEditMode() === "SQRT"
   ) {
     startLineDrawing({
-      x: e.offsetX,
-      y: e.offsetY,
-    });
+            x: e.offsetX,
+            y: e.offsetY,
+          },
+    );
     editModeStore.setNextEditMode();
   }
 }
@@ -226,6 +226,7 @@ function onMouseUp() {
 // methods
 
 function startLineDrawing(position: DotPosition) {
+  console.debug(svgDimensions.value);
   linePosition.value.x1 = position.x + svgDimensions.value.left;
 
   linePosition.value.x2 = linePosition.value.x1 + 10;
@@ -252,7 +253,7 @@ function endDrawLine() {
 
   let toCol = Math.round(
     (linePosition.value.x2 - svgDimensions.value.left) /
-      (notationStore.getCellHorizontalWidth()+ cellSpace),
+      (notationStore.getCellHorizontalWidth() + cellSpace),
   );
 
   let row = Math.round(
