@@ -159,6 +159,7 @@ async function moveSelectionByKey(
 }
 
 function handleMouseMove(e: MouseEvent) {
+  console.debug("area selector mouse move:" + e);
   if (e.buttons !== 1) {
     return;
   }
@@ -194,6 +195,7 @@ function handleMouseMove(e: MouseEvent) {
 }
 
 function handleMouseDown(e: MouseEvent) {
+  console.debug("area selector mouse down:" + e);
   resetSelection();
 }
 
@@ -217,7 +219,9 @@ function handleMouseUp(e: MouseEvent) {
 
 // extend or shrink selection area from inner mouse move
 function updateSelectionArea(e: MouseEvent) {
-  // normalize selection position to edges of rectangle
+
+  console.debug("update selection:" +selectionPosition.value)
+
   if (selectionPosition.value.x1 == 0) {
     selectionPosition.value.x1 = e.clientX;
     selectionPosition.value.y1 = e.clientY;

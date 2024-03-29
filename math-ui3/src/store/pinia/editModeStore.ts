@@ -107,8 +107,6 @@ export const useEditModeStore = defineStore("editMode", () => {
         return setEditMode("FRACTION_DRAWING");
       case "SQRT_SELECTED":
         return setEditMode("SQRT_DRAWING");
-      //case "AREA_SELECT":
-      //  return setEditMode("AREA_SELECTING");
       case "AREA_SELECTING":
         return setEditMode("AREA_SELECTED");
       case "AREA_SELECTED":

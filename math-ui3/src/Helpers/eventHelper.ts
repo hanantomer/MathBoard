@@ -283,6 +283,7 @@ export default function eventHelper() {
   }
 
   function emitSvgMouseMove(e: MouseEvent) {
+    console.debug("emit mouse move");
     eventBus.emit("svgmousemove", e);
   }
 

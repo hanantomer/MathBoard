@@ -11,6 +11,7 @@
       <div style="display: flex; flex-direction: column">
         <v-sheet class="mt-10 ml-8 overflow-auto">
           <v-progress-linear
+            data-cy="pBar"
             v-show="pBar"
             color="deep-purple-accent-4"
             indeterminate

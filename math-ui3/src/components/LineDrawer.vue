@@ -185,29 +185,33 @@ function onMouseDown(e: MouseEvent) {
     editModeStore.getEditMode() === "SQRT"
   ) {
     startLineDrawing({
-            x: e.offsetX,
-            y: e.offsetY,
-          },
-    );
+      x: e.offsetX,
+      y: e.offsetY,
+    });
     editModeStore.setNextEditMode();
   }
 }
 
 function onMouseMove(e: MouseEvent) {
+  console.debug("onMouseMove: buttons = " + e.buttons);
+
   // ignore right button
   if (e.buttons !== 1) {
     return;
   }
 
+  console.debug(linePosition);
   // nothing done yet
   if (linePosition.value.x1 === 0 && linePosition.value.x2 === 0) {
     return;
   }
 
+  console.debug(editModeStore.isLineDrawingMode());
   if (!editModeStore.isLineDrawingMode()) {
     return;
   }
 
+  console.debug("e.clientX:" + e.clientX);
   setLineWidth(e.clientX);
 }
 

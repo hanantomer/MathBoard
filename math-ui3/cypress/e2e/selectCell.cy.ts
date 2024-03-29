@@ -1,5 +1,6 @@
 import type {} from "cypress";
 import "cypress-real-events";
+import "../support/e2e";
 
 describe("e2e", () => {
   before(function () {});
@@ -10,11 +11,21 @@ describe("e2e", () => {
     cy.login();
     // select lesson
     cy.get('td:contains("test lesson")').click();
+    cy.dataCy("pBar").should("exist");
     // delete previous added notations
-    // cy.get("#lessonSvg").realMouseDown({ x: 100, y: 50 });
+    //cy.get("#lessonSvg").trigger("mousedown", { buttons: 1, x: 100, y: 50 });
+    cy.get("#lessonSvg").realMouseDown({ x: 50, y: 50 });
+    cy.wait(1000);
+    cy.get("#lessonSvg").trigger("mousemove", { buttons: 1, x: 51, y: 51 });
+    cy.get("#lessonSvg").trigger("mousemove", { buttons: 1, x: 52, y: 52 });
+    cy.get("#lessonSvg").trigger("mousemove", { buttons: 1, x: 1300, y: 700 });
+    cy.wait(1000).realMouseUp();
+    //      .trigger("mouseup");
     // cy.get("#lessonSvg").realMouseMove(800, 800);
     // cy.get("#lessonSvg").realMouseUp();
-    // cy.get("#lessonSvg").realType("{del}");
+    //    cy.wait(1000);
+    //cy.get("#lessonSvg").trigger("mouseup");
+    cy.get("body").type("{del}");
 
     // select cell
     // cy.get('[row="0"] > [col="0"]')
@@ -41,24 +52,14 @@ describe("e2e", () => {
     //    cy.get('foreignObject[row="1"][col="1"] > p').should("include.text", "3");
 
     //add fraction line
-    cy.dataCy("fraction").click();
-    cy.get("#lessonSvg")
-      .realMouseDown({
-        x: 200,
-        y: 200,
-      });
-      //.realMouseMove(500, 200);
+    // cy.dataCy("fraction").click();
+    // cy.get("#lessonSvg").realMouseDown({
+    //   x: 200,
+    //   y: 200,
+    // });
 
-    cy.get("#lineRightHandle").realMouseDown();
-    //cy.get("#lessonSvg").realMouseMove(500, 300);
+    // cy.get("#lessonSvg").trigger("mousemove", { buttons: 1, x: 300, y: 200 });
 
-    //cy.get("#lineLeftHandle").realMouseUp();
-    //.realHover()
-    //.wait(500)
-    //.get("#lessonSvg")
-    //.realMouseMove(800, 300)
-    //.wait(500)
-    //.realMouseUp()
-    //.wait(500);
+    // cy.get("#lineRightHandle").realMouseUp();
   });
 });
