@@ -162,7 +162,8 @@ function onLineSelected(lineNotation: LineNotationAttributes) {
   eventBus.emit("lineSelected", null); // to enable re selection
 }
 
-function onHandleMouseDown() {
+function
+  onHandleMouseDown() {
   editModeStore.setNextEditMode();
 }
 

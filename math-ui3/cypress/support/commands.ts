@@ -36,9 +36,6 @@
 //   }
 // }
 
-
-
-
 declare namespace Cypress {
   interface Chainable {
     /**
@@ -47,14 +44,33 @@ declare namespace Cypress {
      */
     dataCy(value: string): Chainable<JQuery>;
     login();
+    openLesson();
+    clearBoard();
   }
 }
 
-Cypress.Commands.add("dataCy", (value: string) => cy.get(`[data-cy="${value}"]`));
-
+Cypress.Commands.add("dataCy", (value: string) =>
+  cy.get(`[data-cy="${value}"]`),
+);
 
 Cypress.Commands.add("login", () => {
   cy.dataCy("login_email").type("hanantomer@gmail.com");
   cy.dataCy("login_password").type("12345678");
   cy.get('[data-cy="login"] > .v-btn__content').click();
+});
+
+Cypress.Commands.add("openLesson", () => {
+  cy.get('[data-cy="lessons"] > .v-btn__content').click();
+  cy.login();
+  cy.get('td:contains("test lesson")').click();
+  cy.dataCy("pBar").should("not.be.visible");
+});
+
+Cypress.Commands.add("clearBoard", () => {
+  cy.get("#lessonSvg").trigger("mousedown", { buttons: 1, x: 100, y: 50 });
+  cy.get("#lessonSvg").trigger("mousemove", { buttons: 1, x: 51, y: 51 });
+  cy.get("#lessonSvg").trigger("mousemove", { buttons: 1, x: 52, y: 52 });
+  cy.get("#lessonSvg").trigger("mousemove", { buttons: 1, x: 1300, y: 700 });
+  cy.get("#selection").trigger("mouseup");
+  cy.get("body").type("{del}");
 });
