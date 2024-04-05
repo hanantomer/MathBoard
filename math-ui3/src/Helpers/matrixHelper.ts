@@ -15,7 +15,7 @@ import { cellSpace } from "common/globals";
 
 import {
   NotationAttributes,
-  PointAttributes,
+  CellAttributes,
   LineAttributes,
   RectAttributes,
   LineNotationAttributes,
@@ -72,10 +72,7 @@ export default function useMatrixHelper() {
     if (!clientWidth || !clientHeight) return;
 
     notationStore.setCellVerticalHeight(
-      //Math.min(
-      //  Math.floor(clientWidth / colsNum),
       Math.floor(clientHeight / matrixDimensions.rowsNum),
-      //),
     );
   }
 
@@ -161,7 +158,7 @@ export default function useMatrixHelper() {
   function getNextCell(
     horizontalStep: number,
     verticalStep: number,
-  ): PointAttributes | undefined {
+  ): CellAttributes | undefined {
     if (
       notationStore.getSelectedCell()?.col == null ||
       !notationStore.getSelectedCell()?.row == null
@@ -205,6 +202,7 @@ export default function useMatrixHelper() {
     }
 
     return {
+      part: "MIDDLE",
       col: nextCol,
       row: nextRow,
     };
@@ -290,7 +288,7 @@ export default function useMatrixHelper() {
       .attr("uuid", (n: NotationAttributes) => {
         return n.uuid;
       })
-      .attr("col", (n: PointAttributes) => {
+      .attr("col", (n: CellAttributes) => {
         return n?.col;
       })
       .attr("fromCol", (n: LineAttributes | RectAttributes) => {
@@ -299,7 +297,7 @@ export default function useMatrixHelper() {
       .attr("toCol", (n: LineAttributes | RectAttributes) => {
         return n?.toCol;
       })
-      .attr("row", (n: PointAttributes) => {
+      .attr("row", (n: CellAttributes) => {
         return n?.row;
       })
       .attr("fromRow", (n: RectAttributes) => {
@@ -432,7 +430,7 @@ export default function useMatrixHelper() {
     return null;
   }
 
-  function pointNotationWidth(n: PointAttributes): number {
+  function pointNotationWidth(n: CellAttributes): number {
     return notationStore.getCellHorizontalWidth();
   }
 
@@ -456,7 +454,7 @@ export default function useMatrixHelper() {
     );
   }
 
-  function pointNotationHeight(n: PointAttributes): number {
+  function pointNotationHeight(n: CellAttributes): number {
     return notationStore.getCellVerticalHeight();
   }
 
@@ -547,7 +545,7 @@ export default function useMatrixHelper() {
     return row * (notationStore.getCellVerticalHeight() + cellSpace);
   }
 
-  function colorizeCell(svgId: string, cell: PointAttributes, color: string) {
+  function colorizeCell(svgId: string, cell: CellAttributes, color: string) {
     let rectElm = document
       ?.querySelector<HTMLElement>(`svg[id="${svgId}"] g[row="${cell.row}"]`)
       ?.querySelector<HTMLElement>(`rect[col="${cell.col}"]`);
@@ -558,8 +556,8 @@ export default function useMatrixHelper() {
   // called by store watcher. see mathboard.vue
   function showSelectedCell(
     svgId: string,
-    newSelectedCell: PointAttributes | null | undefined,
-    oldSelectedCell: PointAttributes | null | undefined,
+    newSelectedCell: CellAttributes | null | undefined,
+    oldSelectedCell: CellAttributes | null | undefined,
   ) {
     if (oldSelectedCell?.col != null) {
       let prevRectElm = document

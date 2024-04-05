@@ -68,6 +68,7 @@
     <v-tooltip text="Draw sqrt line">
       <template v-slot:activator="{ props }">
         <v-btn
+          data-cy="sqrt"
           v-bind="props"
           icon
           :color="squareRootButtonActive ? 'white' : 'yellow'"

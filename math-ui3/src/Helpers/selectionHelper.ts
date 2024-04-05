@@ -22,6 +22,7 @@ export default function selectionHelper() {
     svgId: string,
     position: DotPosition,
   ): NotationAttributes | null {
+
     notationStore.resetSelectedNotations();
 
     const notation = elementFinderHelper.findClickedNotation(svgId, position);

@@ -1,6 +1,6 @@
 import { 
   LineAttributes, 
-  PointAttributes, 
+  CellAttributes, 
   RectAttributes, 
   SingleValueAttributes,
   BoardAttributes,
@@ -22,7 +22,7 @@ export type LessonLineCreationAttributes = Omit<LessonLineAttributes, keyof Enti
   
 // point
 
-export type LessonPointAttributes = EntityAttributes & NotationAttributes & PointAttributes &  SingleValueAttributes;
+export type LessonPointAttributes = EntityAttributes & NotationAttributes & CellAttributes &  SingleValueAttributes;
 
 export type LessonPointCreationAttributes = Omit<LessonPointAttributes, keyof EntityAttributes>     
 
@@ -35,7 +35,7 @@ export type LessonRectCreationAttributes = Omit<LessonRectAttributes, keyof Enti
 
 // exponent
 
-export type LessonExponentAttributes = EntityAttributes & NotationAttributes & PointAttributes & LessonAttributes &  LessonNotationAttributes;
+export type LessonExponentAttributes = EntityAttributes & NotationAttributes & CellAttributes & LessonAttributes &  LessonNotationAttributes;
 
 export type LessonExponentCreationAttributes = Omit<LessonExponentAttributes, keyof EntityAttributes>     
 

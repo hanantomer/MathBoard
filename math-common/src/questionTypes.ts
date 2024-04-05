@@ -1,7 +1,7 @@
 import { LessonAttributes } from "./lessonTypes";
 import { 
   LineAttributes, 
-  PointAttributes, 
+  CellAttributes, 
   RectAttributes, 
   SingleValueAttributes,
   BoardAttributes,
@@ -32,7 +32,7 @@ export type QuestionLineCreationAttributes = Omit<QuestionLineAttributes, keyof 
   
 // point
 
-export type QuestionPointAttributes = EntityAttributes & NotationAttributes & PointAttributes &  QuestionNotationAttributes & SingleValueAttributes;
+export type QuestionPointAttributes = EntityAttributes & NotationAttributes & CellAttributes &  QuestionNotationAttributes & SingleValueAttributes;
 
 export type QuestionPointCreationAttributes = Omit<QuestionPointAttributes, keyof EntityAttributes>     
 
@@ -44,7 +44,7 @@ export type QuestionRectCreationAttributes = Omit<QuestionRectAttributes, keyof 
 
 // exponent
 
-export type QuestionExponentAttributes = EntityAttributes & NotationAttributes & PointAttributes & QuestionAttributes &  QuestionNotationAttributes;
+export type QuestionExponentAttributes = EntityAttributes & NotationAttributes & CellAttributes & QuestionAttributes &  QuestionNotationAttributes;
 
 export type QuestionExponentCreationAttributes = Omit<QuestionExponentAttributes, keyof EntityAttributes>     
 

@@ -39,7 +39,7 @@ import editingToolbar from "./EditingToolbar.vue";
 import areaSelector from "./AreaSelector.vue";
 import lineDrawer from "./LineDrawer.vue";
 import useEventBus from "../helpers/eventBusHelper";
-import { PointAttributes } from "common/baseTypes";
+import { CellAttributes } from "common/baseTypes";
 import { onMounted, onUnmounted, ref, watch } from "vue";
 import { useNotationStore } from "../store/pinia/notationStore";
 import { useEditModeStore } from "../store/pinia/editModeStore";
@@ -105,10 +105,10 @@ watch(
 );
 
 watch(
-  () => notationStore.getSelectedCell() as PointAttributes,
+  () => notationStore.getSelectedCell() as CellAttributes,
   (
-    newSelectedCell: PointAttributes | undefined | null,
-    oldSelectedCell: PointAttributes | undefined | null,
+    newSelectedCell: CellAttributes | undefined | null,
+    oldSelectedCell: CellAttributes | undefined | null,
   ) => {
     setTimeout(() => {
       matrixHelper.showSelectedCell(
@@ -145,7 +145,7 @@ watch(
       "row",
     );
 
-    let cell: PointAttributes = {
+    let cell: CellAttributes = {
       col: parseInt(col || "-1"),
       row: parseInt(row || "-1"),
     };

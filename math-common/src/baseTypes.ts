@@ -1,4 +1,4 @@
-import { BoardType, NotationType } from "./unions";
+import { BoardType, CellPart, NotationType } from "./unions";
 import { UserAttributes } from "./userTypes";
 
 export type EntityAttributes = {  
@@ -36,17 +36,18 @@ export type TriangleAttributes =  {
   C: number;
 };
 
-export type PointAttributes =  {
+export type CellAttributes =  {
   col: number;
   row: number;
+  part: CellPart;
 };
 
-export type SelectedCell = PointAttributes & {
+export type SelectedCell = CellAttributes & {
   userUUId: string;
   lessonUUId: number;
 }
 
-export type ColorizedCell  = PointAttributes & {
+export type ColorizedCell  = CellAttributes & {
   userUUId: string;
   lessonUUId: number;
   color: string;
@@ -77,17 +78,17 @@ export type Board = {
 };
 
 
-export type PointNotationAttributes = EntityAttributes &  NotationAttributes & PointAttributes & SingleValueAttributes;
+export type PointNotationAttributes = EntityAttributes &  NotationAttributes & CellAttributes & SingleValueAttributes;
 export type LineNotationAttributes = EntityAttributes & NotationAttributes & LineAttributes & SingleValueAttributes;
 export type RectNotationAttributes = EntityAttributes & NotationAttributes & RectAttributes & SingleValueAttributes;
-export type ExponentNotationAttributes = EntityAttributes &  NotationAttributes & PointAttributes & ExponentAttributes;
-export type TriangleNotationAttributes = EntityAttributes &  NotationAttributes & PointAttributes & TriangleAttributes;
+export type ExponentNotationAttributes = EntityAttributes &  NotationAttributes & CellAttributes & ExponentAttributes;
+export type TriangleNotationAttributes = EntityAttributes &  NotationAttributes & CellAttributes & TriangleAttributes;
 
 // ommiting uuid from creation attributed since created by the databse
-export type PointNotationCreationAttributes = Omit<NotationAttributes & PointAttributes & SingleValueAttributes, "uuid">;
+export type PointNotationCreationAttributes = Omit<NotationAttributes & CellAttributes & SingleValueAttributes, "uuid">;
 export type LineNotationCreationAttributes = Omit<NotationAttributes & LineAttributes, "uuid">;
 export type RectNotationCreationAttributes = Omit<NotationAttributes & RectAttributes & SingleValueAttributes, "uuid">;
-export type ExponentNotationCreationAttributes = Omit<EntityAttributes &  NotationAttributes & PointAttributes & ExponentAttributes, "uuid">;
+export type ExponentNotationCreationAttributes = Omit<EntityAttributes &  NotationAttributes & CellAttributes & ExponentAttributes, "uuid">;
 export type TriangleNotationCreationAttributes = Omit<SingleValueAttributes & EntityAttributes &  NotationAttributes & RectAttributes & TriangleAttributes, "uuid">;
 
 

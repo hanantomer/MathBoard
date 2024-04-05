@@ -1,18 +1,15 @@
-import {
-  DotPosition,
-  cellSpace,
-} from "../../../math-common/src/globals";
-import { PointAttributes } from "../../../math-common/src/baseTypes";
+import { DotPosition, cellSpace } from "../../../math-common/src/globals";
+import { CellAttributes } from "../../../math-common/src/baseTypes";
 import { useNotationStore } from "../store/pinia/notationStore";
 import { NotationAttributes } from "../../../math-common/src/baseTypes";
+import { CellPart } from "../../../math-common/src/unions";
 const notationStore = useNotationStore();
 
 export default function elementFinderHelper() {
-
   function findClickedCell(
     svgId: string,
     dotPosition: DotPosition,
-  ): PointAttributes {
+  ): CellAttributes {
     const boundingRect = document
       .getElementById(svgId)
       ?.getBoundingClientRect();
@@ -22,12 +19,19 @@ export default function elementFinderHelper() {
         (notationStore.getCellHorizontalWidth() + cellSpace),
     );
 
-    const clickedCellRow = Math.floor(
+    const clickedPosDivededByRowHeight =
       (dotPosition.y - boundingRect!.top) /
-        (notationStore.getCellVerticalHeight() + cellSpace),
-    );
+      (notationStore.getCellVerticalHeight() + cellSpace);
 
-    return { col: clickedCellCol, row: clickedCellRow };
+    const clickedCellRow = Math.floor(clickedPosDivededByRowHeight);
+
+    const modulo = clickedPosDivededByRowHeight - clickedCellRow;
+
+    let cellPart: CellPart =
+      modulo <= 0.25 ? "TOP" :
+        modulo > 0.25 && modulo < 0.75 ? "MIDDLE" : "BOTTOM";
+
+    return { col: clickedCellCol, row: clickedCellRow, part: cellPart };
   }
 
   function findClickedNotation(
@@ -35,7 +39,7 @@ export default function elementFinderHelper() {
     dotPosition: DotPosition,
   ): NotationAttributes | null {
     const clickedCell = findClickedCell(svgId, dotPosition);
-    return notationStore.getNotationByCell(clickedCell.col, clickedCell.row);
+    return notationStore.getNotationByCell(clickedCell);
   }
 
   return {

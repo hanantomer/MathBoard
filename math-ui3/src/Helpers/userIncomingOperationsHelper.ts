@@ -2,7 +2,7 @@ import {
   SelectedCell,
   ColorizedCell,
   NotationAttributes,
-  PointAttributes,
+  CellAttributes,
 } from "common/baseTypes";
 import { useUserStore } from "../store/pinia/userStore";
 import { useStudentStore } from "../store/pinia/studentStore";
@@ -76,8 +76,12 @@ export default function userIncomingOperations() {
 
         if (colorizedCell.userUUId == userStore.getCurrentUser()!.uuid) return;
 
-        matrixHelper.colorizeCell(svgId, colorizedCell as PointAttributes, colorizedCell.color);
-    });
+        matrixHelper.colorizeCell(
+          svgId,
+          colorizedCell as CellAttributes,
+          colorizedCell.color,
+        );
+      });
 
     // accept write authorization as student in lesson
     if (!userStore.isTeacher()) {

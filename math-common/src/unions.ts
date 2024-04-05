@@ -8,6 +8,8 @@ export type PointType = "SYMBOL" |  "EXPONENT" |  "SIGN"
 
 export type LineType = "FRACTION" |  "SQRT"
 
+export type CellPart = "TOP" | "MIDDLE" | "BOTTOM"
+
 export const NotationTypeValues = ["SYMBOL","SIGN","EXPONENT","FRACTION","SQRT","SQRTSYMBOL","TEXT","IMAGE","TRIANGLE"] as const;
 
 export type NotationType = typeof NotationTypeValues[number]

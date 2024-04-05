@@ -5,7 +5,7 @@ import { matrixDimensions } from "common/globals";
 import {
   Board,
   NotationAttributes,
-  PointAttributes,
+  CellAttributes,
   PointNotationAttributes,
   LineNotationAttributes,
   RectNotationAttributes,
@@ -21,7 +21,13 @@ const notationCellOccupationHelper = useNotationCellOccupationHelper();
 export const useNotationStore = defineStore("notation", () => {
   let cellVerticalHight = ref<number>();
 
-  let cellOccupationMatrix: (NotationAttributes | null)[][] =
+  let cellPointNotationOccupationMatrix: (NotationAttributes | null)[][] =
+    createCellOccupationMatrix();
+
+  let cellLineNotationOccupationMatrix: (NotationAttributes | null)[][] =
+    createCellOccupationMatrix();
+
+  let cellRectNotationOccupationMatrix: (NotationAttributes | null)[][] =
     createCellOccupationMatrix();
 
   let parent = ref<Board>({ uuid: "", type: "LESSON" });
@@ -30,7 +36,7 @@ export const useNotationStore = defineStore("notation", () => {
 
   let copiedNotations = ref(<Map<String, NotationAttributes>>new Map());
 
-  let selectedCell = ref(<PointAttributes>{ col: 0, row: 0 });
+  let selectedCell = ref(<CellAttributes>{ col: 0, row: 0 });
 
   function getCellVerticalHeight() {
     if (!cellVerticalHight.value)
@@ -79,9 +85,9 @@ export const useNotationStore = defineStore("notation", () => {
     return parent.value;
   }
 
-  function getCellOccupationMatrix() {
-    return cellOccupationMatrix;
-  }
+  // function getCellOccupationMatrix() {
+  //   return cellNotationOccupationMatrix;
+  // }
 
   function getNotationsByShape<T>(notationShape: NotationShape): T[] {
     return Array.from(notations.value.values()).filter((n) => {
@@ -137,11 +143,29 @@ export const useNotationStore = defineStore("notation", () => {
   function addNotation(notation: NotationAttributes) {
     notation.boardType = parent.value.type;
     notations.value.set(notation.uuid, notation);
-    notationCellOccupationHelper.updateOccupationMatrix(
-      cellOccupationMatrix,
-      notation,
-      false,
-    );
+
+    switch (NotationTypeShape.get(notation.notationType)) {
+      case "POINT":
+        notationCellOccupationHelper.updatePointOccupationMatrix(
+          cellPointNotationOccupationMatrix,
+          notation as PointNotationAttributes,
+          false,
+        );
+
+      case "LINE":
+        notationCellOccupationHelper.updateLineOccupationMatrix(
+          cellLineNotationOccupationMatrix,
+          notation as LineNotationAttributes,
+          false,
+        );
+
+      case "RECT":
+        notationCellOccupationHelper.updateRectOccupationMatrix(
+          cellLineNotationOccupationMatrix,
+          notation as RectNotationAttributes,
+          false,
+        );
+    }
   }
 
   function addCopiedNotation(notation: NotationAttributes) {
@@ -150,11 +174,28 @@ export const useNotationStore = defineStore("notation", () => {
   }
 
   function deleteNotation(uuid: string) {
-    notationCellOccupationHelper.updateOccupationMatrix(
-      cellOccupationMatrix,
-      notations.value.get(uuid)!,
-      true,
-    );
+    const notation = notations.value.get(uuid)!;
+
+    switch (NotationTypeShape.get(notation.notationType)) {
+      case "POINT":
+        notationCellOccupationHelper.updatePointOccupationMatrix(
+          cellPointNotationOccupationMatrix,
+          notations.value.get(uuid)! as PointNotationAttributes,
+          true,
+        );
+      case "LINE":
+        notationCellOccupationHelper.updateLineOccupationMatrix(
+          cellLineNotationOccupationMatrix,
+          notations.value.get(uuid)! as LineNotationAttributes,
+          true,
+        );
+      case "RECT":
+        notationCellOccupationHelper.updateRectOccupationMatrix(
+          cellRectNotationOccupationMatrix,
+          notations.value.get(uuid)! as RectNotationAttributes,
+          true,
+        );
+    }
 
     notations.value.delete(uuid);
 
@@ -165,14 +206,16 @@ export const useNotationStore = defineStore("notation", () => {
 
   function clearNotations() {
     notations.value.clear();
-    cellOccupationMatrix = createCellOccupationMatrix();
+    cellPointNotationOccupationMatrix = createCellOccupationMatrix();
+    cellLineNotationOccupationMatrix = createCellOccupationMatrix();
+    cellRectNotationOccupationMatrix = createCellOccupationMatrix();
   }
 
   function clearCopiedNotations() {
     copiedNotations.value.clear();
   }
 
-  function selectCell(newSelectedCell: PointAttributes) {
+  function selectCell(newSelectedCell: CellAttributes) {
     selectedCell.value = newSelectedCell;
   }
 
@@ -188,7 +231,7 @@ export const useNotationStore = defineStore("notation", () => {
   }
 
   function resetSelectedCell() {
-    selectedCell.value = { col: -1, row: -1 };
+    selectedCell.value = { col: -1, row: -1, part: "MIDDLE" };
   }
 
   function resetSelectedNotations() {
@@ -204,10 +247,23 @@ export const useNotationStore = defineStore("notation", () => {
   }
 
   function getNotationByCell(
-    col: number,
-    row: number,
+    clickedCell: CellAttributes,
   ): NotationAttributes | null {
-    return cellOccupationMatrix[col][row];
+    const poinNotation =
+      cellPointNotationOccupationMatrix[clickedCell.col][clickedCell.row];
+    if (poinNotation) return poinNotation;
+
+    // clicked above line
+    let lineNotation =
+      cellLineNotationOccupationMatrix[clickedCell.col][clickedCell.row + 1];
+    if (clickedCell.part === "BOTTOM" && lineNotation) return lineNotation;
+
+    // clicked below line
+    lineNotation =
+      cellLineNotationOccupationMatrix[clickedCell.col][clickedCell.row];
+    if (clickedCell.part === "TOP" && lineNotation) return lineNotation;
+
+    return cellRectNotationOccupationMatrix[clickedCell.col][clickedCell.row];
   }
 
   function createCellOccupationMatrix(): (NotationAttributes | null)[][] {

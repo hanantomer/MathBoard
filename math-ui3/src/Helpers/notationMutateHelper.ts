@@ -13,7 +13,7 @@ import {
 } from "common/baseTypes";
 
 import { matrixDimensions } from "common/globals";
-import { PointAttributes } from "common/baseTypes";
+import { CellAttributes } from "common/baseTypes";
 import { NotationType, NotationTypeShape, MoveDirection } from "common/unions";
 import { useUserStore } from "../store/pinia/userStore";
 import { useNotationStore } from "../store/pinia/notationStore";
@@ -42,7 +42,7 @@ const userOutgoingOperations = useUserOutgoingOperations();
 export default function notationMutateHelper() {
   function pointAtCellCoordinates(
     n1: PointNotationAttributes,
-    n2: PointAttributes,
+    n2: CellAttributes,
     userUUId: string,
   ) {
     return n1.col == n2.col && n1.row == n2.row && n1.user.uuid === userUUId;
@@ -78,7 +78,7 @@ export default function notationMutateHelper() {
   // line
   function lineAtCellCoordinates(
     lineCoordinates: LineNotationAttributes,
-    cellCoordinates: PointAttributes,
+    cellCoordinates: CellAttributes,
     userUUId: string,
   ) {
     return (
@@ -123,14 +123,14 @@ export default function notationMutateHelper() {
   // rect
   function rectAtCellCoordinates(
     rectNotation: RectNotationAttributes,
-    PointAttributes: PointAttributes,
+    CellAttributes: CellAttributes,
     userUUId: string,
   ) {
     return (
-      rectNotation.fromCol <= PointAttributes.col &&
-      rectNotation.toCol >= PointAttributes.col &&
-      rectNotation.fromRow <= PointAttributes.row &&
-      rectNotation.toRow >= PointAttributes.row &&
+      rectNotation.fromCol <= CellAttributes.col &&
+      rectNotation.toCol >= CellAttributes.col &&
+      rectNotation.fromRow <= CellAttributes.row &&
+      rectNotation.toRow >= CellAttributes.row &&
       rectNotation.user.uuid == userUUId
     );
   }
@@ -169,7 +169,7 @@ export default function notationMutateHelper() {
     );
   }
 
-  function findNotationsByCellCoordinates(cellCoordinates: PointAttributes) {
+  function findNotationsByCellCoordinates(cellCoordinates: CellAttributes) {
     let userUUId = getUserUUId();
 
     return notationStore
@@ -232,31 +232,28 @@ export default function notationMutateHelper() {
     notationsMap: Map<String, NotationAttributes>,
     lineCoordinates: LineNotationAttributes,
   ) {
-    return (
-      Object.values(notationsMap)
-          .filter((n: NotationAttributes) =>
-          n.notationType == "SYMBOL" ||
-          n.notationType == "EXPONENT" ||
-          n.notationType == "SIGN"
-            ? pointAtLineCoordinates(
-                n as PointNotationAttributes,
-                lineCoordinates,
-                getUserUUId(),
-              )
-            : n.notationType == "FRACTION" || n.notationType == "SQRT"
-            ? lineAtLineCoordinates(
-                n as LineNotationAttributes,
-                lineCoordinates,
-                getUserUUId(),
-              )
-            : n.notationType == "TEXT"
-            ? rectAtLineCoordinates(
-                n as RectNotationAttributes,
-                lineCoordinates,
-                getUserUUId(),
-              )
-            : false,
-        )
+    return Object.values(notationsMap).filter((n: NotationAttributes) =>
+      n.notationType == "SYMBOL" ||
+      n.notationType == "EXPONENT" ||
+      n.notationType == "SIGN"
+        ? pointAtLineCoordinates(
+            n as PointNotationAttributes,
+            lineCoordinates,
+            getUserUUId(),
+          )
+        : n.notationType == "FRACTION" || n.notationType == "SQRT"
+        ? lineAtLineCoordinates(
+            n as LineNotationAttributes,
+            lineCoordinates,
+            getUserUUId(),
+          )
+        : n.notationType == "TEXT"
+        ? rectAtLineCoordinates(
+            n as RectNotationAttributes,
+            lineCoordinates,
+            getUserUUId(),
+          )
+        : false,
     );
   }
 
@@ -291,15 +288,16 @@ export default function notationMutateHelper() {
   function findOverlapRectNotation(
     notation: RectNotationCreationAttributes,
   ): RectNotationAttributes | undefined {
-    return notationStore.getRectNotations().find((n2: RectNotationAttributes) => {
-      return rectAtRectCoordinates(
-        notation as RectNotationAttributes,
-        n2,
-        getUserUUId(),
-      );
-    });
+    return notationStore
+      .getRectNotations()
+      .find((n2: RectNotationAttributes) => {
+        return rectAtRectCoordinates(
+          notation as RectNotationAttributes,
+          n2,
+          getUserUUId(),
+        );
+      });
   }
-
 
   function findOverlapNotationsOfAnyType(
     notation: NotationCreationAttributes,
@@ -365,8 +363,8 @@ export default function notationMutateHelper() {
     });
   }
 
-  async function selectNotationByCoordinates(PointAttributes: PointAttributes) {
-    findNotationsByCellCoordinates(PointAttributes).forEach(
+  async function selectNotationByCoordinates(CellAttributes: CellAttributes) {
+    findNotationsByCellCoordinates(CellAttributes).forEach(
       (n: NotationAttributes) => {
         notationStore.selectNotation(n.uuid);
       },
@@ -528,11 +526,7 @@ export default function notationMutateHelper() {
     notationStore.addNotation(lineNotation);
   }
 
-
-  function upsertPointNotation(
-    notation: PointNotationCreationAttributes,
-  ) {
-
+  function upsertPointNotation(notation: PointNotationCreationAttributes) {
     editModeStore.resetEditMode();
     notationStore.resetSelectedNotations();
 
@@ -554,9 +548,7 @@ export default function notationMutateHelper() {
     addNotation(notation);
   }
 
-  function upsertLineNotation(
-    notation: LineNotationCreationAttributes,
-  ) {
+  function upsertLineNotation(notation: LineNotationCreationAttributes) {
     editModeStore.resetEditMode();
     notationStore.resetSelectedNotations();
 
@@ -578,9 +570,7 @@ export default function notationMutateHelper() {
     addNotation(notation);
   }
 
-  function upsertRectNotation(
-    notation: RectNotationCreationAttributes,
-  ) {
+  function upsertRectNotation(notation: RectNotationCreationAttributes) {
     editModeStore.resetEditMode();
     notationStore.resetSelectedNotations();
 
@@ -602,7 +592,10 @@ export default function notationMutateHelper() {
     addNotation(notation);
   }
 
-  function updateExistingNotation(existingNotation : NotationAttributes, notation : NotationCreationAttributes) {
+  function updateExistingNotation(
+    existingNotation: NotationAttributes,
+    notation: NotationCreationAttributes,
+  ) {
     // dont update a question notation from within answer and vice versa
     if (existingNotation.boardType !== notation.boardType) {
       return;
@@ -619,13 +612,14 @@ export default function notationMutateHelper() {
 
   function addNotation(notation: NotationCreationAttributes) {
     dbHelper.addNotation(notation).then((newNotation) => {
-    newNotation.notationType = notation.notationType;
-    notationStore.addNotation(newNotation);
+      newNotation.notationType = notation.notationType;
+      notationStore.addNotation(newNotation);
 
-    // sync to other participants
-    if (notationStore.getParent().type === "LESSON") {
-      userOutgoingOperations.syncOutgoingAddNotation(newNotation);
-    }});
+      // sync to other participants
+      if (notationStore.getParent().type === "LESSON") {
+        userOutgoingOperations.syncOutgoingAddNotation(newNotation);
+      }
+    });
   }
 
   function setNotationAttributes(
@@ -693,8 +687,8 @@ export default function notationMutateHelper() {
       if (
         lineNotation.boardType === "ANSWER" &&
         !userStore.isTeacher() &&
-        notationStore
-          .getNotationByCell(i, lineNotation.row)?.boardType == "QUESTION"
+        notationStore.getNotationByCell({col:i, row:lineNotation.row, part:"MIDDLE" })?.boardType ==
+          "QUESTION"
       )
         return true;
     }
@@ -714,12 +708,11 @@ export default function notationMutateHelper() {
         return (
           notation?.boardType === "ANSWER" &&
           !userStore.isTeacher() &&
-          notationStore
-            .getNotationByCell(
-              pointNotation.col + delatX,
-              pointNotation.row + delatY,
-            )
-            ?.boardType == "QUESTION"
+          notationStore.getNotationByCell({
+            col: pointNotation.col + delatX,
+            row: pointNotation.row + delatY,
+            part: "MIDDLE",
+          })?.boardType == "QUESTION"
         );
       }
 
@@ -733,11 +726,10 @@ export default function notationMutateHelper() {
           if (
             notation?.boardType === "ANSWER" &&
             !userStore.isTeacher() &&
-            notationStore
-              .getNotationByCell(col, lineNotation.row + delatY)
+            notationStore.getNotationByCell({col:col, row:lineNotation.row, part:"MIDDLE" })
               ?.boardType == "QUESTION"
           )
-            return true;
+          return true;
         }
       }
 
@@ -756,8 +748,11 @@ export default function notationMutateHelper() {
             if (
               notation?.boardType === "ANSWER" &&
               !userStore.isTeacher() &&
-              notationStore.getNotationByCell(col, row)?.boardType ==
-                "QUESTION"
+              notationStore.getNotationByCell({
+                col: col,
+                row: row,
+                part: "MIDDLE",
+              })?.boardType == "QUESTION"
             )
               return true;
           }
@@ -768,15 +763,19 @@ export default function notationMutateHelper() {
   }
 
   function isCellInQuestionArea(
-    pointAttributes: PointAttributes | null,
+    pointAttributes: CellAttributes | null,
   ): boolean | null {
     return (
       notationStore.getParent().type == "ANSWER" &&
       !userStore.isTeacher() &&
       pointAttributes &&
-      notationStore
-        .getNotationByCell(pointAttributes.col, pointAttributes?.row)
-        ?.boardType == "QUESTION"
+      notationStore.getNotationByCell(
+        {
+          col: pointAttributes.col,
+          row: pointAttributes.row,
+          part: "MIDDLE",
+        },
+      )?.boardType == "QUESTION"
     );
   }
 
@@ -876,7 +875,7 @@ export default function notationMutateHelper() {
       parentUUId: notationStore.getParent().uuid,
       notationType: "TRIANGLE",
       user: userStore.getCurrentUser()!,
-      value: ""
+      value: "",
     };
 
     upsertRectNotation(notation);
@@ -916,6 +915,7 @@ export default function notationMutateHelper() {
       editModeStore.getEditMode() === "EXPONENT" ? "EXPONENT" : "SYMBOL";
 
     let notation: PointNotationCreationAttributes = {
+      part: "MIDDLE",
       col: symbolCell.col,
       row: symbolCell.row,
       value: value,
@@ -930,21 +930,21 @@ export default function notationMutateHelper() {
     matrixHelper.setNextCell(1, 0);
   }
 
-  function getSelectedCell(): PointAttributes | null {
+  function getSelectedCell(): CellAttributes | null {
     if (notationStore.getSelectedNotations().length) {
       let point =
         notationStore.getSelectedNotations()[0] as PointNotationAttributes;
-      return { col: point.col, row: point.row };
+      return { col: point.col, row: point.row, part: "MIDDLE", };
     }
 
     return notationStore.getSelectedCell();
   }
 
-  function getRectCell(): PointAttributes | null {
+  function getRectCell(): CellAttributes | null {
     if (notationStore.getSelectedNotations().length) {
       const rect =
         notationStore.getSelectedNotations()[0] as RectNotationAttributes;
-      return { col: rect.fromCol, row: rect.fromRow };
+      return { col: rect.fromCol, row: rect.fromRow, part: "MIDDLE" };
     }
 
     return notationStore.getSelectedCell();

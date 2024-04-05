@@ -7,7 +7,7 @@
         left: lineLeft - 5 + 'px',
         top: lineTop + 'px',
       }"
-      v-on:mouseup="mouseup"
+      v-on:mouseup="onMouseUp"
       v-on:mousedown="onHandleMouseDown"
     ></v-card>
     <v-card
@@ -17,7 +17,7 @@
         left: lineRight + 'px',
         top: lineTop + 'px',
       }"
-      v-on:mouseup="mouseup"
+      v-on:mouseup="onMouseUp"
       v-on:mousedown="onHandleMouseDown"
     ></v-card>
     <v-card
@@ -30,7 +30,7 @@
         width: lineRight - lineLeft + 'px',
         height: '1px',
       }"
-      v-on:mouseup="mouseup"
+      v-on:mouseup="onMouseUp"
     ></v-card>
     <p
       style="position: absolute"
@@ -137,9 +137,9 @@ watch(
 
 // event emitters
 
-function mouseup(e: KeyboardEvent) {
-  eventBus.emit("svgmouseup", e);
-}
+//function mouseup(e: KeyboardEvent) {
+//  eventBus.emit("svgmouseup", e);
+//}
 
 // event handlers
 
@@ -162,8 +162,7 @@ function onLineSelected(lineNotation: LineNotationAttributes) {
   eventBus.emit("lineSelected", null); // to enable re selection
 }
 
-function
-  onHandleMouseDown() {
+function onHandleMouseDown() {
   editModeStore.setNextEditMode();
 }
 
@@ -277,8 +276,15 @@ function endDrawLine() {
 }
 
 function saveLine(lineAttributes: LineAttributes) {
-  if (selectedLine) notationMutateHelper.updateLineNotation(selectedLine);
-  else
+  if (notationStore.getSelectedNotations().length > 0) {
+    let updatedLine = {
+      ...notationStore.getSelectedNotations().at(0)!,
+      ...lineAttributes,
+    };
+    notationMutateHelper.updateLineNotation(
+      updatedLine as LineNotationAttributes,
+    );
+  } else
     notationMutateHelper.addLineNotation(
       lineAttributes,
       editModeStore.isFractionMode() ? "FRACTION" : "SQRT",

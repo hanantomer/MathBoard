@@ -1,64 +1,58 @@
 import {
-  NotationAttributes,
   PointNotationAttributes,
   LineNotationAttributes,
   RectNotationAttributes,
 } from "common/baseTypes";
 
-import { NotationTypeShape } from "common/unions";
-
 import { matrixDimensions } from "common/globals";
 
 export default function notationCellOccupationHelper() {
-  function updateOccupationMatrix(
+
+  function updatePointOccupationMatrix(
     matrix: any,
-    notation: NotationAttributes,
+    notation: PointNotationAttributes,
     doRemove: boolean,
   ) {
-    switch (NotationTypeShape.get(notation.notationType)) {
-      case "LINE":
-        {
-          const n = notation as LineNotationAttributes;
-          for (let i = n.fromCol; i <= n.toCol; i++) {
-            if (
-              i < matrixDimensions.colsNum &&
-              n.row < matrixDimensions.rowsNum
-            ) {
-              matrix[i][n.row] = doRemove ? null : n;
-            }
-          }
+    if (
+      notation.col < matrixDimensions.colsNum &&
+      notation.row < matrixDimensions.rowsNum
+    ) {
+      matrix[notation.col][notation.row] = doRemove ? null : notation;
+    }
+  }
+
+  function updateLineOccupationMatrix(
+    matrix: any,
+    notation: LineNotationAttributes,
+    doRemove: boolean,
+  ) {
+    for (let i = notation.fromCol; i <= notation.toCol; i++) {
+      if (
+        i < matrixDimensions.colsNum &&
+        notation.row < matrixDimensions.rowsNum
+      ) {
+        matrix[i][notation.row] = doRemove ? null : notation;
+      }
+    }
+  }
+
+  function updateRectOccupationMatrix(
+    matrix: any,
+    notation: RectNotationAttributes,
+    doRemove: boolean,
+  ) {
+    for (let i = notation.fromCol; i <= notation.toCol; i++) {
+      for (let j = notation.fromRow; j <= notation.toRow; j++) {
+        if (i < matrixDimensions.colsNum && j < matrixDimensions.rowsNum) {
+          matrix[i][j] = doRemove ? null : notation;
         }
-        break;
-      case "POINT":
-        {
-          const n = notation as PointNotationAttributes;
-          if (
-            n.col < matrixDimensions.colsNum &&
-            n.row < matrixDimensions.rowsNum
-          ) {
-            matrix[n.col][n.row] = doRemove ? null : n;
-          }
-        }
-        break;
-      case "RECT":
-        {
-          const n = notation as RectNotationAttributes;
-          for (let i = n.fromCol; i <= n.toCol; i++) {
-            for (let j = n.fromRow; j <= n.toRow; j++) {
-              if (
-                i < matrixDimensions.colsNum &&
-                j < matrixDimensions.rowsNum
-              ) {
-                matrix[i][j] = doRemove ? null : n;
-              }
-            }
-          }
-        }
-        break;
+      }
     }
   }
 
   return {
-    updateOccupationMatrix,
+    updatePointOccupationMatrix,
+    updateLineOccupationMatrix,
+    updateRectOccupationMatrix,
   };
 }

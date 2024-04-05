@@ -1,7 +1,7 @@
 import { QuestionAttributes } from "./questionTypes";
 import { 
   LineAttributes, 
-  PointAttributes, 
+  CellAttributes, 
   RectAttributes, 
   SingleValueAttributes,
   ExponentAttributes,
@@ -32,7 +32,7 @@ export type AnswerLineCreationAttributes = Omit<AnswerLineAttributes, keyof Enti
   
 // point
 
-export type AnswerPointAttributes = EntityAttributes & NotationAttributes & PointAttributes &  AnswerNotationAttributes & SingleValueAttributes;
+export type AnswerPointAttributes = EntityAttributes & NotationAttributes & CellAttributes &  AnswerNotationAttributes & SingleValueAttributes;
 
 export type AnswerPointCreationAttributes = Omit<AnswerPointAttributes, keyof EntityAttributes>     
 
@@ -44,7 +44,7 @@ export type AnswerRectCreationAttributes = Omit<AnswerRectAttributes, keyof Enti
 
 // exponent
 
-export type AnswerExponentAttributes = EntityAttributes & NotationAttributes & PointAttributes & ExponentAttributes &  AnswerNotationAttributes;
+export type AnswerExponentAttributes = EntityAttributes & NotationAttributes & CellAttributes & ExponentAttributes &  AnswerNotationAttributes;
 
 export type AnswerExponentCreationAttributes = Omit<AnswerExponentAttributes, keyof EntityAttributes>     
 

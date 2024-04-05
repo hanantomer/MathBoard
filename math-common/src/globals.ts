@@ -15,7 +15,7 @@ export const defaultdCellStroke = "lightgray";
 
 export const heartBeatInterval = 5000;
 
-//export type PointAttributes = {col: number, row: number};
+//export type CellAttributes = {col: number, row: number};
 
 export type DotPosition = {x: number, y:number};
 

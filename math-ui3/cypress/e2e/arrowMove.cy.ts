@@ -22,19 +22,5 @@ describe("e2e", () => {
       .should("have.css", "stroke")
       .and("include", "rgb(255, 0, 0)"); // verify new cell is selected
 
-    // type some text
-    //    cy.get("body").type("3");
-    //    cy.get('foreignObject[row="1"][col="1"] > p').should("include.text", "3");
-
-    //add fraction line
-    // cy.dataCy("fraction").click();
-    // cy.get("#lessonSvg").realMouseDown({
-    //   x: 200,
-    //   y: 200,
-    // });
-
-    // cy.get("#lessonSvg").trigger("mousemove", { buttons: 1, x: 300, y: 200 });
-
-    // cy.get("#lineRightHandle").realMouseUp();
   });
 });
