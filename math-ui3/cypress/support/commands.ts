@@ -46,6 +46,8 @@ declare namespace Cypress {
     login();
     openLesson();
     clearBoard();
+    drawLine(x: number, y: number, width: number);
+    selectArea(x: number, y: number, width: number, height: number);
   }
 }
 
@@ -67,10 +69,74 @@ Cypress.Commands.add("openLesson", () => {
 });
 
 Cypress.Commands.add("clearBoard", () => {
-  cy.get("#lessonSvg").trigger("mousedown", { buttons: 1, x: 100, y: 50 });
-  cy.get("#lessonSvg").trigger("mousemove", { buttons: 1, x: 51, y: 51 });
+  cy.get("#lessonSvg").trigger("mousedown", { buttons: 1, x: 0, y: 0 });
+  cy.get("#lessonSvg").trigger("mousemove", { buttons: 1, x: 2, y: 2 });
+  cy.get("#lessonSvg").trigger("mousemove", { buttons: 1, x: 3, y: 3 });
   cy.get("#lessonSvg").trigger("mousemove", { buttons: 1, x: 52, y: 52 });
   cy.get("#lessonSvg").trigger("mousemove", { buttons: 1, x: 1300, y: 700 });
   cy.get("#selection").trigger("mouseup");
   cy.get("body").type("{del}");
 });
+
+Cypress.Commands.add("drawLine", (x: number, y: number, width: number) => {
+
+  cy.dataCy("fraction").click();
+
+  cy.get("#lessonSvg").realMouseDown({ x: x, y: y });
+
+  cy.get("#lessonSvg").trigger("mousemove", {
+    buttons: 1,
+    x: x + 1,
+    y: y,
+    force: true
+  });
+
+  cy.get("#lessonSvg").trigger("mousemove", {
+    buttons: 1,
+    x: x + 2,
+    y: 200,
+    force: true,
+  });
+
+  cy.get("#lessonSvg").trigger("mousemove", {
+    buttons: 1,
+    x: +width,
+    y: 200,
+    force: true,
+  });
+
+  cy.get("#lineRightHandle").trigger("mouseup");
+});
+
+Cypress.Commands.add(
+  "selectArea",
+  (x: number, y: number, width: number, height: number) => {
+
+    cy.get("#lessonSvg").realMouseDown({ x: x, y: y });
+
+    cy.get("#lessonSvg").trigger("mousemove", {
+      buttons: 1,
+      x: x + 1,
+      y: y + 1,
+      force: true,
+    });
+
+    cy.get("#lessonSvg").trigger("mousemove", {
+      buttons: 1,
+      x: x + 2,
+      y: y +2,
+      force: true,
+    });
+
+    cy.get("#lessonSvg").trigger("mousemove", {
+      buttons: 1,
+      x: x + width,
+      y: y + height,
+      force: true,
+    });
+
+    cy.get("#lessonSvg").trigger("mouseup");
+  },
+);
+
+

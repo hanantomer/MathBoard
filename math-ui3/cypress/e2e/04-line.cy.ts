@@ -10,32 +10,7 @@ describe("e2e", () => {
     cy.openLesson();
     cy.clearBoard();
 
-    cy.dataCy("fraction").click();
-
-    cy.get("#lessonSvg").realMouseDown({ x: 200, y: 200 });
-
-    cy.get("#lessonSvg").trigger("mousemove", {
-      buttons: 1,
-      x: 201,
-      y: 200,
-      force: true,
-    });
-    cy.get("#lessonSvg").trigger("mousemove", {
-      buttons: 1,
-      x: 202,
-      y: 200,
-      force: true,
-    });
-    cy.get("#lessonSvg").trigger("mousemove", {
-      buttons: 1,
-      x: 300,
-      y: 200,
-      force: true,
-    });
-    cy.get("#lineRightHandle").trigger("mouseup");
-
-    cy.get(".line").invoke("outerWidth").should("be.gt", 50);
-    cy.get(".line").invoke("outerWidth").should("be.lt", 150);
+    cy.drawLine(200, 200, 100);
 
     //edit line
     cy.get("foreignObject[notationType='FRACTION'] span.line").click();
@@ -62,7 +37,7 @@ describe("e2e", () => {
 
     cy.get("#lineRightHandle").trigger("mouseup");
 
-    // cy.get(".line").invoke("outerWidth").should("be.gt", 100);
-    // cy.get(".line").invoke("outerWidth").should("be.lt", 300);
+    cy.get(".line").invoke("outerWidth").should("be.gt", 200);
+    cy.get(".line").invoke("outerWidth").should("be.lt", 350);
   });
 });
