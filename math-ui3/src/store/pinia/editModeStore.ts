@@ -1,9 +1,9 @@
 import { defineStore } from "pinia";
-import { EditMode } from "common/unions";
+import { EditMode, EditModeNotationType, NotationType } from "common/unions";
 import { ref } from "vue";
 
 export const useEditModeStore = defineStore("editMode", () => {
-  let editMode = ref<EditMode>();
+  let editMode = ref<EditMode>("SYMBOL");
 
   const defaultEditMode: EditMode = "SYMBOL";
 
@@ -16,27 +16,53 @@ export const useEditModeStore = defineStore("editMode", () => {
   }
 
   function isSelectionMode() {
-    return (
-      //editMode.value == "AREA_SELECT" ||
-      editMode.value == "AREA_SELECTING" ||
-      editMode.value == "MOVING"
-    );
+    return editMode.value == "AREA_SELECTING" || editMode.value == "MOVING";
   }
 
   function isSelectedMode() {
     return (
       editMode.value == "AREA_SELECTED" ||
-      editMode.value == "FRACTION_SELECTED" ||
+      editMode.value == "HORIZONTAL_LINE_SELECTED" ||
       editMode.value == "SQRT_SELECTED"
     );
   }
 
   function isLineMode() {
-    return isFractionMode() || isSqrtMode();
+    return (
+      isHorizontalLineMode() ||
+      isVerticallLineMode() ||
+      isSlopeLineMode() ||
+      isSqrtMode()
+    );
   }
 
-  function isFractionMode() {
-    return editMode.value == "FRACTION" || editMode.value == "FRACTION_DRAWING";
+  function isLineStartedMode() {
+    return (
+      editMode.value == "HORIZONTAL_LINE_STARTED" ||
+      editMode.value == "VERTICAL_LINE_STARTED" ||
+      editMode.value == "SLOPE_LINE_STARTED"
+    );
+  }
+
+  function isHorizontalLineMode() {
+    return (
+      editMode.value == "HORIZONTAL_LINE_STARTED" ||
+      editMode.value == "HORIZONTAL_LINE_DRAWING"
+    );
+  }
+
+  function isVerticallLineMode() {
+    return (
+      editMode.value == "VERTICAL_LINE_STARTED" ||
+      editMode.value == "VERTICAL_LINE_DRAWING"
+    );
+  }
+
+  function isSlopeLineMode() {
+    return (
+      editMode.value == "SLOPE_LINE_STARTED" ||
+      editMode.value == "SLOPE_LINE_DRAWING"
+    );
   }
 
   function isSqrtMode() {
@@ -53,13 +79,19 @@ export const useEditModeStore = defineStore("editMode", () => {
 
   function isLineDrawingMode() {
     return (
-      editMode.value == "FRACTION_DRAWING" || editMode.value == "SQRT_DRAWING"
+      editMode.value == "HORIZONTAL_LINE_DRAWING" ||
+      editMode.value == "SQRT_DRAWING" ||
+      editMode.value == "VERTICAL_LINE_DRAWING" ||
+      editMode.value == "SLOPE_LINE_DRAWING"
     );
   }
 
   function isLineSelectedMode() {
     return (
-      editMode.value == "FRACTION_SELECTED" || editMode.value == "SQRT_SELECTED"
+      editMode.value == "HORIZONTAL_LINE_SELECTED" ||
+      editMode.value == "SQRT_SELECTED" ||
+      editMode.value == "VERTICAL_LINE_SELECTED" ||
+      editMode.value == "SLOPE_LINE_SELECTED"
     );
   }
 
@@ -72,15 +104,18 @@ export const useEditModeStore = defineStore("editMode", () => {
   }
 
   function isCheckMode() {
-    return editMode.value == "CHECKMARK" || editMode.value == "SEMICHECKMARK" || editMode.value == "XMARK";
+    return (
+      editMode.value == "CHECKMARK" ||
+      editMode.value == "SEMICHECKMARK" ||
+      editMode.value == "XMARK"
+    );
   }
 
   function isColorisingMode() {
     return editMode.value === "COLORISING";
   }
 
-
-  function getEditMode() {
+  function getEditMode(): EditMode {
     return editMode.value;
   }
 
@@ -99,33 +134,54 @@ export const useEditModeStore = defineStore("editMode", () => {
 
   function setNextEditMode() {
     switch (editMode.value) {
-      case "FRACTION":
-        return setEditMode("FRACTION_DRAWING");
+      case "HORIZONTAL_LINE_STARTED":
+        return setEditMode("HORIZONTAL_LINE_DRAWING");
+      case "HORIZONTAL_LINE_SELECTED":
+        return setEditMode("HORIZONTAL_LINE_DRAWING");
+
+      case "VERTICAL_LINE_STARTED":
+        return setEditMode("VERTICAL_LINE_DRAWING");
+      case "VERTICAL_LINE_SELECTED":
+        return setEditMode("VERTICAL_LINE_DRAWING");
+
+      case "SLOPE_LINE_STARTED":
+        return setEditMode("SLOPE_LINE_DRAWING");
+      case "SLOPE_LINE_SELECTED":
+        return setEditMode("SLOPE_LINE_DRAWING");
+
       case "SQRT":
         return setEditMode("SQRT_DRAWING");
-      case "FRACTION_SELECTED":
-        return setEditMode("FRACTION_DRAWING");
+
       case "SQRT_SELECTED":
         return setEditMode("SQRT_DRAWING");
       case "AREA_SELECTING":
         return setEditMode("AREA_SELECTED");
       case "AREA_SELECTED":
         return setEditMode("MOVING");
+
       case "MOVING":
         return resetEditMode();
     }
   }
 
+  function getNotationTypeByEditMode(): NotationType {
+    return EditModeNotationType.get(getEditMode())!;
+  }
+
   return {
     getEditMode,
     getDefaultEditMode,
+    getNotationTypeByEditMode,
     isAreaSelectionOrMovingMode,
     isSelectionMode,
+    isLineStartedMode,
     isLineMode,
     isLineDrawingMode,
     isLineSelectedMode,
     isSelectedMode,
-    isFractionMode,
+    isHorizontalLineMode,
+    isVerticallLineMode,
+    isSlopeLineMode,
     isSqrtMode,
     isSqrtEditMode,
     isExponentMode,

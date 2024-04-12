@@ -30,10 +30,14 @@ export default function selectionHelper() {
     if (!notation) return null;
 
     switch (NotationTypeShape.get(notation!.notationType)) {
-      case "LINE": {
-        if (notation!.notationType == "FRACTION")
-          selectFractionNotation(notation!);
-        if (notation!.notationType == "SQRT") selectSqrtNotation(notation!);
+      case "HORIZONTAL_LINE":
+      case "VERTICAL_LINE":
+      case "SLOPE_LINE":
+      {
+        //if (notation!.notationType == "FRACTION")
+        //  selectFractionNotation(notation!);
+        //if (notation!.notationType == "SQRT") selectSqrtNotation(notation!);
+        selectLineNotation(notation!);
         break;
       }
       case "RECT":
@@ -54,17 +58,19 @@ export default function selectionHelper() {
     notationStore.selectNotation(activeNotation?.uuid);
   }
 
-  function selectFractionNotation(notation: NotationAttributes) {
-    editModeStore.setEditMode("FRACTION_SELECTED");
+  function selectLineNotation(notation: NotationAttributes) {
 
-    // signal LineDrawer.vue to perform store and visual selection
-    eventBus.emit("lineSelected", notation);
-  }
+    switch (notation.notationType) {
+      case "SQRT":
+        editModeStore.setEditMode("SQRT_SELECTED");
+      case "HORIZONTALLINE":
+        editModeStore.setEditMode("HORIZONTAL_LINE_SELECTED");
+      case "VERTICALLINE":
+        editModeStore.setEditMode("VERTICAL_LINE_SELECTED");
+      case "SLOPELINE":
+        editModeStore.setEditMode("SLOPE_LINE_SELECTED");
+    }
 
-  function selectSqrtNotation(notation: NotationAttributes) {
-    editModeStore.setEditMode("SQRT_SELECTED");
-
-    // signal LineDrawer.vue to perform store and visual selection
     eventBus.emit("lineSelected", notation);
   }
 

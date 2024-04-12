@@ -1,19 +1,21 @@
-import { Model, Column, BelongsTo, ForeignKey, DataType, NotNull, AllowNull  } from "sequelize-typescript";
-import { NotationType, BoardType } from "../../../../../math-common/src/unions";
-import {LessonLineAttributes, LessonLineCreationAttributes} from "../../../../../math-common/build/lessonTypes";
-import User from "../../user.model";
+import {
+    Model, Column, BelongsTo, ForeignKey, DataType, AllowNull
+} from "sequelize-typescript";
+import  User from "../../user.model";
 import Lesson from "../../lesson/lesson.model";
 import LessonDecorator from "../../lesson/lessonDecorator";
+import {
+    LessonHorizontalLineAttributes,
+    LessonHorizontalLineCreationAttributes,
+} from "../../../../../math-common/src/lessonTypes";
 
-
-@LessonDecorator("LessonFraction")
-export default class LessonFraction extends Model<
-    LessonLineAttributes,
-    LessonLineCreationAttributes
+@LessonDecorator("LessonHorizontalLine")
+export default class LessonHorizontalLine extends Model<
+    LessonHorizontalLineAttributes,
+    LessonHorizontalLineCreationAttributes
 > {
-    notationType = "FRACTION";
-    boardType = "LESSON";
-    value = null;
+    notationType = "HORIZONTALLINE";
+    boardType = "ANSWER";
 
     @AllowNull(false)
     @Column({ type: DataType.UUID, defaultValue: DataType.UUIDV4 })

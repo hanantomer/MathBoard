@@ -1,21 +1,21 @@
-import { Model, Column, BelongsTo, ForeignKey, DataType, AllowNull } from "sequelize-typescript";
-import { NotationType, BoardType } from "../../../../../math-common/src/unions";
 import {
-    QuestionLineAttributes,
-    QuestionLineCreationAttributes,
-} from "../../../../../math-common/src/questionTypes";
-import User from "../../user.model";
+    Model, Column, BelongsTo, ForeignKey, DataType, AllowNull
+} from "sequelize-typescript";
+import  User from "../../user.model";
 import Question from "../../question/question.model";
 import QuestionDecorator from "../../question/questionDecorator";
+import {
+    QuestionHorizontalLineAttributes,
+    QuestionHorizontalLineCreationAttributes,
+} from "../../../../../math-common/src/questionTypes";
 
-@QuestionDecorator("QuestionRoot")
-export default class QuestionRoot extends Model<
-    QuestionLineAttributes,
-    QuestionLineCreationAttributes
+@QuestionDecorator("QuestionHorizontalLine")
+export default class QuestionHorizontalLine extends Model<
+    QuestionHorizontalLineAttributes,
+    QuestionHorizontalLineCreationAttributes
 > {
-    notationType = "SQRT";
-    boardType = "QUESTION";
-    value = null;
+    notationType = "HORIZONTALLINE";
+    boardType = "ANSWER";
 
     @AllowNull(false)
     @Column({ type: DataType.UUID, defaultValue: DataType.UUIDV4 })

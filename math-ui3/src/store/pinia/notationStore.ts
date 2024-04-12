@@ -7,8 +7,10 @@ import {
   NotationAttributes,
   CellAttributes,
   PointNotationAttributes,
-  LineNotationAttributes,
   RectNotationAttributes,
+  HorizontalLineNotationAttributes,
+  VerticalLineNotationAttributes,
+  SlopeLineNotationAttributes,
 } from "common/baseTypes";
 import { BoardType, NotationShape, NotationTypeShape } from "common/unions";
 import { ref } from "vue";
@@ -107,10 +109,24 @@ export const useNotationStore = defineStore("notation", () => {
       .map((n) => n as PointNotationAttributes);
   }
 
-  function getLineNotations(): LineNotationAttributes[] {
+  function getHorizontalLineNotations(): HorizontalLineNotationAttributes[] {
     return Array.from(notations.value.values())
-      .filter((n) => NotationTypeShape.get(n.notationType) === "RECT")
-      .map((n) => n as LineNotationAttributes);
+      .filter(
+        (n) => NotationTypeShape.get(n.notationType) === "HORIZONTAL_LINE",
+      )
+      .map((n) => n as HorizontalLineNotationAttributes);
+  }
+
+  function getVerticalLineNotations(): VerticalLineNotationAttributes[] {
+    return Array.from(notations.value.values())
+      .filter((n) => NotationTypeShape.get(n.notationType) === "VERTICAL_LINE")
+      .map((n) => n as VerticalLineNotationAttributes);
+  }
+
+  function getSlopeLineNotations(): SlopeLineNotationAttributes[] {
+    return Array.from(notations.value.values())
+      .filter((n) => NotationTypeShape.get(n.notationType) === "SLOPE_LINE")
+      .map((n) => n as SlopeLineNotationAttributes);
   }
 
   function getRectNotations(): RectNotationAttributes[] {
@@ -152,10 +168,24 @@ export const useNotationStore = defineStore("notation", () => {
           false,
         );
 
-      case "LINE":
-        notationCellOccupationHelper.updateLineOccupationMatrix(
+      case "HORIZONTAL_LINE":
+        notationCellOccupationHelper.updateHorizontalLineOccupationMatrix(
           cellLineNotationOccupationMatrix,
-          notation as LineNotationAttributes,
+          notation as HorizontalLineNotationAttributes,
+          false,
+        );
+
+      case "VERTICAL_LINE":
+        notationCellOccupationHelper.updateVerticalLineOccupationMatrix(
+          cellLineNotationOccupationMatrix,
+          notation as VerticalLineNotationAttributes,
+          false,
+        );
+
+      case "SLOPE_LINE":
+        notationCellOccupationHelper.updateSlopeLineOccupationMatrix(
+          cellLineNotationOccupationMatrix,
+          notation as SlopeLineNotationAttributes,
           false,
         );
 
@@ -183,12 +213,25 @@ export const useNotationStore = defineStore("notation", () => {
           notations.value.get(uuid)! as PointNotationAttributes,
           true,
         );
-      case "LINE":
-        notationCellOccupationHelper.updateLineOccupationMatrix(
+      case "HORIZONTAL_LINE":
+        notationCellOccupationHelper.updateHorizontalLineOccupationMatrix(
           cellLineNotationOccupationMatrix,
-          notations.value.get(uuid)! as LineNotationAttributes,
+          notations.value.get(uuid)! as HorizontalLineNotationAttributes,
           true,
         );
+      case "VERTICAL_LINE":
+        notationCellOccupationHelper.updateVerticalLineOccupationMatrix(
+          cellLineNotationOccupationMatrix,
+          notations.value.get(uuid)! as VerticalLineNotationAttributes,
+          true,
+        );
+      case "SLOPE_LINE":
+        notationCellOccupationHelper.updateSlopeLineOccupationMatrix(
+          cellLineNotationOccupationMatrix,
+          notations.value.get(uuid)! as SlopeLineNotationAttributes,
+          true,
+        );
+
       case "RECT":
         notationCellOccupationHelper.updateRectOccupationMatrix(
           cellRectNotationOccupationMatrix,
@@ -241,7 +284,9 @@ export const useNotationStore = defineStore("notation", () => {
   function isLineOrRectSelected() {
     return getSelectedNotations().find(
       (n) =>
-        NotationTypeShape.get(n.notationType) == "LINE" ||
+        NotationTypeShape.get(n.notationType) == "HORIZONTAL_LINE" ||
+        NotationTypeShape.get(n.notationType) == "VERTICAL_LINE" ||
+        NotationTypeShape.get(n.notationType) == "SLOPE_LINE" ||
         NotationTypeShape.get(n.notationType) == "RECT",
     );
   }
@@ -282,12 +327,13 @@ export const useNotationStore = defineStore("notation", () => {
     getNotation,
     getNotations,
     getPointNotations,
-    getLineNotations,
+    getHorizontalLineNotations,
+    getVerticalLineNotations,
+    getSlopeLineNotations,
     getRectNotations,
     getCopiedNotations,
     getNotationsByShape,
     getNotationByCell,
-    //getCellOccupationMatrix,
     getSelectedCell,
     getSelectedNotations,
     getParent,

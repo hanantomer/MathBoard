@@ -167,7 +167,7 @@ function handleMouseMove(e: MouseEvent) {
   const editMode = editModeStore.getEditMode();
 
   if (
-    editModeStore.isFractionMode() ||
+    editModeStore.isLineMode() ||
     editModeStore.isSqrtMode() ||
     editModeStore.isColorisingMode()
   ) {
@@ -245,7 +245,9 @@ function endSelect() {
         let y_gutter = 10;
 
         if (
-          NotationTypeShape.get(datum.notationType) === "LINE" ||
+          NotationTypeShape.get(datum.notationType) === "HORIZONTAL_LINE" ||
+          NotationTypeShape.get(datum.notationType) === "VERTICAL_LINE" ||
+          NotationTypeShape.get(datum.notationType) === "SLOPE_LINE" ||
           datum.notationType === "SQRTSYMBOL"
         ) {
           y_gutter = 0;

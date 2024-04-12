@@ -3,16 +3,16 @@ import { Model, Column, BelongsTo, ForeignKey, DataType, AllowNull } from "seque
 import { NotationType, BoardType } from "../../../../../math-common/src/unions";
 import { UUID, UUIDV4 } from "sequelize/types/data-types";
 import {
-    LessonLineAttributes,
-    LessonLineCreationAttributes,
+    LessonHorizontalLineAttributes,
+    LessonHorizontalLineCreationAttributes,
 } from "../../../../../math-common/src/lessonTypes";
 import User from "../../user.model";
 import Lesson from "../../lesson/lesson.model";
 
 @LessonDecorator("LessonSqrt")
 export default class LessonSqrt extends Model<
-    LessonLineAttributes,
-    LessonLineCreationAttributes
+    LessonHorizontalLineAttributes,
+    LessonHorizontalLineCreationAttributes
 > {
     notationType = "SQRT";
     boardType = "LESSON";
@@ -52,5 +52,9 @@ export default class LessonSqrt extends Model<
 
     @AllowNull(false)
     @Column({ type: DataType.INTEGER })
-    row!: number;
+    fromRow!: number;
+
+    @AllowNull(false)
+    @Column({ type: DataType.INTEGER })
+    toRow!: number;
 }

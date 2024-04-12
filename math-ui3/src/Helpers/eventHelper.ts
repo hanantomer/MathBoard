@@ -9,10 +9,12 @@ import useAuthorizationHelper from "./authorizationHelper";
 import useEventBus from "../helpers/eventBusHelper";
 import useSelectionHelper from "./selectionHelper";
 import {
-  LineNotationAttributes,
   NotationAttributes,
   PointNotationAttributes,
   RectNotationAttributes,
+  HorizontalLineNotationAttributes,
+  VerticalLineNotationAttributes,
+  SlopeLineNotationAttributes,
 } from "common/baseTypes";
 import { NotationTypeShape } from "common/unions";
 
@@ -57,13 +59,7 @@ export default function eventHelper() {
   async function pasteNotations() {
     const selectedCell = notationStore.getSelectedCell();
     if (!selectedCell) return;
-    //    let colIdx = 0
 
-    //let cell = selectedCell;
-    //  let lastCol: number;
-    //  let lastRow: number;
-    //let colShifting = 0;
-    //let rowShifting = 0;
     let firstRow: number | null = null;
     let firstCol: number | null = null;
 
@@ -77,19 +73,46 @@ export default function eventHelper() {
           n1.col = selectedCell.col + n1.col - firstCol;
           n1.row = selectedCell.row + n1.row - firstRow;
           notationMutationHelper.cloneNotation(n1);
+          break;
+        }
+
+        case "HORIZONTAL_LINE": {
+          let n1 = { ...n } as HorizontalLineNotationAttributes;
+          const lineWidth = n1.toCol - n1.fromCol;
+          if (!firstCol) firstCol = n1.fromCol;
+          n1.fromCol = selectedCell.col + n1.fromCol - firstCol;
+          n1.toCol = n1.fromCol + lineWidth;
+          n1.row = selectedCell.row + n1.row;
+
+          notationMutationHelper.cloneNotation(n1);
 
           break;
         }
 
-        case "LINE": {
-          let n1 = { ...n } as LineNotationAttributes;
-          const lineWidth = n1.toCol - n1.fromCol;
-          if (!firstRow) firstRow = n1.row;
-          if (!firstCol) firstCol = n1.fromCol;
+        case "VERTICAL_LINE": {
+          let n1 = { ...n } as VerticalLineNotationAttributes;
+          if (!firstRow) firstRow = n1.fromRow;
+          const lineHeight = n1.toRow - n1.fromRow;
+          n1.col = selectedCell.col;
+          n1.fromRow = selectedCell.row + n1.fromRow - firstRow;
+          n1.toRow = n1.fromRow + lineHeight;
 
-          n1.fromCol = selectedCell.col + n1.fromCol - firstCol;
-          n1.toCol = n1.fromCol + lineWidth;
-          n1.row = selectedCell.row + n1.row - firstRow;
+          notationMutationHelper.cloneNotation(n1);
+
+          break;
+        }
+
+        case "SLOPE_LINE": {
+          let n1 = { ...n } as SlopeLineNotationAttributes;
+          if (!firstCol) firstCol = n1.fromCol;
+          if (!firstRow) firstRow = n1.fromRow;
+          const lineWidth = n1.toCol - n1.fromCol;
+          const lineHeight = n1.toRow - n1.fromRow;
+          n1.fromCol = selectedCell.col;
+          n1.toCol = selectedCell.col + lineWidth;
+          n1.fromRow = selectedCell.row + n1.fromRow - firstRow;
+          n1.toRow = n1.fromRow + lineHeight;
+
           notationMutationHelper.cloneNotation(n1);
 
           break;

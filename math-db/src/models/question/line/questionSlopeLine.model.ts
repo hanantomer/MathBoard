@@ -1,21 +1,21 @@
-import { Model, Column, BelongsTo, ForeignKey, DataType, AllowNull } from "sequelize-typescript";
-import { NotationType, BoardType } from "../../../../../math-common/src/unions";
 import {
-    QuestionLineAttributes,
-    QuestionLineCreationAttributes,
-} from "../../../../../math-common/src/questionTypes";
-import User from "../../user.model";
+    Model, Column, BelongsTo, ForeignKey, DataType, AllowNull
+} from "sequelize-typescript";
+import  User from "../../user.model";
 import Question from "../../question/question.model";
 import QuestionDecorator from "../../question/questionDecorator";
+import {
+    QuestionSlopeLineAttributes,
+    QuestionSlopeLineCreationAttributes,
+} from "../../../../../math-common/src/questionTypes";
 
-@QuestionDecorator("QuestionFraction")
-export default class QuestionFraction extends Model<
-    QuestionLineAttributes,
-    QuestionLineCreationAttributes
+@QuestionDecorator("QuestionSlopeLine")
+export default class QuestionSlopeLine extends Model<
+    QuestionSlopeLineAttributes,
+    QuestionSlopeLineCreationAttributes
 > {
-    notationType = "FRACTION";
-    boardType = "QUESTION";
-    value = null;
+    notationType = "SlopeLINE";
+    boardType = "ANSWER";
 
     @AllowNull(false)
     @Column({ type: DataType.UUID, defaultValue: DataType.UUIDV4 })

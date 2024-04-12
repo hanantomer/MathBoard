@@ -1,6 +1,8 @@
 import {
   PointNotationAttributes,
-  LineNotationAttributes,
+  HorizontalLineNotationAttributes,
+  VerticalLineNotationAttributes,
+  SlopeLineNotationAttributes,
   RectNotationAttributes,
 } from "common/baseTypes";
 
@@ -21,9 +23,9 @@ export default function notationCellOccupationHelper() {
     }
   }
 
-  function updateLineOccupationMatrix(
+  function updateHorizontalLineOccupationMatrix(
     matrix: any,
-    notation: LineNotationAttributes,
+    notation: HorizontalLineNotationAttributes,
     doRemove: boolean,
   ) {
     for (let i = notation.fromCol; i <= notation.toCol; i++) {
@@ -32,6 +34,40 @@ export default function notationCellOccupationHelper() {
         notation.row < matrixDimensions.rowsNum
       ) {
         matrix[i][notation.row] = doRemove ? null : notation;
+      }
+    }
+  }
+
+  function updateVerticalLineOccupationMatrix(
+    matrix: any,
+    notation: VerticalLineNotationAttributes,
+    doRemove: boolean,
+  ) {
+    for (let i = notation.fromRow; i <= notation.toRow; i++) {
+      if (
+        i < matrixDimensions.rowsNum &&
+        notation.col < matrixDimensions.colsNum
+      ) {
+        matrix[notation.col][i] = doRemove ? null : notation;
+      }
+    }
+  }
+
+
+  ///TODO: update occupation matrix assuming that from col is less than to col
+  //// but from row can be greater than to row in case of negative slope
+  /// the occupation matrix shoulkd be populated to encompass the generated lin
+  function updateSlopeLineOccupationMatrix(
+    matrix: any,
+    notation: SlopeLineNotationAttributes,
+    doRemove: boolean,
+  ) {
+    for (let i = notation.fromRow; i <= notation.toRow; i++) {
+      if (
+        i < matrixDimensions.rowsNum &&
+        notation.toCol < matrixDimensions.colsNum
+      ) {
+        matrix[notation.fromCol][i] = doRemove ? null : notation;
       }
     }
   }
@@ -52,7 +88,9 @@ export default function notationCellOccupationHelper() {
 
   return {
     updatePointOccupationMatrix,
-    updateLineOccupationMatrix,
+    updateHorizontalLineOccupationMatrix,
+    updateVerticalLineOccupationMatrix,
+    updateSlopeLineOccupationMatrix,
     updateRectOccupationMatrix,
   };
 }

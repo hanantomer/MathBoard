@@ -1,22 +1,21 @@
-import AnswerDecorator from "../../answer/answerDecorator";
-import { Model, Column, BelongsTo, ForeignKey, DataType, AllowNull } from "sequelize-typescript";
-import { NotationType, BoardType } from "../../../../../math-common/src/unions";
-import User  from "../../user.model";
+import {
+    Model, Column, BelongsTo, ForeignKey, DataType, AllowNull
+} from "sequelize-typescript";
+import  User from "../../user.model";
 import Answer from "../../answer/answer.model";
+import AnswerDecorator from "../../answer/answerDecorator";
 import {
     AnswerHorizontalLineAttributes,
     AnswerHorizontalLineCreationAttributes,
 } from "../../../../../math-common/src/answerTypes";
 
-        
-@AnswerDecorator("AnswerSqrt")
-export default class AnswerSqrt extends Model<
+@AnswerDecorator("AnswerHorizontalLine")
+export default class AnswerHorizontalLine extends Model<
     AnswerHorizontalLineAttributes,
     AnswerHorizontalLineCreationAttributes
 > {
-    notationType = "SQRT";
+    notationType = "HORIZONTALLINE";
     boardType = "ANSWER";
-    value = null;
 
     @AllowNull(false)
     @Column({ type: DataType.UUID, defaultValue: DataType.UUIDV4 })
@@ -52,9 +51,5 @@ export default class AnswerSqrt extends Model<
 
     @AllowNull(false)
     @Column({ type: DataType.INTEGER })
-    fromRow!: number;
-
-    @AllowNull(false)
-    @Column({ type: DataType.INTEGER })
-    toRow!: number;
+    row!: number;
 }

@@ -1,20 +1,21 @@
-import { Model, Column, BelongsTo, ForeignKey, DataType, AllowNull } from "sequelize-typescript";
-import User from "../../user.model";
-import Question from "../question.model";
-import QuestionDecorator from "../questionDecorator";
 import {
-    QuestionHorizontalLineAttributes,
-    QuestionHorizontalLineCreationAttributes,
+    Model, Column, BelongsTo, ForeignKey, DataType, AllowNull
+} from "sequelize-typescript";
+import  User from "../../user.model";
+import Question from "../../question/question.model";
+import QuestionDecorator from "../../question/questionDecorator";
+import {
+    QuestionVerticalLineAttributes,
+    QuestionVerticalLineCreationAttributes,
 } from "../../../../../math-common/src/questionTypes";
 
-@QuestionDecorator("QuestionSqrt")
-export default class QuestionSqrt extends Model<
-    QuestionHorizontalLineAttributes,
-    QuestionHorizontalLineCreationAttributes
+@QuestionDecorator("QuestionVerticalLine")
+export default class QuestionVerticalLine extends Model<
+    QuestionVerticalLineAttributes,
+    QuestionVerticalLineCreationAttributes
 > {
-    notationType = "SQRT";
-    boardType = "QUESTION";
-    value = null;
+    notationType = "VerticalLine";
+    boardType = "ANSWER";
 
     @AllowNull(false)
     @Column({ type: DataType.UUID, defaultValue: DataType.UUIDV4 })
@@ -42,11 +43,7 @@ export default class QuestionSqrt extends Model<
 
     @AllowNull(false)
     @Column({ type: DataType.INTEGER })
-    fromCol!: number;
-
-    @AllowNull(false)
-    @Column({ type: DataType.INTEGER })
-    toCol!: number;
+    col!: number;
 
     @AllowNull(false)
     @Column({ type: DataType.INTEGER })

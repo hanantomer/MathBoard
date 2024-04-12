@@ -3,15 +3,11 @@
     :show="showAccessLinkDialog"
     @close="closeAccessLinkDialog"
   ></accessLinkDialog>
+
   <freeTextDialog
     :show="showFreeTextDialog"
     @close="closeFreeTextDialog"
   ></freeTextDialog>
-
-  <triangleDialog
-    :show="showTriangleDialog"
-    @close="closeTriangleDialog"
-  ></triangleDialog>
 
   <v-toolbar color="primary" dark class="vertical-toolbar" height="500">
     <!-- create access link -->
@@ -45,18 +41,18 @@
       </template>
     </v-tooltip> -->
 
-    <!-- fraction line-->
-    <v-tooltip text="Draw fraction line">
+    <!-- horizontal line-->
+    <v-tooltip text="Draw horizontal fraction line">
       <template v-slot:activator="{ props }">
         <v-btn
-          data-cy="fraction"
+          data-cy="horizontalLine"
           v-bind="props"
           icon
-          :color="fractionButtonActive ? 'white' : 'yellow'"
+          :color="horizontalLineButtonActive ? 'white' : 'yellow'"
           x-small
           fab
           dark
-          v-on:click="toggleFractionMode"
+          v-on:click="toggleHorizontalLineMode"
           :disabled="!editEnabled"
         >
           <v-icon>mdi-tooltip-minus-outline</v-icon>
@@ -168,20 +164,6 @@
         </v-btn>
       </template>
     </v-tooltip>
-
-    <!-- triangle -->
-    <v-tooltip text="Triangle">
-      <template v-slot:activator="{ props }">
-        <v-btn
-          v-bind="props"
-          icon
-          v-on:click="startTriangleMode"
-          :disabled="!triangleEnabled"
-          @click.stop="openTriangleDialog"
-          ><v-icon>mdi-triangle</v-icon></v-btn
-        >
-      </template>
-    </v-tooltip>
   </v-toolbar>
 </template>
 
@@ -189,15 +171,12 @@
 import { watch, ref } from "vue";
 import accessLinkDialog from "./AccessLinkDialog.vue";
 import freeTextDialog from "./FreeTextDialog.vue";
-//import exponentDialog from "./ExponentDialog.vue";
-import triangleDialog from "./TriangleDialog.vue";
 import useNotationMutateHelper from "../helpers/notationMutateHelper";
 import { useNotationStore } from "../store/pinia/notationStore";
 import { useEditModeStore } from "../store/pinia/editModeStore";
 import { computed } from "vue";
 import { useUserStore } from "../store/pinia/userStore";
 import useEventBus from "../helpers/eventBusHelper";
-import { ExponentAttributes, TriangleAttributes } from "common/baseTypes";
 import useAuthorizationHelper from "../helpers/authorizationHelper";
 
 const authorizationHelper = useAuthorizationHelper();
@@ -211,12 +190,13 @@ let checkmarkButtonActive = ref(1);
 let semicheckmarkButtonActive = ref(1);
 let xmarkButtonActive = ref(1);
 let selectionButtonActive = ref(1);
-let fractionButtonActive = ref(1);
+let verticalLineButtonActive = ref(1);
+let slopeLineButtonActive = ref(1);
+let horizontalLineButtonActive = ref(1);
 let squareRootButtonActive = ref(1);
 let exponentButtonActive = ref(1);
 let textButtonActive = ref(1);
 
-let showTriangleDialog = ref(false);
 let showAccessLinkDialog = ref(false);
 let showFreeTextDialog = ref(false);
 //let showExponentDialog = ref(false);
@@ -231,8 +211,16 @@ watch(
       resetButtonsState();
     }
 
-    if (editMode === "FRACTION") {
-      fractionButtonActive.value = 0;
+    if (editMode === "HORIZONTAL_LINE_STARTED") {
+      horizontalLineButtonActive.value = 0;
+    }
+
+    if (editMode === "VERTICAL_LINE_STARTED") {
+      verticalLineButtonActive.value = 0;
+    }
+
+    if (editMode === "SLOPE_LINE_STARTED") {
+      slopeLineButtonActive.value = 0;
     }
 
     if (editMode === "SQRT") {
@@ -263,20 +251,12 @@ watch(
 );
 
 // emitted by triangle dialog
-watch(
-  () => eventBus.bus.value.get("triangleSubmited"),
-  (triangle: TriangleAttributes) => {
-    notationMutateHelper.upsertTriangleNotation(triangle);
-  },
-);
-
-function openTriangleDialog() {
-  showTriangleDialog.value = true;
-}
-
-function closeTriangleDialog() {
-  showTriangleDialog.value = false;
-}
+// watch(
+//   () => eventBus.bus.value.get("triangleSubmited"),
+//   (triangle: TriangleAttributes) => {
+//     notationMutateHelper.upsertTriangleNotation(triangle);
+//   },
+// );
 
 function openFreeTextDialog() {
   showFreeTextDialog.value = true;
@@ -324,15 +304,6 @@ const exponentEnabled = computed(() => {
   );
 });
 
-const triangleEnabled = computed(() => {
-  if (!editEnabled.value) return false;
-
-  return (
-    notationStore.getSelectedCell() ||
-    notationStore.getSelectedNotations()?.at(0)?.notationType === "TRIANGLE"
-  );
-});
-
 const answerCheckMode = computed(() => {
   return notationStore.getParent().type == "ANSWER" && userStore.isTeacher();
 });
@@ -342,24 +313,56 @@ function resetButtonsState() {
   semicheckmarkButtonActive.value = 1;
   xmarkButtonActive.value = 1;
   selectionButtonActive.value = 1;
-  fractionButtonActive.value = 1;
+  horizontalLineButtonActive.value = 1;
+  verticalLineButtonActive.value = 1;
+  slopeLineButtonActive.value = 1;
   squareRootButtonActive.value = 1;
   exponentButtonActive.value = 1;
 }
 
-function toggleFractionMode() {
+function toggleHorizontalLineMode() {
   resetButtonsState();
-  if (editModeStore.getEditMode() == "FRACTION") {
+  if (editModeStore.getEditMode() == "HORIZONTAL_LINE_STARTED") {
     resetButtonsState();
   } else {
-    startFractionMode();
+    startHorizontalLineMode();
   }
 }
 
-function startFractionMode() {
+function toggleVerticalLineMode() {
   resetButtonsState();
-  fractionButtonActive.value = 0;
-  editModeStore.setEditMode("FRACTION");
+  if (editModeStore.getEditMode() == "VERTICAL_LINE_STARTED") {
+    resetButtonsState();
+  } else {
+    startVerticalLineMode();
+  }
+}
+
+function toggleSlopeLineMode() {
+  resetButtonsState();
+  if (editModeStore.getEditMode() == "SLOPE_LINE_STARTED") {
+    resetButtonsState();
+  } else {
+    startSlopeLineMode();
+  }
+}
+
+function startHorizontalLineMode() {
+  resetButtonsState();
+  horizontalLineButtonActive.value = 0;
+  editModeStore.setEditMode("HORIZONTAL_LINE_STARTED");
+}
+
+function startVerticalLineMode() {
+  resetButtonsState();
+  verticalLineButtonActive.value = 0;
+  editModeStore.setEditMode("VERTICAL_LINE_STARTED");
+}
+
+function startSlopeLineMode() {
+  resetButtonsState();
+  horizontalLineButtonActive.value = 0;
+  editModeStore.setEditMode("SLOPE_LINE_STARTED");
 }
 
 function toggleSqrtMode() {
@@ -402,7 +405,6 @@ function startTextMode() {
   textButtonActive.value = 0;
   editModeStore.setEditMode("TEXT");
 }
-
 
 function toggleCheckmarkMode() {
   if (editModeStore.getEditMode() == "CHECKMARK") {

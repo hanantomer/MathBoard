@@ -1,8 +1,11 @@
 import { BoardType, NotationType } from "common/unions";
 import {
-  LineNotationAttributes,
+  HorizontalLineNotationAttributes,
   NotationAttributes,
   NotationCreationAttributes,
+  SlopeLineNotationAttributes,
+  VerticalLineAttributes,
+  VerticalLineNotationAttributes,
 } from "common/baseTypes";
 import {
   UserAttributes,
@@ -230,7 +233,7 @@ export default function useDbHelper() {
     );
   }
 
-  async function updateLineAttributes(lineNotation: LineNotationAttributes) {
+  async function updateHorizontalLineAttributes(lineNotation: HorizontalLineNotationAttributes) {
     return axios.put(
       baseURL +
         `/${lineNotation.boardType.toLowerCase()}${lineNotation.notationType.toLowerCase()}s`,
@@ -238,6 +241,38 @@ export default function useDbHelper() {
         uuid: lineNotation.uuid,
         fromCol: lineNotation.fromCol,
         toCol: lineNotation.toCol,
+        row: lineNotation.row,
+      },
+    );
+  }
+
+  async function updateVerticalLineAttributes(
+    lineNotation: VerticalLineNotationAttributes,
+  ) {
+    return axios.put(
+      baseURL +
+        `/${lineNotation.boardType.toLowerCase()}${lineNotation.notationType.toLowerCase()}s`,
+      {
+        uuid: lineNotation.uuid,
+        col: lineNotation.col,
+        fromRow: lineNotation.fromRow,
+        toRow: lineNotation.toRow,
+      },
+    );
+  }
+
+  async function updateSlopeLineAttributes(
+    lineNotation: SlopeLineNotationAttributes,
+  ) {
+    return axios.put(
+      baseURL +
+        `/${lineNotation.boardType.toLowerCase()}${lineNotation.notationType.toLowerCase()}s`,
+      {
+        uuid: lineNotation.uuid,
+        fromCol: lineNotation.fromCol,
+        toCol: lineNotation.toCol,
+        fromRow: lineNotation.fromRow,
+        toRow: lineNotation.toRow,
       },
     );
   }
@@ -354,7 +389,9 @@ export default function useDbHelper() {
     addQuestion,
     addAnswer,
     addNotation,
-    updateLineAttributes,
+    updateHorizontalLineAttributes,
+    updateVerticalLineAttributes,
+    updateSlopeLineAttributes,
     updateNotationValue,
     saveMovedNotations,
     removeNotation,

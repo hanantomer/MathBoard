@@ -48,15 +48,15 @@ export default defineConfig(function (_a) {
         server: {
             host: "0.0.0.0",
             cors: true,
-            port: Number(process.env.VITE_WEB_PORT),
+            port: Number(process.env.VITE_WEB_PORT /*see .env*/),
             proxy: {
                 "/api": {
-                    target: "http://localhost:" + process.env.VITE_API_PORT,
+                    target: "http://localhost:" + process.env.VITE_API_PORT /*see .env*/,
                     changeOrigin: true,
                     secure: false,
                 },
                 "/socket.io": {
-                    target: "http://localhost:" + process.env.VITE_MESSAGING_PORT,
+                    target: "http://localhost:" + process.env.VITE_MESSAGING_PORT /*see .env*/,
                     changeOrigin: true,
                     ws: true,
                     secure: false,

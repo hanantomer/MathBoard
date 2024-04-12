@@ -1,8 +1,10 @@
 import {
   NotationAttributes,
   PointNotationAttributes,
-  LineNotationAttributes,
   RectNotationAttributes,
+  HorizontalLineNotationAttributes,
+  VerticalLineNotationAttributes,
+  SlopeLineNotationAttributes,
 } from "common/baseTypes";
 
 import useDbHelper from "./dbHelper";
@@ -39,7 +41,7 @@ export default function notationLoadingHelper() {
 
   // e.g. load lesson symbols
   async function loadNotationsByType(
-    boardType: BoardType | undefined,
+    boardType: BoardType,
     notationType: NotationType,
     parentUUId: string,
   ): Promise<NotationAttributes[]> {
@@ -53,8 +55,20 @@ export default function notationLoadingHelper() {
           boardType,
           parentUUId,
         );
-      case "LINE":
-        return await dbHelper.getNotations<LineNotationAttributes>(
+      case "HORIZONTAL_LINE":
+        return await dbHelper.getNotations<HorizontalLineNotationAttributes>(
+          notationType,
+          boardType,
+          parentUUId,
+        );
+      case "VERTICAL_LINE":
+        return await dbHelper.getNotations<VerticalLineNotationAttributes>(
+          notationType,
+          boardType,
+          parentUUId,
+        );
+      case "SLOPE_LINE":
+        return await dbHelper.getNotations<SlopeLineNotationAttributes>(
           notationType,
           boardType,
           parentUUId,

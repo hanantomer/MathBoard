@@ -6,7 +6,12 @@ import {
   selectedCellStroke,
 } from "common/globals";
 
-import { ColorizedCell, SelectedCell } from "common/baseTypes";
+import {
+  HorizontalLineAttributes,
+  HorizontalLineNotationAttributes,
+  SlopeLineNotationAttributes,
+  VerticalLineNotationAttributes
+} from "common/baseTypes";
 
 import * as d3 from "d3";
 import { useNotationStore } from "../store/pinia/notationStore";
@@ -16,9 +21,7 @@ import { cellSpace } from "common/globals";
 import {
   NotationAttributes,
   CellAttributes,
-  LineAttributes,
   RectAttributes,
-  LineNotationAttributes,
   PointNotationAttributes,
   RectNotationAttributes,
 } from "common/baseTypes";
@@ -225,7 +228,7 @@ export default function useMatrixHelper() {
         if (notation.notationType === "SQRT") {
           let sqrtNotation = {
             ...notation,
-            col: (notation as LineNotationAttributes).fromCol,
+            col: (notation as HorizontalLineNotationAttributes).fromCol,
             toCol: null,
           };
           sqrtNotation.notationType = "SQRTSYMBOL";
@@ -266,9 +269,10 @@ export default function useMatrixHelper() {
       case "POINT": {
         return pointNotationHeight(n as PointNotationAttributes);
       }
-      case "LINE": {
-        return lineNotationHeight(n as LineNotationAttributes);
-      }
+///TODO: use svg line
+//      case "LINE": {
+//        return lineNotationHeight(n as LineNotationAttributes);
+//      }
       case "RECT": {
         return rectNotationHeight(n as RectNotationAttributes);
       }
@@ -291,10 +295,10 @@ export default function useMatrixHelper() {
       .attr("col", (n: CellAttributes) => {
         return n?.col;
       })
-      .attr("fromCol", (n: LineAttributes | RectAttributes) => {
+      .attr("fromCol", (n: HorizontalLineAttributes | RectAttributes) => {
         return n?.fromCol;
       })
-      .attr("toCol", (n: LineAttributes | RectAttributes) => {
+      .attr("toCol", (n: HorizontalLineAttributes | RectAttributes) => {
         return n?.toCol;
       })
       .attr("row", (n: CellAttributes) => {
@@ -365,9 +369,17 @@ export default function useMatrixHelper() {
       case "POINT": {
         return (n as PointNotationAttributes).col;
       }
-      case "LINE":
+      case "HORIZONTAL_LINE": {
+        return (n as HorizontalLineNotationAttributes).fromCol;
+      }
+      case "VERTICAL_LINE": {
+        return (n as VerticalLineNotationAttributes).col;
+      }
+      case "SLOPE_LINE": {
+        return (n as SlopeLineNotationAttributes).fromCol;
+      }
       case "RECT": {
-        return (n as LineNotationAttributes).fromCol;
+        return (n as RectNotationAttributes).fromCol;
       }
     }
     return null;
@@ -376,8 +388,14 @@ export default function useMatrixHelper() {
   function row(n: NotationAttributes) {
     switch (NotationTypeShape.get(n.notationType)) {
       case "POINT":
-      case "LINE": {
-        return (n as LineNotationAttributes).row;
+      case "HORIZONTAL_LINE": {
+        return (n as HorizontalLineNotationAttributes).row;
+      }
+      case "VERTICAL_LINE": {
+        return (n as VerticalLineNotationAttributes).fromRow;
+      }
+      case "SLOPE_LINE": {
+        return (n as SlopeLineNotationAttributes).fromRow;
       }
       case "RECT": {
         return (n as RectNotationAttributes).fromRow;
@@ -400,9 +418,9 @@ export default function useMatrixHelper() {
     let rowIdx = row(n);
     if (!rowIdx) return null;
     let deltaY =
-      //n.notationType === "EXPONENT"
-      //  ? -5
-      n.notationType === "FRACTION" ||
+      n.notationType === "HORIZONTALLINE" ||
+      n.notationType === "VERTICALLINE" ||
+      n.notationType === "SLOPELINE" ||
       n.notationType === "SQRT" ||
       n.notationType === "SQRTSYMBOL"
         ? -5
@@ -420,9 +438,11 @@ export default function useMatrixHelper() {
       case "POINT": {
         return pointNotationWidth(n as PointNotationAttributes);
       }
-      case "LINE": {
-        return lineNotationWidth(n as LineNotationAttributes);
-      }
+
+///TODO: use svg line
+//      case "LINE": {
+//        return lineNotationWidth(n as LineNotationAttributes);
+//      }
       case "RECT": {
         return rectNotationWidth(n as RectNotationAttributes);
       }
@@ -434,12 +454,12 @@ export default function useMatrixHelper() {
     return notationStore.getCellHorizontalWidth();
   }
 
-  function lineNotationWidth(n: LineAttributes): number {
-    return (
-      (n.toCol - n.fromCol) *
-      (notationStore.getCellHorizontalWidth() + cellSpace)
-    );
-  }
+  // function lineNotationWidth(n: LineAttributes): number {
+  //   return (
+  //     (n.toCol - n.fromCol) *
+  //     (notationStore.getCellHorizontalWidth() + cellSpace)
+  //   );
+  // }
 
   function rectNotationWidth(n: RectAttributes): number {
     // if (n.notationType === "TEXT") {
@@ -458,9 +478,19 @@ export default function useMatrixHelper() {
     return notationStore.getCellVerticalHeight();
   }
 
-  function lineNotationHeight(n: LineAttributes): number {
-    return 8;
-  }
+  // function horizontalLineNotationHeight(): number {
+  //   return 8;
+  // }
+
+  // function verticalLineNotationHeight(n: VerticalLineAttributes): number {
+  //   return (n.toRow - n.fromRow + 1) * notationStore.getCellVerticalHeight() + 5;
+  // }
+
+  // function slopeLineNotationHeight(n: SlopeLineAttributes): number {
+  //   return (
+  //     (n.toRow - n.fromRow + 1) * notationStore.getCellVerticalHeight() + 5
+  //   );
+  // }
 
   function rectNotationHeight(n: RectAttributes): number {
     return (
@@ -490,22 +520,48 @@ export default function useMatrixHelper() {
         ? "purple"
         : "black";
 
-    if (n.notationType === "FRACTION") {
-      let n1 = n as LineNotationAttributes;
-      return `<span class=line style='color:${color};width:${
-        (n1.toCol - n1.fromCol) *
-        (notationStore.getCellHorizontalWidth() + cellSpace)
-      }px;'></span>`;
+    if (
+      n.notationType === "HORIZONTALLINE"
+    ) {
+      let n1 = n as HorizontalLineNotationAttributes;
+      // return `<span class=line style='color:${color};width:${
+      //   (n1.toCol - n1.fromCol) *
+      //   (notationStore.getCellHorizontalWidth() + cellSpace)
+      // }px;'></span>`;
+      return `<svg width="10" height="10"><rect fill="red" width="10" height="10" /></svg>`
+    }
+
+    if (
+      n.notationType === "VERTICALLINE"
+    ) {
+      let n1 = n as VerticalLineNotationAttributes;
+      // return `<span class=line style='color:${color};width:${
+      //   (n1.toCol - n1.fromCol) *
+      //   (notationStore.getCellHorizontalWidth() + cellSpace)
+      // }px;'></span>`;
+      return `<svg width="10" height="10"><rect fill="red" width="10" height="10" /></svg>`
+    }
+
+    if (
+      n.notationType === "SLOPELINE"
+    ) {
+      let n1 = n as SlopeLineNotationAttributes;
+      // return `<span class=line style='color:${color};width:${
+      //   (n1.toCol - n1.fromCol) *
+      //   (notationStore.getCellHorizontalWidth() + cellSpace)
+      // }px;'></span>`;
+      return `<svg width="10" height="10"><rect fill="red" width="10" height="10" /></svg>`
     }
 
     if (n.notationType === "SQRT") {
-      let n1 = n as LineNotationAttributes;
+      let n1 = n as HorizontalLineNotationAttributes;
       return `<span class=line style='color:${color};position:relative;left:9px;width:${
         (n1.toCol - n1.fromCol) *
           (notationStore.getCellHorizontalWidth() + cellSpace) -
         8
       }px;'></span>`;
     }
+
 
     if (n.notationType === "SQRTSYMBOL") {
       return `<p class='sqrtsymbol' style='color:${color}'>&#x221A;</p>`;

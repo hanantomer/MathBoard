@@ -1,6 +1,8 @@
 import { QuestionAttributes } from "./questionTypes";
 import { 
-  LineAttributes, 
+  HorizontalLineAttributes, 
+  VerticalLineAttributes, 
+  SlopeLineAttributes, 
   CellAttributes, 
   RectAttributes, 
   SingleValueAttributes,
@@ -26,9 +28,18 @@ type AnswerNotationAttributes = {
 
 // line
 
-export type  AnswerLineAttributes = EntityAttributes & NotationAttributes & LineAttributes &  AnswerNotationAttributes;
+export type  AnswerHorizontalLineAttributes = EntityAttributes & NotationAttributes & HorizontalLineAttributes &  AnswerNotationAttributes;
 
-export type AnswerLineCreationAttributes = Omit<AnswerLineAttributes, keyof EntityAttributes> 
+export type AnswerHorizontalLineCreationAttributes = Omit<AnswerHorizontalLineAttributes, keyof EntityAttributes> 
+
+export type  AnswerVerticalLineAttributes = EntityAttributes & NotationAttributes & VerticalLineAttributes &  AnswerNotationAttributes;
+
+export type AnswerVerticalLineCreationAttributes = Omit<AnswerVerticalLineAttributes, keyof EntityAttributes> 
+
+export type  AnswerSlopeLineAttributes = EntityAttributes & NotationAttributes & SlopeLineAttributes &  AnswerNotationAttributes;
+
+export type AnswerSlopeLineCreationAttributes = Omit<AnswerSlopeLineAttributes, keyof EntityAttributes> 
+
   
 // point
 

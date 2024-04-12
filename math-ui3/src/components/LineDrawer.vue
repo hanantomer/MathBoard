@@ -20,18 +20,22 @@
       v-on:mouseup="onMouseUp"
       v-on:mousedown="onHandleMouseDown"
     ></v-card>
+
     <v-card
       id="line"
       class="line"
       v-bind:style="{
         color: 'black',
         left: lineLeft + 8 + 'px',
+        right: lineRight + 8 + 'px',
         top: lineTop + 'px',
-        width: lineRight - lineLeft + 'px',
-        height: '1px',
+        bottom: lineBottom + 'px',
+        // width: lineRight - lineLeft + 'px',
+        // height: '1px',
       }"
       v-on:mouseup="onMouseUp"
     ></v-card>
+
     <p
       style="position: absolute"
       class="sqrtsymbol"
@@ -57,8 +61,12 @@ import {
   cellSpace,
 } from "../../../math-common/src/globals";
 import {
-  LineAttributes,
-  LineNotationAttributes,
+  HorizontalLineAttributes,
+  HorizontalLineNotationAttributes,
+  SlopeLineAttributes,
+  SlopeLineNotationAttributes,
+  VerticalLineAttributes,
+  VerticalLineNotationAttributes,
 } from "../../../math-common/src/baseTypes";
 import useEventBus from "../helpers/eventBusHelper";
 
@@ -75,11 +83,22 @@ const props = defineProps({
 
 // vars
 
-let selectedLine: LineNotationAttributes | null = null;
 let linePosition = ref(<LinePosition | Record<string, never>>{});
 
 const sqrtEditMode = computed(() => {
   return editModeStore.isSqrtEditMode();
+});
+
+const horizontalEditMode = computed(() => {
+  return editModeStore.isHorizontalLineMode();
+});
+
+const verticalEditMode = computed(() => {
+  return editModeStore.isVerticallLineMode();
+});
+
+const slopeEditMode = computed(() => {
+  return editModeStore.isSlopeLineMode();
 });
 
 const show = computed(() => {
@@ -100,8 +119,12 @@ let lineRight = computed(() => {
   return Math.max(linePosition.value.x1, linePosition.value.x2);
 });
 
+let lineBottom = computed(() => {
+  return linePosition.value.y2;
+});
+
 let lineTop = computed(() => {
-  return linePosition.value.y;
+  return linePosition.value.y1;
 });
 
 // watch
@@ -128,22 +151,34 @@ watch(
 );
 
 watch(
-  () => eventBus.bus.value.get("lineSelected"),
-  (line: LineNotationAttributes) => {
-    if (line) onLineSelected(line);
+  () => eventBus.bus.value.get("horizontalLineSelected"), /// TODO: update emitter to distinguish line types
+  (line: HorizontalLineNotationAttributes) => {
+    if (line) onHorizontalLineSelected(line);
   },
   { immediate: true },
 );
 
-// event emitters
+watch(
+  () => eventBus.bus.value.get("verticalLineSelected"), /// TODO: update emitter to distinguish line types
+  (line: VerticalLineNotationAttributes) => {
+    if (line) onVerticalLineSelected(line);
+  },
+  { immediate: true },
+);
 
-//function mouseup(e: KeyboardEvent) {
-//  eventBus.emit("svgmouseup", e);
-//}
+watch(
+  () => eventBus.bus.value.get("slopeLineSelected"), /// TODO: update emitter to distinguish line types
+  (line: SlopeLineNotationAttributes) => {
+    if (line) onSlopeLineSelected(line);
+  },
+  { immediate: true },
+);
 
 // event handlers
 
-function onLineSelected(lineNotation: LineNotationAttributes) {
+function onHorizontalLineSelected(
+  lineNotation: HorizontalLineNotationAttributes,
+) {
   linePosition.value.x1 =
     svgDimensions.value.left +
     lineNotation.fromCol * (notationStore.getCellHorizontalWidth() + cellSpace);
@@ -153,9 +188,50 @@ function onLineSelected(lineNotation: LineNotationAttributes) {
     (lineNotation.toCol - 1) *
       (notationStore.getCellHorizontalWidth() + cellSpace);
 
-  linePosition.value.y =
+  linePosition.value.y1 =
     svgDimensions.value.top +
     lineNotation.row * (notationStore.getCellVerticalHeight() + cellSpace);
+
+  notationStore.selectNotation(lineNotation.uuid);
+
+  eventBus.emit("lineSelected", null); // to enable re selection
+}
+
+function onVerticalLineSelected(lineNotation: VerticalLineNotationAttributes) {
+  linePosition.value.x1 = linePosition.value.x2 =
+    svgDimensions.value.left +
+    lineNotation.col * (notationStore.getCellHorizontalWidth() + cellSpace);
+
+  linePosition.value.y1 =
+    svgDimensions.value.top +
+    lineNotation.fromRow * (notationStore.getCellVerticalHeight() + cellSpace);
+
+  linePosition.value.y2 =
+    svgDimensions.value.top +
+    lineNotation.toRow * (notationStore.getCellVerticalHeight() + cellSpace);
+
+  notationStore.selectNotation(lineNotation.uuid);
+
+  eventBus.emit("lineSelected", null); // to enable re selection
+}
+
+function onSlopeLineSelected(lineNotation: SlopeLineNotationAttributes) {
+  linePosition.value.x1 =
+    svgDimensions.value.left +
+    lineNotation.fromCol * (notationStore.getCellHorizontalWidth() + cellSpace);
+
+  linePosition.value.x2 =
+    svgDimensions.value.left +
+    (lineNotation.toCol - 1) *
+      (notationStore.getCellHorizontalWidth() + cellSpace);
+
+  linePosition.value.y1 =
+    svgDimensions.value.top +
+    lineNotation.fromRow * (notationStore.getCellVerticalHeight() + cellSpace);
+
+  linePosition.value.y2 =
+    svgDimensions.value.top +
+    lineNotation.toRow * (notationStore.getCellVerticalHeight() + cellSpace);
 
   notationStore.selectNotation(lineNotation.uuid);
 
@@ -180,10 +256,7 @@ function onMouseDown(e: MouseEvent) {
   }
 
   // new line
-  if (
-    editModeStore.getEditMode() === "FRACTION" ||
-    editModeStore.getEditMode() === "SQRT"
-  ) {
+  if (editModeStore.isLineStartedMode()) {
     startLineDrawing({
       x: e.offsetX,
       y: e.offsetY,
@@ -202,7 +275,12 @@ function onMouseMove(e: MouseEvent) {
 
   console.debug(linePosition);
   // nothing done yet
-  if (linePosition.value.x1 === 0 && linePosition.value.x2 === 0) {
+  if (
+    linePosition.value.x1 === 0 &&
+    linePosition.value.x2 === 0 &&
+    linePosition.value.y1 === 0 &&
+    linePosition.value.y2 === 0
+  ) {
     return;
   }
 
@@ -213,11 +291,19 @@ function onMouseMove(e: MouseEvent) {
 
   console.debug("e.clientX:" + e.clientX);
   setLineWidth(e.clientX);
+
+  console.debug("e.clientY:" + e.clientY);
+  setLineHeight(e.clientY);
 }
 
 function onMouseUp() {
   // drawing not started
-  if (linePosition.value.x1 === 0 && linePosition.value.x2 === 0) {
+  if (
+    linePosition.value.x1 === 0 &&
+    linePosition.value.x2 === 0 &&
+    linePosition.value.y1 === 0 &&
+    linePosition.value.y2 === 0
+  ) {
     return;
   }
 
@@ -235,7 +321,8 @@ function startLineDrawing(position: DotPosition) {
 
   linePosition.value.x2 = linePosition.value.x1 + 10;
 
-  linePosition.value.y = getNearestRow(position.y) + svgDimensions.value.top;
+  linePosition.value.y1 = linePosition.value.y2 =
+    getNearestRow(position.y) + svgDimensions.value.top;
 }
 
 function setLineWidth(xPos: number) {
@@ -247,8 +334,21 @@ function setLineWidth(xPos: number) {
   }
 }
 
+function setLineHeight(yPos: number) {
+  if (yPos <= linePosition.value.y1) {
+    linePosition.value.y1 = yPos;
+  }
+  if (yPos > linePosition.value.y1) {
+    linePosition.value.y2 = yPos;
+  }
+}
+
 function endDrawLine() {
-  if (linePosition.value.x2 == linePosition.value.x1) return;
+  if (
+    linePosition.value.x2 == linePosition.value.x1 &&
+    linePosition.value.y2 == linePosition.value.y1
+  )
+    return;
 
   let fromCol = Math.round(
     (linePosition.value.x1 - svgDimensions.value.left) /
@@ -260,39 +360,88 @@ function endDrawLine() {
       (notationStore.getCellHorizontalWidth() + cellSpace),
   );
 
-  let row = Math.round(
-    (linePosition.value.y - svgDimensions.value.top) /
+  let fromRow = Math.round(
+    (linePosition.value.y1 - svgDimensions.value.top) /
       (notationStore.getCellVerticalHeight() + cellSpace),
   );
 
-  let lineAttributes: LineAttributes = {
-    fromCol: fromCol,
-    toCol: toCol,
-    row: row,
-  };
+  let toRow = Math.round(
+    (linePosition.value.y2 - svgDimensions.value.top) /
+      (notationStore.getCellVerticalHeight() + cellSpace),
+  );
 
-  saveLine(lineAttributes);
+  if (horizontalEditMode)
+    saveHorizontalLine({ fromCol: fromCol, toCol: toCol, row: fromRow });
+  else if (verticalEditMode)
+    saveVerticalLine({ col: fromCol, fromRow: fromRow, toRow: toRow });
+  else if (slopeEditMode)
+    saveSlopeLine({
+      fromCol: fromCol,
+      toCol: toCol,
+      fromRow: fromRow,
+      toRow: toRow,
+    });
+
   editModeStore.resetEditMode();
 }
 
-function saveLine(lineAttributes: LineAttributes) {
+function saveHorizontalLine(lineAttributes: HorizontalLineAttributes) {
   if (notationStore.getSelectedNotations().length > 0) {
     let updatedLine = {
       ...notationStore.getSelectedNotations().at(0)!,
       ...lineAttributes,
     };
-    notationMutateHelper.updateLineNotation(
-      updatedLine as LineNotationAttributes,
+
+    notationMutateHelper.updateHorizontalLineNotation(
+      updatedLine as HorizontalLineNotationAttributes,
     );
   } else
-    notationMutateHelper.addLineNotation(
+    notationMutateHelper.addHorizontalLineNotation(
       lineAttributes,
-      editModeStore.isFractionMode() ? "FRACTION" : "SQRT",
+      editModeStore.getNotationTypeByEditMode(),
+    );
+}
+
+function saveVerticalLine(lineAttributes: VerticalLineAttributes) {
+  if (notationStore.getSelectedNotations().length > 0) {
+    let updatedLine = {
+      ...notationStore.getSelectedNotations().at(0)!,
+      ...lineAttributes,
+    };
+
+    notationMutateHelper.updateVerticalLineNotation(
+      updatedLine as VerticalLineNotationAttributes,
+    );
+  } else
+    notationMutateHelper.addVerticalLineNotation(
+      lineAttributes,
+      editModeStore.getNotationTypeByEditMode(),
+    );
+}
+
+function saveSlopeLine(lineAttributes: SlopeLineAttributes) {
+  if (notationStore.getSelectedNotations().length > 0) {
+    let updatedLine = {
+      ...notationStore.getSelectedNotations().at(0)!,
+      ...lineAttributes,
+    };
+
+    notationMutateHelper.updateSlopeLineNotation(
+      updatedLine as SlopeLineNotationAttributes,
+    );
+  } else
+    notationMutateHelper.addSlopeLineNotation(
+      lineAttributes,
+      editModeStore.getNotationTypeByEditMode(),
     );
 }
 
 function resetLineDrawing() {
-  linePosition.value.x1 = linePosition.value.x2 = linePosition.value.y = 0;
+  linePosition.value.x1 =
+    linePosition.value.x2 =
+    linePosition.value.y1 =
+    linePosition.value.y2 =
+      0;
   editModeStore.resetEditMode();
 }
 
@@ -305,12 +454,12 @@ function getNearestRow(clickedYPos: number) {
 </script>
 
 <style>
-foreignObject[type="fraction"],
+/* foreignObject[type="fraction"],
 foreignObject[type="sqrt"] {
   height: 10px;
   padding-top: 4px;
   cursor: pointer;
-}
+} */
 .line {
   top: 4px;
   position: absolute;

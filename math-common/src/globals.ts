@@ -22,7 +22,8 @@ export type DotPosition = {x: number, y:number};
 export type LinePosition =  {
   x1: number;
   x2: number;
-  y: number;
+  y1: number;
+  y2: number;
 };
 
 

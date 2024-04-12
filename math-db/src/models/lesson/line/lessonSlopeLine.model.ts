@@ -1,21 +1,21 @@
-import AnswerDecorator from "../answerDecorator";
-import { Model, Column, BelongsTo, ForeignKey, DataType, AllowNull} from "sequelize-typescript";
-import { NotationType, BoardType } from "../../../../../math-common/src/unions";
-import User from "../../user.model";
-import Answer from "../../answer/answer.model";
 import {
-    AnswerLineAttributes,
-    AnswerLineCreationAttributes,
+    Model, Column, BelongsTo, ForeignKey, DataType, AllowNull
+} from "sequelize-typescript";
+import  User from "../../user.model";
+import Answer from "../../answer/answer.model";
+import AnswerDecorator from "../../answer/answerDecorator";
+import {
+    AnswerSlopeLineAttributes,
+    AnswerSlopeLineCreationAttributes,
 } from "../../../../../math-common/src/answerTypes";
 
-@AnswerDecorator("AnswerRoot")
-export default class AnswerRoot extends Model<
-    AnswerLineAttributes,
-    AnswerLineCreationAttributes
+@AnswerDecorator("AnswerSlopeLine")
+export default class AnswerSlopeLine extends Model<
+    AnswerSlopeLineAttributes,
+    AnswerSlopeLineCreationAttributes
 > {
-    notationType = "SQRT";
+    notationType = "SlopeLINE";
     boardType = "ANSWER";
-    value = null;
 
     @AllowNull(false)
     @Column({ type: DataType.UUID, defaultValue: DataType.UUIDV4 })

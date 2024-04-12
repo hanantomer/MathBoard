@@ -1,5 +1,7 @@
 import { 
-  LineAttributes, 
+  HorizontalLineAttributes, 
+  VerticalLineAttributes, 
+  SlopeLineAttributes, 
   CellAttributes, 
   RectAttributes, 
   SingleValueAttributes,
@@ -16,9 +18,18 @@ export type LessonCreationAttributes = Omit<LessonAttributes, keyof EntityAttrib
 
 // line
 
-export type  LessonLineAttributes = EntityAttributes & NotationAttributes & LineAttributes ;
+export type  LessonHorizontalLineAttributes = EntityAttributes & NotationAttributes & HorizontalLineAttributes;
 
-export type LessonLineCreationAttributes = Omit<LessonLineAttributes, keyof EntityAttributes> 
+export type LessonHorizontalLineCreationAttributes = Omit<LessonHorizontalLineAttributes, keyof EntityAttributes> 
+
+export type  LessonVerticalLineAttributes = EntityAttributes & NotationAttributes & VerticalLineAttributes;
+
+export type LessonVerticalLineCreationAttributes = Omit<LessonVerticalLineAttributes, keyof EntityAttributes> 
+
+export type  LessonSlopeLineAttributes = EntityAttributes & NotationAttributes & SlopeLineAttributes;
+
+export type LessonSlopeLineCreationAttributes = Omit<LessonSlopeLineAttributes, keyof EntityAttributes> 
+
   
 // point
 

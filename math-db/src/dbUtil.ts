@@ -265,17 +265,17 @@ export default function dbUtil() {
         const modelName = boardModelName + notationTypeNameCapitalized; // e.g. LessonSymbol
 
         if (!parentUUId) {
-            ///TODE: report warning to log
+            ///TODO: report warning to log
             return null;
         }
 
         if (!db.sequelize.models[modelName]) {
-            ///TODE: report warning to log
+            ///TODO: report warning to log
             return null;
         }
 
         if (!db.sequelize.models[boardModelName]) {
-            ///TODE: report warning to log
+            ///TODO: report warning to log
             return null;
         }
 
