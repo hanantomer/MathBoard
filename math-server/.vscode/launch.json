@@ -24,7 +24,7 @@
                 "ts-node/esm"
             ],
             "args": ["${workspaceFolder}\\build\\app.js"],
-            "preLaunchTask": "tsc: build - tsconfig.json",
+            "preLaunchTask": "build",
             "outFiles": ["${workspaceFolder}/build/**/*.js", "${workspaceFolder}/../math-db/build/**/*.js"],
             "skipFiles": ["<node_internals>/**"]
         },

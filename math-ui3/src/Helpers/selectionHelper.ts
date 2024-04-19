@@ -63,15 +63,22 @@ export default function selectionHelper() {
     switch (notation.notationType) {
       case "SQRT":
         editModeStore.setEditMode("SQRT_SELECTED");
+        eventBus.emit("horizontalLineSelected", notation);
+        break;
       case "HORIZONTALLINE":
         editModeStore.setEditMode("HORIZONTAL_LINE_SELECTED");
+        eventBus.emit("horizontalLineSelected", notation);
+        break;
       case "VERTICALLINE":
         editModeStore.setEditMode("VERTICAL_LINE_SELECTED");
+        eventBus.emit("verticalLineSelected", notation);
+        break;
       case "SLOPELINE":
         editModeStore.setEditMode("SLOPE_LINE_SELECTED");
+        eventBus.emit("slopeLineSelected", notation);
     }
 
-    eventBus.emit("lineSelected", notation);
+
   }
 
   async function selectCell(svgId: string, position: DotPosition) {

@@ -30,7 +30,7 @@ export const useEditModeStore = defineStore("editMode", () => {
   function isLineMode() {
     return (
       isHorizontalLineMode() ||
-      isVerticallLineMode() ||
+      isVerticalLineMode() ||
       isSlopeLineMode() ||
       isSqrtMode()
     );
@@ -51,7 +51,7 @@ export const useEditModeStore = defineStore("editMode", () => {
     );
   }
 
-  function isVerticallLineMode() {
+  function isVerticalLineMode() {
     return (
       editMode.value == "VERTICAL_LINE_STARTED" ||
       editMode.value == "VERTICAL_LINE_DRAWING"
@@ -77,22 +77,34 @@ export const useEditModeStore = defineStore("editMode", () => {
     return editMode.value === "SQRT_DRAWING";
   }
 
-  function isLineDrawingMode() {
+  function isHorizontalLineDrawingMode() {
     return (
       editMode.value == "HORIZONTAL_LINE_DRAWING" ||
-      editMode.value == "SQRT_DRAWING" ||
-      editMode.value == "VERTICAL_LINE_DRAWING" ||
-      editMode.value == "SLOPE_LINE_DRAWING"
+      editMode.value == "SQRT_DRAWING"
     );
   }
 
-  function isLineSelectedMode() {
+  function isVerticalLineDrawingMode() {
+    return editMode.value == "VERTICAL_LINE_DRAWING";
+  }
+
+  function isSlopeLineDrawingMode() {
+    return editMode.value == "SLOPE_LINE_DRAWING";
+  }
+
+  function isHorizontalLineSelectedMode() {
     return (
       editMode.value == "HORIZONTAL_LINE_SELECTED" ||
-      editMode.value == "SQRT_SELECTED" ||
-      editMode.value == "VERTICAL_LINE_SELECTED" ||
-      editMode.value == "SLOPE_LINE_SELECTED"
+      editMode.value == "SQRT_SELECTED"
     );
+  }
+
+  function isVerticalLineSelectedMode() {
+    return editMode.value == "VERTICAL_LINE_SELECTED";
+  }
+
+  function isSlopeLineSelectedMode() {
+    return editMode.value == "SLOPE_LINE_SELECTED";
   }
 
   function isTextMode() {
@@ -176,12 +188,16 @@ export const useEditModeStore = defineStore("editMode", () => {
     isSelectionMode,
     isLineStartedMode,
     isLineMode,
-    isLineDrawingMode,
-    isLineSelectedMode,
-    isSelectedMode,
     isHorizontalLineMode,
-    isVerticallLineMode,
+    isHorizontalLineSelectedMode,
+    isHorizontalLineDrawingMode,
+    isVerticalLineMode,
+    isVerticalLineSelectedMode,
+    isVerticalLineDrawingMode,
     isSlopeLineMode,
+    isSlopeLineSelectedMode,
+    isSlopeLineDrawingMode,
+    isSelectedMode,
     isSqrtMode,
     isSqrtEditMode,
     isExponentMode,

@@ -9,7 +9,7 @@ import {
     AnswerSlopeLineCreationAttributes,
 } from "../../../../../math-common/src/answerTypes";
 
-@AnswerDecorator("AnswerSlopeLine")
+@AnswerDecorator("AnswerSlopeline")
 export default class AnswerSlopeLine extends Model<
     AnswerSlopeLineAttributes,
     AnswerSlopeLineCreationAttributes

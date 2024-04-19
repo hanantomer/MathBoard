@@ -11,22 +11,29 @@ export const signList = ["=", "+", "-", "*", "/", "\\", "(", ")", "[", "]"];
 
 export const selectedCellStroke = "red";
 export const defaultdCellStroke = "lightgray";
-//export const selectedCellStrokeWidth = "2";
 
 export const heartBeatInterval = 5000;
 
-//export type CellAttributes = {col: number, row: number};
 
 export type DotPosition = {x: number, y:number};
 
-export type LinePosition =  {
-  x1: number;
-  x2: number;
-  y1: number;
+export type HorizontaLinePosition =  {
+  x1: number,
+  x2: number,
+  y: number;
+};
+
+export type VerticalLinePosition =  {
+  x: number,
+  y1: number,
   y2: number;
 };
 
-
+// if y of left DotPosition is less than y of right DotPosition slope is positive and vice versa
+export type SlopeLinePosition =  {
+  left: DotPosition, 
+  right: DotPosition
+};
 
 export function getDefaultFontSize() : number {
   var style  = 

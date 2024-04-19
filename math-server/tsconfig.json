@@ -1,6 +1,6 @@
 {
     "compilerOptions": {
-        "composite": true,
+        "composite": true, 
         "target": "ES6",
         "module": "CommonJS",
         "lib": ["ES2021", "ESNext"],
@@ -17,7 +17,7 @@
             "auth/*": ["../math-auth/src/*"]
         },
         "sourceMap": true,
-        "resolveJsonModule": true
+        "resolveJsonModule": true,
     },
     "ts-node": {
         // Tell ts-node CLI to install the --loader automatically

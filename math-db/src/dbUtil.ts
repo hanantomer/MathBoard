@@ -13,9 +13,21 @@ import { QuestionCreationAttributes } from "../../math-common/build/questionType
 import { AnswerAttributes, AnswerCreationAttributes } from "../../math-common/build/answerTypes";
 import { capitalize } from "../../math-common/build/utils";
 import { BoardType, NotationType } from "../../math-common/src/unions";
+import { Model, ModelCtor } from "sequelize";
 
+let modelMap = new Map<String, ModelCtor<Model>>();
 
 export default function dbUtil() {
+
+    function findModel(modelName: String): ModelCtor<Model>{
+        if (modelMap.size === 0) {
+            for (let m in db.sequelize.models) {
+                modelMap.set(m.toLowerCase(), db.sequelize.models[m]);
+            }
+        }
+
+        return modelMap.get(modelName.toLowerCase())!;
+    }
 
     async function getIdByUUId(
         model: string,
@@ -269,7 +281,7 @@ export default function dbUtil() {
             return null;
         }
 
-        if (!db.sequelize.models[modelName]) {
+        if (!findModel(modelName)) {
             ///TODO: report warning to log
             return null;
         }
@@ -282,7 +294,7 @@ export default function dbUtil() {
         let parentId = await getIdByUUId(boardModelName, parentUUId);
         if (!parentId) return null;
 
-        return await db.sequelize.models[modelName].findAll({
+        return await findModel(modelName).findAll({
             where: {
                 [boardFieldIdFieldName]: parentId,
             },
@@ -299,11 +311,13 @@ export default function dbUtil() {
         notationType: String,
         notation: NotationAttributes
     ) {
+        const modelName = getModelName(boardType, notationType); // e.g. LessonSymbol
+
         const boardName = boardType.toString().toLowerCase(); // e.g lesson
         const boardModelName = capitalize(boardName); // e.g Lesson
-        const notationTypeName = notationType.toString().toLowerCase(); // e.g. symbol
-        const notationTypeNameCapitalized = capitalize(notationTypeName); // e.g. Symbol
-        const modelName = boardModelName + notationTypeNameCapitalized; // e.g. LessonSymbol
+        // const notationTypeName = notationType.toString().toLowerCase(); // e.g. symbol
+        // const notationTypeNameCapitalized = capitalize(notationTypeName); // e.g. Symbol
+        // const modelName = boardModelName + notationTypeNameCapitalized; // e.g. LessonSymbol
 
         (notation as any).userId = (await getIdByUUId(
             "User",
@@ -315,11 +329,11 @@ export default function dbUtil() {
             notation.parentUUId
         )) as number;
 
-        const res = await db.sequelize.models[modelName].create(
+        const res = await findModel(modelName).create(
             notation as any
         );
 
-        return await db.sequelize.models[modelName].findByPk(
+        return await findModel(modelName).findByPk(
             res.dataValues.id,
             {
                 include: [
@@ -339,7 +353,7 @@ export default function dbUtil() {
         const modelName = getModelName(boardType, notationType); // e.g. LessonSymbol
         const id = (await getIdByUUId(modelName, uuid)) as number;
         if (!id) return;
-        return await db.sequelize.models[modelName].update(attributes, {
+        return await findModel(modelName).update(attributes, {
             where: { id: id },
             logging: true,
         });
@@ -352,12 +366,12 @@ export default function dbUtil() {
     ) {
         const modelName = getModelName(boardType, notationType); // e.g. LessonSymbol
         const id = (await getIdByUUId(modelName, uuid)) as number;
-        return await db.sequelize.models[modelName].destroy({
+        return await findModel(modelName).destroy({
             where: { id: id },
         });
     }
 
-    function getModelName(boardType: string, notationType: string) {
+    function getModelName(boardType: String, notationType: String) {
         const boardName = boardType.toString().toLowerCase(); // e.g lesson
         const boardModelName = capitalize(boardName); // e.g Lesson
         const notationTypeName = notationType.toString().toLowerCase(); // e.g. symbol
@@ -365,7 +379,7 @@ export default function dbUtil() {
         const modelName = boardModelName + notationTypeNameCapitalized; // e.g. LessonSymbol
         return modelName;
     }
-
+    
 
     return {
         getIdByUUId,

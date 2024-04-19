@@ -42,7 +42,7 @@
     </v-tooltip> -->
 
     <!-- horizontal line-->
-    <v-tooltip text="Draw horizontal fraction line">
+    <v-tooltip text="Draw horizontal line">
       <template v-slot:activator="{ props }">
         <v-btn
           data-cy="horizontalLine"
@@ -56,6 +56,48 @@
           :disabled="!editEnabled"
         >
           <v-icon>mdi-tooltip-minus-outline</v-icon>
+        </v-btn>
+      </template>
+    </v-tooltip>
+
+    <!-- vertical line-->
+    <v-tooltip text="Draw vertical line">
+      <template v-slot:activator="{ props }">
+        <v-btn
+          data-cy="verticalLine"
+          v-bind="props"
+          icon
+          :color="verticalLineButtonActive ? 'white' : 'yellow'"
+          x-small
+          fab
+          dark
+          v-on:click="toggleVerticalLineMode"
+          :disabled="!editEnabled"
+        >
+          <v-icon style="transform: rotate(90deg)"
+            >mdi-tooltip-minus-outline</v-icon
+          >
+        </v-btn>
+      </template>
+    </v-tooltip>
+
+    <!-- slope line-->
+    <v-tooltip text="Draw sloped line">
+      <template v-slot:activator="{ props }">
+        <v-btn
+          data-cy="slopeLine"
+          v-bind="props"
+          icon
+          :color="slopeLineButtonActive ? 'white' : 'yellow'"
+          x-small
+          fab
+          dark
+          v-on:click="toggleSlopeLineMode"
+          :disabled="!editEnabled"
+        >
+          <v-icon style="transform: rotate(45deg)"
+            >mdi-tooltip-minus-outline</v-icon
+          >
         </v-btn>
       </template>
     </v-tooltip>

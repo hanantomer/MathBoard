@@ -2,8 +2,9 @@ import express, { Request, Response, NextFunction } from "express";
 import cors from "cors";
 import bodyParser from "body-parser";
 import useAuthUtil  from "../../math-auth/build/authUtil";
-import useDb from  "../../math-db/build/dbUtil"
+import useDb from "../../math-db/build/dbUtil"
 import connection from "../../math-db/build/models/index";
+const { exec } = require("child_process");
 import { BoardTypeValues, NotationTypeValues } from "../../math-common/build/unions"
 import { createTransport } from "nodemailer";
 
@@ -32,7 +33,6 @@ app.use(
         parameterLimit: 5000,
     })
 );
-
 
 
 
@@ -452,14 +452,18 @@ const errorHandler = (
     res: Response,
     next: NextFunction
 ) => {
-    console.error("unhandled error:" + err);
-    res.status(500).send({ errors: [{ message: "Something went wrong" }] });
+    console.error("unhandled error:" + err.message);
+    console.error(err.cause);
+    console.error(err.stack);
+    res.status(500).send({ errors: [{ message: err.message + err.cause }] });  /// TODO: log instaed 
 };
 
 app.use(errorHandler);
 
-const forceDbCreate = process.env.NODE_ENV === "test";
+let forceDbCreate = process.env.NODE_ENV === "test";
+forceDbCreate = true;
 console.log("re create db =" + forceDbCreate);
+
 connection.sequelize.sync({ force: forceDbCreate }).then(() => {
     const port = Number(process.env.API_PORT) || 17030;  
     app.listen(port, () => {
@@ -468,4 +472,20 @@ connection.sequelize.sync({ force: forceDbCreate }).then(() => {
     .on("error", (e) => {
         console.log("Error: ", e.message);
     });
+    if (forceDbCreate) {
+        exec(
+            "C:/dev/MathBoard/math-db/seeders/seed.bat",
+            (err: any, stdout: any, stderr: any) => {
+                if (err) {
+                    console.log(err);
+                    // node couldn't execute the command
+                    return;
+                }
+
+                // the *entire* stdout and stderr (buffered)
+                console.log(`stdout: ${stdout}`);
+                console.log(`stderr: ${stderr}`);
+            }
+        );
+    }
 });

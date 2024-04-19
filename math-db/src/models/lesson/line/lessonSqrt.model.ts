@@ -52,9 +52,5 @@ export default class LessonSqrt extends Model<
 
     @AllowNull(false)
     @Column({ type: DataType.INTEGER })
-    fromRow!: number;
-
-    @AllowNull(false)
-    @Column({ type: DataType.INTEGER })
-    toRow!: number;
+    row!: number;
 }

@@ -18,8 +18,9 @@
             rounded
             height="6"
           ></v-progress-linear>
-
-          <lineDrawer :svgId="svgId"></lineDrawer>
+          <horizontalLineDrawer :svgId="svgId"></horizontalLineDrawer>
+          <verticalLineDrawer :svgId="svgId"></verticalLineDrawer>
+          <slopeLineDrawer :svgId="svgId"></slopeLineDrawer>
           <svg v-bind:id="svgId" width="1600" height="760"></svg>
         </v-sheet>
         <v-sheet class="ml-auto mr-auto">
@@ -37,7 +38,9 @@ import UseEventHelper from "../helpers/eventHelper";
 import toolbar from "./Toolbar.vue";
 import editingToolbar from "./EditingToolbar.vue";
 import areaSelector from "./AreaSelector.vue";
-import lineDrawer from "./LineDrawer.vue";
+import horizontalLineDrawer from "./HorizontalLineDrawer.vue";
+import verticalLineDrawer from "./VerticalLineDrawer.vue";
+import slopeLineDrawer from "./SlopeLineDrawer.vue";
 import useEventBus from "../helpers/eventBusHelper";
 import { CellAttributes } from "common/baseTypes";
 import { onMounted, onUnmounted, ref, watch } from "vue";
@@ -49,9 +52,6 @@ import useSelectionHelper from "../helpers/selectionHelper";
 import useNotationMutateHelper from "../helpers/notationMutateHelper";
 import useElementFinderHelper from "../helpers/elementFinderHelper";
 import useUserOutgoingOperations from "../helpers/userOutgoingOperationsHelper";
-import useNotationCellOccupationHelper from "../helpers/notationCellOccupationHelper";
-
-const notationCellOccupationHelper = useNotationCellOccupationHelper();
 const notationLoadingHelper = useNotationLoadingHelper();
 const notationStore = useNotationStore();
 const eventBus = useEventBus();
