@@ -56,8 +56,8 @@ export default function notationCellOccupationHelper() {
 
   ///TODO: update occupation matrix assuming that from col is less than to col
   //// but from row can be greater than to row in case of negative slope
-  /// the occupation matrix shoulkd be populated to encompass the generated lin
   function updateSlopeLineOccupationMatrix(
+    /// the occupation matrix shoulkd be populated to encompass the generated line
     matrix: any,
     notation: SlopeLineNotationAttributes,
     doRemove: boolean,

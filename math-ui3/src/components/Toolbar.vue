@@ -26,21 +26,6 @@
       </template>
     </v-tooltip>
 
-    <!-- selection button -->
-    <!-- <v-tooltip text="Selection">
-      <template v-slot:activator="{ props }">
-        <v-btn
-          v-bind="props"
-          :color="selectionButtonActive ? 'white' : 'yellow'"
-          icon
-          :disabled="!editEnabled"
-          @click="toggleSelectionMode"
-          x-small
-          ><v-icon>mdi-selection</v-icon></v-btn
-        >
-      </template>
-    </v-tooltip> -->
-
     <!-- horizontal line-->
     <v-tooltip text="Draw horizontal line">
       <template v-slot:activator="{ props }">
@@ -55,7 +40,11 @@
           v-on:click="toggleHorizontalLineMode"
           :disabled="!editEnabled"
         >
-          <v-icon>mdi-tooltip-minus-outline</v-icon>
+          <v-icon
+            ><span class="material-symbols-outlined">
+              horizontal_rule
+            </span></v-icon
+          >
         </v-btn>
       </template>
     </v-tooltip>
@@ -75,7 +64,9 @@
           :disabled="!editEnabled"
         >
           <v-icon style="transform: rotate(90deg)"
-            >mdi-tooltip-minus-outline</v-icon
+            ><span class="material-symbols-outlined">
+              horizontal_rule
+            </span></v-icon
           >
         </v-btn>
       </template>
@@ -95,8 +86,10 @@
           v-on:click="toggleSlopeLineMode"
           :disabled="!editEnabled"
         >
-          <v-icon style="transform: rotate(45deg)"
-            >mdi-tooltip-minus-outline</v-icon
+          <v-icon style="transform: rotate(115deg)"
+            ><span class="material-symbols-outlined">
+              horizontal_rule
+            </span></v-icon
           >
         </v-btn>
       </template>

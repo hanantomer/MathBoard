@@ -26,16 +26,16 @@ import { useEditModeStore } from "../store/pinia/editModeStore";
 import useAuthorizationHelper from "./authorizationHelper";
 import useUserOutgoingOperations from "./userOutgoingOperationsHelper";
 import useMatrixHelper from "../helpers/matrixHelper";
-
-import useNotationCellOccupationHelper from "./notationCellOccupationHelper";
-const notationCellOccupationHelper = useNotationCellOccupationHelper();
+import useMatrixCellHelper from "../helpers/matrixCellHelper";
+import useMatrixHtmlHelper from "../helpers/matrixHtmlHelper";
 
 import {
   NotationAttributes,
   RectAttributes,
 } from "common/baseTypes";
 
-const matrixHelper = useMatrixHelper();
+const matrixHtmlHelper = useMatrixHtmlHelper();
+const matrixCellHelper = useMatrixCellHelper();
 const userStore = useUserStore();
 const dbHelper = useDbHelper();
 const notationStore = useNotationStore();
@@ -898,10 +898,10 @@ export default function notationMutateHelper() {
 
     let fromCol = rectCell.col;
     let toCol =
-      rectCell.col + Math.floor(matrixHelper.getFreeTextRectWidth(value));
+      rectCell.col + Math.floor(matrixHtmlHelper.getFreeTextRectWidth(value));
     let fromRow = rectCell.row;
     let toRow =
-      rectCell.row + Math.floor(matrixHelper.getFreeTextRectHeight(value));
+      rectCell.row + Math.floor(matrixHtmlHelper.getFreeTextRectHeight(value));
 
     let notation: RectNotationCreationAttributes = {
       fromCol: fromCol,
@@ -938,7 +938,7 @@ export default function notationMutateHelper() {
 
     upsertPointNotation(notation);
 
-    matrixHelper.setNextCell(1, 0);
+    matrixCellHelper.setNextCell(1, 0);
   }
 
   function getSelectedCell(): CellAttributes | null {

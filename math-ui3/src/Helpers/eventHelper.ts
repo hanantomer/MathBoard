@@ -4,6 +4,7 @@ import { useNotationStore } from "../store/pinia/notationStore";
 import { cellSpace } from "common/globals";
 
 import useMatrixHelper from "./matrixHelper";
+import useMatrixCellHelper from "./matrixCellHelper";
 import useNotationMutationHelper from "./notationMutateHelper";
 import useAuthorizationHelper from "./authorizationHelper";
 import useEventBus from "../helpers/eventBusHelper";
@@ -22,6 +23,7 @@ const userStore = useUserStore();
 const editModeStore = useEditModeStore();
 const notationStore = useNotationStore();
 const matrixHelper = useMatrixHelper();
+const matrixCellHelper = useMatrixCellHelper();
 const notationMutationHelper = useNotationMutationHelper();
 const authorizationHelper = useAuthorizationHelper();
 const eventBus = useEventBus();
@@ -225,23 +227,23 @@ export default function eventHelper() {
     if (editModeStore.getEditMode() === "AREA_SELECTED") return;
 
     if (key === "ArrowLeft" || key === "Backspace") {
-      matrixHelper.setNextCell(-1, 0);
+      matrixCellHelper.setNextCell(-1, 0);
     }
 
     if (key === "ArrowRight" || key === "Space") {
-      matrixHelper.setNextCell(1, 0);
+      matrixCellHelper.setNextCell(1, 0);
     }
 
     if (key === "ArrowUp") {
-      matrixHelper.setNextCell(0, -1);
+      matrixCellHelper.setNextCell(0, -1);
     }
 
     if (key === "ArrowDown") {
-      matrixHelper.setNextCell(0, 1);
+      matrixCellHelper.setNextCell(0, 1);
     }
 
     if (key === "Enter") {
-      matrixHelper.setNextCell(0, -1);
+      matrixCellHelper.setNextCell(0, -1);
     }
 
     const svgBounds = document.getElementById(svgId)?.getBoundingClientRect()!;

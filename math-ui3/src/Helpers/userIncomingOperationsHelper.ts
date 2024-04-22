@@ -9,14 +9,13 @@ import { useStudentStore } from "../store/pinia/studentStore";
 import { useNotationStore } from "../store/pinia/notationStore";
 import { useLessonStore } from "../store/pinia/lessonStore";
 import { FeathersHelper } from "./feathersHelper";
-import UseMatrixHelper from "./matrixHelper";
-import { col } from "sequelize";
+import UseMatrixCellHelper from "./matrixCellHelper";
 
 const notationStore = useNotationStore();
 const lessonStore = useLessonStore();
 const userStore = useUserStore();
 const studentStore = useStudentStore();
-const matrixHelper = UseMatrixHelper();
+const matrixCellHelper = UseMatrixCellHelper();
 
 export default function userIncomingOperations() {
   // check if in Lesson and not initiated by me
@@ -76,7 +75,7 @@ export default function userIncomingOperations() {
 
         if (colorizedCell.userUUId == userStore.getCurrentUser()!.uuid) return;
 
-        matrixHelper.colorizeCell(
+        matrixCellHelper.colorizeCell(
           svgId,
           colorizedCell as CellAttributes,
           colorizedCell.color,

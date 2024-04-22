@@ -34,6 +34,7 @@
 <script setup lang="ts">
 import useNotationLoadingHelper from "../helpers/notationLoadingHelper";
 import UseMatrixHelper from "../helpers/matrixHelper";
+import UseMatrixCellHelper from "../helpers/matrixCellHelper";
 import UseEventHelper from "../helpers/eventHelper";
 import toolbar from "./Toolbar.vue";
 import editingToolbar from "./EditingToolbar.vue";
@@ -56,6 +57,7 @@ const notationLoadingHelper = useNotationLoadingHelper();
 const notationStore = useNotationStore();
 const eventBus = useEventBus();
 const matrixHelper = UseMatrixHelper();
+const matrixCellHelper = UseMatrixCellHelper();
 const selectionHelper = useSelectionHelper();
 const notationMutateHelper = useNotationMutateHelper();
 const eventHelper = UseEventHelper();
@@ -111,7 +113,7 @@ watch(
     oldSelectedCell: CellAttributes | undefined | null,
   ) => {
     setTimeout(() => {
-      matrixHelper.showSelectedCell(
+      matrixCellHelper.showSelectedCell(
         props.svgId,
         newSelectedCell,
         oldSelectedCell,
@@ -157,7 +159,7 @@ watch(
       y: params.clientY,
     });
 
-    matrixHelper.colorizeCell(props.svgId, clickedCell, params.cellColor);
+    matrixCellHelper.colorizeCell(props.svgId, clickedCell, params.cellColor);
 
     userOutgoingOperations.syncOutgoingColorizedCell(
       clickedCell,
