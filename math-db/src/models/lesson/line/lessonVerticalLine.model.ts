@@ -2,17 +2,17 @@ import {
     Model, Column, BelongsTo, ForeignKey, DataType, AllowNull
 } from "sequelize-typescript";
 import  User from "../../user.model";
-import Answer from "../../answer/answer.model";
-import AnswerDecorator from "../../answer/answerDecorator";
+import Lesson from "../../lesson/lesson.model";
+import LessonDecorator from "../../lesson/lessonDecorator";
 import {
-    AnswerVerticalLineAttributes,
-    AnswerVerticalLineCreationAttributes,
-} from "../../../../../math-common/src/answerTypes";
+    LessonVerticalLineAttributes,
+    LessonVerticalLineCreationAttributes,
+} from "../../../../../math-common/src/lessonTypes";
 
-@AnswerDecorator("AnswerVerticalLine")
-export default class AnswerVerticalLine extends Model<
-    AnswerVerticalLineAttributes,
-    AnswerVerticalLineCreationAttributes
+@LessonDecorator("LessonVerticalLine")
+export default class LessonVerticalLine extends Model<
+    LessonVerticalLineAttributes,
+    LessonVerticalLineCreationAttributes
 > {
     notationType = "VerticalLine";
     boardType = "ANSWER";
@@ -31,15 +31,15 @@ export default class AnswerVerticalLine extends Model<
     })
     user!: User;
 
-    @ForeignKey(() => Answer)
-    answerId!: number;
+    @ForeignKey(() => Lesson)
+    lessonId!: number;
 
-    @BelongsTo(() => Answer, {
+    @BelongsTo(() => Lesson, {
         foreignKey: {
             allowNull: false,
         },
     })
-    answer!: Answer;
+    lesson!: Lesson;
 
     @AllowNull(false)
     @Column({ type: DataType.INTEGER })

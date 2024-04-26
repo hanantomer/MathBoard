@@ -6,24 +6,6 @@ import useUtils from "./matrixHelperUtils";
 const utils = useUtils();
 
 export default function useHorizontalLineMatrixHelper() {
-  // function mergeLineNotations(svgId: string, notations: NotationAttributes[]) {
-  //   d3.select("#" + svgId)
-  //     .selectAll("line")
-  //     .data(notations, (u: any) => {
-  //       return (u as NotationAttributes).uuid;
-  //     })
-  //     .join(
-  //       (enter) => {
-  //         return addHorizontalLineNotations(enter);
-  //       },
-  //       (update) => {
-  //         return updateHorizontalLineNotations(update);
-  //       },
-  //       (exit) => {
-  //         return utils.removeNotations(exit);
-  //       },
-  //     );
-  // }
 
   function addHorizontalLineNotations(enter: any) {
     return enter
@@ -77,11 +59,11 @@ export default function useHorizontalLineMatrixHelper() {
       });
   }
 
-  function horizontalLineLeft(n: HorizontalLineNotationAttributes): number | null {
+  function horizontalLineLeft(n: HorizontalLineNotationAttributes): number {
     return utils.getNotationXposByCol(n.fromCol);
   }
 
-  function horizontalLineY(n: HorizontalLineNotationAttributes) {
+  function horizontalLineY(n: HorizontalLineNotationAttributes) : number {
     return utils.getNotationYposByRow(n.row);
   }
 
@@ -90,7 +72,6 @@ export default function useHorizontalLineMatrixHelper() {
   }
 
   return {
-//    mergeLineNotations,
     addHorizontalLineNotations,
     updateHorizontalLineNotations
   };

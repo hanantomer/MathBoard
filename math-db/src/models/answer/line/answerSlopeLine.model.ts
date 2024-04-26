@@ -51,5 +51,9 @@ export default class AnswerSlopeLine extends Model<
 
     @AllowNull(false)
     @Column({ type: DataType.INTEGER })
-    row!: number;
+    fromRow!: number;
+
+    @AllowNull(false)
+    @Column({ type: DataType.INTEGER })
+    toRow!: number;
 }

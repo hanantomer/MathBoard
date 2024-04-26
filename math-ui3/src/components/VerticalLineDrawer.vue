@@ -4,8 +4,8 @@
       id="lineToptHandle"
       class="lineHandle"
       v-bind:style="{
-        left: lineX - 5 + 'px',
-        top: lineTop + 'px',
+        left: handleX + 'px',
+        top: handleTop + 'px',
       }"
       v-on:mouseup="onMouseUp"
       v-on:mousedown="onHandleMouseDown"
@@ -14,8 +14,8 @@
       id="lineBottomHandle"
       class="lineHandle"
       v-bind:style="{
-        left: lineX + 'px',
-        top: lineTop + 'px',
+        left: handleX + 'px',
+        top: handleBottom + 'px',
       }"
       v-on:mouseup="onMouseUp"
       v-on:mousedown="onHandleMouseDown"
@@ -31,7 +31,7 @@
         :y1="lineTop"
         :x2="lineX"
         :y2="lineBottom"
-        style="stroke: red; stroke-width: 2"
+        style="stroke: gray; stroke-width: 2"
       />
     </svg>
   </div>
@@ -69,18 +69,19 @@ const props = defineProps({
 let linePosition = ref(<VerticalLinePosition>{
   x: 0,
   y1: 0,
-  y2: 0
+  y2: 0,
 });
 
 const show = computed(() => {
   return (
-    editModeStore.isVerticalLineDrawingMode() || editModeStore.isVerticalLineSelectedMode()
+    editModeStore.isVerticalLineDrawingMode() ||
+    editModeStore.isVerticalLineSelectedMode()
   );
 });
 
-const svgDimensions = computed(() => {
-  return document.getElementById(props.svgId)?.getBoundingClientRect()!;
-});
+function svgDimensions(): DOMRect | undefined {
+  return document.getElementById(props.svgId)?.getBoundingClientRect();
+}
 
 let lineTop = computed(() => {
   return linePosition.value.y1;
@@ -94,7 +95,17 @@ let lineX = computed(() => {
   return linePosition.value.x;
 });
 
+let handleX = computed(() => {
+  return lineX.value + (svgDimensions()?.top ?? 0);
+});
 
+let handleTop = computed(() => {
+  return lineTop.value + (svgDimensions()?.top ?? 0);
+});
+
+let handleBottom = computed(() => {
+  return lineBottom.value + (svgDimensions()?.top ?? 0);
+});
 
 // watch
 
@@ -119,7 +130,6 @@ watch(
   },
 );
 
-
 watch(
   () => eventBus.bus.value.get("verticalLineSelected"), /// TODO: update emitter to distinguish line types
   (line: VerticalLineNotationAttributes) => {
@@ -128,29 +138,23 @@ watch(
   { immediate: true },
 );
 
-
 // event handlers
 
 function onLineSelected(lineNotation: VerticalLineNotationAttributes) {
-
   linePosition.value.x =
-    svgDimensions.value.left +
     lineNotation.col * (notationStore.getCellHorizontalWidth() + cellSpace);
 
   linePosition.value.y1 =
-    svgDimensions.value.top +
     lineNotation.fromRow * (notationStore.getCellVerticalHeight() + cellSpace);
 
   linePosition.value.y2 =
-    svgDimensions.value.top +
     lineNotation.toRow * (notationStore.getCellVerticalHeight() + cellSpace);
 
   notationStore.selectNotation(lineNotation.uuid);
 
-/// TODO use close list for emiiter
+  /// TODO use close list for emiiter
   eventBus.emit("verticalLineSelected", null); // to enable re selection
 }
-
 
 function onHandleMouseDown() {
   editModeStore.setNextEditMode();
@@ -158,7 +162,6 @@ function onHandleMouseDown() {
 
 // emitted by event manager
 function onMouseDown(e: MouseEvent) {
-  console.debug(e);
   if (e.buttons !== 1) {
     // ignore right button
     return;
@@ -170,7 +173,7 @@ function onMouseDown(e: MouseEvent) {
   }
 
   // new line
-  if (editModeStore.isLineStartedMode()) {
+  if (editModeStore.isVerticalLineStartedMode()) {
     startLineDrawing({
       x: e.offsetX,
       y: e.offsetY,
@@ -179,22 +182,8 @@ function onMouseDown(e: MouseEvent) {
   }
 }
 
-function setLine(xPos: number, yPos: number) {
-  if (xPos <= linePosition.value.x) {
-    linePosition.value.x = xPos;
-  }
-
-  if (yPos <= linePosition.value.y1) {
-    linePosition.value.y1 = yPos;
-  }
-  if (yPos > linePosition.value.y1) {
-    linePosition.value.y2 = yPos;
-  }
-}
 
 function onMouseMove(e: MouseEvent) {
-  console.debug("onMouseMove: buttons = " + e.buttons);
-
   // ignore right button
   if (e.buttons !== 1) {
     return;
@@ -213,8 +202,7 @@ function onMouseMove(e: MouseEvent) {
     return;
   }
 
-  console.debug("e.clientX:" + e.clientX + ",e.clientY:" + e.clientY);
-  setLine(e.clientX, e.clientY);
+  setLine(e.offsetY);
 }
 
 function onMouseUp() {
@@ -236,41 +224,39 @@ function onMouseUp() {
 // methods
 
 function startLineDrawing(position: DotPosition) {
-  linePosition.value.x = position.x + svgDimensions.value.left;
+  linePosition.value.y1 = position.y;
 
-  linePosition.value.y1 = linePosition.value.y2 =
-    getNearestRow(position.y) + svgDimensions.value.top;
+  linePosition.value.y2 = linePosition.value.y1 + 10;
 
-  console.debug("startLineDrawing linePosition:");
-  console.debug(linePosition);
+  linePosition.value.x = getNearestCol(position.x);
 }
 
+function setLine(yPos: number) {
+  if (yPos > linePosition.value.y1) {
+    linePosition.value.y2 = yPos;
+  }
+}
+
+
 function endDrawLine() {
-  if (
-    linePosition.value.y2 == linePosition.value.y1
-  )
-    return;
+  if (linePosition.value.y2 == linePosition.value.y1) return;
 
   let col = Math.round(
-    (linePosition.value.x - svgDimensions.value.left) /
-      (notationStore.getCellHorizontalWidth() + cellSpace),
+    linePosition.value.x / (notationStore.getCellHorizontalWidth() + cellSpace),
   );
 
   let fromRow = Math.round(
-    (linePosition.value.y1 - svgDimensions.value.top) /
-      (notationStore.getCellVerticalHeight() + cellSpace),
+    linePosition.value.y1 / (notationStore.getCellVerticalHeight() + cellSpace),
   );
 
   let toRow = Math.round(
-    (linePosition.value.y2 - svgDimensions.value.top) /
-      (notationStore.getCellVerticalHeight() + cellSpace),
+    linePosition.value.y2 / (notationStore.getCellVerticalHeight() + cellSpace),
   );
 
   saveLine({ col: col, fromRow: fromRow, toRow: toRow });
 
   editModeStore.resetEditMode();
 }
-
 
 function saveLine(lineAttributes: VerticalLineAttributes) {
   if (notationStore.getSelectedNotations().length > 0) {
@@ -289,20 +275,16 @@ function saveLine(lineAttributes: VerticalLineAttributes) {
     );
 }
 
-
 function resetLineDrawing() {
-  linePosition.value.x =
-    linePosition.value.y1 =
-    linePosition.value.y2 =
-      0;
+  linePosition.value.x = linePosition.value.y1 = linePosition.value.y2 = 0;
   editModeStore.resetEditMode();
 }
 
-function getNearestRow(clickedYPos: number) {
-  let clickedRow = Math.round(
-    clickedYPos / (notationStore.getCellVerticalHeight() + cellSpace),
+function getNearestCol(clickedXPos: number) {
+  let clickedCol = Math.round(
+    clickedXPos / (notationStore.getCellHorizontalWidth() + cellSpace),
   );
-  return clickedRow * (notationStore.getCellVerticalHeight() + cellSpace);
+  return clickedCol * (notationStore.getCellHorizontalWidth() + cellSpace);
 }
 </script>
 

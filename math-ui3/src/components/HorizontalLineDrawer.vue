@@ -5,7 +5,7 @@
       class="lineHandle"
       v-bind:style="{
         left: handleLeft + 'px',
-        top: handleHeight + 'px',
+        top: handleY + 'px',
       }"
       v-on:mouseup="onMouseUp"
       v-on:mousedown="onHandleMouseDown"
@@ -15,7 +15,7 @@
       class="lineHandle"
       v-bind:style="{
         left: handleRight + 'px',
-        top: handleHeight + 'px',
+        top: handleY + 'px',
       }"
       v-on:mouseup="onMouseUp"
       v-on:mousedown="onHandleMouseDown"
@@ -28,9 +28,9 @@
     >
       <line
         :x1="lineLeft"
-        :y1="lineHeight"
+        :y1="lineY"
         :x2="lineRight"
-        :y2="lineHeight"
+        :y2="lineY"
         style="stroke: gray; stroke-width: 2"
       />
     </svg>
@@ -39,7 +39,7 @@
       class="sqrtsymbol"
       v-bind:style="{
         left: lineLeft - 11 + 'px',
-        top: lineHeight + 'px',
+        top: lineY + 'px',
       }"
       v-if="sqrtEditMode"
     >
@@ -106,7 +106,7 @@ let lineRight = computed(() => {
   return linePosition.value.x2;
 });
 
-let lineHeight = computed(() => {
+let lineY = computed(() => {
   return linePosition.value.y;
 });
 
@@ -118,8 +118,8 @@ let handleRight = computed(() => {
   return lineRight.value + (svgDimensions()?.left ?? 0);
 });
 
-let handleHeight = computed(() => {
-  return lineHeight.value + (svgDimensions()?.top ?? 0);
+let handleY = computed(() => {
+  return lineY.value + (svgDimensions()?.top ?? 0);
 });
 
 watch(
@@ -157,14 +157,11 @@ function onLineSelected(lineNotation: HorizontalLineNotationAttributes) {
   // set selection line
 
   linePosition.value.x1 =
-    //svgDimensions.value.left +
     lineNotation.fromCol * (notationStore.getCellHorizontalWidth() + cellSpace);
   (linePosition.value.x2 =
-    //svgDimensions.value.left +
     (lineNotation.toCol - 1) *
     (notationStore.getCellHorizontalWidth() + cellSpace)),
     (linePosition.value.y =
-      //svgDimensions.value.top +
       lineNotation.row * (notationStore.getCellVerticalHeight() + cellSpace));
 
   // update store
@@ -180,7 +177,6 @@ function onHandleMouseDown() {
 
 // emitted by event manager
 function onMouseDown(e: MouseEvent) {
-  console.debug(e);
   if (e.buttons !== 1) {
     // ignore right button
     return;
@@ -192,7 +188,7 @@ function onMouseDown(e: MouseEvent) {
   }
 
   // new line
-  if (editModeStore.isLineStartedMode()) {
+  if (editModeStore.isHorizontalLineStartedMode()) {
     startLineDrawing({
       x: e.offsetX,
       y: e.offsetY,
@@ -202,8 +198,6 @@ function onMouseDown(e: MouseEvent) {
 }
 
 function onMouseMove(e: MouseEvent) {
-  console.debug("onMouseMove: buttons = " + e.buttons);
-
   // ignore right button
   if (e.buttons !== 1) {
     return;
@@ -221,8 +215,6 @@ function onMouseMove(e: MouseEvent) {
   if (!editModeStore.isHorizontalLineDrawingMode()) {
     return;
   }
-
-  console.debug("e.clientX:" + e.clientX + ",e.clientY:" + e.clientY);
   setLine(e.offsetX);
 }
 
@@ -245,11 +237,11 @@ function onMouseUp() {
 // methods
 
 function startLineDrawing(position: DotPosition) {
-  linePosition.value.x1 = position.x; //+ svgDimensions.value.left;
+  linePosition.value.x1 = position.x;
 
   linePosition.value.x2 = linePosition.value.x1 + 10;
 
-  linePosition.value.y = getNearestRow(position.y); //+ svgDimensions.value.top;
+  linePosition.value.y = getNearestRow(position.y);
 }
 
 function setLine(xPos: number) {

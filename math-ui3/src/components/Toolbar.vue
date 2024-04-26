@@ -37,7 +37,7 @@
           x-small
           fab
           dark
-          v-on:click="toggleHorizontalLineMode"
+          v-on:click="startHorizontalLineMode"
           :disabled="!editEnabled"
         >
           <v-icon
@@ -60,7 +60,7 @@
           x-small
           fab
           dark
-          v-on:click="toggleVerticalLineMode"
+          v-on:click="startVerticalLineMode"
           :disabled="!editEnabled"
         >
           <v-icon style="transform: rotate(90deg)"
@@ -83,7 +83,7 @@
           x-small
           fab
           dark
-          v-on:click="toggleSlopeLineMode"
+          v-on:click="startSlopeLineMode"
           :disabled="!editEnabled"
         >
           <v-icon style="transform: rotate(115deg)"
@@ -106,7 +106,7 @@
           x-small
           fab
           dark
-          v-on:click="toggleSqrtMode"
+          v-on:click="startSqrtMode"
           :disabled="!editEnabled"
         >
           <v-icon>mdi-square-root</v-icon>
@@ -344,43 +344,44 @@ const answerCheckMode = computed(() => {
 });
 
 function resetButtonsState() {
-  checkmarkButtonActive.value = 1;
-  semicheckmarkButtonActive.value = 1;
-  xmarkButtonActive.value = 1;
-  selectionButtonActive.value = 1;
-  horizontalLineButtonActive.value = 1;
-  verticalLineButtonActive.value = 1;
-  slopeLineButtonActive.value = 1;
-  squareRootButtonActive.value = 1;
-  exponentButtonActive.value = 1;
+  checkmarkButtonActive.value =
+    semicheckmarkButtonActive.value =
+    xmarkButtonActive.value =
+    selectionButtonActive.value =
+    horizontalLineButtonActive.value =
+    verticalLineButtonActive.value =
+    slopeLineButtonActive.value =
+    squareRootButtonActive.value =
+    exponentButtonActive.value =
+      1;
 }
 
-function toggleHorizontalLineMode() {
-  resetButtonsState();
-  if (editModeStore.getEditMode() == "HORIZONTAL_LINE_STARTED") {
-    resetButtonsState();
-  } else {
-    startHorizontalLineMode();
-  }
-}
+// function toggleHorizontalLineMode() {
+//   resetButtonsState();
+//   if (editModeStore.getEditMode() == "HORIZONTAL_LINE_STARTED") {
+//     resetButtonsState();
+//   } else {
+//     startHorizontalLineMode();
+//   }
+// }
 
-function toggleVerticalLineMode() {
-  resetButtonsState();
-  if (editModeStore.getEditMode() == "VERTICAL_LINE_STARTED") {
-    resetButtonsState();
-  } else {
-    startVerticalLineMode();
-  }
-}
+// function toggleVerticalLineMode() {
+//   resetButtonsState();
+//   if (editModeStore.getEditMode() == "VERTICAL_LINE_STARTED") {
+//     resetButtonsState();
+//   } else {
+//     startVerticalLineMode();
+//   }
+// }
 
-function toggleSlopeLineMode() {
-  resetButtonsState();
-  if (editModeStore.getEditMode() == "SLOPE_LINE_STARTED") {
-    resetButtonsState();
-  } else {
-    startSlopeLineMode();
-  }
-}
+// function toggleSlopeLineMode() {
+//   resetButtonsState();
+//   if (editModeStore.getEditMode() == "SLOPE_LINE_STARTED") {
+//     resetButtonsState();
+//   } else {
+//     startSlopeLineMode();
+//   }
+// }
 
 function startHorizontalLineMode() {
   resetButtonsState();
@@ -396,18 +397,18 @@ function startVerticalLineMode() {
 
 function startSlopeLineMode() {
   resetButtonsState();
-  horizontalLineButtonActive.value = 0;
+  slopeLineButtonActive.value = 0;
   editModeStore.setEditMode("SLOPE_LINE_STARTED");
 }
 
-function toggleSqrtMode() {
-  resetButtonsState();
-  if (editModeStore.getEditMode() == "SQRT") {
-    resetButtonsState();
-  } else {
-    startSqrtMode();
-  }
-}
+// function toggleSqrtMode() {
+//   resetButtonsState();
+//   if (editModeStore.getEditMode() == "SQRT") {
+//     resetButtonsState();
+//   } else {
+//     startSqrtMode();
+//   }
+// }
 
 function toggleExponentMode() {
   resetButtonsState();

@@ -2,17 +2,17 @@ import {
     Model, Column, BelongsTo, ForeignKey, DataType, AllowNull
 } from "sequelize-typescript";
 import  User from "../../user.model";
-import Answer from "../../answer/answer.model";
-import AnswerDecorator from "../../answer/answerDecorator";
+import Lesson from "../../lesson/lesson.model";
+import LessonDecorator from "../../lesson/lessonDecorator";
 import {
-    AnswerSlopeLineAttributes,
-    AnswerSlopeLineCreationAttributes,
-} from "../../../../../math-common/src/answerTypes";
+    LessonSlopeLineAttributes,
+    LessonSlopeLineCreationAttributes,
+} from "../../../../../math-common/src/lessonTypes";
 
-@AnswerDecorator("AnswerSlopeLine")
-export default class AnswerSlopeLine extends Model<
-    AnswerSlopeLineAttributes,
-    AnswerSlopeLineCreationAttributes
+@LessonDecorator("LessonSlopeLine")
+export default class LessonSlopeLine extends Model<
+    LessonSlopeLineAttributes,
+    LessonSlopeLineCreationAttributes
 > {
     notationType = "SlopeLINE";
     boardType = "ANSWER";
@@ -31,15 +31,15 @@ export default class AnswerSlopeLine extends Model<
     })
     user!: User;
 
-    @ForeignKey(() => Answer)
-    answerId!: number;
+    @ForeignKey(() => Lesson)
+    lessonId!: number;
 
-    @BelongsTo(() => Answer, {
+    @BelongsTo(() => Lesson, {
         foreignKey: {
             allowNull: false,
         },
     })
-    answer!: Answer;
+    lesson!: Lesson;
 
     @AllowNull(false)
     @Column({ type: DataType.INTEGER })
@@ -51,5 +51,9 @@ export default class AnswerSlopeLine extends Model<
 
     @AllowNull(false)
     @Column({ type: DataType.INTEGER })
-    row!: number;
+    fromRow!: number;
+
+    @AllowNull(false)
+    @Column({ type: DataType.INTEGER })
+    toRow!: number;
 }

@@ -34,9 +34,6 @@ export default function selectionHelper() {
       case "VERTICAL_LINE":
       case "SLOPE_LINE":
       {
-        //if (notation!.notationType == "FRACTION")
-        //  selectFractionNotation(notation!);
-        //if (notation!.notationType == "SQRT") selectSqrtNotation(notation!);
         selectLineNotation(notation!);
         break;
       }

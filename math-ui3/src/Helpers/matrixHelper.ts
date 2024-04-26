@@ -8,12 +8,14 @@ import { NotationAttributes } from "common/baseTypes";
 import useHorizontalLineHelper from "./matrixHorizontalLineHelper";
 import useVerticalLineHelper from "./matrixVerticalLineHelper";
 import useSlopeLineHelper from "./matrixSlopeLineHelper";
+import useLineHelper from "./matrixLineHelper";
 import useHtmlHelper from "./matrixHtmlHelper";
 import useUtilsHelper from "./matrixHelperUtils";
 
-const horizontaLineHelper = useHorizontalLineHelper();
-const verticalLineHelper = useVerticalLineHelper();
-const slopeLineHelper = useSlopeLineHelper();
+//const horizontaLineHelper = useHorizontalLineHelper();
+//const verticalLineHelper = useVerticalLineHelper();
+//const slopeLineHelper = useSlopeLineHelper();
+const lineHelper = useLineHelper();
 const notationStore = useNotationStore();
 const htmlHelper = useHtmlHelper();
 const utilsHelper = useUtilsHelper();
@@ -109,6 +111,7 @@ export default function useMatrixHelper() {
     return enrichedNotations;
   }
 
+  
   function refreshScreen(notations: NotationAttributes[], svgId: string) {
     const svgElement = document!.getElementById(svgId);
 
@@ -126,34 +129,16 @@ export default function useMatrixHelper() {
       svgElement!,
     );
 
-    mergeLineNotations(
+    lineHelper.mergeLineNotations(
       svgId,
       notations.filter(
-        (n) => NotationTypeShape.get(n.notationType) === "HORIZONTAL_LINE" ||
+        (n) =>
+          NotationTypeShape.get(n.notationType) === "HORIZONTAL_LINE" ||
           NotationTypeShape.get(n.notationType) === "VERTICAL_LINE" ||
           NotationTypeShape.get(n.notationType) === "SLOPE_LINE",
       ),
     );
-
-    function mergeLineNotations(svgId: string, notations: NotationAttributes[]) {
-      d3.select("#" + svgId)
-        .selectAll("line")
-        .data(notations, (u: any) => {
-          return (u as NotationAttributes).uuid;
-        })
-        .join(
-          (enter) => {
-            horizontaLineHelper.addHorizontalLineNotations(enter);
-          },
-          (update) => {
-            return updateHorizontalLineNotations(update);
-          },
-          (exit) => {
-            return utilsHelper.removeNotations(exit);
-          },
-        );
-
-
+  }
 
   return {
     setMatrix,

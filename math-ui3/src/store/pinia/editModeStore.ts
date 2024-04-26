@@ -36,13 +36,13 @@ export const useEditModeStore = defineStore("editMode", () => {
     );
   }
 
-  function isLineStartedMode() {
-    return (
-      editMode.value == "HORIZONTAL_LINE_STARTED" ||
-      editMode.value == "VERTICAL_LINE_STARTED" ||
-      editMode.value == "SLOPE_LINE_STARTED"
-    );
-  }
+  // function isLineStartedMode() {
+  //   return (
+  //     editMode.value == "HORIZONTAL_LINE_STARTED" ||
+  //     editMode.value == "VERTICAL_LINE_STARTED" ||
+  //     editMode.value == "SLOPE_LINE_STARTED"
+  //   );
+  // }
 
   function isHorizontalLineMode() {
     return (
@@ -83,6 +83,19 @@ export const useEditModeStore = defineStore("editMode", () => {
       editMode.value == "SQRT_DRAWING"
     );
   }
+
+  function isHorizontalLineStartedMode() {
+    return editMode.value == "HORIZONTAL_LINE_STARTED";
+  }
+
+  function isSlopeLineStartedMode() {
+    return editMode.value == "SLOPE_LINE_STARTED";
+  }
+
+  function isVerticalLineStartedMode() {
+    return editMode.value == "VERTICAL_LINE_STARTED";
+  }
+
 
   function isVerticalLineDrawingMode() {
     return editMode.value == "VERTICAL_LINE_DRAWING";
@@ -186,16 +199,19 @@ export const useEditModeStore = defineStore("editMode", () => {
     getNotationTypeByEditMode,
     isAreaSelectionOrMovingMode,
     isSelectionMode,
-    isLineStartedMode,
+//    isLineStartedMode,
     isLineMode,
     isHorizontalLineMode,
     isHorizontalLineSelectedMode,
+    isHorizontalLineStartedMode,
     isHorizontalLineDrawingMode,
     isVerticalLineMode,
     isVerticalLineSelectedMode,
+    isVerticalLineStartedMode,
     isVerticalLineDrawingMode,
     isSlopeLineMode,
     isSlopeLineSelectedMode,
+    isSlopeLineStartedMode,
     isSlopeLineDrawingMode,
     isSelectedMode,
     isSqrtMode,

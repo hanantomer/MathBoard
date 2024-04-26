@@ -25,14 +25,10 @@ import { useNotationStore } from "../store/pinia/notationStore";
 import { useEditModeStore } from "../store/pinia/editModeStore";
 import useAuthorizationHelper from "./authorizationHelper";
 import useUserOutgoingOperations from "./userOutgoingOperationsHelper";
-import useMatrixHelper from "../helpers/matrixHelper";
 import useMatrixCellHelper from "../helpers/matrixCellHelper";
 import useMatrixHtmlHelper from "../helpers/matrixHtmlHelper";
 
-import {
-  NotationAttributes,
-  RectAttributes,
-} from "common/baseTypes";
+import { NotationAttributes, RectAttributes } from "common/baseTypes";
 
 const matrixHtmlHelper = useMatrixHtmlHelper();
 const matrixCellHelper = useMatrixCellHelper();
@@ -42,6 +38,8 @@ const notationStore = useNotationStore();
 const editModeStore = useEditModeStore();
 const authorizationHelper = useAuthorizationHelper();
 const userOutgoingOperations = useUserOutgoingOperations();
+
+type colSpan = { fromCol: number; toCol: number };
 
 export default function notationMutateHelper() {
   function pointAtCellCoordinates(
@@ -66,51 +64,6 @@ export default function notationMutateHelper() {
     );
   }
 
-  // line
-  // function lineAtCellCoordinates(
-  //   lineCoordinates: LineNotationAttributes,
-  //   cellCoordinates: CellAttributes,
-  //   userUUId: string,
-  // ) {
-  //   return (
-  //     lineCoordinates.fromCol <= cellCoordinates.col &&
-  //     lineCoordinates.toCol >= cellCoordinates.col &&
-  //     lineCoordinates.row == cellCoordinates.row &&
-  //     lineCoordinates.user.uuid == userUUId
-  //   );
-  // }
-
-  // function lineAtLineCoordinates(
-  //   line1Coordinates: LineNotationAttributes,
-  //   line2Coordinates: LineNotationAttributes,
-  //   userUUId: string,
-  // ) {
-  //   return (
-  //     ((line1Coordinates.fromCol >= line2Coordinates.fromCol &&
-  //       line1Coordinates.fromCol <= line2Coordinates.toCol) ||
-  //       (line1Coordinates.toCol >= line2Coordinates.fromCol &&
-  //         line1Coordinates.toCol <= line2Coordinates.toCol)) &&
-  //     line1Coordinates.row == line2Coordinates.row &&
-  //     line1Coordinates.user.uuid == userUUId
-  //   );
-  // }
-
-  // function lineAtRectCoordinates(
-  //   lineNotation: LineNotationAttributes,
-  //   rectCoordinates: RectAttributes,
-  //   userUUId: string,
-  // ) {
-  //   return (
-  //     ((lineNotation.fromCol >= rectCoordinates.fromCol &&
-  //       lineNotation.fromCol <= rectCoordinates.toCol) ||
-  //       (lineNotation.toCol >= rectCoordinates.fromCol &&
-  //         lineNotation.toCol <= rectCoordinates.toCol)) &&
-  //     lineNotation.row >= rectCoordinates.fromRow &&
-  //     lineNotation.row <= rectCoordinates.toRow &&
-  //     lineNotation.user.uuid == userUUId
-  //   );
-  // }
-
   // rect
   function rectAtCellCoordinates(
     rectNotation: RectNotationAttributes,
@@ -125,22 +78,6 @@ export default function notationMutateHelper() {
       rectNotation.user.uuid == userUUId
     );
   }
-
-  // function rectAtLineCoordinates(
-  //   rectNotation: RectNotationAttributes,
-  //   lineCoordinates: LineAttributes,
-  //   userUUId: string,
-  // ) {
-  //   return (
-  //     ((rectNotation.fromCol >= lineCoordinates.fromCol &&
-  //       rectNotation.fromCol <= lineCoordinates.toCol) ||
-  //       (rectNotation.toCol >= lineCoordinates.fromCol &&
-  //         rectNotation.toCol <= lineCoordinates.toCol)) &&
-  //     rectNotation.fromRow <= lineCoordinates.row &&
-  //     rectNotation.toRow >= lineCoordinates.row &&
-  //     rectNotation.user.uuid == userUUId
-  //   );
-  // }
 
   function rectAtRectCoordinates(
     rectNotation: RectNotationAttributes,
@@ -163,88 +100,24 @@ export default function notationMutateHelper() {
   function findNotationsByCellCoordinates(cellCoordinates: CellAttributes) {
     let userUUId = getUserUUId();
 
-    return notationStore.getNotations().filter((n: NotationAttributes) =>
-      NotationTypeShape.get(n.notationType) === "POINT"
-        ? pointAtCellCoordinates(
-            n as PointNotationAttributes,
-            cellCoordinates,
-            userUUId,
-          )
-        : // : NotationTypeShape.get(n.notationType) === "LINE"
-        // ? lineAtCellCoordinates(
-        //     n as LineNotationAttributes,
-        //     cellCoordinates,
-        //     userUUId,
-        //   )
-        NotationTypeShape.get(n.notationType) === "RECT"
-        ? rectAtCellCoordinates(
-            n as RectNotationAttributes,
-            cellCoordinates,
-            userUUId,
-          )
-        : false,
-    );
+    return notationStore
+      .getNotations()
+      .filter((n: NotationAttributes) =>
+        NotationTypeShape.get(n.notationType) === "POINT"
+          ? pointAtCellCoordinates(
+              n as PointNotationAttributes,
+              cellCoordinates,
+              userUUId,
+            )
+          : NotationTypeShape.get(n.notationType) === "RECT"
+          ? rectAtCellCoordinates(
+              n as RectNotationAttributes,
+              cellCoordinates,
+              userUUId,
+            )
+          : false,
+      );
   }
-
-  // return a list of notations wich overlap given rect coordinates
-  // function findNotationsByRectCoordinates(
-  //   notations: NotationAttributes[],
-  //   rectCoordinates: RectAttributes,
-  // ) {
-  //   return notations.filter((n: NotationAttributes) =>
-  //     n.notationType == "SYMBOL" ||
-  //     n.notationType == "EXPONENT" ||
-  //     n.notationType == "SIGN"
-  //       ? pointAtRectCoordinates(
-  //           n as PointNotationAttributes,
-  //           rectCoordinates,
-  //           getUserUUId(),
-  //         )
-  //       : n.notationType == "FRACTION" || n.notationType == "SQRT"
-  //       ? lineAtRectCoordinates(
-  //           n as LineNotationAttributes,
-  //           rectCoordinates,
-  //           getUserUUId(),
-  //         )
-  //       : n.notationType == "TEXT"
-  //       ? rectAtRectCoordinates(
-  //           n as RectNotationAttributes,
-  //           rectCoordinates,
-  //           getUserUUId(),
-  //         )
-  //       : false,
-  //   );
-  // }
-
-  // return a list of notations wich overlap given line coordinates
-  /*function findNotationsByLineCoordinates(
-    notationsMap: Map<String, NotationAttributes>,
-    lineCoordinates: LineNotationAttributes,
-  ) {
-    return Object.values(notationsMap).filter((n: NotationAttributes) =>
-      n.notationType == "SYMBOL" ||
-      n.notationType == "EXPONENT" ||
-      n.notationType == "SIGN"
-        ? pointAtLineCoordinates(
-            n as PointNotationAttributes,
-            lineCoordinates,
-            getUserUUId(),
-          )
-        : n.notationType == "FRACTION" || n.notationType == "SQRT"
-        ? lineAtLineCoordinates(
-            n as LineNotationAttributes,
-            lineCoordinates,
-            getUserUUId(),
-          )
-        : n.notationType == "TEXT"
-        ? rectAtLineCoordinates(
-            n as RectNotationAttributes,
-            lineCoordinates,
-            getUserUUId(),
-          )
-        : false,
-    );
-  }*/
 
   function findOverlapPointNotation(
     notation: PointNotationCreationAttributes,
@@ -260,20 +133,6 @@ export default function notationMutateHelper() {
       });
   }
 
-  // function findOverlapLineNotation(
-  //   notation: LineNotationCreationAttributes,
-  // ): LineNotationAttributes | undefined {
-  //   return notationStore
-  //     .getLineNotations()
-  //     .find((n2: LineNotationAttributes) => {
-  //       return lineAtLineCoordinates(
-  //         notation as LineNotationAttributes,
-  //         n2,
-  //         getUserUUId(),
-  //       );
-  //     });
-  // }
-
   function findOverlapRectNotation(
     notation: RectNotationCreationAttributes,
   ): RectNotationAttributes | undefined {
@@ -288,7 +147,7 @@ export default function notationMutateHelper() {
       });
   }
 
-  function findOverlapNotationsOfAnyType(
+  function findOverlapNotationsOfAnyTypeButLine(
     notation: NotationCreationAttributes,
   ): NotationAttributes | undefined {
     return notationStore.getNotations().find((n2: NotationAttributes) => {
@@ -300,36 +159,12 @@ export default function notationMutateHelper() {
               n2 as PointNotationAttributes,
               getUserUUId(),
             ) ??
-            // lineAtCellCoordinates(
-            //   notation as LineNotationAttributes,
-            //   n2 as PointNotationAttributes,
-            //   getUserUUId(),
-            // ) ??
             rectAtCellCoordinates(
               notation as RectNotationAttributes,
               n2 as PointNotationAttributes,
               getUserUUId(),
             )
           );
-        // case "LINE":
-        //   return (
-        //     // lineAtCellCoordinates(
-        //     //   notation as LineNotationAttributes,
-        //     //   n2 as PointNotationAttributes,
-        //     //   getUserUUId(),
-        //     // ) ??
-        //     // lineAtLineCoordinates(
-        //     //   notation as LineNotationAttributes,
-        //     //   n2 as LineNotationAttributes,
-        //     //   getUserUUId(),
-        //     // )
-        //     // ??
-        //     // lineAtRectCoordinates(
-        //     //   notation as LineNotationAttributes,
-        //     //   n2 as RectNotationAttributes,
-        //     //   getUserUUId(),
-        //     // )
-        //   );
 
         case "RECT":
           return (
@@ -338,11 +173,6 @@ export default function notationMutateHelper() {
               n2 as RectNotationAttributes,
               getUserUUId(),
             ) ??
-            // lineAtRectCoordinates(
-            //   notation as LineNotationAttributes,
-            //   n2 as RectNotationAttributes,
-            //   getUserUUId(),
-            // ) ??
             rectAtRectCoordinates(
               notation as RectNotationAttributes,
               n2 as RectNotationAttributes,
@@ -564,7 +394,10 @@ export default function notationMutateHelper() {
       : notationStore.getSelectedNotations();
   }
 
-  async function updateHorizontalLineNotation(lineNotation: HorizontalLineNotationAttributes) {
+  async function updateHorizontalLineNotation(
+    lineNotation: HorizontalLineNotationAttributes,
+  ) {
+    validateFromColLessThanToCol(lineNotation);
     await dbHelper.updateHorizontalLineAttributes(lineNotation);
     notationStore.addNotation(lineNotation);
   }
@@ -579,6 +412,7 @@ export default function notationMutateHelper() {
   async function updateSlopeLineNotation(
     lineNotation: SlopeLineNotationAttributes,
   ) {
+    validateFromColLessThanToCol(lineNotation);
     await dbHelper.updateSlopeLineAttributes(lineNotation);
     notationStore.addNotation(lineNotation);
   }
@@ -595,7 +429,7 @@ export default function notationMutateHelper() {
     }
 
     let overlappedAnyTypeNotation: NotationAttributes | undefined =
-      findOverlapNotationsOfAnyType(notation);
+      findOverlapNotationsOfAnyTypeButLine(notation);
 
     // don't allow override of other type notation
     if (overlappedAnyTypeNotation) {
@@ -607,14 +441,15 @@ export default function notationMutateHelper() {
 
   function upsertLineNotation(
     notation:
-      HorizontalLineNotationCreationAttributes |
-      VerticalLineNotationCreationAttributes |
-      SlopeLineNotationCreationAttributes) {
+      | HorizontalLineNotationCreationAttributes
+      | VerticalLineNotationCreationAttributes
+      | SlopeLineNotationCreationAttributes,
+  ) {
     editModeStore.resetEditMode();
     notationStore.resetSelectedNotations();
 
     let overlappedAnyTypeNotation: NotationAttributes | undefined =
-      findOverlapNotationsOfAnyType(notation);
+      findOverlapNotationsOfAnyTypeButLine(notation);
 
     // don't allow override of other type notation
     if (overlappedAnyTypeNotation) {
@@ -636,7 +471,7 @@ export default function notationMutateHelper() {
     }
 
     let overlappedAnyTypeNotation: NotationAttributes | undefined =
-      findOverlapNotationsOfAnyType(notation);
+      findOverlapNotationsOfAnyTypeButLine(notation);
 
     // don't allow override of other type notation
     if (overlappedAnyTypeNotation) {
@@ -782,11 +617,11 @@ export default function notationMutateHelper() {
         return (
           notation?.boardType === "ANSWER" &&
           !userStore.isTeacher() &&
-          notationStore.getNotationByCell({
+          notationStore.getNotationsByCell({
             col: pointNotation.col + delatX,
             row: pointNotation.row + delatY,
             part: "MIDDLE",
-          })?.boardType == "QUESTION"
+          })?.find((n: NotationAttributes) => n.boardType == "QUESTION") != null
         );
       }
 
@@ -805,13 +640,13 @@ export default function notationMutateHelper() {
             if (
               notation?.boardType === "ANSWER" &&
               !userStore.isTeacher() &&
-              notationStore.getNotationByCell({
+              notationStore.getNotationsByCell({
                 col: col,
                 row: row,
                 part: "MIDDLE",
-              })?.boardType == "QUESTION"
+              })?.find((n: NotationAttributes) => n.boardType == "QUESTION") != null
             )
-              return true;
+            return true;
           }
         }
       }
@@ -826,11 +661,11 @@ export default function notationMutateHelper() {
       notationStore.getParent().type == "ANSWER" &&
       !userStore.isTeacher() &&
       pointAttributes &&
-      notationStore.getNotationByCell({
+      notationStore.getNotationsByCell({
         col: pointAttributes.col,
         row: pointAttributes.row,
         part: "MIDDLE",
-      })?.boardType == "QUESTION"
+      })?.find((n: NotationAttributes) => n.boardType == "QUESTION") != null
     );
   }
 
@@ -965,7 +800,7 @@ export default function notationMutateHelper() {
     coordinates: HorizontalLineAttributes,
     notationType: NotationType,
   ) {
-    let notation: HorizontalLineNotationCreationAttributes = {
+    let lineNotation: HorizontalLineNotationCreationAttributes = {
       fromCol: coordinates.fromCol,
       toCol: coordinates.toCol,
       row: coordinates.row,
@@ -974,8 +809,8 @@ export default function notationMutateHelper() {
       notationType: notationType,
       user: userStore.getCurrentUser()!,
     };
-
-    upsertLineNotation(notation);
+    validateFromColLessThanToCol(lineNotation);
+    upsertLineNotation(lineNotation);
   }
 
   function addVerticalLineNotation(
@@ -999,7 +834,7 @@ export default function notationMutateHelper() {
     coordinates: SlopeLineAttributes,
     notationType: NotationType,
   ) {
-    let notation: SlopeLineNotationCreationAttributes = {
+    let lineNotation: SlopeLineNotationCreationAttributes = {
       fromCol: coordinates.fromCol,
       toCol: coordinates.toCol,
       fromRow: coordinates.fromRow,
@@ -1009,8 +844,8 @@ export default function notationMutateHelper() {
       notationType: notationType,
       user: userStore.getCurrentUser()!,
     };
-
-    upsertLineNotation(notation);
+    validateFromColLessThanToCol(lineNotation);
+    upsertLineNotation(lineNotation);
   }
 
   function cloneNotation(notation: Readonly<NotationAttributes>) {
@@ -1033,6 +868,14 @@ export default function notationMutateHelper() {
 
   function getUserUUId(): string {
     return userStore.getCurrentUser()!.uuid;
+  }
+
+  function validateFromColLessThanToCol(colSpan: colSpan) {
+    if (colSpan.fromCol >= colSpan.toCol) {
+      throw new Error(
+        colSpan + ": invalid line notation, from col must be less than to col:",
+      );
+    }
   }
 
   return {

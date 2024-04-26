@@ -4,8 +4,8 @@
       id="lineLeftHandle"
       class="lineHandle"
       v-bind:style="{
-        left: lineLeft - 5 + 'px',
-        top: lineTop + 'px',
+        left: handleLeft + 'px',
+        top: handleTop + 'px',
       }"
       v-on:mouseup="onMouseUp"
       v-on:mousedown="onHandleMouseDown"
@@ -14,8 +14,8 @@
       id="lineRightHandle"
       class="lineHandle"
       v-bind:style="{
-        left: lineRight + 'px',
-        top: lineTop + 'px',
+        left: handleRight + 'px',
+        top: handleBottom + 'px',
       }"
       v-on:mouseup="onMouseUp"
       v-on:mousedown="onHandleMouseDown"
@@ -32,7 +32,7 @@
         :y1="lineTop"
         :x2="lineRight"
         :y2="lineBottom"
-        style="stroke: red; stroke-width: 2"
+        style="stroke: gray; stroke-width: 2"
       />
     </svg>
   </div>
@@ -46,7 +46,7 @@ import { useEditModeStore } from "../store/pinia/editModeStore";
 import {
   SlopeLinePosition,
   cellSpace,
-  DotPosition
+  DotPosition,
 } from "../../../math-common/src/globals";
 import {
   SlopeLineAttributes,
@@ -58,6 +58,9 @@ const eventBus = useEventBus();
 const notationMutateHelper = useNotationMutateHelper();
 const notationStore = useNotationStore();
 const editModeStore = useEditModeStore();
+
+type SlopeType = "NEGATIVE" | "POSITIVE";
+let slopeType: SlopeType = "POSITIVE";
 
 // props
 
@@ -72,15 +75,11 @@ let linePosition = ref(<SlopeLinePosition>{
   right: { x: 0, y: 0 },
 });
 
-
 const show = computed(() => {
   return (
-    editModeStore.isSlopeLineDrawingMode() || editModeStore.isSlopeLineSelectedMode()
+    editModeStore.isSlopeLineDrawingMode() ||
+    editModeStore.isSlopeLineSelectedMode()
   );
-});
-
-const svgDimensions = computed(() => {
-  return document.getElementById(props.svgId)?.getBoundingClientRect()!;
 });
 
 let lineLeft = computed(() => {
@@ -88,15 +87,35 @@ let lineLeft = computed(() => {
 });
 
 let lineRight = computed(() => {
-  return linePosition.value.right.y;
+  return linePosition.value.right.x;
 });
 
 let lineBottom = computed(() => {
-  return Math.max(linePosition.value.left.y, linePosition.value.right.y);
+  return slopeType === "POSITIVE"
+    ? linePosition.value.right.y
+    : linePosition.value.left.y;
 });
 
 let lineTop = computed(() => {
-  return Math.min(linePosition.value.left.y, linePosition.value.right.y);
+  return slopeType === "POSITIVE"
+    ? linePosition.value.left.y
+    : linePosition.value.right.y;
+});
+
+let handleLeft = computed(() => {
+  return lineLeft.value + (svgDimensions()?.left ?? 0);
+});
+
+let handleRight = computed(() => {
+  return lineRight.value + (svgDimensions()?.left ?? 0);
+});
+
+let handleTop = computed(() => {
+  return lineTop.value + (svgDimensions()?.top ?? 0);
+});
+
+let handleBottom = computed(() => {
+  return lineBottom.value + (svgDimensions()?.top ?? 0);
 });
 
 // watch
@@ -122,7 +141,6 @@ watch(
   },
 );
 
-
 watch(
   () => eventBus.bus.value.get("slopeLineSelected"), /// TODO: update emitter to distinguish line types
   (line: SlopeLineNotationAttributes) => {
@@ -133,23 +151,18 @@ watch(
 
 // event handlers
 
-
 function onSlopeLineSelected(lineNotation: SlopeLineNotationAttributes) {
   linePosition.value.left.x =
-    svgDimensions.value.left +
     lineNotation.fromCol * (notationStore.getCellHorizontalWidth() + cellSpace);
 
   linePosition.value.left.y =
-    svgDimensions.value.top +
     lineNotation.fromRow * (notationStore.getCellVerticalHeight() + cellSpace);
 
   linePosition.value.right.x =
-    svgDimensions.value.left +
     (lineNotation.toCol - 1) *
-      (notationStore.getCellHorizontalWidth() + cellSpace);
+    (notationStore.getCellHorizontalWidth() + cellSpace);
 
   linePosition.value.right.y =
-    svgDimensions.value.top +
     lineNotation.toRow * (notationStore.getCellVerticalHeight() + cellSpace);
 
   notationStore.selectNotation(lineNotation.uuid);
@@ -163,7 +176,6 @@ function onHandleMouseDown() {
 
 // emitted by event manager
 function onMouseDown(e: MouseEvent) {
-  console.debug(e);
   if (e.buttons !== 1) {
     // ignore right button
     return;
@@ -175,7 +187,7 @@ function onMouseDown(e: MouseEvent) {
   }
 
   // new line
-  if (editModeStore.isLineStartedMode()) {
+  if (editModeStore.isSlopeLineStartedMode()) {
     startLineDrawing({
       x: e.offsetX,
       y: e.offsetY,
@@ -185,23 +197,18 @@ function onMouseDown(e: MouseEvent) {
 }
 
 function setLine(xPos: number, yPos: number) {
-  // nagtivve slope
-  if (xPos <= linePosition.value.left.x) {
-     const prevLeftX = linePosition.value.left.x
-    linePosition.value.left.x = xPos;
-    linePosition.value.right.x = prevLeftX;
-    linePosition.value.left.y = yPos;
-  }
-  // positive slope
-  else {
+  if (slopeType === "POSITIVE") {
     linePosition.value.right.x = xPos;
     linePosition.value.right.y = yPos;
+  }
+  // negative slope
+  else {
+    linePosition.value.left.x = xPos;
+    linePosition.value.left.y = yPos;
   }
 }
 
 function onMouseMove(e: MouseEvent) {
-  console.debug("onMouseMove: buttons = " + e.buttons);
-
   // ignore right button
   if (e.buttons !== 1) {
     return;
@@ -221,8 +228,9 @@ function onMouseMove(e: MouseEvent) {
     return;
   }
 
-  console.debug("e.clientX:" + e.clientX + ",e.clientY:" + e.clientY);
-  setLine(e.clientX, e.clientY);
+  setLineSlopeType(e.offsetX);
+
+  setLine(e.offsetX, e.offsetY);
 }
 
 function onMouseUp() {
@@ -244,15 +252,13 @@ function onMouseUp() {
 
 // methods
 
+function svgDimensions(): DOMRect | undefined {
+  return document.getElementById(props.svgId)?.getBoundingClientRect();
+}
+
 function startLineDrawing(position: DotPosition) {
-  linePosition.value.left.x = position.x + svgDimensions.value.left;
-  linePosition.value.right.x = + 10
-
-  linePosition.value.left.y = getNearestRow(position.y) + svgDimensions.value.top;
-  linePosition.value.right.y = linePosition.value.left.y + 10;
-
-  console.debug("startLineDrawing linePosition:");
-  console.debug(linePosition);
+  linePosition.value.left.x = linePosition.value.right.x = position.x;
+  linePosition.value.left.y = linePosition.value.right.y = position.y;
 }
 
 function endDrawLine() {
@@ -263,35 +269,34 @@ function endDrawLine() {
     return;
 
   let fromCol = Math.round(
-    (linePosition.value.left.x - svgDimensions.value.left) /
+    linePosition.value.left.x /
       (notationStore.getCellHorizontalWidth() + cellSpace),
   );
 
   let toCol = Math.round(
-    (linePosition.value.right.x - svgDimensions.value.left) /
+    linePosition.value.right.x /
       (notationStore.getCellHorizontalWidth() + cellSpace),
   );
 
   let fromRow = Math.round(
-    (linePosition.value.left.y - svgDimensions.value.top) /
+    linePosition.value.left.y /
       (notationStore.getCellVerticalHeight() + cellSpace),
   );
 
   let toRow = Math.round(
-    (linePosition.value.right.y - svgDimensions.value.top) /
+    linePosition.value.right.y /
       (notationStore.getCellVerticalHeight() + cellSpace),
   );
 
   saveLine({
-      fromCol: fromCol,
-      toCol: toCol,
-      fromRow: fromRow,
-      toRow: toRow,
-    });
+    fromCol: fromCol,
+    toCol: toCol,
+    fromRow: fromRow,
+    toRow: toRow,
+  });
 
   editModeStore.resetEditMode();
 }
-
 
 function saveLine(lineAttributes: SlopeLineAttributes) {
   if (notationStore.getSelectedNotations().length > 0) {
@@ -319,11 +324,8 @@ function resetLineDrawing() {
   editModeStore.resetEditMode();
 }
 
-function getNearestRow(clickedYPos: number) {
-  let clickedRow = Math.round(
-    clickedYPos / (notationStore.getCellVerticalHeight() + cellSpace),
-  );
-  return clickedRow * (notationStore.getCellVerticalHeight() + cellSpace);
+function setLineSlopeType(firstXPos: number) {
+  slopeType = firstXPos < linePosition.value.left.x ? "NEGATIVE" : "POSITIVE";
 }
 </script>
 

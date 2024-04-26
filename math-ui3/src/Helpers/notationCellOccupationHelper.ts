@@ -4,12 +4,13 @@ import {
   VerticalLineNotationAttributes,
   SlopeLineNotationAttributes,
   RectNotationAttributes,
+  NotationAttributes,
 } from "common/baseTypes";
 
 import { matrixDimensions } from "common/globals";
 
 export default function notationCellOccupationHelper() {
-
+  // point occupation matrix holds only one notation per cell
   function updatePointOccupationMatrix(
     matrix: any,
     notation: PointNotationAttributes,
@@ -19,8 +20,29 @@ export default function notationCellOccupationHelper() {
       notation.col < matrixDimensions.colsNum &&
       notation.row < matrixDimensions.rowsNum
     ) {
-      matrix[notation.col][notation.row] = doRemove ? null : notation;
+      matrix[notation.col][notation.row] = doRemove ? null : notation.uuid;
     }
+  }
+
+  // update single cell
+  function updateLineOccupationMatrixCell(
+    colIndex: number,
+    rowIndex: number,
+    matrix: any,
+    notation: NotationAttributes,
+    doRemove: boolean,
+  ) {
+    if (doRemove) {
+      matrix[colIndex][rowIndex] = null;
+      return;
+    }
+
+    if (matrix[colIndex][rowIndex] === null) {
+      matrix[colIndex][rowIndex] = [];
+    }
+
+    // line occuption mtarix can attribute multiple notations to single cell
+    matrix[colIndex][rowIndex].push(notation.uuid);
   }
 
   function updateHorizontalLineOccupationMatrix(
@@ -28,15 +50,27 @@ export default function notationCellOccupationHelper() {
     notation: HorizontalLineNotationAttributes,
     doRemove: boolean,
   ) {
-    for (let i = notation.fromCol; i <= notation.toCol; i++) {
+    for (
+      let colIndex = notation.fromCol;
+      colIndex <= notation.toCol;
+      colIndex++
+    ) {
       if (
-        i < matrixDimensions.colsNum &&
+        colIndex < matrixDimensions.colsNum &&
         notation.row < matrixDimensions.rowsNum
       ) {
-        matrix[i][notation.row] = doRemove ? null : notation;
+        updateLineOccupationMatrixCell(
+          colIndex,
+          notation.row,
+          matrix,
+          notation,
+          doRemove,
+        );
       }
     }
+    console.log(matrix);
   }
+
 
   function updateVerticalLineOccupationMatrix(
     matrix: any,
@@ -48,30 +82,53 @@ export default function notationCellOccupationHelper() {
         i < matrixDimensions.rowsNum &&
         notation.col < matrixDimensions.colsNum
       ) {
-        matrix[notation.col][i] = doRemove ? null : notation;
+        updateLineOccupationMatrixCell(
+          notation.col,
+          i,
+          matrix,
+          notation,
+          doRemove,
+        );
       }
     }
+    console.log(matrix);
   }
 
-
-  ///TODO: update occupation matrix assuming that from col is less than to col
-  //// but from row can be greater than to row in case of negative slope
   function updateSlopeLineOccupationMatrix(
     /// the occupation matrix shoulkd be populated to encompass the generated line
     matrix: any,
     notation: SlopeLineNotationAttributes,
     doRemove: boolean,
   ) {
-    for (let i = notation.fromRow; i <= notation.toRow; i++) {
-      if (
-        i < matrixDimensions.rowsNum &&
-        notation.toCol < matrixDimensions.colsNum
-      ) {
-        matrix[notation.fromCol][i] = doRemove ? null : notation;
+    const slope =
+      (notation.toRow - notation.fromRow) / (notation.toCol - notation.fromCol);
+
+    let firstRowIndex = notation.fromRow;
+
+    for (
+      let colIndex = notation.fromCol;
+      colIndex <= notation.toCol;
+      colIndex++
+    ) {
+      if (colIndex < matrixDimensions.colsNum) {
+        let rowIndex =
+          firstRowIndex +
+          (slope > 0
+            ? Math.floor((colIndex - notation.fromCol) * slope)
+            : Math.ceil((colIndex - notation.fromCol) * slope));
+        updateLineOccupationMatrixCell(
+          colIndex,
+          rowIndex,
+          matrix,
+          notation,
+          doRemove,
+        );
       }
     }
+    console.log(matrix);
   }
 
+  // rect occupation matrix holds only one notation per cell
   function updateRectOccupationMatrix(
     matrix: any,
     notation: RectNotationAttributes,
@@ -80,7 +137,7 @@ export default function notationCellOccupationHelper() {
     for (let i = notation.fromCol; i <= notation.toCol; i++) {
       for (let j = notation.fromRow; j <= notation.toRow; j++) {
         if (i < matrixDimensions.colsNum && j < matrixDimensions.rowsNum) {
-          matrix[i][j] = doRemove ? null : notation;
+          matrix[i][j] = doRemove ? null : notation.uuid;
         }
       }
     }

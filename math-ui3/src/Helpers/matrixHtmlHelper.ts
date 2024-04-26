@@ -1,5 +1,6 @@
 import * as d3 from "d3";
 import {
+  NotationAttributes,
   HorizontalLineNotationAttributes,
   PointNotationAttributes,
   RectNotationAttributes,
@@ -8,7 +9,6 @@ import {
 } from "common/baseTypes";
 import { useNotationStore } from "../store/pinia/notationStore";
 import { cellSpace, getDefaultFontSize } from "common/globals";
-import { NotationAttributes } from "common/baseTypes";
 import { NotationTypeShape } from "common/unions";
 import useUtils from "./matrixHelperUtils";
 import { useUserStore } from "../store/pinia/userStore";

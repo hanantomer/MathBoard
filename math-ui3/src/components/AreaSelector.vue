@@ -159,7 +159,6 @@ async function moveSelectionByKey(
 }
 
 function handleMouseMove(e: MouseEvent) {
-  console.debug("area selector mouse move:" + e);
   if (e.buttons !== 1) {
     return;
   }
@@ -195,7 +194,6 @@ function handleMouseMove(e: MouseEvent) {
 }
 
 function handleMouseDown(e: MouseEvent) {
-  console.debug("area selector mouse down:" + e);
   resetSelection();
 }
 
@@ -220,12 +218,9 @@ function handleMouseUp(e: MouseEvent) {
 // extend or shrink selection area from inner mouse move
 function updateSelectionArea(e: MouseEvent) {
 
-  console.debug("update selection:" +selectionPosition.value)
-
   if (selectionPosition.value.x1 == 0) {
     selectionPosition.value.x1 = e.clientX;
     selectionPosition.value.y1 = e.clientY;
-    console.debug(`selction starting at: ${e.clientX}, ${e.clientY}`);
   }
 
   selectionPosition.value.x2 = e.clientX;
@@ -234,7 +229,6 @@ function updateSelectionArea(e: MouseEvent) {
 
 function endSelect() {
   if (selectionPosition.value.x2 != selectionPosition.value.x1) {
-    //normalizeSelection();
 
     d3.select("#" + props.svgId)
       .selectAll("foreignObject")
@@ -356,7 +350,6 @@ function resetSelection() {
     selectionPosition.value.y2 =
       0;
 
-  console.debug("selection reset");
 }
 </script>
 
