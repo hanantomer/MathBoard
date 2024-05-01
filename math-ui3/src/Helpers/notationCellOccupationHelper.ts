@@ -66,11 +66,17 @@ export default function notationCellOccupationHelper() {
           notation,
           doRemove,
         );
+
+        updateLineOccupationMatrixCell(
+          colIndex,
+          notation.row - 1,
+          matrix,
+          notation,
+          doRemove,
+        );
       }
     }
-    console.log(matrix);
   }
-
 
   function updateVerticalLineOccupationMatrix(
     matrix: any,
@@ -89,9 +95,16 @@ export default function notationCellOccupationHelper() {
           notation,
           doRemove,
         );
+
+        updateLineOccupationMatrixCell(
+          notation.col - 1,
+          i,
+          matrix,
+          notation,
+          doRemove,
+        );
       }
     }
-    console.log(matrix);
   }
 
   function updateSlopeLineOccupationMatrix(
@@ -119,6 +132,14 @@ export default function notationCellOccupationHelper() {
         updateLineOccupationMatrixCell(
           colIndex,
           rowIndex,
+          matrix,
+          notation,
+          doRemove,
+        );
+
+        updateLineOccupationMatrixCell(
+          colIndex,
+          rowIndex - 1,
           matrix,
           notation,
           doRemove,

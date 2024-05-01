@@ -22,13 +22,13 @@ const notationCellOccupationHelper = useNotationCellOccupationHelper();
 export const useNotationStore = defineStore("notation", () => {
   let cellVerticalHight = ref<number>();
 
-  let cellPointNotationOccupationMatrix: (NotationAttributes | null)[][] =
+  let cellPointNotationOccupationMatrix: (String | null)[][] =
     createCellSingleNotationOccupationMatrix();
 
-  let cellRectNotationOccupationMatrix: (NotationAttributes | null)[][] =
+  let cellRectNotationOccupationMatrix: (String | null)[][] =
     createCellSingleNotationOccupationMatrix();
 
-  let cellLineNotationOccupationMatrix: (NotationAttributes | null)[][][] =
+  let cellLineNotationOccupationMatrix: (String | null)[][][] =
     createCellMultipleNotationOccupationMatrix();
 
   let parent = ref<Board>({ uuid: "", type: "LESSON" });
@@ -304,35 +304,43 @@ export const useNotationStore = defineStore("notation", () => {
 
     let notationsAtCellPoint: NotationAttributes[] = [];
 
-    const poinNotation = cellPointNotationOccupationMatrix[clickedCell.col][
+    const poinNotationUUId = cellPointNotationOccupationMatrix[clickedCell.col][
       clickedCell.row
-    ] as NotationAttributes;
+    ] as String;
+
+    const poinNotation =
+      notations.value.get(poinNotationUUId) as NotationAttributes;
 
     if (poinNotation) {
       notationsAtCellPoint.push(poinNotation);
     } else {
-      const rectNotation = cellRectNotationOccupationMatrix[clickedCell.col][
+
+      const rectNotationUUId = cellRectNotationOccupationMatrix[clickedCell.col][
         clickedCell.row
-      ] as NotationAttributes;
+      ] as String;
+
+      const rectNotation = notations.value.get(
+        rectNotationUUId,
+      ) as NotationAttributes;
 
       if (rectNotation) {
         notationsAtCellPoint.push(rectNotation);
       }
     }
 
-    let lineNotations = cellLineNotationOccupationMatrix[clickedCell.col][
+    let lineNotationsUUIDs = cellLineNotationOccupationMatrix[clickedCell.col][
       clickedCell.row
-    ] as NotationAttributes[];
+    ] as String[];
 
-    if (lineNotations) {
-      lineNotations.forEach((ln) => notationsAtCellPoint.push(ln));
+    if (lineNotationsUUIDs) {
+      lineNotationsUUIDs.forEach((ln) => notationsAtCellPoint.push(notations.value.get(ln) as NotationAttributes));
     }
 
     return notationsAtCellPoint;
   }
 
-  function createCellSingleNotationOccupationMatrix(): (NotationAttributes | null)[][] {
-    let matrix: (NotationAttributes | null)[][] = new Array();
+  function createCellSingleNotationOccupationMatrix(): (String | null)[][] {
+    let matrix: (String | null)[][] = new Array();
     for (let i = 0; i < matrixDimensions.colsNum; i++) {
       matrix.push([]);
       for (let j = 0; j < matrixDimensions.rowsNum; j++) {
@@ -342,8 +350,8 @@ export const useNotationStore = defineStore("notation", () => {
     return matrix;
   }
 
-  function createCellMultipleNotationOccupationMatrix(): (NotationAttributes | null)[][][] {
-    let matrix: (NotationAttributes | null)[][][] = new Array();
+  function createCellMultipleNotationOccupationMatrix(): (String | null)[][][] {
+    let matrix: (String | null)[][][] = new Array();
     for (let i = 0; i < matrixDimensions.colsNum; i++) {
       matrix.push([]);
       for (let j = 0; j < matrixDimensions.rowsNum; j++) {

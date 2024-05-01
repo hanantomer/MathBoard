@@ -14,6 +14,8 @@ import { CellPart, NotationTypeShape } from "../../../math-common/src/unions";
 const notationStore = useNotationStore();
 
 export default function elementFinderHelper() {
+  const minDistanceForSelection = 5;
+
   function findClickedCell(
     svgId: string,
     dotPosition: DotPosition,
@@ -133,9 +135,14 @@ export default function elementFinderHelper() {
     }
 
     // pick notation with min distance
-    return notationDistanceList.reduce((min, notation) =>
+    const notationAndDistance = notationDistanceList.reduce((min, notation) =>
       min.distance < notation.distance ? min : notation,
-    ).notation;
+    );
+
+    if (notationAndDistance.distance < minDistanceForSelection)
+      return notationAndDistance.notation;
+
+    return null;
   }
 
   // calc the distnce from the center of cell to the clicked coordinates.
@@ -189,38 +196,111 @@ export default function elementFinderHelper() {
     );
   }
 
-  //https://en.wikipedia.org/wiki/Distance_from_a_point_to_a_line
   function getClickedPosDistanceFromHorizontalLine(
     svgId: string,
     dotPosition: DotPosition,
     n: HorizontalLineNotationAttributes,
   ): number {
+    const boundingRect = document
+      .getElementById(svgId)
+      ?.getBoundingClientRect();
 
-    return Math.abs(
-      (n.toCol - n.fromCol) * (dotPosition.y - n.row)) /
-      ()
+    const horizontalCellWidth =
+      notationStore.getCellHorizontalWidth() + cellSpace;
 
+    const verticalCellWidth = notationStore.getCellVerticalHeight() + cellSpace;
 
+    const x = dotPosition.x - boundingRect!.left;
+
+    const y = dotPosition.y - boundingRect!.top;
+
+    const horizontalDistance =
+      x < n.fromCol * horizontalCellWidth
+        ? n.fromCol * horizontalCellWidth - x
+        : x > n.toCol * horizontalCellWidth
+        ? x - n.toCol * horizontalCellWidth
+        : 0;
+
+    const verticalDistance = Math.abs(n.row * verticalCellWidth - y);
+
+    const a = Math.pow(horizontalDistance, 2);
+    const b = Math.pow(verticalDistance, 2);
+
+    return Math.sqrt(a + b);
   }
 
   function getClickedPosDistanceFromVerticalLine(
     svgId: string,
     dotPosition: DotPosition,
-    n1: VerticalLineNotationAttributes,
-  ): number {}
-
-  function getClickedPosDistanceFromSlopLine(
-    svgId: string,
-    dotPosition: DotPosition,
-    n1: SlopeLineNotationAttributes,
+    n: VerticalLineNotationAttributes,
   ): number {
+    const boundingRect = document
+      .getElementById(svgId)
+      ?.getBoundingClientRect();
 
-    return Math.abs((n.toCol - n.fromCol) * ())
+    const horizontalCellWidth =
+      notationStore.getCellHorizontalWidth() + cellSpace;
+
+    const verticalCellWidth = notationStore.getCellVerticalHeight() + cellSpace;
+
+    const x = dotPosition.x - boundingRect!.left;
+
+    const y = dotPosition.y - boundingRect!.top;
+
+    const horizontalDistance = Math.abs(n.col * horizontalCellWidth - x);
+
+    const verticalDistance =
+      y < n.fromRow * verticalCellWidth
+        ? n.fromRow * verticalCellWidth - dotPosition.y
+        : y > n.toRow * verticalCellWidth
+        ? y - n.toRow * verticalCellWidth
+        : 0;
+
+    const a = Math.pow(horizontalDistance, 2);
+    const b = Math.pow(verticalDistance, 2);
+
+    return Math.sqrt(a + b);
   }
 
-  getClickedPosDistanceFromHorizontalLine;
+  //https://en.wikipedia.org/wiki/Distance_from_a_point_to_a_line
+  function getClickedPosDistanceFromSlopeLine(
+    svgId: string,
+    dotPosition: DotPosition,
+    n: SlopeLineNotationAttributes,
+  ): number {
+    const boundingRect = document
+      .getElementById(svgId)
+      ?.getBoundingClientRect();
 
-  getClickedPosDistanceFromSlopeLine;
+    const horizontalCellWidth =
+      notationStore.getCellHorizontalWidth() + cellSpace;
+
+    const verticalCellWidth = notationStore.getCellVerticalHeight() + cellSpace;
+
+    const x = dotPosition.x - boundingRect!.left;
+
+    const y = dotPosition.y - boundingRect!.top;
+
+    const nominator = Math.abs(
+      (n.toCol * horizontalCellWidth - n.fromCol * horizontalCellWidth) *
+        (y - n.fromCol * horizontalCellWidth) -
+        (x - n.fromCol * horizontalCellWidth) *
+          (n.toRow * verticalCellWidth - n.fromRow * verticalCellWidth),
+    );
+
+    const deNominator = Math.sqrt(
+      Math.pow(
+        n.toCol * horizontalCellWidth - n.fromCol * horizontalCellWidth,
+        2,
+      ) +
+        Math.pow(
+          n.toRow * verticalCellWidth - n.fromRow * verticalCellWidth,
+          2,
+        ),
+    );
+
+    return nominator / deNominator;
+  }
 
   function getBoundingRect(svgId: string) {
     return document.getElementById(svgId)?.getBoundingClientRect();

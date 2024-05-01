@@ -159,8 +159,7 @@ function onSlopeLineSelected(lineNotation: SlopeLineNotationAttributes) {
     lineNotation.fromRow * (notationStore.getCellVerticalHeight() + cellSpace);
 
   linePosition.value.right.x =
-    (lineNotation.toCol - 1) *
-    (notationStore.getCellHorizontalWidth() + cellSpace);
+    lineNotation.toCol * (notationStore.getCellHorizontalWidth() + cellSpace);
 
   linePosition.value.right.y =
     lineNotation.toRow * (notationStore.getCellVerticalHeight() + cellSpace);
