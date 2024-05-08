@@ -1,6 +1,6 @@
 import { NotationTypeShape } from "common/unions";
 import { useNotationStore } from "../store/pinia/notationStore";
-import { DotPosition } from "common/globals";
+import { AreaCoordinates, DotPosition } from "common/globals";
 import { NotationAttributes } from "common/baseTypes";
 import useElementFinderHelper from "./elementFinderHelper";
 import useNotationMutateHelper from "./notationMutateHelper";
@@ -17,23 +17,28 @@ const lessonStore = useLessonStore();
 const editModeStore = useEditModeStore();
 
 export default function selectionHelper() {
+  function selectNotationsOfArea(
+    svgId: string,
+    areaCoordinates: AreaCoordinates,
+  ) {
+    const areaCells = elementFinderHelper.findAreaCells(svgId, areaCoordinates);
+    notationStore.selectNotationsOfCells(areaCells);
+  }
 
   function selectNotationAtPosition(
     svgId: string,
     position: DotPosition,
   ): NotationAttributes | null {
-
     notationStore.resetSelectedNotations();
 
-    const notation = elementFinderHelper.findClickedNotation(svgId, position);
+    const notation = elementFinderHelper.findPointNotation(svgId, position);
 
     if (!notation) return null;
 
     switch (NotationTypeShape.get(notation!.notationType)) {
       case "HORIZONTAL_LINE":
       case "VERTICAL_LINE":
-      case "SLOPE_LINE":
-      {
+      case "SLOPE_LINE": {
         selectLineNotation(notation!);
         break;
       }
@@ -56,7 +61,6 @@ export default function selectionHelper() {
   }
 
   function selectLineNotation(notation: NotationAttributes) {
-
     switch (notation.notationType) {
       case "SQRT":
         editModeStore.setEditMode("SQRT_SELECTED");
@@ -74,8 +78,6 @@ export default function selectionHelper() {
         editModeStore.setEditMode("SLOPE_LINE_SELECTED");
         eventBus.emit("slopeLineSelected", notation);
     }
-
-
   }
 
   async function selectCell(svgId: string, position: DotPosition) {
@@ -99,6 +101,7 @@ export default function selectionHelper() {
 
   return {
     selectNotationAtPosition,
+    selectNotationsOfArea,
     selectCell,
   };
 }

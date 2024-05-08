@@ -1,7 +1,10 @@
-import { DotPosition, cellSpace } from "../../../math-common/src/globals";
+import {
+  DotPosition,
+  AreaCoordinates,
+  cellSpace,
+} from "../../../math-common/src/globals";
 import {
   CellAttributes,
-  HorizontalLineAttributes,
   HorizontalLineNotationAttributes,
   PointNotationAttributes,
   RectNotationAttributes,
@@ -10,11 +13,16 @@ import {
 } from "../../../math-common/src/baseTypes";
 import { useNotationStore } from "../store/pinia/notationStore";
 import { NotationAttributes } from "../../../math-common/src/baseTypes";
-import { CellPart, NotationTypeShape } from "../../../math-common/src/unions";
+import {
+  //CellPart,
+  NotationTypeShape,
+  NotationType,
+} from "../../../math-common/src/unions";
 const notationStore = useNotationStore();
 
 export default function elementFinderHelper() {
-  const minDistanceForSelection = 5;
+  const minDistanceForLineSelection = 5;
+  const minDistanceForSelection = 25;
 
   function findClickedCell(
     svgId: string,
@@ -29,32 +37,62 @@ export default function elementFinderHelper() {
         (notationStore.getCellHorizontalWidth() + cellSpace),
     );
 
-    const clickedPosDivededByRowHeight =
+    const clickedCellRow = Math.floor(
       (dotPosition.y - boundingRect!.top) /
-      (notationStore.getCellVerticalHeight() + cellSpace);
+        (notationStore.getCellVerticalHeight() + cellSpace),
+    );
 
-    const clickedCellRow = Math.floor(clickedPosDivededByRowHeight);
-
-    const modulo = clickedPosDivededByRowHeight - clickedCellRow;
-
-    let cellPart: CellPart =
-      modulo <= 0.25
-        ? "TOP"
-        : modulo > 0.25 && modulo < 0.75
-        ? "MIDDLE"
-        : "BOTTOM";
-
-    return { col: clickedCellCol, row: clickedCellRow, part: cellPart };
+    return { col: clickedCellCol, row: clickedCellRow };
   }
 
-  function findClickedNotation(
+  function findAreaCells(
+    svgId: string,
+    areaCoordinates: AreaCoordinates,
+  ): CellAttributes[] {
+    let cells: CellAttributes[] = [];
+
+    const boundingRect = document
+      .getElementById(svgId)
+      ?.getBoundingClientRect();
+
+    const areaFromCol = Math.floor(
+      (areaCoordinates.x1 - boundingRect!.left) /
+        (notationStore.getCellHorizontalWidth() + cellSpace),
+    );
+
+    const areaToCol = Math.floor(
+      (areaCoordinates.x2 - boundingRect!.left) /
+        (notationStore.getCellHorizontalWidth() + cellSpace),
+    );
+
+    const areaFromRow = Math.floor(
+      (areaCoordinates.y1 - boundingRect!.top) /
+        (notationStore.getCellVerticalHeight() + cellSpace),
+    );
+
+    const areaToRow = Math.floor(
+      (areaCoordinates.y2 - boundingRect!.top) /
+        (notationStore.getCellVerticalHeight() + cellSpace),
+    );
+
+    for (let i = areaFromCol; i <= areaToCol; i++) {
+      for (let j = areaFromRow; j <= areaToRow; j++) {
+        cells.push({ col: i, row: j });
+      }
+    }
+
+    return cells;
+  }
+
+  function findPointNotation(
     svgId: string,
     dotPosition: DotPosition,
   ): NotationAttributes | null {
-    const clickedCell = findClickedCell(svgId, dotPosition); /// TODE: remove unnessecary clicked cell part
+    const clickedCell = findClickedCell(svgId, dotPosition);
     const notationsAtCell = notationStore.getNotationsByCell(clickedCell);
     return notationClosestToPoint(svgId, notationsAtCell, dotPosition);
   }
+
 
   // loop over notationsAtCell array and return the one closest to dotPosition
   type NotationDistance = { notation: NotationAttributes; distance: number };
@@ -139,10 +177,30 @@ export default function elementFinderHelper() {
       min.distance < notation.distance ? min : notation,
     );
 
-    if (notationAndDistance.distance < minDistanceForSelection)
+    if (
+      notationIsCloseToClickedPoint(
+        notationAndDistance.notation.notationType,
+        notationAndDistance.distance,
+      )
+    ) {
       return notationAndDistance.notation;
+    }
 
     return null;
+  }
+
+  function notationIsCloseToClickedPoint(
+    notationType: NotationType,
+    distance: number,
+  ) {
+    switch (NotationTypeShape.get(notationType)) {
+      case "HORIZONTAL_LINE":
+      case "VERTICAL_LINE":
+      case "SLOPE_LINE":
+        return distance <= minDistanceForLineSelection;
+      default:
+        return distance <= minDistanceForSelection;
+    }
   }
 
   // calc the distnce from the center of cell to the clicked coordinates.
@@ -190,9 +248,11 @@ export default function elementFinderHelper() {
         ((n1.toCol - n1.fromCol) * notationStore.getCellHorizontalWidth()) / 2,
     );
 
-    return Math.sqrt(
-      Math.pow(clickedPosYDistanceFromRectCenter, 2) +
-        Math.pow(clickedPosXDistanceFromRectCenter, 2),
+    return Math.log(
+      Math.sqrt(
+        Math.pow(clickedPosYDistanceFromRectCenter, 2) +
+          Math.pow(clickedPosXDistanceFromRectCenter, 2),
+      ),
     );
   }
 
@@ -205,23 +265,22 @@ export default function elementFinderHelper() {
       .getElementById(svgId)
       ?.getBoundingClientRect();
 
-    const horizontalCellWidth =
-      notationStore.getCellHorizontalWidth() + cellSpace;
+    const cellWidth = notationStore.getCellHorizontalWidth() + cellSpace;
 
-    const verticalCellWidth = notationStore.getCellVerticalHeight() + cellSpace;
+    const cellHeight = notationStore.getCellVerticalHeight() + cellSpace;
 
     const x = dotPosition.x - boundingRect!.left;
 
     const y = dotPosition.y - boundingRect!.top;
 
     const horizontalDistance =
-      x < n.fromCol * horizontalCellWidth
-        ? n.fromCol * horizontalCellWidth - x
-        : x > n.toCol * horizontalCellWidth
-        ? x - n.toCol * horizontalCellWidth
+      x < n.fromCol * cellWidth
+        ? n.fromCol * cellWidth - x
+        : x > n.toCol * cellWidth
+        ? x - n.toCol * cellWidth
         : 0;
 
-    const verticalDistance = Math.abs(n.row * verticalCellWidth - y);
+    const verticalDistance = Math.abs(n.row * cellHeight - y);
 
     const a = Math.pow(horizontalDistance, 2);
     const b = Math.pow(verticalDistance, 2);
@@ -238,22 +297,21 @@ export default function elementFinderHelper() {
       .getElementById(svgId)
       ?.getBoundingClientRect();
 
-    const horizontalCellWidth =
-      notationStore.getCellHorizontalWidth() + cellSpace;
+    const cellWidth = notationStore.getCellHorizontalWidth() + cellSpace;
 
-    const verticalCellWidth = notationStore.getCellVerticalHeight() + cellSpace;
+    const cellHeight = notationStore.getCellVerticalHeight() + cellSpace;
 
     const x = dotPosition.x - boundingRect!.left;
 
     const y = dotPosition.y - boundingRect!.top;
 
-    const horizontalDistance = Math.abs(n.col * horizontalCellWidth - x);
+    const horizontalDistance = Math.abs(n.col * cellWidth - x);
 
     const verticalDistance =
-      y < n.fromRow * verticalCellWidth
-        ? n.fromRow * verticalCellWidth - dotPosition.y
-        : y > n.toRow * verticalCellWidth
-        ? y - n.toRow * verticalCellWidth
+      y < n.fromRow * cellHeight
+        ? n.fromRow * cellHeight - dotPosition.y
+        : y > n.toRow * cellHeight
+        ? y - n.toRow * cellHeight
         : 0;
 
     const a = Math.pow(horizontalDistance, 2);
@@ -272,31 +330,26 @@ export default function elementFinderHelper() {
       .getElementById(svgId)
       ?.getBoundingClientRect();
 
-    const horizontalCellWidth =
-      notationStore.getCellHorizontalWidth() + cellSpace;
+    const cellWidth = notationStore.getCellHorizontalWidth() + cellSpace;
 
-    const verticalCellWidth = notationStore.getCellVerticalHeight() + cellSpace;
+    const cellHeight = notationStore.getCellVerticalHeight() + cellSpace;
 
     const x = dotPosition.x - boundingRect!.left;
 
     const y = dotPosition.y - boundingRect!.top;
 
     const nominator = Math.abs(
-      (n.toCol * horizontalCellWidth - n.fromCol * horizontalCellWidth) *
-        (y - n.fromCol * horizontalCellWidth) -
-        (x - n.fromCol * horizontalCellWidth) *
-          (n.toRow * verticalCellWidth - n.fromRow * verticalCellWidth),
+      (n.toCol - n.fromCol) *
+        cellWidth * // x2-x1
+        (y - n.fromRow * cellHeight) - // y0 - y1
+        (x - n.fromCol * cellWidth) * // x0 - x1
+          (n.toRow - n.fromRow) * // y2 - y1
+          cellHeight,
     );
 
     const deNominator = Math.sqrt(
-      Math.pow(
-        n.toCol * horizontalCellWidth - n.fromCol * horizontalCellWidth,
-        2,
-      ) +
-        Math.pow(
-          n.toRow * verticalCellWidth - n.fromRow * verticalCellWidth,
-          2,
-        ),
+      Math.pow((n.toCol - n.fromCol) * cellWidth, 2) +
+        Math.pow((n.toRow - n.fromRow) * cellHeight, 2),
     );
 
     return nominator / deNominator;
@@ -307,7 +360,8 @@ export default function elementFinderHelper() {
   }
 
   return {
+    findPointNotation,
     findClickedCell,
-    findClickedNotation,
+    findAreaCells,
   };
 }

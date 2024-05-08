@@ -19,16 +19,18 @@
 import { watch, computed, ref } from "vue";
 import { useEditModeStore } from "../store/pinia/editModeStore";
 import { useNotationStore } from "../store/pinia/notationStore";
-import * as d3 from "d3";
+
 import useNotationMutateHelper from "../helpers/notationMutateHelper";
+import useSelectionHelper from "../helpers/selectionHelper";
 import useEventBus from "../helpers/eventBusHelper";
-import { NotationTypeShape, MoveDirection } from "common/unions";
+import { MoveDirection } from "common/unions";
 import { cellSpace } from "common/globals";
 
 const eventBus = useEventBus();
 const editModeStore = useEditModeStore();
 const notationStore = useNotationStore();
 const notationMutateHelper = useNotationMutateHelper();
+const selectionHelper = useSelectionHelper();
 
 const props = defineProps({
   svgId: { type: String, default: "" },
@@ -228,49 +230,7 @@ function updateSelectionArea(e: MouseEvent) {
 }
 
 function endSelect() {
-  if (selectionPosition.value.x2 != selectionPosition.value.x1) {
-
-    d3.select("#" + props.svgId)
-      .selectAll("foreignObject")
-      .each((datum: any) => {
-        let row = datum.row ?? datum.fromRow;
-        let col = datum.col ?? datum.fromCol;
-
-        let y_gutter = 10;
-
-        if (
-          NotationTypeShape.get(datum.notationType) === "HORIZONTAL_LINE" ||
-          NotationTypeShape.get(datum.notationType) === "VERTICAL_LINE" ||
-          NotationTypeShape.get(datum.notationType) === "SLOPE_LINE" ||
-          datum.notationType === "SQRTSYMBOL"
-        ) {
-          y_gutter = 0;
-        }
-
-        const x_gutter = 10;
-
-        if (
-          selectionRectLeft.value <=
-            (notationStore.getCellHorizontalWidth() + cellSpace) * col +
-              x_gutter +
-              svgDimensions.value.x &&
-          selectionRectLeft.value + selectionRectWidth.value >=
-            (notationStore.getCellHorizontalWidth() + cellSpace) * (col + 1) -
-              x_gutter +
-              svgDimensions.value.x &&
-          selectionRectTop.value <=
-            (notationStore.getCellVerticalHeight() + cellSpace) * row +
-              y_gutter +
-              svgDimensions.value.y &&
-          selectionRectTop.value + selectionRectHeight.value >=
-            (notationStore.getCellVerticalHeight() + cellSpace) * (row + 1) -
-              y_gutter +
-              svgDimensions.value.y
-        ) {
-          notationMutateHelper.selectNotation(datum.uuid);
-        }
-      });
-  }
+  selectionHelper.selectNotationsOfArea(props.svgId, selectionPosition.value);
 }
 
 function moveSelection(e: MouseEvent) {

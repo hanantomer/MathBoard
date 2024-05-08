@@ -1,13 +1,9 @@
+freeText
 <template>
   <accessLinkDialog
     :show="showAccessLinkDialog"
     @close="closeAccessLinkDialog"
   ></accessLinkDialog>
-
-  <freeTextDialog
-    :show="showFreeTextDialog"
-    @close="closeFreeTextDialog"
-  ></freeTextDialog>
 
   <v-toolbar color="primary" dark class="vertical-toolbar" height="500">
     <!-- create access link -->
@@ -27,7 +23,7 @@
     </v-tooltip>
 
     <!-- horizontal line-->
-    <v-tooltip text="Draw horizontal line">
+    <v-tooltip text="Horizontal line">
       <template v-slot:activator="{ props }">
         <v-btn
           data-cy="horizontalLine"
@@ -50,7 +46,7 @@
     </v-tooltip>
 
     <!-- vertical line-->
-    <v-tooltip text="Draw vertical line">
+    <v-tooltip text="Vertical line">
       <template v-slot:activator="{ props }">
         <v-btn
           data-cy="verticalLine"
@@ -73,7 +69,7 @@
     </v-tooltip>
 
     <!-- slope line-->
-    <v-tooltip text="Draw sloped line">
+    <v-tooltip text="Sloped line">
       <template v-slot:activator="{ props }">
         <v-btn
           data-cy="slopeLine"
@@ -132,12 +128,7 @@
     <!-- text tool  -->
     <v-tooltip text="Free Text">
       <template v-slot:activator="{ props }">
-        <v-btn
-          v-bind="props"
-          icon
-          v-on:click="startTextMode"
-          :disabled="!textEnabled"
-          @click.stop="openFreeTextDialog"
+        <v-btn v-bind="props" icon v-on:click="startTextMode"
           ><v-icon>mdi-text</v-icon></v-btn
         >
       </template>
@@ -205,7 +196,7 @@
 <script setup lang="ts">
 import { watch, ref } from "vue";
 import accessLinkDialog from "./AccessLinkDialog.vue";
-import freeTextDialog from "./FreeTextDialog.vue";
+
 import useNotationMutateHelper from "../helpers/notationMutateHelper";
 import { useNotationStore } from "../store/pinia/notationStore";
 import { useEditModeStore } from "../store/pinia/editModeStore";
@@ -230,11 +221,10 @@ let slopeLineButtonActive = ref(1);
 let horizontalLineButtonActive = ref(1);
 let squareRootButtonActive = ref(1);
 let exponentButtonActive = ref(1);
-let textButtonActive = ref(1);
+let freeTextButtonActive = ref(1);
 
 let showAccessLinkDialog = ref(false);
-let showFreeTextDialog = ref(false);
-//let showExponentDialog = ref(false);
+let showFreeTextControl = ref(false);
 
 watch(
   () => editModeStore.getEditMode(),
@@ -262,6 +252,10 @@ watch(
       squareRootButtonActive.value = 0;
     }
 
+    if (editMode === "TEXT") {
+      freeTextButtonActive.value = 0;
+    }
+
     if (editMode === editModeStore.getDefaultEditMode()) {
       resetButtonsState();
     }
@@ -269,37 +263,13 @@ watch(
   { immediate: true, deep: true },
 );
 
-// emitted by exponent dialog
-// watch(
-//   () => eventBus.bus.value.get("exponentSubmited"),
-//   (exponent: ExponentAttributes) => {
-//     notationMutateHelper.upsertExponentNotation(exponent);
-//   },
-// );
-
-// emitted by free text dialog
+// emitted by free text control
 watch(
   () => eventBus.bus.value.get("freeTextSubmited"),
   (value: string) => {
     notationMutateHelper.upsertTextNotation(value);
   },
 );
-
-// emitted by triangle dialog
-// watch(
-//   () => eventBus.bus.value.get("triangleSubmited"),
-//   (triangle: TriangleAttributes) => {
-//     notationMutateHelper.upsertTriangleNotation(triangle);
-//   },
-// );
-
-function openFreeTextDialog() {
-  showFreeTextDialog.value = true;
-}
-
-function closeFreeTextDialog() {
-  showFreeTextDialog.value = false;
-}
 
 function openAccessLinkDialog() {
   showAccessLinkDialog.value = true;
@@ -309,26 +279,18 @@ function closeAccessLinkDialog() {
   showAccessLinkDialog.value = false;
 }
 
-// function openExponentDialog() {
-//   showExponentDialog.value = true;
-// }
-
-// function closeExponentDialog() {
-//   showExponentDialog.value = false;
-// }
-
 const editEnabled = computed(() => {
   return authorizationHelper.canEdit();
 });
 
-const textEnabled = computed(() => {
-  if (!editEnabled.value) return false;
+// const textEnabled = computed(() => {
+//   if (!editEnabled.value) return false;
 
-  return (
-    notationStore.getSelectedCell() ||
-    notationStore.getSelectedNotations()?.at(0)?.notationType === "TEXT"
-  );
-});
+//   return (
+//     notationStore.getSelectedCell() ||
+//     notationStore.getSelectedNotations()?.at(0)?.notationType === "TEXT"
+//   );
+// });
 
 const exponentEnabled = computed(() => {
   if (!editEnabled.value) return false;
@@ -353,35 +315,9 @@ function resetButtonsState() {
     slopeLineButtonActive.value =
     squareRootButtonActive.value =
     exponentButtonActive.value =
+    freeTextButtonActive.value =
       1;
 }
-
-// function toggleHorizontalLineMode() {
-//   resetButtonsState();
-//   if (editModeStore.getEditMode() == "HORIZONTAL_LINE_STARTED") {
-//     resetButtonsState();
-//   } else {
-//     startHorizontalLineMode();
-//   }
-// }
-
-// function toggleVerticalLineMode() {
-//   resetButtonsState();
-//   if (editModeStore.getEditMode() == "VERTICAL_LINE_STARTED") {
-//     resetButtonsState();
-//   } else {
-//     startVerticalLineMode();
-//   }
-// }
-
-// function toggleSlopeLineMode() {
-//   resetButtonsState();
-//   if (editModeStore.getEditMode() == "SLOPE_LINE_STARTED") {
-//     resetButtonsState();
-//   } else {
-//     startSlopeLineMode();
-//   }
-// }
 
 function startHorizontalLineMode() {
   resetButtonsState();
@@ -400,15 +336,6 @@ function startSlopeLineMode() {
   slopeLineButtonActive.value = 0;
   editModeStore.setEditMode("SLOPE_LINE_STARTED");
 }
-
-// function toggleSqrtMode() {
-//   resetButtonsState();
-//   if (editModeStore.getEditMode() == "SQRT") {
-//     resetButtonsState();
-//   } else {
-//     startSqrtMode();
-//   }
-// }
 
 function toggleExponentMode() {
   resetButtonsState();
@@ -431,14 +358,9 @@ function startExponentMode() {
   editModeStore.setEditMode("EXPONENT");
 }
 
-function startTriangleMode() {
-  resetButtonsState();
-  editModeStore.setEditMode("GEO");
-}
-
 function startTextMode() {
   resetButtonsState();
-  textButtonActive.value = 0;
+  freeTextButtonActive.value = 0;
   editModeStore.setEditMode("TEXT");
 }
 
@@ -486,47 +408,6 @@ function startXmarkMode() {
   xmarkButtonActive.value = 0;
   editModeStore.setEditMode("XMARK");
 }
-
-/*
-
-    // $symbolButtonPressed(e) {
-    //   if (getCurrentEditMode() === 'SYMBOL')
-    //     notationMixin_addNotation(e.currentTarget.innerText, "symbol");
-    //   else if (getCurrentEditMode() === "EXPONENT) {
-    //     notationMixin_addNotation(e.currentTarget.innerText, "exponent");
-    //   }
-    // },
-    $checkmark() {
-      //notationMixin_addSpecialSymbol("", NotationType.CHECKMARK);
-      checkmarkButtonActive = 0;
-    },
-    $semicheckmark() {
-      //notationMixin_addSpecialSymbol("", NotationType.CHECKMARK);
-      semicheckmarkButtonActive = 0;
-    },
-    $xmark() {
-      //notationMixin_addSpecialSymbol("", NotationType.CHECKMARK);
-      xmarkButtonActive = 0;
-    },
-  },
-
-  watch: {
-    currentEditMode: {
-      deep: true,
-      handler(newVal) {
-        if (newVal == 'SYMBOL') {
-          resetButtonsState();
-        }
-      },
-    },
-  },
-
-  data: function () {
-    return {
-    };
-  },
-};
-*/
 </script>
 
 <style>

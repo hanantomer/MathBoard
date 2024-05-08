@@ -14,10 +14,7 @@ type LineNotationAttributes = HorizontalLineNotationAttributes &
   SlopeLineNotationAttributes;
 
 export default function useLineMatrixHelper() {
-  function mergeLineNotations(
-    svgId: string,
-    notations: NotationAttributes[]
-  ) {
+  function mergeLineNotations(svgId: string, notations: NotationAttributes[]) {
     d3.select("#" + svgId)
       .selectAll("line")
       .data(notations, (u: any) => {
@@ -82,8 +79,8 @@ export default function useLineMatrixHelper() {
       .attr("stroke-width", () => {
         return 2;
       })
-      .attr("fill", () => {
-        return "darkblue";
+      .attr("stroke", (n: LineNotationAttributes) => {
+        return n.selected ? "chocolate" : "darkblue";
       });
   }
 

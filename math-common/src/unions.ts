@@ -8,7 +8,7 @@ export type PointType = "SYMBOL" |  "EXPONENT" |  "SIGN"
 
 export type LineType = "HORIZONTAL_LINE_STARTED" |  "SQRT" | "VERTICAL_LINE_STARTED" | "SLOPE_LINE_STARTED"
 
-export type CellPart = "TOP" | "MIDDLE" | "BOTTOM"
+//export type CellPart = "TOP" | "MIDDLE" | "BOTTOM"
 
 export const NotationTypeValues = 
   ["SYMBOL",
@@ -41,6 +41,7 @@ export type EditMode =
   "SYMBOL"                    | // default mode
   "EXPONENT"                  | // exponent button pressed
   "TEXT"                      | // text button pressed
+  "TEXT_WRITING"              | // user clicked a cell following text button pressed
   "CELL_SELECTED"             | // user clicked on a cell or navigated via keys
   "HORIZONTAL_LINE_STARTED"   | // horizontal line button pressed
   "HORIZONTAL_LINE_DRAWING"   | // horizontal line drawing started

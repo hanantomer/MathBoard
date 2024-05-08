@@ -1,4 +1,5 @@
 <template>
+  <freeText></freeText>
   <areaSelector :svgId="svgId"></areaSelector>
   <v-row>
     <slot name="title"></slot>
@@ -32,6 +33,7 @@
 </template>
 
 <script setup lang="ts">
+import freeText from "./FreeText.vue";
 import useNotationLoadingHelper from "../helpers/notationLoadingHelper";
 import UseMatrixHelper from "../helpers/matrixHelper";
 import UseMatrixCellHelper from "../helpers/matrixCellHelper";
@@ -126,34 +128,6 @@ watch(
 watch(
   () => eventBus.bus.value.get("colorizeCell"),
   (params) => {
-    /*
-    let clickedCell = elementFinderHelper.findClickedNotation(
-      {
-        x: params.clientX,
-        y: params.clientY,
-      },
-      "rect",
-      null,
-    );
-
-    if (!clickedCell) return;
-
-    const col = elementFinderHelper.getElementAttributeValue(
-      clickedCell,
-      "col",
-    );
-    const row = elementFinderHelper.getElementAttributeValue(
-      clickedCell.parentElement!,
-      "row",
-    );
-
-    let cell: CellAttributes = {
-      col: parseInt(col || "-1"),
-      row: parseInt(row || "-1"),
-    };
-
-    */
-
     const clickedCell = elementFinderHelper.findClickedCell(props.svgId, {
       x: params.clientX,
       y: params.clientY,
@@ -242,7 +216,11 @@ function handleMouseDown(e: MouseEvent) {
 
   const position = { x: e.clientX, y: e.clientY };
 
-  if (editModeStore.isLineMode() || editModeStore.isColorisingMode()) {
+  if (
+    editModeStore.isLineMode() ||
+    editModeStore.isColorisingMode() ||
+    editModeStore.isTextMode()
+  ) {
     return;
   }
 

@@ -65,7 +65,6 @@ export default function useHtmlMatrixHelper() {
     }
 
     return {
-      part: "MIDDLE",
       col: nextCol,
       row: nextRow,
     };

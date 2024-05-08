@@ -1,4 +1,4 @@
-import { BoardType, CellPart, NotationType } from "./unions";
+import { BoardType, NotationType } from "./unions";
 import { UserAttributes } from "./userTypes";
 
 export type EntityAttributes = {  
@@ -39,7 +39,7 @@ export type TriangleAttributes =  {
 export type CellAttributes =  {
   col: number;
   row: number;
-  part: CellPart;
+//  part: CellPart;
 };
 
 export type SelectedCell = CellAttributes & {

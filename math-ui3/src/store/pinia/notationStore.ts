@@ -16,6 +16,7 @@ import { BoardType, NotationShape, NotationTypeShape } from "common/unions";
 import { ref } from "vue";
 import useUserOutgoingOperations from "../../helpers/userOutgoingOperationsHelper";
 import useNotationCellOccupationHelper from "../../helpers/notationCellOccupationHelper";
+
 const userOutgoingOperations = useUserOutgoingOperations();
 const notationCellOccupationHelper = useNotationCellOccupationHelper();
 
@@ -194,7 +195,7 @@ export const useNotationStore = defineStore("notation", () => {
 
       case "RECT":
         notationCellOccupationHelper.updateRectOccupationMatrix(
-          cellLineNotationOccupationMatrix,
+          cellRectNotationOccupationMatrix,
           notation as RectNotationAttributes,
           false,
         );
@@ -281,7 +282,7 @@ export const useNotationStore = defineStore("notation", () => {
   }
 
   function resetSelectedCell() {
-    selectedCell.value = { col: -1, row: -1, part: "MIDDLE" };
+    selectedCell.value = { col: -1, row: -1 };
   }
 
   function resetSelectedNotations() {
@@ -301,23 +302,22 @@ export const useNotationStore = defineStore("notation", () => {
   function getNotationsByCell(
     clickedCell: CellAttributes,
   ): NotationAttributes[] {
-
     let notationsAtCellPoint: NotationAttributes[] = [];
 
     const poinNotationUUId = cellPointNotationOccupationMatrix[clickedCell.col][
       clickedCell.row
     ] as String;
 
-    const poinNotation =
-      notations.value.get(poinNotationUUId) as NotationAttributes;
+    const poinNotation = notations.value.get(
+      poinNotationUUId,
+    ) as NotationAttributes;
 
     if (poinNotation) {
       notationsAtCellPoint.push(poinNotation);
     } else {
-
-      const rectNotationUUId = cellRectNotationOccupationMatrix[clickedCell.col][
-        clickedCell.row
-      ] as String;
+      const rectNotationUUId = cellRectNotationOccupationMatrix[
+        clickedCell.col
+      ][clickedCell.row] as String;
 
       const rectNotation = notations.value.get(
         rectNotationUUId,
@@ -333,10 +333,28 @@ export const useNotationStore = defineStore("notation", () => {
     ] as String[];
 
     if (lineNotationsUUIDs) {
-      lineNotationsUUIDs.forEach((ln) => notationsAtCellPoint.push(notations.value.get(ln) as NotationAttributes));
+      lineNotationsUUIDs.forEach((ln) =>
+        notationsAtCellPoint.push(
+          notations.value.get(ln) as NotationAttributes,
+        ),
+      );
     }
 
     return notationsAtCellPoint;
+  }
+
+  function selectNotationsOfCells(areaCells: CellAttributes[]) {
+    const notationsUUIDsToSelect = new Set<string>();
+
+    for (let i = 0; i < areaCells.length; i++) {
+      getNotationsByCell(areaCells[i]).forEach((n) => {
+        notationsUUIDsToSelect.add(n.uuid);
+      });
+    }
+
+    notationsUUIDsToSelect.forEach((uuid) => {
+      notations.value.get(uuid)!.selected = true;
+    });
   }
 
   function createCellSingleNotationOccupationMatrix(): (String | null)[][] {
@@ -373,6 +391,7 @@ export const useNotationStore = defineStore("notation", () => {
     getCopiedNotations,
     getNotationsByShape,
     getNotationsByCell,
+    selectNotationsOfCells,
     getSelectedCell,
     getSelectedNotations,
     getParent,

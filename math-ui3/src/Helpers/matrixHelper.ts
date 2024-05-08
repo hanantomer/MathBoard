@@ -5,20 +5,12 @@ import { HorizontalLineNotationAttributes } from "common/baseTypes";
 import { useNotationStore } from "../store/pinia/notationStore";
 import { cellSpace } from "common/globals";
 import { NotationAttributes } from "common/baseTypes";
-import useHorizontalLineHelper from "./matrixHorizontalLineHelper";
-import useVerticalLineHelper from "./matrixVerticalLineHelper";
-import useSlopeLineHelper from "./matrixSlopeLineHelper";
 import useLineHelper from "./matrixLineHelper";
 import useHtmlHelper from "./matrixHtmlHelper";
-import useUtilsHelper from "./matrixHelperUtils";
 
-//const horizontaLineHelper = useHorizontalLineHelper();
-//const verticalLineHelper = useVerticalLineHelper();
-//const slopeLineHelper = useSlopeLineHelper();
 const lineHelper = useLineHelper();
 const notationStore = useNotationStore();
 const htmlHelper = useHtmlHelper();
-const utilsHelper = useUtilsHelper();
 
 export default function useMatrixHelper() {
   let matrix: any[] = [];
@@ -111,7 +103,6 @@ export default function useMatrixHelper() {
     return enrichedNotations;
   }
 
-  
   function refreshScreen(notations: NotationAttributes[], svgId: string) {
     const svgElement = document!.getElementById(svgId);
 

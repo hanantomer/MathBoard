@@ -96,7 +96,6 @@ export const useEditModeStore = defineStore("editMode", () => {
     return editMode.value == "VERTICAL_LINE_STARTED";
   }
 
-
   function isVerticalLineDrawingMode() {
     return editMode.value == "VERTICAL_LINE_DRAWING";
   }
@@ -121,7 +120,7 @@ export const useEditModeStore = defineStore("editMode", () => {
   }
 
   function isTextMode() {
-    return editMode.value == "TEXT";
+    return editMode.value === "TEXT" || editMode.value === "TEXT_WRITING";
   }
 
   function isExponentMode() {
@@ -159,6 +158,9 @@ export const useEditModeStore = defineStore("editMode", () => {
 
   function setNextEditMode() {
     switch (editMode.value) {
+      case "TEXT":
+        return setEditMode("TEXT_WRITING");
+
       case "HORIZONTAL_LINE_STARTED":
         return setEditMode("HORIZONTAL_LINE_DRAWING");
       case "HORIZONTAL_LINE_SELECTED":
@@ -183,8 +185,9 @@ export const useEditModeStore = defineStore("editMode", () => {
         return setEditMode("AREA_SELECTED");
       case "AREA_SELECTED":
         return setEditMode("MOVING");
-
-      case "MOVING":
+      //case "MOVING":
+      //  return resetEditMode();
+      default:
         return resetEditMode();
     }
   }
@@ -199,7 +202,7 @@ export const useEditModeStore = defineStore("editMode", () => {
     getNotationTypeByEditMode,
     isAreaSelectionOrMovingMode,
     isSelectionMode,
-//    isLineStartedMode,
+    //    isLineStartedMode,
     isLineMode,
     isHorizontalLineMode,
     isHorizontalLineSelectedMode,

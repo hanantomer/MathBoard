@@ -196,7 +196,7 @@ export default function notationMutateHelper() {
   }
 
   function canMoveSelectedNotations(deltaX: number, deltaY: number): boolean {
-    notationStore.getSelectedNotations().forEach((n) => {
+    notationStore.getSelectedNotations().forEach((n: NotationAttributes) => {
       if (isNotationInQuestionArea(n, deltaX, deltaY)) return false;
 
       switch (NotationTypeShape.get(n.notationType)) {
@@ -308,7 +308,7 @@ export default function notationMutateHelper() {
       notationStore.cloneSelectedNotations();
     }
 
-    notationStore.getSelectedNotations().forEach((n) => {
+    notationStore.getSelectedNotations().forEach((n: NotationAttributes) => {
       switch (NotationTypeShape.get(n.notationType)) {
         case "POINT": {
           (n as PointNotationAttributes).col += deltaX;
@@ -353,9 +353,11 @@ export default function notationMutateHelper() {
       getSelectedNotationsSortedByDirection(moveDirection),
     );
 
-    notationStore.getSelectedNotations().forEach(async (n) => {
-      userOutgoingOperations.syncOutgoingUpdateNotation(n);
-    });
+    notationStore
+      .getSelectedNotations()
+      .forEach(async (n: NotationAttributes) => {
+        userOutgoingOperations.syncOutgoingUpdateNotation(n);
+      });
   }
 
   // sort selected notations that we first update the outer and the the inner
@@ -620,7 +622,6 @@ export default function notationMutateHelper() {
           notationStore.getNotationsByCell({
             col: pointNotation.col + delatX,
             row: pointNotation.row + delatY,
-            part: "MIDDLE",
           })?.find((n: NotationAttributes) => n.boardType == "QUESTION") != null
         );
       }
@@ -643,7 +644,6 @@ export default function notationMutateHelper() {
               notationStore.getNotationsByCell({
                 col: col,
                 row: row,
-                part: "MIDDLE",
               })?.find((n: NotationAttributes) => n.boardType == "QUESTION") != null
             )
             return true;
@@ -664,7 +664,6 @@ export default function notationMutateHelper() {
       notationStore.getNotationsByCell({
         col: pointAttributes.col,
         row: pointAttributes.row,
-        part: "MIDDLE",
       })?.find((n: NotationAttributes) => n.boardType == "QUESTION") != null
     );
   }
@@ -689,18 +688,22 @@ export default function notationMutateHelper() {
   function deleteSelectedNotations() {
     if (!authorizationHelper.canEdit()) return;
 
-    notationStore.getSelectedNotations().forEach(async (n) => {
-      // from db
-      await dbHelper.removeNotation(n);
-    });
+    notationStore
+      .getSelectedNotations()
+      .forEach(async (n: NotationAttributes) => {
+        // from db
+        await dbHelper.removeNotation(n);
+      });
 
-    notationStore.getSelectedNotations().forEach(async (n) => {
-      //from store
-      notationStore.deleteNotation(n.uuid);
+    notationStore
+      .getSelectedNotations()
+      .forEach(async (n: NotationAttributes) => {
+        //from store
+        notationStore.deleteNotation(n.uuid);
 
-      // publish
-      userOutgoingOperations.syncOutgoingRemoveNotation(n.uuid, n.parentUUId);
-    });
+        // publish
+        userOutgoingOperations.syncOutgoingRemoveNotation(n.uuid, n.parentUUId);
+      });
   }
 
   function addImageNotation(
@@ -761,7 +764,6 @@ export default function notationMutateHelper() {
       editModeStore.getEditMode() === "EXPONENT" ? "EXPONENT" : "SYMBOL";
 
     let notation: PointNotationCreationAttributes = {
-      part: "MIDDLE",
       col: symbolCell.col,
       row: symbolCell.row,
       value: value,
@@ -780,7 +782,7 @@ export default function notationMutateHelper() {
     if (notationStore.getSelectedNotations().length) {
       let point =
         notationStore.getSelectedNotations()[0] as PointNotationAttributes;
-      return { col: point.col, row: point.row, part: "MIDDLE" };
+      return { col: point.col, row: point.row};
     }
 
     return notationStore.getSelectedCell();
@@ -790,7 +792,7 @@ export default function notationMutateHelper() {
     if (notationStore.getSelectedNotations().length) {
       const rect =
         notationStore.getSelectedNotations()[0] as RectNotationAttributes;
-      return { col: rect.fromCol, row: rect.fromRow, part: "MIDDLE" };
+      return { col: rect.fromCol, row: rect.fromRow};
     }
 
     return notationStore.getSelectedCell();
