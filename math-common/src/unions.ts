@@ -2,13 +2,25 @@ export const BoardTypeValues = ["LESSON","QUESTION","ANSWER"] as const;
 
 export type BoardType = typeof BoardTypeValues[number];
 
+export type BusEventType = 
+    "QUESTION_SAVE"             |
+    "EXPONENT_SUBMITED"         |
+    "CELL_COLORIZED"            |
+    "COPY"                      |
+    "PASTE"                     |
+    "KEYUP"                     | 
+    "SVG_MOUSEUP"               |  
+    "SVG_MOUSEDOWN"             | 
+    "SVG_MOUSEMOVE"             |  
+    "SELECTION_DONE"            | 
+    "FREE_TEXT_SUBMITTED"       |
+    "SLOPE_LINE_SELECTED"       |
+    "VERTICAL_LINE_SELECTED"    |
+    "HORIZONTAL_LINE_SELECTED";
+
 export type NotationShape = "POINT" |  "HORIZONTAL_LINE" | "VERTICAL_LINE"| "SLOPE_LINE" |  "RECT"
 
-export type PointType = "SYMBOL" |  "EXPONENT" |  "SIGN"
-
 export type LineType = "HORIZONTAL_LINE_STARTED" |  "SQRT" | "VERTICAL_LINE_STARTED" | "SLOPE_LINE_STARTED"
-
-//export type CellPart = "TOP" | "MIDDLE" | "BOTTOM"
 
 export const NotationTypeValues = 
   ["SYMBOL",
@@ -23,6 +35,20 @@ export const NotationTypeValues =
   "IMAGE"] as const;
 
 export type NotationType = typeof NotationTypeValues[number]
+
+export type CursorType =
+    "auto" |
+    "default" |
+    "grab" |
+    "grabbing"|
+    "help"|
+    "move"|
+    "none"|
+    "not-allowed"|
+    "pointer"|
+    "progress"|
+    "text"|
+    "wait"
   
 export const NotationTypeShape = new Map<NotationType, NotationShape> ([
   ["SYMBOL", "POINT"],
@@ -41,6 +67,8 @@ export type EditMode =
   "SYMBOL"                    | // default mode
   "EXPONENT"                  | // exponent button pressed
   "TEXT"                      | // text button pressed
+  "TEXT_AREA_SELECTING"       | // user started selecting area following text button pressed
+  "TEXT_AREA_SELECTED"        | // user finished selecting area following text area selecting
   "TEXT_WRITING"              | // user clicked a cell following text button pressed
   "CELL_SELECTED"             | // user clicked on a cell or navigated via keys
   "HORIZONTAL_LINE_STARTED"   | // horizontal line button pressed
@@ -57,7 +85,7 @@ export type EditMode =
   "SQRT_SELECTED"             | // sqrt selected  
   "COLORISING"                | // color selected
   "DELETING"                  | // mouse clicked following delete button pressed
-  "AREA_SELECTING"            | // user stared selecting area
+  "AREA_SELECTING"            | // user started selecting area
   "AREA_SELECTED"             | // user finished selecting area
   "MOVING"                    | // user grabbed the selection area after select button pressed
   "CHECKMARK"                 | // checkmark button pressed
@@ -92,8 +120,38 @@ export type EditMode =
     ["XMARK", "SYMBOL"],                    
     ["GEO", "SYMBOL"],                      
  ])
- 
 
+ export const EditModeCursorType = new Map<EditMode, CursorType> ([
+  ["SYMBOL", "auto"],                  
+  ["EXPONENT", "auto"],                 
+  ["TEXT", "text"],                     
+  ["TEXT_WRITING", "text"],
+  ["CELL_SELECTED", "auto"],            
+  ["HORIZONTAL_LINE_STARTED", "auto"],  
+  ["HORIZONTAL_LINE_DRAWING", "auto"],  
+  ["HORIZONTAL_LINE_SELECTED", "auto"], 
+  ["VERTICAL_LINE_STARTED", "auto"],    
+  ["VERTICAL_LINE_DRAWING", "auto"],    
+  ["VERTICAL_LINE_SELECTED", "auto"],   
+  ["SLOPE_LINE_STARTED", "auto"],       
+  ["SLOPE_LINE_DRAWING", "auto"],       
+  ["SLOPE_LINE_SELECTED", "auto"],      
+  ["SQRT", "auto"],                     
+  ["SQRT_DRAWING", "auto"],             
+  ["SQRT_SELECTED", "auto"],            
+  ["COLORISING", "auto"],               
+  ["DELETING", "auto"],                 
+  ["AREA_SELECTING", "auto"],           
+  ["AREA_SELECTED", "auto"],            
+  ["MOVING", "auto"],                   
+  ["CHECKMARK", "auto"],                
+  ["SEMICHECKMARK", "auto"],            
+  ["XMARK", "auto"],                    
+  ["GEO", "auto"],                      
+])
+
+
+  
 export type UserType = "TEACHER" | "STUDENT"
 
 export type MoveDirection = "LEFT" |  "RIGHT" |  "TOP" |  "BOTTOM" | "LEFTTOP" | "LEFTBOTTOM" | "RIGHTTOP" | "RIGHTBOTTOM"

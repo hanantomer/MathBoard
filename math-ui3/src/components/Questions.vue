@@ -90,7 +90,7 @@ watch(
 );
 
 watch(
-  () => eventBus.bus.value.get("newQuestionSave"),
+  () => eventBus.bus.value.get("QUESTION_SAVE"),
   (questionName: string) => {
     addQuestion(questionName);
   },

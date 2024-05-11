@@ -88,7 +88,7 @@ function submit() {
   if (base.value.length > 2 || base.value.length == 0) return;
   if (exponent.value.length > 2 || exponent.value.length == 0) return;
 
-  eventBus.emit("exponentSubmited", {
+  eventBus.emit("EXPONENT_SUBMITED", {
     base: base.value,
     exponent: exponent.value,
   });

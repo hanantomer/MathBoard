@@ -22,7 +22,12 @@
           <horizontalLineDrawer :svgId="svgId"></horizontalLineDrawer>
           <verticalLineDrawer :svgId="svgId"></verticalLineDrawer>
           <slopeLineDrawer :svgId="svgId"></slopeLineDrawer>
-          <svg v-bind:id="svgId" width="1600" height="760"></svg>
+          <svg
+            v-bind:style="{ cursor: cursor }"
+            v-bind:id="svgId"
+            width="1600"
+            height="760"
+          ></svg>
         </v-sheet>
         <v-sheet class="ml-auto mr-auto">
           <editingToolbar></editingToolbar>
@@ -50,7 +55,12 @@ import { onMounted, onUnmounted, ref, watch } from "vue";
 import { useNotationStore } from "../store/pinia/notationStore";
 import { useEditModeStore } from "../store/pinia/editModeStore";
 import { useAnswerStore } from "../store/pinia/answerStore";
-import { NotationTypeShape } from "common/unions";
+import {
+  NotationTypeShape,
+  CursorType,
+  EditMode,
+  EditModeCursorType,
+} from "common/unions";
 import useSelectionHelper from "../helpers/selectionHelper";
 import useNotationMutateHelper from "../helpers/notationMutateHelper";
 import useElementFinderHelper from "../helpers/elementFinderHelper";
@@ -68,6 +78,8 @@ const answerStore = useAnswerStore();
 const elementFinderHelper = useElementFinderHelper();
 const userOutgoingOperations = useUserOutgoingOperations();
 const pBar = ref(false);
+
+let cursor = ref<CursorType>("auto");
 
 onMounted(() => {
   eventHelper.registerSvgMouseDown(props.svgId);
@@ -93,7 +105,7 @@ const props = defineProps({
 });
 
 watch(
-  () => eventBus.bus.value.get("svgmousedown"),
+  () => eventBus.bus.value.get("SVG_MOUSEDOWN"),
   (e: MouseEvent) => {
     if (!e) return;
     handleMouseDown(e);
@@ -102,10 +114,18 @@ watch(
 );
 
 watch(
-  () => eventBus.bus.value.get("keyup"),
+  () => eventBus.bus.value.get("KEYUP"),
   (e: KeyboardEvent) => {
     eventHelper.keyUp(e, props.svgId);
   },
+);
+
+watch(
+  () => editModeStore.getEditMode() as EditMode,
+  (newEditMode: EditMode) => {
+    cursor.value = EditModeCursorType.get(newEditMode)!;
+  },
+  { immediate: true, deep: true },
 );
 
 watch(
@@ -126,7 +146,7 @@ watch(
 );
 
 watch(
-  () => eventBus.bus.value.get("colorizeCell"),
+  () => eventBus.bus.value.get("CELL_COLORIZED"),
   (params) => {
     const clickedCell = elementFinderHelper.findClickedCell(props.svgId, {
       x: params.clientX,
@@ -146,15 +166,15 @@ watch(
 );
 
 watch(
-  () => eventBus.bus.value.get("copy"),
+  () => eventBus.bus.value.get("COPY"),
   () => {
     eventHelper.copy();
-    eventBus.bus.value.delete("copy");
+    eventBus.bus.value.delete("COPY");
   },
 );
 
 watch(
-  () => eventBus.bus.value.get("paste"),
+  () => eventBus.bus.value.get("PASTE"),
   (e: ClipboardEvent) => {
     eventHelper.paste(e);
   },

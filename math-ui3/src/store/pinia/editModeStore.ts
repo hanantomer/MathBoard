@@ -159,8 +159,11 @@ export const useEditModeStore = defineStore("editMode", () => {
   function setNextEditMode() {
     switch (editMode.value) {
       case "TEXT":
+        return setEditMode("TEXT_AREA_SELECTING");
+      case "TEXT_AREA_SELECTING":
+        return setEditMode("TEXT_AREA_SELECTED");
+      case "TEXT_AREA_SELECTED":
         return setEditMode("TEXT_WRITING");
-
       case "HORIZONTAL_LINE_STARTED":
         return setEditMode("HORIZONTAL_LINE_DRAWING");
       case "HORIZONTAL_LINE_SELECTED":

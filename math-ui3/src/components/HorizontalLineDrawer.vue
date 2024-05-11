@@ -94,9 +94,9 @@ const show = computed(() => {
   );
 });
 
-function svgDimensions() : DOMRect | undefined{
+function svgDimensions(): DOMRect | undefined {
   return document.getElementById(props.svgId)?.getBoundingClientRect();
-};
+}
 
 let lineLeft = computed(() => {
   return linePosition.value.x1;
@@ -123,28 +123,28 @@ let handleY = computed(() => {
 });
 
 watch(
-  () => eventBus.bus.value.get("svgmouseup"),
+  () => eventBus.bus.value.get("SVG_MOUSEUP"),
   () => {
     onMouseUp();
   },
 );
 
 watch(
-  () => eventBus.bus.value.get("svgmousemove"),
+  () => eventBus.bus.value.get("SVG_MOUSEMOVE"),
   (e: MouseEvent) => {
     onMouseMove(e);
   },
 );
 
 watch(
-  () => eventBus.bus.value.get("svgmousedown"),
+  () => eventBus.bus.value.get("SVG_MOUSEDOWN"),
   (e: MouseEvent) => {
     onMouseDown(e);
   },
 );
 
 watch(
-  () => eventBus.bus.value.get("horizontalLineSelected"),
+  () => eventBus.bus.value.get("HORIZONTAL_LINE_SELECTED"),
   (line: HorizontalLineNotationAttributes) => {
     if (line) onLineSelected(line);
   },
@@ -168,7 +168,7 @@ function onLineSelected(lineNotation: HorizontalLineNotationAttributes) {
   notationStore.selectNotation(lineNotation.uuid);
 
   // to enable re selection
-  eventBus.emit("horizontalLineSelected", null);
+  eventBus.emit("HORIZONTAL_LINE_SELECTED", null);
 }
 
 function onHandleMouseDown() {

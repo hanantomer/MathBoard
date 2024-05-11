@@ -5,7 +5,7 @@ import {
   PointNotationAttributes,
   RectNotationAttributes,
   CellAttributes,
-  RectAttributes
+  RectAttributes,
 } from "common/baseTypes";
 import { useNotationStore } from "../store/pinia/notationStore";
 import { cellSpace, getDefaultFontSize } from "common/globals";
@@ -16,6 +16,8 @@ import { useUserStore } from "../store/pinia/userStore";
 const userStore = useUserStore();
 const utils = useUtils();
 const notationStore = useNotationStore();
+
+const maxTextWidth = 10;
 
 export default function useHtmlMatrixHelper() {
   function borderColor(notation: NotationAttributes): string {
@@ -49,7 +51,6 @@ export default function useHtmlMatrixHelper() {
   function sqrtFontSize() {
     return `${notationStore.getCellVerticalHeight() / 20}em`;
   }
-
 
   function mergeHtmlNotations(
     svgId: string,
@@ -291,7 +292,6 @@ export default function useHtmlMatrixHelper() {
     }
 
     if (n.notationType === "EXPONENT") {
-      //let n1 = n as ExponentNotationAttributes;
       let n1 = n as PointNotationAttributes;
       return `</span><span style='position: absolute;top: 10%;transform: translateY(-10%);left:30%;translateX(-10%);color:${color};font-weight:${fontWeight};font-size:0.75em'>${n1.value}</span>`;
     }
@@ -301,30 +301,32 @@ export default function useHtmlMatrixHelper() {
   }
 
   function getFreeTextRectWidth(text: string) {
-      const textArr = text.split("\n");
+    const textArr = text.split("\n");
 
-      const maxWidth = Math.max(
-        ...textArr.map((t) =>
-          parseFloat((<any>window).textMeasurementCtx.measureText(t).width),
-        ),
-      );
+    const maxWidth = Math.max(
+      ...textArr.map((t) =>
+        parseFloat((<any>window).textMeasurementCtx.measureText(t).width),
+      ),
+    );
 
-      return maxWidth / notationStore.getCellHorizontalWidth();
-    }
+    return Math.min(
+      maxTextWidth,
+      maxWidth / notationStore.getCellHorizontalWidth(),
+    );
+  }
 
-    function getFreeTextRectHeight(text: string) {
-      const fontSize = getDefaultFontSize();
-      const margin = 5;
-      return (
-        ((fontSize + margin) * text.split(/\r*\n/).length) /
-        notationStore.getCellVerticalHeight()
-      );
-    }
-
+  function getFreeTextRectHeight(text: string) {
+    const fontSize = getDefaultFontSize();
+    const margin = 5;
+    return (
+      ((fontSize + margin) * text.split(/\r*\n/).length) /
+      notationStore.getCellVerticalHeight()
+    );
+  }
 
   return {
     mergeHtmlNotations,
     getFreeTextRectWidth,
-    getFreeTextRectHeight
+    getFreeTextRectHeight,
   };
 }

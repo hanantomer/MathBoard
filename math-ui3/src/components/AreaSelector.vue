@@ -34,6 +34,7 @@ const selectionHelper = useSelectionHelper();
 
 const props = defineProps({
   svgId: { type: String, default: "" },
+
 });
 
 let selectionPosition = ref({
@@ -84,39 +85,39 @@ const selectionRectHeight = computed(() => {
 
 // emitted by eventHelper
 watch(
-  () => eventBus.bus.value.get("keyup"),
+  () => eventBus.bus.value.get("KEYUP"),
   async (e: KeyboardEvent) => {
     await keyUp(e);
   },
 );
 
 watch(
-  () => eventBus.bus.value.get("svgmousemove"),
+  () => eventBus.bus.value.get("SVG_MOUSEDOWN"),
   (e: MouseEvent) => {
     handleMouseMove(e);
   },
 );
 
 watch(
-  () => eventBus.bus.value.get("svgmouseup"),
+  () => eventBus.bus.value.get("SVG_MOUSEUP"),
   (e: MouseEvent) => {
     handleMouseUp(e);
   },
 );
 
 watch(
-  () => eventBus.bus.value.get("svgmousedown"),
+  () => eventBus.bus.value.get("SVG_MOUSEDOWN"),
   (e: MouseEvent) => {
     handleMouseDown(e);
   },
 );
 
 function mouseup(e: MouseEvent) {
-  eventBus.emit("svgmouseup", e);
+  eventBus.emit("SVG_MOUSEUP", e);
 }
 
 function mousemove(e: MouseEvent) {
-  eventBus.emit("svgmousemove", e);
+  eventBus.emit("SVG_MOUSEMOVE", e);
 }
 
 async function keyUp(e: KeyboardEvent) {
@@ -177,12 +178,12 @@ function handleMouseMove(e: MouseEvent) {
 
   notationStore.resetSelectedCell();
 
-  if (editMode == "AREA_SELECTED") {
-    editModeStore.setNextEditMode(); // => moving
-    return;
-  }
+  //if (editMode === "AREA_SELECTED" || editMode === "TEXT_AREA_SELECTED") {
+  //  editModeStore.setNextEditMode(); // => moving
+  //  return;
+  //}
 
-  if (editMode == "AREA_SELECTING") {
+  if (editMode === "AREA_SELECTING" || editMode === "TEXT_AREA_SELECTING") {
     updateSelectionArea(e); // =>area selected
     return;
   }
@@ -192,7 +193,8 @@ function handleMouseMove(e: MouseEvent) {
     return;
   }
 
-  editModeStore.setEditMode("AREA_SELECTING");
+  //editModeStore.setEditMode("AREA_SELECTING");
+  editModeStore.setNextEditMode(); // => either moving or text writing
 }
 
 function handleMouseDown(e: MouseEvent) {
@@ -214,10 +216,19 @@ function handleMouseUp(e: MouseEvent) {
     return;
   }
 
+  if (editMode == "TEXT_AREA_SELECTING") {
+    editModeStore.setNextEditMode();
+    eventBus.bus.value.set("SELECTION_DONE", selectionPosition);
+    return;
+  }
+
+
+
+
   resetSelection();
 }
 
-// extend or shrink selection area from inner mouse move
+// extend or shrink selection area following inner mouse move
 function updateSelectionArea(e: MouseEvent) {
 
   if (selectionPosition.value.x1 == 0) {

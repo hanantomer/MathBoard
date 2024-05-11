@@ -64,19 +64,19 @@ export default function selectionHelper() {
     switch (notation.notationType) {
       case "SQRT":
         editModeStore.setEditMode("SQRT_SELECTED");
-        eventBus.emit("horizontalLineSelected", notation);
+        eventBus.emit("HORIZONTAL_LINE_SELECTED", notation);
         break;
       case "HORIZONTALLINE":
         editModeStore.setEditMode("HORIZONTAL_LINE_SELECTED");
-        eventBus.emit("horizontalLineSelected", notation);
+        eventBus.emit("HORIZONTAL_LINE_SELECTED", notation);
         break;
       case "VERTICALLINE":
         editModeStore.setEditMode("VERTICAL_LINE_SELECTED");
-        eventBus.emit("verticalLineSelected", notation);
+        eventBus.emit("VERTICAL_LINE_SELECTED", notation);
         break;
       case "SLOPELINE":
         editModeStore.setEditMode("SLOPE_LINE_SELECTED");
-        eventBus.emit("slopeLineSelected", notation);
+        eventBus.emit("SLOPE_LINE_SELECTED", notation);
     }
   }
 

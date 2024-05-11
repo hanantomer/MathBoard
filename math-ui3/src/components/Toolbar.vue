@@ -102,7 +102,7 @@ freeText
           x-small
           fab
           dark
-          v-on:click="startSqrtMode"
+          v-on:click="toggleSqrtMode"
           :disabled="!editEnabled"
         >
           <v-icon>mdi-square-root</v-icon>
@@ -128,7 +128,11 @@ freeText
     <!-- text tool  -->
     <v-tooltip text="Free Text">
       <template v-slot:activator="{ props }">
-        <v-btn v-bind="props" icon v-on:click="startTextMode"
+        <v-btn
+          v-bind="props"
+          icon
+          :color="freeTextButtonActive ? 'white' : 'yellow'"
+          v-on:click="toggleTextMode"
           ><v-icon>mdi-text</v-icon></v-btn
         >
       </template>
@@ -224,7 +228,6 @@ let exponentButtonActive = ref(1);
 let freeTextButtonActive = ref(1);
 
 let showAccessLinkDialog = ref(false);
-let showFreeTextControl = ref(false);
 
 watch(
   () => editModeStore.getEditMode(),
@@ -265,7 +268,7 @@ watch(
 
 // emitted by free text control
 watch(
-  () => eventBus.bus.value.get("freeTextSubmited"),
+  () => eventBus.bus.value.get("FREE_TEXT_SUBMITTED"),
   (value: string) => {
     notationMutateHelper.upsertTextNotation(value);
   },
@@ -283,15 +286,6 @@ const editEnabled = computed(() => {
   return authorizationHelper.canEdit();
 });
 
-// const textEnabled = computed(() => {
-//   if (!editEnabled.value) return false;
-
-//   return (
-//     notationStore.getSelectedCell() ||
-//     notationStore.getSelectedNotations()?.at(0)?.notationType === "TEXT"
-//   );
-// });
-
 const exponentEnabled = computed(() => {
   if (!editEnabled.value) return false;
 
@@ -306,6 +300,7 @@ const answerCheckMode = computed(() => {
 });
 
 function resetButtonsState() {
+  editModeStore.resetEditMode();
   checkmarkButtonActive.value =
     semicheckmarkButtonActive.value =
     xmarkButtonActive.value =
@@ -338,11 +333,25 @@ function startSlopeLineMode() {
 }
 
 function toggleExponentMode() {
-  resetButtonsState();
   if (editModeStore.getEditMode() == "EXPONENT") {
     resetButtonsState();
   } else {
     startExponentMode();
+  }
+}
+function toggleTextMode() {
+  if (editModeStore.getEditMode() == "TEXT") {
+    resetButtonsState();
+  } else {
+    startTextMode();
+  }
+}
+
+function toggleSqrtMode() {
+  if (editModeStore.getEditMode() == "SQRT") {
+    resetButtonsState();
+  } else {
+    startSqrtMode();
   }
 }
 

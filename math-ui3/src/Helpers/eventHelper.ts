@@ -17,7 +17,7 @@ import {
   VerticalLineNotationAttributes,
   SlopeLineNotationAttributes,
 } from "common/baseTypes";
-import { NotationTypeShape } from "common/unions";
+import { NotationTypeShape, BusEventType } from "common/unions";
 
 const userStore = useUserStore();
 const editModeStore = useEditModeStore();
@@ -292,7 +292,7 @@ export default function eventHelper() {
   }
 
   function emitSvgMouseDown(e: MouseEvent) {
-    eventBus.emit("svgmousedown", e);
+    eventBus.emit("SVG_MOUSEDOWN", e);
   }
 
   function registerSvgMouseDown(svgId: string) {
@@ -308,7 +308,7 @@ export default function eventHelper() {
   }
 
   function emitSvgMouseMove(e: MouseEvent) {
-    eventBus.emit("svgmousemove", e);
+    eventBus.emit("SVG_MOUSEMOVE", e);
   }
 
   function registerSvgMouseMove(svgId: string) {
@@ -324,7 +324,7 @@ export default function eventHelper() {
   }
 
   function emitSvgMouseUp(e: MouseEvent) {
-    eventBus.emit("svgmouseup", e);
+    eventBus.emit("SVG_MOUSEUP", e);
   }
 
   function registerSvgMouseUp(svgId: string) {
@@ -340,7 +340,7 @@ export default function eventHelper() {
   }
 
   function emitKeyUp(key: KeyboardEvent) {
-    eventBus.emit("keyup", key);
+    eventBus.emit("KEYUP", key);
   }
 
   function registerKeyUp() {
@@ -352,7 +352,7 @@ export default function eventHelper() {
   }
 
   function emitCopy() {
-    eventBus.emit("copy", null);
+    eventBus.emit("COPY", null);
   }
 
   function registerCopy() {
@@ -364,7 +364,7 @@ export default function eventHelper() {
   }
 
   function emitPaste(e: ClipboardEvent) {
-    eventBus.emit("paste", e);
+    eventBus.emit("PASTE", e);
   }
 
   function registerPaste() {

@@ -84,7 +84,7 @@ function setInitalTextValue() {
 }
 
 function submit() {
-  eventBus.emit("freeTextSubmited", textValue.value);
+  eventBus.emit("FREE_TEXT_SUBMITTED", textValue.value);
   closeDialog();
 }
 

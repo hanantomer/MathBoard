@@ -110,28 +110,28 @@ let handleBottom = computed(() => {
 // watch
 
 watch(
-  () => eventBus.bus.value.get("svgmouseup"),
+  () => eventBus.bus.value.get("SVG_MOUSEUP"),
   () => {
     onMouseUp();
   },
 );
 
 watch(
-  () => eventBus.bus.value.get("svgmousemove"),
+  () => eventBus.bus.value.get("SVG_MOUSEMOVE"),
   (e: MouseEvent) => {
     onMouseMove(e);
   },
 );
 
 watch(
-  () => eventBus.bus.value.get("svgmousedown"),
+  () => eventBus.bus.value.get("SVG_MOUSEDOWN"),
   (e: MouseEvent) => {
     onMouseDown(e);
   },
 );
 
 watch(
-  () => eventBus.bus.value.get("verticalLineSelected"), /// TODO: update emitter to distinguish line types
+  () => eventBus.bus.value.get("VERTICAL_LINE_SELECTED"), /// TODO: update emitter to distinguish line types
   (line: VerticalLineNotationAttributes) => {
     if (line) onLineSelected(line);
   },
@@ -153,7 +153,7 @@ function onLineSelected(lineNotation: VerticalLineNotationAttributes) {
   notationStore.selectNotation(lineNotation.uuid);
 
   /// TODO use close list for emiiter
-  eventBus.emit("verticalLineSelected", null); // to enable re selection
+  eventBus.emit("VERTICAL_LINE_SELECTED", null); // to enable re selection
 }
 
 function onHandleMouseDown() {
@@ -181,7 +181,6 @@ function onMouseDown(e: MouseEvent) {
     editModeStore.setNextEditMode();
   }
 }
-
 
 function onMouseMove(e: MouseEvent) {
   // ignore right button
@@ -236,7 +235,6 @@ function setLine(yPos: number) {
     linePosition.value.y2 = yPos;
   }
 }
-
 
 function endDrawLine() {
   if (linePosition.value.y2 == linePosition.value.y1) return;
