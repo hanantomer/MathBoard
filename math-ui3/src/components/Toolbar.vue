@@ -300,7 +300,6 @@ const answerCheckMode = computed(() => {
 });
 
 function resetButtonsState() {
-  editModeStore.resetEditMode();
   checkmarkButtonActive.value =
     semicheckmarkButtonActive.value =
     xmarkButtonActive.value =

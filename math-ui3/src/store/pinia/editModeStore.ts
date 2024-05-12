@@ -11,6 +11,8 @@ export const useEditModeStore = defineStore("editMode", () => {
     return (
       editMode.value == "AREA_SELECTING" ||
       editMode.value == "AREA_SELECTED" ||
+      editMode.value == "TEXT_AREA_SELECTING" ||
+      editMode.value == "TEXT_AREA_SELECTED" ||
       editMode.value == "MOVING"
     );
   }
@@ -164,6 +166,7 @@ export const useEditModeStore = defineStore("editMode", () => {
         return setEditMode("TEXT_AREA_SELECTED");
       case "TEXT_AREA_SELECTED":
         return setEditMode("TEXT_WRITING");
+
       case "HORIZONTAL_LINE_STARTED":
         return setEditMode("HORIZONTAL_LINE_DRAWING");
       case "HORIZONTAL_LINE_SELECTED":
@@ -181,9 +184,9 @@ export const useEditModeStore = defineStore("editMode", () => {
 
       case "SQRT":
         return setEditMode("SQRT_DRAWING");
-
       case "SQRT_SELECTED":
         return setEditMode("SQRT_DRAWING");
+
       case "AREA_SELECTING":
         return setEditMode("AREA_SELECTED");
       case "AREA_SELECTED":

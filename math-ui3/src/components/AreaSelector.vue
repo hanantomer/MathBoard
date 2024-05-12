@@ -34,7 +34,6 @@ const selectionHelper = useSelectionHelper();
 
 const props = defineProps({
   svgId: { type: String, default: "" },
-
 });
 
 let selectionPosition = ref({
@@ -92,7 +91,7 @@ watch(
 );
 
 watch(
-  () => eventBus.bus.value.get("SVG_MOUSEDOWN"),
+  () => eventBus.bus.value.get("SVG_MOUSEMOVE"),
   (e: MouseEvent) => {
     handleMouseMove(e);
   },
@@ -105,12 +104,12 @@ watch(
   },
 );
 
-watch(
-  () => eventBus.bus.value.get("SVG_MOUSEDOWN"),
-  (e: MouseEvent) => {
-    handleMouseDown(e);
-  },
-);
+// watch(
+//   () => eventBus.bus.value.get("SVG_MOUSEDOWN"),
+//   (e: MouseEvent) => {
+//     handleMouseDown(e);
+//   },
+// );
 
 function mouseup(e: MouseEvent) {
   eventBus.emit("SVG_MOUSEUP", e);
@@ -193,13 +192,16 @@ function handleMouseMove(e: MouseEvent) {
     return;
   }
 
-  //editModeStore.setEditMode("AREA_SELECTING");
-  editModeStore.setNextEditMode(); // => either moving or text writing
+  if (editMode === "TEXT") {
+    editModeStore.setEditMode("TEXT_AREA_SELECTING");
+  } else {
+    editModeStore.setEditMode("AREA_SELECTING");
+  }
 }
 
-function handleMouseDown(e: MouseEvent) {
-  resetSelection();
-}
+//function handleMouseDown(e: MouseEvent) {
+//  resetSelection();
+//}
 
 function handleMouseUp(e: MouseEvent) {
   const editMode = editModeStore.getEditMode();
@@ -218,19 +220,15 @@ function handleMouseUp(e: MouseEvent) {
 
   if (editMode == "TEXT_AREA_SELECTING") {
     editModeStore.setNextEditMode();
-    eventBus.bus.value.set("SELECTION_DONE", selectionPosition);
+    eventBus.bus.value.set("SELECTION_DONE", selectionPosition.value);
     return;
   }
-
-
-
 
   resetSelection();
 }
 
 // extend or shrink selection area following inner mouse move
 function updateSelectionArea(e: MouseEvent) {
-
   if (selectionPosition.value.x1 == 0) {
     selectionPosition.value.x1 = e.clientX;
     selectionPosition.value.y1 = e.clientY;
@@ -320,7 +318,6 @@ function resetSelection() {
     selectionPosition.value.y1 =
     selectionPosition.value.y2 =
       0;
-
 }
 </script>
 

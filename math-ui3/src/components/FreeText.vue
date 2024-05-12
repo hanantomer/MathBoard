@@ -42,7 +42,7 @@ watch(
 watch(
   () => eventBus.bus.value.get("SELECTION_DONE"),
   (selectionPosition: any) => {
-    if (editModeStore.getEditMode() === "TEXT_WRITING") {
+    if (editModeStore.getEditMode() === "TEXT_AREA_SELECTED") {
       setInitialTextValue();
       textLeft.value = selectionPosition.x1;
       textTop.value = selectionPosition.y1;
