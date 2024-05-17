@@ -2,6 +2,7 @@ import {
   DotPosition,
   AreaCoordinates,
   cellSpace,
+
 } from "../../../math-common/src/globals";
 import {
   CellAttributes,
@@ -10,11 +11,11 @@ import {
   RectNotationAttributes,
   SlopeLineNotationAttributes,
   VerticalLineNotationAttributes,
+  RectAttributes,
 } from "../../../math-common/src/baseTypes";
 import { useNotationStore } from "../store/pinia/notationStore";
 import { NotationAttributes } from "../../../math-common/src/baseTypes";
 import {
-  //CellPart,
   NotationTypeShape,
   NotationType,
 } from "../../../math-common/src/unions";
@@ -44,6 +45,39 @@ export default function elementFinderHelper() {
 
     return { col: clickedCellCol, row: clickedCellRow };
   }
+
+  function findCoordinatesCellArea(
+    svgId: string,
+    areaCoordinates: AreaCoordinates,
+  ): RectAttributes {
+
+    const boundingRect = document
+      .getElementById(svgId)
+      ?.getBoundingClientRect();
+
+    const areaFromCol = Math.floor(
+      (areaCoordinates.x1 - boundingRect!.left) /
+        (notationStore.getCellHorizontalWidth() + cellSpace),
+    );
+
+    const areaToCol = Math.floor(
+      (areaCoordinates.x2 - boundingRect!.left) /
+        (notationStore.getCellHorizontalWidth() + cellSpace),
+    );
+
+    const areaFromRow = Math.floor(
+      (areaCoordinates.y1 - boundingRect!.top) /
+        (notationStore.getCellVerticalHeight() + cellSpace),
+    );
+
+    const areaToRow = Math.floor(
+      (areaCoordinates.y2 - boundingRect!.top) /
+        (notationStore.getCellVerticalHeight() + cellSpace),
+    );
+
+    return {fromCol: areaFromCol, toCol: areaToCol, fromRow: areaFromRow, toRow: areaToRow}
+  }
+
 
   function findAreaCells(
     svgId: string,
@@ -363,5 +397,6 @@ export default function elementFinderHelper() {
     findPointNotation,
     findClickedCell,
     findAreaCells,
+    findCoordinatesCellArea,
   };
 }

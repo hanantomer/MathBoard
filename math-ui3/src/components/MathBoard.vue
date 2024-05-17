@@ -1,5 +1,5 @@
 <template>
-  <freeText></freeText>
+  <freeText :svgId="svgId"></freeText>
   <areaSelector :svgId="svgId"></areaSelector>
   <v-row>
     <slot name="title"></slot>
@@ -169,7 +169,7 @@ watch(
   () => eventBus.bus.value.get("COPY"),
   () => {
     eventHelper.copy();
-    eventBus.bus.value.delete("COPY");
+    eventBus.bus.value.delete("COPY"); // clean copy buffer
   },
 );
 
@@ -239,7 +239,7 @@ function handleMouseDown(e: MouseEvent) {
   if (
     editModeStore.isLineMode() ||
     editModeStore.isColorisingMode() ||
-    editModeStore.isTextMode()
+    editModeStore.isTextStartedMode()
   ) {
     return;
   }

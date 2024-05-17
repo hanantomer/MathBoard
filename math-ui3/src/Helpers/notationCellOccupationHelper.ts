@@ -16,33 +16,30 @@ export default function notationCellOccupationHelper() {
     notation: PointNotationAttributes,
     doRemove: boolean,
   ) {
-    if (
-      notation.col < matrixDimensions.colsNum &&
-      notation.row < matrixDimensions.rowsNum
-    ) {
-      matrix[notation.col][notation.row] = doRemove ? null : notation.uuid;
-    }
+    if (!validateRowAndCol(notation.col, notation.row)) return;
+    matrix[notation.col][notation.row] = doRemove ? null : notation.uuid;
   }
 
   // update single cell
   function updateLineOccupationMatrixCell(
-    colIndex: number,
-    rowIndex: number,
+    col: number,
+    row: number,
     matrix: any,
     notation: NotationAttributes,
     doRemove: boolean,
   ) {
+    if (!validateRowAndCol(col, row)) return;
     if (doRemove) {
-      matrix[colIndex][rowIndex] = null;
+      matrix[col][row] = null;
       return;
     }
 
-    if (matrix[colIndex][rowIndex] === null) {
-      matrix[colIndex][rowIndex] = [];
+    if (matrix[col][row] === null) {
+      matrix[col][row] = [];
     }
 
     // line occuption mtarix can attribute multiple notations to single cell
-    matrix[colIndex][rowIndex].push(notation.uuid);
+    matrix[col][row].push(notation.uuid);
   }
 
   function updateHorizontalLineOccupationMatrix(
@@ -50,30 +47,24 @@ export default function notationCellOccupationHelper() {
     notation: HorizontalLineNotationAttributes,
     doRemove: boolean,
   ) {
-    for (
-      let colIndex = notation.fromCol;
-      colIndex <= notation.toCol;
-      colIndex++
-    ) {
-      if (
-        colIndex < matrixDimensions.colsNum &&
-        notation.row < matrixDimensions.rowsNum
-      ) {
+    for (let col = notation.fromCol; col <= notation.toCol; col++) {
+      if (validateRowAndCol(col, notation.row)) {
         updateLineOccupationMatrixCell(
-          colIndex,
+          col,
           notation.row,
           matrix,
           notation,
           doRemove,
         );
 
-        updateLineOccupationMatrixCell(
-          colIndex,
-          notation.row - 1,
-          matrix,
-          notation,
-          doRemove,
-        );
+        if (validateRowAndCol(col, notation.row - 1))
+          updateLineOccupationMatrixCell(
+            col,
+            notation.row - 1,
+            matrix,
+            notation,
+            doRemove,
+          );
       }
     }
   }
@@ -84,10 +75,7 @@ export default function notationCellOccupationHelper() {
     doRemove: boolean,
   ) {
     for (let i = notation.fromRow; i <= notation.toRow; i++) {
-      if (
-        i < matrixDimensions.rowsNum &&
-        notation.col < matrixDimensions.colsNum
-      ) {
+      if (validateRowAndCol(i, matrixDimensions.rowsNum)) {
         updateLineOccupationMatrixCell(
           notation.col,
           i,
@@ -95,7 +83,9 @@ export default function notationCellOccupationHelper() {
           notation,
           doRemove,
         );
+      }
 
+      if (validateRowAndCol(i, matrixDimensions.rowsNum - 1)) {
         updateLineOccupationMatrixCell(
           notation.col - 1,
           i,
@@ -118,32 +108,27 @@ export default function notationCellOccupationHelper() {
 
     let firstRowIndex = notation.fromRow;
 
-    for (
-      let colIndex = notation.fromCol;
-      colIndex <= notation.toCol;
-      colIndex++
-    ) {
-      if (colIndex < matrixDimensions.colsNum) {
-        let rowIndex =
+    for (let col = notation.fromCol; col <= notation.toCol; col++) {
+      if (col < matrixDimensions.colsNum) {
+        let row =
           firstRowIndex +
           (slope > 0
-            ? Math.floor((colIndex - notation.fromCol) * slope)
-            : Math.ceil((colIndex - notation.fromCol) * slope));
-        updateLineOccupationMatrixCell(
-          colIndex,
-          rowIndex,
-          matrix,
-          notation,
-          doRemove,
-        );
+            ? Math.floor((col - notation.fromCol) * slope)
+            : Math.ceil((col - notation.fromCol) * slope));
 
-        updateLineOccupationMatrixCell(
-          colIndex,
-          rowIndex - 1,
-          matrix,
-          notation,
-          doRemove,
-        );
+        if (validateRowAndCol(col, row)) {
+          updateLineOccupationMatrixCell(col, row, matrix, notation, doRemove);
+        }
+
+        if (validateRowAndCol(col, row - 1)) {
+          updateLineOccupationMatrixCell(
+            col,
+            row - 1,
+            matrix,
+            notation,
+            doRemove,
+          );
+        }
       }
     }
     console.log(matrix);
@@ -155,13 +140,22 @@ export default function notationCellOccupationHelper() {
     notation: RectNotationAttributes,
     doRemove: boolean,
   ) {
-    for (let i = notation.fromCol; i <= notation.toCol; i++) {
-      for (let j = notation.fromRow; j <= notation.toRow; j++) {
-        if (i < matrixDimensions.colsNum && j < matrixDimensions.rowsNum) {
-          matrix[i][j] = doRemove ? null : notation.uuid;
+    for (let col = notation.fromCol; col <= notation.toCol; col++) {
+      for (let row = notation.fromRow; row <= notation.toRow; row++) {
+        if (validateRowAndCol(col, row)) {
+          matrix[col][row] = doRemove ? null : notation.uuid;
         }
       }
     }
+  }
+
+  function validateRowAndCol(col: number, row: number): boolean {
+    return (
+      col < matrixDimensions.colsNum &&
+      row < matrixDimensions.rowsNum &&
+      col >= 0 &&
+      row >= 0
+    );
   }
 
   return {

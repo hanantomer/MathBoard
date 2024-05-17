@@ -730,22 +730,14 @@ export default function notationMutateHelper() {
     notationStore.resetSelectedCell();
   }
 
-  function upsertTextNotation(value: string) {
-    const rectCell = getRectCell();
-    if (!rectCell) return;
+  function upsertTextNotation(value: string, textCells: RectAttributes) {
 
-    let fromCol = rectCell.col;
-    let toCol =
-      rectCell.col + Math.floor(matrixHtmlHelper.getFreeTextRectWidth(value));
-    let fromRow = rectCell.row;
-    let toRow =
-      rectCell.row + Math.floor(matrixHtmlHelper.getFreeTextRectHeight(value));
 
     let notation: RectNotationCreationAttributes = {
-      fromCol: fromCol,
-      toCol: toCol,
-      fromRow: fromRow,
-      toRow: toRow,
+      fromCol: textCells.fromCol,
+      toCol: textCells.toCol,
+      fromRow: textCells.fromRow,
+      toRow: textCells.toRow,
       value: value,
       boardType: notationStore.getParent().type,
       parentUUId: notationStore.getParent().uuid,

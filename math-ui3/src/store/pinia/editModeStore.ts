@@ -12,7 +12,6 @@ export const useEditModeStore = defineStore("editMode", () => {
       editMode.value == "AREA_SELECTING" ||
       editMode.value == "AREA_SELECTED" ||
       editMode.value == "TEXT_AREA_SELECTING" ||
-      editMode.value == "TEXT_AREA_SELECTED" ||
       editMode.value == "MOVING"
     );
   }
@@ -68,7 +67,7 @@ export const useEditModeStore = defineStore("editMode", () => {
   }
 
   function isSqrtMode() {
-    return editMode.value == "SQRT" || editMode.value == "SQRT_DRAWING";
+    return editMode.value == "SQRT_STARTED" || editMode.value == "SQRT_DRAWING";
   }
 
   function isDefaultEditMode() {
@@ -92,6 +91,10 @@ export const useEditModeStore = defineStore("editMode", () => {
 
   function isSlopeLineStartedMode() {
     return editMode.value == "SLOPE_LINE_STARTED";
+  }
+
+  function isSqrtStartedMode() {
+    return editMode.value == "SQRT_STARTED";
   }
 
   function isVerticalLineStartedMode() {
@@ -123,6 +126,10 @@ export const useEditModeStore = defineStore("editMode", () => {
 
   function isTextMode() {
     return editMode.value === "TEXT" || editMode.value === "TEXT_WRITING";
+  }
+
+  function isTextStartedMode() {
+    return editMode.value === "TEXT";
   }
 
   function isExponentMode() {
@@ -163,9 +170,9 @@ export const useEditModeStore = defineStore("editMode", () => {
       case "TEXT":
         return setEditMode("TEXT_AREA_SELECTING");
       case "TEXT_AREA_SELECTING":
-        return setEditMode("TEXT_AREA_SELECTED");
-      case "TEXT_AREA_SELECTED":
         return setEditMode("TEXT_WRITING");
+      //      case "TEXT_AREA_SELECTED":
+      //return setEditMode("TEXT_WRITING");
 
       case "HORIZONTAL_LINE_STARTED":
         return setEditMode("HORIZONTAL_LINE_DRAWING");
@@ -182,7 +189,7 @@ export const useEditModeStore = defineStore("editMode", () => {
       case "SLOPE_LINE_SELECTED":
         return setEditMode("SLOPE_LINE_DRAWING");
 
-      case "SQRT":
+      case "SQRT_STARTED":
         return setEditMode("SQRT_DRAWING");
       case "SQRT_SELECTED":
         return setEditMode("SQRT_DRAWING");
@@ -208,10 +215,10 @@ export const useEditModeStore = defineStore("editMode", () => {
     getNotationTypeByEditMode,
     isAreaSelectionOrMovingMode,
     isSelectionMode,
-    //    isLineStartedMode,
     isLineMode,
     isHorizontalLineMode,
     isHorizontalLineSelectedMode,
+    isSqrtStartedMode,
     isHorizontalLineStartedMode,
     isHorizontalLineDrawingMode,
     isVerticalLineMode,
@@ -229,6 +236,7 @@ export const useEditModeStore = defineStore("editMode", () => {
     isColorisingMode,
     isDefaultEditMode,
     isTextMode,
+    isTextStartedMode,
     isCheckMode,
     setEditMode,
     setNextEditMode,

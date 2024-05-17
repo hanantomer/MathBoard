@@ -20,8 +20,6 @@ export type BusEventType =
 
 export type NotationShape = "POINT" |  "HORIZONTAL_LINE" | "VERTICAL_LINE"| "SLOPE_LINE" |  "RECT"
 
-export type LineType = "HORIZONTAL_LINE_STARTED" |  "SQRT" | "VERTICAL_LINE_STARTED" | "SLOPE_LINE_STARTED"
-
 export const NotationTypeValues = 
   ["SYMBOL",
   "SIGN",
@@ -68,7 +66,7 @@ export type EditMode =
   "EXPONENT"                  | // exponent button pressed
   "TEXT"                      | // text button pressed
   "TEXT_AREA_SELECTING"       | // user started selecting area following text button pressed
-  "TEXT_AREA_SELECTED"        | // user finished selecting area following text area selecting
+  //"TEXT_AREA_SELECTED"        | // user finished selecting area following text area selecting
   "TEXT_WRITING"              | // user clicked a cell following text button pressed
   "CELL_SELECTED"             | // user clicked on a cell or navigated via keys
   "HORIZONTAL_LINE_STARTED"   | // horizontal line button pressed
@@ -80,7 +78,7 @@ export type EditMode =
   "SLOPE_LINE_STARTED"        | // slope line button pressed
   "SLOPE_LINE_DRAWING"        | // slope line drawing started
   "SLOPE_LINE_SELECTED"       | // slope line selected
-  "SQRT"                      | // sqrt button pressed
+  "SQRT_STARTED"              | // sqrt button pressed
   "SQRT_DRAWING"              | // sqrt drawing started
   "SQRT_SELECTED"             | // sqrt selected  
   "COLORISING"                | // color selected
@@ -107,7 +105,7 @@ export type EditMode =
     ["SLOPE_LINE_STARTED", "SLOPELINE"],       
     ["SLOPE_LINE_DRAWING", "SLOPELINE"],       
     ["SLOPE_LINE_SELECTED", "SLOPELINE"],      
-    ["SQRT", "SQRT"],                     
+    ["SQRT_STARTED", "SQRT"],                     
     ["SQRT_DRAWING", "SQRT"],             
     ["SQRT_SELECTED", "SQRT"],            
     ["COLORISING", "SYMBOL"],               
@@ -136,7 +134,7 @@ export type EditMode =
   ["SLOPE_LINE_STARTED", "auto"],       
   ["SLOPE_LINE_DRAWING", "auto"],       
   ["SLOPE_LINE_SELECTED", "auto"],      
-  ["SQRT", "auto"],                     
+  ["SQRT_STARTED", "auto"],                     
   ["SQRT_DRAWING", "auto"],             
   ["SQRT_SELECTED", "auto"],            
   ["COLORISING", "auto"],               

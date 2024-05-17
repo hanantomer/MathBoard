@@ -9,6 +9,7 @@
       }"
       v-on:mouseup="onMouseUp"
       v-on:mousedown="onHandleMouseDown"
+      v-if="!sqrtEditMode"
     ></v-card>
     <v-card
       id="lineRightHandle"
@@ -38,8 +39,8 @@
       style="position: absolute"
       class="sqrtsymbol"
       v-bind:style="{
-        left: lineLeft - 11 + 'px',
-        top: lineY + 'px',
+        left: sqrtLeft + 'px',
+        top: sqrtY + 'px',
       }"
       v-if="sqrtEditMode"
     >
@@ -63,6 +64,7 @@ import {
   HorizontalLineNotationAttributes,
 } from "../../../math-common/src/baseTypes";
 import useEventBus from "../helpers/eventBusHelper";
+import { EditModeCursorType } from "common/unions";
 
 const eventBus = useEventBus();
 const notationMutateHelper = useNotationMutateHelper();
@@ -122,6 +124,14 @@ let handleY = computed(() => {
   return lineY.value + (svgDimensions()?.top ?? 0);
 });
 
+let sqrtLeft = computed(() => {
+  return lineLeft.value + (svgDimensions()?.left ?? 0) - 20;
+});
+
+let sqrtY = computed(() => {
+  return lineY.value + (svgDimensions()?.top ?? 0);
+});
+
 watch(
   () => eventBus.bus.value.get("SVG_MOUSEUP"),
   () => {
@@ -148,7 +158,6 @@ watch(
   (line: HorizontalLineNotationAttributes) => {
     if (line) onLineSelected(line);
   },
-  { immediate: true },
 );
 
 // event handlers
@@ -188,7 +197,10 @@ function onMouseDown(e: MouseEvent) {
   }
 
   // new line
-  if (editModeStore.isHorizontalLineStartedMode()) {
+  if (
+    editModeStore.isHorizontalLineStartedMode() ||
+    editModeStore.isSqrtStartedMode()
+  ) {
     startLineDrawing({
       x: e.offsetX,
       y: e.offsetY,

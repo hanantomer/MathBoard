@@ -17,7 +17,7 @@ import {
   VerticalLineNotationAttributes,
   SlopeLineNotationAttributes,
 } from "common/baseTypes";
-import { NotationTypeShape, BusEventType } from "common/unions";
+import { NotationTypeShape } from "common/unions";
 
 const userStore = useUserStore();
 const editModeStore = useEditModeStore();

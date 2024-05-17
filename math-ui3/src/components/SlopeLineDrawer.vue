@@ -145,8 +145,7 @@ watch(
   () => eventBus.bus.value.get("SLOPE_LINE_SELECTED"), /// TODO: update emitter to distinguish line types
   (line: SlopeLineNotationAttributes) => {
     if (line) onSlopeLineSelected(line);
-  },
-  { immediate: true },
+  }
 );
 
 // event handlers

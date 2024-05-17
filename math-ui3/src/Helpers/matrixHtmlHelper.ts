@@ -17,7 +17,7 @@ const userStore = useUserStore();
 const utils = useUtils();
 const notationStore = useNotationStore();
 
-const maxTextWidth = 10;
+//const maxTextWidth = 10;
 
 export default function useHtmlMatrixHelper() {
   function borderColor(notation: NotationAttributes): string {
@@ -277,13 +277,16 @@ export default function useHtmlMatrixHelper() {
     }
 
     if (n.notationType === "TEXT") {
-      let n1 = n as RectNotationAttributes;
+      const n1 = n as RectNotationAttributes;
 
-      let bColor = textBorderColor(n ?? false);
+      const bColor = textBorderColor(n ?? false);
 
-      return `<pre style='background-color:${textBackgroundColor()};border:groove 2px;border-color:${bColor};'>${
+      const height = rectNotationHeight(n as RectNotationAttributes);
+      const width = rectNotationWidth(n as RectNotationAttributes);
+
+      return `<textarea readonly style='overflow:hidden;width:${width}px;height:${height}px;background-color:${textBackgroundColor()};border:groove 2px;border-color:${bColor};'>${
         n1.value
-      }</pre>`;
+      }</textarea>`;
     }
 
     if (n.notationType === "IMAGE") {
@@ -300,33 +303,33 @@ export default function useHtmlMatrixHelper() {
     return `<p style='color:${color};font-weight:${fontWeight}; position: absolute;top: 50%;transform: translateY(-50%);left:20%;translateX(-20%);font-size:1.1em'>${n1.value}</p>`;
   }
 
-  function getFreeTextRectWidth(text: string) {
-    const textArr = text.split("\n");
+  // function getFreeTextRectWidth(text: string) {
+  //   const textArr = text.split("\n");
 
-    const maxWidth = Math.max(
-      ...textArr.map((t) =>
-        parseFloat((<any>window).textMeasurementCtx.measureText(t).width),
-      ),
-    );
+  //   const maxWidth = Math.max(
+  //     ...textArr.map((t) =>
+  //       parseFloat((<any>window).textMeasurementCtx.measureText(t).width),
+  //     ),
+  //   );
 
-    return Math.min(
-      maxTextWidth,
-      maxWidth / notationStore.getCellHorizontalWidth(),
-    );
-  }
+  //   return Math.min(
+  //     maxTextWidth,
+  //     maxWidth / notationStore.getCellHorizontalWidth(),
+  //   );
+  // }
 
-  function getFreeTextRectHeight(text: string) {
-    const fontSize = getDefaultFontSize();
-    const margin = 5;
-    return (
-      ((fontSize + margin) * text.split(/\r*\n/).length) /
-      notationStore.getCellVerticalHeight()
-    );
-  }
+  // function getFreeTextRectHeight(text: string) {
+  //   const fontSize = getDefaultFontSize();
+  //   const margin = 5;
+  //   return (
+  //     ((fontSize + margin) * text.split(/\r*\n/).length) /
+  //     notationStore.getCellVerticalHeight()
+  //   );
+  // }
 
   return {
     mergeHtmlNotations,
-    getFreeTextRectWidth,
-    getFreeTextRectHeight,
+    //getFreeTextRectWidth,
+    //    getFreeTextRectHeight,
   };
 }

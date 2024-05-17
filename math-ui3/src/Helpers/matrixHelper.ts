@@ -28,22 +28,22 @@ export default function useMatrixHelper() {
     );
   }
 
-  function setTextMeasurementCtx(el: HTMLElement) {
-    let textMeasurementEl = document.createElement("canvas");
-    (<any>window).textMeasurementCtx = textMeasurementEl.getContext("2d");
-    (<any>window).textMeasurementCtx.font = getComputedStyle(
-      document.body,
-    ).font;
-    console.log(
-      "font used to measure text is:" + (<any>window).textMeasurementCtx.font,
-    );
-  }
+  // function setTextMeasurementCtx(el: HTMLElement) {
+  //   let textMeasurementEl = document.createElement("canvas");
+  //   (<any>window).textMeasurementCtx = textMeasurementEl.getContext("2d");
+  //   (<any>window).textMeasurementCtx.font = getComputedStyle(
+  //     document.body,
+  //   ).font;
+  //   console.log(
+  //     "font used to measure text is:" + (<any>window).textMeasurementCtx.font,
+  //   );
+  // }
 
   function setMatrix(svgId: string) {
     const el = document.getElementById(svgId);
     if (!el) return;
     setCellVerticalHeight(svgId);
-    setTextMeasurementCtx(el);
+    //    setTextMeasurementCtx(el);
 
     // render rows
     for (var row = 0; row < matrixDimensions.rowsNum; row++) {
@@ -68,7 +68,7 @@ export default function useMatrixHelper() {
       .data((r) => r)
       .enter()
       .append("rect")
-      .attr("fill", (a, i, d) => {
+      .attr("fill", () => {
         return "white";
       })
       .attr("stroke", defaultdCellStroke)

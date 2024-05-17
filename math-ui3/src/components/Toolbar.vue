@@ -30,6 +30,11 @@ freeText
           v-bind="props"
           icon
           :color="horizontalLineButtonActive ? 'white' : 'yellow'"
+          :backgroundColor="
+            horizontalLineButtonActive
+              ? 'white !important'
+              : 'yellow !important'
+          "
           x-small
           fab
           dark
@@ -201,7 +206,7 @@ freeText
 import { watch, ref } from "vue";
 import accessLinkDialog from "./AccessLinkDialog.vue";
 
-import useNotationMutateHelper from "../helpers/notationMutateHelper";
+//import useNotationMutateHelper from "../helpers/notationMutateHelper";
 import { useNotationStore } from "../store/pinia/notationStore";
 import { useEditModeStore } from "../store/pinia/editModeStore";
 import { computed } from "vue";
@@ -210,7 +215,7 @@ import useEventBus from "../helpers/eventBusHelper";
 import useAuthorizationHelper from "../helpers/authorizationHelper";
 
 const authorizationHelper = useAuthorizationHelper();
-const notationMutateHelper = useNotationMutateHelper();
+//const notationMutateHelper = useNotationMutateHelper();
 const notationStore = useNotationStore();
 const userStore = useUserStore();
 const editModeStore = useEditModeStore();
@@ -251,7 +256,7 @@ watch(
       slopeLineButtonActive.value = 0;
     }
 
-    if (editMode === "SQRT") {
+    if (editMode === "SQRT_STARTED") {
       squareRootButtonActive.value = 0;
     }
 
@@ -264,14 +269,6 @@ watch(
     }
   },
   { immediate: true, deep: true },
-);
-
-// emitted by free text control
-watch(
-  () => eventBus.bus.value.get("FREE_TEXT_SUBMITTED"),
-  (value: string) => {
-    notationMutateHelper.upsertTextNotation(value);
-  },
 );
 
 function openAccessLinkDialog() {
@@ -313,6 +310,11 @@ function resetButtonsState() {
       1;
 }
 
+function resetEditModeAndButtonsState() {
+  resetButtonsState();
+  editModeStore.resetEditMode();
+}
+
 function startHorizontalLineMode() {
   resetButtonsState();
   horizontalLineButtonActive.value = 0;
@@ -333,22 +335,22 @@ function startSlopeLineMode() {
 
 function toggleExponentMode() {
   if (editModeStore.getEditMode() == "EXPONENT") {
-    resetButtonsState();
+    resetEditModeAndButtonsState();
   } else {
     startExponentMode();
   }
 }
 function toggleTextMode() {
   if (editModeStore.getEditMode() == "TEXT") {
-    resetButtonsState();
+    resetEditModeAndButtonsState();
   } else {
     startTextMode();
   }
 }
 
 function toggleSqrtMode() {
-  if (editModeStore.getEditMode() == "SQRT") {
-    resetButtonsState();
+  if (editModeStore.getEditMode() == "SQRT_STARTED") {
+    resetEditModeAndButtonsState();
   } else {
     startSqrtMode();
   }
@@ -357,7 +359,7 @@ function toggleSqrtMode() {
 function startSqrtMode() {
   resetButtonsState();
   squareRootButtonActive.value = 0;
-  editModeStore.setEditMode("SQRT");
+  editModeStore.setEditMode("SQRT_STARTED");
 }
 
 function startExponentMode() {
@@ -374,8 +376,7 @@ function startTextMode() {
 
 function toggleCheckmarkMode() {
   if (editModeStore.getEditMode() == "CHECKMARK") {
-    resetButtonsState();
-    editModeStore.setEditMode("SYMBOL");
+    resetEditModeAndButtonsState();
   } else {
     startCheckmarkMode();
   }
@@ -389,8 +390,7 @@ function startCheckmarkMode() {
 
 function toggleSemiCheckmarkMode() {
   if (editModeStore.getEditMode() == "SEMICHECKMARK") {
-    resetButtonsState();
-    editModeStore.setEditMode("SYMBOL");
+    resetEditModeAndButtonsState();
   } else {
     startSemiCheckmarkMode();
   }
@@ -404,8 +404,7 @@ function startSemiCheckmarkMode() {
 
 function toggleXmarkMode() {
   if (editModeStore.getEditMode() == "XMARK") {
-    resetButtonsState();
-    editModeStore.setEditMode("SYMBOL");
+    resetEditModeAndButtonsState();
   } else {
     startXmarkMode();
   }

@@ -104,13 +104,6 @@ watch(
   },
 );
 
-// watch(
-//   () => eventBus.bus.value.get("SVG_MOUSEDOWN"),
-//   (e: MouseEvent) => {
-//     handleMouseDown(e);
-//   },
-// );
-
 function mouseup(e: MouseEvent) {
   eventBus.emit("SVG_MOUSEUP", e);
 }
@@ -177,11 +170,6 @@ function handleMouseMove(e: MouseEvent) {
 
   notationStore.resetSelectedCell();
 
-  //if (editMode === "AREA_SELECTED" || editMode === "TEXT_AREA_SELECTED") {
-  //  editModeStore.setNextEditMode(); // => moving
-  //  return;
-  //}
-
   if (editMode === "AREA_SELECTING" || editMode === "TEXT_AREA_SELECTING") {
     updateSelectionArea(e); // =>area selected
     return;
@@ -198,10 +186,6 @@ function handleMouseMove(e: MouseEvent) {
     editModeStore.setEditMode("AREA_SELECTING");
   }
 }
-
-//function handleMouseDown(e: MouseEvent) {
-//  resetSelection();
-//}
 
 function handleMouseUp(e: MouseEvent) {
   const editMode = editModeStore.getEditMode();
@@ -220,7 +204,12 @@ function handleMouseUp(e: MouseEvent) {
 
   if (editMode == "TEXT_AREA_SELECTING") {
     editModeStore.setNextEditMode();
-    eventBus.bus.value.set("SELECTION_DONE", selectionPosition.value);
+    eventBus.emit("SELECTION_DONE", {
+      left: selectionRectLeft.value,
+      top: selectionRectTop.value,
+      width: selectionRectWidth.value,
+      height: selectionRectHeight.value,
+    });
     return;
   }
 

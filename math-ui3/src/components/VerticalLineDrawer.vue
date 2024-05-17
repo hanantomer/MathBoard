@@ -134,8 +134,7 @@ watch(
   () => eventBus.bus.value.get("VERTICAL_LINE_SELECTED"), /// TODO: update emitter to distinguish line types
   (line: VerticalLineNotationAttributes) => {
     if (line) onLineSelected(line);
-  },
-  { immediate: true },
+  }
 );
 
 // event handlers
