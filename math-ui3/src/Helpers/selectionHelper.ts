@@ -44,7 +44,7 @@ export default function selectionHelper() {
       }
       case "RECT":
       case "POINT": {
-        selectNotation(notation!);
+        selectPointOrRectNotation(notation!);
         break;
       }
     }
@@ -52,10 +52,14 @@ export default function selectionHelper() {
     return notation;
   }
 
-  function selectNotation(activeNotation: NotationAttributes) {
+  function selectPointOrRectNotation(activeNotation: NotationAttributes) {
     // disallow selection of question notations for student
     if (notationMutateHelper.isNotationInQuestionArea(activeNotation, 0, 0))
       return;
+
+    if (activeNotation.notationType === "TEXT") {
+      eventBus.emit("FREE_TEXT_SELECTED", activeNotation);
+    }
 
     notationStore.selectNotation(activeNotation?.uuid);
   }

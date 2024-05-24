@@ -31,7 +31,7 @@
         :y1="lineTop"
         :x2="lineX"
         :y2="lineBottom"
-        style="stroke: gray; stroke-width: 2"
+        class="line"
       />
     </svg>
   </div>
@@ -96,11 +96,11 @@ let lineX = computed(() => {
 });
 
 let handleX = computed(() => {
-  return lineX.value + (svgDimensions()?.top ?? 0);
+  return lineX.value + (svgDimensions()?.top ?? 0) + 5;
 });
 
 let handleTop = computed(() => {
-  return lineTop.value + (svgDimensions()?.top ?? 0);
+  return lineTop.value + (svgDimensions()?.top ?? 0) - 5;
 });
 
 let handleBottom = computed(() => {
@@ -131,10 +131,10 @@ watch(
 );
 
 watch(
-  () => eventBus.bus.value.get("VERTICAL_LINE_SELECTED"), /// TODO: update emitter to distinguish line types
+  () => eventBus.bus.value.get("VERTICAL_LINE_SELECTED"),
   (line: VerticalLineNotationAttributes) => {
     if (line) onLineSelected(line);
-  }
+  },
 );
 
 // event handlers
@@ -230,7 +230,13 @@ function startLineDrawing(position: DotPosition) {
 }
 
 function setLine(yPos: number) {
-  if (yPos > linePosition.value.y1) {
+  const modifyTop =
+    Math.abs(yPos - linePosition.value.y1) <
+    Math.abs(linePosition.value.y2 - yPos);
+
+  if (modifyTop) {
+    linePosition.value.y1 = yPos;
+  } else {
     linePosition.value.y2 = yPos;
   }
 }
@@ -305,10 +311,4 @@ function getNearestCol(clickedXPos: number) {
   border: 1, 1, 1, 1;
 }
 
-.sqrtsymbol {
-  margin-left: 6px;
-  z-index: 999;
-  font-weight: bold;
-  font-size: 1.8em;
-}
 </style>

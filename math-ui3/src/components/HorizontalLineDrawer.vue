@@ -1,5 +1,5 @@
 <template>
-  <div v-show="show">
+  <div v-if="show">
     <v-card
       id="lineLeftHandle"
       class="lineHandle"
@@ -32,11 +32,10 @@
         :y1="lineY"
         :x2="lineRight"
         :y2="lineY"
-        style="stroke: gray; stroke-width: 2"
+        class="line"
       />
     </svg>
     <p
-      style="position: absolute"
       class="sqrtsymbol"
       v-bind:style="{
         left: sqrtLeft + 'px',
@@ -64,7 +63,6 @@ import {
   HorizontalLineNotationAttributes,
 } from "../../../math-common/src/baseTypes";
 import useEventBus from "../helpers/eventBusHelper";
-import { EditModeCursorType } from "common/unions";
 
 const eventBus = useEventBus();
 const notationMutateHelper = useNotationMutateHelper();
@@ -85,6 +83,10 @@ let linePosition = ref(<HorizontaLinePosition>{
   y: 0,
 });
 
+const lineStyle = computed(() => {
+  return 'style="stroke: black"';
+});
+
 const sqrtEditMode = computed(() => {
   return editModeStore.isSqrtEditMode();
 });
@@ -101,7 +103,7 @@ function svgDimensions(): DOMRect | undefined {
 }
 
 let lineLeft = computed(() => {
-  return linePosition.value.x1;
+  return linePosition.value.x1 + (sqrtEditMode.value ? 10 : 0);
 });
 
 let lineRight = computed(() => {
@@ -113,23 +115,23 @@ let lineY = computed(() => {
 });
 
 let handleLeft = computed(() => {
-  return lineLeft.value + (svgDimensions()?.left ?? 0);
-});
-
-let handleRight = computed(() => {
-  return lineRight.value + (svgDimensions()?.left ?? 0);
-});
-
-let handleY = computed(() => {
-  return lineY.value + (svgDimensions()?.top ?? 0);
+  return lineLeft.value + (svgDimensions()?.left ?? 0) - 10;
 });
 
 let sqrtLeft = computed(() => {
-  return lineLeft.value + (svgDimensions()?.left ?? 0) - 20;
+  return linePosition.value.x1 + (svgDimensions()?.left ?? 0) - 10;
 });
 
 let sqrtY = computed(() => {
-  return lineY.value + (svgDimensions()?.top ?? 0);
+  return lineY.value + (svgDimensions()?.top ?? 0) - 5;
+});
+
+let handleRight = computed(() => {
+  return lineRight.value + (svgDimensions()?.left ?? 0) + 10;
+});
+
+let handleY = computed(() => {
+  return lineY.value + (svgDimensions()?.top ?? 0) - 5;
 });
 
 watch(
@@ -257,8 +259,14 @@ function startLineDrawing(position: DotPosition) {
 }
 
 function setLine(xPos: number) {
-  if (xPos > linePosition.value.x1) {
+  const modifyRight =
+    linePosition.value.x2 - xPos < xPos - linePosition.value.x1;
+
+  if (modifyRight) {
     linePosition.value.x2 = xPos;
+  } else {
+    // modify left
+    linePosition.value.x1 = xPos;
   }
 }
 
@@ -315,31 +323,3 @@ function getNearestRow(clickedYPos: number) {
   return clickedRow * (notationStore.getCellVerticalHeight() + cellSpace);
 }
 </script>
-
-<style>
-.line {
-  top: 4px;
-  position: absolute;
-  color: black;
-  display: block;
-  border-bottom: solid 1px;
-  border-top: solid 1px;
-  z-index: 999;
-}
-.lineHandle {
-  cursor: col-resize;
-  display: block;
-  position: absolute;
-  z-index: 999;
-  width: 12px;
-  height: 12px;
-  border: 1, 1, 1, 1;
-}
-
-.sqrtsymbol {
-  margin-left: 6px;
-  z-index: 999;
-  font-weight: bold;
-  font-size: 1.8em;
-}
-</style>

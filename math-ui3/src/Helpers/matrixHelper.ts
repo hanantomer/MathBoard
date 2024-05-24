@@ -90,13 +90,15 @@ export default function useMatrixHelper() {
         enrichedNotations.push(notation);
         // add sqrt symbol
         if (notation.notationType === "SQRT") {
-          let sqrtNotation = {
-            ...notation,
-            col: (notation as HorizontalLineNotationAttributes).fromCol,
-            toCol: null,
+          let sqrtNotation = notation as HorizontalLineNotationAttributes;
+          let sqrtSignNotation = {
+            ...sqrtNotation,
+            col: sqrtNotation.fromCol,
+            toCol: sqrtNotation.fromCol,
           };
-          sqrtNotation.notationType = "SQRTSYMBOL";
-          enrichedNotations.push(sqrtNotation);
+          sqrtSignNotation.uuid = sqrtNotation.uuid + "_";
+          sqrtSignNotation.notationType = "SQRTSYMBOL";
+          enrichedNotations.push(sqrtSignNotation);
         }
       }
     }

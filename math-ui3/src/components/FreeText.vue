@@ -1,18 +1,19 @@
 <template>
   <v-textarea
-    wrap="hard"
+    id="textAreaEditor"
     v-if="show"
-    style="position: absolute"
+    class="freeText"
+    style="resize: both !important"
     v-bind:style="{
       left: textLeft + 'px',
       top: textTop + 'px',
       width: textWidth + 'px',
     }"
     v-bind:rows="rows"
+    v-bind:cols="50"
+    ref="textAreaEl"
     autofocus
     v-model="textValue"
-    background-color="grey lighten-2"
-    color="cyan"
     v-on:blur="submitText"
   >
   </v-textarea>
@@ -23,7 +24,7 @@ import { computed, watch, ref } from "vue";
 import { useNotationStore } from "../store/pinia/notationStore";
 import { useEditModeStore } from "../store/pinia/editModeStore";
 import { RectNotationAttributes } from "../../../math-common/build/baseTypes";
-import { AreaCoordinates } from "../../../math-common/build/globals";
+import { cellSpace } from "../../../math-common/src/globals";
 import useNotationMutateHelper from "../helpers/notationMutateHelper";
 import useElementFinderHelper from "../helpers/elementFinderHelper";
 import useEventBus from "../helpers/eventBusHelper";
@@ -31,11 +32,13 @@ import useEventBus from "../helpers/eventBusHelper";
 const notationMutateHelper = useNotationMutateHelper();
 
 let textValue = ref("");
+let textAreaEl = ref<HTMLTextAreaElement | null>(null);
 
 const notationStore = useNotationStore();
 const eventBus = useEventBus();
 const emit = defineEmits(["hide"]);
 const editModeStore = useEditModeStore();
+
 const elementFinderHelper = useElementFinderHelper();
 
 const show = computed(() => editModeStore.getEditMode() === "TEXT_WRITING");
@@ -44,24 +47,43 @@ const props = defineProps({
   svgId: { type: String, default: "" },
 });
 
-// watch(
-//   () => eventBus.bus.value.get("SVG_MOUSEDOWN"),
-//   (e: MouseEvent) => {
-//     handleMouseDown(e);
-//   },
-// );
+const svgDimensions = computed(() => {
+  return document.getElementById(props.svgId)?.getBoundingClientRect()!;
+});
 
 // area selector signals the selected position attributes
 watch(
   () => eventBus.bus.value.get("SELECTION_DONE"),
   (selectionPosition: any) => {
-    if (editModeStore.getEditMode() === "TEXT_WRITING") {
-      setInitialTextValue();
-      textLeft.value = selectionPosition.left;
-      textTop.value = selectionPosition.top;
-      textHeight.value = selectionPosition.height;
-      textWidth.value = selectionPosition.width;
-    }
+    setInitialTextValue();
+    textLeft.value = selectionPosition.left;
+    textTop.value = selectionPosition.top;
+    textHeight.value = selectionPosition.height;
+    textWidth.value = selectionPosition.width;
+  },
+);
+
+// user selected text notation
+watch(
+  () => eventBus.bus.value.get("FREE_TEXT_SELECTED"),
+  (textNotation: RectNotationAttributes) => {
+    notationStore.deleteNotation(textNotation.uuid);
+    editModeStore.setEditMode("TEXT_WRITING");
+    setInitialTextValue();
+    textLeft.value =
+      svgDimensions.value.left +
+      textNotation.fromCol *
+        (notationStore.getCellHorizontalWidth() + cellSpace);
+    textTop.value =
+      svgDimensions.value.top +
+      textNotation.fromRow *
+        (notationStore.getCellVerticalHeight() + cellSpace);
+    textHeight.value =
+      (textNotation.toRow - textNotation.fromRow) *
+      (notationStore.getCellVerticalHeight() + cellSpace);
+    textWidth.value =
+      (textNotation.toCol - textNotation.fromCol) *
+      (notationStore.getCellHorizontalWidth() + cellSpace);
   },
 );
 
@@ -86,14 +108,6 @@ const rows = computed(() => {
   );
 });
 
-// function handleMouseDown(e: MouseEvent) {
-//   const editMode = editModeStore.getEditMode();
-
-//   if (editMode == "TEXT_WRITING" && textValue.value) {
-//     submitText();
-//   }
-// }
-
 function setInitialTextValue() {
   textValue.value = "";
   if (notationStore.getSelectedNotations()[0]?.notationType == "TEXT")
@@ -103,7 +117,7 @@ function setInitialTextValue() {
 }
 
 function submitText() {
-  if (!textValue.value) return;
+  //if (!textValue.value) return;
 
   editModeStore.setNextEditMode();
   const textCells = elementFinderHelper.findCoordinatesCellArea(
@@ -113,3 +127,12 @@ function submitText() {
   notationMutateHelper.upsertTextNotation(textValue.value, textCells);
 }
 </script>
+<style>
+#textAreaEditor {
+  resize: both;
+}
+.freeText {
+  background-color: lightyellow;
+  position: absolute;
+}
+</style>

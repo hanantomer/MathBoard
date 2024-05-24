@@ -5,6 +5,9 @@ import {
   SlopeLineNotationAttributes,
   VerticalLineNotationAttributes,
 } from "common/baseTypes";
+
+import { lineColor, selectionColor } from "common/globals";
+
 import useUtils from "./matrixHelperUtils";
 
 const utils = useUtils();
@@ -80,12 +83,16 @@ export default function useLineMatrixHelper() {
         return 2;
       })
       .attr("stroke", (n: LineNotationAttributes) => {
-        return n.selected ? "chocolate" : "darkblue";
+        return n.selected ? selectionColor : lineColor;
       });
   }
 
   function lineX1(n: LineNotationAttributes): number {
-    return utils.getNotationXposByCol(n.fromCol ?? n.col);
+    const col =
+      n.notationType === "SQRT"
+        ? n.fromCol + 1 /*to leave space for sqrt sign*/
+        : n.fromCol ?? n.col;
+    return utils.getNotationXposByCol(col);
   }
 
   function lineX2(n: LineNotationAttributes): number {

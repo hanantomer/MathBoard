@@ -59,9 +59,10 @@ export default function useDbHelper() {
     email: string,
     password: string,
   ): Promise<UserAttributes | null> {
-    const res = await axios.post<UserAttributes>(
-      baseURL + `/auth`, {email:email, password:password}
-    );
+    const res = await axios.post<UserAttributes>(baseURL + `/auth`, {
+      email: email,
+      password: password,
+    });
     return res?.data;
   }
 
@@ -233,7 +234,9 @@ export default function useDbHelper() {
     );
   }
 
-  async function updateHorizontalLineAttributes(lineNotation: HorizontalLineNotationAttributes) {
+  async function updateHorizontalLineAttributes(
+    lineNotation: HorizontalLineNotationAttributes,
+  ) {
     return axios.put(
       baseURL +
         `/${lineNotation.boardType.toLowerCase()}${lineNotation.notationType.toLowerCase()}s`,

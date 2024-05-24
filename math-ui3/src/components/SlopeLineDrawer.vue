@@ -32,7 +32,7 @@
         :y1="lineTop"
         :x2="lineRight"
         :y2="lineBottom"
-        style="stroke: gray; stroke-width: 2"
+        class="line"
       />
     </svg>
   </div>
@@ -60,7 +60,12 @@ const notationStore = useNotationStore();
 const editModeStore = useEditModeStore();
 
 type SlopeType = "NEGATIVE" | "POSITIVE";
-let slopeType: SlopeType = "POSITIVE";
+
+const slopeType = computed(() =>
+  linePosition.value.left.y < linePosition.value.right.x
+    ? "POSITIVE"
+    : "NEGATIVE",
+);
 
 // props
 
@@ -91,13 +96,13 @@ let lineRight = computed(() => {
 });
 
 let lineBottom = computed(() => {
-  return slopeType === "POSITIVE"
+  return slopeType.value === "POSITIVE"
     ? linePosition.value.right.y
     : linePosition.value.left.y;
 });
 
 let lineTop = computed(() => {
-  return slopeType === "POSITIVE"
+  return slopeType.value === "POSITIVE"
     ? linePosition.value.left.y
     : linePosition.value.right.y;
 });
@@ -145,7 +150,7 @@ watch(
   () => eventBus.bus.value.get("SLOPE_LINE_SELECTED"), /// TODO: update emitter to distinguish line types
   (line: SlopeLineNotationAttributes) => {
     if (line) onSlopeLineSelected(line);
-  }
+  },
 );
 
 // event handlers
@@ -195,15 +200,31 @@ function onMouseDown(e: MouseEvent) {
 }
 
 function setLine(xPos: number, yPos: number) {
-  if (slopeType === "POSITIVE") {
+  //if (slopeType === "POSITIVE") {
+
+  const modifyRight =
+    Math.sqrt(
+      Math.pow(linePosition.value.right.x - xPos, 2) +
+        Math.pow(linePosition.value.right.y - yPos, 2),
+    ) <
+    Math.sqrt(
+      Math.pow(linePosition.value.left.x - xPos, 2) +
+        Math.pow(linePosition.value.left.y - yPos, 2),
+    );
+
+  if (modifyRight) {
     linePosition.value.right.x = xPos;
     linePosition.value.right.y = yPos;
-  }
-  // negative slope
-  else {
+  } else {
     linePosition.value.left.x = xPos;
     linePosition.value.left.y = yPos;
   }
+  //}
+  // negative slope
+  //  else {
+  //    linePosition.value.left.x = xPos;
+  //    linePosition.value.left.y = yPos;
+  //  }
 }
 
 function onMouseMove(e: MouseEvent) {
@@ -226,7 +247,7 @@ function onMouseMove(e: MouseEvent) {
     return;
   }
 
-  setLineSlopeType(e.offsetX);
+  //setLineSlopeType(e.offsetX);
 
   setLine(e.offsetX, e.offsetY);
 }
@@ -322,9 +343,9 @@ function resetLineDrawing() {
   editModeStore.resetEditMode();
 }
 
-function setLineSlopeType(firstXPos: number) {
-  slopeType = firstXPos < linePosition.value.left.x ? "NEGATIVE" : "POSITIVE";
-}
+//function setLineSlopeType(firstXPos: number) {
+//  slopeType = firstXPos < linePosition.value.left.x ? "NEGATIVE" : "POSITIVE";
+//}
 </script>
 
 <style>
@@ -347,10 +368,4 @@ function setLineSlopeType(firstXPos: number) {
   border: 1, 1, 1, 1;
 }
 
-.sqrtsymbol {
-  margin-left: 6px;
-  z-index: 999;
-  font-weight: bold;
-  font-size: 1.8em;
-}
 </style>

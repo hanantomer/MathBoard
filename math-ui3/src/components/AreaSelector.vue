@@ -91,6 +91,13 @@ watch(
 );
 
 watch(
+  () => eventBus.bus.value.get("SVG_MOUSEDOWN"),
+  (e: MouseEvent) => {
+    handleMouseDown(e);
+  },
+);
+
+watch(
   () => eventBus.bus.value.get("SVG_MOUSEMOVE"),
   (e: MouseEvent) => {
     handleMouseMove(e);
@@ -151,6 +158,19 @@ async function moveSelectionByKey(
     moveHorizontal * (notationStore.getCellHorizontalWidth() + cellSpace);
   selectionPosition.value.y2 +=
     moveVertical * notationStore.getCellVerticalHeight() + cellSpace;
+}
+
+function handleMouseDown(e: MouseEvent) {
+  if (e.buttons !== 1) {
+    return;
+  }
+
+  if (editModeStore.isTextMode()) {
+    selectionPosition.value.x1 = e.clientX;
+    selectionPosition.value.y1 = e.clientY;
+    selectionPosition.value.x2 = e.clientX + 25;
+    selectionPosition.value.y2 = e.clientY + 25;
+  }
 }
 
 function handleMouseMove(e: MouseEvent) {

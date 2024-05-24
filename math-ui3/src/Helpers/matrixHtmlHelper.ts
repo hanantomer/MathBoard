@@ -40,16 +40,8 @@ export default function useHtmlMatrixHelper() {
     return getComputedStyle(document.body).getPropertyValue("font-size");
   }
 
-  function exponentBaseFontSize() {
-    return `${notationStore.getCellVerticalHeight() / 28}em`;
-  }
-
   function signFontSize() {
     return `${notationStore.getCellVerticalHeight() / 28}em`;
-  }
-
-  function sqrtFontSize() {
-    return `${notationStore.getCellVerticalHeight() / 20}em`;
   }
 
   function mergeHtmlNotations(
@@ -189,7 +181,7 @@ export default function useHtmlMatrixHelper() {
     let colIdx = col(n);
     let deltaX =
       n.notationType === "SQRTSYMBOL"
-        ? Math.round(notationStore.getCellHorizontalWidth() / 1.5) * -1
+        ? Math.round(notationStore.getCellHorizontalWidth() / 3) * -1
         : 0;
 
     return colIdx ? utils.getNotationXposByCol(colIdx) + deltaX : null;
@@ -284,7 +276,7 @@ export default function useHtmlMatrixHelper() {
       const height = rectNotationHeight(n as RectNotationAttributes);
       const width = rectNotationWidth(n as RectNotationAttributes);
 
-      return `<textarea readonly style='overflow:hidden;width:${width}px;height:${height}px;background-color:${textBackgroundColor()};border:groove 2px;border-color:${bColor};'>${
+      return `<textarea  style='overflow:hidden;width:${width}px;height:${height}px;background-color:${textBackgroundColor()};border:groove 2px;border-color:${bColor};'>${
         n1.value
       }</textarea>`;
     }

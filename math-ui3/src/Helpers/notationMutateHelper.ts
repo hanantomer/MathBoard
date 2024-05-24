@@ -399,7 +399,7 @@ export default function notationMutateHelper() {
   async function updateHorizontalLineNotation(
     lineNotation: HorizontalLineNotationAttributes,
   ) {
-    validateFromColLessThanToCol(lineNotation);
+    transposeHorizontalCoordinatesIfNeeded(lineNotation);
     await dbHelper.updateHorizontalLineAttributes(lineNotation);
     notationStore.addNotation(lineNotation);
   }
@@ -407,6 +407,7 @@ export default function notationMutateHelper() {
   async function updateVerticalLineNotation(
     lineNotation: VerticalLineNotationAttributes,
   ) {
+    transposeVerticalCoordinatesIfNeeded(lineNotation);
     await dbHelper.updateVerticalLineAttributes(lineNotation);
     notationStore.addNotation(lineNotation);
   }
@@ -414,7 +415,6 @@ export default function notationMutateHelper() {
   async function updateSlopeLineNotation(
     lineNotation: SlopeLineNotationAttributes,
   ) {
-    validateFromColLessThanToCol(lineNotation);
     await dbHelper.updateSlopeLineAttributes(lineNotation);
     notationStore.addNotation(lineNotation);
   }
@@ -619,10 +619,12 @@ export default function notationMutateHelper() {
         return (
           notation?.boardType === "ANSWER" &&
           !userStore.isTeacher() &&
-          notationStore.getNotationsByCell({
-            col: pointNotation.col + delatX,
-            row: pointNotation.row + delatY,
-          })?.find((n: NotationAttributes) => n.boardType == "QUESTION") != null
+          notationStore
+            .getNotationsByCell({
+              col: pointNotation.col + delatX,
+              row: pointNotation.row + delatY,
+            })
+            ?.find((n: NotationAttributes) => n.boardType == "QUESTION") != null
         );
       }
 
@@ -641,12 +643,15 @@ export default function notationMutateHelper() {
             if (
               notation?.boardType === "ANSWER" &&
               !userStore.isTeacher() &&
-              notationStore.getNotationsByCell({
-                col: col,
-                row: row,
-              })?.find((n: NotationAttributes) => n.boardType == "QUESTION") != null
+              notationStore
+                .getNotationsByCell({
+                  col: col,
+                  row: row,
+                })
+                ?.find((n: NotationAttributes) => n.boardType == "QUESTION") !=
+                null
             )
-            return true;
+              return true;
           }
         }
       }
@@ -661,10 +666,12 @@ export default function notationMutateHelper() {
       notationStore.getParent().type == "ANSWER" &&
       !userStore.isTeacher() &&
       pointAttributes &&
-      notationStore.getNotationsByCell({
-        col: pointAttributes.col,
-        row: pointAttributes.row,
-      })?.find((n: NotationAttributes) => n.boardType == "QUESTION") != null
+      notationStore
+        .getNotationsByCell({
+          col: pointAttributes.col,
+          row: pointAttributes.row,
+        })
+        ?.find((n: NotationAttributes) => n.boardType == "QUESTION") != null
     );
   }
 
@@ -702,7 +709,12 @@ export default function notationMutateHelper() {
         notationStore.deleteNotation(n.uuid);
 
         // publish
-        userOutgoingOperations.syncOutgoingRemoveNotation(n.uuid, n.parentUUId);
+        if (notationStore.getParent().type === "LESSON") {
+          userOutgoingOperations.syncOutgoingRemoveNotation(
+            n.uuid,
+            n.parentUUId,
+          );
+        }
       });
   }
 
@@ -731,8 +743,6 @@ export default function notationMutateHelper() {
   }
 
   function upsertTextNotation(value: string, textCells: RectAttributes) {
-
-
     let notation: RectNotationCreationAttributes = {
       fromCol: textCells.fromCol,
       toCol: textCells.toCol,
@@ -774,7 +784,7 @@ export default function notationMutateHelper() {
     if (notationStore.getSelectedNotations().length) {
       let point =
         notationStore.getSelectedNotations()[0] as PointNotationAttributes;
-      return { col: point.col, row: point.row};
+      return { col: point.col, row: point.row };
     }
 
     return notationStore.getSelectedCell();
@@ -784,7 +794,7 @@ export default function notationMutateHelper() {
     if (notationStore.getSelectedNotations().length) {
       const rect =
         notationStore.getSelectedNotations()[0] as RectNotationAttributes;
-      return { col: rect.fromCol, row: rect.fromRow};
+      return { col: rect.fromCol, row: rect.fromRow };
     }
 
     return notationStore.getSelectedCell();
@@ -794,6 +804,8 @@ export default function notationMutateHelper() {
     coordinates: HorizontalLineAttributes,
     notationType: NotationType,
   ) {
+    transposeHorizontalCoordinatesIfNeeded(coordinates);
+
     let lineNotation: HorizontalLineNotationCreationAttributes = {
       fromCol: coordinates.fromCol,
       toCol: coordinates.toCol,
@@ -803,7 +815,7 @@ export default function notationMutateHelper() {
       notationType: notationType,
       user: userStore.getCurrentUser()!,
     };
-    validateFromColLessThanToCol(lineNotation);
+
     upsertLineNotation(lineNotation);
   }
 
@@ -811,6 +823,8 @@ export default function notationMutateHelper() {
     coordinates: VerticalLineAttributes,
     notationType: NotationType,
   ) {
+    transposeVerticalCoordinatesIfNeeded(coordinates);
+
     let notation: VerticalLineNotationCreationAttributes = {
       col: coordinates.col,
       fromRow: coordinates.fromRow,
@@ -838,7 +852,6 @@ export default function notationMutateHelper() {
       notationType: notationType,
       user: userStore.getCurrentUser()!,
     };
-    validateFromColLessThanToCol(lineNotation);
     upsertLineNotation(lineNotation);
   }
 
@@ -864,11 +877,23 @@ export default function notationMutateHelper() {
     return userStore.getCurrentUser()!.uuid;
   }
 
-  function validateFromColLessThanToCol(colSpan: colSpan) {
-    if (colSpan.fromCol >= colSpan.toCol) {
-      throw new Error(
-        colSpan + ": invalid line notation, from col must be less than to col:",
-      );
+  function transposeVerticalCoordinatesIfNeeded(
+    coordinates: VerticalLineAttributes,
+  ) {
+    if (coordinates.fromRow > coordinates.toRow) {
+      const fromRow = coordinates.fromRow;
+      coordinates.fromRow = coordinates.toRow;
+      coordinates.toRow = fromRow;
+    }
+  }
+
+  function transposeHorizontalCoordinatesIfNeeded(
+    coordinates: HorizontalLineAttributes,
+  ) {
+    if (coordinates.fromCol > coordinates.toCol) {
+      const fromCol = coordinates.fromCol;
+      coordinates.fromCol = coordinates.toCol;
+      coordinates.toCol = fromCol;
     }
   }
 

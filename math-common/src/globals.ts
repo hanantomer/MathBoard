@@ -5,6 +5,10 @@ export const matrixDimensions = {
   colsNum: 96,
 };
 
+export const selectionColor = "chocolate";
+
+export const lineColor = "darkblue" 
+
 export const cellSpace = 1;
 
 export const signList = ["=", "+", "-", "*", "/", "\\", "(", ")", "[", "]"];

@@ -14,6 +14,7 @@ export type BusEventType =
     "SVG_MOUSEMOVE"             |  
     "SELECTION_DONE"            | 
     "FREE_TEXT_SUBMITTED"       |
+    "FREE_TEXT_SELECTED"        |
     "SLOPE_LINE_SELECTED"       |
     "VERTICAL_LINE_SELECTED"    |
     "HORIZONTAL_LINE_SELECTED";
@@ -66,7 +67,6 @@ export type EditMode =
   "EXPONENT"                  | // exponent button pressed
   "TEXT"                      | // text button pressed
   "TEXT_AREA_SELECTING"       | // user started selecting area following text button pressed
-  //"TEXT_AREA_SELECTED"        | // user finished selecting area following text area selecting
   "TEXT_WRITING"              | // user clicked a cell following text button pressed
   "CELL_SELECTED"             | // user clicked on a cell or navigated via keys
   "HORIZONTAL_LINE_STARTED"   | // horizontal line button pressed

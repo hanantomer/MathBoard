@@ -246,10 +246,6 @@ export const useNotationStore = defineStore("notation", () => {
     }
 
     notations.value.delete(uuid);
-
-    if (getParent().type === "LESSON") {
-      userOutgoingOperations.syncOutgoingRemoveNotation(uuid, getParent().uuid);
-    }
   }
 
   function clearNotations() {

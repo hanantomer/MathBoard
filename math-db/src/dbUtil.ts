@@ -15,11 +15,12 @@ import { capitalize } from "../../math-common/build/utils";
 import { BoardType, NotationType } from "../../math-common/src/unions";
 import { Model, ModelCtor } from "sequelize";
 
-let modelMap = new Map<String, ModelCtor<Model>>();
+let modelMap = new Map<string, ModelCtor<Model>>();
 
 export default function dbUtil() {
 
-    function findModel(modelName: String): ModelCtor<Model>{
+    // helps to find model with case insensetivity
+    function findModel(modelName: string): ModelCtor<Model>{
         if (modelMap.size === 0) {
             for (let m in db.sequelize.models) {
                 modelMap.set(m.toLowerCase(), db.sequelize.models[m]);
@@ -29,31 +30,7 @@ export default function dbUtil() {
         return modelMap.get(modelName.toLowerCase())!;
     }
 
-    async function getIdByUUId(
-        model: string,
-        uuid: string
-    ): Promise<number | null> {
-        if (!model) {
-            throw new Error(`model: ${model} must not be null`);
-        }
-
-        if (!uuid) {
-            throw new Error(`uuid for model: ${model} must not be null`);
-        }
-
-
-        let res = await db.sequelize.models[model].findOne({
-            attributes: {
-                include: ["id"],
-            },
-            where: {
-                uuid: uuid,
-            },
-        });
-
-        return res?.get("id") as number;
-    }
-
+    
     // user
 
     async function getUser(uuid: string): Promise<User | null> {
@@ -262,6 +239,34 @@ export default function dbUtil() {
             },
         });
     }
+
+    async function getIdByUUId(
+        model: string,
+        uuid: string
+    ): Promise<number | null> {
+
+        
+
+        if (!model) {
+            throw new Error(`model: ${model} should not be null`);
+        }
+
+        if (!uuid) {
+            throw new Error(`uuid for model: ${model} should not be null`);
+        }
+
+        let res = await findModel(model).findOne({
+            attributes: {
+                include: ["id"],
+            },
+            where: {
+                uuid: uuid,
+            },
+        });
+
+        return res?.get("id") as number;
+    }
+
 
     async function getNotations(
         boardType: String,

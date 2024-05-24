@@ -171,8 +171,6 @@ export const useEditModeStore = defineStore("editMode", () => {
         return setEditMode("TEXT_AREA_SELECTING");
       case "TEXT_AREA_SELECTING":
         return setEditMode("TEXT_WRITING");
-      //      case "TEXT_AREA_SELECTED":
-      //return setEditMode("TEXT_WRITING");
 
       case "HORIZONTAL_LINE_STARTED":
         return setEditMode("HORIZONTAL_LINE_DRAWING");

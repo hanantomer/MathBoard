@@ -300,4 +300,28 @@ html {
   text-align: center;
   z-index: 9999;
 }
+
+.line {
+  stroke: chocolate;
+}
+.lineHandle {
+  cursor: col-resize;
+  display: block;
+  position: absolute;
+  z-index: 999;
+  width: 12px;
+  height: 12px;
+  border: 1, 1, 1, 1;
+}
+
+.sqrtsymbol {
+  position: absolute;
+  color: chocolate;
+  margin-left: 6px;
+  z-index: 999;
+  font-weight: bold;
+  font-size: 1.7em;
+}
+
+
 </style>
