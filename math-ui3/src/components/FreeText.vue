@@ -1,22 +1,21 @@
 <template>
-  <v-textarea
+  <textarea
+    autofocus
     id="textAreaEditor"
     v-if="show"
     class="freeText"
-    style="resize: both !important"
+    style="resize: both !important; margin: 0"
     v-bind:style="{
       left: textLeft + 'px',
       top: textTop + 'px',
       width: textWidth + 'px',
+      height: textHeight + 'px',
     }"
-    v-bind:rows="rows"
-    v-bind:cols="50"
     ref="textAreaEl"
-    autofocus
     v-model="textValue"
-    v-on:blur="submitText"
+    v-on:blur="onBlur"
   >
-  </v-textarea>
+  </textarea>
 </template>
 
 <script setup lang="ts">
@@ -31,6 +30,7 @@ import useEventBus from "../helpers/eventBusHelper";
 
 const notationMutateHelper = useNotationMutateHelper();
 
+let initialTextValue = "";
 let textValue = ref("");
 let textAreaEl = ref<HTMLTextAreaElement | null>(null);
 
@@ -67,23 +67,36 @@ watch(
 watch(
   () => eventBus.bus.value.get("FREE_TEXT_SELECTED"),
   (textNotation: RectNotationAttributes) => {
-    notationStore.deleteNotation(textNotation.uuid);
+    if (!textNotation) return;
+    eventBus.bus.value.delete("FREE_TEXT_SELECTED");
+    //notationStore.deleteNotation(textNotation.uuid);
+    document!.querySelector<HTMLElement>(
+      `foreignObject[uuid="${textNotation.uuid}"]`,
+    )!.style.display = "none";
+
     editModeStore.setEditMode("TEXT_WRITING");
+
     setInitialTextValue();
+
     textLeft.value =
       svgDimensions.value.left +
       textNotation.fromCol *
         (notationStore.getCellHorizontalWidth() + cellSpace);
+
     textTop.value =
       svgDimensions.value.top +
       textNotation.fromRow *
         (notationStore.getCellVerticalHeight() + cellSpace);
+
     textHeight.value =
-      (textNotation.toRow - textNotation.fromRow) *
+      (textNotation.toRow - textNotation.fromRow + 1) *
       (notationStore.getCellVerticalHeight() + cellSpace);
+
     textWidth.value =
-      (textNotation.toCol - textNotation.fromCol) *
+      (textNotation.toCol - textNotation.fromCol + 1) *
       (notationStore.getCellHorizontalWidth() + cellSpace);
+
+    textAreaEl.value?.focus();
   },
 );
 
@@ -101,24 +114,22 @@ const textArea = computed(() => {
   };
 });
 
-const rows = computed(() => {
-  return Math.max(
-    1,
-    Math.floor(textHeight.value / notationStore.getCellVerticalHeight()),
-  );
-});
-
 function setInitialTextValue() {
   textValue.value = "";
   if (notationStore.getSelectedNotations()[0]?.notationType == "TEXT")
     textValue.value = (
       notationStore.getSelectedNotations()[0] as RectNotationAttributes
     ).value;
+  initialTextValue = textValue.value;
+}
+
+function onBlur() {
+  editModeStore.setDefaultEditMode();
+  if (initialTextValue === textValue.value) return;
+  submitText();
 }
 
 function submitText() {
-  //if (!textValue.value) return;
-
   editModeStore.setNextEditMode();
   const textCells = elementFinderHelper.findCoordinatesCellArea(
     props.svgId,

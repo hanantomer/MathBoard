@@ -39,7 +39,6 @@ export type TriangleAttributes =  {
 export type CellAttributes =  {
   col: number;
   row: number;
-//  part: CellPart;
 };
 
 export type SelectedCell = CellAttributes & {

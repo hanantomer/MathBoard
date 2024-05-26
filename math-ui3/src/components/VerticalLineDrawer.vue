@@ -258,7 +258,7 @@ function endDrawLine() {
 
   saveLine({ col: col, fromRow: fromRow, toRow: toRow });
 
-  editModeStore.resetEditMode();
+  editModeStore.setDefaultEditMode();
 }
 
 function saveLine(lineAttributes: VerticalLineAttributes) {
@@ -280,7 +280,7 @@ function saveLine(lineAttributes: VerticalLineAttributes) {
 
 function resetLineDrawing() {
   linePosition.value.x = linePosition.value.y1 = linePosition.value.y2 = 0;
-  editModeStore.resetEditMode();
+  editModeStore.setDefaultEditMode();
 }
 
 function getNearestCol(clickedXPos: number) {
@@ -310,5 +310,4 @@ function getNearestCol(clickedXPos: number) {
   height: 12px;
   border: 1, 1, 1, 1;
 }
-
 </style>

@@ -420,7 +420,7 @@ export default function notationMutateHelper() {
   }
 
   function upsertPointNotation(notation: PointNotationCreationAttributes) {
-    editModeStore.resetEditMode();
+    editModeStore.setDefaultEditMode();
     notationStore.resetSelectedNotations();
 
     let overlappedSameTypeNotation = findOverlapPointNotation(notation);
@@ -447,7 +447,7 @@ export default function notationMutateHelper() {
       | VerticalLineNotationCreationAttributes
       | SlopeLineNotationCreationAttributes,
   ) {
-    editModeStore.resetEditMode();
+    editModeStore.setDefaultEditMode();
     notationStore.resetSelectedNotations();
 
     let overlappedAnyTypeNotation: NotationAttributes | undefined =
@@ -462,7 +462,7 @@ export default function notationMutateHelper() {
   }
 
   function upsertRectNotation(notation: RectNotationCreationAttributes) {
-    editModeStore.resetEditMode();
+    editModeStore.setDefaultEditMode();
     notationStore.resetSelectedNotations();
 
     let overlappedSameTypeNotation = findOverlapRectNotation(notation);

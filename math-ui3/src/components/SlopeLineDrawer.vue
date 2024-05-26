@@ -314,7 +314,7 @@ function endDrawLine() {
     toRow: toRow,
   });
 
-  editModeStore.resetEditMode();
+  editModeStore.setDefaultEditMode();
 }
 
 function saveLine(lineAttributes: SlopeLineAttributes) {
@@ -340,7 +340,7 @@ function resetLineDrawing() {
     linePosition.value.left.y =
     linePosition.value.right.y =
       0;
-  editModeStore.resetEditMode();
+  editModeStore.setDefaultEditMode();
 }
 
 //function setLineSlopeType(firstXPos: number) {
@@ -367,5 +367,4 @@ function resetLineDrawing() {
   height: 12px;
   border: 1, 1, 1, 1;
 }
-
 </style>

@@ -220,7 +220,7 @@ export default function eventHelper() {
   function handleDeletionKey(key: string) {
     notationMutationHelper.deleteSelectedNotations();
 
-    editModeStore.resetEditMode();
+    editModeStore.setDefaultEditMode();
   }
 
   function handleMovementKey(key: string, svgId: string) {

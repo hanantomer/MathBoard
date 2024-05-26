@@ -310,9 +310,9 @@ function resetButtonsState() {
       1;
 }
 
-function resetEditModeAndButtonsState() {
+function setDefaultEditModeAndButtonsState() {
   resetButtonsState();
-  editModeStore.resetEditMode();
+  editModeStore.setDefaultEditMode();
 }
 
 function startHorizontalLineMode() {
@@ -335,14 +335,14 @@ function startSlopeLineMode() {
 
 function toggleExponentMode() {
   if (editModeStore.getEditMode() == "EXPONENT") {
-    resetEditModeAndButtonsState();
+    setDefaultEditModeAndButtonsState();
   } else {
     startExponentMode();
   }
 }
 function toggleTextMode() {
   if (editModeStore.getEditMode() == "TEXT") {
-    resetEditModeAndButtonsState();
+    setDefaultEditModeAndButtonsState();
   } else {
     startTextMode();
   }
@@ -350,7 +350,7 @@ function toggleTextMode() {
 
 function toggleSqrtMode() {
   if (editModeStore.getEditMode() == "SQRT_STARTED") {
-    resetEditModeAndButtonsState();
+    setDefaultEditModeAndButtonsState();
   } else {
     startSqrtMode();
   }
@@ -376,7 +376,7 @@ function startTextMode() {
 
 function toggleCheckmarkMode() {
   if (editModeStore.getEditMode() == "CHECKMARK") {
-    resetEditModeAndButtonsState();
+    setDefaultEditModeAndButtonsState();
   } else {
     startCheckmarkMode();
   }
@@ -390,7 +390,7 @@ function startCheckmarkMode() {
 
 function toggleSemiCheckmarkMode() {
   if (editModeStore.getEditMode() == "SEMICHECKMARK") {
-    resetEditModeAndButtonsState();
+    setDefaultEditModeAndButtonsState();
   } else {
     startSemiCheckmarkMode();
   }
@@ -404,7 +404,7 @@ function startSemiCheckmarkMode() {
 
 function toggleXmarkMode() {
   if (editModeStore.getEditMode() == "XMARK") {
-    resetEditModeAndButtonsState();
+    setDefaultEditModeAndButtonsState();
   } else {
     startXmarkMode();
   }

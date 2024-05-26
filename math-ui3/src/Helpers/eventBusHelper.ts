@@ -5,12 +5,13 @@ const bus = ref(new Map<BusEventType, any>());
 
 export default function() {
 
-    function emit(event: BusEventType, arg?: any) {
-      bus.value.set(event, arg);
-    }
+  function emit(event: BusEventType, arg?: any) {
+    bus.value.set(event, arg);
+  }
 
-    return {
-        emit,
-        bus
-    }
+
+  return {
+    emit,
+    bus
+  }
 }

@@ -161,7 +161,7 @@ export const useEditModeStore = defineStore("editMode", () => {
     editMode.value = newEditMode;
   }
 
-  function resetEditMode() {
+  function setDefaultEditMode() {
     setEditMode(defaultEditMode);
   }
 
@@ -197,9 +197,9 @@ export const useEditModeStore = defineStore("editMode", () => {
       case "AREA_SELECTED":
         return setEditMode("MOVING");
       //case "MOVING":
-      //  return resetEditMode();
+      //  return setDefaultEditMode();
       default:
-        return resetEditMode();
+        return setDefaultEditMode();
     }
   }
 
@@ -238,6 +238,6 @@ export const useEditModeStore = defineStore("editMode", () => {
     isCheckMode,
     setEditMode,
     setNextEditMode,
-    resetEditMode,
+    setDefaultEditMode,
   };
 });

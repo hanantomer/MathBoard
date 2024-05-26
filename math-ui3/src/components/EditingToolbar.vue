@@ -155,7 +155,7 @@ function resetButtonsState() {
   greenButtonActive.value = 1;
   purpleButtonActive.value = 1;
   transparentButtonActive.value = 1;
-  editModeStore.resetEditMode();
+  editModeStore.setDefaultEditMode();
 }
 </script>
 

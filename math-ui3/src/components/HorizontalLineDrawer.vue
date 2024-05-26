@@ -291,7 +291,7 @@ function endDrawLine() {
 
   saveLine({ fromCol: fromCol, toCol: toCol, row: row });
 
-  editModeStore.resetEditMode();
+  editModeStore.setDefaultEditMode();
 }
 
 function saveLine(lineAttributes: HorizontalLineAttributes) {
@@ -313,7 +313,7 @@ function saveLine(lineAttributes: HorizontalLineAttributes) {
 
 function resetLineDrawing() {
   linePosition.value.x1 = linePosition.value.x2 = linePosition.value.y = 0;
-  editModeStore.resetEditMode();
+  editModeStore.setDefaultEditMode();
 }
 
 function getNearestRow(clickedYPos: number) {

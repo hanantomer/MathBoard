@@ -300,6 +300,16 @@ export const useNotationStore = defineStore("notation", () => {
   ): NotationAttributes[] {
     let notationsAtCellPoint: NotationAttributes[] = [];
 
+    if (clickedCell.col < 0) {
+      console.error("invalid col:" + clickedCell.col);
+      return [];
+    }
+
+    if (clickedCell.row < 0) {
+      console.error("invalid col:" + clickedCell.row);
+      return [];
+    }
+
     const poinNotationUUId = cellPointNotationOccupationMatrix[clickedCell.col][
       clickedCell.row
     ] as String;
