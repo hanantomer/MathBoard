@@ -61,7 +61,8 @@ export default function useMatrixHelper() {
       })
       .lower()
       .attr("transform", (d, i) => {
-        let y = (notationStore.getCellVerticalHeight() + cellSpace) * i;
+        let y =
+          (notationStore.getCellVerticalHeight() + cellSpace) * i - cellSpace;
         return "translate(0, " + y + ")";
       })
       .selectAll("cell")
@@ -76,7 +77,9 @@ export default function useMatrixHelper() {
         return i;
       })
       .attr("x", (d, i) => {
-        return i * (notationStore.getCellHorizontalWidth() + cellSpace);
+        return (
+          i * (notationStore.getCellHorizontalWidth() + cellSpace) - cellSpace
+        );
       })
       .attr("width", notationStore.getCellHorizontalWidth())
       .attr("height", notationStore.getCellVerticalHeight());

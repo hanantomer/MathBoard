@@ -222,6 +222,7 @@ export default function useDbHelper() {
     return cooerdinates;
   }
 
+  /// TODO: check if needed
   async function updateNotationValue(notation: NotationAttributes) {
     if ("value" in notation === false) return null;
     await axios.put<NotationAttributes>(
@@ -232,6 +233,13 @@ export default function useDbHelper() {
         value: (notation as any)["value"],
       },
     );
+  }
+
+  async function updateNotation(notation: NotationAttributes) {
+    await axios.put<NotationAttributes>(
+      baseURL +
+        `/${notation.boardType.toLowerCase()}${notation.notationType.toLowerCase()}s`,
+        notation);
   }
 
   async function updateHorizontalLineAttributes(
@@ -396,6 +404,7 @@ export default function useDbHelper() {
     updateVerticalLineAttributes,
     updateSlopeLineAttributes,
     updateNotationValue,
+    updateNotation,
     saveMovedNotations,
     removeNotation,
   };

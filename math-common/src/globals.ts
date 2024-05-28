@@ -20,7 +20,7 @@ export const heartBeatInterval = 5000;
 
 export type DotPosition = {x: number, y:number};
 
-export type AreaCoordinates = {x1: number, y1:number, x2: number, y2:number};
+export type ScreenCoordinates = {x1: number, y1:number, x2: number, y2:number};
 
 export type HorizontaLinePosition =  {
   x1: number,

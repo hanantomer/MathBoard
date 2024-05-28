@@ -427,7 +427,7 @@ export default function notationMutateHelper() {
 
     // update
     if (overlappedSameTypeNotation) {
-      return updateExistingNotation(overlappedSameTypeNotation, notation);
+      return updateFromExistingNotation(overlappedSameTypeNotation, notation);
     }
 
     let overlappedAnyTypeNotation: NotationAttributes | undefined =
@@ -461,29 +461,29 @@ export default function notationMutateHelper() {
     addNotation(notation);
   }
 
-  function upsertRectNotation(notation: RectNotationCreationAttributes) {
+  function upsertRectNotation(newNotation: RectNotationCreationAttributes) {
     editModeStore.setDefaultEditMode();
     notationStore.resetSelectedNotations();
 
-    let overlappedSameTypeNotation = findOverlapRectNotation(notation);
+    let overlappedSameTypeNotation = findOverlapRectNotation(newNotation);
 
     // update
     if (overlappedSameTypeNotation) {
-      updateExistingNotation(overlappedSameTypeNotation, notation);
+      updateFromExistingNotation(overlappedSameTypeNotation, newNotation);
     }
 
     let overlappedAnyTypeNotation: NotationAttributes | undefined =
-      findOverlapNotationsOfAnyTypeButLine(notation);
+      findOverlapNotationsOfAnyTypeButLine(newNotation);
 
     // don't allow override of other type notation
     if (overlappedAnyTypeNotation) {
       return;
     }
 
-    addNotation(notation);
+    addNotation(newNotation);
   }
 
-  function updateExistingNotation(
+  function updateFromExistingNotation(
     existingNotation: NotationAttributes,
     notation: NotationCreationAttributes,
   ) {
@@ -897,6 +897,15 @@ export default function notationMutateHelper() {
     }
   }
 
+  async function updateNotation(
+    notation: NotationAttributes,
+  ) {
+    await dbHelper.updateNotation(notation);
+    notationStore.addNotation(notation);
+    userOutgoingOperations.syncOutgoingUpdateNotation(notation); 
+  }
+
+
   return {
     selectNotation,
     selectNotationByCoordinates,
@@ -905,7 +914,7 @@ export default function notationMutateHelper() {
     upsertSymbolNotation,
     addMarkNotation,
     addImageNotation,
-    upsertTextNotation, // text can be modified
+    upsertTextNotation,
     addHorizontalLineNotation,
     addVerticalLineNotation,
     addSlopeLineNotation,
@@ -915,6 +924,7 @@ export default function notationMutateHelper() {
     updateHorizontalLineNotation,
     updateVerticalLineNotation,
     updateSlopeLineNotation,
+    updateNotation,
     cloneNotation,
   };
 }

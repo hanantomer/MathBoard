@@ -1,10 +1,8 @@
 <template>
   <textarea
-    autofocus
-    id="textAreaEditor"
     v-if="show"
     class="freeText"
-    style="resize: both !important; margin: 0"
+    style="resize: both !important; margin: 0; background-color: aqua"
     v-bind:style="{
       left: textLeft + 'px',
       top: textTop + 'px',
@@ -13,7 +11,6 @@
     }"
     ref="textAreaEl"
     v-model="textValue"
-    v-on:blur="onBlur"
   >
   </textarea>
 </template>
@@ -43,6 +40,8 @@ const elementFinderHelper = useElementFinderHelper();
 
 const show = computed(() => editModeStore.getEditMode() === "TEXT_WRITING");
 
+let selectedNotation: RectNotationAttributes | null = null;
+
 const props = defineProps({
   svgId: { type: String, default: "" },
 });
@@ -50,6 +49,15 @@ const props = defineProps({
 const svgDimensions = computed(() => {
   return document.getElementById(props.svgId)?.getBoundingClientRect()!;
 });
+
+watch(
+  () => editModeStore.getEditMode(),
+  (newEditMode, oldEditMode) => {
+    if (oldEditMode === "TEXT_WRITING" && newEditMode !== "TEXT_WRITING") {
+      onLeave();
+    }
+  },
+);
 
 // area selector signals the selected position attributes
 watch(
@@ -69,32 +77,36 @@ watch(
   (textNotation: RectNotationAttributes) => {
     if (!textNotation) return;
     eventBus.bus.value.delete("FREE_TEXT_SELECTED");
-    //notationStore.deleteNotation(textNotation.uuid);
-    document!.querySelector<HTMLElement>(
-      `foreignObject[uuid="${textNotation.uuid}"]`,
-    )!.style.display = "none";
+
+    hideTextNotation(textNotation.uuid);
 
     editModeStore.setEditMode("TEXT_WRITING");
 
     setInitialTextValue();
 
+    selectedNotation = textNotation;
+
     textLeft.value =
       svgDimensions.value.left +
       textNotation.fromCol *
-        (notationStore.getCellHorizontalWidth() + cellSpace);
+        (notationStore.getCellHorizontalWidth() + cellSpace) -
+      cellSpace;
 
     textTop.value =
       svgDimensions.value.top +
       textNotation.fromRow *
-        (notationStore.getCellVerticalHeight() + cellSpace);
+        (notationStore.getCellVerticalHeight() + cellSpace) -
+      cellSpace;
 
     textHeight.value =
       (textNotation.toRow - textNotation.fromRow + 1) *
-      (notationStore.getCellVerticalHeight() + cellSpace);
+        (notationStore.getCellVerticalHeight() + cellSpace) -
+      cellSpace;
 
     textWidth.value =
       (textNotation.toCol - textNotation.fromCol + 1) *
-      (notationStore.getCellHorizontalWidth() + cellSpace);
+        (notationStore.getCellHorizontalWidth() + cellSpace) -
+      cellSpace;
 
     textAreaEl.value?.focus();
   },
@@ -105,15 +117,6 @@ let textTop = ref(0);
 let textHeight = ref(0);
 let textWidth = ref(0);
 
-const textArea = computed(() => {
-  return {
-    x1: textLeft.value,
-    x2: textLeft.value + textWidth.value,
-    y1: textTop.value,
-    y2: textTop.value + textHeight.value,
-  };
-});
-
 function setInitialTextValue() {
   textValue.value = "";
   if (notationStore.getSelectedNotations()[0]?.notationType == "TEXT")
@@ -123,27 +126,58 @@ function setInitialTextValue() {
   initialTextValue = textValue.value;
 }
 
-function onBlur() {
+function onLeave() {
+  if (selectedNotation) {
+    showTextNotation(selectedNotation.uuid);
+  }
+
   editModeStore.setDefaultEditMode();
-  if (initialTextValue === textValue.value) return;
+  //if (initialTextValue === textValue.value) return;
   submitText();
 }
 
 function submitText() {
   editModeStore.setNextEditMode();
-  const textCells = elementFinderHelper.findCoordinatesCellArea(
-    props.svgId,
-    textArea.value,
-  );
-  notationMutateHelper.upsertTextNotation(textValue.value, textCells);
+
+  const textAreaRect = textAreaEl.value?.getBoundingClientRect();
+
+  const rectCoordinates = elementFinderHelper.getRectCoordinates(props.svgId, {
+    x1: textAreaRect?.left! + window.scrollX,
+    x2: textAreaRect?.right! + window.scrollX,
+    y1: textAreaRect?.top! + window.scrollY,
+    y2: textAreaRect?.bottom! + window.scrollY,
+  });
+
+  if (selectedNotation) {
+    selectedNotation.value = textValue.value;
+    selectedNotation = Object.assign(selectedNotation, rectCoordinates);
+    notationMutateHelper.updateNotation(selectedNotation);
+  } else {
+    notationMutateHelper.upsertTextNotation(textValue.value, rectCoordinates);
+  }
+}
+
+function hideTextNotation(uuid: string) {
+  document!
+    .querySelector<HTMLElement>(`foreignObject[uuid="${uuid}"]`)!
+    .classList.add("hidden");
+}
+
+function showTextNotation(uuid: string) {
+  document!
+    .querySelector<HTMLElement>(`foreignObject[uuid="${uuid}"]`)!
+    .classList.remove("hidden");
 }
 </script>
 <style>
-#textAreaEditor {
+textarea {
   resize: both;
 }
 .freeText {
   background-color: lightyellow;
   position: absolute;
+}
+.hidden {
+  display: none;
 }
 </style>

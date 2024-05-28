@@ -1,6 +1,6 @@
 import { NotationTypeShape } from "common/unions";
 import { useNotationStore } from "../store/pinia/notationStore";
-import { AreaCoordinates, DotPosition } from "common/globals";
+import { ScreenCoordinates, DotPosition } from "common/globals";
 import { NotationAttributes } from "common/baseTypes";
 import useElementFinderHelper from "./elementFinderHelper";
 import useNotationMutateHelper from "./notationMutateHelper";
@@ -19,9 +19,12 @@ const editModeStore = useEditModeStore();
 export default function selectionHelper() {
   function selectNotationsOfArea(
     svgId: string,
-    areaCoordinates: AreaCoordinates,
+    screenCoordinates: ScreenCoordinates,
   ) {
-    const areaCells = elementFinderHelper.findAreaCells(svgId, areaCoordinates);
+    const areaCells = elementFinderHelper.getScreenCoordinatesOccupiedCells(
+      svgId,
+      screenCoordinates,
+    );
     notationStore.selectNotationsOfCells(areaCells);
   }
 

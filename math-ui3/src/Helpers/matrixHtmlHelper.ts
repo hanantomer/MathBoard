@@ -198,7 +198,9 @@ export default function useHtmlMatrixHelper() {
 
   function width(n: NotationAttributes): number {
     if (n.notationType === "SQRTSYMBOL") {
-      return (notationStore.getCellHorizontalWidth() + cellSpace) * 2;
+      return (
+        (notationStore.getCellHorizontalWidth() + cellSpace) * 2 - cellSpace
+      );
     }
 
     switch (NotationTypeShape.get(n.notationType)) {
@@ -219,7 +221,8 @@ export default function useHtmlMatrixHelper() {
   function rectNotationWidth(n: RectAttributes): number {
     return (
       (n.toCol - n.fromCol + 1) *
-      (notationStore.getCellHorizontalWidth() + cellSpace)
+        (notationStore.getCellHorizontalWidth() + cellSpace) -
+      cellSpace
     );
   }
 
@@ -229,7 +232,9 @@ export default function useHtmlMatrixHelper() {
 
   function rectNotationHeight(n: RectAttributes): number {
     return (
-      (n.toRow - n.fromRow + 1) * notationStore.getCellVerticalHeight() + 5
+      (n.toRow - n.fromRow + 1) *
+        (notationStore.getCellVerticalHeight() + cellSpace) -
+      cellSpace
     );
   }
 
