@@ -34,7 +34,7 @@ export default function selectionHelper() {
   ): NotationAttributes | null {
     notationStore.resetSelectedNotations();
 
-    const notation = elementFinderHelper.findPointNotation(svgId, position);
+    const notation = elementFinderHelper.getPointNotation(svgId, position);
 
     if (!notation) return null;
 
@@ -88,7 +88,7 @@ export default function selectionHelper() {
   }
 
   async function selectCell(svgId: string, position: DotPosition) {
-    let clickedCell = elementFinderHelper.findClickedCell(svgId, position);
+    let clickedCell = elementFinderHelper.getClickedCell(svgId, position);
 
     if (!clickedCell) return;
 

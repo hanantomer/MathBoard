@@ -193,9 +193,7 @@ export default function eventHelper() {
 
     if (!authorizationHelper.canEdit()) return;
 
-    if (editModeStore.isTextMode()) return;
-
-    //if (editModeStore.isExponentMode()) return;
+    if (editModeStore.isTextWritingMode()) return;
 
     switch (classifyKeyCode(code)) {
       case "DELETION": {
@@ -224,6 +222,7 @@ export default function eventHelper() {
   }
 
   function handleMovementKey(key: string, svgId: string) {
+    // handeled by keyUp in AreaSelector
     if (editModeStore.getEditMode() === "AREA_SELECTED") return;
 
     if (key === "ArrowLeft" || key === "Backspace") {

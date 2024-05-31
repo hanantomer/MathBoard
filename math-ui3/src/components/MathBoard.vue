@@ -148,7 +148,7 @@ watch(
 watch(
   () => eventBus.bus.value.get("CELL_COLORIZED"),
   (params) => {
-    const clickedCell = elementFinderHelper.findClickedCell(props.svgId, {
+    const clickedCell = elementFinderHelper.getClickedCell(props.svgId, {
       x: params.clientX,
       y: params.clientY,
     });
@@ -322,6 +322,4 @@ html {
   font-weight: bold;
   font-size: 1.7em;
 }
-
-
 </style>

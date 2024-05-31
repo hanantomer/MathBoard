@@ -1,15 +1,14 @@
 <template>
   <textarea
-    v-if="show"
+    v-show="show"
     class="freeText"
-    style="resize: both !important; margin: 0; background-color: aqua"
     v-bind:style="{
       left: textLeft + 'px',
       top: textTop + 'px',
       width: textWidth + 'px',
       height: textHeight + 'px',
     }"
-    ref="textAreaEl"
+    id="textAreaEl"
     v-model="textValue"
   >
   </textarea>
@@ -29,7 +28,6 @@ const notationMutateHelper = useNotationMutateHelper();
 
 let initialTextValue = "";
 let textValue = ref("");
-let textAreaEl = ref<HTMLTextAreaElement | null>(null);
 
 const notationStore = useNotationStore();
 const eventBus = useEventBus();
@@ -68,6 +66,8 @@ watch(
     textTop.value = selectionPosition.top;
     textHeight.value = selectionPosition.height;
     textWidth.value = selectionPosition.width;
+    editModeStore.setEditMode("TEXT_WRITING");
+    setTimeout('document.getElementById("textAreaEl").focus()', 100);
   },
 );
 
@@ -78,9 +78,16 @@ watch(
     if (!textNotation) return;
     eventBus.bus.value.delete("FREE_TEXT_SELECTED");
 
-    hideTextNotation(textNotation.uuid);
+    // fisrt click -> select
+    if (!editModeStore.isTextSelectedMode()) {
+      editModeStore.setEditMode("TEXT_SELECTED");
+      return;
+    }
 
+    // second click -> edit
     editModeStore.setEditMode("TEXT_WRITING");
+
+    hideTextNotation(textNotation.uuid);
 
     setInitialTextValue();
 
@@ -108,7 +115,7 @@ watch(
         (notationStore.getCellHorizontalWidth() + cellSpace) -
       cellSpace;
 
-    textAreaEl.value?.focus();
+    document.getElementById("textAreaEl")?.focus();
   },
 );
 
@@ -133,13 +140,16 @@ function onLeave() {
 
   editModeStore.setDefaultEditMode();
   //if (initialTextValue === textValue.value) return;
+  /// TODO bring that back with or dimensions changed
   submitText();
 }
 
 function submitText() {
   editModeStore.setNextEditMode();
 
-  const textAreaRect = textAreaEl.value?.getBoundingClientRect();
+  const textAreaRect = document
+    .getElementById("textAreaEl")!
+    .getBoundingClientRect();
 
   const rectCoordinates = elementFinderHelper.getRectCoordinates(props.svgId, {
     x1: textAreaRect?.left! + window.scrollX,
@@ -176,6 +186,9 @@ textarea {
 .freeText {
   background-color: lightyellow;
   position: absolute;
+  padding: 5px;
+  box-sizing: border-box;
+  resize: both;
 }
 .hidden {
   display: none;

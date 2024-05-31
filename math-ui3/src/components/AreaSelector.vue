@@ -24,7 +24,7 @@ import useNotationMutateHelper from "../helpers/notationMutateHelper";
 import useSelectionHelper from "../helpers/selectionHelper";
 import useEventBus from "../helpers/eventBusHelper";
 import { MoveDirection } from "common/unions";
-import { cellSpace } from "common/globals";
+import { cellSpace, ScreenCoordinates, DotPosition } from "common/globals";
 
 const eventBus = useEventBus();
 const editModeStore = useEditModeStore();
@@ -36,14 +36,14 @@ const props = defineProps({
   svgId: { type: String, default: "" },
 });
 
-let selectionPosition = ref({
+let selectionPosition = ref<ScreenCoordinates>({
   x1: 0,
   y1: 0,
   x2: 0,
   y2: 0,
 });
 
-let dragPosition = ref({
+let dragPosition = ref<DotPosition>({
   x: 0,
   y: 0,
 });
@@ -165,7 +165,7 @@ function handleMouseDown(e: MouseEvent) {
     return;
   }
 
-  if (editModeStore.isTextMode()) {
+  if (editModeStore.isTextStartedMode()) {
     selectionPosition.value.x1 = e.clientX;
     selectionPosition.value.y1 = e.clientY;
     selectionPosition.value.x2 = e.clientX + 25;
@@ -183,7 +183,8 @@ function handleMouseMove(e: MouseEvent) {
   if (
     editModeStore.isLineMode() ||
     editModeStore.isSqrtMode() ||
-    editModeStore.isColorisingMode()
+    editModeStore.isColorisingMode() ||
+    editModeStore.isTextWritingMode()
   ) {
     return;
   }
@@ -200,7 +201,7 @@ function handleMouseMove(e: MouseEvent) {
     return;
   }
 
-  if (editMode === "TEXT") {
+  if (editMode === "TEXT_STARTED") {
     editModeStore.setEditMode("TEXT_AREA_SELECTING");
   } else {
     editModeStore.setEditMode("AREA_SELECTING");

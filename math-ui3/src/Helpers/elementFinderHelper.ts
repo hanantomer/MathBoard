@@ -23,8 +23,9 @@ const notationStore = useNotationStore();
 export default function elementFinderHelper() {
   const minDistanceForLineSelection = 5;
   const minDistanceForSelection = 25;
+  type NotationDistance = { notation: NotationAttributes; distance: number };
 
-  function findClickedCell(
+  function getClickedCell(
     svgId: string,
     dotPosition: DotPosition,
   ): CellAttributes {
@@ -50,28 +51,30 @@ export default function elementFinderHelper() {
     screenCoordinates: ScreenCoordinates,
   ): RectAttributes {
     const boundingRect = document
-      .getElementById(svgId)
-      ?.getBoundingClientRect();
+      .getElementById(svgId)!
+      .getBoundingClientRect();
 
-    const areaFromCol = Math.floor(
-      (screenCoordinates.x1 - boundingRect!.left) /
+    const areaFromCol = Math.round(
+      (screenCoordinates.x1 - boundingRect.left) /
         (notationStore.getCellHorizontalWidth() + cellSpace),
     );
 
-    const areaToCol = Math.floor(
-      (screenCoordinates.x2 - boundingRect!.left) /
-        (notationStore.getCellHorizontalWidth() + cellSpace),
-    );
+    const areaToCol =
+      Math.round(
+        (screenCoordinates.x2 - boundingRect.left) /
+          (notationStore.getCellHorizontalWidth() + cellSpace),
+      ) - 1;
 
-    const areaFromRow = Math.floor(
-      (screenCoordinates.y1 - boundingRect!.top) /
+    const areaFromRow = Math.round(
+      (screenCoordinates.y1 - boundingRect.top) /
         (notationStore.getCellVerticalHeight() + cellSpace),
     );
 
-    const areaToRow = Math.floor(
-      (screenCoordinates.y2 - boundingRect!.top) /
-        (notationStore.getCellVerticalHeight() + cellSpace),
-    );
+    const areaToRow =
+      Math.round(
+        (screenCoordinates.y2 - boundingRect.top) /
+          (notationStore.getCellVerticalHeight() + cellSpace),
+      ) - 1;
 
     return {
       fromCol: areaFromCol,
@@ -120,17 +123,16 @@ export default function elementFinderHelper() {
     return cells;
   }
 
-  function findPointNotation(
+  function getPointNotation(
     svgId: string,
     dotPosition: DotPosition,
   ): NotationAttributes | null {
-    const clickedCell = findClickedCell(svgId, dotPosition);
+    const clickedCell = getClickedCell(svgId, dotPosition);
     const notationsAtCell = notationStore.getNotationsByCell(clickedCell);
     return notationClosestToPoint(svgId, notationsAtCell, dotPosition);
   }
 
   // loop over notationsAtCell array and return the one closest to dotPosition
-  type NotationDistance = { notation: NotationAttributes; distance: number };
   function notationClosestToPoint(
     svgId: string,
     notationsAtCell: NotationAttributes[],
@@ -395,8 +397,8 @@ export default function elementFinderHelper() {
   }
 
   return {
-    findPointNotation,
-    findClickedCell,
+    getPointNotation,
+    getClickedCell,
     getScreenCoordinatesOccupiedCells,
     getRectCoordinates,
   };

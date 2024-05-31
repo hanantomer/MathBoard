@@ -65,7 +65,8 @@ export const NotationTypeShape = new Map<NotationType, NotationShape> ([
 export type EditMode = 
   "SYMBOL"                    | // default mode
   "EXPONENT"                  | // exponent button pressed
-  "TEXT"                      | // text button pressed
+  "TEXT_STARTED"              | // text button pressed
+  "TEXT_SELECTED"             | // user clicked on existing text rectangle
   "TEXT_AREA_SELECTING"       | // user started selecting area following text button pressed
   "TEXT_WRITING"              | // user clicked a cell following text button pressed
   "CELL_SELECTED"             | // user clicked on a cell or navigated via keys
@@ -94,7 +95,7 @@ export type EditMode =
   export const EditModeNotationType = new Map<EditMode, NotationType> ([
     ["SYMBOL", "SYMBOL"],                  
     ["EXPONENT", "EXPONENT"],                 
-    ["TEXT", "TEXT"],                     
+    ["TEXT_STARTED", "TEXT"],                     
     ["CELL_SELECTED", "SYMBOL"],            
     ["HORIZONTAL_LINE_STARTED", "HORIZONTALLINE"],  
     ["HORIZONTAL_LINE_DRAWING", "HORIZONTALLINE"],  
@@ -122,7 +123,7 @@ export type EditMode =
  export const EditModeCursorType = new Map<EditMode, CursorType> ([
   ["SYMBOL", "auto"],                  
   ["EXPONENT", "auto"],                 
-  ["TEXT", "text"],                     
+  ["TEXT_STARTED", "text"],                     
   ["TEXT_WRITING", "text"],
   ["CELL_SELECTED", "auto"],            
   ["HORIZONTAL_LINE_STARTED", "auto"],  

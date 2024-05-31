@@ -203,14 +203,14 @@ export default function useDbHelper() {
             row: (notation as any)["row"],
           }
         : // line
-        "fromCol" in notation
+        "fromCol" in notation && "row" in notation
         ? {
             fromCol: (notation as any)["fromCol"],
             toCol: (notation as any)["toCol"],
             row: (notation as any)["row"],
           }
         : // rect
-        "fromRow" in notation
+        "fromRow" in notation && "fromCol" in notation
         ? {
             fromCol: (notation as any)["fromCol"],
             toCol: (notation as any)["toCol"],
@@ -239,7 +239,8 @@ export default function useDbHelper() {
     await axios.put<NotationAttributes>(
       baseURL +
         `/${notation.boardType.toLowerCase()}${notation.notationType.toLowerCase()}s`,
-        notation);
+      notation,
+    );
   }
 
   async function updateHorizontalLineAttributes(

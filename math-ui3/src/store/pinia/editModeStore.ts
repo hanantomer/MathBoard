@@ -124,12 +124,16 @@ export const useEditModeStore = defineStore("editMode", () => {
     return editMode.value == "SLOPE_LINE_SELECTED";
   }
 
-  function isTextMode() {
-    return editMode.value === "TEXT" || editMode.value === "TEXT_WRITING";
+  function isTextStartedMode() {
+    return editMode.value === "TEXT_STARTED";
   }
 
-  function isTextStartedMode() {
-    return editMode.value === "TEXT";
+  function isTextSelectedMode() {
+    return editMode.value === "TEXT_SELECTED";
+  }
+
+  function isTextWritingMode() {
+    return editMode.value === "TEXT_WRITING";
   }
 
   function isExponentMode() {
@@ -167,7 +171,7 @@ export const useEditModeStore = defineStore("editMode", () => {
 
   function setNextEditMode() {
     switch (editMode.value) {
-      case "TEXT":
+      case "TEXT_STARTED":
         return setEditMode("TEXT_AREA_SELECTING");
       case "TEXT_AREA_SELECTING":
         return setEditMode("TEXT_WRITING");
@@ -233,8 +237,9 @@ export const useEditModeStore = defineStore("editMode", () => {
     isExponentMode,
     isColorisingMode,
     isDefaultEditMode,
-    isTextMode,
+    isTextWritingMode,
     isTextStartedMode,
+    isTextSelectedMode,
     isCheckMode,
     setEditMode,
     setNextEditMode,
