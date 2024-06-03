@@ -676,17 +676,17 @@ export default function notationMutateHelper() {
   }
 
   function addMarkNotation() {
-    if (editModeStore.getEditMode() == "CHECKMARK") {
+    if (editModeStore.getEditMode() == "CHECKMARK_STARTED") {
       upsertSymbolNotation("&#x2714");
       return;
     }
 
-    if (editModeStore.getEditMode() == "SEMICHECKMARK") {
+    if (editModeStore.getEditMode() == "SEMICHECKMARK_STARTED") {
       upsertSymbolNotation("&#x237B");
       return;
     }
 
-    if (editModeStore.getEditMode() == "XMARK") {
+    if (editModeStore.getEditMode() == "XMARK_STARTED") {
       upsertSymbolNotation("&#x2718");
       return;
     }
@@ -763,7 +763,9 @@ export default function notationMutateHelper() {
     if (!symbolCell) return;
 
     const notationType: NotationType =
-      editModeStore.getEditMode() === "EXPONENT" ? "EXPONENT" : "SYMBOL";
+      editModeStore.getEditMode() === "EXPONENT_STARTED"
+        ? "EXPONENT_STARTED"
+        : "SYMBOL";
 
     let notation: PointNotationCreationAttributes = {
       col: symbolCell.col,
@@ -897,14 +899,11 @@ export default function notationMutateHelper() {
     }
   }
 
-  async function updateNotation(
-    notation: NotationAttributes,
-  ) {
+  async function updateNotation(notation: NotationAttributes) {
     await dbHelper.updateNotation(notation);
     notationStore.addNotation(notation);
-    userOutgoingOperations.syncOutgoingUpdateNotation(notation); 
+    userOutgoingOperations.syncOutgoingUpdateNotation(notation);
   }
-
 
   return {
     selectNotation,

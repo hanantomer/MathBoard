@@ -5,262 +5,68 @@
   ></accessLinkDialog>
 
   <v-toolbar color="primary" dark class="vertical-toolbar" height="500">
-    <v-toolbar-items>
-      <v-toolbar-item v-for="item in modeButtons">
-        <v-tooltip>
-          {{ item.tooltip }}
-          <template v-slot:activator="{ props }">
-            <v-btn
-              data-cy="{{"
-              item.name
-              }}
-              v-bind="props"
-              icon
-              x-small
-              fab
-              dark
-              v-on:click="startHorizontalLineMode"
-              :disabled="!editEnabled"
+    <v-toolbar-item>
+      <v-tooltip
+        text="Invite students via access link"
+        v-if="userStore.isTeacher()"
+      >
+        <template v-slot:activator="{ props }">
+          <v-btn
+            v-bind="props"
+            icon
+            @click.stop="openAccessLinkDialog"
+            color="white"
+            x-small
+            fab
+            dark
+            ><v-icon>mdi-account-plus</v-icon></v-btn
+          >
+        </template>
+      </v-tooltip>
+    </v-toolbar-item>
+    <v-toolbar-item v-for="item in modeButtons">
+      <v-tooltip>
+        {{ item.tooltip }}
+        <template v-slot:activator="{ props }">
+          <v-btn
+            v-show="item.show_condition"
+            :data-cy="item.name"
+            v-bind="props"
+            icon
+            x-small
+            fab
+            dark
+            :color="item.activeState.value === 1 ? 'white' : 'green'"
+            v-on:click="startEditMode(item)"
+            :disabled="!editEnabled"
+          >
+            <v-icon
+              v-if="item.icon_class"
+              :style="{ transform: 'rotate(' + item.rotate + 'deg)' }"
+              ><span :class="item.icon_class">{{ item.icon }}</span></v-icon
             >
-              <v-icon
-                ><span class="material-symbols-outlined">
-                  horizontal_rule
-                </span></v-icon
-              >
-            </v-btn>
-          </template>
-        </v-tooltip>
-      </v-toolbar-item>
-    </v-toolbar-items>
+            <v-icon
+              v-if="item.overlay_icon"
+              :icon="item.overlay_icon"
+              style="position: absolute; left: 12px; top: 12px"
+            >
+            </v-icon>
+
+            <v-icon
+              v-if="!item.icon_class"
+              :style="{ transform: 'rotate(' + item.rotate + 'deg)' }"
+              :icon="item.icon"
+            >
+            </v-icon>
+          </v-btn>
+        </template>
+      </v-tooltip>
+    </v-toolbar-item>
   </v-toolbar>
-
-  <!-- <v-tooltip text="Create Access Link" v-if="userStore.isTeacher()">
-  //     <template v-slot:activator="{ props }">
-  //       <v-btn
-  //         v-bind="props"
-  //         icon
-  //         @click.stop="openAccessLinkDialog"
-  //         color="white"
-  //         x-small
-  //         fab
-  //         dark
-  //         ><v-icon>mdi-account-plus</v-icon></v-btn
-  //       >
-  //     </template>
-  //   </v-tooltip>
-
-  //   <v-tooltip text="Horizontal line">
-  //     <template v-slot:activator="{ props }">
-  //       <v-btn
-  //         data-cy="horizontalLine"
-  //         v-bind="props"
-  //         icon
-  //         :color="horizontalLineButtonActive ? 'white' : 'yellow'"
-  //         :backgroundColor="
-  //           horizontalLineButtonActive
-  //             ? 'white !important'
-  //             : 'yellow !important'
-  //         "
-  //         x-small
-  //         fab
-  //         dark
-  //         v-on:click="startHorizontalLineMode"
-  //         :disabled="!editEnabled"
-  //       >
-  //         <v-icon
-  //           ><span class="material-symbols-outlined">
-  //             horizontal_rule
-  //           </span></v-icon
-  //         >
-  //       </v-btn>
-  //     </template>
-  //   </v-tooltip>
-
-  //   <v-tooltip text="Vertical line">
-  //     <template v-slot:activator="{ props }">
-  //       <v-btn
-  //         data-cy="verticalLine"
-  //         v-bind="props"
-  //         icon
-  //         :color="verticalLineButtonActive ? 'white' : 'yellow'"
-  //         x-small
-  //         fab
-  //         dark
-  //         v-on:click="startVerticalLineMode"
-  //         :disabled="!editEnabled"
-  //       >
-  //         <v-icon style="transform: rotate(90deg)"
-  //           ><span class="material-symbols-outlined">
-  //             horizontal_rule
-  //           </span></v-icon
-  //         >
-  //       </v-btn>
-  //     </template>
-  //   </v-tooltip>
-
-  //   <v-tooltip text="Sloped line">
-  //     <template v-slot:activator="{ props }">
-  //       <v-btn
-  //         data-cy="slopeLine"
-  //         v-bind="props"
-  //         icon
-  //         :color="slopeLineButtonActive ? 'white' : 'yellow'"
-  //         x-small
-  //         fab
-  //         dark
-  //         v-on:click="startSlopeLineMode"
-  //         :disabled="!editEnabled"
-  //       >
-  //         <v-icon style="transform: rotate(115deg)"
-  //           ><span class="material-symbols-outlined">
-  //             horizontal_rule
-  //           </span></v-icon
-  //         >
-  //       </v-btn>
-  //     </template>
-  //   </v-tooltip>
-
-  //   <v-tooltip text="Concaved Curved Line">
-  //     <template v-slot:activator="{ props }">
-  //       <v-btn
-  //         data-cy="concavedCurvedLine"
-  //         v-bind="props"
-  //         icon
-  //         :color="concavedCurvedLineButtonActive ? 'white' : 'yellow'"
-  //         x-small
-  //         fab
-  //         dark
-  //         v-on:click="startConcavedCurvedLineMode"
-  //         :disabled="!editEnabled"
-  //       >
-  //         <v-icon style="transform: rotate(100deg)"
-  //           ><span class="material-symbols-outlined"> line_curve </span></v-icon
-  //         >
-  //       </v-btn>
-  //     </template>
-  //   </v-tooltip>
-
-  //   <v-tooltip text="Convexed Curved Line">
-  //     <template v-slot:activator="{ props }">
-  //       <v-btn
-  //         data-cy="convexedCurvedLine"
-  //         v-bind="props"
-  //         icon
-  //         :color="convexedCurvedLineButtonActive ? 'white' : 'yellow'"
-  //         x-small
-  //         fab
-  //         dark
-  //         v-on:click="startConvexedCurvedLineMode"
-  //         :disabled="!editEnabled"
-  //       >
-  //         <v-icon style="transform: rotate(275deg)"
-  //           ><span class="material-symbols-outlined"> line_curve </span></v-icon
-  //         >
-  //       </v-btn>
-  //     </template>
-  //   </v-tooltip>
-
-  //   <v-tooltip text="Draw sqrt line">
-  //     <template v-slot:activator="{ props }">
-  //       <v-btn
-  //         data-cy="sqrt"
-  //         v-bind="props"
-  //         icon
-  //         :color="squareRootButtonActive ? 'white' : 'yellow'"
-  //         x-small
-  //         fab
-  //         dark
-  //         v-on:click="toggleSqrtMode"
-  //         :disabled="!editEnabled"
-  //       >
-  //         <v-icon>mdi-square-root</v-icon>
-  //       </v-btn>
-  //     </template>
-  //   </v-tooltip>
-
-  //   <v-tooltip text="exponent">
-  //     <template v-slot:activator="{ props }">
-  //       <v-btn
-  //         v-bind="props"
-  //         :color="exponentButtonActive ? 'white' : 'yellow'"
-  //         icon
-  //         v-on:click="toggleExponentMode"
-  //         :disabled="!exponentEnabled"
-  //       >
-  //         <v-icon>mdi-exponent</v-icon>
-  //       </v-btn>
-  //     </template>
-  //   </v-tooltip>
-
-  //   <v-tooltip text="Free Text">
-  //     <template v-slot:activator="{ props }">
-  //       <v-btn
-  //         v-bind="props"
-  //         icon
-  //         :color="freeTextButtonActive ? 'white' : 'yellow'"
-  //         v-on:click="toggleTextMode"
-  //         ><v-icon>mdi-text</v-icon></v-btn
-  //       >
-  //     </template>
-  //   </v-tooltip>
-
-  //   <v-tooltip text="Correct">
-  //     <template v-slot:activator="{ props }">
-  //       <v-btn
-  //         v-bind="props"
-  //         v-if="answerCheckMode"
-  //         icon
-  //         :color="checkmarkButtonActive ? 'white' : 'yellow'"
-  //         x-small
-  //         fab
-  //         dark
-  //         v-on:click="toggleCheckmarkMode"
-  //       >
-  //         <v-icon>mdi-checkbox-marked-circle-outline</v-icon>
-  //       </v-btn>
-  //     </template>
-  //   </v-tooltip>
-
-  //   <v-tooltip text="Half Correct">
-  //     <template v-slot:activator="{ props }">
-  //       <v-btn
-  //         v-bind="props"
-  //         v-if="answerCheckMode"
-  //         icon
-  //         :color="semicheckmarkButtonActive ? 'white' : 'yellow'"
-  //         x-small
-  //         fab
-  //         dark
-  //         v-on:click="toggleSemiCheckmarkMode"
-  //       >
-  //         <v-icon style="position: relative; left: 8px">mdi-check</v-icon>
-  //         <v-icon style="position: relative; left: -8px; top: -1px"
-  //           >mdi-minus</v-icon
-  //         >
-  //       </v-btn>
-  //     </template>
-  //   </v-tooltip>
-
-  //   <v-tooltip text="Incorrect">
-  //     <template v-slot:activator="{ props }">
-  //       <v-btn
-  //         v-bind="props"
-  //         v-if="answerCheckMode"
-  //         icon
-  //         :color="xmarkButtonActive ? 'white' : 'yellow'"
-  //         x-small
-  //         fab
-  //         dark
-  //         v-on:click="toggleXmarkMode"
-  //       >
-  //         <v-icon>mdi-close-outline</v-icon>
-  //       </v-btn>
-  //     </template>
-  //   </v-tooltip> -->
 </template>
 
 <script setup lang="ts">
-import { watch, ref, reactive } from "vue";
+import { watch, ref } from "vue";
 import accessLinkDialog from "./AccessLinkDialog.vue";
 
 import { useNotationStore } from "../store/pinia/notationStore";
@@ -275,33 +81,147 @@ const notationStore = useNotationStore();
 const userStore = useUserStore();
 const editModeStore = useEditModeStore();
 
-let checkmarkButtonActive = ref(1);
-let semicheckmarkButtonActive = ref(1);
-let xmarkButtonActive = ref(1);
-let selectionButtonActive = ref(1);
-let verticalLineButtonActive = ref(1);
-let slopeLineButtonActive = ref(1);
-let horizontalLineButtonActive = ref(1);
-let squareRootButtonActive = ref(1);
-let exponentButtonActive = ref(1);
-let freeTextButtonActive = ref(1);
-
 let showAccessLinkDialog = ref(false);
+
+const answerCheckMode  = computed(() => {
+  return notationStore.getParent().type == "ANSWER" && userStore.isTeacher();
+});
+
 
 const modeButtons: Array<{
   name: string;
+  show_condition: boolean,
   editMode: EditMode;
-  activeState: number;
+  activeState: any;
   tooltip: string;
-}> = reactive(
-  Array({
+  icon_class: string; // using span with class when we dont have adequate icon
+  icon: string;
+  overlay_icon: string;
+  rotate: number;
+}> = Array(
+  {
     name: "horizontalLine",
+    show_condition :true,
     editMode: "HORIZONTAL_LINE_STARTED",
-    activeState: 1,
+    activeState: ref(1),
     tooltip: "Horizontal Line",
-  }),
-);
+    icon_class: "material-symbols-outlined",
+    icon: "horizontal_rule",
+    overlay_icon: "",
+    rotate: 0,
+  },
+  {
+    name: "verticalLine",
+    show_condition :true,
+    editMode: "VERTICAL_LINE_STARTED",
+    activeState: ref(1),
+    tooltip: "Vertical Line",
+    icon_class: "material-symbols-outlined",
+    icon: "horizontal_rule",
+    overlay_icon: "",
+    rotate: 90,
+  },
+  {
+    name: "slopeLine",
+    show_condition :true,
+    editMode: "SLOPE_LINE_STARTED",
+    activeState: ref(1),
+    tooltip: "Slope Line",
+    icon_class: "material-symbols-outlined",
+    icon: "horizontal_rule",
+    overlay_icon: "",
+    rotate: 120,
+  },
+  {
+    name: "concaveLine",
+    show_condition :true,
+    editMode: "CONCAVE_LINE_STARTED",
+    activeState: ref(1),
+    tooltip: "concave Line",
+    icon_class: "material-symbols-outlined",
+    icon: "line_curve",
+    overlay_icon: "",
+    rotate: 260,
+  },
+  {
+    name: "convexLine",
+    show_condition :true,
+    editMode: "CONVEX_LINE_STARTED",
+    activeState: ref(1),
+    tooltip: "convex Line",
+    icon_class: "material-symbols-outlined",
+    icon: "line_curve",
+    overlay_icon: "",
+    rotate: 100,
+  },
+  {
+    name: "sqrt",
+    show_condition :true,
+    editMode: "SQRT_STARTED",
+    activeState: ref(1),
+    tooltip: "Sqrt",
+    icon_class: "",
+    icon: "mdi-square-root",
+    overlay_icon: "",
+    rotate: 0,
+  },
 
+  {
+    name: "exponent",
+    show_condition :true,
+    editMode: "EXPONENT_STARTED",
+    activeState: ref(1),
+    tooltip: "exponent",
+    icon_class: "",
+    icon: "mdi-exponent",
+    overlay_icon: "",
+    rotate: 0,
+  },
+  {
+    name: "free text",
+    show_condition :true,
+    editMode: "TEXT_STARTED",
+    activeState: ref(1),
+    tooltip: "free text",
+    icon_class: "",
+    icon: "mdi-text",
+    overlay_icon: "",
+    rotate: 0,
+  },
+  {
+    name: "checkmark",
+    show_condition :answerCheckMode.value,
+    editMode: "CHECKMARK_STARTED",
+    activeState: ref(1),
+    tooltip: "correct",
+    icon_class: "",
+    icon: "mdi-checkbox-marked-circle-outline",
+    overlay_icon: "",
+    rotate: 0,
+  },
+  {
+    name: "xmark",
+    show_condition :answerCheckMode.value,
+    editMode: "XMARK_STARTED",
+    activeState: ref(1),
+    tooltip: "incorrect",
+    icon_class: "",
+    icon: "mdi-close-outline",
+    overlay_icon: "",
+    rotate: 0,
+  },
+  {
+    name: "semicheckmark",
+    show_condition :answerCheckMode.value,
+    editMode: "SEMICHECKMARK_STARTED",
+    activeState: ref(1),
+    tooltip: "partially correct",
+    icon_class: "",
+    icon: "mdi-checkbox-marked-circle-outline",
+    overlay_icon: "mdi-minus",
+    rotate: 0,
+  },
+);
 watch(
   () => editModeStore.getEditMode(),
   (editMode) => {
@@ -312,29 +232,8 @@ watch(
       resetButtonsState();
     }
 
-    if (editMode === "HORIZONTAL_LINE_STARTED") {
-      horizontalLineButtonActive.value = 0;
-    }
-
-    if (editMode === "VERTICAL_LINE_STARTED") {
-      verticalLineButtonActive.value = 0;
-    }
-
-    if (editMode === "SLOPE_LINE_STARTED") {
-      slopeLineButtonActive.value = 0;
-    }
-
-    if (editMode === "SQRT_STARTED") {
-      squareRootButtonActive.value = 0;
-    }
-
-    if (editMode === "TEXT_STARTED") {
-      freeTextButtonActive.value = 0;
-    }
-
-    if (editMode === editModeStore.getDefaultEditMode()) {
-      resetButtonsState();
-    }
+    const matchedButton = modeButtons.find((b) => b.editMode === editMode);
+    if (matchedButton) matchedButton.activeState.value = 0;
   },
   { immediate: true, deep: true },
 );
@@ -351,137 +250,16 @@ const editEnabled = computed(() => {
   return authorizationHelper.canEdit();
 });
 
-const exponentEnabled = computed(() => {
-  if (!editEnabled.value) return false;
 
-  return (
-    notationStore.getSelectedCell() ||
-    notationStore.getSelectedNotations()?.at(0)?.notationType === "EXPONENT"
-  );
-});
-
-const answerCheckMode = computed(() => {
-  return notationStore.getParent().type == "ANSWER" && userStore.isTeacher();
-});
+function startEditMode(item: any) {
+  resetButtonsState();
+  editModeStore.setEditMode(item.editMode); // watcher sets activeState to 0
+}
 
 function resetButtonsState() {
-  checkmarkButtonActive.value =
-    semicheckmarkButtonActive.value =
-    xmarkButtonActive.value =
-    selectionButtonActive.value =
-    horizontalLineButtonActive.value =
-    verticalLineButtonActive.value =
-    slopeLineButtonActive.value =
-    squareRootButtonActive.value =
-    exponentButtonActive.value =
-    freeTextButtonActive.value =
-      1;
-}
-
-function setDefaultEditModeAndButtonsState() {
-  resetButtonsState();
-  editModeStore.setDefaultEditMode();
-}
-
-function startHorizontalLineMode() {
-  resetButtonsState();
-  horizontalLineButtonActive.value = 0;
-  editModeStore.setEditMode("HORIZONTAL_LINE_STARTED");
-}
-
-function startVerticalLineMode() {
-  resetButtonsState();
-  verticalLineButtonActive.value = 0;
-  editModeStore.setEditMode("VERTICAL_LINE_STARTED");
-}
-
-function startSlopeLineMode() {
-  resetButtonsState();
-  slopeLineButtonActive.value = 0;
-  editModeStore.setEditMode("SLOPE_LINE_STARTED");
-}
-
-function toggleExponentMode() {
-  if (editModeStore.getEditMode() == "EXPONENT") {
-    setDefaultEditModeAndButtonsState();
-  } else {
-    startExponentMode();
-  }
-}
-function toggleTextMode() {
-  if (editModeStore.getEditMode() == "TEXT_STARTED") {
-    setDefaultEditModeAndButtonsState();
-  } else {
-    startTextMode();
-  }
-}
-
-function toggleSqrtMode() {
-  if (editModeStore.getEditMode() == "SQRT_STARTED") {
-    setDefaultEditModeAndButtonsState();
-  } else {
-    startSqrtMode();
-  }
-}
-
-function startSqrtMode() {
-  resetButtonsState();
-  squareRootButtonActive.value = 0;
-  editModeStore.setEditMode("SQRT_STARTED");
-}
-
-function startExponentMode() {
-  resetButtonsState();
-  exponentButtonActive.value = 0;
-  editModeStore.setEditMode("EXPONENT");
-}
-
-function startTextMode() {
-  resetButtonsState();
-  freeTextButtonActive.value = 0;
-  editModeStore.setEditMode("TEXT_STARTED");
-}
-
-function toggleCheckmarkMode() {
-  if (editModeStore.getEditMode() == "CHECKMARK") {
-    setDefaultEditModeAndButtonsState();
-  } else {
-    startCheckmarkMode();
-  }
-}
-
-function startCheckmarkMode() {
-  resetButtonsState();
-  checkmarkButtonActive.value = 0;
-  editModeStore.setEditMode("CHECKMARK");
-}
-
-function toggleSemiCheckmarkMode() {
-  if (editModeStore.getEditMode() == "SEMICHECKMARK") {
-    setDefaultEditModeAndButtonsState();
-  } else {
-    startSemiCheckmarkMode();
-  }
-}
-
-function startSemiCheckmarkMode() {
-  resetButtonsState();
-  semicheckmarkButtonActive.value = 0;
-  editModeStore.setEditMode("SEMICHECKMARK");
-}
-
-function toggleXmarkMode() {
-  if (editModeStore.getEditMode() == "XMARK") {
-    setDefaultEditModeAndButtonsState();
-  } else {
-    startXmarkMode();
-  }
-}
-
-function startXmarkMode() {
-  resetButtonsState();
-  xmarkButtonActive.value = 0;
-  editModeStore.setEditMode("XMARK");
+  modeButtons.forEach((b) => {
+    b.activeState.value = 1;
+  });
 }
 </script>
 

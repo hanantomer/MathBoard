@@ -245,9 +245,9 @@ function handleMouseDown(e: MouseEvent) {
   }
 
   if (
-    editModeStore.getEditMode() === "CHECKMARK" ||
-    editModeStore.getEditMode() === "SEMICHECKMARK" ||
-    editModeStore.getEditMode() === "XMARK"
+    editModeStore.getEditMode() === "CHECKMARK_STARTED" ||
+    editModeStore.getEditMode() === "SEMICHECKMARK_STARTED" ||
+    editModeStore.getEditMode() === "XMARK_STARTED"
   ) {
     selectionHelper.selectCell(props.svgId, position);
     notationMutateHelper.addMarkNotation();

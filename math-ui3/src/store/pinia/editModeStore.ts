@@ -137,14 +137,14 @@ export const useEditModeStore = defineStore("editMode", () => {
   }
 
   function isExponentMode() {
-    return editMode.value == "EXPONENT";
+    return editMode.value == "EXPONENT_STARTED";
   }
 
   function isCheckMode() {
     return (
-      editMode.value == "CHECKMARK" ||
-      editMode.value == "SEMICHECKMARK" ||
-      editMode.value == "XMARK"
+      editMode.value == "CHECKMARK_STARTED" ||
+      editMode.value == "SEMICHECKMARK_STARTED" ||
+      editMode.value == "XMARK_STARTED"
     );
   }
 

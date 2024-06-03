@@ -13,7 +13,7 @@ export default class QuestionExponent extends Model<
     QuestionExponentAttributes,
     QuestionExponentCreationAttributes
 > {
-    notationType = "EXPONENT";
+    notationType = "EXPONENT_STARTED";
     boardType = "QUESTION";
 
     @AllowNull(false)

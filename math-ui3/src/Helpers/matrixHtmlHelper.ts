@@ -291,7 +291,7 @@ export default function useHtmlMatrixHelper() {
       return `<img style='border:groove 2px;border-color:${borderColor}' src='${n1.value}'>`;
     }
 
-    if (n.notationType === "EXPONENT") {
+    if (n.notationType === "EXPONENT_STARTED") {
       let n1 = n as PointNotationAttributes;
       return `</span><span style='position: absolute;top: 10%;transform: translateY(-10%);left:30%;translateX(-10%);color:${color};font-weight:${fontWeight};font-size:0.75em'>${n1.value}</span>`;
     }

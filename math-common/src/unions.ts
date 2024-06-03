@@ -24,7 +24,7 @@ export type NotationShape = "POINT" |  "HORIZONTAL_LINE" | "VERTICAL_LINE"| "SLO
 export const NotationTypeValues = 
   ["SYMBOL",
   "SIGN",
-  "EXPONENT",
+  "EXPONENT_STARTED",
   "HORIZONTALLINE",
   "VERTICALLINE",
   "SLOPELINE",
@@ -52,7 +52,7 @@ export type CursorType =
 export const NotationTypeShape = new Map<NotationType, NotationShape> ([
   ["SYMBOL", "POINT"],
   ["SIGN", "POINT"],
-  ["EXPONENT", "POINT"],
+  ["EXPONENT_STARTED", "POINT"],
   ["SQRT", "HORIZONTAL_LINE"],
   ["SQRTSYMBOL", "POINT"],
   ["HORIZONTALLINE", "HORIZONTAL_LINE"],
@@ -64,7 +64,7 @@ export const NotationTypeShape = new Map<NotationType, NotationShape> ([
 
 export type EditMode = 
   "SYMBOL"                    | // default mode
-  "EXPONENT"                  | // exponent button pressed
+  "EXPONENT_STARTED"          | // exponent button pressed
   "TEXT_STARTED"              | // text button pressed
   "TEXT_SELECTED"             | // user clicked on existing text rectangle
   "TEXT_AREA_SELECTING"       | // user started selecting area following text button pressed
@@ -79,6 +79,13 @@ export type EditMode =
   "SLOPE_LINE_STARTED"        | // slope line button pressed
   "SLOPE_LINE_DRAWING"        | // slope line drawing started
   "SLOPE_LINE_SELECTED"       | // slope line selected
+  "CONCAVE_LINE_STARTED"      | // concave line button pressed
+  "CONCAVE_LINE_DRAWING"      | // concave line drawing started
+  "CONCAVE_LINE_SELECTED"     | // concave line selected
+  "CONVEX_LINE_STARTED"       | // convex line button pressed
+  "CONVEX_LINE_DRAWING"       | // convex line drawing started
+  "CONVEX_LINE_SELECTED"      | // convex line selected
+
   "SQRT_STARTED"              | // sqrt button pressed
   "SQRT_DRAWING"              | // sqrt drawing started
   "SQRT_SELECTED"             | // sqrt selected  
@@ -87,14 +94,14 @@ export type EditMode =
   "AREA_SELECTING"            | // user started selecting area
   "AREA_SELECTED"             | // user finished selecting area
   "MOVING"                    | // user grabbed the selection area after select button pressed
-  "CHECKMARK"                 | // checkmark button pressed
-  "SEMICHECKMARK"             | // semicheck button pressed
-  "XMARK"                     | // xmark button pressed
-  "GEO"                         // geometry sketching
+  "CHECKMARK_STARTED"         | // checkmark button pressed
+  "SEMICHECKMARK_STARTED"     | // semicheck button pressed
+  "XMARK_STARTED"               // xmark button pressed
+  
 
   export const EditModeNotationType = new Map<EditMode, NotationType> ([
     ["SYMBOL", "SYMBOL"],                  
-    ["EXPONENT", "EXPONENT"],                 
+    ["EXPONENT_STARTED", "EXPONENT_STARTED"],                 
     ["TEXT_STARTED", "TEXT"],                     
     ["CELL_SELECTED", "SYMBOL"],            
     ["HORIZONTAL_LINE_STARTED", "HORIZONTALLINE"],  
@@ -114,15 +121,14 @@ export type EditMode =
     ["AREA_SELECTING", "SYMBOL"],           
     ["AREA_SELECTED", "SYMBOL"],            
     ["MOVING", "SYMBOL"],                   
-    ["CHECKMARK", "SYMBOL"],                
-    ["SEMICHECKMARK", "SYMBOL"],            
-    ["XMARK", "SYMBOL"],                    
-    ["GEO", "SYMBOL"],                      
+    ["CHECKMARK_STARTED", "SYMBOL"],                
+    ["SEMICHECKMARK_STARTED", "SYMBOL"],            
+    ["XMARK_STARTED", "SYMBOL"],                    
  ])
 
  export const EditModeCursorType = new Map<EditMode, CursorType> ([
   ["SYMBOL", "auto"],                  
-  ["EXPONENT", "auto"],                 
+  ["EXPONENT_STARTED", "auto"],                 
   ["TEXT_STARTED", "text"],                     
   ["TEXT_WRITING", "text"],
   ["CELL_SELECTED", "auto"],            
@@ -143,10 +149,9 @@ export type EditMode =
   ["AREA_SELECTING", "auto"],           
   ["AREA_SELECTED", "auto"],            
   ["MOVING", "auto"],                   
-  ["CHECKMARK", "auto"],                
-  ["SEMICHECKMARK", "auto"],            
-  ["XMARK", "auto"],                    
-  ["GEO", "auto"],                      
+  ["CHECKMARK_STARTED", "auto"],                
+  ["SEMICHECKMARK_STARTED", "auto"],            
+  ["XMARK_STARTED", "auto"],                    
 ])
 
 

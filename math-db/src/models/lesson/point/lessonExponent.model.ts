@@ -12,7 +12,7 @@ export default class LessonExponent extends Model<
     LessonExponentAttributes,
     LessonExponentCreationAttributes
 > {
-    notationType = "EXPONENT";
+    notationType = "EXPONENT_STARTED";
     boardType = "LESSON";
 
     @AllowNull(false)
