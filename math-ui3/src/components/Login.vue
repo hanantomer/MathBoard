@@ -23,6 +23,7 @@
                 name="input-10-1"
                 label="Password"
                 hint="At least 8 characters"
+                @keydown.enter="validateLogin"
                 counter
               ></v-text-field>
             </v-col>

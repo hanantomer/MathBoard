@@ -58,28 +58,44 @@ import { useQuestionStore } from "../store/pinia/questionStore";
 import { useLessonStore } from "../store/pinia/lessonStore";
 import { useAnswerStore } from "../store/pinia/answerStore";
 import { useUserStore } from "../store/pinia/userStore";
+import { useEditModeStore } from "../store/pinia/editModeStore";
 import { useRouter } from "vue-router";
+import { useRoute } from "vue-router";
 import useEventBus from "../helpers/eventBusHelper";
 
 const questionStore = useQuestionStore();
 const lessonStore = useLessonStore();
 const answerStore = useAnswerStore();
 const userStore = useUserStore();
+const editModeStore = useEditModeStore();
+
 const router = useRouter();
+const route = useRoute();
 const eventBus = useEventBus();
 
 const noLessonDialog = ref(false);
 const questionDialog = ref(false);
 let itemsPerPage = 10;
 
-const menu = [
-  { icon: "plus", title: "Add" },
-  { icon: "remove", title: "Remove" },
-];
+
 
 let selectedLesson = ref();
 
-onMounted(() => lessonStore.loadLessons());
+onMounted(async () => {
+  await lessonStore.loadLessons();
+  const lessons = Array.from(lessonStore.getLessons().values());
+  if (lessons.length > 0) {
+    selectedLesson.value = lessons.at(0)?.uuid;
+  }
+});
+
+watch(
+  route,
+  async () => {
+    editModeStore.setEditMode("QUESTIONS_SELECTION");
+  },
+  { immediate: true },
+);
 
 watch(
   () => selectedLesson.value,
@@ -90,7 +106,7 @@ watch(
 );
 
 watch(
-  () => eventBus.bus.value.get("QUESTION_SAVE"),
+  () => eventBus.bus.value.get("QUESTION_SAVED"),
   (questionName: string) => {
     addQuestion(questionName);
   },
@@ -136,7 +152,8 @@ const questions = computed(() => {
     });
 });
 
-function navToLessons() {
+function navToLessons(e:any) {
+  e.stopPropagation();
   noLessonDialog.value = false;
   router.push({
     path: "/lessons/",

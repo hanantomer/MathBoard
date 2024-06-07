@@ -26,6 +26,7 @@ import { useNotationStore } from "../store/pinia/notationStore";
 import { watch } from "vue";
 import { useRoute } from "vue-router";
 import { heartBeatInterval } from "../../../math-common/src/globals";
+import { useEditModeStore } from "../store/pinia/editModeStore";
 import lessonStudents from "./LessonStudents.vue";
 
 const route = useRoute();
@@ -33,6 +34,7 @@ const route = useRoute();
 const userStore = useUserStore();
 const lessonStore = useLessonStore();
 const notationStore = useNotationStore();
+const editModeStore = useEditModeStore();
 const userOutgoingOperations = useUserOutgoingOperations();
 const userIncomingOperations = useUserIncomingOperations();
 
@@ -53,6 +55,7 @@ watch(
 );
 
 async function loadLesson(lessonUUId: string) {
+  editModeStore.setDefaultEditMode();
   // store might not be loaded yet
   if (!lessonStore.getLessons().get(lessonUUId)) {
     await lessonStore.loadLesson(lessonUUId);

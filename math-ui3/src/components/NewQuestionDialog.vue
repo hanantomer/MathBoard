@@ -11,7 +11,7 @@
               <v-row>
                 <v-col cols="12">
                   <v-select
-                    :rules = "requiredRules"
+                    :rules="requiredRules"
                     item-value="uuid"
                     item-title="name"
                     label="pleeas select a lesson:"
@@ -25,7 +25,7 @@
               <v-row>
                 <v-col cols="12">
                   <v-text-field
-                    :rules = "requiredRules"
+                    :rules="requiredRules"
                     autofocus
                     v-model="name"
                     label="Title*"
@@ -58,7 +58,7 @@ const show = ref(false);
 const name = ref();
 const newQuestionForm = ref(null);
 
-const requiredRules = [(v: string) =>  !!v || "required field"]
+const requiredRules = [(v: string) => !!v || "required field"];
 
 const props = defineProps({
   dialog: {
@@ -95,8 +95,7 @@ async function save() {
   const { valid, errors } = await (newQuestionForm.value as any).validate();
   if (valid) {
     show.value = false;
-    eventBus.emit("QUESTION_SAVE", name.value);
+    eventBus.emit("QUESTION_SAVED", name.value);
   }
 }
-
 </script>

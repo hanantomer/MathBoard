@@ -42,11 +42,15 @@ import { formatDate } from "../../../math-common/src/globals";
 import { LessonAttributes } from "../../../math-common/src/lessonTypes";
 import { useUserStore } from "../store/pinia/userStore";
 import { useLessonStore } from "../store/pinia/lessonStore";
-import { ref, computed, onMounted } from "vue";
+import { useEditModeStore } from "../store/pinia/editModeStore";
+import { watch, ref, computed, onMounted } from "vue";
 import { useRouter } from "vue-router";
+import { useRoute } from "vue-router";
 const router = useRouter();
+const route = useRoute();
 const userStore = useUserStore();
 const lessonStore = useLessonStore();
+const editModeStore = useEditModeStore();
 const title = computed(() => {
   return userStore.isTeacher() ? "Lessons" : "Lessons Shared with me";
 });
@@ -57,6 +61,15 @@ const menu = [{ icon: "plus", title: "Add" }];
 let itemsPerPage = 10;
 
 onMounted(() => lessonStore.loadLessons());
+
+watch(
+  route,
+  async () => {
+    editModeStore.setEditMode("LESSONS_SELECTION");
+  },
+  { immediate: true },
+);
+
 
 const headers = computed(() => [
   {
@@ -97,6 +110,7 @@ async function addLesson(lessonName: string) {
 }
 
 async function selectLesson(e: any, row: any) {
+  e.stopPropagation();
   router.push({
     path: "/lesson/" + row.item.uuid,
   });

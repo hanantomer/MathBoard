@@ -7,7 +7,7 @@
   <v-row align="start" class="fill-heigh" no-gutters>
     <div style="display: flex; flex-direction: row">
       <v-sheet class="mt-14 ml-1">
-        <toolbar></toolbar>
+        <toolbar :key="toolbarKey"></toolbar>
       </v-sheet>
       <div style="display: flex; flex-direction: column">
         <v-sheet class="mt-10 ml-8 overflow-auto">
@@ -78,8 +78,8 @@ const answerStore = useAnswerStore();
 const elementFinderHelper = useElementFinderHelper();
 const userOutgoingOperations = useUserOutgoingOperations();
 const pBar = ref(false);
-
 let cursor = ref<CursorType>("auto");
+let toolbarKey = ref(0);
 
 onMounted(() => {
   eventHelper.registerSvgMouseDown(props.svgId);
@@ -200,6 +200,8 @@ watch(
 async function load() {
   pBar.value = true;
 
+  toolbarKey.value++; // refreash toolbar
+
   try {
     notationStore.clearNotations();
 
@@ -224,6 +226,8 @@ async function load() {
       notationStore.getParent().type,
       notationStore.getParent().uuid,
     );
+
+
   } finally {
     pBar.value = false;
   }
@@ -292,7 +296,7 @@ html {
   cursor: URL("~@/assets/delete.jpg"), none !important;
 }
 .title {
-  max-width: 300px;
+  max-width: 500px;
   color: white;
   position: absolute;
   top: 20px;

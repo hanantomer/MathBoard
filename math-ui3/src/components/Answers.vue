@@ -37,8 +37,12 @@ import { computed } from "vue";
 import { useAnswerStore } from "../store/pinia/answerStore";
 import { useQuestionStore } from "../store/pinia/questionStore";
 import { useLessonStore } from "../store/pinia/lessonStore";
+import { useRoute } from "vue-router";
+import { useEditModeStore } from "../store/pinia/editModeStore";
 
 const router = useRouter();
+const route = useRoute();
+const editModeStore = useEditModeStore();
 const answerStore = useAnswerStore();
 const questionStore = useQuestionStore();
 const lessonStore = useLessonStore();
@@ -46,6 +50,15 @@ const lessonStore = useLessonStore();
 onMounted(() => {
   lessonStore.loadLessons();
 });
+
+watch(
+  route,
+  async () => {
+    editModeStore.setEditMode("ANSWERS_SELECTION");
+  },
+  { immediate: true },
+);
+
 
 let headers = computed(() => [
   {

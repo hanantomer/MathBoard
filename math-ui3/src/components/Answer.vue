@@ -18,21 +18,25 @@ import { useAnswerStore } from "../store/pinia/answerStore";
 import { watch } from "vue";
 import { useRoute } from "vue-router";
 import { useNotationStore } from "../store/pinia/notationStore";
+import { useEditModeStore } from "../store/pinia/editModeStore";
 
 const route = useRoute();
 const userStore = useUserStore();
 const answerStore = useAnswerStore();
 const notationStore = useNotationStore();
+const editModeStore = useEditModeStore();
 
 let loaded = ref(false);
 const svgId = "answerSvg";
 
 let answerTitle = computed(() => {
   return userStore.isTeacher()
-    ? answerStore.getCurrentAnswer()?.user?.firstName +
-        " " +
-        answerStore.getCurrentAnswer()?.user?.lastName
-    : answerStore.getCurrentAnswer()?.name;
+    ? `Lesson: ${
+        answerStore.getCurrentAnswer()?.question.lesson.name
+      }, Question:  ${answerStore.getCurrentAnswer()?.question
+        .name}, Student: ${answerStore.getCurrentAnswer()?.user
+        ?.firstName} ${answerStore.getCurrentAnswer()?.user?.lastName}`
+    : answerStore.getCurrentAnswer()?.question.name;
 });
 
 watch(
@@ -46,6 +50,7 @@ watch(
 async function markAnswerAsChecked() {} // not implemented yet
 
 async function loadAnswer(answerUUId: string) {
+  editModeStore.setDefaultEditMode();
   // load from db to store
   await answerStore.loadAnswer(answerUUId);
 

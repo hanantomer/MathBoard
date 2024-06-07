@@ -188,7 +188,7 @@ export default function dbUtil() {
         let answerId = await getIdByUUId("Answer", answerUUId);
         if (!answerId) return null;
         const answer = (await Answer.findByPk(answerId, {
-            include: [{ model: Question },{ model: User }]
+            include: [{ model: Question, include: [{ model: Lesson }] },{ model: User }]
         })) as AnswerAttributes | null;
 
         return answer;

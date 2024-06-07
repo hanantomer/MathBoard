@@ -43,11 +43,11 @@ export default class LessonSlopeLine extends Model<
 
     @AllowNull(false)
     @Column({ type: DataType.INTEGER })
-    fromCol!: number;
+    fromCol!: number; // col related to the lower row
 
     @AllowNull(false)
     @Column({ type: DataType.INTEGER })
-    toCol!: number;
+    toCol!: number; // col related to the higher row
 
     @AllowNull(false)
     @Column({ type: DataType.INTEGER })

@@ -3,7 +3,7 @@ export const BoardTypeValues = ["LESSON","QUESTION","ANSWER"] as const;
 export type BoardType = typeof BoardTypeValues[number];
 
 export type BusEventType = 
-    "QUESTION_SAVE"             |
+    "QUESTION_SAVED"             |
     "EXPONENT_SUBMITED"         |
     "CELL_COLORIZED"            |
     "COPY"                      |
@@ -63,6 +63,9 @@ export const NotationTypeShape = new Map<NotationType, NotationShape> ([
 ])
 
 export type EditMode = 
+  "LESSONS_SELECTION"         | //  after click on lessons icon
+  "QUESTIONS_SELECTION"       | //  after click on questions icon
+  "ANSWERS_SELECTION"          | //  after click on answers icon
   "SYMBOL"                    | // default mode
   "EXPONENT_STARTED"          | // exponent button pressed
   "TEXT_STARTED"              | // text button pressed

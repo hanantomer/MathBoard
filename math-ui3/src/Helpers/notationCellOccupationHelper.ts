@@ -106,15 +106,19 @@ export default function notationCellOccupationHelper() {
     const slope =
       (notation.toRow - notation.fromRow) / (notation.toCol - notation.fromCol);
 
-    let firstRowIndex = notation.fromRow;
+    let firstRowIndex =
+      notation.toCol > notation.fromCol ? notation.fromRow : notation.toRow;
 
-    for (let col = notation.fromCol; col <= notation.toCol; col++) {
+    const absoluetFromCol = Math.min(notation.toCol, notation.fromCol);
+    const absoluetToCol = Math.max(notation.toCol, notation.fromCol);
+
+    for (let col = absoluetFromCol; col <= absoluetToCol; col++) {
       if (col < matrixDimensions.colsNum) {
         let row =
           firstRowIndex +
           (slope > 0
-            ? Math.floor((col - notation.fromCol) * slope)
-            : Math.ceil((col - notation.fromCol) * slope));
+            ? Math.floor((col - absoluetFromCol) * slope)
+            : Math.ceil((col - absoluetFromCol) * slope));
 
         if (validateRowAndCol(col, row)) {
           updateLineOccupationMatrixCell(col, row, matrix, notation, doRemove);

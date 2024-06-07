@@ -16,32 +16,22 @@ import mathBoard from "./MathBoard.vue";
 import { useQuestionStore } from "../store/pinia/questionStore";
 import { useLessonStore } from "../store/pinia/lessonStore";
 import { useNotationStore } from "../store/pinia/notationStore";
+import { useEditModeStore } from "../store/pinia/editModeStore";
 import { useRoute } from "vue-router";
 
 const questionStore = useQuestionStore();
 const notationStore = useNotationStore();
 const lessonStore = useLessonStore();
+const editModeStore = useEditModeStore();
 
 const route = useRoute();
 const svgId = "questionSvg";
 let loaded = ref(false);
 
-/*const props = defineProps({
-  questionUUId: { type: String },
-});
-
-const students = computed(() => {
-  return Array.from(answerStore.getAnswers()).map(([uuid, answer]) => {
-    return {
-      text: `${answer.user.firstName} ${answer.user.lastName}`,
-      value: answer.user.uuid,
-    };
-  });
-});*/
-
 const questionTitle = computed(() => {
   if (!questionStore.getCurrentQuestion()) return;
-  return questionStore.getCurrentQuestion()!.name;
+  return `${questionStore.getCurrentQuestion()!.lesson.name} -
+  ${questionStore.getCurrentQuestion()!.name}`;
 });
 
 watch(
@@ -53,6 +43,7 @@ watch(
 );
 
 async function loadQuestion(questionUUId: string) {
+  editModeStore.setDefaultEditMode();
   const question = await questionStore.loadQuestion(questionUUId);
 
   if (!question) {

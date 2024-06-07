@@ -28,22 +28,10 @@ export default function useMatrixHelper() {
     );
   }
 
-  // function setTextMeasurementCtx(el: HTMLElement) {
-  //   let textMeasurementEl = document.createElement("canvas");
-  //   (<any>window).textMeasurementCtx = textMeasurementEl.getContext("2d");
-  //   (<any>window).textMeasurementCtx.font = getComputedStyle(
-  //     document.body,
-  //   ).font;
-  //   console.log(
-  //     "font used to measure text is:" + (<any>window).textMeasurementCtx.font,
-  //   );
-  // }
-
   function setMatrix(svgId: string) {
     const el = document.getElementById(svgId);
     if (!el) return;
     setCellVerticalHeight(svgId);
-    //    setTextMeasurementCtx(el);
 
     // render rows
     for (var row = 0; row < matrixDimensions.rowsNum; row++) {
@@ -62,7 +50,10 @@ export default function useMatrixHelper() {
       .lower()
       .attr("transform", (d, i) => {
         let y =
-          (notationStore.getCellVerticalHeight() + cellSpace) * i - cellSpace;
+          i === 0
+            ? 0
+            : (notationStore.getCellVerticalHeight() + cellSpace) * i -
+              cellSpace;
         return "translate(0, " + y + ")";
       })
       .selectAll("cell")
@@ -77,9 +68,10 @@ export default function useMatrixHelper() {
         return i;
       })
       .attr("x", (d, i) => {
-        return (
-          i * (notationStore.getCellHorizontalWidth() + cellSpace) - cellSpace
-        );
+        return i == 0
+          ? 0
+          : i * (notationStore.getCellHorizontalWidth() + cellSpace) -
+              cellSpace;
       })
       .attr("width", notationStore.getCellHorizontalWidth())
       .attr("height", notationStore.getCellVerticalHeight());

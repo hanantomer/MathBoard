@@ -27,6 +27,10 @@
       xmlns="http://www.w3.org/2000/svg"
       style="position: absolute; pointer-events: none"
     >
+      <path id="curve" d="M0 0" stroke="green" stroke-width="4" stroke-linecap="round" fill="transparent">
+        
+      </path>
+
       <line
         :x1="lineLeft"
         :y1="lineTop"
@@ -59,10 +63,10 @@ const notationMutateHelper = useNotationMutateHelper();
 const notationStore = useNotationStore();
 const editModeStore = useEditModeStore();
 
-//type SlopeType = "POSITIVE" | "NEGATIVE";
+type SlopeType = "NEGATIVE" | "POSITIVE";
 
 const slopeType = computed(() =>
-  linePosition.value.left.y >= linePosition.value.right.y
+  linePosition.value.left.y < linePosition.value.right.x
     ? "POSITIVE"
     : "NEGATIVE",
 );
@@ -96,13 +100,13 @@ let lineRight = computed(() => {
 });
 
 let lineBottom = computed(() => {
-  return slopeType.value === "NEGATIVE"
+  return slopeType.value === "POSITIVE"
     ? linePosition.value.right.y
     : linePosition.value.left.y;
 });
 
 let lineTop = computed(() => {
-  return slopeType.value === "NEGATIVE"
+  return slopeType.value === "POSITIVE"
     ? linePosition.value.left.y
     : linePosition.value.right.y;
 });
@@ -200,49 +204,31 @@ function onMouseDown(e: MouseEvent) {
 }
 
 function setLine(xPos: number, yPos: number) {
-  // 4 options for drawing sloped line:
-  // 1. upper left to lower right.
-  // 2  lower right to upper left.
-  // 3. upper right to lower left.
-  // 4. lower left to upper right.
+  //if (slopeType === "POSITIVE") {
 
-  const movementUp =
-    (slopeType.value === "POSITIVE" && yPos > linePosition.value.right.y) ||
-    (slopeType.value === "NEGATIVE" && yPos > linePosition.value.left.y);
+  const modifyRight =
+    Math.sqrt(
+      Math.pow(linePosition.value.right.x - xPos, 2) +
+        Math.pow(linePosition.value.right.y - yPos, 2),
+    ) <
+    Math.sqrt(
+      Math.pow(linePosition.value.left.x - xPos, 2) +
+        Math.pow(linePosition.value.left.y - yPos, 2),
+    );
 
-  // const modifyRight =
-  //   Math.sqrt(
-  //     Math.pow(linePosition.value.right.x - xPos, 2) +
-  //       Math.pow(linePosition.value.right.y - yPos, 2),
-  //   ) <
-  //   Math.sqrt(
-  //     Math.pow(linePosition.value.left.x - xPos, 2) +
-  //       Math.pow(linePosition.value.left.y - yPos, 2),
-  //   );
-
-  if (slopeType.value === "NEGATIVE" && movementUp) {
-    linePosition.value.left.x = xPos;
-    linePosition.value.left.y = yPos;
-    return;
-  }
-
-  if (slopeType.value === "NEGATIVE" && !movementUp) {
+  if (modifyRight) {
     linePosition.value.right.x = xPos;
     linePosition.value.right.y = yPos;
-    return;
-  }
-
-  if (slopeType.value === "POSITIVE" && movementUp) {
-    linePosition.value.right.x = xPos;
-    linePosition.value.right.y = yPos;
-    return;
-  }
-
-  if (slopeType.value === "POSITIVE" && !movementUp) {
+  } else {
     linePosition.value.left.x = xPos;
     linePosition.value.left.y = yPos;
-    return;
   }
+  //}
+  // negative slope
+  //  else {
+  //    linePosition.value.left.x = xPos;
+  //    linePosition.value.left.y = yPos;
+  //  }
 }
 
 function onMouseMove(e: MouseEvent) {
@@ -264,6 +250,8 @@ function onMouseMove(e: MouseEvent) {
   if (!editModeStore.isSlopeLineDrawingMode()) {
     return;
   }
+
+  //setLineSlopeType(e.offsetX);
 
   setLine(e.offsetX, e.offsetY);
 }
@@ -358,6 +346,7 @@ function resetLineDrawing() {
       0;
   editModeStore.setDefaultEditMode();
 }
+
 </script>
 
 <style>

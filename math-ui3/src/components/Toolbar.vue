@@ -5,63 +5,60 @@
   ></accessLinkDialog>
 
   <v-toolbar color="primary" dark class="vertical-toolbar" height="500">
-    <v-toolbar-item>
-      <v-tooltip
-        text="Invite students via access link"
-        v-if="userStore.isTeacher()"
-      >
-        <template v-slot:activator="{ props }">
-          <v-btn
-            v-bind="props"
-            icon
-            @click.stop="openAccessLinkDialog"
-            color="white"
-            x-small
-            fab
-            dark
-            ><v-icon>mdi-account-plus</v-icon></v-btn
-          >
-        </template>
-      </v-tooltip>
-    </v-toolbar-item>
-    <v-toolbar-item v-for="item in modeButtons">
-      <v-tooltip>
-        {{ item.tooltip }}
-        <template v-slot:activator="{ props }">
-          <v-btn
-            v-show="item.show_condition"
-            :data-cy="item.name"
-            v-bind="props"
-            icon
-            x-small
-            fab
-            dark
-            :color="item.activeState.value === 1 ? 'white' : 'green'"
-            v-on:click="startEditMode(item)"
-            :disabled="!editEnabled"
-          >
-            <v-icon
-              v-if="item.icon_class"
-              :style="{ transform: 'rotate(' + item.rotate + 'deg)' }"
-              ><span :class="item.icon_class">{{ item.icon }}</span></v-icon
-            >
-            <v-icon
-              v-if="item.overlay_icon"
-              :icon="item.overlay_icon"
-              style="position: absolute; left: 12px; top: 12px"
-            >
-            </v-icon>
+    <v-tooltip
+      text="Invite students via access link"
+      v-if="userStore.isTeacher()"
+    >
+      <template v-slot:activator="{ props }">
+        <v-btn
+          v-bind="props"
+          icon
+          @click.stop="openAccessLinkDialog"
+          color="white"
+          x-small
+          fab
+          dark
+          ><v-icon>mdi-account-plus</v-icon></v-btn
+        >
+      </template>
+    </v-tooltip>
 
-            <v-icon
-              v-if="!item.icon_class"
-              :style="{ transform: 'rotate(' + item.rotate + 'deg)' }"
-              :icon="item.icon"
-            >
-            </v-icon>
-          </v-btn>
-        </template>
-      </v-tooltip>
-    </v-toolbar-item>
+    <v-tooltip v-for="item in modeButtons" :key="item.name">
+      {{ item.tooltip }}
+      <template v-slot:activator="{ props }">
+        <v-btn
+          v-show="item.show_condition"
+          :data-cy="item.name"
+          v-bind="props"
+          icon
+          x-small
+          fab
+          dark
+          :color="item.activeState.value === 1 ? 'white' : 'green'"
+          v-on:click="startEditMode(item)"
+          :disabled="!editEnabled"
+        >
+          <v-icon
+            v-if="item.icon_class"
+            :style="{ transform: 'rotate(' + item.rotate + 'deg)' }"
+            ><span :class="item.icon_class">{{ item.icon }}</span></v-icon
+          >
+          <v-icon
+            v-if="item.overlay_icon"
+            :icon="item.overlay_icon"
+            style="position: absolute; left: 12px; top: 12px"
+          >
+          </v-icon>
+
+          <v-icon
+            v-if="!item.icon_class"
+            :style="{ transform: 'rotate(' + item.rotate + 'deg)' }"
+            :icon="item.icon"
+          >
+          </v-icon>
+        </v-btn>
+      </template>
+    </v-tooltip>
   </v-toolbar>
 </template>
 
@@ -83,14 +80,13 @@ const editModeStore = useEditModeStore();
 
 let showAccessLinkDialog = ref(false);
 
-const answerCheckMode  = computed(() => {
+const answerCheckMode = computed(() => {
   return notationStore.getParent().type == "ANSWER" && userStore.isTeacher();
 });
 
-
 const modeButtons: Array<{
   name: string;
-  show_condition: boolean,
+  show_condition: boolean;
   editMode: EditMode;
   activeState: any;
   tooltip: string;
@@ -101,7 +97,7 @@ const modeButtons: Array<{
 }> = Array(
   {
     name: "horizontalLine",
-    show_condition :true,
+    show_condition: true,
     editMode: "HORIZONTAL_LINE_STARTED",
     activeState: ref(1),
     tooltip: "Horizontal Line",
@@ -112,7 +108,7 @@ const modeButtons: Array<{
   },
   {
     name: "verticalLine",
-    show_condition :true,
+    show_condition: true,
     editMode: "VERTICAL_LINE_STARTED",
     activeState: ref(1),
     tooltip: "Vertical Line",
@@ -123,7 +119,7 @@ const modeButtons: Array<{
   },
   {
     name: "slopeLine",
-    show_condition :true,
+    show_condition: true,
     editMode: "SLOPE_LINE_STARTED",
     activeState: ref(1),
     tooltip: "Slope Line",
@@ -134,7 +130,7 @@ const modeButtons: Array<{
   },
   {
     name: "concaveLine",
-    show_condition :true,
+    show_condition: true,
     editMode: "CONCAVE_LINE_STARTED",
     activeState: ref(1),
     tooltip: "concave Line",
@@ -145,7 +141,7 @@ const modeButtons: Array<{
   },
   {
     name: "convexLine",
-    show_condition :true,
+    show_condition: true,
     editMode: "CONVEX_LINE_STARTED",
     activeState: ref(1),
     tooltip: "convex Line",
@@ -156,7 +152,7 @@ const modeButtons: Array<{
   },
   {
     name: "sqrt",
-    show_condition :true,
+    show_condition: true,
     editMode: "SQRT_STARTED",
     activeState: ref(1),
     tooltip: "Sqrt",
@@ -168,7 +164,7 @@ const modeButtons: Array<{
 
   {
     name: "exponent",
-    show_condition :true,
+    show_condition: true,
     editMode: "EXPONENT_STARTED",
     activeState: ref(1),
     tooltip: "exponent",
@@ -179,7 +175,7 @@ const modeButtons: Array<{
   },
   {
     name: "free text",
-    show_condition :true,
+    show_condition: true,
     editMode: "TEXT_STARTED",
     activeState: ref(1),
     tooltip: "free text",
@@ -190,7 +186,7 @@ const modeButtons: Array<{
   },
   {
     name: "checkmark",
-    show_condition :answerCheckMode.value,
+    show_condition: answerCheckMode.value,
     editMode: "CHECKMARK_STARTED",
     activeState: ref(1),
     tooltip: "correct",
@@ -201,7 +197,7 @@ const modeButtons: Array<{
   },
   {
     name: "xmark",
-    show_condition :answerCheckMode.value,
+    show_condition: answerCheckMode.value,
     editMode: "XMARK_STARTED",
     activeState: ref(1),
     tooltip: "incorrect",
@@ -212,7 +208,7 @@ const modeButtons: Array<{
   },
   {
     name: "semicheckmark",
-    show_condition :answerCheckMode.value,
+    show_condition: answerCheckMode.value,
     editMode: "SEMICHECKMARK_STARTED",
     activeState: ref(1),
     tooltip: "partially correct",
@@ -249,7 +245,6 @@ function closeAccessLinkDialog() {
 const editEnabled = computed(() => {
   return authorizationHelper.canEdit();
 });
-
 
 function startEditMode(item: any) {
   resetButtonsState();
