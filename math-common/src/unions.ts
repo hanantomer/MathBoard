@@ -24,7 +24,7 @@ export type NotationShape = "POINT" |  "HORIZONTAL_LINE" | "VERTICAL_LINE"| "SLO
 export const NotationTypeValues = 
   ["SYMBOL",
   "SIGN",
-  "EXPONENT_STARTED",
+  "EXPONENT",
   "HORIZONTALLINE",
   "VERTICALLINE",
   "SLOPELINE",
@@ -52,7 +52,7 @@ export type CursorType =
 export const NotationTypeShape = new Map<NotationType, NotationShape> ([
   ["SYMBOL", "POINT"],
   ["SIGN", "POINT"],
-  ["EXPONENT_STARTED", "POINT"],
+  ["EXPONENT", "POINT"],
   ["SQRT", "HORIZONTAL_LINE"],
   ["SQRTSYMBOL", "POINT"],
   ["HORIZONTALLINE", "HORIZONTAL_LINE"],
@@ -104,7 +104,7 @@ export type EditMode =
 
   export const EditModeNotationType = new Map<EditMode, NotationType> ([
     ["SYMBOL", "SYMBOL"],                  
-    ["EXPONENT_STARTED", "EXPONENT_STARTED"],                 
+    ["EXPONENT_STARTED", "EXPONENT"],                 
     ["TEXT_STARTED", "TEXT"],                     
     ["CELL_SELECTED", "SYMBOL"],            
     ["HORIZONTAL_LINE_STARTED", "HORIZONTALLINE"],  

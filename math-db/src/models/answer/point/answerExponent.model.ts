@@ -2,15 +2,16 @@ import { Model, Column, BelongsTo, ForeignKey, DataType, AllowNull } from "seque
 import AnswerDecorator from "../../answer/answerDecorator";
 import  User from "../../user.model";
 import Answer from "../../answer/answer.model";
-import {
-    AnswerExponentAttributes,
-    AnswerExponentCreationAttributes,
-} from "../../../../../math-common/src/answerTypes";
+import { AnswerPointAttributes, AnswerPointCreationAttributes } from "../../../../../math-common/src/answerTypes";
+// import {
+//     AnswerExponentAttributes,
+//     AnswerExponentCreationAttributes,
+// } from "../../../../../math-common/src/answerTypes";
 
 @AnswerDecorator("AnswerExponent")
 export default class AnswerExponent extends Model<
-    AnswerExponentAttributes,
-    AnswerExponentCreationAttributes
+    AnswerPointAttributes,
+    AnswerPointCreationAttributes
 > {
     notationType = "EXPONENT_STARTED";
     boardType = "ANSWER";

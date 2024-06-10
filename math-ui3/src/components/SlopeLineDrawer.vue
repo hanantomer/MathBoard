@@ -59,13 +59,11 @@ const notationMutateHelper = useNotationMutateHelper();
 const notationStore = useNotationStore();
 const editModeStore = useEditModeStore();
 
-//type SlopeType = "POSITIVE" | "NEGATIVE";
+type SlopeType = "POSITIVE" | "NEGATIVE" | "NONE";
+const slopeType = ref<SlopeType>("NONE");
 
-const slopeType = computed(() =>
-  linePosition.value.left.y >= linePosition.value.right.y
-    ? "POSITIVE"
-    : "NEGATIVE",
-);
+type MovementDirection = "UP" | "DOWN" | "NONE";
+const movementDirection = ref<MovementDirection>("NONE");
 
 // props
 
@@ -96,15 +94,11 @@ let lineRight = computed(() => {
 });
 
 let lineBottom = computed(() => {
-  return slopeType.value === "NEGATIVE"
-    ? linePosition.value.right.y
-    : linePosition.value.left.y;
+  return linePosition.value.right.y;
 });
 
 let lineTop = computed(() => {
-  return slopeType.value === "NEGATIVE"
-    ? linePosition.value.left.y
-    : linePosition.value.right.y;
+  return linePosition.value.left.y;
 });
 
 let handleLeft = computed(() => {
@@ -200,48 +194,47 @@ function onMouseDown(e: MouseEvent) {
 }
 
 function setLine(xPos: number, yPos: number) {
+  if (slopeType.value === "NONE") {
+    setSlopeType(xPos, yPos);
+  }
+
+  if (movementDirection.value === "NONE") {
+    movementDirection.value =
+      (slopeType.value === "POSITIVE" && yPos > linePosition.value.right.y) ||
+      (slopeType.value === "NEGATIVE" && yPos > linePosition.value.left.y)
+        ? "DOWN"
+        : "UP";
+  }
+
   // 4 options for drawing sloped line:
   // 1. upper left to lower right.
   // 2  lower right to upper left.
   // 3. upper right to lower left.
   // 4. lower left to upper right.
 
-  const movementUp =
-    (slopeType.value === "POSITIVE" && yPos > linePosition.value.right.y) ||
-    (slopeType.value === "NEGATIVE" && yPos > linePosition.value.left.y);
+  const modifyRight =
+    (slopeType.value === "POSITIVE" && movementDirection.value === "UP") ||
+    (slopeType.value === "NEGATIVE" && movementDirection.value === "DOWN");
 
-  // const modifyRight =
-  //   Math.sqrt(
-  //     Math.pow(linePosition.value.right.x - xPos, 2) +
-  //       Math.pow(linePosition.value.right.y - yPos, 2),
-  //   ) <
-  //   Math.sqrt(
-  //     Math.pow(linePosition.value.left.x - xPos, 2) +
-  //       Math.pow(linePosition.value.left.y - yPos, 2),
-  //   );
-
-  if (slopeType.value === "NEGATIVE" && movementUp) {
-    linePosition.value.left.x = xPos;
-    linePosition.value.left.y = yPos;
-    return;
-  }
-
-  if (slopeType.value === "NEGATIVE" && !movementUp) {
+  if (modifyRight) {
     linePosition.value.right.x = xPos;
     linePosition.value.right.y = yPos;
-    return;
-  }
-
-  if (slopeType.value === "POSITIVE" && movementUp) {
-    linePosition.value.right.x = xPos;
-    linePosition.value.right.y = yPos;
-    return;
-  }
-
-  if (slopeType.value === "POSITIVE" && !movementUp) {
+  } else {
     linePosition.value.left.x = xPos;
     linePosition.value.left.y = yPos;
-    return;
+  }
+}
+
+function setSlopeType(xPos: number, yPos: number) {
+  if (
+    (yPos < linePosition.value.right.y &&
+      xPos > linePosition.value.right.x) /*moving up and right*/ ||
+    (yPos > linePosition.value.right.y && xPos < linePosition.value.right.x)
+  ) {
+    /*moving down and left*/
+    slopeType.value = "POSITIVE";
+  } else {
+    slopeType.value = "NEGATIVE";
   }
 }
 
@@ -292,8 +285,12 @@ function svgDimensions(): DOMRect | undefined {
 }
 
 function startLineDrawing(position: DotPosition) {
+  slopeType.value = "NONE";
+  movementDirection.value = "NONE";
+
   linePosition.value.left.x = linePosition.value.right.x = position.x;
   linePosition.value.left.y = linePosition.value.right.y = position.y;
+  console.debug(position);
 }
 
 function endDrawLine() {

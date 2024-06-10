@@ -6,7 +6,7 @@ import Answer  from "./models/answer/answer.model";
 import User from "./models/user.model";
 import db from "./models/index";
 
-import { NotationAttributes } from "../../math-common/src/baseTypes";
+import {  HorizontalLineNotationAttributes, NotationAttributes, PointNotationAttributes, SlopeLineNotationAttributes, VerticalLineNotationAttributes } from "../../math-common/src/baseTypes";
 import { UserAttributes, StudentLessonCreationAttributes} from "../../math-common/build/userTypes";
 import { LessonCreationAttributes } from "../../math-common/src/lessonTypes";
 import { QuestionCreationAttributes } from "../../math-common/build/questionTypes";
@@ -317,12 +317,13 @@ export default function dbUtil() {
         notation: NotationAttributes
     ) {
         const modelName = getModelName(boardType, notationType); // e.g. LessonSymbol
-
         const boardName = boardType.toString().toLowerCase(); // e.g lesson
         const boardModelName = capitalize(boardName); // e.g Lesson
-        // const notationTypeName = notationType.toString().toLowerCase(); // e.g. symbol
-        // const notationTypeNameCapitalized = capitalize(notationTypeName); // e.g. Symbol
-        // const modelName = boardModelName + notationTypeNameCapitalized; // e.g. LessonSymbol
+
+        if (!validateModel(notation)) {
+
+            return;
+        }
 
         (notation as any).userId = (await getIdByUUId(
             "User",
@@ -383,6 +384,47 @@ export default function dbUtil() {
         const notationTypeNameCapitalized = capitalize(notationTypeName); // e.g. Symbol
         const modelName = boardModelName + notationTypeNameCapitalized; // e.g. LessonSymbol
         return modelName;
+    }
+
+    function validateModel(model: NotationAttributes) : boolean {
+        switch (model.notationType) {
+            case "EXPONENT":
+            case "SYMBOL": {
+                const m = model as PointNotationAttributes;
+                return m.col >= 0 && m.row >= 0 && m.value.length > 0;
+            }
+            case "HORIZONTALLINE": {
+                const m = model as HorizontalLineNotationAttributes;
+                return (
+                    m.fromCol >= 0 &&
+                    m.toCol >= 0 &&
+                    m.row >= 0 &&
+                    m.fromCol <= m.toCol
+                );
+            }
+            case "SLOPELINE": {
+                const m = model as SlopeLineNotationAttributes;
+                return (
+                    m.fromCol >= 0 &&
+                    m.toCol >= 0 &&
+                    m.fromRow >= 0 &&
+                    m.toRow >= 0 &&
+                    m.fromCol < m.toCol &&
+                    m.fromRow != m.toRow
+                );
+            }
+            case "VERTICALLINE": {
+                const m = model as VerticalLineNotationAttributes;
+                return (
+                    m.col >= 0 &&
+                    m.fromRow >= 0 &&
+                    m.toRow >= 0 &&
+                    m.fromRow <= m.toRow
+                );
+            }
+        }
+
+        return true;
     }
     
 

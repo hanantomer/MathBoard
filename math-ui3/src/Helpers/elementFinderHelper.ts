@@ -48,31 +48,31 @@ export default function elementFinderHelper() {
 
   function getRectCoordinates(
     svgId: string,
-    screenCoordinates: ScreenCoordinates,
+    rectScreenCoordinates: ScreenCoordinates,
   ): RectAttributes {
     const boundingRect = document
       .getElementById(svgId)!
       .getBoundingClientRect();
 
     const areaFromCol = Math.round(
-      (screenCoordinates.x1 - boundingRect.left) /
+      (rectScreenCoordinates.x1 - boundingRect.left) /
         (notationStore.getCellHorizontalWidth() + cellSpace),
     );
 
     const areaToCol =
       Math.round(
-        (screenCoordinates.x2 - boundingRect.left) /
+        (rectScreenCoordinates.x2 - boundingRect.left) /
           (notationStore.getCellHorizontalWidth() + cellSpace),
       ) - 1;
 
     const areaFromRow = Math.round(
-      (screenCoordinates.y1 - boundingRect.top) /
+      (rectScreenCoordinates.y1 - boundingRect.top) /
         (notationStore.getCellVerticalHeight() + cellSpace),
     );
 
     const areaToRow =
       Math.round(
-        (screenCoordinates.y2 - boundingRect.top) /
+        (rectScreenCoordinates.y2 - boundingRect.top) /
           (notationStore.getCellVerticalHeight() + cellSpace),
       ) - 1;
 

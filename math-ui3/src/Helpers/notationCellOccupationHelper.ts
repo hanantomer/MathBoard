@@ -135,7 +135,6 @@ export default function notationCellOccupationHelper() {
         }
       }
     }
-    console.log(matrix);
   }
 
   // rect occupation matrix holds only one notation per cell

@@ -764,7 +764,7 @@ export default function notationMutateHelper() {
 
     const notationType: NotationType =
       editModeStore.getEditMode() === "EXPONENT_STARTED"
-        ? "EXPONENT_STARTED"
+        ? "EXPONENT"
         : "SYMBOL";
 
     let notation: PointNotationCreationAttributes = {

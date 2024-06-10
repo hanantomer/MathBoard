@@ -2,7 +2,7 @@
   <freeText :svgId="svgId"></freeText>
   <areaSelector :svgId="svgId"></areaSelector>
   <v-row>
-    <slot name="title"></slot>
+    <slot name="title" class="title"></slot>
   </v-row>
   <v-row align="start" class="fill-heigh" no-gutters>
     <div style="display: flex; flex-direction: row">
@@ -226,8 +226,6 @@ async function load() {
       notationStore.getParent().type,
       notationStore.getParent().uuid,
     );
-
-
   } finally {
     pBar.value = false;
   }
@@ -241,6 +239,7 @@ function handleMouseDown(e: MouseEvent) {
   const position = { x: e.clientX, y: e.clientY };
 
   if (
+    editModeStore.isSelectFromListMode() ||
     editModeStore.isLineMode() ||
     editModeStore.isColorisingMode() ||
     editModeStore.isTextStartedMode()
@@ -300,9 +299,15 @@ html {
   color: white;
   position: absolute;
   top: 20px;
-  left: 50%;
+  left: 400px;
   text-align: center;
   z-index: 9999;
+}
+
+@media (width <= 1150px) {
+  .title {
+    display: none;
+  }
 }
 
 .line {

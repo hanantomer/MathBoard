@@ -6,7 +6,7 @@ import {
   CellAttributes, 
   RectAttributes, 
   SingleValueAttributes,
-  ExponentAttributes,
+  //ExponentAttributes,
   BoardAttributes,
   EntityAttributes,
   NotationAttributes
@@ -55,8 +55,8 @@ export type AnswerRectCreationAttributes = Omit<AnswerRectAttributes, keyof Enti
 
 // exponent
 
-export type AnswerExponentAttributes = EntityAttributes & NotationAttributes & CellAttributes & ExponentAttributes &  AnswerNotationAttributes;
+//export type AnswerExponentAttributes = EntityAttributes & NotationAttributes & CellAttributes & ExponentAttributes &  AnswerNotationAttributes;
 
-export type AnswerExponentCreationAttributes = Omit<AnswerExponentAttributes, keyof EntityAttributes>     
+//export type AnswerExponentCreationAttributes = Omit<AnswerExponentAttributes, keyof EntityAttributes>     
 
 

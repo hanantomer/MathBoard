@@ -28,6 +28,14 @@ export const useEditModeStore = defineStore("editMode", () => {
     );
   }
 
+  function isSelectFromListMode() {
+    return (
+      editMode.value == "LESSONS_SELECTION" ||
+      editMode.value == "QUESTIONS_SELECTION" ||
+      editMode.value == "ANSWERS_SELECTION"
+    );
+  }
+
   function isLineMode() {
     return (
       isHorizontalLineMode() ||
@@ -241,6 +249,7 @@ export const useEditModeStore = defineStore("editMode", () => {
     isTextStartedMode,
     isTextSelectedMode,
     isCheckMode,
+    isSelectFromListMode,
     setEditMode,
     setNextEditMode,
     setDefaultEditMode,

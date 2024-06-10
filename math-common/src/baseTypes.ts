@@ -25,16 +25,16 @@ export type SingleValueAttributes =  {
   value: string;
 };
 
-export type ExponentAttributes =  {
-  base: string;
-  exponent: string;
-};
+// export type ExponentAttributes =  {
+//   base: string;
+//   exponent: string;
+// };
 
-export type TriangleAttributes =  {
-  A: number;
-  B: number;
-  C: number;
-};
+// export type TriangleAttributes =  {
+//   A: number;
+//   B: number;
+//   C: number;
+// };
 
 export type CellAttributes =  {
   col: number;
@@ -96,7 +96,7 @@ export type HorizontalLineNotationAttributes = EntityAttributes & NotationAttrib
 export type VerticalLineNotationAttributes = EntityAttributes & NotationAttributes & VerticalLineAttributes & SingleValueAttributes;
 export type SlopeLineNotationAttributes = EntityAttributes & NotationAttributes & SlopeLineAttributes & SingleValueAttributes;
 export type RectNotationAttributes = EntityAttributes & NotationAttributes & RectAttributes & SingleValueAttributes;
-export type ExponentNotationAttributes = EntityAttributes &  NotationAttributes & CellAttributes & ExponentAttributes;
+//export type ExponentNotationAttributes = EntityAttributes &  NotationAttributes & CellAttributes & ExponentAttributes;
 
 // ommiting uuid from creation attributed since created by the databse
 export type PointNotationCreationAttributes = Omit<NotationAttributes & CellAttributes & SingleValueAttributes, "uuid">;
@@ -104,7 +104,7 @@ export type HorizontalLineNotationCreationAttributes = Omit<NotationAttributes &
 export type VerticalLineNotationCreationAttributes = Omit<NotationAttributes & VerticalLineAttributes, "uuid">;
 export type SlopeLineNotationCreationAttributes = Omit<NotationAttributes & SlopeLineAttributes, "uuid">;
 export type RectNotationCreationAttributes = Omit<NotationAttributes & RectAttributes & SingleValueAttributes, "uuid">;
-export type ExponentNotationCreationAttributes = Omit<EntityAttributes &  NotationAttributes & CellAttributes & ExponentAttributes, "uuid">;
+//export type ExponentNotationCreationAttributes = Omit<EntityAttributes &  NotationAttributes & CellAttributes & ExponentAttributes, "uuid">;
 
 
 

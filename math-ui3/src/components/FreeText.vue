@@ -10,6 +10,7 @@
     }"
     id="textAreaEl"
     v-model="textValue"
+    v-bind:onblur="onLeave"
   >
   </textarea>
 </template>
@@ -25,8 +26,6 @@ import useElementFinderHelper from "../helpers/elementFinderHelper";
 import useEventBus from "../helpers/eventBusHelper";
 
 const notationMutateHelper = useNotationMutateHelper();
-
-let initialTextValue = "";
 let textValue = ref("");
 
 const notationStore = useNotationStore();
@@ -48,14 +47,14 @@ const svgDimensions = computed(() => {
   return document.getElementById(props.svgId)?.getBoundingClientRect()!;
 });
 
-watch(
-  () => editModeStore.getEditMode(),
-  (newEditMode, oldEditMode) => {
-    if (oldEditMode === "TEXT_WRITING" && newEditMode !== "TEXT_WRITING") {
-      onLeave();
-    }
-  },
-);
+// watch(
+//   () => editModeStore.getEditMode(),
+//   (newEditMode, oldEditMode) => {
+//     if (oldEditMode === "TEXT_WRITING" && newEditMode !== "TEXT_WRITING") {
+//       onLeave();
+//     }
+//   },
+// );
 
 // area selector signals the selected position attributes
 watch(
@@ -130,7 +129,6 @@ function setInitialTextValue() {
     textValue.value = (
       notationStore.getSelectedNotations()[0] as RectNotationAttributes
     ).value;
-  initialTextValue = textValue.value;
 }
 
 function onLeave() {
@@ -147,15 +145,11 @@ function onLeave() {
 function submitText() {
   editModeStore.setNextEditMode();
 
-  const textAreaRect = document
-    .getElementById("textAreaEl")!
-    .getBoundingClientRect();
-
   const rectCoordinates = elementFinderHelper.getRectCoordinates(props.svgId, {
-    x1: textAreaRect?.left! + window.scrollX,
-    x2: textAreaRect?.right! + window.scrollX,
-    y1: textAreaRect?.top! + window.scrollY,
-    y2: textAreaRect?.bottom! + window.scrollY,
+    x1: textLeft.value + window.scrollX,
+    x2: textLeft.value + textWidth.value + window.scrollX,
+    y1: textTop.value + window.scrollY,
+    y2: textTop.value + textHeight.value + window.scrollY,
   });
 
   if (selectedNotation) {
@@ -173,6 +167,7 @@ function hideTextNotation(uuid: string) {
     .classList.add("hidden");
 }
 
+// show back text notation that was hideen during editing
 function showTextNotation(uuid: string) {
   document!
     .querySelector<HTMLElement>(`foreignObject[uuid="${uuid}"]`)!
