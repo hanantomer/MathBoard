@@ -2,6 +2,7 @@ import {
   HorizontalLineAttributes, 
   VerticalLineAttributes, 
   SlopeLineAttributes, 
+  CurveLineAttributes,
   CellAttributes, 
   RectAttributes, 
   SingleValueAttributes,
@@ -29,6 +30,11 @@ export type LessonVerticalLineCreationAttributes = Omit<LessonVerticalLineAttrib
 export type  LessonSlopeLineAttributes = EntityAttributes & NotationAttributes & SlopeLineAttributes;
 
 export type LessonSlopeLineCreationAttributes = Omit<LessonSlopeLineAttributes, keyof EntityAttributes> 
+
+export type LessonCurveLineAttributes = EntityAttributes & NotationAttributes & CurveLineAttributes &  LessonNotationAttributes;
+
+export type LessonCurevLineCreationAttributes = Omit<LessonCurveLineAttributes, keyof EntityAttributes> 
+
 
   
 // point

@@ -45,7 +45,7 @@
 
 <script setup lang="ts">
 import { ref } from "vue";
-import { useContactUsStore } from "../store/pinia/contctUsStore";
+import { useContactUsStore } from "../store/pinia/contactUsStore";
 import { useRouter } from "vue-router";
 const router = useRouter();
 

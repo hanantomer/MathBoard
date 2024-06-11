@@ -2,11 +2,11 @@
   <div class="d-flex">
     <v-sheet>
       <mathBoard :svgId="svgId" :loaded="loaded">
-        <template #title
+        <!-- <template #title
           ><p class="title">
             {{ lessonTitle }}
           </p></template
-        >
+        > -->
       </mathBoard>
     </v-sheet>
     <v-sheet class="mt-10">
@@ -27,6 +27,7 @@ import { watch } from "vue";
 import { useRoute } from "vue-router";
 import { heartBeatInterval } from "../../../math-common/src/globals";
 import { useEditModeStore } from "../store/pinia/editModeStore";
+import { useTitleStore } from "../store/pinia/titleStore";
 import lessonStudents from "./LessonStudents.vue";
 
 const route = useRoute();
@@ -35,16 +36,12 @@ const userStore = useUserStore();
 const lessonStore = useLessonStore();
 const notationStore = useNotationStore();
 const editModeStore = useEditModeStore();
+const titleStore = useTitleStore();
 const userOutgoingOperations = useUserOutgoingOperations();
 const userIncomingOperations = useUserIncomingOperations();
 
 let loaded = ref(false);
 const svgId = "lessonSvg";
-
-const lessonTitle = computed(() => {
-  if (!lessonStore.getCurrentLesson()) return;
-  return lessonStore.getCurrentLesson()!.name;
-});
 
 watch(
   route,
@@ -83,6 +80,7 @@ async function loadLesson(lessonUUId: string) {
     lessonStore.addLessonToSharedLessons();
   }
 
+  titleStore.setTitle(lessonStore.getCurrentLesson()!.name);
   loaded.value = true;
 }
 </script>

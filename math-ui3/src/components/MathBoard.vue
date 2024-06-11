@@ -1,16 +1,13 @@
 <template>
   <freeText :svgId="svgId"></freeText>
   <areaSelector :svgId="svgId"></areaSelector>
-  <v-row>
-    <slot name="title" class="title"></slot>
-  </v-row>
   <v-row align="start" class="fill-heigh" no-gutters>
     <div style="display: flex; flex-direction: row">
       <v-sheet class="mt-14 ml-1">
         <toolbar :key="toolbarKey"></toolbar>
       </v-sheet>
       <div style="display: flex; flex-direction: column">
-        <v-sheet class="mt-10 ml-8 overflow-auto">
+        <v-sheet class="mt-10 ml-8">
           <v-progress-linear
             data-cy="pBar"
             v-show="pBar"
@@ -293,15 +290,6 @@ html {
 }
 .deleteButtonActive {
   cursor: URL("~@/assets/delete.jpg"), none !important;
-}
-.title {
-  max-width: 500px;
-  color: white;
-  position: absolute;
-  top: 20px;
-  left: 400px;
-  text-align: center;
-  z-index: 9999;
 }
 
 @media (width <= 1150px) {

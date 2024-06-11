@@ -25,16 +25,6 @@ export type SingleValueAttributes =  {
   value: string;
 };
 
-// export type ExponentAttributes =  {
-//   base: string;
-//   exponent: string;
-// };
-
-// export type TriangleAttributes =  {
-//   A: number;
-//   B: number;
-//   C: number;
-// };
 
 export type CellAttributes =  {
   col: number;
@@ -71,6 +61,16 @@ export type SlopeLineAttributes =  {
   fromRow: number;
   toRow: number;
 };
+
+export type CurveLineAttributes =  {
+  fromCol: number;
+  toCol: number;
+  fromRow: number;
+  toRow: number;
+  controlPoint1: CellAttributes;
+  controlPoint2: CellAttributes;
+};
+
 
 
 export type RectAttributes = {

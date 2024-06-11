@@ -23,7 +23,8 @@
         contain
       ></v-img>
       <v-toolbar-title>
-        ONLINE <strong style="color: darkorange">MATHBOARD</strong>
+        ONLINE <strong style="color: darkorange">MATHBOARD </strong>
+        <span class="title">{{ title }}</span>
       </v-toolbar-title>
 
       <!-- lessons -->
@@ -148,15 +149,21 @@ import { useRouter } from "vue-router";
 import { onMounted, computed } from "vue";
 import useAxiosHelper from "./helpers/axiosHelper";
 import { useUserStore } from "./store/pinia/userStore";
+import { useTitleStore } from "./store/pinia/titleStore";
 import { useCookies } from "vue3-cookies";
 const cookies = useCookies().cookies;
 
 const { initAxiosInterceptors } = useAxiosHelper();
 const router = useRouter();
 const userStore = useUserStore();
+const titleStore = useTitleStore();
 
 onMounted(() => {
   initAxiosInterceptors();
+});
+
+let title = computed(() => {
+  return titleStore.getTitle();
 });
 
 const user = computed(() => {
@@ -213,6 +220,9 @@ function navContactUs() {
 // },
 </script>
 <style>
+.title {
+  margin-left: 20px !important;
+}
 body {
   -webkit-touch-callout: none;
   -webkit-user-select: none;
