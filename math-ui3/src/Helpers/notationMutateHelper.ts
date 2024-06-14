@@ -9,12 +9,15 @@ import {
   HorizontalLineNotationAttributes,
   VerticalLineNotationAttributes,
   SlopeLineNotationAttributes,
+  CurveAttributes,
   HorizontalLineAttributes,
   VerticalLineAttributes,
   SlopeLineAttributes,
+  CurveNotationAttributes,
   HorizontalLineNotationCreationAttributes,
   VerticalLineNotationCreationAttributes,
   SlopeLineNotationCreationAttributes,
+  CurveNotationCreationAttributes,
 } from "common/baseTypes";
 
 import { matrixDimensions } from "common/globals";
@@ -419,6 +422,13 @@ export default function notationMutateHelper() {
     notationStore.addNotation(lineNotation);
   }
 
+  async function updateCurveNotation(
+    curve: CurveNotationAttributes,
+  ) {
+    await dbHelper.updateCurveAttributes(curve);
+    notationStore.addNotation(curve);
+  }
+
   function upsertPointNotation(notation: PointNotationCreationAttributes) {
     editModeStore.setDefaultEditMode();
     notationStore.resetSelectedNotations();
@@ -803,15 +813,15 @@ export default function notationMutateHelper() {
   }
 
   function addHorizontalLineNotation(
-    coordinates: HorizontalLineAttributes,
+    horizontalLineAttributes: HorizontalLineAttributes,
     notationType: NotationType,
   ) {
-    transposeHorizontalCoordinatesIfNeeded(coordinates);
+    transposeHorizontalCoordinatesIfNeeded(horizontalLineAttributes);
 
     let lineNotation: HorizontalLineNotationCreationAttributes = {
-      fromCol: coordinates.fromCol,
-      toCol: coordinates.toCol,
-      row: coordinates.row,
+      fromCol: horizontalLineAttributes.fromCol,
+      toCol: horizontalLineAttributes.toCol,
+      row: horizontalLineAttributes.row,
       boardType: notationStore.getParent().type,
       parentUUId: notationStore.getParent().uuid,
       notationType: notationType,
@@ -822,15 +832,15 @@ export default function notationMutateHelper() {
   }
 
   function addVerticalLineNotation(
-    coordinates: VerticalLineAttributes,
+    verticalLineAttributes: VerticalLineAttributes,
     notationType: NotationType,
   ) {
-    transposeVerticalCoordinatesIfNeeded(coordinates);
+    transposeVerticalCoordinatesIfNeeded(verticalLineAttributes);
 
     let notation: VerticalLineNotationCreationAttributes = {
-      col: coordinates.col,
-      fromRow: coordinates.fromRow,
-      toRow: coordinates.toRow,
+      col: verticalLineAttributes.col,
+      fromRow: verticalLineAttributes.fromRow,
+      toRow: verticalLineAttributes.toRow,
       boardType: notationStore.getParent().type,
       parentUUId: notationStore.getParent().uuid,
       notationType: notationType,
@@ -841,20 +851,39 @@ export default function notationMutateHelper() {
   }
 
   function addSlopeLineNotation(
-    coordinates: SlopeLineAttributes,
+    slopeLineAttributes: SlopeLineAttributes,
     notationType: NotationType,
   ) {
     let lineNotation: SlopeLineNotationCreationAttributes = {
-      fromCol: coordinates.fromCol,
-      toCol: coordinates.toCol,
-      fromRow: coordinates.fromRow,
-      toRow: coordinates.toRow,
+      fromCol: slopeLineAttributes.fromCol,
+      toCol: slopeLineAttributes.toCol,
+      fromRow: slopeLineAttributes.fromRow,
+      toRow: slopeLineAttributes.toRow,
       boardType: notationStore.getParent().type,
       parentUUId: notationStore.getParent().uuid,
       notationType: notationType,
       user: userStore.getCurrentUser()!,
     };
     upsertLineNotation(lineNotation);
+  }
+
+  function addCurveNotation(
+    curveAttributes: CurveAttributes,
+    notationType: NotationType,
+  ) {
+    let curveNotation: CurveNotationCreationAttributes = {
+      fromCol: curveAttributes.fromCol,
+      toCol: curveAttributes.toCol,
+      fromRow: curveAttributes.fromRow,
+      toRow: curveAttributes.toRow,
+      controlPoint1: curveAttributes.controlPoint1,
+      controlPoint2: curveAttributes.controlPoint2,
+      boardType: notationStore.getParent().type,
+      parentUUId: notationStore.getParent().uuid,
+      notationType: notationType,
+      user: userStore.getCurrentUser()!,
+    };
+    upsertLineNotation(curveNotation);
   }
 
   function cloneNotation(notation: Readonly<NotationAttributes>) {
@@ -917,12 +946,14 @@ export default function notationMutateHelper() {
     addHorizontalLineNotation,
     addVerticalLineNotation,
     addSlopeLineNotation,
+    addCurveNotation,
     deleteSelectedNotations,
     moveSelectedNotations,
     saveMovedNotations,
     updateHorizontalLineNotation,
     updateVerticalLineNotation,
     updateSlopeLineNotation,
+    updateCurveNotation,
     updateNotation,
     cloneNotation,
   };

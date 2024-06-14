@@ -16,6 +16,7 @@ export type BusEventType =
     "FREE_TEXT_SUBMITTED"       |
     "FREE_TEXT_SELECTED"        |
     "SLOPE_LINE_SELECTED"       |
+    "CURVE_SELECTED"            |
     "VERTICAL_LINE_SELECTED"    |
     "HORIZONTAL_LINE_SELECTED";
 
@@ -28,6 +29,7 @@ export const NotationTypeValues =
   "HORIZONTALLINE",
   "VERTICALLINE",
   "SLOPELINE",
+  "CURVE",
   "SQRT",
   "SQRTSYMBOL",
   "TEXT",
@@ -82,12 +84,12 @@ export type EditMode =
   "SLOPE_LINE_STARTED"        | // slope line button pressed
   "SLOPE_LINE_DRAWING"        | // slope line drawing started
   "SLOPE_LINE_SELECTED"       | // slope line selected
-  "CONCAVE_LINE_STARTED"      | // concave line button pressed
-  "CONCAVE_LINE_DRAWING"      | // concave line drawing started
-  "CONCAVE_LINE_SELECTED"     | // concave line selected
-  "CONVEX_LINE_STARTED"       | // convex line button pressed
-  "CONVEX_LINE_DRAWING"       | // convex line drawing started
-  "CONVEX_LINE_SELECTED"      | // convex line selected
+  "CONCAVE_CURVE_STARTED"      | // concave line button pressed
+  "CONCAVE_CURVE_DRAWING"      | // concave line drawing started
+  "CONCAVE_CURVE_SELECTED"     | // concave line selected
+  "CONVEX_CURVE_STARTED"       | // convex line button pressed
+  "CONVEX_CURVE_DRAWING"       | // convex line drawing started
+  "CONVEX_CURVE_SELECTED"      | // convex line selected
 
   "SQRT_STARTED"              | // sqrt button pressed
   "SQRT_DRAWING"              | // sqrt drawing started
@@ -116,6 +118,9 @@ export type EditMode =
     ["SLOPE_LINE_STARTED", "SLOPELINE"],       
     ["SLOPE_LINE_DRAWING", "SLOPELINE"],       
     ["SLOPE_LINE_SELECTED", "SLOPELINE"],      
+    ["CURVE_STARTED", "CURVE"],       
+    ["CURVE_DRAWING", "CURVE"],       
+    ["CURVE_SELECTED", "CURVE"],      
     ["SQRT_STARTED", "SQRT"],                     
     ["SQRT_DRAWING", "SQRT"],             
     ["SQRT_SELECTED", "SQRT"],            

@@ -40,6 +40,15 @@ export type SlopeLinePosition =  {
   right: DotPosition
 };
 
+export type CurvePosition =  {
+  left: DotPosition, 
+  right: DotPosition,
+  controlPoint1: DotPosition,
+  controlPoint2: DotPosition
+};
+
+
+
 export function getDefaultFontSize() : number {
   var style  = 
     window!.getComputedStyle(document!.body)!;

@@ -19,6 +19,7 @@
           <horizontalLineDrawer :svgId="svgId"></horizontalLineDrawer>
           <verticalLineDrawer :svgId="svgId"></verticalLineDrawer>
           <slopeLineDrawer :svgId="svgId"></slopeLineDrawer>
+          <curveDrawer :svgId="svgId" :curveType="curveType"></curveDrawer>
           <svg
             v-bind:style="{ cursor: cursor }"
             v-bind:id="svgId"
@@ -46,9 +47,10 @@ import areaSelector from "./AreaSelector.vue";
 import horizontalLineDrawer from "./HorizontalLineDrawer.vue";
 import verticalLineDrawer from "./VerticalLineDrawer.vue";
 import slopeLineDrawer from "./SlopeLineDrawer.vue";
+import curveDrawer from "./CurveDrawer.vue";
 import useEventBus from "../helpers/eventBusHelper";
 import { CellAttributes } from "common/baseTypes";
-import { onMounted, onUnmounted, ref, watch } from "vue";
+import { onMounted, onUnmounted, ref, watch, computed } from "vue";
 import { useNotationStore } from "../store/pinia/notationStore";
 import { useEditModeStore } from "../store/pinia/editModeStore";
 import { useAnswerStore } from "../store/pinia/answerStore";
@@ -100,6 +102,10 @@ const props = defineProps({
   svgId: { type: String, default: "" },
   loaded: { type: Boolean, default: false },
 });
+
+let curveType:  = computed(() => {
+  return editModeStore.getEditMode() === "CONCAVE_CURVE_STARTED" ? "CONCAVE" : "CONVEX";
+})
 
 watch(
   () => eventBus.bus.value.get("SVG_MOUSEDOWN"),

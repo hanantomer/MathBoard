@@ -4,8 +4,8 @@ import {
   NotationAttributes,
   NotationCreationAttributes,
   SlopeLineNotationAttributes,
-  VerticalLineAttributes,
   VerticalLineNotationAttributes,
+  CurveNotationAttributes,
 } from "common/baseTypes";
 import {
   UserAttributes,
@@ -289,6 +289,25 @@ export default function useDbHelper() {
     );
   }
 
+  async function updateCurveAttributes(
+    curve: CurveNotationAttributes,
+  ) {
+    return axios.put(
+      baseURL +
+        `/${curve.boardType.toLowerCase()}${curve.notationType.toLowerCase()}s`,
+      {
+        uuid: curve.uuid,
+        fromCol: curve.fromCol,
+        toCol: curve.toCol,
+        fromRow: curve.fromRow,
+        toRow: curve.toRow,
+        controlPoint1: curve.controlPoint1,
+        controlPoint2: curve.controlPoint2
+      },
+    );
+  }
+
+
   async function getLesson(lessonUUId: string): Promise<LessonAttributes> {
     const { data } = await axios.get<LessonAttributes>(
       baseURL + "/lessons?lessonUUId=" + lessonUUId,
@@ -404,6 +423,7 @@ export default function useDbHelper() {
     updateHorizontalLineAttributes,
     updateVerticalLineAttributes,
     updateSlopeLineAttributes,
+    updateCurveAttributes,
     updateNotationValue,
     updateNotation,
     saveMovedNotations,

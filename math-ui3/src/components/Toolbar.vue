@@ -129,9 +129,9 @@ const modeButtons: Array<{
     rotate: 120,
   },
   {
-    name: "concaveLine",
+    name: "concaveCurve",
     show_condition: true,
-    editMode: "CONCAVE_LINE_STARTED",
+    editMode: "CONCAVE_CURVE_STARTED",
     activeState: ref(1),
     tooltip: "concave Line",
     icon_class: "material-symbols-outlined",
@@ -140,9 +140,9 @@ const modeButtons: Array<{
     rotate: 260,
   },
   {
-    name: "convexLine",
+    name: "convexCurve",
     show_condition: true,
-    editMode: "CONVEX_LINE_STARTED",
+    editMode: "CONVEX_CURVE_STARTED",
     activeState: ref(1),
     tooltip: "convex Line",
     icon_class: "material-symbols-outlined",

@@ -3,7 +3,7 @@ import {
   HorizontalLineAttributes, 
   VerticalLineAttributes, 
   SlopeLineAttributes, 
-  CurveLineAttributes, 
+  CurveAttributes, 
   CellAttributes, 
   RectAttributes, 
   SingleValueAttributes,
@@ -40,9 +40,9 @@ export type  AnswerSlopeLineAttributes = EntityAttributes & NotationAttributes &
 
 export type AnswerSlopeLineCreationAttributes = Omit<AnswerSlopeLineAttributes, keyof EntityAttributes> 
 
-export type  AnswerCurveLineAttributes = EntityAttributes & NotationAttributes & CurveLineAttributes &  AnswerNotationAttributes;
+export type  AnswerCurveAttributes = EntityAttributes & NotationAttributes & CurveAttributes &  AnswerNotationAttributes;
 
-export type AnswerCurevLineCreationAttributes = Omit<AnswerCurveLineAttributes, keyof EntityAttributes> 
+export type AnswerCurveCreationAttributes = Omit<AnswerCurveAttributes, keyof EntityAttributes> 
   
 // point
 

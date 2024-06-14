@@ -101,6 +101,13 @@ export const useEditModeStore = defineStore("editMode", () => {
     return editMode.value == "SLOPE_LINE_STARTED";
   }
 
+  function isCurveStartedMode() {
+    return (
+      editMode.value == "CONVEX_CURVE_STARTED" ||
+      editMode.value == "CONCAVE_CURVE_STARTED"
+    );
+  }
+
   function isSqrtStartedMode() {
     return editMode.value == "SQRT_STARTED";
   }
@@ -117,6 +124,13 @@ export const useEditModeStore = defineStore("editMode", () => {
     return editMode.value == "SLOPE_LINE_DRAWING";
   }
 
+  function isCurveDrawingMode() {
+    return (
+      editMode.value == "CONCAVE_CURVE_DRAWING" ||
+      editMode.value == "CONVEX_CURVE_DRAWING"
+    );
+  }
+
   function isHorizontalLineSelectedMode() {
     return (
       editMode.value == "HORIZONTAL_LINE_SELECTED" ||
@@ -130,6 +144,12 @@ export const useEditModeStore = defineStore("editMode", () => {
 
   function isSlopeLineSelectedMode() {
     return editMode.value == "SLOPE_LINE_SELECTED";
+  }
+
+  function isCurveSelectedMode() {
+    return (
+      editMode.value == "CONVEX_CURVE_SELECTED" || "CONCAVE_CURVE_SELECTED"
+    );
   }
 
   function isTextStartedMode() {
@@ -199,6 +219,16 @@ export const useEditModeStore = defineStore("editMode", () => {
       case "SLOPE_LINE_SELECTED":
         return setEditMode("SLOPE_LINE_DRAWING");
 
+      case "CONCAVE_CURVE_STARTED":
+        return setEditMode("CONCAVE_CURVE_DRAWING");
+      case "CONCAVE_CURVE_SELECTED":
+        return setEditMode("CONCAVE_CURVE_DRAWING");
+
+      case "CONVEX_CURVE_STARTED":
+        return setEditMode("CONVEX_CURVE_DRAWING");
+      case "CONVEX_CURVE_SELECTED":
+        return setEditMode("CONVEX_CURVE_DRAWING");
+
       case "SQRT_STARTED":
         return setEditMode("SQRT_DRAWING");
       case "SQRT_SELECTED":
@@ -237,8 +267,11 @@ export const useEditModeStore = defineStore("editMode", () => {
     isVerticalLineDrawingMode,
     isSlopeLineMode,
     isSlopeLineSelectedMode,
+    isCurveSelectedMode,
     isSlopeLineStartedMode,
+    isCurveStartedMode,
     isSlopeLineDrawingMode,
+    isCurveDrawingMode,
     isSelectedMode,
     isSqrtMode,
     isSqrtEditMode,

@@ -2,7 +2,7 @@ import {
   HorizontalLineAttributes, 
   VerticalLineAttributes, 
   SlopeLineAttributes, 
-  CurveLineAttributes,
+  CurveAttributes,
   CellAttributes, 
   RectAttributes, 
   SingleValueAttributes,
@@ -31,9 +31,9 @@ export type  LessonSlopeLineAttributes = EntityAttributes & NotationAttributes &
 
 export type LessonSlopeLineCreationAttributes = Omit<LessonSlopeLineAttributes, keyof EntityAttributes> 
 
-export type LessonCurveLineAttributes = EntityAttributes & NotationAttributes & CurveLineAttributes &  LessonNotationAttributes;
+export type LessonCurveAttributes = EntityAttributes & NotationAttributes & CurveAttributes &  LessonNotationAttributes;
 
-export type LessonCurevLineCreationAttributes = Omit<LessonCurveLineAttributes, keyof EntityAttributes> 
+export type LessonCurveCreationAttributes = Omit<LessonCurveAttributes, keyof EntityAttributes> 
 
 
   
