@@ -103,7 +103,7 @@ const props = defineProps({
   loaded: { type: Boolean, default: false },
 });
 
-let curveType:  = computed(() => {
+let curveType = computed(() => {
   return editModeStore.getEditMode() === "CONCAVE_CURVE_STARTED" ? "CONCAVE" : "CONVEX";
 })
 
