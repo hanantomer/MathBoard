@@ -38,17 +38,16 @@
         );
 
         // mid-point of line:
-        var mpx = (p2x + p1x) * 0.5;
-        var mpy = (p2y + p1y) * 0.5;
+        var mpx = (p2x + p1x) * 0.5 - 500;
+        var mpy = (p2y + p1y) * 0.5 + 50;
 
         // angle of perpendicular to line:
         var theta =
           Math.atan2(p2y - p1y, p2x - p1x) -
           Math.PI / 2;
 
-        
         // distance of control point from mid-point of line:
-        var offset = 30;
+        var offset = 180;
 
         // location of control point:
         var c1x = mpx + offset * Math.cos(theta);
@@ -84,7 +83,7 @@
       <circle
         id="au"
         class="spot"
-        cx="200"
+        cx="400"
         cy="50"
         r="4"
       ></circle>
@@ -92,7 +91,7 @@
         id="sl"
         class="spot"
         cx="100"
-        cy="100"
+        cy="500"
         r="4"
       ></circle>
       <circle

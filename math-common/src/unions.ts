@@ -118,9 +118,12 @@ export type EditMode =
     ["SLOPE_LINE_STARTED", "SLOPELINE"],       
     ["SLOPE_LINE_DRAWING", "SLOPELINE"],       
     ["SLOPE_LINE_SELECTED", "SLOPELINE"],      
-    ["CURVE_STARTED", "CURVE"],       
-    ["CURVE_DRAWING", "CURVE"],       
-    ["CURVE_SELECTED", "CURVE"],      
+    ["CONCAVE_CURVE_STARTED", "CURVE"],       
+    ["CONVEX_CURVE_STARTED", "CURVE"],       
+    ["CONCAVE_CURVE_DRAWING", "CURVE"],       
+    ["CONVEX_CURVE_DRAWING", "CURVE"],       
+    ["CONCAVE_CURVE_SELECTED", "CURVE"],      
+    ["CONVEX_CURVE_SELECTED", "CURVE"],      
     ["SQRT_STARTED", "SQRT"],                     
     ["SQRT_DRAWING", "SQRT"],             
     ["SQRT_SELECTED", "SQRT"],            
@@ -131,7 +134,7 @@ export type EditMode =
     ["MOVING", "SYMBOL"],                   
     ["CHECKMARK_STARTED", "SYMBOL"],                
     ["SEMICHECKMARK_STARTED", "SYMBOL"],            
-    ["XMARK_STARTED", "SYMBOL"],                    
+    ["XMARK_STARTED", "SYMBOL"]                    
  ])
 
  export const EditModeCursorType = new Map<EditMode, CursorType> ([

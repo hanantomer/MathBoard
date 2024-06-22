@@ -104,8 +104,10 @@ const props = defineProps({
 });
 
 let curveType = computed(() => {
-  return editModeStore.getEditMode() === "CONCAVE_CURVE_STARTED" ? "CONCAVE" : "CONVEX";
-})
+  return editModeStore.getEditMode() === "CONCAVE_CURVE_STARTED"
+    ? "CONCAVE"
+    : "CONVEX";
+});
 
 watch(
   () => eventBus.bus.value.get("SVG_MOUSEDOWN"),
@@ -244,6 +246,7 @@ function handleMouseDown(e: MouseEvent) {
   if (
     editModeStore.isSelectFromListMode() ||
     editModeStore.isLineMode() ||
+    editModeStore.isCurveMode() ||
     editModeStore.isColorisingMode() ||
     editModeStore.isTextStartedMode()
   ) {

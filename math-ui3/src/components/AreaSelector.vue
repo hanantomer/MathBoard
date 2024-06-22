@@ -183,6 +183,7 @@ function handleMouseMove(e: MouseEvent) {
   if (
     editModeStore.isLineMode() ||
     editModeStore.isSqrtMode() ||
+    editModeStore.isCurveMode() ||
     editModeStore.isColorisingMode() ||
     editModeStore.isTextWritingMode()
   ) {
