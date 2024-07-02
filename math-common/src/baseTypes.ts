@@ -70,12 +70,12 @@ export type SlopeLineAttributes =  {
 };
 
 export type CurveAttributes =  {
-  fromCol: number;
-  toCol: number;
-  fromRow: number;
-  toRow: number;
-  controlPoint1: CellAttributes;
-  controlPoint2: CellAttributes;
+  p1x: number;
+  p2x: number;
+  p1y: number;
+  p2y: number;
+  cpx: number;
+  cpy: number;
 };
 
 

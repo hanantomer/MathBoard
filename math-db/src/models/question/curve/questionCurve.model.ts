@@ -2,18 +2,18 @@ import {
     Model, Column, BelongsTo, ForeignKey, DataType, AllowNull
 } from "sequelize-typescript";
 import  User from "../../user.model";
-import Lesson from "../../lesson/lesson.model";
-import LessonDecorator from "../../lesson/lessonDecorator";
+import Question from "../../question/question.model";
+import QuestionDecorator from "../../question/questionDecorator";
 import {
-    LessonCurveAttributes,
-    LessonCurveCreationAttributes,
-} from "../../../../../math-common/src/lessonTypes";
+    QuestionCurveAttributes,
+    QuestionCurveCreationAttributes,
+} from "../../../../../math-common/src/questionTypes";
 import { BoardType, NotationType } from "../../../../../math-common/src/unions";
 
-@LessonDecorator("LessonCurve")
-export default class LessonCurve extends Model<
-    LessonCurveAttributes,
-    LessonCurveCreationAttributes
+@QuestionDecorator("QuestionCurve")
+export default class QuestionCurve extends Model<
+    QuestionCurveAttributes,
+    QuestionCurveCreationAttributes
 > {
     notationType: NotationType = "CURVE";
     boardType: BoardType = "ANSWER";
@@ -32,45 +32,37 @@ export default class LessonCurve extends Model<
     })
     user!: User;
 
-    @ForeignKey(() => Lesson)
-    lessonId!: number;
+    @ForeignKey(() => Question)
+    questionId!: number;
 
-    @BelongsTo(() => Lesson, {
+    @BelongsTo(() => Question, {
         foreignKey: {
             allowNull: false,
         },
     })
-    lesson!: Lesson;
+    question!: Question;
 
     @AllowNull(false)
     @Column({ type: DataType.INTEGER })
-    fromCol!: number; // col related to the lower row
+    p1x!: number; // col related to the lower row
 
     @AllowNull(false)
     @Column({ type: DataType.INTEGER })
-    toCol!: number; // col related to the higher row
+    p2x!: number; // col related to the higher row
 
     @AllowNull(false)
     @Column({ type: DataType.INTEGER })
-    fromRow!: number;
+    p1y!: number;
 
     @AllowNull(false)
     @Column({ type: DataType.INTEGER })
-    toRow!: number;
+    p2y!: number;
 
     @AllowNull(false)
     @Column({ type: DataType.INTEGER })
-    controlPoint1Col!: number;
+    cpx!: number;
 
     @AllowNull(false)
     @Column({ type: DataType.INTEGER })
-    controlPoint1Row!: number;
-
-    @AllowNull(false)
-    @Column({ type: DataType.INTEGER })
-    controlPoint2Col!: number;
-
-    @AllowNull(false)
-    @Column({ type: DataType.INTEGER })
-    controlPoint2Row!: number;
+    cpy!: number;
 }

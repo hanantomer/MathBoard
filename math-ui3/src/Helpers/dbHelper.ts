@@ -297,12 +297,12 @@ export default function useDbHelper() {
         `/${curve.boardType.toLowerCase()}${curve.notationType.toLowerCase()}s`,
       {
         uuid: curve.uuid,
-        fromCol: curve.fromCol,
-        toCol: curve.toCol,
-        fromRow: curve.fromRow,
-        toRow: curve.toRow,
-        controlPoint1: curve.controlPoint1,
-        controlPoint2: curve.controlPoint2
+        p1x: curve.p1x,
+        p2x: curve.p2x,
+        p1y: curve.p1y,
+        p2y: curve.p2y,
+        cpx: curve.cpx,
+        cpy: curve.cpy
       },
     );
   }

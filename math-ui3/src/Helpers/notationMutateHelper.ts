@@ -471,6 +471,22 @@ export default function notationMutateHelper() {
     addNotation(notation);
   }
 
+  function upsertCurveNotation(notation: CurveNotationCreationAttributes) {
+    editModeStore.setDefaultEditMode();
+    notationStore.resetSelectedNotations();
+
+    let overlappedAnyTypeNotation: NotationAttributes | undefined =
+      findOverlapNotationsOfAnyTypeButLine(notation);
+
+    // don't allow override of other type notation
+    if (overlappedAnyTypeNotation) {
+      return;
+    }
+
+    addNotation(notation);
+  }
+
+
   function upsertRectNotation(newNotation: RectNotationCreationAttributes) {
     editModeStore.setDefaultEditMode();
     notationStore.resetSelectedNotations();
@@ -872,18 +888,18 @@ export default function notationMutateHelper() {
     notationType: NotationType,
   ) {
     let curveNotation: CurveNotationCreationAttributes = {
-      fromCol: curveAttributes.fromCol,
-      toCol: curveAttributes.toCol,
-      fromRow: curveAttributes.fromRow,
-      toRow: curveAttributes.toRow,
-      controlPoint1: curveAttributes.controlPoint1,
-      controlPoint2: curveAttributes.controlPoint2,
+      p1x: curveAttributes.p1x,
+      p2x: curveAttributes.p2x,
+      p1y: curveAttributes.p1y,
+      p2y: curveAttributes.p2y,
+      cpx: curveAttributes.cpx,
+      cpy: curveAttributes.cpy,
       boardType: notationStore.getParent().type,
       parentUUId: notationStore.getParent().uuid,
       notationType: notationType,
       user: userStore.getCurrentUser()!,
     };
-    upsertLineNotation(curveNotation);
+    upsertCurveNotation(curveNotation);
   }
 
   function cloneNotation(notation: Readonly<NotationAttributes>) {

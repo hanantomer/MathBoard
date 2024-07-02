@@ -42,7 +42,7 @@
 <script setup lang="ts">
 import useNotationMutateHelper from "../helpers/notationMutateHelper";
 
-import { watch, computed, ref, PropType } from "vue";
+import { watch, computed, ref } from "vue";
 import { useNotationStore } from "../store/pinia/notationStore";
 import { useEditModeStore } from "../store/pinia/editModeStore";
 import { DotPosition } from "../../../math-common/src/globals";
@@ -57,7 +57,14 @@ const notationMutateHelper = useNotationMutateHelper();
 const notationStore = useNotationStore();
 const editModeStore = useEditModeStore();
 
+const MIN_NUMBER_OF_POINTS = 3;
+
 type CurveType = "CONCAVE" | "CONVEX";
+
+type Point = {
+  x: number;
+  y: number;
+};
 
 type PointWithSlope = {
   x: number;
@@ -80,6 +87,10 @@ const show = computed(() => {
 
 let p1x = 0;
 let p1y = 0;
+let p2x = 0;
+let p2y = 0;
+let cpx = 0;
+let cpy = 0;
 
 //let p2x = ref(0);
 //let p2y = ref(0);
@@ -87,7 +98,7 @@ let p1y = 0;
 //let controlPoint1X = ref(0);
 //let controlPoint1Y = ref(0);
 
-let visitedPoints = new Map<number, number>();
+let visitedPoints: Point[] = [];
 
 let mouseMoveCount = 0;
 
@@ -168,40 +179,52 @@ function onMouseDown(e: MouseEvent) {
 }
 
 function setCurve(xPos: number, yPos: number) {
-  visitedPoints.set(xPos, yPos); // hold one y for each visited x
+  visitedPoints.push({ x: xPos, y: yPos }); // hold one y for each visited x
 
-  console.debug("xPos:" + xPos);
-  console.debug("yPos:" + yPos);
+  if (visitedPoints.length < MIN_NUMBER_OF_POINTS) return;
 
-  const slopes = getSlopes();
-  console.debug("slopes:");
-  console.debug(slopes);
+  const points = getNormalizedPoints(visitedPoints);
 
-  const normalizedSlopes = getNormalizedSlopes(slopes);
+  const slopes = getSlopes(points);
+
+  const normalizedSlopes =
+    props.curveType === "CONCAVE"
+      ? getNormalizedConcaveSlopes(slopes)
+      : getNormalizedConvexSlopes(slopes);
+
   console.debug("normalizedSlopes:");
   console.debug(normalizedSlopes);
 
-  const pointWitMinSlope = getControlPoint(normalizedSlopes);
-  console.debug("pointWitMinSlope:");
-  console.debug(pointWitMinSlope);
+  let controlPointIndex = getControlPointIndex(normalizedSlopes);
+  console.debug("controlPointIndex:" + controlPointIndex);
+
+  const theta = Math.atan2(yPos - p1y, xPos - p1x) - Math.PI / 2; // calculate rciprocal to curve
+  const turningPoint = normalizedSlopes[controlPointIndex];
+
+  const distanceFromCurve = calculateDistance(
+    normalizedSlopes,
+    controlPointIndex,
+    props.curveType,
+  );
+
+  console.debug("distanceFromCurve" + distanceFromCurve);
+
+  cpx = turningPoint.x + distanceFromCurve * Math.cos(theta);
+  cpy = turningPoint.y + distanceFromCurve * Math.cos(theta);
+
+  console.debug("p1x:" + p1x);
+  console.debug("p1y:" + p1y);
+  console.debug("xPos:" + xPos);
+  console.debug("yPos:" + yPos);
+  console.debug("cpX:" + cpx);
+  console.debug("cpY:" + cpy);
 
   var curve =
-    "M" +
-    p1x +
-    " " +
-    p1y +
-    " Q " +
-    pointWitMinSlope.x +
-    " " +
-    pointWitMinSlope.y +
-    " " +
-    xPos +
-    " " +
-    yPos;
+    "M" + p1x + " " + p1y + " Q " + cpx + " " + cpy + " " + xPos + " " + yPos;
 
   var c1 = document.getElementById("cp");
-  c1!.setAttribute("cx", pointWitMinSlope.x.toString());
-  c1!.setAttribute("cy", pointWitMinSlope.y.toString());
+  c1!.setAttribute("cx", cpx.toString());
+  c1!.setAttribute("cy", cpy.toString());
 
   document.getElementById("curve")!.setAttribute("d", curve);
 }
@@ -226,59 +249,77 @@ function onMouseMove(e: MouseEvent) {
   setCurve(e.offsetX, e.offsetY);
 }
 
-// 2 control points: one from the most left x to the point where sginificant
-// change in slope occured. the second is from previous point to the most right x
-// the optimim point is that which produces 2 segments  with minimized slope variance
-// in order to minimize noise we sample only 1 of 5 mouse move events
-// also, we detect outliers by identifying if the slope direction differs from 2 sides.
-function getSlopes(): PointWithSlope[] {
+// verify that x can grow only
+function getNormalizedPoints(points: Point[]) {
+  const normalizedPoints = points;
+  for (let i = 1; i < points.length; i++) {
+    if (points[i].x <= points[i - 1].x) {
+      points[i].x = points[i - 1].x + 1;
+    }
+  }
+  return normalizedPoints;
+}
+
+function getSlopes(points: Point[]): PointWithSlope[] {
   const slopes: PointWithSlope[] = [];
   let prevPoint = { x: 0, y: 0 };
-  for (let [x, y] of visitedPoints) {
+  for (let point of points) {
     if (prevPoint.x === 0) {
-      slopes.push({ x: x, y: y, slope: 0 });
+      slopes.push({ x: point.x, y: point.y, slope: 0 });
     } else {
       slopes.push({
-        x: x,
-        y: y,
-        slope: (y - prevPoint.y) / (x - prevPoint.x),
+        x: point.x,
+        y: point.y,
+        slope: (point.y - prevPoint.y) / (point.x - prevPoint.x),
       });
     }
-    prevPoint = { x: x, y: y };
+    prevPoint = { x: point.x, y: point.y };
   }
   return slopes;
 }
 
-function getControlPoint(normalizedSlopes: PointWithSlope[]): PointWithSlope {
-  let minSlopePosition: PointWithSlope = { x: 0, y: 0, slope: 0 };
-  let minSlopesDiffSum = 0;
-  for (let i = 1; i < normalizedSlopes.length; i++) {
-    let sumSlopesDiff1 = 0;
-    let sumSlopesDiff2 = 0;
-    for (let j = 1; j < i; j++) {
-      sumSlopesDiff1 +=
-        Math.abs(normalizedSlopes[j].slope) -
-        Math.abs(normalizedSlopes[j - 1].slope);
-    }
-
-    for (let j = i; j < normalizedSlopes.length; j++) {
-      sumSlopesDiff2 +=
-        Math.abs(normalizedSlopes[j].slope) -
-        Math.abs(normalizedSlopes[j - 1].slope);
-    }
-
-    if (
-      minSlopesDiffSum === 0 ||
-      sumSlopesDiff1 + sumSlopesDiff2 < minSlopesDiffSum
-    ) {
-      minSlopesDiffSum = sumSlopesDiff1 + sumSlopesDiff2;
-      minSlopePosition = normalizedSlopes[i];
-    }
-  }
-  return minSlopePosition;
+function getStdDev(arr: number[]) {
+  const mean = arr.reduce((acc, val) => acc + val, 0) / arr.length;
+  return Math.sqrt(
+    arr
+      .reduce((acc: number[], val: number) => acc.concat((val - mean) ** 2), [])
+      .reduce((acc: number, val: number) => acc + val, 0) / arr.length,
+  );
 }
 
-function getNormalizedSlopes(slopes: PointWithSlope[]): PointWithSlope[] {
+function getControlPointIndex(
+  normalizedPointsWithSlope: PointWithSlope[],
+): number {
+  let controlPointIndex: number = Math.round(
+    normalizedPointsWithSlope.length / 2,
+  );
+
+  if (normalizedPointsWithSlope.length < MIN_NUMBER_OF_POINTS)
+    return controlPointIndex;
+
+  const slopes = normalizedPointsWithSlope.map((p) => p.slope);
+
+  let minSumWeightedStd = 0;
+  for (let i = 2; i < slopes.length - 2; i++) {
+    //console.debug("i:" + i);
+
+    const stdSlopes1 = getStdDev(slopes.slice(0, i));
+    //console.debug("stdSlopes1:" + stdSlopes1);
+
+    const stdSlopes2 = getStdDev(slopes.slice(i, slopes.length - 1));
+
+    const sumWeightedStd =
+      (stdSlopes1 * i + stdSlopes2 * (slopes.length - i)) / slopes.length;
+
+    if (minSumWeightedStd === 0 || minSumWeightedStd > sumWeightedStd) {
+      minSumWeightedStd = sumWeightedStd;
+      controlPointIndex = i;
+    }
+  }
+  return controlPointIndex;
+}
+
+function getNormalizedConvexSlopes(slopes: PointWithSlope[]): PointWithSlope[] {
   const normalizedSlopes: PointWithSlope[] = [];
 
   normalizedSlopes.push(slopes[0]);
@@ -286,25 +327,48 @@ function getNormalizedSlopes(slopes: PointWithSlope[]): PointWithSlope[] {
   for (let i = 1; i < slopes.length - 1; i++) {
     normalizedSlopes.push(slopes[i]);
     let doNormalize = false;
-    if (
-      slopes[i].slope < 0 &&
-      slopes[i - 1].slope > 0 &&
-      slopes[i + 1].slope > 0
-    ) {
+
+    if (slopes[i].slope >= 0) {
       doNormalize = true;
     }
 
-    if (
-      slopes[i].slope > 0 &&
-      slopes[i - 1].slope < 0 &&
-      slopes[i + 1].slope < 0
-    ) {
+    // slopes are negative, verify it diminishes
+    if (slopes[i].slope <= slopes[i - 1].slope && slopes[i - 1].slope !== 0) {
       doNormalize = true;
     }
 
     if (doNormalize) {
-      normalizedSlopes[i].slope =
-        (slopes[i - 1].slope + slopes[i + 1].slope) / 2;
+      normalizedSlopes[i].slope = slopes[i - 1].slope + 0.1;
+    }
+  }
+
+  normalizedSlopes.push(slopes[slopes.length - 1]);
+
+  return normalizedSlopes;
+}
+
+function getNormalizedConcaveSlopes(
+  slopes: PointWithSlope[],
+): PointWithSlope[] {
+  const normalizedSlopes: PointWithSlope[] = [];
+
+  normalizedSlopes.push(slopes[0]);
+
+  for (let i = 1; i < slopes.length - 1; i++) {
+    normalizedSlopes.push(slopes[i]);
+    let doNormalize = false;
+
+    if (slopes[i].slope >= 0) {
+      doNormalize = true;
+    }
+
+    // slopes are negative, verify it increases
+    if (slopes[i].slope >= slopes[i - 1].slope && slopes[i - 1].slope !== 0) {
+      doNormalize = true;
+    }
+
+    if (doNormalize) {
+      normalizedSlopes[i].slope = slopes[i - 1].slope - 0.1;
     }
   }
 
@@ -315,25 +379,14 @@ function getNormalizedSlopes(slopes: PointWithSlope[]): PointWithSlope[] {
 
 function onMouseUp() {
   // drawing not started
-  // if (
-  //   linePosition.value.left.x === 0 &&
-  //   linePosition.value.left.y === 0 &&
-  //   linePosition.value.right.x === 0 &&
-  //   linePosition.value.right.y === 0
-  // ) {
-  //   return;
-  // }
+  if (p1x === 0) {
+    return;
+  }
 
   // line yet not modified
-  if (editModeStore.isSlopeLineDrawingMode()) {
-    endDrawLine();
+  if (editModeStore.isCurveDrawingMode()) {
+    endDrawCurve();
   }
-}
-
-// methods
-
-function svgDimensions(): DOMRect | undefined {
-  return document.getElementById(props.svgId)?.getBoundingClientRect();
 }
 
 function startCurveDrawing(position: DotPosition) {
@@ -342,44 +395,22 @@ function startCurveDrawing(position: DotPosition) {
   p1y = position.y;
 }
 
-function endDrawLine() {
-  // if (
-  //   linePosition.value.left.x == linePosition.value.right.x &&
-  //   linePosition.value.right.y == linePosition.value.right.y
-  // )
-  //   return;
+function endDrawCurve() {
+  if (p1x === p2x && p1y === p2y) return;
 
-  // let fromCol = Math.round(
-  //   linePosition.value.left.x /
-  //     (notationStore.getCellHorizontalWidth() + cellSpace),
-  // );
-
-  // let toCol = Math.round(
-  //   linePosition.value.right.x /
-  //     (notationStore.getCellHorizontalWidth() + cellSpace),
-  // );
-
-  // let fromRow = Math.round(
-  //   linePosition.value.left.y /
-  //     (notationStore.getCellVerticalHeight() + cellSpace),
-  // );
-
-  // let toRow = Math.round(
-  //   linePosition.value.right.y /
-  //     (notationStore.getCellVerticalHeight() + cellSpace),
-  // );
-
-  // saveLine({
-  //   fromCol: fromCol,
-  //   toCol: toCol,
-  //   fromRow: fromRow,
-  //   toRow: toRow,
-  // });
+  saveCurve({
+    p1x: p1x,
+    p2x: p2x,
+    p1y: p1y,
+    p2y: p2y,
+    cpx: cpx,
+    cpy: cpy,
+  });
 
   editModeStore.setDefaultEditMode();
 }
 
-function saveCiurve(curevAttributes: CurveAttributes) {
+function saveCurve(curevAttributes: CurveAttributes) {
   if (notationStore.getSelectedNotations().length > 0) {
     let updatedCurve = {
       ...notationStore.getSelectedNotations().at(0)!,
@@ -395,6 +426,58 @@ function saveCiurve(curevAttributes: CurveAttributes) {
       editModeStore.getNotationTypeByEditMode(),
     );
   }
+}
+
+function calculateDistance(
+  normalizedSlopes: PointWithSlope[],
+  controlPointIndex: number,
+  curveType: String,
+): number {
+  console.debug("calculateDistance");
+  console.debug("controlPointIndex:" + controlPointIndex);
+  console.debug("normalizedSlopes length:" + normalizedSlopes.length);
+
+  const coeficient = curveType === "CONCAVE" ? -1 : 1;
+
+  if (controlPointIndex === 0) {
+    return 0;
+  }
+
+  if (normalizedSlopes.length <= 3) {
+    return 0;
+  }
+
+  const avgSlopeUpToControlPoint =
+    normalizedSlopes
+      .slice(0, controlPointIndex + 1)
+      .map((p) => p.slope)
+      .reduce((a, b) => a + b) /
+      controlPointIndex +
+    1;
+
+  const avgSlopeFromControlPoint =
+    normalizedSlopes
+      .slice(controlPointIndex + 1, normalizedSlopes.length)
+      .map((p) => p.slope)
+      .reduce((a, b) => a + b) /
+      controlPointIndex +
+    1;
+
+  const slopeChange = Math.abs(
+    avgSlopeFromControlPoint - avgSlopeUpToControlPoint,
+  );
+
+  console.debug("slopeChange:" + slopeChange);
+
+  return slopeChange < 0.01
+    ? 0
+    : slopeChange < 0.25
+    ? 5 * coeficient
+    : slopeChange < 0.5
+    ? 7 * coeficient
+    : slopeChange < 1
+    ? 9 * coeficient
+    : 12 * coeficient;
 }
 
 function resetCurveDrawing() {

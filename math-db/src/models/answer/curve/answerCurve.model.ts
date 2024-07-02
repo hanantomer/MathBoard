@@ -44,33 +44,25 @@ export default class AnswerCurve extends Model<
 
     @AllowNull(false)
     @Column({ type: DataType.INTEGER })
-    fromCol!: number; // col related to the lower row
+    p1x!: number; // col related to the lower row
 
     @AllowNull(false)
     @Column({ type: DataType.INTEGER })
-    toCol!: number; // col related to the higher row
+    p2x!: number; // col related to the higher row
 
     @AllowNull(false)
     @Column({ type: DataType.INTEGER })
-    fromRow!: number;
+    p1y!: number;
 
     @AllowNull(false)
     @Column({ type: DataType.INTEGER })
-    toRow!: number;
+    p2y!: number;
 
     @AllowNull(false)
     @Column({ type: DataType.INTEGER })
-    controlPoint1Col!: number;
+    cpx!: number;
 
     @AllowNull(false)
     @Column({ type: DataType.INTEGER })
-    controlPoint1Row!: number;
-
-    @AllowNull(false)
-    @Column({ type: DataType.INTEGER })
-    controlPoint2Col!: number;
-
-    @AllowNull(false)
-    @Column({ type: DataType.INTEGER })
-    controlPoint2Row!: number;
+    cpy!: number;
 }
