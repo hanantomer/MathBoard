@@ -2,7 +2,7 @@ import { NotationTypeShape } from "common/unions";
 import { useNotationStore } from "../store/pinia/notationStore";
 import { ScreenCoordinates, DotPosition } from "common/globals";
 import { NotationAttributes } from "common/baseTypes";
-import useElementFinderHelper from "./elementFinderHelper";
+import usescreenHelper from "./screenHelper";
 import useNotationMutateHelper from "./notationMutateHelper";
 import useUserOutgoingOperationsHelper from "./userOutgoingOperationsHelper";
 import useEventBus from "./eventBusHelper";
@@ -11,7 +11,7 @@ import { useEditModeStore } from "../store/pinia/editModeStore";
 const eventBus = useEventBus();
 const notationStore = useNotationStore();
 const notationMutateHelper = useNotationMutateHelper();
-const elementFinderHelper = useElementFinderHelper();
+const screenHelper = usescreenHelper();
 const userOutgoingOperationsHelper = useUserOutgoingOperationsHelper();
 const lessonStore = useLessonStore();
 const editModeStore = useEditModeStore();
@@ -21,7 +21,7 @@ export default function selectionHelper() {
     svgId: string,
     screenCoordinates: ScreenCoordinates,
   ) {
-    const areaCells = elementFinderHelper.getScreenCoordinatesOccupiedCells(
+    const areaCells = screenHelper.getScreenCoordinatesOccupiedCells(
       svgId,
       screenCoordinates,
     );
@@ -34,7 +34,7 @@ export default function selectionHelper() {
   ): NotationAttributes | null {
     notationStore.resetSelectedNotations();
 
-    const notation = elementFinderHelper.getPointNotation(svgId, position);
+    const notation = screenHelper.getPointNotation(svgId, position);
 
     if (!notation) return null;
 
@@ -88,7 +88,7 @@ export default function selectionHelper() {
   }
 
   async function selectCell(svgId: string, position: DotPosition) {
-    let clickedCell = elementFinderHelper.getClickedCell(svgId, position);
+    let clickedCell = screenHelper.getClickedCell(svgId, position);
 
     if (!clickedCell) return;
 

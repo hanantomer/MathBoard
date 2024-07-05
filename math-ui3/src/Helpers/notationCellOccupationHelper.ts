@@ -4,10 +4,15 @@ import {
   VerticalLineNotationAttributes,
   SlopeLineNotationAttributes,
   RectNotationAttributes,
+  CurveNotationAttributes,
   NotationAttributes,
+  RectAttributes,
 } from "common/baseTypes";
 
 import { matrixDimensions } from "common/globals";
+import  useScreenHelper  from "./screenHelper";
+
+const screenHelper = useScreenHelper();
 
 export default function notationCellOccupationHelper() {
   // point occupation matrix holds only one notation per cell
@@ -152,6 +157,30 @@ export default function notationCellOccupationHelper() {
     }
   }
 
+  function updateCurveOccupationMatrix(
+    svgId: string,
+    matrix: any,
+    notation: CurveNotationAttributes,
+    doRemove: boolean,
+  ) {
+
+    const rect = screenHelper.getRectCoordinates(svgId, {
+      x1: notation.p1x,
+      x2: notation.p2x,
+      y1: notation.p1y,
+      y2: notation.p2y
+    })
+
+    for (let col = rect.fromCol; col <= rect.toCol; col++) {
+      for (let row = rect.fromRow; row <= rect.toRow; row++) {
+        if (validateRowAndCol(col, row)) {
+          matrix[col][row] = doRemove ? null : notation.uuid;
+        }
+      }
+    }
+  }
+
+
   function validateRowAndCol(col: number, row: number): boolean {
     return (
       col < matrixDimensions.colsNum &&
@@ -166,6 +195,7 @@ export default function notationCellOccupationHelper() {
     updateHorizontalLineOccupationMatrix,
     updateVerticalLineOccupationMatrix,
     updateSlopeLineOccupationMatrix,
+    updateCurveOccupationMatrix,
     updateRectOccupationMatrix,
   };
 }

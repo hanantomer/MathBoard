@@ -6,9 +6,11 @@ import { useNotationStore } from "../store/pinia/notationStore";
 import { cellSpace } from "common/globals";
 import { NotationAttributes } from "common/baseTypes";
 import useLineHelper from "./matrixLineHelper";
+import useCurveHelper from "./matrixCurveHelper";
 import useHtmlHelper from "./matrixHtmlHelper";
 
 const lineHelper = useLineHelper();
+const curveHelper = useCurveHelper();
 const notationStore = useNotationStore();
 const htmlHelper = useHtmlHelper();
 
@@ -126,6 +128,15 @@ export default function useMatrixHelper() {
           NotationTypeShape.get(n.notationType) === "SLOPE_LINE",
       ),
     );
+
+    curveHelper.mergeCurveNotations(
+      svgId,
+      notations.filter(
+        (n) =>
+          NotationTypeShape.get(n.notationType) === "CURVE" ,
+      ),
+    );
+
   }
 
   return {

@@ -62,7 +62,7 @@ import {
 } from "common/unions";
 import useSelectionHelper from "../helpers/selectionHelper";
 import useNotationMutateHelper from "../helpers/notationMutateHelper";
-import useElementFinderHelper from "../helpers/elementFinderHelper";
+import usescreenHelper from "../helpers/screenHelper";
 import useUserOutgoingOperations from "../helpers/userOutgoingOperationsHelper";
 const notationLoadingHelper = useNotationLoadingHelper();
 const notationStore = useNotationStore();
@@ -74,7 +74,7 @@ const notationMutateHelper = useNotationMutateHelper();
 const eventHelper = UseEventHelper();
 const editModeStore = useEditModeStore();
 const answerStore = useAnswerStore();
-const elementFinderHelper = useElementFinderHelper();
+const screenHelper = usescreenHelper();
 const userOutgoingOperations = useUserOutgoingOperations();
 const pBar = ref(false);
 let cursor = ref<CursorType>("auto");
@@ -153,7 +153,7 @@ watch(
 watch(
   () => eventBus.bus.value.get("CELL_COLORIZED"),
   (params) => {
-    const clickedCell = elementFinderHelper.getClickedCell(props.svgId, {
+    const clickedCell = screenHelper.getClickedCell(props.svgId, {
       x: params.clientX,
       y: params.clientY,
     });

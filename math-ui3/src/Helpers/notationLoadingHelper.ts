@@ -2,6 +2,7 @@ import {
   NotationAttributes,
   PointNotationAttributes,
   RectNotationAttributes,
+  CurveNotationAttributes,
   HorizontalLineNotationAttributes,
   VerticalLineNotationAttributes,
   SlopeLineNotationAttributes,
@@ -79,6 +80,13 @@ export default function notationLoadingHelper() {
           boardType,
           parentUUId,
         );
+      case "CURVE":
+        return await dbHelper.getNotations<CurveNotationAttributes>(
+          notationType,
+          boardType,
+          parentUUId,
+        );
+
       default:
         throw new Error(`${notationType} :notation type is invalid`);
     }

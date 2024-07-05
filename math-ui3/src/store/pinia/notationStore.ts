@@ -11,6 +11,7 @@ import {
   HorizontalLineNotationAttributes,
   VerticalLineNotationAttributes,
   SlopeLineNotationAttributes,
+  CurveNotationAttributes,
 } from "common/baseTypes";
 import { BoardType, NotationShape, NotationTypeShape } from "common/unions";
 import { ref } from "vue";
@@ -154,6 +155,18 @@ export const useNotationStore = defineStore("notation", () => {
 
   function getNotation(uuid: String) {
     return notations.value.get(uuid);
+  }
+
+  function addCurveNotation(notation: NotationAttributes, svgId: string) {
+    notation.boardType = parent.value.type;
+    notations.value.set(notation.uuid, notation);
+
+    notationCellOccupationHelper.updateCurveOccupationMatrix(
+      svgId,
+      cellRectNotationOccupationMatrix,
+      notation as CurveNotationAttributes,
+      false,
+    );
   }
 
   function addNotation(notation: NotationAttributes) {

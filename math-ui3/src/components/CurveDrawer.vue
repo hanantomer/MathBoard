@@ -219,9 +219,13 @@ function setCurve(xPos: number, yPos: number) {
   console.debug("cpX:" + cpx);
   console.debug("cpY:" + cpy);
 
-  var curve =
-    "M" + p1x + " " + p1y + " Q " + cpx + " " + cpy + " " + xPos + " " + yPos;
+  p2x = xPos;
+  p2y = yPos;
 
+  var curve =
+    "M" + p1x + " " + p1y + " Q " + cpx + " " + cpy + " " + p2x + " " + p2y;
+
+  // temporarly show control point
   var c1 = document.getElementById("cp");
   c1!.setAttribute("cx", cpx.toString());
   c1!.setAttribute("cy", cpy.toString());

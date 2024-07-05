@@ -20,7 +20,7 @@ export type BusEventType =
     "VERTICAL_LINE_SELECTED"    |
     "HORIZONTAL_LINE_SELECTED";
 
-export type NotationShape = "POINT" |  "HORIZONTAL_LINE" | "VERTICAL_LINE"| "SLOPE_LINE" |  "RECT"
+export type NotationShape = "POINT" |  "HORIZONTAL_LINE" | "VERTICAL_LINE"| "SLOPE_LINE" | "CURVE"  | "RECT"
 
 export const NotationTypeValues = 
   ["SYMBOL",
@@ -62,6 +62,7 @@ export const NotationTypeShape = new Map<NotationType, NotationShape> ([
   ["SLOPELINE", "SLOPE_LINE"],
   ["TEXT", "RECT"],
   ["IMAGE", "RECT"],
+  ["CURVE", "CURVE"],
 ])
 
 export type EditMode = 

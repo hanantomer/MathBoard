@@ -20,7 +20,7 @@ import {
 } from "../../../math-common/src/unions";
 const notationStore = useNotationStore();
 
-export default function elementFinderHelper() {
+export default function screenHelper() {
   const minDistanceForLineSelection = 5;
   const minDistanceForSelection = 25;
   type NotationDistance = { notation: NotationAttributes; distance: number };
@@ -123,6 +123,7 @@ export default function elementFinderHelper() {
     return cells;
   }
 
+  // find notation at screen  point
   function getPointNotation(
     svgId: string,
     dotPosition: DotPosition,

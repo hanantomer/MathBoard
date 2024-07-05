@@ -22,7 +22,7 @@ import { useEditModeStore } from "../store/pinia/editModeStore";
 import { RectNotationAttributes } from "../../../math-common/build/baseTypes";
 import { cellSpace } from "../../../math-common/src/globals";
 import useNotationMutateHelper from "../helpers/notationMutateHelper";
-import useElementFinderHelper from "../helpers/elementFinderHelper";
+import usescreenHelper from "../helpers/screenHelper";
 import useEventBus from "../helpers/eventBusHelper";
 
 const notationMutateHelper = useNotationMutateHelper();
@@ -33,7 +33,7 @@ const eventBus = useEventBus();
 const emit = defineEmits(["hide"]);
 const editModeStore = useEditModeStore();
 
-const elementFinderHelper = useElementFinderHelper();
+const screenHelper = usescreenHelper();
 
 const show = computed(() => editModeStore.getEditMode() === "TEXT_WRITING");
 
@@ -145,7 +145,7 @@ function onLeave() {
 function submitText() {
   editModeStore.setNextEditMode();
 
-  const rectCoordinates = elementFinderHelper.getRectCoordinates(props.svgId, {
+  const rectCoordinates = screenHelper.getRectCoordinates(props.svgId, {
     x1: textLeft.value + window.scrollX,
     x2: textLeft.value + textWidth.value + window.scrollX,
     y1: textTop.value + window.scrollY,
