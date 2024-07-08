@@ -15,10 +15,8 @@ import {
 } from "common/baseTypes";
 import { BoardType, NotationShape, NotationTypeShape } from "common/unions";
 import { ref } from "vue";
-import useUserOutgoingOperations from "../../helpers/userOutgoingOperationsHelper";
 import useNotationCellOccupationHelper from "../../helpers/notationCellOccupationHelper";
 
-const userOutgoingOperations = useUserOutgoingOperations();
 const notationCellOccupationHelper = useNotationCellOccupationHelper();
 
 export const useNotationStore = defineStore("notation", () => {
@@ -88,10 +86,6 @@ export const useNotationStore = defineStore("notation", () => {
     return parent.value;
   }
 
-  // function getCellOccupationMatrix() {
-  //   return cellNotationOccupationMatrix;
-  // }
-
   function getNotationsByShape<T>(notationShape: NotationShape): T[] {
     return Array.from(notations.value.values()).filter((n) => {
       return (
@@ -157,18 +151,6 @@ export const useNotationStore = defineStore("notation", () => {
     return notations.value.get(uuid);
   }
 
-  function addCurveNotation(notation: NotationAttributes, svgId: string) {
-    notation.boardType = parent.value.type;
-    notations.value.set(notation.uuid, notation);
-
-    notationCellOccupationHelper.updateCurveOccupationMatrix(
-      svgId,
-      cellRectNotationOccupationMatrix,
-      notation as CurveNotationAttributes,
-      false,
-    );
-  }
-
   function addNotation(notation: NotationAttributes) {
     notation.boardType = parent.value.type;
     notations.value.set(notation.uuid, notation);
@@ -213,6 +195,14 @@ export const useNotationStore = defineStore("notation", () => {
           false,
         );
         break;
+
+      case "CONCAVE_CURVE":
+      case "CONVEX_CURVE":
+        notationCellOccupationHelper.updateCurveOccupationMatrix(
+          cellRectNotationOccupationMatrix,
+          notation as CurveNotationAttributes,
+          false,
+        );
     }
   }
 
@@ -411,19 +401,13 @@ export const useNotationStore = defineStore("notation", () => {
     getNotationsByShape,
     getNotationsByCell,
     selectNotationsOfCells,
-    getSelectedCell,
     getSelectedNotations,
     getParent,
-    getCellHorizontalWidth,
-    getCellVerticalHeight,
     isLineOrRectSelected,
     setNotations,
     setCopiedNotations,
     selectNotation,
-    selectCell,
     setParent,
-    setCellVerticalHeight,
-    resetSelectedCell,
     resetSelectedNotations,
     deleteNotation,
     clearNotations,

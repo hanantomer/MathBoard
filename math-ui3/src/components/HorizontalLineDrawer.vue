@@ -52,6 +52,7 @@ import useNotationMutateHelper from "../helpers/notationMutateHelper";
 
 import { watch, computed, ref } from "vue";
 import { useNotationStore } from "../store/pinia/notationStore";
+import { useCellStore } from "../store/pinia/cellStore";
 import { useEditModeStore } from "../store/pinia/editModeStore";
 import {
   HorizontaLinePosition,
@@ -67,6 +68,7 @@ import useEventBus from "../helpers/eventBusHelper";
 const eventBus = useEventBus();
 const notationMutateHelper = useNotationMutateHelper();
 const notationStore = useNotationStore();
+const cellStore = useCellStore();
 const editModeStore = useEditModeStore();
 
 // props
@@ -168,12 +170,12 @@ function onLineSelected(lineNotation: HorizontalLineNotationAttributes) {
   // set selection line
 
   linePosition.value.x1 =
-    lineNotation.fromCol * (notationStore.getCellHorizontalWidth() + cellSpace);
+    lineNotation.fromCol * (cellStore.getCellHorizontalWidth() + cellSpace);
   (linePosition.value.x2 =
     (lineNotation.toCol - 1) *
-    (notationStore.getCellHorizontalWidth() + cellSpace)),
+    (cellStore.getCellHorizontalWidth() + cellSpace)),
     (linePosition.value.y =
-      lineNotation.row * (notationStore.getCellVerticalHeight() + cellSpace));
+      lineNotation.row * (cellStore.getCellVerticalHeight() + cellSpace));
 
   // update store
   notationStore.selectNotation(lineNotation.uuid);
@@ -277,16 +279,16 @@ function endDrawLine() {
 
   let fromCol = Math.round(
     linePosition.value.x1 /
-      (notationStore.getCellHorizontalWidth() + cellSpace),
+      (cellStore.getCellHorizontalWidth() + cellSpace),
   );
 
   let toCol = Math.round(
     linePosition.value.x2 /
-      (notationStore.getCellHorizontalWidth() + cellSpace),
+      (cellStore.getCellHorizontalWidth() + cellSpace),
   );
 
   let row = Math.round(
-    linePosition.value.y / (notationStore.getCellVerticalHeight() + cellSpace),
+    linePosition.value.y / (cellStore.getCellVerticalHeight() + cellSpace),
   );
 
   saveLine({ fromCol: fromCol, toCol: toCol, row: row });
@@ -318,8 +320,8 @@ function resetLineDrawing() {
 
 function getNearestRow(clickedYPos: number) {
   let clickedRow = Math.round(
-    clickedYPos / (notationStore.getCellVerticalHeight() + cellSpace),
+    clickedYPos / (cellStore.getCellVerticalHeight() + cellSpace),
   );
-  return clickedRow * (notationStore.getCellVerticalHeight() + cellSpace);
+  return clickedRow * (cellStore.getCellVerticalHeight() + cellSpace);
 }
 </script>

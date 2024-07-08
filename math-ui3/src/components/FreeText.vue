@@ -18,6 +18,7 @@
 <script setup lang="ts">
 import { computed, watch, ref } from "vue";
 import { useNotationStore } from "../store/pinia/notationStore";
+import { useCellStore } from "../store/pinia/cellStore";
 import { useEditModeStore } from "../store/pinia/editModeStore";
 import { RectNotationAttributes } from "../../../math-common/build/baseTypes";
 import { cellSpace } from "../../../math-common/src/globals";
@@ -29,6 +30,7 @@ const notationMutateHelper = useNotationMutateHelper();
 let textValue = ref("");
 
 const notationStore = useNotationStore();
+const cellStore = useCellStore();
 const eventBus = useEventBus();
 const emit = defineEmits(["hide"]);
 const editModeStore = useEditModeStore();
@@ -95,23 +97,23 @@ watch(
     textLeft.value =
       svgDimensions.value.left +
       textNotation.fromCol *
-        (notationStore.getCellHorizontalWidth() + cellSpace) -
+        (cellStore.getCellHorizontalWidth() + cellSpace) -
       cellSpace;
 
     textTop.value =
       svgDimensions.value.top +
       textNotation.fromRow *
-        (notationStore.getCellVerticalHeight() + cellSpace) -
+        (cellStore.getCellVerticalHeight() + cellSpace) -
       cellSpace;
 
     textHeight.value =
       (textNotation.toRow - textNotation.fromRow + 1) *
-        (notationStore.getCellVerticalHeight() + cellSpace) -
+        (cellStore.getCellVerticalHeight() + cellSpace) -
       cellSpace;
 
     textWidth.value =
       (textNotation.toCol - textNotation.fromCol + 1) *
-        (notationStore.getCellHorizontalWidth() + cellSpace) -
+        (cellStore.getCellHorizontalWidth() + cellSpace) -
       cellSpace;
 
     document.getElementById("textAreaEl")?.focus();

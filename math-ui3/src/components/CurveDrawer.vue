@@ -126,11 +126,19 @@ watch(
 );
 
 watch(
-  () => eventBus.bus.value.get("CURVE_SELECTED"), /// TODO: update emitter to distinguish line types
+  () => eventBus.bus.value.get("CONCAVE_CURVE_SELECTED"),
   (curve: CurveNotationAttributes) => {
     if (curve) onCurveSelected(curve);
   },
 );
+
+watch(
+  () => eventBus.bus.value.get("CONVEX_CURVE_SELECTED"),
+  (curve: CurveNotationAttributes) => {
+    if (curve) onCurveSelected(curve);
+  },
+);
+
 
 // event handlers
 
@@ -405,8 +413,8 @@ function endDrawCurve() {
   saveCurve({
     p1x: p1x,
     p2x: p2x,
-    p1y: p1y,
-    p2y: p2y,
+    p1y: Math.max(p1y, p2y),
+    p2y: Math.min(p1y, p2y),
     cpx: cpx,
     cpy: cpy,
   });

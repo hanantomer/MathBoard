@@ -1,9 +1,9 @@
 import { useUserStore } from "../store/pinia/userStore";
 import { useEditModeStore } from "../store/pinia/editModeStore";
 import { useNotationStore } from "../store/pinia/notationStore";
+import { useCellStore } from "../store/pinia/cellStore";
 import { cellSpace } from "common/globals";
 
-import useMatrixHelper from "./matrixHelper";
 import useMatrixCellHelper from "./matrixCellHelper";
 import useNotationMutationHelper from "./notationMutateHelper";
 import useAuthorizationHelper from "./authorizationHelper";
@@ -22,7 +22,8 @@ import { NotationTypeShape } from "common/unions";
 const userStore = useUserStore();
 const editModeStore = useEditModeStore();
 const notationStore = useNotationStore();
-const matrixHelper = useMatrixHelper();
+const cellStore = useCellStore();
+
 const matrixCellHelper = useMatrixCellHelper();
 const notationMutationHelper = useNotationMutationHelper();
 const authorizationHelper = useAuthorizationHelper();
@@ -59,7 +60,7 @@ export default function eventHelper() {
   }
 
   async function pasteNotations() {
-    const selectedCell = notationStore.getSelectedCell();
+    const selectedCell = cellStore.getSelectedCell();
     if (!selectedCell) return;
 
     let firstRow: number | null = null;
@@ -152,7 +153,7 @@ export default function eventHelper() {
   async function pasteImage(e: ClipboardEvent) {
     // disallow adding image by student
     if (!userStore.isTeacher) return;
-    if (!notationStore.getSelectedCell()) return;
+    if (!cellStore.getSelectedCell()) return;
 
     const dT = e.clipboardData; /*|| window.Clipboard*/
     const item = dT?.items[0];
@@ -164,15 +165,13 @@ export default function eventHelper() {
       let image: HTMLImageElement = new Image();
       image.src = base64data?.toString();
       image.onload = () => {
-        let fromCol = notationStore.getSelectedCell()?.col;
-        let fromRow = notationStore.getSelectedCell()?.row;
+        let fromCol = cellStore.getSelectedCell()?.col;
+        let fromRow = cellStore.getSelectedCell()?.row;
         if (!fromCol || !fromRow) return;
         let toCol =
-          Math.ceil(image.width / notationStore.getCellHorizontalWidth()) +
-          fromCol;
+          Math.ceil(image.width / cellStore.getCellHorizontalWidth()) + fromCol;
         let toRow =
-          Math.ceil(image.height / notationStore.getCellVerticalHeight()) +
-          fromRow;
+          Math.ceil(image.height / cellStore.getCellVerticalHeight()) + fromRow;
 
         notationMutationHelper.addImageNotation(
           fromCol,
@@ -201,12 +200,12 @@ export default function eventHelper() {
       }
 
       case "MOVEMENT": {
-        return handleMovementKey(code, svgId);
+        return handleMovementKey(code);
       }
 
       case "DELETEANDMOVE": {
         handleDeletionKey(code);
-        return handleMovementKey(code, svgId);
+        return handleMovementKey(code);
       }
 
       case "SYMBOL": {
@@ -221,7 +220,7 @@ export default function eventHelper() {
     editModeStore.setDefaultEditMode();
   }
 
-  function handleMovementKey(key: string, svgId: string) {
+  function handleMovementKey(key: string) {
     // handeled by keyUp in AreaSelector
     if (editModeStore.getEditMode() === "AREA_SELECTED") return;
 
@@ -245,18 +244,18 @@ export default function eventHelper() {
       matrixCellHelper.setNextCell(0, -1);
     }
 
-    const svgBounds = document.getElementById(svgId)?.getBoundingClientRect()!;
+    const svgBounds = document.getElementById(cellStore.getSvgId()!)?.getBoundingClientRect()!;
 
     // select a notation occupied by selected cell
-    selectionHelper.selectNotationAtPosition(svgId, {
+    selectionHelper.selectNotationAtPosition(cellStore.getSvgId()!, {
       x:
         svgBounds.left +
-        notationStore.getSelectedCell()?.col! *
-          (notationStore.getCellHorizontalWidth() + cellSpace),
+        cellStore.getSelectedCell()?.col! *
+          (cellStore.getCellHorizontalWidth() + cellSpace),
       y:
         svgBounds.left +
-        notationStore.getSelectedCell()?.row! *
-          (notationStore.getCellVerticalHeight() + cellSpace),
+        cellStore.getSelectedCell()?.row! *
+          (cellStore.getCellVerticalHeight() + cellSpace),
     });
   }
 
@@ -294,15 +293,15 @@ export default function eventHelper() {
     eventBus.emit("SVG_MOUSEDOWN", e);
   }
 
-  function registerSvgMouseDown(svgId: string) {
+  function registerSvgMouseDown() {
     document
-      ?.getElementById(svgId)
+      ?.getElementById(cellStore.getSvgId()!)
       ?.addEventListener("mousedown", emitSvgMouseDown);
   }
 
-  function unregisterSvgMouseDown(svgId: string) {
+  function unregisterSvgMouseDown() {
     document
-      ?.getElementById(svgId)
+      ?.getElementById(cellStore.getSvgId()!)
       ?.removeEventListener("mousedown", emitSvgMouseDown);
   }
 
@@ -310,15 +309,15 @@ export default function eventHelper() {
     eventBus.emit("SVG_MOUSEMOVE", e);
   }
 
-  function registerSvgMouseMove(svgId: string) {
+  function registerSvgMouseMove() {
     document
-      ?.getElementById(svgId)
+      ?.getElementById(cellStore.getSvgId()!)
       ?.addEventListener("mousemove", emitSvgMouseMove);
   }
 
-  function unregisterSvgMouseMove(svgId: string) {
+  function unregisterSvgMouseMove() {
     document
-      ?.getElementById(svgId)
+      ?.getElementById(cellStore.getSvgId()!)
       ?.removeEventListener("mousemove", emitSvgMouseMove);
   }
 
@@ -326,15 +325,15 @@ export default function eventHelper() {
     eventBus.emit("SVG_MOUSEUP", e);
   }
 
-  function registerSvgMouseUp(svgId: string) {
+  function registerSvgMouseUp() {
     document
-      ?.getElementById(svgId)
+      ?.getElementById(cellStore.getSvgId()!)
       ?.addEventListener("mouseup", emitSvgMouseUp);
   }
 
-  function unregisterSvgMouseUp(svgId: string) {
+  function unregisterSvgMouseUp() {
     document
-      ?.getElementById(svgId)
+      ?.getElementById(cellStore.getSvgId()!)
       ?.removeEventListener("mouseup", emitSvgMouseUp);
   }
 

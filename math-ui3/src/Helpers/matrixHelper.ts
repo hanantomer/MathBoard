@@ -3,6 +3,7 @@ import { NotationTypeShape } from "common/unions";
 import { matrixDimensions, defaultdCellStroke } from "common/globals";
 import { HorizontalLineNotationAttributes } from "common/baseTypes";
 import { useNotationStore } from "../store/pinia/notationStore";
+import { useCellStore } from "../store/pinia/cellStore";
 import { cellSpace } from "common/globals";
 import { NotationAttributes } from "common/baseTypes";
 import useLineHelper from "./matrixLineHelper";
@@ -12,6 +13,7 @@ import useHtmlHelper from "./matrixHtmlHelper";
 const lineHelper = useLineHelper();
 const curveHelper = useCurveHelper();
 const notationStore = useNotationStore();
+const cellStore = useCellStore();
 const htmlHelper = useHtmlHelper();
 
 export default function useMatrixHelper() {
@@ -25,7 +27,7 @@ export default function useMatrixHelper() {
 
     if (!clientWidth || !clientHeight) return;
 
-    notationStore.setCellVerticalHeight(
+    cellStore.setCellVerticalHeight(
       Math.floor(clientHeight / matrixDimensions.rowsNum),
     );
   }
@@ -54,8 +56,7 @@ export default function useMatrixHelper() {
         let y =
           i === 0
             ? 0
-            : (notationStore.getCellVerticalHeight() + cellSpace) * i -
-              cellSpace;
+            : (cellStore.getCellVerticalHeight() + cellSpace) * i - cellSpace;
         return "translate(0, " + y + ")";
       })
       .selectAll("cell")
@@ -72,11 +73,10 @@ export default function useMatrixHelper() {
       .attr("x", (d, i) => {
         return i == 0
           ? 0
-          : i * (notationStore.getCellHorizontalWidth() + cellSpace) -
-              cellSpace;
+          : i * (cellStore.getCellHorizontalWidth() + cellSpace) - cellSpace;
       })
-      .attr("width", notationStore.getCellHorizontalWidth())
-      .attr("height", notationStore.getCellVerticalHeight());
+      .attr("width", cellStore.getCellHorizontalWidth())
+      .attr("height", cellStore.getCellVerticalHeight());
   }
 
   function enrichNotations(notations: NotationAttributes[]) {
@@ -133,10 +133,10 @@ export default function useMatrixHelper() {
       svgId,
       notations.filter(
         (n) =>
-          NotationTypeShape.get(n.notationType) === "CURVE" ,
+          NotationTypeShape.get(n.notationType) === "CONCAVE_CURVE" ||
+          NotationTypeShape.get(n.notationType) === "CONVEX_CURVE",
       ),
     );
-
   }
 
   return {

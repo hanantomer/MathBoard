@@ -8,7 +8,8 @@ import {
   RectAttributes,
 } from "common/baseTypes";
 import { useNotationStore } from "../store/pinia/notationStore";
-import { cellSpace, getDefaultFontSize } from "common/globals";
+import { useCellStore } from "../store/pinia/cellStore";
+import { cellSpace } from "common/globals";
 import { NotationTypeShape } from "common/unions";
 import useUtils from "./matrixHelperUtils";
 import { useUserStore } from "../store/pinia/userStore";
@@ -16,6 +17,7 @@ import { useUserStore } from "../store/pinia/userStore";
 const userStore = useUserStore();
 const utils = useUtils();
 const notationStore = useNotationStore();
+const cellStore = useCellStore();
 
 //const maxTextWidth = 10;
 
@@ -33,7 +35,7 @@ export default function useHtmlMatrixHelper() {
   }
 
   function regularFontSize() {
-    return `${notationStore.getCellVerticalHeight() / 25}em`;
+    return `${cellStore.getCellVerticalHeight() / 25}em`;
   }
 
   function textFontSize(el: HTMLElement): string {
@@ -41,7 +43,7 @@ export default function useHtmlMatrixHelper() {
   }
 
   function signFontSize() {
-    return `${notationStore.getCellVerticalHeight() / 28}em`;
+    return `${cellStore.getCellVerticalHeight() / 28}em`;
   }
 
   function mergeHtmlNotations(
@@ -181,7 +183,7 @@ export default function useHtmlMatrixHelper() {
     let colIdx = col(n);
     let deltaX =
       n.notationType === "SQRTSYMBOL"
-        ? Math.round(notationStore.getCellHorizontalWidth() / 3) * -1
+        ? Math.round(cellStore.getCellHorizontalWidth() / 3) * -1
         : 0;
 
     return colIdx ? utils.getNotationXposByCol(colIdx) + deltaX : null;
@@ -198,9 +200,7 @@ export default function useHtmlMatrixHelper() {
 
   function width(n: NotationAttributes): number {
     if (n.notationType === "SQRTSYMBOL") {
-      return (
-        (notationStore.getCellHorizontalWidth() + cellSpace) * 2 - cellSpace
-      );
+      return (cellStore.getCellHorizontalWidth() + cellSpace) * 2 - cellSpace;
     }
 
     switch (NotationTypeShape.get(n.notationType)) {
@@ -215,25 +215,25 @@ export default function useHtmlMatrixHelper() {
   }
 
   function pointNotationWidth(n: CellAttributes): number {
-    return notationStore.getCellHorizontalWidth();
+    return cellStore.getCellHorizontalWidth();
   }
 
   function rectNotationWidth(n: RectAttributes): number {
     return (
       (n.toCol - n.fromCol + 1) *
-        (notationStore.getCellHorizontalWidth() + cellSpace) -
+        (cellStore.getCellHorizontalWidth() + cellSpace) -
       cellSpace
     );
   }
 
   function pointNotationHeight(n: CellAttributes): number {
-    return notationStore.getCellVerticalHeight();
+    return cellStore.getCellVerticalHeight();
   }
 
   function rectNotationHeight(n: RectAttributes): number {
     return (
       (n.toRow - n.fromRow + 1) *
-        (notationStore.getCellVerticalHeight() + cellSpace) -
+        (cellStore.getCellVerticalHeight() + cellSpace) -
       cellSpace
     );
   }
@@ -264,7 +264,7 @@ export default function useHtmlMatrixHelper() {
       let n1 = n as HorizontalLineNotationAttributes;
       return `<span class=line style='color:${color};position:relative;left:9px;width:${
         (n1.toCol - n1.fromCol) *
-          (notationStore.getCellHorizontalWidth() + cellSpace) -
+          (cellStore.getCellHorizontalWidth() + cellSpace) -
         8
       }px;'></span>`;
     }

@@ -42,6 +42,7 @@ import useNotationMutateHelper from "../helpers/notationMutateHelper";
 
 import { watch, computed, ref } from "vue";
 import { useNotationStore } from "../store/pinia/notationStore";
+import { useCellStore } from "../store/pinia/cellStore";
 import { useEditModeStore } from "../store/pinia/editModeStore";
 import {
   SlopeLinePosition,
@@ -57,6 +58,7 @@ import useEventBus from "../helpers/eventBusHelper";
 const eventBus = useEventBus();
 const notationMutateHelper = useNotationMutateHelper();
 const notationStore = useNotationStore();
+const cellStore = useCellStore();
 const editModeStore = useEditModeStore();
 
 type SlopeType = "POSITIVE" | "NEGATIVE" | "NONE";
@@ -151,16 +153,16 @@ watch(
 
 function onSlopeLineSelected(lineNotation: SlopeLineNotationAttributes) {
   linePosition.value.left.x =
-    lineNotation.fromCol * (notationStore.getCellHorizontalWidth() + cellSpace);
+    lineNotation.fromCol * (cellStore.getCellHorizontalWidth() + cellSpace);
 
   linePosition.value.left.y =
-    lineNotation.fromRow * (notationStore.getCellVerticalHeight() + cellSpace);
+    lineNotation.fromRow * (cellStore.getCellVerticalHeight() + cellSpace);
 
   linePosition.value.right.x =
-    lineNotation.toCol * (notationStore.getCellHorizontalWidth() + cellSpace);
+    lineNotation.toCol * (cellStore.getCellHorizontalWidth() + cellSpace);
 
   linePosition.value.right.y =
-    lineNotation.toRow * (notationStore.getCellVerticalHeight() + cellSpace);
+    lineNotation.toRow * (cellStore.getCellVerticalHeight() + cellSpace);
 
   notationStore.selectNotation(lineNotation.uuid);
 
@@ -302,22 +304,22 @@ function endDrawLine() {
 
   let fromCol = Math.round(
     linePosition.value.left.x /
-      (notationStore.getCellHorizontalWidth() + cellSpace),
+      (cellStore.getCellHorizontalWidth() + cellSpace),
   );
 
   let toCol = Math.round(
     linePosition.value.right.x /
-      (notationStore.getCellHorizontalWidth() + cellSpace),
+      (cellStore.getCellHorizontalWidth() + cellSpace),
   );
 
   let fromRow = Math.round(
     linePosition.value.left.y /
-      (notationStore.getCellVerticalHeight() + cellSpace),
+      (cellStore.getCellVerticalHeight() + cellSpace),
   );
 
   let toRow = Math.round(
     linePosition.value.right.y /
-      (notationStore.getCellVerticalHeight() + cellSpace),
+      (cellStore.getCellVerticalHeight() + cellSpace),
   );
 
   saveLine({

@@ -4,6 +4,7 @@ import {
   cellSpace,
 } from "../../../math-common/src/globals";
 import {
+  NotationAttributes,
   CellAttributes,
   HorizontalLineNotationAttributes,
   PointNotationAttributes,
@@ -12,13 +13,15 @@ import {
   VerticalLineNotationAttributes,
   RectAttributes,
 } from "../../../math-common/src/baseTypes";
-import { useNotationStore } from "../store/pinia/notationStore";
-import { NotationAttributes } from "../../../math-common/src/baseTypes";
 import {
   NotationTypeShape,
   NotationType,
 } from "../../../math-common/src/unions";
-const notationStore = useNotationStore();
+
+import { useNotationStore } from "../store/pinia/notationStore";
+import { useCellStore } from "../store/pinia/cellStore";
+
+const cellStore = useCellStore();
 
 export default function screenHelper() {
   const minDistanceForLineSelection = 5;
@@ -35,12 +38,12 @@ export default function screenHelper() {
 
     const clickedCellCol = Math.floor(
       (dotPosition.x - boundingRect!.left) /
-        (notationStore.getCellHorizontalWidth() + cellSpace),
+        (cellStore.getCellHorizontalWidth() + cellSpace),
     );
 
     const clickedCellRow = Math.floor(
       (dotPosition.y - boundingRect!.top) /
-        (notationStore.getCellVerticalHeight() + cellSpace),
+        (cellStore.getCellVerticalHeight() + cellSpace),
     );
 
     return { col: clickedCellCol, row: clickedCellRow };
@@ -56,24 +59,24 @@ export default function screenHelper() {
 
     const areaFromCol = Math.round(
       (rectScreenCoordinates.x1 - boundingRect.left) /
-        (notationStore.getCellHorizontalWidth() + cellSpace),
+        (cellStore.getCellHorizontalWidth() + cellSpace),
     );
 
     const areaToCol =
       Math.round(
         (rectScreenCoordinates.x2 - boundingRect.left) /
-          (notationStore.getCellHorizontalWidth() + cellSpace),
+          (cellStore.getCellHorizontalWidth() + cellSpace),
       ) - 1;
 
     const areaFromRow = Math.round(
       (rectScreenCoordinates.y1 - boundingRect.top) /
-        (notationStore.getCellVerticalHeight() + cellSpace),
+        (cellStore.getCellVerticalHeight() + cellSpace),
     );
 
     const areaToRow =
       Math.round(
         (rectScreenCoordinates.y2 - boundingRect.top) /
-          (notationStore.getCellVerticalHeight() + cellSpace),
+          (cellStore.getCellVerticalHeight() + cellSpace),
       ) - 1;
 
     return {
@@ -96,22 +99,22 @@ export default function screenHelper() {
 
     const areaFromCol = Math.floor(
       (screenCoordinates.x1 - boundingRect!.left) /
-        (notationStore.getCellHorizontalWidth() + cellSpace),
+        (cellStore.getCellHorizontalWidth() + cellSpace),
     );
 
     const areaToCol = Math.floor(
       (screenCoordinates.x2 - boundingRect!.left) /
-        (notationStore.getCellHorizontalWidth() + cellSpace),
+        (cellStore.getCellHorizontalWidth() + cellSpace),
     );
 
     const areaFromRow = Math.floor(
       (screenCoordinates.y1 - boundingRect!.top) /
-        (notationStore.getCellVerticalHeight() + cellSpace),
+        (cellStore.getCellVerticalHeight() + cellSpace),
     );
 
     const areaToRow = Math.floor(
       (screenCoordinates.y2 - boundingRect!.top) /
-        (notationStore.getCellVerticalHeight() + cellSpace),
+        (cellStore.getCellVerticalHeight() + cellSpace),
     );
 
     for (let i = areaFromCol; i <= areaToCol; i++) {
@@ -128,6 +131,7 @@ export default function screenHelper() {
     svgId: string,
     dotPosition: DotPosition,
   ): NotationAttributes | null {
+    const notationStore = useNotationStore();
     const clickedCell = getClickedCell(svgId, dotPosition);
     const notationsAtCell = notationStore.getNotationsByCell(clickedCell);
     return notationClosestToPoint(svgId, notationsAtCell, dotPosition);
@@ -250,15 +254,15 @@ export default function screenHelper() {
     const clickedPosYDistanceFromCellCenter = Math.abs(
       dotPosition.y -
         getBoundingRect(svgId)!.top -
-        notation.row! * (notationStore.getCellVerticalHeight() + cellSpace) -
-        notationStore.getCellVerticalHeight() / 2,
+        notation.row! * (cellStore.getCellVerticalHeight() + cellSpace) -
+        cellStore.getCellVerticalHeight() / 2,
     );
 
     const clickedPosXDistanceFromCellCenter = Math.abs(
       dotPosition.x -
         getBoundingRect(svgId)!.left -
-        notation.col! * (notationStore.getCellHorizontalWidth() + cellSpace) -
-        notationStore.getCellHorizontalWidth() / 2,
+        notation.col! * (cellStore.getCellHorizontalWidth() + cellSpace) -
+        cellStore.getCellHorizontalWidth() / 2,
     );
 
     return Math.sqrt(
@@ -275,15 +279,15 @@ export default function screenHelper() {
     const clickedPosYDistanceFromRectCenter = Math.abs(
       dotPosition.y -
         getBoundingRect(svgId)!.top -
-        n1.fromRow * (notationStore.getCellVerticalHeight() + cellSpace) -
-        ((n1.toRow - n1.fromRow) * notationStore.getCellVerticalHeight()) / 2,
+        n1.fromRow * (cellStore.getCellVerticalHeight() + cellSpace) -
+        ((n1.toRow - n1.fromRow) * cellStore.getCellVerticalHeight()) / 2,
     );
 
     const clickedPosXDistanceFromRectCenter = Math.abs(
       dotPosition.x -
         getBoundingRect(svgId)!.top -
-        n1.fromCol * (notationStore.getCellHorizontalWidth() + cellSpace) -
-        ((n1.toCol - n1.fromCol) * notationStore.getCellHorizontalWidth()) / 2,
+        n1.fromCol * (cellStore.getCellHorizontalWidth() + cellSpace) -
+        ((n1.toCol - n1.fromCol) * cellStore.getCellHorizontalWidth()) / 2,
     );
 
     return Math.log(
@@ -303,9 +307,9 @@ export default function screenHelper() {
       .getElementById(svgId)
       ?.getBoundingClientRect();
 
-    const cellWidth = notationStore.getCellHorizontalWidth() + cellSpace;
+    const cellWidth = cellStore.getCellHorizontalWidth() + cellSpace;
 
-    const cellHeight = notationStore.getCellVerticalHeight() + cellSpace;
+    const cellHeight = cellStore.getCellVerticalHeight() + cellSpace;
 
     const x = dotPosition.x - boundingRect!.left;
 
@@ -335,9 +339,9 @@ export default function screenHelper() {
       .getElementById(svgId)
       ?.getBoundingClientRect();
 
-    const cellWidth = notationStore.getCellHorizontalWidth() + cellSpace;
+    const cellWidth = cellStore.getCellHorizontalWidth() + cellSpace;
 
-    const cellHeight = notationStore.getCellVerticalHeight() + cellSpace;
+    const cellHeight = cellStore.getCellVerticalHeight() + cellSpace;
 
     const x = dotPosition.x - boundingRect!.left;
 
@@ -368,9 +372,9 @@ export default function screenHelper() {
       .getElementById(svgId)
       ?.getBoundingClientRect();
 
-    const cellWidth = notationStore.getCellHorizontalWidth() + cellSpace;
+    const cellWidth = cellStore.getCellHorizontalWidth() + cellSpace;
 
-    const cellHeight = notationStore.getCellVerticalHeight() + cellSpace;
+    const cellHeight = cellStore.getCellVerticalHeight() + cellSpace;
 
     const x = dotPosition.x - boundingRect!.left;
 

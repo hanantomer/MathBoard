@@ -1,5 +1,6 @@
 import * as d3 from "d3";
 import { NotationAttributes, CurveNotationAttributes } from "common/baseTypes";
+import { lineColor, selectionColor } from "common/globals";
 
 import useUtils from "./matrixHelperUtils";
 
@@ -35,7 +36,7 @@ export default function useCurveMatrixHelper() {
         return d(n);
       })
       .attr("stroke", () => {
-        return "darkblue"; /// TODO: externalize
+        return lineColor;
       })
       .attr("stroke-width", () => {
         return "2"; /// TODO: externalize
@@ -55,6 +56,9 @@ export default function useCurveMatrixHelper() {
       })
       .attr("d", (n: CurveNotationAttributes) => {
         return d(n);
+      })
+      .attr("stroke", (n: CurveNotationAttributes) => {
+        return n.selected ? selectionColor : lineColor;
       });
   }
 

@@ -8,10 +8,12 @@ import { useUserStore } from "../store/pinia/userStore";
 import { useStudentStore } from "../store/pinia/studentStore";
 import { useNotationStore } from "../store/pinia/notationStore";
 import { useLessonStore } from "../store/pinia/lessonStore";
+import { useCellStore } from "../store/pinia/cellStore";
 import { FeathersHelper } from "./feathersHelper";
 import UseMatrixCellHelper from "./matrixCellHelper";
 
 const notationStore = useNotationStore();
+const cellStore = useCellStore();
 const lessonStore = useLessonStore();
 const userStore = useUserStore();
 const studentStore = useStudentStore();
@@ -64,7 +66,7 @@ export default function userIncomingOperations() {
       .on("updated", (selectedCell: SelectedCell) => {
         if (notationStore.getParent().type !== "LESSON") return;
         if (selectedCell.userUUId == userStore.getCurrentUser()!.uuid) return;
-        notationStore.selectCell(selectedCell);
+        cellStore.selectCell(selectedCell);
       });
 
     // sync cell colorizing

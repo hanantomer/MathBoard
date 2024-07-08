@@ -9,12 +9,10 @@ import {
 } from "common/globals";
 
 import { useNotationStore } from "../store/pinia/notationStore";
-import useUtils from "./matrixHelperUtils";
-import { useUserStore } from "../store/pinia/userStore";
+import { useCellStore } from "../store/pinia/cellStore";
 
-const userStore = useUserStore();
-const utils = useUtils();
 const notationStore = useNotationStore();
+const cellStore = useCellStore();
 
 export default function useHtmlMatrixHelper() {
 
@@ -23,14 +21,14 @@ export default function useHtmlMatrixHelper() {
     verticalStep: number,
   ): CellAttributes | undefined {
     if (
-      notationStore.getSelectedCell()?.col == null ||
-      !notationStore.getSelectedCell()?.row == null
+      cellStore.getSelectedCell()?.col == null ||
+      !cellStore.getSelectedCell()?.row == null
     ) {
       return;
     }
 
-    let col = notationStore.getSelectedCell()?.col || 0;
-    let row = notationStore.getSelectedCell()?.row || 0;
+    let col = cellStore.getSelectedCell()?.col || 0;
+    let row = cellStore.getSelectedCell()?.row || 0;
     let nextCol = col;
     let nextRow = row;
 
@@ -73,7 +71,7 @@ export default function useHtmlMatrixHelper() {
   function setNextCell(horizontalStep: number, verticalStep: number) {
     let nextCell = getNextCell(horizontalStep, verticalStep);
     if (nextCell) {
-      notationStore.selectCell(nextCell);
+      cellStore.selectCell(nextCell);
     }
   }
 

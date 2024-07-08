@@ -10,7 +10,7 @@ import {
   VerticalLineNotationAttributes,
 } from "common/baseTypes";
 
-import { useNotationStore } from "../store/pinia/notationStore";
+import { useCellStore } from "../store/pinia/cellStore";
 import { cellSpace } from "common/globals";
 import {
   NotationAttributes,
@@ -18,7 +18,7 @@ import {
   RectNotationAttributes,
 } from "common/baseTypes";
 
-const notationStore = useNotationStore();
+const cellStore = useCellStore();
 export default function useMatrixHelperUtils() {
 
   function getCol(n: NotationAttributes): number  {
@@ -62,11 +62,11 @@ export default function useMatrixHelperUtils() {
   }
 
   function getNotationXposByCol(col: number): number {
-    return col * (notationStore.getCellHorizontalWidth() + 1);
+    return col * (cellStore.getCellHorizontalWidth() + 1);
   }
 
   function getNotationYposByRow(row: number): number {
-    return row * (notationStore.getCellVerticalHeight() + cellSpace);
+    return row * (cellStore.getCellVerticalHeight() + cellSpace);
   }
 
   function removeNotations(exit: any) {

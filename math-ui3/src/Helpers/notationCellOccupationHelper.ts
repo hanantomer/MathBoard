@@ -6,13 +6,15 @@ import {
   RectNotationAttributes,
   CurveNotationAttributes,
   NotationAttributes,
-  RectAttributes,
 } from "common/baseTypes";
 
+import useScreenHelper from "./screenHelper";
+
 import { matrixDimensions } from "common/globals";
-import  useScreenHelper  from "./screenHelper";
+import { useCellStore } from "../store/pinia/cellStore";
 
 const screenHelper = useScreenHelper();
+const cellStore = useCellStore();
 
 export default function notationCellOccupationHelper() {
   // point occupation matrix holds only one notation per cell
@@ -158,18 +160,18 @@ export default function notationCellOccupationHelper() {
   }
 
   function updateCurveOccupationMatrix(
-    svgId: string,
     matrix: any,
     notation: CurveNotationAttributes,
     doRemove: boolean,
   ) {
+    if (!cellStore.getSvgId) return;
 
-    const rect = screenHelper.getRectCoordinates(svgId, {
+    const rect = screenHelper.getRectCoordinates(cellStore.getSvgId()!, {
       x1: notation.p1x,
       x2: notation.p2x,
-      y1: notation.p1y,
-      y2: notation.p2y
-    })
+      y1: notation.p2y,
+      y2: notation.p1y,
+    });
 
     for (let col = rect.fromCol; col <= rect.toCol; col++) {
       for (let row = rect.fromRow; row <= rect.toRow; row++) {
@@ -179,7 +181,6 @@ export default function notationCellOccupationHelper() {
       }
     }
   }
-
 
   function validateRowAndCol(col: number, row: number): boolean {
     return (

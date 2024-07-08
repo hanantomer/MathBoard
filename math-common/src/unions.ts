@@ -16,11 +16,19 @@ export type BusEventType =
     "FREE_TEXT_SUBMITTED"       |
     "FREE_TEXT_SELECTED"        |
     "SLOPE_LINE_SELECTED"       |
-    "CURVE_SELECTED"            |
+    "CONCAVE_CURVE_SELECTED"    |
+    "CONVEX_CURVE_SELECTED"     |
     "VERTICAL_LINE_SELECTED"    |
     "HORIZONTAL_LINE_SELECTED";
 
-export type NotationShape = "POINT" |  "HORIZONTAL_LINE" | "VERTICAL_LINE"| "SLOPE_LINE" | "CURVE"  | "RECT"
+export type NotationShape = 
+    "POINT"           |  
+    "HORIZONTAL_LINE" | 
+    "VERTICAL_LINE"   | 
+    "SLOPE_LINE"      | 
+    "CONCAVE_CURVE"   | 
+    "CONVEX_CURVE"    | 
+    "RECT";
 
 export const NotationTypeValues = 
   ["SYMBOL",
@@ -29,7 +37,8 @@ export const NotationTypeValues =
   "HORIZONTALLINE",
   "VERTICALLINE",
   "SLOPELINE",
-  "CURVE",
+  "CONCAVECURVE",
+  "CONVEXCURVE",
   "SQRT",
   "SQRTSYMBOL",
   "TEXT",
@@ -62,7 +71,8 @@ export const NotationTypeShape = new Map<NotationType, NotationShape> ([
   ["SLOPELINE", "SLOPE_LINE"],
   ["TEXT", "RECT"],
   ["IMAGE", "RECT"],
-  ["CURVE", "CURVE"],
+  ["CONCAVECURVE", "CONCAVE_CURVE"],
+  ["CONVEXCURVE", "CONVEX_CURVE"],
 ])
 
 export type EditMode = 
@@ -91,7 +101,6 @@ export type EditMode =
   "CONVEX_CURVE_STARTED"       | // convex line button pressed
   "CONVEX_CURVE_DRAWING"       | // convex line drawing started
   "CONVEX_CURVE_SELECTED"      | // convex line selected
-
   "SQRT_STARTED"              | // sqrt button pressed
   "SQRT_DRAWING"              | // sqrt drawing started
   "SQRT_SELECTED"             | // sqrt selected  
@@ -119,12 +128,12 @@ export type EditMode =
     ["SLOPE_LINE_STARTED", "SLOPELINE"],       
     ["SLOPE_LINE_DRAWING", "SLOPELINE"],       
     ["SLOPE_LINE_SELECTED", "SLOPELINE"],      
-    ["CONCAVE_CURVE_STARTED", "CURVE"],       
-    ["CONVEX_CURVE_STARTED", "CURVE"],       
-    ["CONCAVE_CURVE_DRAWING", "CURVE"],       
-    ["CONVEX_CURVE_DRAWING", "CURVE"],       
-    ["CONCAVE_CURVE_SELECTED", "CURVE"],      
-    ["CONVEX_CURVE_SELECTED", "CURVE"],      
+    ["CONCAVE_CURVE_STARTED", "CONCAVECURVE"],       
+    ["CONCAVE_CURVE_DRAWING", "CONCAVECURVE"],       
+    ["CONCAVE_CURVE_SELECTED", "CONCAVECURVE"],      
+    ["CONVEX_CURVE_STARTED", "CONVEXCURVE"],       
+    ["CONVEX_CURVE_DRAWING", "CONVEXCURVE"],       
+    ["CONVEX_CURVE_SELECTED", "CONVEXCURVE"],      
     ["SQRT_STARTED", "SQRT"],                     
     ["SQRT_DRAWING", "SQRT"],             
     ["SQRT_SELECTED", "SQRT"],            

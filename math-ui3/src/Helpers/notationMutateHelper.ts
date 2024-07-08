@@ -25,19 +25,19 @@ import { CellAttributes } from "common/baseTypes";
 import { NotationType, NotationTypeShape, MoveDirection } from "common/unions";
 import { useUserStore } from "../store/pinia/userStore";
 import { useNotationStore } from "../store/pinia/notationStore";
+import { useCellStore } from "../store/pinia/cellStore";
 import { useEditModeStore } from "../store/pinia/editModeStore";
 import useAuthorizationHelper from "./authorizationHelper";
 import useUserOutgoingOperations from "./userOutgoingOperationsHelper";
 import useMatrixCellHelper from "../helpers/matrixCellHelper";
-import useMatrixHtmlHelper from "../helpers/matrixHtmlHelper";
 
 import { NotationAttributes, RectAttributes } from "common/baseTypes";
 
-const matrixHtmlHelper = useMatrixHtmlHelper();
 const matrixCellHelper = useMatrixCellHelper();
 const userStore = useUserStore();
 const dbHelper = useDbHelper();
 const notationStore = useNotationStore();
+const cellStore = useCellStore();
 const editModeStore = useEditModeStore();
 const authorizationHelper = useAuthorizationHelper();
 const userOutgoingOperations = useUserOutgoingOperations();
@@ -765,7 +765,7 @@ export default function notationMutateHelper() {
 
     upsertRectNotation(notation);
 
-    notationStore.resetSelectedCell();
+    cellStore.resetSelectedCell();
   }
 
   function upsertTextNotation(value: string, textCells: RectAttributes) {
@@ -815,7 +815,7 @@ export default function notationMutateHelper() {
       return { col: point.col, row: point.row };
     }
 
-    return notationStore.getSelectedCell();
+    return cellStore.getSelectedCell();
   }
 
   function getRectCell(): CellAttributes | null {
@@ -825,7 +825,7 @@ export default function notationMutateHelper() {
       return { col: rect.fromCol, row: rect.fromRow };
     }
 
-    return notationStore.getSelectedCell();
+    return cellStore.getSelectedCell();
   }
 
   function addHorizontalLineNotation(

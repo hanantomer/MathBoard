@@ -52,6 +52,7 @@ import useEventBus from "../helpers/eventBusHelper";
 import { CellAttributes } from "common/baseTypes";
 import { onMounted, onUnmounted, ref, watch, computed } from "vue";
 import { useNotationStore } from "../store/pinia/notationStore";
+import { useCellStore } from "../store/pinia/cellStore";
 import { useEditModeStore } from "../store/pinia/editModeStore";
 import { useAnswerStore } from "../store/pinia/answerStore";
 import {
@@ -66,6 +67,7 @@ import usescreenHelper from "../helpers/screenHelper";
 import useUserOutgoingOperations from "../helpers/userOutgoingOperationsHelper";
 const notationLoadingHelper = useNotationLoadingHelper();
 const notationStore = useNotationStore();
+const cellStore = useCellStore();
 const eventBus = useEventBus();
 const matrixHelper = UseMatrixHelper();
 const matrixCellHelper = UseMatrixCellHelper();
@@ -80,19 +82,12 @@ const pBar = ref(false);
 let cursor = ref<CursorType>("auto");
 let toolbarKey = ref(0);
 
-onMounted(() => {
-  eventHelper.registerSvgMouseDown(props.svgId);
-  eventHelper.registerSvgMouseMove(props.svgId);
-  eventHelper.registerSvgMouseUp(props.svgId);
-  eventHelper.registerKeyUp();
-  eventHelper.registerPaste();
-  eventHelper.registerCopy();
-});
+onMounted(() => {});
 
 onUnmounted(() => {
-  eventHelper.unregisterSvgMouseDown(props.svgId);
-  eventHelper.unregisterSvgMouseMove(props.svgId);
-  eventHelper.unregisterSvgMouseUp(props.svgId);
+  eventHelper.unregisterSvgMouseDown();
+  eventHelper.unregisterSvgMouseMove();
+  eventHelper.unregisterSvgMouseUp();
   eventHelper.unregisterKeyUp();
   eventHelper.unregisterPaste();
   eventHelper.unregisterCopy();
@@ -134,7 +129,7 @@ watch(
 );
 
 watch(
-  () => notationStore.getSelectedCell() as CellAttributes,
+  () => cellStore.getSelectedCell() as CellAttributes,
   (
     newSelectedCell: CellAttributes | undefined | null,
     oldSelectedCell: CellAttributes | undefined | null,
@@ -166,7 +161,7 @@ watch(
       params.cellColor,
     );
 
-    notationStore.resetSelectedCell();
+    cellStore.resetSelectedCell();
   },
 );
 
@@ -203,6 +198,15 @@ watch(
 );
 
 async function load() {
+  cellStore.setSvgId(props.svgId);
+
+  eventHelper.registerSvgMouseDown();
+  eventHelper.registerSvgMouseMove();
+  eventHelper.registerSvgMouseUp();
+  eventHelper.registerKeyUp();
+  eventHelper.registerPaste();
+  eventHelper.registerCopy();
+
   pBar.value = true;
 
   toolbarKey.value++; // refreash toolbar

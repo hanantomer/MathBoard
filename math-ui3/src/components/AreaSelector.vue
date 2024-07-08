@@ -18,6 +18,7 @@
 <script setup lang="ts">
 import { watch, computed, ref } from "vue";
 import { useEditModeStore } from "../store/pinia/editModeStore";
+import { useCellStore } from "../store/pinia/cellStore";
 import { useNotationStore } from "../store/pinia/notationStore";
 
 import useNotationMutateHelper from "../helpers/notationMutateHelper";
@@ -28,6 +29,7 @@ import { cellSpace, ScreenCoordinates, DotPosition } from "common/globals";
 
 const eventBus = useEventBus();
 const editModeStore = useEditModeStore();
+const cellStore = useCellStore();
 const notationStore = useNotationStore();
 const notationMutateHelper = useNotationMutateHelper();
 const selectionHelper = useSelectionHelper();
@@ -151,13 +153,13 @@ async function moveSelectionByKey(
   moveVertical: number,
 ) {
   selectionPosition.value.x1 +=
-    moveHorizontal * (notationStore.getCellHorizontalWidth() + cellSpace);
+    moveHorizontal * (cellStore.getCellHorizontalWidth() + cellSpace);
   selectionPosition.value.y1 +=
-    moveVertical * (notationStore.getCellVerticalHeight() + cellSpace);
+    moveVertical * (cellStore.getCellVerticalHeight() + cellSpace);
   selectionPosition.value.x2 +=
-    moveHorizontal * (notationStore.getCellHorizontalWidth() + cellSpace);
+    moveHorizontal * (cellStore.getCellHorizontalWidth() + cellSpace);
   selectionPosition.value.y2 +=
-    moveVertical * notationStore.getCellVerticalHeight() + cellSpace;
+    moveVertical * cellStore.getCellVerticalHeight() + cellSpace;
 }
 
 function handleMouseDown(e: MouseEvent) {
@@ -190,7 +192,7 @@ function handleMouseMove(e: MouseEvent) {
     return;
   }
 
-  notationStore.resetSelectedCell();
+  cellStore.resetSelectedCell();
 
   if (editMode === "AREA_SELECTING" || editMode === "TEXT_AREA_SELECTING") {
     updateSelectionArea(e); // =>area selected
@@ -264,21 +266,21 @@ function moveSelection(e: MouseEvent) {
   // movement is still too small
   if (
     Math.abs(e.clientX - svgDimensions.value.x - dragPosition.value.x) <
-      notationStore.getCellHorizontalWidth() + cellSpace &&
+      cellStore.getCellHorizontalWidth() + cellSpace &&
     Math.abs(e.clientY - svgDimensions.value.y - dragPosition.value.y) <
-      notationStore.getCellVerticalHeight() + cellSpace
+      cellStore.getCellVerticalHeight() + cellSpace
   ) {
     return;
   }
 
   const rectDeltaX = Math.round(
     (e.clientX - svgDimensions.value.x - dragPosition.value.x) /
-      (notationStore.getCellHorizontalWidth() + cellSpace),
+      (cellStore.getCellHorizontalWidth() + cellSpace),
   );
 
   const rectDeltaY = Math.round(
     (e.clientY - svgDimensions.value.y - dragPosition.value.y) /
-      (notationStore.getCellVerticalHeight() + cellSpace),
+      (cellStore.getCellVerticalHeight() + cellSpace),
   );
 
   if (rectDeltaX != 0 || rectDeltaY != 0) {
@@ -289,13 +291,13 @@ function moveSelection(e: MouseEvent) {
     );
 
     selectionPosition.value.x1 +=
-      rectDeltaX * (notationStore.getCellHorizontalWidth() + cellSpace);
+      rectDeltaX * (cellStore.getCellHorizontalWidth() + cellSpace);
     selectionPosition.value.y1 +=
-      rectDeltaY * (notationStore.getCellVerticalHeight() + cellSpace);
+      rectDeltaY * (cellStore.getCellVerticalHeight() + cellSpace);
     selectionPosition.value.x2 +=
-      rectDeltaX * (notationStore.getCellHorizontalWidth() + cellSpace);
+      rectDeltaX * (cellStore.getCellHorizontalWidth() + cellSpace);
     selectionPosition.value.y2 +=
-      rectDeltaY * (notationStore.getCellVerticalHeight() + cellSpace);
+      rectDeltaY * (cellStore.getCellVerticalHeight() + cellSpace);
 
     dragPosition.value.x = e.clientX - svgDimensions.value.x;
     dragPosition.value.y = e.clientY - svgDimensions.value.y;

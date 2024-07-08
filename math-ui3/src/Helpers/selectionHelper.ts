@@ -1,15 +1,17 @@
 import { NotationTypeShape } from "common/unions";
 import { useNotationStore } from "../store/pinia/notationStore";
+import { useCellStore } from "../store/pinia/cellStore";
 import { ScreenCoordinates, DotPosition } from "common/globals";
 import { NotationAttributes } from "common/baseTypes";
+import { useLessonStore } from "../store/pinia/lessonStore";
+import { useEditModeStore } from "../store/pinia/editModeStore";
 import usescreenHelper from "./screenHelper";
 import useNotationMutateHelper from "./notationMutateHelper";
 import useUserOutgoingOperationsHelper from "./userOutgoingOperationsHelper";
 import useEventBus from "./eventBusHelper";
-import { useLessonStore } from "../store/pinia/lessonStore";
-import { useEditModeStore } from "../store/pinia/editModeStore";
+
 const eventBus = useEventBus();
-const notationStore = useNotationStore();
+const cellStore = useCellStore();
 const notationMutateHelper = useNotationMutateHelper();
 const screenHelper = usescreenHelper();
 const userOutgoingOperationsHelper = useUserOutgoingOperationsHelper();
@@ -21,6 +23,7 @@ export default function selectionHelper() {
     svgId: string,
     screenCoordinates: ScreenCoordinates,
   ) {
+    const notationStore = useNotationStore(); // must be initlized here to  prevent circular refernce
     const areaCells = screenHelper.getScreenCoordinatesOccupiedCells(
       svgId,
       screenCoordinates,
@@ -32,6 +35,7 @@ export default function selectionHelper() {
     svgId: string,
     position: DotPosition,
   ): NotationAttributes | null {
+    const notationStore = useNotationStore();
     notationStore.resetSelectedNotations();
 
     const notation = screenHelper.getPointNotation(svgId, position);
@@ -45,6 +49,11 @@ export default function selectionHelper() {
         selectLineNotation(notation!);
         break;
       }
+      case "CONVEX_CURVE":
+      case "CONCAVE_CURVE":  {
+        selectCurveNotation(notation!);
+        break;
+      }
       case "RECT":
       case "POINT": {
         selectPointOrRectNotation(notation!);
@@ -56,6 +65,7 @@ export default function selectionHelper() {
   }
 
   function selectPointOrRectNotation(activeNotation: NotationAttributes) {
+    const notationStore = useNotationStore();
     // disallow selection of question notations for student
     if (notationMutateHelper.isNotationInQuestionArea(activeNotation, 0, 0))
       return;
@@ -65,6 +75,18 @@ export default function selectionHelper() {
     }
 
     notationStore.selectNotation(activeNotation?.uuid);
+  }
+
+  function selectCurveNotation(notation: NotationAttributes) {
+    switch (notation.notationType) {
+      case "CONCAVECURVE":
+        editModeStore.setEditMode("CONCAVE_CURVE_SELECTED");
+        eventBus.emit("CONCAVE_CURVE_SELECTED", notation);
+        break;
+      case "CONVEXCURVE":
+        editModeStore.setEditMode("CONVEX_CURVE_SELECTED");
+        eventBus.emit("CONVEX_CURVE_SELECTED", notation);
+    }
   }
 
   function selectLineNotation(notation: NotationAttributes) {
@@ -88,11 +110,12 @@ export default function selectionHelper() {
   }
 
   async function selectCell(svgId: string, position: DotPosition) {
+    const notationStore = useNotationStore();
     let clickedCell = screenHelper.getClickedCell(svgId, position);
 
     if (!clickedCell) return;
 
-    notationStore.selectCell(clickedCell!);
+    cellStore.selectCell(clickedCell!);
 
     if (!editModeStore.isCheckMode()) {
       editModeStore.setEditMode("CELL_SELECTED");
