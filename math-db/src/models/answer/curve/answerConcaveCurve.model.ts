@@ -2,20 +2,20 @@ import {
     Model, Column, BelongsTo, ForeignKey, DataType, AllowNull
 } from "sequelize-typescript";
 import  User from "../../user.model";
-import Lesson from "../../lesson/lesson.model";
-import LessonDecorator from "../../lesson/lessonDecorator";
+import Answer from "../../answer/answer.model";
+import AnswerDecorator from "../../answer/answerDecorator";
 import {
-    LessonCurveAttributes,
-    LessonCurveCreationAttributes,
-} from "../../../../../math-common/src/lessonTypes";
+    AnswerCurveAttributes,
+    AnswerCurveCreationAttributes,
+} from "../../../../../math-common/src/answerTypes";
 import { BoardType, NotationType } from "../../../../../math-common/src/unions";
 
-@LessonDecorator("LessonCurve")
-export default class LessonCurve extends Model<
-    LessonCurveAttributes,
-    LessonCurveCreationAttributes
+@AnswerDecorator("AnswerConcaveCurve")
+export default class AnswerConcaveCurve extends Model<
+    AnswerCurveAttributes,
+    AnswerCurveCreationAttributes
 > {
-    notationType: NotationType = "CURVE";
+    notationType: NotationType = "CONCAVECURVE";
     boardType: BoardType = "ANSWER";
 
     @AllowNull(false)
@@ -32,15 +32,15 @@ export default class LessonCurve extends Model<
     })
     user!: User;
 
-    @ForeignKey(() => Lesson)
-    lessonId!: number;
+    @ForeignKey(() => Answer)
+    answerId!: number;
 
-    @BelongsTo(() => Lesson, {
+    @BelongsTo(() => Answer, {
         foreignKey: {
             allowNull: false,
         },
     })
-    lesson!: Lesson;
+    answer!: Answer;
 
     @AllowNull(false)
     @Column({ type: DataType.INTEGER })

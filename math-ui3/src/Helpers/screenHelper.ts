@@ -11,6 +11,7 @@ import {
   RectNotationAttributes,
   SlopeLineNotationAttributes,
   VerticalLineNotationAttributes,
+  CurveNotationAttributes,
   RectAttributes,
 } from "../../../math-common/src/baseTypes";
 import {
@@ -211,6 +212,19 @@ export default function screenHelper() {
           });
           break;
         }
+
+        case "CONCAVE_CURVE": {
+          let n1 = n as CurveNotationAttributes;
+          notationDistanceList.push({
+            notation: n1,
+            distance: getClickedPosDistanceFromConcaveCurve(
+              svgId,
+              dotPosition,
+              n1,
+            ),
+          });
+          break;
+        }
       }
     }
 
@@ -329,6 +343,8 @@ export default function screenHelper() {
 
     return Math.sqrt(a + b);
   }
+
+  getClickedPosDistanceFromConcaveCurve
 
   function getClickedPosDistanceFromVerticalLine(
     svgId: string,

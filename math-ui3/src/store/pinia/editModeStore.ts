@@ -41,7 +41,7 @@ export const useEditModeStore = defineStore("editMode", () => {
       isHorizontalLineMode() ||
       isVerticalLineMode() ||
       isSlopeLineMode() ||
-      isSqrtMode() 
+      isSqrtMode()
     );
   }
 
@@ -78,12 +78,23 @@ export const useEditModeStore = defineStore("editMode", () => {
     return editMode.value == "SQRT_STARTED" || editMode.value == "SQRT_DRAWING";
   }
 
-  function isCurveMode() {
+  function isConcaveCurveMode() {
     return (
       editMode.value == "CONCAVE_CURVE_STARTED" ||
-      editMode.value == "CONCAVE_CURVE_DRAWING" ||
+      editMode.value == "CONCAVE_CURVE_DRAWING"
+    );
+  }
+
+  function isConvexCurveMode() {
+    return (
       editMode.value == "CONVEX_CURVE_STARTED" ||
       editMode.value == "CONVEX_CURVE_DRAWING"
+    );
+  }
+
+  function isCurveMode() {
+    return (
+      isConvexCurveMode() || isConcaveCurveMode()
     );
   }
 
@@ -265,6 +276,8 @@ export const useEditModeStore = defineStore("editMode", () => {
     isAreaSelectionOrMovingMode,
     isSelectionMode,
     isLineMode,
+    isConcaveCurveMode,
+    isConvexCurveMode,
     isCurveMode,
     isHorizontalLineMode,
     isHorizontalLineSelectedMode,

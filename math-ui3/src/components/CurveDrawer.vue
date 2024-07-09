@@ -59,8 +59,6 @@ const editModeStore = useEditModeStore();
 
 const MIN_NUMBER_OF_POINTS = 3;
 
-type CurveType = "CONCAVE" | "CONVEX";
-
 type Point = {
   x: number;
   y: number;
@@ -76,7 +74,6 @@ type PointWithSlope = {
 
 const props = defineProps({
   svgId: { type: String, default: "" },
-  curveType: { type: String, default: "CONCAVE" },
 });
 
 const show = computed(() => {
@@ -85,6 +82,11 @@ const show = computed(() => {
   );
 });
 
+const curveType = computed(() => {
+  return editModeStore.isConcaveCurveMode() ? "CONCAVE" : "CONVEX"
+});
+
+
 let p1x = 0;
 let p1y = 0;
 let p2x = 0;
@@ -92,15 +94,11 @@ let p2y = 0;
 let cpx = 0;
 let cpy = 0;
 
-//let p2x = ref(0);
-//let p2y = ref(0);
-
-//let controlPoint1X = ref(0);
-//let controlPoint1Y = ref(0);
 
 let visitedPoints: Point[] = [];
 
 let mouseMoveCount = 0;
+
 
 // watch
 
@@ -139,25 +137,24 @@ watch(
   },
 );
 
-
 // event handlers
 
 function onCurveSelected(curve: CurveNotationAttributes) {
-  // linePosition.value.left.x =
-  //   lineNotation.fromCol * (notationStore.getCellHorizontalWidth() + cellSpace);
+  p1x = curve.p1x;
+  p1y = curve.p1y;
+  p2x = curve.p2x;
+  p2y = curve.p2y;
+  cpx = curve.cpx;
+  cpy = curve.cpy;
 
-  // linePosition.value.left.y =
-  //   lineNotation.fromRow * (notationStore.getCellVerticalHeight() + cellSpace);
+  notationStore.selectNotation(curve.uuid);
 
-  // linePosition.value.right.x =
-  //   lineNotation.toCol * (notationStore.getCellHorizontalWidth() + cellSpace);
+  const evName =
+    curve.notationType === "CONCAVECURVE" ?
+      "CONCAVE_CURVE_SELECTED" :
+      "CONVEX_CURVE_SELECTED";
 
-  // linePosition.value.right.y =
-  //   lineNotation.toRow * (notationStore.getCellVerticalHeight() + cellSpace);
-
-  // notationStore.selectNotation(lineNotation.uuid);
-
-  eventBus.emit("CURVE_SELECTED", null); // to enable re selection
+  eventBus.emit(evName, null); // to enable re selection
 }
 
 function onHandleMouseDown() {
@@ -196,7 +193,7 @@ function setCurve(xPos: number, yPos: number) {
   const slopes = getSlopes(points);
 
   const normalizedSlopes =
-    props.curveType === "CONCAVE"
+    curveType.value === "CONCAVE"
       ? getNormalizedConcaveSlopes(slopes)
       : getNormalizedConvexSlopes(slopes);
 
@@ -212,7 +209,7 @@ function setCurve(xPos: number, yPos: number) {
   const distanceFromCurve = calculateDistance(
     normalizedSlopes,
     controlPointIndex,
-    props.curveType,
+    curveType.value,
   );
 
   console.debug("distanceFromCurve" + distanceFromCurve);
