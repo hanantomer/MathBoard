@@ -39,21 +39,6 @@ export const useNotationStore = defineStore("notation", () => {
 
   let selectedCell = ref(<CellAttributes>{ col: 0, row: 0 });
 
-  function getCellVerticalHeight() {
-    if (!cellVerticalHight.value)
-      throw new Error("cellVerticalHight.value is null");
-    return cellVerticalHight.value;
-  }
-
-  function getCellHorizontalWidth() {
-    if (!cellVerticalHight.value)
-      throw new Error("cell VerticalHight value is null");
-    return cellVerticalHight.value / 2;
-  }
-
-  function setCellVerticalHeight(size: number) {
-    cellVerticalHight.value = size;
-  }
 
   function getSelectedNotations(): NotationAttributes[] {
     return Array.from(notations.value.values()).filter(

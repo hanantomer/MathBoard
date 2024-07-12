@@ -169,7 +169,7 @@ export default function notationCellOccupationHelper() {
     const rect = screenHelper.getRectCoordinates(cellStore.getSvgId()!, {
       x1: notation.p1x,
       x2: notation.p2x,
-      y1: notation.p2y,
+      y1: notation.p2y,  /// TODO: consider switching
       y2: notation.p1y,
     });
 

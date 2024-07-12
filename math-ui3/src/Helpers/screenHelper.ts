@@ -58,33 +58,31 @@ export default function screenHelper() {
       .getElementById(svgId)!
       .getBoundingClientRect();
 
-    const areaFromCol = Math.round(
-      (rectScreenCoordinates.x1 - boundingRect.left) /
+    const rectFromCol = Math.round(
+      rectScreenCoordinates.x1 /
         (cellStore.getCellHorizontalWidth() + cellSpace),
     );
 
-    const areaToCol =
-      Math.round(
-        (rectScreenCoordinates.x2 - boundingRect.left) /
-          (cellStore.getCellHorizontalWidth() + cellSpace),
-      ) - 1;
+    const rectToCol = Math.round(
+      rectScreenCoordinates.x2 /
+        (cellStore.getCellHorizontalWidth() + cellSpace),
+    );
 
-    const areaFromRow = Math.round(
-      (rectScreenCoordinates.y1 - boundingRect.top) /
+    const rectFromRow = Math.round(
+      rectScreenCoordinates.y1 /
         (cellStore.getCellVerticalHeight() + cellSpace),
     );
 
-    const areaToRow =
-      Math.round(
-        (rectScreenCoordinates.y2 - boundingRect.top) /
-          (cellStore.getCellVerticalHeight() + cellSpace),
-      ) - 1;
+    const rectToRow = Math.round(
+      rectScreenCoordinates.y2 /
+        (cellStore.getCellVerticalHeight() + cellSpace),
+    );
 
     return {
-      fromCol: areaFromCol,
-      toCol: areaToCol,
-      fromRow: areaFromRow,
-      toRow: areaToRow,
+      fromCol: rectFromCol,
+      toCol: rectToCol,
+      fromRow: rectFromRow,
+      toRow: rectToRow,
     };
   }
 
@@ -213,15 +211,18 @@ export default function screenHelper() {
           break;
         }
 
-        case "CONCAVE_CURVE": {
+        case "CONCAVE_CURVE":
+        case "CONVEX_CURVE": {
           let n1 = n as CurveNotationAttributes;
+          let curveEnclosingTriangleCenterX = (n1.cpx + n1.p1x + n1.p2x) / 3;
+          let curveEnclosingTriangleCenterY = (n1.cpy + n1.p1y + n1.p2y) / 3;
+
           notationDistanceList.push({
             notation: n1,
-            distance: getClickedPosDistanceFromConcaveCurve(
-              svgId,
-              dotPosition,
-              n1,
-            ),
+            distance: getClickedPosDistanceFromPoint(svgId, dotPosition, {
+              x: curveEnclosingTriangleCenterX,
+              y: curveEnclosingTriangleCenterY,
+            }),
           });
           break;
         }
@@ -257,6 +258,19 @@ export default function screenHelper() {
       default:
         return distance <= minDistanceForSelection;
     }
+  }
+
+  // calc the distnce from a point to point.
+  function getClickedPosDistanceFromPoint(
+    svgId: string,
+    dotPosition1: DotPosition,
+    dotPosition2: DotPosition,
+  ): number {
+    const xDistance = Math.abs((dotPosition1.x - dotPosition2.x) / 2);
+
+    const yDistance = Math.abs((dotPosition1.y - dotPosition2.y) / 2);
+
+    return Math.sqrt(Math.pow(xDistance, 2) + Math.pow(yDistance, 2));
   }
 
   // calc the distnce from the center of cell to the clicked coordinates.
@@ -343,8 +357,23 @@ export default function screenHelper() {
 
     return Math.sqrt(a + b);
   }
+  /*
+  function getClickedPosDistanceFromConcaveCurve(
+    svgId: string,
+    dotPosition: DotPosition,
+    n: CurveNotationAttributes,
+  ): number {
+    const boundingRect = document
+      .getElementById(svgId)
+      ?.getBoundingClientRect(); /// TODO move to function
 
-  getClickedPosDistanceFromConcaveCurve
+    const x = dotPosition.x - boundingRect!.left;
+
+    const y = dotPosition.y - boundingRect!.top;
+
+    // aoutline a virtual triangle from curve edges and control point
+  }
+  */
 
   function getClickedPosDistanceFromVerticalLine(
     svgId: string,
