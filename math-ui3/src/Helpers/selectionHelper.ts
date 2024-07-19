@@ -1,7 +1,7 @@
 import { NotationTypeShape } from "common/unions";
 import { useNotationStore } from "../store/pinia/notationStore";
 import { useCellStore } from "../store/pinia/cellStore";
-import { ScreenCoordinates, DotPosition } from "common/globals";
+import { RectCoordinates, DotCoordinates } from "common/baseTypes";
 import { NotationAttributes } from "common/baseTypes";
 import { useLessonStore } from "../store/pinia/lessonStore";
 import { useEditModeStore } from "../store/pinia/editModeStore";
@@ -21,24 +21,28 @@ const editModeStore = useEditModeStore();
 export default function selectionHelper() {
   function selectNotationsOfArea(
     svgId: string,
-    screenCoordinates: ScreenCoordinates,
+    RectCoordinates: RectCoordinates,
   ) {
-    const notationStore = useNotationStore(); // must be initlized here to  prevent circular refernce
-    const areaCells = screenHelper.getScreenCoordinatesOccupiedCells(
+    // must be initlized here to prevent circular refernce
+    const notationStore = useNotationStore();
+    const areaCells = screenHelper.getRectCoordinatesOccupiedCells(
       svgId,
-      screenCoordinates,
+      RectCoordinates,
     );
     notationStore.selectNotationsOfCells(areaCells);
   }
 
   function selectNotationAtPosition(
     svgId: string,
-    position: DotPosition,
+    dotCoordinates: DotCoordinates,
   ): NotationAttributes | null {
     const notationStore = useNotationStore();
     notationStore.resetSelectedNotations();
 
-    const notation = screenHelper.getPointNotation(svgId, position);
+    const notation = screenHelper.getNotationAtDotCoordinates(
+      svgId,
+      dotCoordinates,
+    );
 
     if (!notation) return null;
 
@@ -50,7 +54,7 @@ export default function selectionHelper() {
         break;
       }
       case "CONVEX_CURVE":
-      case "CONCAVE_CURVE":  {
+      case "CONCAVE_CURVE": {
         selectCurveNotation(notation!);
         break;
       }
@@ -109,7 +113,7 @@ export default function selectionHelper() {
     }
   }
 
-  async function selectCell(svgId: string, position: DotPosition) {
+  async function selectCell(svgId: string, position: DotCoordinates) {
     const notationStore = useNotationStore();
     let clickedCell = screenHelper.getClickedCell(svgId, position);
 

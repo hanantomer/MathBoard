@@ -54,11 +54,13 @@ import { watch, computed, ref } from "vue";
 import { useNotationStore } from "../store/pinia/notationStore";
 import { useCellStore } from "../store/pinia/cellStore";
 import { useEditModeStore } from "../store/pinia/editModeStore";
+import { cellSpace } from "../../../math-common/src/globals";
+
 import {
   HorizontaLinePosition,
-  DotPosition,
-  cellSpace,
-} from "../../../math-common/src/globals";
+  DotCoordinates,
+} from "../../../math-common/src/baseTypes";
+
 import {
   HorizontalLineAttributes,
   HorizontalLineNotationAttributes,
@@ -252,7 +254,7 @@ function onMouseUp() {
 
 // methods
 
-function startLineDrawing(position: DotPosition) {
+function startLineDrawing(position: DotCoordinates) {
   linePosition.value.x1 = position.x;
 
   linePosition.value.x2 = linePosition.value.x1 + 10;
@@ -278,13 +280,11 @@ function endDrawLine() {
   }
 
   let fromCol = Math.round(
-    linePosition.value.x1 /
-      (cellStore.getCellHorizontalWidth() + cellSpace),
+    linePosition.value.x1 / (cellStore.getCellHorizontalWidth() + cellSpace),
   );
 
   let toCol = Math.round(
-    linePosition.value.x2 /
-      (cellStore.getCellHorizontalWidth() + cellSpace),
+    linePosition.value.x2 / (cellStore.getCellHorizontalWidth() + cellSpace),
   );
 
   let row = Math.round(

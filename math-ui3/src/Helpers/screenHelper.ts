@@ -1,8 +1,8 @@
+import { cellSpace } from "../../../math-common/src/globals";
 import {
-  DotPosition,
-  ScreenCoordinates,
-  cellSpace,
-} from "../../../math-common/src/globals";
+  DotCoordinates,
+  RectCoordinates,
+} from "../../../math-common/src/baseTypes";
 import {
   NotationAttributes,
   CellAttributes,
@@ -13,6 +13,7 @@ import {
   VerticalLineNotationAttributes,
   CurveNotationAttributes,
   RectAttributes,
+  LineCoordinates,
 } from "../../../math-common/src/baseTypes";
 import {
   NotationTypeShape,
@@ -27,54 +28,51 @@ const cellStore = useCellStore();
 export default function screenHelper() {
   const minDistanceForLineSelection = 5;
   const minDistanceForSelection = 25;
+  const minDistanceForCurveSelection = 50;
   type NotationDistance = { notation: NotationAttributes; distance: number };
 
   function getClickedCell(
     svgId: string,
-    dotPosition: DotPosition,
+    DotCoordinates: DotCoordinates,
   ): CellAttributes {
     const boundingRect = document
       .getElementById(svgId)
       ?.getBoundingClientRect();
 
     const clickedCellCol = Math.floor(
-      (dotPosition.x - boundingRect!.left) /
+      (DotCoordinates.x - boundingRect!.left) /
         (cellStore.getCellHorizontalWidth() + cellSpace),
     );
 
     const clickedCellRow = Math.floor(
-      (dotPosition.y - boundingRect!.top) /
+      (DotCoordinates.y - boundingRect!.top) /
         (cellStore.getCellVerticalHeight() + cellSpace),
     );
 
     return { col: clickedCellCol, row: clickedCellRow };
   }
 
-  function getRectCoordinates(
+  function getRectAttributes(
     svgId: string,
-    rectScreenCoordinates: ScreenCoordinates,
+    rectCoordinates: RectCoordinates,
   ): RectAttributes {
-    const boundingRect = document
-      .getElementById(svgId)!
-      .getBoundingClientRect();
-
     const rectFromCol = Math.round(
-      rectScreenCoordinates.x1 /
+      rectCoordinates.topLeft.x /
         (cellStore.getCellHorizontalWidth() + cellSpace),
     );
 
     const rectToCol = Math.round(
-      rectScreenCoordinates.x2 /
+      rectCoordinates.bottomRight.x /
         (cellStore.getCellHorizontalWidth() + cellSpace),
     );
 
     const rectFromRow = Math.round(
-      rectScreenCoordinates.y1 /
+      rectCoordinates.topLeft.y /
         (cellStore.getCellVerticalHeight() + cellSpace),
     );
 
     const rectToRow = Math.round(
-      rectScreenCoordinates.y2 /
+      rectCoordinates.bottomRight.y /
         (cellStore.getCellVerticalHeight() + cellSpace),
     );
 
@@ -86,9 +84,9 @@ export default function screenHelper() {
     };
   }
 
-  function getScreenCoordinatesOccupiedCells(
+  function getRectCoordinatesOccupiedCells(
     svgId: string,
-    screenCoordinates: ScreenCoordinates,
+    rectCoordinates: RectCoordinates,
   ): CellAttributes[] {
     let cells: CellAttributes[] = [];
 
@@ -97,22 +95,22 @@ export default function screenHelper() {
       ?.getBoundingClientRect();
 
     const areaFromCol = Math.floor(
-      (screenCoordinates.x1 - boundingRect!.left) /
+      (rectCoordinates.topLeft.x - boundingRect!.left) /
         (cellStore.getCellHorizontalWidth() + cellSpace),
     );
 
     const areaToCol = Math.floor(
-      (screenCoordinates.x2 - boundingRect!.left) /
+      (rectCoordinates.bottomRight.x - boundingRect!.left) /
         (cellStore.getCellHorizontalWidth() + cellSpace),
     );
 
     const areaFromRow = Math.floor(
-      (screenCoordinates.y1 - boundingRect!.top) /
+      (rectCoordinates.bottomRight.y - boundingRect!.top) /
         (cellStore.getCellVerticalHeight() + cellSpace),
     );
 
     const areaToRow = Math.floor(
-      (screenCoordinates.y2 - boundingRect!.top) /
+      (rectCoordinates.bottomRight.y - boundingRect!.top) /
         (cellStore.getCellVerticalHeight() + cellSpace),
     );
 
@@ -126,21 +124,21 @@ export default function screenHelper() {
   }
 
   // find notation at screen  point
-  function getPointNotation(
+  function getNotationAtDotCoordinates(
     svgId: string,
-    dotPosition: DotPosition,
+    DotCoordinates: DotCoordinates,
   ): NotationAttributes | null {
     const notationStore = useNotationStore();
-    const clickedCell = getClickedCell(svgId, dotPosition);
-    const notationsAtCell = notationStore.getNotationsByCell(clickedCell);
-    return notationClosestToPoint(svgId, notationsAtCell, dotPosition);
+    const clickedCell = getClickedCell(svgId, DotCoordinates);
+    const notationsAtCell = notationStore.getNotationsAtCell(clickedCell);
+    return notationClosestToPoint(svgId, notationsAtCell, DotCoordinates);
   }
 
-  // loop over notationsAtCell array and return the one closest to dotPosition
+  // loop over notationsAtCell array and return the one closest to DotCoordinates
   function notationClosestToPoint(
     svgId: string,
     notationsAtCell: NotationAttributes[],
-    dotPosition: DotPosition,
+    DotCoordinates: DotCoordinates,
   ): NotationAttributes | null {
     if (!notationsAtCell?.length) return null;
 
@@ -157,7 +155,7 @@ export default function screenHelper() {
             notation: n1,
             distance: getClickedPosDistanceFromCellCenter(
               svgId,
-              dotPosition,
+              DotCoordinates,
               n1,
             ),
           });
@@ -169,7 +167,7 @@ export default function screenHelper() {
             notation: n1,
             distance: getClickedPosDistanceFromRectCenter(
               svgId,
-              dotPosition,
+              DotCoordinates,
               n1,
             ),
           });
@@ -180,7 +178,7 @@ export default function screenHelper() {
             notation: n1,
             distance: getClickedPosDistanceFromSlopeLine(
               svgId,
-              dotPosition,
+              DotCoordinates,
               n1,
             ),
           });
@@ -192,7 +190,7 @@ export default function screenHelper() {
             notation: n1,
             distance: getClickedPosDistanceFromHorizontalLine(
               svgId,
-              dotPosition,
+              DotCoordinates,
               n1,
             ),
           });
@@ -204,7 +202,7 @@ export default function screenHelper() {
             notation: n1,
             distance: getClickedPosDistanceFromVerticalLine(
               svgId,
-              dotPosition,
+              DotCoordinates,
               n1,
             ),
           });
@@ -219,10 +217,13 @@ export default function screenHelper() {
 
           notationDistanceList.push({
             notation: n1,
-            distance: getClickedPosDistanceFromPoint(svgId, dotPosition, {
-              x: curveEnclosingTriangleCenterX,
-              y: curveEnclosingTriangleCenterY,
-            }),
+            distance: getClickedPosDistanceFromEnclosingTriangleCenter(
+              DotCoordinates,
+              {
+                x: curveEnclosingTriangleCenterX,
+                y: curveEnclosingTriangleCenterY,
+              },
+            ),
           });
           break;
         }
@@ -255,39 +256,41 @@ export default function screenHelper() {
       case "VERTICAL_LINE":
       case "SLOPE_LINE":
         return distance <= minDistanceForLineSelection;
+      case "CONCAVE_CURVE":
+      case "CONVEX_CURVE":
+        return distance <= minDistanceForCurveSelection;
       default:
         return distance <= minDistanceForSelection;
     }
   }
 
-  // calc the distnce from a point to point.
-  function getClickedPosDistanceFromPoint(
-    svgId: string,
-    dotPosition1: DotPosition,
-    dotPosition2: DotPosition,
+  // calc the minimum distnce of either x dimension or y dimension between 2 points.
+  function getClickedPosDistanceFromEnclosingTriangleCenter(
+    clickedDot: DotCoordinates,
+    enclosingTriangleCenter: DotCoordinates,
   ): number {
-    const xDistance = Math.abs((dotPosition1.x - dotPosition2.x) / 2);
+    const xDistance = Math.abs((clickedDot.x - enclosingTriangleCenter.x) / 2);
 
-    const yDistance = Math.abs((dotPosition1.y - dotPosition2.y) / 2);
+    const yDistance = Math.abs((clickedDot.y - enclosingTriangleCenter.y) / 2);
 
-    return Math.sqrt(Math.pow(xDistance, 2) + Math.pow(yDistance, 2));
+    return Math.sqrt(Math.min(Math.pow(xDistance, 2), Math.pow(yDistance, 2)));
   }
 
   // calc the distnce from the center of cell to the clicked coordinates.
   function getClickedPosDistanceFromCellCenter(
     svgId: string,
-    dotPosition: DotPosition,
+    DotCoordinates: DotCoordinates,
     notation: PointNotationAttributes,
   ): number {
     const clickedPosYDistanceFromCellCenter = Math.abs(
-      dotPosition.y -
+      DotCoordinates.y -
         getBoundingRect(svgId)!.top -
         notation.row! * (cellStore.getCellVerticalHeight() + cellSpace) -
         cellStore.getCellVerticalHeight() / 2,
     );
 
     const clickedPosXDistanceFromCellCenter = Math.abs(
-      dotPosition.x -
+      DotCoordinates.x -
         getBoundingRect(svgId)!.left -
         notation.col! * (cellStore.getCellHorizontalWidth() + cellSpace) -
         cellStore.getCellHorizontalWidth() / 2,
@@ -301,18 +304,18 @@ export default function screenHelper() {
 
   function getClickedPosDistanceFromRectCenter(
     svgId: string,
-    dotPosition: DotPosition,
+    DotCoordinates: DotCoordinates,
     n1: RectNotationAttributes,
   ): number {
     const clickedPosYDistanceFromRectCenter = Math.abs(
-      dotPosition.y -
+      DotCoordinates.y -
         getBoundingRect(svgId)!.top -
         n1.fromRow * (cellStore.getCellVerticalHeight() + cellSpace) -
         ((n1.toRow - n1.fromRow) * cellStore.getCellVerticalHeight()) / 2,
     );
 
     const clickedPosXDistanceFromRectCenter = Math.abs(
-      dotPosition.x -
+      DotCoordinates.x -
         getBoundingRect(svgId)!.top -
         n1.fromCol * (cellStore.getCellHorizontalWidth() + cellSpace) -
         ((n1.toCol - n1.fromCol) * cellStore.getCellHorizontalWidth()) / 2,
@@ -328,7 +331,7 @@ export default function screenHelper() {
 
   function getClickedPosDistanceFromHorizontalLine(
     svgId: string,
-    dotPosition: DotPosition,
+    DotCoordinates: DotCoordinates,
     n: HorizontalLineNotationAttributes,
   ): number {
     const boundingRect = document
@@ -339,9 +342,9 @@ export default function screenHelper() {
 
     const cellHeight = cellStore.getCellVerticalHeight() + cellSpace;
 
-    const x = dotPosition.x - boundingRect!.left;
+    const x = DotCoordinates.x - boundingRect!.left;
 
-    const y = dotPosition.y - boundingRect!.top;
+    const y = DotCoordinates.y - boundingRect!.top;
 
     const horizontalDistance =
       x < n.fromCol * cellWidth
@@ -360,16 +363,16 @@ export default function screenHelper() {
   /*
   function getClickedPosDistanceFromConcaveCurve(
     svgId: string,
-    dotPosition: DotPosition,
+    DotCoordinates: DotCoordinates,
     n: CurveNotationAttributes,
   ): number {
     const boundingRect = document
       .getElementById(svgId)
       ?.getBoundingClientRect(); /// TODO move to function
 
-    const x = dotPosition.x - boundingRect!.left;
+    const x = DotCoordinates.x - boundingRect!.left;
 
-    const y = dotPosition.y - boundingRect!.top;
+    const y = DotCoordinates.y - boundingRect!.top;
 
     // aoutline a virtual triangle from curve edges and control point
   }
@@ -377,7 +380,7 @@ export default function screenHelper() {
 
   function getClickedPosDistanceFromVerticalLine(
     svgId: string,
-    dotPosition: DotPosition,
+    DotCoordinates: DotCoordinates,
     n: VerticalLineNotationAttributes,
   ): number {
     const boundingRect = document
@@ -388,15 +391,15 @@ export default function screenHelper() {
 
     const cellHeight = cellStore.getCellVerticalHeight() + cellSpace;
 
-    const x = dotPosition.x - boundingRect!.left;
+    const x = DotCoordinates.x - boundingRect!.left;
 
-    const y = dotPosition.y - boundingRect!.top;
+    const y = DotCoordinates.y - boundingRect!.top;
 
     const horizontalDistance = Math.abs(n.col * cellWidth - x);
 
     const verticalDistance =
       y < n.fromRow * cellHeight
-        ? n.fromRow * cellHeight - dotPosition.y
+        ? n.fromRow * cellHeight - DotCoordinates.y
         : y > n.toRow * cellHeight
         ? y - n.toRow * cellHeight
         : 0;
@@ -410,7 +413,7 @@ export default function screenHelper() {
   //https://en.wikipedia.org/wiki/Distance_from_a_point_to_a_line
   function getClickedPosDistanceFromSlopeLine(
     svgId: string,
-    dotPosition: DotPosition,
+    DotCoordinates: DotCoordinates,
     n: SlopeLineNotationAttributes,
   ): number {
     const boundingRect = document
@@ -421,9 +424,9 @@ export default function screenHelper() {
 
     const cellHeight = cellStore.getCellVerticalHeight() + cellSpace;
 
-    const x = dotPosition.x - boundingRect!.left;
+    const x = DotCoordinates.x - boundingRect!.left;
 
-    const y = dotPosition.y - boundingRect!.top;
+    const y = DotCoordinates.y - boundingRect!.top;
 
     const nominator = Math.abs(
       (n.toCol - n.fromCol) *
@@ -446,10 +449,18 @@ export default function screenHelper() {
     return document.getElementById(svgId)?.getBoundingClientRect();
   }
 
+  function isCellIntersectsWithLine(
+    cell: CellAttributes,
+    line: LineCoordinates,
+  ) {
+    return false; /// TODO: implement intersection with any cell corner
+  }
+
   return {
-    getPointNotation,
+    getNotationAtDotCoordinates,
     getClickedCell,
-    getScreenCoordinatesOccupiedCells,
-    getRectCoordinates,
+    getRectCoordinatesOccupiedCells,
+    getRectAttributes,
+    isCellIntersectsWithLine,
   };
 }

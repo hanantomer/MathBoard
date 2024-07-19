@@ -1,6 +1,7 @@
 import { BoardType, NotationType } from "./unions";
 import { UserAttributes } from "./userTypes";
 
+
 export type EntityAttributes = {  
   id?: number; 
   uuid: string;
@@ -30,6 +31,44 @@ export type NotationCreationAttributes = Omit<NotationAttributes, "uuid">
 
 export type SingleValueAttributes =  {
   value: string;
+};
+
+export type DotCoordinates = {x: number, y:number};
+
+export type LineCoordinates = {
+  top: DotCoordinates,
+  bottom: DotCoordinates
+};
+
+
+export type RectCoordinates = {
+  topLeft: DotCoordinates,
+  bottomRight: DotCoordinates
+};
+
+export type HorizontaLinePosition =  {
+  x1: number,
+  x2: number,
+  y: number;
+};
+
+export type VerticalLinePosition =  {
+  x: number,
+  y1: number,
+  y2: number;
+};
+
+// if y of left DotCoordinates is less than y of right DotCoordinates slope is positive and vice versa
+export type SlopeLinePosition =  {
+  left: DotCoordinates, 
+  right: DotCoordinates
+};
+
+export type CurvePosition =  {
+  left: DotCoordinates, 
+  right: DotCoordinates,
+  controlPoint1: DotCoordinates,
+  controlPoint2: DotCoordinates
 };
 
 

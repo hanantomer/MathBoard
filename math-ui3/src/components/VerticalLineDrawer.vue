@@ -43,11 +43,13 @@ import { watch, computed, ref } from "vue";
 import { useNotationStore } from "../store/pinia/notationStore";
 import { useCellStore } from "../store/pinia/cellStore";
 import { useEditModeStore } from "../store/pinia/editModeStore";
+import { cellSpace } from "../../../math-common/src/globals";
+
 import {
   VerticalLinePosition,
-  DotPosition,
-  cellSpace,
-} from "../../../math-common/src/globals";
+  DotCoordinates,
+} from "../../../math-common/src/baseTypes";
+
 import {
   VerticalLineAttributes,
   VerticalLineNotationAttributes,
@@ -223,7 +225,7 @@ function onMouseUp() {
 
 // methods
 
-function startLineDrawing(position: DotPosition) {
+function startLineDrawing(position: DotCoordinates) {
   linePosition.value.y1 = position.y;
 
   linePosition.value.y2 = linePosition.value.y1 + 10;

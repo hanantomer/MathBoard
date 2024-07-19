@@ -45,7 +45,7 @@ import useNotationMutateHelper from "../helpers/notationMutateHelper";
 import { watch, computed, ref } from "vue";
 import { useNotationStore } from "../store/pinia/notationStore";
 import { useEditModeStore } from "../store/pinia/editModeStore";
-import { DotPosition } from "../../../math-common/src/globals";
+import { DotCoordinates } from "../../../math-common/src/baseTypes";
 import {
   CurveAttributes,
   CurveNotationAttributes,
@@ -83,9 +83,8 @@ const show = computed(() => {
 });
 
 const curveType = computed(() => {
-  return editModeStore.isConcaveCurveMode() ? "CONCAVE" : "CONVEX"
+  return editModeStore.isConcaveCurveMode() ? "CONCAVE" : "CONVEX";
 });
-
 
 let p1x = 0;
 let p1y = 0;
@@ -94,11 +93,9 @@ let p2y = 0;
 let cpx = 0;
 let cpy = 0;
 
-
 let visitedPoints: Point[] = [];
 
 let mouseMoveCount = 0;
-
 
 // watch
 
@@ -150,9 +147,9 @@ function onCurveSelected(curve: CurveNotationAttributes) {
   notationStore.selectNotation(curve.uuid);
 
   const evName =
-    curve.notationType === "CONCAVECURVE" ?
-      "CONCAVE_CURVE_SELECTED" :
-      "CONVEX_CURVE_SELECTED";
+    curve.notationType === "CONCAVECURVE"
+      ? "CONCAVE_CURVE_SELECTED"
+      : "CONVEX_CURVE_SELECTED";
 
   eventBus.emit(evName, null); // to enable re selection
 }
@@ -398,7 +395,7 @@ function onMouseUp() {
   }
 }
 
-function startCurveDrawing(position: DotPosition) {
+function startCurveDrawing(position: DotCoordinates) {
   mouseMoveCount = 0;
   p1x = position.x;
   p1y = position.y;

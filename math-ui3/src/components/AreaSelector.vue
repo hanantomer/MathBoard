@@ -25,7 +25,8 @@ import useNotationMutateHelper from "../helpers/notationMutateHelper";
 import useSelectionHelper from "../helpers/selectionHelper";
 import useEventBus from "../helpers/eventBusHelper";
 import { MoveDirection } from "common/unions";
-import { cellSpace, ScreenCoordinates, DotPosition } from "common/globals";
+import { cellSpace } from "common/globals";
+import { RectCoordinates, DotCoordinates } from "common/baseTypes";
 
 const eventBus = useEventBus();
 const editModeStore = useEditModeStore();
@@ -38,14 +39,12 @@ const props = defineProps({
   svgId: { type: String, default: "" },
 });
 
-let selectionPosition = ref<ScreenCoordinates>({
-  x1: 0,
-  y1: 0,
-  x2: 0,
-  y2: 0,
+let selectionPosition = ref<RectCoordinates>({
+  topLeft: { x: 0, y: 0 },
+  bottomRight: { x: 0, y: 0 },
 });
 
-let dragPosition = ref<DotPosition>({
+let dragPosition = ref<DotCoordinates>({
   x: 0,
   y: 0,
 });
@@ -53,8 +52,9 @@ let dragPosition = ref<DotPosition>({
 const show = computed(() => {
   return (
     editModeStore.isAreaSelectionOrMovingMode() &&
-    selectionPosition.value.x1 != selectionPosition.value.x2 &&
-    selectionPosition.value.y1 != selectionPosition.value.y2
+    selectionPosition.value.topLeft.x !=
+      selectionPosition.value.bottomRight.x &&
+    selectionPosition.value.topLeft.y != selectionPosition.value.bottomRight.y
   );
 });
 
@@ -63,24 +63,42 @@ const svgDimensions = computed(() => {
 });
 
 const selectionRectLeft = computed(() => {
-  return Math.min(selectionPosition.value.x1, selectionPosition.value.x2);
+  return Math.min(
+    selectionPosition.value.topLeft.x,
+    selectionPosition.value.bottomRight.x,
+  );
 });
 
 const selectionRectTop = computed(() => {
-  return Math.min(selectionPosition.value.y1, selectionPosition.value.y2);
+  return Math.min(
+    selectionPosition.value.topLeft.y,
+    selectionPosition.value.bottomRight.y,
+  );
 });
 
 const selectionRectWidth = computed(() => {
   return (
-    Math.max(selectionPosition.value.x1, selectionPosition.value.x2) -
-    Math.min(selectionPosition.value.x1, selectionPosition.value.x2)
+    Math.max(
+      selectionPosition.value.topLeft.x,
+      selectionPosition.value.bottomRight.x,
+    ) -
+    Math.min(
+      selectionPosition.value.topLeft.x,
+      selectionPosition.value.bottomRight.x,
+    )
   );
 });
 
 const selectionRectHeight = computed(() => {
   return (
-    Math.max(selectionPosition.value.y1, selectionPosition.value.y2) -
-    Math.min(selectionPosition.value.y1, selectionPosition.value.y2)
+    Math.max(
+      selectionPosition.value.topLeft.y,
+      selectionPosition.value.bottomRight.y,
+    ) -
+    Math.min(
+      selectionPosition.value.topLeft.y,
+      selectionPosition.value.bottomRight.y,
+    )
   );
 });
 
@@ -152,13 +170,13 @@ async function moveSelectionByKey(
   moveHorizontal: number,
   moveVertical: number,
 ) {
-  selectionPosition.value.x1 +=
+  selectionPosition.value.topLeft.x +=
     moveHorizontal * (cellStore.getCellHorizontalWidth() + cellSpace);
-  selectionPosition.value.y1 +=
+  selectionPosition.value.topLeft.y +=
     moveVertical * (cellStore.getCellVerticalHeight() + cellSpace);
-  selectionPosition.value.x2 +=
+  selectionPosition.value.bottomRight.x +=
     moveHorizontal * (cellStore.getCellHorizontalWidth() + cellSpace);
-  selectionPosition.value.y2 +=
+  selectionPosition.value.bottomRight.y +=
     moveVertical * cellStore.getCellVerticalHeight() + cellSpace;
 }
 
@@ -168,10 +186,10 @@ function handleMouseDown(e: MouseEvent) {
   }
 
   if (editModeStore.isTextStartedMode()) {
-    selectionPosition.value.x1 = e.clientX;
-    selectionPosition.value.y1 = e.clientY;
-    selectionPosition.value.x2 = e.clientX + 25;
-    selectionPosition.value.y2 = e.clientY + 25;
+    selectionPosition.value.topLeft.x = e.clientX;
+    selectionPosition.value.topLeft.y = e.clientY;
+    selectionPosition.value.bottomRight.x = e.clientX + 25;
+    selectionPosition.value.bottomRight.y = e.clientY + 25;
   }
 }
 
@@ -242,13 +260,13 @@ function handleMouseUp(e: MouseEvent) {
 
 // extend or shrink selection area following inner mouse move
 function updateSelectionArea(e: MouseEvent) {
-  if (selectionPosition.value.x1 == 0) {
-    selectionPosition.value.x1 = e.clientX;
-    selectionPosition.value.y1 = e.clientY;
+  if (selectionPosition.value.topLeft.x == 0) {
+    selectionPosition.value.topLeft.x = e.clientX;
+    selectionPosition.value.topLeft.y = e.clientY;
   }
 
-  selectionPosition.value.x2 = e.clientX;
-  selectionPosition.value.y2 = e.clientY;
+  selectionPosition.value.bottomRight.x = e.clientX;
+  selectionPosition.value.bottomRight.y = e.clientY;
 }
 
 function endSelect() {
@@ -290,13 +308,13 @@ function moveSelection(e: MouseEvent) {
       e.ctrlKey,
     );
 
-    selectionPosition.value.x1 +=
+    selectionPosition.value.topLeft.x +=
       rectDeltaX * (cellStore.getCellHorizontalWidth() + cellSpace);
-    selectionPosition.value.y1 +=
+    selectionPosition.value.topLeft.y +=
       rectDeltaY * (cellStore.getCellVerticalHeight() + cellSpace);
-    selectionPosition.value.x2 +=
+    selectionPosition.value.bottomRight.x +=
       rectDeltaX * (cellStore.getCellHorizontalWidth() + cellSpace);
-    selectionPosition.value.y2 +=
+    selectionPosition.value.bottomRight.y +=
       rectDeltaY * (cellStore.getCellVerticalHeight() + cellSpace);
 
     dragPosition.value.x = e.clientX - svgDimensions.value.x;
@@ -326,10 +344,10 @@ async function endMoveSelection(e: MouseEvent) {
 function resetSelection() {
   dragPosition.value.x =
     dragPosition.value.y =
-    selectionPosition.value.x1 =
-    selectionPosition.value.x2 =
-    selectionPosition.value.y1 =
-    selectionPosition.value.y2 =
+    selectionPosition.value.topLeft.x =
+    selectionPosition.value.bottomRight.x =
+    selectionPosition.value.topLeft.y =
+    selectionPosition.value.bottomRight.y =
       0;
 }
 </script>

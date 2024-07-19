@@ -39,7 +39,6 @@ export const useNotationStore = defineStore("notation", () => {
 
   let selectedCell = ref(<CellAttributes>{ col: 0, row: 0 });
 
-
   function getSelectedNotations(): NotationAttributes[] {
     return Array.from(notations.value.values()).filter(
       (n) => n.selected === true,
@@ -83,7 +82,7 @@ export const useNotationStore = defineStore("notation", () => {
     return Array.from(notations.value.values());
   }
 
-  function getPointNotations(): PointNotationAttributes[] {
+  function getNotationAtDotCoordinatess(): PointNotationAttributes[] {
     return Array.from(notations.value.values())
       .filter((n) => NotationTypeShape.get(n.notationType) === "POINT")
       .map((n) => n as PointNotationAttributes);
@@ -283,7 +282,11 @@ export const useNotationStore = defineStore("notation", () => {
     );
   }
 
-  function getNotationsByCell(
+
+
+maybe with lines we should avoid using occupation matrix and use intersection instead
+
+  function getNotationsAtCell(
     clickedCell: CellAttributes,
   ): NotationAttributes[] {
     let notationsAtCellPoint: NotationAttributes[] = [];
@@ -341,7 +344,7 @@ export const useNotationStore = defineStore("notation", () => {
     const notationsUUIDsToSelect = new Set<string>();
 
     for (let i = 0; i < areaCells.length; i++) {
-      getNotationsByCell(areaCells[i]).forEach((n) => {
+      getNotationsAtCell(areaCells[i]).forEach((n) => {
         notationsUUIDsToSelect.add(n.uuid);
       });
     }
@@ -377,14 +380,14 @@ export const useNotationStore = defineStore("notation", () => {
     addNotation,
     getNotation,
     getNotations,
-    getPointNotations,
+    getNotationAtDotCoordinatess,
     getHorizontalLineNotations,
     getVerticalLineNotations,
     getSlopeLineNotations,
     getRectNotations,
     getCopiedNotations,
     getNotationsByShape,
-    getNotationsByCell,
+    getNotationsAtCell,
     selectNotationsOfCells,
     getSelectedNotations,
     getParent,

@@ -96,14 +96,12 @@ watch(
 
     textLeft.value =
       svgDimensions.value.left +
-      textNotation.fromCol *
-        (cellStore.getCellHorizontalWidth() + cellSpace) -
+      textNotation.fromCol * (cellStore.getCellHorizontalWidth() + cellSpace) -
       cellSpace;
 
     textTop.value =
       svgDimensions.value.top +
-      textNotation.fromRow *
-        (cellStore.getCellVerticalHeight() + cellSpace) -
+      textNotation.fromRow * (cellStore.getCellVerticalHeight() + cellSpace) -
       cellSpace;
 
     textHeight.value =
@@ -147,11 +145,15 @@ function onLeave() {
 function submitText() {
   editModeStore.setNextEditMode();
 
-  const rectCoordinates = screenHelper.getRectCoordinates(props.svgId, {
-    x1: textLeft.value + window.scrollX,
-    x2: textLeft.value + textWidth.value + window.scrollX,
-    y1: textTop.value + window.scrollY,
-    y2: textTop.value + textHeight.value + window.scrollY,
+  const rectCoordinates = screenHelper.getRectAttributes(props.svgId, {
+    topLeft: {
+      x: textLeft.value + window.scrollX,
+      y: textTop.value + window.scrollY,
+    },
+    bottomRight: {
+      x: textLeft.value + textWidth.value + window.scrollX,
+      y: textTop.value + textHeight.value + window.scrollY,
+    },
   });
 
   if (selectedNotation) {

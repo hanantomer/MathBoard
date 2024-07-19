@@ -44,11 +44,11 @@ import { watch, computed, ref } from "vue";
 import { useNotationStore } from "../store/pinia/notationStore";
 import { useCellStore } from "../store/pinia/cellStore";
 import { useEditModeStore } from "../store/pinia/editModeStore";
+import { cellSpace } from "../../../math-common/src/globals";
 import {
   SlopeLinePosition,
-  cellSpace,
-  DotPosition,
-} from "../../../math-common/src/globals";
+  DotCoordinates,
+} from "../../../math-common/src/baseTypes";
 import {
   SlopeLineAttributes,
   SlopeLineNotationAttributes,
@@ -286,7 +286,7 @@ function svgDimensions(): DOMRect | undefined {
   return document.getElementById(props.svgId)?.getBoundingClientRect();
 }
 
-function startLineDrawing(position: DotPosition) {
+function startLineDrawing(position: DotCoordinates) {
   slopeType.value = "NONE";
   movementDirection.value = "NONE";
 
@@ -313,8 +313,7 @@ function endDrawLine() {
   );
 
   let fromRow = Math.round(
-    linePosition.value.left.y /
-      (cellStore.getCellVerticalHeight() + cellSpace),
+    linePosition.value.left.y / (cellStore.getCellVerticalHeight() + cellSpace),
   );
 
   let toRow = Math.round(

@@ -166,11 +166,9 @@ export default function notationCellOccupationHelper() {
   ) {
     if (!cellStore.getSvgId) return;
 
-    const rect = screenHelper.getRectCoordinates(cellStore.getSvgId()!, {
-      x1: notation.p1x,
-      x2: notation.p2x,
-      y1: notation.p2y,  /// TODO: consider switching
-      y2: notation.p1y,
+    const rect = screenHelper.getRectAttributes(cellStore.getSvgId()!, {
+      topLeft: { x:notation.p1x , y: notation.p1y },
+      bottomRight: { x:notation.p2x , y: notation.p2y}
     });
 
     for (let col = rect.fromCol; col <= rect.toCol; col++) {

@@ -126,7 +126,7 @@ export default function notationMutateHelper() {
     notation: PointNotationCreationAttributes,
   ): PointNotationAttributes | undefined {
     return notationStore
-      .getPointNotations()
+      .getNotationAtDotCoordinatess()
       .find((n2: PointNotationAttributes) => {
         return pointAtCellCoordinates(
           notation as PointNotationAttributes,
@@ -422,9 +422,7 @@ export default function notationMutateHelper() {
     notationStore.addNotation(lineNotation);
   }
 
-  async function updateCurveNotation(
-    curve: CurveNotationAttributes,
-  ) {
+  async function updateCurveNotation(curve: CurveNotationAttributes) {
     await dbHelper.updateCurveAttributes(curve);
     notationStore.addNotation(curve);
   }
@@ -485,7 +483,6 @@ export default function notationMutateHelper() {
 
     addNotation(notation);
   }
-
 
   function upsertRectNotation(newNotation: RectNotationCreationAttributes) {
     editModeStore.setDefaultEditMode();
@@ -646,7 +643,7 @@ export default function notationMutateHelper() {
           notation?.boardType === "ANSWER" &&
           !userStore.isTeacher() &&
           notationStore
-            .getNotationsByCell({
+            .getNotationsAtCell({
               col: pointNotation.col + delatX,
               row: pointNotation.row + delatY,
             })
@@ -670,7 +667,7 @@ export default function notationMutateHelper() {
               notation?.boardType === "ANSWER" &&
               !userStore.isTeacher() &&
               notationStore
-                .getNotationsByCell({
+                .getNotationsAtCell({
                   col: col,
                   row: row,
                 })
@@ -693,7 +690,7 @@ export default function notationMutateHelper() {
       !userStore.isTeacher() &&
       pointAttributes &&
       notationStore
-        .getNotationsByCell({
+        .getNotationsAtCell({
           col: pointAttributes.col,
           row: pointAttributes.row,
         })
