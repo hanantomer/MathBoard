@@ -629,7 +629,7 @@ export default function notationMutateHelper() {
     }
   }
 
-  // return true for 1. student in question and 2. notation coordinates are within question area
+  // return true if 1. student in question and 2. notation coordinates are within question area
   function isNotationInQuestionArea(
     notation: NotationAttributes | null,
     delatX: number,

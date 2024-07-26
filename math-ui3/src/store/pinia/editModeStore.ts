@@ -9,30 +9,33 @@ export const useEditModeStore = defineStore("editMode", () => {
 
   function isAreaSelectionOrMovingMode() {
     return (
-      editMode.value == "AREA_SELECTING" ||
-      editMode.value == "AREA_SELECTED" ||
-      editMode.value == "TEXT_AREA_SELECTING" ||
-      editMode.value == "MOVING"
+      editMode.value === "AREA_SELECTING" ||
+      editMode.value === "AREA_SELECTED" ||
+      editMode.value === "TEXT_AREA_SELECTING" ||
+      editMode.value === "MOVING"
     );
   }
 
   function isSelectionMode() {
-    return editMode.value == "AREA_SELECTING" || editMode.value == "MOVING";
+    return (
+      editMode.value === "AREA_SELECTING" ||
+      editMode.value === "MOVING"
+    )
   }
 
   function isSelectedMode() {
     return (
-      editMode.value == "AREA_SELECTED" ||
-      editMode.value == "HORIZONTAL_LINE_SELECTED" ||
-      editMode.value == "SQRT_SELECTED"
+      editMode.value === "AREA_SELECTED" ||
+      editMode.value === "HORIZONTAL_LINE_SELECTED" ||
+      editMode.value === "SQRT_SELECTED"
     );
   }
 
   function isSelectFromListMode() {
     return (
-      editMode.value == "LESSONS_SELECTION" ||
-      editMode.value == "QUESTIONS_SELECTION" ||
-      editMode.value == "ANSWERS_SELECTION"
+      editMode.value === "LESSONS_SELECTION" ||
+      editMode.value === "QUESTIONS_SELECTION" ||
+      editMode.value === "ANSWERS_SELECTION"
     );
   }
 
@@ -45,57 +48,50 @@ export const useEditModeStore = defineStore("editMode", () => {
     );
   }
 
-  // function isLineStartedMode() {
-  //   return (
-  //     editMode.value == "HORIZONTAL_LINE_STARTED" ||
-  //     editMode.value == "VERTICAL_LINE_STARTED" ||
-  //     editMode.value == "SLOPE_LINE_STARTED"
-  //   );
-  // }
-
   function isHorizontalLineMode() {
     return (
-      editMode.value == "HORIZONTAL_LINE_STARTED" ||
-      editMode.value == "HORIZONTAL_LINE_DRAWING"
+      editMode.value === "HORIZONTAL_LINE_STARTED" ||
+      editMode.value === "HORIZONTAL_LINE_DRAWING"
     );
   }
 
   function isVerticalLineMode() {
     return (
-      editMode.value == "VERTICAL_LINE_STARTED" ||
-      editMode.value == "VERTICAL_LINE_DRAWING"
+      editMode.value === "VERTICAL_LINE_STARTED" ||
+      editMode.value === "VERTICAL_LINE_DRAWING"
     );
   }
 
   function isSlopeLineMode() {
     return (
-      editMode.value == "SLOPE_LINE_STARTED" ||
-      editMode.value == "SLOPE_LINE_DRAWING"
+      editMode.value === "SLOPE_LINE_STARTED" ||
+      editMode.value === "SLOPE_LINE_DRAWING"
     );
   }
 
   function isSqrtMode() {
-    return editMode.value == "SQRT_STARTED" || editMode.value == "SQRT_DRAWING";
+    return(
+      editMode.value === "SQRT_STARTED" ||
+      editMode.value === "SQRT_DRAWING"
+    )
   }
 
   function isConcaveCurveMode() {
     return (
-      editMode.value == "CONCAVE_CURVE_STARTED" ||
-      editMode.value == "CONCAVE_CURVE_DRAWING"
+      editMode.value === "CONCAVE_CURVE_STARTED" ||
+      editMode.value === "CONCAVE_CURVE_DRAWING"
     );
   }
 
   function isConvexCurveMode() {
     return (
-      editMode.value == "CONVEX_CURVE_STARTED" ||
-      editMode.value == "CONVEX_CURVE_DRAWING"
+      editMode.value === "CONVEX_CURVE_STARTED" ||
+      editMode.value === "CONVEX_CURVE_DRAWING"
     );
   }
 
   function isCurveMode() {
-    return (
-      isConvexCurveMode() || isConcaveCurveMode()
-    );
+    return isConvexCurveMode() || isConcaveCurveMode();
   }
 
   function isDefaultEditMode() {
@@ -108,67 +104,68 @@ export const useEditModeStore = defineStore("editMode", () => {
 
   function isHorizontalLineDrawingMode() {
     return (
-      editMode.value == "HORIZONTAL_LINE_DRAWING" ||
-      editMode.value == "SQRT_DRAWING"
+      editMode.value === "HORIZONTAL_LINE_DRAWING" ||
+      editMode.value === "SQRT_DRAWING"
     );
   }
 
   function isHorizontalLineStartedMode() {
-    return editMode.value == "HORIZONTAL_LINE_STARTED";
+    return editMode.value === "HORIZONTAL_LINE_STARTED";
   }
 
   function isSlopeLineStartedMode() {
-    return editMode.value == "SLOPE_LINE_STARTED";
+    return editMode.value === "SLOPE_LINE_STARTED";
   }
 
   function isCurveStartedMode() {
     return (
-      editMode.value == "CONVEX_CURVE_STARTED" ||
-      editMode.value == "CONCAVE_CURVE_STARTED"
+      editMode.value === "CONVEX_CURVE_STARTED" ||
+      editMode.value === "CONCAVE_CURVE_STARTED"
     );
   }
 
   function isSqrtStartedMode() {
-    return editMode.value == "SQRT_STARTED";
+    return editMode.value === "SQRT_STARTED";
   }
 
   function isVerticalLineStartedMode() {
-    return editMode.value == "VERTICAL_LINE_STARTED";
+    return editMode.value === "VERTICAL_LINE_STARTED";
   }
 
   function isVerticalLineDrawingMode() {
-    return editMode.value == "VERTICAL_LINE_DRAWING";
+    return editMode.value === "VERTICAL_LINE_DRAWING";
   }
 
   function isSlopeLineDrawingMode() {
-    return editMode.value == "SLOPE_LINE_DRAWING";
+    return editMode.value === "SLOPE_LINE_DRAWING";
   }
 
   function isCurveDrawingMode() {
     return (
-      editMode.value == "CONCAVE_CURVE_DRAWING" ||
-      editMode.value == "CONVEX_CURVE_DRAWING"
+      editMode.value === "CONCAVE_CURVE_DRAWING" ||
+      editMode.value === "CONVEX_CURVE_DRAWING"
     );
   }
 
   function isHorizontalLineSelectedMode() {
     return (
-      editMode.value == "HORIZONTAL_LINE_SELECTED" ||
-      editMode.value == "SQRT_SELECTED"
+      editMode.value === "HORIZONTAL_LINE_SELECTED" ||
+      editMode.value === "SQRT_SELECTED"
     );
   }
 
   function isVerticalLineSelectedMode() {
-    return editMode.value == "VERTICAL_LINE_SELECTED";
+    return editMode.value === "VERTICAL_LINE_SELECTED";
   }
 
   function isSlopeLineSelectedMode() {
-    return editMode.value == "SLOPE_LINE_SELECTED";
+    return editMode.value === "SLOPE_LINE_SELECTED";
   }
 
   function isCurveSelectedMode() {
     return (
-      editMode.value == "CONVEX_CURVE_SELECTED" || "CONCAVE_CURVE_SELECTED"
+      editMode.value === "CONVEX_CURVE_SELECTED" ||
+      editMode.value === "CONCAVE_CURVE_SELECTED"
     );
   }
 
@@ -185,14 +182,14 @@ export const useEditModeStore = defineStore("editMode", () => {
   }
 
   function isExponentMode() {
-    return editMode.value == "EXPONENT_STARTED";
+    return editMode.value === "EXPONENT_STARTED";
   }
 
   function isCheckMode() {
     return (
-      editMode.value == "CHECKMARK_STARTED" ||
-      editMode.value == "SEMICHECKMARK_STARTED" ||
-      editMode.value == "XMARK_STARTED"
+      editMode.value === "CHECKMARK_STARTED" ||
+      editMode.value === "SEMICHECKMARK_STARTED" ||
+      editMode.value === "XMARK_STARTED"
     );
   }
 

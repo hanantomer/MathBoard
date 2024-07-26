@@ -1,26 +1,5 @@
 <template>
   <div v-show="show">
-    <v-card
-      id="lineLeftHandle"
-      class="lineHandle"
-      v-bind:style="{
-        // left: handleLeft + 'px',
-        // top: handleTop + 'px',
-      }"
-      v-on:mouseup="onMouseUp"
-      v-on:mousedown="onHandleMouseDown"
-    ></v-card>
-    <v-card
-      id="lineRightHandle"
-      class="lineHandle"
-      v-bind:style="{
-        // left: handleRight + 'px',
-        // top: handleBottom + 'px',
-      }"
-      v-on:mouseup="onMouseUp"
-      v-on:mousedown="onHandleMouseDown"
-    ></v-card>
-
     <svg
       height="800"
       width="1500"
@@ -154,9 +133,9 @@ function onCurveSelected(curve: CurveNotationAttributes) {
   eventBus.emit(evName, null); // to enable re selection
 }
 
-function onHandleMouseDown() {
-  editModeStore.setNextEditMode();
-}
+//function onHandleMouseDown() {
+//  editModeStore.setNextEditMode();
+//}
 
 // emitted by event manager
 function onMouseDown(e: MouseEvent) {
@@ -180,7 +159,40 @@ function onMouseDown(e: MouseEvent) {
   }
 }
 
+function xIsGrowing(xPos: number): boolean {
+  if (xPos > visitedPoints[visitedPoints.length - 1].x) return true;
+  return false;
+}
+
+function secondDeraviateIsPositive(xPos: number, yPos: number): boolean {
+  const prevPrevPoint = visitedPoints[visitedPoints.length - 2];
+  const prevPoint = visitedPoints[visitedPoints.length - 1];
+
+  const prevFirstDeraviate =
+    (prevPrevPoint.y - prevPoint.y) / (prevPoint.x - prevPrevPoint.x);
+
+  const currentFirstDeraviate = (prevPoint.y - yPos) / (xPos - prevPoint.x);
+
+  return currentFirstDeraviate >= prevFirstDeraviate;
+}
+
 function setCurve(xPos: number, yPos: number) {
+  if (visitedPoints.length > 0 && !xIsGrowing(xPos)) return;
+
+  if (
+    visitedPoints.length > 1 &&
+    curveType.value === "CONCAVE" &&
+    !secondDeraviateIsPositive(xPos, yPos)
+  )
+    return;
+
+  if (
+    visitedPoints.length > 1 &&
+    curveType.value === "CONVEX" &&
+    secondDeraviateIsPositive(xPos, yPos)
+  )
+    return;
+
   visitedPoints.push({ x: xPos, y: yPos }); // hold one y for each visited x
 
   if (visitedPoints.length < MIN_NUMBER_OF_POINTS) return;
@@ -194,11 +206,7 @@ function setCurve(xPos: number, yPos: number) {
       ? getNormalizedConcaveSlopes(slopes)
       : getNormalizedConvexSlopes(slopes);
 
-  console.debug("normalizedSlopes:");
-  console.debug(normalizedSlopes);
-
   let controlPointIndex = getControlPointIndex(normalizedSlopes);
-  console.debug("controlPointIndex:" + controlPointIndex);
 
   const theta = Math.atan2(yPos - p1y, xPos - p1x) - Math.PI / 2; // calculate rciprocal to curve
   const turningPoint = normalizedSlopes[controlPointIndex];
@@ -209,17 +217,8 @@ function setCurve(xPos: number, yPos: number) {
     curveType.value,
   );
 
-  console.debug("distanceFromCurve" + distanceFromCurve);
-
   cpx = turningPoint.x + distanceFromCurve * Math.cos(theta);
   cpy = turningPoint.y + distanceFromCurve * Math.cos(theta);
-
-  console.debug("p1x:" + p1x);
-  console.debug("p1y:" + p1y);
-  console.debug("xPos:" + xPos);
-  console.debug("yPos:" + yPos);
-  console.debug("cpX:" + cpx);
-  console.debug("cpY:" + cpy);
 
   p2x = xPos;
   p2y = yPos;
