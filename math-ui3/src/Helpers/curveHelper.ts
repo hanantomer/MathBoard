@@ -1,8 +1,8 @@
-import {
-  CurveAttributes,
-} from "common/baseTypes";
+import { CurveAttributes } from "common/baseTypes";
 
 const MIN_NUMBER_OF_POINTS = 3;
+
+const MOUSE_MOVE_THROTTELING_INTERVAL = 3;
 
 type Point = {
   x: number;
@@ -18,22 +18,29 @@ type PointWithSlope = {
 type CurveType = "CONCAVE" | "CONVEX";
 
 let visitedPoints: Point[] = [];
+
 const curveAttributes: CurveAttributes = {
   cpx: 0,
   cpy: 0,
   p1x: 0,
   p2x: 0,
   p1y: 0,
-  p2y: 0
+  p2y: 0,
 };
+
 let mouseMoveCount = 0;
 
 export default function curveHelper() {
-
   function startCurveDrawing(position: Point) {
     mouseMoveCount = 0;
-    curveAttributes.p1x = position.x;
-    curveAttributes.p1y = position.y;
+    curveAttributes.p1x =
+      curveAttributes.p2x =
+      curveAttributes.cpx =
+        position.x;
+    curveAttributes.p1y =
+      curveAttributes.p2y =
+      curveAttributes.cpy =
+        position.y;
   }
 
   function calculateDistance(
@@ -156,34 +163,36 @@ export default function curveHelper() {
 
     let minSumWeightedStd = 0;
     for (let i = 2; i < slopes.length - 2; i++) {
-      //console.debug("i:" + i);
-
       const stdSlopes1 = getStdDev(slopes.slice(0, i));
-      //console.debug("stdSlopes1:" + stdSlopes1);
+      console.debug(`stdSlopes1:` + stdSlopes1);
 
       const stdSlopes2 = getStdDev(slopes.slice(i, slopes.length - 1));
+      console.debug(`stdSlopes2:` + stdSlopes2);
 
       const sumWeightedStd =
         (stdSlopes1 * i + stdSlopes2 * (slopes.length - i)) / slopes.length;
+      console.debug(`sumWeightedStd:` + sumWeightedStd);
 
       if (minSumWeightedStd === 0 || minSumWeightedStd > sumWeightedStd) {
         minSumWeightedStd = sumWeightedStd;
         controlPointIndex = i;
+        console.debug(`minSumWeightedStd:` + minSumWeightedStd);
+        console.debug(`controlPointIndex:` + controlPointIndex);
       }
     }
     return controlPointIndex;
   }
 
   // verify that x can grow only
-  function getNormalizedPoints(points: Point[]) {
-    const normalizedPoints = points;
-    for (let i = 1; i < points.length; i++) {
-      if (points[i].x <= points[i - 1].x) {
-        points[i].x = points[i - 1].x + 1;
-      }
-    }
-    return normalizedPoints;
-  }
+  // function getNormalizedPoints(points: Point[]) {
+  //   const normalizedPoints = points;
+  //   for (let i = 1; i < points.length; i++) {
+  //     if (points[i].x <= points[i - 1].x) {
+  //       points[i].x = points[i - 1].x + 1;
+  //     }
+  //   }
+  //   return normalizedPoints;
+  // }
 
   function getSlopes(points: Point[]): PointWithSlope[] {
     const slopes: PointWithSlope[] = [];
@@ -195,7 +204,7 @@ export default function curveHelper() {
         slopes.push({
           x: point.x,
           y: point.y,
-          slope: (point.y - prevPoint.y) / (point.x - prevPoint.x),
+          slope: (prevPoint.y - point.y) / (point.x - prevPoint.x),
         });
       }
       prevPoint = { x: point.x, y: point.y };
@@ -215,8 +224,14 @@ export default function curveHelper() {
     );
   }
 
-  function xIsGrowing(xPos: number): boolean {
+  function xIsGrowingOrEqual(xPos: number): boolean {
     if (xPos > visitedPoints[visitedPoints.length - 1].x) return true;
+    return false;
+  }
+
+  function yIsGrowingOrEqual(yPos: number): boolean {
+    // y axis is flipped
+    if (yPos <= visitedPoints[visitedPoints.length - 1].y) return true;
     return false;
   }
 
@@ -229,42 +244,88 @@ export default function curveHelper() {
 
     const currentFirstDeraviate = (prevPoint.y - yPos) / (xPos - prevPoint.x);
 
+    console.debug(
+      `ppdy: ${prevPrevPoint.y - prevPoint.y},
+      ppdx:${prevPoint.x - prevPrevPoint.x}`,
+    );
+
+    console.debug(`
+      pdy: ${prevPoint.y - yPos},
+      pdx:${xPos - prevPoint.x}`);
+
+    console.debug(
+      `prevFirstDeraviate: ${prevFirstDeraviate},currentFirstDeraviate:${currentFirstDeraviate}`,
+    );
+
     return currentFirstDeraviate >= prevFirstDeraviate;
   }
 
-  function calculateCurveProperties(
+  function setCurvePoints(
     curveType: CurveType,
     xPos: number,
-    yPos: number) {
+    yPos: number,
+  ): boolean {
     // nothing done yet
-    //if (p1x === 0 && p1y === 0) {
-    //  return;
-    //}
+    if (curveAttributes.p1x === 0 && curveAttributes.p1y === 0) {
+      console.debug("not initialized");
+      return false;
+    }
 
     mouseMoveCount++;
-    if (mouseMoveCount % 5/*TODO: magic number */ !== 0) return; // throtteling mouse move events
+    if (
+      mouseMoveCount %
+        MOUSE_MOVE_THROTTELING_INTERVAL /*TODO: magic number */ !==
+      0
+    ) {
+      //console.debug("throtteling:" + mouseMoveCount);
+      return false; // throtteling mouse move events
+    }
 
-    if (visitedPoints.length > 0 && !xIsGrowing(xPos)) return;
+    if (visitedPoints.length > 0 && !xIsGrowingOrEqual(xPos)) {
+      console.debug("x is not growing");
+      return false;
+    }
+
+    if (visitedPoints.length > 0 && !yIsGrowingOrEqual(yPos)) {
+      console.debug("y is not growing");
+      return false;
+    }
 
     if (
       visitedPoints.length > 1 &&
       curveType === "CONCAVE" &&
       !secondDeraviateIsPositive(xPos, yPos)
-    )
-      return ;
+    ) {
+      //console.debug("concave second deraviate is not positive");
+      //return false;
+    }
 
     if (
       visitedPoints.length > 1 &&
       curveType === "CONVEX" &&
       secondDeraviateIsPositive(xPos, yPos)
-    )
-      return null;
+    ) {
+      //console.debug("convex second deraviate is positive");
+      //return false;
+    }
 
-    visitedPoints.push({ x: xPos, y: yPos }); // hold one y for each visited x
+    console.debug("point added:" + visitedPoints.length);
+    visitedPoints.push({ x: xPos, y: yPos });
 
-    if (visitedPoints.length < MIN_NUMBER_OF_POINTS) return;
+    return true;
+  }
 
-    const points = getNormalizedPoints(visitedPoints);
+  function setCurveAttributes(
+    curveType: CurveType,
+    xPos: number,
+    yPos: number,
+  ) {
+    if (visitedPoints.length < MIN_NUMBER_OF_POINTS) {
+      //console.debug("min number of points not reached");
+      return;
+    }
+
+    const points = visitedPoints; //getNormalizedPoints(visitedPoints);
 
     const slopes = getSlopes(points);
 
@@ -292,8 +353,27 @@ export default function curveHelper() {
     curveAttributes.p2y = yPos;
   }
 
+  function updateCurve(
+    curveType: CurveType,
+    xPos: number,
+    yPos: number,
+  ): CurveAttributes {
+    removePointsToTheRightOfX(xPos);
+
+    setCurvePoints(curveType, xPos, yPos);
+
+    setCurveAttributes(curveType, xPos, yPos);
+
+    return curveAttributes;
+  }
+
+  function removePointsToTheRightOfX(xPos: number) {
+    visitedPoints = visitedPoints.filter((p) => p.x <= xPos);
+    console.debug(visitedPoints);
+  }
+
   function getCurveAttributes() {
-    return curveAttributes
+    return curveAttributes;
   }
 
   function resetCurveDrawing() {
@@ -307,10 +387,15 @@ export default function curveHelper() {
     visitedPoints = [];
   }
 
+  function getVisitedPoints() {
+    return visitedPoints;
+  }
+
   return {
     startCurveDrawing,
-    calculateCurveProperties,
+    updateCurve,
     getCurveAttributes,
+    getVisitedPoints,
     resetCurveDrawing,
   };
 }

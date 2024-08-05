@@ -37,7 +37,11 @@ export default function notationCellOccupationHelper() {
   ) {
     if (!validateRowAndCol(col, row)) return;
     if (doRemove) {
-      matrix[col][row] = null;
+      for (let i = 0; i < matrix[col][row].length; i++) {
+        if (matrix[col][row][i] === notation.uuid) {
+          matrix[col][row][i] = null;
+        }
+      }
       return;
     }
 
@@ -55,7 +59,8 @@ export default function notationCellOccupationHelper() {
     doRemove: boolean,
   ) {
     for (let col = notation.fromCol; col <= notation.toCol; col++) {
-      if (validateRowAndCol(col, notation.row)) { // occupy notation row
+      if (validateRowAndCol(col, notation.row)) {
+        // occupy notation row
         updateLineOccupationMatrixCell(
           col,
           notation.row,
@@ -106,7 +111,7 @@ export default function notationCellOccupationHelper() {
   }
 
   function updateSlopeLineOccupationMatrix(
-    /// the occupation matrix shoulkd be populated to encompass the generated line
+    /// the occupation matrix is populated to encompass the sloped line
     matrix: any,
     notation: SlopeLineNotationAttributes,
     doRemove: boolean,
@@ -167,18 +172,30 @@ export default function notationCellOccupationHelper() {
   ) {
     if (!cellStore.getSvgId) return;
 
-    const rect = screenHelper.getRectAttributes(cellStore.getSvgId()!, {
-      topLeft: { x:notation.p1x , y: notation.p1y },
-      bottomRight: { x:notation.p2x , y: notation.p2y}
+    // get curve-enclosing-triangle and mark all cells intersecting
+    // with the edges which emerge from the control point
+
+    const triangleEddge1 = screenHelper.getSlopeLineAttributesByCoordinates({
+      bottom: { x: notation.p1x, y: notation.p1y },
+      top: { x: notation.cpx, y: notation.cpy },
     });
 
-    for (let col = rect.fromCol; col <= rect.toCol; col++) {
-      for (let row = rect.fromRow; row <= rect.toRow; row++) {
-        if (validateRowAndCol(col, row)) {
-          matrix[col][row] = doRemove ? null : notation.uuid;
-        }
-      }
-    }
+    updateSlopeLineOccupationMatrix(
+      matrix,
+      { ...notation, ...triangleEddge1 },
+      doRemove,
+    );
+
+    const triangleEddge2 = screenHelper.getSlopeLineAttributesByCoordinates({
+      bottom: { x: notation.cpx, y: notation.cpy },
+      top: { x: notation.p2x, y: notation.p2y },
+    });
+
+    updateSlopeLineOccupationMatrix(
+      matrix,
+      { ...notation, ...triangleEddge2 },
+      doRemove,
+    );
   }
 
   function validateRowAndCol(col: number, row: number): boolean {

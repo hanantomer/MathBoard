@@ -145,7 +145,7 @@ function onLeave() {
 function submitText() {
   editModeStore.setNextEditMode();
 
-  const rectCoordinates = screenHelper.getRectAttributes(props.svgId, {
+  const rectCoordinates = screenHelper.getRectAttributes({
     topLeft: {
       x: textLeft.value + window.scrollX,
       y: textTop.value + window.scrollY,

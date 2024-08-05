@@ -20,14 +20,15 @@ import useNotationCellOccupationHelper from "../../helpers/notationCellOccupatio
 const notationCellOccupationHelper = useNotationCellOccupationHelper();
 
 export const useNotationStore = defineStore("notation", () => {
-  let cellVerticalHight = ref<number>();
-
+  // cell can occupy one point only
   let cellPointNotationOccupationMatrix: (String | null)[][] =
     createCellSingleNotationOccupationMatrix();
 
+  // cell can occupy one rect only
   let cellRectNotationOccupationMatrix: (String | null)[][] =
     createCellSingleNotationOccupationMatrix();
 
+  // cell can occupy multiple lines
   let cellLineNotationOccupationMatrix: (String | null)[][][] =
     createCellMultipleNotationOccupationMatrix();
 
@@ -183,7 +184,7 @@ export const useNotationStore = defineStore("notation", () => {
       case "CONCAVE_CURVE":
       case "CONVEX_CURVE":
         notationCellOccupationHelper.updateCurveOccupationMatrix(
-          cellRectNotationOccupationMatrix,
+          cellLineNotationOccupationMatrix,
           notation as CurveNotationAttributes,
           false,
         );
@@ -319,34 +320,41 @@ export const useNotationStore = defineStore("notation", () => {
       );
     }
 
+    // line
+
     const lineNotationsUUIDs = cellLineNotationOccupationMatrix[
       clickedCell.col
     ][clickedCell.row] as String[];
 
     if (lineNotationsUUIDs) {
       lineNotationsUUIDs.forEach((ln) => {
-        if (lineNotationIntersectsWithCell(clickedCell, ln)) {
-          notationsAtCell.push(notations.value.get(ln) as NotationAttributes);
-        }
+        //if (curveNotationIntersectsWithCell(clickedCell, ln)) {
+        notationsAtCell.push(notations.value.get(ln) as NotationAttributes);
+        // }
       });
     }
 
     return notationsAtCell;
   }
 
-  function lineNotationIntersectsWithCell(cell: CellAttributes, notationUUId: String) : boolean {
-    const notation = notations.value.get(notationUUId);
+  /// TODO: implement mechanism to check percise intersection between cell and curve
+  // function curveNotationIntersectsWithCell(
+  //   cell: CellAttributes,
+  //   notationUUId: String,
+  // ): boolean {
+  //   const notation = notations.value.get(notationUUId);
 
-    switch (notation?.notationType) {
-      case "CONCAVECURVE":
-      case "CONVEXCURVE": {
+  //   switch (notation?.notationType) {
+  //     case "CONCAVECURVE":
+  //     case "CONVEXCURVE": {
+  //       const curve = notation as CurveNotationAttributes;
+  //       const line1 =
 
-        const curve = notation as CurveNotationAttributes;
-      }
-    }
+  //     }
+  //   }
 
-    return true;
-  }
+  //   return true;
+  // }
 
   /*
   function getNotationsAtCell(

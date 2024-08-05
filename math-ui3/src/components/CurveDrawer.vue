@@ -1,6 +1,7 @@
 <template>
   <div v-show="show">
     <svg
+      id="curveSvgId"
       height="800"
       width="1500"
       xmlns="http://www.w3.org/2000/svg"
@@ -25,7 +26,6 @@ import useCurveHelper from "../helpers/curveHelper";
 import { watch, computed } from "vue";
 import { useNotationStore } from "../store/pinia/notationStore";
 import { useEditModeStore } from "../store/pinia/editModeStore";
-import { DotCoordinates } from "../../../math-common/src/baseTypes";
 import {
   CurveAttributes,
   CurveNotationAttributes,
@@ -129,13 +129,28 @@ function onMouseDown(e: MouseEvent) {
 }
 
 function setCurve(xPos: number, yPos: number) {
-  curveHelper.calculateCurveProperties(curveType.value, xPos, yPos);
-
-  const curveAttributes: CurveAttributes = curveHelper.getCurveAttributes();
+  const curveAttributes: CurveAttributes =
+    curveHelper.updateCurve(curveType.value, xPos, yPos);
 
   if (!curveAttributes) return;
 
-  var curve =
+  setCurveElement(curveAttributes);
+
+  // temporarly show control point
+  showControlPoint(curveAttributes)
+
+  // temporarly show points map
+  showPoints();
+}
+
+function showControlPoint(curveAttributes: CurveAttributes) {
+  var c1 = document.getElementById("cp");
+  c1!.setAttribute("cx", curveAttributes.cpx.toString());
+  c1!.setAttribute("cy", curveAttributes.cpy.toString());
+}
+
+function setCurveElement(curveAttributes:CurveAttributes) {
+    var curve =
     "M" +
     curveAttributes.p1x +
     " " +
@@ -149,12 +164,34 @@ function setCurve(xPos: number, yPos: number) {
     " " +
     curveAttributes.p2y;
 
-  // temporarly show control point
-  var c1 = document.getElementById("cp");
-  c1!.setAttribute("cx", curveAttributes.cpx.toString());
-  c1!.setAttribute("cy", curveAttributes.cpy.toString());
-
   document.getElementById("curve")!.setAttribute("d", curve);
+}
+
+function showPoints() {
+  const visitedPointPrefix = "visitedPoint";
+  const visitedPointsCircleElements = document.querySelectorAll(
+    `[id^=${visitedPointPrefix}]`,
+  );
+  visitedPointsCircleElements.forEach((vp) => vp.parentNode?.removeChild(vp));
+
+  let svgns = "http://www.w3.org/2000/svg";
+  let svgContainer = document.getElementById("curveSvgId")!;
+  let visitedPoints = curveHelper.getVisitedPoints();
+
+  for (let i = 0; i < visitedPoints.length; i++) {
+    const id = visitedPointPrefix + i;
+    let circle = document.createElementNS(svgns, "circle");
+    circle.setAttribute("id", id);
+    circle.setAttributeNS(null, "cx", visitedPoints[i].x.toString());
+    circle.setAttributeNS(null, "cy", visitedPoints[i].y.toString());
+    circle.setAttributeNS(null, "r", "3");
+    circle.setAttributeNS(
+      null,
+      "style",
+      "fill: none; stroke: blue; stroke-width: 1px;",
+    );
+    svgContainer.appendChild(circle);
+  }
 }
 
 function onMouseMove(e: MouseEvent) {
@@ -176,7 +213,6 @@ function onMouseUp() {
     endDrawCurve();
   }
 }
-
 
 function endDrawCurve() {
   const curveAttributes: CurveAttributes = curveHelper.getCurveAttributes();
@@ -221,6 +257,8 @@ function saveCurve(curevAttributes: CurveAttributes) {
     );
   }
 }
+
+
 </script>
 
 <style>

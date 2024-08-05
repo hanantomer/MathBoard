@@ -14,6 +14,7 @@ import {
   CurveNotationAttributes,
   RectAttributes,
   LineCoordinates,
+  SlopeLineAttributes,
 } from "../../../math-common/src/baseTypes";
 import {
   NotationTypeShape,
@@ -52,10 +53,7 @@ export default function screenHelper() {
     return { col: clickedCellCol, row: clickedCellRow };
   }
 
-  function getRectAttributes(
-    svgId: string,
-    rectCoordinates: RectCoordinates,
-  ): RectAttributes {
+  function getRectAttributes(rectCoordinates: RectCoordinates): RectAttributes {
     const rectFromCol = Math.round(
       rectCoordinates.topLeft.x /
         (cellStore.getCellHorizontalWidth() + cellSpace),
@@ -67,12 +65,12 @@ export default function screenHelper() {
     );
 
     const rectFromRow = Math.round(
-      rectCoordinates.topLeft.y /
+      rectCoordinates.bottomRight.y /
         (cellStore.getCellVerticalHeight() + cellSpace),
     );
 
     const rectToRow = Math.round(
-      rectCoordinates.bottomRight.y /
+      rectCoordinates.topLeft.y /
         (cellStore.getCellVerticalHeight() + cellSpace),
     );
 
@@ -81,6 +79,35 @@ export default function screenHelper() {
       toCol: rectToCol,
       fromRow: rectFromRow,
       toRow: rectToRow,
+    };
+  }
+
+  function getSlopeLineAttributesByCoordinates(
+    lineCoordinates: LineCoordinates,
+  ): SlopeLineAttributes {
+    const lineFromCol = Math.round(
+      lineCoordinates.bottom.x /
+        (cellStore.getCellHorizontalWidth() + cellSpace),
+    );
+
+    const lineToCol = Math.round(
+      lineCoordinates.top.x / (cellStore.getCellHorizontalWidth() + cellSpace),
+    );
+
+    const lineFromRow = Math.round(
+      lineCoordinates.bottom.y /
+        (cellStore.getCellVerticalHeight() + cellSpace),
+    );
+
+    const lineToRow = Math.round(
+      lineCoordinates.top.y / (cellStore.getCellVerticalHeight() + cellSpace),
+    );
+
+    return {
+      fromCol: lineFromCol,
+      toCol: lineToCol,
+      fromRow: lineFromRow,
+      toRow: lineToRow,
     };
   }
 
@@ -431,10 +458,8 @@ export default function screenHelper() {
     const nominator = Math.abs(
       (n.toCol - n.fromCol) *
         cellWidth * // x2-x1
-        (y - n.fromRow * cellHeight) - // y0 - y1
-        (x - n.fromCol * cellWidth) * // x0 - x1
-          (n.toRow - n.fromRow) * // y2 - y1
-          cellHeight,
+        (y - n.fromRow * cellHeight) -
+        (x - n.fromCol * cellWidth) * (n.toRow - n.fromRow) * cellHeight,
     );
 
     const deNominator = Math.sqrt(
@@ -449,18 +474,11 @@ export default function screenHelper() {
     return document.getElementById(svgId)?.getBoundingClientRect();
   }
 
-  function isCellIntersectsWithLine(
-    cell: CellAttributes,
-    line: LineCoordinates,
-  ) {
-    return false; /// TODO: implement intersection with any cell corner
-  }
-
   return {
     getNotationAtDotCoordinates,
     getClickedCell,
     getRectCoordinatesOccupiedCells,
+    getSlopeLineAttributesByCoordinates,
     getRectAttributes,
-    isCellIntersectsWithLine,
   };
 }
