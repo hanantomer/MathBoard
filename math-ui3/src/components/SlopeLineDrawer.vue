@@ -209,10 +209,10 @@ function setLine(xPos: number, yPos: number) {
   }
 
   // 4 options for drawing sloped line:
-  // 1. upper left to lower right.
-  // 2  lower right to upper left.
-  // 3. upper right to lower left.
-  // 4. lower left to upper right.
+  // 1. upper left to lower right. direction is DOWN and slopeType is NEGATIVE
+  // 2  lower right to upper left. direction is UP and slopeType is NEGATIVE
+  // 3. upper right to lower left. direction is DOWN and slopeType is POSITIVE
+  // 4. lower left to upper right. direction is UP and slopeType is POSITIVE
 
   const modifyRight =
     (slopeType.value === "POSITIVE" && movementDirection.value === "UP") ||

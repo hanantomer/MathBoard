@@ -27,26 +27,26 @@ import { useCellStore } from "../store/pinia/cellStore";
 const cellStore = useCellStore();
 
 export default function screenHelper() {
-  const minDistanceForLineSelection = 5;
+  //const minDistanceForLineSelection = 10;
   const minDistanceForSelection = 25;
-  const minDistanceForCurveSelection = 50;
+  //const minDistanceForCurveSelection = 10;
   type NotationDistance = { notation: NotationAttributes; distance: number };
 
   function getClickedCell(
     svgId: string,
-    DotCoordinates: DotCoordinates,
+    dotCoordinates: DotCoordinates,
   ): CellAttributes {
     const boundingRect = document
       .getElementById(svgId)
       ?.getBoundingClientRect();
 
     const clickedCellCol = Math.floor(
-      (DotCoordinates.x - boundingRect!.left) /
+      (dotCoordinates.x - boundingRect!.left) /
         (cellStore.getCellHorizontalWidth() + cellSpace),
     );
 
     const clickedCellRow = Math.floor(
-      (DotCoordinates.y - boundingRect!.top) /
+      (dotCoordinates.y - boundingRect!.top) /
         (cellStore.getCellVerticalHeight() + cellSpace),
     );
 
@@ -158,6 +158,9 @@ export default function screenHelper() {
     const notationStore = useNotationStore();
     const clickedCell = getClickedCell(svgId, DotCoordinates);
     const notationsAtCell = notationStore.getNotationsAtCell(clickedCell);
+
+    if (!notationsAtCell?.length) return null;
+
     return notationClosestToPoint(svgId, notationsAtCell, DotCoordinates);
   }
 
@@ -167,8 +170,6 @@ export default function screenHelper() {
     notationsAtCell: NotationAttributes[],
     DotCoordinates: DotCoordinates,
   ): NotationAttributes | null {
-    if (!notationsAtCell?.length) return null;
-
     let notationDistanceList: NotationDistance[] = [];
 
     for (let i = 0; i < notationsAtCell.length; i++) {
@@ -262,16 +263,16 @@ export default function screenHelper() {
       min.distance < notation.distance ? min : notation,
     );
 
-    if (
-      notationIsCloseToClickedPoint(
-        notationAndDistance.notation.notationType,
-        notationAndDistance.distance,
-      )
-    ) {
-      return notationAndDistance.notation;
-    }
+    // if (
+    //   notationIsCloseToClickedPoint(
+    //     notationAndDistance.notation.notationType,
+    //     notationAndDistance.distance,
+    //   )
+    // ) {
+    return notationAndDistance.notation;
+    //}
 
-    return null;
+    //return null;
   }
 
   function notationIsCloseToClickedPoint(
@@ -282,10 +283,10 @@ export default function screenHelper() {
       case "HORIZONTAL_LINE":
       case "VERTICAL_LINE":
       case "SLOPE_LINE":
-        return distance <= minDistanceForLineSelection;
+        return distance <= minDistanceForSelection;
       case "CONCAVE_CURVE":
       case "CONVEX_CURVE":
-        return distance <= minDistanceForCurveSelection;
+        return distance <= minDistanceForSelection;
       default:
         return distance <= minDistanceForSelection;
     }

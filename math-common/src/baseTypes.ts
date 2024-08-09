@@ -102,10 +102,10 @@ export type VerticalLineAttributes =  {
 };
 
 export type SlopeLineAttributes =  {
-  fromCol: number;
-  toCol: number;
-  fromRow: number;
-  toRow: number;
+  fromCol: number; // left col
+  toCol: number; // right col
+  fromRow: number; // row corresponding left col
+  toRow: number; // row corresponding right col
 };
 
 export type CurveAttributes =  {

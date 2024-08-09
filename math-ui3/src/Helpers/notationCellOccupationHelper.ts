@@ -51,6 +51,7 @@ export default function notationCellOccupationHelper() {
 
     // line occuption mtarix can attribute multiple notations to single cell
     matrix[col][row].push(notation.uuid);
+    console.debug("slope at col:" + col + ", row:" + row);
   }
 
   function updateHorizontalLineOccupationMatrix(
@@ -110,42 +111,39 @@ export default function notationCellOccupationHelper() {
     }
   }
 
+  /// populate occupation matrix to encompass the sloped line
   function updateSlopeLineOccupationMatrix(
-    /// the occupation matrix is populated to encompass the sloped line
     matrix: any,
     notation: SlopeLineNotationAttributes,
     doRemove: boolean,
   ) {
+    // slope is positive if fromRow > toRow
     const slope =
       (notation.toRow - notation.fromRow) / (notation.toCol - notation.fromCol);
 
-    let firstRowIndex =
-      notation.toCol > notation.fromCol ? notation.fromRow : notation.toRow;
+    //
+    let firstRowIndex = notation.fromRow;
+    //  notation.toCol > notation.fromCol ? notation.fromRow : notation.toRow;
 
-    const absoluetFromCol = Math.min(notation.toCol, notation.fromCol);
-    const absoluetToCol = Math.max(notation.toCol, notation.fromCol);
+    //const absoluetFromCol = Math.min(notation.toCol, notation.fromCol);
+    //const absoluetToCol = Math.max(notation.toCol, notation.fromCol);
 
-    for (let col = absoluetFromCol; col <= absoluetToCol; col++) {
-      if (col < matrixDimensions.colsNum) {
-        let row =
-          firstRowIndex +
-          (slope > 0
-            ? Math.floor((col - absoluetFromCol) * slope)
-            : Math.ceil((col - absoluetFromCol) * slope));
+    for (
+      let col = notation.fromCol - 1, i = 0;
+      col <= notation.toCol;
+      col++, i++
+    ) {
+      let row = Math.ceil(firstRowIndex + i * slope);
 
-        if (validateRowAndCol(col, row)) {
-          updateLineOccupationMatrixCell(col, row, matrix, notation, doRemove);
-        }
-
-        if (validateRowAndCol(col, row - 1)) {
-          updateLineOccupationMatrixCell(
-            col,
-            row - 1,
-            matrix,
-            notation,
-            doRemove,
-          );
-        }
+      if (validateRowAndCol(col, row)) {
+        updateLineOccupationMatrixCell(col, row, matrix, notation, doRemove);
+        updateLineOccupationMatrixCell(
+          col - 1,
+          row,
+          matrix,
+          notation,
+          doRemove,
+        );
       }
     }
   }
