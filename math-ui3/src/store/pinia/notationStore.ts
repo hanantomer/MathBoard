@@ -284,22 +284,23 @@ export const useNotationStore = defineStore("notation", () => {
   }
 
   function getNotationsAtCell(
-    clickedCell: CellAttributes,
+    cell: CellAttributes,
   ): NotationAttributes[] {
     const notationsAtCell: NotationAttributes[] = [];
 
-    if (clickedCell.col < 0) {
-      throw new Error("invalid col:" + clickedCell.col);
+    if (cell.col < 0) {
+      throw new Error("invalid col:" + cell.col);
     }
 
-    if (clickedCell.row < 0) {
-      throw new Error("invalid col:" + clickedCell.row);
+    if (cell.row < 0) {
+      throw new Error("invalid col:" + cell.row);
     }
 
     // point
 
-    const poinNotationUUId = cellPointNotationOccupationMatrix[clickedCell.col][
-      clickedCell.row
+
+    const poinNotationUUId = cellPointNotationOccupationMatrix[cell.col][
+      cell.row
     ] as String;
 
     if (poinNotationUUId) {
@@ -307,11 +308,12 @@ export const useNotationStore = defineStore("notation", () => {
         notations.value.get(poinNotationUUId) as NotationAttributes,
       );
     }
+    console.debug('notation not found at coll:' + cell.col + ',row:' + cell.row);
 
     // rect
 
-    const rectNotationUUId = cellRectNotationOccupationMatrix[clickedCell.col][
-      clickedCell.row
+    const rectNotationUUId = cellRectNotationOccupationMatrix[cell.col][
+      cell.row
     ] as String;
 
     if (rectNotationUUId) {
@@ -322,9 +324,9 @@ export const useNotationStore = defineStore("notation", () => {
 
     // line
 
-    const lineNotationsUUIDs = cellLineNotationOccupationMatrix[
-      clickedCell.col
-    ][clickedCell.row] as String[];
+    const lineNotationsUUIDs = cellLineNotationOccupationMatrix[cell.col][
+      cell.row
+    ] as String[];
 
     if (lineNotationsUUIDs) {
       lineNotationsUUIDs.forEach((ln) => {

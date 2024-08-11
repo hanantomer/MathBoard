@@ -270,6 +270,13 @@ function updateSelectionArea(e: MouseEvent) {
 }
 
 function endSelect() {
+  if (
+    selectionPosition.value.topLeft.x ===
+      selectionPosition.value.bottomRight.x ||
+    selectionPosition.value.topLeft.y === selectionPosition.value.bottomRight.y
+  )
+    return;
+
   selectionHelper.selectNotationsOfArea(props.svgId, selectionPosition.value);
 }
 

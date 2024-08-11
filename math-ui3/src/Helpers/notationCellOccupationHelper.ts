@@ -24,6 +24,13 @@ export default function notationCellOccupationHelper() {
     doRemove: boolean,
   ) {
     if (!validateRowAndCol(notation.col, notation.row)) return;
+    console.debug(
+      "add point to occupation matrix at coll:" +
+        notation.col +
+        ",row:" +
+        notation.row,
+    );
+
     matrix[notation.col][notation.row] = doRemove ? null : notation.uuid;
   }
 
@@ -121,13 +128,7 @@ export default function notationCellOccupationHelper() {
     const slope =
       (notation.toRow - notation.fromRow) / (notation.toCol - notation.fromCol);
 
-    //
     let firstRowIndex = notation.fromRow;
-    //  notation.toCol > notation.fromCol ? notation.fromRow : notation.toRow;
-
-    //const absoluetFromCol = Math.min(notation.toCol, notation.fromCol);
-    //const absoluetToCol = Math.max(notation.toCol, notation.fromCol);
-
     for (
       let col = notation.fromCol - 1, i = 0;
       col <= notation.toCol;
@@ -155,7 +156,11 @@ export default function notationCellOccupationHelper() {
     doRemove: boolean,
   ) {
     for (let col = notation.fromCol; col <= notation.toCol; col++) {
-      for (let row = notation.fromRow; row <= notation.toRow; row++) {
+      for (
+        let row = Math.min(notation.fromRow, notation.toRow);
+        row <= Math.max(notation.fromRow, notation.toRow);
+        row++
+      ) {
         if (validateRowAndCol(col, row)) {
           matrix[col][row] = doRemove ? null : notation.uuid;
         }

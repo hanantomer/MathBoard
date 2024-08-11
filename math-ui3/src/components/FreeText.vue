@@ -171,7 +171,7 @@ function hideTextNotation(uuid: string) {
     .classList.add("hidden");
 }
 
-// show back text notation that was hideen during editing
+// restore text notation that was hideen during editing
 function showTextNotation(uuid: string) {
   document!
     .querySelector<HTMLElement>(`foreignObject[uuid="${uuid}"]`)!

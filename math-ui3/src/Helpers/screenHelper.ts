@@ -132,7 +132,7 @@ export default function screenHelper() {
     );
 
     const areaFromRow = Math.floor(
-      (rectCoordinates.bottomRight.y - boundingRect!.top) /
+      (rectCoordinates.topLeft.y - boundingRect!.top) /
         (cellStore.getCellVerticalHeight() + cellSpace),
     );
 

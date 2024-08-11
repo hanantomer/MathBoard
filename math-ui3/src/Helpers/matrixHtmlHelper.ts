@@ -232,7 +232,7 @@ export default function useHtmlMatrixHelper() {
 
   function rectNotationHeight(n: RectAttributes): number {
     return (
-      (n.toRow - n.fromRow + 1) *
+      (Math.abs(n.toRow - n.fromRow) + 1) *
         (cellStore.getCellVerticalHeight() + cellSpace) -
       cellSpace
     );
@@ -326,7 +326,5 @@ export default function useHtmlMatrixHelper() {
 
   return {
     mergeHtmlNotations,
-    //getFreeTextRectWidth,
-    //    getFreeTextRectHeight,
   };
 }
