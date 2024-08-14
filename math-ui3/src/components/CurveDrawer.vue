@@ -57,35 +57,35 @@ const curveType = computed(() => {
 // watch
 
 watch(
-  () => eventBus.bus.value.get("SVG_MOUSEUP"),
+  () => eventBus.bus.value.get("EV_SVG_MOUSEUP"),
   () => {
     onMouseUp();
   },
 );
 
 watch(
-  () => eventBus.bus.value.get("SVG_MOUSEMOVE"),
+  () => eventBus.bus.value.get("EV_SVG_MOUSEMOVE"),
   (e: MouseEvent) => {
     onMouseMove(e);
   },
 );
 
 watch(
-  () => eventBus.bus.value.get("SVG_MOUSEDOWN"),
+  () => eventBus.bus.value.get("EV_SVG_MOUSEDOWN"),
   (e: MouseEvent) => {
     onMouseDown(e);
   },
 );
 
 watch(
-  () => eventBus.bus.value.get("CONCAVE_CURVE_SELECTED"),
+  () => eventBus.bus.value.get("EV_CONCAVE_CURVE_SELECTED"),
   (curve: CurveNotationAttributes) => {
     if (curve) onCurveSelected(curve);
   },
 );
 
 watch(
-  () => eventBus.bus.value.get("CONVEX_CURVE_SELECTED"),
+  () => eventBus.bus.value.get("EV_CONVEX_CURVE_SELECTED"),
   (curve: CurveNotationAttributes) => {
     if (curve) onCurveSelected(curve);
   },
@@ -98,8 +98,8 @@ function onCurveSelected(curve: CurveNotationAttributes) {
 
   const evName =
     curve.notationType === "CONCAVECURVE"
-      ? "CONCAVE_CURVE_SELECTED"
-      : "CONVEX_CURVE_SELECTED";
+      ? "EV_CONCAVE_CURVE_SELECTED"
+      : "EV_CONVEX_CURVE_SELECTED";
 
   eventBus.emit(evName, null); // to enable re selection
 }
@@ -129,15 +129,18 @@ function onMouseDown(e: MouseEvent) {
 }
 
 function setCurve(xPos: number, yPos: number) {
-  const curveAttributes: CurveAttributes =
-    curveHelper.updateCurve(curveType.value, xPos, yPos);
+  const curveAttributes: CurveAttributes = curveHelper.updateCurve(
+    curveType.value,
+    xPos,
+    yPos,
+  );
 
   if (!curveAttributes) return;
 
   setCurveElement(curveAttributes);
 
   // temporarly show control point
-  showControlPoint(curveAttributes)
+  showControlPoint(curveAttributes);
 
   // temporarly show points map
   showPoints();
@@ -149,8 +152,8 @@ function showControlPoint(curveAttributes: CurveAttributes) {
   c1!.setAttribute("cy", curveAttributes.cpy.toString());
 }
 
-function setCurveElement(curveAttributes:CurveAttributes) {
-    var curve =
+function setCurveElement(curveAttributes: CurveAttributes) {
+  var curve =
     "M" +
     curveAttributes.p1x +
     " " +
@@ -257,8 +260,6 @@ function saveCurve(curevAttributes: CurveAttributes) {
     );
   }
 }
-
-
 </script>
 
 <style>

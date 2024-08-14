@@ -283,9 +283,7 @@ export const useNotationStore = defineStore("notation", () => {
     );
   }
 
-  function getNotationsAtCell(
-    cell: CellAttributes,
-  ): NotationAttributes[] {
+  function getNotationsAtCell(cell: CellAttributes): NotationAttributes[] {
     const notationsAtCell: NotationAttributes[] = [];
 
     if (cell.col < 0) {
@@ -298,7 +296,6 @@ export const useNotationStore = defineStore("notation", () => {
 
     // point
 
-
     const poinNotationUUId = cellPointNotationOccupationMatrix[cell.col][
       cell.row
     ] as String;
@@ -308,7 +305,6 @@ export const useNotationStore = defineStore("notation", () => {
         notations.value.get(poinNotationUUId) as NotationAttributes,
       );
     }
-    console.debug('notation not found at coll:' + cell.col + ',row:' + cell.row);
 
     // rect
 
@@ -338,81 +334,6 @@ export const useNotationStore = defineStore("notation", () => {
 
     return notationsAtCell;
   }
-
-  /// TODO: implement mechanism to check percise intersection between cell and curve
-  // function curveNotationIntersectsWithCell(
-  //   cell: CellAttributes,
-  //   notationUUId: String,
-  // ): boolean {
-  //   const notation = notations.value.get(notationUUId);
-
-  //   switch (notation?.notationType) {
-  //     case "CONCAVECURVE":
-  //     case "CONVEXCURVE": {
-  //       const curve = notation as CurveNotationAttributes;
-  //       const line1 =
-
-  //     }
-  //   }
-
-  //   return true;
-  // }
-
-  /*
-  function getNotationsAtCell(
-    clickedCell: CellAttributes,
-  ): NotationAttributes[] {
-    let notationsAtCell: NotationAttributes[] = [];
-
-    if (clickedCell.col < 0) {
-      console.error("invalid col:" + clickedCell.col);
-      return [];
-    }
-
-    if (clickedCell.row < 0) {
-      console.error("invalid col:" + clickedCell.row);
-      return [];
-    }
-
-    const poinNotationUUId = cellPointNotationOccupationMatrix[clickedCell.col][
-      clickedCell.row
-    ] as String;
-
-    const poinNotation = notations.value.get(
-      poinNotationUUId,
-    ) as NotationAttributes;
-
-    if (poinNotation) {
-      notationsAtCell.push(poinNotation);
-    } else {
-      const rectNotationUUId = cellRectNotationOccupationMatrix[
-        clickedCell.col
-      ][clickedCell.row] as String;
-
-      const rectNotation = notations.value.get(
-        rectNotationUUId,
-      ) as NotationAttributes;
-
-      if (rectNotation) {
-        notationsAtCell.push(rectNotation);
-      }
-    }
-
-    let lineNotationsUUIDs = cellLineNotationOccupationMatrix[clickedCell.col][
-      clickedCell.row
-    ] as String[];
-
-    add here intersection check
-
-    if (lineNotationsUUIDs) {
-      lineNotationsUUIDs.forEach((ln) =>
-        notationsAtCell.push(notations.value.get(ln) as NotationAttributes),
-      );
-    }
-
-    return notationsAtCell;
-  }
-  */
 
   function selectNotationsOfCells(areaCells: CellAttributes[]) {
     const notationsUUIDsToSelect = new Set<string>();

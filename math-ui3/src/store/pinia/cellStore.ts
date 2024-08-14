@@ -6,7 +6,6 @@ import { ref } from "vue";
 import { CellAttributes } from "common/baseTypes";
 
 export const useCellStore = defineStore("cell", () => {
-
   let svgId: string | undefined = undefined;
 
   let cellVerticalHight = ref<number>();
@@ -14,14 +13,12 @@ export const useCellStore = defineStore("cell", () => {
   let selectedCell = ref(<CellAttributes>{ col: 0, row: 0 });
 
   function getCellVerticalHeight() {
-    if (!cellVerticalHight.value)
-      throw new Error("cellVerticalHight.value is null");
+    if (!cellVerticalHight.value) return null;
     return cellVerticalHight.value;
   }
 
   function getCellHorizontalWidth() {
-    if (!cellVerticalHight.value)
-      throw new Error("cell VerticalHight value is null");
+    if (!cellVerticalHight.value) return null;
     return cellVerticalHight.value / 2;
   }
 

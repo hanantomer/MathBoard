@@ -95,7 +95,7 @@ async function save() {
   const { valid, errors } = await (newQuestionForm.value as any).validate();
   if (valid) {
     show.value = false;
-    eventBus.emit("QUESTION_SAVED", name.value);
+    eventBus.emit("EV_QUESTION_SAVED", name.value);
   }
 }
 </script>

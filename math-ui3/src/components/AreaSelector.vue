@@ -104,39 +104,39 @@ const selectionRectHeight = computed(() => {
 
 // emitted by eventHelper
 watch(
-  () => eventBus.bus.value.get("KEYUP"),
+  () => eventBus.bus.value.get("EV_KEYUP"),
   async (e: KeyboardEvent) => {
     await keyUp(e);
   },
 );
 
 watch(
-  () => eventBus.bus.value.get("SVG_MOUSEDOWN"),
+  () => eventBus.bus.value.get("EV_SVG_MOUSEDOWN"),
   (e: MouseEvent) => {
     handleMouseDown(e);
   },
 );
 
 watch(
-  () => eventBus.bus.value.get("SVG_MOUSEMOVE"),
+  () => eventBus.bus.value.get("EV_SVG_MOUSEMOVE"),
   (e: MouseEvent) => {
     handleMouseMove(e);
   },
 );
 
 watch(
-  () => eventBus.bus.value.get("SVG_MOUSEUP"),
+  () => eventBus.bus.value.get("EV_SVG_MOUSEUP"),
   (e: MouseEvent) => {
     handleMouseUp(e);
   },
 );
 
 function mouseup(e: MouseEvent) {
-  eventBus.emit("SVG_MOUSEUP", e);
+  eventBus.emit("EV_SVG_MOUSEUP", e);
 }
 
 function mousemove(e: MouseEvent) {
-  eventBus.emit("SVG_MOUSEMOVE", e);
+  eventBus.emit("EV_SVG_MOUSEMOVE", e);
 }
 
 async function keyUp(e: KeyboardEvent) {
@@ -246,7 +246,7 @@ function handleMouseUp(e: MouseEvent) {
 
   if (editMode == "TEXT_AREA_SELECTING") {
     editModeStore.setNextEditMode();
-    eventBus.emit("SELECTION_DONE", {
+    eventBus.emit("EV_SELECTION_DONE", {
       left: selectionRectLeft.value,
       top: selectionRectTop.value,
       width: selectionRectWidth.value,

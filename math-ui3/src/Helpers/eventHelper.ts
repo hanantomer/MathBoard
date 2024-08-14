@@ -244,7 +244,9 @@ export default function eventHelper() {
       matrixCellHelper.setNextCell(0, -1);
     }
 
-    const svgBounds = document.getElementById(cellStore.getSvgId()!)?.getBoundingClientRect()!;
+    const svgBounds = document
+      .getElementById(cellStore.getSvgId()!)
+      ?.getBoundingClientRect()!;
 
     // select a notation occupied by selected cell
     selectionHelper.selectNotationAtPosition(cellStore.getSvgId()!, {
@@ -290,7 +292,7 @@ export default function eventHelper() {
   }
 
   function emitSvgMouseDown(e: MouseEvent) {
-    eventBus.emit("SVG_MOUSEDOWN", e);
+    eventBus.emit("EV_SVG_MOUSEDOWN", e);
   }
 
   function registerSvgMouseDown() {
@@ -306,7 +308,7 @@ export default function eventHelper() {
   }
 
   function emitSvgMouseMove(e: MouseEvent) {
-    eventBus.emit("SVG_MOUSEMOVE", e);
+    eventBus.emit("EV_SVG_MOUSEMOVE", e);
   }
 
   function registerSvgMouseMove() {
@@ -322,7 +324,7 @@ export default function eventHelper() {
   }
 
   function emitSvgMouseUp(e: MouseEvent) {
-    eventBus.emit("SVG_MOUSEUP", e);
+    eventBus.emit("EV_SVG_MOUSEUP", e);
   }
 
   function registerSvgMouseUp() {
@@ -338,7 +340,7 @@ export default function eventHelper() {
   }
 
   function emitKeyUp(key: KeyboardEvent) {
-    eventBus.emit("KEYUP", key);
+    eventBus.emit("EV_KEYUP", key);
   }
 
   function registerKeyUp() {
@@ -350,7 +352,7 @@ export default function eventHelper() {
   }
 
   function emitCopy() {
-    eventBus.emit("COPY", null);
+    eventBus.emit("EV_COPY", null);
   }
 
   function registerCopy() {
@@ -362,7 +364,7 @@ export default function eventHelper() {
   }
 
   function emitPaste(e: ClipboardEvent) {
-    eventBus.emit("PASTE", e);
+    eventBus.emit("EV_PASTE", e);
   }
 
   function registerPaste() {

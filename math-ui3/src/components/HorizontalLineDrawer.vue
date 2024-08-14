@@ -139,28 +139,28 @@ let handleY = computed(() => {
 });
 
 watch(
-  () => eventBus.bus.value.get("SVG_MOUSEUP"),
+  () => eventBus.bus.value.get("EV_SVG_MOUSEUP"),
   () => {
     onMouseUp();
   },
 );
 
 watch(
-  () => eventBus.bus.value.get("SVG_MOUSEMOVE"),
+  () => eventBus.bus.value.get("EV_SVG_MOUSEMOVE"),
   (e: MouseEvent) => {
     onMouseMove(e);
   },
 );
 
 watch(
-  () => eventBus.bus.value.get("SVG_MOUSEDOWN"),
+  () => eventBus.bus.value.get("EV_SVG_MOUSEDOWN"),
   (e: MouseEvent) => {
     onMouseDown(e);
   },
 );
 
 watch(
-  () => eventBus.bus.value.get("HORIZONTAL_LINE_SELECTED"),
+  () => eventBus.bus.value.get("EV_HORIZONTAL_LINE_SELECTED"),
   (line: HorizontalLineNotationAttributes) => {
     if (line) onLineSelected(line);
   },
@@ -183,7 +183,7 @@ function onLineSelected(lineNotation: HorizontalLineNotationAttributes) {
   notationStore.selectNotation(lineNotation.uuid);
 
   // to enable re selection
-  eventBus.emit("HORIZONTAL_LINE_SELECTED", null);
+  eventBus.emit("EV_HORIZONTAL_LINE_SELECTED", null);
 }
 
 function onHandleMouseDown() {

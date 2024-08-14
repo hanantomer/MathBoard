@@ -9,7 +9,6 @@ export default function() {
     bus.value.set(event, arg);
   }
 
-
   return {
     emit,
     bus

@@ -105,7 +105,7 @@ let curveType = computed(() => {
 });
 
 watch(
-  () => eventBus.bus.value.get("SVG_MOUSEDOWN"),
+  () => eventBus.bus.value.get("EV_SVG_MOUSEDOWN"),
   (e: MouseEvent) => {
     if (!e) return;
     handleMouseDown(e);
@@ -114,7 +114,7 @@ watch(
 );
 
 watch(
-  () => eventBus.bus.value.get("KEYUP"),
+  () => eventBus.bus.value.get("EV_KEYUP"),
   (e: KeyboardEvent) => {
     eventHelper.keyUp(e, props.svgId);
   },
@@ -146,7 +146,7 @@ watch(
 );
 
 watch(
-  () => eventBus.bus.value.get("CELL_COLORIZED"),
+  () => eventBus.bus.value.get("EV_CELL_COLORIZED"),
   (params) => {
     const clickedCell = screenHelper.getClickedCell(props.svgId, {
       x: params.clientX,
@@ -166,15 +166,15 @@ watch(
 );
 
 watch(
-  () => eventBus.bus.value.get("COPY"),
+  () => eventBus.bus.value.get("EV_COPY"),
   () => {
     eventHelper.copy();
-    eventBus.bus.value.delete("COPY"); // clean copy buffer
+    eventBus.bus.value.delete("EV_COPY"); // clean copy buffer
   },
 );
 
 watch(
-  () => eventBus.bus.value.get("PASTE"),
+  () => eventBus.bus.value.get("EV_PASTE"),
   (e: ClipboardEvent) => {
     eventHelper.paste(e);
   },

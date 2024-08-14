@@ -12,7 +12,6 @@ import useHtmlHelper from "./matrixHtmlHelper";
 
 const lineHelper = useLineHelper();
 const curveHelper = useCurveHelper();
-const notationStore = useNotationStore();
 const cellStore = useCellStore();
 const htmlHelper = useHtmlHelper();
 
@@ -20,6 +19,9 @@ export default function useMatrixHelper() {
   let matrix: any[] = [];
 
   function setCellVerticalHeight(svgId: string) {
+    if(cellStore.getCellVerticalHeight())
+      return;
+
     let clientWidth: number | undefined =
       document.getElementById(svgId)?.clientWidth;
     let clientHeight: number | undefined =

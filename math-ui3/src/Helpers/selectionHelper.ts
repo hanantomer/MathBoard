@@ -44,6 +44,15 @@ export default function selectionHelper() {
       dotCoordinates,
     );
 
+    console.debug(
+      "notation:" +
+        notation?.notationType +
+        ", selected at x:" +
+        dotCoordinates.x +
+        ",y:" +
+        dotCoordinates.y,
+    );
+
     if (!notation) return null;
 
     switch (NotationTypeShape.get(notation!.notationType)) {
@@ -75,7 +84,7 @@ export default function selectionHelper() {
       return;
 
     if (activeNotation.notationType === "TEXT") {
-      eventBus.emit("FREE_TEXT_SELECTED", activeNotation);
+      eventBus.emit("EV_FREE_TEXT_SELECTED", activeNotation);
     }
 
     notationStore.selectNotation(activeNotation?.uuid);
@@ -84,12 +93,12 @@ export default function selectionHelper() {
   function selectCurveNotation(notation: NotationAttributes) {
     switch (notation.notationType) {
       case "CONCAVECURVE":
-        editModeStore.setEditMode("CONCAVE_CURVE_SELECTED");
-        eventBus.emit("CONCAVE_CURVE_SELECTED", notation);
+        editModeStore.setEditMode("EV_CONCAVE_CURVE_SELECTED");
+        eventBus.emit("EV_CONCAVE_CURVE_SELECTED", notation);
         break;
       case "CONVEXCURVE":
-        editModeStore.setEditMode("CONVEX_CURVE_SELECTED");
-        eventBus.emit("CONVEX_CURVE_SELECTED", notation);
+        editModeStore.setEditMode("EV_CONVEX_CURVE_SELECTED");
+        eventBus.emit("EV_CONVEX_CURVE_SELECTED", notation);
     }
   }
 
@@ -97,19 +106,19 @@ export default function selectionHelper() {
     switch (notation.notationType) {
       case "SQRT":
         editModeStore.setEditMode("SQRT_SELECTED");
-        eventBus.emit("HORIZONTAL_LINE_SELECTED", notation);
+        eventBus.emit("EV_HORIZONTAL_LINE_SELECTED", notation);
         break;
       case "HORIZONTALLINE":
-        editModeStore.setEditMode("HORIZONTAL_LINE_SELECTED");
-        eventBus.emit("HORIZONTAL_LINE_SELECTED", notation);
+        editModeStore.setEditMode("EV_HORIZONTAL_LINE_SELECTED");
+        eventBus.emit("EV_HORIZONTAL_LINE_SELECTED", notation);
         break;
       case "VERTICALLINE":
-        editModeStore.setEditMode("VERTICAL_LINE_SELECTED");
-        eventBus.emit("VERTICAL_LINE_SELECTED", notation);
+        editModeStore.setEditMode("EV_VERTICAL_LINE_SELECTED");
+        eventBus.emit("EV_VERTICAL_LINE_SELECTED", notation);
         break;
       case "SLOPELINE":
-        editModeStore.setEditMode("SLOPE_LINE_SELECTED");
-        eventBus.emit("SLOPE_LINE_SELECTED", notation);
+        editModeStore.setEditMode("EV_SLOPE_LINE_SELECTED");
+        eventBus.emit("EV_SLOPE_LINE_SELECTED", notation);
     }
   }
 

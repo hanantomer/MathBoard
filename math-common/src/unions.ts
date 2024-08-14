@@ -3,23 +3,23 @@ export const BoardTypeValues = ["LESSON","QUESTION","ANSWER"] as const;
 export type BoardType = typeof BoardTypeValues[number];
 
 export type BusEventType = 
-    "QUESTION_SAVED"             |
-    "EXPONENT_SUBMITED"         |
-    "CELL_COLORIZED"            |
-    "COPY"                      |
-    "PASTE"                     |
-    "KEYUP"                     | 
-    "SVG_MOUSEUP"               |  
-    "SVG_MOUSEDOWN"             | 
-    "SVG_MOUSEMOVE"             |  
-    "SELECTION_DONE"            | 
-    "FREE_TEXT_SUBMITTED"       |
-    "FREE_TEXT_SELECTED"        |
-    "SLOPE_LINE_SELECTED"       |
-    "CONCAVE_CURVE_SELECTED"    |
-    "CONVEX_CURVE_SELECTED"     |
-    "VERTICAL_LINE_SELECTED"    |
-    "HORIZONTAL_LINE_SELECTED";
+    "EV_QUESTION_SAVED"         |
+    "EV_EXPONENT_SUBMITED"      |
+    "EV_CELL_COLORIZED"         |
+    "EV_COPY"                      |
+    "EV_PASTE"                     |
+    "EV_KEYUP"                     | 
+    "EV_SVG_MOUSEUP"               |  
+    "EV_SVG_MOUSEDOWN"             | 
+    "EV_SVG_MOUSEMOVE"             |  
+    "EV_SELECTION_DONE"            | 
+    "EV_FREE_TEXT_SUBMITTED"       |
+    "EV_FREE_TEXT_SELECTED"        |
+    "EV_SLOPE_LINE_SELECTED"       |
+    "EV_CONCAVE_CURVE_SELECTED"    |
+    "EV_CONVEX_CURVE_SELECTED"     |
+    "EV_VERTICAL_LINE_SELECTED"    |
+    "EV_HORIZONTAL_LINE_SELECTED";
 
 export type NotationShape = 
     "POINT"           |  
@@ -88,19 +88,19 @@ export type EditMode =
   "CELL_SELECTED"             | // user clicked on a cell or navigated via keys
   "HORIZONTAL_LINE_STARTED"   | // horizontal line button pressed
   "HORIZONTAL_LINE_DRAWING"   | // horizontal line drawing started
-  "HORIZONTAL_LINE_SELECTED"  | // horizontal line selected
+  "EV_HORIZONTAL_LINE_SELECTED"  | // horizontal line selected
   "VERTICAL_LINE_STARTED"     | // vertical line button pressed
   "VERTICAL_LINE_DRAWING"     | // vertical line drawing started
-  "VERTICAL_LINE_SELECTED"    | // vertical line selected
+  "EV_VERTICAL_LINE_SELECTED"    | // vertical line selected
   "SLOPE_LINE_STARTED"        | // slope line button pressed
   "SLOPE_LINE_DRAWING"        | // slope line drawing started
-  "SLOPE_LINE_SELECTED"       | // slope line selected
+  "EV_SLOPE_LINE_SELECTED"       | // slope line selected
   "CONCAVE_CURVE_STARTED"      | // concave line button pressed
   "CONCAVE_CURVE_DRAWING"      | // concave line drawing started
-  "CONCAVE_CURVE_SELECTED"     | // concave line selected
+  "EV_CONCAVE_CURVE_SELECTED"     | // concave line selected
   "CONVEX_CURVE_STARTED"       | // convex line button pressed
   "CONVEX_CURVE_DRAWING"       | // convex line drawing started
-  "CONVEX_CURVE_SELECTED"      | // convex line selected
+  "EV_CONVEX_CURVE_SELECTED"      | // convex line selected
   "SQRT_STARTED"              | // sqrt button pressed
   "SQRT_DRAWING"              | // sqrt drawing started
   "SQRT_SELECTED"             | // sqrt selected  
@@ -121,19 +121,19 @@ export type EditMode =
     ["CELL_SELECTED", "SYMBOL"],            
     ["HORIZONTAL_LINE_STARTED", "HORIZONTALLINE"],  
     ["HORIZONTAL_LINE_DRAWING", "HORIZONTALLINE"],  
-    ["HORIZONTAL_LINE_SELECTED", "HORIZONTALLINE"], 
+    ["EV_HORIZONTAL_LINE_SELECTED", "HORIZONTALLINE"], 
     ["VERTICAL_LINE_STARTED", "VERTICALLINE"],    
     ["VERTICAL_LINE_DRAWING", "VERTICALLINE"],    
-    ["VERTICAL_LINE_SELECTED", "VERTICALLINE"],   
+    ["EV_VERTICAL_LINE_SELECTED", "VERTICALLINE"],   
     ["SLOPE_LINE_STARTED", "SLOPELINE"],       
     ["SLOPE_LINE_DRAWING", "SLOPELINE"],       
-    ["SLOPE_LINE_SELECTED", "SLOPELINE"],      
+    ["EV_SLOPE_LINE_SELECTED", "SLOPELINE"],      
     ["CONCAVE_CURVE_STARTED", "CONCAVECURVE"],       
     ["CONCAVE_CURVE_DRAWING", "CONCAVECURVE"],       
-    ["CONCAVE_CURVE_SELECTED", "CONCAVECURVE"],      
+    ["EV_CONCAVE_CURVE_SELECTED", "CONCAVECURVE"],      
     ["CONVEX_CURVE_STARTED", "CONVEXCURVE"],       
     ["CONVEX_CURVE_DRAWING", "CONVEXCURVE"],       
-    ["CONVEX_CURVE_SELECTED", "CONVEXCURVE"],      
+    ["EV_CONVEX_CURVE_SELECTED", "CONVEXCURVE"],      
     ["SQRT_STARTED", "SQRT"],                     
     ["SQRT_DRAWING", "SQRT"],             
     ["SQRT_SELECTED", "SQRT"],            
@@ -155,13 +155,13 @@ export type EditMode =
   ["CELL_SELECTED", "auto"],            
   ["HORIZONTAL_LINE_STARTED", "auto"],  
   ["HORIZONTAL_LINE_DRAWING", "auto"],  
-  ["HORIZONTAL_LINE_SELECTED", "auto"], 
+  ["EV_HORIZONTAL_LINE_SELECTED", "auto"], 
   ["VERTICAL_LINE_STARTED", "auto"],    
   ["VERTICAL_LINE_DRAWING", "auto"],    
-  ["VERTICAL_LINE_SELECTED", "auto"],   
+  ["EV_VERTICAL_LINE_SELECTED", "auto"],   
   ["SLOPE_LINE_STARTED", "auto"],       
   ["SLOPE_LINE_DRAWING", "auto"],       
-  ["SLOPE_LINE_SELECTED", "auto"],      
+  ["EV_SLOPE_LINE_SELECTED", "auto"],      
   ["SQRT_STARTED", "auto"],                     
   ["SQRT_DRAWING", "auto"],             
   ["SQRT_SELECTED", "auto"],            

@@ -114,28 +114,28 @@ let handleBottom = computed(() => {
 // watch
 
 watch(
-  () => eventBus.bus.value.get("SVG_MOUSEUP"),
+  () => eventBus.bus.value.get("EV_SVG_MOUSEUP"),
   () => {
     onMouseUp();
   },
 );
 
 watch(
-  () => eventBus.bus.value.get("SVG_MOUSEMOVE"),
+  () => eventBus.bus.value.get("EV_SVG_MOUSEMOVE"),
   (e: MouseEvent) => {
     onMouseMove(e);
   },
 );
 
 watch(
-  () => eventBus.bus.value.get("SVG_MOUSEDOWN"),
+  () => eventBus.bus.value.get("EV_SVG_MOUSEDOWN"),
   (e: MouseEvent) => {
     onMouseDown(e);
   },
 );
 
 watch(
-  () => eventBus.bus.value.get("VERTICAL_LINE_SELECTED"),
+  () => eventBus.bus.value.get("EV_VERTICAL_LINE_SELECTED"),
   (line: VerticalLineNotationAttributes) => {
     if (line) onLineSelected(line);
   },
@@ -156,7 +156,7 @@ function onLineSelected(lineNotation: VerticalLineNotationAttributes) {
   notationStore.selectNotation(lineNotation.uuid);
 
   /// TODO use close list for emiiter
-  eventBus.emit("VERTICAL_LINE_SELECTED", null); // to enable re selection
+  eventBus.emit("EV_VERTICAL_LINE_SELECTED", null); // to enable re selection
 }
 
 function onHandleMouseDown() {

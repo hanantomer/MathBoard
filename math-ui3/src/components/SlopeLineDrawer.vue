@@ -122,28 +122,28 @@ let handleBottom = computed(() => {
 // watch
 
 watch(
-  () => eventBus.bus.value.get("SVG_MOUSEUP"),
+  () => eventBus.bus.value.get("EV_SVG_MOUSEUP"),
   () => {
     onMouseUp();
   },
 );
 
 watch(
-  () => eventBus.bus.value.get("SVG_MOUSEMOVE"),
+  () => eventBus.bus.value.get("EV_SVG_MOUSEMOVE"),
   (e: MouseEvent) => {
     onMouseMove(e);
   },
 );
 
 watch(
-  () => eventBus.bus.value.get("SVG_MOUSEDOWN"),
+  () => eventBus.bus.value.get("EV_SVG_MOUSEDOWN"),
   (e: MouseEvent) => {
     onMouseDown(e);
   },
 );
 
 watch(
-  () => eventBus.bus.value.get("SLOPE_LINE_SELECTED"), /// TODO: update emitter to distinguish line types
+  () => eventBus.bus.value.get("EV_SLOPE_LINE_SELECTED"), /// TODO: update emitter to distinguish line types
   (line: SlopeLineNotationAttributes) => {
     if (line) onSlopeLineSelected(line);
   },
@@ -166,7 +166,7 @@ function onSlopeLineSelected(lineNotation: SlopeLineNotationAttributes) {
 
   notationStore.selectNotation(lineNotation.uuid);
 
-  eventBus.emit("SLOPE_LINE_SELECTED", null); // to enable re selection
+  eventBus.emit("EV_SLOPE_LINE_SELECTED", null); // to enable re selection
 }
 
 function onHandleMouseDown() {

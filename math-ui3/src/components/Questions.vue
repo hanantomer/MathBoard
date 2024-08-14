@@ -77,8 +77,6 @@ const noLessonDialog = ref(false);
 const questionDialog = ref(false);
 let itemsPerPage = 10;
 
-
-
 let selectedLesson = ref();
 
 onMounted(async () => {
@@ -106,7 +104,7 @@ watch(
 );
 
 watch(
-  () => eventBus.bus.value.get("QUESTION_SAVED"),
+  () => eventBus.bus.value.get("EV_QUESTION_SAVED"),
   (questionName: string) => {
     addQuestion(questionName);
   },
@@ -152,7 +150,7 @@ const questions = computed(() => {
     });
 });
 
-function navToLessons(e:any) {
+function navToLessons(e: any) {
   e.stopPropagation();
   noLessonDialog.value = false;
   router.push({

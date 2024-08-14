@@ -65,12 +65,12 @@ export default function screenHelper() {
     );
 
     const rectFromRow = Math.round(
-      rectCoordinates.bottomRight.y /
+      rectCoordinates.topLeft.y /
         (cellStore.getCellVerticalHeight() + cellSpace),
     );
 
     const rectToRow = Math.round(
-      rectCoordinates.topLeft.y /
+      rectCoordinates.bottomRight.y /
         (cellStore.getCellVerticalHeight() + cellSpace),
     );
 

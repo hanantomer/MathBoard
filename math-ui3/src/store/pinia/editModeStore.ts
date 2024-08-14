@@ -17,16 +17,13 @@ export const useEditModeStore = defineStore("editMode", () => {
   }
 
   function isSelectionMode() {
-    return (
-      editMode.value === "AREA_SELECTING" ||
-      editMode.value === "MOVING"
-    )
+    return editMode.value === "AREA_SELECTING" || editMode.value === "MOVING";
   }
 
   function isSelectedMode() {
     return (
       editMode.value === "AREA_SELECTED" ||
-      editMode.value === "HORIZONTAL_LINE_SELECTED" ||
+      editMode.value === "EV_HORIZONTAL_LINE_SELECTED" ||
       editMode.value === "SQRT_SELECTED"
     );
   }
@@ -70,10 +67,9 @@ export const useEditModeStore = defineStore("editMode", () => {
   }
 
   function isSqrtMode() {
-    return(
-      editMode.value === "SQRT_STARTED" ||
-      editMode.value === "SQRT_DRAWING"
-    )
+    return (
+      editMode.value === "SQRT_STARTED" || editMode.value === "SQRT_DRAWING"
+    );
   }
 
   function isConcaveCurveMode() {
@@ -149,23 +145,23 @@ export const useEditModeStore = defineStore("editMode", () => {
 
   function isHorizontalLineSelectedMode() {
     return (
-      editMode.value === "HORIZONTAL_LINE_SELECTED" ||
+      editMode.value === "EV_HORIZONTAL_LINE_SELECTED" ||
       editMode.value === "SQRT_SELECTED"
     );
   }
 
   function isVerticalLineSelectedMode() {
-    return editMode.value === "VERTICAL_LINE_SELECTED";
+    return editMode.value === "EV_VERTICAL_LINE_SELECTED";
   }
 
   function isSlopeLineSelectedMode() {
-    return editMode.value === "SLOPE_LINE_SELECTED";
+    return editMode.value === "EV_SLOPE_LINE_SELECTED";
   }
 
   function isCurveSelectedMode() {
     return (
-      editMode.value === "CONVEX_CURVE_SELECTED" ||
-      editMode.value === "CONCAVE_CURVE_SELECTED"
+      editMode.value === "EV_CONVEX_CURVE_SELECTED" ||
+      editMode.value === "EV_CONCAVE_CURVE_SELECTED"
     );
   }
 
@@ -223,27 +219,27 @@ export const useEditModeStore = defineStore("editMode", () => {
 
       case "HORIZONTAL_LINE_STARTED":
         return setEditMode("HORIZONTAL_LINE_DRAWING");
-      case "HORIZONTAL_LINE_SELECTED":
+      case "EV_HORIZONTAL_LINE_SELECTED":
         return setEditMode("HORIZONTAL_LINE_DRAWING");
 
       case "VERTICAL_LINE_STARTED":
         return setEditMode("VERTICAL_LINE_DRAWING");
-      case "VERTICAL_LINE_SELECTED":
+      case "EV_VERTICAL_LINE_SELECTED":
         return setEditMode("VERTICAL_LINE_DRAWING");
 
       case "SLOPE_LINE_STARTED":
         return setEditMode("SLOPE_LINE_DRAWING");
-      case "SLOPE_LINE_SELECTED":
+      case "EV_SLOPE_LINE_SELECTED":
         return setEditMode("SLOPE_LINE_DRAWING");
 
       case "CONCAVE_CURVE_STARTED":
         return setEditMode("CONCAVE_CURVE_DRAWING");
-      case "CONCAVE_CURVE_SELECTED":
+      case "EV_CONCAVE_CURVE_SELECTED":
         return setEditMode("CONCAVE_CURVE_DRAWING");
 
       case "CONVEX_CURVE_STARTED":
         return setEditMode("CONVEX_CURVE_DRAWING");
-      case "CONVEX_CURVE_SELECTED":
+      case "EV_CONVEX_CURVE_SELECTED":
         return setEditMode("CONVEX_CURVE_DRAWING");
 
       case "SQRT_STARTED":
@@ -255,8 +251,6 @@ export const useEditModeStore = defineStore("editMode", () => {
         return setEditMode("AREA_SELECTED");
       case "AREA_SELECTED":
         return setEditMode("MOVING");
-      //case "MOVING":
-      //  return setDefaultEditMode();
       default:
         return setDefaultEditMode();
     }

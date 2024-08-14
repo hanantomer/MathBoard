@@ -77,21 +77,21 @@ type CellColor = "lightblue" | "lightgreen" | "pink" | "transparent" | "none";
 let cellColor: CellColor = "none";
 
 watch(
-  () => eventBus.bus.value.get("SVG_MOUSEMOVE"),
+  () => eventBus.bus.value.get("EV_SVG_MOUSEMOVE"),
   (e: MouseEvent) => {
     handleMouseMove(e);
   },
 );
 
 watch(
-  () => eventBus.bus.value.get("SVG_MOUSEUP"),
+  () => eventBus.bus.value.get("EV_SVG_MOUSEUP"),
   (e: MouseEvent) => {
     handleMouseUp(e);
   },
 );
 
 watch(
-  () => eventBus.bus.value.get("SVG_MOUSEDOWN"),
+  () => eventBus.bus.value.get("EV_SVG_MOUSEDOWN"),
   (e: MouseEvent) => {
     handleMouseDown(e);
   },
@@ -104,7 +104,7 @@ function handleMouseUp(e: MouseEvent) {
 
 function handleMouseDown(e: MouseEvent) {
   if (cellColor === "none") return;
-  eventBus.emit("CELL_COLORIZED", {
+  eventBus.emit("EV_CELL_COLORIZED", {
     clientX: e.clientX,
     clientY: e.clientY,
     cellColor,
@@ -114,7 +114,7 @@ function handleMouseDown(e: MouseEvent) {
 function handleMouseMove(e: MouseEvent) {
   if (cellColor === "none") return;
   if (e.buttons !== 1) return;
-  eventBus.emit("CELL_COLORIZED", {
+  eventBus.emit("EV_CELL_COLORIZED", {
     clientX: e.clientX,
     clientY: e.clientY,
     cellColor,

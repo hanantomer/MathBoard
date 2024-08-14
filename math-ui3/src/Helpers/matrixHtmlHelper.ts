@@ -27,7 +27,7 @@ export default function useHtmlMatrixHelper() {
   }
 
   function textBorderColor(notation: NotationAttributes): string {
-    return notation.selected ? "gray" : "lighgray";
+    return notation.selected ? "black" : "lighgray";
   }
 
   function textBackgroundColor(): string {
@@ -281,9 +281,11 @@ export default function useHtmlMatrixHelper() {
       const height = rectNotationHeight(n as RectNotationAttributes);
       const width = rectNotationWidth(n as RectNotationAttributes);
 
-      return `<textarea style='resize:none; overflow:hidden;width:${width}px;height:${height}px;background-color:${textBackgroundColor()};border:groove 2px;border-color:${bColor};'>${
-        n1.value
-      }</textarea>`;
+      return `<textarea style='resize:none; overflow:hidden;width:${width}px;
+              height:${height}px;background-color:${textBackgroundColor()};
+              border:groove 2px;border-color:${bColor};'>${
+                n1.value
+              }</textarea>`;
     }
 
     if (n.notationType === "IMAGE") {

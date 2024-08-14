@@ -10,7 +10,6 @@
     }"
     id="textAreaEl"
     v-model="textValue"
-    v-bind:onblur="onLeave"
   >
   </textarea>
 </template>
@@ -22,6 +21,7 @@ import { useCellStore } from "../store/pinia/cellStore";
 import { useEditModeStore } from "../store/pinia/editModeStore";
 import { RectNotationAttributes } from "../../../math-common/build/baseTypes";
 import { cellSpace } from "../../../math-common/src/globals";
+import { EditMode } from "../../../math-common/src/unions";
 import useNotationMutateHelper from "../helpers/notationMutateHelper";
 import usescreenHelper from "../helpers/screenHelper";
 import useEventBus from "../helpers/eventBusHelper";
@@ -49,18 +49,24 @@ const svgDimensions = computed(() => {
   return document.getElementById(props.svgId)?.getBoundingClientRect()!;
 });
 
-// watch(
-//   () => editModeStore.getEditMode(),
-//   (newEditMode, oldEditMode) => {
-//     if (oldEditMode === "TEXT_WRITING" && newEditMode !== "TEXT_WRITING") {
-//       onLeave();
-//     }
-//   },
-// );
+let textLeft = ref(0);
+let textTop = ref(0);
+let textHeight = ref(0);
+let textWidth = ref(0);
+
+watch(
+  () => editModeStore.getEditMode() as EditMode,
+  (newEditMode: EditMode, oldEditMode: any) => {
+    if (newEditMode !== "TEXT_WRITING" && oldEditMode === "TEXT_WRITING") {
+      onLeave();
+    }
+  },
+  { immediate: true, deep: true },
+);
 
 // area selector signals the selected position attributes
 watch(
-  () => eventBus.bus.value.get("SELECTION_DONE"),
+  () => eventBus.bus.value.get("EV_SELECTION_DONE"),
   (selectionPosition: any) => {
     setInitialTextValue();
     textLeft.value = selectionPosition.left;
@@ -74,10 +80,10 @@ watch(
 
 // user selected text notation
 watch(
-  () => eventBus.bus.value.get("FREE_TEXT_SELECTED"),
+  () => eventBus.bus.value.get("EV_FREE_TEXT_SELECTED"),
   (textNotation: RectNotationAttributes) => {
     if (!textNotation) return;
-    eventBus.bus.value.delete("FREE_TEXT_SELECTED");
+    eventBus.bus.value.delete("EV_FREE_TEXT_SELECTED");
 
     // fisrt click -> select
     if (!editModeStore.isTextSelectedMode()) {
@@ -86,93 +92,114 @@ watch(
     }
 
     // second click -> edit
-    editModeStore.setEditMode("TEXT_WRITING");
-
-    hideTextNotation(textNotation.uuid);
-
-    setInitialTextValue();
-
-    selectedNotation = textNotation;
-
-    textLeft.value =
-      svgDimensions.value.left +
-      textNotation.fromCol * (cellStore.getCellHorizontalWidth() + cellSpace) -
-      cellSpace;
-
-    textTop.value =
-      svgDimensions.value.top +
-      textNotation.fromRow * (cellStore.getCellVerticalHeight() + cellSpace) -
-      cellSpace;
-
-    textHeight.value =
-      (textNotation.toRow - textNotation.fromRow + 1) *
-        (cellStore.getCellVerticalHeight() + cellSpace) -
-      cellSpace;
-
-    textWidth.value =
-      (textNotation.toCol - textNotation.fromCol + 1) *
-        (cellStore.getCellHorizontalWidth() + cellSpace) -
-      cellSpace;
-
-    document.getElementById("textAreaEl")?.focus();
+    editSelectedTextNotation(textNotation);
   },
 );
 
-let textLeft = ref(0);
-let textTop = ref(0);
-let textHeight = ref(0);
-let textWidth = ref(0);
+function editSelectedTextNotation(textNotation: RectNotationAttributes) {
+  editModeStore.setEditMode("TEXT_WRITING");
+
+  selectedNotation = textNotation;
+
+  setInitialTextValue();
+
+  setInitialTextDimensions(textNotation);
+
+  hideTextNotation(textNotation.uuid);
+
+  const textEl = document.getElementById("textAreaEl")! as HTMLTextAreaElement;
+
+  setTimeout(() => {
+    textEl.focus();
+  }, 0);
+}
+
+function setInitialTextDimensions(textNotation: RectNotationAttributes) {
+  textLeft.value =
+    svgDimensions.value.left +
+    textNotation.fromCol * (cellStore.getCellHorizontalWidth() + cellSpace) -
+    cellSpace;
+
+  textTop.value =
+    svgDimensions.value.top +
+    textNotation.fromRow * (cellStore.getCellVerticalHeight() + cellSpace) -
+    cellSpace;
+
+  textHeight.value =
+    (textNotation.toRow - textNotation.fromRow + 1) *
+      (cellStore.getCellVerticalHeight() + cellSpace) -
+    cellSpace;
+
+  console.debug({ textNotation });
+  console.debug("height:" + textHeight.value);
+
+  textWidth.value =
+    (textNotation.toCol - textNotation.fromCol + 1) *
+      (cellStore.getCellHorizontalWidth() + cellSpace) -
+    cellSpace;
+}
 
 function setInitialTextValue() {
   textValue.value = "";
-  if (notationStore.getSelectedNotations()[0]?.notationType == "TEXT")
-    textValue.value = (
-      notationStore.getSelectedNotations()[0] as RectNotationAttributes
-    ).value;
+  if (selectedNotation?.value) {
+    textValue.value = selectedNotation?.value!;
+  }
 }
 
 function onLeave() {
-  if (selectedNotation) {
-    showTextNotation(selectedNotation.uuid);
+  console.debug("onleave");
+  if (selectedNotation != null) {
+    console.debug("show text notation");
+    restoreTextNotation(selectedNotation.uuid);
+  } else {
+    console.debug("selected notation is null");
   }
-
-  editModeStore.setDefaultEditMode();
-  //if (initialTextValue === textValue.value) return;
-  /// TODO bring that back with or dimensions changed
   submitText();
 }
 
 function submitText() {
+  //editModeStore.setDefaultEditMode();
   editModeStore.setNextEditMode();
 
   const rectCoordinates = screenHelper.getRectAttributes({
     topLeft: {
-      x: textLeft.value + window.scrollX,
-      y: textTop.value + window.scrollY,
+      x: textLeft.value + window.scrollX - svgDimensions.value.left,
+      y: textTop.value + window.scrollY - svgDimensions.value.top,
     },
     bottomRight: {
-      x: textLeft.value + textWidth.value + window.scrollX,
-      y: textTop.value + textHeight.value + window.scrollY,
+      x:
+        textLeft.value +
+        textWidth.value +
+        window.scrollX -
+        svgDimensions.value.left,
+      y:
+        textTop.value +
+        textHeight.value +
+        window.scrollY -
+        svgDimensions.value.top,
     },
   });
 
-  if (selectedNotation) {
+  if (selectedNotation && rectCoordinates) {
     selectedNotation.value = textValue.value;
     selectedNotation = Object.assign(selectedNotation, rectCoordinates);
     notationMutateHelper.updateNotation(selectedNotation);
   } else {
     notationMutateHelper.upsertTextNotation(textValue.value, rectCoordinates);
   }
+  console.debug("selected notation is:" + selectedNotation);
 }
 
 function hideTextNotation(uuid: string) {
+  console.debug("hide text notation:" + uuid);
   document!
     .querySelector<HTMLElement>(`foreignObject[uuid="${uuid}"]`)!
     .classList.add("hidden");
 }
 
 // restore text notation that was hideen during editing
-function showTextNotation(uuid: string) {
+function restoreTextNotation(uuid: string) {
+  console.debug("restoring text notation:" + uuid);
   document!
     .querySelector<HTMLElement>(`foreignObject[uuid="${uuid}"]`)!
     .classList.remove("hidden");
