@@ -54,24 +54,39 @@ export default function screenHelper() {
   }
 
   function getRectAttributes(rectCoordinates: RectCoordinates): RectAttributes {
+    console.log(
+      "getRectAttributes rectCoordinates:" + JSON.stringify(rectCoordinates),
+    );
     const rectFromCol = Math.round(
       rectCoordinates.topLeft.x /
         (cellStore.getCellHorizontalWidth() + cellSpace),
     );
 
-    const rectToCol = Math.round(
-      rectCoordinates.bottomRight.x /
-        (cellStore.getCellHorizontalWidth() + cellSpace),
-    );
+    const rectToCol =
+      Math.round(
+        rectCoordinates.bottomRight.x /
+          (cellStore.getCellHorizontalWidth() + cellSpace),
+      ) - 1;
 
     const rectFromRow = Math.round(
       rectCoordinates.topLeft.y /
         (cellStore.getCellVerticalHeight() + cellSpace),
     );
 
-    const rectToRow = Math.round(
-      rectCoordinates.bottomRight.y /
-        (cellStore.getCellVerticalHeight() + cellSpace),
+    const rectToRow =
+      Math.round(
+        rectCoordinates.bottomRight.y /
+          (cellStore.getCellVerticalHeight() + cellSpace),
+      ) - 1;
+
+    console.log(
+      "getRectAttributes rectAttributes:" +
+        JSON.stringify({
+          fromCol: rectFromCol,
+          toCol: rectToCol,
+          fromRow: rectFromRow,
+          toRow: rectToRow,
+        }),
     );
 
     return {

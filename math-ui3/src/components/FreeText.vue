@@ -114,14 +114,17 @@ function editSelectedTextNotation(textNotation: RectNotationAttributes) {
   }, 0);
 }
 
+// set text area dimensions upon notation selection
 function setInitialTextDimensions(textNotation: RectNotationAttributes) {
   textLeft.value =
     svgDimensions.value.left +
+    window.scrollX +
     textNotation.fromCol * (cellStore.getCellHorizontalWidth() + cellSpace) -
     cellSpace;
 
   textTop.value =
     svgDimensions.value.top +
+    window.scrollY +
     textNotation.fromRow * (cellStore.getCellVerticalHeight() + cellSpace) -
     cellSpace;
 
@@ -129,9 +132,6 @@ function setInitialTextDimensions(textNotation: RectNotationAttributes) {
     (textNotation.toRow - textNotation.fromRow + 1) *
       (cellStore.getCellVerticalHeight() + cellSpace) -
     cellSpace;
-
-  console.debug({ textNotation });
-  console.debug("height:" + textHeight.value);
 
   textWidth.value =
     (textNotation.toCol - textNotation.fromCol + 1) *
@@ -158,8 +158,14 @@ function onLeave() {
 }
 
 function submitText() {
-  //editModeStore.setDefaultEditMode();
   editModeStore.setNextEditMode();
+
+  const textAreaEl = document.getElementById("textAreaEl");
+
+  textLeft.value = parseInt(textAreaEl.style.left.replace("px", ""));
+  textWidth.value = parseInt(textAreaEl.style.width.replace("px", ""));
+  textTop.value = parseInt(textAreaEl.style.top.replace("px", ""));
+  textHeight.value = parseInt(textAreaEl.style.height.replace("px", ""));
 
   const rectCoordinates = screenHelper.getRectAttributes({
     topLeft: {
@@ -183,6 +189,7 @@ function submitText() {
   if (selectedNotation && rectCoordinates) {
     selectedNotation.value = textValue.value;
     selectedNotation = Object.assign(selectedNotation, rectCoordinates);
+
     notationMutateHelper.updateNotation(selectedNotation);
   } else {
     notationMutateHelper.upsertTextNotation(textValue.value, rectCoordinates);

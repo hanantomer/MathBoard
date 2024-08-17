@@ -8,17 +8,15 @@ import { CellAttributes } from "common/baseTypes";
 export const useCellStore = defineStore("cell", () => {
   let svgId: string | undefined = undefined;
 
-  let cellVerticalHight = ref<number>();
+  let cellVerticalHight = ref<number>(0);
 
   let selectedCell = ref(<CellAttributes>{ col: 0, row: 0 });
 
-  function getCellVerticalHeight() {
-    if (!cellVerticalHight.value) return null;
+  function getCellVerticalHeight() : number {
     return cellVerticalHight.value;
   }
 
-  function getCellHorizontalWidth() {
-    if (!cellVerticalHight.value) return null;
+  function getCellHorizontalWidth() : number {
     return cellVerticalHight.value / 2;
   }
 

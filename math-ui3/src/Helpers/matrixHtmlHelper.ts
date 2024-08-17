@@ -19,15 +19,13 @@ const utils = useUtils();
 const notationStore = useNotationStore();
 const cellStore = useCellStore();
 
-//const maxTextWidth = 10;
-
 export default function useHtmlMatrixHelper() {
   function borderColor(notation: NotationAttributes): string {
     return notation.selected ? "gray" : "transparent";
   }
 
   function textBorderColor(notation: NotationAttributes): string {
-    return notation.selected ? "black" : "lighgray";
+    return notation.selected ? "chocolate" : "lighgray";
   }
 
   function textBackgroundColor(): string {
