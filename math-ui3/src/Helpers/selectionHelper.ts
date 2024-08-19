@@ -87,17 +87,21 @@ export default function selectionHelper() {
       eventBus.emit("EV_FREE_TEXT_SELECTED", activeNotation);
     }
 
+    if (activeNotation.notationType === "EXPONENT") {
+      eventBus.emit("EV_EXPONENT_SELECTED", activeNotation);
+    }
+
     notationStore.selectNotation(activeNotation?.uuid);
   }
 
   function selectCurveNotation(notation: NotationAttributes) {
     switch (notation.notationType) {
       case "CONCAVECURVE":
-        editModeStore.setEditMode("EV_CONCAVE_CURVE_SELECTED");
+        editModeStore.setEditMode("CONCAVE_CURVE_SELECTED");
         eventBus.emit("EV_CONCAVE_CURVE_SELECTED", notation);
         break;
       case "CONVEXCURVE":
-        editModeStore.setEditMode("EV_CONVEX_CURVE_SELECTED");
+        editModeStore.setEditMode("CONVEX_CURVE_SELECTED");
         eventBus.emit("EV_CONVEX_CURVE_SELECTED", notation);
     }
   }
@@ -109,15 +113,15 @@ export default function selectionHelper() {
         eventBus.emit("EV_HORIZONTAL_LINE_SELECTED", notation);
         break;
       case "HORIZONTALLINE":
-        editModeStore.setEditMode("EV_HORIZONTAL_LINE_SELECTED");
+        editModeStore.setEditMode("HORIZONTAL_LINE_SELECTED");
         eventBus.emit("EV_HORIZONTAL_LINE_SELECTED", notation);
         break;
       case "VERTICALLINE":
-        editModeStore.setEditMode("EV_VERTICAL_LINE_SELECTED");
+        editModeStore.setEditMode("VERTICAL_LINE_SELECTED");
         eventBus.emit("EV_VERTICAL_LINE_SELECTED", notation);
         break;
       case "SLOPELINE":
-        editModeStore.setEditMode("EV_SLOPE_LINE_SELECTED");
+        editModeStore.setEditMode("SLOPE_LINE_SELECTED");
         eventBus.emit("EV_SLOPE_LINE_SELECTED", notation);
     }
   }

@@ -185,6 +185,7 @@ export default function screenHelper() {
     notationsAtCell: NotationAttributes[],
     DotCoordinates: DotCoordinates,
   ): NotationAttributes | null {
+
     let notationDistanceList: NotationDistance[] = [];
 
     for (let i = 0; i < notationsAtCell.length; i++) {
@@ -273,21 +274,12 @@ export default function screenHelper() {
       }
     }
 
+    if (notationDistanceList.length === 0) return null;
+
     // pick notation with min distance
-    const notationAndDistance = notationDistanceList.reduce((min, notation) =>
+    return notationDistanceList.reduce((min, notation) =>
       min.distance < notation.distance ? min : notation,
-    );
-
-    // if (
-    //   notationIsCloseToClickedPoint(
-    //     notationAndDistance.notation.notationType,
-    //     notationAndDistance.distance,
-    //   )
-    // ) {
-    return notationAndDistance.notation;
-    //}
-
-    //return null;
+    ).notation;
   }
 
   function notationIsCloseToClickedPoint(

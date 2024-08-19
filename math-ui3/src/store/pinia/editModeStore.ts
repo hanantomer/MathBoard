@@ -23,7 +23,7 @@ export const useEditModeStore = defineStore("editMode", () => {
   function isSelectedMode() {
     return (
       editMode.value === "AREA_SELECTED" ||
-      editMode.value === "EV_HORIZONTAL_LINE_SELECTED" ||
+      editMode.value === "HORIZONTAL_LINE_SELECTED" ||
       editMode.value === "SQRT_SELECTED"
     );
   }
@@ -145,23 +145,23 @@ export const useEditModeStore = defineStore("editMode", () => {
 
   function isHorizontalLineSelectedMode() {
     return (
-      editMode.value === "EV_HORIZONTAL_LINE_SELECTED" ||
+      editMode.value === "HORIZONTAL_LINE_SELECTED" ||
       editMode.value === "SQRT_SELECTED"
     );
   }
 
   function isVerticalLineSelectedMode() {
-    return editMode.value === "EV_VERTICAL_LINE_SELECTED";
+    return editMode.value === "VERTICAL_LINE_SELECTED";
   }
 
   function isSlopeLineSelectedMode() {
-    return editMode.value === "EV_SLOPE_LINE_SELECTED";
+    return editMode.value === "SLOPE_LINE_SELECTED";
   }
 
   function isCurveSelectedMode() {
     return (
-      editMode.value === "EV_CONVEX_CURVE_SELECTED" ||
-      editMode.value === "EV_CONCAVE_CURVE_SELECTED"
+      editMode.value === "CONVEX_CURVE_SELECTED" ||
+      editMode.value === "CONCAVE_CURVE_SELECTED"
     );
   }
 
@@ -178,7 +178,10 @@ export const useEditModeStore = defineStore("editMode", () => {
   }
 
   function isExponentMode() {
-    return editMode.value === "EXPONENT_STARTED";
+    return (
+      editMode.value === "EXPONENT_STARTED" ||
+      editMode.value === "EXPONENT_WRITING"
+    );
   }
 
   function isCheckMode() {
@@ -217,29 +220,32 @@ export const useEditModeStore = defineStore("editMode", () => {
       case "TEXT_AREA_SELECTING":
         return setEditMode("TEXT_WRITING");
 
+      case "EXPONENT_STARTED":
+        return setEditMode("EXPONENT_WRITING");
+
       case "HORIZONTAL_LINE_STARTED":
         return setEditMode("HORIZONTAL_LINE_DRAWING");
-      case "EV_HORIZONTAL_LINE_SELECTED":
+      case "HORIZONTAL_LINE_SELECTED":
         return setEditMode("HORIZONTAL_LINE_DRAWING");
 
       case "VERTICAL_LINE_STARTED":
         return setEditMode("VERTICAL_LINE_DRAWING");
-      case "EV_VERTICAL_LINE_SELECTED":
+      case "VERTICAL_LINE_SELECTED":
         return setEditMode("VERTICAL_LINE_DRAWING");
 
       case "SLOPE_LINE_STARTED":
         return setEditMode("SLOPE_LINE_DRAWING");
-      case "EV_SLOPE_LINE_SELECTED":
+      case "SLOPE_LINE_SELECTED":
         return setEditMode("SLOPE_LINE_DRAWING");
 
       case "CONCAVE_CURVE_STARTED":
         return setEditMode("CONCAVE_CURVE_DRAWING");
-      case "EV_CONCAVE_CURVE_SELECTED":
+      case "CONCAVE_CURVE_SELECTED":
         return setEditMode("CONCAVE_CURVE_DRAWING");
 
       case "CONVEX_CURVE_STARTED":
         return setEditMode("CONVEX_CURVE_DRAWING");
-      case "EV_CONVEX_CURVE_SELECTED":
+      case "CONVEX_CURVE_SELECTED":
         return setEditMode("CONVEX_CURVE_DRAWING");
 
       case "SQRT_STARTED":

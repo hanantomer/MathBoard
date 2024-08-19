@@ -58,7 +58,7 @@ watch(
   () => editModeStore.getEditMode() as EditMode,
   (newEditMode: EditMode, oldEditMode: any) => {
     if (newEditMode !== "TEXT_WRITING" && oldEditMode === "TEXT_WRITING") {
-      onLeave();
+      submitText();
     }
   },
   { immediate: true, deep: true },
@@ -85,7 +85,7 @@ watch(
     if (!textNotation) return;
     eventBus.bus.value.delete("EV_FREE_TEXT_SELECTED");
 
-    // fisrt click -> select
+    // first click -> select
     if (!editModeStore.isTextSelectedMode()) {
       editModeStore.setEditMode("TEXT_SELECTED");
       return;
@@ -146,21 +146,22 @@ function setInitialTextValue() {
   }
 }
 
-function onLeave() {
-  console.debug("onleave");
-  if (selectedNotation != null) {
-    console.debug("show text notation");
-    restoreTextNotation(selectedNotation.uuid);
-  } else {
-    console.debug("selected notation is null");
-  }
-  submitText();
-}
+// function onLeave() {
+//   console.debug("onleave");
+//   // if (selectedNotation != null) {
+//   //   console.debug("show text notation");
+//   //   restoreTextNotation(selectedNotation.uuid);
+//   // } else {
+//   //   console.debug("selected notation is null");
+//   // }
+//   submitText();
+// }
 
 function submitText() {
+  console.debug("submitText");
   editModeStore.setNextEditMode();
 
-  const textAreaEl = document.getElementById("textAreaEl");
+  const textAreaEl = document.getElementById("textAreaEl")!;
 
   textLeft.value = parseInt(textAreaEl.style.left.replace("px", ""));
   textWidth.value = parseInt(textAreaEl.style.width.replace("px", ""));
@@ -191,10 +192,10 @@ function submitText() {
     selectedNotation = Object.assign(selectedNotation, rectCoordinates);
 
     notationMutateHelper.updateNotation(selectedNotation);
+    restoreTextNotation(selectedNotation?.uuid);
   } else {
     notationMutateHelper.upsertTextNotation(textValue.value, rectCoordinates);
   }
-  console.debug("selected notation is:" + selectedNotation);
 }
 
 function hideTextNotation(uuid: string) {

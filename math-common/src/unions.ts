@@ -3,22 +3,24 @@ export const BoardTypeValues = ["LESSON","QUESTION","ANSWER"] as const;
 export type BoardType = typeof BoardTypeValues[number];
 
 export type BusEventType = 
-    "EV_QUESTION_SAVED"         |
-    "EV_EXPONENT_SUBMITED"      |
-    "EV_CELL_COLORIZED"         |
-    "EV_COPY"                      |
-    "EV_PASTE"                     |
-    "EV_KEYUP"                     | 
-    "EV_SVG_MOUSEUP"               |  
-    "EV_SVG_MOUSEDOWN"             | 
-    "EV_SVG_MOUSEMOVE"             |  
-    "EV_SELECTION_DONE"            | 
-    "EV_FREE_TEXT_SUBMITTED"       |
-    "EV_FREE_TEXT_SELECTED"        |
-    "EV_SLOPE_LINE_SELECTED"       |
-    "EV_CONCAVE_CURVE_SELECTED"    |
-    "EV_CONVEX_CURVE_SELECTED"     |
-    "EV_VERTICAL_LINE_SELECTED"    |
+    "EV_QUESTION_SAVED"           |
+    "EV_EXPONENT_SUBMITED"        |
+    "EV_CELL_COLORIZED"           |
+    "EV_COPY"                     |
+    "EV_PASTE"                    |
+    "EV_KEYUP"                    | 
+    "EV_SVG_MOUSEUP"              |  
+    "EV_SVG_MOUSEDOWN"            | 
+    "EV_SVG_MOUSEMOVE"            |  
+    "EV_SELECTION_DONE"           | 
+    "EV_FREE_TEXT_SUBMITTED"      |
+    "EV_FREE_TEXT_SELECTED"       |
+    "EV_EXPONENT_SUBMITTED"       |
+    "EV_EXPONENT_SELECTED"        |
+    "EV_SLOPE_LINE_SELECTED"      |
+    "EV_CONCAVE_CURVE_SELECTED"   |
+    "EV_CONVEX_CURVE_SELECTED"    |
+    "EV_VERTICAL_LINE_SELECTED"   |
     "EV_HORIZONTAL_LINE_SELECTED";
 
 export type NotationShape = 
@@ -78,9 +80,11 @@ export const NotationTypeShape = new Map<NotationType, NotationShape> ([
 export type EditMode = 
   "LESSONS_SELECTION"         | //  after click on lessons icon
   "QUESTIONS_SELECTION"       | //  after click on questions icon
-  "ANSWERS_SELECTION"          | //  after click on answers icon
+  "ANSWERS_SELECTION"         | //  after click on answers icon
   "SYMBOL"                    | // default mode
   "EXPONENT_STARTED"          | // exponent button pressed
+  "EXPONENT_WRITING"          | // user clicked a cell following exponent button pressed
+  "EXPONENT_SELECTED"         | // user clicked on existing exponent
   "TEXT_STARTED"              | // text button pressed
   "TEXT_SELECTED"             | // user clicked on existing text rectangle
   "TEXT_AREA_SELECTING"       | // user started selecting area following text button pressed
@@ -88,19 +92,19 @@ export type EditMode =
   "CELL_SELECTED"             | // user clicked on a cell or navigated via keys
   "HORIZONTAL_LINE_STARTED"   | // horizontal line button pressed
   "HORIZONTAL_LINE_DRAWING"   | // horizontal line drawing started
-  "EV_HORIZONTAL_LINE_SELECTED"  | // horizontal line selected
+  "HORIZONTAL_LINE_SELECTED"  | // horizontal line selected
   "VERTICAL_LINE_STARTED"     | // vertical line button pressed
   "VERTICAL_LINE_DRAWING"     | // vertical line drawing started
-  "EV_VERTICAL_LINE_SELECTED"    | // vertical line selected
+  "VERTICAL_LINE_SELECTED"    | // vertical line selected
   "SLOPE_LINE_STARTED"        | // slope line button pressed
   "SLOPE_LINE_DRAWING"        | // slope line drawing started
-  "EV_SLOPE_LINE_SELECTED"       | // slope line selected
-  "CONCAVE_CURVE_STARTED"      | // concave line button pressed
-  "CONCAVE_CURVE_DRAWING"      | // concave line drawing started
-  "EV_CONCAVE_CURVE_SELECTED"     | // concave line selected
-  "CONVEX_CURVE_STARTED"       | // convex line button pressed
-  "CONVEX_CURVE_DRAWING"       | // convex line drawing started
-  "EV_CONVEX_CURVE_SELECTED"      | // convex line selected
+  "SLOPE_LINE_SELECTED"       | // slope line selected
+  "CONCAVE_CURVE_STARTED"     | // concave line button pressed
+  "CONCAVE_CURVE_DRAWING"     | // concave line drawing started
+  "CONCAVE_CURVE_SELECTED"    | // concave line selected
+  "CONVEX_CURVE_STARTED"      | // convex line button pressed
+  "CONVEX_CURVE_DRAWING"      | // convex line drawing started
+  "CONVEX_CURVE_SELECTED"     | // convex line selected
   "SQRT_STARTED"              | // sqrt button pressed
   "SQRT_DRAWING"              | // sqrt drawing started
   "SQRT_SELECTED"             | // sqrt selected  
@@ -116,24 +120,25 @@ export type EditMode =
 
   export const EditModeNotationType = new Map<EditMode, NotationType> ([
     ["SYMBOL", "SYMBOL"],                  
-    ["EXPONENT_STARTED", "EXPONENT"],                 
+    ["EXPONENT_STARTED", "EXPONENT"],
+    ["EXPONENT_WRITING", "EXPONENT"],                                  
     ["TEXT_STARTED", "TEXT"],                     
     ["CELL_SELECTED", "SYMBOL"],            
     ["HORIZONTAL_LINE_STARTED", "HORIZONTALLINE"],  
     ["HORIZONTAL_LINE_DRAWING", "HORIZONTALLINE"],  
-    ["EV_HORIZONTAL_LINE_SELECTED", "HORIZONTALLINE"], 
+    ["HORIZONTAL_LINE_SELECTED", "HORIZONTALLINE"], 
     ["VERTICAL_LINE_STARTED", "VERTICALLINE"],    
     ["VERTICAL_LINE_DRAWING", "VERTICALLINE"],    
-    ["EV_VERTICAL_LINE_SELECTED", "VERTICALLINE"],   
+    ["VERTICAL_LINE_SELECTED", "VERTICALLINE"],   
     ["SLOPE_LINE_STARTED", "SLOPELINE"],       
     ["SLOPE_LINE_DRAWING", "SLOPELINE"],       
-    ["EV_SLOPE_LINE_SELECTED", "SLOPELINE"],      
+    ["SLOPE_LINE_SELECTED", "SLOPELINE"],      
     ["CONCAVE_CURVE_STARTED", "CONCAVECURVE"],       
     ["CONCAVE_CURVE_DRAWING", "CONCAVECURVE"],       
-    ["EV_CONCAVE_CURVE_SELECTED", "CONCAVECURVE"],      
+    ["CONCAVE_CURVE_SELECTED", "CONCAVECURVE"],      
     ["CONVEX_CURVE_STARTED", "CONVEXCURVE"],       
     ["CONVEX_CURVE_DRAWING", "CONVEXCURVE"],       
-    ["EV_CONVEX_CURVE_SELECTED", "CONVEXCURVE"],      
+    ["CONVEX_CURVE_SELECTED", "CONVEXCURVE"],      
     ["SQRT_STARTED", "SQRT"],                     
     ["SQRT_DRAWING", "SQRT"],             
     ["SQRT_SELECTED", "SQRT"],            
@@ -150,6 +155,7 @@ export type EditMode =
  export const EditModeCursorType = new Map<EditMode, CursorType> ([
   ["SYMBOL", "auto"],                  
   ["EXPONENT_STARTED", "auto"],                 
+  ["EXPONENT_WRITING", "auto"],                 
   ["TEXT_STARTED", "text"],                     
   ["TEXT_WRITING", "text"],
   ["CELL_SELECTED", "auto"],            

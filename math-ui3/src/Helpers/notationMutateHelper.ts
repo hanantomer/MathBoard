@@ -18,6 +18,7 @@ import {
   VerticalLineNotationCreationAttributes,
   SlopeLineNotationCreationAttributes,
   CurveNotationCreationAttributes,
+  ExponentNotationCreationAttributes,
 } from "common/baseTypes";
 
 import { matrixDimensions } from "common/globals";
@@ -449,6 +450,8 @@ export default function notationMutateHelper() {
     addNotation(notation);
   }
 
+
+
   function upsertLineNotation(
     notation:
       | HorizontalLineNotationCreationAttributes
@@ -781,14 +784,24 @@ export default function notationMutateHelper() {
     upsertRectNotation(notation);
   }
 
+  function upsertExponentNotation(base: string, exponent: string) {
+    let notation: ExponentNotationCreationAttributes = {
+      col: getSelectedCell()!.col,
+      row: getSelectedCell()!.row,
+      base: base,
+      exponent: exponent,
+      boardType: notationStore.getParent().type,
+      parentUUId: notationStore.getParent().uuid,
+      notationType: "EXPONENT",
+      user: userStore.getCurrentUser()!,
+    };
+
+    addNotation(notation);
+  }
+
   function upsertSymbolNotation(value: string) {
     const symbolCell = getSelectedCell();
     if (!symbolCell) return;
-
-    const notationType: NotationType =
-      editModeStore.getEditMode() === "EXPONENT_STARTED"
-        ? "EXPONENT"
-        : "SYMBOL";
 
     let notation: PointNotationCreationAttributes = {
       col: symbolCell.col,
@@ -796,7 +809,7 @@ export default function notationMutateHelper() {
       value: value,
       boardType: notationStore.getParent().type,
       parentUUId: notationStore.getParent().uuid,
-      notationType: notationType,
+      notationType: "SYMBOL",
       user: userStore.getCurrentUser()!,
     };
 
@@ -942,32 +955,33 @@ export default function notationMutateHelper() {
   }
 
   async function updateNotation(notation: NotationAttributes) {
-    await dbHelper.updateNotation(notation);
     notationStore.addNotation(notation);
+    await dbHelper.updateNotation(notation);
     userOutgoingOperations.syncOutgoingUpdateNotation(notation);
   }
 
   return {
-    selectNotation,
-    selectNotationByCoordinates,
-    isNotationInQuestionArea,
-    isCellInQuestionArea,
-    upsertSymbolNotation,
-    addMarkNotation,
-    addImageNotation,
-    upsertTextNotation,
+    addCurveNotation,
     addHorizontalLineNotation,
+    addImageNotation,
+    addMarkNotation,
     addVerticalLineNotation,
     addSlopeLineNotation,
-    addCurveNotation,
+    cloneNotation,
     deleteSelectedNotations,
     moveSelectedNotations,
-    saveMovedNotations,
+    isNotationInQuestionArea,
+    isCellInQuestionArea,
     updateHorizontalLineNotation,
     updateVerticalLineNotation,
     updateSlopeLineNotation,
     updateCurveNotation,
     updateNotation,
-    cloneNotation,
+    upsertSymbolNotation,
+    upsertTextNotation,
+    upsertExponentNotation,
+    selectNotation,
+    selectNotationByCoordinates,
+    saveMovedNotations,
   };
 }
