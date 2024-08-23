@@ -300,30 +300,6 @@ export default function useHtmlMatrixHelper() {
     return `<p style='color:${color};font-weight:${fontWeight}; position: absolute;top: 50%;transform: translateY(-50%);left:20%;translateX(-20%);font-size:1.1em'>${n1.value}</p>`;
   }
 
-  // function getFreeTextRectWidth(text: string) {
-  //   const textArr = text.split("\n");
-
-  //   const maxWidth = Math.max(
-  //     ...textArr.map((t) =>
-  //       parseFloat((<any>window).textMeasurementCtx.measureText(t).width),
-  //     ),
-  //   );
-
-  //   return Math.min(
-  //     maxTextWidth,
-  //     maxWidth / notationStore.getCellHorizontalWidth(),
-  //   );
-  // }
-
-  // function getFreeTextRectHeight(text: string) {
-  //   const fontSize = getDefaultFontSize();
-  //   const margin = 5;
-  //   return (
-  //     ((fontSize + margin) * text.split(/\r*\n/).length) /
-  //     notationStore.getCellVerticalHeight()
-  //   );
-  // }
-
   return {
     mergeHtmlNotations,
   };

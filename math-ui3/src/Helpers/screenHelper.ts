@@ -53,6 +53,23 @@ export default function screenHelper() {
     return { col: clickedCellCol, row: clickedCellRow };
   }
 
+  function getClickedCellTopLeftCoordinates(
+    svgId: string,
+    dotCoordinates: DotCoordinates,
+  ): DotCoordinates {
+
+    const cellWidth = cellStore.getCellHorizontalWidth() + cellSpace;
+    const cellHeight = cellStore.getCellVerticalHeight() + cellSpace;
+
+    const clickedCell = getClickedCell(svgId, dotCoordinates);
+
+    return {
+      x: clickedCell.col * cellWidth + getBoundingRect(svgId)!.left - cellSpace,
+      y: clickedCell.row * cellHeight + getBoundingRect(svgId)!.top - cellSpace,
+    };
+  }
+
+
   function getRectAttributes(rectCoordinates: RectCoordinates): RectAttributes {
     console.log(
       "getRectAttributes rectCoordinates:" + JSON.stringify(rectCoordinates),
@@ -176,16 +193,15 @@ export default function screenHelper() {
 
     if (!notationsAtCell?.length) return null;
 
-    return notationClosestToPoint(svgId, notationsAtCell, DotCoordinates);
+    return getClosestNotationToPoint(svgId, notationsAtCell, DotCoordinates);
   }
 
   // loop over notationsAtCell array and return the one closest to DotCoordinates
-  function notationClosestToPoint(
+  function getClosestNotationToPoint(
     svgId: string,
     notationsAtCell: NotationAttributes[],
     DotCoordinates: DotCoordinates,
   ): NotationAttributes | null {
-
     let notationDistanceList: NotationDistance[] = [];
 
     for (let i = 0; i < notationsAtCell.length; i++) {
@@ -280,23 +296,6 @@ export default function screenHelper() {
     return notationDistanceList.reduce((min, notation) =>
       min.distance < notation.distance ? min : notation,
     ).notation;
-  }
-
-  function notationIsCloseToClickedPoint(
-    notationType: NotationType,
-    distance: number,
-  ) {
-    switch (NotationTypeShape.get(notationType)) {
-      case "HORIZONTAL_LINE":
-      case "VERTICAL_LINE":
-      case "SLOPE_LINE":
-        return distance <= minDistanceForSelection;
-      case "CONCAVE_CURVE":
-      case "CONVEX_CURVE":
-        return distance <= minDistanceForSelection;
-      default:
-        return distance <= minDistanceForSelection;
-    }
   }
 
   // calc the minimum distnce of either x dimension or y dimension between 2 points.
@@ -395,23 +394,6 @@ export default function screenHelper() {
 
     return Math.sqrt(a + b);
   }
-  /*
-  function getClickedPosDistanceFromConcaveCurve(
-    svgId: string,
-    DotCoordinates: DotCoordinates,
-    n: CurveNotationAttributes,
-  ): number {
-    const boundingRect = document
-      .getElementById(svgId)
-      ?.getBoundingClientRect(); /// TODO move to function
-
-    const x = DotCoordinates.x - boundingRect!.left;
-
-    const y = DotCoordinates.y - boundingRect!.top;
-
-    // aoutline a virtual triangle from curve edges and control point
-  }
-  */
 
   function getClickedPosDistanceFromVerticalLine(
     svgId: string,
@@ -482,11 +464,13 @@ export default function screenHelper() {
     return document.getElementById(svgId)?.getBoundingClientRect();
   }
 
+
   return {
     getNotationAtDotCoordinates,
     getClickedCell,
     getRectCoordinatesOccupiedCells,
     getSlopeLineAttributesByCoordinates,
     getRectAttributes,
+    getClickedCellTopLeftCoordinates,
   };
 }

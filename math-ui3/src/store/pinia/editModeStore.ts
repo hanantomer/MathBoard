@@ -177,10 +177,19 @@ export const useEditModeStore = defineStore("editMode", () => {
     return editMode.value === "TEXT_WRITING";
   }
 
+  function isExponentStartedMode() {
+    return editMode.value === "EXPONENT_STARTED";
+  }
+
+  function isExponentWritingMode() {
+    return editMode.value === "EXPONENT_WRITING";
+  }
+
   function isExponentMode() {
     return (
       editMode.value === "EXPONENT_STARTED" ||
-      editMode.value === "EXPONENT_WRITING"
+      editMode.value === "EXPONENT_WRITING" ||
+      editMode.value === "EXPONENT_SELECTED"
     );
   }
 
@@ -271,6 +280,9 @@ export const useEditModeStore = defineStore("editMode", () => {
     getDefaultEditMode,
     getNotationTypeByEditMode,
     isAreaSelectionOrMovingMode,
+    isExponentMode,
+    isExponentStartedMode,
+    isExponentWritingMode,
     isSelectionMode,
     isLineMode,
     isConcaveCurveMode,
@@ -295,7 +307,6 @@ export const useEditModeStore = defineStore("editMode", () => {
     isSelectedMode,
     isSqrtMode,
     isSqrtEditMode,
-    isExponentMode,
     isColorisingMode,
     isDefaultEditMode,
     isTextWritingMode,

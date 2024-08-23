@@ -1,22 +1,22 @@
 <template>
   <v-container
-    v-show="show"
     class="exponentEditor"
+    v-show="show"
     v-bind:style="{
       left: exponentLeft + 'px',
       top: exponentTop + 'px',
     }"
   >
-    <v-row style="height: 50px" no-gutters>
-      <v-col align-self="start">
-        <v-sheet class="pa-2 ma-2">
-          <v-text-Field model="baseValue"></v-text-Field>
-        </v-sheet>
+    <v-row no-gutters>
+      <v-col>
+        <input
+          id="exponentInput"
+          class="exponentInput baseInput"
+          placeholder="base"
+        />
       </v-col>
-      <v-col align-self="end">
-        <v-sheet class="pa-2 ma-2">
-          <v-text-Field model="exponentValue"></v-text-Field>
-        </v-sheet>
+      <v-col>
+        <input id="baseInput" class="exponentInput" placeholder="exp" />
       </v-col>
     </v-row>
   </v-container>
@@ -29,14 +29,14 @@ import { ExponentNotationAttributes } from "../../../math-common/build/baseTypes
 import { EditMode } from "../../../math-common/src/unions";
 import useNotationMutateHelper from "../helpers/notationMutateHelper";
 import useEventBus from "../helpers/eventBusHelper";
+import useScreenHelper from "../helpers/screenHelper";
 
 const notationMutateHelper = useNotationMutateHelper();
-let exponentValue = ref("");
-let baseValue = ref("");
 
 const eventBus = useEventBus();
 const emit = defineEmits(["hide"]);
 const editModeStore = useEditModeStore();
+const screenHelper = useScreenHelper();
 
 const show = computed(() => editModeStore.getEditMode() === "EXPONENT_WRITING");
 
@@ -44,6 +44,19 @@ let selectedNotation: ExponentNotationAttributes | null = null;
 
 let exponentLeft = ref(0);
 let exponentTop = ref(0);
+
+const props = defineProps({
+  svgId: { type: String, default: "" },
+});
+
+watch(
+  () => eventBus.bus.value.get("EV_SVG_MOUSEDOWN"),
+  (e: MouseEvent) => {
+    if (!e) return;
+    handleMouseDown(e);
+  },
+  { immediate: true },
+);
 
 watch(
   () => editModeStore.getEditMode() as EditMode,
@@ -76,6 +89,29 @@ watch(
   },
 );
 
+function handleMouseDown(e: MouseEvent) {
+  if (e.buttons !== 1) {
+    return;
+  }
+
+  if (editModeStore.isExponentStartedMode()) {
+    startNewExponent(e);
+  }
+}
+
+function startNewExponent(e: MouseEvent) {
+  editModeStore.setNextEditMode();
+  document.getElementById("baseInput")?.setAttribute("value", "");
+  document.getElementById("exponentInput")?.setAttribute("value", "");
+  const clickedCoordinates = screenHelper.getClickedCellTopLeftCoordinates(
+    props.svgId,
+    { x: e.clientX, y: e.clientY },
+  );
+
+  exponentLeft.value = clickedCoordinates.x;
+  exponentTop.value = clickedCoordinates.y;
+}
+
 function editSelectedExponentNotation(
   exponentNotation: ExponentNotationAttributes,
 ) {
@@ -87,33 +123,65 @@ function editSelectedExponentNotation(
 }
 
 function setInitialExponentValue() {
-    baseValue.value = selectedNotation?.base!;
-    exponentValue.value = selectedNotation?.exponent!;
+  document
+    .getElementById("baseInput")
+    ?.setAttribute("value", selectedNotation?.base!);
+  document
+    .getElementById("exponentInput")
+    ?.setAttribute("value", selectedNotation?.exponent!);
 }
-
 
 function submitExponent() {
   editModeStore.setNextEditMode();
 
+  if (
+    !document.getElementById("baseInput")?.getAttribute("value") ||
+    !document.getElementById("exponentInput")?.getAttribute("value")
+  )
+    return;
+
   if (selectedNotation) {
-    selectedNotation.base = baseValue.value;
-    selectedNotation.exponent = exponentValue.value;
+    selectedNotation.base = document
+      .getElementById("baseInput")
+      ?.getAttribute("value")!;
+    selectedNotation.exponent = document
+      .getElementById("exponentInput")
+      ?.getAttribute("value")!;
 
     notationMutateHelper.updateNotation(selectedNotation);
   } else {
-    notationMutateHelper.upsertExponentNotation(baseValue.value, exponentValue.value);
+    notationMutateHelper.upsertExponentNotation(
+      document.getElementById("baseInput")?.getAttribute("value")!,
+      document.getElementById("exponentInput")?.getAttribute("value")!,
+    );
   }
 }
 </script>
 <style>
-textarea {
-  resize: both;
-}
 .exponentEditor {
+  border: 1px darkblue solid;
   background-color: lightgray;
   position: absolute;
-  padding: 5px;
+  padding: 1px;
+  top: 500px;
+  left: 500px;
   box-sizing: border-box;
+  width: 75px;
+  height: 4%;
+}
+.exponentInput {
+  border: 1px darkblue solid;
+  padding: 1px;
+  height: 25px;
+  margin: 1px;
+  width: 30px;
+  font-size: 11px;
+  background-color: transparent;
+}
+.baseInput {
+  width: 35px;
+  font-size: 14px;
+  margin-top: 9px;
 }
 .hidden {
   display: none;

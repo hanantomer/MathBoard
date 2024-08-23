@@ -1,5 +1,4 @@
 <template>
-  <!-- <loginDialog :dialog="showLoginDialog" @register="register"></loginDialog> -->
   <loginDialog @register="register"></loginDialog>
   <registerDialog @registered="login"></registerDialog>
   <v-main>

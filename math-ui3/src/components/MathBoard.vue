@@ -1,5 +1,6 @@
 <template>
-  <freeText :svgId="svgId"></freeText>
+  <freeTextEditor :svgId="svgId"></freeTextEditor>
+  <exponentEditor :svgId="svgId"></exponentEditor>
   <areaSelector :svgId="svgId"></areaSelector>
   <v-row align="start" class="fill-heigh" no-gutters>
     <div style="display: flex; flex-direction: row">
@@ -36,7 +37,8 @@
 </template>
 
 <script setup lang="ts">
-import freeText from "./FreeText.vue";
+import freeTextEditor from "./FreeTextEditor.vue";
+import exponentEditor from "./ExponentEditor.vue";
 import useNotationLoadingHelper from "../helpers/notationLoadingHelper";
 import UseMatrixHelper from "../helpers/matrixHelper";
 import UseMatrixCellHelper from "../helpers/matrixCellHelper";
@@ -252,7 +254,8 @@ function handleMouseDown(e: MouseEvent) {
     editModeStore.isLineMode() ||
     editModeStore.isCurveMode() ||
     editModeStore.isColorisingMode() ||
-    editModeStore.isTextStartedMode()
+    editModeStore.isTextStartedMode() ||
+    editModeStore.isExponentStartedMode() 
   ) {
     return;
   }
@@ -271,6 +274,7 @@ function handleMouseDown(e: MouseEvent) {
     props.svgId,
     position,
   );
+
   if (!notation || NotationTypeShape.get(notation?.notationType) === "POINT") {
     selectionHelper.selectCell(props.svgId, position);
   }

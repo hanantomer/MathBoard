@@ -1,7 +1,6 @@
 <template>
   <v-dialog v-model="show" max-width="500" persistent>
     <v-card height="400">
-      <!-- <v-card-title class="text-center" primary-title>Log In</v-card-title> -->
       <v-card-text>
         <v-form ref="loginForm" v-model="valid" lazy-validation>
           <v-row>
@@ -111,15 +110,6 @@ const props = defineProps({
 
 const emit = defineEmits(["register"]);
 
-// watch(
-//   () => props.dialog,
-//   (val: boolean) => {
-//     if (val) show.value = true;
-//     else show.value = false;
-//   },
-//   { flush: "pre", immediate: true },
-// );
-
 watch(
   route,
   (params) => {
@@ -136,18 +126,6 @@ function register() {
   emit("register", redirectAfterLogin);
 }
 
-//mounted() {
-//    if (!show) show = true;
-/*    gapi.signin2.render("google-signin-btn", {
-      scope: "email",
-      longtitle: true,
-      theme: "dark",
-      onsuccess: googleOnSuccess,
-    });*/
-// if (dialog) {
-//   show = true;
-// }
-//},
 function googleOnSuccess() {
   show.value = false;
   cookies.remove("access_token");

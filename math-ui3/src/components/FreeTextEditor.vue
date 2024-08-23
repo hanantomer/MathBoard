@@ -29,7 +29,6 @@ import useEventBus from "../helpers/eventBusHelper";
 const notationMutateHelper = useNotationMutateHelper();
 let textValue = ref("");
 
-const notationStore = useNotationStore();
 const cellStore = useCellStore();
 const eventBus = useEventBus();
 const emit = defineEmits(["hide"]);
@@ -146,16 +145,6 @@ function setInitialTextValue() {
   }
 }
 
-// function onLeave() {
-//   console.debug("onleave");
-//   // if (selectedNotation != null) {
-//   //   console.debug("show text notation");
-//   //   restoreTextNotation(selectedNotation.uuid);
-//   // } else {
-//   //   console.debug("selected notation is null");
-//   // }
-//   submitText();
-// }
 
 function submitText() {
   console.debug("submitText");
@@ -212,6 +201,7 @@ function restoreTextNotation(uuid: string) {
     .querySelector<HTMLElement>(`foreignObject[uuid="${uuid}"]`)!
     .classList.remove("hidden");
 }
+
 </script>
 <style>
 textarea {

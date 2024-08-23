@@ -185,7 +185,7 @@ const showAnswers = computed(() => {
 const isTeacher = computed(() => userStore.isTeacher());
 
 function showLoginDialog() {
-  router.push("/login");
+  //router.push("/login");
 }
 
 function signOut() {

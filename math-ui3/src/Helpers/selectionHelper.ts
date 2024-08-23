@@ -23,7 +23,7 @@ export default function selectionHelper() {
     svgId: string,
     RectCoordinates: RectCoordinates,
   ) {
-    // must be initlized here to prevent circular refernce
+    // must be initialized here to prevent circular refernce
     const notationStore = useNotationStore();
     const areaCells = screenHelper.getRectCoordinatesOccupiedCells(
       svgId,

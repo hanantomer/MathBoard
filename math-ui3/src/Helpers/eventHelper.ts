@@ -194,6 +194,8 @@ export default function eventHelper() {
 
     if (editModeStore.isTextWritingMode()) return;
 
+    if (editModeStore.isExponentWritingMode()) return;
+
     switch (classifyKeyCode(code)) {
       case "DELETION": {
         return handleDeletionKey(code);
@@ -223,6 +225,8 @@ export default function eventHelper() {
   function handleMovementKey(key: string) {
     // handeled by keyUp in AreaSelector
     if (editModeStore.getEditMode() === "AREA_SELECTED") return;
+    if (editModeStore.getEditMode() === "EXPONENT_SELECTED") return;
+    if (editModeStore.getEditMode() === "EXPONENT_WRITING") return;
 
     if (key === "ArrowLeft" || key === "Backspace") {
       matrixCellHelper.setNextCell(-1, 0);

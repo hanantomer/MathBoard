@@ -205,7 +205,8 @@ function handleMouseMove(e: MouseEvent) {
     editModeStore.isSqrtMode() ||
     editModeStore.isCurveMode() ||
     editModeStore.isColorisingMode() ||
-    editModeStore.isTextWritingMode()
+    editModeStore.isTextWritingMode() ||
+    editModeStore.isExponentMode()
   ) {
     return;
   }
