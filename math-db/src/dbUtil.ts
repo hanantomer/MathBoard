@@ -6,7 +6,7 @@ import Answer  from "./models/answer/answer.model";
 import User from "./models/user.model";
 import db from "./models/index";
 
-import {  HorizontalLineNotationAttributes, NotationAttributes, PointNotationAttributes, SlopeLineNotationAttributes, VerticalLineNotationAttributes } from "../../math-common/src/baseTypes";
+import {  ExponentNotationAttributes, HorizontalLineNotationAttributes, NotationAttributes, PointNotationAttributes, SlopeLineNotationAttributes, VerticalLineNotationAttributes } from "../../math-common/src/baseTypes";
 import { UserAttributes, StudentLessonCreationAttributes} from "../../math-common/build/userTypes";
 import { LessonCreationAttributes } from "../../math-common/src/lessonTypes";
 import { QuestionCreationAttributes } from "../../math-common/build/questionTypes";
@@ -388,7 +388,16 @@ export default function dbUtil() {
 
     function validateModel(model: NotationAttributes) : boolean {
         switch (model.notationType) {
-            case "EXPONENT":
+            case "EXPONENT":{
+                const m = model as ExponentNotationAttributes;
+                return (
+                    m.col >= 0 &&
+                    m.row >= 0 &&
+                    m.base.length > 0 &&
+                    m.exponent.length > 0
+                );
+            }
+
             case "SYMBOL": {
                 const m = model as PointNotationAttributes;
                 return m.col >= 0 && m.row >= 0 && m.value.length > 0;

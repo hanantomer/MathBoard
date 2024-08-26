@@ -50,5 +50,9 @@ export default class QuestionExponent extends Model<
 
     @AllowNull(false)
     @Column({ type: DataType.INTEGER })
-    value!: string;
+    base!: string;
+
+    @AllowNull(false)
+    @Column({ type: DataType.INTEGER })
+    exponent!: string;
 }

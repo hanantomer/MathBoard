@@ -13,10 +13,16 @@
           id="exponentInput"
           class="exponentInput baseInput"
           placeholder="base"
+          autocomplete="off"
         />
       </v-col>
       <v-col>
-        <input id="baseInput" class="exponentInput" placeholder="exp" />
+        <input
+          id="baseInput"
+          class="exponentInput"
+          placeholder="exp"
+          autocomplete="off"
+        />
       </v-col>
     </v-row>
   </v-container>
@@ -25,6 +31,7 @@
 <script setup lang="ts">
 import { computed, watch, ref } from "vue";
 import { useEditModeStore } from "../store/pinia/editModeStore";
+import { useCellStore } from "../store/pinia/cellStore";
 import { ExponentNotationAttributes } from "../../../math-common/build/baseTypes";
 import { EditMode } from "../../../math-common/src/unions";
 import useNotationMutateHelper from "../helpers/notationMutateHelper";
@@ -36,6 +43,7 @@ const notationMutateHelper = useNotationMutateHelper();
 const eventBus = useEventBus();
 const emit = defineEmits(["hide"]);
 const editModeStore = useEditModeStore();
+const cellStore = useCellStore();
 const screenHelper = useScreenHelper();
 
 const show = computed(() => editModeStore.getEditMode() === "EXPONENT_WRITING");
@@ -96,13 +104,25 @@ function handleMouseDown(e: MouseEvent) {
 
   if (editModeStore.isExponentStartedMode()) {
     startNewExponent(e);
+    return;
+  }
+
+  if (editModeStore.isExponentWritingMode()) {
+    editModeStore.setNextEditMode();
+    return;
   }
 }
 
 function startNewExponent(e: MouseEvent) {
+  let clickedCell = screenHelper.getClickedCell(props.svgId, {
+    x: e.clientX,
+    y: e.clientY,
+  });
+  cellStore.selectCell(clickedCell!);
+
   editModeStore.setNextEditMode();
-  document.getElementById("baseInput")?.setAttribute("value", "");
-  document.getElementById("exponentInput")?.setAttribute("value", "");
+  (document.getElementById("exponentInput") as HTMLInputElement).value = "";
+  (document.getElementById("baseInput") as HTMLInputElement).value = "";
   const clickedCoordinates = screenHelper.getClickedCellTopLeftCoordinates(
     props.svgId,
     { x: e.clientX, y: e.clientY },
@@ -123,36 +143,34 @@ function editSelectedExponentNotation(
 }
 
 function setInitialExponentValue() {
-  document
-    .getElementById("baseInput")
-    ?.setAttribute("value", selectedNotation?.base!);
-  document
-    .getElementById("exponentInput")
-    ?.setAttribute("value", selectedNotation?.exponent!);
+  (document.getElementById("baseInput") as HTMLInputElement).value =
+    selectedNotation?.base!;
+  (document.getElementById("exponentInput") as HTMLInputElement).value =
+    selectedNotation?.exponent!;
 }
 
 function submitExponent() {
   editModeStore.setNextEditMode();
 
   if (
-    !document.getElementById("baseInput")?.getAttribute("value") ||
-    !document.getElementById("exponentInput")?.getAttribute("value")
+    !(document.getElementById("baseInput") as HTMLInputElement).value ||
+    !(document.getElementById("exponentInput") as HTMLInputElement).value
   )
     return;
 
   if (selectedNotation) {
-    selectedNotation.base = document
-      .getElementById("baseInput")
-      ?.getAttribute("value")!;
-    selectedNotation.exponent = document
-      .getElementById("exponentInput")
-      ?.getAttribute("value")!;
+    selectedNotation.base = (
+      document.getElementById("baseInput") as HTMLInputElement
+    ).value;
+    selectedNotation.exponent = (
+      document.getElementById("exponentInput") as HTMLInputElement
+    ).value;
 
     notationMutateHelper.updateNotation(selectedNotation);
   } else {
     notationMutateHelper.upsertExponentNotation(
-      document.getElementById("baseInput")?.getAttribute("value")!,
-      document.getElementById("exponentInput")?.getAttribute("value")!,
+      (document.getElementById("baseInput") as HTMLInputElement).value,
+      (document.getElementById("exponentInput") as HTMLInputElement).value,
     );
   }
 }

@@ -1,5 +1,6 @@
 import {
   PointNotationAttributes,
+  ExponentNotationAttributes,
   HorizontalLineNotationAttributes,
   VerticalLineNotationAttributes,
   SlopeLineNotationAttributes,
@@ -32,6 +33,19 @@ export default function notationCellOccupationHelper() {
     );
 
     matrix[notation.col][notation.row] = doRemove ? null : notation.uuid;
+  }
+
+  function updateExponentOccupationMatrix(
+    matrix: any,
+    notation: ExponentNotationAttributes,
+    doRemove: boolean,
+  ) {
+    if (!validateRowAndCol(notation.col, notation.row)) return;
+
+    // occupy base cells plus one cell for exponent
+    for (let i = 0; i <= notation.base.toString().length; i++) {
+      matrix[notation.col + i][notation.row] = doRemove ? null : notation.uuid;
+    }
   }
 
   // update single cell
@@ -212,6 +226,7 @@ export default function notationCellOccupationHelper() {
 
   return {
     updatePointOccupationMatrix,
+    updateExponentOccupationMatrix,
     updateHorizontalLineOccupationMatrix,
     updateVerticalLineOccupationMatrix,
     updateSlopeLineOccupationMatrix,

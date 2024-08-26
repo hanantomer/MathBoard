@@ -126,10 +126,12 @@ function register() {
   emit("register", redirectAfterLogin);
 }
 
+/*
 function googleOnSuccess() {
   show.value = false;
   cookies.remove("access_token");
 }
+  */
 
 async function validateLogin() {
   if (!email) return;

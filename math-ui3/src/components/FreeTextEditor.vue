@@ -16,7 +16,6 @@
 
 <script setup lang="ts">
 import { computed, watch, ref } from "vue";
-import { useNotationStore } from "../store/pinia/notationStore";
 import { useCellStore } from "../store/pinia/cellStore";
 import { useEditModeStore } from "../store/pinia/editModeStore";
 import { RectNotationAttributes } from "../../../math-common/build/baseTypes";

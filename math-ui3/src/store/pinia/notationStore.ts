@@ -7,6 +7,7 @@ import {
   NotationAttributes,
   CellAttributes,
   PointNotationAttributes,
+  ExponentNotationAttributes,
   RectNotationAttributes,
   HorizontalLineNotationAttributes,
   VerticalLineNotationAttributes,
@@ -142,11 +143,20 @@ export const useNotationStore = defineStore("notation", () => {
 
     switch (NotationTypeShape.get(notation.notationType)) {
       case "POINT":
-        notationCellOccupationHelper.updatePointOccupationMatrix(
-          cellPointNotationOccupationMatrix,
-          notation as PointNotationAttributes,
-          false,
-        );
+        if (notation.notationType === "EXPONENT") {
+          notationCellOccupationHelper.updateExponentOccupationMatrix(
+            cellPointNotationOccupationMatrix,
+            notation as ExponentNotationAttributes,
+            false,
+          );
+        }
+        else {
+          notationCellOccupationHelper.updatePointOccupationMatrix(
+            cellPointNotationOccupationMatrix,
+            notation as PointNotationAttributes,
+            false,
+          );
+        }
         break;
 
       case "HORIZONTAL_LINE":

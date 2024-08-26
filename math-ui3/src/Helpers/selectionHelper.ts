@@ -44,15 +44,6 @@ export default function selectionHelper() {
       dotCoordinates,
     );
 
-    console.debug(
-      "notation:" +
-        notation?.notationType +
-        ", selected at x:" +
-        dotCoordinates.x +
-        ",y:" +
-        dotCoordinates.y,
-    );
-
     if (!notation) return null;
 
     switch (NotationTypeShape.get(notation!.notationType)) {

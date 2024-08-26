@@ -3,6 +3,7 @@ import {
   NotationAttributes,
   HorizontalLineNotationAttributes,
   PointNotationAttributes,
+  ExponentNotationAttributes,
   RectNotationAttributes,
   CellAttributes,
   RectAttributes,
@@ -203,17 +204,20 @@ export default function useHtmlMatrixHelper() {
 
     switch (NotationTypeShape.get(n.notationType)) {
       case "POINT": {
-        return pointNotationWidth(n as PointNotationAttributes);
+        if (n.notationType === "EXPONENT") {
+          return (
+            ((n as ExponentNotationAttributes).base.toString().length +
+              1) /*1 cell for exponent*/ *
+            cellStore.getCellHorizontalWidth()
+          );
+        }
+        return cellStore.getCellHorizontalWidth();
       }
       case "RECT": {
         return rectNotationWidth(n as RectNotationAttributes);
       }
     }
     return 0;
-  }
-
-  function pointNotationWidth(n: CellAttributes): number {
-    return cellStore.getCellHorizontalWidth();
   }
 
   function rectNotationWidth(n: RectAttributes): number {
@@ -292,12 +296,32 @@ export default function useHtmlMatrixHelper() {
     }
 
     if (n.notationType === "EXPONENT") {
-      let n1 = n as PointNotationAttributes;
-      return `</span><span style='position: absolute;top: 10%;transform: translateY(-10%);left:30%;translateX(-10%);color:${color};font-weight:${fontWeight};font-size:0.75em'>${n1.value}</span>`;
+      const n1 = n as ExponentNotationAttributes;
+      const baseStr = n1.base.toString();
+      let baseHtml = "";
+
+      for (let i = 0; i < baseStr.length; i++) {
+        baseHtml += `<p style='color:${color};font-weight:${fontWeight}; position: absolute;
+          top:23%;
+          transform: translateX(${
+            i * (cellStore.getCellHorizontalWidth() + cellSpace)
+          }px);
+          font-size:1.1em'>${baseStr.charAt(i)}</p>`;
+      }
+
+      const exponentHtml = `<p style='color:${color};font-weight:${fontWeight}; position: absolute;
+      transform:translateY(-20%);
+      transform:translateX(${
+        baseStr.length * (cellStore.getCellHorizontalWidth() + cellSpace) - 10
+      }px);
+      font-size:0.7em'>${n1.exponent}</p>`;
+
+      return baseHtml + exponentHtml;
     }
 
     let n1 = n as PointNotationAttributes;
-    return `<p style='color:${color};font-weight:${fontWeight}; position: absolute;top: 50%;transform: translateY(-50%);left:20%;translateX(-20%);font-size:1.1em'>${n1.value}</p>`;
+    return `<p style='color:${color};font-weight:${fontWeight}; position: absolute;top: 50%;transform:
+    translateY(-50%);left:20%;font-size:1.1em'>${n1.value}</p>`;
   }
 
   return {

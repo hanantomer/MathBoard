@@ -255,7 +255,8 @@ function handleMouseDown(e: MouseEvent) {
     editModeStore.isCurveMode() ||
     editModeStore.isColorisingMode() ||
     editModeStore.isTextStartedMode() ||
-    editModeStore.isExponentStartedMode() 
+    editModeStore.isExponentStartedMode() ||
+    editModeStore.isExponentWritingMode()
   ) {
     return;
   }

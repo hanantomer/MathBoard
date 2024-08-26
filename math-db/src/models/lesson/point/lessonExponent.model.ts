@@ -12,7 +12,7 @@ export default class LessonExponent extends Model<
     LessonExponentAttributes,
     LessonExponentCreationAttributes
 > {
-    notationType = "EXPONENT_STARTED";
+    notationType = "EXPONENT";
     boardType = "LESSON";
 
     @AllowNull(false)
@@ -49,5 +49,9 @@ export default class LessonExponent extends Model<
 
     @AllowNull(false)
     @Column({ type: DataType.INTEGER })
-    value!: string;
+    base!: string;
+
+    @AllowNull(false)
+    @Column({ type: DataType.INTEGER })
+    exponent!: string;
 }
