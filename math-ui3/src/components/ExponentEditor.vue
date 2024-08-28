@@ -7,24 +7,21 @@
       top: exponentTop + 'px',
     }"
   >
-    <v-row no-gutters>
-      <v-col>
-        <input
-          id="exponentInput"
-          class="exponentInput baseInput"
-          placeholder="base"
-          autocomplete="off"
-        />
-      </v-col>
-      <v-col>
-        <input
-          id="baseInput"
-          class="exponentInput"
-          placeholder="exp"
-          autocomplete="off"
-        />
-      </v-col>
-    </v-row>
+    <input
+      maxlength="4"
+      autofocus
+      id="baseInput"
+      class="baseInput"
+      placeholder="base"
+      autocomplete="off"
+    />
+    <input
+      maxlength="4"
+      id="exponentInput"
+      class="exponentInput"
+      placeholder="exp"
+      autocomplete="off"
+    />
   </v-container>
 </template>
 
@@ -56,6 +53,14 @@ let exponentTop = ref(0);
 const props = defineProps({
   svgId: { type: String, default: "" },
 });
+
+// emitted by eventHelper
+watch(
+  () => eventBus.bus.value.get("EV_KEYUP"),
+  async (e: KeyboardEvent) => {
+    handleKeyUp(e);
+  },
+);
 
 watch(
   () => eventBus.bus.value.get("EV_SVG_MOUSEDOWN"),
@@ -97,6 +102,13 @@ watch(
   },
 );
 
+function handleKeyUp(e: KeyboardEvent) {
+  const { code } = e;
+  if (code === "Enter" && editModeStore.getEditMode() == "EXPONENT_WRITING") {
+    editModeStore.setNextEditMode();
+  }
+}
+
 function handleMouseDown(e: MouseEvent) {
   if (e.buttons !== 1) {
     return;
@@ -130,6 +142,8 @@ function startNewExponent(e: MouseEvent) {
 
   exponentLeft.value = clickedCoordinates.x;
   exponentTop.value = clickedCoordinates.y;
+
+  setTimeout(`document.getElementById("baseInput")?.focus();`, 0);
 }
 
 function editSelectedExponentNotation(
@@ -181,25 +195,28 @@ function submitExponent() {
   background-color: lightgray;
   position: absolute;
   padding: 1px;
-  top: 500px;
-  left: 500px;
   box-sizing: border-box;
   width: 75px;
-  height: 4%;
-}
-.exponentInput {
-  border: 1px darkblue solid;
-  padding: 1px;
-  height: 25px;
-  margin: 1px;
-  width: 30px;
-  font-size: 11px;
-  background-color: transparent;
+  height: 32px;
 }
 .baseInput {
+  border: 1px darkblue solid;
+  height: 22px;
   width: 35px;
   font-size: 14px;
-  margin-top: 9px;
+  margin-top: 5px;
+  padding: 2px;
+}
+.exponentInput {
+  position: relative;
+  bottom: 8px;
+  border: 1px darkblue solid;
+  height: 18px;
+  width: 35px;
+  font-size: 11px;
+  margin-top: -0px;
+  margin-left: 1px;
+  padding: 2px;
 }
 .hidden {
   display: none;

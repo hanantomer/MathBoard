@@ -450,8 +450,6 @@ export default function notationMutateHelper() {
     addNotation(notation);
   }
 
-
-
   function upsertLineNotation(
     notation:
       | HorizontalLineNotationCreationAttributes
@@ -797,6 +795,7 @@ export default function notationMutateHelper() {
     };
 
     addNotation(notation);
+    matrixCellHelper.setNextCell(base.length + 1, 0);
   }
 
   function upsertSymbolNotation(value: string) {

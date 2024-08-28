@@ -302,17 +302,17 @@ export default function useHtmlMatrixHelper() {
 
       for (let i = 0; i < baseStr.length; i++) {
         baseHtml += `<p style='color:${color};font-weight:${fontWeight}; position: absolute;
-          top:23%;
+          top:10%;
           transform: translateX(${
             i * (cellStore.getCellHorizontalWidth() + cellSpace)
           }px);
           font-size:1.1em'>${baseStr.charAt(i)}</p>`;
       }
 
-      const exponentHtml = `<p style='color:${color};font-weight:${fontWeight}; position: absolute;
+      const exponentHtml = `<p style='color:${color};font-weight:${fontWeight}; position:realtive;
       transform:translateY(-20%);
       transform:translateX(${
-        baseStr.length * (cellStore.getCellHorizontalWidth() + cellSpace) - 10
+        baseStr.length * (cellStore.getCellHorizontalWidth() + cellSpace) - 2
       }px);
       font-size:0.7em'>${n1.exponent}</p>`;
 

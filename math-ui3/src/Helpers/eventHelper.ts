@@ -359,6 +359,7 @@ export default function eventHelper() {
     eventBus.emit("EV_COPY", null);
   }
 
+
   function registerCopy() {
     document.addEventListener("copy", emitCopy);
   }
