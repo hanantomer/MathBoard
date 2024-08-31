@@ -39,7 +39,7 @@ export default function selectionHelper() {
     const notationStore = useNotationStore();
     notationStore.resetSelectedNotations();
 
-    const notation = screenHelper.getNotationAtDotCoordinates(
+    const notation = screenHelper.getNotationAtCoordinates(
       svgId,
       dotCoordinates,
     );

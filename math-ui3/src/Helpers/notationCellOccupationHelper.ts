@@ -25,13 +25,6 @@ export default function notationCellOccupationHelper() {
     doRemove: boolean,
   ) {
     if (!validateRowAndCol(notation.col, notation.row)) return;
-    console.debug(
-      "add point to occupation matrix at coll:" +
-        notation.col +
-        ",row:" +
-        notation.row,
-    );
-
     matrix[notation.col][notation.row] = doRemove ? null : notation.uuid;
   }
 
@@ -72,7 +65,6 @@ export default function notationCellOccupationHelper() {
 
     // line occuption mtarix can attribute multiple notations to single cell
     matrix[col][row].push(notation.uuid);
-    console.debug("slope at col:" + col + ", row:" + row);
   }
 
   function updateHorizontalLineOccupationMatrix(
@@ -83,13 +75,13 @@ export default function notationCellOccupationHelper() {
     for (let col = notation.fromCol; col <= notation.toCol; col++) {
       if (validateRowAndCol(col, notation.row)) {
         // occupy notation row
-        updateLineOccupationMatrixCell(
-          col,
-          notation.row,
-          matrix,
-          notation,
-          doRemove,
-        );
+        // updateLineOccupationMatrixCell(
+        //   col,
+        //   notation.row,
+        //   matrix,
+        //   notation,
+        //   doRemove,
+        // );
 
         if (validateRowAndCol(col, notation.row - 1))
           // occupy also row above
@@ -100,7 +92,7 @@ export default function notationCellOccupationHelper() {
             notation,
             doRemove,
           );
-      }
+       }
     }
   }
 

@@ -127,7 +127,7 @@ export default function notationMutateHelper() {
     notation: PointNotationCreationAttributes,
   ): PointNotationAttributes | undefined {
     return notationStore
-      .getNotationAtDotCoordinatess()
+      .getNotationAtCoordinatess()
       .find((n2: PointNotationAttributes) => {
         return pointAtCellCoordinates(
           notation as PointNotationAttributes,

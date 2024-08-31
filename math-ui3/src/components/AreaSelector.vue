@@ -131,6 +131,16 @@ watch(
   },
 );
 
+watch(
+  () => editModeStore.getEditMode() as any,
+  (newEditMode: any, oldEditMode: any) => {
+    if (oldEditMode === "AREA_SELECTED" && newEditMode !== "AREA_SELECTED") {
+      resetSelection();
+    }
+  },
+  { immediate: true, deep: true },
+);
+
 function mouseup(e: MouseEvent) {
   eventBus.emit("EV_SVG_MOUSEUP", e);
 }
@@ -185,6 +195,7 @@ function handleMouseDown(e: MouseEvent) {
     return;
   }
 
+  // free text creation starts with area selection
   if (editModeStore.isTextStartedMode()) {
     selectionPosition.value.topLeft.x = e.clientX;
     selectionPosition.value.topLeft.y = e.clientY;
@@ -211,8 +222,6 @@ function handleMouseMove(e: MouseEvent) {
     return;
   }
 
-  cellStore.resetSelectedCell();
-
   if (editMode === "AREA_SELECTING" || editMode === "TEXT_AREA_SELECTING") {
     updateSelectionArea(e); // =>area selected
     return;
@@ -227,11 +236,17 @@ function handleMouseMove(e: MouseEvent) {
     editModeStore.setEditMode("TEXT_AREA_SELECTING");
   } else {
     editModeStore.setEditMode("AREA_SELECTING");
+    resetSelection();
   }
 }
 
 function handleMouseUp(e: MouseEvent) {
   const editMode = editModeStore.getEditMode();
+
+  if (editMode == "TEXT_STARTED") {
+    editModeStore.setNextEditMode();
+    return;
+  }
 
   if (editMode == "MOVING") {
     endMoveSelection(e);
@@ -255,8 +270,6 @@ function handleMouseUp(e: MouseEvent) {
     });
     return;
   }
-
-  resetSelection();
 }
 
 // extend or shrink selection area following inner mouse move
@@ -350,6 +363,7 @@ async function endMoveSelection(e: MouseEvent) {
 }
 
 function resetSelection() {
+  console.debug("resetSelection");
   dragPosition.value.x =
     dragPosition.value.y =
     selectionPosition.value.topLeft.x =
@@ -357,6 +371,8 @@ function resetSelection() {
     selectionPosition.value.topLeft.y =
     selectionPosition.value.bottomRight.y =
       0;
+  cellStore.resetSelectedCell();
+  notationStore.resetSelectedNotations();
 }
 </script>
 

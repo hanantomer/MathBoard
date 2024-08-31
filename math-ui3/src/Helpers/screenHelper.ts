@@ -55,20 +55,16 @@ export default function screenHelper() {
 
   function getClickedCellTopLeftCoordinates(
     svgId: string,
-    dotCoordinates: DotCoordinates,
+    clickedCell: CellAttributes,
   ): DotCoordinates {
-
     const cellWidth = cellStore.getCellHorizontalWidth() + cellSpace;
     const cellHeight = cellStore.getCellVerticalHeight() + cellSpace;
-
-    const clickedCell = getClickedCell(svgId, dotCoordinates);
 
     return {
       x: clickedCell.col * cellWidth + getBoundingRect(svgId)!.left - cellSpace,
       y: clickedCell.row * cellHeight + getBoundingRect(svgId)!.top - cellSpace,
     };
   }
-
 
   function getRectAttributes(rectCoordinates: RectCoordinates): RectAttributes {
     console.log(
@@ -183,7 +179,7 @@ export default function screenHelper() {
   }
 
   // find notation at screen  point
-  function getNotationAtDotCoordinates(
+  function getNotationAtCoordinates(
     svgId: string,
     DotCoordinates: DotCoordinates,
   ): NotationAttributes | null {
@@ -464,9 +460,8 @@ export default function screenHelper() {
     return document.getElementById(svgId)?.getBoundingClientRect();
   }
 
-
   return {
-    getNotationAtDotCoordinates,
+    getNotationAtCoordinates,
     getClickedCell,
     getRectCoordinatesOccupiedCells,
     getSlopeLineAttributesByCoordinates,

@@ -84,7 +84,7 @@ export const useNotationStore = defineStore("notation", () => {
     return Array.from(notations.value.values());
   }
 
-  function getNotationAtDotCoordinatess(): PointNotationAttributes[] {
+  function getNotationAtCoordinatess(): PointNotationAttributes[] {
     return Array.from(notations.value.values())
       .filter((n) => NotationTypeShape.get(n.notationType) === "POINT")
       .map((n) => n as PointNotationAttributes);
@@ -149,8 +149,7 @@ export const useNotationStore = defineStore("notation", () => {
             notation as ExponentNotationAttributes,
             false,
           );
-        }
-        else {
+        } else {
           notationCellOccupationHelper.updatePointOccupationMatrix(
             cellPointNotationOccupationMatrix,
             notation as PointNotationAttributes,
@@ -385,7 +384,7 @@ export const useNotationStore = defineStore("notation", () => {
     addNotation,
     getNotation,
     getNotations,
-    getNotationAtDotCoordinatess,
+    getNotationAtCoordinatess,
     getHorizontalLineNotations,
     getVerticalLineNotations,
     getSlopeLineNotations,

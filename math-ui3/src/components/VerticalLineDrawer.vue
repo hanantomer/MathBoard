@@ -100,7 +100,7 @@ let lineX = computed(() => {
 });
 
 let handleX = computed(() => {
-  return lineX.value + (svgDimensions()?.top ?? 0) + 5;
+  return lineX.value + (svgDimensions()?.left ?? 0) - 5;
 });
 
 let handleTop = computed(() => {
@@ -307,11 +307,11 @@ function getNearestCol(clickedXPos: number) {
 }
 .lineHandle {
   cursor: col-resize;
-  display: block;
   position: absolute;
-  z-index: 999;
+  display: block;
   width: 12px;
   height: 12px;
   border: 1, 1, 1, 1;
+  z-index: 999;
 }
 </style>
