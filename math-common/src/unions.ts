@@ -21,6 +21,7 @@ export type BusEventType =
     "EV_CONCAVE_CURVE_SELECTED"   |
     "EV_CONVEX_CURVE_SELECTED"    |
     "EV_VERTICAL_LINE_SELECTED"   |
+    "EV_SQRT_SELECTED"            |
     "EV_HORIZONTAL_LINE_SELECTED";
 
 export type NotationShape = 

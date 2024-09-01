@@ -284,12 +284,21 @@ function updateSelectionArea(e: MouseEvent) {
 }
 
 function endSelect() {
+  // select cell if seelection is too small
   if (
-    selectionPosition.value.topLeft.x ===
-      selectionPosition.value.bottomRight.x ||
-    selectionPosition.value.topLeft.y === selectionPosition.value.bottomRight.y
-  )
+    Math.abs(
+      selectionPosition.value.topLeft.x - selectionPosition.value.bottomRight.x,
+    ) < 5 ||
+    Math.abs(
+      selectionPosition.value.topLeft.y - selectionPosition.value.bottomRight.y,
+    ) < 5
+  ) {
+    selectionHelper.selectCell(props.svgId, {
+      x: selectionPosition.value.topLeft.x,
+      y: selectionPosition.value.topLeft.y,
+    });
     return;
+  }
 
   selectionHelper.selectNotationsOfArea(props.svgId, selectionPosition.value);
 }

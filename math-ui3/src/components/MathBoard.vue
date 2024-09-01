@@ -18,6 +18,7 @@
             height="6"
           ></v-progress-linear>
           <horizontalLineDrawer :svgId="svgId"></horizontalLineDrawer>
+          <sqrtDrawer :svgId="svgId"></sqrtDrawer>
           <verticalLineDrawer :svgId="svgId"></verticalLineDrawer>
           <slopeLineDrawer :svgId="svgId"></slopeLineDrawer>
           <curveDrawer :svgId="svgId" :curveType="curveType"></curveDrawer>
@@ -47,6 +48,7 @@ import toolbar from "./Toolbar.vue";
 import editingToolbar from "./EditingToolbar.vue";
 import areaSelector from "./AreaSelector.vue";
 import horizontalLineDrawer from "./HorizontalLineDrawer.vue";
+import sqrtDrawer from "./SqrtDrawer.vue";
 import verticalLineDrawer from "./VerticalLineDrawer.vue";
 import slopeLineDrawer from "./SlopeLineDrawer.vue";
 import curveDrawer from "./CurveDrawer.vue";

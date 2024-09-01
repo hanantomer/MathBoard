@@ -101,7 +101,7 @@ export default function selectionHelper() {
     switch (notation.notationType) {
       case "SQRT":
         editModeStore.setEditMode("SQRT_SELECTED");
-        eventBus.emit("EV_HORIZONTAL_LINE_SELECTED", notation);
+        eventBus.emit("EV_SQRT_SELECTED", notation);
         break;
       case "HORIZONTALLINE":
         editModeStore.setEditMode("HORIZONTAL_LINE_SELECTED");

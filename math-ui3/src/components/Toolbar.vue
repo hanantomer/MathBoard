@@ -248,6 +248,7 @@ const editEnabled = computed(() => {
 
 function startEditMode(item: any) {
   resetButtonsState();
+  notationStore.resetSelectedNotations();
   editModeStore.setEditMode(item.editMode); // watcher sets activeState to 0
 }
 

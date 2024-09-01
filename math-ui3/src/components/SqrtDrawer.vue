@@ -1,18 +1,7 @@
 <template>
   <div v-if="show">
     <v-card
-      id="lineLeftHandle"
-      class="lineHandle"
-      v-bind:style="{
-        left: handleLeft + 'px',
-        top: handleY + 'px',
-      }"
-      v-on:mouseup="onMouseUp"
-      v-on:mousedown="onHandleMouseDown"
-      v-if="!sqrtEditMode"
-    ></v-card>
-    <v-card
-      id="lineRightHandle"
+      id="sqrtRightHandle"
       class="lineHandle"
       v-bind:style="{
         left: handleRight + 'px',
@@ -28,14 +17,22 @@
       style="position: absolute; pointer-events: none"
     >
       <line
-        :x1="lineLeft"
-        :y1="lineY"
-        :x2="lineRight"
-        :y2="lineY"
+        :x1="sqrtLeft"
+        :y1="sqrtY"
+        :x2="sqrtRight"
+        :y2="sqrtY"
         class="line"
       />
     </svg>
-
+    <p
+      class="sqrtsymbol"
+      v-bind:style="{
+        left: sqrtSymbolLeft + 'px',
+        top: sqrtSymbolY + 'px',
+      }"
+    >
+      &#x221A;
+    </p>
   </div>
 </template>
 <script setup lang="ts">
@@ -72,58 +69,46 @@ const props = defineProps({
 
 // vars
 
-let linePosition = ref(<HorizontaLinePosition>{
+let sqrtPosition = ref(<HorizontaLinePosition>{
   x1: 0,
   x2: 0,
   y: 0,
 });
 
-
-const sqrtEditMode = computed(() => {
-  return editModeStore.isSqrtEditMode();
-});
-
 const show = computed(() => {
-  return (
-    editModeStore.isHorizontalLineDrawingMode() ||
-    editModeStore.isHorizontalLineSelectedMode()
-  );
+  return editModeStore.isSqrtEditMode() || editModeStore.isSqrtSelectedMode();
 });
 
 function svgDimensions(): DOMRect | undefined {
   return document.getElementById(props.svgId)?.getBoundingClientRect();
 }
 
-let lineLeft = computed(() => {
-  return linePosition.value.x1 ;
-});
-
-let lineRight = computed(() => {
-  return linePosition.value.x2;
-});
-
-let lineY = computed(() => {
-  return linePosition.value.y;
-});
-
-let handleLeft = computed(() => {
-  return lineLeft.value + (svgDimensions()?.left ?? 0) - 10;
+let sqrtRight = computed(() => {
+  return sqrtPosition.value.x2;
 });
 
 let sqrtLeft = computed(() => {
-  return linePosition.value.x1 + (svgDimensions()?.left ?? 0) - 10;
+  return sqrtPosition.value.x1;
 });
 
 let sqrtY = computed(() => {
-  return lineY.value + (svgDimensions()?.top ?? 0) - 5;
+  return sqrtPosition.value.y;
+});
+
+let sqrtSymbolLeft = computed(() => {
+  return sqrtPosition.value.x1 + (svgDimensions()?.left ?? 0) - 10;
+});
+
+let sqrtSymbolY = computed(() => {
+  return sqrtPosition.value.y + (svgDimensions()?.top ?? 0);
 });
 
 let handleRight = computed(() => {
-  return lineRight.value + (svgDimensions()?.left ?? 0) + 10;
+  return sqrtRight.value + (svgDimensions()?.left ?? 0) + 10;
 });
 
 let handleY = computed(() => {
-  return lineY.value + (svgDimensions()?.top ?? 0) - 5;
+  return sqrtY.value + (svgDimensions()?.top ?? 0) - 5;
 });
 
 watch(
@@ -148,30 +133,30 @@ watch(
 );
 
 watch(
-  () => eventBus.bus.value.get("EV_HORIZONTAL_LINE_SELECTED"),
-  (line: HorizontalLineNotationAttributes) => {
-    if (line) onLineSelected(line);
+  () => eventBus.bus.value.get("EV_SQRT_SELECTED"),
+  (sqrt: HorizontalLineNotationAttributes) => {
+    if (sqrt) onSqerSelected(sqrt);
   },
 );
 
 // event handlers
 
-function onLineSelected(lineNotation: HorizontalLineNotationAttributes) {
-  // set selection line
+function onSqerSelected(sqrtNotation: HorizontalLineNotationAttributes) {
+  // set selection sqrt
 
-  linePosition.value.x1 =
-    lineNotation.fromCol * (cellStore.getCellHorizontalWidth() + cellSpace);
-  (linePosition.value.x2 =
-    (lineNotation.toCol - 1) *
+  sqrtPosition.value.x1 =
+    sqrtNotation.fromCol * (cellStore.getCellHorizontalWidth() + cellSpace);
+  (sqrtPosition.value.x2 =
+    (sqrtNotation.toCol - 1) *
     (cellStore.getCellHorizontalWidth() + cellSpace)),
-    (linePosition.value.y =
-      lineNotation.row * (cellStore.getCellVerticalHeight() + cellSpace));
+    (sqrtPosition.value.y =
+      sqrtNotation.row * (cellStore.getCellVerticalHeight() + cellSpace));
 
   // update store
-  notationStore.selectNotation(lineNotation.uuid);
+  notationStore.selectNotation(sqrtNotation.uuid);
 
   // to enable re selection
-  eventBus.emit("EV_HORIZONTAL_LINE_SELECTED", null);
+  eventBus.emit("EV_SQRT_SELECTED", null);
 }
 
 function onHandleMouseDown() {
@@ -186,15 +171,13 @@ function onMouseDown(e: MouseEvent) {
   }
 
   // user clicked elsewere after start drawing
-  if (editModeStore.isHorizontalLineDrawingMode()) {
-    resetLineDrawing();
+  if (editModeStore.isSqrtDrawingMode()) {
+    resetSqrtDrawing();
   }
 
-  // new line
-  if (
-    editModeStore.isHorizontalLineStartedMode()
-  ) {
-    startLineDrawing({
+  // new sqrt
+  if (editModeStore.isSqrtStartedMode()) {
+    startSqrtDrawing({
       x: e.offsetX,
       y: e.offsetY,
     });
@@ -210,84 +193,76 @@ function onMouseMove(e: MouseEvent) {
 
   // nothing done yet
   if (
-    linePosition.value.x1 === 0 &&
-    linePosition.value.x2 === 0 &&
-    linePosition.value.y === 0
+    sqrtPosition.value.x1 === 0 &&
+    sqrtPosition.value.x2 === 0 &&
+    sqrtPosition.value.y === 0
   ) {
     return;
   }
 
-  if (!editModeStore.isHorizontalLineDrawingMode()) {
+  if (!editModeStore.isSqrtDrawingMode()) {
     return;
   }
-  setLine(e.offsetX);
+  setSqrt(e.offsetX);
 }
 
 function onMouseUp() {
   // drawing not started
   if (
-    linePosition.value.x1 === 0 &&
-    linePosition.value.x2 === 0 &&
-    linePosition.value.y === 0
+    sqrtPosition.value.x1 === 0 &&
+    sqrtPosition.value.x2 === 0 &&
+    sqrtPosition.value.y === 0
   ) {
     return;
   }
 
-  // line yet not modified
-  if (editModeStore.isHorizontalLineDrawingMode()) {
-    endDrawLine();
+  // sqrt yet not modified
+  if (editModeStore.isSqrtDrawingMode()) {
+    endDrawSqrt();
   }
 }
 
 // methods
 
-function startLineDrawing(position: DotCoordinates) {
-  linePosition.value.x1 = position.x;
+function startSqrtDrawing(position: DotCoordinates) {
+  sqrtPosition.value.x1 = position.x;
 
-  linePosition.value.x2 = linePosition.value.x1 + 10;
+  sqrtPosition.value.x2 = sqrtPosition.value.x1 + 10;
 
-  linePosition.value.y = getNearestRow(position.y);
+  sqrtPosition.value.y = getNearestRow(position.y);
 }
 
-function setLine(xPos: number) {
-  const modifyRight =
-    linePosition.value.x2 - xPos < xPos - linePosition.value.x1;
-
-  if (modifyRight) {
-    linePosition.value.x2 = xPos;
-  } else {
-    // modify left
-    linePosition.value.x1 = xPos;
-  }
+function setSqrt(xPos: number) {
+  sqrtPosition.value.x2 = xPos;
 }
 
-function endDrawLine() {
-  if (linePosition.value.x2 == linePosition.value.x1) {
+function endDrawSqrt() {
+  if (sqrtPosition.value.x2 == sqrtPosition.value.x1) {
     return;
   }
 
   let fromCol = Math.round(
-    linePosition.value.x1 / (cellStore.getCellHorizontalWidth() + cellSpace),
+    sqrtPosition.value.x1 / (cellStore.getCellHorizontalWidth() + cellSpace),
   );
 
   let toCol = Math.round(
-    linePosition.value.x2 / (cellStore.getCellHorizontalWidth() + cellSpace),
+    sqrtPosition.value.x2 / (cellStore.getCellHorizontalWidth() + cellSpace),
   );
 
   let row = Math.round(
-    linePosition.value.y / (cellStore.getCellVerticalHeight() + cellSpace),
+    sqrtPosition.value.y / (cellStore.getCellVerticalHeight() + cellSpace),
   );
 
-  saveLine({ fromCol: fromCol, toCol: toCol, row: row });
+  saveSqrt({ fromCol: fromCol, toCol: toCol, row: row });
 
   editModeStore.setDefaultEditMode();
 }
 
-function saveLine(lineAttributes: HorizontalLineAttributes) {
+function saveSqrt(sqrtAttributes: HorizontalLineAttributes) {
   if (notationStore.getSelectedNotations().length > 0) {
     let updatedLine = {
       ...notationStore.getSelectedNotations().at(0)!,
-      ...lineAttributes,
+      ...sqrtAttributes,
     };
 
     notationMutateHelper.updateHorizontalLineNotation(
@@ -295,13 +270,13 @@ function saveLine(lineAttributes: HorizontalLineAttributes) {
     );
   } else
     notationMutateHelper.addHorizontalLineNotation(
-      lineAttributes,
+      sqrtAttributes,
       editModeStore.getNotationTypeByEditMode(),
     );
 }
 
-function resetLineDrawing() {
-  linePosition.value.x1 = linePosition.value.x2 = linePosition.value.y = 0;
+function resetSqrtDrawing() {
+  sqrtPosition.value.x1 = sqrtPosition.value.x2 = sqrtPosition.value.y = 0;
   editModeStore.setDefaultEditMode();
 }
 
