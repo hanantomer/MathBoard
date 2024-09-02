@@ -54,6 +54,7 @@ import {
   HorizontalLineNotationAttributes,
 } from "../../../math-common/src/baseTypes";
 import useEventBus from "../helpers/eventBusHelper";
+import screenHelper from "src/helpers/screenHelper";
 
 const eventBus = useEventBus();
 const notationMutateHelper = useNotationMutateHelper();
@@ -88,7 +89,7 @@ let sqrtRight = computed(() => {
 });
 
 let sqrtLeft = computed(() => {
-  return sqrtPosition.value.x1;
+  return sqrtPosition.value.x1 + cellStore.getCellHorizontalWidth();
 });
 
 let sqrtY = computed(() => {
@@ -96,11 +97,11 @@ let sqrtY = computed(() => {
 });
 
 let sqrtSymbolLeft = computed(() => {
-  return sqrtPosition.value.x1 + (svgDimensions()?.left ?? 0) - 10;
+  return sqrtPosition.value.x1 + (svgDimensions()?.left ?? 0) - 6;
 });
 
 let sqrtSymbolY = computed(() => {
-  return sqrtPosition.value.y + (svgDimensions()?.top ?? 0);
+  return sqrtPosition.value.y + (svgDimensions()?.top ?? 0) - 5;
 });
 
 let handleRight = computed(() => {

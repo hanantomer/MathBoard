@@ -24,7 +24,7 @@ import { useNotationStore } from "../store/pinia/notationStore";
 import useNotationMutateHelper from "../helpers/notationMutateHelper";
 import useSelectionHelper from "../helpers/selectionHelper";
 import useEventBus from "../helpers/eventBusHelper";
-import { MoveDirection } from "common/unions";
+import { EditMode, MoveDirection } from "common/unions";
 import { cellSpace } from "common/globals";
 import { RectCoordinates, DotCoordinates } from "common/baseTypes";
 
@@ -133,8 +133,8 @@ watch(
 
 watch(
   () => editModeStore.getEditMode() as any,
-  (newEditMode: any, oldEditMode: any) => {
-    if (oldEditMode === "AREA_SELECTED" && newEditMode !== "AREA_SELECTED") {
+  (newEditMode: EditMode, oldEditMode: any) => {
+    if (oldEditMode === "AREA_SELECTED" && newEditMode === "CELL_SELECTED") {
       resetSelection();
     }
   },
