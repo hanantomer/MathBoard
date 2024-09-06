@@ -101,13 +101,6 @@ let rules = {
   validMail: (v: string) => /.+@.+\..+/.test(v) || "E-mail must be valid",
 };
 
-const props = defineProps({
-  dialog: {
-    type: Boolean,
-    default: false,
-  },
-});
-
 const emit = defineEmits(["register"]);
 
 watch(
@@ -125,13 +118,6 @@ function register() {
   show.value = false;
   emit("register", redirectAfterLogin);
 }
-
-/*
-function googleOnSuccess() {
-  show.value = false;
-  cookies.remove("access_token");
-}
-  */
 
 async function validateLogin() {
   if (!email) return;

@@ -68,9 +68,10 @@ const routes = [
 ];
 
 const router = createRouter({
-  history: createWebHistory(),
+  history:  createWebHistory(),
   routes,
 });
+
 
 router.beforeEach(async (to, from) => {
   const authenticationHelper = useauthenticationHelper();
@@ -88,24 +89,8 @@ router.beforeEach(async (to, from) => {
     return;
   }
 
-  return { path: "/login", query: { from: to.path } };
-
-  /*
-
-  // google auth exists for our domain
-  let googleUser = await authMixin.methods.mixin_getGoogleUser();
-  if (!!googleUser) {
-    user = await store.dispatch("authGoogleUser");
-    if (!user) {
-      // local auth info removed at the server side -> re-create
-      user = await store.dispatch("registerUser", googleUser);
-    }
-    user = await store.dispatch("setUser", { ...user, ...googleUser });
-    next();
-    return;
-  }*/
-
-  // could not find user info -> login/register
+  return { path: "/answer", query: { from: to.path } };
 });
+
 
 export default router;

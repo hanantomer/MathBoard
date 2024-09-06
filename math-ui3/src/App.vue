@@ -185,7 +185,7 @@ const showAnswers = computed(() => {
 const isTeacher = computed(() => userStore.isTeacher());
 
 function showLoginDialog() {
-  //router.push("/login");
+  router.push("/login");
 }
 
 function signOut() {
@@ -210,14 +210,6 @@ function navContactUs() {
   router.push("/contactUs");
 }
 
-// signInViaGoogleAuth: async function () {
-//   let user = await authGoogleUser(googleUser);
-//   if (!!user) {
-//     return await setUser(user);
-//   } else {
-//     return await registerUser(...googleUser);
-//   }
-// },
 </script>
 <style>
 .title {

@@ -274,7 +274,7 @@ export default function curveHelper() {
     mouseMoveCount++;
     if (
       mouseMoveCount %
-        MOUSE_MOVE_THROTTELING_INTERVAL /*TODO: magic number */ !==
+        MOUSE_MOVE_THROTTELING_INTERVAL  !==
       0
     ) {
       //console.debug("throtteling:" + mouseMoveCount);

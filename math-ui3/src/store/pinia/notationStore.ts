@@ -259,9 +259,6 @@ export const useNotationStore = defineStore("notation", () => {
     copiedNotations.value.clear();
   }
 
-  function selectCell(newSelectedCell: CellAttributes) {
-    selectedCell.value = newSelectedCell;
-  }
 
   function selectNotation(uuid: string) {
     const notation = notations.value.get(uuid);
@@ -274,9 +271,6 @@ export const useNotationStore = defineStore("notation", () => {
     parent.value.type = boardType;
   }
 
-  function resetSelectedCell() {
-    selectedCell.value = { col: -1, row: -1 };
-  }
 
   function resetSelectedNotations() {
     Array.from(getSelectedNotations()).forEach((n) => (n.selected = false));

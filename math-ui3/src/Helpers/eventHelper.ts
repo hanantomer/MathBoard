@@ -198,7 +198,7 @@ export default function eventHelper() {
 
     switch (classifyKeyCode(code)) {
       case "DELETION": {
-        return handleDeletionKey(code);
+        return handleDeletionKey();
       }
 
       case "MOVEMENT": {
@@ -206,7 +206,7 @@ export default function eventHelper() {
       }
 
       case "DELETEANDMOVE": {
-        handleDeletionKey(code);
+        handleDeletionKey();
         return handleMovementKey(code);
       }
 
@@ -216,7 +216,7 @@ export default function eventHelper() {
     }
   }
 
-  function handleDeletionKey(key: string) {
+  function handleDeletionKey() {
     notationMutationHelper.deleteSelectedNotations();
 
     editModeStore.setDefaultEditMode();
@@ -259,7 +259,7 @@ export default function eventHelper() {
         cellStore.getSelectedCell()?.col! *
           (cellStore.getCellHorizontalWidth() + cellSpace),
       y:
-        svgBounds.left +
+        svgBounds.top +
         cellStore.getSelectedCell()?.row! *
           (cellStore.getCellVerticalHeight() + cellSpace),
     });
@@ -358,7 +358,6 @@ export default function eventHelper() {
   function emitCopy() {
     eventBus.emit("EV_COPY", null);
   }
-
 
   function registerCopy() {
     document.addEventListener("copy", emitCopy);

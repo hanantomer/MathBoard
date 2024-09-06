@@ -70,7 +70,7 @@ const movementDirection = ref<MovementDirection>("NONE");
 // props
 
 const props = defineProps({
-  svgId: { type: String, default: "" },
+  svgId: { type: String },
 });
 
 // vars
@@ -283,7 +283,7 @@ function onMouseUp() {
 // methods
 
 function svgDimensions(): DOMRect | undefined {
-  return document.getElementById(props.svgId)?.getBoundingClientRect();
+  return document.getElementById(props?.svgId)?.getBoundingClientRect();
 }
 
 function startLineDrawing(position: DotCoordinates) {

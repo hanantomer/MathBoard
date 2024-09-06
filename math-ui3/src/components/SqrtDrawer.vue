@@ -54,7 +54,7 @@ import {
   HorizontalLineNotationAttributes,
 } from "../../../math-common/src/baseTypes";
 import useEventBus from "../helpers/eventBusHelper";
-import screenHelper from "src/helpers/screenHelper";
+import screenHelper from "../helpers/screenHelper";
 
 const eventBus = useEventBus();
 const notationMutateHelper = useNotationMutateHelper();
@@ -65,7 +65,7 @@ const editModeStore = useEditModeStore();
 // props
 
 const props = defineProps({
-  svgId: { type: String, default: "" },
+  svgId: { type: String},
 });
 
 // vars
@@ -76,13 +76,15 @@ let sqrtPosition = ref(<HorizontaLinePosition>{
   y: 0,
 });
 
+
 const show = computed(() => {
   return editModeStore.isSqrtEditMode() || editModeStore.isSqrtSelectedMode();
 });
 
-function svgDimensions(): DOMRect | undefined {
-  return document.getElementById(props.svgId)?.getBoundingClientRect();
-}
+const svgDimensions = computed(() => {
+  return document.getElementById(props?.svgId)?.getBoundingClientRect()!;
+});
+
 
 let sqrtRight = computed(() => {
   return sqrtPosition.value.x2;
@@ -97,19 +99,19 @@ let sqrtY = computed(() => {
 });
 
 let sqrtSymbolLeft = computed(() => {
-  return sqrtPosition.value.x1 + (svgDimensions()?.left ?? 0) - 6;
+  return sqrtPosition.value.x1 + (svgDimensions.value.left ?? 0) - 6;
 });
 
 let sqrtSymbolY = computed(() => {
-  return sqrtPosition.value.y + (svgDimensions()?.top ?? 0) - 5;
+  return sqrtPosition.value.y + (svgDimensions.value.top ?? 0) - 5;
 });
 
 let handleRight = computed(() => {
-  return sqrtRight.value + (svgDimensions()?.left ?? 0) + 10;
+  return sqrtRight.value + (svgDimensions.value.left ?? 0) + 10;
 });
 
 let handleY = computed(() => {
-  return sqrtY.value + (svgDimensions()?.top ?? 0) - 5;
+  return sqrtY.value + (svgDimensions.value.top ?? 0) - 5;
 });
 
 watch(
@@ -179,8 +181,8 @@ function onMouseDown(e: MouseEvent) {
   // new sqrt
   if (editModeStore.isSqrtStartedMode()) {
     startSqrtDrawing({
-      x: e.offsetX,
-      y: e.offsetY,
+      x: e.pageX - svgDimensions.value.x,
+      y: e.pageY - svgDimensions.value.y,
     });
     editModeStore.setNextEditMode();
   }
@@ -254,12 +256,13 @@ function endDrawSqrt() {
     sqrtPosition.value.y / (cellStore.getCellVerticalHeight() + cellSpace),
   );
 
-  saveSqrt({ fromCol: fromCol, toCol: toCol, row: row });
+  saveSqrt({ fromCol: fromCol, toCol: toCol, row: row});
 
   editModeStore.setDefaultEditMode();
 }
 
 function saveSqrt(sqrtAttributes: HorizontalLineAttributes) {
+
   if (notationStore.getSelectedNotations().length > 0) {
     let updatedLine = {
       ...notationStore.getSelectedNotations().at(0)!,

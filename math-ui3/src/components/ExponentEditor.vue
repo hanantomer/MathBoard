@@ -52,7 +52,11 @@ let exponentLeft = ref(0);
 let exponentTop = ref(0);
 
 const props = defineProps({
-  svgId: { type: String, default: "" },
+  svgId: { type: String },
+});
+
+const svgDimensions = computed(() => {
+  return document.getElementById(props?.svgId)?.getBoundingClientRect()!;
 });
 
 // emitted by eventHelper
@@ -130,7 +134,10 @@ function handleMouseDown(e: MouseEvent) {
   }
 
   if (editModeStore.isExponentStartedMode()) {
-    selectionHelper.selectCell(props.svgId, e);
+    selectionHelper.selectCell(props?.svgId, {
+      x: e.pageX + svgDimensions.value.x,
+      y: e.pageY + svgDimensions.value.y,
+    });
     startNewExponent();
     return;
   }
@@ -155,7 +162,6 @@ function startNewExponent() {
 
   setTimeout(`document.getElementById("baseInput")?.focus();`, 0);
 }
-
 
 function editSelectedExponentNotation(
   exponentNotation: ExponentNotationAttributes,

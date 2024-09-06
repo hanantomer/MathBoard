@@ -36,7 +36,7 @@ const notationMutateHelper = useNotationMutateHelper();
 const selectionHelper = useSelectionHelper();
 
 const props = defineProps({
-  svgId: { type: String, default: "" },
+  svgId: { type: String },
 });
 
 let selectionPosition = ref<RectCoordinates>({
@@ -58,9 +58,9 @@ const show = computed(() => {
   );
 });
 
-const svgDimensions = computed(() => {
-  return document.getElementById(props.svgId)?.getBoundingClientRect()!;
-});
+function svgDimensions() {
+  return document.getElementById(props.svgId!)?.getBoundingClientRect();
+}
 
 const selectionRectLeft = computed(() => {
   return Math.min(
@@ -197,10 +197,10 @@ function handleMouseDown(e: MouseEvent) {
 
   // free text creation starts with area selection
   if (editModeStore.isTextStartedMode()) {
-    selectionPosition.value.topLeft.x = e.clientX;
-    selectionPosition.value.topLeft.y = e.clientY;
-    selectionPosition.value.bottomRight.x = e.clientX + 25;
-    selectionPosition.value.bottomRight.y = e.clientY + 25;
+    cellStore.resetSelectedCell();
+    selectionPosition.value.topLeft.y = e.pageY;
+    selectionPosition.value.bottomRight.x = e.pageX + 25;
+    selectionPosition.value.bottomRight.y = e.pageY + 25;
   }
 }
 
@@ -223,7 +223,12 @@ function handleMouseMove(e: MouseEvent) {
   }
 
   if (editMode === "AREA_SELECTING" || editMode === "TEXT_AREA_SELECTING") {
-    updateSelectionArea(e); // =>area selected
+    updateSelectionArea(e);
+    return;
+  }
+
+  if (editMode === "AREA_SELECTED") {
+    editModeStore.setEditMode("MOVING");
     return;
   }
 
@@ -236,7 +241,7 @@ function handleMouseMove(e: MouseEvent) {
     editModeStore.setEditMode("TEXT_AREA_SELECTING");
   } else {
     editModeStore.setEditMode("AREA_SELECTING");
-    resetSelection();
+    //resetSelection();
   }
 }
 
@@ -275,12 +280,12 @@ function handleMouseUp(e: MouseEvent) {
 // extend or shrink selection area following inner mouse move
 function updateSelectionArea(e: MouseEvent) {
   if (selectionPosition.value.topLeft.x == 0) {
-    selectionPosition.value.topLeft.x = e.clientX;
-    selectionPosition.value.topLeft.y = e.clientY;
+    selectionPosition.value.topLeft.x = e.pageX;
+    selectionPosition.value.topLeft.y = e.pageY;
   }
 
-  selectionPosition.value.bottomRight.x = e.clientX;
-  selectionPosition.value.bottomRight.y = e.clientY;
+  selectionPosition.value.bottomRight.x = e.pageX;
+  selectionPosition.value.bottomRight.y = e.pageY;
 }
 
 function endSelect() {
@@ -293,41 +298,41 @@ function endSelect() {
       selectionPosition.value.topLeft.y - selectionPosition.value.bottomRight.y,
     ) < 5
   ) {
-    selectionHelper.selectCell(props.svgId, {
+    selectionHelper.selectCell(props.svgId!, {
       x: selectionPosition.value.topLeft.x,
       y: selectionPosition.value.topLeft.y,
     });
     return;
   }
 
-  selectionHelper.selectNotationsOfArea(props.svgId, selectionPosition.value);
+  selectionHelper.selectNotationsOfArea(props.svgId!, selectionPosition.value);
 }
 
 function moveSelection(e: MouseEvent) {
   // initial drag position
   if (!dragPosition.value.x) {
-    dragPosition.value.x = e.clientX - svgDimensions.value.left;
-    dragPosition.value.y = e.clientY - svgDimensions.value.top;
+    dragPosition.value.x = e.pageX - svgDimensions()!.left;
+    dragPosition.value.y = e.pageY - svgDimensions()!.top;
     return;
   }
 
   // movement is still too small
   if (
-    Math.abs(e.clientX - svgDimensions.value.x - dragPosition.value.x) <
+    Math.abs(e.pageX - svgDimensions()!.x - dragPosition.value.x) <
       cellStore.getCellHorizontalWidth() + cellSpace &&
-    Math.abs(e.clientY - svgDimensions.value.y - dragPosition.value.y) <
+    Math.abs(e.pageY - svgDimensions()!.y - dragPosition.value.y) <
       cellStore.getCellVerticalHeight() + cellSpace
   ) {
     return;
   }
 
   const rectDeltaX = Math.round(
-    (e.clientX - svgDimensions.value.x - dragPosition.value.x) /
+    (e.pageX - svgDimensions()!.x - dragPosition.value.x) /
       (cellStore.getCellHorizontalWidth() + cellSpace),
   );
 
   const rectDeltaY = Math.round(
-    (e.clientY - svgDimensions.value.y - dragPosition.value.y) /
+    (e.pageY - svgDimensions.value.y - dragPosition.value.y) /
       (cellStore.getCellVerticalHeight() + cellSpace),
   );
 
@@ -347,8 +352,8 @@ function moveSelection(e: MouseEvent) {
     selectionPosition.value.bottomRight.y +=
       rectDeltaY * (cellStore.getCellVerticalHeight() + cellSpace);
 
-    dragPosition.value.x = e.clientX - svgDimensions.value.x;
-    dragPosition.value.y = e.clientY - svgDimensions.value.y;
+    dragPosition.value.x = e.pageX - svgDimensions.value.x;
+    dragPosition.value.y = e.pageY - svgDimensions.value.y;
   }
 }
 

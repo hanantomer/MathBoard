@@ -47,9 +47,6 @@ import { useUserStore } from "../store/pinia/userStore";
 const router = useRouter();
 const userStore = useUserStore();
 
-const props = defineProps({
-  login: Boolean,
-});
 
 function login(redirectAfterLogin: string) {
   router.push({

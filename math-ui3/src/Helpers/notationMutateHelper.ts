@@ -360,6 +360,7 @@ export default function notationMutateHelper() {
     notationStore
       .getSelectedNotations()
       .forEach(async (n: NotationAttributes) => {
+        notationStore.addNotation(n);
         userOutgoingOperations.syncOutgoingUpdateNotation(n);
       });
   }

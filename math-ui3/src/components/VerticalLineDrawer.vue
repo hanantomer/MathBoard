@@ -65,7 +65,7 @@ const editModeStore = useEditModeStore();
 // props
 
 const props = defineProps({
-  svgId: { type: String, default: "" },
+  svgId: { type: String },
 });
 
 // vars
@@ -76,16 +76,16 @@ let linePosition = ref(<VerticalLinePosition>{
   y2: 0,
 });
 
+const svgDimensions = computed(() => {
+  return document.getElementById(props?.svgId)?.getBoundingClientRect()!;
+});
+
 const show = computed(() => {
   return (
     editModeStore.isVerticalLineDrawingMode() ||
     editModeStore.isVerticalLineSelectedMode()
   );
 });
-
-function svgDimensions(): DOMRect | undefined {
-  return document.getElementById(props.svgId)?.getBoundingClientRect();
-}
 
 let lineTop = computed(() => {
   return linePosition.value.y1;
@@ -100,15 +100,15 @@ let lineX = computed(() => {
 });
 
 let handleX = computed(() => {
-  return lineX.value + (svgDimensions()?.left ?? 0) - 5;
+  return lineX.value + (svgDimensions.value?.left ?? 0) - 5;
 });
 
 let handleTop = computed(() => {
-  return lineTop.value + (svgDimensions()?.top ?? 0) - 5;
+  return lineTop.value + (svgDimensions.value?.top ?? 0) - 5;
 });
 
 let handleBottom = computed(() => {
-  return lineBottom.value + (svgDimensions()?.top ?? 0);
+  return lineBottom.value + (svgDimensions.value?.top ?? 0);
 });
 
 // watch
@@ -178,8 +178,8 @@ function onMouseDown(e: MouseEvent) {
   // new line
   if (editModeStore.isVerticalLineStartedMode()) {
     startLineDrawing({
-      x: e.offsetX,
-      y: e.offsetY,
+      x: e.pageX - svgDimensions.value.x,
+      y: e.pageY - svgDimensions.value.y,
     });
     editModeStore.setNextEditMode();
   }
@@ -204,7 +204,7 @@ function onMouseMove(e: MouseEvent) {
     return;
   }
 
-  setLine(e.offsetY);
+  setLine(e.pageY - svgDimensions.value.y);
 }
 
 function onMouseUp() {

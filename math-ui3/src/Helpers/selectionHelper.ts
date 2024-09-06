@@ -48,6 +48,8 @@ export default function selectionHelper() {
 
     switch (NotationTypeShape.get(notation!.notationType)) {
       case "HORIZONTAL_LINE":
+        if (!screenHelper.clickedAtCellBottom(svgId, dotCoordinates))
+          return null;
       case "VERTICAL_LINE":
       case "SLOPE_LINE": {
         selectLineNotation(notation!);

@@ -18,7 +18,6 @@ import {
 } from "../../../math-common/src/baseTypes";
 import {
   NotationTypeShape,
-  NotationType,
 } from "../../../math-common/src/unions";
 
 import { useNotationStore } from "../store/pinia/notationStore";
@@ -27,9 +26,6 @@ import { useCellStore } from "../store/pinia/cellStore";
 const cellStore = useCellStore();
 
 export default function screenHelper() {
-  //const minDistanceForLineSelection = 10;
-  const minDistanceForSelection = 25;
-  //const minDistanceForCurveSelection = 10;
   type NotationDistance = { notation: NotationAttributes; distance: number };
 
   function getClickedCell(
@@ -52,6 +48,18 @@ export default function screenHelper() {
 
     return { col: clickedCellCol, row: clickedCellRow };
   }
+
+  function clickedAtCellBottom(
+    svgId: string,
+    dotCoordinates: DotCoordinates,
+  ): boolean {
+    const boundingRect = document
+      .getElementById(svgId)
+      ?.getBoundingClientRect();
+
+    return (dotCoordinates.y - boundingRect?.top!) % cellStore.getCellVerticalHeight() < 5;
+  }
+
 
   function getClickedCellTopLeftCoordinates(
     svgId: string,
@@ -461,6 +469,7 @@ export default function screenHelper() {
   }
 
   return {
+    clickedAtCellBottom,
     getNotationAtCoordinates,
     getClickedCell,
     getRectCoordinatesOccupiedCells,

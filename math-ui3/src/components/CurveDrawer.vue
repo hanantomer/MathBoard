@@ -54,6 +54,10 @@ const curveType = computed(() => {
   return editModeStore.isConcaveCurveMode() ? "CONCAVE" : "CONVEX";
 });
 
+const svgDimensions = computed(() => {
+  return document.getElementById(props.svgId)?.getBoundingClientRect()!;
+});
+
 // watch
 
 watch(
@@ -121,8 +125,8 @@ function onMouseDown(e: MouseEvent) {
     curveHelper.resetCurveDrawing();
 
     curveHelper.startCurveDrawing({
-      x: e.offsetX,
-      y: e.offsetY,
+      x: e.pageX - svgDimensions.value.x,
+      y: e.pageY - svgDimensions.value.y,
     });
     editModeStore.setNextEditMode();
   }
@@ -207,7 +211,7 @@ function onMouseMove(e: MouseEvent) {
     return;
   }
 
-  setCurve(e.offsetX, e.offsetY);
+  setCurve(e.pageX - svgDimensions.value.x, e.pageY - svgDimensions.value.y);
 }
 
 function onMouseUp() {
