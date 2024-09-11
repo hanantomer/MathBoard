@@ -44,10 +44,8 @@ const cellStore = useCellStore();
 const screenHelper = useScreenHelper();
 const selectionHelper = useSelectionHelper();
 
-const show = computed(() => editModeStore.getEditMode() === "EXPONENT_WRITING");
-
+// variable
 let selectedNotation: ExponentNotationAttributes | null = null;
-
 let exponentLeft = ref(0);
 let exponentTop = ref(0);
 
@@ -55,11 +53,11 @@ const props = defineProps({
   svgId: { type: String },
 });
 
-const svgDimensions = computed(() => {
-  return document.getElementById(props?.svgId)?.getBoundingClientRect()!;
-});
+// computed
 
-// emitted by eventHelper
+const show = computed(() => editModeStore.getEditMode() === "EXPONENT_WRITING");
+
+// whatch
 watch(
   () => eventBus.bus.value.get("EV_KEYUP"),
   async (e: KeyboardEvent) => {
@@ -121,12 +119,7 @@ watch(
   },
 );
 
-function handleKeyUp(e: KeyboardEvent) {
-  const { code } = e;
-  if (code === "Enter" && editModeStore.getEditMode() == "EXPONENT_WRITING") {
-    editModeStore.setNextEditMode();
-  }
-}
+// event handlers
 
 function handleMouseDown(e: MouseEvent) {
   if (e.buttons !== 1) {
@@ -134,9 +127,9 @@ function handleMouseDown(e: MouseEvent) {
   }
 
   if (editModeStore.isExponentStartedMode()) {
-    selectionHelper.selectCell(props?.svgId, {
-      x: e.pageX + svgDimensions.value.x,
-      y: e.pageY + svgDimensions.value.y,
+    selectionHelper.selectCell(props.svgId!, {
+      x: e.pageX,
+      y: e.pageY,
     });
     startNewExponent();
     return;
@@ -148,12 +141,21 @@ function handleMouseDown(e: MouseEvent) {
   }
 }
 
+function handleKeyUp(e: KeyboardEvent) {
+  const { code } = e;
+  if (code === "Enter" && editModeStore.getEditMode() == "EXPONENT_WRITING") {
+    editModeStore.setNextEditMode();
+  }
+}
+
+// methods
+
 function startNewExponent() {
   editModeStore.setEditMode("EXPONENT_WRITING");
   (document.getElementById("exponentInput") as HTMLInputElement).value = "";
   (document.getElementById("baseInput") as HTMLInputElement).value = "";
   const clickedCoordinates = screenHelper.getClickedCellTopLeftCoordinates(
-    props.svgId,
+    props.svgId!,
     cellStore.getSelectedCell(),
   );
 

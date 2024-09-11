@@ -16,7 +16,7 @@
 </template>
 
 <script setup lang="ts">
-import { watch, computed, ref } from "vue";
+import { watch, computed, ref, onMounted } from "vue";
 import { useEditModeStore } from "../store/pinia/editModeStore";
 import { useCellStore } from "../store/pinia/cellStore";
 import { useNotationStore } from "../store/pinia/notationStore";
@@ -35,6 +35,8 @@ const notationStore = useNotationStore();
 const notationMutateHelper = useNotationMutateHelper();
 const selectionHelper = useSelectionHelper();
 
+// variables
+
 const props = defineProps({
   svgId: { type: String },
 });
@@ -49,6 +51,18 @@ let dragPosition = ref<DotCoordinates>({
   y: 0,
 });
 
+let svgDimensions: DOMRect | null = null;
+
+// life cycle events
+
+onMounted(() => {
+  svgDimensions = document
+    .getElementById(props.svgId!)
+    ?.getBoundingClientRect()!;
+});
+
+// computed
+
 const show = computed(() => {
   return (
     editModeStore.isAreaSelectionOrMovingMode() &&
@@ -57,10 +71,6 @@ const show = computed(() => {
     selectionPosition.value.topLeft.y != selectionPosition.value.bottomRight.y
   );
 });
-
-function svgDimensions() {
-  return document.getElementById(props.svgId!)?.getBoundingClientRect();
-}
 
 const selectionRectLeft = computed(() => {
   return Math.min(
@@ -102,7 +112,8 @@ const selectionRectHeight = computed(() => {
   );
 });
 
-// emitted by eventHelper
+// watch
+
 watch(
   () => eventBus.bus.value.get("EV_KEYUP"),
   async (e: KeyboardEvent) => {
@@ -141,54 +152,7 @@ watch(
   { immediate: true, deep: true },
 );
 
-function mouseup(e: MouseEvent) {
-  eventBus.emit("EV_SVG_MOUSEUP", e);
-}
-
-function mousemove(e: MouseEvent) {
-  eventBus.emit("EV_SVG_MOUSEMOVE", e);
-}
-
-async function keyUp(e: KeyboardEvent) {
-  if (selectionRectHeight.value === 0) return;
-
-  switch (e.code) {
-    case "ArrowLeft":
-      if (!notationMutateHelper.moveSelectedNotations(-1, 0, e.ctrlKey)) return;
-      await moveSelectionByKey(-1, 0);
-      await notationMutateHelper.saveMovedNotations("LEFT");
-      break;
-    case "ArrowRight":
-      if (!notationMutateHelper.moveSelectedNotations(1, 0, e.ctrlKey)) return;
-      moveSelectionByKey(1, 0);
-      await notationMutateHelper.saveMovedNotations("RIGHT");
-      break;
-    case "ArrowDown":
-      if (!notationMutateHelper.moveSelectedNotations(0, 1, e.ctrlKey)) return;
-      moveSelectionByKey(0, 1);
-      await notationMutateHelper.saveMovedNotations("BOTTOM");
-      break;
-    case "ArrowUp":
-      if (!notationMutateHelper.moveSelectedNotations(0, -1, e.ctrlKey)) return;
-      moveSelectionByKey(0, -1);
-      await notationMutateHelper.saveMovedNotations("TOP");
-      break;
-  }
-}
-
-async function moveSelectionByKey(
-  moveHorizontal: number,
-  moveVertical: number,
-) {
-  selectionPosition.value.topLeft.x +=
-    moveHorizontal * (cellStore.getCellHorizontalWidth() + cellSpace);
-  selectionPosition.value.topLeft.y +=
-    moveVertical * (cellStore.getCellVerticalHeight() + cellSpace);
-  selectionPosition.value.bottomRight.x +=
-    moveHorizontal * (cellStore.getCellHorizontalWidth() + cellSpace);
-  selectionPosition.value.bottomRight.y +=
-    moveVertical * cellStore.getCellVerticalHeight() + cellSpace;
-}
+// event handlers
 
 function handleMouseDown(e: MouseEvent) {
   if (e.buttons !== 1) {
@@ -241,7 +205,6 @@ function handleMouseMove(e: MouseEvent) {
     editModeStore.setEditMode("TEXT_AREA_SELECTING");
   } else {
     editModeStore.setEditMode("AREA_SELECTING");
-    //resetSelection();
   }
 }
 
@@ -277,6 +240,57 @@ function handleMouseUp(e: MouseEvent) {
   }
 }
 
+function mouseup(e: MouseEvent) {
+  eventBus.emit("EV_SVG_MOUSEUP", e);
+}
+
+function mousemove(e: MouseEvent) {
+  eventBus.emit("EV_SVG_MOUSEMOVE", e);
+}
+
+async function keyUp(e: KeyboardEvent) {
+  if (selectionRectHeight.value === 0) return;
+
+  switch (e.code) {
+    case "ArrowLeft":
+      if (!notationMutateHelper.moveSelectedNotations(-1, 0, e.ctrlKey)) return;
+      await moveSelectionByKey(-1, 0);
+      await notationMutateHelper.saveMovedNotations("LEFT");
+      break;
+    case "ArrowRight":
+      if (!notationMutateHelper.moveSelectedNotations(1, 0, e.ctrlKey)) return;
+      moveSelectionByKey(1, 0);
+      await notationMutateHelper.saveMovedNotations("RIGHT");
+      break;
+    case "ArrowDown":
+      if (!notationMutateHelper.moveSelectedNotations(0, 1, e.ctrlKey)) return;
+      moveSelectionByKey(0, 1);
+      await notationMutateHelper.saveMovedNotations("BOTTOM");
+      break;
+    case "ArrowUp":
+      if (!notationMutateHelper.moveSelectedNotations(0, -1, e.ctrlKey)) return;
+      moveSelectionByKey(0, -1);
+      await notationMutateHelper.saveMovedNotations("TOP");
+      break;
+  }
+}
+
+async function moveSelectionByKey(
+  moveHorizontal: number,
+  moveVertical: number,
+) {
+  selectionPosition.value.topLeft.x +=
+    moveHorizontal * (cellStore.getCellHorizontalWidth() + cellSpace);
+  selectionPosition.value.topLeft.y +=
+    moveVertical * (cellStore.getCellVerticalHeight() + cellSpace);
+  selectionPosition.value.bottomRight.x +=
+    moveHorizontal * (cellStore.getCellHorizontalWidth() + cellSpace);
+  selectionPosition.value.bottomRight.y +=
+    moveVertical * cellStore.getCellVerticalHeight() + cellSpace;
+}
+
+// methods
+
 // extend or shrink selection area following inner mouse move
 function updateSelectionArea(e: MouseEvent) {
   if (selectionPosition.value.topLeft.x == 0) {
@@ -286,6 +300,7 @@ function updateSelectionArea(e: MouseEvent) {
 
   selectionPosition.value.bottomRight.x = e.pageX;
   selectionPosition.value.bottomRight.y = e.pageY;
+  cellStore.resetSelectedCell();
 }
 
 function endSelect() {
@@ -311,28 +326,29 @@ function endSelect() {
 function moveSelection(e: MouseEvent) {
   // initial drag position
   if (!dragPosition.value.x) {
-    dragPosition.value.x = e.pageX - svgDimensions()!.left;
-    dragPosition.value.y = e.pageY - svgDimensions()!.top;
+    if (!svgDimensions) return;
+    dragPosition.value.x = e.pageX - svgDimensions?.left;
+    dragPosition.value.y = e.pageY - svgDimensions?.top;
     return;
   }
 
   // movement is still too small
   if (
-    Math.abs(e.pageX - svgDimensions()!.x - dragPosition.value.x) <
+    Math.abs(e.pageX - svgDimensions!.x - dragPosition.value.x) <
       cellStore.getCellHorizontalWidth() + cellSpace &&
-    Math.abs(e.pageY - svgDimensions()!.y - dragPosition.value.y) <
+    Math.abs(e.pageY - svgDimensions!.y - dragPosition.value.y) <
       cellStore.getCellVerticalHeight() + cellSpace
   ) {
     return;
   }
 
   const rectDeltaX = Math.round(
-    (e.pageX - svgDimensions()!.x - dragPosition.value.x) /
+    (e.pageX - svgDimensions!.x - dragPosition.value.x) /
       (cellStore.getCellHorizontalWidth() + cellSpace),
   );
 
   const rectDeltaY = Math.round(
-    (e.pageY - svgDimensions.value.y - dragPosition.value.y) /
+    (e.pageY - svgDimensions!.y - dragPosition.value.y) /
       (cellStore.getCellVerticalHeight() + cellSpace),
   );
 
@@ -352,8 +368,8 @@ function moveSelection(e: MouseEvent) {
     selectionPosition.value.bottomRight.y +=
       rectDeltaY * (cellStore.getCellVerticalHeight() + cellSpace);
 
-    dragPosition.value.x = e.pageX - svgDimensions.value.x;
-    dragPosition.value.y = e.pageY - svgDimensions.value.y;
+    dragPosition.value.x = e.pageX - svgDimensions!.x;
+    dragPosition.value.y = e.pageY - svgDimensions!.y;
   }
 }
 
@@ -385,9 +401,9 @@ function resetSelection() {
     selectionPosition.value.topLeft.y =
     selectionPosition.value.bottomRight.y =
       0;
-  cellStore.resetSelectedCell();
   notationStore.resetSelectedNotations();
 }
+
 </script>
 
 <style>

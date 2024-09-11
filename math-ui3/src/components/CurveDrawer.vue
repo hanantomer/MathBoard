@@ -23,7 +23,7 @@
 import useNotationMutateHelper from "../helpers/notationMutateHelper";
 import useCurveHelper from "../helpers/curveHelper";
 
-import { watch, computed } from "vue";
+import { watch, computed, onMounted } from "vue";
 import { useNotationStore } from "../store/pinia/notationStore";
 import { useEditModeStore } from "../store/pinia/editModeStore";
 import {
@@ -41,7 +41,13 @@ const editModeStore = useEditModeStore();
 // props
 
 const props = defineProps({
-  svgId: { type: String, default: "" },
+  svgId: { type: String },
+});
+
+let svgDimensions: DOMRect | null = null;
+
+onMounted(() => {
+  svgDimensions = document.getElementById(props.svgId!)?.getBoundingClientRect()!;
 });
 
 const show = computed(() => {
@@ -54,9 +60,6 @@ const curveType = computed(() => {
   return editModeStore.isConcaveCurveMode() ? "CONCAVE" : "CONVEX";
 });
 
-const svgDimensions = computed(() => {
-  return document.getElementById(props.svgId)?.getBoundingClientRect()!;
-});
 
 // watch
 
@@ -125,8 +128,8 @@ function onMouseDown(e: MouseEvent) {
     curveHelper.resetCurveDrawing();
 
     curveHelper.startCurveDrawing({
-      x: e.pageX - svgDimensions.value.x,
-      y: e.pageY - svgDimensions.value.y,
+      x: e.pageX - svgDimensions!.x,
+      y: e.pageY - svgDimensions!.y,
     });
     editModeStore.setNextEditMode();
   }
@@ -211,7 +214,7 @@ function onMouseMove(e: MouseEvent) {
     return;
   }
 
-  setCurve(e.pageX - svgDimensions.value.x, e.pageY - svgDimensions.value.y);
+  setCurve(e.pageX - svgDimensions!.x, e.pageY - svgDimensions!.y);
 }
 
 function onMouseUp() {

@@ -40,7 +40,7 @@
 <script setup lang="ts">
 import useNotationMutateHelper from "../helpers/notationMutateHelper";
 
-import { watch, computed, ref } from "vue";
+import { watch, computed, ref, onMounted } from "vue";
 import { useNotationStore } from "../store/pinia/notationStore";
 import { useCellStore } from "../store/pinia/cellStore";
 import { useEditModeStore } from "../store/pinia/editModeStore";
@@ -61,11 +61,20 @@ const notationStore = useNotationStore();
 const cellStore = useCellStore();
 const editModeStore = useEditModeStore();
 
+// vars
+
+const linePosition = ref(<SlopeLinePosition>{
+  left: { x: 0, y: 0 },
+  right: { x: 0, y: 0 },
+});
+
 type SlopeType = "POSITIVE" | "NEGATIVE" | "NONE";
 const slopeType = ref<SlopeType>("NONE");
 
 type MovementDirection = "UP" | "DOWN" | "NONE";
 const movementDirection = ref<MovementDirection>("NONE");
+
+let svgDimensions: DOMRect | null = null;
 
 // props
 
@@ -73,12 +82,15 @@ const props = defineProps({
   svgId: { type: String },
 });
 
-// vars
+// lifecycle events
 
-let linePosition = ref(<SlopeLinePosition>{
-  left: { x: 0, y: 0 },
-  right: { x: 0, y: 0 },
+onMounted(() => {
+  svgDimensions = document
+    .getElementById(props.svgId!)
+    ?.getBoundingClientRect()!;
 });
+
+// computed
 
 const show = computed(() => {
   return (
@@ -104,27 +116,31 @@ let lineTop = computed(() => {
 });
 
 let handleLeft = computed(() => {
-  return lineLeft.value + (svgDimensions()?.left ?? 0);
+  if (!svgDimensions) return;
+  return lineLeft.value + (svgDimensions.left ?? 0);
 });
 
 let handleRight = computed(() => {
-  return lineRight.value + (svgDimensions()?.left ?? 0);
+  if (!svgDimensions) return;
+  return lineRight.value + (svgDimensions.left ?? 0);
 });
 
 let handleTop = computed(() => {
-  return lineTop.value + (svgDimensions()?.top ?? 0);
+  if (!svgDimensions) return;
+  return lineTop.value + (svgDimensions.top ?? 0);
 });
 
 let handleBottom = computed(() => {
-  return lineBottom.value + (svgDimensions()?.top ?? 0);
+  if (!svgDimensions) return;
+  return lineBottom.value + (svgDimensions.top ?? 0);
 });
 
 // watch
 
 watch(
-  () => eventBus.bus.value.get("EV_SVG_MOUSEUP"),
-  () => {
-    onMouseUp();
+  () => eventBus.bus.value.get("EV_SVG_MOUSEDOWN"),
+  (e: MouseEvent) => {
+    onMouseDown(e);
   },
 );
 
@@ -136,9 +152,9 @@ watch(
 );
 
 watch(
-  () => eventBus.bus.value.get("EV_SVG_MOUSEDOWN"),
-  (e: MouseEvent) => {
-    onMouseDown(e);
+  () => eventBus.bus.value.get("EV_SVG_MOUSEUP"),
+  () => {
+    onMouseUp();
   },
 );
 
@@ -150,24 +166,6 @@ watch(
 );
 
 // event handlers
-
-function onSlopeLineSelected(lineNotation: SlopeLineNotationAttributes) {
-  linePosition.value.left.x =
-    lineNotation.fromCol * (cellStore.getCellHorizontalWidth() + cellSpace);
-
-  linePosition.value.left.y =
-    lineNotation.fromRow * (cellStore.getCellVerticalHeight() + cellSpace);
-
-  linePosition.value.right.x =
-    lineNotation.toCol * (cellStore.getCellHorizontalWidth() + cellSpace);
-
-  linePosition.value.right.y =
-    lineNotation.toRow * (cellStore.getCellVerticalHeight() + cellSpace);
-
-  notationStore.selectNotation(lineNotation.uuid);
-
-  eventBus.emit("EV_SLOPE_LINE_SELECTED", null); // to enable re selection
-}
 
 function onHandleMouseDown() {
   editModeStore.setNextEditMode();
@@ -188,16 +186,96 @@ function onMouseDown(e: MouseEvent) {
   // new line
   if (editModeStore.isSlopeLineStartedMode()) {
     startLineDrawing({
-      x: e.offsetX,
-      y: e.offsetY,
+      x: e.pageX - svgDimensions!.x,
+      y: e.pageY - svgDimensions!.y,
     });
     editModeStore.setNextEditMode();
   }
 }
 
+function onMouseMove(e: MouseEvent) {
+  // ignore right button
+  if (e.buttons !== 1) {
+    return;
+  }
+
+  // nothing done yet
+  if (
+    linePosition.value.left.x === 0 &&
+    linePosition.value.left.y === 0 &&
+    linePosition.value.right.x === 0 &&
+    linePosition.value.right.y === 0
+  ) {
+    return;
+  }
+
+  // movement is neglectable
+  if (
+    isSiginificantMove(linePosition.value.left.x, e.pageX - svgDimensions!.x) ||
+    isSiginificantMove(linePosition.value.left.y, e.pageY - svgDimensions!.y) ||
+    isSiginificantMove(linePosition.value.right.x, e.pageX - svgDimensions!.x) ||
+    isSiginificantMove(linePosition.value.right.y, e.pageY - svgDimensions!.y)
+  ) {
+    return;
+  }
+
+  if (!editModeStore.isSlopeLineDrawingMode()) {
+    return;
+  }
+
+  setLine(e.pageX - svgDimensions!.x, e.pageY - svgDimensions!.y);
+}
+
+function onMouseUp() {
+  // drawing not started
+  if (
+    linePosition.value.left.x === 0 &&
+    linePosition.value.left.y === 0 &&
+    linePosition.value.right.x === 0 &&
+    linePosition.value.right.y === 0
+  ) {
+    return;
+  }
+
+  // line yet not modified
+  if (editModeStore.isSlopeLineDrawingMode()) {
+    endDrawLine();
+  }
+}
+
+function onSlopeLineSelected(lineNotation: SlopeLineNotationAttributes) {
+  linePosition.value.left.x =
+    lineNotation.fromCol * (cellStore.getCellHorizontalWidth() + cellSpace);
+
+  linePosition.value.left.y =
+    lineNotation.fromRow * (cellStore.getCellVerticalHeight() + cellSpace);
+
+  linePosition.value.right.x =
+    lineNotation.toCol * (cellStore.getCellHorizontalWidth() + cellSpace);
+
+  linePosition.value.right.y =
+    lineNotation.toRow * (cellStore.getCellVerticalHeight() + cellSpace);
+
+  notationStore.selectNotation(lineNotation.uuid);
+
+  eventBus.emit("EV_SLOPE_LINE_SELECTED", null); // to enable re selection
+}
+
+// methods
+
+function startLineDrawing(position: DotCoordinates) {
+  slopeType.value = "NONE";
+  movementDirection.value = "NONE";
+
+  linePosition.value.left.x = linePosition.value.right.x = position.x;
+  linePosition.value.left.y = linePosition.value.right.y = position.y;
+
+  console.debug("startLineDrawing");
+}
+
 function setLine(xPos: number, yPos: number) {
   if (slopeType.value === "NONE") {
-    setSlopeType(xPos, yPos);
+    slopeType.value = getSlopeType(xPos, yPos);
   }
 
   if (movementDirection.value === "NONE") {
@@ -218,6 +296,9 @@ function setLine(xPos: number, yPos: number) {
     (slopeType.value === "POSITIVE" && movementDirection.value === "UP") ||
     (slopeType.value === "NEGATIVE" && movementDirection.value === "DOWN");
 
+  console.debug(slopeType.value);
+  console.debug(movementDirection.value);
+
   if (modifyRight) {
     linePosition.value.right.x = xPos;
     linePosition.value.right.y = yPos;
@@ -227,72 +308,17 @@ function setLine(xPos: number, yPos: number) {
   }
 }
 
-function setSlopeType(xPos: number, yPos: number) {
+function getSlopeType(xPos: number, yPos: number) : SlopeType {
   if (
-    (yPos < linePosition.value.right.y &&
-      xPos > linePosition.value.right.x) /*moving up and right*/ ||
+    /*moving up and right*/
+    (yPos < linePosition.value.right.y && xPos > linePosition.value.right.x) ||
+    /*moving down and left*/
     (yPos > linePosition.value.right.y && xPos < linePosition.value.right.x)
   ) {
-    /*moving down and left*/
-    slopeType.value = "POSITIVE";
-  } else {
-    slopeType.value = "NEGATIVE";
-  }
-}
-
-function onMouseMove(e: MouseEvent) {
-  // ignore right button
-  if (e.buttons !== 1) {
-    return;
+    return  "POSITIVE";
   }
 
-  // nothing done yet
-  if (
-    linePosition.value.left.x === 0 &&
-    linePosition.value.left.y === 0 &&
-    linePosition.value.right.x === 0 &&
-    linePosition.value.right.y === 0
-  ) {
-    return;
-  }
-
-  if (!editModeStore.isSlopeLineDrawingMode()) {
-    return;
-  }
-
-  setLine(e.offsetX, e.offsetY);
-}
-
-function onMouseUp() {
-  // drawing not started
-  if (
-    linePosition.value.left.x === 0 &&
-    linePosition.value.left.y === 0 &&
-    linePosition.value.right.x === 0 &&
-    linePosition.value.right.y === 0
-  ) {
-    return;
-  }
-
-  // line yet not modified
-  if (editModeStore.isSlopeLineDrawingMode()) {
-    endDrawLine();
-  }
-}
-
-// methods
-
-function svgDimensions(): DOMRect | undefined {
-  return document.getElementById(props?.svgId)?.getBoundingClientRect();
-}
-
-function startLineDrawing(position: DotCoordinates) {
-  slopeType.value = "NONE";
-  movementDirection.value = "NONE";
-
-  linePosition.value.left.x = linePosition.value.right.x = position.x;
-  linePosition.value.left.y = linePosition.value.right.y = position.y;
-  console.debug(position);
+  return  "NEGATIVE";
 }
 
 function endDrawLine() {
@@ -356,6 +382,12 @@ function resetLineDrawing() {
       0;
   editModeStore.setDefaultEditMode();
 }
+
+function isSiginificantMove(a1: number, a2: number) : boolean {
+  return Math.abs(a1 - a2) < 3;
+}
+
+
 </script>
 
 <style>

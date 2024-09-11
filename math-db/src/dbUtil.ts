@@ -14,6 +14,7 @@ import { AnswerAttributes, AnswerCreationAttributes } from "../../math-common/bu
 import { capitalize } from "../../math-common/build/utils";
 import { BoardType, NotationType } from "../../math-common/src/unions";
 import { Model, ModelCtor } from "sequelize";
+import { stringify } from "querystring";
 
 let modelMap = new Map<string, ModelCtor<Model>>();
 
@@ -310,7 +311,6 @@ export default function dbUtil() {
         });
     }
 
-    /// TODO: use getModelName and reduce boilerplate
     async function createNotation(
         boardType: String,
         notationType: String,
@@ -390,46 +390,62 @@ export default function dbUtil() {
         switch (model.notationType) {
             case "EXPONENT":{
                 const m = model as ExponentNotationAttributes;
-                return (
+
+                if(! (
                     m.col >= 0 &&
                     m.row >= 0 &&
                     m.base.length > 0 &&
                     m.exponent.length > 0
-                );
+                )) {
+                    throw new Error("invalid model:" + JSON.stringify(m));
+                }
+                break;
             }
 
             case "SYMBOL": {
                 const m = model as PointNotationAttributes;
-                return m.col >= 0 && m.row >= 0 && m.value.length > 0;
+                if (!( m.col >= 0 && m.row >= 0 && m.value.length > 0)) {
+                    throw new Error("invalid model:" + JSON.stringify(m));
+                };
+                break;
             }
             case "HORIZONTALLINE": {
                 const m = model as HorizontalLineNotationAttributes;
-                return (
+                if( ! (
                     m.fromCol >= 0 &&
                     m.toCol >= 0 &&
                     m.row >= 0 &&
-                    m.fromCol <= m.toCol
-                );
+                    m.fromCol < m.toCol
+                )) {
+                    throw new Error("invalid model:" + JSON.stringify(m));;
+                }
+                break;
             }
             case "SLOPELINE": {
                 const m = model as SlopeLineNotationAttributes;
-                return (
+                if (! (
                     m.fromCol >= 0 &&
                     m.toCol >= 0 &&
                     m.fromRow >= 0 &&
                     m.toRow >= 0 &&
                     m.fromCol < m.toCol &&
                     m.fromRow != m.toRow
-                );
+                )) {
+                    throw new Error("invalid model:" + JSON.stringify(m));
+                }
+                break;
             }
             case "VERTICALLINE": {
                 const m = model as VerticalLineNotationAttributes;
-                return (
+                if (! (
                     m.col >= 0 &&
                     m.fromRow >= 0 &&
                     m.toRow >= 0 &&
-                    m.fromRow <= m.toRow
-                );
+                    m.fromRow < m.toRow
+                )) {
+                    throw new Error("invalid model:" + JSON.stringify(m));
+                }
+                break;
             }
         }
 

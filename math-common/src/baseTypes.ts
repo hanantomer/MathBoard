@@ -33,6 +33,11 @@ export type SingleValueAttributes =  {
   value: string;
 };
 
+export type SymbolAttributes =  {
+  followsFraction: boolean;
+};
+
+
 export type DotCoordinates = {x: number, y:number};
 
 export type LineCoordinates = {
@@ -58,12 +63,15 @@ export type VerticalLinePosition =  {
   y2: number;
 };
 
-// if y of left DotCoordinates is less than y of right DotCoordinates slope is positive and vice versa
+// if y of left DotCoordinates is less than y of right DotCoordinates 
+// slope is positive and vice versa
+/// TODO mieght not be global
 export type SlopeLinePosition =  {
   left: DotCoordinates, 
   right: DotCoordinates
 };
 
+/// TODO mieght not be global
 export type CurvePosition =  {
   left: DotCoordinates, 
   right: DotCoordinates,
@@ -137,7 +145,7 @@ export type Board = {
 };
 
 
-export type PointNotationAttributes = EntityAttributes &  NotationAttributes & CellAttributes & SingleValueAttributes;
+export type PointNotationAttributes = EntityAttributes &  NotationAttributes & CellAttributes & SingleValueAttributes & SymbolAttributes;
 export type HorizontalLineNotationAttributes = EntityAttributes & NotationAttributes & HorizontalLineAttributes;
 export type VerticalLineNotationAttributes = EntityAttributes & NotationAttributes & VerticalLineAttributes;
 export type SlopeLineNotationAttributes = EntityAttributes & NotationAttributes & SlopeLineAttributes;

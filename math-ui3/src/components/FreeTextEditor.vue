@@ -15,7 +15,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, watch, ref } from "vue";
+import { computed, watch, ref, onMounted } from "vue";
 import { useCellStore } from "../store/pinia/cellStore";
 import { useEditModeStore } from "../store/pinia/editModeStore";
 import { RectNotationAttributes } from "../../../math-common/build/baseTypes";
@@ -40,11 +40,15 @@ const show = computed(() => editModeStore.getEditMode() === "TEXT_WRITING");
 let selectedNotation: RectNotationAttributes | null = null;
 
 const props = defineProps({
-  svgId: { type: String, default: "" },
+  svgId: { type: String },
 });
 
-const svgDimensions = computed(() => {
-  return document.getElementById(props.svgId)?.getBoundingClientRect()!;
+let svgDimensions: DOMRect | null = null;
+
+onMounted(() => {
+  svgDimensions = document
+    .getElementById(props.svgId!)
+    ?.getBoundingClientRect()!;
 });
 
 let textLeft = ref(0);
@@ -115,13 +119,13 @@ function editSelectedTextNotation(textNotation: RectNotationAttributes) {
 // set text area dimensions upon notation selection
 function setInitialTextDimensions(textNotation: RectNotationAttributes) {
   textLeft.value =
-    svgDimensions.value.left +
+    svgDimensions!.x +
     window.scrollX +
     textNotation.fromCol * (cellStore.getCellHorizontalWidth() + cellSpace) -
     cellSpace;
 
   textTop.value =
-    svgDimensions.value.top +
+    svgDimensions!.y +
     window.scrollY +
     textNotation.fromRow * (cellStore.getCellVerticalHeight() + cellSpace) -
     cellSpace;
@@ -144,7 +148,6 @@ function setInitialTextValue() {
   }
 }
 
-
 function submitText() {
   console.debug("submitText");
   editModeStore.setNextEditMode();
@@ -158,20 +161,13 @@ function submitText() {
 
   const rectCoordinates = screenHelper.getRectAttributes({
     topLeft: {
-      x: textLeft.value + window.scrollX - svgDimensions.value.left,
-      y: textTop.value + window.scrollY - svgDimensions.value.top,
+      x: textLeft.value + window.scrollX - svgDimensions!.x,
+      y: textTop.value + window.scrollY - svgDimensions!.y,
     },
     bottomRight: {
       x:
-        textLeft.value +
-        textWidth.value +
-        window.scrollX -
-        svgDimensions.value.left,
-      y:
-        textTop.value +
-        textHeight.value +
-        window.scrollY -
-        svgDimensions.value.top,
+        textLeft.value + textWidth.value + window.scrollX - svgDimensions!.x,
+      y: textTop.value + textHeight.value + window.scrollY - svgDimensions!.y,
     },
   });
 
@@ -200,7 +196,6 @@ function restoreTextNotation(uuid: string) {
     .querySelector<HTMLElement>(`foreignObject[uuid="${uuid}"]`)!
     .classList.remove("hidden");
 }
-
 </script>
 <style>
 textarea {

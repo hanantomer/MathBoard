@@ -1,26 +1,30 @@
 import * as d3 from "d3";
 import { NotationTypeShape } from "common/unions";
 import { matrixDimensions, defaultdCellStroke } from "common/globals";
-import { HorizontalLineNotationAttributes } from "common/baseTypes";
-import { useNotationStore } from "../store/pinia/notationStore";
+import {
+  HorizontalLineNotationAttributes,
+  PointNotationAttributes,
+} from "common/baseTypes";
 import { useCellStore } from "../store/pinia/cellStore";
+import { useNotationStore } from "../store/pinia/notationStore";
 import { cellSpace } from "common/globals";
 import { NotationAttributes } from "common/baseTypes";
 import useLineHelper from "./matrixLineHelper";
 import useCurveHelper from "./matrixCurveHelper";
 import useHtmlHelper from "./matrixHtmlHelper";
+import notationCellOccupationHelper from "./notationCellOccupationHelper";
 
 const lineHelper = useLineHelper();
 const curveHelper = useCurveHelper();
 const cellStore = useCellStore();
+const notationStore = useNotationStore();
 const htmlHelper = useHtmlHelper();
 
 export default function useMatrixHelper() {
   let matrix: any[] = [];
 
   function setCellVerticalHeight(svgId: string) {
-    if(cellStore.getCellVerticalHeight())
-      return;
+    if (cellStore.getCellVerticalHeight()) return;
 
     let clientWidth: number | undefined =
       document.getElementById(svgId)?.clientWidth;
@@ -89,19 +93,41 @@ export default function useMatrixHelper() {
         enrichedNotations.push(notation);
         // add sqrt symbol
         if (notation.notationType === "SQRT") {
-          let sqrtNotation = notation as HorizontalLineNotationAttributes;
-          let sqrtSignNotation = {
-            ...sqrtNotation,
-            col: sqrtNotation.fromCol,
-            toCol: sqrtNotation.fromCol,
-          };
-          sqrtSignNotation.uuid = sqrtNotation.uuid + "_";
-          sqrtSignNotation.notationType = "SQRTSYMBOL";
-          enrichedNotations.push(sqrtSignNotation);
+          enrichedNotations.push(getSqrtSymbol(notation));
+        }
+
+        if (notation.notationType === "SYMBOL") {
+          let pointNotation = notation as PointNotationAttributes;
+          pointNotation.followsFraction = symbolFollowsFraction(pointNotation);
+          console.debug(pointNotation);
         }
       }
     }
     return enrichedNotations;
+  }
+
+  function symbolFollowsFraction(notation: PointNotationAttributes): boolean {
+    const maxLineDistance = 2;
+    if (
+      notationStore.getLineHorizontalDistanceFromCell(notation) <=
+      maxLineDistance
+    ) {
+      return true;
+    }
+
+    return false;
+  }
+
+  function getSqrtSymbol(notation: NotationAttributes): NotationAttributes {
+    let sqrtNotation = notation as HorizontalLineNotationAttributes;
+    let sqrtSignNotation = {
+      ...sqrtNotation,
+      col: sqrtNotation.fromCol,
+      toCol: sqrtNotation.fromCol,
+    };
+    sqrtSignNotation.uuid = sqrtNotation.uuid + "_";
+    sqrtSignNotation.notationType = "SQRTSYMBOL";
+    return sqrtNotation;
   }
 
   function refreshScreen(notations: NotationAttributes[], svgId: string) {

@@ -259,7 +259,6 @@ export const useNotationStore = defineStore("notation", () => {
     copiedNotations.value.clear();
   }
 
-
   function selectNotation(uuid: string) {
     const notation = notations.value.get(uuid);
     if (!notation) return;
@@ -270,7 +269,6 @@ export const useNotationStore = defineStore("notation", () => {
     parent.value.uuid = parentUUID;
     parent.value.type = boardType;
   }
-
 
   function resetSelectedNotations() {
     Array.from(getSelectedNotations()).forEach((n) => (n.selected = false));
@@ -342,9 +340,10 @@ export const useNotationStore = defineStore("notation", () => {
     const notationsUUIDsToSelect = new Set<string>();
 
     for (let i = 0; i < areaCells.length; i++) {
-      getNotationsAtCell(areaCells[i]).forEach((n) => {
-        notationsUUIDsToSelect.add(n.uuid);
-      });
+      const notations = getNotationsAtCell(areaCells[i]);
+      for (let j = 0; j < notations.length; j++) {
+        notationsUUIDsToSelect.add(notations[j].uuid);
+      }
     }
 
     notationsUUIDsToSelect.forEach((uuid) => {
@@ -374,6 +373,26 @@ export const useNotationStore = defineStore("notation", () => {
     return matrix;
   }
 
+  function getLineHorizontalDistanceFromCell(cell: CellAttributes): number {
+    if (cell.col < 0) {
+      throw new Error("invalid col:" + cell.col);
+    }
+
+    if (cell.row < 0) {
+      throw new Error("invalid col:" + cell.row);
+    }
+
+    if (cell.row === matrixDimensions.colsNum) return Number.MAX_VALUE;
+
+    for (let i = cell.col - 1; i <= 0; i++) {
+      if (cellLineNotationOccupationMatrix[i][cell.row + 1].length > 0) {
+        return i;
+      }
+    }
+
+    return Number.MAX_VALUE;
+  }
+
   return {
     addNotation,
     getNotation,
@@ -386,6 +405,7 @@ export const useNotationStore = defineStore("notation", () => {
     getCopiedNotations,
     getNotationsByShape,
     getNotationsAtCell,
+    getLineHorizontalDistanceFromCell,
     selectNotationsOfCells,
     getSelectedNotations,
     getParent,

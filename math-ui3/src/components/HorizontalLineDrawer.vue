@@ -40,7 +40,7 @@
 <script setup lang="ts">
 import useNotationMutateHelper from "../helpers/notationMutateHelper";
 
-import { watch, computed, ref } from "vue";
+import { watch, computed, ref, onMounted } from "vue";
 import { useNotationStore } from "../store/pinia/notationStore";
 import { useCellStore } from "../store/pinia/cellStore";
 import { useEditModeStore } from "../store/pinia/editModeStore";
@@ -69,6 +69,14 @@ const props = defineProps({
   svgId: { type: String },
 });
 
+let svgDimensions: DOMRect | null = null;
+
+onMounted(() => {
+  svgDimensions = document
+    .getElementById(props.svgId!)
+    ?.getBoundingClientRect()!;
+});
+
 // vars
 
 let linePosition = ref(<HorizontaLinePosition>{
@@ -88,10 +96,6 @@ const show = computed(() => {
   );
 });
 
-const svgDimensions = computed(() => {
-  return document.getElementById(props?.svgId)?.getBoundingClientRect()!;
-});
-
 let lineLeft = computed(() => {
   return linePosition.value.x1;
 });
@@ -105,15 +109,15 @@ let lineY = computed(() => {
 });
 
 let handleLeft = computed(() => {
-  return lineLeft.value + (svgDimensions.value.left ?? 0) - 10;
+  return lineLeft.value + (svgDimensions?.left ?? 0) - 10;
 });
 
 let handleRight = computed(() => {
-  return lineRight.value + (svgDimensions.value.left ?? 0) + 10;
+  return lineRight.value + (svgDimensions?.left ?? 0) + 10;
 });
 
 let handleY = computed(() => {
-  return lineY.value + (svgDimensions.value.top ?? 0) - 5;
+  return lineY.value + (svgDimensions?.top ?? 0) - 5;
 });
 
 watch(
@@ -183,8 +187,8 @@ function onMouseDown(e: MouseEvent) {
   // new line
   if (editModeStore.isHorizontalLineStartedMode()) {
     startLineDrawing({
-      x: e.pageX - svgDimensions.value.x,
-      y: e.pageY - svgDimensions.value.y,
+      x: e.pageX - svgDimensions!.x,
+      y: e.pageY - svgDimensions!.y,
     });
     editModeStore.setNextEditMode();
   }
@@ -208,7 +212,7 @@ function onMouseMove(e: MouseEvent) {
   if (!editModeStore.isHorizontalLineDrawingMode()) {
     return;
   }
-  setLine(e.pageX - svgDimensions.value.x);
+  setLine(e.pageX - svgDimensions!.x);
 }
 
 function onMouseUp() {

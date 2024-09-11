@@ -89,7 +89,7 @@ router.beforeEach(async (to, from) => {
     return;
   }
 
-  return { path: "/answer", query: { from: to.path } };
+  return { path: "/login", query: { from: to.path } };
 });
 
 

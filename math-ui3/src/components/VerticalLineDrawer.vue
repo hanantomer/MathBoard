@@ -36,10 +36,11 @@
     </svg>
   </div>
 </template>
-<script setup lang="ts">
-import useNotationMutateHelper from "../helpers/notationMutateHelper";
 
-import { watch, computed, ref } from "vue";
+<script setup lang="ts">
+
+import useNotationMutateHelper from "../helpers/notationMutateHelper";
+import { watch, computed, ref, onMounted } from "vue";
 import { useNotationStore } from "../store/pinia/notationStore";
 import { useCellStore } from "../store/pinia/cellStore";
 import { useEditModeStore } from "../store/pinia/editModeStore";
@@ -68,6 +69,14 @@ const props = defineProps({
   svgId: { type: String },
 });
 
+let svgDimensions: DOMRect | null = null;
+
+onMounted(() => {
+  svgDimensions = document.getElementById(props.svgId!)?.getBoundingClientRect()!;
+});
+
+
+
 // vars
 
 let linePosition = ref(<VerticalLinePosition>{
@@ -76,9 +85,6 @@ let linePosition = ref(<VerticalLinePosition>{
   y2: 0,
 });
 
-const svgDimensions = computed(() => {
-  return document.getElementById(props?.svgId)?.getBoundingClientRect()!;
-});
 
 const show = computed(() => {
   return (
@@ -100,15 +106,18 @@ let lineX = computed(() => {
 });
 
 let handleX = computed(() => {
-  return lineX.value + (svgDimensions.value?.left ?? 0) - 5;
+  if (!svgDimensions) return;
+  return lineX.value + (svgDimensions.left ?? 0) - 5;
 });
 
 let handleTop = computed(() => {
-  return lineTop.value + (svgDimensions.value?.top ?? 0) - 5;
+  if (!svgDimensions) return;
+  return lineTop.value + (svgDimensions.top ?? 0) - 5;
 });
 
 let handleBottom = computed(() => {
-  return lineBottom.value + (svgDimensions.value?.top ?? 0);
+  if (!svgDimensions) return;
+  return lineBottom.value + (svgDimensions.top ?? 0);
 });
 
 // watch
@@ -155,8 +164,7 @@ function onLineSelected(lineNotation: VerticalLineNotationAttributes) {
 
   notationStore.selectNotation(lineNotation.uuid);
 
-  /// TODO use close list for emiiter
-  eventBus.emit("EV_VERTICAL_LINE_SELECTED", null); // to enable re selection
+   eventBus.emit("EV_VERTICAL_LINE_SELECTED", null); // to enable re selection
 }
 
 function onHandleMouseDown() {
@@ -178,8 +186,8 @@ function onMouseDown(e: MouseEvent) {
   // new line
   if (editModeStore.isVerticalLineStartedMode()) {
     startLineDrawing({
-      x: e.pageX - svgDimensions.value.x,
-      y: e.pageY - svgDimensions.value.y,
+      x: e.pageX - (svgDimensions?.x ?? 0),
+      y: e.pageY - (svgDimensions?.y ?? 0),
     });
     editModeStore.setNextEditMode();
   }
@@ -204,7 +212,7 @@ function onMouseMove(e: MouseEvent) {
     return;
   }
 
-  setLine(e.pageY - svgDimensions.value.y);
+  setLine(e.pageY - (svgDimensions?.y ?? 0));
 }
 
 function onMouseUp() {
