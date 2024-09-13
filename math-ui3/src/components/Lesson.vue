@@ -1,13 +1,7 @@
 <template>
   <div class="d-flex">
     <v-sheet>
-      <mathBoard :svgId="svgId" :loaded="loaded">
-        <!-- <template #title
-          ><p class="title">
-            {{ lessonTitle }}
-          </p></template
-        > -->
-      </mathBoard>
+      <mathBoard :svgId="svgId" :loaded="loaded"> </mathBoard>
     </v-sheet>
     <v-sheet class="mt-10">
       <lessonStudents></lessonStudents>
@@ -19,7 +13,7 @@
 import mathBoard from "./MathBoard.vue";
 import useUserOutgoingOperations from "../helpers/userOutgoingOperationsHelper";
 import useUserIncomingOperations from "../helpers/userIncomingOperationsHelper";
-import { computed, ref } from "vue";
+import { ref, onMounted } from "vue";
 import { useUserStore } from "../store/pinia/userStore";
 import { useLessonStore } from "../store/pinia/lessonStore";
 import { useNotationStore } from "../store/pinia/notationStore";
@@ -28,6 +22,7 @@ import { useRoute } from "vue-router";
 import { heartBeatInterval } from "../../../math-common/src/globals";
 import { useEditModeStore } from "../store/pinia/editModeStore";
 import { useTitleStore } from "../store/pinia/titleStore";
+import { useCellStore } from "../store/pinia/cellStore";
 import lessonStudents from "./LessonStudents.vue";
 
 const route = useRoute();
@@ -37,11 +32,16 @@ const lessonStore = useLessonStore();
 const notationStore = useNotationStore();
 const editModeStore = useEditModeStore();
 const titleStore = useTitleStore();
+const cellStore = useCellStore();
 const userOutgoingOperations = useUserOutgoingOperations();
 const userIncomingOperations = useUserIncomingOperations();
 
 let loaded = ref(false);
 const svgId = "lessonSvg";
+
+onMounted(() => {
+  cellStore.setSvgBoundingRect(svgId);
+});
 
 watch(
   route,

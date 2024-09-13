@@ -15,7 +15,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, watch, ref, onMounted } from "vue";
+import { computed, watch, ref } from "vue";
 import { useCellStore } from "../store/pinia/cellStore";
 import { useEditModeStore } from "../store/pinia/editModeStore";
 import { RectNotationAttributes } from "../../../math-common/build/baseTypes";
@@ -38,18 +38,6 @@ const screenHelper = usescreenHelper();
 const show = computed(() => editModeStore.getEditMode() === "TEXT_WRITING");
 
 let selectedNotation: RectNotationAttributes | null = null;
-
-const props = defineProps({
-  svgId: { type: String },
-});
-
-let svgDimensions: DOMRect | null = null;
-
-onMounted(() => {
-  svgDimensions = document
-    .getElementById(props.svgId!)
-    ?.getBoundingClientRect()!;
-});
 
 let textLeft = ref(0);
 let textTop = ref(0);
@@ -119,13 +107,13 @@ function editSelectedTextNotation(textNotation: RectNotationAttributes) {
 // set text area dimensions upon notation selection
 function setInitialTextDimensions(textNotation: RectNotationAttributes) {
   textLeft.value =
-    svgDimensions!.x +
+    cellStore.getSvgBoundingRect().x +
     window.scrollX +
     textNotation.fromCol * (cellStore.getCellHorizontalWidth() + cellSpace) -
     cellSpace;
 
   textTop.value =
-    svgDimensions!.y +
+    cellStore.getSvgBoundingRect().y +
     window.scrollY +
     textNotation.fromRow * (cellStore.getCellVerticalHeight() + cellSpace) -
     cellSpace;
@@ -161,13 +149,13 @@ function submitText() {
 
   const rectCoordinates = screenHelper.getRectAttributes({
     topLeft: {
-      x: textLeft.value + window.scrollX - svgDimensions!.x,
-      y: textTop.value + window.scrollY - svgDimensions!.y,
+      x: textLeft.value + window.scrollX - cellStore.getSvgBoundingRect().x,
+      y: textTop.value + window.scrollY - cellStore.getSvgBoundingRect().y,
     },
     bottomRight: {
       x:
-        textLeft.value + textWidth.value + window.scrollX - svgDimensions!.x,
-      y: textTop.value + textHeight.value + window.scrollY - svgDimensions!.y,
+        textLeft.value + textWidth.value + window.scrollX - cellStore.getSvgBoundingRect().x,
+      y: textTop.value + textHeight.value + window.scrollY - cellStore.getSvgBoundingRect().y,
     },
   });
 

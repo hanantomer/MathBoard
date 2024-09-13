@@ -319,8 +319,11 @@ export default function useHtmlMatrixHelper() {
       return baseHtml + exponentHtml;
     }
 
+    // Symbol
+
     let n1 = n as PointNotationAttributes;
-    return `<p style='color:${color};font-weight:${fontWeight}; position: absolute;top: 50%;transform:
+    const top = n1.followsFraction ? "90%" : "50%";
+    return `<p style='color:${color};font-weight:${fontWeight}; position: absolute;top:${top};transform:
     translateY(-50%);left:20%;font-size:1.1em'>${n1.value}</p>`;
   }
 

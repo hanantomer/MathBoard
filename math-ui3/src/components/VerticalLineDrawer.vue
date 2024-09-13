@@ -40,7 +40,7 @@
 <script setup lang="ts">
 
 import useNotationMutateHelper from "../helpers/notationMutateHelper";
-import { watch, computed, ref, onMounted } from "vue";
+import { watch, computed, ref } from "vue";
 import { useNotationStore } from "../store/pinia/notationStore";
 import { useCellStore } from "../store/pinia/cellStore";
 import { useEditModeStore } from "../store/pinia/editModeStore";
@@ -62,19 +62,6 @@ const notationMutateHelper = useNotationMutateHelper();
 const notationStore = useNotationStore();
 const cellStore = useCellStore();
 const editModeStore = useEditModeStore();
-
-// props
-
-const props = defineProps({
-  svgId: { type: String },
-});
-
-let svgDimensions: DOMRect | null = null;
-
-onMounted(() => {
-  svgDimensions = document.getElementById(props.svgId!)?.getBoundingClientRect()!;
-});
-
 
 
 // vars
@@ -106,18 +93,17 @@ let lineX = computed(() => {
 });
 
 let handleX = computed(() => {
-  if (!svgDimensions) return;
-  return lineX.value + (svgDimensions.left ?? 0) - 5;
+    return lineX.value + (cellStore.getSvgBoundingRect().left ?? 0) - 5;
 });
 
 let handleTop = computed(() => {
-  if (!svgDimensions) return;
-  return lineTop.value + (svgDimensions.top ?? 0) - 5;
+  if (!cellStore.getSvgBoundingRect()) return;
+  return lineTop.value + (cellStore.getSvgBoundingRect().top ?? 0) - 5;
 });
 
 let handleBottom = computed(() => {
-  if (!svgDimensions) return;
-  return lineBottom.value + (svgDimensions.top ?? 0);
+  if (!cellStore.getSvgBoundingRect()) return;
+  return lineBottom.value + (cellStore.getSvgBoundingRect().top ?? 0);
 });
 
 // watch
@@ -186,8 +172,8 @@ function onMouseDown(e: MouseEvent) {
   // new line
   if (editModeStore.isVerticalLineStartedMode()) {
     startLineDrawing({
-      x: e.pageX - (svgDimensions?.x ?? 0),
-      y: e.pageY - (svgDimensions?.y ?? 0),
+      x: e.pageX - (cellStore.getSvgBoundingRect()?.x ?? 0),
+      y: e.pageY - (cellStore.getSvgBoundingRect()?.y ?? 0),
     });
     editModeStore.setNextEditMode();
   }
@@ -212,7 +198,7 @@ function onMouseMove(e: MouseEvent) {
     return;
   }
 
-  setLine(e.pageY - (svgDimensions?.y ?? 0));
+  setLine(e.pageY - (cellStore.getSvgBoundingRect()?.y ?? 0));
 }
 
 function onMouseUp() {

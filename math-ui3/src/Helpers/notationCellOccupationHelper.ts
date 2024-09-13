@@ -74,16 +74,25 @@ export default function notationCellOccupationHelper() {
   ) {
     for (let col = notation.fromCol; col <= notation.toCol; col++) {
       if (validateRowAndCol(col, notation.row)) {
-
         if (validateRowAndCol(col, notation.row - 1))
+          // occupy 2 rows
+
           updateLineOccupationMatrixCell(
             col,
-            notation.row - 1,
+            notation.row,
             matrix,
             notation,
             doRemove,
           );
-       }
+
+        updateLineOccupationMatrixCell(
+          col,
+          notation.row - 1,
+          matrix,
+          notation,
+          doRemove,
+        );
+      }
     }
   }
 

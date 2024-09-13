@@ -49,10 +49,6 @@ let selectedNotation: ExponentNotationAttributes | null = null;
 let exponentLeft = ref(0);
 let exponentTop = ref(0);
 
-const props = defineProps({
-  svgId: { type: String },
-});
-
 // computed
 
 const show = computed(() => editModeStore.getEditMode() === "EXPONENT_WRITING");
@@ -127,7 +123,7 @@ function handleMouseDown(e: MouseEvent) {
   }
 
   if (editModeStore.isExponentStartedMode()) {
-    selectionHelper.selectCell(props.svgId!, {
+    selectionHelper.selectCell( {
       x: e.pageX,
       y: e.pageY,
     });
@@ -155,8 +151,7 @@ function startNewExponent() {
   (document.getElementById("exponentInput") as HTMLInputElement).value = "";
   (document.getElementById("baseInput") as HTMLInputElement).value = "";
   const clickedCoordinates = screenHelper.getClickedCellTopLeftCoordinates(
-    props.svgId!,
-    cellStore.getSelectedCell(),
+    cellStore.getSelectedCell()
   );
 
   exponentLeft.value = clickedCoordinates.x;

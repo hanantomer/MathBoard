@@ -23,9 +23,10 @@
 import useNotationMutateHelper from "../helpers/notationMutateHelper";
 import useCurveHelper from "../helpers/curveHelper";
 
-import { watch, computed, onMounted } from "vue";
+import { watch, computed } from "vue";
 import { useNotationStore } from "../store/pinia/notationStore";
 import { useEditModeStore } from "../store/pinia/editModeStore";
+import { useCellStore } from "../store/pinia/cellStore";
 import {
   CurveAttributes,
   CurveNotationAttributes,
@@ -37,18 +38,7 @@ const notationMutateHelper = useNotationMutateHelper();
 const curveHelper = useCurveHelper();
 const notationStore = useNotationStore();
 const editModeStore = useEditModeStore();
-
-// props
-
-const props = defineProps({
-  svgId: { type: String },
-});
-
-let svgDimensions: DOMRect | null = null;
-
-onMounted(() => {
-  svgDimensions = document.getElementById(props.svgId!)?.getBoundingClientRect()!;
-});
+const cellStore = useCellStore();
 
 const show = computed(() => {
   return (
@@ -128,8 +118,8 @@ function onMouseDown(e: MouseEvent) {
     curveHelper.resetCurveDrawing();
 
     curveHelper.startCurveDrawing({
-      x: e.pageX - svgDimensions!.x,
-      y: e.pageY - svgDimensions!.y,
+      x: e.pageX - cellStore.getSvgBoundingRect().x,
+      y: e.pageY - cellStore.getSvgBoundingRect().y,
     });
     editModeStore.setNextEditMode();
   }
@@ -214,7 +204,7 @@ function onMouseMove(e: MouseEvent) {
     return;
   }
 
-  setCurve(e.pageX - svgDimensions!.x, e.pageY - svgDimensions!.y);
+  setCurve(e.pageX - cellStore.getSvgBoundingRect().x, e.pageY - cellStore.getSvgBoundingRect().y);
 }
 
 function onMouseUp() {

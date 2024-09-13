@@ -1,7 +1,13 @@
 import { NotationTypeShape } from "common/unions";
 import { useNotationStore } from "../store/pinia/notationStore";
 import { useCellStore } from "../store/pinia/cellStore";
-import { RectCoordinates, DotCoordinates } from "common/baseTypes";
+import {
+  RectCoordinates,
+  DotCoordinates,
+  VerticalLineNotationAttributes,
+  HorizontalLineNotationAttributes,
+  SlopeLineNotationAttributes,
+} from "common/baseTypes";
 import { NotationAttributes } from "common/baseTypes";
 import { useLessonStore } from "../store/pinia/lessonStore";
 import { useEditModeStore } from "../store/pinia/editModeStore";
@@ -9,6 +15,7 @@ import usescreenHelper from "./screenHelper";
 import useNotationMutateHelper from "./notationMutateHelper";
 import useUserOutgoingOperationsHelper from "./userOutgoingOperationsHelper";
 import useEventBus from "./eventBusHelper";
+import { max } from "d3";
 
 const eventBus = useEventBus();
 const cellStore = useCellStore();
@@ -19,55 +26,69 @@ const lessonStore = useLessonStore();
 const editModeStore = useEditModeStore();
 
 export default function selectionHelper() {
-  function selectNotationsOfArea(
-    svgId: string,
-    RectCoordinates: RectCoordinates,
-  ) {
+  function selectNotationsOfArea(RectCoordinates: RectCoordinates) {
     // must be initialized here to prevent circular refernce
     const notationStore = useNotationStore();
-    const areaCells = screenHelper.getRectCoordinatesOccupiedCells(
-      svgId,
-      RectCoordinates,
-    );
+    const areaCells =
+      screenHelper.getRectCoordinatesOccupiedCells(RectCoordinates);
     notationStore.selectNotationsOfCells(areaCells);
   }
 
-  function selectNotationAtPosition(
-    svgId: string,
-    dotCoordinates: DotCoordinates,
-  ): NotationAttributes | null {
+  function selectNotationAtPosition(dotCoordinates: DotCoordinates) {
+    const maxDistanceToSelect = 5;
     const notationStore = useNotationStore();
     notationStore.resetSelectedNotations();
 
-    const notation = screenHelper.getNotationAtCoordinates(
-      svgId,
-      dotCoordinates,
-    );
+    const notation = screenHelper.getNotationAtCoordinates(dotCoordinates);
 
     if (!notation) return null;
 
     switch (NotationTypeShape.get(notation!.notationType)) {
       case "HORIZONTAL_LINE":
-        if (!screenHelper.clickedAtCellBottom(svgId, dotCoordinates))
-          return null;
+        const horizontalLineNotation =
+          notation as HorizontalLineNotationAttributes;
+        if (
+          screenHelper.getClickedPosDistanceFromHorizontalLine(
+            dotCoordinates,
+            horizontalLineNotation,
+          ) < maxDistanceToSelect
+        ) {
+          selectLineNotation(notation);
+        }
+        break;
       case "VERTICAL_LINE":
+        const verticalLineNotation = notation as VerticalLineNotationAttributes;
+        if (
+          screenHelper.getClickedPosDistanceFromVerticalLine(
+            dotCoordinates,
+            verticalLineNotation,
+          ) < maxDistanceToSelect
+        ) {
+          selectLineNotation(notation);
+        }
+        break;
       case "SLOPE_LINE": {
-        selectLineNotation(notation!);
+        const slopeLineNotation = notation as SlopeLineNotationAttributes;
+        if (
+          screenHelper.getClickedPosDistanceFromSlopeLine(
+            dotCoordinates,
+            slopeLineNotation,
+          ) < maxDistanceToSelect
+        )
+          selectLineNotation(notation);
         break;
       }
       case "CONVEX_CURVE":
       case "CONCAVE_CURVE": {
-        selectCurveNotation(notation!);
+        selectCurveNotation(notation);
         break;
       }
       case "RECT":
       case "POINT": {
-        selectPointOrRectNotation(notation!);
+        selectPointOrRectNotation(notation);
         break;
       }
     }
-
-    return notation;
   }
 
   function selectPointOrRectNotation(activeNotation: NotationAttributes) {
@@ -119,9 +140,9 @@ export default function selectionHelper() {
     }
   }
 
-  async function selectCell(svgId: string, position: DotCoordinates) {
+  async function selectCell(position: DotCoordinates) {
     const notationStore = useNotationStore();
-    let clickedCell = screenHelper.getClickedCell(svgId, position);
+    let clickedCell = screenHelper.getClickedCell(position);
 
     if (!clickedCell) return;
 

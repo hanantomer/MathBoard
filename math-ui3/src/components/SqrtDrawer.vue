@@ -38,7 +38,7 @@
 <script setup lang="ts">
 import useNotationMutateHelper from "../helpers/notationMutateHelper";
 
-import { watch, computed, ref, onMounted } from "vue";
+import { watch, computed, ref } from "vue";
 import { useNotationStore } from "../store/pinia/notationStore";
 import { useCellStore } from "../store/pinia/cellStore";
 import { useEditModeStore } from "../store/pinia/editModeStore";
@@ -54,7 +54,6 @@ import {
   HorizontalLineNotationAttributes,
 } from "../../../math-common/src/baseTypes";
 import useEventBus from "../helpers/eventBusHelper";
-import screenHelper from "../helpers/screenHelper";
 
 const eventBus = useEventBus();
 const notationMutateHelper = useNotationMutateHelper();
@@ -62,19 +61,6 @@ const notationStore = useNotationStore();
 const cellStore = useCellStore();
 const editModeStore = useEditModeStore();
 
-// props
-
-const props = defineProps({
-  svgId: { type: String },
-});
-
-let svgDimensions: DOMRect | null = null;
-
-onMounted(() => {
-  svgDimensions = document
-    .getElementById(props.svgId!)
-    ?.getBoundingClientRect()!;
-});
 
 // vars
 
@@ -101,19 +87,19 @@ let sqrtY = computed(() => {
 });
 
 let sqrtSymbolLeft = computed(() => {
-  return sqrtPosition.value.x1 + (svgDimensions?.left ?? 0) - 6;
+  return sqrtPosition.value.x1 + (cellStore.getSvgBoundingRect().left ?? 0) - 6;
 });
 
 let sqrtSymbolY = computed(() => {
-  return sqrtPosition.value.y + (svgDimensions?.top ?? 0) - 5;
+  return sqrtPosition.value.y + (cellStore.getSvgBoundingRect().top ?? 0) - 5;
 });
 
 let handleRight = computed(() => {
-  return sqrtRight.value + (svgDimensions?.left ?? 0) + 10;
+  return sqrtRight.value + (cellStore.getSvgBoundingRect().left ?? 0) + 10;
 });
 
 let handleY = computed(() => {
-  return sqrtY.value + (svgDimensions?.top ?? 0) - 5;
+  return sqrtY.value + (cellStore.getSvgBoundingRect().top ?? 0) - 5;
 });
 
 watch(
@@ -183,8 +169,8 @@ function onMouseDown(e: MouseEvent) {
   // new sqrt
   if (editModeStore.isSqrtStartedMode()) {
     startSqrtDrawing({
-      x: e.pageX - svgDimensions!.x,
-      y: e.pageY - svgDimensions!.y,
+      x: e.pageX - cellStore.getSvgBoundingRect().x,
+      y: e.pageY - cellStore.getSvgBoundingRect().y,
     });
     editModeStore.setNextEditMode();
   }

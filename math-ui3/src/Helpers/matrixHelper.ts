@@ -107,10 +107,17 @@ export default function useMatrixHelper() {
   }
 
   function symbolFollowsFraction(notation: PointNotationAttributes): boolean {
-    const maxLineDistance = 2;
+    const maxLineDistance = 1;
+
+    if (notationStore.isSymbolPartOfFraction(notation)) {
+      return false;
+    }
+
     if (
-      notationStore.getLineHorizontalDistanceFromCell(notation) <=
-      maxLineDistance
+      notationStore.isSymbolAdjecentToHorizontalLine(
+        notation,
+        maxLineDistance,
+      ) <= maxLineDistance
     ) {
       return true;
     }
@@ -127,7 +134,7 @@ export default function useMatrixHelper() {
     };
     sqrtSignNotation.uuid = sqrtNotation.uuid + "_";
     sqrtSignNotation.notationType = "SQRTSYMBOL";
-    return sqrtNotation;
+    return sqrtSignNotation;
   }
 
   function refreshScreen(notations: NotationAttributes[], svgId: string) {

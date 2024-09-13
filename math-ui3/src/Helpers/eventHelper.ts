@@ -248,18 +248,15 @@ export default function eventHelper() {
       matrixCellHelper.setNextCell(0, -1);
     }
 
-    const svgBounds = document
-      .getElementById(cellStore.getSvgId()!)
-      ?.getBoundingClientRect()!;
 
     // select a notation occupied by selected cell
-    selectionHelper.selectNotationAtPosition(cellStore.getSvgId()!, {
+    selectionHelper.selectNotationAtPosition( {
       x:
-        svgBounds.left +
+        cellStore.getSvgBoundingRect().left +
         cellStore.getSelectedCell()?.col! *
           (cellStore.getCellHorizontalWidth() + cellSpace),
       y:
-        svgBounds.top +
+        cellStore.getSvgBoundingRect().top +
         cellStore.getSelectedCell()?.row! *
           (cellStore.getCellVerticalHeight() + cellSpace),
     });

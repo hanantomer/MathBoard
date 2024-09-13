@@ -8,10 +8,8 @@ import {
   selectedCellStroke,
 } from "common/globals";
 
-import { useNotationStore } from "../store/pinia/notationStore";
 import { useCellStore } from "../store/pinia/cellStore";
 
-const notationStore = useNotationStore();
 const cellStore = useCellStore();
 
 export default function useHtmlMatrixHelper() {

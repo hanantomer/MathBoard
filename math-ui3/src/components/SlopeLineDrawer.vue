@@ -40,7 +40,7 @@
 <script setup lang="ts">
 import useNotationMutateHelper from "../helpers/notationMutateHelper";
 
-import { watch, computed, ref, onMounted } from "vue";
+import { watch, computed, ref } from "vue";
 import { useNotationStore } from "../store/pinia/notationStore";
 import { useCellStore } from "../store/pinia/cellStore";
 import { useEditModeStore } from "../store/pinia/editModeStore";
@@ -61,6 +61,7 @@ const notationStore = useNotationStore();
 const cellStore = useCellStore();
 const editModeStore = useEditModeStore();
 
+
 // vars
 
 const linePosition = ref(<SlopeLinePosition>{
@@ -74,21 +75,6 @@ const slopeType = ref<SlopeType>("NONE");
 type MovementDirection = "UP" | "DOWN" | "NONE";
 const movementDirection = ref<MovementDirection>("NONE");
 
-let svgDimensions: DOMRect | null = null;
-
-// props
-
-const props = defineProps({
-  svgId: { type: String },
-});
-
-// lifecycle events
-
-onMounted(() => {
-  svgDimensions = document
-    .getElementById(props.svgId!)
-    ?.getBoundingClientRect()!;
-});
 
 // computed
 
@@ -116,23 +102,19 @@ let lineTop = computed(() => {
 });
 
 let handleLeft = computed(() => {
-  if (!svgDimensions) return;
-  return lineLeft.value + (svgDimensions.left ?? 0);
+    return lineLeft.value + (cellStore.getSvgBoundingRect().left ?? 0);
 });
 
 let handleRight = computed(() => {
-  if (!svgDimensions) return;
-  return lineRight.value + (svgDimensions.left ?? 0);
+  return lineRight.value + (cellStore.getSvgBoundingRect().left ?? 0);
 });
 
 let handleTop = computed(() => {
-  if (!svgDimensions) return;
-  return lineTop.value + (svgDimensions.top ?? 0);
+  return lineTop.value + (cellStore.getSvgBoundingRect().top ?? 0);
 });
 
 let handleBottom = computed(() => {
-  if (!svgDimensions) return;
-  return lineBottom.value + (svgDimensions.top ?? 0);
+  return lineBottom.value + (cellStore.getSvgBoundingRect().top ?? 0);
 });
 
 // watch
@@ -186,8 +168,8 @@ function onMouseDown(e: MouseEvent) {
   // new line
   if (editModeStore.isSlopeLineStartedMode()) {
     startLineDrawing({
-      x: e.pageX - svgDimensions!.x,
-      y: e.pageY - svgDimensions!.y,
+      x: e.pageX - cellStore.getSvgBoundingRect().x,
+      y: e.pageY - cellStore.getSvgBoundingRect().y,
     });
     editModeStore.setNextEditMode();
   }
@@ -211,10 +193,10 @@ function onMouseMove(e: MouseEvent) {
 
   // movement is neglectable
   if (
-    isSiginificantMove(linePosition.value.left.x, e.pageX - svgDimensions!.x) ||
-    isSiginificantMove(linePosition.value.left.y, e.pageY - svgDimensions!.y) ||
-    isSiginificantMove(linePosition.value.right.x, e.pageX - svgDimensions!.x) ||
-    isSiginificantMove(linePosition.value.right.y, e.pageY - svgDimensions!.y)
+    isSiginificantMove(linePosition.value.left.x, e.pageX - cellStore.getSvgBoundingRect().x) ||
+    isSiginificantMove(linePosition.value.left.y, e.pageY - cellStore.getSvgBoundingRect().y) ||
+    isSiginificantMove(linePosition.value.right.x, e.pageX - cellStore.getSvgBoundingRect().x) ||
+    isSiginificantMove(linePosition.value.right.y, e.pageY - cellStore.getSvgBoundingRect().y)
   ) {
     return;
   }
@@ -223,7 +205,7 @@ function onMouseMove(e: MouseEvent) {
     return;
   }
 
-  setLine(e.pageX - svgDimensions!.x, e.pageY - svgDimensions!.y);
+  setLine(e.pageX - cellStore.getSvgBoundingRect().x, e.pageY - cellStore.getSvgBoundingRect().y);
 }
 
 function onMouseUp() {

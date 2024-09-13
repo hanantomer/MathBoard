@@ -327,9 +327,7 @@ export const useNotationStore = defineStore("notation", () => {
 
     if (lineNotationsUUIDs) {
       lineNotationsUUIDs.forEach((ln) => {
-        //if (curveNotationIntersectsWithCell(clickedCell, ln)) {
         notationsAtCell.push(notations.value.get(ln) as NotationAttributes);
-        // }
       });
     }
 
@@ -373,25 +371,24 @@ export const useNotationStore = defineStore("notation", () => {
     return matrix;
   }
 
-  function getLineHorizontalDistanceFromCell(cell: CellAttributes): number {
-    if (cell.col < 0) {
-      throw new Error("invalid col:" + cell.col);
-    }
-
-    if (cell.row < 0) {
-      throw new Error("invalid col:" + cell.row);
-    }
+  function isSymbolAdjecentToHorizontalLine(cell: CellAttributes, maxDistance: number): number {
 
     if (cell.row === matrixDimensions.colsNum) return Number.MAX_VALUE;
 
-    for (let i = cell.col - 1; i <= 0; i++) {
+    for (let i = cell.col - 1; cell.col - i >= maxDistance; i--) {
       if (cellLineNotationOccupationMatrix[i][cell.row + 1].length > 0) {
-        return i;
+        return cell.col - i;
       }
     }
 
     return Number.MAX_VALUE;
   }
+
+  function isSymbolPartOfFraction(cell: CellAttributes): boolean {
+
+    return cellLineNotationOccupationMatrix[cell.col][cell.row + 1].length > 0;
+  }
+
 
   return {
     addNotation,
@@ -405,7 +402,8 @@ export const useNotationStore = defineStore("notation", () => {
     getCopiedNotations,
     getNotationsByShape,
     getNotationsAtCell,
-    getLineHorizontalDistanceFromCell,
+    isSymbolPartOfFraction,
+    isSymbolAdjecentToHorizontalLine,
     selectNotationsOfCells,
     getSelectedNotations,
     getParent,

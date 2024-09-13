@@ -40,7 +40,7 @@
 <script setup lang="ts">
 import useNotationMutateHelper from "../helpers/notationMutateHelper";
 
-import { watch, computed, ref, onMounted } from "vue";
+import { watch, computed, ref } from "vue";
 import { useNotationStore } from "../store/pinia/notationStore";
 import { useCellStore } from "../store/pinia/cellStore";
 import { useEditModeStore } from "../store/pinia/editModeStore";
@@ -62,20 +62,6 @@ const notationMutateHelper = useNotationMutateHelper();
 const notationStore = useNotationStore();
 const cellStore = useCellStore();
 const editModeStore = useEditModeStore();
-
-// props
-
-const props = defineProps({
-  svgId: { type: String },
-});
-
-let svgDimensions: DOMRect | null = null;
-
-onMounted(() => {
-  svgDimensions = document
-    .getElementById(props.svgId!)
-    ?.getBoundingClientRect()!;
-});
 
 // vars
 
@@ -109,15 +95,15 @@ let lineY = computed(() => {
 });
 
 let handleLeft = computed(() => {
-  return lineLeft.value + (svgDimensions?.left ?? 0) - 10;
+  return lineLeft.value + (cellStore.getSvgBoundingRect().left ?? 0) - 10;
 });
 
 let handleRight = computed(() => {
-  return lineRight.value + (svgDimensions?.left ?? 0) + 10;
+  return lineRight.value + (cellStore.getSvgBoundingRect().left ?? 0) + 10;
 });
 
 let handleY = computed(() => {
-  return lineY.value + (svgDimensions?.top ?? 0) - 5;
+  return lineY.value + (cellStore.getSvgBoundingRect().top ?? 0) - 5;
 });
 
 watch(
@@ -187,8 +173,8 @@ function onMouseDown(e: MouseEvent) {
   // new line
   if (editModeStore.isHorizontalLineStartedMode()) {
     startLineDrawing({
-      x: e.pageX - svgDimensions!.x,
-      y: e.pageY - svgDimensions!.y,
+      x: e.pageX - cellStore.getSvgBoundingRect().x,
+      y: e.pageY - cellStore.getSvgBoundingRect().y,
     });
     editModeStore.setNextEditMode();
   }
@@ -212,7 +198,7 @@ function onMouseMove(e: MouseEvent) {
   if (!editModeStore.isHorizontalLineDrawingMode()) {
     return;
   }
-  setLine(e.pageX - svgDimensions!.x);
+  setLine(e.pageX - cellStore.getSvgBoundingRect().x);
 }
 
 function onMouseUp() {

@@ -20,7 +20,6 @@ export default defineConfig(function (_a) {
     var mode = _a.mode;
     process.env = __assign(__assign({}, process.env), loadEnv(mode, process.cwd()));
     return {
-        //define: { "process.env": {} },
         build: {
             sourcemap: true,
         },

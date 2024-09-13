@@ -4,19 +4,34 @@ import { defineStore } from "pinia";
 import { ref } from "vue";
 
 import { CellAttributes } from "common/baseTypes";
+import { useEditModeStore } from "./editModeStore";
+
+const editModeStore = useEditModeStore();
 
 export const useCellStore = defineStore("cell", () => {
   let svgId: string | undefined = undefined;
+
+  let svgDimensions: DOMRect = {
+    x: 0,
+    y: 0,
+    width: 0,
+    height: 0,
+    bottom: 0,
+    left: 0,
+    right: 0,
+    top: 0,
+    toJSON: () => null,
+  };
 
   let cellVerticalHight = ref<number>(0);
 
   let selectedCell = ref(<CellAttributes>{ col: 0, row: 0 });
 
-  function getCellVerticalHeight() : number {
+  function getCellVerticalHeight(): number {
     return cellVerticalHight.value;
   }
 
-  function getCellHorizontalWidth() : number {
+  function getCellHorizontalWidth(): number {
     return cellVerticalHight.value / 2;
   }
 
@@ -30,23 +45,32 @@ export const useCellStore = defineStore("cell", () => {
 
   function selectCell(newSelectedCell: CellAttributes) {
     selectedCell.value = newSelectedCell;
+    editModeStore.setEditMode("CELL_SELECTED");
   }
 
   function resetSelectedCell() {
     selectedCell.value = { col: -1, row: -1 };
   }
 
+  function getSvgBoundingRect() {
+    return svgDimensions!;
+  }
+
   function getSvgId() {
     return svgId;
   }
 
-  function setSvgId(id: string) {
+  function setSvgBoundingRect(id: string) {
     svgId = id;
+    if (document.getElementById(svgId) !== null) {
+      svgDimensions = document.getElementById(svgId)?.getBoundingClientRect()!;
+    }
   }
 
   return {
+    getSvgBoundingRect,
+    setSvgBoundingRect,
     getSvgId,
-    setSvgId,
     getSelectedCell,
     getCellHorizontalWidth,
     getCellVerticalHeight,

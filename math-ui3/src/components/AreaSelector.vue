@@ -16,7 +16,7 @@
 </template>
 
 <script setup lang="ts">
-import { watch, computed, ref, onMounted } from "vue";
+import { watch, computed, ref } from "vue";
 import { useEditModeStore } from "../store/pinia/editModeStore";
 import { useCellStore } from "../store/pinia/cellStore";
 import { useNotationStore } from "../store/pinia/notationStore";
@@ -37,10 +37,6 @@ const selectionHelper = useSelectionHelper();
 
 // variables
 
-const props = defineProps({
-  svgId: { type: String },
-});
-
 let selectionPosition = ref<RectCoordinates>({
   topLeft: { x: 0, y: 0 },
   bottomRight: { x: 0, y: 0 },
@@ -53,13 +49,6 @@ let dragPosition = ref<DotCoordinates>({
 
 let svgDimensions: DOMRect | null = null;
 
-// life cycle events
-
-onMounted(() => {
-  svgDimensions = document
-    .getElementById(props.svgId!)
-    ?.getBoundingClientRect()!;
-});
 
 // computed
 
@@ -203,9 +192,11 @@ function handleMouseMove(e: MouseEvent) {
 
   if (editMode === "TEXT_STARTED") {
     editModeStore.setEditMode("TEXT_AREA_SELECTING");
-  } else {
-    editModeStore.setEditMode("AREA_SELECTING");
+    return;
   }
+
+  resetSelection();
+  editModeStore.setEditMode("AREA_SELECTING");
 }
 
 function handleMouseUp(e: MouseEvent) {
@@ -313,14 +304,14 @@ function endSelect() {
       selectionPosition.value.topLeft.y - selectionPosition.value.bottomRight.y,
     ) < 5
   ) {
-    selectionHelper.selectCell(props.svgId!, {
+    selectionHelper.selectCell( {
       x: selectionPosition.value.topLeft.x,
       y: selectionPosition.value.topLeft.y,
     });
     return;
   }
 
-  selectionHelper.selectNotationsOfArea(props.svgId!, selectionPosition.value);
+  selectionHelper.selectNotationsOfArea(selectionPosition.value);
 }
 
 function moveSelection(e: MouseEvent) {

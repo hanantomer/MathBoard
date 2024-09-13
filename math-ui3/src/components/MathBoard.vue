@@ -1,7 +1,7 @@
 <template>
-  <freeTextEditor :svgId="svgId"></freeTextEditor>
-  <exponentEditor :svgId="svgId"></exponentEditor>
-  <areaSelector :svgId="svgId"></areaSelector>
+  <freeTextEditor></freeTextEditor>
+  <exponentEditor></exponentEditor>
+  <areaSelector></areaSelector>
   <v-row align="start" class="fill-heigh" no-gutters>
     <div style="display: flex; flex-direction: row">
       <v-sheet class="mt-14 ml-1">
@@ -17,11 +17,11 @@
             rounded
             height="6"
           ></v-progress-linear>
-          <horizontalLineDrawer :svgId="svgId"></horizontalLineDrawer>
-          <sqrtDrawer :svgId="svgId"></sqrtDrawer>
-          <verticalLineDrawer :svgId="svgId"></verticalLineDrawer>
-          <slopeLineDrawer :svgId="svgId"></slopeLineDrawer>
-          <curveDrawer :svgId="svgId" :curveType="curveType"></curveDrawer>
+          <horizontalLineDrawer></horizontalLineDrawer>
+          <sqrtDrawer></sqrtDrawer>
+          <verticalLineDrawer></verticalLineDrawer>
+          <slopeLineDrawer></slopeLineDrawer>
+          <curveDrawer :curveType="curveType"></curveDrawer>
           <svg
             v-bind:style="{ cursor: cursor }"
             v-bind:id="svgId"
@@ -85,8 +85,6 @@ const userOutgoingOperations = useUserOutgoingOperations();
 const pBar = ref(false);
 let cursor = ref<CursorType>("auto");
 let toolbarKey = ref(0);
-
-onMounted(() => {});
 
 onUnmounted(() => {
   eventHelper.unregisterSvgMouseDown();
@@ -152,7 +150,7 @@ watch(
 watch(
   () => eventBus.bus.value.get("EV_CELL_COLORIZED"),
   (params) => {
-    const clickedCell = screenHelper.getClickedCell(props.svgId, {
+    const clickedCell = screenHelper.getClickedCell({
       x: params.clientX,
       y: params.clientY,
     });
@@ -202,7 +200,7 @@ watch(
 );
 
 async function load() {
-  cellStore.setSvgId(props.svgId);
+  cellStore.setSvgBoundingRect(props.svgId);
 
   eventHelper.registerSvgMouseDown();
   eventHelper.registerSvgMouseMove();
@@ -268,18 +266,20 @@ function handleMouseDown(e: MouseEvent) {
     editModeStore.getEditMode() === "SEMICHECKMARK_STARTED" ||
     editModeStore.getEditMode() === "XMARK_STARTED"
   ) {
-    selectionHelper.selectCell(props.svgId, position);
+    selectionHelper.selectCell(position);
     notationMutateHelper.addMarkNotation();
     return;
   }
 
-  const notation = selectionHelper.selectNotationAtPosition(
-    props.svgId,
-    position,
-  );
+  selectionHelper.selectNotationAtPosition(position);
 
-  if (!notation || NotationTypeShape.get(notation?.notationType) === "POINT") {
-    selectionHelper.selectCell(props.svgId, position);
+  // if nothing or symbol selected -> select the clicked cell
+  if (
+    notationStore.getSelectedNotations().length === 0 ||
+    (notationStore.getSelectedNotations().length === 1 &&
+      notationStore.getSelectedNotations()[0].notationType === "SYMBOL")
+  ) {
+    selectionHelper.selectCell(position);
   }
 }
 </script>
