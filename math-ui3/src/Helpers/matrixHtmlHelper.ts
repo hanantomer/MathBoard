@@ -322,8 +322,9 @@ export default function useHtmlMatrixHelper() {
     // Symbol
 
     let n1 = n as PointNotationAttributes;
-    const top = n1.followsFraction ? "90%" : "50%";
-    return `<p style='color:${color};font-weight:${fontWeight}; position: absolute;top:${top};transform:
+    const top = n1.followsFraction ? "75%" : "50%";
+    ///TODO move static css props to a class
+    return `<p style='z-index:100;color:${color};font-weight:${fontWeight}; position: absolute;top:${top};transform:
     translateY(-50%);left:20%;font-size:1.1em'>${n1.value}</p>`;
   }
 

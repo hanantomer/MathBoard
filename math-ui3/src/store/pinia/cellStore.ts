@@ -25,7 +25,7 @@ export const useCellStore = defineStore("cell", () => {
 
   let cellVerticalHight = ref<number>(0);
 
-  let selectedCell = ref(<CellAttributes>{ col: 0, row: 0 });
+  let selectedCell = ref(<CellAttributes>{ col: 0, row: 0 })
 
   function getCellVerticalHeight(): number {
     return cellVerticalHight.value;

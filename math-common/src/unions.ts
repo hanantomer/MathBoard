@@ -11,6 +11,7 @@ export type BusEventType =
     "EV_KEYUP"                    | 
     "EV_SVG_MOUSEUP"              |  
     "EV_SVG_MOUSEDOWN"            | 
+    "EV_SVG_MOUSECLICK"           | 
     "EV_SVG_MOUSEMOVE"            |  
     "EV_SELECTION_DONE"           | 
     "EV_FREE_TEXT_SUBMITTED"      |

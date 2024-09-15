@@ -326,9 +326,11 @@ export const useNotationStore = defineStore("notation", () => {
     ] as String[];
 
     if (lineNotationsUUIDs) {
-      lineNotationsUUIDs.forEach((ln) => {
-        notationsAtCell.push(notations.value.get(ln) as NotationAttributes);
-      });
+      lineNotationsUUIDs
+        .filter((ln) => ln)
+        .forEach((ln) => {
+          notationsAtCell.push(notations.value.get(ln) as NotationAttributes);
+        });
     }
 
     return notationsAtCell;
@@ -371,24 +373,24 @@ export const useNotationStore = defineStore("notation", () => {
     return matrix;
   }
 
-  function isSymbolAdjecentToHorizontalLine(cell: CellAttributes, maxDistance: number): number {
+  function isSymbolAdjecentToHorizontalLine(
+    cell: CellAttributes,
+    maxDistance: number,
+  ): boolean {
+    if (cell.row === matrixDimensions.colsNum) return false;
 
-    if (cell.row === matrixDimensions.colsNum) return Number.MAX_VALUE;
-
-    for (let i = cell.col - 1; cell.col - i >= maxDistance; i--) {
+    for (let i = cell.col; cell.col - i <= maxDistance; i--) {
       if (cellLineNotationOccupationMatrix[i][cell.row + 1].length > 0) {
-        return cell.col - i;
+        return true;
       }
     }
 
-    return Number.MAX_VALUE;
+    return false;
   }
 
   function isSymbolPartOfFraction(cell: CellAttributes): boolean {
-
     return cellLineNotationOccupationMatrix[cell.col][cell.row + 1].length > 0;
   }
-
 
   return {
     addNotation,

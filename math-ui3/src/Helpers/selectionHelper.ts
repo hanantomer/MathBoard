@@ -34,14 +34,14 @@ export default function selectionHelper() {
     notationStore.selectNotationsOfCells(areaCells);
   }
 
-  function selectNotationAtPosition(dotCoordinates: DotCoordinates) {
+  function selectNotationAtPosition(dotCoordinates: DotCoordinates) : boolean {
     const maxDistanceToSelect = 5;
     const notationStore = useNotationStore();
     notationStore.resetSelectedNotations();
 
     const notation = screenHelper.getNotationAtCoordinates(dotCoordinates);
 
-    if (!notation) return null;
+    if (!notation) return false;
 
     switch (NotationTypeShape.get(notation!.notationType)) {
       case "HORIZONTAL_LINE":
@@ -89,6 +89,7 @@ export default function selectionHelper() {
         break;
       }
     }
+    return true;
   }
 
   function selectPointOrRectNotation(activeNotation: NotationAttributes) {
@@ -148,9 +149,9 @@ export default function selectionHelper() {
 
     cellStore.selectCell(clickedCell!);
 
-    if (!editModeStore.isCheckMode()) {
-      editModeStore.setEditMode("CELL_SELECTED");
-    }
+    //if (!editModeStore.isCheckMode()) {
+    //  editModeStore.setEditMode("CELL_SELECTED");
+    //}
 
     if (notationStore.getParent().type == "LESSON") {
       let t = await userOutgoingOperationsHelper.syncOutgoingSelectedCell(

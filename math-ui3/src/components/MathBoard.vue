@@ -8,7 +8,7 @@
         <toolbar :key="toolbarKey"></toolbar>
       </v-sheet>
       <div style="display: flex; flex-direction: column">
-        <v-sheet class="mt-10 ml-8">
+        <v-sheet class="mt-10 ml-16">
           <v-progress-linear
             data-cy="pBar"
             v-show="pBar"
@@ -54,7 +54,7 @@ import slopeLineDrawer from "./SlopeLineDrawer.vue";
 import curveDrawer from "./CurveDrawer.vue";
 import useEventBus from "../helpers/eventBusHelper";
 import { CellAttributes } from "common/baseTypes";
-import { onMounted, onUnmounted, ref, watch, computed } from "vue";
+import { onUnmounted, ref, watch, computed } from "vue";
 import { useNotationStore } from "../store/pinia/notationStore";
 import { useCellStore } from "../store/pinia/cellStore";
 import { useEditModeStore } from "../store/pinia/editModeStore";
@@ -88,6 +88,7 @@ let toolbarKey = ref(0);
 
 onUnmounted(() => {
   eventHelper.unregisterSvgMouseDown();
+  eventHelper.unregisterSvgMouseClick();
   eventHelper.unregisterSvgMouseMove();
   eventHelper.unregisterSvgMouseUp();
   eventHelper.unregisterKeyUp();
@@ -106,11 +107,13 @@ let curveType = computed(() => {
     : "CONVEX";
 });
 
+let clicEventFlowingAreaSelected = true;
+
 watch(
-  () => eventBus.bus.value.get("EV_SVG_MOUSEDOWN"),
+  () => eventBus.bus.value.get("EV_SVG_MOUSECLICK"),
   (e: MouseEvent) => {
     if (!e) return;
-    handleMouseDown(e);
+    handleMouseClick(e);
   },
   { immediate: true },
 );
@@ -151,8 +154,8 @@ watch(
   () => eventBus.bus.value.get("EV_CELL_COLORIZED"),
   (params) => {
     const clickedCell = screenHelper.getClickedCell({
-      x: params.clientX,
-      y: params.clientY,
+      x: params.pageX,
+      y: params.pageY,
     });
 
     matrixCellHelper.colorizeCell(props.svgId, clickedCell, params.cellColor);
@@ -203,6 +206,7 @@ async function load() {
   cellStore.setSvgBoundingRect(props.svgId);
 
   eventHelper.registerSvgMouseDown();
+  eventHelper.registerSvgMouseClick();
   eventHelper.registerSvgMouseMove();
   eventHelper.registerSvgMouseUp();
   eventHelper.registerKeyUp();
@@ -242,12 +246,23 @@ async function load() {
   }
 }
 
-function handleMouseDown(e: MouseEvent) {
-  if (e.buttons !== 1) {
-    return;
+function handleMouseClick(e: MouseEvent) {
+  //if (e.buttons !== 1) {
+  //  return;
+  //}
+
+  // ignore the click event at the end of area selection
+  if (editModeStore.getEditMode() === "AREA_SELECTED") {
+    if (clicEventFlowingAreaSelected)
+    {
+      clicEventFlowingAreaSelected = false;
+      return;
+    }
+
+    clicEventFlowingAreaSelected = true;
   }
 
-  const position = { x: e.clientX, y: e.clientY };
+  const position = { x: e.pageX , y: e.pageY };
 
   if (
     editModeStore.isSelectFromListMode() ||
@@ -271,16 +286,18 @@ function handleMouseDown(e: MouseEvent) {
     return;
   }
 
-  selectionHelper.selectNotationAtPosition(position);
-
-  // if nothing or symbol selected -> select the clicked cell
-  if (
-    notationStore.getSelectedNotations().length === 0 ||
-    (notationStore.getSelectedNotations().length === 1 &&
-      notationStore.getSelectedNotations()[0].notationType === "SYMBOL")
-  ) {
+  if (!selectionHelper.selectNotationAtPosition(position)) {
     selectionHelper.selectCell(position);
   }
+
+  // if nothing or symbol selected -> select the clicked cell
+  // if (
+  //   notationStore.getSelectedNotations().length === 0 ||
+  //   (notationStore.getSelectedNotations().length === 1 &&
+  //     notationStore.getSelectedNotations()[0].notationType === "SYMBOL")
+  // ) {
+  //   ;
+  // }
 }
 </script>
 

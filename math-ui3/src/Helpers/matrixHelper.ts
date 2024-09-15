@@ -96,11 +96,11 @@ export default function useMatrixHelper() {
           enrichedNotations.push(getSqrtSymbol(notation));
         }
 
-        if (notation.notationType === "SYMBOL") {
-          let pointNotation = notation as PointNotationAttributes;
-          pointNotation.followsFraction = symbolFollowsFraction(pointNotation);
-          console.debug(pointNotation);
-        }
+        // if (notation.notationType === "SYMBOL") {
+        //   let pointNotation = notation as PointNotationAttributes;
+        //   pointNotation.followsFraction = symbolFollowsFraction(pointNotation);
+        //   console.debug(pointNotation);
+        // }
       }
     }
     return enrichedNotations;
@@ -114,10 +114,7 @@ export default function useMatrixHelper() {
     }
 
     if (
-      notationStore.isSymbolAdjecentToHorizontalLine(
-        notation,
-        maxLineDistance,
-      ) <= maxLineDistance
+      notationStore.isSymbolAdjecentToHorizontalLine(notation, maxLineDistance)
     ) {
       return true;
     }

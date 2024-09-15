@@ -296,6 +296,10 @@ export default function eventHelper() {
     eventBus.emit("EV_SVG_MOUSEDOWN", e);
   }
 
+  function emitSvgMouseClick(e: MouseEvent) {
+    eventBus.emit("EV_SVG_MOUSECLICK", e);
+  }
+
   function registerSvgMouseDown() {
     document
       ?.getElementById(cellStore.getSvgId()!)
@@ -306,6 +310,18 @@ export default function eventHelper() {
     document
       ?.getElementById(cellStore.getSvgId()!)
       ?.removeEventListener("mousedown", emitSvgMouseDown);
+  }
+
+  function registerSvgMouseClick() {
+    document
+      ?.getElementById(cellStore.getSvgId()!)
+      ?.addEventListener("click", emitSvgMouseClick);
+  }
+
+  function unregisterSvgMouseClick() {
+    document
+      ?.getElementById(cellStore.getSvgId()!)
+      ?.removeEventListener("click", emitSvgMouseClick);
   }
 
   function emitSvgMouseMove(e: MouseEvent) {
@@ -382,6 +398,8 @@ export default function eventHelper() {
     keyUp,
     registerSvgMouseDown,
     unregisterSvgMouseDown,
+    registerSvgMouseClick,
+    unregisterSvgMouseClick,
     registerSvgMouseMove,
     unregisterSvgMouseMove,
     registerSvgMouseUp,

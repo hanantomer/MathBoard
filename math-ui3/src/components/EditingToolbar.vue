@@ -105,8 +105,8 @@ function handleMouseUp(e: MouseEvent) {
 function handleMouseDown(e: MouseEvent) {
   if (cellColor === "none") return;
   eventBus.emit("EV_CELL_COLORIZED", {
-    clientX: e.clientX,
-    clientY: e.clientY,
+    pageX: e.pageX,
+    pageY: e.pageY,
     cellColor,
   });
 }
@@ -115,8 +115,8 @@ function handleMouseMove(e: MouseEvent) {
   if (cellColor === "none") return;
   if (e.buttons !== 1) return;
   eventBus.emit("EV_CELL_COLORIZED", {
-    clientX: e.clientX,
-    clientY: e.clientY,
+    pageX: e.pageX,
+    pageY: e.pageY,
     cellColor,
   });
 }
@@ -176,4 +176,5 @@ function resetButtonsState() {
 .vertical-toolbar-column {
   flex-basis: content;
 }
+
 </style>

@@ -3,6 +3,7 @@ import { EditMode, EditModeNotationType, NotationType } from "common/unions";
 import { ref } from "vue";
 
 export const useEditModeStore = defineStore("editMode", () => {
+
   let editMode = ref<EditMode>("SYMBOL");
 
   const defaultEditMode: EditMode = "SYMBOL";
