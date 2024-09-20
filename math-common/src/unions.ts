@@ -16,6 +16,8 @@ export type BusEventType =
     "EV_SELECTION_DONE"           | 
     "EV_FREE_TEXT_SUBMITTED"      |
     "EV_FREE_TEXT_SELECTED"       |
+    "EV_ANNOTATION_SUBMITTED"     |
+    "EV_ANNOTATION_SELECTED"      |
     "EV_EXPONENT_SUBMITTED"       |
     "EV_EXPONENT_SELECTED"        |
     "EV_SLOPE_LINE_SELECTED"      |
@@ -46,6 +48,7 @@ export const NotationTypeValues =
   "SQRT",
   "SQRTSYMBOL",
   "TEXT",
+  "ANNOTATION",
   "IMAGE"] as const;
 
 export type NotationType = typeof NotationTypeValues[number]
@@ -74,6 +77,7 @@ export const NotationTypeShape = new Map<NotationType, NotationShape> ([
   ["VERTICALLINE", "VERTICAL_LINE"],
   ["SLOPELINE", "SLOPE_LINE"],
   ["TEXT", "RECT"],
+  ["ANNOTATION", "HORIZONTAL_LINE"],
   ["IMAGE", "RECT"],
   ["CONCAVECURVE", "CONCAVE_CURVE"],
   ["CONVEXCURVE", "CONVEX_CURVE"],
@@ -91,6 +95,10 @@ export type EditMode =
   "TEXT_SELECTED"             | // user clicked on existing text rectangle
   "TEXT_AREA_SELECTING"       | // user started selecting area following text button pressed
   "TEXT_WRITING"              | // user clicked a cell following text button pressed
+  "ANNOTATION_STARTED"        | // annotation button pressed
+  "ANNOTATION_SELECTED"       | // user clicked on existing annotation rectangle
+  "ANNOTATION_AREA_SELECTING" | // user started selecting area following annotation button pressed
+  "ANNOTATION_WRITING"        | // user clicked a cell following annotation button pressed
   "CELL_SELECTED"             | // user clicked on a cell or navigated via keys
   "HORIZONTAL_LINE_STARTED"   | // horizontal line button pressed
   "HORIZONTAL_LINE_DRAWING"   | // horizontal line drawing started

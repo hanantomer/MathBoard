@@ -34,7 +34,7 @@ export default function selectionHelper() {
     notationStore.selectNotationsOfCells(areaCells);
   }
 
-  function selectNotationAtPosition(dotCoordinates: DotCoordinates) : boolean {
+  function selectNotationAtPosition(dotCoordinates: DotCoordinates): boolean {
     const maxDistanceToSelect = 5;
     const notationStore = useNotationStore();
     notationStore.resetSelectedNotations();
@@ -54,8 +54,8 @@ export default function selectionHelper() {
           ) < maxDistanceToSelect
         ) {
           selectLineNotation(notation);
+          return true;
         }
-        break;
       case "VERTICAL_LINE":
         const verticalLineNotation = notation as VerticalLineNotationAttributes;
         if (
@@ -65,8 +65,9 @@ export default function selectionHelper() {
           ) < maxDistanceToSelect
         ) {
           selectLineNotation(notation);
+          return true;
         }
-        break;
+        return false;
       case "SLOPE_LINE": {
         const slopeLineNotation = notation as SlopeLineNotationAttributes;
         if (
@@ -74,22 +75,25 @@ export default function selectionHelper() {
             dotCoordinates,
             slopeLineNotation,
           ) < maxDistanceToSelect
-        )
+        ) {
           selectLineNotation(notation);
-        break;
+          return true;
+        }
+        return false;
       }
       case "CONVEX_CURVE":
       case "CONCAVE_CURVE": {
         selectCurveNotation(notation);
-        break;
+        return true;
       }
       case "RECT":
       case "POINT": {
         selectPointOrRectNotation(notation);
-        break;
+        return true;
       }
     }
-    return true;
+
+    return false;
   }
 
   function selectPointOrRectNotation(activeNotation: NotationAttributes) {

@@ -340,9 +340,9 @@ export const useNotationStore = defineStore("notation", () => {
     const notationsUUIDsToSelect = new Set<string>();
 
     for (let i = 0; i < areaCells.length; i++) {
-      const notations = getNotationsAtCell(areaCells[i]);
-      for (let j = 0; j < notations.length; j++) {
-        notationsUUIDsToSelect.add(notations[j].uuid);
+      const notationsAtCell = getNotationsAtCell(areaCells[i]);
+      for (let j = 0; j < notationsAtCell.length; j++) {
+        notationsUUIDsToSelect.add(notationsAtCell[j].uuid);
       }
     }
 

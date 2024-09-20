@@ -7,6 +7,7 @@ import connection from "../../math-db/build/models/index";
 const { exec } = require("child_process");
 import { BoardTypeValues, NotationTypeValues } from "../../math-common/build/unions"
 import { createTransport } from "nodemailer";
+import { NotationAttributes } from "../../math-common/src/baseTypes";
 
 var transporter = createTransport({
     service: "gmail",
@@ -412,12 +413,7 @@ BoardTypeValues.forEach((boardType) => {
                         boardType,
                         notationType,
                         req.body.uuid,
-                        // all keys but uuid
-                        Object.fromEntries(
-                            Object.entries(req.body).filter(
-                                (o) => o[0] != "uuid"
-                            )
-                        )
+                        req.body
                     );
                     return res.status(200).send();
                 }

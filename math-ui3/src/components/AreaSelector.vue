@@ -11,6 +11,8 @@
     }"
     v-on:mouseup="mouseup"
     v-on:mousemove="mousemove"
+    v-on:mouseenter="enter"
+    v-on:mouseleave="leave"
     v-if="show"
   ></v-card>
 </template>
@@ -37,6 +39,8 @@ const selectionHelper = useSelectionHelper();
 
 // variables
 
+let mouseOverSelectionArea: boolean = false;
+
 let selectionPosition = ref<RectCoordinates>({
   topLeft: { x: 0, y: 0 },
   bottomRight: { x: 0, y: 0 },
@@ -46,9 +50,6 @@ let dragPosition = ref<DotCoordinates>({
   x: 0,
   y: 0,
 });
-
-let svgDimensions: DOMRect | null = null;
-
 
 // computed
 
@@ -143,6 +144,16 @@ watch(
 
 // event handlers
 
+function enter() {
+  console.debug("enter");
+  mouseOverSelectionArea = true;
+}
+
+function leave() {
+  console.debug("leave");
+  mouseOverSelectionArea = false;
+}
+
 function handleMouseDown(e: MouseEvent) {
   if (e.buttons !== 1) {
     return;
@@ -190,7 +201,7 @@ function handleMouseMove(e: MouseEvent) {
     return;
   }
 
-  if (editMode === "TEXT_STARTED") {
+  if (editMode === "TEXT_STARTED" || editMode === "ANNOTATION_STARTED") {
     editModeStore.setEditMode("TEXT_AREA_SELECTING");
     return;
   }
@@ -266,22 +277,6 @@ async function keyUp(e: KeyboardEvent) {
   }
 }
 
-async function moveSelectionByKey(
-  moveHorizontal: number,
-  moveVertical: number,
-) {
-  selectionPosition.value.topLeft.x +=
-    moveHorizontal * (cellStore.getCellHorizontalWidth() + cellSpace);
-  selectionPosition.value.topLeft.y +=
-    moveVertical * (cellStore.getCellVerticalHeight() + cellSpace);
-  selectionPosition.value.bottomRight.x +=
-    moveHorizontal * (cellStore.getCellHorizontalWidth() + cellSpace);
-  selectionPosition.value.bottomRight.y +=
-    moveVertical * cellStore.getCellVerticalHeight() + cellSpace;
-}
-
-// methods
-
 // extend or shrink selection area following inner mouse move
 function updateSelectionArea(e: MouseEvent) {
   if (selectionPosition.value.topLeft.x == 0) {
@@ -304,7 +299,7 @@ function endSelect() {
       selectionPosition.value.topLeft.y - selectionPosition.value.bottomRight.y,
     ) < 5
   ) {
-    selectionHelper.selectCell( {
+    selectionHelper.selectCell({
       x: selectionPosition.value.topLeft.x,
       y: selectionPosition.value.topLeft.y,
     });
@@ -317,29 +312,28 @@ function endSelect() {
 function moveSelection(e: MouseEvent) {
   // initial drag position
   if (!dragPosition.value.x) {
-    if (!svgDimensions) return;
-    dragPosition.value.x = e.pageX - svgDimensions?.left;
-    dragPosition.value.y = e.pageY - svgDimensions?.top;
+    dragPosition.value.x = e.pageX;
+    dragPosition.value.y = e.pageY;
     return;
   }
 
   // movement is still too small
   if (
-    Math.abs(e.pageX - svgDimensions!.x - dragPosition.value.x) <
+    Math.abs(e.pageX - dragPosition.value.x) <
       cellStore.getCellHorizontalWidth() + cellSpace &&
-    Math.abs(e.pageY - svgDimensions!.y - dragPosition.value.y) <
+    Math.abs(e.pageY - dragPosition.value.y) <
       cellStore.getCellVerticalHeight() + cellSpace
   ) {
     return;
   }
 
   const rectDeltaX = Math.round(
-    (e.pageX - svgDimensions!.x - dragPosition.value.x) /
+    (e.pageX - dragPosition.value.x) /
       (cellStore.getCellHorizontalWidth() + cellSpace),
   );
 
   const rectDeltaY = Math.round(
-    (e.pageY - svgDimensions!.y - dragPosition.value.y) /
+    (e.pageY - dragPosition.value.y) /
       (cellStore.getCellVerticalHeight() + cellSpace),
   );
 
@@ -359,9 +353,23 @@ function moveSelection(e: MouseEvent) {
     selectionPosition.value.bottomRight.y +=
       rectDeltaY * (cellStore.getCellVerticalHeight() + cellSpace);
 
-    dragPosition.value.x = e.pageX - svgDimensions!.x;
-    dragPosition.value.y = e.pageY - svgDimensions!.y;
+    dragPosition.value.x = e.pageX;
+    dragPosition.value.y = e.pageY;
   }
+}
+
+async function moveSelectionByKey(
+  moveHorizontal: number,
+  moveVertical: number,
+) {
+  selectionPosition.value.topLeft.x +=
+    moveHorizontal * (cellStore.getCellHorizontalWidth() + cellSpace);
+  selectionPosition.value.topLeft.y +=
+    moveVertical * (cellStore.getCellVerticalHeight() + cellSpace);
+  selectionPosition.value.bottomRight.x +=
+    moveHorizontal * (cellStore.getCellHorizontalWidth() + cellSpace);
+  selectionPosition.value.bottomRight.y +=
+    moveVertical * cellStore.getCellVerticalHeight() + cellSpace;
 }
 
 async function endMoveSelection(e: MouseEvent) {
@@ -394,7 +402,6 @@ function resetSelection() {
       0;
   notationStore.resetSelectedNotations();
 }
-
 </script>
 
 <style>

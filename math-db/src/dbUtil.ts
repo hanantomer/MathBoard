@@ -354,12 +354,21 @@ export default function dbUtil() {
         boardType: BoardType,
         notationType: NotationType,
         uuid: string,
-        attributes: Object
+        notation: NotationAttributes
     ) {
         const modelName = getModelName(boardType, notationType); // e.g. LessonSymbol
         const id = (await getIdByUUId(modelName, uuid)) as number;
+        notation.notationType = notationType;
         if (!id) return;
-        return await findModel(modelName).update(attributes, {
+        if (!validateModel(notation)) {
+            return;
+        }
+
+        // all keys but uuid
+        const notationFiltered =
+            Object.fromEntries(Object.entries(notation).filter((o) => o[0] != "uuid"));
+
+        return await findModel(modelName).update(notationFiltered, {
             where: { id: id },
             logging: true,
         });
@@ -386,7 +395,8 @@ export default function dbUtil() {
         return modelName;
     }
 
-    function validateModel(model: NotationAttributes) : boolean {
+    function validateModel(model: NotationAttributes): boolean {
+        
         switch (model.notationType) {
             case "EXPONENT":{
                 const m = model as ExponentNotationAttributes;
@@ -404,7 +414,7 @@ export default function dbUtil() {
 
             case "SYMBOL": {
                 const m = model as PointNotationAttributes;
-                if (!( m.col >= 0 && m.row >= 0 && m.value.length > 0)) {
+                if (!( m.col >= 0 && m.row >= 0)) {
                     throw new Error("invalid model:" + JSON.stringify(m));
                 };
                 break;

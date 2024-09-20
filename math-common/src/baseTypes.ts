@@ -111,7 +111,7 @@ export type VerticalLineAttributes =  {
 
 export type SlopeLineAttributes =  {
   fromCol: number; // left col
-  toCol: number; // right col
+  toCol: number; // right col must be > left col
   fromRow: number; // row corresponding left col
   toRow: number; // row corresponding right col
 };

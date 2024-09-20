@@ -13,6 +13,7 @@ export const useEditModeStore = defineStore("editMode", () => {
       editMode.value === "AREA_SELECTING" ||
       editMode.value === "AREA_SELECTED" ||
       editMode.value === "TEXT_AREA_SELECTING" ||
+      editMode.value === "ANNOTATION_AREA_SELECTING" ||
       editMode.value === "MOVING"
     );
   }
@@ -183,6 +184,19 @@ export const useEditModeStore = defineStore("editMode", () => {
     return editMode.value === "TEXT_WRITING";
   }
 
+  function isAnnotationStartedMode() {
+    return editMode.value === "ANNOTATION_STARTED";
+  }
+
+  function isAnnotationSelectedMode() {
+    return editMode.value === "ANNOTATION_SELECTED";
+  }
+
+  function isAnnotationWritingMode() {
+    return editMode.value === "ANNOTATION_WRITING";
+  }
+
+
   function isExponentStartedMode() {
     return editMode.value === "EXPONENT_STARTED";
   }
@@ -234,6 +248,11 @@ export const useEditModeStore = defineStore("editMode", () => {
         return setEditMode("TEXT_AREA_SELECTING");
       case "TEXT_AREA_SELECTING":
         return setEditMode("TEXT_WRITING");
+
+      case "ANNOTATION_STARTED":
+        return setEditMode("ANNOTATION_AREA_SELECTING");
+      case "ANNOTATION_AREA_SELECTING":
+        return setEditMode("ANNOTATION_WRITING");
 
       case "EXPONENT_STARTED":
         return setEditMode("EXPONENT_WRITING");
@@ -320,6 +339,9 @@ export const useEditModeStore = defineStore("editMode", () => {
     isTextWritingMode,
     isTextStartedMode,
     isTextSelectedMode,
+    isAnnotationWritingMode,
+    isAnnotationStartedMode,
+    isAnnotationSelectedMode,
     isCheckMode,
     isSelectFromListMode,
     setEditMode,

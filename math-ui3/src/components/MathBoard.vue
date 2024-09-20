@@ -1,4 +1,5 @@
 <template>
+  <annotationEditor></annotationEditor>
   <freeTextEditor></freeTextEditor>
   <exponentEditor></exponentEditor>
   <areaSelector></areaSelector>
@@ -39,6 +40,7 @@
 
 <script setup lang="ts">
 import freeTextEditor from "./FreeTextEditor.vue";
+import annotationEditor from "./AnnotationEditor.vue";
 import exponentEditor from "./ExponentEditor.vue";
 import useNotationLoadingHelper from "../helpers/notationLoadingHelper";
 import UseMatrixHelper from "../helpers/matrixHelper";

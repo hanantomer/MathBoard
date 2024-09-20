@@ -185,6 +185,17 @@ const modeButtons: Array<{
     rotate: 0,
   },
   {
+    name: "annotation",
+    show_condition: true,
+    editMode: "ANNOTATION_STARTED",
+    activeState: ref(1),
+    tooltip: "create an annotation",
+    icon_class: "",
+    icon: "mdi-text-short",
+    overlay_icon: "",
+    rotate: 0,
+  },
+  {
     name: "checkmark",
     show_condition: answerCheckMode.value,
     editMode: "CHECKMARK_STARTED",
