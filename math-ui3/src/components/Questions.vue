@@ -104,7 +104,7 @@ watch(
 );
 
 watch(
-  () => eventBus.bus.value.get("EV_QUESTION_SAVED"),
+  () => eventBus.get("SYMBOL", "EV_QUESTION_SAVED"),
   (questionName: string) => {
     addQuestion(questionName);
   },

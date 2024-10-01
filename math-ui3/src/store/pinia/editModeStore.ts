@@ -14,12 +14,16 @@ export const useEditModeStore = defineStore("editMode", () => {
       editMode.value === "AREA_SELECTED" ||
       editMode.value === "TEXT_AREA_SELECTING" ||
       editMode.value === "ANNOTATION_AREA_SELECTING" ||
-      editMode.value === "MOVING"
+      editMode.value === "AREA_MOVING"
     );
   }
 
+  function isAreaSelectedMode() {
+    return editMode.value === "AREA_SELECTED"
+  }
+
   function isSelectionMode() {
-    return editMode.value === "AREA_SELECTING" || editMode.value === "MOVING";
+    return editMode.value === "AREA_SELECTING" || editMode.value === "AREA_MOVING";
   }
 
   function isSelectedMode() {
@@ -173,7 +177,7 @@ export const useEditModeStore = defineStore("editMode", () => {
   }
 
   function isTextStartedMode() {
-    return editMode.value === "TEXT_STARTED";
+    return editMode.value === "TEXT_STARTED" ;
   }
 
   function isTextSelectedMode() {
@@ -290,7 +294,7 @@ export const useEditModeStore = defineStore("editMode", () => {
       case "AREA_SELECTING":
         return setEditMode("AREA_SELECTED");
       case "AREA_SELECTED":
-        return setEditMode("MOVING");
+        return setEditMode("AREA_MOVING");
       default:
         return setDefaultEditMode();
     }
@@ -304,6 +308,7 @@ export const useEditModeStore = defineStore("editMode", () => {
     getEditMode,
     getDefaultEditMode,
     getNotationTypeByEditMode,
+    isAreaSelectedMode,
     isAreaSelectionOrMovingMode,
     isExponentMode,
     isExponentStartedMode,

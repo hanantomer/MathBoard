@@ -55,22 +55,18 @@ import verticalLineDrawer from "./VerticalLineDrawer.vue";
 import slopeLineDrawer from "./SlopeLineDrawer.vue";
 import curveDrawer from "./CurveDrawer.vue";
 import useEventBus from "../helpers/eventBusHelper";
+import useWatchHelper from "../helpers/watchHelper";
 import { CellAttributes } from "common/baseTypes";
 import { onUnmounted, ref, watch, computed } from "vue";
 import { useNotationStore } from "../store/pinia/notationStore";
 import { useCellStore } from "../store/pinia/cellStore";
 import { useEditModeStore } from "../store/pinia/editModeStore";
 import { useAnswerStore } from "../store/pinia/answerStore";
-import {
-  NotationTypeShape,
-  CursorType,
-  EditMode,
-  EditModeCursorType,
-} from "common/unions";
+import { CursorType, EditMode, EditModeCursorType } from "common/unions";
 import useSelectionHelper from "../helpers/selectionHelper";
-import useNotationMutateHelper from "../helpers/notationMutateHelper";
 import usescreenHelper from "../helpers/screenHelper";
 import useUserOutgoingOperations from "../helpers/userOutgoingOperationsHelper";
+import useKeyHelper from "../helpers/keyHelper";
 const notationLoadingHelper = useNotationLoadingHelper();
 const notationStore = useNotationStore();
 const cellStore = useCellStore();
@@ -78,19 +74,21 @@ const eventBus = useEventBus();
 const matrixHelper = UseMatrixHelper();
 const matrixCellHelper = UseMatrixCellHelper();
 const selectionHelper = useSelectionHelper();
-const notationMutateHelper = useNotationMutateHelper();
+const keyHelper = useKeyHelper();
 const eventHelper = UseEventHelper();
+const watchHelper = useWatchHelper();
+
 const editModeStore = useEditModeStore();
 const answerStore = useAnswerStore();
 const screenHelper = usescreenHelper();
 const userOutgoingOperations = useUserOutgoingOperations();
+
 const pBar = ref(false);
 let cursor = ref<CursorType>("auto");
 let toolbarKey = ref(0);
 
 onUnmounted(() => {
   eventHelper.unregisterSvgMouseDown();
-  eventHelper.unregisterSvgMouseClick();
   eventHelper.unregisterSvgMouseMove();
   eventHelper.unregisterSvgMouseUp();
   eventHelper.unregisterKeyUp();
@@ -109,51 +107,26 @@ let curveType = computed(() => {
     : "CONVEX";
 });
 
-let clicEventFlowingAreaSelected = true;
-
-watch(
-  () => eventBus.bus.value.get("EV_SVG_MOUSECLICK"),
-  (e: MouseEvent) => {
-    if (!e) return;
-    handleMouseClick(e);
-  },
-  { immediate: true },
+watchHelper.watchMouseEvent(
+  ["SYMBOL", "CELL_SELECTED"],
+  "EV_SVG_MOUSEUP",
+  selectClickedPosition,
 );
 
-watch(
-  () => eventBus.bus.value.get("EV_KEYUP"),
-  (e: KeyboardEvent) => {
-    eventHelper.keyUp(e, props.svgId);
-  },
+watchHelper.watchKeyEvent(
+  ["SYMBOL", "CELL_SELECTED", "HORIZONTAL_LINE_SELECTED"],
+  "EV_KEYUP",
+  keyHelper.keyUpHandler,
 );
 
-watch(
-  () => editModeStore.getEditMode() as EditMode,
-  (newEditMode: EditMode) => {
-    cursor.value = EditModeCursorType.get(newEditMode)!;
-  },
-  { immediate: true, deep: true },
+watchHelper.watchEditMode(
+  (newEditMode) => (cursor.value = EditModeCursorType.get(newEditMode)!),
 );
 
-watch(
-  () => cellStore.getSelectedCell() as CellAttributes,
-  (
-    newSelectedCell: CellAttributes | undefined | null,
-    oldSelectedCell: CellAttributes | undefined | null,
-  ) => {
-    setTimeout(() => {
-      matrixCellHelper.showSelectedCell(
-        props.svgId,
-        newSelectedCell,
-        oldSelectedCell,
-      );
-    }, 100);
-  },
-  { immediate: true, deep: true },
-);
+watchHelper.watchSelectedCell(props.svgId);
 
 watch(
-  () => eventBus.bus.value.get("EV_CELL_COLORIZED"),
+  () => eventBus.get("SYMBOL", "EV_CELL_COLORIZED"),
   (params) => {
     const clickedCell = screenHelper.getClickedCell({
       x: params.pageX,
@@ -173,15 +146,15 @@ watch(
 );
 
 watch(
-  () => eventBus.bus.value.get("EV_COPY"),
+  () => eventBus.get("SYMBOL", "EV_COPY"),
   () => {
     eventHelper.copy();
-    eventBus.bus.value.delete("EV_COPY"); // clean copy buffer
+    eventBus.remove("EV_COPY", "SYMBOL"); // clean copy buffer
   },
 );
 
 watch(
-  () => eventBus.bus.value.get("EV_PASTE"),
+  () => eventBus.get("SYMBOL", "EV_PASTE"),
   (e: ClipboardEvent) => {
     eventHelper.paste(e);
   },
@@ -208,7 +181,6 @@ async function load() {
   cellStore.setSvgBoundingRect(props.svgId);
 
   eventHelper.registerSvgMouseDown();
-  eventHelper.registerSvgMouseClick();
   eventHelper.registerSvgMouseMove();
   eventHelper.registerSvgMouseUp();
   eventHelper.registerKeyUp();
@@ -248,58 +220,11 @@ async function load() {
   }
 }
 
-function handleMouseClick(e: MouseEvent) {
-  //if (e.buttons !== 1) {
-  //  return;
-  //}
-
-  // ignore the click event at the end of area selection
-  if (editModeStore.getEditMode() === "AREA_SELECTED") {
-    if (clicEventFlowingAreaSelected)
-    {
-      clicEventFlowingAreaSelected = false;
-      return;
-    }
-
-    clicEventFlowingAreaSelected = true;
-  }
-
-  const position = { x: e.pageX , y: e.pageY };
-
-  if (
-    editModeStore.isSelectFromListMode() ||
-    editModeStore.isLineMode() ||
-    editModeStore.isCurveMode() ||
-    editModeStore.isColorisingMode() ||
-    editModeStore.isTextStartedMode() ||
-    editModeStore.isExponentStartedMode() ||
-    editModeStore.isExponentWritingMode()
-  ) {
-    return;
-  }
-
-  if (
-    editModeStore.getEditMode() === "CHECKMARK_STARTED" ||
-    editModeStore.getEditMode() === "SEMICHECKMARK_STARTED" ||
-    editModeStore.getEditMode() === "XMARK_STARTED"
-  ) {
-    selectionHelper.selectCell(position);
-    notationMutateHelper.addMarkNotation();
-    return;
-  }
-
+function selectClickedPosition(e: MouseEvent) {
+  const position = { x: e.pageX, y: e.pageY };
   if (!selectionHelper.selectNotationAtPosition(position)) {
     selectionHelper.selectCell(position);
   }
-
-  // if nothing or symbol selected -> select the clicked cell
-  // if (
-  //   notationStore.getSelectedNotations().length === 0 ||
-  //   (notationStore.getSelectedNotations().length === 1 &&
-  //     notationStore.getSelectedNotations()[0].notationType === "SYMBOL")
-  // ) {
-  //   ;
-  // }
 }
 </script>
 
@@ -338,16 +263,23 @@ html {
 }
 
 .line {
+  top: 4px;
   stroke: chocolate;
+  position: absolute;
+  color: black;
+  display: block;
+  border-bottom: solid 1px;
+  border-top: solid 1px;
+  z-index: 999;
 }
 .lineHandle {
   cursor: col-resize;
-  display: block;
   position: absolute;
-  z-index: 999;
+  display: block;
   width: 12px;
   height: 12px;
   border: 1, 1, 1, 1;
+  z-index: 999;
 }
 
 .sqrtsymbol {

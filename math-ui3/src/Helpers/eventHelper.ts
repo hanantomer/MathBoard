@@ -2,7 +2,7 @@ import { useUserStore } from "../store/pinia/userStore";
 import { useEditModeStore } from "../store/pinia/editModeStore";
 import { useNotationStore } from "../store/pinia/notationStore";
 import { useCellStore } from "../store/pinia/cellStore";
-import { cellSpace } from "common/globals";
+
 
 import useMatrixCellHelper from "./matrixCellHelper";
 import useNotationMutationHelper from "./notationMutateHelper";
@@ -30,7 +30,6 @@ const authorizationHelper = useAuthorizationHelper();
 const eventBus = useEventBus();
 const selectionHelper = useSelectionHelper();
 
-type keyType = "SYMBOL" | "MOVEMENT" | "DELETION" | "DELETEANDMOVE";
 
 export default function eventHelper() {
   async function copy() {
@@ -186,119 +185,11 @@ export default function eventHelper() {
     reader.readAsDataURL(item?.getAsFile() as Blob);
   }
 
-  function keyUp(e: KeyboardEvent, svgId: string) {
-    const { ctrlKey, altKey, code, key } = e;
-    if (ctrlKey || altKey) return;
-
-    if (!authorizationHelper.canEdit()) return;
-
-    if (editModeStore.isTextWritingMode()) return;
-
-    if (editModeStore.isExponentWritingMode()) return;
-
-    switch (classifyKeyCode(code)) {
-      case "DELETION": {
-        return handleDeletionKey();
-      }
-
-      case "MOVEMENT": {
-        return handleMovementKey(code);
-      }
-
-      case "DELETEANDMOVE": {
-        handleDeletionKey();
-        return handleMovementKey(code);
-      }
-
-      case "SYMBOL": {
-        return notationMutationHelper.upsertSymbolNotation(key);
-      }
-    }
-  }
-
-  function handleDeletionKey() {
-    notationMutationHelper.deleteSelectedNotations();
-
-    editModeStore.setDefaultEditMode();
-  }
-
-  function handleMovementKey(key: string) {
-    // handeled by keyUp in AreaSelector
-    if (editModeStore.getEditMode() === "AREA_SELECTED") return;
-    if (editModeStore.getEditMode() === "EXPONENT_SELECTED") return;
-    if (editModeStore.getEditMode() === "EXPONENT_WRITING") return;
-
-    if (key === "ArrowLeft" || key === "Backspace") {
-      matrixCellHelper.setNextCell(-1, 0);
-    }
-
-    if (key === "ArrowRight" || key === "Space") {
-      matrixCellHelper.setNextCell(1, 0);
-    }
-
-    if (key === "ArrowUp") {
-      matrixCellHelper.setNextCell(0, -1);
-    }
-
-    if (key === "ArrowDown") {
-      matrixCellHelper.setNextCell(0, 1);
-    }
-
-    if (key === "Enter") {
-      matrixCellHelper.setNextCell(0, -1);
-    }
-
-
-    // select a notation occupied by selected cell
-    selectionHelper.selectNotationAtPosition( {
-      x:
-        cellStore.getSvgBoundingRect().left +
-        cellStore.getSelectedCell()?.col! *
-          (cellStore.getCellHorizontalWidth() + cellSpace),
-      y:
-        cellStore.getSvgBoundingRect().top +
-        cellStore.getSelectedCell()?.row! *
-          (cellStore.getCellVerticalHeight() + cellSpace),
-    });
-  }
-
-  function classifyKeyCode(code: string): keyType | null {
-    if (
-      code === "ArrowLeft" ||
-      code === "ArrowRight" ||
-      code === "ArrowUp" ||
-      code === "ArrowDown" ||
-      code === "Space"
-    )
-      return "MOVEMENT";
-
-    if (
-      code.startsWith("Digit") ||
-      code.startsWith("Key") ||
-      code.startsWith("Numpad") ||
-      code === "Minus" ||
-      code === "Plus" ||
-      code === "Equal" ||
-      code === "Slash" ||
-      code === "Backslash" ||
-      code === "Period"
-    )
-      return "SYMBOL";
-
-    if (code === "Delete") return "DELETION";
-
-    if (code === "Backspace") return "DELETEANDMOVE";
-
-    return null;
-  }
 
   function emitSvgMouseDown(e: MouseEvent) {
     eventBus.emit("EV_SVG_MOUSEDOWN", e);
   }
 
-  function emitSvgMouseClick(e: MouseEvent) {
-    eventBus.emit("EV_SVG_MOUSECLICK", e);
-  }
 
   function registerSvgMouseDown() {
     document
@@ -312,22 +203,6 @@ export default function eventHelper() {
       ?.removeEventListener("mousedown", emitSvgMouseDown);
   }
 
-  function registerSvgMouseClick() {
-    document
-      ?.getElementById(cellStore.getSvgId()!)
-      ?.addEventListener("click", emitSvgMouseClick);
-  }
-
-  function unregisterSvgMouseClick() {
-    document
-      ?.getElementById(cellStore.getSvgId()!)
-      ?.removeEventListener("click", emitSvgMouseClick);
-  }
-
-  function emitSvgMouseMove(e: MouseEvent) {
-    eventBus.emit("EV_SVG_MOUSEMOVE", e);
-  }
-
   function registerSvgMouseMove() {
     document
       ?.getElementById(cellStore.getSvgId()!)
@@ -338,6 +213,10 @@ export default function eventHelper() {
     document
       ?.getElementById(cellStore.getSvgId()!)
       ?.removeEventListener("mousemove", emitSvgMouseMove);
+  }
+
+  function emitSvgMouseMove(e: MouseEvent) {
+    eventBus.emit("EV_SVG_MOUSEMOVE", e);
   }
 
   function emitSvgMouseUp(e: MouseEvent) {
@@ -357,6 +236,7 @@ export default function eventHelper() {
   }
 
   function emitKeyUp(key: KeyboardEvent) {
+
     eventBus.emit("EV_KEYUP", key);
   }
 
@@ -395,11 +275,8 @@ export default function eventHelper() {
   return {
     copy,
     paste,
-    keyUp,
     registerSvgMouseDown,
     unregisterSvgMouseDown,
-    registerSvgMouseClick,
-    unregisterSvgMouseClick,
     registerSvgMouseMove,
     unregisterSvgMouseMove,
     registerSvgMouseUp,

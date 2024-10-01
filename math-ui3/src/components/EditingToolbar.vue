@@ -77,21 +77,21 @@ type CellColor = "lightblue" | "lightgreen" | "pink" | "transparent" | "none";
 let cellColor: CellColor = "none";
 
 watch(
-  () => eventBus.bus.value.get("EV_SVG_MOUSEMOVE"),
+  () => eventBus.get("SYMBOL", "EV_SVG_MOUSEMOVE"),
   (e: MouseEvent) => {
     handleMouseMove(e);
   },
 );
 
 watch(
-  () => eventBus.bus.value.get("EV_SVG_MOUSEUP"),
+  () => eventBus.get("SYMBOL", "EV_SVG_MOUSEUP"),
   (e: MouseEvent) => {
     handleMouseUp(e);
   },
 );
 
 watch(
-  () => eventBus.bus.value.get("EV_SVG_MOUSEDOWN"),
+  () => eventBus.get("SYMBOL", "EV_SVG_MOUSEDOWN"),
   (e: MouseEvent) => {
     handleMouseDown(e);
   },
@@ -176,5 +176,4 @@ function resetButtonsState() {
 .vertical-toolbar-column {
   flex-basis: content;
 }
-
 </style>

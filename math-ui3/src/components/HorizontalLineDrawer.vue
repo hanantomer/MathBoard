@@ -7,8 +7,8 @@
         left: handleLeft + 'px',
         top: handleY + 'px',
       }"
-      v-on:mouseup="onMouseUp"
-      v-on:mousedown="onHandleMouseDown"
+      v-on:mouseup="endDrawLine"
+      v-on:mousedown="startLineDrawing"
       v-if="!sqrtEditMode"
     ></v-card>
     <v-card
@@ -18,8 +18,8 @@
         left: handleRight + 'px',
         top: handleY + 'px',
       }"
-      v-on:mouseup="onMouseUp"
-      v-on:mousedown="onHandleMouseDown"
+      v-on:mouseup="endDrawLine"
+      v-on:mousedown="startLineDrawing"
     ></v-card>
     <svg
       height="800"
@@ -46,22 +46,21 @@ import { useCellStore } from "../store/pinia/cellStore";
 import { useEditModeStore } from "../store/pinia/editModeStore";
 import { cellSpace } from "../../../math-common/src/globals";
 
-import {
-  HorizontaLinePosition,
-  DotCoordinates,
-} from "../../../math-common/src/baseTypes";
+import { HorizontaLinePosition } from "../../../math-common/src/baseTypes";
 
 import {
   HorizontalLineAttributes,
   HorizontalLineNotationAttributes,
 } from "../../../math-common/src/baseTypes";
 import useEventBus from "../helpers/eventBusHelper";
+import useWatchHelper from "../helpers/watchHelper";
 
 const eventBus = useEventBus();
 const notationMutateHelper = useNotationMutateHelper();
 const notationStore = useNotationStore();
 const cellStore = useCellStore();
 const editModeStore = useEditModeStore();
+const watchHelper = useWatchHelper();
 
 // vars
 
@@ -70,6 +69,8 @@ let linePosition = ref(<HorizontaLinePosition>{
   x2: 0,
   y: 0,
 });
+
+// computed
 
 const sqrtEditMode = computed(() => {
   return editModeStore.isSqrtEditMode();
@@ -106,38 +107,43 @@ let handleY = computed(() => {
   return lineY.value + (cellStore.getSvgBoundingRect().top ?? 0) - 5;
 });
 
-watch(
-  () => eventBus.bus.value.get("EV_SVG_MOUSEUP"),
-  () => {
-    onMouseUp();
-  },
+// watchers
+
+watchHelper.watchMouseEvent(
+  ["HORIZONTAL_LINE_STARTED"],
+  "EV_SVG_MOUSEDOWN",
+  startLineDrawing,
 );
 
-watch(
-  () => eventBus.bus.value.get("EV_SVG_MOUSEMOVE"),
-  (e: MouseEvent) => {
-    onMouseMove(e);
-  },
+watchHelper.watchMouseEvent(
+  ["HORIZONTAL_LINE_DRAWING"],
+  "EV_SVG_MOUSEMOVE",
+  setLine,
 );
 
-watch(
-  () => eventBus.bus.value.get("EV_SVG_MOUSEDOWN"),
-  (e: MouseEvent) => {
-    onMouseDown(e);
-  },
+watchHelper.watchMouseEvent(
+  ["HORIZONTAL_LINE_DRAWING"],
+  "EV_SVG_MOUSEUP",
+  endDrawLine,
 );
 
-watch(
-  () => eventBus.bus.value.get("EV_HORIZONTAL_LINE_SELECTED"),
-  (line: HorizontalLineNotationAttributes) => {
-    if (line) onLineSelected(line);
-  },
+// emmited by selection helper
+watchHelper.watchNotationSelection(
+  "HORIZONTAL_LINE_SELECTED",
+  "EV_HORIZONTAL_LINE_SELECTED",
+  lineSelected,
 );
 
-// event handlers
+watchHelper.watchMouseEvent(
+  ["HORIZONTAL_LINE_SELECTED"],
+  "EV_SVG_MOUSEDOWN",
+  resetLineDrawing,
+);
 
-function onLineSelected(lineNotation: HorizontalLineNotationAttributes) {
-  // set selection line
+// meethds
+
+function lineSelected(lineNotation: HorizontalLineNotationAttributes) {
+  if (!lineNotation) return;
 
   linePosition.value.x1 =
     lineNotation.fromCol * (cellStore.getCellHorizontalWidth() + cellSpace);
@@ -149,38 +155,24 @@ function onLineSelected(lineNotation: HorizontalLineNotationAttributes) {
 
   // update store
   notationStore.selectNotation(lineNotation.uuid);
-
-  // to enable re selection
-  eventBus.emit("EV_HORIZONTAL_LINE_SELECTED", null);
 }
 
-function onHandleMouseDown() {
+function startLineDrawing(e: MouseEvent) {
+  const position = {
+    x: e.pageX - cellStore.getSvgBoundingRect().x,
+    y: e.pageY - cellStore.getSvgBoundingRect().y,
+  };
+
+  linePosition.value.x1 = position.x;
+
+  linePosition.value.x2 = linePosition.value.x1 + 10;
+
+  linePosition.value.y = getNearestRow(position.y);
+
   editModeStore.setNextEditMode();
 }
 
-// emitted by event manager
-function onMouseDown(e: MouseEvent) {
-  if (e.buttons !== 1) {
-    // ignore right button
-    return;
-  }
-
-  // user clicked elsewere after start drawing
-  if (editModeStore.isHorizontalLineDrawingMode()) {
-    resetLineDrawing();
-  }
-
-  // new line
-  if (editModeStore.isHorizontalLineStartedMode()) {
-    startLineDrawing({
-      x: e.pageX - cellStore.getSvgBoundingRect().x,
-      y: e.pageY - cellStore.getSvgBoundingRect().y,
-    });
-    editModeStore.setNextEditMode();
-  }
-}
-
-function onMouseMove(e: MouseEvent) {
+function setLine(e: MouseEvent) {
   // ignore right button
   if (e.buttons !== 1) {
     return;
@@ -195,46 +187,9 @@ function onMouseMove(e: MouseEvent) {
     return;
   }
 
-  if (!editModeStore.isHorizontalLineDrawingMode()) {
-    return;
-  }
-  setLine(e.pageX - cellStore.getSvgBoundingRect().x);
-}
+  const xPos = e.pageX - cellStore.getSvgBoundingRect().x;
 
-function onMouseUp() {
-  // drawing not started
-  if (
-    linePosition.value.x1 === 0 &&
-    linePosition.value.x2 === 0 &&
-    linePosition.value.y === 0
-  ) {
-    return;
-  }
-
-  // line yet not modified
-  if (editModeStore.isHorizontalLineDrawingMode()) {
-    endDrawLine();
-  }
-}
-
-// methods
-
-function startLineDrawing(position: DotCoordinates) {
-  linePosition.value.x1 = position.x;
-
-  linePosition.value.x2 = linePosition.value.x1 + 10;
-
-  linePosition.value.y = getNearestRow(position.y);
-}
-
-function setLine(xPos: number) {
-  console.debug("xPos:" + xPos);
-  console.debug("linePosition.value.x1:" + linePosition.value.x1);
-  console.debug("linePosition.value.x2:" + linePosition.value.x2);
-
-  const modifyRight =
-    // linePosition.value.x2 - xPos < xPos - linePosition.value.x1;
-    xPos >= linePosition.value.x1;
+  const modifyRight = xPos >= linePosition.value.x1;
 
   if (modifyRight) {
     linePosition.value.x2 = xPos;
@@ -245,6 +200,14 @@ function setLine(xPos: number) {
 }
 
 function endDrawLine() {
+  if (
+    linePosition.value.x1 === 0 &&
+    linePosition.value.x2 === 0 &&
+    linePosition.value.y === 0
+  ) {
+    return;
+  }
+
   if (linePosition.value.x2 == linePosition.value.x1) {
     return;
   }

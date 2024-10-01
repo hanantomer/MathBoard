@@ -50,41 +50,77 @@ const curveType = computed(() => {
   return editModeStore.isConcaveCurveMode() ? "CONCAVE" : "CONVEX";
 });
 
-
 // watch
 
 watch(
-  () => eventBus.bus.value.get("EV_SVG_MOUSEUP"),
+  () => eventBus.get("CONCAVE_CURVE_DRAWING", "EV_SVG_MOUSEUP"),
   () => {
     onMouseUp();
   },
 );
 
 watch(
-  () => eventBus.bus.value.get("EV_SVG_MOUSEMOVE"),
+  () => eventBus.get("CONVEX_CURVE_DRAWING", "EV_SVG_MOUSEUP"),
+  () => {
+    onMouseUp();
+  },
+);
+
+watch(
+  () => eventBus.get("CONCAVE_CURVE_DRAWING", "EV_SVG_MOUSEMOVE"),
   (e: MouseEvent) => {
     onMouseMove(e);
   },
 );
 
 watch(
-  () => eventBus.bus.value.get("EV_SVG_MOUSEDOWN"),
+  () => eventBus.get("CONVEX_CURVE_DRAWING", "EV_SVG_MOUSEMOVE"),
+  (e: MouseEvent) => {
+    onMouseMove(e);
+  },
+);
+
+watch(
+  () => eventBus.get("CONCAVE_CURVE_STARTED", "EV_SVG_MOUSEDOWN"),
   (e: MouseEvent) => {
     onMouseDown(e);
   },
 );
 
 watch(
-  () => eventBus.bus.value.get("EV_CONCAVE_CURVE_SELECTED"),
+  () => eventBus.get("CONVEX_CURVE_STARTED", "EV_SVG_MOUSEDOWN"),
+  (e: MouseEvent) => {
+    onMouseDown(e);
+  },
+);
+
+watch(
+  () => eventBus.get("SYMBOL", "EV_CONCAVE_CURVE_SELECTED"),
   (curve: CurveNotationAttributes) => {
     if (curve) onCurveSelected(curve);
   },
 );
 
 watch(
-  () => eventBus.bus.value.get("EV_CONVEX_CURVE_SELECTED"),
+  () => eventBus.get("SYMBOL", "EV_CONVEX_CURVE_SELECTED"),
   (curve: CurveNotationAttributes) => {
     if (curve) onCurveSelected(curve);
+  },
+);
+
+watch(
+  () => eventBus.get("CONVEX_CURVE_SELECTED", "EV_SVG_MOUSEUP"),
+  () => {
+    notationStore.resetSelectedNotations();
+    editModeStore.setDefaultEditMode();
+  },
+);
+
+watch(
+  () => eventBus.get("CONCAVE_CURVE_SELECTED", "EV_SVG_MOUSEUP"),
+  () => {
+    notationStore.resetSelectedNotations();
+    editModeStore.setDefaultEditMode();
   },
 );
 
@@ -204,7 +240,10 @@ function onMouseMove(e: MouseEvent) {
     return;
   }
 
-  setCurve(e.pageX - cellStore.getSvgBoundingRect().x, e.pageY - cellStore.getSvgBoundingRect().y);
+  setCurve(
+    e.pageX - cellStore.getSvgBoundingRect().x,
+    e.pageY - cellStore.getSvgBoundingRect().y,
+  );
 }
 
 function onMouseUp() {

@@ -55,19 +55,25 @@ const show = computed(() => editModeStore.getEditMode() === "EXPONENT_WRITING");
 
 // whatch
 watch(
-  () => eventBus.bus.value.get("EV_KEYUP"),
+  () => eventBus.get("EXPONENT_WRITING", "EV_KEYUP"),
   async (e: KeyboardEvent) => {
     handleKeyUp(e);
   },
 );
 
 watch(
-  () => eventBus.bus.value.get("EV_SVG_MOUSEDOWN"),
+  () => eventBus.get("EXPONENT_STARTED", "EV_SVG_MOUSEDOWN"),
   (e: MouseEvent) => {
     if (!e) return;
-    handleMouseDown(e);
+    if (e.buttons !== 1) return;
+    startNewExponent(e);
   },
   { immediate: true },
+);
+
+watch(
+  () => eventBus.get("EXPONENT_WRITING", "EV_SVG_MOUSEDOWN"),
+  () => editModeStore.setNextEditMode(),
 );
 
 watch(
@@ -84,13 +90,13 @@ watch(
 
     // cell selected after clicking on exponent icon
     if (newEditMode === "CELL_SELECTED" && oldEditMode === "EXPONENT_STARTED") {
-      startNewExponent();
+      startNewExponent(null);
       return;
     }
 
     // exponent icon clicked after cell selection
     if (newEditMode === "EXPONENT_STARTED" && oldEditMode === "CELL_SELECTED") {
-      startNewExponent();
+      startNewExponent(null);
       return;
     }
   },
@@ -99,10 +105,10 @@ watch(
 
 // user selected exponent notation
 watch(
-  () => eventBus.bus.value.get("EV_EXPONENT_SELECTED"),
+  () => eventBus.get("SYMBOL", "EV_EXPONENT_SELECTED"),
   (exponentNotation: ExponentNotationAttributes) => {
     if (!exponentNotation) return;
-    eventBus.bus.value.delete("EV_EXPONENT_SELECTED");
+    eventBus.remove("EV_EXPONENT_SELECTED", "SYMBOL");
 
     // first click -> select
     if (!editModeStore.isTextSelectedMode()) {
@@ -117,41 +123,28 @@ watch(
 
 // event handlers
 
-function handleMouseDown(e: MouseEvent) {
-  if (e.buttons !== 1) {
-    return;
-  }
-
-  if (editModeStore.isExponentStartedMode()) {
-    selectionHelper.selectCell( {
-      x: e.pageX,
-      y: e.pageY,
-    });
-    startNewExponent();
-    return;
-  }
-
-  if (editModeStore.isExponentWritingMode()) {
-    editModeStore.setNextEditMode();
-    return;
-  }
-}
-
 function handleKeyUp(e: KeyboardEvent) {
   const { code } = e;
-  if (code === "Enter" && editModeStore.getEditMode() == "EXPONENT_WRITING") {
+  if (code === "Enter") {
     editModeStore.setNextEditMode();
   }
 }
 
 // methods
 
-function startNewExponent() {
+function startNewExponent(e: MouseEvent | null) {
+  if (e) {
+    selectionHelper.selectCell({
+      x: e.pageX,
+      y: e.pageY,
+    });
+  }
+
   editModeStore.setEditMode("EXPONENT_WRITING");
   (document.getElementById("exponentInput") as HTMLInputElement).value = "";
   (document.getElementById("baseInput") as HTMLInputElement).value = "";
   const clickedCoordinates = screenHelper.getClickedCellTopLeftCoordinates(
-    cellStore.getSelectedCell()
+    cellStore.getSelectedCell(),
   );
 
   exponentLeft.value = clickedCoordinates.x;

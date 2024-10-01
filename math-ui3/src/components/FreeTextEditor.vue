@@ -54,32 +54,47 @@ watch(
   { immediate: true, deep: true },
 );
 
+watch(
+  () => eventBus.get("TEXT_WRITING", "EV_SVG_MOUSEDOWN"),
+  (e: MouseEvent) => {
+    if (!e) return;
+
+    if (e.target != document.getElementById("textAreaEl")) {
+      editModeStore.setDefaultEditMode();
+    }
+  },
+  { immediate: true },
+);
+
 // area selector signals the selected position attributes
 watch(
-  () => eventBus.bus.value.get("EV_SELECTION_DONE"),
+  () => eventBus.get("TEXT_WRITING", "EV_AREA_SELECTION_DONE"),
   (selectionPosition: any) => {
     setInitialTextValue();
     textLeft.value = selectionPosition.left;
     textTop.value = selectionPosition.top;
     textHeight.value = selectionPosition.height;
     textWidth.value = selectionPosition.width;
-    editModeStore.setEditMode("TEXT_WRITING");
+    //    editModeStore.setEditMode("TEXT_WRITING");
     setTimeout('document.getElementById("textAreaEl").focus()', 100);
   },
 );
 
 // user selected text notation
 watch(
-  () => eventBus.bus.value.get("EV_FREE_TEXT_SELECTED"),
+  () => eventBus.get("SYMBOL", "EV_FREE_TEXT_SELECTED"),
   (textNotation: RectNotationAttributes) => {
     if (!textNotation) return;
-    eventBus.bus.value.delete("EV_FREE_TEXT_SELECTED");
+    editModeStore.setEditMode("TEXT_SELECTED");
+  },
+);
 
-    // first click -> select
-    if (!editModeStore.isTextSelectedMode()) {
-      editModeStore.setEditMode("TEXT_SELECTED");
-      return;
-    }
+// user clicked inside selected text notation (i.e second click)
+watch(
+  () => eventBus.get("TEXT_SELECTED", "EV_FREE_TEXT_SELECTED"),
+  (textNotation: RectNotationAttributes) => {
+    if (!textNotation) return;
+    eventBus.remove("EV_FREE_TEXT_SELECTED", "TEXT_SELECTED");
 
     // second click -> edit
     editSelectedTextNotation(textNotation);
@@ -154,8 +169,15 @@ function submitText() {
     },
     bottomRight: {
       x:
-        textLeft.value + textWidth.value + window.scrollX - cellStore.getSvgBoundingRect().x,
-      y: textTop.value + textHeight.value + window.scrollY - cellStore.getSvgBoundingRect().y,
+        textLeft.value +
+        textWidth.value +
+        window.scrollX -
+        cellStore.getSvgBoundingRect().x,
+      y:
+        textTop.value +
+        textHeight.value +
+        window.scrollY -
+        cellStore.getSvgBoundingRect().y,
     },
   });
 

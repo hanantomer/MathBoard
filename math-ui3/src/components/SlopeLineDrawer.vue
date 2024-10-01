@@ -7,8 +7,7 @@
         left: handleLeft + 'px',
         top: handleTop + 'px',
       }"
-      v-on:mouseup="onMouseUp"
-      v-on:mousedown="onHandleMouseDown"
+      v-on:mouseup="endDrawLine"
     ></v-card>
     <v-card
       id="lineRightHandle"
@@ -17,8 +16,7 @@
         left: handleRight + 'px',
         top: handleBottom + 'px',
       }"
-      v-on:mouseup="onMouseUp"
-      v-on:mousedown="onHandleMouseDown"
+      v-on:mouseup="endDrawLine"
     ></v-card>
 
     <svg
@@ -61,7 +59,6 @@ const notationStore = useNotationStore();
 const cellStore = useCellStore();
 const editModeStore = useEditModeStore();
 
-
 // vars
 
 const linePosition = ref(<SlopeLinePosition>{
@@ -74,7 +71,6 @@ const slopeType = ref<SlopeType>("NONE");
 
 type MovementDirection = "UP" | "DOWN" | "NONE";
 const movementDirection = ref<MovementDirection>("NONE");
-
 
 // computed
 
@@ -102,7 +98,7 @@ let lineTop = computed(() => {
 });
 
 let handleLeft = computed(() => {
-    return lineLeft.value + (cellStore.getSvgBoundingRect().left ?? 0);
+  return lineLeft.value + (cellStore.getSvgBoundingRect().left ?? 0);
 });
 
 let handleRight = computed(() => {
@@ -117,43 +113,58 @@ let handleBottom = computed(() => {
   return lineBottom.value + (cellStore.getSvgBoundingRect().top ?? 0);
 });
 
-// watch
+// watchers
 
 watch(
-  () => eventBus.bus.value.get("EV_SVG_MOUSEDOWN"),
+  () => eventBus.get("SLOPE_LINE_STARTED", "EV_SVG_MOUSEDOWN"),
   (e: MouseEvent) => {
-    onMouseDown(e);
+    startLineDrawing({
+      x: e.pageX - cellStore.getSvgBoundingRect().x,
+      y: e.pageY - cellStore.getSvgBoundingRect().y,
+    });
+    editModeStore.setNextEditMode();
   },
 );
 
 watch(
-  () => eventBus.bus.value.get("EV_SVG_MOUSEMOVE"),
+  () => eventBus.get("SLOPE_LINE_DRAWING", "EV_SVG_MOUSEUP"),
+  () => {
+    endDrawLine();
+  },
+);
+
+watch(
+  () => eventBus.get("SLOPE_LINE_DRAWING", "EV_SVG_MOUSEMOVE"),
   (e: MouseEvent) => {
     onMouseMove(e);
   },
 );
 
 watch(
-  () => eventBus.bus.value.get("EV_SVG_MOUSEUP"),
-  () => {
-    onMouseUp();
+  () => eventBus.get("SLOPE_LINE_DRAWING", "EV_SVG_MOUSEDOWN"),
+  (e: MouseEvent) => {
+    onMouseDown(e);
   },
 );
 
 watch(
-  () => eventBus.bus.value.get("EV_SLOPE_LINE_SELECTED"), /// TODO: update emitter to distinguish line types
+  () => eventBus.get("SYMBOL", "EV_SLOPE_LINE_SELECTED"),
   (line: SlopeLineNotationAttributes) => {
     if (line) onSlopeLineSelected(line);
   },
 );
 
-// event handlers
+watch(
+  () => eventBus.get("SLOPE_LINE_SELECTED", "EV_SVG_MOUSEUP"),
+  () => {
+    notationStore.resetSelectedNotations();
+    editModeStore.setDefaultEditMode();
+  },
+);
 
-function onHandleMouseDown() {
-  editModeStore.setNextEditMode();
-}
 
-// emitted by event manager
+// methods
+
 function onMouseDown(e: MouseEvent) {
   if (e.buttons !== 1) {
     // ignore right button
@@ -193,10 +204,22 @@ function onMouseMove(e: MouseEvent) {
 
   // movement is neglectable
   if (
-    isSiginificantMove(linePosition.value.left.x, e.pageX - cellStore.getSvgBoundingRect().x) ||
-    isSiginificantMove(linePosition.value.left.y, e.pageY - cellStore.getSvgBoundingRect().y) ||
-    isSiginificantMove(linePosition.value.right.x, e.pageX - cellStore.getSvgBoundingRect().x) ||
-    isSiginificantMove(linePosition.value.right.y, e.pageY - cellStore.getSvgBoundingRect().y)
+    isSiginificantMove(
+      linePosition.value.left.x,
+      e.pageX - cellStore.getSvgBoundingRect().x,
+    ) ||
+    isSiginificantMove(
+      linePosition.value.left.y,
+      e.pageY - cellStore.getSvgBoundingRect().y,
+    ) ||
+    isSiginificantMove(
+      linePosition.value.right.x,
+      e.pageX - cellStore.getSvgBoundingRect().x,
+    ) ||
+    isSiginificantMove(
+      linePosition.value.right.y,
+      e.pageY - cellStore.getSvgBoundingRect().y,
+    )
   ) {
     return;
   }
@@ -205,24 +228,10 @@ function onMouseMove(e: MouseEvent) {
     return;
   }
 
-  setLine(e.pageX - cellStore.getSvgBoundingRect().x, e.pageY - cellStore.getSvgBoundingRect().y);
-}
-
-function onMouseUp() {
-  // drawing not started
-  if (
-    linePosition.value.left.x === 0 &&
-    linePosition.value.left.y === 0 &&
-    linePosition.value.right.x === 0 &&
-    linePosition.value.right.y === 0
-  ) {
-    return;
-  }
-
-  // line yet not modified
-  if (editModeStore.isSlopeLineDrawingMode()) {
-    endDrawLine();
-  }
+  setLine(
+    e.pageX - cellStore.getSvgBoundingRect().x,
+    e.pageY - cellStore.getSvgBoundingRect().y,
+  );
 }
 
 function onSlopeLineSelected(lineNotation: SlopeLineNotationAttributes) {
@@ -251,8 +260,6 @@ function startLineDrawing(position: DotCoordinates) {
 
   linePosition.value.left.x = linePosition.value.right.x = position.x;
   linePosition.value.left.y = linePosition.value.right.y = position.y;
-
-  console.debug("startLineDrawing");
 }
 
 function setLine(xPos: number, yPos: number) {
@@ -290,20 +297,29 @@ function setLine(xPos: number, yPos: number) {
   }
 }
 
-function getSlopeType(xPos: number, yPos: number) : SlopeType {
+function getSlopeType(xPos: number, yPos: number): SlopeType {
   if (
     /*moving up and right*/
     (yPos < linePosition.value.right.y && xPos > linePosition.value.right.x) ||
     /*moving down and left*/
     (yPos > linePosition.value.right.y && xPos < linePosition.value.right.x)
   ) {
-    return  "POSITIVE";
+    return "POSITIVE";
   }
 
-  return  "NEGATIVE";
+  return "NEGATIVE";
 }
 
 function endDrawLine() {
+  if (
+    linePosition.value.left.x === 0 &&
+    linePosition.value.left.y === 0 &&
+    linePosition.value.right.x === 0 &&
+    linePosition.value.right.y === 0
+  ) {
+    return;
+  }
+
   if (
     linePosition.value.left.x == linePosition.value.right.x &&
     linePosition.value.right.y == linePosition.value.right.y
@@ -365,30 +381,7 @@ function resetLineDrawing() {
   editModeStore.setDefaultEditMode();
 }
 
-function isSiginificantMove(a1: number, a2: number) : boolean {
+function isSiginificantMove(a1: number, a2: number): boolean {
   return Math.abs(a1 - a2) < 3;
 }
-
-
 </script>
-
-<style>
-.line {
-  top: 4px;
-  position: absolute;
-  color: black;
-  display: block;
-  border-bottom: solid 1px;
-  border-top: solid 1px;
-  z-index: 999;
-}
-.lineHandle {
-  cursor: col-resize;
-  display: block;
-  position: absolute;
-  z-index: 999;
-  width: 12px;
-  height: 12px;
-  border: 1, 1, 1, 1;
-}
-</style>

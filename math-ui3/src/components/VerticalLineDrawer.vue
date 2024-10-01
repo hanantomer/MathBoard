@@ -38,7 +38,6 @@
 </template>
 
 <script setup lang="ts">
-
 import useNotationMutateHelper from "../helpers/notationMutateHelper";
 import { watch, computed, ref } from "vue";
 import { useNotationStore } from "../store/pinia/notationStore";
@@ -63,7 +62,6 @@ const notationStore = useNotationStore();
 const cellStore = useCellStore();
 const editModeStore = useEditModeStore();
 
-
 // vars
 
 let linePosition = ref(<VerticalLinePosition>{
@@ -72,6 +70,7 @@ let linePosition = ref(<VerticalLinePosition>{
   y2: 0,
 });
 
+// computed
 
 const show = computed(() => {
   return (
@@ -93,7 +92,7 @@ let lineX = computed(() => {
 });
 
 let handleX = computed(() => {
-    return lineX.value + (cellStore.getSvgBoundingRect().left ?? 0) - 5;
+  return lineX.value + (cellStore.getSvgBoundingRect().left ?? 0) - 5;
 });
 
 let handleTop = computed(() => {
@@ -106,39 +105,58 @@ let handleBottom = computed(() => {
   return lineBottom.value + (cellStore.getSvgBoundingRect().top ?? 0);
 });
 
-// watch
+// watchers
 
 watch(
-  () => eventBus.bus.value.get("EV_SVG_MOUSEUP"),
-  () => {
-    onMouseUp();
+  () => eventBus.get("VERTICAL_LINE_STARTED", "EV_SVG_MOUSEDOWN"),
+  (e: MouseEvent) => {
+    startLineDrawing({
+      x: e.pageX - cellStore.getSvgBoundingRect().x,
+      y: e.pageY - cellStore.getSvgBoundingRect().y,
+    });
+    editModeStore.setNextEditMode();
   },
 );
 
 watch(
-  () => eventBus.bus.value.get("EV_SVG_MOUSEMOVE"),
+  () => eventBus.get("VERTICAL_LINE_DRAWING", "EV_SVG_MOUSEUP"),
+  () => {
+    endDrawLine();
+  },
+);
+
+watch(
+  () => eventBus.get("VERTICAL_LINE_DRAWING", "EV_SVG_MOUSEMOVE"),
   (e: MouseEvent) => {
     onMouseMove(e);
   },
 );
 
 watch(
-  () => eventBus.bus.value.get("EV_SVG_MOUSEDOWN"),
+  () => eventBus.get("VERTICAL_LINE_DRAWING", "EV_SVG_MOUSEDOWN"),
   (e: MouseEvent) => {
-    onMouseDown(e);
+    resetLineDrawing();
   },
 );
 
 watch(
-  () => eventBus.bus.value.get("EV_VERTICAL_LINE_SELECTED"),
+  () => eventBus.get("VERTICAL_LINE_SELECTED", "EV_VERTICAL_LINE_SELECTED"),
   (line: VerticalLineNotationAttributes) => {
-    if (line) onLineSelected(line);
+    lineSelected(line);
   },
 );
 
-// event handlers
+watch(
+  () => eventBus.get("VERTICAL_LINE_SELECTED", "EV_SVG_MOUSEUP"),
+  () => {
+    notationStore.resetSelectedNotations();
+    editModeStore.setDefaultEditMode();
+  },
+);
 
-function onLineSelected(lineNotation: VerticalLineNotationAttributes) {
+// methods
+
+function lineSelected(lineNotation: VerticalLineNotationAttributes) {
   linePosition.value.x =
     lineNotation.col * (cellStore.getCellHorizontalWidth() + cellSpace);
 
@@ -150,7 +168,7 @@ function onLineSelected(lineNotation: VerticalLineNotationAttributes) {
 
   notationStore.selectNotation(lineNotation.uuid);
 
-   eventBus.emit("EV_VERTICAL_LINE_SELECTED", null); // to enable re selection
+  eventBus.emit("EV_VERTICAL_LINE_SELECTED", null); // to enable re selection
 }
 
 function onHandleMouseDown() {
@@ -175,7 +193,6 @@ function onMouseDown(e: MouseEvent) {
       x: e.pageX - (cellStore.getSvgBoundingRect()?.x ?? 0),
       y: e.pageY - (cellStore.getSvgBoundingRect()?.y ?? 0),
     });
-    editModeStore.setNextEditMode();
   }
 }
 
@@ -216,8 +233,6 @@ function onMouseUp() {
     endDrawLine();
   }
 }
-
-// methods
 
 function startLineDrawing(position: DotCoordinates) {
   linePosition.value.y1 = position.y;
@@ -288,24 +303,3 @@ function getNearestCol(clickedXPos: number) {
   return clickedCol * (cellStore.getCellHorizontalWidth() + cellSpace);
 }
 </script>
-
-<style>
-.line {
-  top: 4px;
-  position: absolute;
-  color: black;
-  display: block;
-  border-bottom: solid 1px;
-  border-top: solid 1px;
-  z-index: 999;
-}
-.lineHandle {
-  cursor: col-resize;
-  position: absolute;
-  display: block;
-  width: 12px;
-  height: 12px;
-  border: 1, 1, 1, 1;
-  z-index: 999;
-}
-</style>

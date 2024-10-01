@@ -61,7 +61,6 @@ const notationStore = useNotationStore();
 const cellStore = useCellStore();
 const editModeStore = useEditModeStore();
 
-
 // vars
 
 let sqrtPosition = ref(<HorizontaLinePosition>{
@@ -103,34 +102,50 @@ let handleY = computed(() => {
 });
 
 watch(
-  () => eventBus.bus.value.get("EV_SVG_MOUSEUP"),
+  () => eventBus.get("SQRT_STARTED", "EV_SVG_MOUSEDOWN"),
+  (e: MouseEvent) => {
+    startSqrtDrawing({
+      x: e.pageX - cellStore.getSvgBoundingRect().x,
+      y: e.pageY - cellStore.getSvgBoundingRect().y,
+    });
+    editModeStore.setNextEditMode();
+  },
+);
+
+watch(
+  () => eventBus.get("SQRT_DRAWING", "EV_SVG_MOUSEUP"),
   () => {
     onMouseUp();
   },
 );
 
 watch(
-  () => eventBus.bus.value.get("EV_SVG_MOUSEMOVE"),
+  () => eventBus.get("SQRT_DRAWING", "EV_SVG_MOUSEMOVE"),
   (e: MouseEvent) => {
     onMouseMove(e);
   },
 );
 
 watch(
-  () => eventBus.bus.value.get("EV_SVG_MOUSEDOWN"),
+  () => eventBus.get("SQRT_DRAWING", "EV_SVG_MOUSEDOWN"),
   (e: MouseEvent) => {
-    onMouseDown(e);
+    resetLineDrawing();
   },
 );
 
 watch(
-  () => eventBus.bus.value.get("EV_SQRT_SELECTED"),
+  () => eventBus.get("SQRT_SELECTED", "EV_SQRT_SELECTED"),
   (sqrt: HorizontalLineNotationAttributes) => {
     if (sqrt) onSqerSelected(sqrt);
   },
 );
 
 // event handlers
+
+function resetLineDrawing() {
+  sqrtPosition.value.x1 = sqrtPosition.value.x2 = sqrtPosition.value.y = 0;
+  editModeStore.setDefaultEditMode();
+}
 
 function onSqerSelected(sqrtNotation: HorizontalLineNotationAttributes) {
   // set selection sqrt

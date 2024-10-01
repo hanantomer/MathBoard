@@ -25,21 +25,22 @@ import { useNotationStore } from "../store/pinia/notationStore";
 
 import useNotationMutateHelper from "../helpers/notationMutateHelper";
 import useSelectionHelper from "../helpers/selectionHelper";
-import useEventBus from "../helpers/eventBusHelper";
-import { EditMode, MoveDirection } from "common/unions";
+import { MoveDirection } from "common/unions";
 import { cellSpace } from "common/globals";
 import { RectCoordinates, DotCoordinates } from "common/baseTypes";
+import useEventBusHelper from "../helpers/eventBusHelper";
 
-const eventBus = useEventBus();
+const eventBus = useEventBusHelper();
 const editModeStore = useEditModeStore();
 const cellStore = useCellStore();
 const notationStore = useNotationStore();
-const notationMutateHelper = useNotationMutateHelper();
+const notationMutationHelper = useNotationMutateHelper();
 const selectionHelper = useSelectionHelper();
 
 // variables
 
 let mouseOverSelectionArea: boolean = false;
+let mouseLeftSelectionArea: boolean = false;
 
 let selectionPosition = ref<RectCoordinates>({
   topLeft: { x: 0, y: 0 },
@@ -102,118 +103,146 @@ const selectionRectHeight = computed(() => {
   );
 });
 
-// watch
+// area selection watchers
 
 watch(
-  () => eventBus.bus.value.get("EV_KEYUP"),
+  () => eventBus.get("SYMBOL", "EV_SVG_MOUSEMOVE"),
+  (e: MouseEvent) => {
+    if (e.buttons !== 1) return;
+    cancelSelection();
+    editModeStore.setEditMode("AREA_SELECTING");
+  },
+);
+
+watch(
+  () => eventBus.get("CELL_SELECTED", "EV_SVG_MOUSEMOVE"),
+  (e: MouseEvent) => {
+    if (e.buttons !== 1) return;
+    cancelSelection();
+    editModeStore.setEditMode("AREA_SELECTING");
+  },
+);
+
+watch(
+  () => eventBus.get("AREA_SELECTING", "EV_SVG_MOUSEMOVE"),
+  (e: MouseEvent) => {
+    updateSelectionArea(e);
+  },
+);
+
+watch(
+  () => eventBus.get("AREA_SELECTING", "EV_SVG_MOUSEMOVE"),
+  async (e: MouseEvent) => {
+    updateSelectionArea(e);
+  },
+);
+
+watch(
+  () => eventBus.get("AREA_SELECTING", "EV_SVG_MOUSEUP"),
+  () => {
+    endSelect();
+  },
+);
+
+watch(
+  () => eventBus.get("AREA_SELECTED", "EV_KEYUP"),
   async (e: KeyboardEvent) => {
-    await keyUp(e);
+    await handlKeyUp(e);
   },
 );
 
 watch(
-  () => eventBus.bus.value.get("EV_SVG_MOUSEDOWN"),
+  () => eventBus.get("AREA_SELECTED", "EV_SVG_MOUSEMOVE"),
   (e: MouseEvent) => {
-    handleMouseDown(e);
+    startMoving(e);
   },
 );
 
 watch(
-  () => eventBus.bus.value.get("EV_SVG_MOUSEMOVE"),
-  (e: MouseEvent) => {
-    handleMouseMove(e);
+  () => eventBus.get("AREA_MOVING", "EV_SVG_MOUSEMOVE"),
+  async (e: MouseEvent) => {
+    await moveSelectionByMouseDrag(e);
   },
 );
 
 watch(
-  () => eventBus.bus.value.get("EV_SVG_MOUSEUP"),
-  (e: MouseEvent) => {
-    handleMouseUp(e);
+  () => eventBus.get("AREA_MOVING", "EV_SVG_MOUSEUP"),
+  async (e: MouseEvent) => {
+    await endMoveSelection(e);
   },
 );
 
 watch(
-  () => editModeStore.getEditMode() as any,
-  (newEditMode: EditMode, oldEditMode: any) => {
-    if (oldEditMode === "AREA_SELECTED" && newEditMode === "CELL_SELECTED") {
-      resetSelection();
-    }
+  () => eventBus.get("AREA_SELECTED", "EV_SVG_MOUSEUP"),
+  () => {
+    if (!mouseLeftSelectionArea) return;
+    cancelSelection();
+    editModeStore.setDefaultEditMode();
   },
-  { immediate: true, deep: true },
+);
+
+watch(
+  () => eventBus.get("SYMBOL", "EV_SVG_MOUSEUP"),
+  () => {
+    cancelSelection();
+  },
+);
+
+// free text watchers
+
+watch(
+  () => eventBus.get("TEXT_AREA_SELECTING", "EV_SVG_MOUSEMOVE"),
+  async (e: MouseEvent) => {
+    updateSelectionArea(e);
+  },
+);
+
+watch(
+  () => eventBus.get("TEXT_AREA_SELECTING", "EV_SVG_MOUSEUP"),
+  () => {
+    endSelect();
+    signalSelection();
+  },
+);
+
+// annotation watchers
+
+watch(
+  () => eventBus.get("ANNOTATION_AREA_SELECTING", "EV_SVG_MOUSEMOVE"),
+  async (e: MouseEvent) => {
+    updateSelectionArea(e);
+  },
+);
+
+watch(
+  () => eventBus.get("ANNOTATION_AREA_SELECTING", "EV_SVG_MOUSEUP"),
+  () => {
+    endSelect();
+  },
 );
 
 // event handlers
 
+function startMoving(e: MouseEvent) {
+  if (e.buttons !== 1) return;
+  if (!mouseOverSelectionArea) return;
+  editModeStore.setNextEditMode();
+}
+
 function enter() {
-  console.debug("enter");
   mouseOverSelectionArea = true;
+  mouseLeftSelectionArea = false;
 }
 
 function leave() {
-  console.debug("leave");
-  mouseOverSelectionArea = false;
+  mouseLeftSelectionArea = true;
 }
 
-function handleMouseDown(e: MouseEvent) {
-  if (e.buttons !== 1) {
-    return;
-  }
-
-  // free text creation starts with area selection
-  if (editModeStore.isTextStartedMode()) {
-    cellStore.resetSelectedCell();
-    selectionPosition.value.topLeft.y = e.pageY;
-    selectionPosition.value.bottomRight.x = e.pageX + 25;
-    selectionPosition.value.bottomRight.y = e.pageY + 25;
-  }
-}
-
-function handleMouseMove(e: MouseEvent) {
-  if (e.buttons !== 1) {
-    return;
-  }
-
-  const editMode = editModeStore.getEditMode();
-
-  if (
-    editModeStore.isLineMode() ||
-    editModeStore.isSqrtMode() ||
-    editModeStore.isCurveMode() ||
-    editModeStore.isColorisingMode() ||
-    editModeStore.isTextWritingMode() ||
-    editModeStore.isExponentMode()
-  ) {
-    return;
-  }
-
-  if (editMode === "AREA_SELECTING" || editMode === "TEXT_AREA_SELECTING") {
-    updateSelectionArea(e);
-    return;
-  }
-
-  if (editMode === "AREA_SELECTED") {
-    editModeStore.setEditMode("MOVING");
-    return;
-  }
-
-  if (editMode === "MOVING") {
-    moveSelection(e);
-    return;
-  }
-
-  if (editMode === "TEXT_STARTED" || editMode === "ANNOTATION_STARTED") {
-    editModeStore.setEditMode("TEXT_AREA_SELECTING");
-    return;
-  }
-
-  resetSelection();
-  editModeStore.setEditMode("AREA_SELECTING");
-}
-
+/*
 function handleMouseUp(e: MouseEvent) {
   const editMode = editModeStore.getEditMode();
 
-  if (editMode == "TEXT_STARTED") {
+  if (editMode == "TEXT_STARTED" || editMode == "ANNOTATION_STARTED") {
     editModeStore.setNextEditMode();
     return;
   }
@@ -226,11 +255,21 @@ function handleMouseUp(e: MouseEvent) {
 
   if (editMode == "AREA_SELECTING") {
     endSelect();
+    mouseOverSelectionArea = false; // expect to move the mouse over the selection area at start
+    mouseLeftSelectionArea = false;
     editModeStore.setNextEditMode();
     return;
   }
 
-  if (editMode == "TEXT_AREA_SELECTING") {
+  if (editMode == "AREA_SELECTED" && mouseLeftSelectionArea) {
+    editModeStore.setNextEditMode();
+    return;
+  }
+
+  if (
+    editMode === "TEXT_AREA_SELECTING" ||
+    editMode === "ANNOTATION_AREA_SELECTING"
+  ) {
     editModeStore.setNextEditMode();
     eventBus.emit("EV_SELECTION_DONE", {
       left: selectionRectLeft.value,
@@ -241,6 +280,7 @@ function handleMouseUp(e: MouseEvent) {
     return;
   }
 }
+*/
 
 function mouseup(e: MouseEvent) {
   eventBus.emit("EV_SVG_MOUSEUP", e);
@@ -250,42 +290,49 @@ function mousemove(e: MouseEvent) {
   eventBus.emit("EV_SVG_MOUSEMOVE", e);
 }
 
-async function keyUp(e: KeyboardEvent) {
+async function handlKeyUp(e: KeyboardEvent) {
   if (selectionRectHeight.value === 0) return;
 
   switch (e.code) {
+    case "Delete":
+       notationMutationHelper.deleteSelectedNotations();
+       editModeStore.setDefaultEditMode();
     case "ArrowLeft":
-      if (!notationMutateHelper.moveSelectedNotations(-1, 0, e.ctrlKey)) return;
+      if (!notationMutationHelper.moveSelectedNotations(-1, 0, e.ctrlKey)) return;
       await moveSelectionByKey(-1, 0);
-      await notationMutateHelper.saveMovedNotations("LEFT");
+      await notationMutationHelper.saveMovedNotations("LEFT");
       break;
     case "ArrowRight":
-      if (!notationMutateHelper.moveSelectedNotations(1, 0, e.ctrlKey)) return;
+      if (!notationMutationHelper.moveSelectedNotations(1, 0, e.ctrlKey)) return;
       moveSelectionByKey(1, 0);
-      await notationMutateHelper.saveMovedNotations("RIGHT");
+      await notationMutationHelper.saveMovedNotations("RIGHT");
       break;
     case "ArrowDown":
-      if (!notationMutateHelper.moveSelectedNotations(0, 1, e.ctrlKey)) return;
+      if (!notationMutationHelper.moveSelectedNotations(0, 1, e.ctrlKey)) return;
       moveSelectionByKey(0, 1);
-      await notationMutateHelper.saveMovedNotations("BOTTOM");
+      await notationMutationHelper.saveMovedNotations("BOTTOM");
       break;
     case "ArrowUp":
-      if (!notationMutateHelper.moveSelectedNotations(0, -1, e.ctrlKey)) return;
+      if (!notationMutationHelper.moveSelectedNotations(0, -1, e.ctrlKey)) return;
       moveSelectionByKey(0, -1);
-      await notationMutateHelper.saveMovedNotations("TOP");
+      await notationMutationHelper.saveMovedNotations("TOP");
       break;
   }
 }
 
 // extend or shrink selection area following inner mouse move
 function updateSelectionArea(e: MouseEvent) {
+  if (e.buttons !== 1) return;
   if (selectionPosition.value.topLeft.x == 0) {
     selectionPosition.value.topLeft.x = e.pageX;
     selectionPosition.value.topLeft.y = e.pageY;
   }
 
   selectionPosition.value.bottomRight.x = e.pageX;
-  selectionPosition.value.bottomRight.y = e.pageY;
+  selectionPosition.value.bottomRight.y =
+    editModeStore.getEditMode() === "ANNOTATION_AREA_SELECTING"
+      ? selectionPosition.value.topLeft.y + 20
+      : e.pageY;
   cellStore.resetSelectedCell();
 }
 
@@ -307,9 +354,13 @@ function endSelect() {
   }
 
   selectionHelper.selectNotationsOfArea(selectionPosition.value);
+  editModeStore.setNextEditMode();
 }
 
-function moveSelection(e: MouseEvent) {
+function moveSelectionByMouseDrag(e: MouseEvent) {
+  if (!mouseOverSelectionArea) return;
+  if (mouseLeftSelectionArea) return;
+
   // initial drag position
   if (!dragPosition.value.x) {
     dragPosition.value.x = e.pageX;
@@ -318,6 +369,7 @@ function moveSelection(e: MouseEvent) {
   }
 
   // movement is still too small
+
   if (
     Math.abs(e.pageX - dragPosition.value.x) <
       cellStore.getCellHorizontalWidth() + cellSpace &&
@@ -338,7 +390,7 @@ function moveSelection(e: MouseEvent) {
   );
 
   if (rectDeltaX != 0 || rectDeltaY != 0) {
-    notationMutateHelper.moveSelectedNotations(
+    notationMutationHelper.moveSelectedNotations(
       rectDeltaX,
       rectDeltaY,
       e.ctrlKey,
@@ -386,13 +438,15 @@ async function endMoveSelection(e: MouseEvent) {
       ? "LEFTTOP"
       : "LEFT";
 
-  await notationMutateHelper.saveMovedNotations(moveDirection);
+  await notationMutationHelper.saveMovedNotations(moveDirection);
   notationStore.resetSelectedNotations();
-  resetSelection();
+  cancelSelection();
+  editModeStore.setDefaultEditMode();
 }
 
-function resetSelection() {
-  console.debug("resetSelection");
+function cancelSelection() {
+  //if (!mouseLeftSelectionArea) return;
+  console.debug("cancelSelection");
   dragPosition.value.x =
     dragPosition.value.y =
     selectionPosition.value.topLeft.x =
@@ -401,6 +455,17 @@ function resetSelection() {
     selectionPosition.value.bottomRight.y =
       0;
   notationStore.resetSelectedNotations();
+  //editModeStore.setDefaultEditMode();
+}
+
+function signalSelection() {
+  editModeStore.setNextEditMode();
+  eventBus.emit("EV_AREA_SELECTION_DONE", {
+    left: selectionRectLeft.value,
+    top: selectionRectTop.value,
+    width: selectionRectWidth.value,
+    height: selectionRectHeight.value,
+  });
 }
 </script>
 

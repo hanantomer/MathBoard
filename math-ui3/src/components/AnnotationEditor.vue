@@ -8,7 +8,7 @@
       width: textWidth + 'px',
     }"
     id="annotationEl"
-    v-model="textValue"
+    v-model="annotaionValue"
   />
 </template>
 
@@ -24,7 +24,7 @@ import usescreenHelper from "../helpers/screenHelper";
 import useEventBus from "../helpers/eventBusHelper";
 
 const notationMutateHelper = useNotationMutateHelper();
-let textValue = ref("");
+let annotaionValue = ref("");
 
 const cellStore = useCellStore();
 const eventBus = useEventBus();
@@ -46,7 +46,10 @@ let textWidth = ref(0);
 watch(
   () => editModeStore.getEditMode() as EditMode,
   (newEditMode: EditMode, oldEditMode: any) => {
-    if (newEditMode !== "TEXT_WRITING" && oldEditMode === "TEXT_WRITING") {
+    if (
+      newEditMode !== "ANNOTATION_WRITING" &&
+      oldEditMode === "ANNOTATION_WRITING"
+    ) {
       submitText();
     }
   },
@@ -55,7 +58,7 @@ watch(
 
 // area selector signals the selected position attributes
 watch(
-  () => eventBus.bus.value.get("EV_SELECTION_DONE"),
+  () => eventBus.get("ANNOTATION_AREA_SELECTING", "EV_AREA_SELECTION_DONE"),
   (selectionPosition: any) => {
     setInitialTextValue();
     textLeft.value = selectionPosition.left;
@@ -67,14 +70,14 @@ watch(
 
 // user selected text notation
 watch(
-  () => eventBus.bus.value.get("EV_ANNOTATION_SELECTED"),
+  () => eventBus.get("SYMBOL", "EV_ANNOTATION_SELECTED"),
   (textNotation: RectNotationAttributes) => {
     if (!textNotation) return;
-    eventBus.bus.value.delete("EV_ANNOTATION_SELECTED");
+    eventBus.remove("EV_ANNOTATION_SELECTED", "SYMBOL");
 
     // first click -> select
     if (!editModeStore.isTextSelectedMode()) {
-      editModeStore.setEditMode("ANNOTATION_SELECTED");
+      editModeStore.setEditMode("ANNOTATION_SELECTED"); ///TODO: avoid manipulate edit mode directly
       return;
     }
 
@@ -94,7 +97,9 @@ function editSelectedTextNotation(textNotation: RectNotationAttributes) {
 
   hideTextNotation(textNotation.uuid);
 
-  const textEl = document.getElementById("textAreaEl")! as HTMLTextAreaElement;
+  const textEl = document.getElementById(
+    "annotationEl",
+  )! as HTMLTextAreaElement;
 
   setTimeout(() => {
     textEl.focus();
@@ -122,9 +127,9 @@ function setInitialTextDimensions(textNotation: RectNotationAttributes) {
 }
 
 function setInitialTextValue() {
-  textValue.value = "";
+  annotaionValue.value = "";
   if (selectedNotation?.value) {
-    textValue.value = selectedNotation?.value!;
+    annotaionValue.value = selectedNotation?.value!;
   }
 }
 
@@ -132,11 +137,11 @@ function submitText() {
   console.debug("submitText");
   editModeStore.setNextEditMode();
 
-  const textAreaEl = document.getElementById("textAreaEl")!;
+  const annotationEl = document.getElementById("annotationEl")!;
 
-  textLeft.value = parseInt(textAreaEl.style.left.replace("px", ""));
-  textWidth.value = parseInt(textAreaEl.style.width.replace("px", ""));
-  textTop.value = parseInt(textAreaEl.style.top.replace("px", ""));
+  textLeft.value = parseInt(annotationEl.style.left.replace("px", ""));
+  textWidth.value = parseInt(annotationEl.style.width.replace("px", ""));
+  textTop.value = parseInt(annotationEl.style.top.replace("px", ""));
 
   const rectCoordinates = screenHelper.getRectAttributes({
     topLeft: {
@@ -158,13 +163,16 @@ function submitText() {
   });
 
   if (selectedNotation && rectCoordinates) {
-    selectedNotation.value = textValue.value;
+    selectedNotation.value = annotaionValue.value;
     selectedNotation = Object.assign(selectedNotation, rectCoordinates);
 
     notationMutateHelper.updateNotation(selectedNotation);
     restoreTextNotation(selectedNotation?.uuid);
   } else {
-    notationMutateHelper.upsertTextNotation(textValue.value, rectCoordinates);
+    notationMutateHelper.upsertTextNotation(
+      annotaionValue.value,
+      rectCoordinates,
+    );
   }
 }
 

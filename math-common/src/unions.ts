@@ -2,6 +2,7 @@ export const BoardTypeValues = ["LESSON","QUESTION","ANSWER"] as const;
 
 export type BoardType = typeof BoardTypeValues[number];
 
+
 export type BusEventType = 
     "EV_QUESTION_SAVED"           |
     "EV_EXPONENT_SUBMITED"        |
@@ -11,9 +12,10 @@ export type BusEventType =
     "EV_KEYUP"                    | 
     "EV_SVG_MOUSEUP"              |  
     "EV_SVG_MOUSEDOWN"            | 
-    "EV_SVG_MOUSECLICK"           | 
     "EV_SVG_MOUSEMOVE"            |  
-    "EV_SELECTION_DONE"           | 
+    "EV_AREA_SELECTION_DONE"      |
+    "EV_AREA_SELECTION_LEAVE"     |
+    "EV_AREA_SELECTION_END"       |
     "EV_FREE_TEXT_SUBMITTED"      |
     "EV_FREE_TEXT_SELECTED"       |
     "EV_ANNOTATION_SUBMITTED"     |
@@ -26,6 +28,7 @@ export type BusEventType =
     "EV_VERTICAL_LINE_SELECTED"   |
     "EV_SQRT_SELECTED"            |
     "EV_HORIZONTAL_LINE_SELECTED";
+    
 
 export type NotationShape = 
     "POINT"           |  
@@ -77,7 +80,7 @@ export const NotationTypeShape = new Map<NotationType, NotationShape> ([
   ["VERTICALLINE", "VERTICAL_LINE"],
   ["SLOPELINE", "SLOPE_LINE"],
   ["TEXT", "RECT"],
-  ["ANNOTATION", "HORIZONTAL_LINE"],
+  ["ANNOTATION", "RECT"],
   ["IMAGE", "RECT"],
   ["CONCAVECURVE", "CONCAVE_CURVE"],
   ["CONVEXCURVE", "CONVEX_CURVE"],
@@ -122,7 +125,11 @@ export type EditMode =
   "DELETING"                  | // mouse clicked following delete button pressed
   "AREA_SELECTING"            | // user started selecting area
   "AREA_SELECTED"             | // user finished selecting area
-  "MOVING"                    | // user grabbed the selection area after select button pressed
+  "TEXT_AREA_SELECTING"       | // user started selecting area after click on free text icon
+  "TEXT_AREA_SELECTED"        | // user finished selecting text area
+  "ANNOTATION_AREA_SELECTING" | // user started selecting area after click on annotation icon
+  "ANNOTATION_AREA_SELECTED"  | // user finished selecting annotation area
+  "AREA_MOVING"               | // user grabbed the selection area after select button pressed
   "CHECKMARK_STARTED"         | // checkmark button pressed
   "SEMICHECKMARK_STARTED"     | // semicheck button pressed
   "XMARK_STARTED"               // xmark button pressed
@@ -156,7 +163,11 @@ export type EditMode =
     ["DELETING", "SYMBOL"],                 
     ["AREA_SELECTING", "SYMBOL"],           
     ["AREA_SELECTED", "SYMBOL"],            
-    ["MOVING", "SYMBOL"],                   
+    ["TEXT_AREA_SELECTING", "TEXT"],           
+    ["TEXT_AREA_SELECTED", "TEXT"],            
+    ["ANNOTATION_AREA_SELECTING", "TEXT"],           
+    ["ANNOTATION_AREA_SELECTED", "TEXT"],            
+    ["AREA_MOVING", "SYMBOL"],                   
     ["CHECKMARK_STARTED", "SYMBOL"],                
     ["SEMICHECKMARK_STARTED", "SYMBOL"],            
     ["XMARK_STARTED", "SYMBOL"]                    
@@ -186,13 +197,15 @@ export type EditMode =
   ["DELETING", "auto"],                 
   ["AREA_SELECTING", "auto"],           
   ["AREA_SELECTED", "auto"],            
-  ["MOVING", "auto"],                   
+  ["TEXT_AREA_SELECTING", "auto"],           
+  ["TEXT_AREA_SELECTED", "auto"],            
+  ["ANNOTATION_AREA_SELECTING", "auto"],           
+  ["ANNOTATION_AREA_SELECTED", "auto"],            
+  ["AREA_MOVING", "auto"],                   
   ["CHECKMARK_STARTED", "auto"],                
   ["SEMICHECKMARK_STARTED", "auto"],            
   ["XMARK_STARTED", "auto"],                    
 ])
-
-
   
 export type UserType = "TEACHER" | "STUDENT"
 

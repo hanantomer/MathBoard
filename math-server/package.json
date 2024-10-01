@@ -30,6 +30,7 @@
         "sequelize-typescript": "^2.1.5",
         "ts-node": "^10.9.1",
         "tsconfig-paths": "^4.2.0",
+        "vue-router": "^4.4.5",
         "vue3-cookies": "^1.0.6"
     },
     "devDependencies": {

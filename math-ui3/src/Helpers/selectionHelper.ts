@@ -126,6 +126,7 @@ export default function selectionHelper() {
   }
 
   function selectLineNotation(notation: NotationAttributes) {
+    const notationStore = useNotationStore();
     switch (notation.notationType) {
       case "SQRT":
         editModeStore.setEditMode("SQRT_SELECTED");

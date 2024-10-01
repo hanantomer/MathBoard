@@ -1,16 +1,29 @@
-import { ref } from "vue";
-import { BusEventType } from "../../../math-common/build/unions";
-const bus = ref(new Map<BusEventType, any>());
+import { ref, computed } from "vue";
+import { BusEventType, EditMode } from "../../../math-common/build/unions";
+import { useEditModeStore } from "../store/pinia/editModeStore";
 
+const editModeStore = useEditModeStore();
 
-export default function() {
+const bus = ref(new Map<String, any>());
 
-  function emit(event: BusEventType, arg?: any) {
-    bus.value.set(event, arg);
+export default function () {
+  function emit(event: BusEventType, e: any) {
+    const key = editModeStore.getEditMode() + "_" + event;
+    console.debug("emmiting:" + key);
+    bus.value.set(key, e);
+  }
+
+  function get(editMode: EditMode, eventType: BusEventType): any {
+    return bus.value.get(editMode + "_" + eventType);
+  }
+
+  function remove(eventType: BusEventType, editMode: EditMode) {
+    bus.value.delete(editMode + eventType);
   }
 
   return {
     emit,
-    bus
-  }
+    remove,
+    get,
+  };
 }
