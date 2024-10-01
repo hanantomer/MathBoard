@@ -38,7 +38,7 @@
 <script setup lang="ts">
 import useNotationMutateHelper from "../helpers/notationMutateHelper";
 
-import { watch, computed, ref } from "vue";
+import { computed, ref } from "vue";
 import { useNotationStore } from "../store/pinia/notationStore";
 import { useCellStore } from "../store/pinia/cellStore";
 import { useEditModeStore } from "../store/pinia/editModeStore";
@@ -52,7 +52,9 @@ import {
   SlopeLineNotationAttributes,
 } from "../../../math-common/src/baseTypes";
 import useEventBus from "../helpers/eventBusHelper";
+import useWatchHelper from "../helpers/watchHelper";
 
+const watchHelper = useWatchHelper();
 const eventBus = useEventBus();
 const notationMutateHelper = useNotationMutateHelper();
 const notationStore = useNotationStore();
@@ -115,126 +117,40 @@ let handleBottom = computed(() => {
 
 // watchers
 
-watch(
-  () => eventBus.get("SLOPE_LINE_STARTED", "EV_SVG_MOUSEDOWN"),
-  (e: MouseEvent) => {
-    startLineDrawing({
-      x: e.pageX - cellStore.getSvgBoundingRect().x,
-      y: e.pageY - cellStore.getSvgBoundingRect().y,
-    });
-    editModeStore.setNextEditMode();
-  },
+watchHelper.watchMouseEvent(
+  ["SLOPE_LINE_STARTED"],
+  "EV_SVG_MOUSEDOWN",
+  startDrawLine,
 );
 
-watch(
-  () => eventBus.get("SLOPE_LINE_DRAWING", "EV_SVG_MOUSEUP"),
-  () => {
-    endDrawLine();
-  },
+watchHelper.watchMouseEvent(
+  ["SLOPE_LINE_DRAWING"],
+  "EV_SVG_MOUSEMOVE",
+  setLine,
 );
 
-watch(
-  () => eventBus.get("SLOPE_LINE_DRAWING", "EV_SVG_MOUSEMOVE"),
-  (e: MouseEvent) => {
-    onMouseMove(e);
-  },
+watchHelper.watchMouseEvent(
+  ["SLOPE_LINE_DRAWING"],
+  "EV_SVG_MOUSEUP",
+  endDrawLine,
 );
 
-watch(
-  () => eventBus.get("SLOPE_LINE_DRAWING", "EV_SVG_MOUSEDOWN"),
-  (e: MouseEvent) => {
-    onMouseDown(e);
-  },
+// emmited by selection helper
+watchHelper.watchNotationSelection(
+  "SLOPE_LINE_SELECTED",
+  "EV_HORIZONTAL_LINE_SELECTED",
+  lineSelected,
 );
 
-watch(
-  () => eventBus.get("SYMBOL", "EV_SLOPE_LINE_SELECTED"),
-  (line: SlopeLineNotationAttributes) => {
-    if (line) onSlopeLineSelected(line);
-  },
+watchHelper.watchMouseEvent(
+  ["SLOPE_LINE_SELECTED"],
+  "EV_SVG_MOUSEDOWN",
+  resetLineDrawing,
 );
-
-watch(
-  () => eventBus.get("SLOPE_LINE_SELECTED", "EV_SVG_MOUSEUP"),
-  () => {
-    notationStore.resetSelectedNotations();
-    editModeStore.setDefaultEditMode();
-  },
-);
-
 
 // methods
 
-function onMouseDown(e: MouseEvent) {
-  if (e.buttons !== 1) {
-    // ignore right button
-    return;
-  }
-
-  // user clicked elsewere after start drawing
-  if (editModeStore.isSlopeLineDrawingMode()) {
-    resetLineDrawing();
-  }
-
-  // new line
-  if (editModeStore.isSlopeLineStartedMode()) {
-    startLineDrawing({
-      x: e.pageX - cellStore.getSvgBoundingRect().x,
-      y: e.pageY - cellStore.getSvgBoundingRect().y,
-    });
-    editModeStore.setNextEditMode();
-  }
-}
-
-function onMouseMove(e: MouseEvent) {
-  // ignore right button
-  if (e.buttons !== 1) {
-    return;
-  }
-
-  // nothing done yet
-  if (
-    linePosition.value.left.x === 0 &&
-    linePosition.value.left.y === 0 &&
-    linePosition.value.right.x === 0 &&
-    linePosition.value.right.y === 0
-  ) {
-    return;
-  }
-
-  // movement is neglectable
-  if (
-    isSiginificantMove(
-      linePosition.value.left.x,
-      e.pageX - cellStore.getSvgBoundingRect().x,
-    ) ||
-    isSiginificantMove(
-      linePosition.value.left.y,
-      e.pageY - cellStore.getSvgBoundingRect().y,
-    ) ||
-    isSiginificantMove(
-      linePosition.value.right.x,
-      e.pageX - cellStore.getSvgBoundingRect().x,
-    ) ||
-    isSiginificantMove(
-      linePosition.value.right.y,
-      e.pageY - cellStore.getSvgBoundingRect().y,
-    )
-  ) {
-    return;
-  }
-
-  if (!editModeStore.isSlopeLineDrawingMode()) {
-    return;
-  }
-
-  setLine(
-    e.pageX - cellStore.getSvgBoundingRect().x,
-    e.pageY - cellStore.getSvgBoundingRect().y,
-  );
-}
-
-function onSlopeLineSelected(lineNotation: SlopeLineNotationAttributes) {
+function lineSelected(lineNotation: SlopeLineNotationAttributes) {
   linePosition.value.left.x =
     lineNotation.fromCol * (cellStore.getCellHorizontalWidth() + cellSpace);
 
@@ -254,15 +170,26 @@ function onSlopeLineSelected(lineNotation: SlopeLineNotationAttributes) {
 
 // methods
 
-function startLineDrawing(position: DotCoordinates) {
+function startDrawLine(e: MouseEvent) {
+  editModeStore.setNextEditMode();
+  if (linePosition.value.left.y) return;
+
   slopeType.value = "NONE";
   movementDirection.value = "NONE";
+
+  const position = {
+    x: e.pageX - cellStore.getSvgBoundingRect().x,
+    y: e.pageY - cellStore.getSvgBoundingRect().y,
+  };
 
   linePosition.value.left.x = linePosition.value.right.x = position.x;
   linePosition.value.left.y = linePosition.value.right.y = position.y;
 }
 
-function setLine(xPos: number, yPos: number) {
+function setLine(e: MouseEvent) {
+  const yPos = e.pageY - (cellStore.getSvgBoundingRect()?.y ?? 0);
+  const xPos = e.pageX - (cellStore.getSvgBoundingRect()?.x ?? 0);
+
   if (slopeType.value === "NONE") {
     slopeType.value = getSlopeType(xPos, yPos);
   }
@@ -352,7 +279,7 @@ function endDrawLine() {
     toRow: toRow,
   });
 
-  editModeStore.setDefaultEditMode();
+  resetLineDrawing();
 }
 
 function saveLine(lineAttributes: SlopeLineAttributes) {

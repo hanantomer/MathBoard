@@ -9,7 +9,7 @@ const bus = ref(new Map<String, any>());
 export default function () {
   function emit(event: BusEventType, e: any) {
     const key = editModeStore.getEditMode() + "_" + event;
-    console.debug("emmiting:" + key);
+//    console.debug("emmiting:" + key);
     bus.value.set(key, e);
   }
 

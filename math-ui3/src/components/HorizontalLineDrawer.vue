@@ -8,7 +8,7 @@
         top: handleY + 'px',
       }"
       v-on:mouseup="endDrawLine"
-      v-on:mousedown="startLineDrawing"
+      v-on:mousedown="startDrawLine"
       v-if="!sqrtEditMode"
     ></v-card>
     <v-card
@@ -19,7 +19,7 @@
         top: handleY + 'px',
       }"
       v-on:mouseup="endDrawLine"
-      v-on:mousedown="startLineDrawing"
+      v-on:mousedown="startDrawLine"
     ></v-card>
     <svg
       height="800"
@@ -40,7 +40,7 @@
 <script setup lang="ts">
 import useNotationMutateHelper from "../helpers/notationMutateHelper";
 
-import { watch, computed, ref } from "vue";
+import { computed, ref } from "vue";
 import { useNotationStore } from "../store/pinia/notationStore";
 import { useCellStore } from "../store/pinia/cellStore";
 import { useEditModeStore } from "../store/pinia/editModeStore";
@@ -52,10 +52,9 @@ import {
   HorizontalLineAttributes,
   HorizontalLineNotationAttributes,
 } from "../../../math-common/src/baseTypes";
-import useEventBus from "../helpers/eventBusHelper";
+
 import useWatchHelper from "../helpers/watchHelper";
 
-const eventBus = useEventBus();
 const notationMutateHelper = useNotationMutateHelper();
 const notationStore = useNotationStore();
 const cellStore = useCellStore();
@@ -112,7 +111,7 @@ let handleY = computed(() => {
 watchHelper.watchMouseEvent(
   ["HORIZONTAL_LINE_STARTED"],
   "EV_SVG_MOUSEDOWN",
-  startLineDrawing,
+  startDrawLine,
 );
 
 watchHelper.watchMouseEvent(
@@ -157,7 +156,11 @@ function lineSelected(lineNotation: HorizontalLineNotationAttributes) {
   notationStore.selectNotation(lineNotation.uuid);
 }
 
-function startLineDrawing(e: MouseEvent) {
+function startDrawLine(e: MouseEvent) {
+  editModeStore.setNextEditMode();
+
+  if (linePosition.value.x1) return;
+
   const position = {
     x: e.pageX - cellStore.getSvgBoundingRect().x,
     y: e.pageY - cellStore.getSvgBoundingRect().y,
@@ -168,8 +171,6 @@ function startLineDrawing(e: MouseEvent) {
   linePosition.value.x2 = linePosition.value.x1 + 10;
 
   linePosition.value.y = getNearestRow(position.y);
-
-  editModeStore.setNextEditMode();
 }
 
 function setLine(e: MouseEvent) {
@@ -226,7 +227,7 @@ function endDrawLine() {
 
   saveLine({ fromCol: fromCol, toCol: toCol, row: row });
 
-  editModeStore.setDefaultEditMode();
+  resetLineDrawing();
 }
 
 function saveLine(lineAttributes: HorizontalLineAttributes) {
