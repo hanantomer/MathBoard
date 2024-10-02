@@ -17,8 +17,9 @@ const matrixCellHelper = useMatrixCellHelper();
 
 type mouseEventHandler = (e: MouseEvent) => void;
 type keyEventHandler = (e: KeyboardEvent) => void;
-type editModeHandler = (em: EditMode) => void;
+type editModeHandler = (newEditMode: EditMode, oldEditMode: any) => void;
 type notationHandler = (n: any) => void;
+type customEventHandler = (d: any) => void;
 
 export default function () {
   function watchMouseEvent(
@@ -54,8 +55,8 @@ export default function () {
   function watchEditMode(handler: editModeHandler) {
     watch(
       () => editModeStore.getEditMode() as EditMode,
-      (em: EditMode) => {
-        handler(em);
+      (newEditMode: EditMode, oldEditMode: EditMode) => {
+        handler(newEditMode, oldEditMode);
       },
     );
   }
@@ -92,11 +93,25 @@ export default function () {
     );
   }
 
+   function watchCustomEvent(
+     editMode: EditMode,
+     eventType: BusEventType,
+     handler: customEventHandler,
+   ) {
+     watch(
+       () => eventBus.get(editMode, eventType),
+       (data: any) => {
+         handler(data);
+       },
+     );
+   }
+
   return {
     watchMouseEvent,
     watchKeyEvent,
     watchEditMode,
     watchSelectedCell,
     watchNotationSelection,
+    watchCustomEvent,
   };
 }

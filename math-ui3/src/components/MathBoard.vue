@@ -114,7 +114,18 @@ watchHelper.watchMouseEvent(
 );
 
 watchHelper.watchKeyEvent(
-  ["SYMBOL", "CELL_SELECTED", "HORIZONTAL_LINE_SELECTED"],
+  [
+    "SYMBOL",
+    "CELL_SELECTED",
+    "HORIZONTAL_LINE_SELECTED",
+    "VERTICAL_LINE_SELECTED",
+    "SLOPE_LINE_SELECTED",
+    "CONCAVE_CURVE_SELECTED",
+    "CONVEX_CURVE_SELECTED",
+    "SQRT_SELECTED",
+    "ANNOTATION_SELECTED",
+    "TEXT_SELECTED",
+  ],
   "EV_KEYUP",
   keyHelper.keyUpHandler,
 );

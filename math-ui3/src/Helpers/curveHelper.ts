@@ -1,7 +1,11 @@
 import { CurveAttributes } from "common/baseTypes";
+import { useCellStore } from "../store/pinia/cellStore";
+import { useEditModeStore } from "../store/pinia/editModeStore";
+
+const cellStore = useCellStore();
+const editModeStore = useEditModeStore();
 
 const MIN_NUMBER_OF_POINTS = 3;
-
 const MOUSE_MOVE_THROTTELING_INTERVAL = 3;
 
 type Point = {
@@ -31,16 +35,15 @@ const curveAttributes: CurveAttributes = {
 let mouseMoveCount = 0;
 
 export default function curveHelper() {
-  function startCurveDrawing(position: Point) {
+  function startCurveDrawing(e: MouseEvent) {
+    const x = e.pageX - cellStore.getSvgBoundingRect().x;
+    const y = e.pageY - cellStore.getSvgBoundingRect().y;
+    visitedPoints = [];
     mouseMoveCount = 0;
-    curveAttributes.p1x =
-      curveAttributes.p2x =
-      curveAttributes.cpx =
-        position.x;
-    curveAttributes.p1y =
-      curveAttributes.p2y =
-      curveAttributes.cpy =
-        position.y;
+    curveAttributes.p1x = curveAttributes.p2x = curveAttributes.cpx = x;
+    curveAttributes.p1y = curveAttributes.p2y = curveAttributes.cpy = y;
+
+    editModeStore.setNextEditMode();
   }
 
   function calculateDistance(
@@ -183,16 +186,6 @@ export default function curveHelper() {
     return controlPointIndex;
   }
 
-  // verify that x can grow only
-  // function getNormalizedPoints(points: Point[]) {
-  //   const normalizedPoints = points;
-  //   for (let i = 1; i < points.length; i++) {
-  //     if (points[i].x <= points[i - 1].x) {
-  //       points[i].x = points[i - 1].x + 1;
-  //     }
-  //   }
-  //   return normalizedPoints;
-  // }
 
   function getSlopes(points: Point[]): PointWithSlope[] {
     const slopes: PointWithSlope[] = [];
@@ -272,11 +265,7 @@ export default function curveHelper() {
     }
 
     mouseMoveCount++;
-    if (
-      mouseMoveCount %
-        MOUSE_MOVE_THROTTELING_INTERVAL  !==
-      0
-    ) {
+    if (mouseMoveCount % MOUSE_MOVE_THROTTELING_INTERVAL !== 0) {
       //console.debug("throtteling:" + mouseMoveCount);
       return false; // throtteling mouse move events
     }

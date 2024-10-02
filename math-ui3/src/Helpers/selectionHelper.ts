@@ -103,10 +103,17 @@ export default function selectionHelper() {
       return;
 
     if (activeNotation.notationType === "TEXT") {
+      editModeStore.setEditMode("TEXT_SELECTED");
       eventBus.emit("EV_FREE_TEXT_SELECTED", activeNotation);
     }
 
+    if (activeNotation.notationType === "ANNOTATION") {
+      editModeStore.setEditMode("ANNOTATION_SELECTED");
+      eventBus.emit("EV_ANNOTATION_SELECTED", activeNotation);
+    }
+
     if (activeNotation.notationType === "EXPONENT") {
+      editModeStore.setEditMode("EXPONENT_SELECTED");
       eventBus.emit("EV_EXPONENT_SELECTED", activeNotation);
     }
 
@@ -143,6 +150,7 @@ export default function selectionHelper() {
       case "SLOPELINE":
         editModeStore.setEditMode("SLOPE_LINE_SELECTED");
         eventBus.emit("EV_SLOPE_LINE_SELECTED", notation);
+        break;
     }
   }
 

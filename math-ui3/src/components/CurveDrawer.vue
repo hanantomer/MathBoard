@@ -23,7 +23,7 @@
 import useNotationMutateHelper from "../helpers/notationMutateHelper";
 import useCurveHelper from "../helpers/curveHelper";
 
-import { watch, computed } from "vue";
+import { computed } from "vue";
 import { useNotationStore } from "../store/pinia/notationStore";
 import { useEditModeStore } from "../store/pinia/editModeStore";
 import { useCellStore } from "../store/pinia/cellStore";
@@ -31,9 +31,9 @@ import {
   CurveAttributes,
   CurveNotationAttributes,
 } from "../../../math-common/src/baseTypes";
-import useEventBus from "../helpers/eventBusHelper";
+import useWatchHelper from "../helpers/watchHelper";
 
-const eventBus = useEventBus();
+const watchHelper = useWatchHelper();
 const notationMutateHelper = useNotationMutateHelper();
 const curveHelper = useCurveHelper();
 const notationStore = useNotationStore();
@@ -51,7 +51,7 @@ const curveType = computed(() => {
 });
 
 // watch
-
+/*
 watch(
   () => eventBus.get("CONCAVE_CURVE_DRAWING", "EV_SVG_MOUSEUP"),
   () => {
@@ -123,18 +123,55 @@ watch(
     editModeStore.setDefaultEditMode();
   },
 );
+*/
+
+watchHelper.watchMouseEvent(
+  ["CONVEX_CURVE_STARTED", "CONCAVE_CURVE_STARTED"],
+  "EV_SVG_MOUSEDOWN",
+  curveHelper.startCurveDrawing,
+);
+
+watchHelper.watchMouseEvent(
+  ["CONCAVE_CURVE_DRAWING", "CONVEX_CURVE_DRAWING"],
+  "EV_SVG_MOUSEMOVE",
+  setCurve,
+);
+
+watchHelper.watchMouseEvent(
+  ["CONCAVE_CURVE_DRAWING", "CONVEX_CURVE_DRAWING"],
+  "EV_SVG_MOUSEUP",
+  endDrawCurve,
+);
+
+// emmited by selection helper
+watchHelper.watchNotationSelection(
+  "CONCAVE_CURVE_SELECTED",
+  "EV_CONCAVE_CURVE_SELECTED",
+  curveSelected,
+);
+
+watchHelper.watchNotationSelection(
+  "CONVEX_CURVE_SELECTED",
+  "EV_CONVEX_CURVE_SELECTED",
+  curveSelected,
+);
+
+watchHelper.watchMouseEvent(
+  ["CONCAVE_CURVE_SELECTED", "CONVEX_CURVE_SELECTED"],
+  "EV_SVG_MOUSEDOWN",
+  resetCurveDrawing,
+);
 
 // event handlers
 
-function onCurveSelected(curve: CurveNotationAttributes) {
+function curveSelected(curve: CurveNotationAttributes) {
   notationStore.selectNotation(curve.uuid);
+  // const evName =
+  //   curve.notationType === "CONCAVECURVE"
+  //     ? "EV_CONCAVE_CURVE_SELECTED"
+  //     : "EV_CONVEX_CURVE_SELECTED";
 
-  const evName =
-    curve.notationType === "CONCAVECURVE"
-      ? "EV_CONCAVE_CURVE_SELECTED"
-      : "EV_CONVEX_CURVE_SELECTED";
-
-  eventBus.emit(evName, null); // to enable re selection
+  // eventBus.emit(evName, null); // to enable re selection
 }
 
 // emitted by event manager
@@ -153,15 +190,15 @@ function onMouseDown(e: MouseEvent) {
   if (editModeStore.isCurveStartedMode()) {
     curveHelper.resetCurveDrawing();
 
-    curveHelper.startCurveDrawing({
-      x: e.pageX - cellStore.getSvgBoundingRect().x,
-      y: e.pageY - cellStore.getSvgBoundingRect().y,
-    });
+    curveHelper.startCurveDrawing(e);
     editModeStore.setNextEditMode();
   }
 }
 
-function setCurve(xPos: number, yPos: number) {
+function setCurve(e: MouseEvent) {
+  const xPos = e.pageX - cellStore.getSvgBoundingRect().x;
+  const yPos = e.pageY - cellStore.getSvgBoundingRect().y;
+
   const curveAttributes: CurveAttributes = curveHelper.updateCurve(
     curveType.value,
     xPos,
@@ -240,10 +277,7 @@ function onMouseMove(e: MouseEvent) {
     return;
   }
 
-  setCurve(
-    e.pageX - cellStore.getSvgBoundingRect().x,
-    e.pageY - cellStore.getSvgBoundingRect().y,
-  );
+  setCurve(e);
 }
 
 function onMouseUp() {
@@ -295,6 +329,12 @@ function saveCurve(curevAttributes: CurveAttributes) {
       editModeStore.getNotationTypeByEditMode(),
     );
   }
+}
+
+function resetCurveDrawing() {
+  curveHelper.resetCurveDrawing();
+
+  editModeStore.setDefaultEditMode();
 }
 </script>
 

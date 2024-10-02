@@ -234,6 +234,14 @@ export const useNotationStore = defineStore("notation", () => {
           true,
         );
 
+      case "CONCAVE_CURVE":
+      case "CONVEX_CURVE":
+        notationCellOccupationHelper.updateCurveOccupationMatrix(
+          cellLineNotationOccupationMatrix,
+          notations.value.get(uuid)! as CurveNotationAttributes,
+          true,
+        );
+
       case "RECT":
         notationCellOccupationHelper.updateRectOccupationMatrix(
           cellRectNotationOccupationMatrix,

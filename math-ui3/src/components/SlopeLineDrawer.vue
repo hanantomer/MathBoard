@@ -43,10 +43,7 @@ import { useNotationStore } from "../store/pinia/notationStore";
 import { useCellStore } from "../store/pinia/cellStore";
 import { useEditModeStore } from "../store/pinia/editModeStore";
 import { cellSpace } from "../../../math-common/src/globals";
-import {
-  SlopeLinePosition,
-  DotCoordinates,
-} from "../../../math-common/src/baseTypes";
+import {SlopeLinePosition } from "../../../math-common/src/baseTypes";
 import {
   SlopeLineAttributes,
   SlopeLineNotationAttributes,
@@ -164,8 +161,6 @@ function lineSelected(lineNotation: SlopeLineNotationAttributes) {
     lineNotation.toRow * (cellStore.getCellVerticalHeight() + cellSpace);
 
   notationStore.selectNotation(lineNotation.uuid);
-
-  eventBus.emit("EV_SLOPE_LINE_SELECTED", null); // to enable re selection
 }
 
 // methods
@@ -212,8 +207,8 @@ function setLine(e: MouseEvent) {
     (slopeType.value === "POSITIVE" && movementDirection.value === "UP") ||
     (slopeType.value === "NEGATIVE" && movementDirection.value === "DOWN");
 
-  console.debug(slopeType.value);
-  console.debug(movementDirection.value);
+//  console.debug(slopeType.value);
+//  console.debug(movementDirection.value);
 
   if (modifyRight) {
     linePosition.value.right.x = xPos;
@@ -308,7 +303,4 @@ function resetLineDrawing() {
   editModeStore.setDefaultEditMode();
 }
 
-function isSiginificantMove(a1: number, a2: number): boolean {
-  return Math.abs(a1 - a2) < 3;
-}
 </script>

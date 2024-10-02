@@ -24,70 +24,52 @@ import { EditMode } from "../../../math-common/src/unions";
 import useNotationMutateHelper from "../helpers/notationMutateHelper";
 import usescreenHelper from "../helpers/screenHelper";
 import useEventBus from "../helpers/eventBusHelper";
+import useWatchHelper from "../helpers/watchHelper";
 
 const notationMutateHelper = useNotationMutateHelper();
-let textValue = ref("");
+const watchHelper = useWatchHelper();
 
+let textValue = ref("");
 const cellStore = useCellStore();
 const eventBus = useEventBus();
 const emit = defineEmits(["hide"]);
 const editModeStore = useEditModeStore();
-
 const screenHelper = usescreenHelper();
-
 const show = computed(() => editModeStore.getEditMode() === "TEXT_WRITING");
 
 let selectedNotation: RectNotationAttributes | null = null;
-
 let textLeft = ref(0);
 let textTop = ref(0);
 let textHeight = ref(0);
 let textWidth = ref(0);
 
-watch(
-  () => editModeStore.getEditMode() as EditMode,
-  (newEditMode: EditMode, oldEditMode: any) => {
-    if (newEditMode !== "TEXT_WRITING" && oldEditMode === "TEXT_WRITING") {
-      submitText();
-    }
-  },
-  { immediate: true, deep: true },
-);
+watchHelper.watchEditMode(submitText);
 
-watch(
-  () => eventBus.get("TEXT_WRITING", "EV_SVG_MOUSEDOWN"),
-  (e: MouseEvent) => {
-    if (!e) return;
-
-    if (e.target != document.getElementById("textAreaEl")) {
-      editModeStore.setDefaultEditMode();
-    }
-  },
-  { immediate: true },
+watchHelper.watchMouseEvent(
+  ["TEXT_WRITING"],
+  "EV_SVG_MOUSEDOWN",
+  resetTextEditing,
 );
 
 // area selector signals the selected position attributes
-watch(
-  () => eventBus.get("TEXT_WRITING", "EV_AREA_SELECTION_DONE"),
-  (selectionPosition: any) => {
-    setInitialTextValue();
-    textLeft.value = selectionPosition.left;
-    textTop.value = selectionPosition.top;
-    textHeight.value = selectionPosition.height;
-    textWidth.value = selectionPosition.width;
-    //    editModeStore.setEditMode("TEXT_WRITING");
-    setTimeout('document.getElementById("textAreaEl").focus()', 100);
-  },
+
+watchHelper.watchCustomEvent(
+  "TEXT_WRITING",
+  "EV_AREA_SELECTION_DONE",
+  startTextEditing,
 );
 
+
 // user selected text notation
-watch(
-  () => eventBus.get("SYMBOL", "EV_FREE_TEXT_SELECTED"),
-  (textNotation: RectNotationAttributes) => {
-    if (!textNotation) return;
-    editModeStore.setEditMode("TEXT_SELECTED");
-  },
-);
+// watch(
+//   () => eventBus.get("SYMBOL", "EV_FREE_TEXT_SELECTED"),
+//   (textNotation: RectNotationAttributes) => {
+//     if (!textNotation) return;
+//     editModeStore.setEditMode("TEXT_SELECTED");
+//   },
+// );
+
+//watchHelper.watchNotationSelection("SYMBOL", "EV_FREE_TEXT_SELECTED")
 
 // user clicked inside selected text notation (i.e second click)
 watch(
@@ -151,8 +133,11 @@ function setInitialTextValue() {
   }
 }
 
-function submitText() {
-  console.debug("submitText");
+function submitText(newEditMode: EditMode, oldEditMode: any) {
+  if (newEditMode === "TEXT_WRITING" && oldEditMode !== "TEXT_WRITING") {
+    return;
+  }
+
   editModeStore.setNextEditMode();
 
   const textAreaEl = document.getElementById("textAreaEl")!;
@@ -199,13 +184,30 @@ function hideTextNotation(uuid: string) {
     .classList.add("hidden");
 }
 
-// restore text notation that was hideen during editing
+// restore text notation which was hideen during editing
 function restoreTextNotation(uuid: string) {
   console.debug("restoring text notation:" + uuid);
   document!
     .querySelector<HTMLElement>(`foreignObject[uuid="${uuid}"]`)!
     .classList.remove("hidden");
 }
+
+function resetTextEditing(e: MouseEvent) {
+  // mouse clicked outside of text arae
+  if (e.target != document.getElementById("textAreaEl")) {
+    editModeStore.setDefaultEditMode();
+  }
+}
+
+function startTextEditing(selectionPosition: any) {
+  setInitialTextValue();
+  textLeft.value = selectionPosition.left;
+  textTop.value = selectionPosition.top;
+  textHeight.value = selectionPosition.height;
+  textWidth.value = selectionPosition.width;
+  setTimeout('document.getElementById("textAreaEl").focus()', 100);
+}
+
 </script>
 <style>
 textarea {

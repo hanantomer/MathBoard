@@ -7,7 +7,6 @@ import useSelectionHelper from "../helpers/selectionHelper";
 import { cellSpace } from "common/globals";
 type keyType = "SYMBOL" | "MOVEMENT" | "DELETION" | "DELETEANDMOVE";
 
-
 const editModeStore = useEditModeStore();
 const cellStore = useCellStore();
 const matrixCellHelper = useMatrixCellHelper();
@@ -49,11 +48,6 @@ export default function () {
   }
 
   function handleMovementKey(key: string) {
-    // handeled by keyUp in AreaSelector
-//    if (editModeStore.getEditMode() === "AREA_SELECTED") return;
-//    if (editModeStore.getEditMode() === "EXPONENT_SELECTED") return;
-//    if (editModeStore.getEditMode() === "EXPONENT_WRITING") return;
-
     if (key === "ArrowLeft" || key === "Backspace") {
       matrixCellHelper.setNextCell(-1, 0);
     }
@@ -118,6 +112,6 @@ export default function () {
   }
 
   return {
-    keyUpHandler
+    keyUpHandler,
   };
 }
