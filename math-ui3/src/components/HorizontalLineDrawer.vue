@@ -130,7 +130,7 @@ watchHelper.watchMouseEvent(
 watchHelper.watchNotationSelection(
   "HORIZONTAL_LINE_SELECTED",
   "EV_HORIZONTAL_LINE_SELECTED",
-  lineSelected,
+  selectLine,
 );
 
 watchHelper.watchMouseEvent(
@@ -141,7 +141,7 @@ watchHelper.watchMouseEvent(
 
 // meethds
 
-function lineSelected(lineNotation: HorizontalLineNotationAttributes) {
+function selectLine(lineNotation: HorizontalLineNotationAttributes) {
   if (!lineNotation) return;
 
   linePosition.value.x1 =
@@ -258,4 +258,5 @@ function getNearestRow(clickedYPos: number) {
   );
   return clickedRow * (cellStore.getCellVerticalHeight() + cellSpace);
 }
+
 </script>

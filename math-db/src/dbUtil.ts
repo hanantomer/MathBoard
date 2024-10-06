@@ -6,7 +6,7 @@ import Answer  from "./models/answer/answer.model";
 import User from "./models/user.model";
 import db from "./models/index";
 
-import {  ExponentNotationAttributes, HorizontalLineNotationAttributes, NotationAttributes, PointNotationAttributes, SlopeLineNotationAttributes, VerticalLineNotationAttributes } from "../../math-common/src/baseTypes";
+import {  CurveNotationAttributes, ExponentNotationAttributes, HorizontalLineNotationAttributes, NotationAttributes, PointNotationAttributes, RectAttributes, RectNotationAttributes, SlopeLineNotationAttributes, VerticalLineNotationAttributes } from "../../math-common/src/baseTypes";
 import { UserAttributes, StudentLessonCreationAttributes} from "../../math-common/build/userTypes";
 import { LessonCreationAttributes } from "../../math-common/src/lessonTypes";
 import { QuestionCreationAttributes } from "../../math-common/build/questionTypes";
@@ -398,61 +398,100 @@ export default function dbUtil() {
     function validateModel(model: NotationAttributes): boolean {
         
         switch (model.notationType) {
-            case "EXPONENT":{
-                const m = model as ExponentNotationAttributes;
+            case "TEXT":
+            case "IMAGE": {
+                const m = model as RectNotationAttributes;
 
-                if(! (
-                    m.col >= 0 &&
-                    m.row >= 0 &&
-                    m.base.length > 0 &&
-                    m.exponent.length > 0
-                )) {
+                if (
+                    !(
+                        m.fromCol >= 0 &&
+                        m.fromCol >= 0 &&
+                        m.toCol >= 0 &&
+                        m.toRow >= 0 &&
+                        m.fromCol <= m.toCol
+                    )
+                ) {
                     throw new Error("invalid model:" + JSON.stringify(m));
                 }
                 break;
             }
 
-            case "SYMBOL": {
-                const m = model as PointNotationAttributes;
-                if (!( m.col >= 0 && m.row >= 0)) {
+            case "EXPONENT": {
+                const m = model as ExponentNotationAttributes;
+
+                if (
+                    !(
+                        m.col >= 0 &&
+                        m.row >= 0 &&
+                        m.base.length > 0 &&
+                        m.exponent.length > 0
+                    )
+                ) {
                     throw new Error("invalid model:" + JSON.stringify(m));
-                };
+                }
                 break;
             }
+
+            case "SIGN":
+            case "SYMBOL": {
+                const m = model as PointNotationAttributes;
+                if (!(m.col >= 0 && m.row >= 0)) {
+                    throw new Error("invalid model:" + JSON.stringify(m));
+                }
+                break;
+            }
+
+            case "SQRT":
             case "HORIZONTALLINE": {
                 const m = model as HorizontalLineNotationAttributes;
-                if( ! (
-                    m.fromCol >= 0 &&
-                    m.toCol >= 0 &&
-                    m.row >= 0 &&
-                    m.fromCol < m.toCol
-                )) {
-                    throw new Error("invalid model:" + JSON.stringify(m));;
+                if (
+                    !(
+                        m.fromCol >= 0 &&
+                        m.toCol >= 0 &&
+                        m.row >= 0 &&
+                        m.fromCol < m.toCol
+                    )
+                ) {
+                    throw new Error("invalid model:" + JSON.stringify(m));
                 }
                 break;
             }
             case "SLOPELINE": {
                 const m = model as SlopeLineNotationAttributes;
-                if (! (
-                    m.fromCol >= 0 &&
-                    m.toCol >= 0 &&
-                    m.fromRow >= 0 &&
-                    m.toRow >= 0 &&
-                    m.fromCol < m.toCol &&
-                    m.fromRow != m.toRow
-                )) {
+                if (
+                    !(
+                        m.fromCol >= 0 &&
+                        m.toCol >= 0 &&
+                        m.fromRow >= 0 &&
+                        m.toRow >= 0 &&
+                        m.fromCol < m.toCol &&
+                        m.fromRow != m.toRow
+                    )
+                ) {
                     throw new Error("invalid model:" + JSON.stringify(m));
                 }
                 break;
             }
             case "VERTICALLINE": {
                 const m = model as VerticalLineNotationAttributes;
-                if (! (
-                    m.col >= 0 &&
-                    m.fromRow >= 0 &&
-                    m.toRow >= 0 &&
-                    m.fromRow < m.toRow
-                )) {
+                if (
+                    !(
+                        m.col >= 0 &&
+                        m.fromRow >= 0 &&
+                        m.toRow >= 0 &&
+                        m.fromRow < m.toRow
+                    )
+                ) {
+                    throw new Error("invalid model:" + JSON.stringify(m));
+                }
+                break;
+            }
+
+            case "CONCAVECURVE":
+            case "CONVEXCURVE": {
+                const m = model as CurveNotationAttributes;
+
+                if (!(m.p1x > 0 && m.p1y > 0 && m.p2x > 0 && m.p2y >= 0)) {
                     throw new Error("invalid model:" + JSON.stringify(m));
                 }
                 break;

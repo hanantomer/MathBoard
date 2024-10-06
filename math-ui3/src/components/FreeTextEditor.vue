@@ -72,16 +72,18 @@ watchHelper.watchCustomEvent(
 //watchHelper.watchNotationSelection("SYMBOL", "EV_FREE_TEXT_SELECTED")
 
 // user clicked inside selected text notation (i.e second click)
-watch(
-  () => eventBus.get("TEXT_SELECTED", "EV_FREE_TEXT_SELECTED"),
-  (textNotation: RectNotationAttributes) => {
-    if (!textNotation) return;
-    eventBus.remove("EV_FREE_TEXT_SELECTED", "TEXT_SELECTED");
+watchHelper.watchNotationSelection("TEXT_SELECTED", "EV_FREE_TEXT_SELECTED", editSelectedTextNotation);
 
-    // second click -> edit
-    editSelectedTextNotation(textNotation);
-  },
-);
+// watch(
+//   () => eventBus.get("TEXT_SELECTED", "EV_FREE_TEXT_SELECTED"),
+//   (textNotation: RectNotationAttributes) => {
+//     if (!textNotation) return;
+//     eventBus.remove("EV_FREE_TEXT_SELECTED", "TEXT_SELECTED");
+
+//     // second click -> edit
+//     editSelectedTextNotation(textNotation);
+//   },
+// );
 
 function editSelectedTextNotation(textNotation: RectNotationAttributes) {
   editModeStore.setEditMode("TEXT_WRITING");
@@ -134,7 +136,7 @@ function setInitialTextValue() {
 }
 
 function submitText(newEditMode: EditMode, oldEditMode: any) {
-  if (newEditMode === "TEXT_WRITING" && oldEditMode !== "TEXT_WRITING") {
+  if (newEditMode === "TEXT_WRITING" || oldEditMode !== "TEXT_WRITING") {
     return;
   }
 

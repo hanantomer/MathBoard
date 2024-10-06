@@ -29,7 +29,9 @@ import { MoveDirection } from "common/unions";
 import { cellSpace } from "common/globals";
 import { RectCoordinates, DotCoordinates } from "common/baseTypes";
 import useEventBusHelper from "../helpers/eventBusHelper";
+import useWatchHelper from "../helpers/watchHelper";
 
+const watchHelper = useWatchHelper();
 const eventBus = useEventBusHelper();
 const editModeStore = useEditModeStore();
 const cellStore = useCellStore();
@@ -105,90 +107,52 @@ const selectionRectHeight = computed(() => {
 
 // area selection watchers
 
-watch(
-  () => eventBus.get("SYMBOL", "EV_SVG_MOUSEMOVE"),
-  (e: MouseEvent) => {
-    if (e.buttons !== 1) return;
-    cancelSelection();
-    editModeStore.setEditMode("AREA_SELECTING");
-  },
+watchHelper.watchMouseEvent(
+  ["SYMBOL", "CELL_SELECTED"],
+  "EV_SVG_MOUSEMOVE",
+  startSelection,
 );
 
-watch(
-  () => eventBus.get("CELL_SELECTED", "EV_SVG_MOUSEMOVE"),
-  (e: MouseEvent) => {
-    if (e.buttons !== 1) return;
-    cancelSelection();
-    editModeStore.setEditMode("AREA_SELECTING");
-  },
+watchHelper.watchMouseEvent(
+  ["AREA_SELECTING"],
+  "EV_SVG_MOUSEMOVE",
+  updateSelectionArea,
 );
 
-watch(
-  () => eventBus.get("AREA_SELECTING", "EV_SVG_MOUSEMOVE"),
-  (e: MouseEvent) => {
-    updateSelectionArea(e);
-  },
+watchHelper.watchMouseEvent(["AREA_SELECTING"], "EV_SVG_MOUSEUP", endSelect);
+
+watchHelper.watchKeyEvent(["AREA_SELECTED"], "EV_KEYUP", mutateSelectionByKey);
+
+watchHelper.watchMouseEvent(["AREA_SELECTED"], "EV_SVG_MOUSEMOVE", startMoving);
+
+watchHelper.watchMouseEvent(
+  ["AREA_MOVING"],
+  "EV_SVG_MOUSEMOVE",
+  moveSelectionByMouseDrag,
 );
 
-watch(
-  () => eventBus.get("AREA_SELECTING", "EV_SVG_MOUSEMOVE"),
-  async (e: MouseEvent) => {
-    updateSelectionArea(e);
-  },
+//watchHelper.watchMouseEvent(["AREA_MOVING"], "EV_SVG_MOUSEMOVE", endMoveSelection);
+
+watchHelper.watchMouseEvent(
+  ["AREA_MOVING"],
+  "EV_SVG_MOUSEUP",
+  endMoveSelection,
 );
 
-watch(
-  () => eventBus.get("AREA_SELECTING", "EV_SVG_MOUSEUP"),
-  () => {
-    endSelect();
-  },
-);
-
-watch(
-  () => eventBus.get("AREA_SELECTED", "EV_KEYUP"),
-  async (e: KeyboardEvent) => {
-    await handlKeyUp(e);
-  },
-);
-
-watch(
-  () => eventBus.get("AREA_SELECTED", "EV_SVG_MOUSEMOVE"),
-  (e: MouseEvent) => {
-    startMoving(e);
-  },
-);
-
-watch(
-  () => eventBus.get("AREA_MOVING", "EV_SVG_MOUSEMOVE"),
-  async (e: MouseEvent) => {
-    await moveSelectionByMouseDrag(e);
-  },
-);
-
-watch(
-  () => eventBus.get("AREA_MOVING", "EV_SVG_MOUSEUP"),
-  async (e: MouseEvent) => {
-    await endMoveSelection(e);
-  },
-);
-
-watch(
-  () => eventBus.get("AREA_SELECTED", "EV_SVG_MOUSEUP"),
-  () => {
-    if (!mouseLeftSelectionArea) return;
-    cancelSelection();
-    editModeStore.setDefaultEditMode();
-  },
-);
-
-watch(
-  () => eventBus.get("SYMBOL", "EV_SVG_MOUSEUP"),
-  () => {
-    cancelSelection();
-  },
+watchHelper.watchMouseEvent(
+  ["AREA_SELECTED"],
+  "EV_SVG_MOUSEUP",
+  cancelSelectionWhenUserClickedOutside,
 );
 
 // free text watchers
+
+watch(
+  () => eventBus.get("TEXT_STARTED", "EV_SVG_MOUSEDOWN"),
+  async (e: MouseEvent) => {
+    editModeStore.setNextEditMode();
+  },
+);
 
 watch(
   () => eventBus.get("TEXT_AREA_SELECTING", "EV_SVG_MOUSEMOVE"),
@@ -223,6 +187,18 @@ watch(
 
 // event handlers
 
+function cancelSelectionWhenUserClickedOutside() {
+  if (!mouseLeftSelectionArea) return;
+  cancelSelection();
+  editModeStore.setDefaultEditMode();
+}
+
+function startSelection(e: MouseEvent) {
+  if (e.buttons !== 1) return;
+  cancelSelection();
+  editModeStore.setEditMode("AREA_SELECTING");
+}
+
 function startMoving(e: MouseEvent) {
   if (e.buttons !== 1) return;
   if (!mouseOverSelectionArea) return;
@@ -238,50 +214,6 @@ function leave() {
   mouseLeftSelectionArea = true;
 }
 
-/*
-function handleMouseUp(e: MouseEvent) {
-  const editMode = editModeStore.getEditMode();
-
-  if (editMode == "TEXT_STARTED" || editMode == "ANNOTATION_STARTED") {
-    editModeStore.setNextEditMode();
-    return;
-  }
-
-  if (editMode == "MOVING") {
-    endMoveSelection(e);
-    editModeStore.setNextEditMode();
-    return;
-  }
-
-  if (editMode == "AREA_SELECTING") {
-    endSelect();
-    mouseOverSelectionArea = false; // expect to move the mouse over the selection area at start
-    mouseLeftSelectionArea = false;
-    editModeStore.setNextEditMode();
-    return;
-  }
-
-  if (editMode == "AREA_SELECTED" && mouseLeftSelectionArea) {
-    editModeStore.setNextEditMode();
-    return;
-  }
-
-  if (
-    editMode === "TEXT_AREA_SELECTING" ||
-    editMode === "ANNOTATION_AREA_SELECTING"
-  ) {
-    editModeStore.setNextEditMode();
-    eventBus.emit("EV_SELECTION_DONE", {
-      left: selectionRectLeft.value,
-      top: selectionRectTop.value,
-      width: selectionRectWidth.value,
-      height: selectionRectHeight.value,
-    });
-    return;
-  }
-}
-*/
-
 function mouseup(e: MouseEvent) {
   eventBus.emit("EV_SVG_MOUSEUP", e);
 }
@@ -290,30 +222,34 @@ function mousemove(e: MouseEvent) {
   eventBus.emit("EV_SVG_MOUSEMOVE", e);
 }
 
-async function handlKeyUp(e: KeyboardEvent) {
+async function mutateSelectionByKey(e: KeyboardEvent) {
   if (selectionRectHeight.value === 0) return;
 
   switch (e.code) {
     case "Delete":
-       notationMutationHelper.deleteSelectedNotations();
-       editModeStore.setDefaultEditMode();
+      notationMutationHelper.deleteSelectedNotations();
+      editModeStore.setDefaultEditMode();
     case "ArrowLeft":
-      if (!notationMutationHelper.moveSelectedNotations(-1, 0, e.ctrlKey)) return;
+      if (!notationMutationHelper.moveSelectedNotations(-1, 0, e.ctrlKey))
+        return;
       await moveSelectionByKey(-1, 0);
       await notationMutationHelper.saveMovedNotations("LEFT");
       break;
     case "ArrowRight":
-      if (!notationMutationHelper.moveSelectedNotations(1, 0, e.ctrlKey)) return;
+      if (!notationMutationHelper.moveSelectedNotations(1, 0, e.ctrlKey))
+        return;
       moveSelectionByKey(1, 0);
       await notationMutationHelper.saveMovedNotations("RIGHT");
       break;
     case "ArrowDown":
-      if (!notationMutationHelper.moveSelectedNotations(0, 1, e.ctrlKey)) return;
+      if (!notationMutationHelper.moveSelectedNotations(0, 1, e.ctrlKey))
+        return;
       moveSelectionByKey(0, 1);
       await notationMutationHelper.saveMovedNotations("BOTTOM");
       break;
     case "ArrowUp":
-      if (!notationMutationHelper.moveSelectedNotations(0, -1, e.ctrlKey)) return;
+      if (!notationMutationHelper.moveSelectedNotations(0, -1, e.ctrlKey))
+        return;
       moveSelectionByKey(0, -1);
       await notationMutationHelper.saveMovedNotations("TOP");
       break;
@@ -358,26 +294,20 @@ function endSelect() {
 }
 
 function moveSelectionByMouseDrag(e: MouseEvent) {
+  if (e.buttons !== 1) return;
+
   if (!mouseOverSelectionArea) return;
-  if (mouseLeftSelectionArea) return;
+  //if (mouseLeftSelectionArea) return;
 
   // initial drag position
   if (!dragPosition.value.x) {
     dragPosition.value.x = e.pageX;
     dragPosition.value.y = e.pageY;
+    console.debug("initial drag");
     return;
   }
 
   // movement is still too small
-
-  if (
-    Math.abs(e.pageX - dragPosition.value.x) <
-      cellStore.getCellHorizontalWidth() + cellSpace &&
-    Math.abs(e.pageY - dragPosition.value.y) <
-      cellStore.getCellVerticalHeight() + cellSpace
-  ) {
-    return;
-  }
 
   const rectDeltaX = Math.round(
     (e.pageX - dragPosition.value.x) /
@@ -396,17 +326,16 @@ function moveSelectionByMouseDrag(e: MouseEvent) {
       e.ctrlKey,
     );
 
-    selectionPosition.value.topLeft.x +=
-      rectDeltaX * (cellStore.getCellHorizontalWidth() + cellSpace);
-    selectionPosition.value.topLeft.y +=
-      rectDeltaY * (cellStore.getCellVerticalHeight() + cellSpace);
-    selectionPosition.value.bottomRight.x +=
-      rectDeltaX * (cellStore.getCellHorizontalWidth() + cellSpace);
-    selectionPosition.value.bottomRight.y +=
-      rectDeltaY * (cellStore.getCellVerticalHeight() + cellSpace);
+    const xMove = rectDeltaX * (cellStore.getCellHorizontalWidth() + cellSpace);
+    const yMove = rectDeltaY * (cellStore.getCellVerticalHeight() + cellSpace);
 
-    dragPosition.value.x = e.pageX;
-    dragPosition.value.y = e.pageY;
+    selectionPosition.value.topLeft.x += xMove;
+    selectionPosition.value.topLeft.y += yMove;
+    selectionPosition.value.bottomRight.x += xMove;
+    selectionPosition.value.bottomRight.y += yMove;
+
+    dragPosition.value.x += xMove;
+    dragPosition.value.y += yMove;
   }
 }
 
@@ -455,7 +384,6 @@ function cancelSelection() {
     selectionPosition.value.bottomRight.y =
       0;
   notationStore.resetSelectedNotations();
-  //editModeStore.setDefaultEditMode();
 }
 
 function signalSelection() {
