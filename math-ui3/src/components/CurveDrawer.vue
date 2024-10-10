@@ -50,80 +50,6 @@ const curveType = computed(() => {
   return editModeStore.isConcaveCurveMode() ? "CONCAVE" : "CONVEX";
 });
 
-// watch
-/*
-watch(
-  () => eventBus.get("CONCAVE_CURVE_DRAWING", "EV_SVG_MOUSEUP"),
-  () => {
-    onMouseUp();
-  },
-);
-
-watch(
-  () => eventBus.get("CONVEX_CURVE_DRAWING", "EV_SVG_MOUSEUP"),
-  () => {
-    onMouseUp();
-  },
-);
-
-watch(
-  () => eventBus.get("CONCAVE_CURVE_DRAWING", "EV_SVG_MOUSEMOVE"),
-  (e: MouseEvent) => {
-    onMouseMove(e);
-  },
-);
-
-watch(
-  () => eventBus.get("CONVEX_CURVE_DRAWING", "EV_SVG_MOUSEMOVE"),
-  (e: MouseEvent) => {
-    onMouseMove(e);
-  },
-);
-
-watch(
-  () => eventBus.get("CONCAVE_CURVE_STARTED", "EV_SVG_MOUSEDOWN"),
-  (e: MouseEvent) => {
-    onMouseDown(e);
-  },
-);
-
-watch(
-  () => eventBus.get("CONVEX_CURVE_STARTED", "EV_SVG_MOUSEDOWN"),
-  (e: MouseEvent) => {
-    onMouseDown(e);
-  },
-);
-
-watch(
-  () => eventBus.get("SYMBOL", "EV_CONCAVE_CURVE_SELECTED"),
-  (curve: CurveNotationAttributes) => {
-    if (curve) onCurveSelected(curve);
-  },
-);
-
-watch(
-  () => eventBus.get("SYMBOL", "EV_CONVEX_CURVE_SELECTED"),
-  (curve: CurveNotationAttributes) => {
-    if (curve) onCurveSelected(curve);
-  },
-);
-
-watch(
-  () => eventBus.get("CONVEX_CURVE_SELECTED", "EV_SVG_MOUSEUP"),
-  () => {
-    notationStore.resetSelectedNotations();
-    editModeStore.setDefaultEditMode();
-  },
-);
-
-watch(
-  () => eventBus.get("CONCAVE_CURVE_SELECTED", "EV_SVG_MOUSEUP"),
-  () => {
-    notationStore.resetSelectedNotations();
-    editModeStore.setDefaultEditMode();
-  },
-);
-*/
 
 watchHelper.watchMouseEvent(
   ["CONVEX_CURVE_STARTED", "CONCAVE_CURVE_STARTED"],
@@ -161,6 +87,13 @@ watchHelper.watchMouseEvent(
   "EV_SVG_MOUSEDOWN",
   resetCurveDrawing,
 );
+
+watchHelper.watchMouseEvent(
+  ["CONVEX_CURVE_SELECTED","CONCAVE_CURVE_SELECTED"],
+  "EV_SVG_MOUSEUP",
+  () => editModeStore.setDefaultEditMode(),
+);
+
 
 // event handlers
 

@@ -140,6 +140,12 @@ watchHelper.watchMouseEvent(
   resetLineDrawing,
 );
 
+watchHelper.watchMouseEvent(
+  ["VERTICAL_LINE_SELECTED"],
+  "EV_SVG_MOUSEUP",
+  () => editModeStore.setDefaultEditMode(),
+);
+
 // methods
 
 function lineSelected(lineNotation: VerticalLineNotationAttributes) {

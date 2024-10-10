@@ -7,8 +7,8 @@
         left: handleLeft + 'px',
         top: handleY + 'px',
       }"
-      v-on:mouseup="endDrawLine"
-      v-on:mousedown="startDrawLine"
+      v-on:mouseup="lineDrawer.endDrawingLine"
+      v-on:mousedown="lineDrawer.startDrawingLine"
       v-if="!sqrtEditMode"
     ></v-card>
     <v-card
@@ -18,8 +18,8 @@
         left: handleRight + 'px',
         top: handleY + 'px',
       }"
-      v-on:mouseup="endDrawLine"
-      v-on:mousedown="startDrawLine"
+      v-on:mouseup="lineDrawer.endDrawingLine"
+      v-on:mousedown="lineDrawer.startDrawingLine"
     ></v-card>
     <svg
       height="800"
@@ -54,12 +54,14 @@ import {
 } from "../../../math-common/src/baseTypes";
 
 import useWatchHelper from "../helpers/watchHelper";
+import useLineDrawer from "../helpers/lineDrawingHelper";
 
 const notationMutateHelper = useNotationMutateHelper();
 const notationStore = useNotationStore();
 const cellStore = useCellStore();
 const editModeStore = useEditModeStore();
 const watchHelper = useWatchHelper();
+const lineDrawer = useLineDrawer();
 
 // vars
 
@@ -111,152 +113,36 @@ let handleY = computed(() => {
 watchHelper.watchMouseEvent(
   ["HORIZONTAL_LINE_STARTED"],
   "EV_SVG_MOUSEDOWN",
-  startDrawLine,
+  (e) => lineDrawer.startDrawingLine(e, linePosition.value),
 );
 
 watchHelper.watchMouseEvent(
   ["HORIZONTAL_LINE_DRAWING"],
   "EV_SVG_MOUSEMOVE",
-  setLine,
+  (e) => lineDrawer.setLine(e, linePosition.value),
 );
 
-watchHelper.watchMouseEvent(
-  ["HORIZONTAL_LINE_DRAWING"],
-  "EV_SVG_MOUSEUP",
-  endDrawLine,
+watchHelper.watchMouseEvent(["HORIZONTAL_LINE_DRAWING"], "EV_SVG_MOUSEUP", () =>
+  lineDrawer.endDrawingLine(linePosition.value),
 );
 
 // emmited by selection helper
 watchHelper.watchNotationSelection(
   "HORIZONTAL_LINE_SELECTED",
   "EV_HORIZONTAL_LINE_SELECTED",
-  selectLine,
+  (notation) => lineDrawer.selectLine(notation, linePosition.value),
 );
 
 watchHelper.watchMouseEvent(
   ["HORIZONTAL_LINE_SELECTED"],
   "EV_SVG_MOUSEDOWN",
-  resetLineDrawing,
+  () => lineDrawer.resetLineDrawing(linePosition.value),
 );
 
-// meethds
-
-function selectLine(lineNotation: HorizontalLineNotationAttributes) {
-  if (!lineNotation) return;
-
-  linePosition.value.x1 =
-    lineNotation.fromCol * (cellStore.getCellHorizontalWidth() + cellSpace);
-  (linePosition.value.x2 =
-    (lineNotation.toCol - 1) *
-    (cellStore.getCellHorizontalWidth() + cellSpace)),
-    (linePosition.value.y =
-      lineNotation.row * (cellStore.getCellVerticalHeight() + cellSpace));
-
-  // update store
-  notationStore.selectNotation(lineNotation.uuid);
-}
-
-function startDrawLine(e: MouseEvent) {
-  editModeStore.setNextEditMode();
-
-  if (linePosition.value.x1) return;
-
-  const position = {
-    x: e.pageX - cellStore.getSvgBoundingRect().x,
-    y: e.pageY - cellStore.getSvgBoundingRect().y,
-  };
-
-  linePosition.value.x1 = position.x;
-
-  linePosition.value.x2 = linePosition.value.x1 + 10;
-
-  linePosition.value.y = getNearestRow(position.y);
-}
-
-function setLine(e: MouseEvent) {
-  // ignore right button
-  if (e.buttons !== 1) {
-    return;
-  }
-
-  // nothing done yet
-  if (
-    linePosition.value.x1 === 0 &&
-    linePosition.value.x2 === 0 &&
-    linePosition.value.y === 0
-  ) {
-    return;
-  }
-
-  const xPos = e.pageX - cellStore.getSvgBoundingRect().x;
-
-  const modifyRight = xPos >= linePosition.value.x1;
-
-  if (modifyRight) {
-    linePosition.value.x2 = xPos;
-  } else {
-    // modify left
-    linePosition.value.x1 = xPos;
-  }
-}
-
-function endDrawLine() {
-  if (
-    linePosition.value.x1 === 0 &&
-    linePosition.value.x2 === 0 &&
-    linePosition.value.y === 0
-  ) {
-    return;
-  }
-
-  if (linePosition.value.x2 == linePosition.value.x1) {
-    return;
-  }
-
-  let fromCol = Math.round(
-    linePosition.value.x1 / (cellStore.getCellHorizontalWidth() + cellSpace),
-  );
-
-  let toCol = Math.round(
-    linePosition.value.x2 / (cellStore.getCellHorizontalWidth() + cellSpace),
-  );
-
-  let row = Math.round(
-    linePosition.value.y / (cellStore.getCellVerticalHeight() + cellSpace),
-  );
-
-  saveLine({ fromCol: fromCol, toCol: toCol, row: row });
-
-  resetLineDrawing();
-}
-
-function saveLine(lineAttributes: HorizontalLineAttributes) {
-  if (notationStore.getSelectedNotations().length > 0) {
-    let updatedLine = {
-      ...notationStore.getSelectedNotations().at(0)!,
-      ...lineAttributes,
-    };
-
-    notationMutateHelper.updateHorizontalLineNotation(
-      updatedLine as HorizontalLineNotationAttributes,
-    );
-  } else
-    notationMutateHelper.addHorizontalLineNotation(
-      lineAttributes,
-      editModeStore.getNotationTypeByEditMode(),
-    );
-}
-
-function resetLineDrawing() {
-  linePosition.value.x1 = linePosition.value.x2 = linePosition.value.y = 0;
-  editModeStore.setDefaultEditMode();
-}
-
-function getNearestRow(clickedYPos: number) {
-  let clickedRow = Math.round(
-    clickedYPos / (cellStore.getCellVerticalHeight() + cellSpace),
-  );
-  return clickedRow * (cellStore.getCellVerticalHeight() + cellSpace);
-}
+watchHelper.watchMouseEvent(
+  ["HORIZONTAL_LINE_SELECTED"],
+  "EV_SVG_MOUSEUP",
+  () => editModeStore.setDefaultEditMode(),
+);
 
 </script>

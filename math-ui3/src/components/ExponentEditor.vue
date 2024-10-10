@@ -26,15 +26,15 @@
 </template>
 
 <script setup lang="ts">
-import { computed, watch, ref } from "vue";
+import { computed, ref } from "vue";
 import { useEditModeStore } from "../store/pinia/editModeStore";
 import { useCellStore } from "../store/pinia/cellStore";
 import { ExponentNotationAttributes } from "../../../math-common/build/baseTypes";
-import { EditMode } from "../../../math-common/src/unions";
 import useNotationMutateHelper from "../helpers/notationMutateHelper";
 import useEventBus from "../helpers/eventBusHelper";
 import useScreenHelper from "../helpers/screenHelper";
 import useSelectionHelper from "../helpers/selectionHelper";
+import useWatchHelper from "../helpers/watchHelper";
 
 const notationMutateHelper = useNotationMutateHelper();
 const eventBus = useEventBus();
@@ -43,114 +43,118 @@ const editModeStore = useEditModeStore();
 const cellStore = useCellStore();
 const screenHelper = useScreenHelper();
 const selectionHelper = useSelectionHelper();
+const watchHelper = useWatchHelper();
 
-// variable
+
 let selectedNotation: ExponentNotationAttributes | null = null;
 let exponentLeft = ref(0);
 let exponentTop = ref(0);
 
-// computed
+
 
 const show = computed(() => editModeStore.getEditMode() === "EXPONENT_WRITING");
 
-// whatch
-watch(
-  () => eventBus.get("EXPONENT_WRITING", "EV_KEYUP"),
-  async (e: KeyboardEvent) => {
-    handleKeyUp(e);
-  },
+
+
+// user clicked on exponent icon and then clicked on a cell
+
+watchHelper.watchMouseEvent(
+  ["EXPONENT_STARTED"],
+  "EV_SVG_MOUSEDOWN",
+  startNewExponentAtMousePosition,
 );
 
-watch(
-  () => eventBus.get("EXPONENT_STARTED", "EV_SVG_MOUSEDOWN"),
-  (e: MouseEvent) => {
-    if (!e) return;
-    if (e.buttons !== 1) return;
-    startNewExponent(e);
-  },
-  { immediate: true },
+// user clicked outside of exponent editor
+watchHelper.watchMouseEvent(
+  ["EXPONENT_WRITING"],
+  "EV_SVG_MOUSEDOWN",
+  editModeStore.setNextEditMode,
 );
 
-watch(
-  () => eventBus.get("EXPONENT_WRITING", "EV_SVG_MOUSEDOWN"),
-  () => editModeStore.setNextEditMode(),
-);
-
-watch(
-  () => editModeStore.getEditMode() as EditMode,
-  (newEditMode: EditMode, oldEditMode: any) => {
-    // edit mode changed after exponent writing
-    if (
-      newEditMode !== "EXPONENT_WRITING" &&
-      oldEditMode === "EXPONENT_WRITING"
-    ) {
-      submitExponent();
-      return;
-    }
-
-    // cell selected after clicking on exponent icon
-    if (newEditMode === "CELL_SELECTED" && oldEditMode === "EXPONENT_STARTED") {
-      startNewExponent(null);
-      return;
-    }
-
-    // exponent icon clicked after cell selection
-    if (newEditMode === "EXPONENT_STARTED" && oldEditMode === "CELL_SELECTED") {
-      startNewExponent(null);
-      return;
-    }
-  },
-  { immediate: true, deep: true },
+// user selected a cell then clicked on exponent button
+watchHelper.watchEditModeTransition(
+  "CELL_SELECTED",
+  "EXPONENT_STARTED",
+  startNewExponentAtSelectedCell,
 );
 
 // user selected exponent notation
-watch(
-  () => eventBus.get("SYMBOL", "EV_EXPONENT_SELECTED"),
-  (exponentNotation: ExponentNotationAttributes) => {
-    if (!exponentNotation) return;
-    eventBus.remove("EV_EXPONENT_SELECTED", "SYMBOL");
-
-    // first click -> select
-    if (!editModeStore.isTextSelectedMode()) {
-      editModeStore.setEditMode("EXPONENT_SELECTED");
-      return;
-    }
-
-    // second click -> edit
-    editSelectedExponentNotation(exponentNotation);
-  },
+watchHelper.watchNotationSelection(
+  "SYMBOL",
+  "EV_EXPONENT_SELECTED",
+  selectExponent,
 );
 
-// event handlers
+// edit mode changed from "EXPONENT_WRITING" either by cell clik or toolbar click
+watchHelper.watchEndOfEditMode("EXPONENT_WRITING", submitExponent);
 
-function handleKeyUp(e: KeyboardEvent) {
+// user typed Enter -> end editing and move to next edit mode to submit
+watchHelper.watchKeyEvent(
+  ["EXPONENT_WRITING"],
+  "EV_KEYUP",
+  endEditingByEnterKey
+);
+
+function selectExponent(exponentNotation: ExponentNotationAttributes) {
+  if (!exponentNotation) return;
+  eventBus.remove("EV_EXPONENT_SELECTED", "SYMBOL");
+
+  // first click -> select
+  if (!editModeStore.isTextSelectedMode()) {
+    editModeStore.setEditMode("EXPONENT_SELECTED");
+    return;
+  }
+
+  // second click -> edit
+  editSelectedExponentNotation(exponentNotation);
+}
+
+function endEditingByEnterKey(e: KeyboardEvent) {
   const { code } = e;
   if (code === "Enter") {
     editModeStore.setNextEditMode();
   }
 }
 
-// methods
+function startNewExponentAtMousePosition(e: MouseEvent) {
+  if (e.buttons !== 1) return;
 
-function startNewExponent(e: MouseEvent | null) {
-  if (e) {
-    selectionHelper.selectCell({
-      x: e.pageX,
-      y: e.pageY,
-    });
-  }
+  editModeStore.setNextEditMode();
 
-  editModeStore.setEditMode("EXPONENT_WRITING");
-  (document.getElementById("exponentInput") as HTMLInputElement).value = "";
-  (document.getElementById("baseInput") as HTMLInputElement).value = "";
+  selectionHelper.selectCell({
+    x: e.pageX,
+    y: e.pageY,
+  });
+
+  resetExponentValue();
+
+  setExponentPosition();
+
+  setTimeout(`document.getElementById("baseInput")?.focus();`, 0);
+}
+
+function startNewExponentAtSelectedCell() {
+
+  editModeStore.setNextEditMode();
+
+  resetExponentValue();
+
+  setExponentPosition();
+
+  setTimeout(`document.getElementById("baseInput")?.focus();`, 0);
+}
+
+function setExponentPosition() {
   const clickedCoordinates = screenHelper.getClickedCellTopLeftCoordinates(
     cellStore.getSelectedCell(),
   );
-
   exponentLeft.value = clickedCoordinates.x;
   exponentTop.value = clickedCoordinates.y;
+}
 
-  setTimeout(`document.getElementById("baseInput")?.focus();`, 0);
+function resetExponentValue() {
+  (document.getElementById("exponentInput") as HTMLInputElement).value = "";
+  (document.getElementById("baseInput") as HTMLInputElement).value = "";
 }
 
 function editSelectedExponentNotation(
@@ -195,7 +199,9 @@ function submitExponent() {
     );
   }
 }
+
 </script>
+
 <style>
 .exponentEditor {
   border: 1px darkblue solid;

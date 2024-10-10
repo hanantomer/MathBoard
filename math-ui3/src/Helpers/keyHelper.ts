@@ -15,6 +15,7 @@ const notationMutateHelper = useNotationMutateHelper();
 const selectionHelper = useSelectionHelper();
 
 export default function () {
+
   function keyUpHandler(e: KeyboardEvent) {
     const { ctrlKey, altKey, code, key } = e;
     if (ctrlKey || altKey) return;
@@ -110,6 +111,8 @@ export default function () {
 
     return null;
   }
+
+  
 
   return {
     keyUpHandler,

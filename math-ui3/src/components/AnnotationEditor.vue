@@ -13,7 +13,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, watch, ref } from "vue";
+import { computed, ref } from "vue";
 import { useCellStore } from "../store/pinia/cellStore";
 import { useEditModeStore } from "../store/pinia/editModeStore";
 import { RectNotationAttributes } from "../../../math-common/build/baseTypes";
@@ -21,9 +21,11 @@ import { cellSpace } from "../../../math-common/src/globals";
 import { EditMode } from "../../../math-common/src/unions";
 import useNotationMutateHelper from "../helpers/notationMutateHelper";
 import usescreenHelper from "../helpers/screenHelper";
+import useWatchHelper from "../helpers/watchHelper";
 import useEventBus from "../helpers/eventBusHelper";
 
 const notationMutateHelper = useNotationMutateHelper();
+const watchHelper = useWatchHelper();
 let annotaionValue = ref("");
 
 const cellStore = useCellStore();
@@ -41,52 +43,44 @@ let selectedNotation: RectNotationAttributes | null = null;
 
 let textTop = ref(0);
 let textLeft = ref(0);
-let textWidth = ref(0);
+let textWidth = 25;
 
-watch(
-  () => editModeStore.getEditMode() as EditMode,
-  (newEditMode: EditMode, oldEditMode: any) => {
-    if (
-      newEditMode !== "ANNOTATION_WRITING" &&
-      oldEditMode === "ANNOTATION_WRITING"
-    ) {
-      submitText();
-    }
-  },
-  { immediate: true, deep: true },
+watchHelper.watchEndOfEditMode("ANNOTATION_WRITING", submitText);
+
+watchHelper.watchMouseEvent(
+  ["ANNOTATION_STARTED"],
+  "EV_SVG_MOUSEDOWN",
+  startTextEditing,
 );
 
-// area selector signals the selected position attributes
-watch(
-  () => eventBus.get("ANNOTATION_AREA_SELECTING", "EV_AREA_SELECTION_DONE"),
-  (selectionPosition: any) => {
-    setInitialTextValue();
-    textLeft.value = selectionPosition.left;
-    textWidth.value = selectionPosition.width;
-    editModeStore.setEditMode("ANNOTATION_WRITING");
-    setTimeout('document.getElementById("annotationEl").focus()', 100);
-  },
+watchHelper.watchKeyEvent(
+  ["ANNOTATION_WRITING"],
+  "EV_KEYUP",
+  endEditingByEnterKey,
+);
+
+watchHelper.watchMouseEvent(
+  ["ANNOTATION_WRITING"],
+  "EV_SVG_MOUSEDOWN",
+  editModeStore.setNextEditMode,
 );
 
 // user selected text notation
-watch(
-  () => eventBus.get("SYMBOL", "EV_ANNOTATION_SELECTED"),
-  (textNotation: RectNotationAttributes) => {
-    if (!textNotation) return;
-    eventBus.remove("EV_ANNOTATION_SELECTED", "SYMBOL");
-
-    // first click -> select
-    if (!editModeStore.isTextSelectedMode()) {
-      editModeStore.setEditMode("ANNOTATION_SELECTED"); ///TODO: avoid manipulate edit mode directly
-      return;
-    }
-
-    // second click -> edit
-    editSelectedTextNotation(textNotation);
-  },
+watchHelper.watchNotationSelection(
+  "ANNOTATION_SELECTED",
+  "EV_ANNOTATION_SELECTED",
+  editSelectedAnnotation,
 );
 
-function editSelectedTextNotation(textNotation: RectNotationAttributes) {
+function startTextEditing(e: MouseEvent) {
+  editModeStore.setNextEditMode();
+  setInitialTextValue();
+  textLeft.value = e.pageX;
+  textTop.value = e.pageY;
+  setTimeout('document.getElementById("annotationEl").focus()', 100);
+}
+
+function editSelectedAnnotation(textNotation: RectNotationAttributes) {
   editModeStore.setEditMode("ANNOTATION_WRITING");
 
   selectedNotation = textNotation;
@@ -120,10 +114,10 @@ function setInitialTextDimensions(textNotation: RectNotationAttributes) {
     textNotation.fromRow * (cellStore.getCellVerticalHeight() + cellSpace) -
     cellSpace;
 
-  textWidth.value =
-    (textNotation.toCol - textNotation.fromCol + 1) *
-      (cellStore.getCellHorizontalWidth() + cellSpace) -
-    cellSpace;
+  // textWidth.value =
+  //   (textNotation.toCol - textNotation.fromCol + 1) *
+  //     (cellStore.getCellHorizontalWidth() + cellSpace) -
+  //   cellSpace;
 }
 
 function setInitialTextValue() {
@@ -134,50 +128,38 @@ function setInitialTextValue() {
 }
 
 function submitText() {
-  console.debug("submitText");
   editModeStore.setNextEditMode();
 
   const annotationEl = document.getElementById("annotationEl")!;
 
   textLeft.value = parseInt(annotationEl.style.left.replace("px", ""));
-  textWidth.value = parseInt(annotationEl.style.width.replace("px", ""));
   textTop.value = parseInt(annotationEl.style.top.replace("px", ""));
 
-  const rectCoordinates = screenHelper.getRectAttributes({
-    topLeft: {
-      x: textLeft.value + window.scrollX - cellStore.getSvgBoundingRect().x,
-      y: textTop.value + window.scrollY - cellStore.getSvgBoundingRect().y,
-    },
-    bottomRight: {
-      x:
-        textLeft.value +
-        textWidth.value +
-        window.scrollX -
-        cellStore.getSvgBoundingRect().x,
-      y:
-        textTop.value +
-        20 /*TODO: move to const*/ +
-        window.scrollY -
-        cellStore.getSvgBoundingRect().y,
-    },
+  const lineCoordinates = screenHelper.getLineAttributes({
+    x1: textLeft.value + window.scrollX - cellStore.getSvgBoundingRect().x,
+    x2:
+      textLeft.value +
+      textWidth +
+      window.scrollX -
+      cellStore.getSvgBoundingRect().x,
+    y: textTop.value + window.scrollY - cellStore.getSvgBoundingRect().y,
   });
 
-  if (selectedNotation && rectCoordinates) {
+  if (selectedNotation && lineCoordinates) {
     selectedNotation.value = annotaionValue.value;
-    selectedNotation = Object.assign(selectedNotation, rectCoordinates);
+    selectedNotation = Object.assign(selectedNotation, lineCoordinates);
 
     notationMutateHelper.updateNotation(selectedNotation);
     restoreTextNotation(selectedNotation?.uuid);
   } else {
-    notationMutateHelper.upsertTextNotation(
+    notationMutateHelper.upsertAnnotationNotation(
       annotaionValue.value,
-      rectCoordinates,
+      lineCoordinates,
     );
   }
 }
 
 function hideTextNotation(uuid: string) {
-  console.debug("hide text notation:" + uuid);
   document!
     .querySelector<HTMLElement>(`foreignObject[uuid="${uuid}"]`)!
     .classList.add("hidden");
@@ -185,10 +167,16 @@ function hideTextNotation(uuid: string) {
 
 // restore text notation that was hideen during editing
 function restoreTextNotation(uuid: string) {
-  console.debug("restoring text notation:" + uuid);
   document!
     .querySelector<HTMLElement>(`foreignObject[uuid="${uuid}"]`)!
     .classList.remove("hidden");
+}
+
+function endEditingByEnterKey(e: KeyboardEvent) {
+  const { code } = e;
+  if (code === "Enter") {
+    editModeStore.setNextEditMode();
+  }
 }
 </script>
 <style>
@@ -200,6 +188,8 @@ textarea {
   position: absolute;
   padding: 5px;
   box-sizing: border-box;
+  font-size: small;
+  height: 10px;
 }
 .hidden {
   display: none;

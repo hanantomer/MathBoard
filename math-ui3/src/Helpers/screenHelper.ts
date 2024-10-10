@@ -1,13 +1,13 @@
 import { cellSpace } from "../../../math-common/src/globals";
+
 import {
   DotCoordinates,
   RectCoordinates,
-} from "../../../math-common/src/baseTypes";
-import {
   NotationAttributes,
   CellAttributes,
   HorizontalLineNotationAttributes,
   HorizontalLineAttributes,
+  HorizontaLinePosition,
   PointNotationAttributes,
   RectNotationAttributes,
   SlopeLineNotationAttributes,
@@ -17,9 +17,7 @@ import {
   LineCoordinates,
   SlopeLineAttributes,
 } from "../../../math-common/src/baseTypes";
-import {
-  NotationTypeShape,
-} from "../../../math-common/src/unions";
+import { NotationTypeShape } from "../../../math-common/src/unions";
 
 import { useNotationStore } from "../store/pinia/notationStore";
 import { useCellStore } from "../store/pinia/cellStore";
@@ -29,10 +27,7 @@ const cellStore = useCellStore();
 export default function screenHelper() {
   type NotationDistance = { notation: NotationAttributes; distance: number };
 
-  function getClickedCell(
-    dotCoordinates: DotCoordinates,
-  ): CellAttributes {
-
+  function getClickedCell(dotCoordinates: DotCoordinates): CellAttributes {
     const clickedCellCol = Math.floor(
       (dotCoordinates.x - cellStore.getSvgBoundingRect().left) /
         (cellStore.getCellHorizontalWidth() + cellSpace),
@@ -68,7 +63,6 @@ export default function screenHelper() {
   //   );
   // }
 
-
   function getClickedCellTopLeftCoordinates(
     clickedCell: CellAttributes,
   ): DotCoordinates {
@@ -88,9 +82,6 @@ export default function screenHelper() {
   }
 
   function getRectAttributes(rectCoordinates: RectCoordinates): RectAttributes {
-    console.log(
-      "getRectAttributes rectCoordinates:" + JSON.stringify(rectCoordinates),
-    );
     const rectFromCol = Math.round(
       rectCoordinates.topLeft.x /
         (cellStore.getCellHorizontalWidth() + cellSpace),
@@ -113,16 +104,6 @@ export default function screenHelper() {
           (cellStore.getCellVerticalHeight() + cellSpace),
       ) - 1;
 
-    console.log(
-      "getRectAttributes rectAttributes:" +
-        JSON.stringify({
-          fromCol: rectFromCol,
-          toCol: rectToCol,
-          fromRow: rectFromRow,
-          toRow: rectToRow,
-        }),
-    );
-
     return {
       fromCol: rectFromCol,
       toCol: rectToCol,
@@ -130,6 +111,35 @@ export default function screenHelper() {
       toRow: rectToRow,
     };
   }
+
+  function getLineAttributes(
+    lineCoordinates: HorizontaLinePosition,
+  ): HorizontalLineAttributes {
+
+    const fromCol = Math.round(
+      lineCoordinates.x1 /
+        (cellStore.getCellHorizontalWidth() + cellSpace),
+    );
+
+    const toCol =
+      Math.round(
+        lineCoordinates.x2 /
+          (cellStore.getCellHorizontalWidth() + cellSpace),
+      ) - 1;
+
+    const row = Math.round(
+      lineCoordinates.y /
+        (cellStore.getCellVerticalHeight() + cellSpace),
+    );
+
+
+    return {
+      fromCol: fromCol,
+      toCol: toCol,
+      row: row,
+    };
+  }
+
 
   function getSlopeLineAttributesByCoordinates(
     lineCoordinates: LineCoordinates,
@@ -165,7 +175,6 @@ export default function screenHelper() {
   ): CellAttributes[] {
     let cells: CellAttributes[] = [];
 
-
     const areaFromCol = Math.floor(
       (rectCoordinates.topLeft.x - cellStore.getSvgBoundingRect().left) /
         (cellStore.getCellHorizontalWidth() + cellSpace),
@@ -197,7 +206,7 @@ export default function screenHelper() {
 
   // find notation at screen  point
   function getNotationAtCoordinates(
-    DotCoordinates: DotCoordinates
+    DotCoordinates: DotCoordinates,
   ): NotationAttributes | null {
     const notationStore = useNotationStore();
     const clickedCell = getClickedCell(DotCoordinates);
@@ -224,10 +233,7 @@ export default function screenHelper() {
 
           notationDistanceList.push({
             notation: n1,
-            distance: getClickedPosDistanceFromCellCenter(
-              DotCoordinates,
-              n1,
-            ),
+            distance: getClickedPosDistanceFromCellCenter(DotCoordinates, n1),
           });
           break;
         }
@@ -235,20 +241,14 @@ export default function screenHelper() {
           let n1 = n as RectNotationAttributes;
           notationDistanceList.push({
             notation: n1,
-            distance: getClickedPosDistanceFromRectCenter(
-              DotCoordinates,
-              n1,
-            ),
+            distance: getClickedPosDistanceFromRectCenter(DotCoordinates, n1),
           });
           break;
         case "SLOPE_LINE": {
           let n1 = n as SlopeLineNotationAttributes;
           notationDistanceList.push({
             notation: n1,
-            distance: getClickedPosDistanceFromSlopeLine(
-              DotCoordinates,
-              n1,
-            ),
+            distance: getClickedPosDistanceFromSlopeLine(DotCoordinates, n1),
           });
           break;
         }
@@ -267,10 +267,7 @@ export default function screenHelper() {
           let n1 = n as VerticalLineNotationAttributes;
           notationDistanceList.push({
             notation: n1,
-            distance: getClickedPosDistanceFromVerticalLine(
-              DotCoordinates,
-              n1,
-            ),
+            distance: getClickedPosDistanceFromVerticalLine(DotCoordinates, n1),
           });
           break;
         }
@@ -371,7 +368,6 @@ export default function screenHelper() {
     DotCoordinates: DotCoordinates,
     n: HorizontalLineAttributes,
   ): number {
-
     const cellWidth = cellStore.getCellHorizontalWidth() + cellSpace;
 
     const cellHeight = cellStore.getCellVerticalHeight() + cellSpace;
@@ -399,7 +395,6 @@ export default function screenHelper() {
     DotCoordinates: DotCoordinates,
     n: VerticalLineNotationAttributes,
   ): number {
-
     const cellWidth = cellStore.getCellHorizontalWidth() + cellSpace;
 
     const cellHeight = cellStore.getCellVerticalHeight() + cellSpace;
@@ -428,7 +423,6 @@ export default function screenHelper() {
     DotCoordinates: DotCoordinates,
     n: SlopeLineNotationAttributes,
   ): number {
-
     const cellWidth = cellStore.getCellHorizontalWidth() + cellSpace;
 
     const cellHeight = cellStore.getCellVerticalHeight() + cellSpace;
@@ -453,8 +447,6 @@ export default function screenHelper() {
   }
 
   return {
-//    clickedAtCellRightSide,
-    //    clickedAtCellBottom,
     getClickedPosDistanceFromSlopeLine,
     getClickedPosDistanceFromVerticalLine,
     getClickedPosDistanceFromHorizontalLine,
@@ -462,7 +454,8 @@ export default function screenHelper() {
     getClickedCell,
     getRectCoordinatesOccupiedCells,
     getSlopeLineAttributesByCoordinates,
-    getRectAttributes,
     getClickedCellTopLeftCoordinates,
+    getRectAttributes,
+    getLineAttributes,
   };
 }

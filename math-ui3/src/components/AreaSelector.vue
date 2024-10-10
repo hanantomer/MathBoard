@@ -18,7 +18,7 @@
 </template>
 
 <script setup lang="ts">
-import { watch, computed, ref } from "vue";
+import { computed, ref } from "vue";
 import { useEditModeStore } from "../store/pinia/editModeStore";
 import { useCellStore } from "../store/pinia/cellStore";
 import { useNotationStore } from "../store/pinia/notationStore";
@@ -108,7 +108,7 @@ const selectionRectHeight = computed(() => {
 // area selection watchers
 
 watchHelper.watchMouseEvent(
-  ["SYMBOL", "CELL_SELECTED"],
+  ["SYMBOL", "CELL_SELECTED", "TEXT_STARTED", "ANNOTATION_STARTED"],
   "EV_SVG_MOUSEMOVE",
   startSelection,
 );
@@ -145,44 +145,30 @@ watchHelper.watchMouseEvent(
   cancelSelectionWhenUserClickedOutside,
 );
 
-// free text watchers
+// free text and annotation watchers
 
-watch(
-  () => eventBus.get("TEXT_STARTED", "EV_SVG_MOUSEDOWN"),
-  async (e: MouseEvent) => {
-    editModeStore.setNextEditMode();
-  },
+watchHelper.watchMouseEvent(
+  ["TEXT_STARTED"],
+  "EV_SVG_MOUSEDOWN",
+  cancelSelectionWhenUserClickedOutside /*takes action when clicked outside of selection area*/,
 );
 
-watch(
-  () => eventBus.get("TEXT_AREA_SELECTING", "EV_SVG_MOUSEMOVE"),
-  async (e: MouseEvent) => {
-    updateSelectionArea(e);
-  },
+watchHelper.watchMouseEvent(
+  ["TEXT_STARTED"],
+  "EV_SVG_MOUSEDOWN",
+  () => editModeStore.setNextEditMode()
 );
 
-watch(
-  () => eventBus.get("TEXT_AREA_SELECTING", "EV_SVG_MOUSEUP"),
-  () => {
-    endSelect();
-    signalSelection();
-  },
+watchHelper.watchMouseEvent(
+  ["TEXT_AREA_SELECTING", "ANNOTATION_AREA_SELECTING"],
+  "EV_SVG_MOUSEMOVE",
+  updateSelectionArea,
 );
 
-// annotation watchers
-
-watch(
-  () => eventBus.get("ANNOTATION_AREA_SELECTING", "EV_SVG_MOUSEMOVE"),
-  async (e: MouseEvent) => {
-    updateSelectionArea(e);
-  },
-);
-
-watch(
-  () => eventBus.get("ANNOTATION_AREA_SELECTING", "EV_SVG_MOUSEUP"),
-  () => {
-    endSelect();
-  },
+watchHelper.watchMouseEvent(
+  ["TEXT_AREA_SELECTING", "ANNOTATION_AREA_SELECTING"],
+  "EV_SVG_MOUSEUP",
+  signalSelection,
 );
 
 // event handlers

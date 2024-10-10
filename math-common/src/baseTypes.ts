@@ -152,6 +152,7 @@ export type SlopeLineNotationAttributes = EntityAttributes & NotationAttributes 
 export type CurveNotationAttributes = EntityAttributes & NotationAttributes & CurveAttributes ;
 export type RectNotationAttributes = EntityAttributes & NotationAttributes & RectAttributes & SingleValueAttributes;
 export type ExponentNotationAttributes = EntityAttributes &  NotationAttributes & CellAttributes & ExponentAttributes;
+export type AnnotationNotationAttributes = EntityAttributes & NotationAttributes & HorizontalLineAttributes& SingleValueAttributes;
 
 // ommiting uuid from creation attributed since created by the databse
 export type PointNotationCreationAttributes = Omit<NotationAttributes & CellAttributes & SingleValueAttributes, "uuid">;
@@ -161,6 +162,7 @@ export type SlopeLineNotationCreationAttributes = Omit<NotationAttributes & Slop
 export type RectNotationCreationAttributes = Omit<NotationAttributes & RectAttributes & SingleValueAttributes, "uuid">;
 export type CurveNotationCreationAttributes = Omit<NotationAttributes & CurveAttributes,  "uuid">;
 export type ExponentNotationCreationAttributes = Omit<EntityAttributes &  NotationAttributes & CellAttributes & ExponentAttributes, "uuid">;
+export type AnnotationNotationCreationAttributes = Omit<EntityAttributes & NotationAttributes & HorizontalLineAttributes& SingleValueAttributes, "uuid">;
 
 
 

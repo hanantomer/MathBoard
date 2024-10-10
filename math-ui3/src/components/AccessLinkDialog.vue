@@ -36,7 +36,9 @@
 <script setup lang="ts">
 import { computed, ref, watch } from "vue";
 import { useLessonStore } from "../store/pinia/lessonStore";
+import useWatchHelper from "../helpers/watchHelper";
 
+const watchHelper = useWatchHelper();
 const lessonStore = useLessonStore();
 const emit = defineEmits(["close"]);
 
@@ -45,6 +47,8 @@ const dialog = ref(false);
 const props = defineProps({
   show: { type: Boolean },
 });
+
+watchHelper.watchLoadedEvent
 
 watch(
   () => props.show,

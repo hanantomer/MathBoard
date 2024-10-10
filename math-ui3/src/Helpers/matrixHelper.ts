@@ -134,11 +134,14 @@ export default function useMatrixHelper() {
     return sqrtSignNotation;
   }
 
-  function refreshScreen(notations: NotationAttributes[], svgId: string) {
+  function refreshScreen(svgId: string) {
+    
+    let notations: NotationAttributes[] = [];
+
     const svgElement = document!.getElementById(svgId);
 
     try {
-      notations = enrichNotations(notations);
+      notations = enrichNotations(notationStore.getNotations());
     } catch {} // can't check if observer has properties
 
     htmlHelper.mergeHtmlNotations(

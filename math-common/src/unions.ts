@@ -80,7 +80,7 @@ export const NotationTypeShape = new Map<NotationType, NotationShape> ([
   ["VERTICALLINE", "VERTICAL_LINE"],
   ["SLOPELINE", "SLOPE_LINE"],
   ["TEXT", "RECT"],
-  ["ANNOTATION", "RECT"],
+  ["ANNOTATION", "HORIZONTAL_LINE"],
   ["IMAGE", "RECT"],
   ["CONCAVECURVE", "CONCAVE_CURVE"],
   ["CONVEXCURVE", "CONVEX_CURVE"],

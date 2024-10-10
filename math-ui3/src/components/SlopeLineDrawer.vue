@@ -48,11 +48,9 @@ import {
   SlopeLineAttributes,
   SlopeLineNotationAttributes,
 } from "../../../math-common/src/baseTypes";
-import useEventBus from "../helpers/eventBusHelper";
 import useWatchHelper from "../helpers/watchHelper";
 
 const watchHelper = useWatchHelper();
-const eventBus = useEventBus();
 const notationMutateHelper = useNotationMutateHelper();
 const notationStore = useNotationStore();
 const cellStore = useCellStore();
@@ -144,6 +142,13 @@ watchHelper.watchMouseEvent(
   "EV_SVG_MOUSEDOWN",
   resetLineDrawing,
 );
+
+watchHelper.watchMouseEvent(
+  ["SLOPE_LINE_SELECTED"],
+  "EV_SVG_MOUSEUP",
+  () => editModeStore.setDefaultEditMode(),
+);
+
 
 // methods
 

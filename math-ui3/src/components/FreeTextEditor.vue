@@ -43,7 +43,7 @@ let textTop = ref(0);
 let textHeight = ref(0);
 let textWidth = ref(0);
 
-watchHelper.watchEditMode(submitText);
+watchHelper.watchEveryEditMode(submitText);
 
 watchHelper.watchMouseEvent(
   ["TEXT_WRITING"],
@@ -59,7 +59,6 @@ watchHelper.watchCustomEvent(
   startTextEditing,
 );
 
-
 // user selected text notation
 // watch(
 //   () => eventBus.get("SYMBOL", "EV_FREE_TEXT_SELECTED"),
@@ -72,7 +71,11 @@ watchHelper.watchCustomEvent(
 //watchHelper.watchNotationSelection("SYMBOL", "EV_FREE_TEXT_SELECTED")
 
 // user clicked inside selected text notation (i.e second click)
-watchHelper.watchNotationSelection("TEXT_SELECTED", "EV_FREE_TEXT_SELECTED", editSelectedTextNotation);
+watchHelper.watchNotationSelection(
+  "TEXT_SELECTED",
+  "EV_FREE_TEXT_SELECTED",
+  editSelectedTextNotation,
+);
 
 // watch(
 //   () => eventBus.get("TEXT_SELECTED", "EV_FREE_TEXT_SELECTED"),

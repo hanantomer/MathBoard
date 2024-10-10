@@ -7,10 +7,11 @@ import {
   RectNotationAttributes,
   CellAttributes,
   RectAttributes,
+  AnnotationNotationAttributes,
 } from "common/baseTypes";
 import { useNotationStore } from "../store/pinia/notationStore";
 import { useCellStore } from "../store/pinia/cellStore";
-import { cellSpace } from "common/globals";
+import { cellSpace, annotationHeight, annotationWidth } from "common/globals";
 import { NotationTypeShape } from "common/unions";
 import useUtils from "./matrixHelperUtils";
 import { useUserStore } from "../store/pinia/userStore";
@@ -288,6 +289,15 @@ export default function useHtmlMatrixHelper() {
               border:groove 2px;border-color:${bColor};'>${
                 n1.value
               }</textarea>`;
+    }
+
+    if (n.notationType === "ANNOTATION") {
+      const n1 = n as AnnotationNotationAttributes;
+
+      const bColor = textBorderColor(n ?? false);
+      return `<textarea style='resize:none; overflow:hidden;width:${annotationWidth}px;
+          height:${annotationHeight}px;background-color:${textBackgroundColor()};
+          border:groove 2px;border-color:${bColor};'>${n1.value}</textarea>`;
     }
 
     if (n.notationType === "IMAGE") {

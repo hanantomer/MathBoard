@@ -189,7 +189,7 @@ const modeButtons: Array<{
     show_condition: true,
     editMode: "ANNOTATION_STARTED",
     activeState: ref(1),
-    tooltip: "create an annotation",
+    tooltip: "annotation",
     icon_class: "",
     icon: "mdi-text-short",
     overlay_icon: "",

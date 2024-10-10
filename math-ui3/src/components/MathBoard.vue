@@ -61,7 +61,7 @@ import { useNotationStore } from "../store/pinia/notationStore";
 import { useCellStore } from "../store/pinia/cellStore";
 import { useEditModeStore } from "../store/pinia/editModeStore";
 import { useAnswerStore } from "../store/pinia/answerStore";
-import { CursorType, EditMode, EditModeCursorType } from "common/unions";
+import { CursorType, EditModeCursorType } from "common/unions";
 import useSelectionHelper from "../helpers/selectionHelper";
 import usescreenHelper from "../helpers/screenHelper";
 import useUserOutgoingOperations from "../helpers/userOutgoingOperationsHelper";
@@ -124,68 +124,33 @@ watchHelper.watchKeyEvent(
     "SQRT_SELECTED",
     "ANNOTATION_SELECTED",
     "TEXT_SELECTED",
+    "EXPONENT_SELECTED",
   ],
   "EV_KEYUP",
   keyHelper.keyUpHandler,
 );
 
-watchHelper.watchEditMode(
+watchHelper.watchEveryEditMode(
   (newEditMode) => (cursor.value = EditModeCursorType.get(newEditMode)!),
 );
 
 watchHelper.watchSelectedCell(props.svgId);
 
-watch(
-  () => eventBus.get("SYMBOL", "EV_CELL_COLORIZED"),
-  (params) => {
-    const clickedCell = screenHelper.getClickedCell({
-      x: params.pageX,
-      y: params.pageY,
-    });
+watchHelper.watchCustomEvent("SYMBOL", "EV_CELL_COLORIZED", colorizeCell);
 
-    matrixCellHelper.colorizeCell(props.svgId, clickedCell, params.cellColor);
+watchHelper.watchCustomEvent("SYMBOL", "EV_COPY", () => {
+  eventHelper.copy();
+  eventBus.remove("EV_COPY", "SYMBOL"); // clean copy buffer
+});
 
-    userOutgoingOperations.syncOutgoingColorizedCell(
-      clickedCell,
-      notationStore.getParent().uuid,
-      params.cellColor,
-    );
+watchHelper.watchCustomEvent("SYMBOL", "EV_PASTE", (e: ClipboardEvent) => {
+  eventHelper.paste(e);
+});
 
-    cellStore.resetSelectedCell();
-  },
-);
+// wait for child(e.g lesson) loaded signal
+watchHelper.watchLoadedEvent(props, load);
 
-watch(
-  () => eventBus.get("SYMBOL", "EV_COPY"),
-  () => {
-    eventHelper.copy();
-    eventBus.remove("EV_COPY", "SYMBOL"); // clean copy buffer
-  },
-);
-
-watch(
-  () => eventBus.get("SYMBOL", "EV_PASTE"),
-  (e: ClipboardEvent) => {
-    eventHelper.paste(e);
-  },
-);
-
-// wait for child(e.g lesson) signal
-watch(
-  () => props.loaded,
-  (loaded: Boolean) => {
-    if (loaded) load();
-  },
-  { immediate: true },
-);
-
-watch(
-  () => notationStore.getNotations(),
-  () => {
-    matrixHelper.refreshScreen(notationStore.getNotations(), props.svgId);
-  },
-  { deep: true },
-);
+watchHelper.watchNotationsEvent(props.svgId, matrixHelper.refreshScreen);
 
 async function load() {
   cellStore.setSvgBoundingRect(props.svgId);
@@ -235,6 +200,23 @@ function selectClickedPosition(e: MouseEvent) {
   if (!selectionHelper.selectNotationAtPosition(position)) {
     selectionHelper.selectCell(position);
   }
+}
+
+function colorizeCell(params: any) {
+  const clickedCell = screenHelper.getClickedCell({
+    x: params.pageX,
+    y: params.pageY,
+  });
+
+  matrixCellHelper.colorizeCell(props.svgId, clickedCell, params.cellColor);
+
+  userOutgoingOperations.syncOutgoingColorizedCell(
+    clickedCell,
+    notationStore.getParent().uuid,
+    params.cellColor,
+  );
+
+  cellStore.resetSelectedCell();
 }
 </script>
 

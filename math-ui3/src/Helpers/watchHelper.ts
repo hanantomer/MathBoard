@@ -6,26 +6,29 @@ import {
 } from "../../../math-common/build/baseTypes";
 import { useEditModeStore } from "../store/pinia/editModeStore";
 import { useCellStore } from "../store/pinia/cellStore";
+import { useNotationStore } from "../store/pinia/notationStore";
 import useEventBus from "../helpers/eventBusHelper";
 import useMatrixCellHelper from "../helpers/matrixCellHelper";
 
 const editModeStore = useEditModeStore();
 const cellStore = useCellStore();
+const notationStore = useNotationStore();
 
 const eventBus = useEventBus();
 const matrixCellHelper = useMatrixCellHelper();
 
-type mouseEventHandler = (e: MouseEvent) => void;
-type keyEventHandler = (e: KeyboardEvent) => void;
-type editModeHandler = (newEditMode: EditMode, oldEditMode: any) => void;
-type notationHandler = (n: any) => void;
-type customEventHandler = (d: any) => void;
+type MouseEventHandler = (e: MouseEvent) => void;
+type KeyEventHandler = (e: KeyboardEvent) => void;
+type EditModeHandler = (newEditMode: EditMode, oldEditMode: any) => void;
+type NotationSelectionHandler = (notation: any) => void;
+type CustomEventHandler = (data: any) => void;
+type PropEventHandler = (prop: any) => void;
 
 export default function () {
   function watchMouseEvent(
     editMode: EditMode[],
     eventType: BusEventType,
-    handler: mouseEventHandler,
+    handler: MouseEventHandler,
   ) {
     editMode.forEach((em) =>
       watch(
@@ -40,7 +43,7 @@ export default function () {
   function watchKeyEvent(
     editMode: EditMode[],
     eventType: BusEventType,
-    handler: keyEventHandler,
+    handler: KeyEventHandler,
   ) {
     editMode.forEach((em) =>
       watch(
@@ -52,11 +55,37 @@ export default function () {
     );
   }
 
-  function watchEditMode(handler: editModeHandler) {
+  function watchEveryEditMode(handler: EditModeHandler) {
     watch(
       () => editModeStore.getEditMode() as EditMode,
       (newEditMode: EditMode, oldEditMode: EditMode) => {
         handler(newEditMode, oldEditMode);
+      },
+    );
+  }
+
+  function watchEditModeTransition(
+    oldEditMode: EditMode,
+    newEditMode: EditMode,
+    handler: EditModeHandler,
+  ) {
+    watch(
+      () => editModeStore.getEditMode() as EditMode,
+      (nEditMode: EditMode, oEditMode: EditMode) => {
+        if (nEditMode === newEditMode && oEditMode === oldEditMode) {
+          handler(nEditMode, oEditMode);
+        }
+      },
+    );
+  }
+
+  function watchEndOfEditMode(oldEditMode: EditMode, handler: EditModeHandler) {
+    watch(
+      () => editModeStore.getEditMode() as EditMode,
+      (nEditMode: EditMode, oEditMode: EditMode) => {
+        if (nEditMode !== oldEditMode && oEditMode === oldEditMode) {
+          handler(nEditMode, oEditMode);
+        }
       },
     );
   }
@@ -83,7 +112,7 @@ export default function () {
   function watchNotationSelection(
     editMode: EditMode,
     eventType: BusEventType,
-    handler: notationHandler,
+    handler: NotationSelectionHandler,
   ) {
     watch(
       () => eventBus.get(editMode, eventType),
@@ -93,25 +122,47 @@ export default function () {
     );
   }
 
-   function watchCustomEvent(
-     editMode: EditMode,
-     eventType: BusEventType,
-     handler: customEventHandler,
-   ) {
-     watch(
-       () => eventBus.get(editMode, eventType),
-       (data: any) => {
-         handler(data);
-       },
-     );
-   }
+  function watchCustomEvent(
+    editMode: EditMode,
+    eventType: BusEventType,
+    handler: CustomEventHandler,
+  ) {
+    watch(
+      () => eventBus.get(editMode, eventType),
+      (data: any) => {
+        handler(data);
+      },
+    );
+  }
+
+  function watchLoadedEvent(props: any, handler: PropEventHandler) {
+    watch(props, (data: any) => {
+      if (data["loaded"]) handler(data["svgId"]);
+    });
+  }
+
+
+
+  function watchNotationsEvent(svgId: string, handler: CustomEventHandler) {
+    watch(
+      () => notationStore.getNotations(),
+      () => {
+        handler(svgId);
+      },
+      { deep: true, immediate: true },
+    );
+  }
 
   return {
     watchMouseEvent,
     watchKeyEvent,
-    watchEditMode,
+    watchEveryEditMode,
+    watchEditModeTransition,
+    watchEndOfEditMode,
     watchSelectedCell,
     watchNotationSelection,
     watchCustomEvent,
+    watchLoadedEvent,
+    watchNotationsEvent,
   };
 }

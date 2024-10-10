@@ -19,6 +19,7 @@ import {
   SlopeLineNotationCreationAttributes,
   CurveNotationCreationAttributes,
   ExponentNotationCreationAttributes,
+  AnnotationNotationCreationAttributes,
 } from "common/baseTypes";
 
 import { matrixDimensions } from "common/globals";
@@ -783,6 +784,24 @@ export default function notationMutateHelper() {
     upsertRectNotation(notation);
   }
 
+  function upsertAnnotationNotation(
+    value: string,
+    annotationCells: HorizontalLineAttributes,
+  ) {
+    let notation: AnnotationNotationCreationAttributes = {
+      fromCol: annotationCells.fromCol,
+      toCol: annotationCells.toCol,
+      row: annotationCells.row,
+      value: value,
+      boardType: notationStore.getParent().type,
+      parentUUId: notationStore.getParent().uuid,
+      notationType: "ANNOTATION",
+      user: userStore.getCurrentUser()!,
+    };
+
+    upsertLineNotation(notation);
+  }
+
   function upsertExponentNotation(base: string, exponent: string) {
     let notation: ExponentNotationCreationAttributes = {
       col: getSelectedCell()!.col,
@@ -823,16 +842,6 @@ export default function notationMutateHelper() {
       let point =
         notationStore.getSelectedNotations()[0] as PointNotationAttributes;
       return { col: point.col, row: point.row };
-    }
-
-    return cellStore.getSelectedCell();
-  }
-
-  function getRectCell(): CellAttributes | null {
-    if (notationStore.getSelectedNotations().length) {
-      const rect =
-        notationStore.getSelectedNotations()[0] as RectNotationAttributes;
-      return { col: rect.fromCol, row: rect.fromRow };
     }
 
     return cellStore.getSelectedCell();
@@ -979,6 +988,7 @@ export default function notationMutateHelper() {
     updateNotation,
     upsertSymbolNotation,
     upsertTextNotation,
+    upsertAnnotationNotation,
     upsertExponentNotation,
     selectNotation,
     selectNotationByCoordinates,
