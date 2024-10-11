@@ -786,11 +786,10 @@ export default function notationMutateHelper() {
 
   function upsertAnnotationNotation(
     value: string,
-    annotationCells: HorizontalLineAttributes,
+    annotationCells: CellAttributes,
   ) {
     let notation: AnnotationNotationCreationAttributes = {
-      fromCol: annotationCells.fromCol,
-      toCol: annotationCells.toCol,
+      col: annotationCells.col,
       row: annotationCells.row,
       value: value,
       boardType: notationStore.getParent().type,
@@ -799,7 +798,7 @@ export default function notationMutateHelper() {
       user: userStore.getCurrentUser()!,
     };
 
-    upsertLineNotation(notation);
+    upsertPointNotation(notation);
   }
 
   function upsertExponentNotation(base: string, exponent: string) {

@@ -3,7 +3,6 @@ import { EditMode, EditModeNotationType, NotationType } from "common/unions";
 import { ref } from "vue";
 
 export const useEditModeStore = defineStore("editMode", () => {
-
   let editMode = ref<EditMode>("SYMBOL");
 
   const defaultEditMode: EditMode = "SYMBOL";
@@ -13,17 +12,19 @@ export const useEditModeStore = defineStore("editMode", () => {
       editMode.value === "AREA_SELECTING" ||
       editMode.value === "AREA_SELECTED" ||
       editMode.value === "TEXT_AREA_SELECTING" ||
-      editMode.value === "ANNOTATION_AREA_SELECTING" ||
+      //      editMode.value === "ANNOTATION_AREA_SELECTING" ||
       editMode.value === "AREA_MOVING"
     );
   }
 
   function isAreaSelectedMode() {
-    return editMode.value === "AREA_SELECTED"
+    return editMode.value === "AREA_SELECTED";
   }
 
   function isSelectionMode() {
-    return editMode.value === "AREA_SELECTING" || editMode.value === "AREA_MOVING";
+    return (
+      editMode.value === "AREA_SELECTING" || editMode.value === "AREA_MOVING"
+    );
   }
 
   function isSelectedMode() {
@@ -177,7 +178,7 @@ export const useEditModeStore = defineStore("editMode", () => {
   }
 
   function isTextStartedMode() {
-    return editMode.value === "TEXT_STARTED" ;
+    return editMode.value === "TEXT_STARTED";
   }
 
   function isTextSelectedMode() {
@@ -199,7 +200,6 @@ export const useEditModeStore = defineStore("editMode", () => {
   function isAnnotationWritingMode() {
     return editMode.value === "ANNOTATION_WRITING";
   }
-
 
   function isExponentStartedMode() {
     return editMode.value === "EXPONENT_STARTED";
@@ -254,9 +254,9 @@ export const useEditModeStore = defineStore("editMode", () => {
         return setEditMode("TEXT_WRITING");
 
       case "ANNOTATION_STARTED":
-        return setEditMode("ANNOTATION_AREA_SELECTING");
-      case "ANNOTATION_AREA_SELECTING":
         return setEditMode("ANNOTATION_WRITING");
+      //      case "ANNOTATION_AREA_SELECTING":
+      //        return setEditMode("ANNOTATION_WRITING");
 
       case "EXPONENT_STARTED":
         return setEditMode("EXPONENT_WRITING");

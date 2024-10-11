@@ -2,10 +2,12 @@
   <input
     v-show="show"
     class="annotation"
+    maxlength="4"
     v-bind:style="{
-      top: textTop + 'px',
-      left: textLeft + 'px',
-      width: textWidth + 'px',
+      top: annotationTop + 'px',
+      left: annotationLeft + 'px',
+      width: annotationWidth + 'px',
+      height: annotationHeight + 'px',
     }"
     id="annotationEl"
     v-model="annotaionValue"
@@ -16,20 +18,17 @@
 import { computed, ref } from "vue";
 import { useCellStore } from "../store/pinia/cellStore";
 import { useEditModeStore } from "../store/pinia/editModeStore";
-import { RectNotationAttributes } from "../../../math-common/build/baseTypes";
+import { PointNotationAttributes } from "../../../math-common/build/baseTypes";
 import { cellSpace } from "../../../math-common/src/globals";
-import { EditMode } from "../../../math-common/src/unions";
 import useNotationMutateHelper from "../helpers/notationMutateHelper";
 import usescreenHelper from "../helpers/screenHelper";
 import useWatchHelper from "../helpers/watchHelper";
-import useEventBus from "../helpers/eventBusHelper";
 
 const notationMutateHelper = useNotationMutateHelper();
 const watchHelper = useWatchHelper();
 let annotaionValue = ref("");
 
 const cellStore = useCellStore();
-const eventBus = useEventBus();
 const emit = defineEmits(["hide"]);
 const editModeStore = useEditModeStore();
 
@@ -39,11 +38,32 @@ const show = computed(
   () => editModeStore.getEditMode() === "ANNOTATION_WRITING",
 );
 
-let selectedNotation: RectNotationAttributes | null = null;
+const annotationTop = computed(
+  () =>
+    cellStore.getSvgBoundingRect().y +
+    window.scrollY +
+    annotationCell.value.row * (cellStore.getCellVerticalHeight() + cellSpace) -
+    1,
+);
 
-let textTop = ref(0);
-let textLeft = ref(0);
-let textWidth = 25;
+const annotationLeft = computed(
+  () =>
+    cellStore.getSvgBoundingRect().x +
+    window.scrollX +
+    annotationCell.value.col *
+      (cellStore.getCellHorizontalWidth() + cellSpace) -
+    1,
+);
+
+const annotationWidth = computed(() => cellStore.getCellHorizontalWidth() + 2);
+
+const annotationHeight = computed(
+  () => cellStore.getCellVerticalHeight() / 2 + 2,
+);
+
+let selectedNotation: PointNotationAttributes | null = null;
+
+let annotationCell = ref({ col: 10, row: 10 });
 
 watchHelper.watchEndOfEditMode("ANNOTATION_WRITING", submitText);
 
@@ -75,21 +95,21 @@ watchHelper.watchNotationSelection(
 function startTextEditing(e: MouseEvent) {
   editModeStore.setNextEditMode();
   setInitialTextValue();
-  textLeft.value = e.pageX;
-  textTop.value = e.pageY;
+  annotationCell.value = screenHelper.getClickedCell({
+    x: e.pageX,
+    y: e.pageY,
+  });
   setTimeout('document.getElementById("annotationEl").focus()', 100);
 }
 
-function editSelectedAnnotation(textNotation: RectNotationAttributes) {
+function editSelectedAnnotation(annotation: PointNotationAttributes) {
   editModeStore.setEditMode("ANNOTATION_WRITING");
 
-  selectedNotation = textNotation;
+  selectedNotation = annotation;
 
   setInitialTextValue();
 
-  setInitialTextDimensions(textNotation);
-
-  hideTextNotation(textNotation.uuid);
+  hideTextNotation(annotation.uuid);
 
   const textEl = document.getElementById(
     "annotationEl",
@@ -101,24 +121,19 @@ function editSelectedAnnotation(textNotation: RectNotationAttributes) {
 }
 
 // set text area dimensions upon notation selection
-function setInitialTextDimensions(textNotation: RectNotationAttributes) {
-  textLeft.value =
-    cellStore.getSvgBoundingRect().x +
-    window.scrollX +
-    textNotation.fromCol * (cellStore.getCellHorizontalWidth() + cellSpace) -
-    cellSpace;
+// function setInitialTextDimensions(annotation: PointNotationAttributes) {
+//   textLeft.value =
+//     cellStore.getSvgBoundingRect().x +
+//     window.scrollX +
+//     annotation.col * (cellStore.getCellHorizontalWidth() + cellSpace) -
+//     cellSpace;
 
-  textTop.value =
-    cellStore.getSvgBoundingRect().y +
-    window.scrollY +
-    textNotation.fromRow * (cellStore.getCellVerticalHeight() + cellSpace) -
-    cellSpace;
-
-  // textWidth.value =
-  //   (textNotation.toCol - textNotation.fromCol + 1) *
-  //     (cellStore.getCellHorizontalWidth() + cellSpace) -
-  //   cellSpace;
-}
+//   textTop.value =
+//     cellStore.getSvgBoundingRect().y +
+//     window.scrollY +
+//     annotation.row * (cellStore.getCellVerticalHeight() + cellSpace) -
+//     cellSpace;
+// }
 
 function setInitialTextValue() {
   annotaionValue.value = "";
@@ -130,31 +145,31 @@ function setInitialTextValue() {
 function submitText() {
   editModeStore.setNextEditMode();
 
-  const annotationEl = document.getElementById("annotationEl")!;
+  //const annotationEl = document.getElementById("annotationEl")!;
 
-  textLeft.value = parseInt(annotationEl.style.left.replace("px", ""));
-  textTop.value = parseInt(annotationEl.style.top.replace("px", ""));
+  //textLeft.value = parseInt(annotationEl.style.left.replace("px", ""));
+  //textTop.value = parseInt(annotationEl.style.top.replace("px", ""));
 
-  const lineCoordinates = screenHelper.getLineAttributes({
-    x1: textLeft.value + window.scrollX - cellStore.getSvgBoundingRect().x,
-    x2:
-      textLeft.value +
-      textWidth +
-      window.scrollX -
-      cellStore.getSvgBoundingRect().x,
-    y: textTop.value + window.scrollY - cellStore.getSvgBoundingRect().y,
-  });
+  // const cellCoordinates = screenHelper.get LineAttributes({
+  //   x1: textLeft.value + window.scrollX - cellStore.getSvgBoundingRect().x,
+  //   x2:
+  //     textLeft.value +
+  //     textWidth +
+  //     window.scrollX -
+  //     cellStore.getSvgBoundingRect().x,
+  //   y: textTop.value + window.scrollY - cellStore.getSvgBoundingRect().y,
+  // });
 
-  if (selectedNotation && lineCoordinates) {
+  if (selectedNotation) {
     selectedNotation.value = annotaionValue.value;
-    selectedNotation = Object.assign(selectedNotation, lineCoordinates);
+    //selectedNotation = Object.assign(selectedNotation, lineCoordinates);
 
     notationMutateHelper.updateNotation(selectedNotation);
     restoreTextNotation(selectedNotation?.uuid);
   } else {
     notationMutateHelper.upsertAnnotationNotation(
       annotaionValue.value,
-      lineCoordinates,
+      annotationCell.value,
     );
   }
 }
@@ -180,17 +195,16 @@ function endEditingByEnterKey(e: KeyboardEvent) {
 }
 </script>
 <style>
-textarea {
-  resize: both;
-}
 .annotation {
   background-color: lightyellow;
   position: absolute;
-  padding: 5px;
-  box-sizing: border-box;
-  font-size: small;
-  height: 10px;
+  padding: 1px;
+  font-size: xx-small;
 }
+input:focus {
+  outline-width: 1px;
+}
+
 .hidden {
   display: none;
 }

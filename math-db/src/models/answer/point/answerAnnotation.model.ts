@@ -4,18 +4,18 @@ import { NotationType, BoardType } from "../../../../../math-common/src/unions";
 import User  from "../../user.model";
 import Answer from "../../answer/answer.model";
 import {
-    AnswerHorizontalLineAttributes,
-    AnswerHorizontalLineCreationAttributes,
+    AnswerPointAttributes,
+    AnswerPointCreationAttributes,
 } from "../../../../../math-common/src/answerTypes";
 
         
 @AnswerDecorator("AnswerAnnotation")
 export default class AnswerAnnotation extends Model<
-    AnswerHorizontalLineAttributes,
-    AnswerHorizontalLineCreationAttributes
+    AnswerPointAttributes,
+    AnswerPointCreationAttributes
 > {
-    notationType : NotationType = "ANNOTATION";
-    boardType : BoardType = "ANSWER";
+    notationType: NotationType = "ANNOTATION";
+    boardType: BoardType = "ANSWER";
 
     @AllowNull(false)
     @Column({ type: DataType.UUID, defaultValue: DataType.UUIDV4 })
@@ -43,11 +43,7 @@ export default class AnswerAnnotation extends Model<
 
     @AllowNull(false)
     @Column({ type: DataType.INTEGER })
-    fromCol!: number;
-
-    @AllowNull(false)
-    @Column({ type: DataType.INTEGER })
-    toCol!: number;
+    col!: number;
 
     @AllowNull(false)
     @Column({ type: DataType.INTEGER })

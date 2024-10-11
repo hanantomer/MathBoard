@@ -159,17 +159,17 @@ watchHelper.watchMouseEvent(
   () => editModeStore.setNextEditMode()
 );
 
-watchHelper.watchMouseEvent(
-  ["TEXT_AREA_SELECTING", "ANNOTATION_AREA_SELECTING"],
-  "EV_SVG_MOUSEMOVE",
-  updateSelectionArea,
-);
+// watchHelper.watchMouseEvent(
+//   ["TEXT_AREA_SELECTING", "ANNOTATION_AREA_SELECTING"],
+//   "EV_SVG_MOUSEMOVE",
+//   updateSelectionArea,
+// );
 
-watchHelper.watchMouseEvent(
-  ["TEXT_AREA_SELECTING", "ANNOTATION_AREA_SELECTING"],
-  "EV_SVG_MOUSEUP",
-  signalSelection,
-);
+// watchHelper.watchMouseEvent(
+//   ["TEXT_AREA_SELECTING", "ANNOTATION_AREA_SELECTING"],
+//   "EV_SVG_MOUSEUP",
+//   signalSelection,
+// );
 
 // event handlers
 
@@ -252,9 +252,10 @@ function updateSelectionArea(e: MouseEvent) {
 
   selectionPosition.value.bottomRight.x = e.pageX;
   selectionPosition.value.bottomRight.y =
-    editModeStore.getEditMode() === "ANNOTATION_AREA_SELECTING"
-      ? selectionPosition.value.topLeft.y + 20
-      : e.pageY;
+    // editModeStore.getEditMode() === "ANNOTATION_AREA_SELECTING"
+    //   ? selectionPosition.value.topLeft.y + 20
+    //   :
+      e.pageY;
   cellStore.resetSelectedCell();
 }
 

@@ -4,15 +4,15 @@ import { NotationType, BoardType } from "../../../../../math-common/src/unions";
 import User  from "../../user.model";
 import Lesson from "../../lesson/lesson.model";
 import {
-    LessonHorizontalLineAttributes,
-    LessonHorizontalLineCreationAttributes,
+    LessonPointAttributes,
+    LessonPointCreationAttributes,
 } from "../../../../../math-common/src/lessonTypes";
 
         
 @LessonDecorator("LessonAnnotation")
 export default class LessonAnnotation extends Model<
-    LessonHorizontalLineAttributes,
-    LessonHorizontalLineCreationAttributes
+    LessonPointAttributes,
+    LessonPointCreationAttributes
 > {
     notationType: NotationType = "ANNOTATION";
     boardType: BoardType = "LESSON";
@@ -43,11 +43,7 @@ export default class LessonAnnotation extends Model<
 
     @AllowNull(false)
     @Column({ type: DataType.INTEGER })
-    fromCol!: number;
-
-    @AllowNull(false)
-    @Column({ type: DataType.INTEGER })
-    toCol!: number;
+    col!: number;
 
     @AllowNull(false)
     @Column({ type: DataType.INTEGER })

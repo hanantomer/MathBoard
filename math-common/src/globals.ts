@@ -8,8 +8,8 @@ export const signList = ["=", "+", "-", "*", "/", "\\", "(", ")", "[", "]"];
 export const selectedCellStroke = "red";
 export const defaultdCellStroke = "lightgray";
 export const heartBeatInterval = 5000;
-export const annotationHeight = 15;
-export const annotationWidth = 30;
+//export const annotationHeight = 15;
+//export const annotationWidth = 30;
 
 export function getDefaultFontSize() : number {
   var style  = 

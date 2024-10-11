@@ -4,18 +4,18 @@ import { NotationType, BoardType } from "../../../../../math-common/src/unions";
 import User  from "../../user.model";
 import Question from "../../question/question.model";
 import {
-    QuestionHorizontalLineAttributes,
-    QuestionHorizontalLineCreationAttributes,
+    QuestionPointAttributes,
+    QuestionPointCreationAttributes,
 } from "../../../../../math-common/src/questionTypes";
 
         
 @QuestionDecorator("QuestionAnnotation")
 export default class QuestionAnnotation extends Model<
-    QuestionHorizontalLineAttributes,
-    QuestionHorizontalLineCreationAttributes
+    QuestionPointAttributes,
+    QuestionPointCreationAttributes
 > {
-    notationType : NotationType = "ANNOTATION";
-    boardType : BoardType = "LESSON";
+    notationType: NotationType = "ANNOTATION";
+    boardType: BoardType = "LESSON";
 
     @AllowNull(false)
     @Column({ type: DataType.UUID, defaultValue: DataType.UUIDV4 })
@@ -43,11 +43,7 @@ export default class QuestionAnnotation extends Model<
 
     @AllowNull(false)
     @Column({ type: DataType.INTEGER })
-    fromCol!: number;
-
-    @AllowNull(false)
-    @Column({ type: DataType.INTEGER })
-    toCol!: number;
+    col!: number;
 
     @AllowNull(false)
     @Column({ type: DataType.INTEGER })
