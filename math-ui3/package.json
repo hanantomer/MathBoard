@@ -34,7 +34,7 @@
     "vue-cookies": "^1.8.3",
     "vue-router": "^4.0.13",
     "vue3-cookies": "^1.0.6",
-    "vuetify": "^3.7.1",
+    "vuetify": "^3.7.2",
     "webfontloader": "^1.0.0"
   },
   "devDependencies": {

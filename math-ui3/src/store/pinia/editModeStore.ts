@@ -12,7 +12,6 @@ export const useEditModeStore = defineStore("editMode", () => {
       editMode.value === "AREA_SELECTING" ||
       editMode.value === "AREA_SELECTED" ||
       editMode.value === "TEXT_AREA_SELECTING" ||
-      //      editMode.value === "ANNOTATION_AREA_SELECTING" ||
       editMode.value === "AREA_MOVING"
     );
   }
@@ -225,8 +224,8 @@ export const useEditModeStore = defineStore("editMode", () => {
     );
   }
 
-  function isColorisingMode() {
-    return editMode.value === "COLORISING";
+  function isColorizingMode() {
+    return editMode.value === "COLORIZING";
   }
 
   function getEditMode(): EditMode {
@@ -339,7 +338,7 @@ export const useEditModeStore = defineStore("editMode", () => {
     isSqrtMode,
     isSqrtEditMode,
     isSqrtSelectedMode,
-    isColorisingMode,
+    isColorizingMode,
     isDefaultEditMode,
     isTextWritingMode,
     isTextStartedMode,

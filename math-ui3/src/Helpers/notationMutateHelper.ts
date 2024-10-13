@@ -931,6 +931,9 @@ export default function notationMutateHelper() {
       case "VERTICAL_LINE":
       case "SLOPE_LINE":
         return upsertLineNotation(clonedNotation);
+      case "CONVEX_CURVE":
+      case "CONCAVE_CURVE":
+        return upsertCurveNotation(clonedNotation);
       case "POINT":
         return upsertPointNotation(clonedNotation);
       case "RECT":

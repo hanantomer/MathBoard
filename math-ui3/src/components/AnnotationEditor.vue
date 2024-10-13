@@ -42,7 +42,8 @@ const annotationTop = computed(
   () =>
     cellStore.getSvgBoundingRect().y +
     window.scrollY +
-    annotationCell.value.row * (cellStore.getCellVerticalHeight() + cellSpace) -
+    (annotationCell.value.row + 0.2) *
+      (cellStore.getCellVerticalHeight() + cellSpace) -
     1,
 );
 

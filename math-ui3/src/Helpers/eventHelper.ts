@@ -16,8 +16,10 @@ import {
   HorizontalLineNotationAttributes,
   VerticalLineNotationAttributes,
   SlopeLineNotationAttributes,
+  CurveNotationAttributes
 } from "common/baseTypes";
 import { NotationTypeShape } from "common/unions";
+import { cellSpace } from "common/globals";
 
 const userStore = useUserStore();
 const editModeStore = useEditModeStore();
@@ -133,6 +135,28 @@ export default function eventHelper() {
           n1.toRow = n1.fromRow + rectHeight;
           notationMutationHelper.cloneNotation(n1);
 
+          break;
+        }
+
+        case "CONVEX_CURVE":
+        case "CONCAVE_CURVE": {
+          let n1 = { ...n } as CurveNotationAttributes;
+
+          const deltaX =
+            selectedCell.col * (cellStore.getCellHorizontalWidth() + cellSpace) -
+            n1.p1x;
+
+          const deltaY =
+            selectedCell.row *
+              (cellStore.getCellVerticalHeight() + cellSpace) -
+            n1.p1y;
+
+          n1.p1x += deltaX;
+          n1.p2x += deltaX;
+          n1.p1y += deltaY;
+          n1.p2y += deltaY;
+
+          notationMutationHelper.cloneNotation(n1);
           break;
         }
       }

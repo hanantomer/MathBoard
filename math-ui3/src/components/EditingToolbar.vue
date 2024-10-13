@@ -61,12 +61,24 @@
 </template>
 
 <script setup lang="ts">
-import { watch, ref } from "vue";
+import { ref } from "vue";
 import useEventBus from "../helpers/eventBusHelper";
+import useWatchHelper from "../helpers/watchHelper";
+import useMatrixCellHelper from "../helpers/matrixCellHelper";
+import useScreenHelper from "../helpers/screenHelper";
+import useUserOutgoingOperationsHelper from "../helpers/userOutgoingOperationsHelper";
 import { useEditModeStore } from "../store/pinia/editModeStore";
+import { useCellStore } from "../store/pinia/cellStore";
+import { useNotationStore } from "../store/pinia/notationStore";
 
 const eventBus = useEventBus();
+const watchHelper = useWatchHelper();
+const matrixCellHelper = useMatrixCellHelper();
+const screenHelper = useScreenHelper();
+const userOutgoingOperationsHelper = useUserOutgoingOperationsHelper();
 const editModeStore = useEditModeStore();
+const cellStore = useCellStore();
+const notationStore = useNotationStore();
 
 let blueButtonActive = ref(1);
 let greenButtonActive = ref(1);
@@ -76,80 +88,79 @@ let transparentButtonActive = ref(1);
 type CellColor = "lightblue" | "lightgreen" | "pink" | "transparent" | "none";
 let cellColor: CellColor = "none";
 
-watch(
-  () => eventBus.get("SYMBOL", "EV_SVG_MOUSEMOVE"),
-  (e: MouseEvent) => {
-    handleMouseMove(e);
-  },
+watchHelper.watchMouseEvent(
+  ["COLORIZING"],
+  "EV_SVG_MOUSEMOVE",
+  colorizeCellByMouseMove,
 );
 
-watch(
-  () => eventBus.get("SYMBOL", "EV_SVG_MOUSEUP"),
-  (e: MouseEvent) => {
-    handleMouseUp(e);
-  },
+watchHelper.watchMouseEvent(["COLORIZING"], "EV_SVG_MOUSEUP", resetButtonsState);
+
+watchHelper.watchMouseEvent(
+  ["COLORIZING"],
+  "EV_SVG_MOUSEDOWN",
+  colorizeCellByMouseClick,
 );
 
-watch(
-  () => eventBus.get("SYMBOL", "EV_SVG_MOUSEDOWN"),
-  (e: MouseEvent) => {
-    handleMouseDown(e);
-  },
-);
-
-function handleMouseUp(e: MouseEvent) {
+function colorizeCellByMouseClick(e: MouseEvent) {
   if (cellColor === "none") return;
-  resetButtonsState();
+  colorizeCell(e, cellColor)
+  editModeStore.setDefaultEditMode();
 }
 
-function handleMouseDown(e: MouseEvent) {
-  if (cellColor === "none") return;
-  eventBus.emit("EV_CELL_COLORIZED", {
-    pageX: e.pageX,
-    pageY: e.pageY,
-    cellColor,
-  });
-}
-
-function handleMouseMove(e: MouseEvent) {
+function colorizeCellByMouseMove(e: MouseEvent) {
   if (cellColor === "none") return;
   if (e.buttons !== 1) return;
-  eventBus.emit("EV_CELL_COLORIZED", {
-    pageX: e.pageX,
-    pageY: e.pageY,
-    cellColor,
+  colorizeCell(e, cellColor)
+}
+
+function colorizeCell(e: MouseEvent, cellColor: string) {
+  const clickedCell = screenHelper.getClickedCell({
+    x: e.pageX,
+    y: e.pageY,
   });
+
+  matrixCellHelper.colorizeCell(cellStore.getSvgId()!, clickedCell, cellColor);
+
+  userOutgoingOperationsHelper.syncOutgoingColorizedCell(
+    clickedCell,
+    notationStore.getParent().uuid,
+    cellColor,
+  );
+
+  cellStore.resetSelectedCell();
 }
 
 function startBlueMode() {
   resetButtonsState();
-  editModeStore.setEditMode("COLORISING");
+  editModeStore.setEditMode("COLORIZING");
   blueButtonActive.value = 0;
   cellColor = "lightblue";
 }
 
 function startGreenMode() {
   resetButtonsState();
-  editModeStore.setEditMode("COLORISING");
+  editModeStore.setEditMode("COLORIZING");
   greenButtonActive.value = 0;
   cellColor = "lightgreen";
 }
 
 function startPurpleMode() {
   resetButtonsState();
-  editModeStore.setEditMode("COLORISING");
+  editModeStore.setEditMode("COLORIZING");
   purpleButtonActive.value = 0;
   cellColor = "pink";
 }
 
 function startUncolorizeMode() {
   resetButtonsState();
-  editModeStore.setEditMode("COLORISING");
+  editModeStore.setEditMode("COLORIZING");
   transparentButtonActive.value = 0;
   cellColor = "transparent";
 }
 
 function resetButtonsState() {
+  if (cellColor === "none") return;
   cellColor = "none";
   blueButtonActive.value = 1;
   greenButtonActive.value = 1;

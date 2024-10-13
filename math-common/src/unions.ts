@@ -121,7 +121,7 @@ export type EditMode =
   "SQRT_STARTED"              | // sqrt button pressed
   "SQRT_DRAWING"              | // sqrt drawing started
   "SQRT_SELECTED"             | // sqrt selected  
-  "COLORISING"                | // color selected
+  "COLORIZING"                | // color selected
   "DELETING"                  | // mouse clicked following delete button pressed
   "AREA_SELECTING"            | // user started selecting area
   "AREA_SELECTED"             | // user finished selecting area
@@ -159,7 +159,7 @@ export type EditMode =
     ["SQRT_STARTED", "SQRT"],                     
     ["SQRT_DRAWING", "SQRT"],             
     ["SQRT_SELECTED", "SQRT"],            
-    ["COLORISING", "SYMBOL"],               
+    ["COLORIZING", "SYMBOL"],               
     ["DELETING", "SYMBOL"],                 
     ["AREA_SELECTING", "SYMBOL"],           
     ["AREA_SELECTED", "SYMBOL"],            
@@ -193,7 +193,7 @@ export type EditMode =
   ["SQRT_STARTED", "auto"],                     
   ["SQRT_DRAWING", "auto"],             
   ["SQRT_SELECTED", "auto"],            
-  ["COLORISING", "auto"],               
+  ["COLORIZING", "auto"],               
   ["DELETING", "auto"],                 
   ["AREA_SELECTING", "auto"],           
   ["AREA_SELECTED", "auto"],            

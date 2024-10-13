@@ -136,11 +136,9 @@ watchHelper.watchEveryEditMode(
 
 watchHelper.watchSelectedCell(props.svgId);
 
-watchHelper.watchCustomEvent("SYMBOL", "EV_CELL_COLORIZED", colorizeCell);
-
 watchHelper.watchCustomEvent("SYMBOL", "EV_COPY", () => {
   eventHelper.copy();
-  eventBus.remove("EV_COPY", "SYMBOL"); // clean copy buffer
+  //  eventBus.remove("EV_COPY", "SYMBOL"); // clean copy buffer
 });
 
 watchHelper.watchCustomEvent("SYMBOL", "EV_PASTE", (e: ClipboardEvent) => {

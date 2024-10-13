@@ -42,7 +42,7 @@ const selectionHelper = useSelectionHelper();
 // variables
 
 let mouseOverSelectionArea: boolean = false;
-let mouseLeftSelectionArea: boolean = false;
+let mouseLeftSelectionArea: boolean = true;
 
 let selectionPosition = ref<RectCoordinates>({
   topLeft: { x: 0, y: 0 },
@@ -145,7 +145,7 @@ watchHelper.watchMouseEvent(
   cancelSelectionWhenUserClickedOutside,
 );
 
-// free text and annotation watchers
+// free text watchers
 
 watchHelper.watchMouseEvent(
   ["TEXT_STARTED"],
@@ -153,10 +153,8 @@ watchHelper.watchMouseEvent(
   cancelSelectionWhenUserClickedOutside /*takes action when clicked outside of selection area*/,
 );
 
-watchHelper.watchMouseEvent(
-  ["TEXT_STARTED"],
-  "EV_SVG_MOUSEDOWN",
-  () => editModeStore.setNextEditMode()
+watchHelper.watchMouseEvent(["TEXT_STARTED"], "EV_SVG_MOUSEDOWN", () =>
+  editModeStore.setNextEditMode(),
 );
 
 // watchHelper.watchMouseEvent(
@@ -251,11 +249,7 @@ function updateSelectionArea(e: MouseEvent) {
   }
 
   selectionPosition.value.bottomRight.x = e.pageX;
-  selectionPosition.value.bottomRight.y =
-    // editModeStore.getEditMode() === "ANNOTATION_AREA_SELECTING"
-    //   ? selectionPosition.value.topLeft.y + 20
-    //   :
-      e.pageY;
+  selectionPosition.value.bottomRight.y = e.pageY;
   cellStore.resetSelectedCell();
 }
 
