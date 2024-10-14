@@ -1,7 +1,6 @@
 <template>
   <input
     v-show="show"
-    class="annotation"
     maxlength="4"
     v-bind:style="{
       top: annotationTop + 'px',
@@ -26,13 +25,11 @@ import useWatchHelper from "../helpers/watchHelper";
 
 const notationMutateHelper = useNotationMutateHelper();
 const watchHelper = useWatchHelper();
-let annotaionValue = ref("");
-
 const cellStore = useCellStore();
-const emit = defineEmits(["hide"]);
 const editModeStore = useEditModeStore();
-
 const screenHelper = usescreenHelper();
+
+let annotaionValue = ref("");
 
 const show = computed(
   () => editModeStore.getEditMode() === "ANNOTATION_WRITING",
@@ -64,14 +61,20 @@ const annotationHeight = computed(
 
 let selectedNotation: PointNotationAttributes | null = null;
 
-let annotationCell = ref({ col: 10, row: 10 });
+let annotationCell = ref({ col: 0, row: 0 });
 
 watchHelper.watchEndOfEditMode("ANNOTATION_WRITING", submitText);
 
 watchHelper.watchMouseEvent(
-  ["ANNOTATION_STARTED"],
+  ["ANNOTATION_STARTED", "ANNOTATION_SELECTED"],
   "EV_SVG_MOUSEDOWN",
-  startTextEditing,
+  startTextEditingAtMousePosition,
+);
+
+watchHelper.watchEditModeTransition(
+  "CELL_SELECTED",
+  "ANNOTATION_STARTED",
+  startTextEditingAtSelectedCell,
 );
 
 watchHelper.watchKeyEvent(
@@ -93,13 +96,22 @@ watchHelper.watchNotationSelection(
   editSelectedAnnotation,
 );
 
-function startTextEditing(e: MouseEvent) {
-  editModeStore.setNextEditMode();
-  setInitialTextValue();
+function startTextEditingAtMousePosition(e: MouseEvent) {
   annotationCell.value = screenHelper.getClickedCell({
     x: e.pageX,
     y: e.pageY,
   });
+  startTextEditing();
+}
+
+function startTextEditingAtSelectedCell() {
+  annotationCell.value = cellStore.getSelectedCell();
+  startTextEditing();
+}
+
+function startTextEditing() {
+  editModeStore.setNextEditMode();
+  setInitialTextValue();
   setTimeout('document.getElementById("annotationEl").focus()', 100);
 }
 
@@ -107,6 +119,8 @@ function editSelectedAnnotation(annotation: PointNotationAttributes) {
   editModeStore.setEditMode("ANNOTATION_WRITING");
 
   selectedNotation = annotation;
+
+  annotationCell.value = { ...annotation };
 
   setInitialTextValue();
 
@@ -146,21 +160,6 @@ function setInitialTextValue() {
 function submitText() {
   editModeStore.setNextEditMode();
 
-  //const annotationEl = document.getElementById("annotationEl")!;
-
-  //textLeft.value = parseInt(annotationEl.style.left.replace("px", ""));
-  //textTop.value = parseInt(annotationEl.style.top.replace("px", ""));
-
-  // const cellCoordinates = screenHelper.get LineAttributes({
-  //   x1: textLeft.value + window.scrollX - cellStore.getSvgBoundingRect().x,
-  //   x2:
-  //     textLeft.value +
-  //     textWidth +
-  //     window.scrollX -
-  //     cellStore.getSvgBoundingRect().x,
-  //   y: textTop.value + window.scrollY - cellStore.getSvgBoundingRect().y,
-  // });
-
   if (selectedNotation) {
     selectedNotation.value = annotaionValue.value;
     //selectedNotation = Object.assign(selectedNotation, lineCoordinates);
@@ -196,14 +195,13 @@ function endEditingByEnterKey(e: KeyboardEvent) {
 }
 </script>
 <style>
-.annotation {
+input {
+  border: none;
+  outline: none;
   background-color: lightyellow;
   position: absolute;
-  padding: 1px;
-  font-size: xx-small;
-}
-input:focus {
-  outline-width: 1px;
+  padding: 0px;
+  font-size: 0.5em;
 }
 
 .hidden {

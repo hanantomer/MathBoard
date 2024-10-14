@@ -263,7 +263,7 @@ function endSelect() {
       selectionPosition.value.topLeft.y - selectionPosition.value.bottomRight.y,
     ) < 5
   ) {
-    selectionHelper.selectCell({
+    selectionHelper.setSelectedCell({
       x: selectionPosition.value.topLeft.x,
       y: selectionPosition.value.topLeft.y,
     });

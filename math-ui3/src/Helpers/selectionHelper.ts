@@ -154,13 +154,13 @@ export default function selectionHelper() {
     }
   }
 
-  async function selectCell(position: DotCoordinates) {
+  async function setSelectedCell(position: DotCoordinates) {
     const notationStore = useNotationStore();
     let clickedCell = screenHelper.getClickedCell(position);
 
     if (!clickedCell) return;
 
-    cellStore.selectCell(clickedCell!);
+    cellStore.setSelectedCell(clickedCell!);
 
     //if (!editModeStore.isCheckMode()) {
     //  editModeStore.setEditMode("CELL_SELECTED");
@@ -177,6 +177,6 @@ export default function selectionHelper() {
   return {
     selectNotationAtPosition,
     selectNotationsOfArea,
-    selectCell,
+    setSelectedCell,
   };
 }

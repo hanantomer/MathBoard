@@ -69,7 +69,7 @@ export default function useHtmlMatrixHelper() {
   function setNextCell(horizontalStep: number, verticalStep: number) {
     let nextCell = getNextCell(horizontalStep, verticalStep);
     if (nextCell) {
-      cellStore.selectCell(nextCell);
+      cellStore.setSelectedCell(nextCell);
     }
   }
 

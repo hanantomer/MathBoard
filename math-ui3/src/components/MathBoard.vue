@@ -161,7 +161,6 @@ async function load() {
   eventHelper.registerCopy();
 
   pBar.value = true;
-
   toolbarKey.value++; // refreash toolbar
 
   try {
@@ -196,26 +195,11 @@ async function load() {
 function selectClickedPosition(e: MouseEvent) {
   const position = { x: e.pageX, y: e.pageY };
   if (!selectionHelper.selectNotationAtPosition(position)) {
-    selectionHelper.selectCell(position);
+    selectionHelper.setSelectedCell(position);
   }
 }
 
-function colorizeCell(params: any) {
-  const clickedCell = screenHelper.getClickedCell({
-    x: params.pageX,
-    y: params.pageY,
-  });
 
-  matrixCellHelper.colorizeCell(props.svgId, clickedCell, params.cellColor);
-
-  userOutgoingOperations.syncOutgoingColorizedCell(
-    clickedCell,
-    notationStore.getParent().uuid,
-    params.cellColor,
-  );
-
-  cellStore.resetSelectedCell();
-}
 </script>
 
 <style>

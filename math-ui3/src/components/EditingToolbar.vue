@@ -90,28 +90,34 @@ let cellColor: CellColor = "none";
 
 watchHelper.watchMouseEvent(
   ["COLORIZING"],
+  "EV_SVG_MOUSEDOWN",
+  colorizeCellByMouseDown,
+);
+
+watchHelper.watchMouseEvent(
+  ["COLORIZING"],
   "EV_SVG_MOUSEMOVE",
   colorizeCellByMouseMove,
 );
 
-watchHelper.watchMouseEvent(["COLORIZING"], "EV_SVG_MOUSEUP", resetButtonsState);
-
 watchHelper.watchMouseEvent(
   ["COLORIZING"],
-  "EV_SVG_MOUSEDOWN",
-  colorizeCellByMouseClick,
+  "EV_SVG_MOUSEUP",
+  resetButtonsState,
 );
 
-function colorizeCellByMouseClick(e: MouseEvent) {
+
+function colorizeCellByMouseDown(e: MouseEvent) {
   if (cellColor === "none") return;
-  colorizeCell(e, cellColor)
-  editModeStore.setDefaultEditMode();
+  colorizeCell(e, cellColor);
+  //resetButtonsState();
+  //editModeStore.setDefaultEditMode();
 }
 
 function colorizeCellByMouseMove(e: MouseEvent) {
   if (cellColor === "none") return;
   if (e.buttons !== 1) return;
-  colorizeCell(e, cellColor)
+  colorizeCell(e, cellColor);
 }
 
 function colorizeCell(e: MouseEvent, cellColor: string) {

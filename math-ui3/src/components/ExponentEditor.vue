@@ -50,8 +50,6 @@ let selectedNotation: ExponentNotationAttributes | null = null;
 let exponentLeft = ref(0);
 let exponentTop = ref(0);
 
-
-
 const show = computed(() => editModeStore.getEditMode() === "EXPONENT_WRITING");
 
 
@@ -121,7 +119,7 @@ function startNewExponentAtMousePosition(e: MouseEvent) {
 
   editModeStore.setNextEditMode();
 
-  selectionHelper.selectCell({
+  selectionHelper.setSelectedCell({
     x: e.pageX,
     y: e.pageY,
   });

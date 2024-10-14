@@ -43,7 +43,7 @@ export const useCellStore = defineStore("cell", () => {
     return selectedCell.value;
   }
 
-  function selectCell(newSelectedCell: CellAttributes) {
+  function setSelectedCell(newSelectedCell: CellAttributes) {
     selectedCell.value = newSelectedCell;
     editModeStore.setEditMode("CELL_SELECTED");
   }
@@ -74,7 +74,7 @@ export const useCellStore = defineStore("cell", () => {
     getSelectedCell,
     getCellHorizontalWidth,
     getCellVerticalHeight,
-    selectCell,
+    setSelectedCell,
     setCellVerticalHeight,
     resetSelectedCell,
   };
