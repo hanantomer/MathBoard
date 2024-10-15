@@ -53,7 +53,7 @@ const annotationLeft = computed(
     1,
 );
 
-const annotationWidth = computed(() => cellStore.getCellHorizontalWidth() + 2);
+const annotationWidth = computed(() => cellStore.getCellHorizontalWidth());
 
 const annotationHeight = computed(
   () => cellStore.getCellVerticalHeight() / 2 + 2,
@@ -66,15 +66,9 @@ let annotationCell = ref({ col: 0, row: 0 });
 watchHelper.watchEndOfEditMode("ANNOTATION_WRITING", submitText);
 
 watchHelper.watchMouseEvent(
-  ["ANNOTATION_STARTED", "ANNOTATION_SELECTED"],
+  ["ANNOTATION_STARTED"],
   "EV_SVG_MOUSEDOWN",
-  startTextEditingAtMousePosition,
-);
-
-watchHelper.watchEditModeTransition(
-  "CELL_SELECTED",
-  "ANNOTATION_STARTED",
-  startTextEditingAtSelectedCell,
+  startTextEditing,
 );
 
 watchHelper.watchKeyEvent(
@@ -96,20 +90,12 @@ watchHelper.watchNotationSelection(
   editSelectedAnnotation,
 );
 
-function startTextEditingAtMousePosition(e: MouseEvent) {
+function startTextEditing(e: MouseEvent) {
   annotationCell.value = screenHelper.getClickedCell({
     x: e.pageX,
     y: e.pageY,
   });
-  startTextEditing();
-}
 
-function startTextEditingAtSelectedCell() {
-  annotationCell.value = cellStore.getSelectedCell();
-  startTextEditing();
-}
-
-function startTextEditing() {
   editModeStore.setNextEditMode();
   setInitialTextValue();
   setTimeout('document.getElementById("annotationEl").focus()', 100);
@@ -135,21 +121,6 @@ function editSelectedAnnotation(annotation: PointNotationAttributes) {
   }, 0);
 }
 
-// set text area dimensions upon notation selection
-// function setInitialTextDimensions(annotation: PointNotationAttributes) {
-//   textLeft.value =
-//     cellStore.getSvgBoundingRect().x +
-//     window.scrollX +
-//     annotation.col * (cellStore.getCellHorizontalWidth() + cellSpace) -
-//     cellSpace;
-
-//   textTop.value =
-//     cellStore.getSvgBoundingRect().y +
-//     window.scrollY +
-//     annotation.row * (cellStore.getCellVerticalHeight() + cellSpace) -
-//     cellSpace;
-// }
-
 function setInitialTextValue() {
   annotaionValue.value = "";
   if (selectedNotation?.value) {
@@ -162,8 +133,6 @@ function submitText() {
 
   if (selectedNotation) {
     selectedNotation.value = annotaionValue.value;
-    //selectedNotation = Object.assign(selectedNotation, lineCoordinates);
-
     notationMutateHelper.updateNotation(selectedNotation);
     restoreTextNotation(selectedNotation?.uuid);
   } else {

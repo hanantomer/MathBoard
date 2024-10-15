@@ -160,7 +160,7 @@ export default function selectionHelper() {
 
     if (!clickedCell) return;
 
-    cellStore.setSelectedCell(clickedCell!);
+    cellStore.setSelectedCell(clickedCell!, true);
 
     //if (!editModeStore.isCheckMode()) {
     //  editModeStore.setEditMode("CELL_SELECTED");

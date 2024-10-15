@@ -118,6 +118,7 @@ export default function () {
       () => eventBus.get(editMode, eventType),
       (notation: NotationAttributes) => {
         handler(notation);
+        eventBus.remove(eventType, editMode); // clear event from bus to allow reselction
       },
     );
   }
@@ -140,8 +141,6 @@ export default function () {
       if (data["loaded"]) handler(data["svgId"]);
     });
   }
-
-
 
   function watchNotationsEvent(svgId: string, handler: CustomEventHandler) {
     watch(

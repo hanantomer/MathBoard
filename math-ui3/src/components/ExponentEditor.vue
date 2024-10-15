@@ -8,7 +8,7 @@
     }"
   >
     <input
-      maxlength="4"
+      maxlength="3"
       autofocus
       id="baseInput"
       class="baseInput"
@@ -45,14 +45,11 @@ const screenHelper = useScreenHelper();
 const selectionHelper = useSelectionHelper();
 const watchHelper = useWatchHelper();
 
-
 let selectedNotation: ExponentNotationAttributes | null = null;
 let exponentLeft = ref(0);
 let exponentTop = ref(0);
 
 const show = computed(() => editModeStore.getEditMode() === "EXPONENT_WRITING");
-
-
 
 // user clicked on exponent icon and then clicked on a cell
 
@@ -69,13 +66,6 @@ watchHelper.watchMouseEvent(
   editModeStore.setNextEditMode,
 );
 
-// user selected a cell then clicked on exponent button
-watchHelper.watchEditModeTransition(
-  "CELL_SELECTED",
-  "EXPONENT_STARTED",
-  startNewExponentAtSelectedCell,
-);
-
 // user selected exponent notation
 watchHelper.watchNotationSelection(
   "SYMBOL",
@@ -90,12 +80,11 @@ watchHelper.watchEndOfEditMode("EXPONENT_WRITING", submitExponent);
 watchHelper.watchKeyEvent(
   ["EXPONENT_WRITING"],
   "EV_KEYUP",
-  endEditingByEnterKey
+  endEditingByEnterKey,
 );
 
 function selectExponent(exponentNotation: ExponentNotationAttributes) {
   if (!exponentNotation) return;
-  eventBus.remove("EV_EXPONENT_SELECTED", "SYMBOL");
 
   // first click -> select
   if (!editModeStore.isTextSelectedMode()) {
@@ -119,21 +108,13 @@ function startNewExponentAtMousePosition(e: MouseEvent) {
 
   editModeStore.setNextEditMode();
 
-  selectionHelper.setSelectedCell({
-    x: e.pageX,
-    y: e.pageY,
-  });
-
-  resetExponentValue();
-
-  setExponentPosition();
-
-  setTimeout(`document.getElementById("baseInput")?.focus();`, 0);
-}
-
-function startNewExponentAtSelectedCell() {
-
-  editModeStore.setNextEditMode();
+  cellStore.setSelectedCell(
+    screenHelper.getClickedCell({
+      x: e.pageX,
+      y: e.pageY,
+    }),
+    false,
+  );
 
   resetExponentValue();
 
@@ -146,6 +127,7 @@ function setExponentPosition() {
   const clickedCoordinates = screenHelper.getClickedCellTopLeftCoordinates(
     cellStore.getSelectedCell(),
   );
+
   exponentLeft.value = clickedCoordinates.x;
   exponentTop.value = clickedCoordinates.y;
 }
@@ -197,7 +179,6 @@ function submitExponent() {
     );
   }
 }
-
 </script>
 
 <style>
@@ -219,14 +200,13 @@ function submitExponent() {
   padding: 2px;
 }
 .exponentInput {
-  position: relative;
   bottom: 8px;
   border: 1px darkblue solid;
   height: 18px;
   width: 35px;
   font-size: 11px;
   margin-top: -0px;
-  margin-left: 1px;
+  margin-left: 37px;
   padding: 2px;
 }
 .hidden {

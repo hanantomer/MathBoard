@@ -138,7 +138,6 @@ watchHelper.watchSelectedCell(props.svgId);
 
 watchHelper.watchCustomEvent("SYMBOL", "EV_COPY", () => {
   eventHelper.copy();
-  //  eventBus.remove("EV_COPY", "SYMBOL"); // clean copy buffer
 });
 
 watchHelper.watchCustomEvent("SYMBOL", "EV_PASTE", (e: ClipboardEvent) => {
@@ -198,8 +197,6 @@ function selectClickedPosition(e: MouseEvent) {
     selectionHelper.setSelectedCell(position);
   }
 }
-
-
 </script>
 
 <style>
@@ -246,6 +243,11 @@ html {
   border-top: solid 1px;
   z-index: 999;
 }
+
+line:hover {
+  stroke: rgb(235, 69, 91);
+}
+
 .lineHandle {
   cursor: col-resize;
   position: absolute;

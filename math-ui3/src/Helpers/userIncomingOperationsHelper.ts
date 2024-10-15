@@ -66,7 +66,7 @@ export default function userIncomingOperations() {
       .on("updated", (selectedCell: SelectedCell) => {
         if (notationStore.getParent().type !== "LESSON") return;
         if (selectedCell.userUUId == userStore.getCurrentUser()!.uuid) return;
-        cellStore.setSelectedCell(selectedCell);
+        cellStore.setSelectedCell(selectedCell, true);
       });
 
     // sync cell colorizing

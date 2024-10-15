@@ -127,7 +127,6 @@ export type EditMode =
   "AREA_SELECTED"             | // user finished selecting area
   "TEXT_AREA_SELECTING"       | // user started selecting area after click on free text icon
   "TEXT_AREA_SELECTED"        | // user finished selecting text area
-//  "ANNOTATION_AREA_SELECTING" | // user started selecting area after click on annotation icon
   "ANNOTATION_AREA_SELECTED"  | // user finished selecting annotation area
   "AREA_MOVING"               | // user grabbed the selection area after select button pressed
   "CHECKMARK_STARTED"         | // checkmark button pressed

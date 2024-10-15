@@ -43,9 +43,9 @@ export const useCellStore = defineStore("cell", () => {
     return selectedCell.value;
   }
 
-  function setSelectedCell(newSelectedCell: CellAttributes) {
+  function setSelectedCell(newSelectedCell: CellAttributes, setEditMode: boolean) {
     selectedCell.value = newSelectedCell;
-    editModeStore.setEditMode("CELL_SELECTED");
+    if(setEditMode) editModeStore.setEditMode("CELL_SELECTED");
   }
 
   function resetSelectedCell() {
