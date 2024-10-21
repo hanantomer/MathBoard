@@ -198,7 +198,6 @@ export type EditMode =
   ["AREA_SELECTED", "auto"],            
   ["TEXT_AREA_SELECTING", "auto"],           
   ["TEXT_AREA_SELECTED", "auto"],            
-//  ["ANNOTATION_AREA_SELECTING", "auto"],           
   ["ANNOTATION_AREA_SELECTED", "auto"],            
   ["AREA_MOVING", "auto"],                   
   ["CHECKMARK_STARTED", "auto"],                
@@ -209,3 +208,6 @@ export type EditMode =
 export type UserType = "TEACHER" | "STUDENT"
 
 export type MoveDirection = "LEFT" |  "RIGHT" |  "TOP" |  "BOTTOM" | "LEFTTOP" | "LEFTBOTTOM" | "RIGHTTOP" | "RIGHTBOTTOM"
+
+export type Color = "lightblue" | "lightgreen" | "pink" | "transparent" | "none";
+

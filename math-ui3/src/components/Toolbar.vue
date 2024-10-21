@@ -4,7 +4,7 @@
     @close="closeAccessLinkDialog"
   ></accessLinkDialog>
 
-  <v-toolbar color="primary" dark class="vertical-toolbar" height="500">
+  <v-toolbar color="primary" dark class="vertical-toolbar" height="600">
     <v-tooltip
       text="Invite students via access link"
       v-if="userStore.isTeacher()"
@@ -59,12 +59,14 @@
         </v-btn>
       </template>
     </v-tooltip>
+    <colorSelector></colorSelector>
   </v-toolbar>
 </template>
 
 <script setup lang="ts">
 import { watch, ref } from "vue";
 import accessLinkDialog from "./AccessLinkDialog.vue";
+import colorSelector from "./ColorSelector.vue";
 
 import { useNotationStore } from "../store/pinia/notationStore";
 import { useEditModeStore } from "../store/pinia/editModeStore";
@@ -72,6 +74,7 @@ import { computed } from "vue";
 import { useUserStore } from "../store/pinia/userStore";
 import useAuthorizationHelper from "../helpers/authorizationHelper";
 import { EditMode } from "common/unions";
+import ColorSelector from "./ColorSelector.vue";
 
 const authorizationHelper = useAuthorizationHelper();
 const notationStore = useNotationStore();
@@ -229,6 +232,7 @@ const modeButtons: Array<{
     rotate: 0,
   },
 );
+
 watch(
   () => editModeStore.getEditMode(),
   (editMode) => {
@@ -292,4 +296,6 @@ function resetButtonsState() {
 .vertical-toolbar-column {
   flex-basis: content;
 }
+
+
 </style>
