@@ -1,4 +1,4 @@
-import { BoardType, NotationType } from "./unions";
+import { BoardType, NotationType, Color } from "./unions";
 import { UserAttributes } from "./userTypes";
 
 
@@ -17,7 +17,8 @@ export type NotationAttributes = {
   notationType: NotationType;
   boardType: BoardType;
   selected?: boolean;
-} 
+  color?: ColorAttributes;
+}; 
 
 
 export type ExponentAttributes =  {
@@ -35,6 +36,11 @@ export type SingleValueAttributes =  {
 
 export type SymbolAttributes =  {
   followsFraction: boolean;
+};
+
+export type ColorAttributes = {
+  id?: number;
+  value: string;
 };
 
 
@@ -162,7 +168,10 @@ export type SlopeLineNotationCreationAttributes = Omit<NotationAttributes & Slop
 export type RectNotationCreationAttributes = Omit<NotationAttributes & RectAttributes & SingleValueAttributes, "uuid">;
 export type CurveNotationCreationAttributes = Omit<NotationAttributes & CurveAttributes,  "uuid">;
 export type ExponentNotationCreationAttributes = Omit<EntityAttributes &  NotationAttributes & CellAttributes & ExponentAttributes, "uuid">;
-export type AnnotationNotationCreationAttributes = Omit<EntityAttributes & NotationAttributes & CellAttributes  & SingleValueAttributes, "uuid">;
+export type AnnotationNotationCreationAttributes = Omit<EntityAttributes & NotationAttributes & CellAttributes & SingleValueAttributes, "uuid">;
+export type ColorCreationAttributes = Omit<ColorAttributes,"id">
+
+
 
 
 

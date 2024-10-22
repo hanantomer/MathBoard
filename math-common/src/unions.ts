@@ -209,5 +209,5 @@ export type UserType = "TEACHER" | "STUDENT"
 
 export type MoveDirection = "LEFT" |  "RIGHT" |  "TOP" |  "BOTTOM" | "LEFTTOP" | "LEFTBOTTOM" | "RIGHTTOP" | "RIGHTBOTTOM"
 
-export type Color = "lightblue" | "lightgreen" | "pink" | "transparent" | "none";
+export type Color = "lightblue" | "lightgreen" | "pink" | "transparent";
 

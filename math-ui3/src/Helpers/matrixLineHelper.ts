@@ -54,11 +54,11 @@ export default function useLineMatrixHelper() {
       .attr("y2", (n: LineNotationAttributes) => {
         return LineY2(n);
       })
-      .attr("stroke-width", () => {
-        return "2";
+      .attr("stroke-width", (n: LineNotationAttributes) => {
+        return n.color?.value ? "3" : "2";
       })
-      .attr("stroke", () => {
-        return "darkblue";
+      .attr("stroke", (n: LineNotationAttributes) => {
+        return n.color?.value ? n.color.value : lineColor;
       });
   }
 
@@ -83,7 +83,11 @@ export default function useLineMatrixHelper() {
         return 2;
       })
       .attr("stroke", (n: LineNotationAttributes) => {
-        return n.selected ? selectionColor : lineColor;
+        return n.selected
+          ? selectionColor
+          : n.color?.value
+          ? n.color.value
+          : lineColor;
       });
   }
 

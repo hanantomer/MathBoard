@@ -1,7 +1,7 @@
 import { Model, Column, BelongsTo, ForeignKey, DataType, AllowNull } from "sequelize-typescript";
-import { NotationType, BoardType } from "../../../../../math-common/src/unions";
 import QuestionDecorator from "../questionDecorator";
 import User from "../../user.model";
+import Color from "../../color.model";
 import Question from "../question.model";
 import {
     QuestionPointAttributes,
@@ -51,4 +51,9 @@ export default class QuestionSign extends Model<
     @AllowNull(false)
     @Column({ type: DataType.STRING })
     value!: string;
+
+    @BelongsTo(() => Color, {
+        foreignKey: { name: "colorId", field: "colorId", allowNull: true },
+    })
+    color!: Color;
 }

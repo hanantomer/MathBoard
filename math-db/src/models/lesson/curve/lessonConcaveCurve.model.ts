@@ -1,7 +1,8 @@
 import {
     Model, Column, BelongsTo, ForeignKey, DataType, AllowNull
 } from "sequelize-typescript";
-import  User from "../../user.model";
+import User from "../../user.model";
+import Color from "../../color.model";
 import Lesson from "../../lesson/lesson.model";
 import LessonDecorator from "../../lesson/lessonDecorator";
 import {
@@ -65,4 +66,9 @@ export default class LessonConcaveCurve extends Model<
     @AllowNull(false)
     @Column({ type: DataType.INTEGER })
     cpy!: number;
+
+    @BelongsTo(() => Color, {
+        foreignKey: { name: "colorId", field: "colorId", allowNull: true },
+    })
+    color!: Color;
 }

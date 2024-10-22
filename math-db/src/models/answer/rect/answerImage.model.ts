@@ -1,5 +1,5 @@
 import { Model, Column, BelongsTo, ForeignKey, DataType, AllowNull } from "sequelize-typescript";
-import { NotationType, BoardType } from "../../../../../math-common/src/unions";
+import Color from "../../color.model";
 import AnswerDecorator from "../../answer/answerDecorator";
 import User from "../../user.model";
 import Answer from "../../answer/answer.model";
@@ -57,4 +57,9 @@ export default class AnswerImage extends Model<
     @AllowNull(false)
     @Column({ type: DataType.STRING })
     value!: string;
+
+    @BelongsTo(() => Color, {
+        foreignKey: { name: "colorId", field: "colorId", allowNull: true },
+    })
+    color!: Color;
 }

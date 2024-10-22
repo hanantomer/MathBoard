@@ -6,6 +6,7 @@ import {
 } from "../../../../../math-common/src/lessonTypes";
 import LessonDecorator from "../../lesson/lessonDecorator";
 import User from "../../user.model";
+import Color from "../../color.model";
 import Lesson from "../../lesson/lesson.model";
 
 @LessonDecorator("LessonSign")
@@ -51,4 +52,9 @@ export default class LessonSign extends Model<
     @AllowNull(false)
     @Column({ type: DataType.STRING })
     value!: string;
+
+    @BelongsTo(() => Color, {
+        foreignKey: { name: "colorId", field: "colorId", allowNull: true },
+    })
+    color!: Color;
 }

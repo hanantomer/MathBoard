@@ -2,7 +2,7 @@
 //export const apiHost = "/api";
 export const matrixDimensions = { rowsNum: 24, colsNum: 96 };
 export const selectionColor = "chocolate";
-export const lineColor = "darkblue" 
+export const  lineColor = "darkblue" 
 export const cellSpace = 1;
 export const signList = ["=", "+", "-", "*", "/", "\\", "(", ")", "[", "]"];
 export const selectedCellStroke = "red";

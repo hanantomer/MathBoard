@@ -6,6 +6,7 @@ import {
     DataType,
     AllowNull
 } from "sequelize-typescript";
+import { ColorAttributes, ColorCreationAttributes } from "../../../math-common/src/baseTypes";
 
 
 @Table({
@@ -19,12 +20,12 @@ import {
         },
     ],
 })
-export default class Color extends Model<number> {
+export default class Color extends Model<ColorAttributes, ColorCreationAttributes > {
 
     @AllowNull(false)
     @Column({
         type: DataType.STRING,
         allowNull: false,
     })
-    color!: string;
+    value!: string;
 }

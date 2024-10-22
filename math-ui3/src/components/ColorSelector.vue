@@ -7,36 +7,34 @@
           backgroundColor: selectedColor,
         }"
         icon
-        @click.stop="selectColor"
+        @click.stop="showColorSelectionMenu"
         color="white"
         x-small
         fab
         dark
         ><v-icon>mdi-format-color-highlight</v-icon>
-        <v-select
-          ref="colorSelection"
-          id="colorSelection"
-          @update:modelValue="hideColorSelection"
-          v-model="selectedColor"
-          type="hidden"
-          :items="colors"
-          v-show="showColorSelection"
-          v-bind:style="{
-            backgroundColor: selectedColor,
-          }"
-        >
-          <template v-slot:item="{ props, item }">
-            <v-list-item
-              v-bind="props"
-              :title="item.value"
-              :value="item.value"
-              v-bind:style="{
-                backgroundColor: item.value,
-              }"
-            >
-            </v-list-item>
-          </template>
-        </v-select>
+        <v-menu open-on-hover activator="parent" style="max-width: 0px">
+          <v-select
+            ref="colorSelectionEl"
+            v-model="selectedColor"
+            type="hidden"
+            :items="colors"
+            @update:modelValue="selectColor"
+          >
+            <template v-slot:item="{ props, item }">
+              <v-list-item
+                v-bind="props"
+                style="min-height: 25px !important"
+                :title="item.title"
+                :value="item.value"
+                v-bind:style="{
+                  backgroundColor: item.value,
+                }"
+              >
+              </v-list-item>
+            </template>
+          </v-select>
+        </v-menu>
       </v-btn>
     </template>
   </v-tooltip>
@@ -44,6 +42,7 @@
 
 <script setup lang="ts">
 import { ref } from "vue";
+import useNotationMutateHelper from "../helpers/notationMutateHelper";
 import useWatchHelper from "../helpers/watchHelper";
 import useMatrixCellHelper from "../helpers/matrixCellHelper";
 import useScreenHelper from "../helpers/screenHelper";
@@ -60,6 +59,7 @@ import {
 
 import { Color } from "common/unions";
 
+const notationMutateHelper = useNotationMutateHelper();
 const watchHelper = useWatchHelper();
 const matrixCellHelper = useMatrixCellHelper();
 const screenHelper = useScreenHelper();
@@ -68,48 +68,48 @@ const editModeStore = useEditModeStore();
 const cellStore = useCellStore();
 const notationStore = useNotationStore();
 
-let colorSelection = ref();
-let showColorSelection = ref(false);
-const selectedColor = ref("red");
-const colors = [{ value: "transparent" }, { value: "red" }, { value: "blue" }];
-let cellColor: Color = "none";
+let colorSelectionEl = ref();
+
+let selectedColor = ref<Color>("transparent");
+
+interface ColorLine {
+  title: string;
+  value: Color;
+}
+
+const colors: ColorLine[] = [
+  { title: "", value: "lightblue" },
+  { title: "", value: "lightgreen" },
+  { title: "", value: "pink" },
+  { title: "", value: "transparent" },
+];
 
 watchHelper.watchMouseEvent(
   ["COLORIZING"],
   "EV_SVG_MOUSEDOWN",
-  colorizeClickedPositionByMouseDown,
+  colorizeNotationAtMousePosition,
 );
 
 watchHelper.watchMouseEvent(
   ["COLORIZING"],
   "EV_SVG_MOUSEMOVE",
-  colorizeCellByMouseMove,
+  colorizeNotationAtMousePosition,
 );
 
-watchHelper.watchMouseEvent(
-  ["COLORIZING"],
-  "EV_SVG_MOUSEUP",
-  resetButtonsState,
-);
+watchHelper.watchMouseEvent(["COLORIZING"], "EV_SVG_MOUSEUP", endColorizing);
 
 function selectColor() {
-  colorSelection.value.focus();
-  colorSelection.value.details = false;
-  colorSelection.value.menu = true;
+  editModeStore.setEditMode("COLORIZING");
 }
 
-function hideColorSelection() {
-  showColorSelection.value = false;
+function showColorSelectionMenu(e: MouseEvent) {
+  colorSelectionEl.value.focus();
+  colorSelectionEl.value.details = false;
+  colorSelectionEl.value.menu = true;
 }
 
-function colorizeCellByMouseMove(e: MouseEvent) {
-  if (cellColor === "none") return;
+function colorizeNotationAtMousePosition(e: MouseEvent) {
   if (e.buttons !== 1) return;
-  colorizeCell(e, cellColor);
-}
-
-function colorizeClickedPositionByMouseDown(e: MouseEvent) {
-  if (cellColor === "none") return;
 
   const dotCoordinates = { x: e.pageX, y: e.pageY };
 
@@ -148,12 +148,21 @@ function colorizeClickedPositionByMouseDown(e: MouseEvent) {
         return colorizeNotation(clickedNotation);
       }
     }
+
+    case "SIGN":
+    case "SQRTSYMBOL":
+    case "SYMBOL": {
+      return colorizeNotation(clickedNotation);
+    }
   }
 
-  colorizeCell(e, cellColor);
+  //colorizeCell(e, selectedColor.value);
 }
 
-function colorizeNotation(notation: NotationAttributes) {}
+function colorizeNotation(notation: NotationAttributes) {
+  notation.color = { value: selectedColor.value, id: undefined };
+  notationMutateHelper.updateNotation(notation);
+}
 
 function colorizeCell(e: MouseEvent, cellColor: string) {
   const clickedCell = screenHelper.getClickedCell({
@@ -172,21 +181,8 @@ function colorizeCell(e: MouseEvent, cellColor: string) {
   cellStore.resetSelectedCell();
 }
 
-function colorClicked(color: Color) {
-  resetButtonsState();
-  editModeStore.setEditMode("COLORIZING");
-  cellColor = color;
-}
-
-function resetButtonsState() {
-  if (cellColor === "none") return;
-  cellColor = "none";
+function endColorizing() {
+  selectedColor.value = "transparent";
   editModeStore.setDefaultEditMode();
 }
 </script>
-
-<style>
-.v-list {
-  position: static!important;
-}
-</style>

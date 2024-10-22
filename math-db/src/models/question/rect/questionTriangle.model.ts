@@ -5,6 +5,7 @@ import {
 } from "../../../../../math-common/src/questionTypes";
 import QuestionDecorator from "../questionDecorator";
 import User from "../../user.model";
+import Color from "../../color.model";
 import Question from "../question.model";
 
 @QuestionDecorator("QuestionGeo")
@@ -66,4 +67,9 @@ export default class QuestionTriangle extends Model<
     @AllowNull(false)
     @Column({ type: DataType.INTEGER })
     gamma!: number;
+
+    @BelongsTo(() => Color, {
+        foreignKey: { name: "colorId", field: "colorId", allowNull: true },
+    })
+    color!: Color;
 }

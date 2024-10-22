@@ -4,6 +4,7 @@ import { UUID, UUIDV4 } from "sequelize/types/data-types";
 
 import LessonDecorator from "../../lesson/lessonDecorator";
 import User from "../../user.model";
+import Color from "../../color.model";
 import Lesson from "../../lesson/lesson.model";
 import {
     LessonRectAttributes,
@@ -61,4 +62,9 @@ export default class LessonImage extends Model<
     @AllowNull(false)
     @Column({ type: DataType.STRING })
     value!: string;
+
+    @BelongsTo(() => Color, {
+        foreignKey: { name: "colorId", field: "colorId", allowNull: true },
+    })
+    color!: Color;
 }

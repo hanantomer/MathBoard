@@ -5,6 +5,7 @@ import {
 } from "../../../../../math-common/src/lessonTypes";
 import LessonDecorator from "../../lesson/lessonDecorator";
 import User from "../../user.model";
+import Color from "../../color.model";
 import Lesson from "../../lesson/lesson.model";
 
 @LessonDecorator("LessonExponent")
@@ -54,4 +55,9 @@ export default class LessonExponent extends Model<
     @AllowNull(false)
     @Column({ type: DataType.INTEGER })
     exponent!: string;
+
+    @BelongsTo(() => Color, {
+        foreignKey: { name: "colorId", field: "colorId", allowNull: true },
+    })
+    color!: Color;
 }

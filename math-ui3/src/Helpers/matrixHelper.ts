@@ -12,7 +12,6 @@ import { NotationAttributes } from "common/baseTypes";
 import useLineHelper from "./matrixLineHelper";
 import useCurveHelper from "./matrixCurveHelper";
 import useHtmlHelper from "./matrixHtmlHelper";
-import notationCellOccupationHelper from "./notationCellOccupationHelper";
 
 const lineHelper = useLineHelper();
 const curveHelper = useCurveHelper();
@@ -28,6 +27,7 @@ export default function useMatrixHelper() {
 
     let clientWidth: number | undefined =
       document.getElementById(svgId)?.clientWidth;
+
     let clientHeight: number | undefined =
       document.getElementById(svgId)?.clientHeight;
 
@@ -135,7 +135,7 @@ export default function useMatrixHelper() {
   }
 
   function refreshScreen(svgId: string) {
-    
+
     let notations: NotationAttributes[] = [];
 
     const svgElement = document!.getElementById(svgId);

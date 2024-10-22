@@ -390,8 +390,6 @@ export default function useDbHelper() {
     boardType: string,
     parentUUId: string,
   ): Promise<T[]> {
-    // e.g lessonsymbols?lessonUUId=1
-    //const parentFieldName = getParentFieldName(boardType);
     const uri =
       baseURL +
       `/${boardType.toString().toLowerCase()}${notationType

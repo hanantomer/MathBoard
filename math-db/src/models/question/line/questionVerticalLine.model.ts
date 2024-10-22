@@ -1,7 +1,8 @@
 import {
     Model, Column, BelongsTo, ForeignKey, DataType, AllowNull
 } from "sequelize-typescript";
-import  User from "../../user.model";
+import User from "../../user.model";
+import Color from "../../color.model";
 import Question from "../../question/question.model";
 import QuestionDecorator from "../../question/questionDecorator";
 import {
@@ -52,4 +53,9 @@ export default class QuestionVerticalLine extends Model<
     @AllowNull(false)
     @Column({ type: DataType.INTEGER })
     toRow!: number;
+
+    @BelongsTo(() => Color, {
+        foreignKey: { name: "colorId", field: "colorId", allowNull: true },
+    })
+    color!: Color;
 }

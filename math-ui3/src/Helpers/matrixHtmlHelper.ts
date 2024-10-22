@@ -253,6 +253,8 @@ export default function useHtmlMatrixHelper() {
     let fontWeight =
       userStore.getCurrentUser()?.uuid == n.user.uuid ? "bold" : "normal";
 
+    const backgroundcolor = n.color?.value;
+
     let color =
       Array.from(notationStore.getSelectedNotations())
         .map((n) => n.uuid)
@@ -337,7 +339,7 @@ export default function useHtmlMatrixHelper() {
     let n1 = n as PointNotationAttributes;
     const top = n1.followsFraction ? "75%" : "50%";
     ///TODO move static css props to a class
-    return `<p style='z-index:100;color:${color};font-weight:${fontWeight}; position: absolute;top:${top};transform:
+    return `<p style='z-index:100;color:${color};background-color:${backgroundcolor};font-weight:${fontWeight}; position: absolute;top:${top};transform:
     translateY(-50%);left:20%;font-size:1.1em'>${n1.value}</p>`;
   }
 

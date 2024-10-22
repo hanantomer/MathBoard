@@ -1,7 +1,7 @@
 import { Model, Column, BelongsTo, ForeignKey, DataType, AllowNull } from "sequelize-typescript";
-import { NotationType, BoardType } from "../../../../../math-common/src/unions";
 import LessonDecorator from "../../lesson/lessonDecorator";
 import User from "../../user.model";
+import Color from "../../color.model";
 import Lesson from "../../lesson/lesson.model";
 import {
     LessonRectAttributes,
@@ -67,4 +67,9 @@ export default class LessonTriangle extends Model<
     @AllowNull(false)
     @Column({ type: DataType.INTEGER })
     C!: number;
+
+    @BelongsTo(() => Color, {
+        foreignKey: { name: "colorId", field: "colorId", allowNull: true },
+    })
+    color!: Color;
 }

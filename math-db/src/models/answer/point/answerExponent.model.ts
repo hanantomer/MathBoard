@@ -1,12 +1,9 @@
 import { Model, Column, BelongsTo, ForeignKey, DataType, AllowNull } from "sequelize-typescript";
 import AnswerDecorator from "../../answer/answerDecorator";
-import  User from "../../user.model";
+import User from "../../user.model";
+import Color from "../../color.model";
 import Answer from "../../answer/answer.model";
 import { AnswerPointAttributes, AnswerPointCreationAttributes } from "../../../../../math-common/src/answerTypes";
-// import {
-//     AnswerExponentAttributes,
-//     AnswerExponentCreationAttributes,
-// } from "../../../../../math-common/src/answerTypes";
 
 @AnswerDecorator("AnswerExponent")
 export default class AnswerExponent extends Model<
@@ -55,4 +52,9 @@ export default class AnswerExponent extends Model<
     @AllowNull(false)
     @Column({ type: DataType.INTEGER })
     exponent!: string;
+
+    @BelongsTo(() => Color, {
+        foreignKey: { name: "colorId", field: "colorId", allowNull: true },
+    })
+    color!: Color;
 }

@@ -4,6 +4,7 @@ import StudentLesson  from "./models/lesson/studentLesson.model";
 import Question  from "./models/question/question.model";
 import Answer  from "./models/answer/answer.model";
 import User from "./models/user.model";
+import Color from "./models/color.model";
 import db from "./models/index";
 
 import {  CurveNotationAttributes, ExponentNotationAttributes, HorizontalLineNotationAttributes, NotationAttributes, PointNotationAttributes, RectAttributes, RectNotationAttributes, SlopeLineNotationAttributes, VerticalLineNotationAttributes } from "../../math-common/src/baseTypes";
@@ -14,13 +15,14 @@ import { AnswerAttributes, AnswerCreationAttributes } from "../../math-common/bu
 import { capitalize } from "../../math-common/build/utils";
 import { BoardType, NotationType } from "../../math-common/src/unions";
 import { Model, ModelCtor } from "sequelize";
-import { stringify } from "querystring";
+
+
 
 let modelMap = new Map<string, ModelCtor<Model>>();
 
 export default function dbUtil() {
 
-    // helps to find model with case insensetivity
+    // find model with case insensetivity
     function findModel(modelName: string): ModelCtor<Model>{
         if (modelMap.size === 0) {
             for (let m in db.sequelize.models) {
@@ -72,7 +74,7 @@ export default function dbUtil() {
         return await Lesson.findAll({
             include: [{ model: User }],
             where: {
-                "$user.id$": 1,
+                "$user.id$": userId,
             },
         });
     }
@@ -268,6 +270,59 @@ export default function dbUtil() {
         return res?.get("id") as number;
     }
 
+    async function getIdByColor(
+        model: string,
+        value: string 
+    ): Promise<number | null> {
+        if (!model) {
+            throw new Error(`model: ${model} should not be null`);
+        }
+
+        if (!value) {
+            throw new Error("color should not be null");
+        }
+
+        let res = await findModel("color").findOne({
+            attributes: {
+                include: ["id"],
+            },
+            where: {
+                value: value,
+            },
+        });
+
+        // add
+        if (!res) {
+            res = await findModel("color").create({ value: value });
+        }
+
+        return res?.get("id") as number;
+    }
+
+    async function getColorById(
+        model: string,
+        id: number
+    ): Promise<string | null> {
+        if (!model) {
+            throw new Error(`model: ${model} should not be null`);
+        }
+
+        if (!id) {
+            return null;
+        }
+
+        let res = await findModel(model).findOne({
+            attributes: {
+                include: ["value"],
+            },
+            where: {
+                id: id,
+            },
+        });
+
+        return res?.get("value") as string;
+    }
+
 
     async function getNotations(
         boardType: String,
@@ -305,6 +360,7 @@ export default function dbUtil() {
                 [boardFieldIdFieldName]: parentId,
             },
             include: [
+                Color,
                 User,
                 db.sequelize.models[boardModelName],
             ],
@@ -330,6 +386,7 @@ export default function dbUtil() {
             notation.user.uuid
         )) as number;
 
+        
         (notation as any)[boardName + "Id"] = (await getIdByUUId(
             boardModelName,
             notation.parentUUId
@@ -358,6 +415,19 @@ export default function dbUtil() {
     ) {
         const modelName = getModelName(boardType, notationType); // e.g. LessonSymbol
         const id = (await getIdByUUId(modelName, uuid)) as number;
+        if (notation.color) {
+            
+            if (notation.color.id) {
+                (notation as any).colorId = notation.color.id;
+            }
+            else { // new color
+                (notation as any).colorId = (await getIdByColor(
+                    "Color",
+                    notation.color.value
+                )) as number;
+            }
+        }
+
         notation.notationType = notationType;
         if (!id) return;
         if (!validateModel(notation)) {

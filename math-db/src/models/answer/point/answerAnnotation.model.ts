@@ -1,7 +1,8 @@
 import AnswerDecorator from "../../answer/answerDecorator";
 import { Model, Column, BelongsTo, ForeignKey, DataType, AllowNull } from "sequelize-typescript";
 import { NotationType, BoardType } from "../../../../../math-common/src/unions";
-import User  from "../../user.model";
+import User from "../../user.model";
+import Color from "../../color.model";
 import Answer from "../../answer/answer.model";
 import {
     AnswerPointAttributes,
@@ -52,4 +53,9 @@ export default class AnswerAnnotation extends Model<
     @AllowNull(false)
     @Column({ type: DataType.STRING })
     value!: string;
+
+    @BelongsTo(() => Color, {
+        foreignKey: { name: "colorId", field: "colorId", allowNull: true },
+    })
+    color!: Color;
 }
