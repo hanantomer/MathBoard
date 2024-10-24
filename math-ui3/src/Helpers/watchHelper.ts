@@ -117,6 +117,7 @@ export default function () {
     watch(
       () => eventBus.get(editMode, eventType),
       (notation: NotationAttributes) => {
+        if (!notation) return;
         handler(notation);
         eventBus.remove(eventType, editMode); // clear event from bus to allow reselction
       },

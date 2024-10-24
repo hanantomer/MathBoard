@@ -81,8 +81,7 @@ export default function selectionHelper() {
         }
         return false;
       }
-      case "CONVEX_CURVE":
-      case "CONCAVE_CURVE": {
+      case "CURVE": {
         selectCurveNotation(notation);
         return true;
       }

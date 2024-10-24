@@ -138,8 +138,7 @@ export default function eventHelper() {
           break;
         }
 
-        case "CONVEX_CURVE":
-        case "CONCAVE_CURVE": {
+        case "CURVE": {
           let n1 = { ...n } as CurveNotationAttributes;
 
           const deltaX =

@@ -365,7 +365,7 @@ export default function curveHelper() {
     return curveAttributes;
   }
 
-  function resetCurveDrawing() {
+  function endCurveDrawing() {
     curveAttributes.p1x =
       curveAttributes.p1y =
       curveAttributes.p1y =
@@ -385,6 +385,6 @@ export default function curveHelper() {
     updateCurve,
     getCurveAttributes,
     getVisitedPoints,
-    resetCurveDrawing,
+    endCurveDrawing,
   };
 }

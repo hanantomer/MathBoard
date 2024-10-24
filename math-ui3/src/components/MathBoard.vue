@@ -234,7 +234,6 @@ html {
   top: 4px;
   stroke: chocolate;
   position: absolute;
-  color: black;
   display: block;
   border-bottom: solid 1px;
   border-top: solid 1px;
@@ -242,8 +241,13 @@ html {
 }
 
 line:hover {
-  stroke: rgb(235, 69, 91);
+  stroke-width: 3;
 }
+
+path:hover {
+  stroke-width: 3;
+}
+
 
 .lineHandle {
   cursor: col-resize;

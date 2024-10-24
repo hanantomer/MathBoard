@@ -13,7 +13,11 @@
         fab
         dark
         ><v-icon>mdi-format-color-highlight</v-icon>
-        <v-menu open-on-hover activator="parent" style="max-width: 0px">
+        <v-menu
+          open-on-hover
+          activator="parent"
+          style="max-width: 0px; background-color: white"
+        >
           <v-select
             ref="colorSelectionEl"
             v-model="selectedColor"
@@ -24,7 +28,7 @@
             <template v-slot:item="{ props, item }">
               <v-list-item
                 v-bind="props"
-                style="min-height: 25px !important"
+                style="min-height: 25px !important; color: gray"
                 :title="item.title"
                 :value="item.value"
                 v-bind:style="{
@@ -78,10 +82,10 @@ interface ColorLine {
 }
 
 const colors: ColorLine[] = [
-  { title: "", value: "lightblue" },
-  { title: "", value: "lightgreen" },
-  { title: "", value: "pink" },
-  { title: "", value: "transparent" },
+  { title: "blue", value: "darkblue" },
+  { title: "green", value: "darkgreen" },
+  { title: "pink", value: "pink" },
+  { title: "transparent", value: "transparent" },
 ];
 
 watchHelper.watchMouseEvent(
@@ -149,6 +153,7 @@ function colorizeNotationAtMousePosition(e: MouseEvent) {
       }
     }
 
+    case "ANNOTATION":
     case "SIGN":
     case "SQRTSYMBOL":
     case "SYMBOL": {
@@ -164,25 +169,30 @@ function colorizeNotation(notation: NotationAttributes) {
   notationMutateHelper.updateNotation(notation);
 }
 
-function colorizeCell(e: MouseEvent, cellColor: string) {
-  const clickedCell = screenHelper.getClickedCell({
-    x: e.pageX,
-    y: e.pageY,
-  });
+// function colorizeCell(e: MouseEvent, cellColor: string) {
+//   const clickedCell = screenHelper.getClickedCell({
+//     x: e.pageX,
+//     y: e.pageY,
+//   });
 
-  matrixCellHelper.colorizeCell(cellStore.getSvgId()!, clickedCell, cellColor);
+//   matrixCellHelper.colorizeCell(cellStore.getSvgId()!, clickedCell, cellColor);
 
-  userOutgoingOperationsHelper.syncOutgoingColorizedCell(
-    clickedCell,
-    notationStore.getParent().uuid,
-    cellColor,
-  );
+//   userOutgoingOperationsHelper.syncOutgoingColorizedCell(
+//     clickedCell,
+//     notationStore.getParent().uuid,
+//     cellColor,
+//   );
 
-  cellStore.resetSelectedCell();
-}
+//   cellStore.resetSelectedCell();
+// }
 
 function endColorizing() {
   selectedColor.value = "transparent";
   editModeStore.setDefaultEditMode();
 }
 </script>
+<style>
+div.v-input__control {
+  max-height: 0px;
+}
+</style>

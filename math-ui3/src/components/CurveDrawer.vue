@@ -8,10 +8,9 @@
       style="position: absolute; pointer-events: none"
     >
       <path
+        class="line"
         id="curve"
         d="M0 0"
-        stroke="green"
-        stroke-width="4"
         stroke-linecap="round"
         fill="transparent"
       ></path>
@@ -50,7 +49,6 @@ const curveType = computed(() => {
   return editModeStore.isConcaveCurveMode() ? "CONCAVE" : "CONVEX";
 });
 
-
 watchHelper.watchMouseEvent(
   ["CONVEX_CURVE_STARTED", "CONCAVE_CURVE_STARTED"],
   "EV_SVG_MOUSEDOWN",
@@ -70,6 +68,7 @@ watchHelper.watchMouseEvent(
 );
 
 // emmited by selection helper
+
 watchHelper.watchNotationSelection(
   "CONCAVE_CURVE_SELECTED",
   "EV_CONCAVE_CURVE_SELECTED",
@@ -85,47 +84,19 @@ watchHelper.watchNotationSelection(
 watchHelper.watchMouseEvent(
   ["CONCAVE_CURVE_SELECTED", "CONVEX_CURVE_SELECTED"],
   "EV_SVG_MOUSEDOWN",
-  resetCurveDrawing,
+  endCurveDrawing,
 );
 
 watchHelper.watchMouseEvent(
-  ["CONVEX_CURVE_SELECTED","CONCAVE_CURVE_SELECTED"],
+  ["CONVEX_CURVE_SELECTED", "CONCAVE_CURVE_SELECTED"],
   "EV_SVG_MOUSEUP",
   () => editModeStore.setDefaultEditMode(),
 );
-
 
 // event handlers
 
 function curveSelected(curve: CurveNotationAttributes) {
   notationStore.selectNotation(curve.uuid);
-  // const evName =
-  //   curve.notationType === "CONCAVECURVE"
-  //     ? "EV_CONCAVE_CURVE_SELECTED"
-  //     : "EV_CONVEX_CURVE_SELECTED";
-
-  // eventBus.emit(evName, null); // to enable re selection
-}
-
-// emitted by event manager
-function onMouseDown(e: MouseEvent) {
-  if (e.buttons !== 1) {
-    // ignore right button
-    return;
-  }
-
-  // user clicked elsewere after start drawing
-  if (editModeStore.isCurveDrawingMode()) {
-    editModeStore.setDefaultEditMode();
-  }
-
-  // new curve
-  if (editModeStore.isCurveStartedMode()) {
-    curveHelper.resetCurveDrawing();
-
-    curveHelper.startCurveDrawing(e);
-    editModeStore.setNextEditMode();
-  }
 }
 
 function setCurve(e: MouseEvent) {
@@ -200,26 +171,6 @@ function showPoints() {
   }
 }
 
-function onMouseMove(e: MouseEvent) {
-  // ignore right button
-  if (e.buttons !== 1) {
-    return;
-  }
-
-  if (!editModeStore.isCurveDrawingMode()) {
-    return;
-  }
-
-  setCurve(e);
-}
-
-function onMouseUp() {
-  // line yet not modified
-  if (editModeStore.isCurveDrawingMode()) {
-    endDrawCurve();
-  }
-}
-
 function endDrawCurve() {
   const curveAttributes: CurveAttributes = curveHelper.getCurveAttributes();
 
@@ -264,9 +215,8 @@ function saveCurve(curevAttributes: CurveAttributes) {
   }
 }
 
-function resetCurveDrawing() {
-  curveHelper.resetCurveDrawing();
-
+function endCurveDrawing() {
+  curveHelper.endCurveDrawing();
   editModeStore.setDefaultEditMode();
 }
 </script>

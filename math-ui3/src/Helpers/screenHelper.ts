@@ -272,8 +272,7 @@ export default function screenHelper() {
           break;
         }
 
-        case "CONCAVE_CURVE":
-        case "CONVEX_CURVE": {
+        case "CURVE": {
           let n1 = n as CurveNotationAttributes;
           let curveEnclosingTriangleCenterX = (n1.cpx + n1.p1x + n1.p2x) / 3;
           let curveEnclosingTriangleCenterY = (n1.cpy + n1.p1y + n1.p2y) / 3;

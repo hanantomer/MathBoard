@@ -55,7 +55,7 @@ export default function useLineMatrixHelper() {
         return LineY2(n);
       })
       .attr("stroke-width", (n: LineNotationAttributes) => {
-        return n.color?.value ? "3" : "2";
+        return "2";
       })
       .attr("stroke", (n: LineNotationAttributes) => {
         return n.color?.value ? n.color.value : lineColor;

@@ -70,19 +70,19 @@ export default function userIncomingOperations() {
       });
 
     // sync cell colorizing
-    feathersClient
-      .service("colorizedCell")
-      .on("updated", (colorizedCell: ColorizedCell) => {
-        if (notationStore.getParent().type !== "LESSON") return;
+    // feathersClient
+    //   .service("colorizedCell")
+    //   .on("updated", (colorizedCell: ColorizedCell) => {
+    //     if (notationStore.getParent().type !== "LESSON") return;
 
-        if (colorizedCell.userUUId == userStore.getCurrentUser()!.uuid) return;
+    //     if (colorizedCell.userUUId == userStore.getCurrentUser()!.uuid) return;
 
-        matrixCellHelper.colorizeCell(
-          svgId,
-          colorizedCell as CellAttributes,
-          colorizedCell.color,
-        );
-      });
+    //     matrixCellHelper.colorizeCell(
+    //       svgId,
+    //       colorizedCell as CellAttributes,
+    //       colorizedCell.color,
+    //     );
+    //   });
 
     // accept write authorization as student in lesson
     if (!userStore.isTeacher()) {

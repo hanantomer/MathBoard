@@ -1,7 +1,4 @@
-import * as d3 from "d3";
-import {
-  CellAttributes,
-} from "common/baseTypes";
+import { CellAttributes } from "common/baseTypes";
 import {
   matrixDimensions,
   defaultdCellStroke,
@@ -12,8 +9,7 @@ import { useCellStore } from "../store/pinia/cellStore";
 
 const cellStore = useCellStore();
 
-export default function useHtmlMatrixHelper() {
-
+export default function useMatrixCellHelper() {
   function getNextCell(
     horizontalStep: number,
     verticalStep: number,
@@ -73,9 +69,9 @@ export default function useHtmlMatrixHelper() {
     }
   }
 
-  function colorizeCell(svgId: string, cell: CellAttributes, color: string) {
+  function colorizeCell(cell: CellAttributes, color: string) {
     let rectElm = document
-      ?.querySelector<HTMLElement>(`svg[id="${svgId}"] g[row="${cell.row}"]`)
+      ?.querySelector<HTMLElement>(`svg[id="${cellStore.getSvgId()}"] g[row="${cell.row}"]`)
       ?.querySelector<HTMLElement>(`rect[col="${cell.col}"]`);
 
     if (rectElm?.style) rectElm.style.fill = color;
@@ -116,6 +112,6 @@ export default function useHtmlMatrixHelper() {
   return {
     colorizeCell,
     setNextCell,
-    showSelectedCell
+    showSelectedCell,
   };
 }

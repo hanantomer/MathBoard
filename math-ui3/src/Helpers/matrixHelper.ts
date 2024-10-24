@@ -168,8 +168,7 @@ export default function useMatrixHelper() {
       svgId,
       notations.filter(
         (n) =>
-          NotationTypeShape.get(n.notationType) === "CONCAVE_CURVE" ||
-          NotationTypeShape.get(n.notationType) === "CONVEX_CURVE",
+          NotationTypeShape.get(n.notationType) === "CURVE"
       ),
     );
   }

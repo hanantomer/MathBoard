@@ -18,7 +18,11 @@ import {
   RectNotationAttributes,
 } from "common/baseTypes";
 
+import  useMatrixCellHelper from "./matrixCellHelper";
+
 const cellStore = useCellStore();
+const matrixCellHelper = useMatrixCellHelper();
+
 export default function useMatrixHelperUtils() {
 
   function getCol(n: NotationAttributes): number  {
@@ -73,6 +77,15 @@ export default function useMatrixHelperUtils() {
     return exit.remove();
   }
 
+  function colorizeNotationCell(n: NotationAttributes) {
+    if (!n.color?.value) return;
+    const n1 = n as PointNotationAttributes;
+    if (!n1.row || !n1.col) return;
+    const cell = { col: n1.col, row: n1.row };
+    matrixCellHelper.colorizeCell(cell, n.color.value);
+  }
+
+
 
   return {
     getRow,
@@ -81,6 +94,7 @@ export default function useMatrixHelperUtils() {
     defaultdCellStroke,
     getNotationXposByCol,
     getNotationYposByRow,
-    removeNotations
+    removeNotations,
+    colorizeNotationCell,
   };
 }
