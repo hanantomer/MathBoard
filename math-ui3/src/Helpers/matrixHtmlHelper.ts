@@ -12,7 +12,10 @@ import {
 import { useNotationStore } from "../store/pinia/notationStore";
 import { useCellStore } from "../store/pinia/cellStore";
 import { cellSpace } from "common/globals";
-import { NotationTypeShape } from "common/unions";
+import {
+  NotationTypeShape,
+  NotationTypeBackgroundColorizing,
+} from "common/unions";
 import useUtils from "./matrixHelperUtils";
 import { useUserStore } from "../store/pinia/userStore";
 
@@ -250,8 +253,9 @@ export default function useHtmlMatrixHelper() {
   }
 
   function html(n: NotationAttributes) {
-
-    utils.colorizeNotationCell(n);
+    if (NotationTypeBackgroundColorizing.has(n.notationType)) {
+      utils.colorizeNotationCell(n);
+    }
 
     let fontWeight =
       userStore.getCurrentUser()?.uuid == n.user.uuid ? "bold" : "normal";
@@ -268,6 +272,8 @@ export default function useHtmlMatrixHelper() {
 
     if (n.notationType === "SQRT") {
       let n1 = n as HorizontalLineNotationAttributes;
+      color = n.color?.value ? n.color?.value : color;
+
       return `<span class=line style='color:${color};position:relative;left:9px;width:${
         (n1.toCol - n1.fromCol) *
           (cellStore.getCellHorizontalWidth() + cellSpace) -
@@ -276,6 +282,7 @@ export default function useHtmlMatrixHelper() {
     }
 
     if (n.notationType === "SQRTSYMBOL") {
+      color = n.color?.value ? n.color?.value : color;
       return `<p class='sqrtsymbol' style='color:${color}'>&#x221A;</p>`;
     }
 
@@ -348,4 +355,3 @@ export default function useHtmlMatrixHelper() {
     mergeHtmlNotations,
   };
 }
-

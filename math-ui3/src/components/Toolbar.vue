@@ -59,7 +59,7 @@
         </v-btn>
       </template>
     </v-tooltip>
-    <colorSelector></colorSelector>
+    <ColororizeTool></ColororizeTool>
   </v-toolbar>
 </template>
 
@@ -74,7 +74,7 @@ import { computed } from "vue";
 import { useUserStore } from "../store/pinia/userStore";
 import useAuthorizationHelper from "../helpers/authorizationHelper";
 import { EditMode } from "common/unions";
-import ColorSelector from "./ColorSelector.vue";
+import ColororizeTool from "./ColorizeTool.vue";
 
 const authorizationHelper = useAuthorizationHelper();
 const notationStore = useNotationStore();
@@ -296,6 +296,4 @@ function resetButtonsState() {
 .vertical-toolbar-column {
   flex-basis: content;
 }
-
-
 </style>

@@ -48,12 +48,8 @@
 import { ref } from "vue";
 import useNotationMutateHelper from "../helpers/notationMutateHelper";
 import useWatchHelper from "../helpers/watchHelper";
-import useMatrixCellHelper from "../helpers/matrixCellHelper";
 import useScreenHelper from "../helpers/screenHelper";
-import useUserOutgoingOperationsHelper from "../helpers/userOutgoingOperationsHelper";
 import { useEditModeStore } from "../store/pinia/editModeStore";
-import { useCellStore } from "../store/pinia/cellStore";
-import { useNotationStore } from "../store/pinia/notationStore";
 import {
   VerticalLineNotationAttributes,
   SlopeLineNotationAttributes,
@@ -65,12 +61,8 @@ import { Color } from "common/unions";
 
 const notationMutateHelper = useNotationMutateHelper();
 const watchHelper = useWatchHelper();
-const matrixCellHelper = useMatrixCellHelper();
 const screenHelper = useScreenHelper();
-const userOutgoingOperationsHelper = useUserOutgoingOperationsHelper();
 const editModeStore = useEditModeStore();
-const cellStore = useCellStore();
-const notationStore = useNotationStore();
 
 let colorSelectionEl = ref();
 
@@ -82,8 +74,8 @@ interface ColorLine {
 }
 
 const colors: ColorLine[] = [
-  { title: "blue", value: "darkblue" },
-  { title: "green", value: "darkgreen" },
+  { title: "blue", value: "lightblue" },
+  { title: "green", value: "lightgreen" },
   { title: "pink", value: "pink" },
   { title: "transparent", value: "transparent" },
 ];
@@ -120,6 +112,7 @@ function colorizeNotationAtMousePosition(e: MouseEvent) {
   const clickedNotation = screenHelper.getNotationAtCoordinates(dotCoordinates);
 
   switch (clickedNotation?.notationType) {
+    case "SQRT":
     case "HORIZONTALLINE": {
       if (
         screenHelper.getClickedPosDistanceFromHorizontalLine(
@@ -153,6 +146,7 @@ function colorizeNotationAtMousePosition(e: MouseEvent) {
       }
     }
 
+    case "EXPONENT":
     case "ANNOTATION":
     case "SIGN":
     case "SQRTSYMBOL":
@@ -160,31 +154,12 @@ function colorizeNotationAtMousePosition(e: MouseEvent) {
       return colorizeNotation(clickedNotation);
     }
   }
-
-  //colorizeCell(e, selectedColor.value);
 }
 
 function colorizeNotation(notation: NotationAttributes) {
   notation.color = { value: selectedColor.value, id: undefined };
   notationMutateHelper.updateNotation(notation);
 }
-
-// function colorizeCell(e: MouseEvent, cellColor: string) {
-//   const clickedCell = screenHelper.getClickedCell({
-//     x: e.pageX,
-//     y: e.pageY,
-//   });
-
-//   matrixCellHelper.colorizeCell(cellStore.getSvgId()!, clickedCell, cellColor);
-
-//   userOutgoingOperationsHelper.syncOutgoingColorizedCell(
-//     clickedCell,
-//     notationStore.getParent().uuid,
-//     cellColor,
-//   );
-
-//   cellStore.resetSelectedCell();
-// }
 
 function endColorizing() {
   selectedColor.value = "transparent";

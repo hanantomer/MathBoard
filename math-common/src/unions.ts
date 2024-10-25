@@ -93,6 +93,14 @@ export const NotationTypeShape = new Map<
   ["CONVEXCURVE", "CURVE"],
 ]);
 
+export const NotationTypeBackgroundColorizing =
+  new Set<NotationType>([
+    "SYMBOL",
+    "SIGN",
+    "EXPONENT",
+    "ANNOTATION",
+  ]);
+
 export type EditMode =
   | "LESSONS_SELECTION" //  after click on lessons icon
   | "QUESTIONS_SELECTION" //  after click on questions icon
@@ -173,7 +181,6 @@ export const EditModeNotationType = new Map<
   ["AREA_SELECTED", "SYMBOL"],
   ["TEXT_AREA_SELECTING", "TEXT"],
   ["TEXT_AREA_SELECTED", "TEXT"],
-  //    ["ANNOTATION_AREA_SELECTING", "TEXT"],
   ["ANNOTATION_AREA_SELECTED", "TEXT"],
   ["AREA_MOVING", "SYMBOL"],
   ["CHECKMARK_STARTED", "SYMBOL"],
@@ -231,7 +238,7 @@ export type MoveDirection =
 
 export type Color =
   | "white"
-  | "darkblue"
-  | "darkgreen"
+  | "lightblue"
+  | "lightgreen"
   | "pink"
   | "transparent";
