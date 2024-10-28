@@ -16,7 +16,7 @@
       autocomplete="off"
     />
     <input
-      maxlength="4"
+      maxlength="3"
       id="exponentInput"
       class="exponentInput"
       placeholder="exp"
@@ -31,18 +31,14 @@ import { useEditModeStore } from "../store/pinia/editModeStore";
 import { useCellStore } from "../store/pinia/cellStore";
 import { ExponentNotationAttributes } from "../../../math-common/build/baseTypes";
 import useNotationMutateHelper from "../helpers/notationMutateHelper";
-import useEventBus from "../helpers/eventBusHelper";
 import useScreenHelper from "../helpers/screenHelper";
-import useSelectionHelper from "../helpers/selectionHelper";
 import useWatchHelper from "../helpers/watchHelper";
 
 const notationMutateHelper = useNotationMutateHelper();
-const eventBus = useEventBus();
 const emit = defineEmits(["hide"]);
 const editModeStore = useEditModeStore();
 const cellStore = useCellStore();
 const screenHelper = useScreenHelper();
-const selectionHelper = useSelectionHelper();
 const watchHelper = useWatchHelper();
 
 let selectedNotation: ExponentNotationAttributes | null = null;

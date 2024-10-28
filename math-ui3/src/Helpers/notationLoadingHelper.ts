@@ -10,7 +10,7 @@ import {
 
 import useDbHelper from "./dbHelper";
 import { useNotationStore } from "../store/pinia/notationStore";
-import { BoardType, NotationType, NotationTypeShape,  NotationTypeValues } from "common/unions";
+import { BoardType, NotationType,  NotationTypeValues } from "common/unions";
 
 const notationStore = useNotationStore();
 const dbHelper = useDbHelper();
@@ -49,38 +49,45 @@ export default function notationLoadingHelper() {
 
     if (!boardType) boardType = notationStore.getParent().type;
 
-    switch (NotationTypeShape.get(notationType)) {
-      case "POINT":
+    switch (notationType) {
+      case "ANNOTATION":
+      case "SIGN":
+      case "SQRTSYMBOL":
+      case "SYMBOL":
         return await dbHelper.getNotations<PointNotationAttributes>(
           notationType,
           boardType,
           parentUUId,
         );
-      case "HORIZONTAL_LINE":
+      case "EXPONENT":
+      case "SQRT":
+      case "HORIZONTALLINE":
         return await dbHelper.getNotations<HorizontalLineNotationAttributes>(
           notationType,
           boardType,
           parentUUId,
         );
-      case "VERTICAL_LINE":
+      case "VERTICALLINE":
         return await dbHelper.getNotations<VerticalLineNotationAttributes>(
           notationType,
           boardType,
           parentUUId,
         );
-      case "SLOPE_LINE":
+      case "SLOPELINE":
         return await dbHelper.getNotations<SlopeLineNotationAttributes>(
           notationType,
           boardType,
           parentUUId,
         );
-      case "RECT":
+      case "IMAGE":
+      case "TEXT":
         return await dbHelper.getNotations<RectNotationAttributes>(
           notationType,
           boardType,
           parentUUId,
         );
-      case "CURVE":
+      case "CONVEXCURVE":
+      case "CONCAVECURVE":
         return await dbHelper.getNotations<CurveNotationAttributes>(
           notationType,
           boardType,

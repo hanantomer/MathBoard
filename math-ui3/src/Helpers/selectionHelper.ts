@@ -1,4 +1,3 @@
-import { NotationTypeShape } from "common/unions";
 import { useNotationStore } from "../store/pinia/notationStore";
 import { useCellStore } from "../store/pinia/cellStore";
 import {
@@ -7,6 +6,7 @@ import {
   VerticalLineNotationAttributes,
   HorizontalLineNotationAttributes,
   SlopeLineNotationAttributes,
+  MultiCellAttributes,
 } from "common/baseTypes";
 import { NotationAttributes } from "common/baseTypes";
 import { useLessonStore } from "../store/pinia/lessonStore";
@@ -15,7 +15,6 @@ import usescreenHelper from "./screenHelper";
 import useNotationMutateHelper from "./notationMutateHelper";
 import useUserOutgoingOperationsHelper from "./userOutgoingOperationsHelper";
 import useEventBus from "./eventBusHelper";
-import { max } from "d3";
 
 const eventBus = useEventBus();
 const cellStore = useCellStore();
@@ -43,8 +42,21 @@ export default function selectionHelper() {
 
     if (!notation) return false;
 
-    switch (NotationTypeShape.get(notation!.notationType)) {
-      case "HORIZONTAL_LINE":
+    switch (notation!.notationType) {
+      case "SQRT":
+      case "EXPONENT":
+        const multCell =
+          notation as unknown as MultiCellAttributes;
+        if (
+          screenHelper.getClickedPosDistanceFromMultiCell(
+            dotCoordinates,
+            multCell,
+          ) < maxDistanceToSelect
+        ) {
+          selectLineNotation(notation);
+          return true;
+        }
+      case "HORIZONTALLINE":
         const horizontalLineNotation =
           notation as HorizontalLineNotationAttributes;
         if (
@@ -56,7 +68,7 @@ export default function selectionHelper() {
           selectLineNotation(notation);
           return true;
         }
-      case "VERTICAL_LINE":
+      case "VERTICALLINE":
         const verticalLineNotation = notation as VerticalLineNotationAttributes;
         if (
           screenHelper.getClickedPosDistanceFromVerticalLine(
@@ -68,7 +80,7 @@ export default function selectionHelper() {
           return true;
         }
         return false;
-      case "SLOPE_LINE": {
+      case "SLOPELINE": {
         const slopeLineNotation = notation as SlopeLineNotationAttributes;
         if (
           screenHelper.getClickedPosDistanceFromSlopeLine(
@@ -81,12 +93,17 @@ export default function selectionHelper() {
         }
         return false;
       }
-      case "CURVE": {
+      case "CONCAVECURVE":
+      case "CONVEXCURVE": {
         selectCurveNotation(notation);
         return true;
       }
-      case "RECT":
-      case "POINT": {
+      case "IMAGE":
+      case "TEXT":
+      case "ANNOTATION":
+      case "SIGN":
+      case "SYMBOL":
+      case "SQRTSYMBOL": {
         selectPointOrRectNotation(notation);
         return true;
       }

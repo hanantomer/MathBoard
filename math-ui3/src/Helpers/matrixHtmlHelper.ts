@@ -8,14 +8,12 @@ import {
   CellAttributes,
   RectAttributes,
   AnnotationNotationAttributes,
+  MultiCellAttributes,
 } from "common/baseTypes";
 import { useNotationStore } from "../store/pinia/notationStore";
 import { useCellStore } from "../store/pinia/cellStore";
 import { cellSpace } from "common/globals";
-import {
-  NotationTypeShape,
-  NotationTypeBackgroundColorizing,
-} from "common/unions";
+import { NotationTypeBackgroundColorizing } from "common/unions";
 import useUtils from "./matrixHelperUtils";
 import { useUserStore } from "../store/pinia/userStore";
 
@@ -49,6 +47,10 @@ export default function useHtmlMatrixHelper() {
     return `${cellStore.getCellVerticalHeight() / 28}em`;
   }
 
+  function exponentFontSize() {
+    return `0.5em`;
+  }
+
   function mergeHtmlNotations(
     svgId: string,
     notations: NotationAttributes[],
@@ -73,12 +75,17 @@ export default function useHtmlMatrixHelper() {
   }
 
   function height(n: NotationAttributes): number | null {
-    switch (NotationTypeShape.get(n.notationType)) {
-      case "POINT": {
+    switch (n.notationType) {
+      case "ANNOTATION":
+      case "SIGN":
+      case "EXPONENT":
+      case "SYMBOL":
+      case "SQRTSYMBOL": {
         return pointNotationHeight(n as PointNotationAttributes);
       }
 
-      case "RECT": {
+      case "IMAGE":
+      case "TEXT": {
         return rectNotationHeight(n as RectNotationAttributes);
       }
     }
@@ -158,11 +165,15 @@ export default function useHtmlMatrixHelper() {
   }
 
   function col(n: NotationAttributes): number | null {
-    switch (NotationTypeShape.get(n.notationType)) {
-      case "POINT": {
+    switch (n.notationType) {
+      case "ANNOTATION":
+      case "SIGN":
+      case "SQRTSYMBOL":
+      case "SYMBOL": {
         return (n as PointNotationAttributes).col;
       }
-      case "RECT": {
+      case "IMAGE":
+      case "TEXT": {
         return (n as RectNotationAttributes).fromCol;
       }
     }
@@ -170,12 +181,20 @@ export default function useHtmlMatrixHelper() {
   }
 
   function row(n: NotationAttributes) {
-    switch (NotationTypeShape.get(n.notationType)) {
-      case "POINT":
-      case "HORIZONTAL_LINE": {
-        return (n as HorizontalLineNotationAttributes).row;
+    switch (n.notationType) {
+      case "ANNOTATION":
+      case "EXPONENT":
+      case "SQRTSYMBOL":
+      case "SYMBOL":
+      case "HORIZONTALLINE":
+      case "SQRT": {
+        return Math.round(
+          (n as HorizontalLineNotationAttributes).y /
+            cellStore.getCellVerticalHeight(),
+        );
       }
-      case "RECT": {
+      case "IMAGE":
+      case "TEXT": {
         return (n as RectNotationAttributes).fromRow;
       }
     }
@@ -203,21 +222,23 @@ export default function useHtmlMatrixHelper() {
 
   function width(n: NotationAttributes): number {
     if (n.notationType === "SQRTSYMBOL") {
-      return (cellStore.getCellHorizontalWidth() + cellSpace) * 2 - cellSpace;
+      return cellStore.getCellHorizontalWidth() * 2 - cellSpace;
     }
 
-    switch (NotationTypeShape.get(n.notationType)) {
-      case "POINT": {
-        if (n.notationType === "EXPONENT") {
-          return (
-            ((n as ExponentNotationAttributes).base.toString().length +
-              1) /*1 cell for exponent*/ *
-            cellStore.getCellHorizontalWidth()
-          );
-        }
+    switch (n.notationType) {
+      case "ANNOTATION":
+      case "SYMBOL": {
         return cellStore.getCellHorizontalWidth();
       }
-      case "RECT": {
+
+      case "SQRT":
+      case "EXPONENT": {
+        const n1 = n as unknown as MultiCellAttributes;
+        return (n1.toCol - n1.fromCol) * cellStore.getCellHorizontalWidth();
+      }
+
+      case "IMAGE":
+      case "TEXT": {
         return rectNotationWidth(n as RectNotationAttributes);
       }
     }
@@ -226,9 +247,7 @@ export default function useHtmlMatrixHelper() {
 
   function rectNotationWidth(n: RectAttributes): number {
     return (
-      (n.toCol - n.fromCol + 1) *
-        (cellStore.getCellHorizontalWidth() + cellSpace) -
-      cellSpace
+      (n.toCol - n.fromCol + 1) * cellStore.getCellHorizontalWidth() - cellSpace
     );
   }
 
@@ -238,8 +257,7 @@ export default function useHtmlMatrixHelper() {
 
   function rectNotationHeight(n: RectAttributes): number {
     return (
-      (Math.abs(n.toRow - n.fromRow) + 1) *
-        (cellStore.getCellVerticalHeight() + cellSpace) -
+      (Math.abs(n.toRow - n.fromRow) + 1) * cellStore.getCellVerticalHeight() -
       cellSpace
     );
   }
@@ -275,9 +293,7 @@ export default function useHtmlMatrixHelper() {
       color = n.color?.value ? n.color?.value : color;
 
       return `<span class=line style='color:${color};position:relative;left:9px;width:${
-        (n1.toCol - n1.fromCol) *
-          (cellStore.getCellHorizontalWidth() + cellSpace) -
-        8
+        n1.x2 - n1.x1
       }px;'></span>`;
     }
 
@@ -326,18 +342,16 @@ export default function useHtmlMatrixHelper() {
       for (let i = 0; i < baseStr.length; i++) {
         baseHtml += `<p style='color:${color};font-weight:${fontWeight}; position: absolute;
           top:10%;
-          transform: translateX(${
-            i * (cellStore.getCellHorizontalWidth() + cellSpace)
-          }px);
+          transform: translateX(${i * cellStore.getCellHorizontalWidth()}px);
           font-size:1.1em'>${baseStr.charAt(i)}</p>`;
       }
 
       const exponentHtml = `<p style='color:${color};font-weight:${fontWeight}; position:realtive;
       transform:translateY(-20%);
       transform:translateX(${
-        baseStr.length * (cellStore.getCellHorizontalWidth() + cellSpace) - 2
+        baseStr.length * cellStore.getCellHorizontalWidth() - 2
       }px);
-      font-size:0.7em'>${n1.exponent}</p>`;
+      font-size:${exponentFontSize()}'>${n1.exponent}</p>`;
 
       return baseHtml + exponentHtml;
     }

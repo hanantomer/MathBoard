@@ -17,20 +17,15 @@ const notationStore = useNotationStore();
 const notationMutateHelper = useNotationMutateHelper();
 
 export default function useLineDrawingHelper() {
-
   function selectLine(
     lineNotation: HorizontalLineNotationAttributes,
     linePosition: HorizontaLinePosition,
   ) {
     if (!lineNotation) return;
 
-    linePosition.x1 =
-      lineNotation.fromCol * (cellStore.getCellHorizontalWidth() + cellSpace);
-    (linePosition.x2 =
-      (lineNotation.toCol - 1) *
-      (cellStore.getCellHorizontalWidth() + cellSpace)),
-      (linePosition.y =
-        lineNotation.row * (cellStore.getCellVerticalHeight() + cellSpace));
+    linePosition.x1 = lineNotation.x1;
+    linePosition.x2 = lineNotation.x2;
+    linePosition.y = lineNotation.y;
 
     // update store
     notationStore.selectNotation(lineNotation.uuid);
@@ -96,19 +91,7 @@ export default function useLineDrawingHelper() {
       return;
     }
 
-    let fromCol = Math.round(
-      linePosition.x1 / (cellStore.getCellHorizontalWidth() + cellSpace),
-    );
-
-    let toCol = Math.round(
-      linePosition.x2 / (cellStore.getCellHorizontalWidth() + cellSpace),
-    );
-
-    let row = Math.round(
-      linePosition.y / (cellStore.getCellVerticalHeight() + cellSpace),
-    );
-
-    saveLine({ fromCol: fromCol, toCol: toCol, row: row });
+    saveLine(linePosition);
 
     resetLineDrawing(linePosition);
   }
@@ -137,9 +120,9 @@ export default function useLineDrawingHelper() {
 
   function getNearestRow(clickedYPos: number) {
     let clickedRow = Math.round(
-      clickedYPos / (cellStore.getCellVerticalHeight() + cellSpace),
+      clickedYPos / cellStore.getCellVerticalHeight(),
     );
-    return clickedRow * (cellStore.getCellVerticalHeight() + cellSpace);
+    return clickedRow * cellStore.getCellVerticalHeight();
   }
 
   return {

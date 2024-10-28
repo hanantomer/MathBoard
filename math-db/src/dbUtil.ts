@@ -7,7 +7,17 @@ import User from "./models/user.model";
 import Color from "./models/color.model";
 import db from "./models/index";
 
-import {  CurveNotationAttributes, ExponentNotationAttributes, HorizontalLineNotationAttributes, NotationAttributes, PointNotationAttributes, RectAttributes, RectNotationAttributes, SlopeLineNotationAttributes, VerticalLineNotationAttributes } from "../../math-common/src/baseTypes";
+import {
+    CurveNotationAttributes,
+    ExponentNotationAttributes,
+    HorizontalLineNotationAttributes,
+    NotationAttributes,
+    PointNotationAttributes,
+    RectNotationAttributes,
+    SlopeLineNotationAttributes,
+    VerticalLineNotationAttributes,
+    SqrtNotationAttributes
+} from "../../math-common/src/baseTypes";
 import { UserAttributes, StudentLessonCreationAttributes} from "../../math-common/build/userTypes";
 import { LessonCreationAttributes } from "../../math-common/src/lessonTypes";
 import { QuestionCreationAttributes } from "../../math-common/build/questionTypes";
@@ -491,10 +501,11 @@ export default function dbUtil() {
 
                 if (
                     !(
-                        m.col >= 0 &&
+                        m.fromCol >= 0 &&
+                        m.toCol >= 0 &&
                         m.row >= 0 &&
-                        m.base.length > 0 &&
-                        m.exponent.length > 0
+                        m.base.toString().length > 0 &&
+                        m.exponent.toString().length > 0
                     )
                 ) {
                     throw new Error("invalid model:" + JSON.stringify(m));
@@ -512,8 +523,8 @@ export default function dbUtil() {
             }
 
             case "SQRT":
-            case "HORIZONTALLINE": {
-                const m = model as HorizontalLineNotationAttributes;
+             {
+                const m = model as SqrtNotationAttributes;
                 if (
                     !(
                         m.fromCol >= 0 &&
@@ -530,12 +541,12 @@ export default function dbUtil() {
                 const m = model as SlopeLineNotationAttributes;
                 if (
                     !(
-                        m.fromCol >= 0 &&
-                        m.toCol >= 0 &&
-                        m.fromRow >= 0 &&
-                        m.toRow >= 0 &&
-                        m.fromCol < m.toCol &&
-                        m.fromRow != m.toRow
+                        m.x1 >= 0 &&
+                        m.x2 >= 0 &&
+                        m.y1 >= 0 &&
+                        m.y2 >= 0 &&
+                        m.x2 < m.x1 &&
+                        m.y1 != m.y2
                     )
                 ) {
                     throw new Error("invalid model:" + JSON.stringify(m));
@@ -546,10 +557,10 @@ export default function dbUtil() {
                 const m = model as VerticalLineNotationAttributes;
                 if (
                     !(
-                        m.col >= 0 &&
-                        m.fromRow >= 0 &&
-                        m.toRow >= 0 &&
-                        m.fromRow < m.toRow
+                        m.x >= 0 &&
+                        m.y1 >= 0 &&
+                        m.y2 >= 0 &&
+                        m.y1 < m.y2
                     )
                 ) {
                     throw new Error("invalid model:" + JSON.stringify(m));

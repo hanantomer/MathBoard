@@ -251,9 +251,9 @@ export default function useDbHelper() {
         `/${lineNotation.boardType.toLowerCase()}${lineNotation.notationType.toLowerCase()}s`,
       {
         uuid: lineNotation.uuid,
-        fromCol: lineNotation.fromCol,
-        toCol: lineNotation.toCol,
-        row: lineNotation.row,
+        x1: lineNotation.x1,
+        x2: lineNotation.x2,
+        y: lineNotation.y,
       },
     );
   }
@@ -266,9 +266,9 @@ export default function useDbHelper() {
         `/${lineNotation.boardType.toLowerCase()}${lineNotation.notationType.toLowerCase()}s`,
       {
         uuid: lineNotation.uuid,
-        col: lineNotation.col,
-        fromRow: lineNotation.fromRow,
-        toRow: lineNotation.toRow,
+        x: lineNotation.x,
+        y1: lineNotation.y1,
+        y2: lineNotation.y2,
       },
     );
   }
@@ -278,13 +278,13 @@ export default function useDbHelper() {
   ) {
     return axios.put(
       baseURL +
-        `/${lineNotation.boardType.toLowerCase()}${lineNotation.notationType.toLowerCase()}s`,
+      `/${lineNotation.boardType.toLowerCase()}${lineNotation.notationType.toLowerCase()}s`,
       {
         uuid: lineNotation.uuid,
-        fromCol: lineNotation.fromCol,
-        toCol: lineNotation.toCol,
-        fromRow: lineNotation.fromRow,
-        toRow: lineNotation.toRow,
+        x1: lineNotation.x1,
+        x2: lineNotation.x2,
+        y1: lineNotation.y1,
+        y2: lineNotation.y2,
       },
     );
   }

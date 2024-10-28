@@ -27,10 +27,10 @@
       style="position: absolute; pointer-events: none"
     >
       <line
-        :x1="lineX"
-        :y1="lineTop"
-        :x2="lineX"
-        :y2="lineBottom"
+        :x1="linePosition.x"
+        :y1="linePosition.x"
+        :x2="linePosition.y1"
+        :y2="linePosition.y2"
         class="line"
       />
     </svg>
@@ -46,18 +46,13 @@ import { useEditModeStore } from "../store/pinia/editModeStore";
 import { cellSpace } from "../../../math-common/src/globals";
 import useWatchHelper from "../helpers/watchHelper";
 
-import {
-  VerticalLinePosition,
-  DotCoordinates,
-} from "../../../math-common/src/baseTypes";
+import { VerticalLinePosition } from "../../../math-common/src/baseTypes";
 
 import {
   VerticalLineAttributes,
   VerticalLineNotationAttributes,
 } from "../../../math-common/src/baseTypes";
-import useEventBus from "../helpers/eventBusHelper";
 
-const eventBus = useEventBus();
 const notationMutateHelper = useNotationMutateHelper();
 const watchHelper = useWatchHelper();
 const notationStore = useNotationStore();
@@ -81,30 +76,30 @@ const show = computed(() => {
   );
 });
 
-let lineTop = computed(() => {
-  return linePosition.value.y1;
-});
+// let lineTop = computed(() => {
+//   return linePosition.value.y1;
+// });
 
-let lineBottom = computed(() => {
-  return linePosition.value.y2;
-});
+// let lineBottom = computed(() => {
+//   return linePosition.value.y2;
+// });
 
-let lineX = computed(() => {
-  return linePosition.value.x;
-});
+// let lineX = computed(() => {
+//   return linePosition.value.x;
+// });
 
 let handleX = computed(() => {
-  return lineX.value + (cellStore.getSvgBoundingRect().left ?? 0) - 5;
+  return linePosition.value.x + (cellStore.getSvgBoundingRect().left ?? 0) - 5;
 });
 
 let handleTop = computed(() => {
   if (!cellStore.getSvgBoundingRect()) return;
-  return lineTop.value + (cellStore.getSvgBoundingRect().top ?? 0) - 5;
+  return linePosition.value.y2 + (cellStore.getSvgBoundingRect().top ?? 0) - 5;
 });
 
 let handleBottom = computed(() => {
   if (!cellStore.getSvgBoundingRect()) return;
-  return lineBottom.value + (cellStore.getSvgBoundingRect().top ?? 0);
+  return linePosition.value.y1 + (cellStore.getSvgBoundingRect().top ?? 0);
 });
 
 // watchers
@@ -140,24 +135,14 @@ watchHelper.watchMouseEvent(
   resetLineDrawing,
 );
 
-watchHelper.watchMouseEvent(
-  ["VERTICAL_LINE_SELECTED"],
-  "EV_SVG_MOUSEUP",
-  () => editModeStore.setDefaultEditMode(),
+watchHelper.watchMouseEvent(["VERTICAL_LINE_SELECTED"], "EV_SVG_MOUSEUP", () =>
+  editModeStore.setDefaultEditMode(),
 );
 
 // methods
 
 function lineSelected(lineNotation: VerticalLineNotationAttributes) {
-  linePosition.value.x =
-    lineNotation.col * (cellStore.getCellHorizontalWidth() + cellSpace);
-
-  linePosition.value.y1 =
-    lineNotation.fromRow * (cellStore.getCellVerticalHeight() + cellSpace);
-
-  linePosition.value.y2 =
-    lineNotation.toRow * (cellStore.getCellVerticalHeight() + cellSpace);
-
+  Object.assign(linePosition.value, lineNotation);
   notationStore.selectNotation(lineNotation.uuid);
 }
 
@@ -184,7 +169,6 @@ function onMouseUp() {
 }
 
 function startDrawLine(e: MouseEvent) {
-
   editModeStore.setNextEditMode();
 
   if (linePosition.value.y1) return;
@@ -217,19 +201,18 @@ function endDrawLine() {
   if (linePosition.value.y2 == linePosition.value.y1) return;
 
   let col = Math.round(
-    linePosition.value.x / (cellStore.getCellHorizontalWidth() + cellSpace),
+    linePosition.value.x / cellStore.getCellHorizontalWidth(),
   );
 
   let fromRow = Math.round(
-    linePosition.value.y1 / (cellStore.getCellVerticalHeight() + cellSpace),
+    linePosition.value.y1 / cellStore.getCellVerticalHeight(),
   );
 
   let toRow = Math.round(
-    linePosition.value.y2 / (cellStore.getCellVerticalHeight() + cellSpace),
+    linePosition.value.y2 / cellStore.getCellVerticalHeight(),
   );
 
-
-  saveLine({ col: col, fromRow: fromRow, toRow: toRow });
+  saveLine(linePosition.value);
 
   resetLineDrawing();
 }
@@ -257,9 +240,7 @@ function resetLineDrawing() {
 }
 
 function getNearestCol(clickedXPos: number) {
-  let clickedCol = Math.round(
-    clickedXPos / (cellStore.getCellHorizontalWidth() + cellSpace),
-  );
-  return clickedCol * (cellStore.getCellHorizontalWidth() + cellSpace);
+  let clickedCol = Math.round(clickedXPos / cellStore.getCellHorizontalWidth());
+  return clickedCol * cellStore.getCellHorizontalWidth();
 }
 </script>

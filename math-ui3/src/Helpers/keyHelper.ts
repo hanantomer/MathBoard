@@ -15,7 +15,6 @@ const notationMutateHelper = useNotationMutateHelper();
 const selectionHelper = useSelectionHelper();
 
 export default function () {
-
   function keyUpHandler(e: KeyboardEvent) {
     const { ctrlKey, altKey, code, key } = e;
     if (ctrlKey || altKey) return;
@@ -73,12 +72,10 @@ export default function () {
     selectionHelper.selectNotationAtPosition({
       x:
         cellStore.getSvgBoundingRect().left +
-        cellStore.getSelectedCell()?.col! *
-          (cellStore.getCellHorizontalWidth() + cellSpace),
+        cellStore.getSelectedCell()?.col! * cellStore.getCellHorizontalWidth(),
       y:
         cellStore.getSvgBoundingRect().top +
-        cellStore.getSelectedCell()?.row! *
-          (cellStore.getCellVerticalHeight() + cellSpace),
+        cellStore.getSelectedCell()?.row! * cellStore.getCellVerticalHeight(),
     });
   }
 
@@ -111,8 +108,6 @@ export default function () {
 
     return null;
   }
-
-  
 
   return {
     keyUpHandler,

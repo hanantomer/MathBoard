@@ -44,19 +44,19 @@ export default class QuestionSlopeLine extends Model<
 
     @AllowNull(false)
     @Column({ type: DataType.INTEGER })
-    fromCol!: number;
+    p1x!: number;
 
     @AllowNull(false)
     @Column({ type: DataType.INTEGER })
-    toCol!: number;
+    p2x!: number;
 
     @AllowNull(false)
     @Column({ type: DataType.INTEGER })
-    fromRow!: number;
+    p1y!: number;
 
     @AllowNull(false)
     @Column({ type: DataType.INTEGER })
-    toRow!: number;
+    p2y!: number;
 
     @BelongsTo(() => Color, {
         foreignKey: { name: "colorId", field: "colorId", allowNull: true },

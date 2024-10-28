@@ -41,18 +41,18 @@ export default class AnswerHorizontalLine extends Model<
         },
     })
     answer!: Answer;
+    
+    @AllowNull(false)
+    @Column({ type: DataType.INTEGER })
+    p1x!: number; 
 
     @AllowNull(false)
     @Column({ type: DataType.INTEGER })
-    fromCol!: number;
+    p2x!: number; 
 
     @AllowNull(false)
     @Column({ type: DataType.INTEGER })
-    toCol!: number;
-
-    @AllowNull(false)
-    @Column({ type: DataType.INTEGER })
-    row!: number;
+    py!: number;
 
     @BelongsTo(() => Color, {
         foreignKey: { name: "colorId", field: "colorId", allowNull: true },

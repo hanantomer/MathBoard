@@ -5,6 +5,7 @@ import { ref } from "vue";
 
 import { CellAttributes } from "common/baseTypes";
 import { useEditModeStore } from "./editModeStore";
+import { cellSpace } from "common/globals";
 
 const editModeStore = useEditModeStore();
 
@@ -28,11 +29,11 @@ export const useCellStore = defineStore("cell", () => {
   let selectedCell = ref(<CellAttributes>{ col: 0, row: 0 })
 
   function getCellVerticalHeight(): number {
-    return cellVerticalHight.value;
+    return cellVerticalHight.value + cellSpace;
   }
 
   function getCellHorizontalWidth(): number {
-    return cellVerticalHight.value / 2;
+    return cellVerticalHight.value / 2 + cellSpace;
   }
 
   function setCellVerticalHeight(size: number) {

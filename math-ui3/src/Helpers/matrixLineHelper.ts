@@ -43,16 +43,16 @@ export default function useLineMatrixHelper() {
         return n.uuid;
       })
       .attr("x1", (n: LineNotationAttributes) => {
-        return lineX1(n);
+        return n.x1;
       })
       .attr("x2", (n: LineNotationAttributes) => {
-        return lineX2(n);
+        return n.x2;
       })
       .attr("y1", (n: LineNotationAttributes) => {
-        return LineY1(n);
+        return n.y1;
       })
       .attr("y2", (n: LineNotationAttributes) => {
-        return LineY2(n);
+        return n.y2;
       })
       .attr("stroke-width", (n: LineNotationAttributes) => {
         return "2";
@@ -68,16 +68,16 @@ export default function useLineMatrixHelper() {
         return n.uuid;
       })
       .attr("x1", (n: LineNotationAttributes) => {
-        return lineX1(n);
+        return n.x1;
       })
       .attr("x2", (n: LineNotationAttributes) => {
-        return lineX2(n);
+        return n.x2;
       })
       .attr("y1", (n: LineNotationAttributes) => {
-        return LineY1(n);
+        return n.y1;
       })
       .attr("y2", (n: LineNotationAttributes) => {
-        return LineY2(n);
+        return n.y2;
       })
       .attr("stroke-width", () => {
         return 2;
@@ -91,25 +91,25 @@ export default function useLineMatrixHelper() {
       });
   }
 
-  function lineX1(n: LineNotationAttributes): number {
-    const col =
-      n.notationType === "SQRT"
-        ? n.fromCol + 1 /*to leave space for sqrt sign*/
-        : n.fromCol ?? n.col;
-    return utils.getNotationXposByCol(col);
-  }
+  // function lineX1(n: LineNotationAttributes): number {
+  //   const col =
+  //     n.notationType === "SQRT"
+  //       ? n.fromCol + 1 /*to leave space for sqrt sign*/
+  //       : n.fromCol ?? n.col;
+  //   return utils.getNotationXposByCol(col);
+  // }
 
-  function lineX2(n: LineNotationAttributes): number {
-    return utils.getNotationXposByCol(n.toCol ?? n.col);
-  }
+  // function lineX2(n: LineNotationAttributes): number {
+  //   return utils.getNotationXposByCol(n.toCol ?? n.col);
+  // }
 
-  function LineY1(n: LineNotationAttributes): number {
-    return utils.getNotationYposByRow(n.fromRow ?? n.row);
-  }
+  // function LineY1(n: LineNotationAttributes): number {
+  //   return utils.getNotationYposByRow(n.fromRow ?? n.row);
+  // }
 
-  function LineY2(n: LineNotationAttributes): number {
-    return utils.getNotationYposByRow(n.toRow ?? n.row);
-  }
+  // function LineY2(n: LineNotationAttributes): number {
+  //   return utils.getNotationYposByRow(n.toRow ?? n.row);
+  // }
 
   return {
     mergeLineNotations,

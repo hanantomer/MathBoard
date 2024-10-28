@@ -38,26 +38,16 @@
   </div>
 </template>
 <script setup lang="ts">
-import useNotationMutateHelper from "../helpers/notationMutateHelper";
+
 
 import { computed, ref } from "vue";
-import { useNotationStore } from "../store/pinia/notationStore";
 import { useCellStore } from "../store/pinia/cellStore";
 import { useEditModeStore } from "../store/pinia/editModeStore";
-import { cellSpace } from "../../../math-common/src/globals";
-
 import { HorizontaLinePosition } from "../../../math-common/src/baseTypes";
-
-import {
-  HorizontalLineAttributes,
-  HorizontalLineNotationAttributes,
-} from "../../../math-common/src/baseTypes";
 
 import useWatchHelper from "../helpers/watchHelper";
 import useLineDrawer from "../helpers/lineDrawingHelper";
 
-const notationMutateHelper = useNotationMutateHelper();
-const notationStore = useNotationStore();
 const cellStore = useCellStore();
 const editModeStore = useEditModeStore();
 const watchHelper = useWatchHelper();

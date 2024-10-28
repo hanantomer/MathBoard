@@ -3,7 +3,6 @@ import { useEditModeStore } from "../store/pinia/editModeStore";
 import { useNotationStore } from "../store/pinia/notationStore";
 import { useCellStore } from "../store/pinia/cellStore";
 
-
 import useMatrixCellHelper from "./matrixCellHelper";
 import useNotationMutationHelper from "./notationMutateHelper";
 import useAuthorizationHelper from "./authorizationHelper";
@@ -16,22 +15,18 @@ import {
   HorizontalLineNotationAttributes,
   VerticalLineNotationAttributes,
   SlopeLineNotationAttributes,
-  CurveNotationAttributes
+  CurveNotationAttributes,
+  MultiCellAttributes,
+  ExponentNotationAttributes,
 } from "common/baseTypes";
-import { NotationTypeShape } from "common/unions";
+//import { NotationTypeShape } from "common/unions";
 import { cellSpace } from "common/globals";
 
 const userStore = useUserStore();
-const editModeStore = useEditModeStore();
 const notationStore = useNotationStore();
 const cellStore = useCellStore();
-
-const matrixCellHelper = useMatrixCellHelper();
 const notationMutationHelper = useNotationMutationHelper();
-const authorizationHelper = useAuthorizationHelper();
 const eventBus = useEventBus();
-const selectionHelper = useSelectionHelper();
-
 
 export default function eventHelper() {
   async function copy() {
@@ -68,9 +63,12 @@ export default function eventHelper() {
     let firstCol: number | null = null;
 
     notationStore.getCopiedNotations().forEach((n: NotationAttributes) => {
-      switch (NotationTypeShape.get(n.notationType)) {
-        case "POINT": {
-          let n1 = { ...n } as PointNotationAttributes;
+      switch (n.notationType) {
+        case "SYMBOL":
+        case "SIGN":
+        case "SQRTSYMBOL":
+        case "ANNOTATION": {
+          const n1 = n as PointNotationAttributes;
           if (!firstRow) firstRow = n1.row;
           if (!firstCol) firstCol = n1.col;
 
@@ -80,49 +78,52 @@ export default function eventHelper() {
           break;
         }
 
-        case "HORIZONTAL_LINE": {
-          let n1 = { ...n } as HorizontalLineNotationAttributes;
+        case "EXPONENT":
+        case "SQRT": {
+          let n1 = n as ExponentNotationAttributes;
           const lineWidth = n1.toCol - n1.fromCol;
           if (!firstCol) firstCol = n1.fromCol;
           n1.fromCol = selectedCell.col + n1.fromCol - firstCol;
           n1.toCol = n1.fromCol + lineWidth;
           n1.row = selectedCell.row + n1.row;
-
           notationMutationHelper.cloneNotation(n1);
-
           break;
         }
 
-        case "VERTICAL_LINE": {
+        case "HORIZONTALLINE": {
+          let n1 = { ...n } as HorizontalLineNotationAttributes;
+          const lineWidth = n1.x2 - n1.x1;
+          n1.x1 = selectedCell.col * cellStore.getCellHorizontalWidth();
+          n1.x2 = n1.x1 + lineWidth;
+          n1.y = selectedCell.row * cellStore.getCellVerticalHeight();
+          notationMutationHelper.cloneNotation(n1);
+          break;
+        }
+
+        case "VERTICALLINE": {
           let n1 = { ...n } as VerticalLineNotationAttributes;
-          if (!firstRow) firstRow = n1.fromRow;
-          const lineHeight = n1.toRow - n1.fromRow;
-          n1.col = selectedCell.col;
-          n1.fromRow = selectedCell.row + n1.fromRow - firstRow;
-          n1.toRow = n1.fromRow + lineHeight;
-
+          const lineHeight = n1.y2 - n1.y1;
+          n1.y1 = selectedCell.row * cellStore.getCellVerticalHeight();
+          n1.y2 = n1.y1 + lineHeight;
+          n1.x = selectedCell.col * cellStore.getCellHorizontalWidth();
           notationMutationHelper.cloneNotation(n1);
-
           break;
         }
 
-        case "SLOPE_LINE": {
+        case "SLOPELINE": {
           let n1 = { ...n } as SlopeLineNotationAttributes;
-          if (!firstCol) firstCol = n1.fromCol;
-          if (!firstRow) firstRow = n1.fromRow;
-          const lineWidth = n1.toCol - n1.fromCol;
-          const lineHeight = n1.toRow - n1.fromRow;
-          n1.fromCol = selectedCell.col;
-          n1.toCol = selectedCell.col + lineWidth;
-          n1.fromRow = selectedCell.row + n1.fromRow - firstRow;
-          n1.toRow = n1.fromRow + lineHeight;
-
+          const lineWidth = n1.x2 - n1.x1;
+          const lineHeight = n1.y2 - n1.y1;
+          n1.x1 = selectedCell.col * cellStore.getCellHorizontalWidth();
+          n1.x2 = n1.x1 + lineWidth;
+          n1.y1 = selectedCell.row * cellStore.getCellVerticalHeight();
+          n1.y2 = n1.y1 + lineHeight;
           notationMutationHelper.cloneNotation(n1);
-
           break;
         }
 
-        case "RECT": {
+        case "IMAGE":
+        case "TEXT": {
           let n1 = { ...n } as RectNotationAttributes;
           const rectWidth = n1.toCol - n1.fromCol;
           const rectHeight = n1.toRow - n1.fromRow;
@@ -138,17 +139,15 @@ export default function eventHelper() {
           break;
         }
 
-        case "CURVE": {
+        case "CONCAVECURVE":
+        case "CONVEXCURVE": {
           let n1 = { ...n } as CurveNotationAttributes;
 
           const deltaX =
-            selectedCell.col * (cellStore.getCellHorizontalWidth() + cellSpace) -
-            n1.p1x;
+            selectedCell.col * cellStore.getCellHorizontalWidth() - n1.p1x;
 
           const deltaY =
-            selectedCell.row *
-              (cellStore.getCellVerticalHeight() + cellSpace) -
-            n1.p1y;
+            selectedCell.row * cellStore.getCellVerticalHeight() - n1.p1y;
 
           n1.p1x += deltaX;
           n1.p2x += deltaX;
@@ -208,11 +207,9 @@ export default function eventHelper() {
     reader.readAsDataURL(item?.getAsFile() as Blob);
   }
 
-
   function emitSvgMouseDown(e: MouseEvent) {
     eventBus.emit("EV_SVG_MOUSEDOWN", e);
   }
-
 
   function registerSvgMouseDown() {
     document
@@ -259,7 +256,6 @@ export default function eventHelper() {
   }
 
   function emitKeyUp(key: KeyboardEvent) {
-
     eventBus.emit("EV_KEYUP", key);
   }
 

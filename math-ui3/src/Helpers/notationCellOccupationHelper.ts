@@ -1,12 +1,14 @@
 import {
   PointNotationAttributes,
   ExponentNotationAttributes,
-  HorizontalLineNotationAttributes,
+  HorizontalLineAttributes,
   VerticalLineNotationAttributes,
   SlopeLineNotationAttributes,
   RectNotationAttributes,
   CurveNotationAttributes,
   NotationAttributes,
+  SlopeLineAttributes,
+  MultiCellAttributes,
 } from "common/baseTypes";
 
 import useScreenHelper from "./screenHelper";
@@ -28,16 +30,15 @@ export default function notationCellOccupationHelper() {
     matrix[notation.col][notation.row] = doRemove ? null : notation.uuid;
   }
 
-  function updateExponentOccupationMatrix(
+  function updateMultiCellOccupationMatrix(
     matrix: any,
-    notation: ExponentNotationAttributes,
+    notation: MultiCellAttributes,
+    uuid: string,
     doRemove: boolean,
   ) {
-    if (!validateRowAndCol(notation.col, notation.row)) return;
-
-    // occupy base cells plus one cell for exponent
-    for (let i = 0; i <= notation.base.toString().length; i++) {
-      matrix[notation.col + i][notation.row] = doRemove ? null : notation.uuid;
+    for (let i = notation.fromCol; i <= notation.toCol; i++) {
+      if (!validateRowAndCol(i, notation.row)) return;
+      matrix[i][notation.row] = doRemove ? null : uuid;
     }
   }
 
@@ -46,13 +47,13 @@ export default function notationCellOccupationHelper() {
     col: number,
     row: number,
     matrix: any,
-    notation: NotationAttributes,
+    uuid : string,
     doRemove: boolean,
   ) {
     if (!validateRowAndCol(col, row)) return;
     if (doRemove) {
       for (let i = 0; i < matrix[col][row].length; i++) {
-        if (matrix[col][row][i] === notation.uuid) {
+        if (matrix[col][row][i] === uuid) {
           matrix[col][row][i] = null;
         }
       }
@@ -64,32 +65,37 @@ export default function notationCellOccupationHelper() {
     }
 
     // line occuption mtarix can attribute multiple notations to single cell
-    matrix[col][row].push(notation.uuid);
+    matrix[col][row].push(uuid);
   }
 
   function updateHorizontalLineOccupationMatrix(
     matrix: any,
-    notation: HorizontalLineNotationAttributes,
+    notation: HorizontalLineAttributes,
+    uuid: string,
     doRemove: boolean,
   ) {
-    for (let col = notation.fromCol; col <= notation.toCol; col++) {
-      if (validateRowAndCol(col, notation.row)) {
-        if (validateRowAndCol(col, notation.row - 1))
+    const fromCol = notation.x1 / cellStore.getCellHorizontalWidth();
+    const toCol = notation.x2 / cellStore.getCellHorizontalWidth();
+    const row = notation.y / cellStore.getCellVerticalHeight();
+
+    for (let col = fromCol; col <= toCol; col++) {
+      if (validateRowAndCol(col, row)) {
+        if (validateRowAndCol(col, row - 1))
           // occupy 2 rows
 
           updateLineOccupationMatrixCell(
             col,
-            notation.row,
+            row,
             matrix,
-            notation,
+            uuid,
             doRemove,
           );
 
         updateLineOccupationMatrixCell(
           col,
-          notation.row - 1,
+          row - 1,
           matrix,
-          notation,
+          uuid,
           doRemove,
         );
       }
@@ -101,23 +107,28 @@ export default function notationCellOccupationHelper() {
     notation: VerticalLineNotationAttributes,
     doRemove: boolean,
   ) {
-    for (let i = notation.fromRow; i <= notation.toRow; i++) {
+
+    const fromRow = Math.round(notation.y1 / cellStore.getCellVerticalHeight());
+    const toRow = Math.round(notation.y2 / cellStore.getCellVerticalHeight());
+    const col = Math.round(notation.x / cellStore.getCellHorizontalWidth())
+
+    for (let i = fromRow; i <= toRow; i++) {
       if (validateRowAndCol(i, matrixDimensions.rowsNum)) {
         updateLineOccupationMatrixCell(
-          notation.col,
+          col,
           i,
           matrix,
-          notation,
+          notation.uuid,
           doRemove,
         );
       }
 
       if (validateRowAndCol(i, matrixDimensions.rowsNum - 1)) {
         updateLineOccupationMatrixCell(
-          notation.col - 1,
+          col - 1,
           i,
           matrix,
-          notation,
+          notation.uuid,
           doRemove,
         );
       }
@@ -127,28 +138,36 @@ export default function notationCellOccupationHelper() {
   /// populate occupation matrix to encompass the sloped line
   function updateSlopeLineOccupationMatrix(
     matrix: any,
-    notation: SlopeLineNotationAttributes,
+    notation: SlopeLineAttributes,
+    uuid: string,
     doRemove: boolean,
   ) {
+
+    const fromCol = notation.x1 / cellStore.getCellHorizontalWidth();
+    const toCol = notation.x2 / cellStore.getCellHorizontalWidth();
+    const fromRow = notation.y1 / cellStore.getCellVerticalHeight();
+    const toRow = notation.y2 / cellStore.getCellVerticalHeight();
+
+
     // slope is positive if fromRow > toRow
     const slope =
-      (notation.toRow - notation.fromRow) / (notation.toCol - notation.fromCol);
+      (toRow - fromRow) / (toCol - fromCol);
 
-    let firstRowIndex = notation.fromRow;
+    let firstRowIndex = fromRow;
     for (
-      let col = notation.fromCol - 1, i = 0;
-      col <= notation.toCol;
+      let col = fromCol - 1, i = 0;
+      col <= toCol;
       col++, i++
     ) {
       let row = Math.ceil(firstRowIndex + i * slope);
 
       if (validateRowAndCol(col, row)) {
-        updateLineOccupationMatrixCell(col, row, matrix, notation, doRemove);
+        updateLineOccupationMatrixCell(col, row, matrix, uuid, doRemove);
         updateLineOccupationMatrixCell(
           col - 1,
           row,
           matrix,
-          notation,
+          uuid,
           doRemove,
         );
       }
@@ -184,25 +203,18 @@ export default function notationCellOccupationHelper() {
     // get curve-enclosing-triangle and mark all cells intersecting
     // with the edges which emerge from the control point
 
-    const triangleEddge1 = screenHelper.getSlopeLineAttributesByCoordinates({
-      bottom: { x: notation.p1x, y: notation.p1y },
-      top: { x: notation.cpx, y: notation.cpy },
-    });
-
     updateSlopeLineOccupationMatrix(
       matrix,
-      { ...notation, ...triangleEddge1 },
+      { x1: notation.p1x, x2: notation.cpx, y1: notation.p1y, y2: notation.cpy },
+      notation.uuid,
       doRemove,
     );
 
-    const triangleEddge2 = screenHelper.getSlopeLineAttributesByCoordinates({
-      bottom: { x: notation.cpx, y: notation.cpy },
-      top: { x: notation.p2x, y: notation.p2y },
-    });
 
     updateSlopeLineOccupationMatrix(
       matrix,
-      { ...notation, ...triangleEddge2 },
+      { x1: notation.p2x, x2: notation.cpx, y1: notation.p2y, y2: notation.cpy },
+      notation.uuid,
       doRemove,
     );
   }
@@ -218,7 +230,7 @@ export default function notationCellOccupationHelper() {
 
   return {
     updatePointOccupationMatrix,
-    updateExponentOccupationMatrix,
+    updateMultiCellOccupationMatrix,
     updateHorizontalLineOccupationMatrix,
     updateVerticalLineOccupationMatrix,
     updateSlopeLineOccupationMatrix,

@@ -1,8 +1,7 @@
 import * as d3 from "d3";
-import { NotationTypeShape } from "common/unions";
 import { matrixDimensions, defaultdCellStroke } from "common/globals";
 import {
-  HorizontalLineNotationAttributes,
+  SqrtNotationAttributes,
   PointNotationAttributes,
 } from "common/baseTypes";
 import { useCellStore } from "../store/pinia/cellStore";
@@ -59,10 +58,7 @@ export default function useMatrixHelper() {
       })
       .lower()
       .attr("transform", (d, i) => {
-        let y =
-          i === 0
-            ? 0
-            : (cellStore.getCellVerticalHeight() + cellSpace) * i - cellSpace;
+        let y = i === 0 ? 0 : cellStore.getCellVerticalHeight() * i - cellSpace;
         return "translate(0, " + y + ")";
       })
       .selectAll("cell")
@@ -77,9 +73,7 @@ export default function useMatrixHelper() {
         return i;
       })
       .attr("x", (d, i) => {
-        return i == 0
-          ? 0
-          : i * (cellStore.getCellHorizontalWidth() + cellSpace) - cellSpace;
+        return i == 0 ? 0 : i * cellStore.getCellHorizontalWidth() - cellSpace;
       })
       .attr("width", cellStore.getCellHorizontalWidth())
       .attr("height", cellStore.getCellVerticalHeight());
@@ -123,7 +117,7 @@ export default function useMatrixHelper() {
   }
 
   function getSqrtSymbol(notation: NotationAttributes): NotationAttributes {
-    let sqrtNotation = notation as HorizontalLineNotationAttributes;
+    let sqrtNotation = notation as SqrtNotationAttributes;
     let sqrtSignNotation = {
       ...sqrtNotation,
       col: sqrtNotation.fromCol,
@@ -135,7 +129,6 @@ export default function useMatrixHelper() {
   }
 
   function refreshScreen(svgId: string) {
-
     let notations: NotationAttributes[] = [];
 
     const svgElement = document!.getElementById(svgId);
@@ -148,8 +141,12 @@ export default function useMatrixHelper() {
       svgId,
       notations.filter(
         (n) =>
-          NotationTypeShape.get(n.notationType) === "POINT" ||
-          NotationTypeShape.get(n.notationType) === "RECT",
+          n.notationType === "ANNOTATION" ||
+          n.notationType === "EXPONENT" ||
+          n.notationType === "SIGN" ||
+          n.notationType === "SQRT" ||
+          n.notationType === "SQRTSYMBOL" ||
+          n.notationType === "SYMBOL",
       ),
       svgElement!,
     );
@@ -158,9 +155,9 @@ export default function useMatrixHelper() {
       svgId,
       notations.filter(
         (n) =>
-          NotationTypeShape.get(n.notationType) === "HORIZONTAL_LINE" ||
-          NotationTypeShape.get(n.notationType) === "VERTICAL_LINE" ||
-          NotationTypeShape.get(n.notationType) === "SLOPE_LINE",
+          n.notationType === "HORIZONTALLINE" ||
+          n.notationType === "VERTICALLINE" ||
+          n.notationType === "SLOPELINE",
       ),
     );
 
@@ -168,7 +165,7 @@ export default function useMatrixHelper() {
       svgId,
       notations.filter(
         (n) =>
-          NotationTypeShape.get(n.notationType) === "CURVE"
+          n.notationType === "CONCAVECURVE" || n.notationType === "CONVEXCURVE",
       ),
     );
   }

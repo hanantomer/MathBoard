@@ -39,7 +39,11 @@ export default class AnswerExponent extends Model<
 
     @AllowNull(false)
     @Column({ type: DataType.INTEGER })
-    col!: number;
+    fromCol!: number;
+
+    @AllowNull(false)
+    @Column({ type: DataType.INTEGER })
+    toCol!: number;
 
     @AllowNull(false)
     @Column({ type: DataType.INTEGER })

@@ -1,4 +1,4 @@
-import { NotationTypeShape } from "common/unions";
+
 import {
   getDefaultFontSize,
   defaultdCellStroke,
@@ -26,43 +26,37 @@ const matrixCellHelper = useMatrixCellHelper();
 export default function useMatrixHelperUtils() {
 
   function getCol(n: NotationAttributes): number  {
-    switch (NotationTypeShape.get(n.notationType)) {
-      case "POINT": {
+    switch (n.notationType) {
+      case "ANNOTATION":
+      case "SIGN":
+      case "SYMBOL":
+      case "SQRTSYMBOL": {
         return (n as PointNotationAttributes).col;
       }
-      case "HORIZONTAL_LINE": {
-        return (n as HorizontalLineNotationAttributes).fromCol;
-      }
-      case "VERTICAL_LINE": {
-        return (n as VerticalLineNotationAttributes).col;
-      }
-      case "SLOPE_LINE": {
-        return (n as SlopeLineNotationAttributes).fromCol;
-      }
-      case "RECT": {
+      case "IMAGE":
+      case "TEXT": {
         return (n as RectNotationAttributes).fromCol;
       }
+      default:
+        return 0;
     }
-    throw new Error("invlid notation type:" + n.notationType);
   }
 
   function getRow(n: NotationAttributes) : number {
-    switch (NotationTypeShape.get(n.notationType)) {
-      case "POINT":
-      case "HORIZONTAL_LINE": {
-        return (n as HorizontalLineNotationAttributes).row;
+    switch (n.notationType) {
+      case "ANNOTATION":
+      case "SIGN":
+      case "SYMBOL":
+      case "SQRTSYMBOL": {
+        return (n as PointNotationAttributes).row;
       }
-      case "VERTICAL_LINE": {
-        return (n as VerticalLineNotationAttributes).fromRow;
-      }
-      case "SLOPE_LINE": {
-        return (n as SlopeLineNotationAttributes).fromRow;
-      }
-      case "RECT": {
+      case "IMAGE":
+      case "TEXT": {
         return (n as RectNotationAttributes).fromRow;
       }
+      default:
+        return 0;
     }
-    throw new Error("invalid notation type:+" + n.notationType)
   }
 
   function getNotationXposByCol(col: number): number {
@@ -70,7 +64,7 @@ export default function useMatrixHelperUtils() {
   }
 
   function getNotationYposByRow(row: number): number {
-    return row * (cellStore.getCellVerticalHeight() + cellSpace);
+    return row * (cellStore.getCellVerticalHeight());
   }
 
   function removeNotations(exit: any) {
@@ -84,7 +78,6 @@ export default function useMatrixHelperUtils() {
     const cell = { col: n1.col, row: n1.row };
     matrixCellHelper.colorizeCell(cell, n.color.value);
   }
-
 
 
   return {

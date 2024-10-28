@@ -296,13 +296,11 @@ function moveSelectionByMouseDrag(e: MouseEvent) {
   // movement is still too small
 
   const rectDeltaX = Math.round(
-    (e.pageX - dragPosition.value.x) /
-      (cellStore.getCellHorizontalWidth() + cellSpace),
+    (e.pageX - dragPosition.value.x) / cellStore.getCellHorizontalWidth(),
   );
 
   const rectDeltaY = Math.round(
-    (e.pageY - dragPosition.value.y) /
-      (cellStore.getCellVerticalHeight() + cellSpace),
+    (e.pageY - dragPosition.value.y) / cellStore.getCellVerticalHeight(),
   );
 
   if (rectDeltaX != 0 || rectDeltaY != 0) {
@@ -312,8 +310,8 @@ function moveSelectionByMouseDrag(e: MouseEvent) {
       e.ctrlKey,
     );
 
-    const xMove = rectDeltaX * (cellStore.getCellHorizontalWidth() + cellSpace);
-    const yMove = rectDeltaY * (cellStore.getCellVerticalHeight() + cellSpace);
+    const xMove = rectDeltaX * cellStore.getCellHorizontalWidth();
+    const yMove = rectDeltaY * cellStore.getCellVerticalHeight();
 
     selectionPosition.value.topLeft.x += xMove;
     selectionPosition.value.topLeft.y += yMove;
@@ -330,13 +328,13 @@ async function moveSelectionByKey(
   moveVertical: number,
 ) {
   selectionPosition.value.topLeft.x +=
-    moveHorizontal * (cellStore.getCellHorizontalWidth() + cellSpace);
+    moveHorizontal * cellStore.getCellHorizontalWidth();
   selectionPosition.value.topLeft.y +=
-    moveVertical * (cellStore.getCellVerticalHeight() + cellSpace);
+    moveVertical * cellStore.getCellVerticalHeight();
   selectionPosition.value.bottomRight.x +=
-    moveHorizontal * (cellStore.getCellHorizontalWidth() + cellSpace);
+    moveHorizontal * cellStore.getCellHorizontalWidth();
   selectionPosition.value.bottomRight.y +=
-    moveVertical * cellStore.getCellVerticalHeight() + cellSpace;
+    moveVertical * cellStore.getCellVerticalHeight();
 }
 
 async function endMoveSelection(e: MouseEvent) {
@@ -376,7 +374,6 @@ function resetSelectionPosition() {
 }
 
 function signalSelection() {
-
   eventBus.emit("EV_AREA_SELECTION_DONE", {
     left: selectionRectLeft.value,
     top: selectionRectTop.value,

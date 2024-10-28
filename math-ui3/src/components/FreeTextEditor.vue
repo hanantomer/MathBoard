@@ -89,23 +89,23 @@ function setInitialTextDimensions(textNotation: RectNotationAttributes) {
   textLeft.value =
     cellStore.getSvgBoundingRect().x +
     window.scrollX +
-    textNotation.fromCol * (cellStore.getCellHorizontalWidth() + cellSpace) -
+    textNotation.fromCol * cellStore.getCellHorizontalWidth() -
     cellSpace;
 
   textTop.value =
     cellStore.getSvgBoundingRect().y +
     window.scrollY +
-    textNotation.fromRow * (cellStore.getCellVerticalHeight() + cellSpace) -
+    textNotation.fromRow * cellStore.getCellVerticalHeight() -
     cellSpace;
 
   textHeight.value =
     (textNotation.toRow - textNotation.fromRow + 1) *
-      (cellStore.getCellVerticalHeight() + cellSpace) -
+      cellStore.getCellVerticalHeight() -
     cellSpace;
 
   textWidth.value =
     (textNotation.toCol - textNotation.fromCol + 1) *
-      (cellStore.getCellHorizontalWidth() + cellSpace) -
+      cellStore.getCellHorizontalWidth() -
     cellSpace;
 }
 

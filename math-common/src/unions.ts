@@ -33,13 +33,14 @@ export type BusEventType =
   | "EV_SQRT_SELECTED"
   | "EV_HORIZONTAL_LINE_SELECTED";
 
-export type NotationShape =
-  | "POINT"
-  | "HORIZONTAL_LINE"
-  | "VERTICAL_LINE"
-  | "SLOPE_LINE"
-  | "CURVE"
-  | "RECT";
+// export type NotationShape =
+//   | "POINT"
+//   | "POINTARRAY"
+//   | "HORIZONTAL_LINE"
+//   | "VERTICAL_LINE"
+//   | "SLOPE_LINE"
+//   | "CURVE"
+//   | "RECT";
 
 export const NotationTypeValues = [
   "SYMBOL",
@@ -74,24 +75,24 @@ export type CursorType =
   | "text"
   | "wait";
 
-export const NotationTypeShape = new Map<
-  NotationType,
-  NotationShape
->([
-  ["SYMBOL", "POINT"],
-  ["SIGN", "POINT"],
-  ["EXPONENT", "POINT"],
-  ["SQRT", "HORIZONTAL_LINE"],
-  ["SQRTSYMBOL", "POINT"],
-  ["HORIZONTALLINE", "HORIZONTAL_LINE"],
-  ["VERTICALLINE", "VERTICAL_LINE"],
-  ["SLOPELINE", "SLOPE_LINE"],
-  ["TEXT", "RECT"],
-  ["ANNOTATION", "POINT"],
-  ["IMAGE", "RECT"],
-  ["CONCAVECURVE", "CURVE"],
-  ["CONVEXCURVE", "CURVE"],
-]);
+// export const NotationTypeShape = new Map<
+//   NotationType,
+//   NotationShape
+// >([
+//   ["SYMBOL", "POINT"],
+//   ["SIGN", "POINT"],
+//   ["EXPONENT", "POINTARRAY"],
+//   ["SQRT", "HORIZONTAL_LINE"],
+//   ["SQRTSYMBOL", "POINT"],
+//   ["HORIZONTALLINE", "HORIZONTAL_LINE"],
+//   ["VERTICALLINE", "VERTICAL_LINE"],
+//   ["SLOPELINE", "SLOPE_LINE"],
+//   ["TEXT", "RECT"],
+//   ["ANNOTATION", "POINT"],
+//   ["IMAGE", "RECT"],
+//   ["CONCAVECURVE", "CURVE"],
+//   ["CONVEXCURVE", "CURVE"],
+// ]);
 
 export const NotationTypeBackgroundColorizing =
   new Set<NotationType>([

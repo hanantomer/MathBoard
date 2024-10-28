@@ -44,19 +44,19 @@ export default class LessonSlopeLine extends Model<
 
     @AllowNull(false)
     @Column({ type: DataType.INTEGER })
-    fromCol!: number; // col related to the lower row
+    p1x!: number;
 
     @AllowNull(false)
     @Column({ type: DataType.INTEGER })
-    toCol!: number; // col related to the higher row
+    p2x!: number;
 
     @AllowNull(false)
     @Column({ type: DataType.INTEGER })
-    fromRow!: number;
+    p1y!: number;
 
     @AllowNull(false)
     @Column({ type: DataType.INTEGER })
-    toRow!: number;
+    p2y!: number;
 
     @BelongsTo(() => Color, {
         foreignKey: { name: "colorId", field: "colorId", allowNull: true },

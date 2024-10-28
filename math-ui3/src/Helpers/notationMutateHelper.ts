@@ -20,11 +20,17 @@ import {
   CurveNotationCreationAttributes,
   ExponentNotationCreationAttributes,
   AnnotationNotationCreationAttributes,
+  isCurve,
+  isLine,
+  isPoint,
+  isRect,
+  ExponentNotationAttributes,
+  MultiCellAttributes,
 } from "common/baseTypes";
 
 import { matrixDimensions } from "common/globals";
 import { CellAttributes } from "common/baseTypes";
-import { NotationType, NotationTypeShape, MoveDirection } from "common/unions";
+import { NotationType, MoveDirection } from "common/unions";
 import { useUserStore } from "../store/pinia/userStore";
 import { useNotationStore } from "../store/pinia/notationStore";
 import { useCellStore } from "../store/pinia/cellStore";
@@ -43,8 +49,6 @@ const cellStore = useCellStore();
 const editModeStore = useEditModeStore();
 const authorizationHelper = useAuthorizationHelper();
 const userOutgoingOperations = useUserOutgoingOperations();
-
-type colSpan = { fromCol: number; toCol: number };
 
 export default function notationMutateHelper() {
   function pointAtCellCoordinates(
@@ -108,13 +112,16 @@ export default function notationMutateHelper() {
     return notationStore
       .getNotations()
       .filter((n: NotationAttributes) =>
-        NotationTypeShape.get(n.notationType) === "POINT"
+        n.notationType === "ANNOTATION" ||
+        n.notationType === "EXPONENT" ||
+        n.notationType === "SIGN" ||
+        n.notationType === "SQRTSYMBOL"
           ? pointAtCellCoordinates(
               n as PointNotationAttributes,
               cellCoordinates,
               userUUId,
             )
-          : NotationTypeShape.get(n.notationType) === "RECT"
+          : n.notationType === "TEXT" || n.notationType === "IMAGE"
           ? rectAtCellCoordinates(
               n as RectNotationAttributes,
               cellCoordinates,
@@ -128,7 +135,7 @@ export default function notationMutateHelper() {
     notation: PointNotationCreationAttributes,
   ): PointNotationAttributes | undefined {
     return notationStore
-      .getNotationAtCoordinatess()
+      .getNotationAtCoordinates()
       .find((n2: PointNotationAttributes) => {
         return pointAtCellCoordinates(
           notation as PointNotationAttributes,
@@ -156,35 +163,33 @@ export default function notationMutateHelper() {
     notation: NotationCreationAttributes,
   ): NotationAttributes | undefined {
     return notationStore.getNotations().find((n2: NotationAttributes) => {
-      switch (NotationTypeShape.get(notation.notationType)) {
-        case "POINT":
-          return (
-            pointAtCellCoordinates(
-              notation as PointNotationAttributes,
-              n2 as PointNotationAttributes,
-              getUserUUId(),
-            ) ??
-            rectAtCellCoordinates(
-              notation as RectNotationAttributes,
-              n2 as PointNotationAttributes,
-              getUserUUId(),
-            )
-          );
+      if (isPoint(n2.notationType))
+        return (
+          pointAtCellCoordinates(
+            notation as PointNotationAttributes,
+            n2 as PointNotationAttributes,
+            getUserUUId(),
+          ) ??
+          rectAtCellCoordinates(
+            notation as RectNotationAttributes,
+            n2 as PointNotationAttributes,
+            getUserUUId(),
+          )
+        );
 
-        case "RECT":
-          return (
-            pointAtRectCoordinates(
-              notation as PointNotationAttributes,
-              n2 as RectNotationAttributes,
-              getUserUUId(),
-            ) ??
-            rectAtRectCoordinates(
-              notation as RectNotationAttributes,
-              n2 as RectNotationAttributes,
-              getUserUUId(),
-            )
-          );
-      }
+      if (isRect(n2.notationType))
+        return (
+          pointAtRectCoordinates(
+            notation as PointNotationAttributes,
+            n2 as RectNotationAttributes,
+            getUserUUId(),
+          ) ??
+          rectAtRectCoordinates(
+            notation as RectNotationAttributes,
+            n2 as RectNotationAttributes,
+            getUserUUId(),
+          )
+        );
     });
   }
 
@@ -200,100 +205,111 @@ export default function notationMutateHelper() {
     notationStore.selectNotation(uuid);
   }
 
-  function canMoveSelectedNotations(deltaX: number, deltaY: number): boolean {
+  function canMoveSelectedNotations(
+    deltaCol: number,
+    deltaRow: number,
+  ): boolean {
     notationStore.getSelectedNotations().forEach((n: NotationAttributes) => {
-      if (isNotationInQuestionArea(n, deltaX, deltaY)) return false;
+      if (isNotationInQuestionArea(n, deltaCol, deltaRow)) return false;
 
-      switch (NotationTypeShape.get(n.notationType)) {
-        case "POINT": {
-          if (
-            (n as PointNotationAttributes).col + deltaX >
-            matrixDimensions.colsNum
-          )
-            return false;
-          if ((n as PointNotationAttributes).col + deltaX < 1) return false;
-          if (
-            (n as PointNotationAttributes).row + deltaY >
-            matrixDimensions.rowsNum
-          )
-            return false;
-          if ((n as PointNotationAttributes).row + deltaY < 1) return false;
-          break;
-        }
-        case "HORIZONTAL_LINE": {
-          if (
-            (n as HorizontalLineNotationAttributes).toCol + deltaX >
-            matrixDimensions.colsNum
-          )
-            return false;
-          if ((n as HorizontalLineNotationAttributes).fromCol + deltaX < 1)
-            return false;
-          if (
-            (n as HorizontalLineNotationAttributes).row + deltaY >
-            matrixDimensions.rowsNum
-          )
-            return false;
-          if ((n as HorizontalLineNotationAttributes).row + deltaY < 1)
-            return false;
-        }
-        case "VERTICAL_LINE": {
-          if (
-            (n as VerticalLineNotationAttributes).col + deltaX >
-            matrixDimensions.colsNum
-          )
-            return false;
-          if (
-            (n as VerticalLineNotationAttributes).fromRow + deltaY >
-            matrixDimensions.rowsNum
-          )
-            return false;
-          if ((n as VerticalLineNotationAttributes).fromRow + deltaY < 1)
-            return false;
-          if (
-            (n as VerticalLineNotationAttributes).toRow + deltaY >
-            matrixDimensions.colsNum
-          )
-            return false;
-          break;
+      if (isPoint(n.notationType)) {
+        if (
+          (n as PointNotationAttributes).col + deltaCol >
+          matrixDimensions.colsNum
+        ) {
+          return false;
         }
 
-        case "SLOPE_LINE": {
-          if (
-            (n as HorizontalLineNotationAttributes).toCol + deltaX >
-            matrixDimensions.colsNum
-          )
-            return false;
-          if ((n as HorizontalLineNotationAttributes).fromCol + deltaX < 1)
-            return false;
+        if ((n as PointNotationAttributes).col + deltaCol < 1) return false;
 
-          if (
-            (n as SlopeLineNotationAttributes).fromRow + deltaY >
-            matrixDimensions.rowsNum
-          )
-            return false;
-          if ((n as SlopeLineNotationAttributes).fromRow + deltaY < 1)
-            return false;
-          if (
-            (n as SlopeLineNotationAttributes).toRow + deltaY >
-            matrixDimensions.colsNum
-          )
-            return false;
-          break;
+        if (
+          (n as PointNotationAttributes).row + deltaRow >
+          matrixDimensions.rowsNum
+        ) {
+          return false;
         }
 
-        case "RECT": {
+        if ((n as PointNotationAttributes).row + deltaRow < 1) return false;
+
+        return true;
+      }
+
+      switch (n.notationType) {
+        case "HORIZONTALLINE": {
+          const n1 = n as HorizontalLineNotationAttributes;
+          if (n1.x2 + deltaCol * getColWidth() > getMostRightCoordinate()) {
+            return false;
+          }
+
+          if (n1.x1 + deltaCol * getColWidth() < 1) return false;
+
+          if (n1.y + deltaRow * getRowHeight() > getMostBottomCoordinate()) {
+            return false;
+          }
+
+          if (n1.x2 + deltaCol * getColWidth() < 1) {
+            return false;
+          }
+        }
+
+        case "VERTICALLINE": {
+          const n1 = n as VerticalLineNotationAttributes;
+          if (n1.x + deltaCol * getColWidth() > getMostRightCoordinate()) {
+            return false;
+          }
+
+          if (n1.y2 + deltaRow * getRowHeight() > matrixDimensions.rowsNum) {
+            return false;
+          }
+
+          if (n1.y1 + deltaRow * getRowHeight() < 1) {
+            return false;
+          }
+
+          if (n1.y2 + deltaRow * getRowHeight() > getMostBottomCoordinate()) {
+            return false;
+          }
+        }
+
+        case "SLOPELINE": {
+          const n1 = n as SlopeLineNotationAttributes;
+          if (n1.x2 + deltaCol * getColWidth() > getMostRightCoordinate()) {
+            return false;
+          }
+
+          if (n1.x1 + deltaCol * getColWidth() < 1) {
+            return false;
+          }
+
+          if (n1.x2 + deltaRow * getRowHeight() > matrixDimensions.rowsNum) {
+            return false;
+          }
+
+          if (n1.y1 + deltaRow * getRowHeight() < 1) {
+            return false;
+          }
+
+          if (n1.y2 + deltaRow * getRowHeight() > getMostBottomCoordinate()) {
+            return false;
+          }
+        }
+
+        case "TEXT":
+        case "IMAGE": {
           if (
-            (n as RectNotationAttributes).toCol + deltaX >
+            (n as RectNotationAttributes).toCol + deltaCol >
             matrixDimensions.colsNum
           )
             return false;
-          if ((n as RectNotationAttributes).fromCol + deltaX < 1) return false;
+          if ((n as RectNotationAttributes).fromCol + deltaCol < 1)
+            return false;
           if (
-            (n as RectNotationAttributes).toRow + deltaY >
+            (n as RectNotationAttributes).toRow + deltaRow >
             matrixDimensions.rowsNum
           )
             return false;
-          if ((n as RectNotationAttributes).fromRow + deltaY < 1) return false;
+          if ((n as RectNotationAttributes).fromRow + deltaRow < 1)
+            return false;
           break;
         }
       }
@@ -301,50 +317,85 @@ export default function notationMutateHelper() {
 
     return true;
   }
-  // move without persistence - called during  mouse move  - don't bother the database during move
+  // move without persistence - called during  mouse move - don't bother the database during move
   function moveSelectedNotations(
-    deltaX: number,
-    deltaY: number,
+    deltaCol: number,
+    deltaRow: number,
     keepOriginal: boolean,
   ): boolean {
-    if (!canMoveSelectedNotations(deltaX, deltaY)) return false;
+    if (!canMoveSelectedNotations(deltaCol, deltaRow)) return false;
 
     if (keepOriginal) {
       notationStore.cloneSelectedNotations();
     }
 
     notationStore.getSelectedNotations().forEach((n: NotationAttributes) => {
-      switch (NotationTypeShape.get(n.notationType)) {
-        case "POINT": {
-          (n as PointNotationAttributes).col += deltaX;
-          (n as PointNotationAttributes).row += deltaY;
+      switch (n.notationType) {
+        case "ANNOTATION":
+        case "SIGN":
+        case "SQRTSYMBOL":
+        case "SYMBOL": {
+          (n as PointNotationAttributes).col += deltaCol;
+          (n as PointNotationAttributes).row += deltaRow;
           break;
         }
-        case "HORIZONTAL_LINE": {
-          (n as HorizontalLineNotationAttributes).fromCol += deltaX;
-          (n as HorizontalLineNotationAttributes).toCol += deltaX;
-          (n as HorizontalLineNotationAttributes).row += deltaY;
+        case "SQRT":
+        case "HORIZONTALLINE": {
+          (n as HorizontalLineNotationAttributes).x1 +=
+            deltaCol * cellStore.getCellHorizontalWidth();
+          (n as HorizontalLineNotationAttributes).x2 +=
+            deltaCol * cellStore.getCellHorizontalWidth();
+          (n as HorizontalLineNotationAttributes).y +=
+            deltaRow * cellStore.getCellVerticalHeight();
           break;
         }
-        case "VERTICAL_LINE": {
-          (n as VerticalLineNotationAttributes).col += deltaX;
-          (n as VerticalLineNotationAttributes).fromRow += deltaX;
-          (n as VerticalLineNotationAttributes).toRow += deltaY;
+        case "VERTICALLINE": {
+          (n as VerticalLineNotationAttributes).x +=
+            deltaCol * cellStore.getCellHorizontalWidth();
+          (n as VerticalLineNotationAttributes).y1 +=
+            deltaRow * cellStore.getCellVerticalHeight();
+          (n as VerticalLineNotationAttributes).y2 +=
+            deltaRow * cellStore.getCellVerticalHeight();
           break;
         }
-        case "SLOPE_LINE": {
-          (n as SlopeLineNotationAttributes).fromCol += deltaX;
-          (n as SlopeLineNotationAttributes).toCol += deltaX;
-          (n as SlopeLineNotationAttributes).fromRow += deltaX;
-          (n as SlopeLineNotationAttributes).toRow += deltaY;
+        case "SLOPELINE": {
+          (n as SlopeLineNotationAttributes).x1 +=
+            deltaCol * cellStore.getCellHorizontalWidth();
+          (n as SlopeLineNotationAttributes).x2 +=
+            deltaCol * cellStore.getCellHorizontalWidth();
+          (n as SlopeLineNotationAttributes).y1 +=
+            deltaCol * cellStore.getCellHorizontalWidth();
+          (n as SlopeLineNotationAttributes).y2 +=
+            deltaRow * cellStore.getCellVerticalHeight();
           break;
         }
 
-        case "RECT": {
-          (n as RectNotationAttributes).fromCol += deltaX;
-          (n as RectNotationAttributes).toCol += deltaX;
-          (n as RectNotationAttributes).fromRow += deltaY;
-          (n as RectNotationAttributes).toRow += deltaY;
+        case "CONVEXCURVE":
+        case "CONCAVECURVE": {
+          (n as CurveNotationAttributes).p1x +=
+            deltaCol * cellStore.getCellHorizontalWidth();
+          (n as CurveNotationAttributes).p2x +=
+            deltaCol * cellStore.getCellHorizontalWidth();
+          (n as CurveNotationAttributes).p1y +=
+            deltaRow * cellStore.getCellVerticalHeight();
+          (n as CurveNotationAttributes).p2y +=
+            deltaRow * cellStore.getCellVerticalHeight();
+          break;
+        }
+
+        case "EXPONENT": {
+          (n as ExponentNotationAttributes).fromCol += deltaCol;
+          (n as ExponentNotationAttributes).toCol += deltaCol;
+          (n as ExponentNotationAttributes).row += deltaRow;
+          break;
+        }
+
+        case "IMAGE":
+        case "TEXT": {
+          (n as RectNotationAttributes).fromCol += deltaCol;
+          (n as RectNotationAttributes).toCol += deltaCol;
+          (n as RectNotationAttributes).fromRow += deltaRow;
+          (n as RectNotationAttributes).toRow += deltaRow;
           break;
         }
       }
@@ -543,8 +594,11 @@ export default function notationMutateHelper() {
     existingNotation: NotationAttributes,
     notation: NotationCreationAttributes,
   ) {
-    switch (NotationTypeShape.get(existingNotation.notationType)) {
-      case "POINT": {
+    switch (existingNotation.notationType) {
+      case "ANNOTATION":
+      case "SIGN":
+      case "SQRTSYMBOL":
+      case "SYMBOL": {
         (existingNotation as PointNotationAttributes).col = (
           notation as PointNotationAttributes
         ).col;
@@ -556,76 +610,47 @@ export default function notationMutateHelper() {
         ).value;
         break;
       }
-      case "HORIZONTAL_LINE": {
-        (existingNotation as HorizontalLineNotationAttributes).fromCol = (
-          notation as HorizontalLineNotationAttributes
-        ).fromCol;
+      case "HORIZONTALLINE": {
+        const n1 = existingNotation as HorizontalLineNotationAttributes;
+        const n = notation as HorizontalLineNotationAttributes;
 
-        (existingNotation as HorizontalLineNotationAttributes).toCol = (
-          notation as HorizontalLineNotationAttributes
-        ).toCol;
-
-        (existingNotation as HorizontalLineNotationAttributes).row = (
-          notation as HorizontalLineNotationAttributes
-        ).row;
+        n1.x1 = n.x1;
+        n1.x2 = n.x2;
+        n1.y = n.y;
 
         break;
       }
-      case "VERTICAL_LINE": {
-        (existingNotation as VerticalLineNotationAttributes).col = (
-          notation as VerticalLineNotationAttributes
-        ).col;
+      case "VERTICALLINE": {
+        const n1 = existingNotation as VerticalLineNotationAttributes;
+        const n = notation as VerticalLineNotationAttributes;
 
-        (existingNotation as VerticalLineNotationAttributes).fromRow = (
-          notation as VerticalLineNotationAttributes
-        ).fromRow;
-
-        (existingNotation as VerticalLineNotationAttributes).toRow = (
-          notation as VerticalLineNotationAttributes
-        ).toRow;
+        n1.y1 = n.y1;
+        n1.y2 = n.y2;
+        n1.x = n.x;
 
         break;
       }
-      case "SLOPE_LINE": {
-        (existingNotation as SlopeLineNotationAttributes).fromCol = (
-          notation as SlopeLineNotationAttributes
-        ).fromCol;
+      case "SLOPELINE": {
+        const n1 = existingNotation as SlopeLineNotationAttributes;
+        const n = notation as SlopeLineNotationAttributes;
 
-        (existingNotation as SlopeLineNotationAttributes).toCol = (
-          notation as SlopeLineNotationAttributes
-        ).toCol;
-
-        (existingNotation as SlopeLineNotationAttributes).fromRow = (
-          notation as SlopeLineNotationAttributes
-        ).fromRow;
-
-        (existingNotation as SlopeLineNotationAttributes).toRow = (
-          notation as SlopeLineNotationAttributes
-        ).toRow;
+        n1.x1 = n.x1;
+        n1.x2 = n.x2;
+        n1.y1 = n.y1;
+        n1.y2 = n.y2;
 
         break;
       }
 
-      case "RECT": {
-        (existingNotation as RectNotationAttributes).fromCol = (
-          notation as RectNotationAttributes
-        ).fromCol;
+      case "IMAGE":
+      case "TEXT": {
+        const n1 = existingNotation as RectNotationAttributes;
+        const n = notation as RectNotationAttributes;
 
-        (existingNotation as RectNotationAttributes).toCol = (
-          notation as RectNotationAttributes
-        ).toCol;
-
-        (existingNotation as RectNotationAttributes).fromRow = (
-          notation as RectNotationAttributes
-        ).fromRow;
-
-        (existingNotation as RectNotationAttributes).toRow = (
-          notation as RectNotationAttributes
-        ).toRow;
-
-        (existingNotation as RectNotationAttributes).value = (
-          notation as RectNotationAttributes
-        ).value;
+        n1.fromCol = n.fromCol;
+        n1.toCol = n.toCol;
+        n1.fromRow = n.fromRow;
+        n1.toRow = n.toRow;
 
         break;
       }
@@ -639,8 +664,11 @@ export default function notationMutateHelper() {
     delatY: number,
   ): boolean {
     if (!notation) return false;
-    switch (NotationTypeShape.get(notation.notationType)) {
-      case "POINT": {
+    switch (notation.notationType) {
+      case "ANNOTATION":
+      case "SIGN":
+      case "SQRTSYMBOL":
+      case "SYMBOL": {
         let pointNotation = notation as PointNotationAttributes;
         return (
           notation?.boardType === "ANSWER" &&
@@ -654,7 +682,24 @@ export default function notationMutateHelper() {
         );
       }
 
-      case "RECT": {
+      case "EXPONENT": {
+        const multiCell = notation as unknown as MultiCellAttributes;
+        return (
+          notation?.boardType === "ANSWER" &&
+          !userStore.isTeacher() &&
+
+
+          notationStore
+            .getNotationsAtCell({
+              col: multiCell.fromCol + delatX,
+              row: multiCell.row + delatY,
+            })
+            ?.find((n: NotationAttributes) => n.boardType == "QUESTION") != null
+        );
+      }
+
+      case "IMAGE":
+      case "TEXT": {
         let rectNotation = notation as RectNotationAttributes;
         for (
           let col: number = rectNotation.fromCol + delatX;
@@ -803,7 +848,8 @@ export default function notationMutateHelper() {
 
   function upsertExponentNotation(base: string, exponent: string) {
     let notation: ExponentNotationCreationAttributes = {
-      col: getSelectedCell()!.col,
+      fromCol: getSelectedCell()!.col,
+      toCol: getSelectedCell()!.col + exponent.length + 1,
       row: getSelectedCell()!.row,
       base: base,
       exponent: exponent,
@@ -853,9 +899,9 @@ export default function notationMutateHelper() {
     transposeHorizontalCoordinatesIfNeeded(horizontalLineAttributes);
 
     let lineNotation: HorizontalLineNotationCreationAttributes = {
-      fromCol: horizontalLineAttributes.fromCol,
-      toCol: horizontalLineAttributes.toCol,
-      row: horizontalLineAttributes.row,
+      x1: horizontalLineAttributes.x1,
+      x2: horizontalLineAttributes.x2,
+      y: horizontalLineAttributes.y,
       boardType: notationStore.getParent().type,
       parentUUId: notationStore.getParent().uuid,
       notationType: notationType,
@@ -872,9 +918,9 @@ export default function notationMutateHelper() {
     transposeVerticalCoordinatesIfNeeded(verticalLineAttributes);
 
     let notation: VerticalLineNotationCreationAttributes = {
-      col: verticalLineAttributes.col,
-      fromRow: verticalLineAttributes.fromRow,
-      toRow: verticalLineAttributes.toRow,
+      x: verticalLineAttributes.x,
+      y1: verticalLineAttributes.y1,
+      y2: verticalLineAttributes.y2,
       boardType: notationStore.getParent().type,
       parentUUId: notationStore.getParent().uuid,
       notationType: notationType,
@@ -889,10 +935,10 @@ export default function notationMutateHelper() {
     notationType: NotationType,
   ) {
     let lineNotation: SlopeLineNotationCreationAttributes = {
-      fromCol: slopeLineAttributes.fromCol,
-      toCol: slopeLineAttributes.toCol,
-      fromRow: slopeLineAttributes.fromRow,
-      toRow: slopeLineAttributes.toRow,
+      x1: slopeLineAttributes.x1,
+      x2: slopeLineAttributes.x2,
+      y1: slopeLineAttributes.y1,
+      y2: slopeLineAttributes.y2,
       boardType: notationStore.getParent().type,
       parentUUId: notationStore.getParent().uuid,
       notationType: notationType,
@@ -926,16 +972,22 @@ export default function notationMutateHelper() {
     delete clonedNotation.uuid;
     clonedNotation.parentUUId = notationStore.getParent().uuid; // in case you paste from lesson to question, parent will be taken from the target
 
-    switch (NotationTypeShape.get(notation.notationType)) {
-      case "HORIZONTAL_LINE":
-      case "VERTICAL_LINE":
-      case "SLOPE_LINE":
+    switch (notation.notationType) {
+      case "SQRT":
+      case "HORIZONTALLINE":
+      case "VERTICALLINE":
+      case "SLOPELINE":
         return upsertLineNotation(clonedNotation);
-      case "CURVE":
+      case "CONCAVECURVE":
+      case "CONVEXCURVE":
         return upsertCurveNotation(clonedNotation);
-      case "POINT":
+      case "ANNOTATION":
+      case "SIGN":
+      case "SQRTSYMBOL":
+      case "SYMBOL":
         return upsertPointNotation(clonedNotation);
-      case "RECT":
+      case "IMAGE":
+      case "TEXT":
         return upsertRectNotation(clonedNotation);
     }
   }
@@ -947,20 +999,20 @@ export default function notationMutateHelper() {
   function transposeVerticalCoordinatesIfNeeded(
     coordinates: VerticalLineAttributes,
   ) {
-    if (coordinates.fromRow > coordinates.toRow) {
-      const fromRow = coordinates.fromRow;
-      coordinates.fromRow = coordinates.toRow;
-      coordinates.toRow = fromRow;
+    if (coordinates.y1 > coordinates.y2) {
+      const y1 = coordinates.y1;
+      coordinates.y1 = coordinates.y2;
+      coordinates.y2 = y1;
     }
   }
 
   function transposeHorizontalCoordinatesIfNeeded(
     coordinates: HorizontalLineAttributes,
   ) {
-    if (coordinates.fromCol > coordinates.toCol) {
-      const fromCol = coordinates.fromCol;
-      coordinates.fromCol = coordinates.toCol;
-      coordinates.toCol = fromCol;
+    if (coordinates.x1 > coordinates.x2) {
+      const x1 = coordinates.x1;
+      coordinates.x1 = coordinates.x2;
+      coordinates.x2 = x1;
     }
   }
 
@@ -968,6 +1020,22 @@ export default function notationMutateHelper() {
     notationStore.addNotation(notation);
     await dbHelper.updateNotation(notation);
     userOutgoingOperations.syncOutgoingUpdateNotation(notation);
+  }
+
+  function getMostRightCoordinate() {
+    return matrixDimensions.colsNum * cellStore.getCellHorizontalWidth();
+  }
+
+  function getMostBottomCoordinate() {
+    return matrixDimensions.rowsNum * cellStore.getCellVerticalHeight();
+  }
+
+  function getColWidth(): number {
+    return cellStore.getCellHorizontalWidth();
+  }
+
+  function getRowHeight(): number {
+    return cellStore.getCellVerticalHeight();
   }
 
   return {

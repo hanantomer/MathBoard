@@ -44,15 +44,15 @@ export default class AnswerVerticalLine extends Model<
 
     @AllowNull(false)
     @Column({ type: DataType.INTEGER })
-    col!: number;
+    px!: number;
 
     @AllowNull(false)
     @Column({ type: DataType.INTEGER })
-    fromRow!: number;
+    p1y!: number;
 
     @AllowNull(false)
     @Column({ type: DataType.INTEGER })
-    toRow!: number;
+    p2y!: number;
 
     @BelongsTo(() => Color, {
         foreignKey: { name: "colorId", field: "colorId", allowNull: true },

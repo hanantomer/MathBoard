@@ -43,19 +43,14 @@ import { computed, ref } from "vue";
 import { useNotationStore } from "../store/pinia/notationStore";
 import { useCellStore } from "../store/pinia/cellStore";
 import { useEditModeStore } from "../store/pinia/editModeStore";
-import { cellSpace } from "../../../math-common/src/globals";
 
 import { HorizontaLinePosition } from "../../../math-common/src/baseTypes";
 
-import {
-  HorizontalLineAttributes,
-  HorizontalLineNotationAttributes,
-} from "../../../math-common/src/baseTypes";
+import { SqrtNotationAttributes } from "../../../math-common/src/baseTypes";
 import useEventBus from "../helpers/eventBusHelper";
 import useLineDrawingHelper from "../helpers/lineDrawingHelper";
 
 const eventBus = useEventBus();
-const notationMutateHelper = useNotationMutateHelper();
 const watchHelper = useWatchHelper();
 const lineDrawer = useLineDrawingHelper();
 const notationStore = useNotationStore();
@@ -120,12 +115,9 @@ watchHelper.watchNotationSelection(
   (notation) => lineDrawer.selectLine(notation, linePosition.value),
 );
 
-watchHelper.watchMouseEvent(
-  ["SQRT_SELECTED"],
-  "EV_SVG_MOUSEUP",
-  () => editModeStore.setDefaultEditMode(),
+watchHelper.watchMouseEvent(["SQRT_SELECTED"], "EV_SVG_MOUSEUP", () =>
+  editModeStore.setDefaultEditMode(),
 );
-
 
 watchHelper.watchMouseEvent(["SQRT_DRAWING"], "EV_SVG_MOUSEDOWN", () =>
   lineDrawer.resetLineDrawing(linePosition.value),
@@ -133,16 +125,15 @@ watchHelper.watchMouseEvent(["SQRT_DRAWING"], "EV_SVG_MOUSEDOWN", () =>
 
 // event handlers
 
-function selectSqrt(sqrtNotation: HorizontalLineNotationAttributes) {
+function selectSqrt(sqrtNotation: SqrtNotationAttributes) {
   // set selection sqrt
 
   linePosition.value.x1 =
-    sqrtNotation.fromCol * (cellStore.getCellHorizontalWidth() + cellSpace);
+    sqrtNotation.fromCol * cellStore.getCellHorizontalWidth();
   (linePosition.value.x2 =
-    (sqrtNotation.toCol - 1) *
-    (cellStore.getCellHorizontalWidth() + cellSpace)),
+    (sqrtNotation.toCol - 1) * cellStore.getCellHorizontalWidth()),
     (linePosition.value.y =
-      sqrtNotation.row * (cellStore.getCellVerticalHeight() + cellSpace));
+      sqrtNotation.row * cellStore.getCellVerticalHeight());
 
   // update store
   notationStore.selectNotation(sqrtNotation.uuid);
@@ -154,5 +145,4 @@ function selectSqrt(sqrtNotation: HorizontalLineNotationAttributes) {
 function onHandleMouseDown() {
   editModeStore.setNextEditMode();
 }
-
 </script>
