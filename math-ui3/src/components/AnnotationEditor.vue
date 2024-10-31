@@ -18,7 +18,6 @@ import { computed, ref } from "vue";
 import { useCellStore } from "../store/pinia/cellStore";
 import { useEditModeStore } from "../store/pinia/editModeStore";
 import { PointNotationAttributes } from "../../../math-common/build/baseTypes";
-import { cellSpace } from "../../../math-common/src/globals";
 import useNotationMutateHelper from "../helpers/notationMutateHelper";
 import usescreenHelper from "../helpers/screenHelper";
 import useWatchHelper from "../helpers/watchHelper";
@@ -134,7 +133,7 @@ function submitText() {
     notationMutateHelper.updateNotation(selectedNotation);
     restoreTextNotation(selectedNotation?.uuid);
   } else {
-    notationMutateHelper.upsertAnnotationNotation(
+    notationMutateHelper.addAnnotationNotation(
       annotaionValue.value,
       annotationCell.value,
     );

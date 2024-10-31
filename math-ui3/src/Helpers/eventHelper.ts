@@ -19,8 +19,6 @@ import {
   MultiCellAttributes,
   ExponentNotationAttributes,
 } from "common/baseTypes";
-//import { NotationTypeShape } from "common/unions";
-import { cellSpace } from "common/globals";
 
 const userStore = useUserStore();
 const notationStore = useNotationStore();
@@ -166,7 +164,7 @@ export default function eventHelper() {
   async function pasteText(e: ClipboardEvent) {
     e.clipboardData?.items[0].getAsString((content) => {
       content.split("").forEach((c) => {
-        notationMutationHelper.upsertSymbolNotation(c);
+        notationMutationHelper.addSymbolNotation(c);
       });
     });
   }

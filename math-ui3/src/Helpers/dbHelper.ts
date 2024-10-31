@@ -6,6 +6,7 @@ import {
   SlopeLineNotationAttributes,
   VerticalLineNotationAttributes,
   CurveNotationAttributes,
+  SqrtNotationAttributes,
 } from "common/baseTypes";
 import {
   UserAttributes,
@@ -243,7 +244,7 @@ export default function useDbHelper() {
     );
   }
 
-  async function updateHorizontalLineAttributes(
+  async function updateHorizontalLineNotationAttributes(
     lineNotation: HorizontalLineNotationAttributes,
   ) {
     return axios.put(
@@ -258,7 +259,22 @@ export default function useDbHelper() {
     );
   }
 
-  async function updateVerticalLineAttributes(
+  async function updateSqrtNotationAttributes(
+    sqrtNotation: SqrtNotationAttributes,
+  ) {
+    return axios.put(
+      baseURL +
+        `/${sqrtNotation.boardType.toLowerCase()}${sqrtNotation.notationType.toLowerCase()}s`,
+      {
+        uuid: sqrtNotation.uuid,
+        fromCol: sqrtNotation.fromCol,
+        toCol: sqrtNotation.toCol,
+        row: sqrtNotation.row,
+      },
+    );
+  }
+
+  async function updateVerticalLineNotationAttributes(
     lineNotation: VerticalLineNotationAttributes,
   ) {
     return axios.put(
@@ -273,12 +289,12 @@ export default function useDbHelper() {
     );
   }
 
-  async function updateSlopeLineAttributes(
+  async function updateSlopeLineNotationAttributes(
     lineNotation: SlopeLineNotationAttributes,
   ) {
     return axios.put(
       baseURL +
-      `/${lineNotation.boardType.toLowerCase()}${lineNotation.notationType.toLowerCase()}s`,
+        `/${lineNotation.boardType.toLowerCase()}${lineNotation.notationType.toLowerCase()}s`,
       {
         uuid: lineNotation.uuid,
         x1: lineNotation.x1,
@@ -289,9 +305,7 @@ export default function useDbHelper() {
     );
   }
 
-  async function updateCurveAttributes(
-    curve: CurveNotationAttributes,
-  ) {
+  async function updateCurveNotationAttributes(curve: CurveNotationAttributes) {
     return axios.put(
       baseURL +
         `/${curve.boardType.toLowerCase()}${curve.notationType.toLowerCase()}s`,
@@ -302,11 +316,10 @@ export default function useDbHelper() {
         p1y: curve.p1y,
         p2y: curve.p2y,
         cpx: curve.cpx,
-        cpy: curve.cpy
+        cpy: curve.cpy,
       },
     );
   }
-
 
   async function getLesson(lessonUUId: string): Promise<LessonAttributes> {
     const { data } = await axios.get<LessonAttributes>(
@@ -418,10 +431,11 @@ export default function useDbHelper() {
     addQuestion,
     addAnswer,
     addNotation,
-    updateHorizontalLineAttributes,
-    updateVerticalLineAttributes,
-    updateSlopeLineAttributes,
-    updateCurveAttributes,
+    updateHorizontalLineNotationAttributes,
+    updateSqrtNotationAttributes,
+    updateVerticalLineNotationAttributes,
+    updateSlopeLineNotationAttributes,
+    updateCurveNotationAttributes,
     updateNotationValue,
     updateNotation,
     saveMovedNotations,

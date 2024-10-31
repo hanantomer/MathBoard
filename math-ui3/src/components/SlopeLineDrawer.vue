@@ -42,7 +42,6 @@ import { computed, ref } from "vue";
 import { useNotationStore } from "../store/pinia/notationStore";
 import { useCellStore } from "../store/pinia/cellStore";
 import { useEditModeStore } from "../store/pinia/editModeStore";
-import { cellSpace } from "../../../math-common/src/globals";
 import { SlopeLinePosition } from "../../../math-common/src/baseTypes";
 import {
   SlopeLineAttributes,
@@ -79,22 +78,6 @@ const show = computed(() => {
     editModeStore.isSlopeLineSelectedMode()
   );
 });
-
-// let lineLeft = computed(() => {
-//   return linePosition.value.x1;
-// });
-
-// let lineRight = computed(() => {
-//   return linePosition.value.x2;
-// });
-
-// let lineBottom = computed(() => {
-//   return linePosition.value.y2;
-// });
-
-// let lineTop = computed(() => {
-//   return linePosition.value.y1;
-// });
 
 let handleLeft = computed(() => {
   return linePosition.value.x1 + (cellStore.getSvgBoundingRect().left ?? 0);
@@ -136,7 +119,7 @@ watchHelper.watchMouseEvent(
 watchHelper.watchNotationSelection(
   "SLOPE_LINE_SELECTED",
   "EV_HORIZONTAL_LINE_SELECTED",
-  lineSelected,
+  selectLine,
 );
 
 watchHelper.watchMouseEvent(
@@ -151,12 +134,10 @@ watchHelper.watchMouseEvent(["SLOPE_LINE_SELECTED"], "EV_SVG_MOUSEUP", () =>
 
 // methods
 
-function lineSelected(lineNotation: SlopeLineNotationAttributes) {
+function selectLine(lineNotation: SlopeLineNotationAttributes) {
   Object.assign(linePosition.value, lineNotation);
   notationStore.selectNotation(lineNotation.uuid);
 }
-
-// methods
 
 function startDrawLine(e: MouseEvent) {
   editModeStore.setNextEditMode();
@@ -200,8 +181,6 @@ function setLine(e: MouseEvent) {
     (slopeType.value === "POSITIVE" && movementDirection.value === "UP") ||
     (slopeType.value === "NEGATIVE" && movementDirection.value === "DOWN");
 
-  //  console.debug(slopeType.value);
-  //  console.debug(movementDirection.value);
 
   if (modifyRight) {
     linePosition.value.x2 = xPos;
@@ -238,24 +217,9 @@ function endDrawLine() {
   if (
     linePosition.value.x1 == linePosition.value.x2 &&
     linePosition.value.y2 == linePosition.value.y2
-  )
+  ) {
     return;
-
-  let fromCol = Math.round(
-    linePosition.value.x1 / cellStore.getCellHorizontalWidth(),
-  );
-
-  let toCol = Math.round(
-    linePosition.value.x2 / cellStore.getCellHorizontalWidth(),
-  );
-
-  let fromRow = Math.round(
-    linePosition.value.y1 / cellStore.getCellVerticalHeight(),
-  );
-
-  let toRow = Math.round(
-    linePosition.value.y2 / cellStore.getCellVerticalHeight(),
-  );
+  }
 
   saveLine(linePosition.value);
 

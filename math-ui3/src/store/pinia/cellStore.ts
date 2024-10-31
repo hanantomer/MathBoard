@@ -26,15 +26,24 @@ export const useCellStore = defineStore("cell", () => {
 
   let cellVerticalHight = ref<number>(0);
 
-  let selectedCell = ref(<CellAttributes>{ col: 0, row: 0 })
+  let selectedCell = ref(<CellAttributes>{ col: 0, row: 0 });
 
   function getCellVerticalHeight(): number {
     return cellVerticalHight.value + cellSpace;
   }
 
-  function getCellHorizontalWidth(): number {
-    return cellVerticalHight.value / 2 + cellSpace;
+  function getCellVerticalHeightNet(): number {
+    return cellVerticalHight.value;
   }
+
+  function getCellHorizontalWidth(): number {
+    return (cellVerticalHight.value - 1) / 2 + cellSpace;
+  }
+
+  function getCellHorizontalWidthNet(): number {
+    return (cellVerticalHight.value - 1) / 2;
+  }
+
 
   function setCellVerticalHeight(size: number) {
     cellVerticalHight.value = size;
@@ -44,9 +53,12 @@ export const useCellStore = defineStore("cell", () => {
     return selectedCell.value;
   }
 
-  function setSelectedCell(newSelectedCell: CellAttributes, setEditMode: boolean) {
+  function setSelectedCell(
+    newSelectedCell: CellAttributes,
+    setEditMode: boolean,
+  ) {
     selectedCell.value = newSelectedCell;
-    if(setEditMode) editModeStore.setEditMode("CELL_SELECTED");
+    if (setEditMode) editModeStore.setEditMode("CELL_SELECTED");
   }
 
   function resetSelectedCell() {
@@ -74,7 +86,9 @@ export const useCellStore = defineStore("cell", () => {
     getSvgId,
     getSelectedCell,
     getCellHorizontalWidth,
+    getCellHorizontalWidthNet,
     getCellVerticalHeight,
+    getCellVerticalHeightNet,
     setSelectedCell,
     setCellVerticalHeight,
     resetSelectedCell,

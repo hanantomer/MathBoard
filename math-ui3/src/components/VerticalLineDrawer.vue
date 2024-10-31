@@ -43,7 +43,6 @@ import { computed, ref } from "vue";
 import { useNotationStore } from "../store/pinia/notationStore";
 import { useCellStore } from "../store/pinia/cellStore";
 import { useEditModeStore } from "../store/pinia/editModeStore";
-import { cellSpace } from "../../../math-common/src/globals";
 import useWatchHelper from "../helpers/watchHelper";
 
 import { VerticalLinePosition } from "../../../math-common/src/baseTypes";

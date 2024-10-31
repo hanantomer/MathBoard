@@ -169,7 +169,7 @@ function submitExponent() {
 
     notationMutateHelper.updateNotation(selectedNotation);
   } else {
-    notationMutateHelper.upsertExponentNotation(
+    notationMutateHelper.addExponentNotation(
       (document.getElementById("baseInput") as HTMLInputElement).value,
       (document.getElementById("exponentInput") as HTMLInputElement).value,
     );

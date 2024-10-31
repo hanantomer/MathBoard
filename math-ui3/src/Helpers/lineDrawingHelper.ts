@@ -2,9 +2,10 @@ import {
   HorizontalLineAttributes,
   HorizontalLineNotationAttributes,
   HorizontaLinePosition,
+  SqrtNotationAttributes,
+  MultiCellAttributes,
 } from "../../../math-common/build/baseTypes";
 
-import { cellSpace } from "common/globals";
 
 import { useEditModeStore } from "../store/pinia/editModeStore";
 import { useCellStore } from "../store/pinia/cellStore";
@@ -78,6 +79,37 @@ export default function useLineDrawingHelper() {
     }
   }
 
+  function endDrawingSqrt(linePosition: HorizontaLinePosition) {
+    if (
+      linePosition.x1 === 0 &&
+      linePosition.x2 === 0 &&
+      linePosition.y === 0
+    ) {
+      return;
+    }
+
+    if (linePosition.x2 == linePosition.x1) {
+      return;
+    }
+
+    let fromCol = Math.round(
+      linePosition.x1 / (cellStore.getCellHorizontalWidth()),
+    );
+
+    let toCol = Math.round(
+      linePosition.x2 / (cellStore.getCellHorizontalWidth()),
+    );
+
+    let row = Math.round(
+      linePosition.y / (cellStore.getCellVerticalHeight()),
+    );
+
+    saveSqrt({ fromCol: fromCol, toCol: toCol, row: row });
+
+    resetLineDrawing(linePosition);
+  }
+
+
   function endDrawingLine(linePosition: HorizontaLinePosition) {
     if (
       linePosition.x1 === 0 &&
@@ -113,6 +145,24 @@ export default function useLineDrawingHelper() {
       );
   }
 
+    function saveSqrt(sqrtAttributes: MultiCellAttributes) {
+      if (notationStore.getSelectedNotations().length > 0) {
+        let updatedSqrt = {
+          ...notationStore.getSelectedNotations().at(0)!,
+          ...sqrtAttributes,
+        };
+
+        notationMutateHelper.updateSqrtNotation(
+          updatedSqrt ,
+        );
+      } else
+        notationMutateHelper.addSqrtNotation(
+          sqrtAttributes,
+          editModeStore.getNotationTypeByEditMode(),
+        );
+    }
+
+
   function resetLineDrawing(linePosition: HorizontaLinePosition) {
     linePosition.x1 = linePosition.x2 = linePosition.y = 0;
     editModeStore.setDefaultEditMode();
@@ -130,6 +180,7 @@ export default function useLineDrawingHelper() {
     startDrawingLine,
     resetLineDrawing,
     endDrawingLine,
+    endDrawingSqrt,
     setLine,
   };
 }

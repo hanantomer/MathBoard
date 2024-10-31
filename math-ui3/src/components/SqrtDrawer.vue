@@ -36,7 +36,6 @@
   </div>
 </template>
 <script setup lang="ts">
-import useNotationMutateHelper from "../helpers/notationMutateHelper";
 import useWatchHelper from "../helpers/watchHelper";
 
 import { computed, ref } from "vue";
@@ -106,7 +105,7 @@ watchHelper.watchMouseEvent(["SQRT_DRAWING"], "EV_SVG_MOUSEMOVE", (e) =>
 );
 
 watchHelper.watchMouseEvent(["SQRT_DRAWING"], "EV_SVG_MOUSEUP", () =>
-  lineDrawer.endDrawingLine(linePosition.value),
+  lineDrawer.endDrawingSqrt(linePosition.value),
 );
 
 watchHelper.watchNotationSelection(

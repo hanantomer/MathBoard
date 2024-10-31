@@ -11,8 +11,8 @@ export type EntityAttributes = {
   updatedAt?: Date;
 };
 
-export type NotationAttributes = {
-  uuid: string;
+export type NotationAttributes = EntityAttributes & {
+  //uuid: string;
   parentUUId: string;
   user: UserAttributes;
   notationType: NotationType;
@@ -115,19 +115,19 @@ export type VerticalLineAttributes = {
 };
 
 export type SlopeLineAttributes = {
-  x1: number;
-  x2: number;
-  y1: number;
-  y2: number;
+  x1: number; // left
+  x2: number; // right
+  y1: number; // y which corresponds to x1, if the slope is positive this is the bottom(and higher) y and vice versa
+  y2: number; // y which corresponds to x2, if the slope is positive this is the top (and lower y) and vice versa
 };
 
 export type CurveAttributes = {
-  p1x: number;
-  p2x: number;
-  p1y: number;
-  p2y: number;
-  cpx: number;
-  cpy: number;
+  p1x: number; // left
+  p2x: number; // right
+  p1y: number; // y which corresponds to p1x
+  p2y: number; // y which corresponds to p2x
+  cpx: number; // control point x
+  cpy: number; // control point y
 };
 
 export type RectAttributes = {
@@ -213,6 +213,13 @@ export type PointNotationCreationAttributes =
       SingleValueAttributes,
     "uuid"
   >;
+
+export type SqrtNotationCreationAttributes =
+  Omit<
+    SqrtNotationAttributes,
+    "uuid"
+  >;
+
 export type HorizontalLineNotationCreationAttributes =
   Omit<
     NotationAttributes & HorizontalLineAttributes,
@@ -294,5 +301,9 @@ export function isPoint(
 export function isMultiCell(
   n: NotationType
 ): boolean {
-  return n === "EXPONENT" || n === "SQRT"/*sqrt borders are within cells */;
+  return (
+    n === "EXPONENT" ||
+    n ===
+      "SQRT" /*unlike horizontal line, sqrt borders adjusts to cell borders */
+  );
 }

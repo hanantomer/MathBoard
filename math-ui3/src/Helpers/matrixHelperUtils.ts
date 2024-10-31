@@ -4,15 +4,9 @@ import {
   defaultdCellStroke,
 } from "common/globals";
 
-import {
-  HorizontalLineNotationAttributes,
-  SlopeLineNotationAttributes,
-  VerticalLineNotationAttributes,
-} from "common/baseTypes";
-
 import { useCellStore } from "../store/pinia/cellStore";
-import { cellSpace } from "common/globals";
 import {
+  MultiCellAttributes,
   NotationAttributes,
   PointNotationAttributes,
   RectNotationAttributes,
@@ -37,6 +31,11 @@ export default function useMatrixHelperUtils() {
       case "TEXT": {
         return (n as RectNotationAttributes).fromCol;
       }
+      case "SQRT":
+      case "EXPONENT": {
+        return (n as unknown as MultiCellAttributes).fromCol;
+      }
+
       default:
         return 0;
     }
@@ -54,13 +53,17 @@ export default function useMatrixHelperUtils() {
       case "TEXT": {
         return (n as RectNotationAttributes).fromRow;
       }
+      case "SQRT":
+      case "EXPONENT": {
+        return (n as unknown as MultiCellAttributes).row;
+      }
       default:
         return 0;
     }
   }
 
   function getNotationXposByCol(col: number): number {
-    return col * (cellStore.getCellHorizontalWidth() + 1);
+    return col * (cellStore.getCellHorizontalWidth());
   }
 
   function getNotationYposByRow(row: number): number {

@@ -22,7 +22,7 @@ export default function useMatrixHelper() {
   let matrix: any[] = [];
 
   function setCellVerticalHeight(svgId: string) {
-    if (cellStore.getCellVerticalHeight()) return;
+    if (cellStore.getCellVerticalHeight() !== cellSpace/*not initial value*/) return;
 
     let clientWidth: number | undefined =
       document.getElementById(svgId)?.clientWidth;
@@ -58,7 +58,7 @@ export default function useMatrixHelper() {
       })
       .lower()
       .attr("transform", (d, i) => {
-        let y = i === 0 ? 0 : cellStore.getCellVerticalHeight() * i - cellSpace;
+        let y = i === 0 ? 0 : cellStore.getCellVerticalHeight() * i;
         return "translate(0, " + y + ")";
       })
       .selectAll("cell")
@@ -73,10 +73,10 @@ export default function useMatrixHelper() {
         return i;
       })
       .attr("x", (d, i) => {
-        return i == 0 ? 0 : i * cellStore.getCellHorizontalWidth() - cellSpace;
+        return i == 0 ? 0 : i * cellStore.getCellHorizontalWidth();
       })
-      .attr("width", cellStore.getCellHorizontalWidth())
-      .attr("height", cellStore.getCellVerticalHeight());
+      .attr("width", cellStore.getCellHorizontalWidthNet())
+      .attr("height", cellStore.getCellVerticalHeightNet());
   }
 
   function enrichNotations(notations: NotationAttributes[]) {

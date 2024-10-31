@@ -146,6 +146,8 @@ function colorizeNotationAtMousePosition(e: MouseEvent) {
       }
     }
 
+    case "CONCAVECURVE":
+    case "CONVEXCURVE":
     case "EXPONENT":
     case "ANNOTATION":
     case "SIGN":

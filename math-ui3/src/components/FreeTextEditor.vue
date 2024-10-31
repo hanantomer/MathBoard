@@ -15,11 +15,10 @@
 </template>
 
 <script setup lang="ts">
-import { computed, watch, ref } from "vue";
+import { computed, ref } from "vue";
 import { useCellStore } from "../store/pinia/cellStore";
 import { useEditModeStore } from "../store/pinia/editModeStore";
 import { RectNotationAttributes } from "../../../math-common/build/baseTypes";
-import { cellSpace } from "../../../math-common/src/globals";
 import { EditMode } from "../../../math-common/src/unions";
 import useNotationMutateHelper from "../helpers/notationMutateHelper";
 import usescreenHelper from "../helpers/screenHelper";
@@ -89,24 +88,20 @@ function setInitialTextDimensions(textNotation: RectNotationAttributes) {
   textLeft.value =
     cellStore.getSvgBoundingRect().x +
     window.scrollX +
-    textNotation.fromCol * cellStore.getCellHorizontalWidth() -
-    cellSpace;
+    textNotation.fromCol * cellStore.getCellHorizontalWidth();
 
   textTop.value =
     cellStore.getSvgBoundingRect().y +
     window.scrollY +
-    textNotation.fromRow * cellStore.getCellVerticalHeight() -
-    cellSpace;
+    textNotation.fromRow * cellStore.getCellVerticalHeight();
 
   textHeight.value =
     (textNotation.toRow - textNotation.fromRow + 1) *
-      cellStore.getCellVerticalHeight() -
-    cellSpace;
+      cellStore.getCellVerticalHeight() ;
 
   textWidth.value =
     (textNotation.toCol - textNotation.fromCol + 1) *
-      cellStore.getCellHorizontalWidth() -
-    cellSpace;
+      cellStore.getCellHorizontalWidth();
 }
 
 function setInitialTextValue() {
@@ -156,7 +151,7 @@ function submitText(newEditMode: EditMode, oldEditMode: any) {
     notationMutateHelper.updateNotation(selectedNotation);
     restoreTextNotation(selectedNotation?.uuid);
   } else {
-    notationMutateHelper.upsertTextNotation(textValue.value, rectCoordinates);
+    notationMutateHelper.addTextNotation(textValue.value, rectCoordinates);
   }
 }
 

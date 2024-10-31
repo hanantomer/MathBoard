@@ -65,20 +65,15 @@ import useKeyHelper from "../helpers/keyHelper";
 const notationLoadingHelper = useNotationLoadingHelper();
 const notationStore = useNotationStore();
 const cellStore = useCellStore();
-const eventBus = useEventBus();
 const matrixHelper = UseMatrixHelper();
-const matrixCellHelper = UseMatrixCellHelper();
 const selectionHelper = useSelectionHelper();
 const keyHelper = useKeyHelper();
 const eventHelper = UseEventHelper();
 const watchHelper = useWatchHelper();
-
 const editModeStore = useEditModeStore();
 const answerStore = useAnswerStore();
-const screenHelper = usescreenHelper();
-const userOutgoingOperations = useUserOutgoingOperations();
-
 const pBar = ref(false);
+
 let cursor = ref<CursorType>("auto");
 let toolbarKey = ref(0);
 

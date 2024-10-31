@@ -4,7 +4,6 @@ import useMatrixCellHelper from "../helpers/matrixCellHelper";
 import useAuthorizationHelper from "../helpers/authorizationHelper";
 import useNotationMutateHelper from "../helpers/notationMutateHelper";
 import useSelectionHelper from "../helpers/selectionHelper";
-import { cellSpace } from "common/globals";
 type keyType = "SYMBOL" | "MOVEMENT" | "DELETION" | "DELETEANDMOVE";
 
 const editModeStore = useEditModeStore();
@@ -36,7 +35,7 @@ export default function () {
       }
 
       case "SYMBOL": {
-        return notationMutateHelper.upsertSymbolNotation(key);
+        return notationMutateHelper.addSymbolNotation(key);
       }
     }
   }

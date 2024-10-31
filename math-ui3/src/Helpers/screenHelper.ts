@@ -1,4 +1,3 @@
-import { cellSpace } from "../../../math-common/src/globals";
 
 import {
   DotCoordinates,
@@ -7,14 +6,12 @@ import {
   CellAttributes,
   HorizontalLineNotationAttributes,
   HorizontalLineAttributes,
-  HorizontaLinePosition,
   PointNotationAttributes,
   RectNotationAttributes,
   SlopeLineNotationAttributes,
   VerticalLineNotationAttributes,
   CurveNotationAttributes,
   RectAttributes,
-  LineCoordinates,
   MultiCellAttributes,
 } from "../../../math-common/src/baseTypes";
 
@@ -49,12 +46,10 @@ export default function screenHelper() {
     return {
       x:
         clickedCell.col * cellWidth +
-        cellStore.getSvgBoundingRect().left -
-        cellSpace,
+        cellStore.getSvgBoundingRect().left,
       y:
         clickedCell.row * cellHeight +
-        cellStore.getSvgBoundingRect().top -
-        cellSpace,
+        cellStore.getSvgBoundingRect().top,
     };
   }
 

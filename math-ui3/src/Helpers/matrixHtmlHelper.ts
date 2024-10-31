@@ -12,7 +12,6 @@ import {
 } from "common/baseTypes";
 import { useNotationStore } from "../store/pinia/notationStore";
 import { useCellStore } from "../store/pinia/cellStore";
-import { cellSpace } from "common/globals";
 import { NotationTypeBackgroundColorizing } from "common/unions";
 import useUtils from "./matrixHelperUtils";
 import { useUserStore } from "../store/pinia/userStore";
@@ -80,6 +79,7 @@ export default function useHtmlMatrixHelper() {
       case "SIGN":
       case "EXPONENT":
       case "SYMBOL":
+      case "SQRT":
       case "SQRTSYMBOL": {
         return pointNotationHeight(n as PointNotationAttributes);
       }
@@ -176,6 +176,13 @@ export default function useHtmlMatrixHelper() {
       case "TEXT": {
         return (n as RectNotationAttributes).fromCol;
       }
+      case "EXPONENT": {
+        return (n as unknown as MultiCellAttributes).fromCol;
+      }
+
+      case "SQRT": {
+        return (n as unknown as MultiCellAttributes).fromCol + 1;
+      }
     }
     return null;
   }
@@ -183,16 +190,16 @@ export default function useHtmlMatrixHelper() {
   function row(n: NotationAttributes) {
     switch (n.notationType) {
       case "ANNOTATION":
-      case "EXPONENT":
       case "SQRTSYMBOL":
+      case "SIGN":
       case "SYMBOL":
-      case "HORIZONTALLINE":
+        return (n as PointNotationAttributes).row;
+
+      case "EXPONENT":
       case "SQRT": {
-        return Math.round(
-          (n as HorizontalLineNotationAttributes).y /
-            cellStore.getCellVerticalHeight(),
-        );
+        return (n as unknown as MultiCellAttributes).row;
       }
+
       case "IMAGE":
       case "TEXT": {
         return (n as RectNotationAttributes).fromRow;
@@ -222,7 +229,7 @@ export default function useHtmlMatrixHelper() {
 
   function width(n: NotationAttributes): number {
     if (n.notationType === "SQRTSYMBOL") {
-      return cellStore.getCellHorizontalWidth() * 2 - cellSpace;
+      return cellStore.getCellHorizontalWidth() * 2;
     }
 
     switch (n.notationType) {
@@ -231,10 +238,14 @@ export default function useHtmlMatrixHelper() {
         return cellStore.getCellHorizontalWidth();
       }
 
-      case "SQRT":
       case "EXPONENT": {
         const n1 = n as unknown as MultiCellAttributes;
         return (n1.toCol - n1.fromCol) * cellStore.getCellHorizontalWidth();
+      }
+
+      case "SQRT": {
+        const n1 = n as unknown as MultiCellAttributes;
+        return (n1.toCol - n1.fromCol - 1) * cellStore.getCellHorizontalWidth();
       }
 
       case "IMAGE":
@@ -242,13 +253,11 @@ export default function useHtmlMatrixHelper() {
         return rectNotationWidth(n as RectNotationAttributes);
       }
     }
-    return 0;
+    throw new Error("invalid width");
   }
 
   function rectNotationWidth(n: RectAttributes): number {
-    return (
-      (n.toCol - n.fromCol + 1) * cellStore.getCellHorizontalWidth() - cellSpace
-    );
+    return (n.toCol - n.fromCol + 1) * cellStore.getCellHorizontalWidth();
   }
 
   function pointNotationHeight(n: CellAttributes): number {
@@ -257,8 +266,7 @@ export default function useHtmlMatrixHelper() {
 
   function rectNotationHeight(n: RectAttributes): number {
     return (
-      (Math.abs(n.toRow - n.fromRow) + 1) * cellStore.getCellVerticalHeight() -
-      cellSpace
+      (Math.abs(n.toRow - n.fromRow) + 1) * cellStore.getCellVerticalHeight()
     );
   }
 
@@ -289,12 +297,10 @@ export default function useHtmlMatrixHelper() {
         : "black";
 
     if (n.notationType === "SQRT") {
-      let n1 = n as HorizontalLineNotationAttributes;
       color = n.color?.value ? n.color?.value : color;
 
-      return `<span class=line style='color:${color};position:relative;left:9px;width:${
-        n1.x2 - n1.x1
-      }px;'></span>`;
+      return `<span class=line style='color:${color};
+            position:relative;left:9px;'></span>`;
     }
 
     if (n.notationType === "SQRTSYMBOL") {

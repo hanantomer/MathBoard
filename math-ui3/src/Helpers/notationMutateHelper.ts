@@ -20,12 +20,14 @@ import {
   CurveNotationCreationAttributes,
   ExponentNotationCreationAttributes,
   AnnotationNotationCreationAttributes,
+  SqrtNotationCreationAttributes,
   isCurve,
   isLine,
   isPoint,
   isRect,
   ExponentNotationAttributes,
   MultiCellAttributes,
+  SqrtNotationAttributes,
 } from "common/baseTypes";
 
 import { matrixDimensions } from "common/globals";
@@ -115,6 +117,8 @@ export default function notationMutateHelper() {
         n.notationType === "ANNOTATION" ||
         n.notationType === "EXPONENT" ||
         n.notationType === "SIGN" ||
+        n.notationType === "SYMBOL" ||
+        n.notationType === "SQRT" ||
         n.notationType === "SQRTSYMBOL"
           ? pointAtCellCoordinates(
               n as PointNotationAttributes,
@@ -457,31 +461,37 @@ export default function notationMutateHelper() {
     lineNotation: HorizontalLineNotationAttributes,
   ) {
     transposeHorizontalCoordinatesIfNeeded(lineNotation);
-    await dbHelper.updateHorizontalLineAttributes(lineNotation);
+    await dbHelper.updateHorizontalLineNotationAttributes(lineNotation);
     notationStore.addNotation(lineNotation);
+  }
+
+  async function updateSqrtNotation(sqrtNotation: SqrtNotationAttributes) {
+    transposeSqrtCoordinatesIfNeeded(sqrtNotation);
+    await dbHelper.updateSqrtNotationAttributes(sqrtNotation);
+    notationStore.addNotation(sqrtNotation);
   }
 
   async function updateVerticalLineNotation(
     lineNotation: VerticalLineNotationAttributes,
   ) {
     transposeVerticalCoordinatesIfNeeded(lineNotation);
-    await dbHelper.updateVerticalLineAttributes(lineNotation);
+    await dbHelper.updateVerticalLineNotationAttributes(lineNotation);
     notationStore.addNotation(lineNotation);
   }
 
   async function updateSlopeLineNotation(
     lineNotation: SlopeLineNotationAttributes,
   ) {
-    await dbHelper.updateSlopeLineAttributes(lineNotation);
+    await dbHelper.updateSlopeLineNotationAttributes(lineNotation);
     notationStore.addNotation(lineNotation);
   }
 
   async function updateCurveNotation(curve: CurveNotationAttributes) {
-    await dbHelper.updateCurveAttributes(curve);
+    await dbHelper.updateCurveNotationAttributes(curve);
     notationStore.addNotation(curve);
   }
 
-  function upsertPointNotation(notation: PointNotationCreationAttributes) {
+  function addPointNotation(notation: PointNotationCreationAttributes) {
     editModeStore.setDefaultEditMode();
     notationStore.resetSelectedNotations();
 
@@ -508,6 +518,24 @@ export default function notationMutateHelper() {
       | HorizontalLineNotationCreationAttributes
       | VerticalLineNotationCreationAttributes
       | SlopeLineNotationCreationAttributes,
+  ) {
+    editModeStore.setDefaultEditMode();
+    notationStore.resetSelectedNotations();
+
+    let overlappedAnyTypeNotation: NotationAttributes | undefined =
+      findOverlapNotationsOfAnyTypeButLine(notation);
+
+    // don't allow override of other type notation
+    if (overlappedAnyTypeNotation) {
+      return;
+    }
+
+    addNotation(notation);
+  }
+
+  ///TODO : check if real needed or just one upsert notation for all types
+  function upsertSqrtNotation(
+    notation:SqrtNotationCreationAttributes
   ) {
     editModeStore.setDefaultEditMode();
     notationStore.resetSelectedNotations();
@@ -687,8 +715,6 @@ export default function notationMutateHelper() {
         return (
           notation?.boardType === "ANSWER" &&
           !userStore.isTeacher() &&
-
-
           notationStore
             .getNotationsAtCell({
               col: multiCell.fromCol + delatX,
@@ -748,17 +774,17 @@ export default function notationMutateHelper() {
 
   function addMarkNotation() {
     if (editModeStore.getEditMode() == "CHECKMARK_STARTED") {
-      upsertSymbolNotation("&#x2714");
+      addSymbolNotation("&#x2714");
       return;
     }
 
     if (editModeStore.getEditMode() == "SEMICHECKMARK_STARTED") {
-      upsertSymbolNotation("&#x237B");
+      addSymbolNotation("&#x237B");
       return;
     }
 
     if (editModeStore.getEditMode() == "XMARK_STARTED") {
-      upsertSymbolNotation("&#x2718");
+      addSymbolNotation("&#x2718");
       return;
     }
   }
@@ -813,7 +839,7 @@ export default function notationMutateHelper() {
     cellStore.resetSelectedCell();
   }
 
-  function upsertTextNotation(value: string, textCells: RectAttributes) {
+  function addTextNotation(value: string, textCells: RectAttributes) {
     let notation: RectNotationCreationAttributes = {
       fromCol: textCells.fromCol,
       toCol: textCells.toCol,
@@ -829,7 +855,7 @@ export default function notationMutateHelper() {
     upsertRectNotation(notation);
   }
 
-  function upsertAnnotationNotation(
+  function addAnnotationNotation(
     value: string,
     annotationCells: CellAttributes,
   ) {
@@ -843,10 +869,10 @@ export default function notationMutateHelper() {
       user: userStore.getCurrentUser()!,
     };
 
-    upsertPointNotation(notation);
+    addPointNotation(notation);
   }
 
-  function upsertExponentNotation(base: string, exponent: string) {
+  function addExponentNotation(base: string, exponent: string) {
     let notation: ExponentNotationCreationAttributes = {
       fromCol: getSelectedCell()!.col,
       toCol: getSelectedCell()!.col + exponent.length + 1,
@@ -863,7 +889,7 @@ export default function notationMutateHelper() {
     matrixCellHelper.setNextCell(base.length + 1, 0);
   }
 
-  function upsertSymbolNotation(value: string) {
+  function addSymbolNotation(value: string) {
     const symbolCell = getSelectedCell();
     if (!symbolCell) return;
 
@@ -877,7 +903,7 @@ export default function notationMutateHelper() {
       user: userStore.getCurrentUser()!,
     };
 
-    upsertPointNotation(notation);
+    addPointNotation(notation);
 
     matrixCellHelper.setNextCell(1, 0);
   }
@@ -890,6 +916,25 @@ export default function notationMutateHelper() {
     }
 
     return cellStore.getSelectedCell();
+  }
+
+  function addSqrtNotation(
+    sqrtAttributes: MultiCellAttributes,
+    notationType: NotationType,
+  ) {
+    transposeSqrtCoordinatesIfNeeded(sqrtAttributes);
+
+    let sqrtNotation: SqrtNotationCreationAttributes = {
+      fromCol: sqrtAttributes.fromCol,
+      toCol: sqrtAttributes.toCol,
+      row: sqrtAttributes.row,
+      boardType: notationStore.getParent().type,
+      parentUUId: notationStore.getParent().uuid,
+      notationType: notationType,
+      user: userStore.getCurrentUser()!,
+    };
+
+    upsertSqrtNotation(sqrtNotation);
   }
 
   function addHorizontalLineNotation(
@@ -985,7 +1030,7 @@ export default function notationMutateHelper() {
       case "SIGN":
       case "SQRTSYMBOL":
       case "SYMBOL":
-        return upsertPointNotation(clonedNotation);
+        return addPointNotation(clonedNotation);
       case "IMAGE":
       case "TEXT":
         return upsertRectNotation(clonedNotation);
@@ -1013,6 +1058,14 @@ export default function notationMutateHelper() {
       const x1 = coordinates.x1;
       coordinates.x1 = coordinates.x2;
       coordinates.x2 = x1;
+    }
+  }
+
+  function transposeSqrtCoordinatesIfNeeded(notation: MultiCellAttributes) {
+    if (notation.fromCol > notation.toCol) {
+      const fromCol = notation.fromCol;
+      notation.fromCol = notation.toCol;
+      notation.toCol = fromCol;
     }
   }
 
@@ -1045,20 +1098,22 @@ export default function notationMutateHelper() {
     addMarkNotation,
     addVerticalLineNotation,
     addSlopeLineNotation,
+    addSymbolNotation,
+    addTextNotation,
+    addAnnotationNotation,
+    addSqrtNotation,
+    addExponentNotation,
     cloneNotation,
     deleteSelectedNotations,
     moveSelectedNotations,
     isNotationInQuestionArea,
     isCellInQuestionArea,
     updateHorizontalLineNotation,
+    updateSqrtNotation,
     updateVerticalLineNotation,
     updateSlopeLineNotation,
     updateCurveNotation,
     updateNotation,
-    upsertSymbolNotation,
-    upsertTextNotation,
-    upsertAnnotationNotation,
-    upsertExponentNotation,
     selectNotation,
     selectNotationByCoordinates,
     saveMovedNotations,
