@@ -181,7 +181,10 @@ export default function useHtmlMatrixHelper() {
       }
 
       case "SQRT": {
-        return (n as unknown as MultiCellAttributes).fromCol + 1;
+        return (
+          (n as unknown as MultiCellAttributes).fromCol +
+          1 /*first col occupied by sqrt symbol*/
+        );
       }
     }
     return null;
@@ -300,7 +303,7 @@ export default function useHtmlMatrixHelper() {
       color = n.color?.value ? n.color?.value : color;
 
       return `<span class=line style='color:${color};
-            position:relative;left:9px;'></span>`;
+            position:relative;'></span>`;
     }
 
     if (n.notationType === "SQRTSYMBOL") {

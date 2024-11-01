@@ -16,7 +16,7 @@ import {
   ExponentNotationAttributes,
   isRect,
   isPoint,
-  MultiCellAttributes
+  MultiCellAttributes,
 } from "common/baseTypes";
 import { BoardType } from "common/unions";
 import { ref } from "vue";
@@ -146,6 +146,7 @@ export const useNotationStore = defineStore("notation", () => {
     notations.value.set(notation.uuid, notation);
 
     switch (notation.notationType) {
+      case "SQRT":
       case "EXPONENT":
         notationCellOccupationHelper.updateMultiCellOccupationMatrix(
           cellPointNotationOccupationMatrix,
@@ -430,8 +431,8 @@ export const useNotationStore = defineStore("notation", () => {
     getNotations,
     getNotationAtCoordinates,
     //getHorizontalLineNotations,
-//    getVerticalLineNotations,
-//    getSlopeLineNotations,
+    //    getVerticalLineNotations,
+    //    getSlopeLineNotations,
     getRectNotations,
     getCopiedNotations,
     getNotationsAtCell,

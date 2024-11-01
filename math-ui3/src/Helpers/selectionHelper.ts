@@ -44,16 +44,24 @@ export default function selectionHelper() {
 
     switch (notation!.notationType) {
       case "SQRT":
-      case "EXPONENT":
-        const multCell =
-          notation as unknown as MultiCellAttributes;
+        const sqrt = notation as unknown as MultiCellAttributes;
         if (
-          screenHelper.getClickedPosDistanceFromMultiCell(
+          screenHelper.getClickedPosDistanceFromSqrt(dotCoordinates, sqrt) <
+          maxDistanceToSelect
+        ) {
+          selectSqrtNotation(notation);
+          return true;
+        }
+        break;
+      case "EXPONENT":
+        const exponent = notation as unknown as MultiCellAttributes;
+        if (
+          screenHelper.getClickedPosDistanceFromExponent(
             dotCoordinates,
-            multCell,
+            exponent,
           ) < maxDistanceToSelect
         ) {
-          selectLineNotation(notation);
+          selectExponentNotation(notation);
           return true;
         }
       case "HORIZONTALLINE":
@@ -136,6 +144,16 @@ export default function selectionHelper() {
     notationStore.selectNotation(activeNotation?.uuid);
   }
 
+  function selectSqrtNotation(notation: NotationAttributes) {
+    editModeStore.setEditMode("SQRT_SELECTED");
+    eventBus.emit("EV_SQRT_SELECTED", notation);
+  }
+
+  function selectExponentNotation(notation: NotationAttributes) {
+    editModeStore.setEditMode("EXPONENT_SELECTED");
+    eventBus.emit("EV_EXPONENT_SELECTED", notation);
+  }
+
   function selectCurveNotation(notation: NotationAttributes) {
     switch (notation.notationType) {
       case "CONCAVECURVE":
@@ -150,10 +168,6 @@ export default function selectionHelper() {
 
   function selectLineNotation(notation: NotationAttributes) {
     switch (notation.notationType) {
-      case "SQRT":
-        editModeStore.setEditMode("SQRT_SELECTED");
-        eventBus.emit("EV_SQRT_SELECTED", notation);
-        break;
       case "HORIZONTALLINE":
         editModeStore.setEditMode("HORIZONTAL_LINE_SELECTED");
         eventBus.emit("EV_HORIZONTAL_LINE_SELECTED", notation);

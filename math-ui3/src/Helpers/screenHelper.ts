@@ -1,4 +1,3 @@
-
 import {
   DotCoordinates,
   RectCoordinates,
@@ -44,12 +43,8 @@ export default function screenHelper() {
     const cellHeight = cellStore.getCellVerticalHeight();
 
     return {
-      x:
-        clickedCell.col * cellWidth +
-        cellStore.getSvgBoundingRect().left,
-      y:
-        clickedCell.row * cellHeight +
-        cellStore.getSvgBoundingRect().top,
+      x: clickedCell.col * cellWidth + cellStore.getSvgBoundingRect().left,
+      y: clickedCell.row * cellHeight + cellStore.getSvgBoundingRect().top,
     };
   }
 
@@ -80,80 +75,19 @@ export default function screenHelper() {
     };
   }
 
-  function getMultiCellAttributes(
-    x1: number,
-    x2: number,
-    y: number
-  ): MultiCellAttributes {
-    const fromCol = Math.round( x1 / cellStore.getCellHorizontalWidth());
-
-    const toCol = Math.round(x2 / cellStore.getCellHorizontalWidth()) - 1;
-
-    const row = Math.round(y / cellStore.getCellVerticalHeight());
+  function getMultiCellLineAttributes(
+    n: MultiCellAttributes,
+  ): HorizontalLineAttributes {
+    const x1 = cellStore.getCellHorizontalWidth() * n.fromCol;
+    const x2 = cellStore.getCellHorizontalWidth() * n.toCol;
+    const y = cellStore.getCellVerticalHeight() * n.row;
 
     return {
-      fromCol: fromCol,
-      toCol: toCol,
-      row: row
+      x1: x1,
+      x2: x2,
+      y: y,
     };
   }
-
-
-  // function getLineAttributes(
-  //   lineCoordinates: HorizontaLinePosition,
-  // ): HorizontalLineAttributes {
-
-  //   const fromCol = Math.round(
-  //     lineCoordinates.x1 /
-  //       (cellStore.getCellHorizontalWidth()),
-  //   );
-
-  //   const toCol =
-  //     Math.round(
-  //       lineCoordinates.x2 /
-  //         (cellStore.getCellHorizontalWidth()),
-  //     ) - 1;
-
-  //   const row = Math.round(
-  //     lineCoordinates.y /
-  //       (cellStore.getCellVerticalHeight()),
-  //   );
-
-  //   return {
-  //     fromCol: fromCol,
-  //     toCol: toCol,
-  //     row: row,
-  //   };
-  // }
-
-  // function getSlopeLineAttributesByCoordinates(
-  //   lineCoordinates: LineCoordinates,
-  // ): SlopeLineAttributes {
-  //   const lineFromCol = Math.round(
-  //     lineCoordinates.bottom.x /
-  //       (cellStore.getCellHorizontalWidth()),
-  //   );
-
-  //   const lineToCol = Math.round(
-  //     lineCoordinates.top.x / (cellStore.getCellHorizontalWidth()),
-  //   );
-
-  //   const lineFromRow = Math.round(
-  //     lineCoordinates.bottom.y /
-  //       (cellStore.getCellVerticalHeight()),
-  //   );
-
-  //   const lineToRow = Math.round(
-  //     lineCoordinates.top.y / (cellStore.getCellVerticalHeight()),
-  //   );
-
-  //   return {
-  //     fromCol: lineFromCol,
-  //     toCol: lineToCol,
-  //     fromRow: lineFromRow,
-  //     toRow: lineToRow,
-  //   };
-  // }
 
   function getRectCoordinatesOccupiedCells(
     rectCoordinates: RectCoordinates,
@@ -215,6 +149,7 @@ export default function screenHelper() {
       switch (n?.notationType) {
         case "ANNOTATION":
         case "SYMBOL":
+        case "SQRTSYMBOL":
         case "SIGN": {
           let n1 = n as PointNotationAttributes;
 
@@ -249,6 +184,17 @@ export default function screenHelper() {
           notationDistanceList.push({
             notation: n1,
             distance: getClickedPosDistanceFromSlopeLine(DotCoordinates, n1),
+          });
+          break;
+        }
+        case "SQRT": {
+          let n1 = n as unknown as MultiCellAttributes;
+          notationDistanceList.push({
+            notation: n,
+            distance: getClickedPosDistanceFromHorizontalLine(
+              DotCoordinates,
+              getMultiCellLineAttributes(n1),
+            ),
           });
           break;
         }
@@ -364,45 +310,35 @@ export default function screenHelper() {
     );
   }
 
-    function getClickedPosDistanceFromMultiCell(
-      DotCoordinates: DotCoordinates,
-      n: MultiCellAttributes,
-    ): number {
-      const x = DotCoordinates.x - cellStore.getSvgBoundingRect().left;
-      const y = DotCoordinates.y - cellStore.getSvgBoundingRect().top;
+  function getClickedPosDistanceFromExponent(
+    DotCoordinates: DotCoordinates,
+    n: MultiCellAttributes,
+  ): number {
+    const x = DotCoordinates.x - cellStore.getSvgBoundingRect().left;
+    const y = DotCoordinates.y - cellStore.getSvgBoundingRect().top;
 
-      const x1 = n.fromCol * cellStore.getCellHorizontalWidth();
-      const x2 = n.toCol * cellStore.getCellHorizontalWidth();
-      const y1 = n.row * cellStore.getCellVerticalHeight();
+    const x1 = n.fromCol * cellStore.getCellHorizontalWidth();
+    const x2 = n.toCol * cellStore.getCellHorizontalWidth();
+    const y1 = n.row * cellStore.getCellVerticalHeight();
 
+    const horizontalDistance = x < x1 ? x2 - x : x > x2 ? x - x2 : 0;
+    const verticalDistance = Math.abs(y1 - y);
 
+    const a = Math.pow(horizontalDistance, 2);
+    const b = Math.pow(verticalDistance, 2);
 
-      const horizontalDistance = x < x1 ?x2 - x : x > x2 ? x - x2 : 0;
-
-      const verticalDistance = Math.abs(y1 - y);
-
-      const a = Math.pow(horizontalDistance, 2);
-      const b = Math.pow(verticalDistance, 2);
-
-      return Math.sqrt(a + b);
-    }
-
+    return Math.sqrt(a + b);
+  }
 
   function getClickedPosDistanceFromHorizontalLine(
     DotCoordinates: DotCoordinates,
     n: HorizontalLineAttributes,
   ): number {
-
     const x = DotCoordinates.x - cellStore.getSvgBoundingRect().left;
 
     const y = DotCoordinates.y - cellStore.getSvgBoundingRect().top;
 
-    const horizontalDistance =
-      x < n.x1
-        ? n.x2 - x
-        : x > n.x2
-        ? x - n.x2
-        : 0;
+    const horizontalDistance = x < n.x1 ? n.x2 - x : x > n.x2 ? x - n.x2 : 0;
 
     const verticalDistance = Math.abs(n.y - y);
 
@@ -412,11 +348,20 @@ export default function screenHelper() {
     return Math.sqrt(a + b);
   }
 
+  function getClickedPosDistanceFromSqrt(
+    dotCoordinates: DotCoordinates,
+    sqrtCoordinates: MultiCellAttributes,
+  ): number {
+    return getClickedPosDistanceFromHorizontalLine(
+      dotCoordinates,
+      getMultiCellLineAttributes(sqrtCoordinates),
+    );
+  }
+
   function getClickedPosDistanceFromVerticalLine(
     DotCoordinates: DotCoordinates,
     n: VerticalLineNotationAttributes,
   ): number {
-
     const x = DotCoordinates.x - cellStore.getSvgBoundingRect().left;
 
     const y = DotCoordinates.y - cellStore.getSvgBoundingRect().top;
@@ -424,11 +369,7 @@ export default function screenHelper() {
     const horizontalDistance = Math.abs(n.x - x);
 
     const verticalDistance =
-      y < n.y1
-        ? n.y1 - DotCoordinates.y
-        : y > n.y2
-        ? y - n.y2
-        : 0;
+      y < n.y1 ? n.y1 - DotCoordinates.y : y > n.y2 ? y - n.y2 : 0;
 
     const a = Math.pow(horizontalDistance, 2);
     const b = Math.pow(verticalDistance, 2);
@@ -441,19 +382,16 @@ export default function screenHelper() {
     DotCoordinates: DotCoordinates,
     n: SlopeLineNotationAttributes,
   ): number {
-
     const x = DotCoordinates.x - cellStore.getSvgBoundingRect().left;
 
     const y = DotCoordinates.y - cellStore.getSvgBoundingRect().top;
 
     const nominator = Math.abs(
-        (n.x2 - n.x1) * (y - n.y1) -
-        (x - n.x1) * (n.y2 - n.y1),
+      (n.x2 - n.x1) * (y - n.y1) - (x - n.x1) * (n.y2 - n.y1),
     );
 
     const deNominator = Math.sqrt(
-      Math.pow(n.x2 - n.x1, 2) +
-        Math.pow(n.y2 - n.y1, 2),
+      Math.pow(n.x2 - n.x1, 2) + Math.pow(n.y2 - n.y1, 2),
     );
 
     return nominator / deNominator;
@@ -463,12 +401,13 @@ export default function screenHelper() {
     getClickedPosDistanceFromSlopeLine,
     getClickedPosDistanceFromVerticalLine,
     getClickedPosDistanceFromHorizontalLine,
-    getClickedPosDistanceFromMultiCell,
+    getClickedPosDistanceFromExponent,
+    getClickedPosDistanceFromSqrt,
     getNotationAtCoordinates,
     getClickedCell,
     getRectCoordinatesOccupiedCells,
     getClickedCellTopLeftCoordinates,
     getRectAttributes,
-    getMultiCellAttributes,
+    getMultiCellLineAttributes,
   };
 }
