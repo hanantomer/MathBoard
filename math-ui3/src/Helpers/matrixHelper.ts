@@ -22,7 +22,8 @@ export default function useMatrixHelper() {
   let matrix: any[] = [];
 
   function setCellVerticalHeight(svgId: string) {
-    if (cellStore.getCellVerticalHeight() !== cellSpace/*not initial value*/) return;
+    if (cellStore.getCellVerticalHeight() !== cellSpace /*not initial value*/)
+      return;
 
     let clientWidth: number | undefined =
       document.getElementById(svgId)?.clientWidth;
@@ -145,6 +146,7 @@ export default function useMatrixHelper() {
           n.notationType === "EXPONENT" ||
           n.notationType === "SIGN" ||
           n.notationType === "SQRT" ||
+          n.notationType === "TEXT" ||
           n.notationType === "SQRTSYMBOL" ||
           n.notationType === "SYMBOL",
       ),

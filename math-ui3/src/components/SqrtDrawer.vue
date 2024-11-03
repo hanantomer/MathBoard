@@ -37,22 +37,14 @@
 </template>
 <script setup lang="ts">
 import useWatchHelper from "../helpers/watchHelper";
-
 import { computed, ref } from "vue";
-import { useNotationStore } from "../store/pinia/notationStore";
 import { useCellStore } from "../store/pinia/cellStore";
 import { useEditModeStore } from "../store/pinia/editModeStore";
-
 import { HorizontaLinePosition } from "../../../math-common/src/baseTypes";
-
-import { SqrtNotationAttributes } from "../../../math-common/src/baseTypes";
-import useEventBus from "../helpers/eventBusHelper";
 import useLineDrawingHelper from "../helpers/lineDrawingHelper";
 
-const eventBus = useEventBus();
 const watchHelper = useWatchHelper();
 const lineDrawer = useLineDrawingHelper();
-const notationStore = useNotationStore();
 const cellStore = useCellStore();
 const editModeStore = useEditModeStore();
 
@@ -111,7 +103,7 @@ watchHelper.watchMouseEvent(["SQRT_DRAWING"], "EV_SVG_MOUSEUP", () =>
 watchHelper.watchNotationSelection(
   "SQRT_SELECTED",
   "EV_SQRT_SELECTED",
-  (notation) => lineDrawer.selectLine(notation, linePosition.value),
+  (notation) => lineDrawer.selectSqrt(notation, linePosition.value),
 );
 
 watchHelper.watchMouseEvent(["SQRT_SELECTED"], "EV_SVG_MOUSEUP", () =>
@@ -121,27 +113,7 @@ watchHelper.watchMouseEvent(["SQRT_SELECTED"], "EV_SVG_MOUSEUP", () =>
 watchHelper.watchMouseEvent(["SQRT_DRAWING"], "EV_SVG_MOUSEDOWN", () =>
   lineDrawer.resetLineDrawing(linePosition.value),
 );
-
-// event handlers
-
-function selectSqrt(sqrtNotation: SqrtNotationAttributes) {
-  // set selection sqrt
-
-  linePosition.value.x1 =
-    sqrtNotation.fromCol * cellStore.getCellHorizontalWidth();
-  (linePosition.value.x2 =
-    (sqrtNotation.toCol - 1) * cellStore.getCellHorizontalWidth()),
-    (linePosition.value.y =
-      sqrtNotation.row * cellStore.getCellVerticalHeight());
-
-  // update store
-  notationStore.selectNotation(sqrtNotation.uuid);
-
-  // to enable re selection
-  eventBus.emit("EV_SQRT_SELECTED", null);
-}
-
-function onHandleMouseDown() {
-  editModeStore.setNextEditMode();
-}
 </script>
+
+<style>
+</style>

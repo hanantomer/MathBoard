@@ -343,7 +343,7 @@ export default function notationMutateHelper() {
           (n as PointNotationAttributes).row += deltaRow;
           break;
         }
-        case "SQRT":
+
         case "HORIZONTALLINE": {
           (n as HorizontalLineNotationAttributes).x1 +=
             deltaCol * cellStore.getCellHorizontalWidth();
@@ -387,10 +387,11 @@ export default function notationMutateHelper() {
           break;
         }
 
+        case "SQRT":
         case "EXPONENT": {
-          (n as ExponentNotationAttributes).fromCol += deltaCol;
-          (n as ExponentNotationAttributes).toCol += deltaCol;
-          (n as ExponentNotationAttributes).row += deltaRow;
+          (n as unknown as MultiCellAttributes).fromCol += deltaCol;
+          (n as unknown as MultiCellAttributes).toCol += deltaCol;
+          (n as unknown as MultiCellAttributes).row += deltaRow;
           break;
         }
 
@@ -534,9 +535,7 @@ export default function notationMutateHelper() {
   }
 
   ///TODO : check if real needed or just one upsert notation for all types
-  function upsertSqrtNotation(
-    notation:SqrtNotationCreationAttributes
-  ) {
+  function upsertSqrtNotation(notation: SqrtNotationCreationAttributes) {
     editModeStore.setDefaultEditMode();
     notationStore.resetSelectedNotations();
 

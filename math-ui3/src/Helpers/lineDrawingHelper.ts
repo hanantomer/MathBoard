@@ -6,11 +6,11 @@ import {
   MultiCellAttributes,
 } from "../../../math-common/build/baseTypes";
 
-
 import { useEditModeStore } from "../store/pinia/editModeStore";
 import { useCellStore } from "../store/pinia/cellStore";
 import { useNotationStore } from "../store/pinia/notationStore";
 import useNotationMutateHelper from "../helpers/notationMutateHelper";
+
 
 const editModeStore = useEditModeStore();
 const cellStore = useCellStore();
@@ -30,6 +30,21 @@ export default function useLineDrawingHelper() {
 
     // update store
     notationStore.selectNotation(lineNotation.uuid);
+  }
+
+  function selectSqrt(
+    sqrtNotation: SqrtNotationAttributes,
+    linePosition: HorizontaLinePosition,
+  ) {
+    if (!sqrtNotation) return;
+
+    linePosition.x1 = sqrtNotation.fromCol * cellStore.getCellHorizontalWidth();
+    linePosition.x2 =
+      (sqrtNotation.toCol - 1) * cellStore.getCellHorizontalWidth();
+    linePosition.y = sqrtNotation.row * cellStore.getCellVerticalHeight();
+
+    // update store
+    notationStore.selectNotation(sqrtNotation.uuid);
   }
 
   function startDrawingLine(
@@ -93,22 +108,19 @@ export default function useLineDrawingHelper() {
     }
 
     let fromCol = Math.round(
-      linePosition.x1 / (cellStore.getCellHorizontalWidth()),
+      linePosition.x1 / cellStore.getCellHorizontalWidth(),
     );
 
     let toCol = Math.round(
-      linePosition.x2 / (cellStore.getCellHorizontalWidth()),
+      linePosition.x2 / cellStore.getCellHorizontalWidth(),
     );
 
-    let row = Math.round(
-      linePosition.y / (cellStore.getCellVerticalHeight()),
-    );
+    let row = Math.round(linePosition.y / cellStore.getCellVerticalHeight());
 
     saveSqrt({ fromCol: fromCol, toCol: toCol, row: row });
 
     resetLineDrawing(linePosition);
   }
-
 
   function endDrawingLine(linePosition: HorizontaLinePosition) {
     if (
@@ -145,23 +157,20 @@ export default function useLineDrawingHelper() {
       );
   }
 
-    function saveSqrt(sqrtAttributes: MultiCellAttributes) {
-      if (notationStore.getSelectedNotations().length > 0) {
-        let updatedSqrt = {
-          ...notationStore.getSelectedNotations().at(0)!,
-          ...sqrtAttributes,
-        };
+  function saveSqrt(sqrtAttributes: MultiCellAttributes) {
+    if (notationStore.getSelectedNotations().length > 0) {
+      let updatedSqrt = {
+        ...notationStore.getSelectedNotations().at(0)!,
+        ...sqrtAttributes,
+      };
 
-        notationMutateHelper.updateSqrtNotation(
-          updatedSqrt ,
-        );
-      } else
-        notationMutateHelper.addSqrtNotation(
-          sqrtAttributes,
-          editModeStore.getNotationTypeByEditMode(),
-        );
-    }
-
+      notationMutateHelper.updateSqrtNotation(updatedSqrt);
+    } else
+      notationMutateHelper.addSqrtNotation(
+        sqrtAttributes,
+        editModeStore.getNotationTypeByEditMode(),
+      );
+  }
 
   function resetLineDrawing(linePosition: HorizontaLinePosition) {
     linePosition.x1 = linePosition.x2 = linePosition.y = 0;
@@ -177,6 +186,7 @@ export default function useLineDrawingHelper() {
 
   return {
     selectLine,
+    selectSqrt,
     startDrawingLine,
     resetLineDrawing,
     endDrawingLine,

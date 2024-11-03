@@ -153,9 +153,15 @@ watchHelper.watchMouseEvent(
 );
 
 watchHelper.watchMouseEvent(
-  ["AREA_SELECTED", "TEXT_STARTED"],
+  ["AREA_SELECTED"],
   "EV_SVG_MOUSEUP",
   cancelSelectionWhenUserClickedOutside /*takes action when clicked outside of selection area*/,
+);
+
+watchHelper.watchMouseEvent(
+  ["TEXT_STARTED"],
+  "EV_SVG_MOUSEUP",
+  cancelTextSelectionWhenUserClickedOutside /*takes action when clicked outside of selection area*/,
 );
 
 watchHelper.watchMouseEvent(["TEXT_STARTED"], "EV_SVG_MOUSEDOWN", () =>
@@ -163,6 +169,11 @@ watchHelper.watchMouseEvent(["TEXT_STARTED"], "EV_SVG_MOUSEDOWN", () =>
 );
 
 function cancelSelectionWhenUserClickedOutside() {
+  cancelSelection();
+  editModeStore.setDefaultEditMode();
+}
+
+function cancelTextSelectionWhenUserClickedOutside() {
   if (!mouseLeftSelectionArea) return;
   cancelSelection();
   editModeStore.setDefaultEditMode();
