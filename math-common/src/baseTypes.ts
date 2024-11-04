@@ -11,15 +11,16 @@ export type EntityAttributes = {
   updatedAt?: Date;
 };
 
-export type NotationAttributes = EntityAttributes & {
-  //uuid: string;
-  parentUUId: string;
-  user: UserAttributes;
-  notationType: NotationType;
-  boardType: BoardType;
-  selected?: boolean;
-  color?: ColorAttributes;
-};
+export type NotationAttributes =
+  EntityAttributes & {
+    //uuid: string;
+    parentUUId: string;
+    user: UserAttributes;
+    notationType: NotationType;
+    boardType: BoardType;
+    selected?: boolean;
+    color?: ColorAttributes;
+  };
 
 export type ExponentAttributes = {
   base: string;
@@ -60,22 +61,22 @@ export type RectCoordinates = {
 };
 
 export type HorizontaLinePosition = {
-  x1: number;
-  x2: number;
-  y: number;
+  p1x: number;
+  p2x: number;
+  py: number;
 };
 
 export type VerticalLinePosition = {
-  x: number;
-  y1: number;
-  y2: number;
+  px: number;
+  p1y: number;
+  p2y: number;
 };
 
 export type SlopeLinePosition = {
-  x1: number;
-  x2: number;
-  y1: number;
-  y2: number;
+  p1x: number;
+  p2x: number;
+  p1y: number;
+  p2y: number;
 };
 
 /// TODO mieght not be global
@@ -103,22 +104,22 @@ export type ColorizedCell = CellAttributes & {
 };
 
 export type HorizontalLineAttributes = {
-  x1: number;
-  x2: number;
-  y: number;
+  p1x: number;
+  p2x: number;
+  py: number;
 };
 
 export type VerticalLineAttributes = {
-  x: number;
-  y1: number;
-  y2: number;
+  px: number;
+  p1y: number;
+  p2y: number;
 };
 
 export type SlopeLineAttributes = {
-  x1: number; // left
-  x2: number; // right
-  y1: number; // y which corresponds to x1, if the slope is positive this is the bottom(and higher) y and vice versa
-  y2: number; // y which corresponds to x2, if the slope is positive this is the top (and lower y) and vice versa
+  p1x: number; // left
+  p2x: number; // right
+  p1y: number; // y which corresponds to x1, if the slope is positive this is the bottom(and higher) y and vice versa
+  p2y: number; // y which corresponds to x2, if the slope is positive this is the top (and lower y) and vice versa
 };
 
 export type CurveAttributes = {
@@ -142,7 +143,6 @@ export type MultiCellAttributes = {
   toCol: number;
   row: number;
 };
-
 
 export type BoardAttributes = {
   name: string;
@@ -197,13 +197,12 @@ export type AnnotationNotationAttributes =
   EntityAttributes &
     NotationAttributes &
     CellAttributes &
-  SingleValueAttributes;
-    
+    SingleValueAttributes;
+
 export type SqrtNotationAttributes =
   EntityAttributes &
     NotationAttributes &
-    MultiCellAttributes ;
-
+    MultiCellAttributes;
 
 // ommiting uuid from creation attributed since created by the databse
 export type PointNotationCreationAttributes =
@@ -214,11 +213,10 @@ export type PointNotationCreationAttributes =
     "uuid"
   >;
 
-export type SqrtNotationCreationAttributes =
-  Omit<
-    SqrtNotationAttributes,
-    "uuid"
-  >;
+export type SqrtNotationCreationAttributes = Omit<
+  SqrtNotationAttributes,
+  "uuid"
+>;
 
 export type HorizontalLineNotationCreationAttributes =
   Omit<

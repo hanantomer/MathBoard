@@ -252,9 +252,9 @@ export default function useDbHelper() {
         `/${lineNotation.boardType.toLowerCase()}${lineNotation.notationType.toLowerCase()}s`,
       {
         uuid: lineNotation.uuid,
-        x1: lineNotation.x1,
-        x2: lineNotation.x2,
-        y: lineNotation.y,
+        p1x: lineNotation.p1x,
+        p2x: lineNotation.p2x,
+        py: lineNotation.py,
       },
     );
   }
@@ -282,9 +282,9 @@ export default function useDbHelper() {
         `/${lineNotation.boardType.toLowerCase()}${lineNotation.notationType.toLowerCase()}s`,
       {
         uuid: lineNotation.uuid,
-        x: lineNotation.x,
-        y1: lineNotation.y1,
-        y2: lineNotation.y2,
+        x: lineNotation.px,
+        p1y: lineNotation.p1y,
+        p2y: lineNotation.p2y,
       },
     );
   }
@@ -297,10 +297,10 @@ export default function useDbHelper() {
         `/${lineNotation.boardType.toLowerCase()}${lineNotation.notationType.toLowerCase()}s`,
       {
         uuid: lineNotation.uuid,
-        x1: lineNotation.x1,
-        x2: lineNotation.x2,
-        y1: lineNotation.y1,
-        y2: lineNotation.y2,
+        p1x: lineNotation.p1x,
+        p2x: lineNotation.p2x,
+        p1y: lineNotation.p1y,
+        p2y: lineNotation.p2y,
       },
     );
   }

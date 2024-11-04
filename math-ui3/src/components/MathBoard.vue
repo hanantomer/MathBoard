@@ -121,7 +121,7 @@ watchHelper.watchKeyEvent(
   keyHelper.keyUpHandler,
 );
 
-watchHelper.watchEveryEditMode(
+watchHelper.watchEveryEditModeChange(
   (newEditMode) => (cursor.value = EditModeCursorType.get(newEditMode)!),
 );
 
@@ -242,7 +242,6 @@ line:hover {
 path:hover {
   stroke-width: 3;
 }
-
 
 .lineHandle {
   cursor: col-resize;

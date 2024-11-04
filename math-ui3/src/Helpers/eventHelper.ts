@@ -90,32 +90,32 @@ export default function eventHelper() {
 
         case "HORIZONTALLINE": {
           let n1 = { ...n } as HorizontalLineNotationAttributes;
-          const lineWidth = n1.x2 - n1.x1;
-          n1.x1 = selectedCell.col * cellStore.getCellHorizontalWidth();
-          n1.x2 = n1.x1 + lineWidth;
-          n1.y = selectedCell.row * cellStore.getCellVerticalHeight();
+          const lineWidth = n1.p2x - n1.p1x;
+          n1.p1x = selectedCell.col * cellStore.getCellHorizontalWidth();
+          n1.p2x = n1.p1x + lineWidth;
+          n1.py = selectedCell.row * cellStore.getCellVerticalHeight();
           notationMutationHelper.cloneNotation(n1);
           break;
         }
 
         case "VERTICALLINE": {
           let n1 = { ...n } as VerticalLineNotationAttributes;
-          const lineHeight = n1.y2 - n1.y1;
-          n1.y1 = selectedCell.row * cellStore.getCellVerticalHeight();
-          n1.y2 = n1.y1 + lineHeight;
-          n1.x = selectedCell.col * cellStore.getCellHorizontalWidth();
+          const lineHeight = n1.p2y - n1.p1y;
+          n1.p1y = selectedCell.row * cellStore.getCellVerticalHeight();
+          n1.p2y = n1.p1y + lineHeight;
+          n1.px = selectedCell.col * cellStore.getCellHorizontalWidth();
           notationMutationHelper.cloneNotation(n1);
           break;
         }
 
         case "SLOPELINE": {
           let n1 = { ...n } as SlopeLineNotationAttributes;
-          const lineWidth = n1.x2 - n1.x1;
-          const lineHeight = n1.y2 - n1.y1;
-          n1.x1 = selectedCell.col * cellStore.getCellHorizontalWidth();
-          n1.x2 = n1.x1 + lineWidth;
-          n1.y1 = selectedCell.row * cellStore.getCellVerticalHeight();
-          n1.y2 = n1.y1 + lineHeight;
+          const lineWidth = n1.p2x - n1.p1x;
+          const lineHeight = n1.p2y - n1.p1y;
+          n1.p1x = selectedCell.col * cellStore.getCellHorizontalWidth();
+          n1.p2x = n1.p1x + lineWidth;
+          n1.p1y = selectedCell.row * cellStore.getCellVerticalHeight();
+          n1.p2y = n1.p1y + lineHeight;
           notationMutationHelper.cloneNotation(n1);
           break;
         }

@@ -27,10 +27,10 @@
       style="position: absolute; pointer-events: none"
     >
       <line
-        :x1="linePosition.x"
-        :y1="linePosition.x"
-        :x2="linePosition.y1"
-        :y2="linePosition.y2"
+        :x1="linePosition.px"
+        :y1="linePosition.p1y"
+        :x2="linePosition.px"
+        :y2="linePosition.p2y"
         class="line"
       />
     </svg>
@@ -61,9 +61,9 @@ const editModeStore = useEditModeStore();
 // vars
 
 let linePosition = ref(<VerticalLinePosition>{
-  x: 0,
-  y1: 0,
-  y2: 0,
+  px: 0,
+  p1y: 0,
+  p2y: 0,
 });
 
 // computed
@@ -76,29 +76,29 @@ const show = computed(() => {
 });
 
 // let lineTop = computed(() => {
-//   return linePosition.value.y1;
+//   return linePosition.value.p1y;
 // });
 
 // let lineBottom = computed(() => {
-//   return linePosition.value.y2;
+//   return linePosition.value.p2y;
 // });
 
 // let lineX = computed(() => {
-//   return linePosition.value.x;
+//   return linePosition.value.px;
 // });
 
 let handleX = computed(() => {
-  return linePosition.value.x + (cellStore.getSvgBoundingRect().left ?? 0) - 5;
+  return linePosition.value.px + (cellStore.getSvgBoundingRect().left ?? 0) - 5;
 });
 
 let handleTop = computed(() => {
   if (!cellStore.getSvgBoundingRect()) return;
-  return linePosition.value.y2 + (cellStore.getSvgBoundingRect().top ?? 0) - 5;
+  return linePosition.value.p2y + (cellStore.getSvgBoundingRect().top ?? 0) - 5;
 });
 
 let handleBottom = computed(() => {
   if (!cellStore.getSvgBoundingRect()) return;
-  return linePosition.value.y1 + (cellStore.getSvgBoundingRect().top ?? 0);
+  return linePosition.value.p1y + (cellStore.getSvgBoundingRect().top ?? 0);
 });
 
 // watchers
@@ -154,9 +154,9 @@ function onHandleMouseDown() {
 function onMouseUp() {
   // drawing not started
   if (
-    linePosition.value.x === 0 &&
-    linePosition.value.y1 === 0 &&
-    linePosition.value.y2 === 0
+    linePosition.value.px === 0 &&
+    linePosition.value.p1y === 0 &&
+    linePosition.value.p2y === 0
   ) {
     return;
   }
@@ -170,45 +170,45 @@ function onMouseUp() {
 function startDrawLine(e: MouseEvent) {
   editModeStore.setNextEditMode();
 
-  if (linePosition.value.y1) return;
+  if (linePosition.value.p1y) return;
 
   const position = {
     x: e.pageX - cellStore.getSvgBoundingRect().x,
     y: e.pageY - cellStore.getSvgBoundingRect().y,
   };
 
-  linePosition.value.y1 = position.y;
-  linePosition.value.y2 = linePosition.value.y1 + 10;
-  linePosition.value.x = getNearestCol(position.x);
+  linePosition.value.p1y = position.y;
+  linePosition.value.p2y = linePosition.value.p1y + 10;
+  linePosition.value.px = getNearestCol(position.y);
 }
 
 function setLine(e: MouseEvent) {
   const yPos = e.pageY - (cellStore.getSvgBoundingRect()?.y ?? 0);
 
   const modifyTop =
-    Math.abs(yPos - linePosition.value.y1) <
-    Math.abs(linePosition.value.y2 - yPos);
+    Math.abs(yPos - linePosition.value.p1y) <
+    Math.abs(linePosition.value.p2y - yPos);
 
   if (modifyTop) {
-    linePosition.value.y1 = yPos;
+    linePosition.value.p1y = yPos;
   } else {
-    linePosition.value.y2 = yPos;
+    linePosition.value.p2y = yPos;
   }
 }
 
 function endDrawLine() {
-  if (linePosition.value.y2 == linePosition.value.y1) return;
+  if (linePosition.value.p2y == linePosition.value.p1y) return;
 
   let col = Math.round(
-    linePosition.value.x / cellStore.getCellHorizontalWidth(),
+    linePosition.value.px / cellStore.getCellHorizontalWidth(),
   );
 
   let fromRow = Math.round(
-    linePosition.value.y1 / cellStore.getCellVerticalHeight(),
+    linePosition.value.p1y / cellStore.getCellVerticalHeight(),
   );
 
   let toRow = Math.round(
-    linePosition.value.y2 / cellStore.getCellVerticalHeight(),
+    linePosition.value.p2y / cellStore.getCellVerticalHeight(),
   );
 
   saveLine(linePosition.value);
@@ -234,7 +234,7 @@ function saveLine(lineAttributes: VerticalLineAttributes) {
 }
 
 function resetLineDrawing() {
-  linePosition.value.x = linePosition.value.y1 = linePosition.value.y2 = 0;
+  linePosition.value.px = linePosition.value.p1y = linePosition.value.p2y = 0;
   editModeStore.setDefaultEditMode();
 }
 

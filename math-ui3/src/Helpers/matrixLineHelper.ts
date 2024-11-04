@@ -43,16 +43,16 @@ export default function useLineMatrixHelper() {
         return n.uuid;
       })
       .attr("x1", (n: LineNotationAttributes) => {
-        return n.x1;
+        return n.p1x;
       })
       .attr("x2", (n: LineNotationAttributes) => {
-        return n.x2;
+        return n.p2x;
       })
       .attr("y1", (n: LineNotationAttributes) => {
-        return n.y1;
+        return n.p1y;
       })
       .attr("y2", (n: LineNotationAttributes) => {
-        return n.y2;
+        return n.p2y;
       })
       .attr("stroke-width", (n: LineNotationAttributes) => {
         return "2";
@@ -68,16 +68,16 @@ export default function useLineMatrixHelper() {
         return n.uuid;
       })
       .attr("x1", (n: LineNotationAttributes) => {
-        return n.x1;
+        return n.p1x;
       })
       .attr("x2", (n: LineNotationAttributes) => {
-        return n.x2;
+        return n.p2x;
       })
       .attr("y1", (n: LineNotationAttributes) => {
-        return n.y1;
+        return n.p1y;
       })
       .attr("y2", (n: LineNotationAttributes) => {
-        return n.y2;
+        return n.p2y;
       })
       .attr("stroke-width", () => {
         return 2;

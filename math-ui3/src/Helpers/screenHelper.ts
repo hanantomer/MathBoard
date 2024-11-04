@@ -83,9 +83,9 @@ export default function screenHelper() {
     const y = cellStore.getCellVerticalHeight() * n.row;
 
     return {
-      x1: x1,
-      x2: x2,
-      y: y,
+      p1x: x1,
+      p2x: x2,
+      py: y,
     };
   }
 
@@ -338,9 +338,9 @@ export default function screenHelper() {
 
     const y = DotCoordinates.y - cellStore.getSvgBoundingRect().top;
 
-    const horizontalDistance = x < n.x1 ? n.x2 - x : x > n.x2 ? x - n.x2 : 0;
+    const horizontalDistance = x < n.p1x ? n.p2x - x : x > n.p2x ? x - n.p2x : 0;
 
-    const verticalDistance = Math.abs(n.y - y);
+    const verticalDistance = Math.abs(n.py - y);
 
     const a = Math.pow(horizontalDistance, 2);
     const b = Math.pow(verticalDistance, 2);
@@ -366,10 +366,10 @@ export default function screenHelper() {
 
     const y = DotCoordinates.y - cellStore.getSvgBoundingRect().top;
 
-    const horizontalDistance = Math.abs(n.x - x);
+    const horizontalDistance = Math.abs(n.px - x);
 
     const verticalDistance =
-      y < n.y1 ? n.y1 - DotCoordinates.y : y > n.y2 ? y - n.y2 : 0;
+      y < n.p1y ? n.p1y - DotCoordinates.y : y > n.p2y ? y - n.p2y : 0;
 
     const a = Math.pow(horizontalDistance, 2);
     const b = Math.pow(verticalDistance, 2);
@@ -387,11 +387,11 @@ export default function screenHelper() {
     const y = DotCoordinates.y - cellStore.getSvgBoundingRect().top;
 
     const nominator = Math.abs(
-      (n.x2 - n.x1) * (y - n.y1) - (x - n.x1) * (n.y2 - n.y1),
+      (n.p2x - n.p1x) * (y - n.p1y) - (x - n.p1x) * (n.p2y - n.p1y),
     );
 
     const deNominator = Math.sqrt(
-      Math.pow(n.x2 - n.x1, 2) + Math.pow(n.y2 - n.y1, 2),
+      Math.pow(n.p2x - n.p1x, 2) + Math.pow(n.p2y - n.p1y, 2),
     );
 
     return nominator / deNominator;

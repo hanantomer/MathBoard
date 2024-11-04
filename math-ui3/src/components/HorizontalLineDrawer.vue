@@ -9,7 +9,6 @@
       }"
       v-on:mouseup="lineDrawer.endDrawingLine"
       v-on:mousedown="lineDrawer.startDrawingLine"
-      v-if="!sqrtEditMode"
     ></v-card>
     <v-card
       id="lineRightHandle"
@@ -38,8 +37,6 @@
   </div>
 </template>
 <script setup lang="ts">
-
-
 import { computed, ref } from "vue";
 import { useCellStore } from "../store/pinia/cellStore";
 import { useEditModeStore } from "../store/pinia/editModeStore";
@@ -56,16 +53,12 @@ const lineDrawer = useLineDrawer();
 // vars
 
 let linePosition = ref(<HorizontaLinePosition>{
-  x1: 0,
-  x2: 0,
-  y: 0,
+  p1x: 0,
+  p2x: 0,
+  py: 0,
 });
 
 // computed
-
-const sqrtEditMode = computed(() => {
-  return editModeStore.isSqrtEditMode();
-});
 
 const show = computed(() => {
   return (
@@ -75,15 +68,15 @@ const show = computed(() => {
 });
 
 let lineLeft = computed(() => {
-  return linePosition.value.x1;
+  return linePosition.value.p1x;
 });
 
 let lineRight = computed(() => {
-  return linePosition.value.x2;
+  return linePosition.value.p2x;
 });
 
 let lineY = computed(() => {
-  return linePosition.value.y;
+  return linePosition.value.py;
 });
 
 let handleLeft = computed(() => {
@@ -134,5 +127,4 @@ watchHelper.watchMouseEvent(
   "EV_SVG_MOUSEUP",
   () => editModeStore.setDefaultEditMode(),
 );
-
 </script>

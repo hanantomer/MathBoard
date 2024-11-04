@@ -18,36 +18,49 @@
 import { computed, ref } from "vue";
 import { useCellStore } from "../store/pinia/cellStore";
 import { useEditModeStore } from "../store/pinia/editModeStore";
+import { useNotationStore } from "../store/pinia/notationStore";
 import { RectNotationAttributes } from "../../../math-common/build/baseTypes";
 import { EditMode } from "../../../math-common/src/unions";
+
 import useNotationMutateHelper from "../helpers/notationMutateHelper";
 import usescreenHelper from "../helpers/screenHelper";
-import useEventBus from "../helpers/eventBusHelper";
 import useWatchHelper from "../helpers/watchHelper";
-
 const notationMutateHelper = useNotationMutateHelper();
 const watchHelper = useWatchHelper();
 
 let textValue = ref("");
 const cellStore = useCellStore();
-const eventBus = useEventBus();
+const notationStore = useNotationStore();
 const emit = defineEmits(["hide"]);
 const editModeStore = useEditModeStore();
 const screenHelper = usescreenHelper();
 const show = computed(() => editModeStore.getEditMode() === "TEXT_WRITING");
 
-let selectedNotation: RectNotationAttributes | null = null;
+const selectedNotation =
+  notationStore.getSelectedNotations()?.length == 0
+    ? null
+    : (notationStore.getSelectedNotations().at(0) as RectNotationAttributes);
+
+//let selectedNotation: RectNotationAttributes | null = null;
 let textLeft = ref(0);
 let textTop = ref(0);
 let textHeight = ref(0);
 let textWidth = ref(0);
 
-watchHelper.watchEveryEditMode(submitText);
+watchHelper.watchEveryEditModeChange(submitText);
 
+// user clicked outside of text rect during edit
 watchHelper.watchMouseEvent(
   ["TEXT_WRITING"],
   "EV_SVG_MOUSEDOWN",
-  resetTextEditing,
+  resetTextEditingIfClickedOuside,
+);
+
+// user clicked outside of text rect after text selection
+watchHelper.watchMouseEvent(
+  ["TEXT_SELECTED"],
+  "EV_SVG_MOUSEDOWN",
+  resetTextSelection,
 );
 
 // area selector signals the selected position attributes
@@ -58,23 +71,34 @@ watchHelper.watchCustomEvent(
   startTextEditing,
 );
 
-// user clicked inside selected text notation (i.e second click)
-watchHelper.watchNotationSelection(
-  "TEXT_SELECTED",
-  "EV_FREE_TEXT_SELECTED",
+// user clicked inside selected text notation
+// watchHelper.watchNotationSelection(
+//   "SYMBOL",
+//   "EV_FREE_TEXT_SELECTED",
+//   () => {
+//     editModeStore.setEditMode("TEXT_SELECTED");
+//   },
+// );
+
+watchHelper.watchMouseEvent(
+  ["TEXT_SELECTED"],
+  "EV_SVG_MOUSEDOWN",
   editSelectedTextNotation,
 );
 
-function editSelectedTextNotation(textNotation: RectNotationAttributes) {
-  editModeStore.setEditMode("TEXT_WRITING");
+function editSelectedTextNotation(e: MouseEvent) {
+  const el = e.target as Element;
+  if (el.tagName !== "TEXTAREA") {
+    return;
+  }
 
-  selectedNotation = textNotation;
+  editModeStore.setEditMode("TEXT_WRITING");
 
   setInitialTextValue();
 
-  setInitialTextDimensions(textNotation);
+  setInitialTextDimensions(selectedNotation!);
 
-  hideTextNotation(textNotation.uuid);
+  hideTextNotation(selectedNotation!.uuid);
 
   const textEl = document.getElementById("textAreaEl")! as HTMLTextAreaElement;
 
@@ -97,11 +121,11 @@ function setInitialTextDimensions(textNotation: RectNotationAttributes) {
 
   textHeight.value =
     (textNotation.toRow - textNotation.fromRow + 1) *
-      cellStore.getCellVerticalHeight() ;
+    cellStore.getCellVerticalHeight();
 
   textWidth.value =
     (textNotation.toCol - textNotation.fromCol + 1) *
-      cellStore.getCellHorizontalWidth();
+    cellStore.getCellHorizontalWidth();
 }
 
 function setInitialTextValue() {
@@ -146,7 +170,7 @@ function submitText(newEditMode: EditMode, oldEditMode: any) {
 
   if (selectedNotation && rectCoordinates) {
     selectedNotation.value = textValue.value;
-    selectedNotation = Object.assign(selectedNotation, rectCoordinates);
+    Object.assign(selectedNotation, rectCoordinates);
 
     notationMutateHelper.updateNotation(selectedNotation);
     restoreTextNotation(selectedNotation?.uuid);
@@ -156,7 +180,6 @@ function submitText(newEditMode: EditMode, oldEditMode: any) {
 }
 
 function hideTextNotation(uuid: string) {
-  console.debug("hide text notation:" + uuid);
   document!
     .querySelector<HTMLElement>(`foreignObject[uuid="${uuid}"]`)!
     .classList.add("hidden");
@@ -164,17 +187,24 @@ function hideTextNotation(uuid: string) {
 
 // restore text notation which was hideen during editing
 function restoreTextNotation(uuid: string) {
-  console.debug("restoring text notation:" + uuid);
   document!
     .querySelector<HTMLElement>(`foreignObject[uuid="${uuid}"]`)!
     .classList.remove("hidden");
 }
 
-function resetTextEditing(e: MouseEvent) {
+function resetTextEditingIfClickedOuside(e: MouseEvent) {
   // mouse clicked outside of text arae
   if (e.target != document.getElementById("textAreaEl")) {
     editModeStore.setDefaultEditMode();
   }
+}
+
+function resetTextSelection(e: MouseEvent) {
+  const el = e.target as Element;
+  if (el.tagName === "TEXTAREA") {
+    return;
+  }
+  editModeStore.setDefaultEditMode();
 }
 
 function startTextEditing(selectionPosition: any) {

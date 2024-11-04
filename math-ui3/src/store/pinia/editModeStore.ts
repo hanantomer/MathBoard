@@ -155,10 +155,7 @@ export const useEditModeStore = defineStore("editMode", () => {
   }
 
   function isHorizontalLineSelectedMode() {
-    return (
-      editMode.value === "HORIZONTAL_LINE_SELECTED" ||
-      editMode.value === "SQRT_SELECTED"
-    );
+    return editMode.value === "HORIZONTAL_LINE_SELECTED";
   }
 
   function isVerticalLineSelectedMode() {

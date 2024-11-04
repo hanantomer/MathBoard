@@ -26,10 +26,10 @@
       style="position: absolute; pointer-events: none"
     >
       <line
-        :x1="linePosition.x1"
-        :y1="linePosition.y1"
-        :x2="linePosition.x2"
-        :y2="linePosition.x1"
+        :x1="linePosition.p1x"
+        :y1="linePosition.p1y"
+        :x2="linePosition.p2x"
+        :y2="linePosition.p1x"
         class="line"
       />
     </svg>
@@ -58,10 +58,10 @@ const editModeStore = useEditModeStore();
 // vars
 
 const linePosition = ref(<SlopeLinePosition>{
-  x1: 0,
-  x2: 0,
-  y1: 0,
-  y2: 0,
+  p1x: 0,
+  p2x: 0,
+  p1y: 0,
+  p2y: 0,
 });
 
 type SlopeType = "POSITIVE" | "NEGATIVE" | "NONE";
@@ -80,19 +80,19 @@ const show = computed(() => {
 });
 
 let handleLeft = computed(() => {
-  return linePosition.value.x1 + (cellStore.getSvgBoundingRect().left ?? 0);
+  return linePosition.value.p1x + (cellStore.getSvgBoundingRect().left ?? 0);
 });
 
 let handleRight = computed(() => {
-  return linePosition.value.x2 + (cellStore.getSvgBoundingRect().left ?? 0);
+  return linePosition.value.p2x + (cellStore.getSvgBoundingRect().left ?? 0);
 });
 
 let handleTop = computed(() => {
-  return linePosition.value.y1 + (cellStore.getSvgBoundingRect().top ?? 0);
+  return linePosition.value.p1y + (cellStore.getSvgBoundingRect().top ?? 0);
 });
 
 let handleBottom = computed(() => {
-  return linePosition.value.y2 + (cellStore.getSvgBoundingRect().top ?? 0);
+  return linePosition.value.p2y + (cellStore.getSvgBoundingRect().top ?? 0);
 });
 
 // watchers
@@ -141,7 +141,7 @@ function selectLine(lineNotation: SlopeLineNotationAttributes) {
 
 function startDrawLine(e: MouseEvent) {
   editModeStore.setNextEditMode();
-  if (linePosition.value.y1) return;
+  if (linePosition.value.p1y) return;
 
   slopeType.value = "NONE";
   movementDirection.value = "NONE";
@@ -151,8 +151,8 @@ function startDrawLine(e: MouseEvent) {
     y: e.pageY - cellStore.getSvgBoundingRect().y,
   };
 
-  linePosition.value.x1 = linePosition.value.x2 = position.x;
-  linePosition.value.y1 = linePosition.value.y2 = position.y;
+  linePosition.value.p1x = linePosition.value.p2x = position.x;
+  linePosition.value.p1y = linePosition.value.p2y = position.y;
 }
 
 function setLine(e: MouseEvent) {
@@ -165,8 +165,8 @@ function setLine(e: MouseEvent) {
 
   if (movementDirection.value === "NONE") {
     movementDirection.value =
-      (slopeType.value === "POSITIVE" && yPos > linePosition.value.y2) ||
-      (slopeType.value === "NEGATIVE" && yPos > linePosition.value.y1)
+      (slopeType.value === "POSITIVE" && yPos > linePosition.value.p2y) ||
+      (slopeType.value === "NEGATIVE" && yPos > linePosition.value.p1y)
         ? "DOWN"
         : "UP";
   }
@@ -181,22 +181,21 @@ function setLine(e: MouseEvent) {
     (slopeType.value === "POSITIVE" && movementDirection.value === "UP") ||
     (slopeType.value === "NEGATIVE" && movementDirection.value === "DOWN");
 
-
   if (modifyRight) {
-    linePosition.value.x2 = xPos;
-    linePosition.value.y2 = yPos;
+    linePosition.value.p2x = xPos;
+    linePosition.value.p2y = yPos;
   } else {
-    linePosition.value.x1 = xPos;
-    linePosition.value.y1 = yPos;
+    linePosition.value.p1x = xPos;
+    linePosition.value.p1y = yPos;
   }
 }
 
 function getSlopeType(xPos: number, yPos: number): SlopeType {
   if (
     /*moving up and right*/
-    (yPos < linePosition.value.y2 && xPos > linePosition.value.x2) ||
+    (yPos < linePosition.value.p2y && xPos > linePosition.value.p2x) ||
     /*moving down and left*/
-    (yPos > linePosition.value.y2 && xPos < linePosition.value.x2)
+    (yPos > linePosition.value.p2y && xPos < linePosition.value.p2x)
   ) {
     return "POSITIVE";
   }
@@ -206,17 +205,17 @@ function getSlopeType(xPos: number, yPos: number): SlopeType {
 
 function endDrawLine() {
   if (
-    linePosition.value.x1 === 0 &&
-    linePosition.value.y1 === 0 &&
-    linePosition.value.x2 === 0 &&
-    linePosition.value.y2 === 0
+    linePosition.value.p1x === 0 &&
+    linePosition.value.p1y === 0 &&
+    linePosition.value.p2x === 0 &&
+    linePosition.value.p2y === 0
   ) {
     return;
   }
 
   if (
-    linePosition.value.x1 == linePosition.value.x2 &&
-    linePosition.value.y2 == linePosition.value.y2
+    linePosition.value.p1x == linePosition.value.p2x &&
+    linePosition.value.p2y == linePosition.value.p2y
   ) {
     return;
   }
@@ -244,10 +243,10 @@ function saveLine(lineAttributes: SlopeLineAttributes) {
 }
 
 function resetLineDrawing() {
-  linePosition.value.x1 =
-    linePosition.value.x2 =
-    linePosition.value.y1 =
-    linePosition.value.y2 =
+  linePosition.value.p1x =
+    linePosition.value.p2x =
+    linePosition.value.p1y =
+    linePosition.value.p2y =
       0;
   editModeStore.setDefaultEditMode();
 }

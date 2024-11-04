@@ -541,12 +541,12 @@ export default function dbUtil() {
                 const m = model as SlopeLineNotationAttributes;
                 if (
                     !(
-                        m.x1 >= 0 &&
-                        m.x2 >= 0 &&
-                        m.y1 >= 0 &&
-                        m.y2 >= 0 &&
-                        m.x2 < m.x1 &&
-                        m.y1 != m.y2
+                        m.p1x >= 0 &&
+                        m.p2x >= 0 &&
+                        m.p1y >= 0 &&
+                        m.p2y >= 0 &&
+                        m.p2x < m.p1x &&
+                        m.p1y != m.p2y
                     )
                 ) {
                     throw new Error("invalid model:" + JSON.stringify(m));
@@ -558,9 +558,9 @@ export default function dbUtil() {
                 if (
                     !(
                         m.x >= 0 &&
-                        m.y1 >= 0 &&
-                        m.y2 >= 0 &&
-                        m.y1 < m.y2
+                        m.p1y >= 0 &&
+                        m.p2y >= 0 &&
+                        m.p1y < m.p2y
                     )
                 ) {
                     throw new Error("invalid model:" + JSON.stringify(m));

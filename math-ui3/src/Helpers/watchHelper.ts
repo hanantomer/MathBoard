@@ -55,7 +55,7 @@ export default function () {
     );
   }
 
-  function watchEveryEditMode(handler: EditModeHandler) {
+  function watchEveryEditModeChange(handler: EditModeHandler) {
     watch(
       () => editModeStore.getEditMode() as EditMode,
       (newEditMode: EditMode, oldEditMode: EditMode) => {
@@ -156,7 +156,7 @@ export default function () {
   return {
     watchMouseEvent,
     watchKeyEvent,
-    watchEveryEditMode,
+    watchEveryEditModeChange,
     watchEditModeTransition,
     watchEndOfEditMode,
     watchSelectedCell,

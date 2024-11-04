@@ -11,7 +11,6 @@ import { useCellStore } from "../store/pinia/cellStore";
 import { useNotationStore } from "../store/pinia/notationStore";
 import useNotationMutateHelper from "../helpers/notationMutateHelper";
 
-
 const editModeStore = useEditModeStore();
 const cellStore = useCellStore();
 const notationStore = useNotationStore();
@@ -24,9 +23,9 @@ export default function useLineDrawingHelper() {
   ) {
     if (!lineNotation) return;
 
-    linePosition.x1 = lineNotation.x1;
-    linePosition.x2 = lineNotation.x2;
-    linePosition.y = lineNotation.y;
+    linePosition.p1x = lineNotation.p1x;
+    linePosition.p2x = lineNotation.p2x;
+    linePosition.py = lineNotation.py;
 
     // update store
     notationStore.selectNotation(lineNotation.uuid);
@@ -38,10 +37,11 @@ export default function useLineDrawingHelper() {
   ) {
     if (!sqrtNotation) return;
 
-    linePosition.x1 = sqrtNotation.fromCol * cellStore.getCellHorizontalWidth();
-    linePosition.x2 =
+    linePosition.p1x =
+      sqrtNotation.fromCol * cellStore.getCellHorizontalWidth();
+    linePosition.p2x =
       (sqrtNotation.toCol - 1) * cellStore.getCellHorizontalWidth();
-    linePosition.y = sqrtNotation.row * cellStore.getCellVerticalHeight();
+    linePosition.py = sqrtNotation.row * cellStore.getCellVerticalHeight();
 
     // update store
     notationStore.selectNotation(sqrtNotation.uuid);
@@ -53,18 +53,18 @@ export default function useLineDrawingHelper() {
   ) {
     editModeStore.setNextEditMode();
 
-    if (linePosition.x1) return;
+    if (linePosition.p1x) return;
 
     const position = {
       x: e.pageX - cellStore.getSvgBoundingRect().x,
       y: e.pageY - cellStore.getSvgBoundingRect().y,
     };
 
-    linePosition.x1 = position.x;
+    linePosition.p1x = position.x;
 
-    linePosition.x2 = linePosition.x1 + 10;
+    linePosition.p2x = linePosition.p1x + 10;
 
-    linePosition.y = getNearestRow(position.y);
+    linePosition.py = getNearestRow(position.y);
   }
 
   function setLine(e: MouseEvent, linePosition: HorizontaLinePosition) {
@@ -75,47 +75,47 @@ export default function useLineDrawingHelper() {
 
     // nothing done yet
     if (
-      linePosition.x1 === 0 &&
-      linePosition.x2 === 0 &&
-      linePosition.y === 0
+      linePosition.p1x === 0 &&
+      linePosition.p2x === 0 &&
+      linePosition.py === 0
     ) {
       return;
     }
 
     const xPos = e.pageX - cellStore.getSvgBoundingRect().x;
 
-    const modifyRight = xPos >= linePosition.x1;
+    const modifyRight = xPos >= linePosition.p1x;
 
     if (modifyRight) {
-      linePosition.x2 = xPos;
+      linePosition.p2x = xPos;
     } else {
       // modify left
-      linePosition.x1 = xPos;
+      linePosition.p1x = xPos;
     }
   }
 
   function endDrawingSqrt(linePosition: HorizontaLinePosition) {
     if (
-      linePosition.x1 === 0 &&
-      linePosition.x2 === 0 &&
-      linePosition.y === 0
+      linePosition.p1x === 0 &&
+      linePosition.p2x === 0 &&
+      linePosition.py === 0
     ) {
       return;
     }
 
-    if (linePosition.x2 == linePosition.x1) {
+    if (linePosition.p2x == linePosition.p1x) {
       return;
     }
 
     let fromCol = Math.round(
-      linePosition.x1 / cellStore.getCellHorizontalWidth(),
+      linePosition.p1x / cellStore.getCellHorizontalWidth(),
     );
 
     let toCol = Math.round(
-      linePosition.x2 / cellStore.getCellHorizontalWidth(),
+      linePosition.p2x / cellStore.getCellHorizontalWidth(),
     );
 
-    let row = Math.round(linePosition.y / cellStore.getCellVerticalHeight());
+    let row = Math.round(linePosition.py / cellStore.getCellVerticalHeight());
 
     saveSqrt({ fromCol: fromCol, toCol: toCol, row: row });
 
@@ -124,14 +124,14 @@ export default function useLineDrawingHelper() {
 
   function endDrawingLine(linePosition: HorizontaLinePosition) {
     if (
-      linePosition.x1 === 0 &&
-      linePosition.x2 === 0 &&
-      linePosition.y === 0
+      linePosition.p1x === 0 &&
+      linePosition.p2x === 0 &&
+      linePosition.py === 0
     ) {
       return;
     }
 
-    if (linePosition.x2 == linePosition.x1) {
+    if (linePosition.p2x == linePosition.p1x) {
       return;
     }
 
@@ -173,7 +173,7 @@ export default function useLineDrawingHelper() {
   }
 
   function resetLineDrawing(linePosition: HorizontaLinePosition) {
-    linePosition.x1 = linePosition.x2 = linePosition.y = 0;
+    linePosition.p1x = linePosition.p2x = linePosition.py = 0;
     editModeStore.setDefaultEditMode();
   }
 

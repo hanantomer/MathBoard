@@ -51,9 +51,9 @@ const editModeStore = useEditModeStore();
 // vars
 
 let linePosition = ref(<HorizontaLinePosition>{
-  x1: 0,
-  x2: 0,
-  y: 0,
+  p1x: 0,
+  p2x: 0,
+  py: 0,
 });
 
 const show = computed(() => {
@@ -61,23 +61,23 @@ const show = computed(() => {
 });
 
 let sqrtRight = computed(() => {
-  return linePosition.value.x2;
+  return linePosition.value.p2x;
 });
 
 let sqrtLeft = computed(() => {
-  return linePosition.value.x1 + cellStore.getCellHorizontalWidth();
+  return linePosition.value.p1x + cellStore.getCellHorizontalWidth();
 });
 
 let sqrtY = computed(() => {
-  return linePosition.value.y;
+  return linePosition.value.py;
 });
 
 let sqrtSymbolLeft = computed(() => {
-  return linePosition.value.x1 + (cellStore.getSvgBoundingRect().left ?? 0) - 6;
+  return linePosition.value.p1x + (cellStore.getSvgBoundingRect().left ?? 0) - 6;
 });
 
 let sqrtSymbolY = computed(() => {
-  return linePosition.value.y + (cellStore.getSvgBoundingRect().top ?? 0) - 5;
+  return linePosition.value.py + (cellStore.getSvgBoundingRect().top ?? 0) - 5;
 });
 
 let handleRight = computed(() => {
@@ -114,6 +114,3 @@ watchHelper.watchMouseEvent(["SQRT_DRAWING"], "EV_SVG_MOUSEDOWN", () =>
   lineDrawer.resetLineDrawing(linePosition.value),
 );
 </script>
-
-<style>
-</style>

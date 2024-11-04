@@ -241,59 +241,59 @@ export default function notationMutateHelper() {
       switch (n.notationType) {
         case "HORIZONTALLINE": {
           const n1 = n as HorizontalLineNotationAttributes;
-          if (n1.x2 + deltaCol * getColWidth() > getMostRightCoordinate()) {
+          if (n1.p2x + deltaCol * getColWidth() > getMostRightCoordinate()) {
             return false;
           }
 
-          if (n1.x1 + deltaCol * getColWidth() < 1) return false;
+          if (n1.p1x + deltaCol * getColWidth() < 1) return false;
 
-          if (n1.y + deltaRow * getRowHeight() > getMostBottomCoordinate()) {
+          if (n1.py + deltaRow * getRowHeight() > getMostBottomCoordinate()) {
             return false;
           }
 
-          if (n1.x2 + deltaCol * getColWidth() < 1) {
+          if (n1.p2x + deltaCol * getColWidth() < 1) {
             return false;
           }
         }
 
         case "VERTICALLINE": {
           const n1 = n as VerticalLineNotationAttributes;
-          if (n1.x + deltaCol * getColWidth() > getMostRightCoordinate()) {
+          if (n1.px + deltaCol * getColWidth() > getMostRightCoordinate()) {
             return false;
           }
 
-          if (n1.y2 + deltaRow * getRowHeight() > matrixDimensions.rowsNum) {
+          if (n1.p2y + deltaRow * getRowHeight() > matrixDimensions.rowsNum) {
             return false;
           }
 
-          if (n1.y1 + deltaRow * getRowHeight() < 1) {
+          if (n1.p1y + deltaRow * getRowHeight() < 1) {
             return false;
           }
 
-          if (n1.y2 + deltaRow * getRowHeight() > getMostBottomCoordinate()) {
+          if (n1.p2y + deltaRow * getRowHeight() > getMostBottomCoordinate()) {
             return false;
           }
         }
 
         case "SLOPELINE": {
           const n1 = n as SlopeLineNotationAttributes;
-          if (n1.x2 + deltaCol * getColWidth() > getMostRightCoordinate()) {
+          if (n1.p2x + deltaCol * getColWidth() > getMostRightCoordinate()) {
             return false;
           }
 
-          if (n1.x1 + deltaCol * getColWidth() < 1) {
+          if (n1.p1x + deltaCol * getColWidth() < 1) {
             return false;
           }
 
-          if (n1.x2 + deltaRow * getRowHeight() > matrixDimensions.rowsNum) {
+          if (n1.p2x + deltaRow * getRowHeight() > matrixDimensions.rowsNum) {
             return false;
           }
 
-          if (n1.y1 + deltaRow * getRowHeight() < 1) {
+          if (n1.p1y + deltaRow * getRowHeight() < 1) {
             return false;
           }
 
-          if (n1.y2 + deltaRow * getRowHeight() > getMostBottomCoordinate()) {
+          if (n1.p2y + deltaRow * getRowHeight() > getMostBottomCoordinate()) {
             return false;
           }
         }
@@ -345,31 +345,31 @@ export default function notationMutateHelper() {
         }
 
         case "HORIZONTALLINE": {
-          (n as HorizontalLineNotationAttributes).x1 +=
+          (n as HorizontalLineNotationAttributes).p1x +=
             deltaCol * cellStore.getCellHorizontalWidth();
-          (n as HorizontalLineNotationAttributes).x2 +=
+          (n as HorizontalLineNotationAttributes).p2x +=
             deltaCol * cellStore.getCellHorizontalWidth();
-          (n as HorizontalLineNotationAttributes).y +=
+          (n as HorizontalLineNotationAttributes).py +=
             deltaRow * cellStore.getCellVerticalHeight();
           break;
         }
         case "VERTICALLINE": {
-          (n as VerticalLineNotationAttributes).x +=
+          (n as VerticalLineNotationAttributes).px +=
             deltaCol * cellStore.getCellHorizontalWidth();
-          (n as VerticalLineNotationAttributes).y1 +=
+          (n as VerticalLineNotationAttributes).p1y +=
             deltaRow * cellStore.getCellVerticalHeight();
-          (n as VerticalLineNotationAttributes).y2 +=
+          (n as VerticalLineNotationAttributes).p2y +=
             deltaRow * cellStore.getCellVerticalHeight();
           break;
         }
         case "SLOPELINE": {
-          (n as SlopeLineNotationAttributes).x1 +=
+          (n as SlopeLineNotationAttributes).p1x +=
             deltaCol * cellStore.getCellHorizontalWidth();
-          (n as SlopeLineNotationAttributes).x2 +=
+          (n as SlopeLineNotationAttributes).p2x +=
             deltaCol * cellStore.getCellHorizontalWidth();
-          (n as SlopeLineNotationAttributes).y1 +=
+          (n as SlopeLineNotationAttributes).p1y +=
             deltaCol * cellStore.getCellHorizontalWidth();
-          (n as SlopeLineNotationAttributes).y2 +=
+          (n as SlopeLineNotationAttributes).p2y +=
             deltaRow * cellStore.getCellVerticalHeight();
           break;
         }
@@ -641,9 +641,9 @@ export default function notationMutateHelper() {
         const n1 = existingNotation as HorizontalLineNotationAttributes;
         const n = notation as HorizontalLineNotationAttributes;
 
-        n1.x1 = n.x1;
-        n1.x2 = n.x2;
-        n1.y = n.y;
+        n1.p1x = n.p1x;
+        n1.p2x = n.p2x;
+        n1.py = n.py;
 
         break;
       }
@@ -651,9 +651,9 @@ export default function notationMutateHelper() {
         const n1 = existingNotation as VerticalLineNotationAttributes;
         const n = notation as VerticalLineNotationAttributes;
 
-        n1.y1 = n.y1;
-        n1.y2 = n.y2;
-        n1.x = n.x;
+        n1.p1y = n.p1y;
+        n1.p2y = n.p2y;
+        n1.px = n.px;
 
         break;
       }
@@ -661,10 +661,10 @@ export default function notationMutateHelper() {
         const n1 = existingNotation as SlopeLineNotationAttributes;
         const n = notation as SlopeLineNotationAttributes;
 
-        n1.x1 = n.x1;
-        n1.x2 = n.x2;
-        n1.y1 = n.y1;
-        n1.y2 = n.y2;
+        n1.p1x = n.p1x;
+        n1.p2x = n.p2x;
+        n1.p1y = n.p1y;
+        n1.p2y = n.p2y;
 
         break;
       }
@@ -943,9 +943,9 @@ export default function notationMutateHelper() {
     transposeHorizontalCoordinatesIfNeeded(horizontalLineAttributes);
 
     let lineNotation: HorizontalLineNotationCreationAttributes = {
-      x1: horizontalLineAttributes.x1,
-      x2: horizontalLineAttributes.x2,
-      y: horizontalLineAttributes.y,
+      p1x: horizontalLineAttributes.p1x,
+      p2x: horizontalLineAttributes.p2x,
+      py: horizontalLineAttributes.py,
       boardType: notationStore.getParent().type,
       parentUUId: notationStore.getParent().uuid,
       notationType: notationType,
@@ -962,9 +962,9 @@ export default function notationMutateHelper() {
     transposeVerticalCoordinatesIfNeeded(verticalLineAttributes);
 
     let notation: VerticalLineNotationCreationAttributes = {
-      x: verticalLineAttributes.x,
-      y1: verticalLineAttributes.y1,
-      y2: verticalLineAttributes.y2,
+      px: verticalLineAttributes.px,
+      p1y: verticalLineAttributes.p1y,
+      p2y: verticalLineAttributes.p2y,
       boardType: notationStore.getParent().type,
       parentUUId: notationStore.getParent().uuid,
       notationType: notationType,
@@ -979,10 +979,10 @@ export default function notationMutateHelper() {
     notationType: NotationType,
   ) {
     let lineNotation: SlopeLineNotationCreationAttributes = {
-      x1: slopeLineAttributes.x1,
-      x2: slopeLineAttributes.x2,
-      y1: slopeLineAttributes.y1,
-      y2: slopeLineAttributes.y2,
+      p1x: slopeLineAttributes.p1x,
+      p2x: slopeLineAttributes.p2x,
+      p1y: slopeLineAttributes.p1y,
+      p2y: slopeLineAttributes.p2y,
       boardType: notationStore.getParent().type,
       parentUUId: notationStore.getParent().uuid,
       notationType: notationType,
@@ -1043,20 +1043,20 @@ export default function notationMutateHelper() {
   function transposeVerticalCoordinatesIfNeeded(
     coordinates: VerticalLineAttributes,
   ) {
-    if (coordinates.y1 > coordinates.y2) {
-      const y1 = coordinates.y1;
-      coordinates.y1 = coordinates.y2;
-      coordinates.y2 = y1;
+    if (coordinates.p1y > coordinates.p2y) {
+      const y1 = coordinates.p1y;
+      coordinates.p1y = coordinates.p2y;
+      coordinates.p2y = y1;
     }
   }
 
   function transposeHorizontalCoordinatesIfNeeded(
     coordinates: HorizontalLineAttributes,
   ) {
-    if (coordinates.x1 > coordinates.x2) {
-      const x1 = coordinates.x1;
-      coordinates.x1 = coordinates.x2;
-      coordinates.x2 = x1;
+    if (coordinates.p1x > coordinates.p2x) {
+      const x1 = coordinates.p1x;
+      coordinates.p1x = coordinates.p2x;
+      coordinates.p2x = x1;
     }
   }
 

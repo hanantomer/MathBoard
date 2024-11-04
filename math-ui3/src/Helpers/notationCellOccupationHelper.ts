@@ -47,7 +47,7 @@ export default function notationCellOccupationHelper() {
     col: number,
     row: number,
     matrix: any,
-    uuid : string,
+    uuid: string,
     doRemove: boolean,
   ) {
     if (!validateRowAndCol(col, row)) return;
@@ -74,30 +74,18 @@ export default function notationCellOccupationHelper() {
     uuid: string,
     doRemove: boolean,
   ) {
-    const fromCol = notation.x1 / cellStore.getCellHorizontalWidth();
-    const toCol = notation.x2 / cellStore.getCellHorizontalWidth();
-    const row = notation.y / cellStore.getCellVerticalHeight();
+    const fromCol = notation.p1x / cellStore.getCellHorizontalWidth();
+    const toCol = notation.p2x / cellStore.getCellHorizontalWidth();
+    const row = notation.py / cellStore.getCellVerticalHeight();
 
     for (let col = fromCol; col <= toCol; col++) {
       if (validateRowAndCol(col, row)) {
         if (validateRowAndCol(col, row - 1))
           // occupy 2 rows
 
-          updateLineOccupationMatrixCell(
-            col,
-            row,
-            matrix,
-            uuid,
-            doRemove,
-          );
+          updateLineOccupationMatrixCell(col, row, matrix, uuid, doRemove);
 
-        updateLineOccupationMatrixCell(
-          col,
-          row - 1,
-          matrix,
-          uuid,
-          doRemove,
-        );
+        updateLineOccupationMatrixCell(col, row - 1, matrix, uuid, doRemove);
       }
     }
   }
@@ -107,20 +95,13 @@ export default function notationCellOccupationHelper() {
     notation: VerticalLineNotationAttributes,
     doRemove: boolean,
   ) {
-
-    const fromRow = Math.round(notation.y1 / cellStore.getCellVerticalHeight());
-    const toRow = Math.round(notation.y2 / cellStore.getCellVerticalHeight());
-    const col = Math.round(notation.x / cellStore.getCellHorizontalWidth())
+    const fromRow = Math.round(notation.p1y / cellStore.getCellVerticalHeight());
+    const toRow = Math.round(notation.p2y / cellStore.getCellVerticalHeight());
+    const col = Math.round(notation.px / cellStore.getCellHorizontalWidth());
 
     for (let i = fromRow; i <= toRow; i++) {
       if (validateRowAndCol(i, matrixDimensions.rowsNum)) {
-        updateLineOccupationMatrixCell(
-          col,
-          i,
-          matrix,
-          notation.uuid,
-          doRemove,
-        );
+        updateLineOccupationMatrixCell(col, i, matrix, notation.uuid, doRemove);
       }
 
       if (validateRowAndCol(i, matrixDimensions.rowsNum - 1)) {
@@ -142,34 +123,21 @@ export default function notationCellOccupationHelper() {
     uuid: string,
     doRemove: boolean,
   ) {
-
-    const fromCol = notation.x1 / cellStore.getCellHorizontalWidth();
-    const toCol = notation.x2 / cellStore.getCellHorizontalWidth();
-    const fromRow = notation.y1 / cellStore.getCellVerticalHeight();
-    const toRow = notation.y2 / cellStore.getCellVerticalHeight();
-
+    const fromCol = notation.p1x / cellStore.getCellHorizontalWidth();
+    const toCol = notation.p2x / cellStore.getCellHorizontalWidth();
+    const fromRow = notation.p1y / cellStore.getCellVerticalHeight();
+    const toRow = notation.p2y / cellStore.getCellVerticalHeight();
 
     // slope is positive if fromRow > toRow
-    const slope =
-      (toRow - fromRow) / (toCol - fromCol);
+    const slope = (toRow - fromRow) / (toCol - fromCol);
 
     let firstRowIndex = fromRow;
-    for (
-      let col = fromCol - 1, i = 0;
-      col <= toCol;
-      col++, i++
-    ) {
+    for (let col = fromCol - 1, i = 0; col <= toCol; col++, i++) {
       let row = Math.ceil(firstRowIndex + i * slope);
 
       if (validateRowAndCol(col, row)) {
         updateLineOccupationMatrixCell(col, row, matrix, uuid, doRemove);
-        updateLineOccupationMatrixCell(
-          col - 1,
-          row,
-          matrix,
-          uuid,
-          doRemove,
-        );
+        updateLineOccupationMatrixCell(col - 1, row, matrix, uuid, doRemove);
       }
     }
   }
@@ -205,15 +173,24 @@ export default function notationCellOccupationHelper() {
 
     updateSlopeLineOccupationMatrix(
       matrix,
-      { x1: notation.p1x, x2: notation.cpx, y1: notation.p1y, y2: notation.cpy },
+      {
+        p1x: notation.p1x,
+        p2x: notation.cpx,
+        p1y: notation.p1y,
+        p2y: notation.cpy,
+      },
       notation.uuid,
       doRemove,
     );
 
-
     updateSlopeLineOccupationMatrix(
       matrix,
-      { x1: notation.p2x, x2: notation.cpx, y1: notation.p2y, y2: notation.cpy },
+      {
+        p1x: notation.p2x,
+        p2x: notation.cpx,
+        p1y: notation.p2y,
+        p2y: notation.cpy,
+      },
       notation.uuid,
       doRemove,
     );
