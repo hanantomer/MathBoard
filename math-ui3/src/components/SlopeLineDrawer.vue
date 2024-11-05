@@ -42,7 +42,6 @@ import { computed, ref } from "vue";
 import { useNotationStore } from "../store/pinia/notationStore";
 import { useCellStore } from "../store/pinia/cellStore";
 import { useEditModeStore } from "../store/pinia/editModeStore";
-import { SlopeLinePosition } from "../../../math-common/src/baseTypes";
 import {
   SlopeLineAttributes,
   SlopeLineNotationAttributes,
@@ -57,7 +56,7 @@ const editModeStore = useEditModeStore();
 
 // vars
 
-const linePosition = ref(<SlopeLinePosition>{
+const linePosition = ref(<SlopeLineAttributes>{
   p1x: 0,
   p2x: 0,
   p1y: 0,

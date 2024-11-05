@@ -557,7 +557,7 @@ export default function dbUtil() {
                 const m = model as VerticalLineNotationAttributes;
                 if (
                     !(
-                        m.x >= 0 &&
+                        m.px >= 0 &&
                         m.p1y >= 0 &&
                         m.p2y >= 0 &&
                         m.p1y < m.p2y

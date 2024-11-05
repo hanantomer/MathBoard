@@ -45,7 +45,6 @@ import { useCellStore } from "../store/pinia/cellStore";
 import { useEditModeStore } from "../store/pinia/editModeStore";
 import useWatchHelper from "../helpers/watchHelper";
 
-import { VerticalLinePosition } from "../../../math-common/src/baseTypes";
 
 import {
   VerticalLineAttributes,
@@ -60,7 +59,7 @@ const editModeStore = useEditModeStore();
 
 // vars
 
-let linePosition = ref(<VerticalLinePosition>{
+let linePosition = ref(<VerticalLineAttributes>{
   px: 0,
   p1y: 0,
   p2y: 0,

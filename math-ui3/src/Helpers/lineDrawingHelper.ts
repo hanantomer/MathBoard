@@ -1,7 +1,6 @@
 import {
   HorizontalLineAttributes,
   HorizontalLineNotationAttributes,
-  HorizontaLinePosition,
   SqrtNotationAttributes,
   MultiCellAttributes,
 } from "../../../math-common/build/baseTypes";
@@ -19,7 +18,7 @@ const notationMutateHelper = useNotationMutateHelper();
 export default function useLineDrawingHelper() {
   function selectLine(
     lineNotation: HorizontalLineNotationAttributes,
-    linePosition: HorizontaLinePosition,
+    linePosition: HorizontalLineAttributes,
   ) {
     if (!lineNotation) return;
 
@@ -33,7 +32,7 @@ export default function useLineDrawingHelper() {
 
   function selectSqrt(
     sqrtNotation: SqrtNotationAttributes,
-    linePosition: HorizontaLinePosition,
+    linePosition: HorizontalLineAttributes,
   ) {
     if (!sqrtNotation) return;
 
@@ -49,7 +48,7 @@ export default function useLineDrawingHelper() {
 
   function startDrawingLine(
     e: MouseEvent,
-    linePosition: HorizontaLinePosition,
+    linePosition: HorizontalLineAttributes,
   ) {
     editModeStore.setNextEditMode();
 
@@ -67,7 +66,7 @@ export default function useLineDrawingHelper() {
     linePosition.py = getNearestRow(position.y);
   }
 
-  function setLine(e: MouseEvent, linePosition: HorizontaLinePosition) {
+  function setLine(e: MouseEvent, linePosition: HorizontalLineAttributes) {
     // ignore right button
     if (e.buttons !== 1) {
       return;
@@ -94,7 +93,7 @@ export default function useLineDrawingHelper() {
     }
   }
 
-  function endDrawingSqrt(linePosition: HorizontaLinePosition) {
+  function endDrawingSqrt(linePosition: HorizontalLineAttributes) {
     if (
       linePosition.p1x === 0 &&
       linePosition.p2x === 0 &&
@@ -122,7 +121,7 @@ export default function useLineDrawingHelper() {
     resetLineDrawing(linePosition);
   }
 
-  function endDrawingLine(linePosition: HorizontaLinePosition) {
+  function endDrawingLine(linePosition: HorizontalLineAttributes) {
     if (
       linePosition.p1x === 0 &&
       linePosition.p2x === 0 &&
@@ -172,7 +171,7 @@ export default function useLineDrawingHelper() {
       );
   }
 
-  function resetLineDrawing(linePosition: HorizontaLinePosition) {
+  function resetLineDrawing(linePosition: HorizontalLineAttributes) {
     linePosition.p1x = linePosition.p2x = linePosition.py = 0;
     editModeStore.setDefaultEditMode();
   }

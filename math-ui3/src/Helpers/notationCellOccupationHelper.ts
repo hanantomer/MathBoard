@@ -74,17 +74,17 @@ export default function notationCellOccupationHelper() {
     uuid: string,
     doRemove: boolean,
   ) {
-    const fromCol = notation.p1x / cellStore.getCellHorizontalWidth();
-    const toCol = notation.p2x / cellStore.getCellHorizontalWidth();
-    const row = notation.py / cellStore.getCellVerticalHeight();
+    const fromCol = Math.round(
+      notation.p1x / cellStore.getCellHorizontalWidth(),
+    );
+    const toCol = Math.round(notation.p2x / cellStore.getCellHorizontalWidth());
+    const row = Math.round(notation.py / cellStore.getCellVerticalHeight());
 
     for (let col = fromCol; col <= toCol; col++) {
       if (validateRowAndCol(col, row)) {
         if (validateRowAndCol(col, row - 1))
           // occupy 2 rows
-
           updateLineOccupationMatrixCell(col, row, matrix, uuid, doRemove);
-
         updateLineOccupationMatrixCell(col, row - 1, matrix, uuid, doRemove);
       }
     }
@@ -95,7 +95,9 @@ export default function notationCellOccupationHelper() {
     notation: VerticalLineNotationAttributes,
     doRemove: boolean,
   ) {
-    const fromRow = Math.round(notation.p1y / cellStore.getCellVerticalHeight());
+    const fromRow = Math.round(
+      notation.p1y / cellStore.getCellVerticalHeight(),
+    );
     const toRow = Math.round(notation.p2y / cellStore.getCellVerticalHeight());
     const col = Math.round(notation.px / cellStore.getCellHorizontalWidth());
 
@@ -123,10 +125,14 @@ export default function notationCellOccupationHelper() {
     uuid: string,
     doRemove: boolean,
   ) {
-    const fromCol = notation.p1x / cellStore.getCellHorizontalWidth();
-    const toCol = notation.p2x / cellStore.getCellHorizontalWidth();
-    const fromRow = notation.p1y / cellStore.getCellVerticalHeight();
-    const toRow = notation.p2y / cellStore.getCellVerticalHeight();
+    const fromCol = Math.round(
+      notation.p1x / cellStore.getCellHorizontalWidth(),
+    );
+    const toCol = Math.round(notation.p2x / cellStore.getCellHorizontalWidth());
+    const fromRow = Math.round(
+      notation.p1y / cellStore.getCellVerticalHeight(),
+    );
+    const toRow = Math.round(notation.p2y / cellStore.getCellVerticalHeight());
 
     // slope is positive if fromRow > toRow
     const slope = (toRow - fromRow) / (toCol - fromCol);

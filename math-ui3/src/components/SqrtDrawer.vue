@@ -40,7 +40,7 @@ import useWatchHelper from "../helpers/watchHelper";
 import { computed, ref } from "vue";
 import { useCellStore } from "../store/pinia/cellStore";
 import { useEditModeStore } from "../store/pinia/editModeStore";
-import { HorizontaLinePosition } from "../../../math-common/src/baseTypes";
+import { HorizontalLineAttributes } from "../../../math-common/src/baseTypes";
 import useLineDrawingHelper from "../helpers/lineDrawingHelper";
 
 const watchHelper = useWatchHelper();
@@ -50,7 +50,7 @@ const editModeStore = useEditModeStore();
 
 // vars
 
-let linePosition = ref(<HorizontaLinePosition>{
+let linePosition = ref(<HorizontalLineAttributes>{
   p1x: 0,
   p2x: 0,
   py: 0,

@@ -40,7 +40,7 @@
 import { computed, ref } from "vue";
 import { useCellStore } from "../store/pinia/cellStore";
 import { useEditModeStore } from "../store/pinia/editModeStore";
-import { HorizontaLinePosition } from "../../../math-common/src/baseTypes";
+import { HorizontalLineAttributes } from "../../../math-common/src/baseTypes";
 
 import useWatchHelper from "../helpers/watchHelper";
 import useLineDrawer from "../helpers/lineDrawingHelper";
@@ -52,7 +52,7 @@ const lineDrawer = useLineDrawer();
 
 // vars
 
-let linePosition = ref(<HorizontaLinePosition>{
+let linePosition = ref(<HorizontalLineAttributes>{
   p1x: 0,
   p2x: 0,
   py: 0,
@@ -80,15 +80,15 @@ let lineY = computed(() => {
 });
 
 let handleLeft = computed(() => {
-  return lineLeft.value + (cellStore.getSvgBoundingRect().left ?? 0) - 10;
+  return lineLeft.value + (cellStore.getSvgBoundingRect().left ?? 0) - 1;
 });
 
 let handleRight = computed(() => {
-  return lineRight.value + (cellStore.getSvgBoundingRect().left ?? 0) + 10;
+  return lineRight.value + (cellStore.getSvgBoundingRect().left ?? 0) + 1;
 });
 
 let handleY = computed(() => {
-  return lineY.value + (cellStore.getSvgBoundingRect().top ?? 0) - 5;
+  return lineY.value + (cellStore.getSvgBoundingRect().top ?? 0) - 1;
 });
 
 // watchers

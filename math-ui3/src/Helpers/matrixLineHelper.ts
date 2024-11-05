@@ -4,11 +4,13 @@ import {
   HorizontalLineNotationAttributes,
   SlopeLineNotationAttributes,
   VerticalLineNotationAttributes,
+  HorizontalLineAttributes,
 } from "common/baseTypes";
 
 import { lineColor, selectionColor } from "common/globals";
 
 import useUtils from "./matrixHelperUtils";
+import { add } from "cypress/types/lodash";
 
 const utils = useUtils();
 
@@ -43,16 +45,16 @@ export default function useLineMatrixHelper() {
         return n.uuid;
       })
       .attr("x1", (n: LineNotationAttributes) => {
-        return n.p1x;
+        return n.px ?? n.p1x;
       })
       .attr("x2", (n: LineNotationAttributes) => {
-        return n.p2x;
+        return n.px ?? n.p2x;
       })
       .attr("y1", (n: LineNotationAttributes) => {
-        return n.p1y;
+        return n.py ?? n.p1y;
       })
       .attr("y2", (n: LineNotationAttributes) => {
-        return n.p2y;
+        return n.py ?? n.p2y;
       })
       .attr("stroke-width", (n: LineNotationAttributes) => {
         return "2";
@@ -68,16 +70,16 @@ export default function useLineMatrixHelper() {
         return n.uuid;
       })
       .attr("x1", (n: LineNotationAttributes) => {
-        return n.p1x;
+        return n.px ?? n.p1x;
       })
       .attr("x2", (n: LineNotationAttributes) => {
-        return n.p2x;
+        return n.px ?? n.p2x;
       })
       .attr("y1", (n: LineNotationAttributes) => {
-        return n.p1y;
+        return n.py ?? n.p1y;
       })
       .attr("y2", (n: LineNotationAttributes) => {
-        return n.p2y;
+        return n.py ?? n.p2y;
       })
       .attr("stroke-width", () => {
         return 2;
@@ -90,26 +92,6 @@ export default function useLineMatrixHelper() {
           : lineColor;
       });
   }
-
-  // function lineX1(n: LineNotationAttributes): number {
-  //   const col =
-  //     n.notationType === "SQRT"
-  //       ? n.fromCol + 1 /*to leave space for sqrt sign*/
-  //       : n.fromCol ?? n.col;
-  //   return utils.getNotationXposByCol(col);
-  // }
-
-  // function lineX2(n: LineNotationAttributes): number {
-  //   return utils.getNotationXposByCol(n.toCol ?? n.col);
-  // }
-
-  // function LineY1(n: LineNotationAttributes): number {
-  //   return utils.getNotationYposByRow(n.fromRow ?? n.row);
-  // }
-
-  // function LineY2(n: LineNotationAttributes): number {
-  //   return utils.getNotationYposByRow(n.toRow ?? n.row);
-  // }
 
   return {
     mergeLineNotations,

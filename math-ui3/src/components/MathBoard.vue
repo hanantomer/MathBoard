@@ -247,8 +247,8 @@ path:hover {
   cursor: col-resize;
   position: absolute;
   display: block;
-  width: 12px;
-  height: 12px;
+  width: 5px;
+  height: 5px;
   border: 1, 1, 1, 1;
   z-index: 999;
 }
