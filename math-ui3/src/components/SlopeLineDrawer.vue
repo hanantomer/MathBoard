@@ -29,7 +29,7 @@
         :x1="linePosition.p1x"
         :y1="linePosition.p1y"
         :x2="linePosition.p2x"
-        :y2="linePosition.p1x"
+        :y2="linePosition.p2y"
         class="line"
       />
     </svg>
@@ -117,7 +117,7 @@ watchHelper.watchMouseEvent(
 // emmited by selection helper
 watchHelper.watchNotationSelection(
   "SLOPE_LINE_SELECTED",
-  "EV_HORIZONTAL_LINE_SELECTED",
+  "EV_SLOPE_LINE_SELECTED",
   selectLine,
 );
 
@@ -160,6 +160,7 @@ function setLine(e: MouseEvent) {
 
   if (slopeType.value === "NONE") {
     slopeType.value = getSlopeType(xPos, yPos);
+    console.debug(slopeType.value);
   }
 
   if (movementDirection.value === "NONE") {

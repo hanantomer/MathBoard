@@ -63,7 +63,7 @@ export default function useLineDrawingHelper() {
 
     linePosition.p2x = linePosition.p1x + 10;
 
-    linePosition.py = getNearestRow(position.y);
+    linePosition.py = position.y;
   }
 
   function setLine(e: MouseEvent, linePosition: HorizontalLineAttributes) {

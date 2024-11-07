@@ -45,7 +45,6 @@ import { useCellStore } from "../store/pinia/cellStore";
 import { useEditModeStore } from "../store/pinia/editModeStore";
 import useWatchHelper from "../helpers/watchHelper";
 
-
 import {
   VerticalLineAttributes,
   VerticalLineNotationAttributes,
@@ -74,25 +73,13 @@ const show = computed(() => {
   );
 });
 
-// let lineTop = computed(() => {
-//   return linePosition.value.p1y;
-// });
-
-// let lineBottom = computed(() => {
-//   return linePosition.value.p2y;
-// });
-
-// let lineX = computed(() => {
-//   return linePosition.value.px;
-// });
-
 let handleX = computed(() => {
-  return linePosition.value.px + (cellStore.getSvgBoundingRect().left ?? 0) - 5;
+  return linePosition.value.px + (cellStore.getSvgBoundingRect().left ?? 0) - 3;
 });
 
 let handleTop = computed(() => {
   if (!cellStore.getSvgBoundingRect()) return;
-  return linePosition.value.p2y + (cellStore.getSvgBoundingRect().top ?? 0) - 5;
+  return linePosition.value.p2y + (cellStore.getSvgBoundingRect().top ?? 0) - 3;
 });
 
 let handleBottom = computed(() => {
@@ -178,7 +165,7 @@ function startDrawLine(e: MouseEvent) {
 
   linePosition.value.p1y = position.y;
   linePosition.value.p2y = linePosition.value.p1y + 10;
-  linePosition.value.px = getNearestCol(position.y);
+  linePosition.value.px = position.x;
 }
 
 function setLine(e: MouseEvent) {
@@ -197,18 +184,6 @@ function setLine(e: MouseEvent) {
 
 function endDrawLine() {
   if (linePosition.value.p2y == linePosition.value.p1y) return;
-
-  let col = Math.round(
-    linePosition.value.px / cellStore.getCellHorizontalWidth(),
-  );
-
-  let fromRow = Math.round(
-    linePosition.value.p1y / cellStore.getCellVerticalHeight(),
-  );
-
-  let toRow = Math.round(
-    linePosition.value.p2y / cellStore.getCellVerticalHeight(),
-  );
 
   saveLine(linePosition.value);
 

@@ -545,10 +545,10 @@ export default function dbUtil() {
                         m.p2x >= 0 &&
                         m.p1y >= 0 &&
                         m.p2y >= 0 &&
-                        m.p2x < m.p1x &&
+                        m.p2x != m.p1x &&
                         m.p1y != m.p2y
                     )
-                ) {
+                ){
                     throw new Error("invalid model:" + JSON.stringify(m));
                 }
                 break;

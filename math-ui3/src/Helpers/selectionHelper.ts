@@ -90,12 +90,12 @@ export default function selectionHelper() {
         return false;
       case "SLOPELINE": {
         const slopeLineNotation = notation as SlopeLineNotationAttributes;
-        if (
+        const distanceFromLine =
           screenHelper.getClickedPosDistanceFromSlopeLine(
             dotCoordinates,
             slopeLineNotation,
-          ) < maxDistanceToSelect
-        ) {
+          );
+        if (distanceFromLine < maxDistanceToSelect) {
           selectLineNotation(notation);
           return true;
         }

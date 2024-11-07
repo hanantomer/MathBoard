@@ -114,6 +114,8 @@ export default function notationCellOccupationHelper() {
           notation.uuid,
           doRemove,
         );
+
+        updateLineOccupationMatrixCell(col, i, matrix, notation.uuid, doRemove);
       }
     }
   }
@@ -135,11 +137,11 @@ export default function notationCellOccupationHelper() {
     const toRow = Math.round(notation.p2y / cellStore.getCellVerticalHeight());
 
     // slope is positive if fromRow > toRow
-    const slope = (toRow - fromRow) / (toCol - fromCol);
+    const slope = (fromRow - toRow) / (toCol - fromCol);
 
-    let firstRowIndex = fromRow;
+    let firstRowIndex = slope > 0 ? fromRow : toRow;
     for (let col = fromCol - 1, i = 0; col <= toCol; col++, i++) {
-      let row = Math.ceil(firstRowIndex + i * slope);
+      let row = Math.ceil(firstRowIndex + i * slope * -1);
 
       if (validateRowAndCol(col, row)) {
         updateLineOccupationMatrixCell(col, row, matrix, uuid, doRemove);
