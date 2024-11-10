@@ -4,7 +4,7 @@ import useMatrixCellHelper from "../helpers/matrixCellHelper";
 import useAuthorizationHelper from "../helpers/authorizationHelper";
 import useNotationMutateHelper from "../helpers/notationMutateHelper";
 import useSelectionHelper from "../helpers/selectionHelper";
-type keyType = "SYMBOL" | "MOVEMENT" | "DELETION" | "DELETEANDMOVE";
+type keyType = "SYMBOL" | "MOVEMENT" | "DELETION" | "MOVEANDDELETE";
 
 const editModeStore = useEditModeStore();
 const cellStore = useCellStore();
@@ -29,9 +29,10 @@ export default function () {
         return handleMovementKey(code);
       }
 
-      case "DELETEANDMOVE": {
+      case "MOVEANDDELETE": {
+        handleMovementKey(code);
         handleDeletionKey();
-        return handleMovementKey(code);
+        return;
       }
 
       case "SYMBOL": {
@@ -103,7 +104,7 @@ export default function () {
 
     if (code === "Delete") return "DELETION";
 
-    if (code === "Backspace") return "DELETEANDMOVE";
+    if (code === "Backspace") return "MOVEANDDELETE";
 
     return null;
   }

@@ -1,5 +1,6 @@
 <template>
   <v-card
+    v-if="show"
     variant="outlined"
     id="selection"
     class="selection"
@@ -14,7 +15,6 @@
     v-on:mousemove="mousemove"
     v-on:mouseenter="enter"
     v-on:mouseleave="leave"
-    v-if="show"
   ></v-card>
 </template>
 
@@ -121,7 +121,7 @@ watchHelper.watchMouseEvent(
 watchHelper.watchMouseEvent(
   ["TEXT_STARTED"],
   "EV_SVG_MOUSEMOVE",
-  startTextAreaSelection,
+  startAreaSelection,
 );
 
 watchHelper.watchMouseEvent(
@@ -136,7 +136,11 @@ watchHelper.watchMouseEvent(
   endSelect,
 );
 
-watchHelper.watchKeyEvent(["AREA_SELECTED"], "EV_KEYUP", mutateSelectionByKey);
+watchHelper.watchKeyEvent(
+  ["AREA_SELECTED"],
+  "EV_KEYUP",
+  updateSelectionAreaByKey,
+);
 
 watchHelper.watchMouseEvent(["AREA_SELECTED"], "EV_SVG_MOUSEMOVE", startMoving);
 
@@ -164,31 +168,45 @@ watchHelper.watchMouseEvent(
   cancelTextSelectionWhenUserClickedOutside /*takes action when clicked outside of selection area*/,
 );
 
-watchHelper.watchMouseEvent(["TEXT_STARTED"], "EV_SVG_MOUSEDOWN", () =>
-  editModeStore.setNextEditMode(),
-);
+//watchHelper.watchMouseEvent(["TEXT_STARTED"], "EV_SVG_MOUSEDOWN", () =>
+//  editModeStore.setNextEditMode(),
+//);
 
 function cancelSelectionWhenUserClickedOutside() {
   cancelSelection();
+  resetSelectionPosition();
   editModeStore.setDefaultEditMode();
 }
 
 function cancelTextSelectionWhenUserClickedOutside() {
   if (!mouseLeftSelectionArea) return;
   cancelSelection();
+  resetSelectionPosition();
   editModeStore.setDefaultEditMode();
 }
 
 function startAreaSelection(e: MouseEvent) {
   if (e.buttons !== 1) return;
+
   cancelSelection();
-  editModeStore.setEditMode("AREA_SELECTING");
+
+  resetSelectionPosition();
+
+  setStartPosition(e);
+
+  editModeStore.setEditMode(
+    editModeStore.getEditMode() === "TEXT_STARTED"
+      ? "TEXT_AREA_SELECTING"
+      : "AREA_SELECTING",
+  );
 }
 
-function startTextAreaSelection(e: MouseEvent) {
-  if (e.buttons !== 1) return;
-  resetSelectionPosition();
-  editModeStore.setEditMode("TEXT_AREA_SELECTING");
+function setStartPosition(e: MouseEvent) {
+  selectionPosition.value.bottomRight.x = selectionPosition.value.topLeft.x =
+    e.pageX;
+
+  selectionPosition.value.bottomRight.y = selectionPosition.value.topLeft.y =
+    e.pageY;
 }
 
 function startMoving(e: MouseEvent) {
@@ -214,7 +232,7 @@ function mousemove(e: MouseEvent) {
   eventBus.emit("EV_SVG_MOUSEMOVE", e);
 }
 
-async function mutateSelectionByKey(e: KeyboardEvent) {
+async function updateSelectionAreaByKey(e: KeyboardEvent) {
   if (selectionRectHeight.value === 0) return;
 
   switch (e.code) {
@@ -251,14 +269,20 @@ async function mutateSelectionByKey(e: KeyboardEvent) {
 // extend or shrink selection area following inner mouse move
 function updateSelectionArea(e: MouseEvent) {
   if (e.buttons !== 1) return;
-  if (selectionPosition.value.topLeft.x == 0) {
+
+  if (e.pageX > selectionPosition.value.topLeft.x) {
+    selectionPosition.value.bottomRight.x = e.pageX;
+  } else {
     selectionPosition.value.topLeft.x = e.pageX;
+  }
+
+  if (e.pageY > selectionPosition.value.topLeft.y) {
+    selectionPosition.value.bottomRight.y = e.pageY;
+  } else {
     selectionPosition.value.topLeft.y = e.pageY;
   }
 
-  selectionPosition.value.bottomRight.x = e.pageX;
-  selectionPosition.value.bottomRight.y = e.pageY;
-  cellStore.resetSelectedCell();
+  //cellStore.resetSelectedCell();
 }
 
 function endSelect() {
@@ -294,6 +318,7 @@ function moveSelectionByMouseDrag(e: MouseEvent) {
   if (e.buttons !== 1) return;
 
   if (!mouseOverSelectionArea) return;
+  if (mouseLeftSelectionArea) return;
 
   // initial drag position
   if (!dragPosition.value.x) {
@@ -364,12 +389,11 @@ async function endMoveSelection(e: MouseEvent) {
   await notationMutationHelper.saveMovedNotations(moveDirection);
   notationStore.resetSelectedNotations();
   cancelSelection();
+  resetSelectionPosition();
   editModeStore.setDefaultEditMode();
 }
 
 function cancelSelection() {
-  console.debug("cancelSelection");
-  resetSelectionPosition();
   notationStore.resetSelectedNotations();
 }
 

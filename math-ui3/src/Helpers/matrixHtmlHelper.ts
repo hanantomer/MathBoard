@@ -243,7 +243,7 @@ export default function useHtmlMatrixHelper() {
 
       case "EXPONENT": {
         const n1 = n as unknown as MultiCellAttributes;
-        return (n1.toCol - n1.fromCol) * cellStore.getCellHorizontalWidth();
+        return (n1.toCol - n1.fromCol + 1) * cellStore.getCellHorizontalWidth();
       }
 
       case "SQRT": {

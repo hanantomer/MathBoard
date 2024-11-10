@@ -53,17 +53,17 @@ export default function selectionHelper() {
           return true;
         }
         break;
-      case "EXPONENT":
-        const exponent = notation as unknown as MultiCellAttributes;
-        if (
-          screenHelper.getClickedPosDistanceFromExponent(
-            dotCoordinates,
-            exponent,
-          ) < maxDistanceToSelect
-        ) {
-          selectExponentNotation(notation);
-          return true;
-        }
+      // case "EXPONENT":
+      //   //const exponent = notation as unknown as MultiCellAttributes;
+      //   // if (
+      //   //   screenHelper.getClickedPosDistanceFromExponent(
+      //   //     dotCoordinates,
+      //   //     exponent,
+      //   //   ) < maxDistanceToSelect
+      //   // ) {
+      //   selectExponentNotation(notation);
+      //   return true;
+      // //}
       case "HORIZONTALLINE":
         const horizontalLineNotation =
           notation as HorizontalLineNotationAttributes;
@@ -106,6 +106,7 @@ export default function selectionHelper() {
         selectCurveNotation(notation);
         return true;
       }
+      case "EXPONENT":
       case "IMAGE":
       case "TEXT":
       case "ANNOTATION":
@@ -128,17 +129,17 @@ export default function selectionHelper() {
 
     if (activeNotation.notationType === "TEXT") {
       editModeStore.setEditMode("TEXT_SELECTED");
-      eventBus.emit("EV_FREE_TEXT_SELECTED", activeNotation);
+      //eventBus.emit("EV_FREE_TEXT_SELECTED", activeNotation);
     }
 
     if (activeNotation.notationType === "ANNOTATION") {
       editModeStore.setEditMode("ANNOTATION_SELECTED");
-      eventBus.emit("EV_ANNOTATION_SELECTED", activeNotation);
+      //eventBus.emit("EV_ANNOTATION_SELECTED", activeNotation);
     }
 
     if (activeNotation.notationType === "EXPONENT") {
       editModeStore.setEditMode("EXPONENT_SELECTED");
-      eventBus.emit("EV_EXPONENT_SELECTED", activeNotation);
+      //eventBus.emit("EV_EXPONENT_SELECTED", activeNotation);
     }
 
     notationStore.selectNotation(activeNotation?.uuid);
@@ -149,10 +150,10 @@ export default function selectionHelper() {
     eventBus.emit("EV_SQRT_SELECTED", notation);
   }
 
-  function selectExponentNotation(notation: NotationAttributes) {
-    editModeStore.setEditMode("EXPONENT_SELECTED");
-    eventBus.emit("EV_EXPONENT_SELECTED", notation);
-  }
+  // function selectExponentNotation(notation: NotationAttributes) {
+  //   editModeStore.setEditMode("EXPONENT_SELECTED");
+  //   //eventBus.emit("EV_EXPONENT_SELECTED", notation);
+  // }
 
   function selectCurveNotation(notation: NotationAttributes) {
     switch (notation.notationType) {

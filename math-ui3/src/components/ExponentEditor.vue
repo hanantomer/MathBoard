@@ -29,6 +29,7 @@
 import { computed, ref } from "vue";
 import { useEditModeStore } from "../store/pinia/editModeStore";
 import { useCellStore } from "../store/pinia/cellStore";
+import { useNotationStore } from "../store/pinia/notationStore";
 import { ExponentNotationAttributes } from "../../../math-common/build/baseTypes";
 import useNotationMutateHelper from "../helpers/notationMutateHelper";
 import useScreenHelper from "../helpers/screenHelper";
@@ -37,15 +38,27 @@ import useWatchHelper from "../helpers/watchHelper";
 const notationMutateHelper = useNotationMutateHelper();
 const emit = defineEmits(["hide"]);
 const editModeStore = useEditModeStore();
+const notationStore = useNotationStore();
 const cellStore = useCellStore();
 const screenHelper = useScreenHelper();
 const watchHelper = useWatchHelper();
 
-let selectedNotation: ExponentNotationAttributes | null = null;
 let exponentLeft = ref(0);
 let exponentTop = ref(0);
 
-const show = computed(() => editModeStore.getEditMode() === "EXPONENT_WRITING");
+const selectedNotation = computed(() =>
+  notationStore.getSelectedNotations()?.length == 0
+    ? null
+    : (notationStore
+        .getSelectedNotations()
+        .at(0) as ExponentNotationAttributes),
+);
+
+const show = computed(
+  () =>
+    editModeStore.getEditMode() === "EXPONENT_WRITING" ||
+    editModeStore.getEditMode() === "EXPONENT_SELECTED",
+);
 
 // user clicked on exponent icon and then clicked on a cell
 
@@ -63,10 +76,16 @@ watchHelper.watchMouseEvent(
 );
 
 // user selected exponent notation
-watchHelper.watchNotationSelection(
-  "SYMBOL",
-  "EV_EXPONENT_SELECTED",
-  selectExponent,
+// watchHelper.watchNotationSelection(
+//   "SYMBOL",
+//   "EV_EXPONENT_SELECTED",
+//   selectExponent,
+// );
+
+watchHelper.watchMouseEvent(
+  ["EXPONENT_SELECTED"],
+  "EV_SVG_MOUSEDOWN",
+  editSelectedExponentNotation,
 );
 
 // edit mode changed from "EXPONENT_WRITING" either by cell clik or toolbar click
@@ -79,18 +98,18 @@ watchHelper.watchKeyEvent(
   endEditingByEnterKey,
 );
 
-function selectExponent(exponentNotation: ExponentNotationAttributes) {
-  if (!exponentNotation) return;
+// function selectExponent(exponentNotation: ExponentNotationAttributes) {
+//   if (!exponentNotation) return;
 
-  // first click -> select
-  if (!editModeStore.isTextSelectedMode()) {
-    editModeStore.setEditMode("EXPONENT_SELECTED");
-    return;
-  }
+//   // first click -> select
+//   if (!editModeStore.isTextSelectedMode()) {
+//     editModeStore.setEditMode("EXPONENT_SELECTED");
+//     return;
+//   }
 
-  // second click -> edit
-  editSelectedExponentNotation(exponentNotation);
-}
+//   // second click -> edit
+//   editSelectedExponentNotation();
+// }
 
 function endEditingByEnterKey(e: KeyboardEvent) {
   const { code } = e;
@@ -128,26 +147,38 @@ function setExponentPosition() {
   exponentTop.value = clickedCoordinates.y;
 }
 
+function setSelectedExponentPosition() {
+  if (!selectedNotation.value) return;
+
+  exponentLeft.value =
+    cellStore.getSvgBoundingRect().x +
+    window.scrollX +
+    selectedNotation.value.fromCol * cellStore.getCellHorizontalWidth();
+
+  exponentTop.value =
+    cellStore.getSvgBoundingRect().y +
+    window.scrollY +
+    selectedNotation.value.row * cellStore.getCellVerticalHeight();
+}
+
 function resetExponentValue() {
   (document.getElementById("exponentInput") as HTMLInputElement).value = "";
   (document.getElementById("baseInput") as HTMLInputElement).value = "";
 }
 
-function editSelectedExponentNotation(
-  exponentNotation: ExponentNotationAttributes,
-) {
+function editSelectedExponentNotation() {
   editModeStore.setEditMode("EXPONENT_WRITING");
 
-  selectedNotation = exponentNotation;
+  setSelectedExponentPosition();
 
   setInitialExponentValue();
 }
 
 function setInitialExponentValue() {
   (document.getElementById("baseInput") as HTMLInputElement).value =
-    selectedNotation?.base!;
+    selectedNotation.value!.base!;
   (document.getElementById("exponentInput") as HTMLInputElement).value =
-    selectedNotation?.exponent!;
+    selectedNotation.value!.exponent!;
 }
 
 function submitExponent() {
@@ -159,15 +190,15 @@ function submitExponent() {
   )
     return;
 
-  if (selectedNotation) {
-    selectedNotation.base = (
+  if (selectedNotation.value) {
+    selectedNotation.value!.base = (
       document.getElementById("baseInput") as HTMLInputElement
     ).value;
-    selectedNotation.exponent = (
+    selectedNotation.value!.exponent = (
       document.getElementById("exponentInput") as HTMLInputElement
     ).value;
 
-    notationMutateHelper.updateNotation(selectedNotation);
+    notationMutateHelper.updateNotation(selectedNotation.value);
   } else {
     notationMutateHelper.addExponentNotation(
       (document.getElementById("baseInput") as HTMLInputElement).value,
