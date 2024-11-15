@@ -158,6 +158,10 @@ function setLine(e: MouseEvent) {
   const yPos = e.pageY - (cellStore.getSvgBoundingRect()?.y ?? 0);
   const xPos = e.pageX - (cellStore.getSvgBoundingRect()?.x ?? 0);
 
+  if (xPos === linePosition.value.p1x || yPos === linePosition.value.p1y) {
+    return;
+  }
+
   if (slopeType.value === "NONE") {
     slopeType.value = getSlopeType(xPos, yPos);
     console.debug(slopeType.value);
@@ -187,6 +191,13 @@ function setLine(e: MouseEvent) {
   } else {
     linePosition.value.p1x = xPos;
     linePosition.value.p1y = yPos;
+  }
+
+  if (linePosition.value.p1x >= linePosition.value.p2x) {
+    throw new Error(
+      JSON.stringify(linePosition.value) +
+        "is invalid: p2x must be greater than p1x",
+    );
   }
 }
 

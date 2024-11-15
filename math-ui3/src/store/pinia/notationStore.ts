@@ -304,18 +304,9 @@ export const useNotationStore = defineStore("notation", () => {
   }
 
   function resetSelectedNotations() {
+    console.debug("resetSelectedNotations");
     Array.from(getSelectedNotations()).forEach((n) => (n.selected = false));
   }
-
-  // function isLineOrRectSelected() {
-  //   return getSelectedNotations().find(
-  //     (n) =>
-  //       NotationTypeShape.get(n.notationType) == "HORIZONTAL_LINE" ||
-  //       NotationTypeShape.get(n.notationType) == "VERTICAL_LINE" ||
-  //       NotationTypeShape.get(n.notationType) == "SLOPE_LINE" ||
-  //       NotationTypeShape.get(n.notationType) == "RECT",
-  //   );
-  // }
 
   function getNotationsAtCell(cell: CellAttributes): NotationAttributes[] {
     const notationsAtCell: NotationAttributes[] = [];
@@ -430,9 +421,6 @@ export const useNotationStore = defineStore("notation", () => {
     getNotation,
     getNotations,
     getNotationAtCoordinates,
-    //getHorizontalLineNotations,
-    //    getVerticalLineNotations,
-    //    getSlopeLineNotations,
     getRectNotations,
     getCopiedNotations,
     getNotationsAtCell,

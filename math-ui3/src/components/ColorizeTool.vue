@@ -4,7 +4,7 @@
       <v-btn
         v-bind="props"
         v-bind:style="{
-          backgroundColor: selectedColor,
+          backgroundColor: backgroundColor,
         }"
         icon
         @click.stop="showColorSelectionMenu"
@@ -45,7 +45,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue";
+import { ref, computed } from "vue";
 import useNotationMutateHelper from "../helpers/notationMutateHelper";
 import useWatchHelper from "../helpers/watchHelper";
 import useScreenHelper from "../helpers/screenHelper";
@@ -57,6 +57,8 @@ import {
   NotationAttributes,
 } from "common/baseTypes";
 
+import { transparentColor } from "common/globals";
+
 import { Color } from "common/unions";
 
 const notationMutateHelper = useNotationMutateHelper();
@@ -64,16 +66,24 @@ const watchHelper = useWatchHelper();
 const screenHelper = useScreenHelper();
 const editModeStore = useEditModeStore();
 
+const backgroundColor = computed(() => {
+  return selectedColor.value === "none"
+    ? "transparent"
+    : selectedColor.value === "transparent"
+    ? transparentColor
+    : selectedColor.value;
+});
+
 let colorSelectionEl = ref();
 
-let selectedColor = ref<Color>("transparent");
+let selectedColor = ref<Color>("none");
 
-interface ColorLine {
+interface ColorStrip {
   title: string;
   value: Color;
 }
 
-const colors: ColorLine[] = [
+const colors: ColorStrip[] = [
   { title: "blue", value: "lightblue" },
   { title: "green", value: "lightgreen" },
   { title: "pink", value: "pink" },
@@ -92,7 +102,8 @@ watchHelper.watchMouseEvent(
   colorizeNotationAtMousePosition,
 );
 
-watchHelper.watchMouseEvent(["COLORIZING"], "EV_SVG_MOUSEUP", endColorizing);
+// reset coorizing tool when colorizing by click or by drag ends
+watchHelper.watchMouseEvent(["COLORIZING"], "EV_SVG_MOUSEUP", resetColorizing);
 
 function selectColor() {
   editModeStore.setEditMode("COLORIZING");
@@ -155,6 +166,11 @@ function colorizeNotationAtMousePosition(e: MouseEvent) {
     case "SYMBOL": {
       return colorizeNotation(clickedNotation);
     }
+    default: {
+      throw new Error(
+        clickedNotation?.notationType + ": not supported by colorizing",
+      );
+    }
   }
 }
 
@@ -163,8 +179,8 @@ function colorizeNotation(notation: NotationAttributes) {
   notationMutateHelper.updateNotation(notation);
 }
 
-function endColorizing() {
-  selectedColor.value = "transparent";
+function resetColorizing() {
+  selectedColor.value = "none";
   editModeStore.setDefaultEditMode();
 }
 </script>

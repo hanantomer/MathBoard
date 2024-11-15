@@ -26,7 +26,7 @@ import { useNotationStore } from "../store/pinia/notationStore";
 
 import useNotationMutateHelper from "../helpers/notationMutateHelper";
 import useSelectionHelper from "../helpers/selectionHelper";
-import { MoveDirection } from "common/unions";
+import { MoveDirection, NotationType } from "common/unions";
 import { RectCoordinates, DotCoordinates } from "common/baseTypes";
 import useEventBusHelper from "../helpers/eventBusHelper";
 import useWatchHelper from "../helpers/watchHelper";
@@ -43,6 +43,14 @@ const selectionHelper = useSelectionHelper();
 
 let mouseOverSelectionArea: boolean = false;
 let mouseLeftSelectionArea: boolean = false;
+
+let lineTypes: Array<NotationType> = [
+  "CONCAVECURVE",
+  "CONCAVECURVE",
+  "HORIZONTALLINE",
+  "VERTICALLINE",
+  "SLOPELINE",
+];
 
 let selectionPosition = ref<RectCoordinates>({
   topLeft: { x: 0, y: 0 },
@@ -173,14 +181,14 @@ watchHelper.watchMouseEvent(
 //);
 
 function cancelSelectionWhenUserClickedOutside() {
-  cancelSelection();
+  notationStore.resetSelectedNotations();
   resetSelectionPosition();
   editModeStore.setDefaultEditMode();
 }
 
 function cancelTextSelectionWhenUserClickedOutside() {
   if (!mouseLeftSelectionArea) return;
-  cancelSelection();
+  notationStore.resetSelectedNotations();
   resetSelectionPosition();
   editModeStore.setDefaultEditMode();
 }
@@ -188,7 +196,7 @@ function cancelTextSelectionWhenUserClickedOutside() {
 function startAreaSelection(e: MouseEvent) {
   if (e.buttons !== 1) return;
 
-  cancelSelection();
+  notationStore.resetSelectedNotations();
 
   resetSelectionPosition();
 
@@ -240,25 +248,49 @@ async function updateSelectionAreaByKey(e: KeyboardEvent) {
       notationMutationHelper.deleteSelectedNotations();
       editModeStore.setDefaultEditMode();
     case "ArrowLeft":
-      if (!notationMutationHelper.moveSelectedNotations(-1, 0, e.ctrlKey))
+      if (
+        !notationMutationHelper.moveSelectedNotationsAtCellScale(
+          -1,
+          0,
+          e.ctrlKey,
+        )
+      )
         return;
       await moveSelectionByKey(-1, 0);
       await notationMutationHelper.saveMovedNotations("LEFT");
       break;
     case "ArrowRight":
-      if (!notationMutationHelper.moveSelectedNotations(1, 0, e.ctrlKey))
+      if (
+        !notationMutationHelper.moveSelectedNotationsAtCellScale(
+          1,
+          0,
+          e.ctrlKey,
+        )
+      )
         return;
       moveSelectionByKey(1, 0);
       await notationMutationHelper.saveMovedNotations("RIGHT");
       break;
     case "ArrowDown":
-      if (!notationMutationHelper.moveSelectedNotations(0, 1, e.ctrlKey))
+      if (
+        !notationMutationHelper.moveSelectedNotationsAtCellScale(
+          0,
+          1,
+          e.ctrlKey,
+        )
+      )
         return;
       moveSelectionByKey(0, 1);
       await notationMutationHelper.saveMovedNotations("BOTTOM");
       break;
     case "ArrowUp":
-      if (!notationMutationHelper.moveSelectedNotations(0, -1, e.ctrlKey))
+      if (
+        !notationMutationHelper.moveSelectedNotationsAtCellScale(
+          0,
+          -1,
+          e.ctrlKey,
+        )
+      )
         return;
       moveSelectionByKey(0, -1);
       await notationMutationHelper.saveMovedNotations("TOP");
@@ -281,8 +313,6 @@ function updateSelectionArea(e: MouseEvent) {
   } else {
     selectionPosition.value.topLeft.y = e.pageY;
   }
-
-  //cellStore.resetSelectedCell();
 }
 
 function endSelect() {
@@ -311,6 +341,9 @@ function endSelect() {
     signalSelection();
   }
 
+  console.debug("selecting #");
+  console.debug(notationStore.getSelectedNotations().length);
+
   editModeStore.setNextEditMode();
 }
 
@@ -318,7 +351,7 @@ function moveSelectionByMouseDrag(e: MouseEvent) {
   if (e.buttons !== 1) return;
 
   if (!mouseOverSelectionArea) return;
-  if (mouseLeftSelectionArea) return;
+  //  if (mouseLeftSelectionArea) return;
 
   // initial drag position
   if (!dragPosition.value.x) {
@@ -328,37 +361,84 @@ function moveSelectionByMouseDrag(e: MouseEvent) {
     return;
   }
 
-  // movement is still too small
-
-  const rectDeltaX = Math.round(
-    (e.pageX - dragPosition.value.x) / cellStore.getCellHorizontalWidth(),
-  );
-
-  const rectDeltaY = Math.round(
-    (e.pageY - dragPosition.value.y) / cellStore.getCellVerticalHeight(),
-  );
-
-  if (rectDeltaX != 0 || rectDeltaY != 0) {
-    notationMutationHelper.moveSelectedNotations(
-      rectDeltaX,
-      rectDeltaY,
-      e.ctrlKey,
-    );
-
-    const xMove = rectDeltaX * cellStore.getCellHorizontalWidth();
-    const yMove = rectDeltaY * cellStore.getCellVerticalHeight();
-
-    selectionPosition.value.topLeft.x += xMove;
-    selectionPosition.value.topLeft.y += yMove;
-    selectionPosition.value.bottomRight.x += xMove;
-    selectionPosition.value.bottomRight.y += yMove;
-
-    dragPosition.value.x += xMove;
-    dragPosition.value.y += yMove;
+  if (onlyLinesAraSelected()) {
+    moveAtPixelScale(e);
+  } else {
+    moveAtCellScale(e);
   }
 }
 
-async function moveSelectionByKey(
+function onlyLinesAraSelected() {
+  return (
+    notationStore
+      .getSelectedNotations()
+      .filter((n) => !lineTypes.includes(n.notationType)).length == 0
+  );
+}
+
+function moveAtCellScale(e: MouseEvent) {
+  const deltaX = e.pageX - dragPosition.value.x;
+  const deltaY = e.pageY - dragPosition.value.y;
+
+  const deltaCol = Math.round(
+    (e.pageX - dragPosition.value.x) / cellStore.getCellHorizontalWidth(),
+  );
+
+  const deltaRow = Math.round(
+    (e.pageY - dragPosition.value.y) / cellStore.getCellVerticalHeight(),
+  );
+
+  if (Math.abs(deltaCol) > 0 || Math.abs(deltaRow) > 0) {
+    notationMutationHelper.moveSelectedNotations(
+      deltaX,
+      deltaY,
+      deltaCol,
+      deltaRow,
+      e.ctrlKey,
+    );
+
+    moveSelectionBox(deltaCol, deltaRow);
+  }
+}
+
+function moveSelectionBox(deltaCol: number, deltaRow: number) {
+  const xMove = deltaCol * cellStore.getCellHorizontalWidth();
+  const yMove = deltaRow * cellStore.getCellVerticalHeight();
+
+  selectionPosition.value.topLeft.x += xMove;
+  selectionPosition.value.topLeft.y += yMove;
+
+  selectionPosition.value.bottomRight.x += xMove;
+  selectionPosition.value.bottomRight.y += yMove;
+
+  dragPosition.value.x += xMove;
+  dragPosition.value.y += yMove;
+}
+
+function moveAtPixelScale(e: MouseEvent) {
+  const deltaX = e.pageX - dragPosition.value.x;
+  const deltaY = e.pageY - dragPosition.value.y;
+
+  if (deltaX != 0 || deltaY != 0) {
+    notationMutationHelper.moveSelectedNotations(
+      deltaX,
+      deltaY,
+      0,
+      0,
+      e.ctrlKey,
+    );
+
+    selectionPosition.value.topLeft.x += deltaX;
+    selectionPosition.value.topLeft.y += deltaY;
+    selectionPosition.value.bottomRight.x += deltaX;
+    selectionPosition.value.bottomRight.y += deltaY;
+
+    dragPosition.value.x += deltaX;
+    dragPosition.value.y += deltaY;
+  }
+}
+
+async function moveSelectionByKey( ///TODO by cell or pixel
   moveHorizontal: number,
   moveVertical: number,
 ) {
@@ -388,13 +468,8 @@ async function endMoveSelection(e: MouseEvent) {
 
   await notationMutationHelper.saveMovedNotations(moveDirection);
   notationStore.resetSelectedNotations();
-  cancelSelection();
   resetSelectionPosition();
   editModeStore.setDefaultEditMode();
-}
-
-function cancelSelection() {
-  notationStore.resetSelectedNotations();
 }
 
 function resetSelectionPosition() {

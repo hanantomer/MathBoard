@@ -47,7 +47,7 @@ export default function useHtmlMatrixHelper() {
   }
 
   function exponentFontSize() {
-    return `0.5em`;
+    return `0.55em`;
   }
 
   function mergeHtmlNotations(
@@ -243,7 +243,7 @@ export default function useHtmlMatrixHelper() {
 
       case "EXPONENT": {
         const n1 = n as unknown as MultiCellAttributes;
-        return (n1.toCol - n1.fromCol + 1) * cellStore.getCellHorizontalWidth();
+        return (n1.toCol - n1.fromCol + 2) * cellStore.getCellHorizontalWidth();
       }
 
       case "SQRT": {
@@ -283,7 +283,7 @@ export default function useHtmlMatrixHelper() {
 
   function html(n: NotationAttributes) {
     if (NotationTypeBackgroundColorizing.has(n.notationType)) {
-      utils.colorizeNotationCell(n);
+      utils.colorizeNotationCells(n);
     }
 
     let fontWeight =
@@ -328,14 +328,14 @@ export default function useHtmlMatrixHelper() {
 
     if (n.notationType === "ANNOTATION") {
       const n1 = n as AnnotationNotationAttributes;
-      // const annotationHeight = cellStore.getCellVerticalHeight() / 2;
-      // const annotationWidth = cellStore.getCellHorizontalWidth();
 
       const bColor = textBorderColor(n ?? false);
 
       ///TODO move static css props to a class
-      return `<p style='z-index:100;color:${color};font-weight:${fontWeight}; position: absolute;top:50%;transform:
-           translateY(-50%);font-size:0.5em'>${n1.value}</p>`;
+      return `<p style=
+            'background:lightyellow; z-index:100;color:${color};font-weight:${fontWeight};
+            position: absolute;top:50%;transform:
+           translateY(-50%);font-size:0.48em'>${n1.value}</p>`;
     }
 
     if (n.notationType === "IMAGE") {

@@ -476,6 +476,10 @@ export default function dbUtil() {
     }
 
     function validateModel(model: NotationAttributes): boolean {
+
+        if (!validateColAndRowRounded(model)) {
+            throw new Error(JSON.stringify(model) + ": has a non rounded col or row");
+        }
         
         switch (model.notationType) {
             case "TEXT":
@@ -543,12 +547,13 @@ export default function dbUtil() {
                     !(
                         m.p1x >= 0 &&
                         m.p2x >= 0 &&
+                        m.p1x < m.p2x &&
                         m.p1y >= 0 &&
                         m.p2y >= 0 &&
                         m.p2x != m.p1x &&
                         m.p1y != m.p2y
                     )
-                ){
+                ) {
                     throw new Error("invalid model:" + JSON.stringify(m));
                 }
                 break;
@@ -607,3 +612,16 @@ export default function dbUtil() {
         deleteNotation,
     };
 }
+
+function validateColAndRowRounded(model: NotationAttributes) : boolean {
+    
+    const m = model as RectNotationAttributes & ExponentNotationAttributes & PointNotationAttributes;
+    
+    if (m.col && !Number.isSafeInteger(m.col)) return false;
+    if (m.row && !Number.isSafeInteger(m.row)) return false;
+    if (m.fromCol && !Number.isSafeInteger(m.fromCol)) return false;
+    if (m.toCol && !Number.isSafeInteger(m.toCol)) return false;
+
+    return true;
+}
+

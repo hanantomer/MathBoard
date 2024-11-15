@@ -12,7 +12,7 @@
         <v-sheet class="mt-10 ml-16">
           <v-progress-linear
             data-cy="pBar"
-            v-show="pBar"
+            v-show="progressBar"
             color="deep-purple-accent-4"
             indeterminate
             rounded
@@ -50,7 +50,6 @@ import sqrtDrawer from "./SqrtDrawer.vue";
 import verticalLineDrawer from "./VerticalLineDrawer.vue";
 import slopeLineDrawer from "./SlopeLineDrawer.vue";
 import curveDrawer from "./CurveDrawer.vue";
-import useEventBus from "../helpers/eventBusHelper";
 import useWatchHelper from "../helpers/watchHelper";
 import { onUnmounted, ref, computed } from "vue";
 import { useNotationStore } from "../store/pinia/notationStore";
@@ -59,8 +58,6 @@ import { useEditModeStore } from "../store/pinia/editModeStore";
 import { useAnswerStore } from "../store/pinia/answerStore";
 import { CursorType, EditModeCursorType } from "common/unions";
 import useSelectionHelper from "../helpers/selectionHelper";
-import usescreenHelper from "../helpers/screenHelper";
-import useUserOutgoingOperations from "../helpers/userOutgoingOperationsHelper";
 import useKeyHelper from "../helpers/keyHelper";
 const notationLoadingHelper = useNotationLoadingHelper();
 const notationStore = useNotationStore();
@@ -72,7 +69,7 @@ const eventHelper = UseEventHelper();
 const watchHelper = useWatchHelper();
 const editModeStore = useEditModeStore();
 const answerStore = useAnswerStore();
-const pBar = ref(false);
+const progressBar = ref(false);
 
 let cursor = ref<CursorType>("auto");
 let toolbarKey = ref(0);
@@ -150,15 +147,15 @@ async function load() {
   eventHelper.registerPaste();
   eventHelper.registerCopy();
 
-  pBar.value = true;
-  toolbarKey.value++; // refreash toolbar
+  progressBar.value = true;
+  toolbarKey.value++; // refresh toolbar
 
   try {
     notationStore.clearNotations();
 
     matrixHelper.setMatrix(props.svgId);
 
-    // for answer load also question notations
+    // for answer load also question notations too
     if (notationStore.getParent().type === "ANSWER") {
       await notationLoadingHelper.loadNotations(
         "QUESTION",
@@ -178,7 +175,7 @@ async function load() {
       notationStore.getParent().uuid,
     );
   } finally {
-    pBar.value = false;
+    progressBar.value = false;
   }
 }
 

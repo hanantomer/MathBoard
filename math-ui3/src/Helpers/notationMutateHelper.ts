@@ -321,13 +321,24 @@ export default function notationMutateHelper() {
 
     return true;
   }
+
+  function moveSelectedNotationsAtCellScale(
+    deltaCol: number,
+    deltaRow: number,
+    keepOriginal: boolean,
+  ) {
+    return moveSelectedNotations(0, 0, deltaCol, deltaRow, keepOriginal);
+  }
+
   // move without persistence - called during  mouse move - don't bother the database during move
   function moveSelectedNotations(
+    deltaX: number,
+    deltaY: number,
     deltaCol: number,
     deltaRow: number,
     keepOriginal: boolean,
   ): boolean {
-    if (!canMoveSelectedNotations(deltaCol, deltaRow)) return false;
+    //if (!canMoveSelectedNotations(deltaCol, deltaRow)) return false;
 
     if (keepOriginal) {
       notationStore.cloneSelectedNotations();
@@ -345,45 +356,31 @@ export default function notationMutateHelper() {
         }
 
         case "HORIZONTALLINE": {
-          (n as HorizontalLineNotationAttributes).p1x +=
-            deltaCol * cellStore.getCellHorizontalWidth();
-          (n as HorizontalLineNotationAttributes).p2x +=
-            deltaCol * cellStore.getCellHorizontalWidth();
-          (n as HorizontalLineNotationAttributes).py +=
-            deltaRow * cellStore.getCellVerticalHeight();
+          (n as HorizontalLineNotationAttributes).p1x += deltaX;
+          (n as HorizontalLineNotationAttributes).p2x += deltaX;
+          (n as HorizontalLineNotationAttributes).py += deltaY;
           break;
         }
         case "VERTICALLINE": {
-          (n as VerticalLineNotationAttributes).px +=
-            deltaCol * cellStore.getCellHorizontalWidth();
-          (n as VerticalLineNotationAttributes).p1y +=
-            deltaRow * cellStore.getCellVerticalHeight();
-          (n as VerticalLineNotationAttributes).p2y +=
-            deltaRow * cellStore.getCellVerticalHeight();
+          (n as VerticalLineNotationAttributes).px += deltaX;
+          (n as VerticalLineNotationAttributes).p1y += deltaY;
+          (n as VerticalLineNotationAttributes).p2y += deltaY;
           break;
         }
         case "SLOPELINE": {
-          (n as SlopeLineNotationAttributes).p1x +=
-            deltaCol * cellStore.getCellHorizontalWidth();
-          (n as SlopeLineNotationAttributes).p2x +=
-            deltaCol * cellStore.getCellHorizontalWidth();
-          (n as SlopeLineNotationAttributes).p1y +=
-            deltaCol * cellStore.getCellHorizontalWidth();
-          (n as SlopeLineNotationAttributes).p2y +=
-            deltaRow * cellStore.getCellVerticalHeight();
+          (n as SlopeLineNotationAttributes).p1x += deltaX;
+          (n as SlopeLineNotationAttributes).p2x += deltaX;
+          (n as SlopeLineNotationAttributes).p1y += deltaX;
+          (n as SlopeLineNotationAttributes).p2y += deltaY;
           break;
         }
 
         case "CONVEXCURVE":
         case "CONCAVECURVE": {
-          (n as CurveNotationAttributes).p1x +=
-            deltaCol * cellStore.getCellHorizontalWidth();
-          (n as CurveNotationAttributes).p2x +=
-            deltaCol * cellStore.getCellHorizontalWidth();
-          (n as CurveNotationAttributes).p1y +=
-            deltaRow * cellStore.getCellVerticalHeight();
-          (n as CurveNotationAttributes).p2y +=
-            deltaRow * cellStore.getCellVerticalHeight();
+          (n as CurveNotationAttributes).p1x += deltaX;
+          (n as CurveNotationAttributes).p2x += deltaX;
+          (n as CurveNotationAttributes).p1y += deltaY;
+          (n as CurveNotationAttributes).p2y += deltaY;
           break;
         }
 
@@ -1105,6 +1102,7 @@ export default function notationMutateHelper() {
     cloneNotation,
     deleteSelectedNotations,
     moveSelectedNotations,
+    moveSelectedNotationsAtCellScale,
     isNotationInQuestionArea,
     isCellInQuestionArea,
     updateHorizontalLineNotation,

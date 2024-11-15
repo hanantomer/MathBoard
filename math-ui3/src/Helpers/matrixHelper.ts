@@ -1,9 +1,6 @@
 import * as d3 from "d3";
 import { matrixDimensions, defaultdCellStroke } from "common/globals";
-import {
-  SqrtNotationAttributes,
-  PointNotationAttributes,
-} from "common/baseTypes";
+import { SqrtNotationAttributes, PointNotationAttributes} from "common/baseTypes";
 import { useCellStore } from "../store/pinia/cellStore";
 import { useNotationStore } from "../store/pinia/notationStore";
 import { cellSpace } from "common/globals";

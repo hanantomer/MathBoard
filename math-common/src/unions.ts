@@ -238,6 +238,7 @@ export type MoveDirection =
   | "RIGHTBOTTOM";
 
 export type Color =
+  | "none"
   | "white"
   | "lightblue"
   | "lightgreen"

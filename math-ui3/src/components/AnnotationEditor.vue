@@ -17,7 +17,8 @@
 import { computed, ref } from "vue";
 import { useCellStore } from "../store/pinia/cellStore";
 import { useEditModeStore } from "../store/pinia/editModeStore";
-import { PointNotationAttributes } from "../../../math-common/build/baseTypes";
+import { useNotationStore } from "../store/pinia/notationStore";
+import { AnnotationNotationAttributes } from "../../../math-common/build/baseTypes";
 import useNotationMutateHelper from "../helpers/notationMutateHelper";
 import usescreenHelper from "../helpers/screenHelper";
 import useWatchHelper from "../helpers/watchHelper";
@@ -26,9 +27,20 @@ const notationMutateHelper = useNotationMutateHelper();
 const watchHelper = useWatchHelper();
 const cellStore = useCellStore();
 const editModeStore = useEditModeStore();
+const notationStore = useNotationStore();
+
 const screenHelper = usescreenHelper();
 
 let annotaionValue = ref("");
+
+const selectedNotation = computed(() =>
+  notationStore.getSelectedNotations()?.length == 0
+    ? null
+    : (notationStore
+        .getSelectedNotations()
+        .at(0) as AnnotationNotationAttributes),
+);
+
 
 const show = computed(
   () => editModeStore.getEditMode() === "ANNOTATION_WRITING",
@@ -56,11 +68,10 @@ const annotationHeight = computed(
   () => cellStore.getCellVerticalHeight() / 2 + 2,
 );
 
-let selectedNotation: PointNotationAttributes | null = null;
 
 let annotationCell = ref({ col: 0, row: 0 });
 
-watchHelper.watchEndOfEditMode("ANNOTATION_WRITING", submitText);
+watchHelper.watchEndOfEditMode("ANNOTATION_WRITING", save);
 
 watchHelper.watchMouseEvent(
   ["ANNOTATION_STARTED"],
@@ -80,12 +91,19 @@ watchHelper.watchMouseEvent(
   editModeStore.setNextEditMode,
 );
 
-// user selected text notation
-watchHelper.watchNotationSelection(
-  "ANNOTATION_SELECTED",
-  "EV_ANNOTATION_SELECTED",
+watchHelper.watchMouseEvent(
+  ["ANNOTATION_SELECTED"],
+  "EV_SVG_MOUSEDOWN",
   editSelectedAnnotation,
 );
+
+
+// user selected text notation
+// watchHelper.watchNotationSelection(
+//   "ANNOTATION_SELECTED",
+//   "EV_ANNOTATION_SELECTED",
+//   editSelectedAnnotation,
+// );
 
 function startTextEditing(e: MouseEvent) {
   annotationCell.value = screenHelper.getClickedCell({
@@ -98,16 +116,12 @@ function startTextEditing(e: MouseEvent) {
   setTimeout('document.getElementById("annotationEl").focus()', 100);
 }
 
-function editSelectedAnnotation(annotation: PointNotationAttributes) {
+function editSelectedAnnotation() {
   editModeStore.setEditMode("ANNOTATION_WRITING");
-
-  selectedNotation = annotation;
-
-  annotationCell.value = { ...annotation };
 
   setInitialTextValue();
 
-  hideTextNotation(annotation.uuid);
+  hideTextNotation(selectedNotation.value!.uuid);
 
   const textEl = document.getElementById(
     "annotationEl",
@@ -121,17 +135,17 @@ function editSelectedAnnotation(annotation: PointNotationAttributes) {
 function setInitialTextValue() {
   annotaionValue.value = "";
   if (selectedNotation?.value) {
-    annotaionValue.value = selectedNotation?.value!;
+    annotaionValue.value = selectedNotation.value.value;
   }
 }
 
-function submitText() {
+function save() {
   editModeStore.setNextEditMode();
 
-  if (selectedNotation) {
-    selectedNotation.value = annotaionValue.value;
-    notationMutateHelper.updateNotation(selectedNotation);
-    restoreTextNotation(selectedNotation?.uuid);
+  if (selectedNotation.value) {
+    selectedNotation.value.value = annotaionValue.value;
+    notationMutateHelper.updateNotation(selectedNotation.value);
+    restoreTextNotation(selectedNotation.value.uuid);
   } else {
     notationMutateHelper.addAnnotationNotation(
       annotaionValue.value,

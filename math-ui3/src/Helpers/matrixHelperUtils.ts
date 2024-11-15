@@ -1,8 +1,4 @@
-
-import {
-  getDefaultFontSize,
-  defaultdCellStroke,
-} from "common/globals";
+import { getDefaultFontSize, defaultdCellStroke } from "common/globals";
 
 import { useCellStore } from "../store/pinia/cellStore";
 import {
@@ -12,14 +8,13 @@ import {
   RectNotationAttributes,
 } from "common/baseTypes";
 
-import  useMatrixCellHelper from "./matrixCellHelper";
+import useMatrixCellHelper from "./matrixCellHelper";
 
 const cellStore = useCellStore();
 const matrixCellHelper = useMatrixCellHelper();
 
 export default function useMatrixHelperUtils() {
-
-  function getCol(n: NotationAttributes): number  {
+  function getCol(n: NotationAttributes): number {
     switch (n.notationType) {
       case "ANNOTATION":
       case "SIGN":
@@ -41,7 +36,7 @@ export default function useMatrixHelperUtils() {
     }
   }
 
-  function getRow(n: NotationAttributes) : number {
+  function getRow(n: NotationAttributes): number {
     switch (n.notationType) {
       case "ANNOTATION":
       case "SIGN":
@@ -63,25 +58,44 @@ export default function useMatrixHelperUtils() {
   }
 
   function getNotationXposByCol(col: number): number {
-    return col * (cellStore.getCellHorizontalWidth());
+    return col * cellStore.getCellHorizontalWidth();
   }
 
   function getNotationYposByRow(row: number): number {
-    return row * (cellStore.getCellVerticalHeight());
+    return row * cellStore.getCellVerticalHeight();
   }
 
   function removeNotations(exit: any) {
     return exit.remove();
   }
 
-  function colorizeNotationCell(n: NotationAttributes) {
+  function colorizeNotationCells(n: NotationAttributes) {
     if (!n.color?.value) return;
-    const n1 = n as PointNotationAttributes;
-    if (!n1.row || !n1.col) return;
-    const cell = { col: n1.col, row: n1.row };
-    matrixCellHelper.colorizeCell(cell, n.color.value);
-  }
 
+    switch (n.notationType) {
+      case "ANNOTATION":
+      case "SIGN":
+      case "SQRTSYMBOL":
+      case "SYMBOL": {
+        const n1 = n as PointNotationAttributes;
+        if (!n1.row || !n1.col) return;
+        const cell = { col: n1.col, row: n1.row };
+        matrixCellHelper.colorizeCell(cell, n.color.value);
+        break;
+      }
+
+      case "EXPONENT": {
+        const n1 = n as unknown as MultiCellAttributes;
+        if (!n1.fromCol || !n1.fromCol || !n1.toCol) return;
+
+        for (let i = n1.fromCol; i <= n1.toCol; i++) {
+          const cell = { col: i, row: n1.row };
+          matrixCellHelper.colorizeCell(cell, n.color.value);
+        }
+        break;
+      }
+    }
+  }
 
   return {
     getRow,
@@ -91,6 +105,6 @@ export default function useMatrixHelperUtils() {
     getNotationXposByCol,
     getNotationYposByRow,
     removeNotations,
-    colorizeNotationCell,
+    colorizeNotationCells,
   };
 }
