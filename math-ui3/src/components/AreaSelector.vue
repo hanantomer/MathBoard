@@ -31,6 +31,12 @@ import { RectCoordinates, DotCoordinates } from "common/baseTypes";
 import useEventBusHelper from "../helpers/eventBusHelper";
 import useWatchHelper from "../helpers/watchHelper";
 
+type HorizontalDirection = "RIGHT" | "LEFT" | "NONE";
+type VerticalDirection = "UP" | "BOTTOM" | "NONE";
+
+let horizontalDirection: HorizontalDirection = "NONE";
+let verticalDirection: VerticalDirection = "NONE";
+
 const watchHelper = useWatchHelper();
 const eventBus = useEventBusHelper();
 const editModeStore = useEditModeStore();
@@ -52,9 +58,11 @@ let lineTypes: Array<NotationType> = [
   "SLOPELINE",
 ];
 
-let selectionPosition = ref<RectCoordinates>({
-  topLeft: { x: 0, y: 0 },
-  bottomRight: { x: 0, y: 0 },
+let selectionPosition = ref({
+  x1: 0, //left
+  x2: 0, // right
+  y1: 0, // y of left
+  y2: 0, // y of right
 });
 
 let dragPosition = ref<DotCoordinates>({
@@ -68,9 +76,8 @@ const show = computed(() => {
   return (
     (editModeStore.isTextSelectionMode() ||
       editModeStore.isAreaSelectionOrMovingMode()) &&
-    selectionPosition.value.topLeft.x !=
-      selectionPosition.value.bottomRight.x &&
-    selectionPosition.value.topLeft.y != selectionPosition.value.bottomRight.y
+    selectionPosition.value.x1 != selectionPosition.value.x2 &&
+    selectionPosition.value.y1 != selectionPosition.value.y2
   );
 });
 
@@ -79,42 +86,24 @@ const backgroundColor = computed(() => {
 });
 
 const selectionRectLeft = computed(() => {
-  return Math.min(
-    selectionPosition.value.topLeft.x,
-    selectionPosition.value.bottomRight.x,
-  );
+  return Math.min(selectionPosition.value.x1, selectionPosition.value.x2);
 });
 
 const selectionRectTop = computed(() => {
-  return Math.min(
-    selectionPosition.value.topLeft.y,
-    selectionPosition.value.bottomRight.y,
-  );
+  return Math.min(selectionPosition.value.y1, selectionPosition.value.y2);
 });
 
 const selectionRectWidth = computed(() => {
   return (
-    Math.max(
-      selectionPosition.value.topLeft.x,
-      selectionPosition.value.bottomRight.x,
-    ) -
-    Math.min(
-      selectionPosition.value.topLeft.x,
-      selectionPosition.value.bottomRight.x,
-    )
+    Math.max(selectionPosition.value.x1, selectionPosition.value.x2) -
+    Math.min(selectionPosition.value.x1, selectionPosition.value.x2)
   );
 });
 
 const selectionRectHeight = computed(() => {
   return (
-    Math.max(
-      selectionPosition.value.topLeft.y,
-      selectionPosition.value.bottomRight.y,
-    ) -
-    Math.min(
-      selectionPosition.value.topLeft.y,
-      selectionPosition.value.bottomRight.y,
-    )
+    Math.max(selectionPosition.value.y1, selectionPosition.value.y2) -
+    Math.min(selectionPosition.value.y1, selectionPosition.value.y2)
   );
 });
 
@@ -196,6 +185,9 @@ function cancelTextSelectionWhenUserClickedOutside() {
 function startAreaSelection(e: MouseEvent) {
   if (e.buttons !== 1) return;
 
+  horizontalDirection = "NONE";
+  verticalDirection = "NONE";
+
   notationStore.resetSelectedNotations();
 
   resetSelectionPosition();
@@ -210,11 +202,9 @@ function startAreaSelection(e: MouseEvent) {
 }
 
 function setStartPosition(e: MouseEvent) {
-  selectionPosition.value.bottomRight.x = selectionPosition.value.topLeft.x =
-    e.pageX;
+  selectionPosition.value.x2 = selectionPosition.value.x1 = e.pageX;
 
-  selectionPosition.value.bottomRight.y = selectionPosition.value.topLeft.y =
-    e.pageY;
+  selectionPosition.value.y2 = selectionPosition.value.y1 = e.pageY;
 }
 
 function startMoving(e: MouseEvent) {
@@ -298,43 +288,82 @@ async function updateSelectionAreaByKey(e: KeyboardEvent) {
   }
 }
 
-// extend or shrink selection area following inner mouse move
+// extend or shrink selection area
 function updateSelectionArea(e: MouseEvent) {
   if (e.buttons !== 1) return;
 
-  if (e.pageX > selectionPosition.value.topLeft.x) {
-    selectionPosition.value.bottomRight.x = e.pageX;
-  } else {
-    selectionPosition.value.topLeft.x = e.pageX;
+  setSelectionDirection(e)
+
+  if (horizontalDirection === "NONE" || verticalDirection === "NONE") {
+    return;
   }
 
-  if (e.pageY > selectionPosition.value.topLeft.y) {
-    selectionPosition.value.bottomRight.y = e.pageY;
-  } else {
-    selectionPosition.value.topLeft.y = e.pageY;
+  if (horizontalDirection === "LEFT" ) {
+    selectionPosition.value.x1 = e.pageX;
+  }
+
+  if (horizontalDirection === "RIGHT" ) {
+    selectionPosition.value.x2 = e.pageX;
+  }
+
+  if (verticalDirection === "UP" ) {
+    selectionPosition.value.y1 = e.pageY;
+  }
+
+  if (verticalDirection === "BOTTOM") {
+    selectionPosition.value.y2 = e.pageY;
+  }
+}
+
+function setSelectionDirection(e: MouseEvent) {
+
+    if (horizontalDirection === "NONE") {
+    if (e.pageX > selectionPosition.value.x1) {
+      horizontalDirection = "RIGHT";
+      return;
+    }
+
+    if (e.pageX < selectionPosition.value.x1) {
+      horizontalDirection = "LEFT";
+      return;
+    }
+  }
+
+  if (verticalDirection === "NONE") {
+    if (e.pageY > selectionPosition.value.y1) {
+      verticalDirection = "BOTTOM";
+      return;
+    }
+
+    if (e.pageY < selectionPosition.value.y1) {
+      verticalDirection = "UP";
+      return;
+    }
   }
 }
 
 function endSelect() {
   // select cell if seelection is too small
   if (
-    Math.abs(
-      selectionPosition.value.topLeft.x - selectionPosition.value.bottomRight.x,
-    ) < 5 ||
-    Math.abs(
-      selectionPosition.value.topLeft.y - selectionPosition.value.bottomRight.y,
-    ) < 5
+    Math.abs(selectionPosition.value.x1 - selectionPosition.value.x2) < 5 ||
+    Math.abs(selectionPosition.value.y1 - selectionPosition.value.y2) < 5
   ) {
     selectionHelper.setSelectedCell({
-      x: selectionPosition.value.topLeft.x,
-      y: selectionPosition.value.topLeft.y,
+      x: selectionPosition.value.x1,
+      y: selectionPosition.value.y1,
     });
     editModeStore.setDefaultEditMode();
     return;
   }
 
   if (editModeStore.getEditMode() === "AREA_SELECTING") {
-    selectionHelper.selectNotationsOfArea(selectionPosition.value);
+    selectionHelper.selectNotationsOfArea({
+      topLeft: { x: selectionPosition.value.x1, y: selectionPosition.value.y1 },
+      bottomRight: {
+        x: selectionPosition.value.x2,
+        y: selectionPosition.value.y2,
+      },
+    });
   }
 
   if (editModeStore.getEditMode() === "TEXT_AREA_SELECTING") {
@@ -405,11 +434,11 @@ function moveSelectionBox(deltaCol: number, deltaRow: number) {
   const xMove = deltaCol * cellStore.getCellHorizontalWidth();
   const yMove = deltaRow * cellStore.getCellVerticalHeight();
 
-  selectionPosition.value.topLeft.x += xMove;
-  selectionPosition.value.topLeft.y += yMove;
+  selectionPosition.value.x1 += xMove;
+  selectionPosition.value.y1 += yMove;
 
-  selectionPosition.value.bottomRight.x += xMove;
-  selectionPosition.value.bottomRight.y += yMove;
+  selectionPosition.value.x2 += xMove;
+  selectionPosition.value.y2 += yMove;
 
   dragPosition.value.x += xMove;
   dragPosition.value.y += yMove;
@@ -428,10 +457,10 @@ function moveAtPixelScale(e: MouseEvent) {
       e.ctrlKey,
     );
 
-    selectionPosition.value.topLeft.x += deltaX;
-    selectionPosition.value.topLeft.y += deltaY;
-    selectionPosition.value.bottomRight.x += deltaX;
-    selectionPosition.value.bottomRight.y += deltaY;
+    selectionPosition.value.x1 += deltaX;
+    selectionPosition.value.y1 += deltaY;
+    selectionPosition.value.x2 += deltaX;
+    selectionPosition.value.y2 += deltaY;
 
     dragPosition.value.x += deltaX;
     dragPosition.value.y += deltaY;
@@ -442,13 +471,13 @@ async function moveSelectionByKey( ///TODO by cell or pixel
   moveHorizontal: number,
   moveVertical: number,
 ) {
-  selectionPosition.value.topLeft.x +=
+  selectionPosition.value.x1 +=
     moveHorizontal * cellStore.getCellHorizontalWidth();
-  selectionPosition.value.topLeft.y +=
+  selectionPosition.value.y1 +=
     moveVertical * cellStore.getCellVerticalHeight();
-  selectionPosition.value.bottomRight.x +=
+  selectionPosition.value.x2 +=
     moveHorizontal * cellStore.getCellHorizontalWidth();
-  selectionPosition.value.bottomRight.y +=
+  selectionPosition.value.y2 +=
     moveVertical * cellStore.getCellVerticalHeight();
 }
 
@@ -475,10 +504,10 @@ async function endMoveSelection(e: MouseEvent) {
 function resetSelectionPosition() {
   dragPosition.value.x =
     dragPosition.value.y =
-    selectionPosition.value.topLeft.x =
-    selectionPosition.value.bottomRight.x =
-    selectionPosition.value.topLeft.y =
-    selectionPosition.value.bottomRight.y =
+    selectionPosition.value.x1 =
+    selectionPosition.value.x2 =
+    selectionPosition.value.y1 =
+    selectionPosition.value.y2 =
       0;
 }
 

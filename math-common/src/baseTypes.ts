@@ -60,32 +60,13 @@ export type RectCoordinates = {
   bottomRight: DotCoordinates;
 };
 
-// export type HorizontaLinePosition = {
-//   p1x: number;
-//   p2x: number;
-//   py: number;
-// };
-
-// export type VerticalLinePosition = {
-//   px: number;
-//   p1y: number;
-//   p2y: number;
-// };
-
-// export type SlopeLinePosition = {
-//   p1x: number;
-//   p2x: number;
-//   p1y: number;
-//   p2y: number;
-// };
-
 /// TODO mieght not be global
-export type CurvePosition = {
-  left: DotCoordinates;
-  right: DotCoordinates;
-  controlPoint1: DotCoordinates;
-  controlPoint2: DotCoordinates;
-};
+// export type CurvePosition = {
+//   left: DotCoordinates;
+//   right: DotCoordinates;
+//   controlPoint1: DotCoordinates;
+//   controlPoint2: DotCoordinates;
+// };
 
 export type CellAttributes = {
   col: number;
