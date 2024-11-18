@@ -166,31 +166,31 @@ export const useNotationStore = defineStore("notation", () => {
         );
         break;
 
-      case "HORIZONTALLINE":
-        notationCellOccupationHelper.updateHorizontalLineOccupationMatrix(
-          cellLineNotationOccupationMatrix,
-          notation as unknown as HorizontalLineAttributes,
-          notation.uuid,
-          false,
-        );
-        break;
+      // case "HORIZONTALLINE":
+      //   notationCellOccupationHelper.updateHorizontalLineOccupationMatrix(
+      //     cellLineNotationOccupationMatrix,
+      //     notation as unknown as HorizontalLineAttributes,
+      //     notation.uuid,
+      //     false,
+      //   );
+      //   break;
 
-      case "VERTICALLINE":
-        notationCellOccupationHelper.updateVerticalLineOccupationMatrix(
-          cellLineNotationOccupationMatrix,
-          notation as VerticalLineNotationAttributes,
-          false,
-        );
-        break;
+      // case "VERTICALLINE":
+      //   notationCellOccupationHelper.updateVerticalLineOccupationMatrix(
+      //     cellLineNotationOccupationMatrix,
+      //     notation as VerticalLineNotationAttributes,
+      //     false,
+      //   );
+      //   break;
 
-      case "SLOPELINE":
-        notationCellOccupationHelper.updateSlopeLineOccupationMatrix(
-          cellLineNotationOccupationMatrix,
-          notation as SlopeLineNotationAttributes,
-          notation.uuid,
-          false,
-        );
-        break;
+      // case "SLOPELINE":
+      //   notationCellOccupationHelper.updateSlopeLineOccupationMatrix(
+      //     cellLineNotationOccupationMatrix,
+      //     notation as SlopeLineNotationAttributes,
+      //     notation.uuid,
+      //     false,
+      //   );
+      //   break;
 
       case "TEXT":
       case "IMAGE":
@@ -201,13 +201,13 @@ export const useNotationStore = defineStore("notation", () => {
         );
         break;
 
-      case "CONVEXCURVE":
-      case "CONCAVECURVE":
-        notationCellOccupationHelper.updateCurveOccupationMatrix(
-          cellLineNotationOccupationMatrix,
-          notation as CurveNotationAttributes,
-          false,
-        );
+      // case "CONVEXCURVE":
+      // case "CONCAVECURVE":
+      //   notationCellOccupationHelper.updateCurveOccupationMatrix(
+      //     cellLineNotationOccupationMatrix,
+      //     notation as CurveNotationAttributes,
+      //     false,
+      //   );
     }
   }
 
@@ -237,34 +237,34 @@ export const useNotationStore = defineStore("notation", () => {
           notations.value.get(uuid)! as PointNotationAttributes,
           true,
         );
-      case "HORIZONTALLINE":
-        notationCellOccupationHelper.updateHorizontalLineOccupationMatrix(
-          cellLineNotationOccupationMatrix,
-          notations.value.get(uuid)! as HorizontalLineNotationAttributes,
-          uuid,
-          true,
-        );
-      case "VERTICALLINE":
-        notationCellOccupationHelper.updateVerticalLineOccupationMatrix(
-          cellLineNotationOccupationMatrix,
-          notations.value.get(uuid)! as VerticalLineNotationAttributes,
-          true,
-        );
-      case "SLOPELINE":
-        notationCellOccupationHelper.updateSlopeLineOccupationMatrix(
-          cellLineNotationOccupationMatrix,
-          notations.value.get(uuid)! as SlopeLineNotationAttributes,
-          uuid,
-          true,
-        );
+      // case "HORIZONTALLINE":
+      //   notationCellOccupationHelper.updateHorizontalLineOccupationMatrix(
+      //     cellLineNotationOccupationMatrix,
+      //     notations.value.get(uuid)! as HorizontalLineNotationAttributes,
+      //     uuid,
+      //     true,
+      //   );
+      // case "VERTICALLINE":
+      //   notationCellOccupationHelper.updateVerticalLineOccupationMatrix(
+      //     cellLineNotationOccupationMatrix,
+      //     notations.value.get(uuid)! as VerticalLineNotationAttributes,
+      //     true,
+      //   );
+      // case "SLOPELINE":
+      //   notationCellOccupationHelper.updateSlopeLineOccupationMatrix(
+      //     cellLineNotationOccupationMatrix,
+      //     notations.value.get(uuid)! as SlopeLineNotationAttributes,
+      //     uuid,
+      //     true,
+      //   );
 
-      case "CONVEXCURVE":
-      case "CONCAVECURVE":
-        notationCellOccupationHelper.updateCurveOccupationMatrix(
-          cellLineNotationOccupationMatrix,
-          notations.value.get(uuid)! as CurveNotationAttributes,
-          true,
-        );
+      // case "CONVEXCURVE":
+      // case "CONCAVECURVE":
+      //   notationCellOccupationHelper.updateCurveOccupationMatrix(
+      //     cellLineNotationOccupationMatrix,
+      //     notations.value.get(uuid)! as CurveNotationAttributes,
+      //     true,
+      //   );
 
       case "IMAGE":
       case "TEXT":
@@ -345,17 +345,17 @@ export const useNotationStore = defineStore("notation", () => {
 
     // line
 
-    const lineNotationsUUIDs = cellLineNotationOccupationMatrix[cell.col][
-      cell.row
-    ] as String[];
+    // const lineNotationsUUIDs = cellLineNotationOccupationMatrix[cell.col][
+    //   cell.row
+    // ] as String[];
 
-    if (lineNotationsUUIDs) {
-      lineNotationsUUIDs
-        .filter((ln) => ln)
-        .forEach((ln) => {
-          notationsAtCell.push(notations.value.get(ln) as NotationAttributes);
-        });
-    }
+    // if (lineNotationsUUIDs) {
+    //   lineNotationsUUIDs
+    //     .filter((ln) => ln)
+    //     .forEach((ln) => {
+    //       notationsAtCell.push(notations.value.get(ln) as NotationAttributes);
+    //     });
+    // }
 
     return notationsAtCell;
   }

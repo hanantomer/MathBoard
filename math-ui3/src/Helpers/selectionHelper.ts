@@ -1,5 +1,3 @@
-import { useNotationStore } from "../store/pinia/notationStore";
-import { useCellStore } from "../store/pinia/cellStore";
 import {
   RectCoordinates,
   DotCoordinates,
@@ -11,6 +9,8 @@ import {
 import { NotationAttributes } from "common/baseTypes";
 import { useLessonStore } from "../store/pinia/lessonStore";
 import { useEditModeStore } from "../store/pinia/editModeStore";
+import { useNotationStore } from "../store/pinia/notationStore";
+import { useCellStore } from "../store/pinia/cellStore";
 import usescreenHelper from "./screenHelper";
 import useNotationMutateHelper from "./notationMutateHelper";
 import useUserOutgoingOperationsHelper from "./userOutgoingOperationsHelper";
@@ -23,6 +23,7 @@ const screenHelper = usescreenHelper();
 const userOutgoingOperationsHelper = useUserOutgoingOperationsHelper();
 const lessonStore = useLessonStore();
 const editModeStore = useEditModeStore();
+const notationStore = useNotationStore();
 
 export default function selectionHelper() {
   function selectNotationsOfArea(RectCoordinates: RectCoordinates) {
@@ -53,17 +54,7 @@ export default function selectionHelper() {
           return true;
         }
         break;
-      // case "EXPONENT":
-      //   //const exponent = notation as unknown as MultiCellAttributes;
-      //   // if (
-      //   //   screenHelper.getClickedPosDistanceFromExponent(
-      //   //     dotCoordinates,
-      //   //     exponent,
-      //   //   ) < maxDistanceToSelect
-      //   // ) {
-      //   selectExponentNotation(notation);
-      //   return true;
-      // //}
+
       case "HORIZONTALLINE":
         const horizontalLineNotation =
           notation as HorizontalLineNotationAttributes;
@@ -73,7 +64,7 @@ export default function selectionHelper() {
             horizontalLineNotation,
           ) < maxDistanceToSelect
         ) {
-          selectLineNotation(notation);
+          selectLineNotation(notation.uuid);
           return true;
         }
       case "VERTICALLINE":
@@ -84,7 +75,7 @@ export default function selectionHelper() {
             verticalLineNotation,
           ) < maxDistanceToSelect
         ) {
-          selectLineNotation(notation);
+          selectLineNotation(notation.uuid);
           return true;
         }
         return false;
@@ -96,14 +87,14 @@ export default function selectionHelper() {
             slopeLineNotation,
           );
         if (distanceFromLine < maxDistanceToSelect) {
-          selectLineNotation(notation);
+          selectLineNotation(notation.uuid);
           return true;
         }
         return false;
       }
       case "CONCAVECURVE":
       case "CONVEXCURVE": {
-        selectCurveNotation(notation);
+        selectCurveNotation(notation.uuid);
         return true;
       }
       case "EXPONENT":
@@ -155,7 +146,8 @@ export default function selectionHelper() {
   //   //eventBus.emit("EV_EXPONENT_SELECTED", notation);
   // }
 
-  function selectCurveNotation(notation: NotationAttributes) {
+  function selectCurveNotation(uuid: String) {
+    const notation = notationStore.getNotation(uuid)!;
     switch (notation.notationType) {
       case "CONCAVECURVE":
         editModeStore.setEditMode("CONCAVE_CURVE_SELECTED");
@@ -167,7 +159,8 @@ export default function selectionHelper() {
     }
   }
 
-  function selectLineNotation(notation: NotationAttributes) {
+  function selectLineNotation(uuid: String) {
+    const notation = notationStore.getNotation(uuid)!;
     switch (notation.notationType) {
       case "HORIZONTALLINE":
         editModeStore.setEditMode("HORIZONTAL_LINE_SELECTED");
@@ -207,6 +200,8 @@ export default function selectionHelper() {
   return {
     selectNotationAtPosition,
     selectNotationsOfArea,
+    selectLineNotation,
+    selectCurveNotation,
     setSelectedCell,
   };
 }

@@ -3,8 +3,10 @@ import { NotationAttributes, CurveNotationAttributes } from "common/baseTypes";
 import { lineColor, selectionColor } from "common/globals";
 
 import useUtils from "./matrixHelperUtils";
+import useSelectionHelper from "./selectionHelper";
 
 const utils = useUtils();
+const selectionHelper = useSelectionHelper();
 
 export default function useCurveMatrixHelper() {
   function mergeCurveNotations(svgId: string, notations: NotationAttributes[]) {
@@ -46,6 +48,9 @@ export default function useCurveMatrixHelper() {
       })
       .attr("fill", () => {
         return "transparent"; /// TODO: externalize
+      })
+      .on("click", (e: MouseEvent) => {
+        selectionHelper.selectCurveNotation((e.target as any).id);
       });
   }
 

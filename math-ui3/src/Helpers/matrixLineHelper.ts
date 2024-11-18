@@ -4,15 +4,14 @@ import {
   HorizontalLineNotationAttributes,
   SlopeLineNotationAttributes,
   VerticalLineNotationAttributes,
-  HorizontalLineAttributes,
 } from "common/baseTypes";
 
 import { lineColor, selectionColor } from "common/globals";
-
 import useUtils from "./matrixHelperUtils";
-import { add } from "cypress/types/lodash";
+import useSelectionHelper from "./selectionHelper";
 
 const utils = useUtils();
+const selectionHelper = useSelectionHelper();
 
 type LineNotationAttributes = HorizontalLineNotationAttributes &
   VerticalLineNotationAttributes &
@@ -61,6 +60,9 @@ export default function useLineMatrixHelper() {
       })
       .attr("stroke", (n: LineNotationAttributes) => {
         return n.color?.value ? n.color.value : lineColor;
+      })
+      .on("click", (e: MouseEvent) => {
+        selectionHelper.selectLineNotation((e.target as any).id);
       });
   }
 

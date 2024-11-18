@@ -179,14 +179,14 @@ export default function screenHelper() {
             distance: getClickedPosDistanceFromRectCenter(DotCoordinates, n1),
           });
           break;
-        case "SLOPELINE": {
-          let n1 = n as SlopeLineNotationAttributes;
-          notationDistanceList.push({
-            notation: n1,
-            distance: getClickedPosDistanceFromSlopeLine(DotCoordinates, n1),
-          });
-          break;
-        }
+        // case "SLOPELINE": {
+        //   let n1 = n as SlopeLineNotationAttributes;
+        //   notationDistanceList.push({
+        //     notation: n1,
+        //     distance: getClickedPosDistanceFromSlopeLine(DotCoordinates, n1),
+        //   });
+        //   break;
+        // }
         case "SQRT": {
           let n1 = n as unknown as MultiCellAttributes;
           notationDistanceList.push({
@@ -198,45 +198,45 @@ export default function screenHelper() {
           });
           break;
         }
-        case "HORIZONTALLINE": {
-          let n1 = n as HorizontalLineNotationAttributes;
-          notationDistanceList.push({
-            notation: n1,
-            distance: getClickedPosDistanceFromHorizontalLine(
-              DotCoordinates,
-              n1,
-            ),
-          });
-          break;
-        }
-        case "VERTICALLINE": {
-          let n1 = n as VerticalLineNotationAttributes;
-          notationDistanceList.push({
-            notation: n1,
-            distance: getClickedPosDistanceFromVerticalLine(DotCoordinates, n1),
-          });
-          break;
-        }
+      //   case "HORIZONTALLINE": {
+      //     let n1 = n as HorizontalLineNotationAttributes;
+      //     notationDistanceList.push({
+      //       notation: n1,
+      //       distance: getClickedPosDistanceFromHorizontalLine(
+      //         DotCoordinates,
+      //         n1,
+      //       ),
+      //     });
+      //     break;
+      //   }
+      //   case "VERTICALLINE": {
+      //     let n1 = n as VerticalLineNotationAttributes;
+      //     notationDistanceList.push({
+      //       notation: n1,
+      //       distance: getClickedPosDistanceFromVerticalLine(DotCoordinates, n1),
+      //     });
+      //     break;
+      //   }
 
-        case "CONCAVECURVE":
-        case "CONVEXCURVE": {
-          let n1 = n as CurveNotationAttributes;
-          let curveEnclosingTriangleCenterX = (n1.cpx + n1.p1x + n1.p2x) / 3;
-          let curveEnclosingTriangleCenterY = (n1.cpy + n1.p1y + n1.p2y) / 3;
+      //   case "CONCAVECURVE":
+      //   case "CONVEXCURVE": {
+      //     let n1 = n as CurveNotationAttributes;
+      //     let curveEnclosingTriangleCenterX = (n1.cpx + n1.p1x + n1.p2x) / 3;
+      //     let curveEnclosingTriangleCenterY = (n1.cpy + n1.p1y + n1.p2y) / 3;
 
-          notationDistanceList.push({
-            notation: n1,
-            distance: getClickedPosDistanceFromEnclosingTriangleCenter(
-              DotCoordinates,
-              {
-                x: curveEnclosingTriangleCenterX,
-                y: curveEnclosingTriangleCenterY,
-              },
-            ),
-          });
-          break;
-        }
-      }
+      //     notationDistanceList.push({
+      //       notation: n1,
+      //       distance: getClickedPosDistanceFromEnclosingTriangleCenter(
+      //         DotCoordinates,
+      //         {
+      //           x: curveEnclosingTriangleCenterX,
+      //           y: curveEnclosingTriangleCenterY,
+      //         },
+      //       ),
+      //     });
+      //     break;
+      //   }
+       }
     }
 
     if (notationDistanceList.length === 0) return null;
