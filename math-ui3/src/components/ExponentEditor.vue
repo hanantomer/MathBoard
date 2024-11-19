@@ -75,13 +75,6 @@ watchHelper.watchMouseEvent(
   editModeStore.setNextEditMode,
 );
 
-// user selected exponent notation
-// watchHelper.watchNotationSelection(
-//   "SYMBOL",
-//   "EV_EXPONENT_SELECTED",
-//   selectExponent,
-// );
-
 watchHelper.watchMouseEvent(
   ["EXPONENT_SELECTED"],
   "EV_SVG_MOUSEDOWN",

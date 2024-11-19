@@ -1,12 +1,8 @@
 import * as d3 from "d3";
 import { NotationAttributes, CurveNotationAttributes } from "common/baseTypes";
 import { lineColor, selectionColor } from "common/globals";
-
-import useUtils from "./matrixHelperUtils";
-import useSelectionHelper from "./selectionHelper";
-
-const utils = useUtils();
-const selectionHelper = useSelectionHelper();
+import useMatrixHelperUtils from "./matrixHelperUtils";
+const matrixHelperUtils = useMatrixHelperUtils();
 
 export default function useCurveMatrixHelper() {
   function mergeCurveNotations(svgId: string, notations: NotationAttributes[]) {
@@ -23,7 +19,7 @@ export default function useCurveMatrixHelper() {
           return updateNotations(update);
         },
         (exit) => {
-          return utils.removeNotations(exit);
+          return matrixHelperUtils.removeNotations(exit);
         },
       );
   }
@@ -37,8 +33,8 @@ export default function useCurveMatrixHelper() {
       .attr("d", (n: CurveNotationAttributes) => {
         return d(n);
       })
-      .attr("stroke", () => {
-        return lineColor;
+      .attr("stroke", (n: CurveNotationAttributes) => {
+        return matrixHelperUtils.getStroke(n);
       })
       .attr("stroke-width", () => {
         return "2"; /// TODO: externalize
@@ -48,9 +44,6 @@ export default function useCurveMatrixHelper() {
       })
       .attr("fill", () => {
         return "transparent"; /// TODO: externalize
-      })
-      .on("click", (e: MouseEvent) => {
-        selectionHelper.selectCurveNotation((e.target as any).id);
       });
   }
 
@@ -63,7 +56,7 @@ export default function useCurveMatrixHelper() {
         return d(n);
       })
       .attr("stroke", (n: CurveNotationAttributes) => {
-        return n.selected ? selectionColor : lineColor;
+        return matrixHelperUtils.getStroke(n);
       });
   }
 

@@ -166,31 +166,31 @@ export const useNotationStore = defineStore("notation", () => {
         );
         break;
 
-      // case "HORIZONTALLINE":
-      //   notationCellOccupationHelper.updateHorizontalLineOccupationMatrix(
-      //     cellLineNotationOccupationMatrix,
-      //     notation as unknown as HorizontalLineAttributes,
-      //     notation.uuid,
-      //     false,
-      //   );
-      //   break;
+      case "HORIZONTALLINE":
+        notationCellOccupationHelper.updateHorizontalLineOccupationMatrix(
+          cellLineNotationOccupationMatrix,
+          notation as unknown as HorizontalLineAttributes,
+          notation.uuid,
+          false,
+        );
+        break;
 
-      // case "VERTICALLINE":
-      //   notationCellOccupationHelper.updateVerticalLineOccupationMatrix(
-      //     cellLineNotationOccupationMatrix,
-      //     notation as VerticalLineNotationAttributes,
-      //     false,
-      //   );
-      //   break;
+      case "VERTICALLINE":
+        notationCellOccupationHelper.updateVerticalLineOccupationMatrix(
+          cellLineNotationOccupationMatrix,
+          notation as VerticalLineNotationAttributes,
+          false,
+        );
+        break;
 
-      // case "SLOPELINE":
-      //   notationCellOccupationHelper.updateSlopeLineOccupationMatrix(
-      //     cellLineNotationOccupationMatrix,
-      //     notation as SlopeLineNotationAttributes,
-      //     notation.uuid,
-      //     false,
-      //   );
-      //   break;
+      case "SLOPELINE":
+        notationCellOccupationHelper.updateSlopeLineOccupationMatrix(
+          cellLineNotationOccupationMatrix,
+          notation as SlopeLineNotationAttributes,
+          notation.uuid,
+          false,
+        );
+        break;
 
       case "TEXT":
       case "IMAGE":

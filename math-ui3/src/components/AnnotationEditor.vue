@@ -98,13 +98,6 @@ watchHelper.watchMouseEvent(
 );
 
 
-// user selected text notation
-// watchHelper.watchNotationSelection(
-//   "ANNOTATION_SELECTED",
-//   "EV_ANNOTATION_SELECTED",
-//   editSelectedAnnotation,
-// );
-
 function startTextEditing(e: MouseEvent) {
   annotationCell.value = screenHelper.getClickedCell({
     x: e.pageX,

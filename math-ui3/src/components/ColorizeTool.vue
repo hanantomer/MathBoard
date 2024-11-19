@@ -50,12 +50,8 @@ import useNotationMutateHelper from "../helpers/notationMutateHelper";
 import useWatchHelper from "../helpers/watchHelper";
 import useScreenHelper from "../helpers/screenHelper";
 import { useEditModeStore } from "../store/pinia/editModeStore";
-import {
-  VerticalLineNotationAttributes,
-  SlopeLineNotationAttributes,
-  HorizontalLineNotationAttributes,
-  NotationAttributes,
-} from "common/baseTypes";
+import { useNotationStore } from "../store/pinia/notationStore";
+import { NotationAttributes } from "common/baseTypes";
 
 import { transparentColor } from "common/globals";
 
@@ -65,6 +61,7 @@ const notationMutateHelper = useNotationMutateHelper();
 const watchHelper = useWatchHelper();
 const screenHelper = useScreenHelper();
 const editModeStore = useEditModeStore();
+const notationStore = useNotationStore();
 
 const backgroundColor = computed(() => {
   return selectedColor.value === "none"
@@ -76,7 +73,7 @@ const backgroundColor = computed(() => {
 
 let colorSelectionEl = ref();
 
-let selectedColor = ref<Color>("none");
+let selectedColor = ref<Color>("none"); /// TODO move to store
 
 interface ColorStrip {
   title: string;
@@ -87,7 +84,7 @@ const colors: ColorStrip[] = [
   { title: "blue", value: "lightblue" },
   { title: "green", value: "lightgreen" },
   { title: "pink", value: "pink" },
-  { title: "transparent", value: "transparent" },
+  { title: "none", value: "transparent" },
 ];
 
 watchHelper.watchMouseEvent(
@@ -99,7 +96,7 @@ watchHelper.watchMouseEvent(
 watchHelper.watchMouseEvent(
   ["COLORIZING"],
   "EV_SVG_MOUSEMOVE",
-  colorizeNotationAtMousePosition,
+  colorizeNotationByMouseDrag,
 );
 
 // reset coorizing tool when colorizing by click or by drag ends
@@ -115,67 +112,33 @@ function showColorSelectionMenu(e: MouseEvent) {
   colorSelectionEl.value.menu = true;
 }
 
-function colorizeNotationAtMousePosition(e: MouseEvent) {
+function colorizeNotationByMouseDrag(e: MouseEvent) {
   if (e.buttons !== 1) return;
+  colorizeNotationAtMousePosition(e);
+}
+
+function colorizeNotationAtMousePosition(e: MouseEvent) {
+  //  if (e.buttons !== 1) return;
+
+  const uuid = (e.target as any).id;
+  if (uuid) {
+    // line or curve clicked - see matrixLineHelper
+    colorizeNotation(notationStore.getNotation(uuid)!);
+    return;
+  }
 
   const dotCoordinates = { x: e.pageX, y: e.pageY };
-
   const clickedNotation = screenHelper.getNotationAtCoordinates(dotCoordinates);
-
-  switch (clickedNotation?.notationType) {
-    case "SQRT":
-    case "HORIZONTALLINE": {
-      if (
-        screenHelper.getClickedPosDistanceFromHorizontalLine(
-          dotCoordinates,
-          clickedNotation as HorizontalLineNotationAttributes,
-        ) < 5
-      ) {
-        return colorizeNotation(clickedNotation);
-      }
-    }
-
-    case "VERTICALLINE": {
-      if (
-        screenHelper.getClickedPosDistanceFromVerticalLine(
-          dotCoordinates,
-          clickedNotation as VerticalLineNotationAttributes,
-        ) < 5
-      ) {
-        return colorizeNotation(clickedNotation);
-      }
-    }
-
-    case "SLOPELINE": {
-      if (
-        screenHelper.getClickedPosDistanceFromSlopeLine(
-          dotCoordinates,
-          clickedNotation as SlopeLineNotationAttributes,
-        ) < 5
-      ) {
-        return colorizeNotation(clickedNotation);
-      }
-    }
-
-    case "CONCAVECURVE":
-    case "CONVEXCURVE":
-    case "EXPONENT":
-    case "ANNOTATION":
-    case "SIGN":
-    case "SQRTSYMBOL":
-    case "SYMBOL": {
-      return colorizeNotation(clickedNotation);
-    }
-    default: {
-      throw new Error(
-        clickedNotation?.notationType + ": not supported by colorizing",
-      );
-    }
+  if (clickedNotation) {
+    colorizeNotation(clickedNotation);
   }
 }
 
 function colorizeNotation(notation: NotationAttributes) {
-  notation.color = { value: selectedColor.value, id: undefined };
+  notation.color =
+    selectedColor.value === "transparent"
+      ? null
+      : { value: selectedColor.value, id: undefined };
   notationMutateHelper.updateNotation(notation);
 }
 

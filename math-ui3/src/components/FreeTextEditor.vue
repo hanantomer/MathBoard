@@ -71,14 +71,6 @@ watchHelper.watchCustomEvent(
   startTextEditing,
 );
 
-// user clicked inside selected text notation
-// watchHelper.watchNotationSelection(
-//   "SYMBOL",
-//   "EV_FREE_TEXT_SELECTED",
-//   () => {
-//     editModeStore.setEditMode("TEXT_SELECTED");
-//   },
-// );
 
 watchHelper.watchMouseEvent(
   ["TEXT_SELECTED"],

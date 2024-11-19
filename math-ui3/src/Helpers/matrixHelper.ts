@@ -6,7 +6,7 @@ import {
 } from "common/baseTypes";
 import { useCellStore } from "../store/pinia/cellStore";
 import { useNotationStore } from "../store/pinia/notationStore";
-import { cellSpace } from "common/globals";
+import { cellSpace, lineColor, selectionColor } from "common/globals";
 import { NotationAttributes } from "common/baseTypes";
 import useLineHelper from "./matrixLineHelper";
 import useCurveHelper from "./matrixCurveHelper";
@@ -171,6 +171,7 @@ export default function useMatrixHelper() {
       ),
     );
   }
+
 
   return {
     setMatrix,

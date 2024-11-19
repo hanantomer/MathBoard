@@ -6,12 +6,8 @@ import {
   VerticalLineNotationAttributes,
 } from "common/baseTypes";
 
-import { lineColor, selectionColor } from "common/globals";
-import useUtils from "./matrixHelperUtils";
-import useSelectionHelper from "./selectionHelper";
-
-const utils = useUtils();
-const selectionHelper = useSelectionHelper();
+import useMatrixHelperUtils from "./matrixHelperUtils";
+const matrixHelperUtils = useMatrixHelperUtils();
 
 type LineNotationAttributes = HorizontalLineNotationAttributes &
   VerticalLineNotationAttributes &
@@ -32,7 +28,7 @@ export default function useLineMatrixHelper() {
           return updateLineNotations(update);
         },
         (exit) => {
-          return utils.removeNotations(exit);
+          return matrixHelperUtils.removeNotations(exit);
         },
       );
   }
@@ -59,10 +55,7 @@ export default function useLineMatrixHelper() {
         return "2";
       })
       .attr("stroke", (n: LineNotationAttributes) => {
-        return n.color?.value ? n.color.value : lineColor;
-      })
-      .on("click", (e: MouseEvent) => {
-        selectionHelper.selectLineNotation((e.target as any).id);
+        return matrixHelperUtils.getStroke(n);
       });
   }
 
@@ -87,11 +80,7 @@ export default function useLineMatrixHelper() {
         return 2;
       })
       .attr("stroke", (n: LineNotationAttributes) => {
-        return n.selected
-          ? selectionColor
-          : n.color?.value
-          ? n.color.value
-          : lineColor;
+        return matrixHelperUtils.getStroke(n);
       });
   }
 

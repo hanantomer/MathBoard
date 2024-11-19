@@ -120,17 +120,14 @@ export default function selectionHelper() {
 
     if (activeNotation.notationType === "TEXT") {
       editModeStore.setEditMode("TEXT_SELECTED");
-      //eventBus.emit("EV_FREE_TEXT_SELECTED", activeNotation);
     }
 
     if (activeNotation.notationType === "ANNOTATION") {
       editModeStore.setEditMode("ANNOTATION_SELECTED");
-      //eventBus.emit("EV_ANNOTATION_SELECTED", activeNotation);
     }
 
     if (activeNotation.notationType === "EXPONENT") {
       editModeStore.setEditMode("EXPONENT_SELECTED");
-      //eventBus.emit("EV_EXPONENT_SELECTED", activeNotation);
     }
 
     notationStore.selectNotation(activeNotation?.uuid);
@@ -140,11 +137,6 @@ export default function selectionHelper() {
     editModeStore.setEditMode("SQRT_SELECTED");
     eventBus.emit("EV_SQRT_SELECTED", notation);
   }
-
-  // function selectExponentNotation(notation: NotationAttributes) {
-  //   editModeStore.setEditMode("EXPONENT_SELECTED");
-  //   //eventBus.emit("EV_EXPONENT_SELECTED", notation);
-  // }
 
   function selectCurveNotation(uuid: String) {
     const notation = notationStore.getNotation(uuid)!;
@@ -197,7 +189,42 @@ export default function selectionHelper() {
     }
   }
 
+  function selectClickedPosition(e: MouseEvent) {
+    const uuid = (e.target as any).id;
+    if (uuid) {
+      const n = notationStore.getNotation(uuid)!;
+      switch (n.notationType) {
+        case "HORIZONTALLINE":
+        case "SLOPELINE":
+        case "VERTICALLINE":
+          selectLineNotation(uuid);
+          break;
+        case "SQRT":
+          selectSqrtNotation(n);
+          break;
+        case "CONCAVECURVE":
+        case "CONVEXCURVE":
+          selectCurveNotation(uuid);
+          break;
+        case "EXPONENT":
+        case "IMAGE":
+        case "TEXT":
+        case "ANNOTATION":
+        case "SIGN":
+        case "SYMBOL":
+        case "SQRTSYMBOL": {
+          selectPointOrRectNotation(n);
+          break;
+        }
+      }
+    } else {
+      const position = { x: e.pageX, y: e.pageY };
+      setSelectedCell(position);
+    }
+  }
+
   return {
+    selectClickedPosition,
     selectNotationAtPosition,
     selectNotationsOfArea,
     selectLineNotation,

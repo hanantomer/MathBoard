@@ -27,7 +27,7 @@ import { useNotationStore } from "../store/pinia/notationStore";
 import useNotationMutateHelper from "../helpers/notationMutateHelper";
 import useSelectionHelper from "../helpers/selectionHelper";
 import { MoveDirection, NotationType } from "common/unions";
-import { RectCoordinates, DotCoordinates } from "common/baseTypes";
+import { DotCoordinates } from "common/baseTypes";
 import useEventBusHelper from "../helpers/eventBusHelper";
 import useWatchHelper from "../helpers/watchHelper";
 

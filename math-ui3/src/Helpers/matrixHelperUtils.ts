@@ -1,4 +1,6 @@
-import { getDefaultFontSize, defaultdCellStroke } from "common/globals";
+import { lineColor, selectionColor, getDefaultFontSize, defaultdCellStroke } from "common/globals";
+
+
 
 import { useCellStore } from "../store/pinia/cellStore";
 import {
@@ -70,8 +72,6 @@ export default function useMatrixHelperUtils() {
   }
 
   function colorizeNotationCells(n: NotationAttributes) {
-    if (!n.color?.value) return;
-
     switch (n.notationType) {
       case "ANNOTATION":
       case "SIGN":
@@ -80,7 +80,7 @@ export default function useMatrixHelperUtils() {
         const n1 = n as PointNotationAttributes;
         if (!n1.row || !n1.col) return;
         const cell = { col: n1.col, row: n1.row };
-        matrixCellHelper.colorizeCell(cell, n.color.value);
+        matrixCellHelper.colorizeCell(cell, n!.color!.value);
         break;
       }
 
@@ -90,14 +90,22 @@ export default function useMatrixHelperUtils() {
 
         for (let i = n1.fromCol; i <= n1.toCol; i++) {
           const cell = { col: i, row: n1.row };
-          matrixCellHelper.colorizeCell(cell, n.color.value);
+          matrixCellHelper.colorizeCell(cell, n.color!.value);
         }
         break;
       }
     }
   }
+  function getStroke(n: NotationAttributes) {
+    return n.selected
+      ? selectionColor
+      : n.color?.value
+      ? n.color.value
+      : lineColor;
+  }
 
   return {
+    getStroke,
     getRow,
     getCol,
     getDefaultFontSize,

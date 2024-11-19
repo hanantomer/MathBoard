@@ -282,7 +282,10 @@ export default function useHtmlMatrixHelper() {
   }
 
   function html(n: NotationAttributes) {
-    if (NotationTypeBackgroundColorizing.has(n.notationType)) {
+    if (
+      n.color?.value &&
+      NotationTypeBackgroundColorizing.has(n.notationType)
+    ) {
       utils.colorizeNotationCells(n);
     }
 
@@ -302,13 +305,13 @@ export default function useHtmlMatrixHelper() {
     if (n.notationType === "SQRT") {
       color = n.color?.value ? n.color?.value : color;
 
-      return `<span class=line style='color:${color};
+      return `<span id=${n.uuid} class=line style='color:${color};
             position:relative;'></span>`;
     }
 
     if (n.notationType === "SQRTSYMBOL") {
       color = n.color?.value ? n.color?.value : color;
-      return `<p class='sqrtsymbol' style='color:${color}'>&#x221A;</p>`;
+      return `<p id=${n.uuid} class='sqrtsymbol' style='color:${color}'>&#x221A;</p>`;
     }
 
     if (n.notationType === "TEXT") {
@@ -319,7 +322,9 @@ export default function useHtmlMatrixHelper() {
       const height = rectNotationHeight(n as RectNotationAttributes);
       const width = rectNotationWidth(n as RectNotationAttributes);
 
-      return `<textarea style='resize:none; overflow:hidden;width:${width}px;
+      return `<textarea id=${
+        n1.uuid
+      } style='resize:none; overflow:hidden;width:${width}px;
               height:${height}px;background-color:${textBackgroundColor()};
               border:groove 2px;border-color:${bColor};'>${
                 n1.value
@@ -332,7 +337,7 @@ export default function useHtmlMatrixHelper() {
       const bColor = textBorderColor(n ?? false);
 
       ///TODO move static css props to a class
-      return `<p style=
+      return `<p id=${n1.uuid} style=
             'background:lightyellow; z-index:100;color:${color};font-weight:${fontWeight};
             position: absolute;top:50%;transform:
            translateY(-50%);font-size:0.48em'>${n1.value}</p>`;
@@ -340,7 +345,7 @@ export default function useHtmlMatrixHelper() {
 
     if (n.notationType === "IMAGE") {
       let n1 = n as RectNotationAttributes;
-      return `<img style='border:groove 2px;border-color:${borderColor}' src='${n1.value}'>`;
+      return `<img id=${n1.uuid} style='border:groove 2px;border-color:${borderColor}' src='${n1.value}'>`;
     }
 
     if (n.notationType === "EXPONENT") {
@@ -349,13 +354,17 @@ export default function useHtmlMatrixHelper() {
       let baseHtml = "";
 
       for (let i = 0; i < baseStr.length; i++) {
-        baseHtml += `<p style='color:${color};font-weight:${fontWeight}; position: absolute;
+        baseHtml += `<p id=${
+          n1.uuid
+        } style='color:${color};font-weight:${fontWeight}; position: absolute;
           top:10%;
           transform: translateX(${i * cellStore.getCellHorizontalWidth()}px);
           font-size:1.1em'>${baseStr.charAt(i)}</p>`;
       }
 
-      const exponentHtml = `<p style='color:${color};font-weight:${fontWeight}; position:realtive;
+      const exponentHtml = `<p id=${
+        n1.uuid
+      } style='color:${color};font-weight:${fontWeight}; position:realtive;
       transform:translateY(-20%);
       transform:translateX(${
         baseStr.length * cellStore.getCellHorizontalWidth() - 2
@@ -370,7 +379,7 @@ export default function useHtmlMatrixHelper() {
     let n1 = n as PointNotationAttributes;
     const top = n1.followsFraction ? "75%" : "50%";
     ///TODO: move static css props to a class
-    return `<p style='z-index:100;color:${color};font-weight:${fontWeight}; position: absolute;top:${top};transform:
+    return `<p id=${n1.uuid} style='z-index:100;color:${color};font-weight:${fontWeight}; position: absolute;top:${top};transform:
     translateY(-50%);left:20%;font-size:1.1em'>${n1.value}</p>`;
   }
 

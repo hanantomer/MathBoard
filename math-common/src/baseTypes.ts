@@ -19,7 +19,7 @@ export type NotationAttributes =
     notationType: NotationType;
     boardType: BoardType;
     selected?: boolean;
-    color?: ColorAttributes;
+    color?: ColorAttributes | null;
   };
 
 export type ExponentAttributes = {

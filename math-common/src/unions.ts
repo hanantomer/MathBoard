@@ -9,8 +9,6 @@ export type BoardType =
 
 export type BusEventType =
   | "EV_QUESTION_SAVED"
-  | "EV_EXPONENT_SUBMITED"
-  | "EV_CELL_COLORIZED"
   | "EV_COPY"
   | "EV_PASTE"
   | "EV_KEYUP"
@@ -18,29 +16,12 @@ export type BusEventType =
   | "EV_SVG_MOUSEDOWN"
   | "EV_SVG_MOUSEMOVE"
   | "EV_AREA_SELECTION_DONE"
-  | "EV_AREA_SELECTION_LEAVE"
-  | "EV_AREA_SELECTION_END"
-  | "EV_FREE_TEXT_SUBMITTED"
-  | "EV_FREE_TEXT_SELECTED"
-  | "EV_ANNOTATION_SUBMITTED"
-  | "EV_ANNOTATION_SELECTED"
-  | "EV_EXPONENT_SUBMITTED"
-  | "EV_EXPONENT_SELECTED"
   | "EV_SLOPE_LINE_SELECTED"
   | "EV_CONCAVE_CURVE_SELECTED"
   | "EV_CONVEX_CURVE_SELECTED"
   | "EV_VERTICAL_LINE_SELECTED"
   | "EV_SQRT_SELECTED"
   | "EV_HORIZONTAL_LINE_SELECTED";
-
-// export type NotationShape =
-//   | "POINT"
-//   | "POINTARRAY"
-//   | "HORIZONTAL_LINE"
-//   | "VERTICAL_LINE"
-//   | "SLOPE_LINE"
-//   | "CURVE"
-//   | "RECT";
 
 export const NotationTypeValues = [
   "SYMBOL",
@@ -74,25 +55,6 @@ export type CursorType =
   | "progress"
   | "text"
   | "wait";
-
-// export const NotationTypeShape = new Map<
-//   NotationType,
-//   NotationShape
-// >([
-//   ["SYMBOL", "POINT"],
-//   ["SIGN", "POINT"],
-//   ["EXPONENT", "POINTARRAY"],
-//   ["SQRT", "HORIZONTAL_LINE"],
-//   ["SQRTSYMBOL", "POINT"],
-//   ["HORIZONTALLINE", "HORIZONTAL_LINE"],
-//   ["VERTICALLINE", "VERTICAL_LINE"],
-//   ["SLOPELINE", "SLOPE_LINE"],
-//   ["TEXT", "RECT"],
-//   ["ANNOTATION", "POINT"],
-//   ["IMAGE", "RECT"],
-//   ["CONCAVECURVE", "CURVE"],
-//   ["CONVEXCURVE", "CURVE"],
-// ]);
 
 export const NotationTypeBackgroundColorizing =
   new Set<NotationType>([

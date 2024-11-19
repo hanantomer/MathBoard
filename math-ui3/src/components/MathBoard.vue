@@ -97,7 +97,7 @@ let curveType = computed(() => {
 watchHelper.watchMouseEvent(
   ["SYMBOL", "CELL_SELECTED"],
   "EV_SVG_MOUSEUP",
-  selectClickedPosition,
+  selectionHelper.selectClickedPosition,
 );
 
 watchHelper.watchKeyEvent(
@@ -176,13 +176,6 @@ async function load() {
     );
   } finally {
     progressBar.value = false;
-  }
-}
-
-function selectClickedPosition(e: MouseEvent) {
-  const position = { x: e.pageX, y: e.pageY };
-  if (!selectionHelper.selectNotationAtPosition(position)) {
-    selectionHelper.setSelectedCell(position);
   }
 }
 </script>

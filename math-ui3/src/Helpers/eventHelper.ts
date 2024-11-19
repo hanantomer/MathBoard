@@ -3,11 +3,8 @@ import { useEditModeStore } from "../store/pinia/editModeStore";
 import { useNotationStore } from "../store/pinia/notationStore";
 import { useCellStore } from "../store/pinia/cellStore";
 
-import useMatrixCellHelper from "./matrixCellHelper";
 import useNotationMutationHelper from "./notationMutateHelper";
-import useAuthorizationHelper from "./authorizationHelper";
 import useEventBus from "../helpers/eventBusHelper";
-import useSelectionHelper from "./selectionHelper";
 import {
   NotationAttributes,
   PointNotationAttributes,
