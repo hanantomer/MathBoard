@@ -12,9 +12,7 @@
       background: backgroundColor,
     }"
     v-on:mouseup="mouseup"
-    v-on:mousemove="mousemove"
-    v-on:mouseenter="enter"
-    v-on:mouseleave="leave"
+    v-on:mousemove="moveSelectionByMouseDrag"
   ></v-card>
 </template>
 
@@ -47,8 +45,8 @@ const selectionHelper = useSelectionHelper();
 
 // variables
 
-let mouseOverSelectionArea: boolean = false;
-let mouseLeftSelectionArea: boolean = false;
+//let mouseOverSelectionArea: boolean = false;
+//let mouseLeftSelectionArea: boolean = false;
 
 let lineTypes: Array<NotationType> = [
   "CONCAVECURVE",
@@ -143,12 +141,6 @@ watchHelper.watchMouseEvent(["AREA_SELECTED"], "EV_SVG_MOUSEMOVE", startMoving);
 
 watchHelper.watchMouseEvent(
   ["AREA_MOVING"],
-  "EV_SVG_MOUSEMOVE",
-  moveSelectionByMouseDrag,
-);
-
-watchHelper.watchMouseEvent(
-  ["AREA_MOVING"],
   "EV_SVG_MOUSEUP",
   endMoveSelection,
 );
@@ -165,10 +157,6 @@ watchHelper.watchMouseEvent(
   cancelTextSelectionWhenUserClickedOutside /*takes action when clicked outside of selection area*/,
 );
 
-//watchHelper.watchMouseEvent(["TEXT_STARTED"], "EV_SVG_MOUSEDOWN", () =>
-//  editModeStore.setNextEditMode(),
-//);
-
 function cancelSelectionWhenUserClickedOutside() {
   notationStore.resetSelectedNotations();
   resetSelectionPosition();
@@ -176,7 +164,7 @@ function cancelSelectionWhenUserClickedOutside() {
 }
 
 function cancelTextSelectionWhenUserClickedOutside() {
-  if (!mouseLeftSelectionArea) return;
+  //if (!mouseLeftSelectionArea) return;
   notationStore.resetSelectedNotations();
   resetSelectionPosition();
   editModeStore.setDefaultEditMode();
@@ -209,25 +197,12 @@ function setStartPosition(e: MouseEvent) {
 
 function startMoving(e: MouseEvent) {
   if (e.buttons !== 1) return;
-  if (!mouseOverSelectionArea) return;
+  //if (!mouseOverSelectionArea) return;
   editModeStore.setNextEditMode();
-}
-
-function enter() {
-  mouseOverSelectionArea = true;
-  mouseLeftSelectionArea = false;
-}
-
-function leave() {
-  mouseLeftSelectionArea = true;
 }
 
 function mouseup(e: MouseEvent) {
   eventBus.emit("EV_SVG_MOUSEUP", e);
-}
-
-function mousemove(e: MouseEvent) {
-  eventBus.emit("EV_SVG_MOUSEMOVE", e);
 }
 
 async function updateSelectionAreaByKey(e: KeyboardEvent) {
@@ -292,21 +267,21 @@ async function updateSelectionAreaByKey(e: KeyboardEvent) {
 function updateSelectionArea(e: MouseEvent) {
   if (e.buttons !== 1) return;
 
-  setSelectionDirection(e)
+  setSelectionDirection(e);
 
   if (horizontalDirection === "NONE" || verticalDirection === "NONE") {
     return;
   }
 
-  if (horizontalDirection === "LEFT" ) {
+  if (horizontalDirection === "LEFT") {
     selectionPosition.value.x1 = e.pageX;
   }
 
-  if (horizontalDirection === "RIGHT" ) {
+  if (horizontalDirection === "RIGHT") {
     selectionPosition.value.x2 = e.pageX;
   }
 
-  if (verticalDirection === "UP" ) {
+  if (verticalDirection === "UP") {
     selectionPosition.value.y1 = e.pageY;
   }
 
@@ -316,8 +291,7 @@ function updateSelectionArea(e: MouseEvent) {
 }
 
 function setSelectionDirection(e: MouseEvent) {
-
-    if (horizontalDirection === "NONE") {
+  if (horizontalDirection === "NONE") {
     if (e.pageX > selectionPosition.value.x1) {
       horizontalDirection = "RIGHT";
       return;
@@ -379,9 +353,6 @@ function endSelect() {
 function moveSelectionByMouseDrag(e: MouseEvent) {
   if (e.buttons !== 1) return;
 
-  if (!mouseOverSelectionArea) return;
-  //  if (mouseLeftSelectionArea) return;
-
   // initial drag position
   if (!dragPosition.value.x) {
     dragPosition.value.x = e.pageX;
@@ -406,9 +377,6 @@ function onlyLinesAraSelected() {
 }
 
 function moveAtCellScale(e: MouseEvent) {
-  const deltaX = e.pageX - dragPosition.value.x;
-  const deltaY = e.pageY - dragPosition.value.y;
-
   const deltaCol = Math.round(
     (e.pageX - dragPosition.value.x) / cellStore.getCellHorizontalWidth(),
   );
@@ -419,8 +387,8 @@ function moveAtCellScale(e: MouseEvent) {
 
   if (Math.abs(deltaCol) > 0 || Math.abs(deltaRow) > 0) {
     notationMutationHelper.moveSelectedNotations(
-      deltaX,
-      deltaY,
+      deltaCol * cellStore.getCellHorizontalWidth(),
+      deltaRow * cellStore.getCellVerticalHeight(),
       deltaCol,
       deltaRow,
       e.ctrlKey,

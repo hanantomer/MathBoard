@@ -370,7 +370,7 @@ export default function notationMutateHelper() {
         case "SLOPELINE": {
           (n as SlopeLineNotationAttributes).p1x += deltaX;
           (n as SlopeLineNotationAttributes).p2x += deltaX;
-          (n as SlopeLineNotationAttributes).p1y += deltaX;
+          (n as SlopeLineNotationAttributes).p1y += deltaY;
           (n as SlopeLineNotationAttributes).p2y += deltaY;
           break;
         }
@@ -381,6 +381,8 @@ export default function notationMutateHelper() {
           (n as CurveNotationAttributes).p2x += deltaX;
           (n as CurveNotationAttributes).p1y += deltaY;
           (n as CurveNotationAttributes).p2y += deltaY;
+          (n as CurveNotationAttributes).cpx += deltaX;
+          (n as CurveNotationAttributes).cpy += deltaY;
           break;
         }
 

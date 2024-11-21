@@ -17,3 +17,5 @@ math-server/math.db
 math-server/math.db
 math-db/tsconfig.tsbuildinfo
 math-common/tsconfig.tsbuildinfo
+math-common/tsconfig.tsbuildinfo
+math-db/tsconfig.tsbuildinfo

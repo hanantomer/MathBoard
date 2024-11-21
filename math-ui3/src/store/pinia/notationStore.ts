@@ -201,13 +201,13 @@ export const useNotationStore = defineStore("notation", () => {
         );
         break;
 
-      // case "CONVEXCURVE":
-      // case "CONCAVECURVE":
-      //   notationCellOccupationHelper.updateCurveOccupationMatrix(
-      //     cellLineNotationOccupationMatrix,
-      //     notation as CurveNotationAttributes,
-      //     false,
-      //   );
+      case "CONVEXCURVE":
+      case "CONCAVECURVE":
+        notationCellOccupationHelper.updateCurveOccupationMatrix(
+          cellLineNotationOccupationMatrix,
+          notation as CurveNotationAttributes,
+          false,
+        );
     }
   }
 
@@ -345,17 +345,17 @@ export const useNotationStore = defineStore("notation", () => {
 
     // line
 
-    // const lineNotationsUUIDs = cellLineNotationOccupationMatrix[cell.col][
-    //   cell.row
-    // ] as String[];
+    const lineNotationsUUIDs = cellLineNotationOccupationMatrix[cell.col][
+      cell.row
+    ] as String[];
 
-    // if (lineNotationsUUIDs) {
-    //   lineNotationsUUIDs
-    //     .filter((ln) => ln)
-    //     .forEach((ln) => {
-    //       notationsAtCell.push(notations.value.get(ln) as NotationAttributes);
-    //     });
-    // }
+    if (lineNotationsUUIDs) {
+      lineNotationsUUIDs
+        .filter((ln) => ln)
+        .forEach((ln) => {
+          notationsAtCell.push(notations.value.get(ln) as NotationAttributes);
+        });
+    }
 
     return notationsAtCell;
   }

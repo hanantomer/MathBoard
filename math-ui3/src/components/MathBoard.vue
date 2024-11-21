@@ -225,12 +225,8 @@ html {
   z-index: 999;
 }
 
-line:hover {
-  stroke-width: 3;
-}
-
-path:hover {
-  stroke-width: 3;
+line:hover, path:hover {
+  stroke-width: 4.5;
 }
 
 .lineHandle {

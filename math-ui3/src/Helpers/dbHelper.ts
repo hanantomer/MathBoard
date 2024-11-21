@@ -218,6 +218,46 @@ export default function useDbHelper() {
             fromRow: (notation as any)["fromRow"],
             toRow: (notation as any)["toRow"],
           }
+        : // horizontal line
+        "p1x" in notation && "p2x" in notation && "py" in notation
+        ? {
+            p1x: (notation as any)["p1x"],
+            p2x: (notation as any)["p2x"],
+            py: (notation as any)["py"],
+          }
+        : // vertical line
+        "px" in notation && "p1y" in notation && "p2y" in notation
+        ? {
+            px: (notation as any)["px"],
+            p1y: (notation as any)["p1y"],
+            p2y: (notation as any)["p2y"],
+          }
+        : // sloped line
+        "p1x" in notation &&
+          "p2x" in notation &&
+          "p1y" in notation &&
+          "p2y" in notation
+        ? {
+            p1x: (notation as any)["p1x"],
+            p2x: (notation as any)["p2x"],
+            p1y: (notation as any)["p1y"],
+            p2y: (notation as any)["p2y"],
+          }
+        : // sloped line
+        "p1x" in notation &&
+          "p2x" in notation &&
+          "p1y" in notation &&
+          "p2y" in notation &&
+          "cpx" in notation &&
+          "cpy" in notation
+        ? {
+            p1x: (notation as any)["p1x"],
+            p2x: (notation as any)["p2x"],
+            p1y: (notation as any)["p1y"],
+            p2y: (notation as any)["p2y"],
+            cpx: (notation as any)["cpx"],
+            cpy: (notation as any)["cpy"],
+          }
         : null;
 
     return cooerdinates;
