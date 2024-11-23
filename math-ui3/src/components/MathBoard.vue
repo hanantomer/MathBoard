@@ -225,7 +225,8 @@ html {
   z-index: 999;
 }
 
-line:hover, path:hover {
+line:hover,
+path:hover {
   stroke-width: 4.5;
 }
 
@@ -233,8 +234,8 @@ line:hover, path:hover {
   cursor: col-resize;
   position: absolute;
   display: block;
-  width: 5px;
-  height: 5px;
+  width: 7px;
+  height: 7px;
   border: 1, 1, 1, 1;
   z-index: 999;
 }

@@ -15,11 +15,13 @@ import { useCellStore } from "../store/pinia/cellStore";
 import { NotationTypeBackgroundColorizing } from "common/unions";
 import useUtils from "./matrixHelperUtils";
 import { useUserStore } from "../store/pinia/userStore";
+import useMatrixCellHelper from "./matrixCellHelper";
 
 const userStore = useUserStore();
 const utils = useUtils();
 const notationStore = useNotationStore();
 const cellStore = useCellStore();
+const matrixCellHelper = useMatrixCellHelper();
 
 export default function useHtmlMatrixHelper() {
   function borderColor(notation: NotationAttributes): string {
@@ -68,6 +70,9 @@ export default function useHtmlMatrixHelper() {
           return updateHtmlNotations(update);
         },
         (exit) => {
+          if (!exit.empty()) {
+            matrixCellHelper.unColorizeNotationCells(exit.datum() as any);
+          }
           return utils.removeNotations(exit);
         },
       );

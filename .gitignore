@@ -19,3 +19,4 @@ math-db/tsconfig.tsbuildinfo
 math-common/tsconfig.tsbuildinfo
 math-common/tsconfig.tsbuildinfo
 math-db/tsconfig.tsbuildinfo
+math-server/math.db

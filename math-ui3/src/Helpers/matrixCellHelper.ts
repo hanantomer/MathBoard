@@ -1,4 +1,4 @@
-import { CellAttributes } from "common/baseTypes";
+import { CellAttributes, MultiCellAttributes } from "common/baseTypes";
 import {
   matrixDimensions,
   defaultdCellStroke,
@@ -71,10 +71,24 @@ export default function useMatrixCellHelper() {
 
   function colorizeCell(cell: CellAttributes, color: string) {
     let rectElm = document
-      ?.querySelector<HTMLElement>(`svg[id="${cellStore.getSvgId()}"] g[row="${cell.row}"]`)
+      ?.querySelector<HTMLElement>(
+        `svg[id="${cellStore.getSvgId()}"] g[row="${cell.row}"]`,
+      )
       ?.querySelector<HTMLElement>(`rect[col="${cell.col}"]`);
 
     if (rectElm?.style) rectElm.style.fill = color;
+  }
+
+  function unColorizeNotationCells(n: any) {
+    if (n.col && n.row) {
+      colorizeCell({ col: n.col, row: n.row }, "");
+    }
+
+    if (n.fromCol && n.toCol && n.row) {
+      for (let i = n.fromCol; i <= n.toCol; i++) {
+        colorizeCell({ col: i, row: n.row }, "");
+      }
+    }
   }
 
   // called by store watcher. see mathboard.vue
@@ -111,6 +125,7 @@ export default function useMatrixCellHelper() {
 
   return {
     colorizeCell,
+    unColorizeNotationCells,
     setNextCell,
     showSelectedCell,
   };

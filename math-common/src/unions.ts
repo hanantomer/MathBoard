@@ -201,7 +201,7 @@ export type MoveDirection =
 
 export type Color =
   | "none"
-  | "white"
+  | "lightyellow"
   | "lightblue"
   | "lightgreen"
   | "pink"

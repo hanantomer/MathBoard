@@ -349,7 +349,7 @@ export const useNotationStore = defineStore("notation", () => {
       cell.row
     ] as String[];
 
-    if (lineNotationsUUIDs) {
+    if (lineNotationsUUIDs && lineNotationsUUIDs.length) {
       lineNotationsUUIDs
         .filter((ln) => ln)
         .forEach((ln) => {

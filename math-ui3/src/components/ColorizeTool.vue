@@ -7,37 +7,25 @@
           backgroundColor: backgroundColor,
         }"
         icon
-        @click.stop="showColorSelectionMenu"
         color="white"
         x-small
         fab
         dark
         ><v-icon>mdi-format-color-highlight</v-icon>
-        <v-menu
-          open-on-hover
-          activator="parent"
-          style="max-width: 0px; background-color: white"
-        >
-          <v-select
-            ref="colorSelectionEl"
-            v-model="selectedColor"
-            type="hidden"
-            :items="colors"
-            @update:modelValue="selectColor"
-          >
-            <template v-slot:item="{ props, item }">
-              <v-list-item
-                v-bind="props"
-                style="min-height: 25px !important; color: gray"
-                :title="item.title"
-                :value="item.value"
-                v-bind:style="{
-                  backgroundColor: item.value,
-                }"
-              >
-              </v-list-item>
-            </template>
-          </v-select>
+        <v-menu activator="parent">
+          <v-list>
+            <v-list-item
+              v-for="(item, index) in colors"
+              :key="index"
+              :value="index"
+              v-bind:style="{
+                backgroundColor: item,
+              }"
+              @click="selectColor"
+            >
+              <v-list-item-title>{{ item }}</v-list-item-title>
+            </v-list-item>
+          </v-list>
         </v-menu>
       </v-btn>
     </template>
@@ -67,25 +55,13 @@ const backgroundColor = computed(() => {
   return selectedColor.value === "none"
     ? "transparent"
     : selectedColor.value === "transparent"
-    ? transparentColor
+    ? transparentColor // indication for user that uncolorizing is taking place
     : selectedColor.value;
 });
 
-let colorSelectionEl = ref();
-
 let selectedColor = ref<Color>("none"); /// TODO move to store
 
-interface ColorStrip {
-  title: string;
-  value: Color;
-}
-
-const colors: ColorStrip[] = [
-  { title: "blue", value: "lightblue" },
-  { title: "green", value: "lightgreen" },
-  { title: "pink", value: "pink" },
-  { title: "none", value: "transparent" },
-];
+const colors: Color[] = ["lightyellow", "lightblue", "lightgreen", "pink", "transparent"];
 
 watchHelper.watchMouseEvent(
   ["COLORIZING"],
@@ -102,14 +78,10 @@ watchHelper.watchMouseEvent(
 // reset coorizing tool when colorizing by click or by drag ends
 watchHelper.watchMouseEvent(["COLORIZING"], "EV_SVG_MOUSEUP", resetColorizing);
 
-function selectColor() {
+function selectColor(e: any) {
   editModeStore.setEditMode("COLORIZING");
-}
-
-function showColorSelectionMenu(e: MouseEvent) {
-  colorSelectionEl.value.focus();
-  colorSelectionEl.value.details = false;
-  colorSelectionEl.value.menu = true;
+  const color = (e.currentTarget as any).textContent as Color;
+  selectedColor.value = color === "transparent" ? "none" : color;
 }
 
 function colorizeNotationByMouseDrag(e: MouseEvent) {
@@ -118,8 +90,6 @@ function colorizeNotationByMouseDrag(e: MouseEvent) {
 }
 
 function colorizeNotationAtMousePosition(e: MouseEvent) {
-  //  if (e.buttons !== 1) return;
-
   const uuid = (e.target as any).id;
   if (uuid) {
     // line or curve clicked - see matrixLineHelper
@@ -150,5 +120,11 @@ function resetColorizing() {
 <style>
 div.v-input__control {
   max-height: 0px;
+}
+
+._colorsMenu {
+  _max-width: 0px;
+  background-color: white;
+  margin-bottom: -50px;
 }
 </style>

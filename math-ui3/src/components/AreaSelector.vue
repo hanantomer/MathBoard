@@ -131,6 +131,10 @@ watchHelper.watchMouseEvent(
   endSelect,
 );
 
+watchHelper.watchMouseEvent(["AREA_SELECTED"], "EV_SVG_MOUSEDOWN", () => {
+  cancelSelectionWhenUserClickedOutside();
+});
+
 watchHelper.watchKeyEvent(
   ["AREA_SELECTED"],
   "EV_KEYUP",
@@ -145,11 +149,11 @@ watchHelper.watchMouseEvent(
   endMoveSelection,
 );
 
-watchHelper.watchMouseEvent(
-  ["AREA_SELECTED"],
-  "EV_SVG_MOUSEUP",
-  cancelSelectionWhenUserClickedOutside /*takes action when clicked outside of selection area*/,
-);
+// watchHelper.watchMouseEvent(
+//   ["AREA_SELECTED"],
+//   "EV_SVG_MOUSEUP",
+//   cancelSelectionWhenUserClickedOutside /*takes action when clicked outside of selection area*/,
+// );
 
 watchHelper.watchMouseEvent(
   ["TEXT_STARTED"],
@@ -479,6 +483,7 @@ function resetSelectionPosition() {
       0;
 }
 
+// signal free text editor
 function signalSelection() {
   eventBus.emit("EV_AREA_SELECTION_DONE", {
     left: selectionRectLeft.value,
@@ -487,6 +492,8 @@ function signalSelection() {
     height: selectionRectHeight.value,
   });
 }
+
+
 </script>
 
 <style>
