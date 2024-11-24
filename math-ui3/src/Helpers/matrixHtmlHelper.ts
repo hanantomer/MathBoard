@@ -12,7 +12,6 @@ import {
 } from "common/baseTypes";
 import { useNotationStore } from "../store/pinia/notationStore";
 import { useCellStore } from "../store/pinia/cellStore";
-import { NotationTypeBackgroundColorizing } from "common/unions";
 import useUtils from "./matrixHelperUtils";
 import { useUserStore } from "../store/pinia/userStore";
 import useMatrixCellHelper from "./matrixCellHelper";
@@ -287,31 +286,26 @@ export default function useHtmlMatrixHelper() {
   }
 
   function html(n: NotationAttributes) {
-    if (
-      n.color?.value &&
-      NotationTypeBackgroundColorizing.has(n.notationType)
-    ) {
+    // if (
+    //   n.color?.value &&
+    //   NotationTypeBackgroundColorizing.has(n.notationType)
+    // ) {
+    //   utils.colorizeNotationCells(n);
+    // }
+
+    //if (n.color) {
       utils.colorizeNotationCells(n);
-    }
+    //}
 
     let fontWeight =
       userStore.getCurrentUser()?.uuid == n.user.uuid ? "bold" : "normal";
 
-    let color =
-      Array.from(notationStore.getSelectedNotations())
-        .map((n) => n.uuid)
-        .indexOf(n.uuid) >= 0
-        ? "chocolate"
-        : notationStore.getParent().type === "ANSWER" &&
-          userStore.getCurrentUser()?.uuid != n.user.uuid
-        ? "purple"
-        : "black";
+    let color = utils.getColor(n);
+    //   : notationStore.getParent().type === "ANSWER" &&
+    //     userStore.getCurrentUser()?.uuid != n.user.uuid
 
     if (n.notationType === "SQRT") {
-      color = n.color?.value ? n.color?.value : color;
-
-      return `<span id=${n.uuid} class=line style='color:${color};
-            position:relative;'></span>`;
+      return `<span id=${n.uuid} class=sqrt style='color:${color}'></span>`;
     }
 
     if (n.notationType === "SQRTSYMBOL") {

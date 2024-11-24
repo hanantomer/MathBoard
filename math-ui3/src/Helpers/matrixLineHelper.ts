@@ -55,7 +55,7 @@ export default function useLineMatrixHelper() {
         return "2";
       })
       .attr("stroke", (n: LineNotationAttributes) => {
-        return matrixHelperUtils.getStroke(n);
+        return matrixHelperUtils.getColor(n);
       });
   }
 
@@ -80,7 +80,7 @@ export default function useLineMatrixHelper() {
         return 2;
       })
       .attr("stroke", (n: LineNotationAttributes) => {
-        return matrixHelperUtils.getStroke(n);
+        return matrixHelperUtils.getColor(n);
       });
   }
 

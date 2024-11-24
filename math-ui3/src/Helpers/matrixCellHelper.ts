@@ -69,7 +69,8 @@ export default function useMatrixCellHelper() {
     }
   }
 
-  function colorizeCell(cell: CellAttributes, color: string) {
+  function colorizeCell(cell: CellAttributes, color: string | null | undefined) {
+    if (!color) color = "";
     let rectElm = document
       ?.querySelector<HTMLElement>(
         `svg[id="${cellStore.getSvgId()}"] g[row="${cell.row}"]`,

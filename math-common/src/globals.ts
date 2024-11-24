@@ -4,9 +4,10 @@ export const matrixDimensions = {
   rowsNum: 24,
   colsNum: 96,
 };
-export const transparentColor = "#4d6a96"; 
+export const transparentColor = "#4d6a96";
 export const selectionColor = "chocolate";
-export const lineColor = "black";
+export const lineColor = "darkgreen";
+export const htmlColor = "black";
 export const cellSpace = 1;
 export const signList = [
   "=",

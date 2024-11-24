@@ -56,13 +56,13 @@ export type CursorType =
   | "text"
   | "wait";
 
-export const NotationTypeBackgroundColorizing =
-  new Set<NotationType>([
-    "SYMBOL",
-    "SIGN",
-    "EXPONENT",
-    "ANNOTATION",
-  ]);
+// export const NotationTypeBackgroundColorizing =
+//   new Set<NotationType>([
+//     "SYMBOL",
+//     "SIGN",
+//     "EXPONENT",
+//     "ANNOTATION",
+//   ]);
 
 export type EditMode =
   | "LESSONS_SELECTION" //  after click on lessons icon

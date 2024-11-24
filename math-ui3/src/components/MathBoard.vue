@@ -230,6 +230,20 @@ path:hover {
   stroke-width: 4.5;
 }
 
+.sqrt {
+  border-bottom: solid 1px;
+  border-top: solid 1px;
+  z-index: 999;
+  display: block;
+  position: relative;
+  top: 2px;
+}
+
+.sqrt:hover {
+  border-bottom: solid 2px;
+  border-top: solid 2px;
+}
+
 .lineHandle {
   cursor: col-resize;
   position: absolute;

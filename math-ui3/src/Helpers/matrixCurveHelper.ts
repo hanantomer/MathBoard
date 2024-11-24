@@ -34,7 +34,7 @@ export default function useCurveMatrixHelper() {
         return d(n);
       })
       .attr("stroke", (n: CurveNotationAttributes) => {
-        return matrixHelperUtils.getStroke(n);
+        return matrixHelperUtils.getColor(n);
       })
       .attr("stroke-width", () => {
         return "2"; /// TODO: externalize
@@ -56,7 +56,7 @@ export default function useCurveMatrixHelper() {
         return d(n);
       })
       .attr("stroke", (n: CurveNotationAttributes) => {
-        return matrixHelperUtils.getStroke(n);
+        return matrixHelperUtils.getColor(n);
       });
   }
 

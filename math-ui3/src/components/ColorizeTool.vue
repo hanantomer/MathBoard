@@ -52,16 +52,22 @@ const editModeStore = useEditModeStore();
 const notationStore = useNotationStore();
 
 const backgroundColor = computed(() => {
-  return selectedColor.value === "none"
-    ? "transparent"
-    : selectedColor.value === "transparent"
+  return selectedColor.value === null
+    ? ""
+    : selectedColor.value === "none"
     ? transparentColor // indication for user that uncolorizing is taking place
     : selectedColor.value;
 });
 
-let selectedColor = ref<Color>("none"); /// TODO move to store
+let selectedColor = ref<Color | null>(null); /// TODO move to store
 
-const colors: Color[] = ["lightyellow", "lightblue", "lightgreen", "pink", "transparent"];
+const colors: Color[] = [
+  "lightyellow",
+  "lightblue",
+  "lightgreen",
+  "pink",
+  "none",
+];
 
 watchHelper.watchMouseEvent(
   ["COLORIZING"],
@@ -81,7 +87,7 @@ watchHelper.watchMouseEvent(["COLORIZING"], "EV_SVG_MOUSEUP", resetColorizing);
 function selectColor(e: any) {
   editModeStore.setEditMode("COLORIZING");
   const color = (e.currentTarget as any).textContent as Color;
-  selectedColor.value = color === "transparent" ? "none" : color;
+  selectedColor.value = color;
 }
 
 function colorizeNotationByMouseDrag(e: MouseEvent) {
@@ -106,25 +112,14 @@ function colorizeNotationAtMousePosition(e: MouseEvent) {
 
 function colorizeNotation(notation: NotationAttributes) {
   notation.color =
-    selectedColor.value === "transparent"
+    selectedColor.value === "none" || selectedColor.value === null
       ? null
       : { value: selectedColor.value, id: undefined };
   notationMutateHelper.updateNotation(notation);
 }
 
 function resetColorizing() {
-  selectedColor.value = "none";
+  selectedColor.value = null;
   editModeStore.setDefaultEditMode();
 }
 </script>
-<style>
-div.v-input__control {
-  max-height: 0px;
-}
-
-._colorsMenu {
-  _max-width: 0px;
-  background-color: white;
-  margin-bottom: -50px;
-}
-</style>

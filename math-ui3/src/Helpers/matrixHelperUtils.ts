@@ -1,6 +1,10 @@
-import { lineColor, selectionColor, getDefaultFontSize, defaultdCellStroke } from "common/globals";
-
-
+import {
+  lineColor,
+  htmlColor,
+  selectionColor,
+  getDefaultFontSize,
+  defaultdCellStroke,
+} from "common/globals";
 
 import { useCellStore } from "../store/pinia/cellStore";
 import {
@@ -80,7 +84,7 @@ export default function useMatrixHelperUtils() {
         const n1 = n as PointNotationAttributes;
         if (!n1.row || !n1.col) return;
         const cell = { col: n1.col, row: n1.row };
-        matrixCellHelper.colorizeCell(cell, n!.color!.value);
+        matrixCellHelper.colorizeCell(cell, n.color?.value);
         break;
       }
 
@@ -90,22 +94,42 @@ export default function useMatrixHelperUtils() {
 
         for (let i = n1.fromCol; i <= n1.toCol; i++) {
           const cell = { col: i, row: n1.row };
-          matrixCellHelper.colorizeCell(cell, n.color!.value);
+          matrixCellHelper.colorizeCell(cell, n.color?.value);
         }
         break;
       }
     }
   }
-  function getStroke(n: NotationAttributes) {
+  function getColor(n: NotationAttributes) {
+    switch (n.notationType) {
+      case "ANNOTATION":
+      case "EXPONENT":
+      case "SIGN":
+      case "SQRT":
+      case "SQRTSYMBOL":
+      case "SYMBOL":
+        return n.selected ? selectionColor : htmlColor;
+      case "CONCAVECURVE":
+      case "CONVEXCURVE":
+      case "HORIZONTALLINE":
+      case "SLOPELINE":
+      case "VERTICALLINE":
+        return n.selected
+          ? selectionColor
+          : n.color?.value
+          ? n.color.value
+          : lineColor;
+    }
+
     return n.selected
       ? selectionColor
-      : n.color?.value
-      ? n.color.value
-      : lineColor;
+      : //: n.color?.value
+        //? n.color.value
+        lineColor;
   }
 
   return {
-    getStroke,
+    getColor,
     getRow,
     getCol,
     getDefaultFontSize,
