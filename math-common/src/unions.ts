@@ -189,7 +189,7 @@ export const EditModeCursorType = new Map<
 
 export type UserType = "TEACHER" | "STUDENT";
 
-export type MoveDirection =
+export type SelectionMoveDirection =
   | "LEFT"
   | "RIGHT"
   | "TOP"
@@ -199,6 +199,7 @@ export type MoveDirection =
   | "RIGHTTOP"
   | "RIGHTBOTTOM";
 
+
 export type Color =
   | "none"
   | "lightyellow"
@@ -206,3 +207,6 @@ export type Color =
   | "lightgreen"
   | "pink"
   | "transparent";
+
+
+

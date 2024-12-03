@@ -19,7 +19,7 @@ import { computed, ref } from "vue";
 import { useCellStore } from "../store/pinia/cellStore";
 import { useEditModeStore } from "../store/pinia/editModeStore";
 import { useNotationStore } from "../store/pinia/notationStore";
-import { RectNotationAttributes } from "../../../math-common/build/baseTypes";
+import { RectNotationAttributes } from "../../../math-common/src/baseTypes";
 import { EditMode } from "../../../math-common/src/unions";
 
 import useNotationMutateHelper from "../helpers/notationMutateHelper";

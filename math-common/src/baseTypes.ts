@@ -286,3 +286,19 @@ export function isMultiCell(
       "SQRT" /*unlike horizontal line, sqrt borders adjusts to cell borders */
   );
 }
+
+export type MovementDirection =
+  | "UP"
+  | "DOWN"
+  | "NONE";
+
+export type SlopeType =
+  | "POSITIVE"
+  | "NEGATIVE"
+  | "NONE";  
+
+export type SlopeDrawerAttributes = {
+  linePosition: SlopeLineAttributes;
+  slopeType: SlopeType;
+  movementDirection: MovementDirection;
+};

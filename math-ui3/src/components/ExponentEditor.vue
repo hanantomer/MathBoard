@@ -30,7 +30,7 @@ import { computed, ref } from "vue";
 import { useEditModeStore } from "../store/pinia/editModeStore";
 import { useCellStore } from "../store/pinia/cellStore";
 import { useNotationStore } from "../store/pinia/notationStore";
-import { ExponentNotationAttributes } from "../../../math-common/build/baseTypes";
+import { ExponentNotationAttributes } from "../../../math-common/src/baseTypes";
 import useNotationMutateHelper from "../helpers/notationMutateHelper";
 import useScreenHelper from "../helpers/screenHelper";
 import useWatchHelper from "../helpers/watchHelper";

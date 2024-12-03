@@ -7,8 +7,8 @@
         left: handleRight + 'px',
         top: handleY + 'px',
       }"
-      v-on:mouseup="lineDrawer.endDrawingLine"
-      v-on:mousedown="lineDrawer.startDrawingLine"
+      v-on:mouseup="lineDrawer.endDrawingHorizontalLine"
+      v-on:mousedown="lineDrawer.startDrawingHorizontalLine"
     ></v-card>
     <svg
       height="800"
@@ -48,7 +48,6 @@ const lineDrawer = useLineDrawingHelper();
 const cellStore = useCellStore();
 const editModeStore = useEditModeStore();
 
-// vars
 
 let linePosition = ref(<HorizontalLineAttributes>{
   p1x: 0,
@@ -73,7 +72,9 @@ let sqrtY = computed(() => {
 });
 
 let sqrtSymbolLeft = computed(() => {
-  return linePosition.value.p1x + (cellStore.getSvgBoundingRect().left ?? 0) - 6;
+  return (
+    linePosition.value.p1x + (cellStore.getSvgBoundingRect().left ?? 0) - 6
+  );
 });
 
 let sqrtSymbolY = computed(() => {
@@ -89,11 +90,11 @@ let handleY = computed(() => {
 });
 
 watchHelper.watchMouseEvent(["SQRT_STARTED"], "EV_SVG_MOUSEDOWN", (e) =>
-  lineDrawer.startDrawingLine(e, linePosition.value),
+  lineDrawer.startDrawingHorizontalLine(e, linePosition.value),
 );
 
 watchHelper.watchMouseEvent(["SQRT_DRAWING"], "EV_SVG_MOUSEMOVE", (e) =>
-  lineDrawer.setLine(e, linePosition.value),
+  lineDrawer.setHorizontalLine(e, linePosition.value),
 );
 
 watchHelper.watchMouseEvent(["SQRT_DRAWING"], "EV_SVG_MOUSEUP", () =>
@@ -103,7 +104,7 @@ watchHelper.watchMouseEvent(["SQRT_DRAWING"], "EV_SVG_MOUSEUP", () =>
 watchHelper.watchNotationSelection(
   "SQRT_SELECTED",
   "EV_SQRT_SELECTED",
-  (notation) => lineDrawer.selectSqrt(notation, linePosition.value),
+  (notation) => lineDrawer.selectLine(notation, linePosition.value),
 );
 
 watchHelper.watchMouseEvent(["SQRT_SELECTED"], "EV_SVG_MOUSEUP", () =>
@@ -111,6 +112,7 @@ watchHelper.watchMouseEvent(["SQRT_SELECTED"], "EV_SVG_MOUSEUP", () =>
 );
 
 watchHelper.watchMouseEvent(["SQRT_DRAWING"], "EV_SVG_MOUSEDOWN", () =>
-  lineDrawer.resetLineDrawing(linePosition.value),
+  lineDrawer.resetHorizontalLineDrawing(linePosition.value),
 );
+
 </script>

@@ -1,9 +1,7 @@
 import {
   PointNotationAttributes,
-  ExponentNotationAttributes,
   HorizontalLineAttributes,
   VerticalLineNotationAttributes,
-  SlopeLineNotationAttributes,
   RectNotationAttributes,
   CurveNotationAttributes,
   NotationAttributes,
@@ -11,12 +9,9 @@ import {
   MultiCellAttributes,
 } from "common/baseTypes";
 
-import useScreenHelper from "./screenHelper";
-
 import { matrixDimensions } from "common/globals";
 import { useCellStore } from "../store/pinia/cellStore";
 
-const screenHelper = useScreenHelper();
 const cellStore = useCellStore();
 
 export default function notationCellOccupationHelper() {
@@ -27,6 +22,7 @@ export default function notationCellOccupationHelper() {
     doRemove: boolean,
   ) {
     if (!validateRowAndCol(notation.col, notation.row)) return;
+    clearNotationFromMatrix(notation.uuid, matrix);
     matrix[notation.col][notation.row] = doRemove ? null : notation.uuid;
   }
 
@@ -36,6 +32,7 @@ export default function notationCellOccupationHelper() {
     uuid: string,
     doRemove: boolean,
   ) {
+    clearNotationFromMatrix(uuid, matrix);
     for (let i = notation.fromCol; i <= notation.toCol; i++) {
       if (!validateRowAndCol(i, notation.row)) return;
       matrix[i][notation.row] = doRemove ? null : uuid;
@@ -51,6 +48,7 @@ export default function notationCellOccupationHelper() {
     doRemove: boolean,
   ) {
     if (!validateRowAndCol(col, row)) return;
+    clearLineNotationFromMatrix(uuid, matrix);
     if (doRemove) {
       for (let i = 0; i < matrix[col][row].length; i++) {
         if (matrix[col][row][i] === uuid) {
@@ -95,6 +93,7 @@ export default function notationCellOccupationHelper() {
     notation: VerticalLineNotationAttributes,
     doRemove: boolean,
   ) {
+    clearNotationFromMatrix(notation.uuid, matrix);
     const fromRow = Math.round(
       notation.p1y / cellStore.getCellVerticalHeight(),
     );
@@ -127,6 +126,7 @@ export default function notationCellOccupationHelper() {
     uuid: string,
     doRemove: boolean,
   ) {
+    clearNotationFromMatrix(uuid, matrix);
     const fromCol = Math.round(
       notation.p1x / cellStore.getCellHorizontalWidth(),
     );
@@ -139,9 +139,9 @@ export default function notationCellOccupationHelper() {
     // slope is positive if fromRow > toRow
     const slope = (fromRow - toRow) / (toCol - fromCol);
 
-    let firstRowIndex = slope > 0 ? fromRow : toRow;
+    //let firstRowIndex = slope > 0 ? fromRow : toRow;
     for (let col = fromCol - 1, i = 0; col <= toCol; col++, i++) {
-      let row = Math.ceil(firstRowIndex + i * slope * -1);
+      let row = Math.ceil(fromRow + i * slope * -1);
 
       if (validateRowAndCol(col, row)) {
         updateLineOccupationMatrixCell(col, row, matrix, uuid, doRemove);
@@ -156,6 +156,7 @@ export default function notationCellOccupationHelper() {
     notation: RectNotationAttributes,
     doRemove: boolean,
   ) {
+    clearNotationFromMatrix(notation.uuid, matrix);
     for (let col = notation.fromCol; col <= notation.toCol; col++) {
       for (
         let row = Math.min(notation.fromRow, notation.toRow);
@@ -175,6 +176,7 @@ export default function notationCellOccupationHelper() {
     doRemove: boolean,
   ) {
     if (!cellStore.getSvgId) return;
+    clearLineNotationFromMatrix(notation.uuid, matrix);
 
     // get curve-enclosing-triangle and mark all cells intersecting
     // with the edges which emerge from the control point
@@ -211,6 +213,28 @@ export default function notationCellOccupationHelper() {
       col >= 0 &&
       row >= 0
     );
+  }
+
+  function clearNotationFromMatrix(uuid: string, matrix: any) {
+    for (let col = 0; col < matrixDimensions.colsNum; col++) {
+      for (let row = 0; row < matrixDimensions.rowsNum; row++) {
+        if (matrix[col][row] === uuid) {
+          matrix[col][row] = null;
+        }
+      }
+    }
+  }
+
+  function clearLineNotationFromMatrix(uuid: string, matrix: any) {
+    for (let col = 0; col < matrixDimensions.colsNum; col++) {
+      for (let row = 0; row < matrixDimensions.rowsNum; row++) {
+        for (let sub = 0; sub < matrix[col][row].length; sub++) {
+          if (matrix[col][row][sub] === uuid) {
+            matrix[col][row][sub] = null;
+          }
+        }
+      }
+    }
   }
 
   return {

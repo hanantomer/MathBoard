@@ -24,7 +24,7 @@ import { useNotationStore } from "../store/pinia/notationStore";
 
 import useNotationMutateHelper from "../helpers/notationMutateHelper";
 import useSelectionHelper from "../helpers/selectionHelper";
-import { MoveDirection, NotationType } from "common/unions";
+import { NotationType, SelectionMoveDirection } from "common/unions";
 import { DotCoordinates } from "common/baseTypes";
 import useEventBusHelper from "../helpers/eventBusHelper";
 import useWatchHelper from "../helpers/watchHelper";
@@ -454,7 +454,7 @@ async function moveSelectionByKey( ///TODO by cell or pixel
 }
 
 async function endMoveSelection(e: MouseEvent) {
-  const moveDirection: MoveDirection =
+  const moveDirection: SelectionMoveDirection =
     e.movementX > 0 && e.movementY > 0
       ? "RIGHTBOTTOM"
       : e.movementX > 0 && e.movementY < 0
@@ -492,8 +492,6 @@ function signalSelection() {
     height: selectionRectHeight.value,
   });
 }
-
-
 </script>
 
 <style>

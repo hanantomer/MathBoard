@@ -122,7 +122,7 @@ watchHelper.watchEveryEditModeChange(
   (newEditMode) => (cursor.value = EditModeCursorType.get(newEditMode)!),
 );
 
-watchHelper.watchSelectedCell(props.svgId);
+watchHelper.watchSelectedCellAndDisplayNewSelected(props.svgId);
 
 watchHelper.watchCustomEvent("SYMBOL", "EV_COPY", () => {
   eventHelper.copy();
@@ -134,6 +134,8 @@ watchHelper.watchCustomEvent("SYMBOL", "EV_PASTE", (e: ClipboardEvent) => {
 
 // wait for child(e.g lesson) loaded signal
 watchHelper.watchLoadedEvent(props, load);
+
+watchHelper.watchNotationsEvent(props.svgId, matrixHelper.refreshScreen);
 
 watchHelper.watchNotationsEvent(props.svgId, matrixHelper.refreshScreen);
 

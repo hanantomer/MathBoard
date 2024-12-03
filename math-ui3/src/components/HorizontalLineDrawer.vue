@@ -7,8 +7,8 @@
         left: handleLeft + 'px',
         top: handleY + 'px',
       }"
-      v-on:mouseup="lineDrawer.endDrawingLine"
-      v-on:mousedown="lineDrawer.startDrawingLine"
+      v-on:mouseup="lineDrawer.endDrawingHorizontalLine"
+      v-on:mousedown="lineDrawer.startDrawingHorizontalLine"
     ></v-card>
     <v-card
       id="lineRightHandle"
@@ -17,8 +17,8 @@
         left: handleRight + 'px',
         top: handleY + 'px',
       }"
-      v-on:mouseup="lineDrawer.endDrawingLine"
-      v-on:mousedown="lineDrawer.startDrawingLine"
+      v-on:mouseup="lineDrawer.endDrawingHorizontalLine"
+      v-on:mousedown="lineDrawer.startDrawingHorizontalLine"
     ></v-card>
     <svg
       height="800"
@@ -96,30 +96,30 @@ let handleY = computed(() => {
 watchHelper.watchMouseEvent(
   ["HORIZONTAL_LINE_STARTED"],
   "EV_SVG_MOUSEDOWN",
-  (e) => lineDrawer.startDrawingLine(e, linePosition.value),
+  (e) => lineDrawer.startDrawingHorizontalLine(e, linePosition.value),
 );
 
 watchHelper.watchMouseEvent(
   ["HORIZONTAL_LINE_DRAWING"],
   "EV_SVG_MOUSEMOVE",
-  (e) => lineDrawer.setLine(e, linePosition.value),
+  (e) => lineDrawer.setHorizontalLine(e, linePosition.value),
 );
 
 watchHelper.watchMouseEvent(["HORIZONTAL_LINE_DRAWING"], "EV_SVG_MOUSEUP", () =>
-  lineDrawer.endDrawingLine(linePosition.value),
+  lineDrawer.endDrawingHorizontalLine(linePosition.value),
 );
 
 // emmited by selection helper
 watchHelper.watchNotationSelection(
   "HORIZONTAL_LINE_SELECTED",
   "EV_HORIZONTAL_LINE_SELECTED",
-  (notation) => lineDrawer.selectLine(notation, linePosition.value),
+  (notation) => lineDrawer.selectHorizontalLine(notation, linePosition.value),
 );
 
 watchHelper.watchMouseEvent(
   ["HORIZONTAL_LINE_SELECTED"],
   "EV_SVG_MOUSEDOWN",
-  () => lineDrawer.resetLineDrawing(linePosition.value),
+  () => lineDrawer.resetHorizontalLineDrawing(linePosition.value),
 );
 
 watchHelper.watchMouseEvent(
@@ -127,4 +127,5 @@ watchHelper.watchMouseEvent(
   "EV_SVG_MOUSEUP",
   () => editModeStore.setDefaultEditMode(),
 );
+
 </script>

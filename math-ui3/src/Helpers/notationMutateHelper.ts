@@ -21,18 +21,15 @@ import {
   ExponentNotationCreationAttributes,
   AnnotationNotationCreationAttributes,
   SqrtNotationCreationAttributes,
-  isCurve,
-  isLine,
   isPoint,
   isRect,
-  ExponentNotationAttributes,
   MultiCellAttributes,
   SqrtNotationAttributes,
 } from "common/baseTypes";
 
 import { matrixDimensions } from "common/globals";
 import { CellAttributes } from "common/baseTypes";
-import { NotationType, MoveDirection } from "common/unions";
+import { NotationType, SelectionMoveDirection } from "common/unions";
 import { useUserStore } from "../store/pinia/userStore";
 import { useNotationStore } from "../store/pinia/notationStore";
 import { useCellStore } from "../store/pinia/cellStore";
@@ -403,12 +400,13 @@ export default function notationMutateHelper() {
           break;
         }
       }
+      notationStore.addNotation(n);
     });
     return true;
   }
 
   // move selected notations with persistence - called upon muose up
-  async function saveMovedNotations(moveDirection: MoveDirection) {
+  async function saveMovedNotations(moveDirection: SelectionMoveDirection) {
     await dbHelper.saveMovedNotations(
       getSelectedNotationsSortedByDirection(moveDirection),
     );
@@ -425,7 +423,9 @@ export default function notationMutateHelper() {
   // in order to avoid integrity constraint violation
   // for example: if we move 2 notations to the left, we must first update the left one
   // or the noation to the right will try to occupy the same cell of the left one.
-  function getSelectedNotationsSortedByDirection(moveDirection: MoveDirection) {
+  function getSelectedNotationsSortedByDirection(
+    moveDirection: SelectionMoveDirection,
+  ) {
     return moveDirection === "LEFT"
       ? notationStore
           .getSelectedNotations()

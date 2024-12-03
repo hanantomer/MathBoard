@@ -76,14 +76,6 @@ export const useNotationStore = defineStore("notation", () => {
     return parent.value;
   }
 
-  // function getNotationsByShape<T>(notationShape: NotationShape): T[] {
-  //   return Array.from(notations.value.values()).filter((n) => {
-  //     return (
-  //       n.notationType && NotationTypeShape.get(n.notationType) == notationShape
-  //     );
-  //   }) as T[];
-  // }
-
   function getNotations(): NotationAttributes[] {
     return Array.from(notations.value.values());
   }
@@ -237,34 +229,34 @@ export const useNotationStore = defineStore("notation", () => {
           notations.value.get(uuid)! as PointNotationAttributes,
           true,
         );
-      // case "HORIZONTALLINE":
-      //   notationCellOccupationHelper.updateHorizontalLineOccupationMatrix(
-      //     cellLineNotationOccupationMatrix,
-      //     notations.value.get(uuid)! as HorizontalLineNotationAttributes,
-      //     uuid,
-      //     true,
-      //   );
-      // case "VERTICALLINE":
-      //   notationCellOccupationHelper.updateVerticalLineOccupationMatrix(
-      //     cellLineNotationOccupationMatrix,
-      //     notations.value.get(uuid)! as VerticalLineNotationAttributes,
-      //     true,
-      //   );
-      // case "SLOPELINE":
-      //   notationCellOccupationHelper.updateSlopeLineOccupationMatrix(
-      //     cellLineNotationOccupationMatrix,
-      //     notations.value.get(uuid)! as SlopeLineNotationAttributes,
-      //     uuid,
-      //     true,
-      //   );
+      case "HORIZONTALLINE":
+        notationCellOccupationHelper.updateHorizontalLineOccupationMatrix(
+          cellLineNotationOccupationMatrix,
+          notations.value.get(uuid)! as HorizontalLineNotationAttributes,
+          uuid,
+          true,
+        );
+      case "VERTICALLINE":
+        notationCellOccupationHelper.updateVerticalLineOccupationMatrix(
+          cellLineNotationOccupationMatrix,
+          notations.value.get(uuid)! as VerticalLineNotationAttributes,
+          true,
+        );
+      case "SLOPELINE":
+        notationCellOccupationHelper.updateSlopeLineOccupationMatrix(
+          cellLineNotationOccupationMatrix,
+          notations.value.get(uuid)! as SlopeLineNotationAttributes,
+          uuid,
+          true,
+        );
 
-      // case "CONVEXCURVE":
-      // case "CONCAVECURVE":
-      //   notationCellOccupationHelper.updateCurveOccupationMatrix(
-      //     cellLineNotationOccupationMatrix,
-      //     notations.value.get(uuid)! as CurveNotationAttributes,
-      //     true,
-      //   );
+      case "CONVEXCURVE":
+      case "CONCAVECURVE":
+        notationCellOccupationHelper.updateCurveOccupationMatrix(
+          cellLineNotationOccupationMatrix,
+          notations.value.get(uuid)! as CurveNotationAttributes,
+          true,
+        );
 
       case "IMAGE":
       case "TEXT":
@@ -296,6 +288,7 @@ export const useNotationStore = defineStore("notation", () => {
     const notation = notations.value.get(uuid);
     if (!notation) return;
     notation.selected = true;
+    console.debug("select Notation");
   }
 
   function setParent(parentUUID: string, boardType: BoardType) {
@@ -371,7 +364,8 @@ export const useNotationStore = defineStore("notation", () => {
     }
 
     notationsUUIDsToSelect.forEach((uuid) => {
-      notations.value.get(uuid)!.selected = true;
+      selectNotation(uuid);
+      //notations.value.get(uuid)!.selected = true;
     });
   }
 

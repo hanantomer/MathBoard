@@ -40,7 +40,7 @@
 import { computed } from "vue";
 import { useStudentStore } from "../store/pinia/studentStore";
 import { useLessonStore } from "../store/pinia/lessonStore";
-import { UserAttributes } from "../../../math-common/build/userTypes";
+import { UserAttributes } from "../../../math-common/src/userTypes";
 import UseUserOutgoingOperations from "../helpers/userOutgoingOperationsHelper";
 
 const studentStore = useStudentStore();

@@ -18,7 +18,7 @@ import { computed, ref } from "vue";
 import { useCellStore } from "../store/pinia/cellStore";
 import { useEditModeStore } from "../store/pinia/editModeStore";
 import { useNotationStore } from "../store/pinia/notationStore";
-import { AnnotationNotationAttributes } from "../../../math-common/build/baseTypes";
+import { AnnotationNotationAttributes } from "../../../math-common/src/baseTypes";
 import useNotationMutateHelper from "../helpers/notationMutateHelper";
 import usescreenHelper from "../helpers/screenHelper";
 import useWatchHelper from "../helpers/watchHelper";

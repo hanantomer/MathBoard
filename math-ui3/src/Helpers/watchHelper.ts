@@ -3,7 +3,7 @@ import { EditMode, BusEventType } from "../../../math-common/build/unions";
 import {
   CellAttributes,
   NotationAttributes,
-} from "../../../math-common/build/baseTypes";
+} from "../../../math-common/src/baseTypes";
 import { useEditModeStore } from "../store/pinia/editModeStore";
 import { useCellStore } from "../store/pinia/cellStore";
 import { useNotationStore } from "../store/pinia/notationStore";
@@ -90,7 +90,7 @@ export default function () {
     );
   }
 
-  function watchSelectedCell(svgId: string) {
+  function watchSelectedCellAndDisplayNewSelected(svgId: string) {
     watch(
       () => cellStore.getSelectedCell() as CellAttributes,
       (
@@ -145,7 +145,7 @@ export default function () {
 
   function watchNotationsEvent(svgId: string, handler: CustomEventHandler) {
     watch(
-      () => notationStore.getNotations(),
+      () => notationStore.getNotations(),  // new and old
       () => {
         handler(svgId);
       },
@@ -159,7 +159,7 @@ export default function () {
     watchEveryEditModeChange,
     watchEditModeTransition,
     watchEndOfEditMode,
-    watchSelectedCell,
+    watchSelectedCellAndDisplayNewSelected,
     watchNotationSelection,
     watchCustomEvent,
     watchLoadedEvent,
