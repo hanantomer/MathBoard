@@ -21,19 +21,20 @@ const notationStore = useNotationStore();
 const notationMutateHelper = useNotationMutateHelper();
 
 export default function useLineDrawingHelper() {
-  function selectHorizontalLine(
-    lineNotation: HorizontalLineNotationAttributes,
-    linePosition: HorizontalLineAttributes,
-  ) {
-    if (!lineNotation) return;
 
-    linePosition.p1x = lineNotation.p1x;
-    linePosition.p2x = lineNotation.p2x;
-    linePosition.py = lineNotation.py;
+  // function selectHorizontalLine(
+  //   lineNotation: HorizontalLineNotationAttributes,
+  //   linePosition: HorizontalLineAttributes,
+  // ) {
+  //   if (!lineNotation) return;
 
-    // update store
-    notationStore.selectNotation(lineNotation.uuid);
-  }
+  //   linePosition.p1x = lineNotation.p1x;
+  //   linePosition.p2x = lineNotation.p2x;
+  //   linePosition.py = lineNotation.py;
+
+  //   // update store
+  //   notationStore.selectNotation(lineNotation.uuid);
+  // }
 
   // function selectSqrt(
   //   sqrtNotation: SqrtNotationAttributes,
@@ -51,13 +52,13 @@ export default function useLineDrawingHelper() {
   //   notationStore.selectNotation(sqrtNotation.uuid);
   // }
 
-  function selectSlopeLine(
-    lineNotation: SlopeLineNotationAttributes,
-    linePosition: SlopeLineAttributes,
-  ) {
-    Object.assign(linePosition, lineNotation);
-    notationStore.selectNotation(lineNotation.uuid);
-  }
+  // function selectSlopeLine(
+  //   lineNotation: SlopeLineNotationAttributes,
+  //   linePosition: SlopeLineAttributes,
+  // ) {
+  //   Object.assign(linePosition, lineNotation);
+  //   notationStore.selectNotation(lineNotation.uuid);
+  // }
 
   function selectLine(lineNotation: NotationAttributes, linePosition: any) {
     Object.assign(linePosition, lineNotation);
@@ -285,6 +286,7 @@ export default function useLineDrawingHelper() {
 
   function resetVerticalLineDrawing(linePosition: VerticalLineAttributes) {
     linePosition.px = linePosition.p1y = linePosition.p2y = 0;
+    notationStore.resetSelectedNotations();
     editModeStore.setDefaultEditMode();
   }
 
@@ -409,8 +411,6 @@ export default function useLineDrawingHelper() {
     }
 
     saveSlopeLine(linePosition);
-
-    resetSlopeLineDrawing(linePosition);
   }
 
   function saveSlopeLine(linePosition: SlopeLineAttributes) {
@@ -430,12 +430,13 @@ export default function useLineDrawingHelper() {
       );
   }
 
-  function resetSlopeLineDrawing(linePosition: SlopeLineAttributes) {
-    linePosition.p1x =
-      linePosition.p2x =
-      linePosition.p1y =
-      linePosition.p2y =
-        0;
+  function resetDrawing(linePosition: any) {
+
+    let key: keyof typeof linePosition;
+    for (key in linePosition) {
+      linePosition[key] = 0;
+    }
+    notationStore.resetSelectedNotations();
     editModeStore.setDefaultEditMode();
   }
 
@@ -443,16 +444,18 @@ export default function useLineDrawingHelper() {
     startDrawingHorizontalLine,
     startDrawingVerticalLine,
     startDrawingSlopeLine,
-    selectHorizontalLine,
-    selectSlopeLine,
+
+//    selectHorizontalLine,
+//  selectSlopeLine,
     selectLine,
-    resetHorizontalLineDrawing,
-    resetVerticalLineDrawing,
-    resetSlopeLineDrawing,
+
+    resetDrawing,
+
     endDrawingHorizontalLine,
     endDrawingVerticalLine,
     endDrawingSqrt,
     endDrawingSlopeLine,
+
     setHorizontalLine,
     setVerticalLine,
     setSlopeLine,

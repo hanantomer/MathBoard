@@ -220,6 +220,7 @@ export const useNotationStore = defineStore("notation", () => {
           uuid,
           true,
         );
+        break;
       case "ANNOTATION":
       case "SIGN":
       case "SQRTSYMBOL":
@@ -229,6 +230,7 @@ export const useNotationStore = defineStore("notation", () => {
           notations.value.get(uuid)! as PointNotationAttributes,
           true,
         );
+        break;
       case "HORIZONTALLINE":
         notationCellOccupationHelper.updateHorizontalLineOccupationMatrix(
           cellLineNotationOccupationMatrix,
@@ -236,12 +238,14 @@ export const useNotationStore = defineStore("notation", () => {
           uuid,
           true,
         );
+        break;
       case "VERTICALLINE":
         notationCellOccupationHelper.updateVerticalLineOccupationMatrix(
           cellLineNotationOccupationMatrix,
           notations.value.get(uuid)! as VerticalLineNotationAttributes,
           true,
         );
+        break;
       case "SLOPELINE":
         notationCellOccupationHelper.updateSlopeLineOccupationMatrix(
           cellLineNotationOccupationMatrix,
@@ -249,6 +253,7 @@ export const useNotationStore = defineStore("notation", () => {
           uuid,
           true,
         );
+        break;
 
       case "CONVEXCURVE":
       case "CONCAVECURVE":
@@ -257,6 +262,7 @@ export const useNotationStore = defineStore("notation", () => {
           notations.value.get(uuid)! as CurveNotationAttributes,
           true,
         );
+        break;
 
       case "IMAGE":
       case "TEXT":
@@ -265,6 +271,7 @@ export const useNotationStore = defineStore("notation", () => {
           notations.value.get(uuid)! as RectNotationAttributes,
           true,
         );
+        break;
     }
 
     notations.value.delete(uuid);

@@ -120,7 +120,7 @@ watchHelper.watchNotationSelection(
 watchHelper.watchMouseEvent(
   ["VERTICAL_LINE_SELECTED"],
   "EV_SVG_MOUSEDOWN",
-  () => lineDrawer.resetVerticalLineDrawing(linePosition.value),
+  () => lineDrawer.resetDrawing(linePosition.value),
 );
 
 watchHelper.watchMouseEvent(["VERTICAL_LINE_SELECTED"], "EV_SVG_MOUSEUP", () =>

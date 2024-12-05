@@ -48,7 +48,11 @@ import {
   SlopeLineAttributes,
   SlopeLineNotationAttributes,
 } from "../../../math-common/src/baseTypes";
-import { SlopeType, MovementDirection, SlopeDrawerAttributes } from "../../../math-common/src/baseTypes";
+import {
+  SlopeType,
+  MovementDirection,
+  SlopeDrawerAttributes,
+} from "../../../math-common/src/baseTypes";
 import useWatchHelper from "../helpers/watchHelper";
 import useLineDrawer from "../helpers/lineDrawingHelper";
 
@@ -69,7 +73,7 @@ const slopeDrawerAttributes = ref<SlopeDrawerAttributes>({
     p2y: 0,
   },
   slopeType: "NONE",
-  movementDirection: "NONE"
+  movementDirection: "NONE",
 });
 
 // const slopeType = ref<SlopeType>("NONE");
@@ -85,19 +89,31 @@ const show = computed(() => {
 });
 
 let handleLeft = computed(() => {
-  return slopeDrawerAttributes.value.linePosition.p1x + (cellStore.getSvgBoundingRect().left ?? 0);
+  return (
+    slopeDrawerAttributes.value.linePosition.p1x +
+    (cellStore.getSvgBoundingRect().left ?? 0)
+  );
 });
 
 let handleRight = computed(() => {
-  return slopeDrawerAttributes.value.linePosition.p2x + (cellStore.getSvgBoundingRect().left ?? 0);
+  return (
+    slopeDrawerAttributes.value.linePosition.p2x +
+    (cellStore.getSvgBoundingRect().left ?? 0)
+  );
 });
 
 let handleTop = computed(() => {
-  return slopeDrawerAttributes.value.linePosition.p1y + (cellStore.getSvgBoundingRect().top ?? 0);
+  return (
+    slopeDrawerAttributes.value.linePosition.p1y +
+    (cellStore.getSvgBoundingRect().top ?? 0)
+  );
 });
 
 let handleBottom = computed(() => {
-  return slopeDrawerAttributes.value.linePosition.p2y + (cellStore.getSvgBoundingRect().top ?? 0);
+  return (
+    slopeDrawerAttributes.value.linePosition.p2y +
+    (cellStore.getSvgBoundingRect().top ?? 0)
+  );
 });
 
 // watchers
@@ -115,24 +131,26 @@ watchHelper.watchMouseEvent(
 watchHelper.watchMouseEvent(
   ["SLOPE_LINE_DRAWING"],
   "EV_SVG_MOUSEUP",
-  (e: MouseEvent) => lineDrawer.endDrawingSlopeLine(slopeDrawerAttributes.value.linePosition),
+  (e: MouseEvent) =>
+    lineDrawer.endDrawingSlopeLine(slopeDrawerAttributes.value.linePosition),
 );
 
 // emmited by selection helper
 watchHelper.watchNotationSelection(
   "SLOPE_LINE_SELECTED",
   "EV_SLOPE_LINE_SELECTED",
-  (notation) => lineDrawer.selectSlopeLine(notation, slopeDrawerAttributes.value.linePosition)
+  (notation) =>
+    lineDrawer.selectLine(
+      notation,
+      slopeDrawerAttributes.value.linePosition,
+    ),
 );
 
-watchHelper.watchMouseEvent(
-  ["SLOPE_LINE_SELECTED"],
-  "EV_SVG_MOUSEDOWN",
-  () => lineDrawer.resetSlopeLineDrawing(slopeDrawerAttributes.value.linePosition),
+watchHelper.watchMouseEvent(["SLOPE_LINE_SELECTED"], "EV_SVG_MOUSEDOWN", () =>
+  lineDrawer.resetDrawing(slopeDrawerAttributes.value.linePosition),
 );
 
 watchHelper.watchMouseEvent(["SLOPE_LINE_SELECTED"], "EV_SVG_MOUSEUP", () =>
   editModeStore.setDefaultEditMode(),
 );
-
 </script>

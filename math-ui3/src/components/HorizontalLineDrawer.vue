@@ -113,13 +113,13 @@ watchHelper.watchMouseEvent(["HORIZONTAL_LINE_DRAWING"], "EV_SVG_MOUSEUP", () =>
 watchHelper.watchNotationSelection(
   "HORIZONTAL_LINE_SELECTED",
   "EV_HORIZONTAL_LINE_SELECTED",
-  (notation) => lineDrawer.selectHorizontalLine(notation, linePosition.value),
+  (notation) => lineDrawer.selectLine(notation, linePosition.value),
 );
 
 watchHelper.watchMouseEvent(
   ["HORIZONTAL_LINE_SELECTED"],
   "EV_SVG_MOUSEDOWN",
-  () => lineDrawer.resetHorizontalLineDrawing(linePosition.value),
+  () => lineDrawer.resetDrawing(linePosition.value),
 );
 
 watchHelper.watchMouseEvent(

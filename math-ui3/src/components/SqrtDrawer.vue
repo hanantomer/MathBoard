@@ -112,7 +112,7 @@ watchHelper.watchMouseEvent(["SQRT_SELECTED"], "EV_SVG_MOUSEUP", () =>
 );
 
 watchHelper.watchMouseEvent(["SQRT_DRAWING"], "EV_SVG_MOUSEDOWN", () =>
-  lineDrawer.resetHorizontalLineDrawing(linePosition.value),
+  lineDrawer.resetDrawing(linePosition.value),
 );
 
 </script>

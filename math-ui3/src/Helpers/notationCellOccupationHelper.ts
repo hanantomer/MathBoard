@@ -32,7 +32,7 @@ export default function notationCellOccupationHelper() {
     uuid: string,
     doRemove: boolean,
   ) {
-    clearNotationFromMatrix(uuid, matrix);
+    clearNotationFromMatrix(uuid, matrix); ///TODO: 
     for (let i = notation.fromCol; i <= notation.toCol; i++) {
       if (!validateRowAndCol(i, notation.row)) return;
       matrix[i][notation.row] = doRemove ? null : uuid;

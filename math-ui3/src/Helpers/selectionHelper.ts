@@ -190,6 +190,7 @@ export default function selectionHelper() {
   }
 
   function selectClickedPosition(e: MouseEvent) {
+    notationStore.resetSelectedNotations();
     const uuid = (e.target as any).id;
     if (uuid) {
       const n = notationStore.getNotation(uuid)!;

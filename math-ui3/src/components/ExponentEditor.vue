@@ -3,13 +3,14 @@
     class="exponentEditor"
     v-show="show"
     v-bind:style="{
-      left: exponentLeft + 'px',
-      top: exponentTop + 'px',
+      left: leftPosition + 'px',
+      top: topPosition + 'px',
     }"
   >
     <input
       maxlength="3"
-      autofocus
+      autofocus="true"
+      v-model="base"
       id="baseInput"
       class="baseInput"
       placeholder="base"
@@ -17,7 +18,7 @@
     />
     <input
       maxlength="3"
-      id="exponentInput"
+      v-model="exponent"
       class="exponentInput"
       placeholder="exp"
       autocomplete="off"
@@ -43,8 +44,11 @@ const cellStore = useCellStore();
 const screenHelper = useScreenHelper();
 const watchHelper = useWatchHelper();
 
-let exponentLeft = ref(0);
-let exponentTop = ref(0);
+let exponent = ref("");
+let base = ref("");
+
+let leftPosition = ref(0);
+let topPosition = ref(0);
 
 const selectedNotation = computed(() =>
   notationStore.getSelectedNotations()?.length == 0
@@ -54,11 +58,7 @@ const selectedNotation = computed(() =>
         .at(0) as ExponentNotationAttributes),
 );
 
-const show = computed(
-  () =>
-    editModeStore.getEditMode() === "EXPONENT_WRITING" ||
-    editModeStore.getEditMode() === "EXPONENT_SELECTED",
-);
+const show = computed(() => editModeStore.getEditMode() === "EXPONENT_WRITING");
 
 // user clicked on exponent icon and then clicked on a cell
 
@@ -124,7 +124,7 @@ function startNewExponentAtMousePosition(e: MouseEvent) {
     false,
   );
 
-  resetExponentValue();
+  setInitialExponentValue();
 
   setExponentPosition();
 
@@ -136,27 +136,22 @@ function setExponentPosition() {
     cellStore.getSelectedCell(),
   );
 
-  exponentLeft.value = clickedCoordinates.x;
-  exponentTop.value = clickedCoordinates.y;
+  leftPosition.value = clickedCoordinates.x;
+  topPosition.value = clickedCoordinates.y;
 }
 
 function setSelectedExponentPosition() {
   if (!selectedNotation.value) return;
 
-  exponentLeft.value =
+  leftPosition.value =
     cellStore.getSvgBoundingRect().x +
     window.scrollX +
     selectedNotation.value.fromCol * cellStore.getCellHorizontalWidth();
 
-  exponentTop.value =
+  topPosition.value =
     cellStore.getSvgBoundingRect().y +
     window.scrollY +
     selectedNotation.value.row * cellStore.getCellVerticalHeight();
-}
-
-function resetExponentValue() {
-  (document.getElementById("exponentInput") as HTMLInputElement).value = "";
-  (document.getElementById("baseInput") as HTMLInputElement).value = "";
 }
 
 function editSelectedExponentNotation() {
@@ -164,39 +159,27 @@ function editSelectedExponentNotation() {
 
   setSelectedExponentPosition();
 
-  setInitialExponentValue();
+  base.value = selectedNotation.value?.base!;
+  exponent.value = selectedNotation.value?.exponent!;
 }
 
 function setInitialExponentValue() {
-  (document.getElementById("baseInput") as HTMLInputElement).value =
-    selectedNotation.value!.base!;
-  (document.getElementById("exponentInput") as HTMLInputElement).value =
-    selectedNotation.value!.exponent!;
+  base.value = "";
+  exponent.value = "";
 }
 
 function submitExponent() {
   editModeStore.setNextEditMode();
 
-  if (
-    !(document.getElementById("baseInput") as HTMLInputElement).value ||
-    !(document.getElementById("exponentInput") as HTMLInputElement).value
-  )
-    return;
+  if (!base.value || !exponent.value) return;
 
   if (selectedNotation.value) {
-    selectedNotation.value!.base = (
-      document.getElementById("baseInput") as HTMLInputElement
-    ).value;
-    selectedNotation.value!.exponent = (
-      document.getElementById("exponentInput") as HTMLInputElement
-    ).value;
+    selectedNotation.value!.base = base.value;
+    selectedNotation.value!.exponent = exponent.value;
 
     notationMutateHelper.updateNotation(selectedNotation.value);
   } else {
-    notationMutateHelper.addExponentNotation(
-      (document.getElementById("baseInput") as HTMLInputElement).value,
-      (document.getElementById("exponentInput") as HTMLInputElement).value,
-    );
+    notationMutateHelper.addExponentNotation(base.value, exponent.value);
   }
 }
 </script>
