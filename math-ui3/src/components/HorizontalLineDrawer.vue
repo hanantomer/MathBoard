@@ -1,3 +1,4 @@
+<!-- TODO: create component for line handles -->
 <template>
   <div v-if="show">
     <v-card
@@ -7,8 +8,10 @@
         left: handleLeft + 'px',
         top: handleY + 'px',
       }"
-      v-on:mouseup="lineDrawer.endDrawingHorizontalLine"
-      v-on:mousedown="lineDrawer.startDrawingHorizontalLine"
+      v-on:mouseup="() => lineDrawer.endDrawingHorizontalLine(linePosition)"
+      v-on:mousedown="
+        (e) => lineDrawer.startDrawingHorizontalLine(e, linePosition)
+      "
     ></v-card>
     <v-card
       id="lineRightHandle"
@@ -17,8 +20,10 @@
         left: handleRight + 'px',
         top: handleY + 'px',
       }"
-      v-on:mouseup="lineDrawer.endDrawingHorizontalLine"
-      v-on:mousedown="lineDrawer.startDrawingHorizontalLine"
+      v-on:mouseup="() => lineDrawer.endDrawingHorizontalLine(linePosition)"
+      v-on:mousedown="
+        (e) => lineDrawer.startDrawingHorizontalLine(e, linePosition)
+      "
     ></v-card>
     <svg
       height="800"
@@ -127,5 +132,4 @@ watchHelper.watchMouseEvent(
   "EV_SVG_MOUSEUP",
   () => editModeStore.setDefaultEditMode(),
 );
-
 </script>

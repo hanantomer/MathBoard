@@ -68,7 +68,8 @@ export const useEditModeStore = defineStore("editMode", () => {
   function isSlopeLineMode() {
     return (
       editMode.value === "SLOPE_LINE_STARTED" ||
-      editMode.value === "SLOPE_LINE_DRAWING"
+      editMode.value === "SLOPE_LINE_DRAWING" ||
+      editMode.value === "SLOPE_LINE_EDITING"
     );
   }
 
@@ -144,7 +145,7 @@ export const useEditModeStore = defineStore("editMode", () => {
   }
 
   function isSlopeLineDrawingMode() {
-    return editMode.value === "SLOPE_LINE_DRAWING";
+    return editMode.value === "SLOPE_LINE_DRAWING" || "SLOPE_LINE_EDITING";
   }
 
   function isCurveDrawingMode() {
@@ -272,7 +273,7 @@ export const useEditModeStore = defineStore("editMode", () => {
       case "SLOPE_LINE_STARTED":
         return setEditMode("SLOPE_LINE_DRAWING");
       case "SLOPE_LINE_SELECTED":
-        return setEditMode("SLOPE_LINE_DRAWING");
+        return setEditMode("SLOPE_LINE_EDITING");
 
       case "CONCAVE_CURVE_STARTED":
         return setEditMode("CONCAVE_CURVE_DRAWING");

@@ -90,6 +90,7 @@ export type EditMode =
   | "SLOPE_LINE_STARTED" // slope line button pressed
   | "SLOPE_LINE_DRAWING" // slope line drawing started
   | "SLOPE_LINE_SELECTED" // slope line selected
+  | "SLOPE_LINE_EDITING" // slope line handle cliccked followin slope line selected
   | "CONCAVE_CURVE_STARTED" // concave line button pressed
   | "CONCAVE_CURVE_DRAWING" // concave line drawing started
   | "CONCAVE_CURVE_SELECTED" // concave line selected
@@ -129,6 +130,7 @@ export const EditModeNotationType = new Map<
   ["SLOPE_LINE_STARTED", "SLOPELINE"],
   ["SLOPE_LINE_DRAWING", "SLOPELINE"],
   ["SLOPE_LINE_SELECTED", "SLOPELINE"],
+  ["SLOPE_LINE_EDITING", "SLOPELINE"],
   ["CONCAVE_CURVE_STARTED", "CONCAVECURVE"],
   ["CONCAVE_CURVE_DRAWING", "CONCAVECURVE"],
   ["CONCAVE_CURVE_SELECTED", "CONCAVECURVE"],
@@ -171,6 +173,7 @@ export const EditModeCursorType = new Map<
   ["SLOPE_LINE_STARTED", "auto"],
   ["SLOPE_LINE_DRAWING", "auto"],
   ["SLOPE_LINE_SELECTED", "auto"],
+  ["SLOPE_LINE_EDITING", "auto"],
   ["SQRT_STARTED", "auto"],
   ["SQRT_DRAWING", "auto"],
   ["SQRT_SELECTED", "auto"],

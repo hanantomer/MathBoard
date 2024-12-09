@@ -301,4 +301,5 @@ export type SlopeDrawerAttributes = {
   linePosition: SlopeLineAttributes;
   slopeType: SlopeType;
   movementDirection: MovementDirection;
+  modifyRight: boolean
 };

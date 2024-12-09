@@ -91,18 +91,8 @@ watchHelper.watchKeyEvent(
   endEditingByEnterKey,
 );
 
-// function selectExponent(exponentNotation: ExponentNotationAttributes) {
-//   if (!exponentNotation) return;
 
-//   // first click -> select
-//   if (!editModeStore.isTextSelectedMode()) {
-//     editModeStore.setEditMode("EXPONENT_SELECTED");
-//     return;
-//   }
-
-//   // second click -> edit
-//   editSelectedExponentNotation();
-// }
+///TODO: move to helper
 
 function endEditingByEnterKey(e: KeyboardEvent) {
   const { code } = e;

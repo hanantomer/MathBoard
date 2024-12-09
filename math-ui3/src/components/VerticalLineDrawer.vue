@@ -7,8 +7,10 @@
         left: handleX + 'px',
         top: handleTop + 'px',
       }"
-      v-on:mouseup="lineDrawer.endDrawingVerticalLine"
-      v-on:mousedown="lineDrawer.startDrawingVerticalLine"
+      v-on:mouseup="() => lineDrawer.endDrawingVerticalLine(linePosition)"
+      v-on:mousedown="
+        (e) => lineDrawer.startDrawingVerticalLine(e, linePosition)
+      "
     ></v-card>
     <v-card
       id="lineBottomHandle"
@@ -17,8 +19,10 @@
         left: handleX + 'px',
         top: handleBottom + 'px',
       }"
-      v-on:mouseup="lineDrawer.endDrawingVerticalLine"
-      v-on:mousedown="lineDrawer.startDrawingVerticalLine"
+      v-on:mouseup="() => lineDrawer.endDrawingVerticalLine(linePosition)"
+      v-on:mousedown="
+        (e) => lineDrawer.startDrawingVerticalLine(e, linePosition)
+      "
     ></v-card>
     <svg
       height="800"
@@ -103,10 +107,8 @@ watchHelper.watchMouseEvent(
   (e: MouseEvent) => lineDrawer.setVerticalLine(e, linePosition.value),
 );
 
-watchHelper.watchMouseEvent(
-  ["VERTICAL_LINE_DRAWING"],
-  "EV_SVG_MOUSEUP",
-  () => lineDrawer.endDrawingVerticalLine(linePosition.value),
+watchHelper.watchMouseEvent(["VERTICAL_LINE_DRAWING"], "EV_SVG_MOUSEUP", () =>
+  lineDrawer.endDrawingVerticalLine(linePosition.value),
 );
 
 // emmited by selection helper
@@ -126,5 +128,4 @@ watchHelper.watchMouseEvent(
 watchHelper.watchMouseEvent(["VERTICAL_LINE_SELECTED"], "EV_SVG_MOUSEUP", () =>
   editModeStore.setDefaultEditMode(),
 );
-
 </script>

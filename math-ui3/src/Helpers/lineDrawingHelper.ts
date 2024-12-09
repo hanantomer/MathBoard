@@ -13,7 +13,11 @@ import { useEditModeStore } from "../store/pinia/editModeStore";
 import { useCellStore } from "../store/pinia/cellStore";
 import { useNotationStore } from "../store/pinia/notationStore";
 import useNotationMutateHelper from "../helpers/notationMutateHelper";
-import { SlopeDrawerAttributes, SlopeType } from "common/baseTypes";
+import {
+  SlopeDrawerAttributes,
+  SlopeType,
+  MovementDirection,
+} from "common/baseTypes";
 
 const editModeStore = useEditModeStore();
 const cellStore = useCellStore();
@@ -21,44 +25,6 @@ const notationStore = useNotationStore();
 const notationMutateHelper = useNotationMutateHelper();
 
 export default function useLineDrawingHelper() {
-
-  // function selectHorizontalLine(
-  //   lineNotation: HorizontalLineNotationAttributes,
-  //   linePosition: HorizontalLineAttributes,
-  // ) {
-  //   if (!lineNotation) return;
-
-  //   linePosition.p1x = lineNotation.p1x;
-  //   linePosition.p2x = lineNotation.p2x;
-  //   linePosition.py = lineNotation.py;
-
-  //   // update store
-  //   notationStore.selectNotation(lineNotation.uuid);
-  // }
-
-  // function selectSqrt(
-  //   sqrtNotation: SqrtNotationAttributes,
-  //   linePosition: HorizontalLineAttributes,
-  // ) {
-  //   if (!sqrtNotation) return;
-
-  //   linePosition.p1x =
-  //     sqrtNotation.fromCol * cellStore.getCellHorizontalWidth();
-  //   linePosition.p2x =
-  //     (sqrtNotation.toCol - 1) * cellStore.getCellHorizontalWidth();
-  //   linePosition.py = sqrtNotation.row * cellStore.getCellVerticalHeight();
-
-  //   // update store
-  //   notationStore.selectNotation(sqrtNotation.uuid);
-  // }
-
-  // function selectSlopeLine(
-  //   lineNotation: SlopeLineNotationAttributes,
-  //   linePosition: SlopeLineAttributes,
-  // ) {
-  //   Object.assign(linePosition, lineNotation);
-  //   notationStore.selectNotation(lineNotation.uuid);
-  // }
 
   function selectLine(lineNotation: NotationAttributes, linePosition: any) {
     Object.assign(linePosition, lineNotation);
@@ -85,27 +51,6 @@ export default function useLineDrawingHelper() {
     linePosition.p2x = linePosition.p1x + 10;
 
     linePosition.py = position.y;
-  }
-
-  function startDrawingSlopeLine(
-    e: MouseEvent,
-    slopeDrawerAttributes: SlopeDrawerAttributes,
-  ) {
-    editModeStore.setNextEditMode();
-    if (slopeDrawerAttributes.linePosition.p1y) return;
-
-    slopeDrawerAttributes.slopeType = "NONE";
-    slopeDrawerAttributes.movementDirection = "NONE";
-
-    const position = {
-      x: e.pageX - cellStore.getSvgBoundingRect().x,
-      y: e.pageY - cellStore.getSvgBoundingRect().y,
-    };
-
-    slopeDrawerAttributes.linePosition.p1x =
-      slopeDrawerAttributes.linePosition.p2x = position.x;
-    slopeDrawerAttributes.linePosition.p1y =
-      slopeDrawerAttributes.linePosition.p2y = position.y;
   }
 
   function setHorizontalLine(
@@ -137,72 +82,6 @@ export default function useLineDrawingHelper() {
     }
   }
 
-  function setSlopeLine(
-    e: MouseEvent,
-    slopeDrawerAttributes: SlopeDrawerAttributes,
-  ) {
-    if (e.buttons !== 1) {
-      return;
-    }
-
-    const yPos = e.pageY - (cellStore.getSvgBoundingRect()?.y ?? 0);
-    const xPos = e.pageX - (cellStore.getSvgBoundingRect()?.x ?? 0);
-
-    if (
-      xPos === slopeDrawerAttributes.linePosition.p1x ||
-      yPos === slopeDrawerAttributes.linePosition.p1y
-    ) {
-      return;
-    }
-
-    if (slopeDrawerAttributes.slopeType === "NONE") {
-      slopeDrawerAttributes.slopeType = getSlopeType(
-        xPos,
-        yPos,
-        slopeDrawerAttributes.linePosition,
-      );
-    }
-
-    if (slopeDrawerAttributes.movementDirection === "NONE") {
-      slopeDrawerAttributes.movementDirection =
-        (slopeDrawerAttributes.slopeType === "POSITIVE" &&
-          yPos > slopeDrawerAttributes.linePosition.p2y) ||
-        (slopeDrawerAttributes.slopeType === "NEGATIVE" &&
-          yPos > slopeDrawerAttributes.linePosition.p1y)
-          ? "DOWN"
-          : "UP";
-    }
-
-    // 4 options for drawing sloped line:
-    // 1. upper left to lower right. direction is DOWN and slopeType is NEGATIVE
-    // 2  lower right to upper left. direction is UP and slopeType is NEGATIVE
-    // 3. upper right to lower left. direction is DOWN and slopeType is POSITIVE
-    // 4. lower left to upper right. direction is UP and slopeType is POSITIVE
-
-    const modifyRight =
-      (slopeDrawerAttributes.slopeType === "POSITIVE" &&
-        slopeDrawerAttributes.movementDirection === "UP") ||
-      (slopeDrawerAttributes.slopeType === "NEGATIVE" &&
-        slopeDrawerAttributes.movementDirection === "DOWN");
-
-    if (modifyRight) {
-      slopeDrawerAttributes.linePosition.p2x = xPos;
-      slopeDrawerAttributes.linePosition.p2y = yPos;
-    } else {
-      slopeDrawerAttributes.linePosition.p1x = xPos;
-      slopeDrawerAttributes.linePosition.p1y = yPos;
-    }
-
-    if (
-      slopeDrawerAttributes.linePosition.p1x >=
-      slopeDrawerAttributes.linePosition.p2x
-    ) {
-      throw new Error(
-        JSON.stringify(slopeDrawerAttributes.linePosition) +
-          "is invalid: p2x must be greater than p1x",
-      );
-    }
-  }
 
   function endDrawingSqrt(linePosition: HorizontalLineAttributes) {
     if (
@@ -342,22 +221,7 @@ export default function useLineDrawingHelper() {
     return clickedCol * cellStore.getCellHorizontalWidth();
   }
 
-  function getSlopeType(
-    xPos: number,
-    yPos: number,
-    linePosition: SlopeLineAttributes,
-  ): SlopeType {
-    if (
-      /*moving up and right*/
-      (yPos < linePosition.p2y && xPos > linePosition.p2x) ||
-      /*moving down and left*/
-      (yPos > linePosition.p2y && xPos < linePosition.p2x)
-    ) {
-      return "POSITIVE";
-    }
 
-    return "NEGATIVE";
-  }
 
   function startDrawingVerticalLine(
     e: MouseEvent,
@@ -393,45 +257,8 @@ export default function useLineDrawingHelper() {
     }
   }
 
-  function endDrawingSlopeLine(linePosition: SlopeLineAttributes) {
-    if (
-      linePosition.p1x === 0 &&
-      linePosition.p1y === 0 &&
-      linePosition.p2x === 0 &&
-      linePosition.p2y === 0
-    ) {
-      return;
-    }
-
-    if (
-      linePosition.p1x == linePosition.p2x &&
-      linePosition.p2y == linePosition.p2y
-    ) {
-      return;
-    }
-
-    saveSlopeLine(linePosition);
-  }
-
-  function saveSlopeLine(linePosition: SlopeLineAttributes) {
-    if (notationStore.getSelectedNotations().length > 0) {
-      let updatedLine = {
-        ...notationStore.getSelectedNotations().at(0)!,
-        ...linePosition,
-      };
-
-      notationMutateHelper.updateSlopeLineNotation(
-        updatedLine as SlopeLineNotationAttributes,
-      );
-    } else
-      notationMutateHelper.addSlopeLineNotation(
-        linePosition,
-        editModeStore.getNotationTypeByEditMode(),
-      );
-  }
 
   function resetDrawing(linePosition: any) {
-
     let key: keyof typeof linePosition;
     for (key in linePosition) {
       linePosition[key] = 0;
@@ -440,24 +267,16 @@ export default function useLineDrawingHelper() {
     editModeStore.setDefaultEditMode();
   }
 
+
   return {
     startDrawingHorizontalLine,
     startDrawingVerticalLine,
-    startDrawingSlopeLine,
-
-//    selectHorizontalLine,
-//  selectSlopeLine,
     selectLine,
-
     resetDrawing,
-
     endDrawingHorizontalLine,
     endDrawingVerticalLine,
     endDrawingSqrt,
-    endDrawingSlopeLine,
-
     setHorizontalLine,
     setVerticalLine,
-    setSlopeLine,
   };
 }

@@ -7,8 +7,13 @@
         left: handleLeft + 'px',
         top: handleTop + 'px',
       }"
-      v-on:mouseup="lineDrawer.endDrawingSlopeLine"
-      v-on:mousedown="lineDrawer.startDrawingSlopeLine"
+      v-on:mouseup="
+        () => slopeLineDrawer.endDrawingSlopeLine(slopeDrawerAttributes)
+      "
+      v-on:mousedown="
+        (e) =>
+          slopeLineDrawer.startEditingSlopeLine(e, slopeDrawerAttributes, false)
+      "
     ></v-card>
     <v-card
       id="lineRightHandle"
@@ -17,8 +22,13 @@
         left: handleRight + 'px',
         top: handleBottom + 'px',
       }"
-      v-on:mouseup="lineDrawer.endDrawingSlopeLine"
-      v-on:mousedown="lineDrawer.startDrawingSlopeLine"
+      v-on:mouseup="
+        () => slopeLineDrawer.endDrawingSlopeLine(slopeDrawerAttributes)
+      "
+      v-on:mousedown="
+        (e) =>
+          slopeLineDrawer.startEditingSlopeLine(e, slopeDrawerAttributes, true)
+      "
     ></v-card>
 
     <svg
@@ -38,30 +48,19 @@
   </div>
 </template>
 <script setup lang="ts">
-import useNotationMutateHelper from "../helpers/notationMutateHelper";
-
 import { computed, ref } from "vue";
-import { useNotationStore } from "../store/pinia/notationStore";
 import { useCellStore } from "../store/pinia/cellStore";
 import { useEditModeStore } from "../store/pinia/editModeStore";
-import {
-  SlopeLineAttributes,
-  SlopeLineNotationAttributes,
-} from "../../../math-common/src/baseTypes";
-import {
-  SlopeType,
-  MovementDirection,
-  SlopeDrawerAttributes,
-} from "../../../math-common/src/baseTypes";
+import { SlopeDrawerAttributes } from "../../../math-common/src/baseTypes";
 import useWatchHelper from "../helpers/watchHelper";
 import useLineDrawer from "../helpers/lineDrawingHelper";
+import useSlopeLineDrawer from "../helpers/slopeLineDrawingHelper";
 
 const watchHelper = useWatchHelper();
-const notationMutateHelper = useNotationMutateHelper();
-const notationStore = useNotationStore();
 const cellStore = useCellStore();
 const editModeStore = useEditModeStore();
 const lineDrawer = useLineDrawer();
+const slopeLineDrawer = useSlopeLineDrawer();
 
 // vars
 
@@ -74,10 +73,8 @@ const slopeDrawerAttributes = ref<SlopeDrawerAttributes>({
   },
   slopeType: "NONE",
   movementDirection: "NONE",
+  modifyRight: false,
 });
-
-// const slopeType = ref<SlopeType>("NONE");
-// const movementDirection = ref<MovementDirection>("NONE");
 
 // computed
 
@@ -119,20 +116,28 @@ let handleBottom = computed(() => {
 // watchers
 
 watchHelper.watchMouseEvent(["SLOPE_LINE_STARTED"], "EV_SVG_MOUSEDOWN", (e) =>
-  lineDrawer.startDrawingSlopeLine(e, slopeDrawerAttributes.value),
+  slopeLineDrawer.startDrawingSlopeLine(e, slopeDrawerAttributes.value),
 );
 
 watchHelper.watchMouseEvent(
   ["SLOPE_LINE_DRAWING"],
   "EV_SVG_MOUSEMOVE",
-  (e: MouseEvent) => lineDrawer.setSlopeLine(e, slopeDrawerAttributes.value),
+  (e: MouseEvent) =>
+    slopeLineDrawer.setNewSlopeLine(e, slopeDrawerAttributes.value),
 );
 
 watchHelper.watchMouseEvent(
-  ["SLOPE_LINE_DRAWING"],
+  ["SLOPE_LINE_EDITING"],
+  "EV_SVG_MOUSEMOVE",
+  (e: MouseEvent) =>
+    slopeLineDrawer.setExistingSlopeLine(e, slopeDrawerAttributes.value),
+);
+
+watchHelper.watchMouseEvent(
+  ["SLOPE_LINE_DRAWING", "SLOPE_LINE_EDITING"],
   "EV_SVG_MOUSEUP",
   (e: MouseEvent) =>
-    lineDrawer.endDrawingSlopeLine(slopeDrawerAttributes.value.linePosition),
+    slopeLineDrawer.endDrawingSlopeLine(slopeDrawerAttributes.value),
 );
 
 // emmited by selection helper
@@ -140,10 +145,7 @@ watchHelper.watchNotationSelection(
   "SLOPE_LINE_SELECTED",
   "EV_SLOPE_LINE_SELECTED",
   (notation) =>
-    lineDrawer.selectLine(
-      notation,
-      slopeDrawerAttributes.value.linePosition,
-    ),
+    lineDrawer.selectLine(notation, slopeDrawerAttributes.value.linePosition),
 );
 
 watchHelper.watchMouseEvent(["SLOPE_LINE_SELECTED"], "EV_SVG_MOUSEDOWN", () =>
