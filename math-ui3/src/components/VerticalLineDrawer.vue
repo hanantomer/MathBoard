@@ -1,29 +1,19 @@
 <template>
   <div v-show="show">
-    <v-card
-      id="lineToptHandle"
-      class="lineHandle"
+    <line-handle
+      edit-mode="VERTICAL_LINE_EDITING_TOP"
       v-bind:style="{
         left: handleX + 'px',
         top: handleTop + 'px',
       }"
-      v-on:mouseup="() => lineDrawer.endDrawingVerticalLine(linePosition)"
-      v-on:mousedown="
-        (e) => lineDrawer.startDrawingVerticalLine(e, linePosition)
-      "
-    ></v-card>
-    <v-card
-      id="lineBottomHandle"
-      class="lineHandle"
+    ></line-handle>
+    <line-handle
+      edit-mode="VERTICAL_LINE_EDITING_BOTTOM"
       v-bind:style="{
         left: handleX + 'px',
         top: handleBottom + 'px',
       }"
-      v-on:mouseup="() => lineDrawer.endDrawingVerticalLine(linePosition)"
-      v-on:mousedown="
-        (e) => lineDrawer.startDrawingVerticalLine(e, linePosition)
-      "
-    ></v-card>
+    ></line-handle>
     <svg
       height="800"
       width="1500"
@@ -42,29 +32,28 @@
 </template>
 
 <script setup lang="ts">
-import useNotationMutateHelper from "../helpers/notationMutateHelper";
 import { computed, ref } from "vue";
-import { useNotationStore } from "../store/pinia/notationStore";
 import { useCellStore } from "../store/pinia/cellStore";
 import { useEditModeStore } from "../store/pinia/editModeStore";
 import useWatchHelper from "../helpers/watchHelper";
 import useLineDrawer from "../helpers/lineDrawingHelper";
+import useVerticalLineDrawingHelper from "../helpers/verticalLineDrawingHelper";
 
 import {
-  VerticalLineAttributes,
   VerticalLineNotationAttributes,
+  VerticalLineAttributes,
 } from "../../../math-common/src/baseTypes";
+import lineHandle from "./LineHandle.vue";
 
-const notationMutateHelper = useNotationMutateHelper();
 const watchHelper = useWatchHelper();
 const lineDrawer = useLineDrawer();
-const notationStore = useNotationStore();
+const verticalLineDrawer = useVerticalLineDrawingHelper();
 const cellStore = useCellStore();
 const editModeStore = useEditModeStore();
 
 // vars
 
-let linePosition = ref(<VerticalLineAttributes>{
+const linePosition = ref<VerticalLineAttributes>({
   px: 0,
   p1y: 0,
   p2y: 0,
@@ -75,7 +64,8 @@ let linePosition = ref(<VerticalLineAttributes>{
 const show = computed(() => {
   return (
     editModeStore.isVerticalLineDrawingMode() ||
-    editModeStore.isVerticalLineSelectedMode()
+    editModeStore.isVerticalLineSelectedMode() ||
+    editModeStore.isVerticalLineEditingMode()
   );
 });
 
@@ -83,12 +73,12 @@ let handleX = computed(() => {
   return linePosition.value.px + (cellStore.getSvgBoundingRect().left ?? 0) - 3;
 });
 
-let handleTop = computed(() => {
+let handleBottom = computed(() => {
   if (!cellStore.getSvgBoundingRect()) return;
   return linePosition.value.p2y + (cellStore.getSvgBoundingRect().top ?? 0) - 3;
 });
 
-let handleBottom = computed(() => {
+let handleTop = computed(() => {
   if (!cellStore.getSvgBoundingRect()) return;
   return linePosition.value.p1y + (cellStore.getSvgBoundingRect().top ?? 0);
 });
@@ -98,17 +88,39 @@ let handleBottom = computed(() => {
 watchHelper.watchMouseEvent(
   ["VERTICAL_LINE_STARTED"],
   "EV_SVG_MOUSEDOWN",
-  (e: MouseEvent) => lineDrawer.startDrawingVerticalLine(e, linePosition.value),
+  (e: MouseEvent) =>
+    verticalLineDrawer.startDrawingVerticalLine(e, linePosition.value),
 );
 
 watchHelper.watchMouseEvent(
   ["VERTICAL_LINE_DRAWING"],
   "EV_SVG_MOUSEMOVE",
-  (e: MouseEvent) => lineDrawer.setVerticalLine(e, linePosition.value),
+  (e: MouseEvent) =>
+    verticalLineDrawer.setNewVerticalLine(e, linePosition.value),
 );
 
-watchHelper.watchMouseEvent(["VERTICAL_LINE_DRAWING"], "EV_SVG_MOUSEUP", () =>
-  lineDrawer.endDrawingVerticalLine(linePosition.value),
+watchHelper.watchMouseEvent(
+  ["VERTICAL_LINE_EDITING_TOP"],
+  "EV_SVG_MOUSEMOVE",
+  (e: MouseEvent) =>
+    verticalLineDrawer.setExistingVerticalLine(e, linePosition.value, true),
+);
+
+watchHelper.watchMouseEvent(
+  ["VERTICAL_LINE_EDITING_BOTTOM"],
+  "EV_SVG_MOUSEMOVE",
+  (e: MouseEvent) =>
+    verticalLineDrawer.setExistingVerticalLine(e, linePosition.value, false),
+);
+
+watchHelper.watchMouseEvent(
+  [
+    "VERTICAL_LINE_DRAWING",
+    "VERTICAL_LINE_EDITING_BOTTOM",
+    "VERTICAL_LINE_EDITING_TOP",
+  ],
+  "EV_SVG_MOUSEUP",
+  () => verticalLineDrawer.endDrawingVerticalLine(linePosition.value),
 );
 
 // emmited by selection helper
@@ -125,7 +137,7 @@ watchHelper.watchMouseEvent(
   () => lineDrawer.resetDrawing(linePosition.value),
 );
 
-watchHelper.watchMouseEvent(["VERTICAL_LINE_SELECTED"], "EV_SVG_MOUSEUP", () =>
-  editModeStore.setDefaultEditMode(),
-);
+// watchHelper.watchMouseEvent(["VERTICAL_LINE_EDITING"], "EV_SVG_MOUSEUP", () =>
+//   lineDrawer.endLineEditing(),
+// );
 </script>

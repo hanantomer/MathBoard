@@ -1,35 +1,18 @@
 <template>
   <div v-show="show">
-    <v-card
-      id="lineLeftHandle"
-      class="lineHandle"
+    <line-handle
+      edit-mode="SLOPE_LINE_EDITING_LEFT"
       v-bind:style="{
         left: handleLeft + 'px',
         top: handleTop + 'px',
       }"
-      v-on:mouseup="
-        () => slopeLineDrawer.endDrawingSlopeLine(slopeDrawerAttributes)
-      "
-      v-on:mousedown="
-        (e) =>
-          slopeLineDrawer.startEditingSlopeLine(e, slopeDrawerAttributes, false)
-      "
-    ></v-card>
-    <v-card
-      id="lineRightHandle"
-      class="lineHandle"
+    ></line-handle>
+    <line-handle edit-mode="SLOPE_LINE_EDITING_RIGHT"
       v-bind:style="{
         left: handleRight + 'px',
         top: handleBottom + 'px',
       }"
-      v-on:mouseup="
-        () => slopeLineDrawer.endDrawingSlopeLine(slopeDrawerAttributes)
-      "
-      v-on:mousedown="
-        (e) =>
-          slopeLineDrawer.startEditingSlopeLine(e, slopeDrawerAttributes, true)
-      "
-    ></v-card>
+    ></line-handle>
 
     <svg
       height="800"
@@ -55,6 +38,7 @@ import { SlopeDrawerAttributes } from "../../../math-common/src/baseTypes";
 import useWatchHelper from "../helpers/watchHelper";
 import useLineDrawer from "../helpers/lineDrawingHelper";
 import useSlopeLineDrawer from "../helpers/slopeLineDrawingHelper";
+import lineHandle from "./LineHandle.vue";
 
 const watchHelper = useWatchHelper();
 const cellStore = useCellStore();
@@ -73,7 +57,6 @@ const slopeDrawerAttributes = ref<SlopeDrawerAttributes>({
   },
   slopeType: "NONE",
   movementDirection: "NONE",
-  modifyRight: false,
 });
 
 // computed
@@ -127,14 +110,22 @@ watchHelper.watchMouseEvent(
 );
 
 watchHelper.watchMouseEvent(
-  ["SLOPE_LINE_EDITING"],
+  ["SLOPE_LINE_EDITING_LEFT"],
   "EV_SVG_MOUSEMOVE",
   (e: MouseEvent) =>
-    slopeLineDrawer.setExistingSlopeLine(e, slopeDrawerAttributes.value),
+    slopeLineDrawer.setExistingSlopeLine(e, slopeDrawerAttributes.value, false),
 );
 
 watchHelper.watchMouseEvent(
-  ["SLOPE_LINE_DRAWING", "SLOPE_LINE_EDITING"],
+  ["SLOPE_LINE_EDITING_RIGHT"],
+  "EV_SVG_MOUSEMOVE",
+  (e: MouseEvent) =>
+    slopeLineDrawer.setExistingSlopeLine(e, slopeDrawerAttributes.value, true),
+);
+
+
+watchHelper.watchMouseEvent(
+  ["SLOPE_LINE_DRAWING", "SLOPE_LINE_EDITING_LEFT", "SLOPE_LINE_EDITING_RIGHT"],
   "EV_SVG_MOUSEUP",
   (e: MouseEvent) =>
     slopeLineDrawer.endDrawingSlopeLine(slopeDrawerAttributes.value),
@@ -155,4 +146,9 @@ watchHelper.watchMouseEvent(["SLOPE_LINE_SELECTED"], "EV_SVG_MOUSEDOWN", () =>
 watchHelper.watchMouseEvent(["SLOPE_LINE_SELECTED"], "EV_SVG_MOUSEUP", () =>
   editModeStore.setDefaultEditMode(),
 );
+
+// watchHelper.watchMouseEvent(["SLOPE_LINE_EDITING"], "EV_SVG_MOUSEUP", () =>
+//   lineDrawer.endLineEditing(),
+// );
+
 </script>

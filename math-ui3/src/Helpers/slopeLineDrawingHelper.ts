@@ -1,9 +1,10 @@
 import { SlopeLineNotationAttributes } from "../../../math-common/src/baseTypes";
-
 import { useEditModeStore } from "../store/pinia/editModeStore";
 import { useCellStore } from "../store/pinia/cellStore";
 import { useNotationStore } from "../store/pinia/notationStore";
 import useNotationMutateHelper from "../helpers/notationMutateHelper";
+import useLineDrawingHelper from "../helpers/lineDrawingHelper";
+
 import {
   SlopeLineAttributes,
   SlopeDrawerAttributes,
@@ -15,6 +16,7 @@ const editModeStore = useEditModeStore();
 const cellStore = useCellStore();
 const notationStore = useNotationStore();
 const notationMutateHelper = useNotationMutateHelper();
+const lineDrawingHelper = useLineDrawingHelper();
 
 export default function useSlopeLineDrawingHelper() {
   function startDrawingSlopeLine(
@@ -48,8 +50,6 @@ export default function useSlopeLineDrawingHelper() {
     );
 
     slopeDrawerAttributes.movementDirection = "NONE";
-
-    slopeDrawerAttributes.modifyRight = modifyRight;
 
     editModeStore.setNextEditMode();
   }
@@ -91,13 +91,13 @@ export default function useSlopeLineDrawingHelper() {
     // 3. upper right to lower left. direction is DOWN and slopeType is POSITIVE
     // 4. lower left to upper right. direction is UP and slopeType is POSITIVE
 
-    slopeDrawerAttributes.modifyRight =
+    const modifyRight =
       (slopeDrawerAttributes.slopeType === "POSITIVE" &&
         slopeDrawerAttributes.movementDirection === "UP") ||
       (slopeDrawerAttributes.slopeType === "NEGATIVE" &&
         slopeDrawerAttributes.movementDirection === "DOWN");
 
-    if (slopeDrawerAttributes.modifyRight) {
+    if (modifyRight) {
       slopeDrawerAttributes.linePosition.p2x = xPos;
       slopeDrawerAttributes.linePosition.p2y = yPos;
     } else {
@@ -111,6 +111,7 @@ export default function useSlopeLineDrawingHelper() {
   function setExistingSlopeLine(
     e: MouseEvent,
     slopeDrawerAttributes: SlopeDrawerAttributes,
+    modifyRight: boolean
   ) {
     if (e.buttons !== 1) {
       return;
@@ -119,7 +120,7 @@ export default function useSlopeLineDrawingHelper() {
     const yPos = e.pageY - (cellStore.getSvgBoundingRect()?.y ?? 0);
     const xPos = e.pageX - (cellStore.getSvgBoundingRect()?.x ?? 0);
 
-    if (slopeDrawerAttributes.modifyRight) {
+    if (modifyRight) {
       slopeDrawerAttributes.linePosition.p2x = xPos;
       slopeDrawerAttributes.linePosition.p2y = yPos;
     } else {
@@ -178,6 +179,9 @@ export default function useSlopeLineDrawingHelper() {
   }
 
   function endDrawingSlopeLine(slopeDrawerAttributes: SlopeDrawerAttributes) {
+    if (notationStore.hasSelectedNotations()) {
+      lineDrawingHelper.showMatrixLine();
+    }
     if (
       slopeDrawerAttributes.linePosition.p1x === 0 &&
       slopeDrawerAttributes.linePosition.p1y === 0 &&

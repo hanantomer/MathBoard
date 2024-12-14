@@ -7,8 +7,8 @@
         left: handleRight + 'px',
         top: handleY + 'px',
       }"
-      v-on:mouseup="lineDrawer.endDrawingHorizontalLine"
-      v-on:mousedown="lineDrawer.startDrawingHorizontalLine"
+      v-on:mouseup="horizontalLineDrawingHelper.endDrawingHorizontalLine"
+      v-on:mousedown="horizontalLineDrawingHelper.startDrawingHorizontalLine"
     ></v-card>
     <svg
       height="800"
@@ -42,9 +42,11 @@ import { useCellStore } from "../store/pinia/cellStore";
 import { useEditModeStore } from "../store/pinia/editModeStore";
 import { HorizontalLineAttributes } from "../../../math-common/src/baseTypes";
 import useLineDrawingHelper from "../helpers/lineDrawingHelper";
+import useHorizontalLineDrawingHelper from "../helpers/horizontalLineDrawingHelper";
 
 const watchHelper = useWatchHelper();
 const lineDrawer = useLineDrawingHelper();
+const horizontalLineDrawingHelper = useHorizontalLineDrawingHelper();
 const cellStore = useCellStore();
 const editModeStore = useEditModeStore();
 
@@ -90,15 +92,15 @@ let handleY = computed(() => {
 });
 
 watchHelper.watchMouseEvent(["SQRT_STARTED"], "EV_SVG_MOUSEDOWN", (e) =>
-  lineDrawer.startDrawingHorizontalLine(e, linePosition.value),
+  horizontalLineDrawingHelper.startDrawingHorizontalLine(e, linePosition.value),
 );
 
 watchHelper.watchMouseEvent(["SQRT_DRAWING"], "EV_SVG_MOUSEMOVE", (e) =>
-  lineDrawer.setHorizontalLine(e, linePosition.value),
+  horizontalLineDrawingHelper.setNewHorizontalLine(e, linePosition.value),
 );
 
 watchHelper.watchMouseEvent(["SQRT_DRAWING"], "EV_SVG_MOUSEUP", () =>
-  lineDrawer.endDrawingSqrt(linePosition.value),
+  horizontalLineDrawingHelper.endDrawingSqrt(linePosition.value),
 );
 
 watchHelper.watchNotationSelection(

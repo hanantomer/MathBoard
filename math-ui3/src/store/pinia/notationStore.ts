@@ -398,6 +398,10 @@ export const useNotationStore = defineStore("notation", () => {
     return matrix;
   }
 
+  function hasSelectedNotations() : boolean {
+    return getSelectedNotations().length > 0;
+  }
+
   function isSymbolAdjecentToHorizontalLine(
     cell: CellAttributes,
     maxDistance: number,
@@ -427,6 +431,7 @@ export const useNotationStore = defineStore("notation", () => {
     getNotationsAtCell,
     isSymbolPartOfFraction,
     isSymbolAdjecentToHorizontalLine,
+    hasSelectedNotations,
     selectNotationsOfCells,
     getSelectedNotations,
     getParent,

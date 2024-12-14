@@ -63,8 +63,7 @@ watchHelper.watchMouseEvent(
   resetTextSelection,
 );
 
-// area selector signals the selected position attributes
-
+// area selector signals the selected position
 watchHelper.watchCustomEvent(
   "TEXT_AREA_SELECTING",
   "EV_AREA_SELECTION_DONE",

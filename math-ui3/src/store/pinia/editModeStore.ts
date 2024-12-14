@@ -54,14 +54,18 @@ export const useEditModeStore = defineStore("editMode", () => {
   function isHorizontalLineMode() {
     return (
       editMode.value === "HORIZONTAL_LINE_STARTED" ||
-      editMode.value === "HORIZONTAL_LINE_DRAWING"
+      editMode.value === "HORIZONTAL_LINE_DRAWING" ||
+      editMode.value === "HORIZONTAL_LINE_EDITING_LEFT" ||
+      editMode.value === "HORIZONTAL_LINE_EDITING_RIGHT"
     );
   }
 
   function isVerticalLineMode() {
     return (
       editMode.value === "VERTICAL_LINE_STARTED" ||
-      editMode.value === "VERTICAL_LINE_DRAWING"
+      editMode.value === "VERTICAL_LINE_DRAWING" ||
+      editMode.value === "VERTICAL_LINE_EDITING_BOTTOM" ||
+      editMode.value === "VERTICAL_LINE_EDITING_TOP"
     );
   }
 
@@ -69,7 +73,8 @@ export const useEditModeStore = defineStore("editMode", () => {
     return (
       editMode.value === "SLOPE_LINE_STARTED" ||
       editMode.value === "SLOPE_LINE_DRAWING" ||
-      editMode.value === "SLOPE_LINE_EDITING"
+      editMode.value === "SLOPE_LINE_EDITING_LEFT" ||
+      editMode.value === "SLOPE_LINE_EDITING_RIGHT"
     );
   }
 
@@ -113,6 +118,18 @@ export const useEditModeStore = defineStore("editMode", () => {
     return editMode.value === "HORIZONTAL_LINE_DRAWING";
   }
 
+  function isHorizontalLineEditingMode() {
+    return (
+      editMode.value === "HORIZONTAL_LINE_EDITING_LEFT" ||
+      editMode.value === "HORIZONTAL_LINE_EDITING_RIGHT"
+    );
+  }
+
+  function isVerticalLineEditingMode() {
+    return editMode.value === "VERTICAL_LINE_EDITING_TOP" ||
+    editMode.value === "VERTICAL_LINE_EDITING_BOTTOM"
+  }
+
   function isSqrtDrawingMode() {
     return editMode.value === "SQRT_DRAWING";
   }
@@ -145,8 +162,16 @@ export const useEditModeStore = defineStore("editMode", () => {
   }
 
   function isSlopeLineDrawingMode() {
-    return editMode.value === "SLOPE_LINE_DRAWING" || "SLOPE_LINE_EDITING";
+    return editMode.value === "SLOPE_LINE_DRAWING";
   }
+
+  function isSlopeLineEditingMode() {
+    return (
+      editMode.value === "SLOPE_LINE_EDITING_LEFT" ||
+      editMode.value === "SLOPE_LINE_EDITING_RIGHT"
+    );
+  }
+
 
   function isCurveDrawingMode() {
     return (
@@ -262,18 +287,18 @@ export const useEditModeStore = defineStore("editMode", () => {
 
       case "HORIZONTAL_LINE_STARTED":
         return setEditMode("HORIZONTAL_LINE_DRAWING");
-      case "HORIZONTAL_LINE_SELECTED":
-        return setEditMode("HORIZONTAL_LINE_DRAWING");
+      //case "HORIZONTAL_LINE_SELECTED":
+//        return setEditMode("HORIZONTAL_LINE_EDITING");
 
       case "VERTICAL_LINE_STARTED":
         return setEditMode("VERTICAL_LINE_DRAWING");
-      case "VERTICAL_LINE_SELECTED":
-        return setEditMode("VERTICAL_LINE_DRAWING");
+  //    case "VERTICAL_LINE_SELECTED":
+   //     return setEditMode("VERTICAL_LINE_EDITING");
 
       case "SLOPE_LINE_STARTED":
         return setEditMode("SLOPE_LINE_DRAWING");
-      case "SLOPE_LINE_SELECTED":
-        return setEditMode("SLOPE_LINE_EDITING");
+   //   case "SLOPE_LINE_SELECTED":
+    //    return setEditMode("SLOPE_LINE_EDITING");
 
       case "CONCAVE_CURVE_STARTED":
         return setEditMode("CONCAVE_CURVE_DRAWING");
@@ -322,17 +347,20 @@ export const useEditModeStore = defineStore("editMode", () => {
     isSqrtStartedMode,
     isHorizontalLineStartedMode,
     isHorizontalLineDrawingMode,
+    isHorizontalLineEditingMode,
     isSqrtDrawingMode,
     isVerticalLineMode,
     isVerticalLineSelectedMode,
     isVerticalLineStartedMode,
     isVerticalLineDrawingMode,
+    isVerticalLineEditingMode,
     isSlopeLineMode,
     isSlopeLineSelectedMode,
     isCurveSelectedMode,
     isSlopeLineStartedMode,
     isCurveStartedMode,
     isSlopeLineDrawingMode,
+    isSlopeLineEditingMode,
     isCurveDrawingMode,
     isSelectedMode,
     isSqrtMode,

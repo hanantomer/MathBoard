@@ -41,7 +41,6 @@ import annotationEditor from "./AnnotationEditor.vue";
 import exponentEditor from "./ExponentEditor.vue";
 import useNotationLoadingHelper from "../helpers/notationLoadingHelper";
 import UseMatrixHelper from "../helpers/matrixHelper";
-import UseMatrixCellHelper from "../helpers/matrixCellHelper";
 import UseEventHelper from "../helpers/eventHelper";
 import toolbar from "./Toolbar.vue";
 import areaSelector from "./AreaSelector.vue";

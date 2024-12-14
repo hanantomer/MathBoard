@@ -301,5 +301,14 @@ export type SlopeDrawerAttributes = {
   linePosition: SlopeLineAttributes;
   slopeType: SlopeType;
   movementDirection: MovementDirection;
-  modifyRight: boolean
 };
+
+// export type VerticalDrawerAttributes = {
+//   linePosition: VerticalLineAttributes;
+// };
+
+// export type HorizontalDrawerAttributes = {
+//   linePosition: HorizontalLineAttributes;
+// };
+
+

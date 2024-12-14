@@ -81,16 +81,25 @@ export type EditMode =
   //  "ANNOTATION_AREA_SELECTING" | // user started selecting area following annotation button pressed
   | "ANNOTATION_WRITING" // user clicked a cell following annotation button pressed
   | "CELL_SELECTED" // user clicked on a cell or navigated via keys
+  
   | "HORIZONTAL_LINE_STARTED" // horizontal line button pressed
   | "HORIZONTAL_LINE_DRAWING" // horizontal line drawing started
+  | "HORIZONTAL_LINE_EDITING_RIGHT" // horizontal line handle cliccked followin slope line selected
+  | "HORIZONTAL_LINE_EDITING_LEFT" // horizontal line handle cliccked followin slope line selected
   | "HORIZONTAL_LINE_SELECTED" // horizontal line selected
+  
   | "VERTICAL_LINE_STARTED" // vertical line button pressed
   | "VERTICAL_LINE_DRAWING" // vertical line drawing started
   | "VERTICAL_LINE_SELECTED" // vertical line selected
+  | "VERTICAL_LINE_EDITING_TOP" // vertical line handle cliccked followin slope line selected
+  | "VERTICAL_LINE_EDITING_BOTTOM" // vertical line handle cliccked followin slope line selected
+  
   | "SLOPE_LINE_STARTED" // slope line button pressed
   | "SLOPE_LINE_DRAWING" // slope line drawing started
   | "SLOPE_LINE_SELECTED" // slope line selected
-  | "SLOPE_LINE_EDITING" // slope line handle cliccked followin slope line selected
+  | "SLOPE_LINE_EDITING_LEFT" // slope line handle cliccked followin slope line selected
+  | "SLOPE_LINE_EDITING_RIGHT" // slope line handle cliccked followin slope line selected
+
   | "CONCAVE_CURVE_STARTED" // concave line button pressed
   | "CONCAVE_CURVE_DRAWING" // concave line drawing started
   | "CONCAVE_CURVE_SELECTED" // concave line selected
@@ -124,13 +133,19 @@ export const EditModeNotationType = new Map<
   ["HORIZONTAL_LINE_STARTED", "HORIZONTALLINE"],
   ["HORIZONTAL_LINE_DRAWING", "HORIZONTALLINE"],
   ["HORIZONTAL_LINE_SELECTED", "HORIZONTALLINE"],
+  ["HORIZONTAL_LINE_EDITING_LEFT","HORIZONTALLINE"],
+  ["HORIZONTAL_LINE_EDITING_RIGHT", "HORIZONTALLINE"],
+  ["HORIZONTAL_LINE_SELECTED", "HORIZONTALLINE"],
   ["VERTICAL_LINE_STARTED", "VERTICALLINE"],
   ["VERTICAL_LINE_DRAWING", "VERTICALLINE"],
   ["VERTICAL_LINE_SELECTED", "VERTICALLINE"],
+  ["VERTICAL_LINE_EDITING_TOP", "VERTICALLINE"],
+  ["VERTICAL_LINE_EDITING_BOTTOM","VERTICALLINE"],
   ["SLOPE_LINE_STARTED", "SLOPELINE"],
   ["SLOPE_LINE_DRAWING", "SLOPELINE"],
   ["SLOPE_LINE_SELECTED", "SLOPELINE"],
-  ["SLOPE_LINE_EDITING", "SLOPELINE"],
+  ["SLOPE_LINE_EDITING_LEFT", "SLOPELINE"],
+  ["SLOPE_LINE_EDITING_RIGHT", "SLOPELINE"],
   ["CONCAVE_CURVE_STARTED", "CONCAVECURVE"],
   ["CONCAVE_CURVE_DRAWING", "CONCAVECURVE"],
   ["CONCAVE_CURVE_SELECTED", "CONCAVECURVE"],
@@ -166,14 +181,20 @@ export const EditModeCursorType = new Map<
   ["CELL_SELECTED", "auto"],
   ["HORIZONTAL_LINE_STARTED", "auto"],
   ["HORIZONTAL_LINE_DRAWING", "auto"],
+  ["HORIZONTAL_LINE_EDITING_LEFT", "auto"],
+  ["HORIZONTAL_LINE_EDITING_RIGHT", "auto"],
   ["HORIZONTAL_LINE_SELECTED", "auto"],
   ["VERTICAL_LINE_STARTED", "auto"],
   ["VERTICAL_LINE_DRAWING", "auto"],
+  ["VERTICAL_LINE_EDITING_BOTTOM", "auto"],
+  ["VERTICAL_LINE_EDITING_TOP", "auto"],
   ["VERTICAL_LINE_SELECTED", "auto"],
+  ["VERTICAL_LINE_EDITING", "auto"],
   ["SLOPE_LINE_STARTED", "auto"],
   ["SLOPE_LINE_DRAWING", "auto"],
   ["SLOPE_LINE_SELECTED", "auto"],
-  ["SLOPE_LINE_EDITING", "auto"],
+  ["SLOPE_LINE_EDITING_LEFT", "auto"],
+  ["SLOPE_LINE_EDITING_RIGHT", "auto"],
   ["SQRT_STARTED", "auto"],
   ["SQRT_DRAWING", "auto"],
   ["SQRT_SELECTED", "auto"],
@@ -202,7 +223,6 @@ export type SelectionMoveDirection =
   | "RIGHTTOP"
   | "RIGHTBOTTOM";
 
-
 export type Color =
   | "none"
   | "lightyellow"
@@ -210,6 +230,3 @@ export type Color =
   | "lightgreen"
   | "pink"
   | "transparent";
-
-
-
