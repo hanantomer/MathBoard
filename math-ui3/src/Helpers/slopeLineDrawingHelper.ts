@@ -222,7 +222,7 @@ export default function useSlopeLineDrawingHelper() {
     } else {
       notationMutateHelper.addSlopeLineNotation(
         linePosition,
-        editModeStore.getNotationTypeByEditMode(),
+        "SLOPELINE",
       );
     }
     editModeStore.setDefaultEditMode();

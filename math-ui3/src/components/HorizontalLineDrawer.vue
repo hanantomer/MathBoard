@@ -1,50 +1,9 @@
 <!-- TODO: create component for line handles -->
 <template>
   <div v-if="show">
-    <!-- <v-card
-      id="lineLeftHandle"
-      class="lineHandle"
-      v-bind:style="{
-        left: handleLeft + 'px',
-        top: handleY + 'px',
-      }"
-      v-on:mouseup="
-        () =>
-          horizontalLineDrawingHelper.endDrawingHorizontalLine(
-            horizontalDrawerAttributes.linePosition,
-          )
-      "
-      v-on:mousedown="
-        (e) =>
-          horizontalLineDrawingHelper.startEditingHorizontalLine(
-            horizontalDrawerAttributes,
-            false,
-          )
-      "
-    ></v-card> -->
-    <!-- <v-card
-      id="lineRightHandle"
-      class="lineHandle"
-      v-bind:style="{
-        left: handleRight + 'px',
-        top: handleY + 'px',
-      }"
-      v-on:mouseup="
-        () =>
-          horizontalLineDrawingHelper.endDrawingHorizontalLine(
-            horizontalDrawerAttributes.linePosition,
-          )
-      "
-      v-on:mousedown="
-        (e) =>
-          horizontalLineDrawingHelper.startEditingHorizontalLine(
-            horizontalDrawerAttributes,
-            true,
-          )
-      "
-    ></v-card> -->
-   <line-handle
-      edit-mode="HORIZONTAL_LINE_EDITING_LEFT"
+    <line-handle
+      drawing-mode="HORIZONTAL_LINE_DRAWING"
+      editing-mode="HORIZONTAL_LINE_EDITING_LEFT"
       v-bind:style="{
         left: handleLeft + 'px',
         top: handleY + 'px',
@@ -53,7 +12,8 @@
     </line-handle>
 
     <line-handle
-      edit-mode="HORIZONTAL_LINE_EDITING_RIGHT"
+      drawing-mode="HORIZONTAL_LINE_DRAWING"
+      editing-mode="HORIZONTAL_LINE_EDITING_RIGHT"
       v-bind:style="{
         left: handleRight + 'px',
         top: handleY + 'px',
@@ -95,10 +55,10 @@ const horizontalLineDrawingHelper = useHorizontalLineDrawingHelper();
 
 // vars
 
-const linePosition  = ref<HorizontalLineAttributes>({
-    p1x: 0,
-    p2x: 0,
-    py: 0,
+const linePosition = ref<HorizontalLineAttributes>({
+  p1x: 0,
+  p2x: 0,
+  py: 0,
 });
 
 // computed
@@ -151,10 +111,14 @@ watchHelper.watchMouseEvent(
   ["HORIZONTAL_LINE_DRAWING"],
   "EV_SVG_MOUSEMOVE",
   (e) =>
-    horizontalLineDrawingHelper.setNewHorizontalLine(
-      e,
-      linePosition.value,
-    ),
+    horizontalLineDrawingHelper.setNewHorizontalLine(e, linePosition.value),
+);
+
+// emmited by selection helper
+watchHelper.watchNotationSelection(
+  "HORIZONTAL_LINE_SELECTED",
+  "EV_HORIZONTAL_LINE_SELECTED",
+  (notation) => lineDrawer.selectLine(notation, linePosition.value),
 );
 
 watchHelper.watchMouseEvent(
@@ -164,7 +128,7 @@ watchHelper.watchMouseEvent(
     horizontalLineDrawingHelper.setExistingHorizontalLine(
       e,
       linePosition.value,
-      false
+      false,
     ),
 );
 
@@ -175,29 +139,19 @@ watchHelper.watchMouseEvent(
     horizontalLineDrawingHelper.setExistingHorizontalLine(
       e,
       linePosition.value,
-      true
+      true,
     ),
 );
 
-
-watchHelper.watchMouseEvent(
-  ["HORIZONTAL_LINE_DRAWING", "HORIZONTAL_LINE_EDITING_LEFT", "HORIZONTAL_LINE_EDITING_RIGHT"],
-  "EV_SVG_MOUSEUP",
+watchHelper.watchEditModeTransition(
+  [
+    "HORIZONTAL_LINE_DRAWING",
+    "HORIZONTAL_LINE_EDITING_LEFT",
+    "HORIZONTAL_LINE_EDITING_RIGHT",
+  ],
+  "SYMBOL",
   () =>
-    horizontalLineDrawingHelper.endDrawingHorizontalLine(
-      linePosition.value,
-    ),
-);
-
-// emmited by selection helper
-watchHelper.watchNotationSelection(
-  "HORIZONTAL_LINE_SELECTED",
-  "EV_HORIZONTAL_LINE_SELECTED",
-  (notation) =>
-    lineDrawer.selectLine(
-      notation,
-      linePosition.value,
-    ),
+    horizontalLineDrawingHelper.endDrawingHorizontalLine(linePosition.value),
 );
 
 watchHelper.watchMouseEvent(
@@ -205,10 +159,4 @@ watchHelper.watchMouseEvent(
   "EV_SVG_MOUSEDOWN",
   () => lineDrawer.resetDrawing(linePosition.value),
 );
-
-// watchHelper.watchMouseEvent(
-//   ["HORIZONTAL_LINE_EDITING"],
-//   "EV_SVG_MOUSEUP",
-//   () => lineDrawer.endLineEditing(),
-// );
 </script>

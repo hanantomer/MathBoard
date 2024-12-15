@@ -8,13 +8,11 @@ import { useEditModeStore } from "../store/pinia/editModeStore";
 import { useCellStore } from "../store/pinia/cellStore";
 import { useNotationStore } from "../store/pinia/notationStore";
 import useNotationMutateHelper from "../helpers/notationMutateHelper";
-import useLineDrawingHelper from "../helpers/lineDrawingHelper";
 
 const editModeStore = useEditModeStore();
 const cellStore = useCellStore();
 const notationStore = useNotationStore();
 const notationMutateHelper = useNotationMutateHelper();
-const lineDrawingHelper = useLineDrawingHelper();
 
 export default function useHorizontalLineDrawingHelper() {
 
@@ -122,10 +120,6 @@ export default function useHorizontalLineDrawingHelper() {
 
   function endDrawingHorizontalLine(linePosition: HorizontalLineAttributes) {
 
-    if (notationStore.hasSelectedNotations()) {
-      lineDrawingHelper.showMatrixLine();
-    }
-
     if (
       linePosition.p1x === 0 &&
       linePosition.p2x === 0 &&
@@ -156,7 +150,7 @@ export default function useHorizontalLineDrawingHelper() {
     } else
       notationMutateHelper.addHorizontalLineNotation(
         lineAttributes,
-        editModeStore.getNotationTypeByEditMode(),
+        "HORIZONTALLINE",
       );
   }
 
@@ -171,14 +165,13 @@ export default function useHorizontalLineDrawingHelper() {
     } else
       notationMutateHelper.addSqrtNotation(
         sqrtAttributes,
-        editModeStore.getNotationTypeByEditMode(),
+        "SQRT",
       );
   }
 
   function resetHorizontalLineDrawing(linePosition: HorizontalLineAttributes) {
     linePosition.p1x = linePosition.p2x = linePosition.py = 0;
     notationStore.resetSelectedNotations();
-    editModeStore.setDefaultEditMode();
   }
 
   return {

@@ -1,14 +1,16 @@
 <template>
   <div v-show="show">
     <line-handle
-      edit-mode="VERTICAL_LINE_EDITING_TOP"
+      drawing-mode="VERTICAL_LINE_DRAWING"
+      editing-mode="VERTICAL_LINE_EDITING_TOP"
       v-bind:style="{
         left: handleX + 'px',
         top: handleTop + 'px',
       }"
     ></line-handle>
     <line-handle
-      edit-mode="VERTICAL_LINE_EDITING_BOTTOM"
+      drawing-mode="VERTICAL_LINE_DRAWING"
+      editing-mode="VERTICAL_LINE_EDITING_BOTTOM"
       v-bind:style="{
         left: handleX + 'px',
         top: handleBottom + 'px',

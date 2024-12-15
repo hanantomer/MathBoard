@@ -100,7 +100,7 @@ export default function useVerticalLineDrawingHelper() {
     } else
       notationMutateHelper.addVerticalLineNotation(
         lineAttributes,
-        editModeStore.getNotationTypeByEditMode(),
+        "VERTICALLINE",
       );
   }
 

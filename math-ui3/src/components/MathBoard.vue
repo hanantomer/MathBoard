@@ -245,15 +245,6 @@ path:hover {
   border-top: solid 2px;
 }
 
-.lineHandle {
-  cursor: col-resize;
-  position: absolute;
-  display: block;
-  width: 7px;
-  height: 7px;
-  border: 1, 1, 1, 1;
-  z-index: 999;
-}
 
 .sqrtsymbol {
   position: absolute;

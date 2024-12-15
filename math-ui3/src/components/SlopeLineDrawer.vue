@@ -1,13 +1,16 @@
 <template>
   <div v-show="show">
     <line-handle
-      edit-mode="SLOPE_LINE_EDITING_LEFT"
+      drawing-mode="SLOPE_LINE_DRAWING"
+      editing-mode="SLOPE_LINE_EDITING_LEFT"
       v-bind:style="{
         left: handleLeft + 'px',
         top: handleTop + 'px',
       }"
     ></line-handle>
-    <line-handle edit-mode="SLOPE_LINE_EDITING_RIGHT"
+    <line-handle
+      drawing-mode="SLOPE_LINE_DRAWING"
+      editing-mode="SLOPE_LINE_EDITING_RIGHT"
       v-bind:style="{
         left: handleRight + 'px',
         top: handleBottom + 'px',
@@ -64,7 +67,8 @@ const slopeDrawerAttributes = ref<SlopeDrawerAttributes>({
 const show = computed(() => {
   return (
     editModeStore.isSlopeLineDrawingMode() ||
-    editModeStore.isSlopeLineSelectedMode()
+    editModeStore.isSlopeLineSelectedMode() ||
+    editModeStore.isSlopeLineEditingMode()
   );
 });
 
@@ -123,14 +127,6 @@ watchHelper.watchMouseEvent(
     slopeLineDrawer.setExistingSlopeLine(e, slopeDrawerAttributes.value, true),
 );
 
-
-watchHelper.watchMouseEvent(
-  ["SLOPE_LINE_DRAWING", "SLOPE_LINE_EDITING_LEFT", "SLOPE_LINE_EDITING_RIGHT"],
-  "EV_SVG_MOUSEUP",
-  (e: MouseEvent) =>
-    slopeLineDrawer.endDrawingSlopeLine(slopeDrawerAttributes.value),
-);
-
 // emmited by selection helper
 watchHelper.watchNotationSelection(
   "SLOPE_LINE_SELECTED",
@@ -139,16 +135,13 @@ watchHelper.watchNotationSelection(
     lineDrawer.selectLine(notation, slopeDrawerAttributes.value.linePosition),
 );
 
+watchHelper.watchEditModeTransition(
+  ["SLOPE_LINE_DRAWING", "SLOPE_LINE_EDITING_LEFT", "SLOPE_LINE_EDITING_RIGHT"],
+  "SYMBOL",
+  () => slopeLineDrawer.endDrawingSlopeLine(slopeDrawerAttributes.value),
+);
+
 watchHelper.watchMouseEvent(["SLOPE_LINE_SELECTED"], "EV_SVG_MOUSEDOWN", () =>
   lineDrawer.resetDrawing(slopeDrawerAttributes.value.linePosition),
 );
-
-watchHelper.watchMouseEvent(["SLOPE_LINE_SELECTED"], "EV_SVG_MOUSEUP", () =>
-  editModeStore.setDefaultEditMode(),
-);
-
-// watchHelper.watchMouseEvent(["SLOPE_LINE_EDITING"], "EV_SVG_MOUSEUP", () =>
-//   lineDrawer.endLineEditing(),
-// );
-
 </script>

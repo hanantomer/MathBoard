@@ -65,18 +65,20 @@ export default function () {
   }
 
   function watchEditModeTransition(
-    oldEditMode: EditMode,
+    oldEditModes: EditMode[],
     newEditMode: EditMode,
     handler: EditModeHandler,
   ) {
-    watch(
-      () => editModeStore.getEditMode() as EditMode,
-      (nEditMode: EditMode, oEditMode: EditMode) => {
-        if (nEditMode === newEditMode && oEditMode === oldEditMode) {
-          handler(nEditMode, oEditMode);
-        }
-      },
-    );
+    oldEditModes.forEach((oldEditMode) => {
+      watch(
+        () => editModeStore.getEditMode() as EditMode,
+        (nEditMode: EditMode, oEditMode: EditMode) => {
+          if (nEditMode === newEditMode && oEditMode === oldEditMode) {
+            handler(nEditMode, oEditMode);
+          }
+        },
+      );
+    });
   }
 
   function watchEndOfEditMode(oldEditMode: EditMode, handler: EditModeHandler) {
