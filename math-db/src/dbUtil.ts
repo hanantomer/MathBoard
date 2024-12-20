@@ -505,9 +505,9 @@ export default function dbUtil() {
 
                 if (
                     !(
-                        m.fromCol >= 0 &&
-                        m.toCol >= 0 &&
-                        m.row >= 0 &&
+                        (m.fromCol ?? 0) >= 0 &&
+                        (m.toCol ?? 0) >= 0 &&
+                        (m.row ?? 0) >= 0 &&
                         m.base.toString().length > 0 &&
                         m.exponent.toString().length > 0
                     )
@@ -520,7 +520,7 @@ export default function dbUtil() {
             case "SIGN":
             case "SYMBOL": {
                 const m = model as PointNotationAttributes;
-                if (!(m.col >= 0 && m.row >= 0)) {
+                if (!((m.col ?? 0) >= 0 && (m.row ?? 0) >= 0)) {
                     throw new Error("invalid model:" + JSON.stringify(m));
                 }
                 break;

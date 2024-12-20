@@ -136,7 +136,7 @@ export default function notationMutateHelper() {
     notation: PointNotationCreationAttributes,
   ): PointNotationAttributes | undefined {
     return notationStore
-      .getNotationAtCoordinates()
+      .getPointNotations()
       .find((n2: PointNotationAttributes) => {
         return pointAtCellCoordinates(
           notation as PointNotationAttributes,
@@ -347,6 +347,11 @@ export default function notationMutateHelper() {
         case "SIGN":
         case "SQRTSYMBOL":
         case "SYMBOL": {
+          ///TODO move to method
+          if (n.notationType === "SYMBOL" || n.notationType === "SIGN") {
+            matrixCellHelper.unColorizeNotationCells(n);
+          }
+
           (n as PointNotationAttributes).col += deltaCol;
           (n as PointNotationAttributes).row += deltaRow;
           break;

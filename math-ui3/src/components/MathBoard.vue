@@ -136,8 +136,6 @@ watchHelper.watchLoadedEvent(props, load);
 
 watchHelper.watchNotationsEvent(props.svgId, matrixHelper.refreshScreen);
 
-watchHelper.watchNotationsEvent(props.svgId, matrixHelper.refreshScreen);
-
 async function load() {
   cellStore.setSvgBoundingRect(props.svgId);
 
@@ -245,7 +243,6 @@ path:hover {
   border-top: solid 2px;
 }
 
-
 .sqrtsymbol {
   position: absolute;
   color: chocolate;
@@ -254,4 +251,5 @@ path:hover {
   font-weight: bold;
   font-size: 1.7em;
 }
+
 </style>

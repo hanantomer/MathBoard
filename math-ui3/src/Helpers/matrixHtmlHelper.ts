@@ -66,6 +66,9 @@ export default function useHtmlMatrixHelper() {
           return addHtmlNotations(enter, svgElement!);
         },
         (update) => {
+          // if (!update.empty()) {
+          //   matrixCellHelper.unColorizeNotationCells(update.datum() as any);
+          // }
           return updateHtmlNotations(update);
         },
         (exit) => {
@@ -294,7 +297,7 @@ export default function useHtmlMatrixHelper() {
     // }
 
     //if (n.color) {
-      utils.colorizeNotationCells(n);
+    utils.colorizeNotationCells(n);
     //}
 
     let fontWeight =

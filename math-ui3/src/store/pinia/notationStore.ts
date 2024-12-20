@@ -13,7 +13,6 @@ import {
   VerticalLineNotationAttributes,
   SlopeLineNotationAttributes,
   CurveNotationAttributes,
-  ExponentNotationAttributes,
   isRect,
   isPoint,
   MultiCellAttributes,
@@ -21,8 +20,10 @@ import {
 import { BoardType } from "common/unions";
 import { ref } from "vue";
 import useNotationCellOccupationHelper from "../../helpers/notationCellOccupationHelper";
+import useMatrixCellHelper from "../../helpers/matrixCellHelper";
 
 const notationCellOccupationHelper = useNotationCellOccupationHelper();
+const matrixCellHelper = useMatrixCellHelper();
 
 export const useNotationStore = defineStore("notation", () => {
   // cell can occupy one point only
@@ -34,7 +35,7 @@ export const useNotationStore = defineStore("notation", () => {
     createCellSingleNotationOccupationMatrix();
 
   // cell can occupy multiple lines
-  let cellLineNotationOccupationMatrix: (String | null)[][][] =
+  let cellLineNotationOccupationMatrix: Set<String>[][] =
     createCellMultipleNotationOccupationMatrix();
 
   let parent = ref<Board>({ uuid: "", type: "LESSON" });
@@ -80,7 +81,7 @@ export const useNotationStore = defineStore("notation", () => {
     return Array.from(notations.value.values());
   }
 
-  function getNotationAtCoordinates(): PointNotationAttributes[] {
+  function getPointNotations(): PointNotationAttributes[] {
     return Array.from(notations.value.values())
       .filter((n) => isPoint(n.notationType))
       .map((n) => n as PointNotationAttributes);
@@ -137,70 +138,12 @@ export const useNotationStore = defineStore("notation", () => {
     notation.boardType = parent.value.type;
     notations.value.set(notation.uuid, notation);
 
-    switch (notation.notationType) {
-      case "SQRT":
-      case "EXPONENT":
-        notationCellOccupationHelper.updateMultiCellOccupationMatrix(
-          cellPointNotationOccupationMatrix,
-          notation as unknown as MultiCellAttributes,
-          notation.uuid,
-          false,
-        );
-        break;
-      case "ANNOTATION":
-      case "SIGN":
-      case "SQRTSYMBOL":
-      case "SYMBOL":
-        notationCellOccupationHelper.updatePointOccupationMatrix(
-          cellPointNotationOccupationMatrix,
-          notation as PointNotationAttributes,
-          false,
-        );
-        break;
-
-      case "HORIZONTALLINE":
-        notationCellOccupationHelper.updateHorizontalLineOccupationMatrix(
-          cellLineNotationOccupationMatrix,
-          notation as unknown as HorizontalLineAttributes,
-          notation.uuid,
-          false,
-        );
-        break;
-
-      case "VERTICALLINE":
-        notationCellOccupationHelper.updateVerticalLineOccupationMatrix(
-          cellLineNotationOccupationMatrix,
-          notation as VerticalLineNotationAttributes,
-          false,
-        );
-        break;
-
-      case "SLOPELINE":
-        notationCellOccupationHelper.updateSlopeLineOccupationMatrix(
-          cellLineNotationOccupationMatrix,
-          notation as SlopeLineNotationAttributes,
-          notation.uuid,
-          false,
-        );
-        break;
-
-      case "TEXT":
-      case "IMAGE":
-        notationCellOccupationHelper.updateRectOccupationMatrix(
-          cellRectNotationOccupationMatrix,
-          notation as RectNotationAttributes,
-          false,
-        );
-        break;
-
-      case "CONVEXCURVE":
-      case "CONCAVECURVE":
-        notationCellOccupationHelper.updateCurveOccupationMatrix(
-          cellLineNotationOccupationMatrix,
-          notation as CurveNotationAttributes,
-          false,
-        );
-    }
+    updateOccupationMatrix(
+      notation,
+      cellPointNotationOccupationMatrix,
+      cellLineNotationOccupationMatrix,
+      cellRectNotationOccupationMatrix,
+    );
   }
 
   function addCopiedNotation(notation: NotationAttributes) {
@@ -347,14 +290,12 @@ export const useNotationStore = defineStore("notation", () => {
 
     const lineNotationsUUIDs = cellLineNotationOccupationMatrix[cell.col][
       cell.row
-    ] as String[];
+    ] as Set<String>;
 
-    if (lineNotationsUUIDs && lineNotationsUUIDs.length) {
-      lineNotationsUUIDs
-        .filter((ln) => ln)
-        .forEach((ln) => {
-          notationsAtCell.push(notations.value.get(ln) as NotationAttributes);
-        });
+    if (lineNotationsUUIDs) {
+      lineNotationsUUIDs.values().forEach((ln) => {
+        notationsAtCell.push(notations.value.get(ln) as NotationAttributes);
+      });
     }
 
     return notationsAtCell;
@@ -387,18 +328,18 @@ export const useNotationStore = defineStore("notation", () => {
     return matrix;
   }
 
-  function createCellMultipleNotationOccupationMatrix(): (String | null)[][][] {
-    let matrix: (String | null)[][][] = new Array();
+  function createCellMultipleNotationOccupationMatrix(): Set<String>[][] {
+    let matrix: Set<String>[][] = new Array();
     for (let i = 0; i < matrixDimensions.colsNum; i++) {
       matrix.push([]);
       for (let j = 0; j < matrixDimensions.rowsNum; j++) {
-        matrix[i][j] = [];
+        (matrix[i][j] as Set<String>) = new Set<String>();
       }
     }
     return matrix;
   }
 
-  function hasSelectedNotations() : boolean {
+  function hasSelectedNotations(): boolean {
     return getSelectedNotations().length > 0;
   }
 
@@ -409,7 +350,7 @@ export const useNotationStore = defineStore("notation", () => {
     if (cell.row === matrixDimensions.colsNum) return false;
 
     for (let i = cell.col; cell.col - i <= maxDistance; i--) {
-      if (cellLineNotationOccupationMatrix[i][cell.row + 1].length > 0) {
+      if (cellLineNotationOccupationMatrix[i][cell.row + 1].size > 0) {
         return true;
       }
     }
@@ -418,14 +359,14 @@ export const useNotationStore = defineStore("notation", () => {
   }
 
   function isSymbolPartOfFraction(cell: CellAttributes): boolean {
-    return cellLineNotationOccupationMatrix[cell.col][cell.row + 1].length > 0;
+    return cellLineNotationOccupationMatrix[cell.col][cell.row + 1].size > 0;
   }
 
   return {
     addNotation,
     getNotation,
     getNotations,
-    getNotationAtCoordinates,
+    getPointNotations,
     getRectNotations,
     getCopiedNotations,
     getNotationsAtCell,
@@ -446,3 +387,74 @@ export const useNotationStore = defineStore("notation", () => {
     cloneSelectedNotations,
   };
 });
+function updateOccupationMatrix(
+  notation: NotationAttributes,
+  cellPointNotationOccupationMatrix: (String | null)[][],
+  cellLineNotationOccupationMatrix: Set<String>[][],
+  cellRectNotationOccupationMatrix: (String | null)[][],
+) {
+  switch (notation.notationType) {
+    case "SQRT":
+    case "EXPONENT":
+      notationCellOccupationHelper.updateMultiCellOccupationMatrix(
+        cellPointNotationOccupationMatrix,
+        notation as unknown as MultiCellAttributes,
+        notation.uuid,
+        false,
+      );
+      break;
+    case "ANNOTATION":
+    case "SIGN":
+    case "SQRTSYMBOL":
+    case "SYMBOL":
+      notationCellOccupationHelper.updatePointOccupationMatrix(
+        cellPointNotationOccupationMatrix,
+        notation as PointNotationAttributes,
+        false,
+      );
+      break;
+
+    case "HORIZONTALLINE":
+      notationCellOccupationHelper.updateHorizontalLineOccupationMatrix(
+        cellLineNotationOccupationMatrix,
+        notation as unknown as HorizontalLineAttributes,
+        notation.uuid,
+        false,
+      );
+      break;
+
+    case "VERTICALLINE":
+      notationCellOccupationHelper.updateVerticalLineOccupationMatrix(
+        cellLineNotationOccupationMatrix,
+        notation as VerticalLineNotationAttributes,
+        false,
+      );
+      break;
+
+    case "SLOPELINE":
+      notationCellOccupationHelper.updateSlopeLineOccupationMatrix(
+        cellLineNotationOccupationMatrix,
+        notation as SlopeLineNotationAttributes,
+        notation.uuid,
+        false,
+      );
+      break;
+
+    case "TEXT":
+    case "IMAGE":
+      notationCellOccupationHelper.updateRectOccupationMatrix(
+        cellRectNotationOccupationMatrix,
+        notation as RectNotationAttributes,
+        false,
+      );
+      break;
+
+    case "CONVEXCURVE":
+    case "CONCAVECURVE":
+      notationCellOccupationHelper.updateCurveOccupationMatrix(
+        cellLineNotationOccupationMatrix,
+        notation as CurveNotationAttributes,
+        false,
+      );
+  }
+}

@@ -12,6 +12,7 @@
       background: backgroundColor,
     }"
     v-on:mouseup="mouseup"
+    v-on:mousedown="startMoving"
     v-on:mousemove="moveSelectionByMouseDrag"
   ></v-card>
 </template>
@@ -141,7 +142,7 @@ watchHelper.watchKeyEvent(
   updateSelectionAreaByKey,
 );
 
-watchHelper.watchMouseEvent(["AREA_SELECTED"], "EV_SVG_MOUSEMOVE", startMoving);
+//watchHelper.watchMouseEvent(["AREA_SELECTED"], "EV_SVG_MOUSEMOVE", startMoving);
 
 watchHelper.watchMouseEvent(
   ["AREA_MOVING"],

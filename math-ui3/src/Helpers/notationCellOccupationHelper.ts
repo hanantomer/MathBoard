@@ -32,7 +32,7 @@ export default function notationCellOccupationHelper() {
     uuid: string,
     doRemove: boolean,
   ) {
-    clearNotationFromMatrix(uuid, matrix); ///TODO: 
+    clearNotationFromMatrix(uuid, matrix); ///TODO:
     for (let i = notation.fromCol; i <= notation.toCol; i++) {
       if (!validateRowAndCol(i, notation.row)) return;
       matrix[i][notation.row] = doRemove ? null : uuid;
@@ -48,22 +48,24 @@ export default function notationCellOccupationHelper() {
     doRemove: boolean,
   ) {
     if (!validateRowAndCol(col, row)) return;
-    clearLineNotationFromMatrix(uuid, matrix);
-    if (doRemove) {
+    //clearLineNotationFromMatrix(uuid, matrix);
+    /*if (doRemove) {
       for (let i = 0; i < matrix[col][row].length; i++) {
         if (matrix[col][row][i] === uuid) {
           matrix[col][row][i] = null;
         }
       }
       return;
-    }
+    }*/
+
+    if (doRemove) return;
 
     if (matrix[col][row] === null) {
-      matrix[col][row] = [];
+      matrix[col][row] = new Set();
     }
 
     // line occuption mtarix can attribute multiple notations to single cell
-    matrix[col][row].push(uuid);
+    (matrix[col][row] as Set<String>).add(uuid);
   }
 
   function updateHorizontalLineOccupationMatrix(
@@ -127,6 +129,9 @@ export default function notationCellOccupationHelper() {
     doRemove: boolean,
   ) {
     clearNotationFromMatrix(uuid, matrix);
+
+    if (doRemove) return;
+
     const fromCol = Math.round(
       notation.p1x / cellStore.getCellHorizontalWidth(),
     );
@@ -228,11 +233,12 @@ export default function notationCellOccupationHelper() {
   function clearLineNotationFromMatrix(uuid: string, matrix: any) {
     for (let col = 0; col < matrixDimensions.colsNum; col++) {
       for (let row = 0; row < matrixDimensions.rowsNum; row++) {
-        for (let sub = 0; sub < matrix[col][row].length; sub++) {
-          if (matrix[col][row][sub] === uuid) {
-            matrix[col][row][sub] = null;
-          }
-        }
+        (matrix[col][row] as Set<String>).delete(uuid);
+        // for (let sub = 0; sub < matrix[col][row].length; sub++) {
+        //   if (matrix[col][row][sub] === uuid) {
+        //     matrix[col][row][sub] = null;
+        //   }
+        // }
       }
     }
   }

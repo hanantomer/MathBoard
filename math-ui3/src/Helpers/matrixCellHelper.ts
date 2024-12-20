@@ -1,4 +1,4 @@
-import { CellAttributes, MultiCellAttributes } from "common/baseTypes";
+import { CellAttributes, HorizontalLineAttributes, MultiCellAttributes, NotationAttributes } from "common/baseTypes";
 import {
   matrixDimensions,
   defaultdCellStroke,
@@ -80,7 +80,7 @@ export default function useMatrixCellHelper() {
     if (rectElm?.style) rectElm.style.fill = color;
   }
 
-  function unColorizeNotationCells(n: any) {
+  function unColorizeNotationCells(n: any ) {
     if (n.col && n.row) {
       colorizeCell({ col: n.col, row: n.row }, "");
     }

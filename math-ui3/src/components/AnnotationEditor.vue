@@ -1,6 +1,7 @@
 <template>
   <input
     v-show="show"
+    class ="annotation"
     maxlength="4"
     v-bind:style="{
       top: annotationTop + 'px',
@@ -168,7 +169,7 @@ function endEditingByEnterKey(e: KeyboardEvent) {
 }
 </script>
 <style>
-input {
+.annotation {
   border: none;
   outline: none;
   background-color: lightyellow;
