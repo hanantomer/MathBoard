@@ -348,6 +348,26 @@ export default function screenHelper() {
     return Math.sqrt(a + b);
   }
 
+  function getClickedPosDistanceFromLineEdge(
+    DotCoordinates: DotCoordinates,
+    nx: number,
+    ny: number
+  ): number {
+    const x = DotCoordinates.x - cellStore.getSvgBoundingRect().left;
+
+    const y = DotCoordinates.y - cellStore.getSvgBoundingRect().top;
+
+    const horizontalDistance = x - nx;
+
+    const verticalDistance = y - ny;
+
+    const a = Math.pow(horizontalDistance, 2);
+    const b = Math.pow(verticalDistance, 2);
+
+    return Math.sqrt(a + b);
+  }
+
+
   function getClickedPosDistanceFromSqrt(
     dotCoordinates: DotCoordinates,
     sqrtCoordinates: MultiCellAttributes,
@@ -397,6 +417,47 @@ export default function screenHelper() {
     return nominator / deNominator;
   }
 
+  function getCloseLineEdge(dot: DotCoordinates): DotCoordinates | null {
+    const maxDistance = 5;
+    const notationStore = useNotationStore();
+
+    notationStore
+      .getNotations()
+      .filter(
+        (n) =>
+          n.notationType === "HORIZONTALLINE" ||
+          n.notationType === "SLOPELINE" ||
+          n.notationType === "VERTICALLINE",
+      )
+      .find((n) => {
+        switch (n.notationType) {
+          case "HORIZONTALLINE": {
+            const n1 = n as HorizontalLineNotationAttributes;
+            let distance = getClickedPosDistanceFromLineEdge(
+              dot,
+              n1.p1x,
+              n1.py,
+            );
+            if (distance < maxDistance) {
+              return { x: n1.p1x, y: n1.py };
+            }
+
+            distance = getClickedPosDistanceFromLineEdge(
+              dot,
+              n1.p2x,
+              n1.py,
+            );
+            if (distance < maxDistance) {
+              return { x: n1.p2x, y: n1.py };
+            }
+          }
+        }
+      });
+
+    return null;
+  }
+
+
   return {
     getClickedPosDistanceFromSlopeLine,
     getClickedPosDistanceFromVerticalLine,
@@ -409,5 +470,6 @@ export default function screenHelper() {
     getClickedCellTopLeftCoordinates,
     getRectAttributes,
     getMultiCellLineAttributes,
+    getCloseLineEdge,
   };
 }

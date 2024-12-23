@@ -4,6 +4,7 @@ import { useCellStore } from "../store/pinia/cellStore";
 import { useNotationStore } from "../store/pinia/notationStore";
 import useNotationMutateHelper from "../helpers/notationMutateHelper";
 import useLineDrawingHelper from "../helpers/lineDrawingHelper";
+import useScreenHelper from "../helpers/screenHelper";
 
 import {
   SlopeLineAttributes,
@@ -17,6 +18,7 @@ const cellStore = useCellStore();
 const notationStore = useNotationStore();
 const notationMutateHelper = useNotationMutateHelper();
 const lineDrawingHelper = useLineDrawingHelper();
+const screenHelper = useScreenHelper();
 
 export default function useSlopeLineDrawingHelper() {
   function startDrawingSlopeLine(
@@ -111,7 +113,7 @@ export default function useSlopeLineDrawingHelper() {
   function setExistingSlopeLine(
     e: MouseEvent,
     slopeDrawerAttributes: SlopeDrawerAttributes,
-    modifyRight: boolean
+    modifyRight: boolean,
   ) {
     if (e.buttons !== 1) {
       return;
@@ -182,6 +184,7 @@ export default function useSlopeLineDrawingHelper() {
     if (notationStore.hasSelectedNotations()) {
       lineDrawingHelper.showMatrixLine();
     }
+
     if (
       slopeDrawerAttributes.linePosition.p1x === 0 &&
       slopeDrawerAttributes.linePosition.p1y === 0 &&
@@ -210,6 +213,8 @@ export default function useSlopeLineDrawingHelper() {
   }
 
   function saveSlopeLine(linePosition: SlopeLineAttributes) {
+    fixEdge(linePosition);
+
     if (notationStore.getSelectedNotations().length > 0) {
       let updatedLine = {
         ...notationStore.getSelectedNotations().at(0)!,
@@ -220,10 +225,7 @@ export default function useSlopeLineDrawingHelper() {
         updatedLine as SlopeLineNotationAttributes,
       );
     } else {
-      notationMutateHelper.addSlopeLineNotation(
-        linePosition,
-        "SLOPELINE",
-      );
+      notationMutateHelper.addSlopeLineNotation(linePosition, "SLOPELINE");
     }
     editModeStore.setDefaultEditMode();
   }
@@ -235,4 +237,25 @@ export default function useSlopeLineDrawingHelper() {
     setNewSlopeLine,
     setExistingSlopeLine,
   };
+}
+function fixEdge(linePosition: SlopeLineAttributes) {
+  const nearLineRightEdge = screenHelper.getCloseLineEdge({
+    x: linePosition.p1x,
+    y: linePosition.p1y,
+  });
+
+  if (nearLineRightEdge != null) {
+    linePosition.p1x = nearLineRightEdge.x;
+    linePosition.p1y = nearLineRightEdge.y;
+  }
+
+  const nearLineLeftEdge = screenHelper.getCloseLineEdge({
+    x: linePosition.p2x,
+    y: linePosition.p2y,
+  });
+
+  if (nearLineLeftEdge != null) {
+    linePosition.p2x = nearLineLeftEdge.x;
+    linePosition.p2y = nearLineLeftEdge.y;
+  }
 }

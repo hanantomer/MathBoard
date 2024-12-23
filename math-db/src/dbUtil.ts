@@ -508,8 +508,8 @@ export default function dbUtil() {
                         (m.fromCol ?? 0) >= 0 &&
                         (m.toCol ?? 0) >= 0 &&
                         (m.row ?? 0) >= 0 &&
-                        m.base.toString().length > 0 &&
-                        m.exponent.toString().length > 0
+                        (!m.base || m.base.toString().length > 0) &&
+                        (!m.exponent ||  m.exponent.toString().length > 0)
                     )
                 ) {
                     throw new Error("invalid model:" + JSON.stringify(m));

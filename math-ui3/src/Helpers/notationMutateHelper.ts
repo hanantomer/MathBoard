@@ -343,15 +343,19 @@ export default function notationMutateHelper() {
 
     notationStore.getSelectedNotations().forEach((n: NotationAttributes) => {
       switch (n.notationType) {
+        case "EXPONENT":
+        case "ANNOTATION":
+        case "SIGN":
+        case "SQRTSYMBOL":
+        case "SYMBOL":
+          matrixCellHelper.unColorizeNotationCells(n);
+      }
+
+      switch (n.notationType) {
         case "ANNOTATION":
         case "SIGN":
         case "SQRTSYMBOL":
         case "SYMBOL": {
-          ///TODO move to method
-          if (n.notationType === "SYMBOL" || n.notationType === "SIGN") {
-            matrixCellHelper.unColorizeNotationCells(n);
-          }
-
           (n as PointNotationAttributes).col += deltaCol;
           (n as PointNotationAttributes).row += deltaRow;
           break;

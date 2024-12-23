@@ -66,9 +66,6 @@ export default function useHtmlMatrixHelper() {
           return addHtmlNotations(enter, svgElement!);
         },
         (update) => {
-          // if (!update.empty()) {
-          //   matrixCellHelper.unColorizeNotationCells(update.datum() as any);
-          // }
           return updateHtmlNotations(update);
         },
         (exit) => {
@@ -289,16 +286,7 @@ export default function useHtmlMatrixHelper() {
   }
 
   function html(n: NotationAttributes) {
-    // if (
-    //   n.color?.value &&
-    //   NotationTypeBackgroundColorizing.has(n.notationType)
-    // ) {
-    //   utils.colorizeNotationCells(n);
-    // }
-
-    //if (n.color) {
     utils.colorizeNotationCells(n);
-    //}
 
     let fontWeight =
       userStore.getCurrentUser()?.uuid == n.user.uuid ? "bold" : "normal";

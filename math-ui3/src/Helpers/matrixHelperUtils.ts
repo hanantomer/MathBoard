@@ -79,10 +79,9 @@ export default function useMatrixHelperUtils() {
     switch (n.notationType) {
       case "ANNOTATION":
       case "SIGN":
-      case "SQRTSYMBOL":
       case "SYMBOL": {
         const n1 = n as PointNotationAttributes;
-        if (!n1.row || !n1.col) return;
+        if (n1.row == undefined || n1.col == undefined) return;
         const cell = { col: n1.col, row: n1.row };
         matrixCellHelper.colorizeCell(cell, n.color?.value);
         break;

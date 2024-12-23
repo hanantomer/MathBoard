@@ -8,7 +8,7 @@
     }"
   >
     <input
-      maxlength="3"
+      maxlength="12"
       autofocus="true"
       v-model="base"
       id="baseInput"
@@ -17,7 +17,7 @@
       autocomplete="off"
     />
     <input
-      maxlength="3"
+      maxlength="2"
       v-model="exponent"
       class="exponentInput"
       placeholder="exp"
@@ -90,7 +90,6 @@ watchHelper.watchKeyEvent(
   "EV_KEYUP",
   endEditingByEnterKey,
 );
-
 
 ///TODO: move to helper
 
@@ -187,13 +186,14 @@ function submitExponent() {
 .baseInput {
   border: 1px darkblue solid;
   height: 22px;
-  width: 35px;
+  width: 235px;
   font-size: 14px;
   margin-top: 5px;
   padding: 2px;
 }
 .exponentInput {
-  bottom: 8px;
+  bottom: 30px;
+  position: relative;
   border: 1px darkblue solid;
   height: 18px;
   width: 35px;

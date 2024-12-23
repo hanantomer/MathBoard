@@ -224,6 +224,7 @@ export default function selectionHelper() {
     }
   }
 
+
   return {
     selectClickedPosition,
     selectNotationAtPosition,
