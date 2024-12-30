@@ -84,21 +84,21 @@ export type EditMode =
   
   | "HORIZONTAL_LINE_STARTED" // horizontal line button pressed
   | "HORIZONTAL_LINE_DRAWING" // horizontal line drawing started
-  | "HORIZONTAL_LINE_EDITING_RIGHT" // horizontal line handle cliccked followin slope line selected
-  | "HORIZONTAL_LINE_EDITING_LEFT" // horizontal line handle cliccked followin slope line selected
+  | "HORIZONTAL_LINE_EDITING_RIGHT" // horizontal line handle clicked followin slope line selected
+  | "HORIZONTAL_LINE_EDITING_LEFT" // horizontal line handle clicked followin slope line selected
   | "HORIZONTAL_LINE_SELECTED" // horizontal line selected
   
   | "VERTICAL_LINE_STARTED" // vertical line button pressed
   | "VERTICAL_LINE_DRAWING" // vertical line drawing started
   | "VERTICAL_LINE_SELECTED" // vertical line selected
-  | "VERTICAL_LINE_EDITING_TOP" // vertical line handle cliccked followin slope line selected
-  | "VERTICAL_LINE_EDITING_BOTTOM" // vertical line handle cliccked followin slope line selected
+  | "VERTICAL_LINE_EDITING_TOP" // vertical line handle clicked followin slope line selected
+  | "VERTICAL_LINE_EDITING_BOTTOM" // vertical line handle clicked followin slope line selected
   
   | "SLOPE_LINE_STARTED" // slope line button pressed
   | "SLOPE_LINE_DRAWING" // slope line drawing started
   | "SLOPE_LINE_SELECTED" // slope line selected
-  | "SLOPE_LINE_EDITING_LEFT" // slope line handle cliccked followin slope line selected
-  | "SLOPE_LINE_EDITING_RIGHT" // slope line handle cliccked followin slope line selected
+  | "SLOPE_LINE_EDITING_LEFT" // slope line handle clicked followin slope line selection
+  | "SLOPE_LINE_EDITING_RIGHT" // slope line handle clicked followin slope line selection
 
   | "CONCAVE_CURVE_STARTED" // concave line button pressed
   | "CONCAVE_CURVE_DRAWING" // concave line drawing started
@@ -108,6 +108,7 @@ export type EditMode =
   | "CONVEX_CURVE_SELECTED" // convex line selected
   | "SQRT_STARTED" // sqrt button pressed
   | "SQRT_DRAWING" // sqrt drawing started
+  | "SQRT_EDITING" // sqrt line handle clicked 
   | "SQRT_SELECTED" // sqrt selected
   | "COLORIZING" // color selected
   | "DELETING" // mouse clicked following delete button pressed
@@ -133,14 +134,23 @@ export const EditModeNotationType = new Map<
   ["HORIZONTAL_LINE_STARTED", "HORIZONTALLINE"],
   ["HORIZONTAL_LINE_DRAWING", "HORIZONTALLINE"],
   ["HORIZONTAL_LINE_SELECTED", "HORIZONTALLINE"],
-  ["HORIZONTAL_LINE_EDITING_LEFT","HORIZONTALLINE"],
-  ["HORIZONTAL_LINE_EDITING_RIGHT", "HORIZONTALLINE"],
+  [
+    "HORIZONTAL_LINE_EDITING_LEFT",
+    "HORIZONTALLINE",
+  ],
+  [
+    "HORIZONTAL_LINE_EDITING_RIGHT",
+    "HORIZONTALLINE",
+  ],
   ["HORIZONTAL_LINE_SELECTED", "HORIZONTALLINE"],
   ["VERTICAL_LINE_STARTED", "VERTICALLINE"],
   ["VERTICAL_LINE_DRAWING", "VERTICALLINE"],
   ["VERTICAL_LINE_SELECTED", "VERTICALLINE"],
   ["VERTICAL_LINE_EDITING_TOP", "VERTICALLINE"],
-  ["VERTICAL_LINE_EDITING_BOTTOM","VERTICALLINE"],
+  [
+    "VERTICAL_LINE_EDITING_BOTTOM",
+    "VERTICALLINE",
+  ],
   ["SLOPE_LINE_STARTED", "SLOPELINE"],
   ["SLOPE_LINE_DRAWING", "SLOPELINE"],
   ["SLOPE_LINE_SELECTED", "SLOPELINE"],
@@ -155,6 +165,7 @@ export const EditModeNotationType = new Map<
   ["SQRT_STARTED", "SQRT"],
   ["SQRT_DRAWING", "SQRT"],
   ["SQRT_SELECTED", "SQRT"],
+  ["SQRT_EDITING", "SQRT"],
   ["COLORIZING", "SYMBOL"],
   ["DELETING", "SYMBOL"],
   ["AREA_SELECTING", "SYMBOL"],
@@ -199,6 +210,7 @@ export const EditModeCursorType = new Map<
   ["SQRT_STARTED", "auto"],
   ["SQRT_DRAWING", "auto"],
   ["SQRT_SELECTED", "auto"],
+  ["SQRT_EDITING", "auto"],
   ["COLORIZING", "auto"],
   ["DELETING", "auto"],
   ["AREA_SELECTING", "auto"],

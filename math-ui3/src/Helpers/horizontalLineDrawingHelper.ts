@@ -8,11 +8,13 @@ import { useEditModeStore } from "../store/pinia/editModeStore";
 import { useCellStore } from "../store/pinia/cellStore";
 import { useNotationStore } from "../store/pinia/notationStore";
 import useNotationMutateHelper from "../helpers/notationMutateHelper";
+import useScreenHelper from "../helpers/screenHelper";
 
 const editModeStore = useEditModeStore();
 const cellStore = useCellStore();
 const notationStore = useNotationStore();
 const notationMutateHelper = useNotationMutateHelper();
+const screenHelper = useScreenHelper();
 
 export default function useHorizontalLineDrawingHelper() {
 
@@ -138,6 +140,9 @@ export default function useHorizontalLineDrawingHelper() {
   }
 
   function saveHorizontalLine(lineAttributes: HorizontalLineAttributes) {
+
+    fixLineEdge(lineAttributes);
+
     if (notationStore.getSelectedNotations().length > 0) {
       let updatedLine = {
         ...notationStore.getSelectedNotations().at(0)!,
@@ -152,6 +157,28 @@ export default function useHorizontalLineDrawingHelper() {
         lineAttributes,
         "HORIZONTALLINE",
       );
+  }
+
+  function fixLineEdge(linePosition: HorizontalLineAttributes) {
+    const nearLineRightEdge = screenHelper.getCloseLineEdge({
+      x: linePosition.p1x,
+      y: linePosition.py,
+    });
+
+    if (nearLineRightEdge != null) {
+      linePosition.p1x = nearLineRightEdge.x;
+      linePosition.py = nearLineRightEdge.y;
+    }
+
+    const nearLineLeftEdge = screenHelper.getCloseLineEdge({
+      x: linePosition.p2x,
+      y: linePosition.py,
+    });
+
+    if (nearLineLeftEdge != null) {
+      linePosition.p2x = nearLineLeftEdge.x;
+      linePosition.py = nearLineLeftEdge.y;
+    }
   }
 
   function saveSqrt(sqrtAttributes: MultiCellAttributes) {

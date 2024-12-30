@@ -493,6 +493,7 @@ function signalSelection() {
     height: selectionRectHeight.value,
   });
 }
+
 </script>
 
 <style>

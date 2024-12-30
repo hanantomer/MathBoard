@@ -1,20 +1,29 @@
 <template>
-  <input
+  <v-container
+    class="exponentEditor"
     v-show="show"
     v-bind:style="{
       left: leftPosition + 'px',
       top: topPosition + 'px',
-      width: width + 'px',
-      height: height + 'px',
-      position: 'absolute',
     }"
-    id="exponent"
-    autofocus="true"
-    maxlength="3"
-    v-model="exponent"
-    class="exponentInput"
-    autocomplete="off"
-  />
+  >
+    <input
+      maxlength="12"
+      autofocus="true"
+      v-model="base"
+      id="baseInput"
+      class="baseInput"
+      placeholder="base"
+      autocomplete="off"
+    />
+    <input
+      maxlength="2"
+      v-model="exponent"
+      class="exponentInput"
+      placeholder="exp"
+      autocomplete="off"
+    />
+  </v-container>
 </template>
 
 <script setup lang="ts">
@@ -36,11 +45,10 @@ const screenHelper = useScreenHelper();
 const watchHelper = useWatchHelper();
 
 let exponent = ref("");
+let base = ref("");
 
 let leftPosition = ref(0);
 let topPosition = ref(0);
-let width = ref(0);
-let height = ref(0);
 
 const selectedNotation = computed(() =>
   notationStore.getSelectedNotations()?.length == 0
@@ -109,7 +117,7 @@ function startNewExponentAtMousePosition(e: MouseEvent) {
 
   setExponentPosition();
 
-  setTimeout(`document.getElementById("exponent")?.focus();`, 0);
+  setTimeout(`document.getElementById("baseInput")?.focus();`, 0);
 }
 
 function setExponentPosition() {
@@ -119,9 +127,6 @@ function setExponentPosition() {
 
   leftPosition.value = clickedCoordinates.x;
   topPosition.value = clickedCoordinates.y;
-
-  width.value = cellStore.getCellHorizontalWidth() -1;
-  height.value = cellStore.getCellVerticalHeight() / 2;
 }
 
 function setSelectedExponentPosition() {
@@ -147,13 +152,14 @@ function editSelectedExponentNotation() {
 }
 
 function setInitialExponentValue() {
+  base.value = "";
   exponent.value = "";
 }
 
 function submitExponent() {
   editModeStore.setNextEditMode();
 
-  if (!exponent.value) return;
+  if (!base.value || !exponent.value) return;
 
   if (selectedNotation.value) {
     selectedNotation.value!.exponent = exponent.value;
@@ -166,14 +172,35 @@ function submitExponent() {
 </script>
 
 <style>
-.exponentInput {
+.exponentEditor {
+  border: 1px darkblue solid;
+  background-color: lightgray;
   position: absolute;
-  z-index: 99;
-  font-size: 9px;
-  outline: none;
-  padding: 1px dashed rgb(187, 144, 200);
-  -webkit-box-shadow: 0 0 0 1px hsla(0, 0%, 0%, 0.5);
-  -moz-box-shadow: 0 0 0 1px hsla(0, 0%, 0%, 0.5);
-  box-shadow: 0 0 0 1px hsla(0, 0%, 0%, 0.5);
+  padding: 1px;
+  box-sizing: border-box;
+  width: 75px;
+  height: 32px;
+}
+.baseInput {
+  border: 1px darkblue solid;
+  height: 22px;
+  width: 235px;
+  font-size: 14px;
+  margin-top: 5px;
+  padding: 2px;
+}
+.exponentInput {
+  bottom: 30px;
+  position: relative;
+  border: 1px darkblue solid;
+  height: 18px;
+  width: 35px;
+  font-size: 11px;
+  margin-top: -0px;
+  margin-left: 37px;
+  padding: 2px;
+}
+.hidden {
+  display: none;
 }
 </style>

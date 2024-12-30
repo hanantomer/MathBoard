@@ -213,7 +213,7 @@ export default function useSlopeLineDrawingHelper() {
   }
 
   function saveSlopeLine(linePosition: SlopeLineAttributes) {
-    fixEdge(linePosition);
+    fixLineEdge(linePosition);
 
     if (notationStore.getSelectedNotations().length > 0) {
       let updatedLine = {
@@ -230,6 +230,28 @@ export default function useSlopeLineDrawingHelper() {
     editModeStore.setDefaultEditMode();
   }
 
+  function fixLineEdge(linePosition: SlopeLineAttributes) {
+    const nearLineRightEdge = screenHelper.getCloseLineEdge({
+      x: linePosition.p1x,
+      y: linePosition.p1y,
+    });
+
+    if (nearLineRightEdge != null) {
+      linePosition.p1x = nearLineRightEdge.x;
+      linePosition.p1y = nearLineRightEdge.y;
+    }
+
+    const nearLineLeftEdge = screenHelper.getCloseLineEdge({
+      x: linePosition.p2x,
+      y: linePosition.p2y,
+    });
+
+    if (nearLineLeftEdge != null) {
+      linePosition.p2x = nearLineLeftEdge.x;
+      linePosition.p2y = nearLineLeftEdge.y;
+    }
+  }
+
   return {
     startEditingSlopeLine,
     startDrawingSlopeLine,
@@ -238,24 +260,4 @@ export default function useSlopeLineDrawingHelper() {
     setExistingSlopeLine,
   };
 }
-function fixEdge(linePosition: SlopeLineAttributes) {
-  const nearLineRightEdge = screenHelper.getCloseLineEdge({
-    x: linePosition.p1x,
-    y: linePosition.p1y,
-  });
 
-  if (nearLineRightEdge != null) {
-    linePosition.p1x = nearLineRightEdge.x;
-    linePosition.p1y = nearLineRightEdge.y;
-  }
-
-  const nearLineLeftEdge = screenHelper.getCloseLineEdge({
-    x: linePosition.p2x,
-    y: linePosition.p2y,
-  });
-
-  if (nearLineLeftEdge != null) {
-    linePosition.p2x = nearLineLeftEdge.x;
-    linePosition.p2y = nearLineLeftEdge.y;
-  }
-}

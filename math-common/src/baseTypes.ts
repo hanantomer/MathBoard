@@ -23,7 +23,6 @@ export type NotationAttributes =
   };
 
 export type ExponentAttributes = {
-  base: string;
   exponent: string;
 };
 
@@ -171,7 +170,7 @@ export type RectNotationAttributes =
 export type ExponentNotationAttributes =
   EntityAttributes &
     NotationAttributes &
-    MultiCellAttributes &
+    CellAttributes &
     ExponentAttributes;
 
 export type AnnotationNotationAttributes =
@@ -229,7 +228,7 @@ export type ExponentNotationCreationAttributes =
   Omit<
     EntityAttributes &
       NotationAttributes &
-      MultiCellAttributes &
+      CellAttributes &
       ExponentAttributes,
     "uuid"
   >;
@@ -281,7 +280,6 @@ export function isMultiCell(
   n: NotationType
 ): boolean {
   return (
-    n === "EXPONENT" ||
     n ===
       "SQRT" /*unlike horizontal line, sqrt borders adjusts to cell borders */
   );
@@ -295,7 +293,7 @@ export type MovementDirection =
 export type SlopeType =
   | "POSITIVE"
   | "NEGATIVE"
-  | "NONE";  
+  | "NONE";
 
 export type SlopeDrawerAttributes = {
   linePosition: SlopeLineAttributes;
@@ -310,5 +308,3 @@ export type SlopeDrawerAttributes = {
 // export type HorizontalDrawerAttributes = {
 //   linePosition: HorizontalLineAttributes;
 // };
-
-

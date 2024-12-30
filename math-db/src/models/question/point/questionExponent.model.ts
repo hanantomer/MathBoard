@@ -42,19 +42,12 @@ export default class QuestionExponent extends Model<
 
     @AllowNull(false)
     @Column({ type: DataType.INTEGER })
-    fromCol!: number;
-
-    @AllowNull(false)
-    @Column({ type: DataType.INTEGER })
-    toCol!: number;
+    col!: number;
 
     @AllowNull(false)
     @Column({ type: DataType.INTEGER })
     row!: number;
 
-    @AllowNull(false)
-    @Column({ type: DataType.INTEGER })
-    base!: string;
 
     @AllowNull(false)
     @Column({ type: DataType.INTEGER })

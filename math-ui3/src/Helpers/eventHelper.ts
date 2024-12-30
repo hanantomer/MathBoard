@@ -15,6 +15,7 @@ import {
   CurveNotationAttributes,
   MultiCellAttributes,
   ExponentNotationAttributes,
+  SqrtNotationAttributes,
 } from "common/baseTypes";
 
 const userStore = useUserStore();
@@ -62,6 +63,7 @@ export default function eventHelper() {
         case "SYMBOL":
         case "SIGN":
         case "SQRTSYMBOL":
+        case "EXPONENT":
         case "ANNOTATION": {
           const n1 = n as PointNotationAttributes;
           if (!firstRow) firstRow = n1.row;
@@ -73,24 +75,22 @@ export default function eventHelper() {
           break;
         }
 
-        case "EXPONENT":
-        case "SQRT": {
-          let n1 = n as ExponentNotationAttributes;
-          const lineWidth = n1.toCol - n1.fromCol;
-          if (!firstCol) firstCol = n1.fromCol;
-          n1.fromCol = selectedCell.col + n1.fromCol - firstCol;
-          n1.toCol = n1.fromCol + lineWidth;
-          n1.row = selectedCell.row + n1.row;
-          notationMutationHelper.cloneNotation(n1);
-          break;
-        }
-
         case "HORIZONTALLINE": {
           let n1 = { ...n } as HorizontalLineNotationAttributes;
           const lineWidth = n1.p2x - n1.p1x;
           n1.p1x = selectedCell.col * cellStore.getCellHorizontalWidth();
           n1.p2x = n1.p1x + lineWidth;
           n1.py = selectedCell.row * cellStore.getCellVerticalHeight();
+          notationMutationHelper.cloneNotation(n1);
+          break;
+        }
+
+        case "SQRT": {
+          let n1 = { ...n } as SqrtNotationAttributes;
+          const numCols = (n1.toCol - n1.fromCol);
+          n1.fromCol = selectedCell.col ;
+          n1.toCol = n1.fromCol + numCols;
+          n1.row = selectedCell.row;
           notationMutationHelper.cloneNotation(n1);
           break;
         }

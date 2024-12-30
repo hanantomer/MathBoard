@@ -44,7 +44,7 @@ export default function screenHelper() {
 
     return {
       x: clickedCell.col * cellWidth + cellStore.getSvgBoundingRect().left,
-      y: clickedCell.row * cellHeight + cellStore.getSvgBoundingRect().top,
+      y: clickedCell.row  * cellHeight + cellStore.getSvgBoundingRect().top,
     };
   }
 
@@ -147,6 +147,7 @@ export default function screenHelper() {
       const n = notationsAtCell.at(i);
 
       switch (n?.notationType) {
+        case "EXPONENT":
         case "ANNOTATION":
         case "SYMBOL":
         case "SQRTSYMBOL":
@@ -159,18 +160,7 @@ export default function screenHelper() {
           });
           break;
         }
-        case "EXPONENT": {
-          let n1 = n as unknown as MultiCellAttributes;
-
-          notationDistanceList.push({
-            notation: n,
-            distance: getClickedPosDistanceFromCellCenter(DotCoordinates, {
-              col: n1.fromCol + 1,
-              row: n1.row,
-            }),
-          });
-          break;
-        }
+        
         case "IMAGE":
         case "TEXT":
           let n1 = n as RectNotationAttributes;
@@ -198,45 +188,45 @@ export default function screenHelper() {
           });
           break;
         }
-      //   case "HORIZONTALLINE": {
-      //     let n1 = n as HorizontalLineNotationAttributes;
-      //     notationDistanceList.push({
-      //       notation: n1,
-      //       distance: getClickedPosDistanceFromHorizontalLine(
-      //         DotCoordinates,
-      //         n1,
-      //       ),
-      //     });
-      //     break;
-      //   }
-      //   case "VERTICALLINE": {
-      //     let n1 = n as VerticalLineNotationAttributes;
-      //     notationDistanceList.push({
-      //       notation: n1,
-      //       distance: getClickedPosDistanceFromVerticalLine(DotCoordinates, n1),
-      //     });
-      //     break;
-      //   }
+        //   case "HORIZONTALLINE": {
+        //     let n1 = n as HorizontalLineNotationAttributes;
+        //     notationDistanceList.push({
+        //       notation: n1,
+        //       distance: getClickedPosDistanceFromHorizontalLine(
+        //         DotCoordinates,
+        //         n1,
+        //       ),
+        //     });
+        //     break;
+        //   }
+        //   case "VERTICALLINE": {
+        //     let n1 = n as VerticalLineNotationAttributes;
+        //     notationDistanceList.push({
+        //       notation: n1,
+        //       distance: getClickedPosDistanceFromVerticalLine(DotCoordinates, n1),
+        //     });
+        //     break;
+        //   }
 
-      //   case "CONCAVECURVE":
-      //   case "CONVEXCURVE": {
-      //     let n1 = n as CurveNotationAttributes;
-      //     let curveEnclosingTriangleCenterX = (n1.cpx + n1.p1x + n1.p2x) / 3;
-      //     let curveEnclosingTriangleCenterY = (n1.cpy + n1.p1y + n1.p2y) / 3;
+        //   case "CONCAVECURVE":
+        //   case "CONVEXCURVE": {
+        //     let n1 = n as CurveNotationAttributes;
+        //     let curveEnclosingTriangleCenterX = (n1.cpx + n1.p1x + n1.p2x) / 3;
+        //     let curveEnclosingTriangleCenterY = (n1.cpy + n1.p1y + n1.p2y) / 3;
 
-      //     notationDistanceList.push({
-      //       notation: n1,
-      //       distance: getClickedPosDistanceFromEnclosingTriangleCenter(
-      //         DotCoordinates,
-      //         {
-      //           x: curveEnclosingTriangleCenterX,
-      //           y: curveEnclosingTriangleCenterY,
-      //         },
-      //       ),
-      //     });
-      //     break;
-      //   }
-       }
+        //     notationDistanceList.push({
+        //       notation: n1,
+        //       distance: getClickedPosDistanceFromEnclosingTriangleCenter(
+        //         DotCoordinates,
+        //         {
+        //           x: curveEnclosingTriangleCenterX,
+        //           y: curveEnclosingTriangleCenterY,
+        //         },
+        //       ),
+        //     });
+        //     break;
+        //   }
+      }
     }
 
     if (notationDistanceList.length === 0) return null;
@@ -338,7 +328,8 @@ export default function screenHelper() {
 
     const y = DotCoordinates.y - cellStore.getSvgBoundingRect().top;
 
-    const horizontalDistance = x < n.p1x ? n.p2x - x : x > n.p2x ? x - n.p2x : 0;
+    const horizontalDistance =
+      x < n.p1x ? n.p2x - x : x > n.p2x ? x - n.p2x : 0;
 
     const verticalDistance = Math.abs(n.py - y);
 
@@ -351,11 +342,11 @@ export default function screenHelper() {
   function getClickedPosDistanceFromLineEdge(
     DotCoordinates: DotCoordinates,
     nx: number,
-    ny: number
+    ny: number,
   ): number {
-    const x = DotCoordinates.x - cellStore.getSvgBoundingRect().left;
+    const x = DotCoordinates.x; // - cellStore.getSvgBoundingRect().left;
 
-    const y = DotCoordinates.y - cellStore.getSvgBoundingRect().top;
+    const y = DotCoordinates.y; // - cellStore.getSvgBoundingRect().top;
 
     const horizontalDistance = x - nx;
 
@@ -366,7 +357,6 @@ export default function screenHelper() {
 
     return Math.sqrt(a + b);
   }
-
 
   function getClickedPosDistanceFromSqrt(
     dotCoordinates: DotCoordinates,
@@ -418,8 +408,10 @@ export default function screenHelper() {
   }
 
   function getCloseLineEdge(dot: DotCoordinates): DotCoordinates | null {
-    const maxDistance = 5;
+    const maxDistance = 7;
     const notationStore = useNotationStore();
+
+    let nearPoint = null;
 
     notationStore
       .getNotations()
@@ -429,7 +421,7 @@ export default function screenHelper() {
           n.notationType === "SLOPELINE" ||
           n.notationType === "VERTICALLINE",
       )
-      .find((n) => {
+      .forEach((n) => {
         switch (n.notationType) {
           case "HORIZONTALLINE": {
             const n1 = n as HorizontalLineNotationAttributes;
@@ -439,24 +431,60 @@ export default function screenHelper() {
               n1.py,
             );
             if (distance < maxDistance) {
-              return { x: n1.p1x, y: n1.py };
+              nearPoint = { x: n1.p1x, y: n1.py };
+              return;
             }
 
-            distance = getClickedPosDistanceFromLineEdge(
+            distance = getClickedPosDistanceFromLineEdge(dot, n1.p2x, n1.py);
+            if (distance < maxDistance) {
+              nearPoint = { x: n1.p2x, y: n1.py };
+              return;
+            }
+            break;
+          }
+          case "SLOPELINE": {
+            const n1 = n as SlopeLineNotationAttributes;
+            let distance = getClickedPosDistanceFromLineEdge(
               dot,
-              n1.p2x,
-              n1.py,
+              n1.p1x,
+              n1.p1y,
             );
             if (distance < maxDistance) {
-              return { x: n1.p2x, y: n1.py };
+              nearPoint = { x: n1.p1x, y: n1.p1y };
+              return;
             }
+
+            distance = getClickedPosDistanceFromLineEdge(dot, n1.p2x, n1.p2y);
+            if (distance < maxDistance) {
+              nearPoint = { x: n1.p2x, y: n1.p2y };
+              return;
+            }
+            break;
+          }
+          case "VERTICALLINE": {
+            const n1 = n as VerticalLineNotationAttributes;
+            let distance = getClickedPosDistanceFromLineEdge(
+              dot,
+              n1.px,
+              n1.p1y,
+            );
+            if (distance < maxDistance) {
+              nearPoint = { x: n1.px, y: n1.p1y };
+              return;
+            }
+
+            distance = getClickedPosDistanceFromLineEdge(dot, n1.px, n1.p2y);
+            if (distance < maxDistance) {
+              nearPoint = { x: n1.px, y: n1.p2y };
+              return;
+            }
+            break;
           }
         }
       });
 
-    return null;
+    return nearPoint;
   }
-
 
   return {
     getClickedPosDistanceFromSlopeLine,

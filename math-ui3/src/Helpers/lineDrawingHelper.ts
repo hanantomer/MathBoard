@@ -1,4 +1,7 @@
-import { NotationAttributes } from "../../../math-common/src/baseTypes";
+import {
+  NotationAttributes,
+  SqrtNotationAttributes,
+} from "../../../math-common/src/baseTypes";
 
 import { useEditModeStore } from "../store/pinia/editModeStore";
 import { useCellStore } from "../store/pinia/cellStore";
@@ -11,8 +14,25 @@ const notationStore = useNotationStore();
 export default function useLineDrawingHelper() {
   function selectLine(lineNotation: NotationAttributes, linePosition: any) {
     hideMatrixLine(lineNotation.uuid);
-    Object.assign(linePosition, lineNotation);
     notationStore.selectNotation(lineNotation.uuid);
+
+    if (lineNotation.notationType === "HORIZONTALLINE") {
+      Object.assign(linePosition, lineNotation);
+    }
+
+    if (lineNotation.notationType === "SQRT") {
+      linePosition.p1x =
+        (lineNotation as SqrtNotationAttributes).fromCol *
+        cellStore.getCellHorizontalWidth();
+
+      linePosition.p2x =
+        (lineNotation as SqrtNotationAttributes).toCol *
+        cellStore.getCellHorizontalWidth();
+
+      linePosition.py =
+        (lineNotation as SqrtNotationAttributes).row *
+        cellStore.getCellVerticalHeight();
+    }
   }
 
   function hideMatrixLine(uuid: string) {

@@ -56,10 +56,4 @@ export type AnswerRectAttributes = EntityAttributes & NotationAttributes & RectA
 
 export type AnswerRectCreationAttributes = Omit<AnswerRectAttributes, keyof EntityAttributes>     
 
-// exponent
-
-//export type AnswerExponentAttributes = EntityAttributes & NotationAttributes & CellAttributes & ExponentAttributes &  AnswerNotationAttributes;
-
-//export type AnswerExponentCreationAttributes = Omit<AnswerExponentAttributes, keyof EntityAttributes>     
-
 

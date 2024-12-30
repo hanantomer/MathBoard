@@ -2,7 +2,6 @@ import {
   NotationAttributes,
   VerticalLineAttributes,
   VerticalLineNotationAttributes,
-
 } from "../../../math-common/src/baseTypes";
 
 import { useEditModeStore } from "../store/pinia/editModeStore";
@@ -10,12 +9,14 @@ import { useCellStore } from "../store/pinia/cellStore";
 import { useNotationStore } from "../store/pinia/notationStore";
 import useNotationMutateHelper from "../helpers/notationMutateHelper";
 import useLineDrawingHelper from "../helpers/lineDrawingHelper";
+import useScreenHelper from "../helpers/screenHelper";
 
 const editModeStore = useEditModeStore();
 const cellStore = useCellStore();
 const notationStore = useNotationStore();
 const notationMutateHelper = useNotationMutateHelper();
 const lineDrawingHelper = useLineDrawingHelper();
+const screenHelper = useScreenHelper();
 
 export default function useVerticalLineDrawingHelper() {
   function startDrawingVerticalLine(
@@ -37,7 +38,6 @@ export default function useVerticalLineDrawingHelper() {
   }
 
   function startEditingVerticalLine() {
-
     editModeStore.setNextEditMode();
   }
 
@@ -56,14 +56,10 @@ export default function useVerticalLineDrawingHelper() {
   function setExistingVerticalLine(
     e: MouseEvent,
     linePosition: VerticalLineAttributes,
-    modifyTop: boolean
+    modifyTop: boolean,
   ) {
     const yPos = e.pageY - (cellStore.getSvgBoundingRect()?.y ?? 0);
-    setY(
-      modifyTop,
-      linePosition,
-      yPos,
-    );
+    setY(modifyTop, linePosition, yPos);
   }
 
   function endDrawingVerticalLine(linePosition: VerticalLineAttributes) {
@@ -88,6 +84,8 @@ export default function useVerticalLineDrawingHelper() {
   }
 
   function saveVerticalLine(lineAttributes: VerticalLineAttributes) {
+    fixLineEdge(lineAttributes);
+
     if (notationStore.getSelectedNotations().length > 0) {
       let updatedLine = {
         ...notationStore.getSelectedNotations().at(0)!,
@@ -119,6 +117,28 @@ export default function useVerticalLineDrawingHelper() {
       linePosition.p1y = yPos;
     } else {
       linePosition.p2y = yPos;
+    }
+  }
+
+  function fixLineEdge(linePosition: VerticalLineAttributes) {
+    const nearLineRightEdge = screenHelper.getCloseLineEdge({
+      x: linePosition.px,
+      y: linePosition.p1y,
+    });
+
+    if (nearLineRightEdge != null) {
+      linePosition.px = nearLineRightEdge.x;
+      linePosition.p1y = nearLineRightEdge.y;
+    }
+
+    const nearLineLeftEdge = screenHelper.getCloseLineEdge({
+      x: linePosition.px,
+      y: linePosition.p2y,
+    });
+
+    if (nearLineLeftEdge != null) {
+      linePosition.px = nearLineLeftEdge.x;
+      linePosition.p2y = nearLineLeftEdge.y;
     }
   }
 

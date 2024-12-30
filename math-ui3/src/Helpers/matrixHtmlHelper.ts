@@ -1,7 +1,6 @@
 import * as d3 from "d3";
 import {
   NotationAttributes,
-  HorizontalLineNotationAttributes,
   PointNotationAttributes,
   ExponentNotationAttributes,
   RectNotationAttributes,
@@ -10,7 +9,6 @@ import {
   AnnotationNotationAttributes,
   MultiCellAttributes,
 } from "common/baseTypes";
-import { useNotationStore } from "../store/pinia/notationStore";
 import { useCellStore } from "../store/pinia/cellStore";
 import useUtils from "./matrixHelperUtils";
 import { useUserStore } from "../store/pinia/userStore";
@@ -18,7 +16,6 @@ import useMatrixCellHelper from "./matrixCellHelper";
 
 const userStore = useUserStore();
 const utils = useUtils();
-const notationStore = useNotationStore();
 const cellStore = useCellStore();
 const matrixCellHelper = useMatrixCellHelper();
 
@@ -80,6 +77,7 @@ export default function useHtmlMatrixHelper() {
   function height(n: NotationAttributes): number | null {
     switch (n.notationType) {
       case "ANNOTATION":
+        return pointNotationHeight(n as PointNotationAttributes) + 2;
       case "SIGN":
       case "EXPONENT":
       case "SYMBOL":
@@ -170,6 +168,7 @@ export default function useHtmlMatrixHelper() {
 
   function col(n: NotationAttributes): number | null {
     switch (n.notationType) {
+      case "EXPONENT":
       case "ANNOTATION":
       case "SIGN":
       case "SQRTSYMBOL":
@@ -180,10 +179,6 @@ export default function useHtmlMatrixHelper() {
       case "TEXT": {
         return (n as RectNotationAttributes).fromCol;
       }
-      case "EXPONENT": {
-        return (n as unknown as MultiCellAttributes).fromCol;
-      }
-
       case "SQRT": {
         return (
           (n as unknown as MultiCellAttributes).fromCol +
@@ -196,13 +191,13 @@ export default function useHtmlMatrixHelper() {
 
   function row(n: NotationAttributes) {
     switch (n.notationType) {
+      case "EXPONENT":
       case "ANNOTATION":
       case "SQRTSYMBOL":
       case "SIGN":
       case "SYMBOL":
         return (n as PointNotationAttributes).row;
 
-      case "EXPONENT":
       case "SQRT": {
         return (n as unknown as MultiCellAttributes).row;
       }
@@ -222,7 +217,7 @@ export default function useHtmlMatrixHelper() {
         ? Math.round(cellStore.getCellHorizontalWidth() / 3) * -1
         : 0;
 
-    return colIdx ? utils.getNotationXposByCol(colIdx) + deltaX : null;
+    return colIdx != null ? utils.getNotationXposByCol(colIdx) + deltaX : null;
   }
 
   function y(n: NotationAttributes) {
@@ -240,14 +235,15 @@ export default function useHtmlMatrixHelper() {
     }
 
     switch (n.notationType) {
-      case "ANNOTATION":
+      case "ANNOTATION": {
+        return cellStore.getCellHorizontalWidth() + 2;
+      }
       case "SYMBOL": {
         return cellStore.getCellHorizontalWidth();
       }
 
       case "EXPONENT": {
-        const n1 = n as unknown as MultiCellAttributes;
-        return (n1.toCol - n1.fromCol + 2) * cellStore.getCellHorizontalWidth();
+        return cellStore.getCellHorizontalWidth();
       }
 
       case "SQRT": {
@@ -340,28 +336,13 @@ export default function useHtmlMatrixHelper() {
 
     if (n.notationType === "EXPONENT") {
       const n1 = n as ExponentNotationAttributes;
-      const baseStr = n1.base.toString();
-      let baseHtml = "";
-
-      for (let i = 0; i < baseStr.length; i++) {
-        baseHtml += `<p id=${
-          n1.uuid
-        } style='color:${color};font-weight:${fontWeight}; position: absolute;
-          top:10%;
-          transform: translateX(${i * cellStore.getCellHorizontalWidth()}px);
-          font-size:1.1em'>${baseStr.charAt(i)}</p>`;
-      }
 
       const exponentHtml = `<p id=${
         n1.uuid
-      } style='color:${color};font-weight:${fontWeight}; position:realtive;
-      transform:translateY(-20%);
-      transform:translateX(${
-        baseStr.length * cellStore.getCellHorizontalWidth() - 2
-      }px);
+      } style='color:${color};font-weight:${fontWeight};
       font-size:${exponentFontSize()}'>${n1.exponent}</p>`;
 
-      return baseHtml + exponentHtml;
+      return exponentHtml;
     }
 
     // Symbol

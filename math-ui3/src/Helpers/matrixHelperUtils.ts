@@ -22,6 +22,7 @@ const matrixCellHelper = useMatrixCellHelper();
 export default function useMatrixHelperUtils() {
   function getCol(n: NotationAttributes): number {
     switch (n.notationType) {
+      case "EXPONENT":
       case "ANNOTATION":
       case "SIGN":
       case "SYMBOL":
@@ -32,8 +33,7 @@ export default function useMatrixHelperUtils() {
       case "TEXT": {
         return (n as RectNotationAttributes).fromCol;
       }
-      case "SQRT":
-      case "EXPONENT": {
+      case "SQRT": {
         return (n as unknown as MultiCellAttributes).fromCol;
       }
 

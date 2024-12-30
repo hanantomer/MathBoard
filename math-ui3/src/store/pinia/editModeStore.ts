@@ -80,7 +80,9 @@ export const useEditModeStore = defineStore("editMode", () => {
 
   function isSqrtMode() {
     return (
-      editMode.value === "SQRT_STARTED" || editMode.value === "SQRT_DRAWING"
+      editMode.value === "SQRT_STARTED" ||
+      editMode.value === "SQRT_DRAWING" ||
+      editMode.value === "SQRT_SELECTED"
     );
   }
 
@@ -107,7 +109,7 @@ export const useEditModeStore = defineStore("editMode", () => {
   }
 
   function isSqrtEditMode() {
-    return editMode.value === "SQRT_DRAWING";
+    return editMode.value === "SQRT_EDITING";
   }
 
   function isSqrtSelectedMode() {
@@ -126,8 +128,10 @@ export const useEditModeStore = defineStore("editMode", () => {
   }
 
   function isVerticalLineEditingMode() {
-    return editMode.value === "VERTICAL_LINE_EDITING_TOP" ||
-    editMode.value === "VERTICAL_LINE_EDITING_BOTTOM"
+    return (
+      editMode.value === "VERTICAL_LINE_EDITING_TOP" ||
+      editMode.value === "VERTICAL_LINE_EDITING_BOTTOM"
+    );
   }
 
   function isSqrtDrawingMode() {
@@ -171,7 +175,6 @@ export const useEditModeStore = defineStore("editMode", () => {
       editMode.value === "SLOPE_LINE_EDITING_RIGHT"
     );
   }
-
 
   function isCurveDrawingMode() {
     return (
@@ -287,18 +290,12 @@ export const useEditModeStore = defineStore("editMode", () => {
 
       case "HORIZONTAL_LINE_STARTED":
         return setEditMode("HORIZONTAL_LINE_DRAWING");
-      //case "HORIZONTAL_LINE_SELECTED":
-//        return setEditMode("HORIZONTAL_LINE_EDITING");
 
       case "VERTICAL_LINE_STARTED":
         return setEditMode("VERTICAL_LINE_DRAWING");
-  //    case "VERTICAL_LINE_SELECTED":
-   //     return setEditMode("VERTICAL_LINE_EDITING");
 
       case "SLOPE_LINE_STARTED":
         return setEditMode("SLOPE_LINE_DRAWING");
-   //   case "SLOPE_LINE_SELECTED":
-    //    return setEditMode("SLOPE_LINE_EDITING");
 
       case "CONCAVE_CURVE_STARTED":
         return setEditMode("CONCAVE_CURVE_DRAWING");
@@ -313,7 +310,7 @@ export const useEditModeStore = defineStore("editMode", () => {
       case "SQRT_STARTED":
         return setEditMode("SQRT_DRAWING");
       case "SQRT_SELECTED":
-        return setEditMode("SQRT_DRAWING");
+        return setEditMode("SQRT_EDITING");
 
       case "AREA_SELECTING":
         return setEditMode("AREA_SELECTED");

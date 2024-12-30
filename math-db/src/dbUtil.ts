@@ -10,7 +10,6 @@ import db from "./models/index";
 import {
     CurveNotationAttributes,
     ExponentNotationAttributes,
-    HorizontalLineNotationAttributes,
     NotationAttributes,
     PointNotationAttributes,
     RectNotationAttributes,
@@ -505,10 +504,8 @@ export default function dbUtil() {
 
                 if (
                     !(
-                        (m.fromCol ?? 0) >= 0 &&
-                        (m.toCol ?? 0) >= 0 &&
+                        (m.col ?? 0) >= 0 &&
                         (m.row ?? 0) >= 0 &&
-                        (!m.base || m.base.toString().length > 0) &&
                         (!m.exponent ||  m.exponent.toString().length > 0)
                     )
                 ) {

@@ -156,7 +156,6 @@ export const useNotationStore = defineStore("notation", () => {
     const notation = notations.value.get(uuid)!;
 
     switch (notation.notationType) {
-      case "EXPONENT":
       case "SQRT":
         notationCellOccupationHelper.updateMultiCellOccupationMatrix(
           cellLineNotationOccupationMatrix,
@@ -165,6 +164,7 @@ export const useNotationStore = defineStore("notation", () => {
           true,
         );
         break;
+      case "EXPONENT":
       case "ANNOTATION":
       case "SIGN":
       case "SQRTSYMBOL":
@@ -371,7 +371,6 @@ export const useNotationStore = defineStore("notation", () => {
   ) {
     switch (notation.notationType) {
       case "SQRT":
-      case "EXPONENT":
         notationCellOccupationHelper.updateMultiCellOccupationMatrix(
           cellPointNotationOccupationMatrix,
           notation as unknown as MultiCellAttributes,
@@ -379,6 +378,7 @@ export const useNotationStore = defineStore("notation", () => {
           false,
         );
         break;
+      case "EXPONENT":
       case "ANNOTATION":
       case "SIGN":
       case "SQRTSYMBOL":
@@ -434,7 +434,6 @@ export const useNotationStore = defineStore("notation", () => {
         );
     }
   }
-
 
   return {
     addNotation,

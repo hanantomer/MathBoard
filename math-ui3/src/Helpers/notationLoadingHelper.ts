@@ -50,6 +50,7 @@ export default function notationLoadingHelper() {
     if (!boardType) boardType = notationStore.getParent().type;
 
     switch (notationType) {
+      case "EXPONENT":
       case "ANNOTATION":
       case "SIGN":
       case "SQRTSYMBOL":
@@ -59,7 +60,6 @@ export default function notationLoadingHelper() {
           boardType,
           parentUUId,
         );
-      case "EXPONENT":
       case "SQRT":
       case "HORIZONTALLINE":
         return await dbHelper.getNotations<HorizontalLineNotationAttributes>(

@@ -352,6 +352,7 @@ export default function notationMutateHelper() {
       }
 
       switch (n.notationType) {
+        case "EXPONENT":
         case "ANNOTATION":
         case "SIGN":
         case "SQRTSYMBOL":
@@ -392,8 +393,7 @@ export default function notationMutateHelper() {
           break;
         }
 
-        case "SQRT":
-        case "EXPONENT": {
+        case "SQRT": {
           (n as unknown as MultiCellAttributes).fromCol += deltaCol;
           (n as unknown as MultiCellAttributes).toCol += deltaCol;
           (n as unknown as MultiCellAttributes).row += deltaRow;
@@ -700,6 +700,7 @@ export default function notationMutateHelper() {
   ): boolean {
     if (!notation) return false;
     switch (notation.notationType) {
+      case "EXPONENT":
       case "ANNOTATION":
       case "SIGN":
       case "SQRTSYMBOL":
@@ -712,20 +713,6 @@ export default function notationMutateHelper() {
             .getNotationsAtCell({
               col: pointNotation.col + delatX,
               row: pointNotation.row + delatY,
-            })
-            ?.find((n: NotationAttributes) => n.boardType == "QUESTION") != null
-        );
-      }
-
-      case "EXPONENT": {
-        const multiCell = notation as unknown as MultiCellAttributes;
-        return (
-          notation?.boardType === "ANSWER" &&
-          !userStore.isTeacher() &&
-          notationStore
-            .getNotationsAtCell({
-              col: multiCell.fromCol + delatX,
-              row: multiCell.row + delatY,
             })
             ?.find((n: NotationAttributes) => n.boardType == "QUESTION") != null
         );
@@ -879,12 +866,10 @@ export default function notationMutateHelper() {
     addPointNotation(notation);
   }
 
-  function addExponentNotation(base: string, exponent: string) {
+  function addExponentNotation(exponent: string) {
     let notation: ExponentNotationCreationAttributes = {
-      fromCol: getSelectedCell()!.col,
-      toCol: getSelectedCell()!.col + exponent.length + 1,
+      col: getSelectedCell()!.col,
       row: getSelectedCell()!.row,
-      base: base,
       exponent: exponent,
       boardType: notationStore.getParent().type,
       parentUUId: notationStore.getParent().uuid,
@@ -893,7 +878,7 @@ export default function notationMutateHelper() {
     };
 
     addNotation(notation);
-    matrixCellHelper.setNextCell(base.length + 1, 0);
+    matrixCellHelper.setNextCell(1, 0);
   }
 
   function addSymbolNotation(value: string) {

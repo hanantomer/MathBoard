@@ -40,11 +40,11 @@
 import { computed, ref } from "vue";
 import { useCellStore } from "../store/pinia/cellStore";
 import { useEditModeStore } from "../store/pinia/editModeStore";
+import { HorizontalLineAttributes } from "../../../math-common/src/baseTypes";
 import lineHandle from "./LineHandle.vue";
-
 import useWatchHelper from "../helpers/watchHelper";
 import useLineDrawer from "../helpers/lineDrawingHelper";
-import { HorizontalLineAttributes } from "../../../math-common/src/baseTypes";
+
 import useHorizontalLineDrawingHelper from "../helpers/horizontalLineDrawingHelper";
 
 const cellStore = useCellStore();
