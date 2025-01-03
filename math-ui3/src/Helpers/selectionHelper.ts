@@ -26,12 +26,16 @@ const editModeStore = useEditModeStore();
 const notationStore = useNotationStore();
 
 export default function selectionHelper() {
-  function selectNotationsOfArea(RectCoordinates: RectCoordinates) {
+  function selectNotationsOfArea(rectCoordinates: RectCoordinates) {
     // must be initialized here to prevent circular refernce
     const notationStore = useNotationStore();
+
     const areaCells =
-      screenHelper.getRectCoordinatesOccupiedCells(RectCoordinates);
+      screenHelper.getRectCoordinatesOccupiedCells(rectCoordinates);
+
     notationStore.selectNotationsOfCells(areaCells);
+
+    notationStore.selectNotationsOfRectCoordinates(rectCoordinates);
   }
 
   function selectNotationAtPosition(dotCoordinates: DotCoordinates): boolean {

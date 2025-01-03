@@ -6,22 +6,26 @@ import {
   Board,
   NotationAttributes,
   CellAttributes,
+  RectCoordinates,
   PointNotationAttributes,
   RectNotationAttributes,
-  HorizontalLineAttributes,
   HorizontalLineNotationAttributes,
   VerticalLineNotationAttributes,
   SlopeLineNotationAttributes,
   CurveNotationAttributes,
   isRect,
+  isLine,
   isPoint,
   MultiCellAttributes,
   DotCoordinates,
+  RectAttributes,
+  SqrtNotationAttributes,
 } from "common/baseTypes";
 import { BoardType } from "common/unions";
 import { ref } from "vue";
 import useNotationCellOccupationHelper from "../../helpers/notationCellOccupationHelper";
 import useMatrixCellHelper from "../../helpers/matrixCellHelper";
+import { useCellStore } from "../../store/pinia/cellStore";
 
 const notationCellOccupationHelper = useNotationCellOccupationHelper();
 const matrixCellHelper = useMatrixCellHelper();
@@ -114,6 +118,12 @@ export const useNotationStore = defineStore("notation", () => {
       .map((n) => n as RectNotationAttributes);
   }
 
+  function getLinetNotations(): NotationAttributes[] {
+    return Array.from(notations.value.values())
+      .filter((n) => isLine(n.notationType))
+      .map((n) => n as RectNotationAttributes);
+  }
+
   function getCopiedNotations(): NotationAttributes[] {
     return Array.from(copiedNotations.value.values());
   }
@@ -156,14 +166,14 @@ export const useNotationStore = defineStore("notation", () => {
     const notation = notations.value.get(uuid)!;
 
     switch (notation.notationType) {
-      case "SQRT":
-        notationCellOccupationHelper.updateMultiCellOccupationMatrix(
-          cellLineNotationOccupationMatrix,
-          notations.value.get(uuid)! as unknown as MultiCellAttributes,
-          uuid,
-          true,
-        );
-        break;
+      // case "SQRT":
+      //   notationCellOccupationHelper.updateMultiCellOccupationMatrix(
+      //     cellLineNotationOccupationMatrix,
+      //     notations.value.get(uuid)! as unknown as MultiCellAttributes,
+      //     uuid,
+      //     true,
+      //   );
+      //   break;
       case "EXPONENT":
       case "ANNOTATION":
       case "SIGN":
@@ -175,29 +185,29 @@ export const useNotationStore = defineStore("notation", () => {
           true,
         );
         break;
-      case "HORIZONTALLINE":
-        notationCellOccupationHelper.updateHorizontalLineOccupationMatrix(
-          cellLineNotationOccupationMatrix,
-          notations.value.get(uuid)! as HorizontalLineNotationAttributes,
-          uuid,
-          true,
-        );
-        break;
-      case "VERTICALLINE":
-        notationCellOccupationHelper.updateVerticalLineOccupationMatrix(
-          cellLineNotationOccupationMatrix,
-          notations.value.get(uuid)! as VerticalLineNotationAttributes,
-          true,
-        );
-        break;
-      case "SLOPELINE":
-        notationCellOccupationHelper.updateSlopeLineOccupationMatrix(
-          cellLineNotationOccupationMatrix,
-          notations.value.get(uuid)! as SlopeLineNotationAttributes,
-          uuid,
-          true,
-        );
-        break;
+      // case "HORIZONTALLINE":
+      //   notationCellOccupationHelper.updateHorizontalLineOccupationMatrix(
+      //     cellLineNotationOccupationMatrix,
+      //     notations.value.get(uuid)! as HorizontalLineNotationAttributes,
+      //     uuid,
+      //     true,
+      //   );
+      //   break;
+      // case "VERTICALLINE":
+      //   notationCellOccupationHelper.updateVerticalLineOccupationMatrix(
+      //     cellLineNotationOccupationMatrix,
+      //     notations.value.get(uuid)! as VerticalLineNotationAttributes,
+      //     true,
+      //   );
+      //   break;
+      // case "SLOPELINE":
+      //   notationCellOccupationHelper.updateSlopeLineOccupationMatrix(
+      //     cellLineNotationOccupationMatrix,
+      //     notations.value.get(uuid)! as SlopeLineNotationAttributes,
+      //     uuid,
+      //     true,
+      //   );
+      //   break;
 
       case "CONVEXCURVE":
       case "CONCAVECURVE":
@@ -289,6 +299,8 @@ export const useNotationStore = defineStore("notation", () => {
 
     // line
 
+    ///TODO: remove occupation matrix population of lines
+
     const lineNotationsUUIDs = cellLineNotationOccupationMatrix[cell.col][
       cell.row
     ] as Set<String>;
@@ -316,6 +328,91 @@ export const useNotationStore = defineStore("notation", () => {
       selectNotation(uuid);
       //notations.value.get(uuid)!.selected = true;
     });
+  }
+
+  function selectNotationsOfRectCoordinates(rect: RectCoordinates) {
+    getLinetNotations().forEach((l) => {
+      let doIntersects = true;
+      switch (l.notationType) {
+        case "SQRT":
+          doIntersects = checkSqrtIntersection(
+            l as SqrtNotationAttributes,
+            rect,
+          );
+          break;
+        case "HORIZONTALLINE":
+          doIntersects = checkHorizontalLineIntersection(
+            l as HorizontalLineNotationAttributes,
+            rect,
+          );
+          break;
+        case "VERTICALLINE":
+          doIntersects = checkVerticalLineIntersection(
+            l as VerticalLineNotationAttributes,
+            rect,
+          );
+          break;
+        case "SLOPELINE":
+          doIntersects = checkSlopeLineIntersection(
+            l as SlopeLineNotationAttributes,
+            rect,
+          );
+          break;
+      }
+      if (doIntersects) {
+        selectNotation(l.uuid);
+      }
+    });
+  }
+
+  function checkSqrtIntersection(
+    sqrt: SqrtNotationAttributes,
+    rect: RectCoordinates,
+  ): boolean {
+    const cellStore = useCellStore();
+    const x1 = sqrt.fromCol * cellStore.getCellHorizontalWidth();
+    const x2 = sqrt.toCol * cellStore.getCellHorizontalWidth();
+    const y = sqrt.row * cellStore.getCellVerticalHeight();
+
+    // Check if the sqrt notation intersects with the given rectangle
+    if (x1 > rect.bottomRight.x) return false; // sqrt right of rect
+    if (x2 < rect.topLeft.x) return false; // sqrt left of rect
+    if (y > rect.bottomRight.y) return false; // sqrt below rect
+    if (y < rect.topLeft.y) return false; // sqrt above rect
+    return true;
+  }
+
+  function checkHorizontalLineIntersection(
+    line: HorizontalLineNotationAttributes,
+    rect: RectCoordinates,
+  ): boolean {
+    if (line.p2x < rect.topLeft.x) return false; // line left of rect
+    if (line.p1x > rect.bottomRight.x) return false; // line right of rect
+    if (line.py > rect.bottomRight.y) return false; // line below rect
+    if (line.py < rect.topLeft.y) return false; // line above rect
+    return true;
+  }
+
+  function checkVerticalLineIntersection(
+    line: VerticalLineNotationAttributes,
+    rect: RectCoordinates,
+  ): boolean {
+    if (line.px < rect.topLeft.x) return false; // line left of rect
+    if (line.px > rect.bottomRight.x) return false; // line right of rect
+    if (line.p2y < rect.topLeft.y) return false; // line above rect
+    if (line.p1y > rect.bottomRight.y) return false; // line below rect
+    return true;
+  }
+
+  function checkSlopeLineIntersection(
+    line: SlopeLineNotationAttributes,
+    rect: RectCoordinates,
+  ): boolean {
+    if (line.p2x < rect.topLeft.x) return false; // line left of rect
+    if (line.p1x > rect.bottomRight.x) return false; // line right of rect
+    if (Math.min(line.p1y, line.p2y) > rect.bottomRight.y) return false; // line below rect
+    if (Math.max(line.p1y, line.p2y) < rect.topLeft.y) return false; // line above rect
+    return true;
   }
 
   function createCellSingleNotationOccupationMatrix(): (String | null)[][] {
@@ -370,14 +467,14 @@ export const useNotationStore = defineStore("notation", () => {
     cellRectNotationOccupationMatrix: (String | null)[][],
   ) {
     switch (notation.notationType) {
-      case "SQRT":
-        notationCellOccupationHelper.updateMultiCellOccupationMatrix(
-          cellPointNotationOccupationMatrix,
-          notation as unknown as MultiCellAttributes,
-          notation.uuid,
-          false,
-        );
-        break;
+      // case "SQRT":
+      //   notationCellOccupationHelper.updateMultiCellOccupationMatrix(
+      //     cellPointNotationOccupationMatrix,
+      //     notation as unknown as MultiCellAttributes,
+      //     notation.uuid,
+      //     false,
+      //   );
+      //   break;
       case "EXPONENT":
       case "ANNOTATION":
       case "SIGN":
@@ -390,31 +487,31 @@ export const useNotationStore = defineStore("notation", () => {
         );
         break;
 
-      case "HORIZONTALLINE":
-        notationCellOccupationHelper.updateHorizontalLineOccupationMatrix(
-          cellLineNotationOccupationMatrix,
-          notation as unknown as HorizontalLineAttributes,
-          notation.uuid,
-          false,
-        );
-        break;
+      // case "HORIZONTALLINE":
+      //   notationCellOccupationHelper.updateHorizontalLineOccupationMatrix(
+      //     cellLineNotationOccupationMatrix,
+      //     notation as unknown as HorizontalLineAttributes,
+      //     notation.uuid,
+      //     false,
+      //   );
+      //   break;
 
-      case "VERTICALLINE":
-        notationCellOccupationHelper.updateVerticalLineOccupationMatrix(
-          cellLineNotationOccupationMatrix,
-          notation as VerticalLineNotationAttributes,
-          false,
-        );
-        break;
+      // case "VERTICALLINE":
+      //   notationCellOccupationHelper.updateVerticalLineOccupationMatrix(
+      //     cellLineNotationOccupationMatrix,
+      //     notation as VerticalLineNotationAttributes,
+      //     false,
+      //   );
+      //   break;
 
-      case "SLOPELINE":
-        notationCellOccupationHelper.updateSlopeLineOccupationMatrix(
-          cellLineNotationOccupationMatrix,
-          notation as SlopeLineNotationAttributes,
-          notation.uuid,
-          false,
-        );
-        break;
+      // case "SLOPELINE":
+      //   notationCellOccupationHelper.updateSlopeLineOccupationMatrix(
+      //     cellLineNotationOccupationMatrix,
+      //     notation as SlopeLineNotationAttributes,
+      //     notation.uuid,
+      //     false,
+      //   );
+      //   break;
 
       case "TEXT":
       case "IMAGE":
@@ -447,6 +544,7 @@ export const useNotationStore = defineStore("notation", () => {
     isSymbolAdjecentToHorizontalLine,
     hasSelectedNotations,
     selectNotationsOfCells,
+    selectNotationsOfRectCoordinates,
     getSelectedNotations,
     getParent,
     setNotations,

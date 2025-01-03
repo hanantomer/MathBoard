@@ -4,7 +4,7 @@
       drawing-mode="SQRT_DRAWING"
       editing-mode="SQRT_EDITING"
       v-bind:style="{
-        left: handleRight + 'px',
+        left: handleX + 'px',
         top: handleY + 'px',
       }"
     >
@@ -87,8 +87,8 @@ let sqrtSymbolY = computed(() => {
   return linePosition.value.py + (cellStore.getSvgBoundingRect().top ?? 0) - 5;
 });
 
-let handleRight = computed(() => {
-  return sqrtRight.value + (cellStore.getSvgBoundingRect().left ?? 0) + 10;
+let handleX = computed(() => {
+  return sqrtRight.value + (cellStore.getSvgBoundingRect().left ?? 0);
 });
 
 let handleY = computed(() => {

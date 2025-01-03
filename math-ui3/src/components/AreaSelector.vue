@@ -337,10 +337,13 @@ function endSelect() {
 
   if (editModeStore.getEditMode() === "AREA_SELECTING") {
     selectionHelper.selectNotationsOfArea({
-      topLeft: { x: selectionPosition.value.x1, y: selectionPosition.value.y1 },
+      topLeft: {
+        x: selectionPosition.value.x1 - cellStore.getSvgBoundingRect().left,
+        y: selectionPosition.value.y1 - cellStore.getSvgBoundingRect().top,
+      },
       bottomRight: {
-        x: selectionPosition.value.x2,
-        y: selectionPosition.value.y2,
+        x: selectionPosition.value.x2 - cellStore.getSvgBoundingRect().left,
+        y: selectionPosition.value.y2 - cellStore.getSvgBoundingRect().top,
       },
     });
   }
@@ -493,7 +496,6 @@ function signalSelection() {
     height: selectionRectHeight.value,
   });
 }
-
 </script>
 
 <style>

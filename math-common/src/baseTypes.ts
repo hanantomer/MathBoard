@@ -252,6 +252,7 @@ export function isRect(n: NotationType): boolean {
 export function isLine(n: NotationType): boolean {
   return (
     n === "HORIZONTALLINE" ||
+    n === "SQRT" ||
     n === "VERTICALLINE" ||
     n === "SLOPELINE"
   );
@@ -281,7 +282,7 @@ export function isMultiCell(
 ): boolean {
   return (
     n ===
-      "SQRT" /*unlike horizontal line, sqrt borders adjusts to cell borders */
+    "SQRT" /*unlike horizontal line, sqrt borders adjusts to cell borders */
   );
 }
 

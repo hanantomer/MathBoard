@@ -4,7 +4,6 @@ import {
   VerticalLineNotationAttributes,
   RectNotationAttributes,
   CurveNotationAttributes,
-  NotationAttributes,
   SlopeLineAttributes,
   MultiCellAttributes,
 } from "common/baseTypes";
@@ -32,7 +31,7 @@ export default function notationCellOccupationHelper() {
     uuid: string,
     doRemove: boolean,
   ) {
-    clearNotationFromMatrix(uuid, matrix); ///TODO:
+    clearNotationFromMatrix(uuid, matrix);
     for (let i = notation.fromCol; i <= notation.toCol; i++) {
       if (!validateRowAndCol(i, notation.row)) return;
       matrix[i][notation.row] = doRemove ? null : uuid;

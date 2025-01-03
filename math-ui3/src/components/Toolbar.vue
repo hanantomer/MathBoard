@@ -66,7 +66,6 @@
 <script setup lang="ts">
 import { watch, ref } from "vue";
 import accessLinkDialog from "./AccessLinkDialog.vue";
-import colorSelector from "./ColorSelector.vue";
 
 import { useNotationStore } from "../store/pinia/notationStore";
 import { useEditModeStore } from "../store/pinia/editModeStore";
@@ -164,7 +163,6 @@ const modeButtons: Array<{
     overlay_icon: "",
     rotate: 0,
   },
-
   {
     name: "exponent",
     show_condition: true,
@@ -238,6 +236,7 @@ watch(
   (editMode) => {
     if (
       editMode === editModeStore.getDefaultEditMode() ||
+      editMode == "CELL_SELECTED" ||
       editMode == "AREA_SELECTED"
     ) {
       resetButtonsState();

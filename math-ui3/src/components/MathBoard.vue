@@ -216,7 +216,7 @@ html {
 
 .line {
   top: 4px;
-  stroke: rgb(210, 30, 36);
+  stroke: chocolate;
   position: absolute;
   display: block;
   border-bottom: solid 1px;

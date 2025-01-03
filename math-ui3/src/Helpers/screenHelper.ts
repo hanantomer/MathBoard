@@ -95,22 +95,22 @@ export default function screenHelper() {
     let cells: CellAttributes[] = [];
 
     const areaFromCol = Math.floor(
-      (rectCoordinates.topLeft.x - cellStore.getSvgBoundingRect().left) /
+      (rectCoordinates.topLeft.x) /
         cellStore.getCellHorizontalWidth(),
     );
 
     const areaToCol = Math.floor(
-      (rectCoordinates.bottomRight.x - cellStore.getSvgBoundingRect().left) /
+      (rectCoordinates.bottomRight.x) /
         cellStore.getCellHorizontalWidth(),
     );
 
     const areaFromRow = Math.floor(
-      (rectCoordinates.topLeft.y - cellStore.getSvgBoundingRect().top) /
+      (rectCoordinates.topLeft.y) /
         cellStore.getCellVerticalHeight(),
     );
 
     const areaToRow = Math.floor(
-      (rectCoordinates.bottomRight.y - cellStore.getSvgBoundingRect().top) /
+      (rectCoordinates.bottomRight.y) /
         cellStore.getCellVerticalHeight(),
     );
 
@@ -160,7 +160,7 @@ export default function screenHelper() {
           });
           break;
         }
-        
+
         case "IMAGE":
         case "TEXT":
           let n1 = n as RectNotationAttributes;
