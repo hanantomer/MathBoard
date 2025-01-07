@@ -1,4 +1,26 @@
 <template>
+  <line-watcher
+    :startEntry="{
+      editMode: ['VERTICAL_LINE_STARTED'],
+      func: setInitialLinePosition,
+    }"
+    :drawEntry="{
+      editMode: ['VERTICAL_LINE_DRAWING'],
+      func: drawVerticalLine,
+    }"
+    :editEntryFirstHandle="{
+      editMode: ['VERTICAL_LINE_EDITING_TOP'],
+      func: modifyTopVerticalLine,
+    }"
+    :editEntrySecondHandle="{
+      editMode: ['VERTICAL_LINE_EDITING_BOTTOM'],
+      func: modifyBottomVerticalLine,
+    }"
+    :endEntry="{
+      editMode: ['VERTICAL_LINE_SELECTED'],
+      func: endDrawing,
+    }"
+  />
   <div v-show="show">
     <line-handle
       drawing-mode="VERTICAL_LINE_DRAWING"
@@ -38,20 +60,27 @@ import { computed, ref } from "vue";
 import { useCellStore } from "../store/pinia/cellStore";
 import { useEditModeStore } from "../store/pinia/editModeStore";
 import useWatchHelper from "../helpers/watchHelper";
+import useNotationMutateHelper from "../helpers/notationMutateHelper";
+import useScreenHelper from "../helpers/screenHelper";
 import useLineDrawer from "../helpers/lineDrawingHelper";
-import useVerticalLineDrawingHelper from "../helpers/verticalLineDrawingHelper";
+import lineWatcher from "./LineWatcher.vue";
+import { useNotationStore } from "../store/pinia/notationStore";
 
 import {
   VerticalLineNotationAttributes,
   VerticalLineAttributes,
+  DotCoordinates,
 } from "../../../math-common/src/baseTypes";
 import lineHandle from "./LineHandle.vue";
+import { LineHandleType } from "common/unions";
 
 const watchHelper = useWatchHelper();
 const lineDrawer = useLineDrawer();
-const verticalLineDrawer = useVerticalLineDrawingHelper();
 const cellStore = useCellStore();
 const editModeStore = useEditModeStore();
+const screenHelper = useScreenHelper();
+const notationStore = useNotationStore();
+const notationMutateHelper = useNotationMutateHelper();
 
 // vars
 
@@ -87,43 +116,16 @@ let handleTop = computed(() => {
 
 // watchers
 
-watchHelper.watchMouseEvent(
-  ["VERTICAL_LINE_STARTED"],
-  "EV_SVG_MOUSEDOWN",
-  (e: MouseEvent) =>
-    verticalLineDrawer.startDrawingVerticalLine(e, linePosition.value),
-);
-
-watchHelper.watchMouseEvent(
-  ["VERTICAL_LINE_DRAWING"],
-  "EV_SVG_MOUSEMOVE",
-  (e: MouseEvent) =>
-    verticalLineDrawer.setNewVerticalLine(e, linePosition.value),
-);
-
-watchHelper.watchMouseEvent(
-  ["VERTICAL_LINE_EDITING_TOP"],
-  "EV_SVG_MOUSEMOVE",
-  (e: MouseEvent) =>
-    verticalLineDrawer.setExistingVerticalLine(e, linePosition.value, true),
-);
-
-watchHelper.watchMouseEvent(
-  ["VERTICAL_LINE_EDITING_BOTTOM"],
-  "EV_SVG_MOUSEMOVE",
-  (e: MouseEvent) =>
-    verticalLineDrawer.setExistingVerticalLine(e, linePosition.value, false),
-);
-
-watchHelper.watchMouseEvent(
-  [
-    "VERTICAL_LINE_DRAWING",
-    "VERTICAL_LINE_EDITING_BOTTOM",
-    "VERTICAL_LINE_EDITING_TOP",
-  ],
-  "EV_SVG_MOUSEUP",
-  () => verticalLineDrawer.endDrawingVerticalLine(linePosition.value),
-);
+// watchHelper.watchMouseEvent(
+//   [
+//     "VERTICAL_LINE_DRAWING",
+//     "VERTICAL_LINE_EDITING_BOTTOM",
+//     "VERTICAL_LINE_EDITING_TOP",
+//     "VERTICAL_LINE_SELECTED",
+//   ],
+//   "EV_SVG_MOUSEUP",
+//   () => verticalLineDrawer.endDrawingVerticalLine(linePosition.value),
+// );
 
 // emmited by selection helper
 watchHelper.watchNotationSelection(
@@ -139,7 +141,87 @@ watchHelper.watchMouseEvent(
   () => lineDrawer.resetDrawing(linePosition.value),
 );
 
-// watchHelper.watchMouseEvent(["VERTICAL_LINE_EDITING"], "EV_SVG_MOUSEUP", () =>
-//   lineDrawer.endLineEditing(),
-// );
+function setInitialLinePosition(p: DotCoordinates) {
+  linePosition.value.px = p.x;
+  linePosition.value.p1y = p.y;
+  linePosition.value.p2y = p.y;
+}
+
+function setY(handleType: LineHandleType, yPos: number) {
+  if (handleType === "top") {
+    linePosition.value.p1y = yPos;
+  } else {
+    linePosition.value.p2y = yPos;
+  }
+}
+
+function drawVerticalLine(p: DotCoordinates) {
+  const handleType =
+    Math.abs(p.y - linePosition.value.p1y) <
+    Math.abs(linePosition.value.p2y - p.y)
+      ? "top"
+      : "bottom";
+
+  setY(handleType, p.y);
+}
+
+function modifyTopVerticalLine(p: DotCoordinates) {
+  setY("top", p.y);
+}
+
+function modifyBottomVerticalLine(p: DotCoordinates) {
+  setY("bottom", p.y);
+}
+
+function fixLineEdge(linePosition: VerticalLineAttributes) {
+  const nearLineRightEdge = screenHelper.getCloseLineEdge({
+    x: linePosition.px,
+    y: linePosition.p1y,
+  });
+
+  if (nearLineRightEdge != null) {
+    linePosition.px = nearLineRightEdge.x;
+    linePosition.p1y = nearLineRightEdge.y;
+  }
+
+  const nearLineLeftEdge = screenHelper.getCloseLineEdge({
+    x: linePosition.px,
+    y: linePosition.p2y,
+  });
+
+  if (nearLineLeftEdge != null) {
+    linePosition.px = nearLineLeftEdge.x;
+    linePosition.p2y = nearLineLeftEdge.y;
+  }
+}
+
+function endDrawing() {
+  saveVerticalLine();
+  resetDrawing();
+}
+
+function saveVerticalLine() {
+  fixLineEdge(linePosition.value);
+
+  if (notationStore.getSelectedNotations().length > 0) {
+    let updatedLine = {
+      ...notationStore.getSelectedNotations().at(0)!,
+      ...linePosition.value,
+    };
+
+    notationMutateHelper.updateVerticalLineNotation(
+      updatedLine as VerticalLineNotationAttributes,
+    );
+  } else
+    notationMutateHelper.addVerticalLineNotation(
+      linePosition.value,
+      "VERTICALLINE",
+    );
+}
+
+function resetDrawing() {
+  linePosition.value.px = linePosition.value.p1y = linePosition.value.p2y = 0;
+  notationStore.resetSelectedNotations();
+  editModeStore.setDefaultEditMode();
+}
 </script>

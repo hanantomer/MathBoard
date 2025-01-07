@@ -243,3 +243,9 @@ export type Color =
   | "lightgreen"
   | "pink"
   | "transparent";
+
+export type LineHandleType  =  
+  | "top"
+  | "bottom"
+  | "right"
+  | "left";

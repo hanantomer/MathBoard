@@ -1,6 +1,8 @@
 import {
   BoardType,
   NotationType,
+  EditMode,
+  LineHandleType
 } from "./unions";
 import { UserAttributes } from "./userTypes";
 
@@ -59,13 +61,6 @@ export type RectCoordinates = {
   bottomRight: DotCoordinates;
 };
 
-/// TODO mieght not be global
-// export type CurvePosition = {
-//   left: DotCoordinates;
-//   right: DotCoordinates;
-//   controlPoint1: DotCoordinates;
-//   controlPoint2: DotCoordinates;
-// };
 
 export type CellAttributes = {
   col: number;
@@ -302,10 +297,14 @@ export type SlopeDrawerAttributes = {
   movementDirection: MovementDirection;
 };
 
-// export type VerticalDrawerAttributes = {
-//   linePosition: VerticalLineAttributes;
+export type lineWatcherEntry = {
+   func: (p: DotCoordinates) => void
+   editMode: [EditMode]
+}
+
+// export type lineHandleWatcherEntry = {
+//   func: (p: DotCoordinates) => void;
+//   editMode: EditMode;
+//   handleType: LineHandleType;
 // };
 
-// export type HorizontalDrawerAttributes = {
-//   linePosition: HorizontalLineAttributes;
-// };

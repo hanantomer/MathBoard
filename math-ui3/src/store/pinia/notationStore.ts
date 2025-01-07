@@ -306,7 +306,7 @@ export const useNotationStore = defineStore("notation", () => {
     ] as Set<String>;
 
     if (lineNotationsUUIDs) {
-      lineNotationsUUIDs.values().forEach((ln) => {
+      Array.from(lineNotationsUUIDs.values()).forEach((ln : any) => {
         notationsAtCell.push(notations.value.get(ln) as NotationAttributes);
       });
     }
