@@ -322,7 +322,7 @@ export default function useDbHelper() {
         `/${lineNotation.boardType.toLowerCase()}${lineNotation.notationType.toLowerCase()}s`,
       {
         uuid: lineNotation.uuid,
-        x: lineNotation.px,
+        px: lineNotation.px,
         p1y: lineNotation.p1y,
         p2y: lineNotation.p2y,
       },

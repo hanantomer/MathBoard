@@ -5,15 +5,18 @@ import useWatchHelper from "../helpers/watchHelper";
 import useLineDrawer from "../helpers/lineDrawingHelper";
 import { PropType } from "vue";
 
-import { lineWatcherEntry } from "../../../math-common/src/baseTypes";
-
+import {
+  lineWatcherEntry,
+  lineSaveWatcherEntry,
+  lineSelectWatcherEntry,
+  lineResetSelectionWatcherEntry,
+} from "../../../math-common/src/baseTypes";
 
 const lineDrawer = useLineDrawer();
 const watchHelper = useWatchHelper();
 
 // each prop entry holds a stage of the line drawing process
 const props = defineProps({
-
   startEntry: {
     type: Object as PropType<lineWatcherEntry>,
     required: true,
@@ -35,34 +38,62 @@ const props = defineProps({
   },
 
   endEntry: {
-    type: Object as PropType<lineWatcherEntry>,
+    type: Object as PropType<lineSaveWatcherEntry>,
     required: true,
   },
 
+  selectEntry: {
+    type: Object as PropType<lineSelectWatcherEntry>,
+    required: true,
+  },
+
+  resetSelectionEntry: {
+    type: Object as PropType<lineResetSelectionWatcherEntry>,
+    required: true,
+  },
 });
 
 watchHelper.watchMouseEvent(
-  props.startEntry.editMode,
+  [props.startEntry.editMode],
   "EV_SVG_MOUSEDOWN",
-  (e: MouseEvent) => lineDrawer.setLineInitialPosition(e, props.startEntry.func),
+  (e: MouseEvent) => {
+    lineDrawer.setLineInitialPosition(e, props.startEntry.func);
+  },
 );
 
 watchHelper.watchMouseEvent(
-  props.drawEntry.editMode,
+  [props.drawEntry.editMode],
   "EV_SVG_MOUSEMOVE",
   (e: MouseEvent) => lineDrawer.drawNewLine(e, props.drawEntry.func),
 );
 
 watchHelper.watchMouseEvent(
-  props.editEntryFirstHandle.editMode,
+  [props.editEntryFirstHandle.editMode],
   "EV_SVG_MOUSEMOVE",
   (e: MouseEvent) => lineDrawer.modifyLine(e, props.editEntryFirstHandle.func),
 );
 
 watchHelper.watchMouseEvent(
-  props.endEntry.editMode,
-  "EV_SVG_MOUSEUP",
-  () => lineDrawer.endDrawing(props.endEntry.func),
+  [props.editEntrySecondHandle.editMode],
+  "EV_SVG_MOUSEMOVE",
+  (e: MouseEvent) => lineDrawer.modifyLine(e, props.editEntrySecondHandle.func),
+);
+
+watchHelper.watchMouseEvent(props.endEntry.editMode, "EV_SVG_MOUSEUP", () =>
+  lineDrawer.endDrawing(props.endEntry.func),
+);
+
+watchHelper.watchNotationSelection(
+  props.selectEntry.editMode,
+  props.selectEntry.event,
+  (n) => lineDrawer.selectLine(n, props.selectEntry.func),
+);
+
+watchHelper.watchMouseEvent(
+  props.resetSelectionEntry.editMode,
+  "EV_SVG_MOUSEDOWN",
+  () => lineDrawer.resetDrawing(),
 );
 
 </script>
+

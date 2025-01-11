@@ -8,15 +8,11 @@
 <script setup lang="ts">
 import { PropType } from "vue";
 import { useEditModeStore } from "../store/pinia/editModeStore";
-import { useNotationStore } from "../store/pinia/notationStore";
 import { EditMode } from "../../../math-common/src/unions";
-import useWatchHelper from "../helpers/watchHelper";
-import useLineDrawer from "../helpers/lineDrawingHelper";
+import useEventBus from "../helpers/eventBusHelper";
 
-const notationStore = useNotationStore();
-const lineDrawer = useLineDrawer();
 const editModeStore = useEditModeStore();
-const watchHelper = useWatchHelper();
+const eventBus = useEventBus();
 
 const props = defineProps({
   drawingMode: {
@@ -29,17 +25,9 @@ const props = defineProps({
   },
 });
 
-watchHelper.watchMouseEvent(
-  [props.editingMode, props.drawingMode],
-  "EV_SVG_MOUSEUP",
-  endEdit,
-);
 
-function endEdit() {
-  if (notationStore.hasSelectedNotations()) {
-    lineDrawer.showMatrixLine();
-  }
-  editModeStore.setDefaultEditMode();
+function endEdit(e: MouseEvent) {
+  eventBus.emit("EV_SVG_MOUSEUP", e);
 }
 </script>
 <style>

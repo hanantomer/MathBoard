@@ -2,7 +2,6 @@ import {
   NotationAttributes,
   SqrtNotationAttributes,
   DotCoordinates,
-
 } from "../../../math-common/src/baseTypes";
 
 import { LineHandleType } from "../../../math-common/src/unions";
@@ -42,10 +41,7 @@ export default function useLineDrawingHelper() {
     drawLine(position);
   }
 
-  function modifyLine(
-    e: MouseEvent,
-    modifyLine: (p: DotCoordinates) => void,
-  ) {
+  function modifyLine(e: MouseEvent, modifyLine: (p: DotCoordinates) => void) {
     if (e.buttons !== 1) {
       return;
     }
@@ -66,32 +62,14 @@ export default function useLineDrawingHelper() {
     endDrawing();
   }
 
-
-  function selectLine(lineNotation: NotationAttributes, linePosition: any) {
-    hideMatrixLine(lineNotation.uuid);
-    notationStore.selectNotation(lineNotation.uuid);
-
-    if (lineNotation.notationType === "HORIZONTALLINE") {
-      Object.assign(linePosition, lineNotation);
-    }
-
-    if (lineNotation.notationType === "SQRT") {
-      linePosition.p1x =
-        (lineNotation as SqrtNotationAttributes).fromCol *
-        cellStore.getCellHorizontalWidth();
-
-      linePosition.p2x =
-        (lineNotation as SqrtNotationAttributes).toCol *
-        cellStore.getCellHorizontalWidth();
-
-      linePosition.py =
-        (lineNotation as SqrtNotationAttributes).row *
-        cellStore.getCellVerticalHeight();
-    }
+  function selectLine(
+    selectedNotation: NotationAttributes,
+    selectLine: (notation: NotationAttributes) => void,
+  ) {
+    hideMatrixLine(selectedNotation.uuid);
+    notationStore.selectNotation(selectedNotation.uuid);
+    selectLine(selectedNotation);
   }
-
-
-
 
   function hideMatrixLine(uuid: string) {
     (document.getElementById(uuid) as HTMLElement).style.display = "none";
@@ -120,12 +98,7 @@ export default function useLineDrawingHelper() {
     return clickedCol * cellStore.getCellHorizontalWidth();
   }
 
-  function resetDrawing(linePosition: any) {
-    // set line position coordinates to 0
-    let key: keyof typeof linePosition;
-    for (key in linePosition) {
-      linePosition[key] = 0;
-    }
+  function resetDrawing() {
     notationStore.resetSelectedNotations();
     editModeStore.setDefaultEditMode();
   }
@@ -137,6 +110,6 @@ export default function useLineDrawingHelper() {
     showMatrixLine,
     resetDrawing,
     modifyLine,
-    endDrawing
+    endDrawing,
   };
 }

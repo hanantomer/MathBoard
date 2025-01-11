@@ -128,12 +128,12 @@ watchHelper.watchMouseEvent(
 );
 
 // emmited by selection helper
-watchHelper.watchNotationSelection(
-  "SLOPE_LINE_SELECTED",
-  "EV_SLOPE_LINE_SELECTED",
-  (notation) =>
-    lineDrawer.selectLine(notation, slopeDrawerAttributes.value.linePosition),
-);
+// watchHelper.watchNotationSelection(
+//   "SLOPE_LINE_SELECTED",
+//   "EV_SLOPE_LINE_SELECTED",
+//   (notation) =>
+//     lineDrawer.selectLine(notation, slopeDrawerAttributes.value.linePosition),
+// );
 
 watchHelper.watchEditModeTransition(
   ["SLOPE_LINE_DRAWING", "SLOPE_LINE_EDITING_LEFT", "SLOPE_LINE_EDITING_RIGHT"],
@@ -142,6 +142,7 @@ watchHelper.watchEditModeTransition(
 );
 
 watchHelper.watchMouseEvent(["SLOPE_LINE_SELECTED"], "EV_SVG_MOUSEDOWN", () =>
-  lineDrawer.resetDrawing(slopeDrawerAttributes.value.linePosition),
+  lineDrawer.resetDrawing(),
 );
+
 </script>

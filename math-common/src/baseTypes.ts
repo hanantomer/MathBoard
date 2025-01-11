@@ -2,7 +2,7 @@ import {
   BoardType,
   NotationType,
   EditMode,
-  LineHandleType
+  BusEventType
 } from "./unions";
 import { UserAttributes } from "./userTypes";
 
@@ -299,12 +299,24 @@ export type SlopeDrawerAttributes = {
 
 export type lineWatcherEntry = {
    func: (p: DotCoordinates) => void
-   editMode: [EditMode]
+   editMode: EditMode
 }
 
-// export type lineHandleWatcherEntry = {
-//   func: (p: DotCoordinates) => void;
-//   editMode: EditMode;
-//   handleType: LineHandleType;
-// };
+export type lineSaveWatcherEntry = {
+   func: () => void
+   editMode: Array<EditMode>
+}
+
+export type lineResetSelectionWatcherEntry = {
+  func: () => void;
+  editMode: Array<EditMode>;
+};
+
+
+export type lineSelectWatcherEntry = {
+  func: (notation: NotationAttributes) => void;
+  editMode: EditMode;
+  event: BusEventType;
+};
+
 

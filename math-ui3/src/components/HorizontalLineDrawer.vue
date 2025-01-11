@@ -1,5 +1,43 @@
-<!-- TODO: create component for line handles -->
 <template>
+  <lineWatcher
+    :startEntry="{
+      editMode: 'HORIZONTAL_LINE_STARTED',
+      func: setInitialLinePosition,
+    }"
+    :drawEntry="{
+      editMode: 'HORIZONTAL_LINE_DRAWING',
+      func: drawLine,
+    }"
+    :editEntryFirstHandle="{
+      editMode: 'HORIZONTAL_LINE_EDITING_LEFT',
+      func: modifyLineLeft,
+    }"
+    :editEntrySecondHandle="{
+      editMode: 'HORIZONTAL_LINE_EDITING_RIGHT',
+      func: modifyLineRight,
+    }"
+    :endEntry="{
+      editMode: [
+        'HORIZONTAL_LINE_DRAWING',
+        'HORIZONTAL_LINE_EDITING_RIGHT',
+        'HORIZONTAL_LINE_EDITING_LEFT',
+        'HORIZONTAL_LINE_SELECTED',
+      ],
+      func: endDrawing,
+    }"
+    :selectEntry="{
+      editMode: 'HORIZONTAL_LINE_SELECTED',
+      func: selectLine,
+      event: 'EV_HORIZONTAL_LINE_SELECTED',
+    }"
+    :resetSelectionEntry="{
+      editMode: [
+        'HORIZONTAL_LINE_EDITING_RIGHT',
+        'HORIZONTAL_LINE_EDITING_LEFT',
+      ],
+      func: resetDrawing,
+    }"
+  />
   <div v-if="show">
     <line-handle
       drawing-mode="HORIZONTAL_LINE_DRAWING"
@@ -40,18 +78,25 @@
 import { computed, ref } from "vue";
 import { useCellStore } from "../store/pinia/cellStore";
 import { useEditModeStore } from "../store/pinia/editModeStore";
-import { HorizontalLineAttributes } from "../../../math-common/src/baseTypes";
+import { useNotationStore } from "../store/pinia/notationStore";
+import {
+  HorizontalLineAttributes,
+  HorizontalLineNotationAttributes,
+  DotCoordinates,
+  NotationAttributes,
+} from "../../../math-common/src/baseTypes";
 import lineHandle from "./LineHandle.vue";
-import useWatchHelper from "../helpers/watchHelper";
-import useLineDrawer from "../helpers/lineDrawingHelper";
+import lineWatcher from "./LineWatcher.vue";
 
-import useHorizontalLineDrawingHelper from "../helpers/horizontalLineDrawingHelper";
+import useNotationMutateHelper from "../helpers/notationMutateHelper";
+import useScreenHelper from "../helpers/screenHelper";
 
 const cellStore = useCellStore();
 const editModeStore = useEditModeStore();
-const watchHelper = useWatchHelper();
-const lineDrawer = useLineDrawer();
-const horizontalLineDrawingHelper = useHorizontalLineDrawingHelper();
+const notationStore = useNotationStore();
+
+const notationMutateHelper = useNotationMutateHelper();
+const screenHelper = useScreenHelper();
 
 // vars
 
@@ -95,68 +140,105 @@ let handleY = computed(() => {
   return lineY.value + (cellStore.getSvgBoundingRect().top ?? 0) - 1;
 });
 
-// watchers
+// methods
+function setInitialLinePosition(p: DotCoordinates) {
+  linePosition.value.p1x = p.x;
+  linePosition.value.p2x = p.x;
+  linePosition.value.py = p.y;
+}
 
-watchHelper.watchMouseEvent(
-  ["HORIZONTAL_LINE_STARTED"],
-  "EV_SVG_MOUSEDOWN",
-  (e) =>
-    horizontalLineDrawingHelper.startDrawingHorizontalLine(
-      e,
+function drawLine(p: DotCoordinates) {
+  //const xPos = getX(e);
+  const modifyRight = p.x >= linePosition.value.p1x;
+
+  if (modifyRight) {
+    linePosition.value.p2x = p.x;
+  } else {
+    // modify left
+    linePosition.value.p1x = p.x;
+  }
+}
+
+function modifyLineLeft(p: DotCoordinates) {
+  linePosition.value.p1x = p.x;
+}
+
+// function getX(e: MouseEvent) {
+//   return e.pageX - cellStore.getSvgBoundingRect().x;
+// }
+
+function modifyLineRight(p: DotCoordinates) {
+  linePosition.value.p2x = p.x;
+}
+
+function endDrawing() {
+  saveLine();
+  resetDrawing();
+}
+
+function saveLine() {
+  fixLineEdge(linePosition.value);
+
+  if (notationStore.getSelectedNotations().length > 0) {
+    let updatedLine = {
+      ...notationStore.getSelectedNotations().at(0)!,
+      ...linePosition.value,
+    };
+
+    notationMutateHelper.updateHorizontalLineNotation(updatedLine);
+  } else {
+    notationMutateHelper.addHorizontalLineNotation(
       linePosition.value,
-    ),
-);
+      "HORIZONTALLINE",
+    );
+  }
+}
 
-watchHelper.watchMouseEvent(
-  ["HORIZONTAL_LINE_DRAWING"],
-  "EV_SVG_MOUSEMOVE",
-  (e) =>
-    horizontalLineDrawingHelper.setNewHorizontalLine(e, linePosition.value),
-);
+function fixLineEdge(linePosition: HorizontalLineAttributes) {
+  const nearLineRightEdge = screenHelper.getCloseLineEdge({
+    x: linePosition.p1x,
+    y: linePosition.py,
+  });
 
-// emmited by selection helper
-watchHelper.watchNotationSelection(
-  "HORIZONTAL_LINE_SELECTED",
-  "EV_HORIZONTAL_LINE_SELECTED",
-  (notation) => lineDrawer.selectLine(notation, linePosition.value),
-);
+  if (nearLineRightEdge != null) {
+    linePosition.p1x = nearLineRightEdge.x;
+    linePosition.py = nearLineRightEdge.y;
+  }
 
-watchHelper.watchMouseEvent(
-  ["HORIZONTAL_LINE_EDITING_LEFT"],
-  "EV_SVG_MOUSEMOVE",
-  (e) =>
-    horizontalLineDrawingHelper.setExistingHorizontalLine(
-      e,
-      linePosition.value,
-      false,
-    ),
-);
+  const nearLineLeftEdge = screenHelper.getCloseLineEdge({
+    x: linePosition.p2x,
+    y: linePosition.py,
+  });
 
-watchHelper.watchMouseEvent(
-  ["HORIZONTAL_LINE_EDITING_RIGHT"],
-  "EV_SVG_MOUSEMOVE",
-  (e) =>
-    horizontalLineDrawingHelper.setExistingHorizontalLine(
-      e,
-      linePosition.value,
-      true,
-    ),
-);
+  if (nearLineLeftEdge != null) {
+    linePosition.p2x = nearLineLeftEdge.x;
+    linePosition.py = nearLineLeftEdge.y;
+  }
+}
 
-watchHelper.watchEditModeTransition(
-  [
-    "HORIZONTAL_LINE_DRAWING",
-    "HORIZONTAL_LINE_EDITING_LEFT",
-    "HORIZONTAL_LINE_EDITING_RIGHT",
-  ],
-  "SYMBOL",
-  () =>
-    horizontalLineDrawingHelper.endDrawingHorizontalLine(linePosition.value),
-);
+function resetDrawing() {
+  linePosition.value.p1x = linePosition.value.p2x = linePosition.value.py = 0;
+}
 
-watchHelper.watchMouseEvent(
-  ["HORIZONTAL_LINE_SELECTED"],
-  "EV_SVG_MOUSEDOWN",
-  () => lineDrawer.resetDrawing(linePosition.value),
-);
+function selectLine(notation: NotationAttributes) {
+  const n = notation as HorizontalLineNotationAttributes;
+
+  linePosition.value.p1x = n.p1x;
+  linePosition.value.p2x = n.p2x;
+  linePosition.value.py = n.py;
+
+  // if (lineNotation.notationType === "SQRT") {
+  //   linePosition.p1x =
+  //     (lineNotation as SqrtNotationAttributes).fromCol *
+  //     cellStore.getCellHorizontalWidth();
+
+  //   linePosition.p2x =
+  //     (lineNotation as SqrtNotationAttributes).toCol *
+  //     cellStore.getCellHorizontalWidth();
+
+  //   linePosition.py =
+  //     (lineNotation as SqrtNotationAttributes).row *
+  //     cellStore.getCellVerticalHeight();
+  // }
+}
 </script>

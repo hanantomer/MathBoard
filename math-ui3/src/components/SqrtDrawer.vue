@@ -103,11 +103,11 @@ watchHelper.watchMouseEvent(["SQRT_DRAWING"], "EV_SVG_MOUSEMOVE", (e) =>
   horizontalLineDrawingHelper.setNewHorizontalLine(e, linePosition.value),
 );
 
-watchHelper.watchNotationSelection(
-  "SQRT_SELECTED",
-  "EV_SQRT_SELECTED",
-  (notation) => lineDrawer.selectLine(notation, linePosition.value),
-);
+// watchHelper.watchNotationSelection(
+//   "SQRT_SELECTED",
+//   "EV_SQRT_SELECTED",
+//   (notation) => lineDrawer.selectLine(notation, linePosition.value),
+// );
 
 watchHelper.watchMouseEvent(["SQRT_EDITING"], "EV_SVG_MOUSEMOVE", (e) =>
   horizontalLineDrawingHelper.setExistingHorizontalLine(
@@ -124,6 +124,6 @@ watchHelper.watchEditModeTransition(
 );
 
 watchHelper.watchMouseEvent(["SQRT_SELECTED"], "EV_SVG_MOUSEDOWN", () =>
-  lineDrawer.resetDrawing(linePosition.value),
+  lineDrawer.resetDrawing(),
 );
 </script>
