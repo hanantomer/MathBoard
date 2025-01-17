@@ -23,7 +23,7 @@
         'HORIZONTAL_LINE_EDITING_LEFT',
         'HORIZONTAL_LINE_SELECTED',
       ],
-      func: endDrawing,
+      func: saveLine,
     }"
     :selectEntry="{
       editMode: 'HORIZONTAL_LINE_SELECTED',
@@ -34,6 +34,7 @@
       editMode: [
         'HORIZONTAL_LINE_EDITING_RIGHT',
         'HORIZONTAL_LINE_EDITING_LEFT',
+        'HORIZONTAL_LINE_SELECTED',
       ],
       func: resetDrawing,
     }"
@@ -109,11 +110,17 @@ const linePosition = ref<HorizontalLineAttributes>({
 // computed
 
 const show = computed(() => {
-  return (
+  const show = (
     editModeStore.isHorizontalLineDrawingMode() ||
     editModeStore.isHorizontalLineSelectedMode() ||
     editModeStore.isHorizontalLineEditingMode()
   );
+
+  //if (!show) {
+  //  resetDrawing();
+  //}
+
+  return show;
 });
 
 let lineLeft = computed(() => {
@@ -163,18 +170,11 @@ function modifyLineLeft(p: DotCoordinates) {
   linePosition.value.p1x = p.x;
 }
 
-// function getX(e: MouseEvent) {
-//   return e.pageX - cellStore.getSvgBoundingRect().x;
-// }
 
 function modifyLineRight(p: DotCoordinates) {
   linePosition.value.p2x = p.x;
 }
 
-function endDrawing() {
-  saveLine();
-  resetDrawing();
-}
 
 function saveLine() {
   fixLineEdge(linePosition.value);
@@ -226,19 +226,6 @@ function selectLine(notation: NotationAttributes) {
   linePosition.value.p1x = n.p1x;
   linePosition.value.p2x = n.p2x;
   linePosition.value.py = n.py;
-
-  // if (lineNotation.notationType === "SQRT") {
-  //   linePosition.p1x =
-  //     (lineNotation as SqrtNotationAttributes).fromCol *
-  //     cellStore.getCellHorizontalWidth();
-
-  //   linePosition.p2x =
-  //     (lineNotation as SqrtNotationAttributes).toCol *
-  //     cellStore.getCellHorizontalWidth();
-
-  //   linePosition.py =
-  //     (lineNotation as SqrtNotationAttributes).row *
-  //     cellStore.getCellVerticalHeight();
-  // }
 }
+
 </script>

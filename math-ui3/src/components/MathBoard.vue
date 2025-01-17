@@ -246,10 +246,10 @@ path:hover {
 .sqrtsymbol {
   position: absolute;
   color: chocolate;
+  margin-top: -8px;
   margin-left: 8px;
   z-index: 999;
   font-weight: bold;
   font-size: 1.7em;
 }
-
 </style>

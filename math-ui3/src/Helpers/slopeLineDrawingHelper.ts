@@ -8,7 +8,6 @@ import useScreenHelper from "../helpers/screenHelper";
 
 import {
   SlopeLineAttributes,
-  SlopeDrawerAttributes,
   SlopeType,
   MovementDirection,
 } from "common/baseTypes";
@@ -21,243 +20,223 @@ const lineDrawingHelper = useLineDrawingHelper();
 const screenHelper = useScreenHelper();
 
 export default function useSlopeLineDrawingHelper() {
-  function startDrawingSlopeLine(
-    e: MouseEvent,
-    slopeDrawerAttributes: SlopeDrawerAttributes,
-  ) {
-    slopeDrawerAttributes.slopeType = "NONE";
-    slopeDrawerAttributes.movementDirection = "NONE";
 
-    editModeStore.setNextEditMode();
+  // function startEditingSlopeLine(
+  //   e: MouseEvent,
+  //   slopeDrawerAttributes: SlopeDrawerAttributes,
+  //   modifyRight: boolean,
+  // ) {
+  //   slopeDrawerAttributes.slopeType = getSlopeTypeForExistingLine(
+  //     slopeDrawerAttributes.linePosition,
+  //   );
 
-    const position = {
-      x: e.pageX - cellStore.getSvgBoundingRect().x,
-      y: e.pageY - cellStore.getSvgBoundingRect().y,
-    };
+  //   slopeDrawerAttributes.movementDirection = "NONE";
 
-    slopeDrawerAttributes.linePosition.p1x =
-      slopeDrawerAttributes.linePosition.p2x = position.x;
+  //   editModeStore.setNextEditMode();
+  // }
 
-    slopeDrawerAttributes.linePosition.p1y =
-      slopeDrawerAttributes.linePosition.p2y = position.y;
-  }
+  // function setNewSlopeLine(
+  //   e: MouseEvent,
+  //   slopeDrawerAttributes: SlopeDrawerAttributes,
+  // ) {
+  //   if (e.buttons !== 1) {
+  //     return;
+  //   }
 
-  function startEditingSlopeLine(
-    e: MouseEvent,
-    slopeDrawerAttributes: SlopeDrawerAttributes,
-    modifyRight: boolean,
-  ) {
-    slopeDrawerAttributes.slopeType = getSlopeTypeForExistingLine(
-      slopeDrawerAttributes.linePosition,
-    );
+  //   const yPos = e.pageY - (cellStore.getSvgBoundingRect()?.y ?? 0);
+  //   const xPos = e.pageX - (cellStore.getSvgBoundingRect()?.x ?? 0);
 
-    slopeDrawerAttributes.movementDirection = "NONE";
+  //   if (
+  //     xPos === slopeDrawerAttributes.linePosition.p1x ||
+  //     yPos === slopeDrawerAttributes.linePosition.p1y
+  //   ) {
+  //     return;
+  //   }
 
-    editModeStore.setNextEditMode();
-  }
+  //   if (slopeDrawerAttributes.slopeType === "NONE") {
+  //     slopeDrawerAttributes.slopeType = getSlopeTypeForNewLine(
+  //       xPos,
+  //       yPos,
+  //       slopeDrawerAttributes.linePosition,
+  //     );
+  //   }
 
-  function setNewSlopeLine(
-    e: MouseEvent,
-    slopeDrawerAttributes: SlopeDrawerAttributes,
-  ) {
-    if (e.buttons !== 1) {
-      return;
-    }
+  //   if (slopeDrawerAttributes.movementDirection === "NONE") {
+  //     slopeDrawerAttributes.movementDirection =
+  //       getMovementDirectionForNewSlopeLine(slopeDrawerAttributes, yPos);
+  //   }
 
-    const yPos = e.pageY - (cellStore.getSvgBoundingRect()?.y ?? 0);
-    const xPos = e.pageX - (cellStore.getSvgBoundingRect()?.x ?? 0);
+  //   // 4 options for drawing sloped line:
+  //   // 1. upper left to lower right. direction is DOWN and slopeType is NEGATIVE
+  //   // 2  lower right to upper left. direction is UP and slopeType is NEGATIVE
+  //   // 3. upper right to lower left. direction is DOWN and slopeType is POSITIVE
+  //   // 4. lower left to upper right. direction is UP and slopeType is POSITIVE
 
-    if (
-      xPos === slopeDrawerAttributes.linePosition.p1x ||
-      yPos === slopeDrawerAttributes.linePosition.p1y
-    ) {
-      return;
-    }
+  //   const modifyRight =
+  //     (slopeDrawerAttributes.slopeType === "POSITIVE" &&
+  //       slopeDrawerAttributes.movementDirection === "UP") ||
+  //     (slopeDrawerAttributes.slopeType === "NEGATIVE" &&
+  //       slopeDrawerAttributes.movementDirection === "DOWN");
 
-    if (slopeDrawerAttributes.slopeType === "NONE") {
-      slopeDrawerAttributes.slopeType = getSlopeTypeForNewLine(
-        xPos,
-        yPos,
-        slopeDrawerAttributes.linePosition,
-      );
-    }
+  //   if (modifyRight) {
+  //     slopeDrawerAttributes.linePosition.p2x = xPos;
+  //     slopeDrawerAttributes.linePosition.p2y = yPos;
+  //   } else {
+  //     slopeDrawerAttributes.linePosition.p1x = xPos;
+  //     slopeDrawerAttributes.linePosition.p1y = yPos;
+  //   }
 
-    if (slopeDrawerAttributes.movementDirection === "NONE") {
-      slopeDrawerAttributes.movementDirection =
-        getMovementDirectionForNewSlopeLine(slopeDrawerAttributes, yPos);
-    }
+  //   validateSlopePosition(slopeDrawerAttributes);
+  // }
 
-    // 4 options for drawing sloped line:
-    // 1. upper left to lower right. direction is DOWN and slopeType is NEGATIVE
-    // 2  lower right to upper left. direction is UP and slopeType is NEGATIVE
-    // 3. upper right to lower left. direction is DOWN and slopeType is POSITIVE
-    // 4. lower left to upper right. direction is UP and slopeType is POSITIVE
+  // function setExistingSlopeLine(
+  //   e: MouseEvent,
+  //   slopeDrawerAttributes: SlopeDrawerAttributes,
+  //   modifyRight: boolean,
+  // ) {
+  //   if (e.buttons !== 1) {
+  //     return;
+  //   }
 
-    const modifyRight =
-      (slopeDrawerAttributes.slopeType === "POSITIVE" &&
-        slopeDrawerAttributes.movementDirection === "UP") ||
-      (slopeDrawerAttributes.slopeType === "NEGATIVE" &&
-        slopeDrawerAttributes.movementDirection === "DOWN");
+  //   const yPos = e.pageY - (cellStore.getSvgBoundingRect()?.y ?? 0);
+  //   const xPos = e.pageX - (cellStore.getSvgBoundingRect()?.x ?? 0);
 
-    if (modifyRight) {
-      slopeDrawerAttributes.linePosition.p2x = xPos;
-      slopeDrawerAttributes.linePosition.p2y = yPos;
-    } else {
-      slopeDrawerAttributes.linePosition.p1x = xPos;
-      slopeDrawerAttributes.linePosition.p1y = yPos;
-    }
+  //   if (modifyRight) {
+  //     slopeDrawerAttributes.linePosition.p2x = xPos;
+  //     slopeDrawerAttributes.linePosition.p2y = yPos;
+  //   } else {
+  //     slopeDrawerAttributes.linePosition.p1x = xPos;
+  //     slopeDrawerAttributes.linePosition.p1y = yPos;
+  //   }
 
-    validateSlopePosition(slopeDrawerAttributes);
-  }
+  //   validateSlopePosition(slopeDrawerAttributes);
+  // }
 
-  function setExistingSlopeLine(
-    e: MouseEvent,
-    slopeDrawerAttributes: SlopeDrawerAttributes,
-    modifyRight: boolean,
-  ) {
-    if (e.buttons !== 1) {
-      return;
-    }
+  // function validateSlopePosition(slopeDrawerAttributes: SlopeDrawerAttributes) {
+  //   if (
+  //     slopeDrawerAttributes.linePosition.p1x >=
+  //     slopeDrawerAttributes.linePosition.p2x
+  //   ) {
+  //     throw new Error(
+  //       JSON.stringify(slopeDrawerAttributes.linePosition) +
+  //         "is invalid: p2x must be greater than p1x",
+  //     );
+  //   }
+  // }
 
-    const yPos = e.pageY - (cellStore.getSvgBoundingRect()?.y ?? 0);
-    const xPos = e.pageX - (cellStore.getSvgBoundingRect()?.x ?? 0);
+  // function getSlopeTypeForNewLine(
+  //   xPos: number,
+  //   yPos: number,
+  //   linePosition: SlopeLineAttributes,
+  // ): SlopeType {
+  //   if (
+  //     /*moving up and right*/
+  //     (yPos < linePosition.p2y && xPos > linePosition.p2x) ||
+  //     /*moving down and left*/
+  //     (yPos > linePosition.p2y && xPos < linePosition.p2x)
+  //   ) {
+  //     return "POSITIVE";
+  //   }
 
-    if (modifyRight) {
-      slopeDrawerAttributes.linePosition.p2x = xPos;
-      slopeDrawerAttributes.linePosition.p2y = yPos;
-    } else {
-      slopeDrawerAttributes.linePosition.p1x = xPos;
-      slopeDrawerAttributes.linePosition.p1y = yPos;
-    }
+  //   return "NEGATIVE";
+  // }
 
-    validateSlopePosition(slopeDrawerAttributes);
-  }
+  // function getSlopeTypeForExistingLine(
+  //   linePosition: SlopeLineAttributes,
+  // ): SlopeType {
+  //   return linePosition.p2y < linePosition.p1y ? "POSITIVE" : "NEGATIVE";
+  // }
 
-  function validateSlopePosition(slopeDrawerAttributes: SlopeDrawerAttributes) {
-    if (
-      slopeDrawerAttributes.linePosition.p1x >=
-      slopeDrawerAttributes.linePosition.p2x
-    ) {
-      throw new Error(
-        JSON.stringify(slopeDrawerAttributes.linePosition) +
-          "is invalid: p2x must be greater than p1x",
-      );
-    }
-  }
+  // function getMovementDirectionForNewSlopeLine(
+  //   slopeDrawerAttributes: SlopeDrawerAttributes,
+  //   yPos: number,
+  // ): MovementDirection {
+  //   return (slopeDrawerAttributes.slopeType === "POSITIVE" &&
+  //     yPos > slopeDrawerAttributes.linePosition.p2y) ||
+  //     (slopeDrawerAttributes.slopeType === "NEGATIVE" &&
+  //       yPos > slopeDrawerAttributes.linePosition.p1y)
+  //     ? "DOWN"
+  //     : "UP";
+  // }
 
-  function getSlopeTypeForNewLine(
-    xPos: number,
-    yPos: number,
-    linePosition: SlopeLineAttributes,
-  ): SlopeType {
-    if (
-      /*moving up and right*/
-      (yPos < linePosition.p2y && xPos > linePosition.p2x) ||
-      /*moving down and left*/
-      (yPos > linePosition.p2y && xPos < linePosition.p2x)
-    ) {
-      return "POSITIVE";
-    }
+  // function endDrawingSlopeLine(slopeDrawerAttributes: SlopeDrawerAttributes) {
+  //   if (notationStore.hasSelectedNotations()) {
+  //     lineDrawingHelper.showMatrixLine();
+  //   }
 
-    return "NEGATIVE";
-  }
+  //   if (
+  //     slopeDrawerAttributes.linePosition.p1x === 0 &&
+  //     slopeDrawerAttributes.linePosition.p1y === 0 &&
+  //     slopeDrawerAttributes.linePosition.p2x === 0 &&
+  //     slopeDrawerAttributes.linePosition.p2y === 0
+  //   ) {
+  //     return;
+  //   }
 
-  function getSlopeTypeForExistingLine(
-    linePosition: SlopeLineAttributes,
-  ): SlopeType {
-    return linePosition.p2y < linePosition.p1y ? "POSITIVE" : "NEGATIVE";
-  }
+  //   if (
+  //     slopeDrawerAttributes.linePosition.p1x ==
+  //       slopeDrawerAttributes.linePosition.p2x &&
+  //     slopeDrawerAttributes.linePosition.p2y ==
+  //       slopeDrawerAttributes.linePosition.p2y
+  //   ) {
+  //     return;
+  //   }
 
-  function getMovementDirectionForNewSlopeLine(
-    slopeDrawerAttributes: SlopeDrawerAttributes,
-    yPos: number,
-  ): MovementDirection {
-    return (slopeDrawerAttributes.slopeType === "POSITIVE" &&
-      yPos > slopeDrawerAttributes.linePosition.p2y) ||
-      (slopeDrawerAttributes.slopeType === "NEGATIVE" &&
-        yPos > slopeDrawerAttributes.linePosition.p1y)
-      ? "DOWN"
-      : "UP";
-  }
+  //   saveSlopeLine(slopeDrawerAttributes.linePosition);
 
-  function endDrawingSlopeLine(slopeDrawerAttributes: SlopeDrawerAttributes) {
-    if (notationStore.hasSelectedNotations()) {
-      lineDrawingHelper.showMatrixLine();
-    }
+  //   slopeDrawerAttributes.linePosition.p1x =
+  //     slopeDrawerAttributes.linePosition.p2x =
+  //     slopeDrawerAttributes.linePosition.p1y =
+  //     slopeDrawerAttributes.linePosition.p2y =
+  //       0;
+  // }
 
-    if (
-      slopeDrawerAttributes.linePosition.p1x === 0 &&
-      slopeDrawerAttributes.linePosition.p1y === 0 &&
-      slopeDrawerAttributes.linePosition.p2x === 0 &&
-      slopeDrawerAttributes.linePosition.p2y === 0
-    ) {
-      return;
-    }
+  // function saveSlopeLine(linePosition: SlopeLineAttributes) {
+  //   fixLineEdge(linePosition);
 
-    if (
-      slopeDrawerAttributes.linePosition.p1x ==
-        slopeDrawerAttributes.linePosition.p2x &&
-      slopeDrawerAttributes.linePosition.p2y ==
-        slopeDrawerAttributes.linePosition.p2y
-    ) {
-      return;
-    }
+  //   if (notationStore.getSelectedNotations().length > 0) {
+  //     let updatedLine = {
+  //       ...notationStore.getSelectedNotations().at(0)!,
+  //       ...linePosition,
+  //     };
 
-    saveSlopeLine(slopeDrawerAttributes.linePosition);
+  //     notationMutateHelper.updateSlopeLineNotation(
+  //       updatedLine as SlopeLineNotationAttributes,
+  //     );
+  //   } else {
+  //     notationMutateHelper.addSlopeLineNotation(linePosition, "SLOPELINE");
+  //   }
+  //   editModeStore.setDefaultEditMode();
+  // }
 
-    slopeDrawerAttributes.linePosition.p1x =
-      slopeDrawerAttributes.linePosition.p2x =
-      slopeDrawerAttributes.linePosition.p1y =
-      slopeDrawerAttributes.linePosition.p2y =
-        0;
-  }
+  // function fixLineEdge(linePosition: SlopeLineAttributes) {
+  //   const nearLineRightEdge = screenHelper.getCloseLineEdge({
+  //     x: linePosition.p1x,
+  //     y: linePosition.p1y,
+  //   });
 
-  function saveSlopeLine(linePosition: SlopeLineAttributes) {
-    fixLineEdge(linePosition);
+  //   if (nearLineRightEdge != null) {
+  //     linePosition.p1x = nearLineRightEdge.x;
+  //     linePosition.p1y = nearLineRightEdge.y;
+  //   }
 
-    if (notationStore.getSelectedNotations().length > 0) {
-      let updatedLine = {
-        ...notationStore.getSelectedNotations().at(0)!,
-        ...linePosition,
-      };
+  //   const nearLineLeftEdge = screenHelper.getCloseLineEdge({
+  //     x: linePosition.p2x,
+  //     y: linePosition.p2y,
+  //   });
 
-      notationMutateHelper.updateSlopeLineNotation(
-        updatedLine as SlopeLineNotationAttributes,
-      );
-    } else {
-      notationMutateHelper.addSlopeLineNotation(linePosition, "SLOPELINE");
-    }
-    editModeStore.setDefaultEditMode();
-  }
+  //   if (nearLineLeftEdge != null) {
+  //     linePosition.p2x = nearLineLeftEdge.x;
+  //     linePosition.p2y = nearLineLeftEdge.y;
+  //   }
+  // }
 
-  function fixLineEdge(linePosition: SlopeLineAttributes) {
-    const nearLineRightEdge = screenHelper.getCloseLineEdge({
-      x: linePosition.p1x,
-      y: linePosition.p1y,
-    });
-
-    if (nearLineRightEdge != null) {
-      linePosition.p1x = nearLineRightEdge.x;
-      linePosition.p1y = nearLineRightEdge.y;
-    }
-
-    const nearLineLeftEdge = screenHelper.getCloseLineEdge({
-      x: linePosition.p2x,
-      y: linePosition.p2y,
-    });
-
-    if (nearLineLeftEdge != null) {
-      linePosition.p2x = nearLineLeftEdge.x;
-      linePosition.p2y = nearLineLeftEdge.y;
-    }
-  }
-
-  return {
-    startEditingSlopeLine,
-    startDrawingSlopeLine,
-    endDrawingSlopeLine,
-    setNewSlopeLine,
-    setExistingSlopeLine,
-  };
+  // return {
+  //   startEditingSlopeLine,
+  //   startDrawingSlopeLine,
+  //   endDrawingSlopeLine,
+  //   setNewSlopeLine,
+  //   setExistingSlopeLine,
+  // };
 }
 

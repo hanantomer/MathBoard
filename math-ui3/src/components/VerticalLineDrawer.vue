@@ -31,7 +31,7 @@
       event: 'EV_VERTICAL_LINE_SELECTED',
     }"
     :resetSelectionEntry="{
-      editMode: ['VERTICAL_LINE_EDITING_BOTTOM', 'VERTICAL_LINE_EDITING_TOP'],
+      editMode: ['VERTICAL_LINE_EDITING_BOTTOM', 'VERTICAL_LINE_EDITING_TOP', 'VERTICAL_LINE_SELECTED'],
       func: resetDrawing,
     }"
   />

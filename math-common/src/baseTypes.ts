@@ -291,11 +291,11 @@ export type SlopeType =
   | "NEGATIVE"
   | "NONE";
 
-export type SlopeDrawerAttributes = {
-  linePosition: SlopeLineAttributes;
-  slopeType: SlopeType;
-  movementDirection: MovementDirection;
-};
+// export type SlopeDrawerAttributes = {
+//   linePosition: SlopeLineAttributes;
+//   slopeType: SlopeType;
+//   movementDirection: MovementDirection;
+// };
 
 export type lineWatcherEntry = {
    func: (p: DotCoordinates) => void

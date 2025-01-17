@@ -1,10 +1,8 @@
 import {
   NotationAttributes,
-  SqrtNotationAttributes,
   DotCoordinates,
 } from "../../../math-common/src/baseTypes";
 
-import { LineHandleType } from "../../../math-common/src/unions";
 import { useEditModeStore } from "../store/pinia/editModeStore";
 import { useCellStore } from "../store/pinia/cellStore";
 import { useNotationStore } from "../store/pinia/notationStore";
@@ -16,7 +14,7 @@ const notationStore = useNotationStore();
 export default function useLineDrawingHelper() {
   function setLineInitialPosition(
     e: MouseEvent,
-    setLinePosition: (p: DotCoordinates) => void,
+    setLinePositionCallback: (p: DotCoordinates) => void,
   ) {
     editModeStore.setNextEditMode();
 
@@ -25,10 +23,13 @@ export default function useLineDrawingHelper() {
       y: e.pageY - cellStore.getSvgBoundingRect().y,
     };
 
-    setLinePosition(position);
+    setLinePositionCallback(position);
   }
 
-  function drawNewLine(e: MouseEvent, drawLine: (p: DotCoordinates) => void) {
+  function drawNewLine(
+    e: MouseEvent,
+    drawLineCallback: (p: DotCoordinates) => void,
+  ) {
     if (e.buttons !== 1) {
       return;
     }
@@ -38,10 +39,13 @@ export default function useLineDrawingHelper() {
       y: e.pageY - cellStore.getSvgBoundingRect().y,
     };
 
-    drawLine(position);
+    drawLineCallback(position);
   }
 
-  function modifyLine(e: MouseEvent, modifyLine: (p: DotCoordinates) => void) {
+  function modifyLine(
+    e: MouseEvent,
+    modifyLineCallback: (p: DotCoordinates) => void,
+  ) {
     if (e.buttons !== 1) {
       return;
     }
@@ -51,24 +55,24 @@ export default function useLineDrawingHelper() {
       y: e.pageY - cellStore.getSvgBoundingRect().y,
     };
 
-    modifyLine(position);
+    modifyLineCallback(position);
   }
 
-  function endDrawing(endDrawing: () => void) {
+  function endDrawing(endDrawingCallback: () => void) {
     if (notationStore.hasSelectedNotations()) {
       showMatrixLine();
     }
-
-    endDrawing();
+    editModeStore.setDefaultEditMode();
+    endDrawingCallback();
   }
 
   function selectLine(
     selectedNotation: NotationAttributes,
-    selectLine: (notation: NotationAttributes) => void,
+    selectLineCallback: (notation: NotationAttributes) => void,
   ) {
     hideMatrixLine(selectedNotation.uuid);
     notationStore.selectNotation(selectedNotation.uuid);
-    selectLine(selectedNotation);
+    selectLineCallback(selectedNotation);
   }
 
   function hideMatrixLine(uuid: string) {
@@ -84,21 +88,8 @@ export default function useLineDrawingHelper() {
       ).style.display = "block";
   }
 
-  function getNearestRow(clickedYPos: number) {
-    let clickedRow = Math.round(
-      clickedYPos / cellStore.getCellVerticalHeight(),
-    );
-    return clickedRow * cellStore.getCellVerticalHeight();
-  }
-
-  function getNearestCol(clickedXPos: number) {
-    let clickedCol = Math.round(
-      clickedXPos / cellStore.getCellHorizontalWidth(),
-    );
-    return clickedCol * cellStore.getCellHorizontalWidth();
-  }
-
   function resetDrawing() {
+    showMatrixLine();
     notationStore.resetSelectedNotations();
     editModeStore.setDefaultEditMode();
   }

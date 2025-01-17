@@ -1,4 +1,35 @@
 <template>
+  <lineWatcher
+    :startEntry="{
+      editMode: 'SQRT_STARTED',
+      func: setInitialPosition,
+    }"
+    :drawEntry="{
+      editMode: 'SQRT_DRAWING',
+      func: drawLine,
+    }"
+    :editEntryFirstHandle="{
+      editMode: 'SQRT_EDITING',
+      func: modify,
+    }"
+    :editEntrySecondHandle="{
+      editMode: 'SQRT_EDITING',
+      func: modify,
+    }"
+    :endEntry="{
+      editMode: ['SQRT_DRAWING', 'SQRT_EDITING', 'SQRT_SELECTED'],
+      func: endDrawing,
+    }"
+    :selectEntry="{
+      editMode: 'SQRT_SELECTED',
+      func: selectSqrt,
+      event: 'EV_SQRT_SELECTED',
+    }"
+    :resetSelectionEntry="{
+      editMode: ['SQRT_EDITING'],
+      func: resetDrawing,
+    }"
+  />
   <div v-if="show">
     <line-handle
       drawing-mode="SQRT_DRAWING"
@@ -37,19 +68,24 @@
 </template>
 <script setup lang="ts">
 import { computed, ref } from "vue";
+import useNotationMutateHelper from "../helpers/notationMutateHelper";
+import { useNotationStore } from "../store/pinia/notationStore";
 import { useCellStore } from "../store/pinia/cellStore";
 import { useEditModeStore } from "../store/pinia/editModeStore";
-import { HorizontalLineAttributes } from "../../../math-common/src/baseTypes";
+import {
+  HorizontalLineAttributes,
+  DotCoordinates,
+  SqrtNotationAttributes,
+  NotationAttributes,
+  MultiCellAttributes,
+} from "../../../math-common/src/baseTypes";
 import lineHandle from "./LineHandle.vue";
-import useWatchHelper from "../helpers/watchHelper";
-import useLineDrawer from "../helpers/lineDrawingHelper";
-import useHorizontalLineDrawingHelper from "../helpers/horizontalLineDrawingHelper";
+import lineWatcher from "./LineWatcher.vue";
 
-const cellStore = useCellStore();
+const notationStore = useNotationStore();
 const editModeStore = useEditModeStore();
-const watchHelper = useWatchHelper();
-const lineDrawer = useLineDrawer();
-const horizontalLineDrawingHelper = useHorizontalLineDrawingHelper();
+const cellStore = useCellStore();
+const notationMutateHelper = useNotationMutateHelper();
 
 let linePosition = ref(<HorizontalLineAttributes>{
   p1x: 0,
@@ -84,7 +120,7 @@ let sqrtSymbolLeft = computed(() => {
 });
 
 let sqrtSymbolY = computed(() => {
-  return linePosition.value.py + (cellStore.getSvgBoundingRect().top ?? 0) - 5;
+  return linePosition.value.py + (cellStore.getSvgBoundingRect().top ?? 0) -5;
 });
 
 let handleX = computed(() => {
@@ -95,35 +131,61 @@ let handleY = computed(() => {
   return sqrtY.value + (cellStore.getSvgBoundingRect().top ?? 0) - 5;
 });
 
-watchHelper.watchMouseEvent(["SQRT_STARTED"], "EV_SVG_MOUSEDOWN", (e) =>
-  horizontalLineDrawingHelper.startDrawingHorizontalLine(e, linePosition.value),
-);
+function setInitialPosition(p: DotCoordinates) {
+  linePosition.value.p1x = p.x;
+  linePosition.value.p2x = p.x;
+  linePosition.value.py = p.y;
+}
 
-watchHelper.watchMouseEvent(["SQRT_DRAWING"], "EV_SVG_MOUSEMOVE", (e) =>
-  horizontalLineDrawingHelper.setNewHorizontalLine(e, linePosition.value),
-);
+function drawLine(p: DotCoordinates) {
+  linePosition.value.p2x = p.x;
+}
 
-// watchHelper.watchNotationSelection(
-//   "SQRT_SELECTED",
-//   "EV_SQRT_SELECTED",
-//   (notation) => lineDrawer.selectLine(notation, linePosition.value),
-// );
+function endDrawing() {
+  const fromCol = Math.round(
+    linePosition.value.p1x / cellStore.getCellHorizontalWidth(),
+  );
 
-watchHelper.watchMouseEvent(["SQRT_EDITING"], "EV_SVG_MOUSEMOVE", (e) =>
-  horizontalLineDrawingHelper.setExistingHorizontalLine(
-    e,
-    linePosition.value,
-    true,
-  ),
-);
+  let toCol = Math.round(
+    linePosition.value.p2x / cellStore.getCellHorizontalWidth(),
+  );
 
-watchHelper.watchEditModeTransition(
-  ["SQRT_DRAWING", "SQRT_EDITING"],
-  "SYMBOL",
-  () => horizontalLineDrawingHelper.endDrawingSqrt(linePosition.value),
-);
+  let row = Math.round(
+    linePosition.value.py / cellStore.getCellVerticalHeight(),
+  );
 
-watchHelper.watchMouseEvent(["SQRT_SELECTED"], "EV_SVG_MOUSEDOWN", () =>
-  lineDrawer.resetDrawing(),
-);
+  saveSqrt({ fromCol: fromCol, toCol: toCol, row: row });
+
+  resetDrawing();
+}
+
+function modify(p: DotCoordinates) {
+  linePosition.value.p2x = p.x;
+}
+
+function saveSqrt(sqrtAttributes: MultiCellAttributes) {
+  if (notationStore.getSelectedNotations().length > 0) {
+    let updatedSqrt = {
+      ...notationStore.getSelectedNotations().at(0)!,
+      ...sqrtAttributes,
+    };
+
+    notationMutateHelper.updateSqrtNotation(updatedSqrt);
+  } else notationMutateHelper.addSqrtNotation(sqrtAttributes, "SQRT");
+}
+
+function resetDrawing() {
+  linePosition.value.p1x = linePosition.value.p2x = linePosition.value.py = 0;
+}
+
+function selectSqrt(notation: NotationAttributes) {
+  const n = notation as SqrtNotationAttributes;
+
+  linePosition.value.p1x = n.fromCol * cellStore.getCellHorizontalWidth();
+
+  linePosition.value.p2x = n.toCol * cellStore.getCellHorizontalWidth();
+
+  linePosition.value.py = n.row * cellStore.getCellVerticalHeight();
+}
 </script>
+
