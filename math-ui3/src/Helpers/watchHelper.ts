@@ -81,15 +81,17 @@ export default function () {
     });
   }
 
-  function watchEndOfEditMode(oldEditMode: EditMode, handler: EditModeHandler) {
-    watch(
-      () => editModeStore.getEditMode() as EditMode,
-      (nEditMode: EditMode, oEditMode: EditMode) => {
-        if (nEditMode !== oldEditMode && oEditMode === oldEditMode) {
-          handler(nEditMode, oEditMode);
-        }
-      },
-    );
+  function watchEndOfEditMode(oldEditModes: EditMode[], handler: EditModeHandler) {
+    oldEditModes.forEach((oldEditMode) => {
+      watch(
+        () => editModeStore.getEditMode() as EditMode,
+        (nEditMode: EditMode, oEditMode: EditMode) => {
+          if (nEditMode !== oldEditMode && oEditMode === oldEditMode) {
+            handler(nEditMode, oEditMode);
+          }
+        },
+      );
+    })
   }
 
   function watchSelectedCellAndDisplayNewSelected(svgId: string) {

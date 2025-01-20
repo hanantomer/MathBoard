@@ -30,13 +30,8 @@
       func: selectLine,
       event: 'EV_HORIZONTAL_LINE_SELECTED',
     }"
-    :resetSelectionEntry="{
-      editMode: [
-        'HORIZONTAL_LINE_EDITING_RIGHT',
-        'HORIZONTAL_LINE_EDITING_LEFT',
-        'HORIZONTAL_LINE_SELECTED',
-      ],
-      func: resetDrawing,
+    :endSelectionEntry="{
+      editMode: ['HORIZONTAL_LINE_SELECTED'],
     }"
   />
   <div v-if="show">
@@ -110,17 +105,11 @@ const linePosition = ref<HorizontalLineAttributes>({
 // computed
 
 const show = computed(() => {
-  const show = (
+  return (
     editModeStore.isHorizontalLineDrawingMode() ||
     editModeStore.isHorizontalLineSelectedMode() ||
     editModeStore.isHorizontalLineEditingMode()
   );
-
-  //if (!show) {
-  //  resetDrawing();
-  //}
-
-  return show;
 });
 
 let lineLeft = computed(() => {
@@ -170,11 +159,9 @@ function modifyLineLeft(p: DotCoordinates) {
   linePosition.value.p1x = p.x;
 }
 
-
 function modifyLineRight(p: DotCoordinates) {
   linePosition.value.p2x = p.x;
 }
-
 
 function saveLine() {
   fixLineEdge(linePosition.value);
@@ -227,5 +214,4 @@ function selectLine(notation: NotationAttributes) {
   linePosition.value.p2x = n.p2x;
   linePosition.value.py = n.py;
 }
-
 </script>

@@ -238,6 +238,10 @@ export default function eventHelper() {
     eventBus.emit("EV_SVG_MOUSEUP", e);
   }
 
+  function emitMouseUp(e: MouseEvent) {
+    eventBus.emit("EV_MOUSEUP", e);
+  }
+
   function registerSvgMouseUp() {
     document
       ?.getElementById(cellStore.getSvgId()!)
@@ -249,6 +253,15 @@ export default function eventHelper() {
       ?.getElementById(cellStore.getSvgId()!)
       ?.removeEventListener("mouseup", emitSvgMouseUp);
   }
+
+  function registerMouseUp() {
+    document.addEventListener("mouseup", emitMouseUp);
+  }
+
+  function unregisterMouseUp() {
+    document.removeEventListener("mouseup", emitMouseUp);
+  }
+
 
   function emitKeyUp(key: KeyboardEvent) {
     eventBus.emit("EV_KEYUP", key);
@@ -293,6 +306,8 @@ export default function eventHelper() {
     unregisterSvgMouseDown,
     registerSvgMouseMove,
     unregisterSvgMouseMove,
+    registerMouseUp,
+    unregisterMouseUp,
     registerSvgMouseUp,
     unregisterSvgMouseUp,
     registerKeyUp,

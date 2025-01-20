@@ -25,9 +25,8 @@
       func: selectSqrt,
       event: 'EV_SQRT_SELECTED',
     }"
-    :resetSelectionEntry="{
-      editMode: ['SQRT_EDITING'],
-      func: resetDrawing,
+    :endSelectionEntry="{
+      editMode: ['SQRT_EDITING']
     }"
   />
   <div v-if="show">

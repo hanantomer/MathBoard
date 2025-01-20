@@ -72,7 +72,7 @@ const annotationHeight = computed(
 
 let annotationCell = ref({ col: 0, row: 0 });
 
-watchHelper.watchEndOfEditMode("ANNOTATION_WRITING", save);
+watchHelper.watchEndOfEditMode(["ANNOTATION_WRITING"], save);
 
 watchHelper.watchMouseEvent(
   ["ANNOTATION_STARTED"],

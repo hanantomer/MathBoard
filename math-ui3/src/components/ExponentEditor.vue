@@ -74,7 +74,7 @@ watchHelper.watchMouseEvent(
 );
 
 // edit mode changed from "EXPONENT_WRITING" either by cell clik or toolbar click
-watchHelper.watchEndOfEditMode("EXPONENT_WRITING", submitExponent);
+watchHelper.watchEndOfEditMode(["EXPONENT_WRITING"], submitExponent);
 
 // user typed Enter -> end editing and move to next edit mode to submit
 watchHelper.watchKeyEvent(

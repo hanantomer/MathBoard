@@ -3,17 +3,20 @@
 <script setup lang="ts">
 import useWatchHelper from "../helpers/watchHelper";
 import useLineDrawer from "../helpers/lineDrawingHelper";
+import { useEditModeStore } from "../store/pinia/editModeStore";
 import { PropType } from "vue";
 
 import {
   lineWatcherEntry,
   lineSaveWatcherEntry,
   lineSelectWatcherEntry,
-  lineResetSelectionWatcherEntry,
+  lineEndSelectionWatcherEntry,
 } from "../../../math-common/src/baseTypes";
+import { set } from "cypress/types/lodash";
 
 const lineDrawer = useLineDrawer();
 const watchHelper = useWatchHelper();
+const editModeStore = useEditModeStore();
 
 // each prop entry holds a stage of the line drawing process
 const props = defineProps({
@@ -47,8 +50,8 @@ const props = defineProps({
     required: true,
   },
 
-  resetSelectionEntry: {
-    type: Object as PropType<lineResetSelectionWatcherEntry>,
+  endSelectionEntry: {
+    type: Object as PropType<lineEndSelectionWatcherEntry>,
     required: true,
   },
 });
@@ -89,11 +92,20 @@ watchHelper.watchNotationSelection(
   (n) => lineDrawer.selectLine(n, props.selectEntry.func),
 );
 
+// watchHelper.watchMouseEvent(
+//   props.endSelectionEntry.editMode,
+//   "EV_SVG_MOUSEUP",
+//   () => lineDrawer.resetDrawing(),
+// );
+
 watchHelper.watchMouseEvent(
-  props.resetSelectionEntry.editMode,
-  "EV_SVG_MOUSEDOWN",
-  () => lineDrawer.resetDrawing(),
+  props.endSelectionEntry.editMode,
+  "EV_MOUSEUP",
+  () => {
+    setTimeout(() => {
+      if (editModeStore.getEditMode() !== props.endSelectionEntry.editMode[0]/*only one even is being listned to*/)
+        lineDrawer.resetDrawing();
+    }, 0);
+  },
 );
-
 </script>
-

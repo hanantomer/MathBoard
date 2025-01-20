@@ -307,16 +307,20 @@ export type lineSaveWatcherEntry = {
    editMode: Array<EditMode>
 }
 
-export type lineResetSelectionWatcherEntry = {
-  func: () => void;
-  editMode: Array<EditMode>;
-};
-
+// export type lineResetSelectionWatcherEntry = {
+//   func: () => void;
+//   editMode: Array<EditMode>;
+// };
 
 export type lineSelectWatcherEntry = {
   func: (notation: NotationAttributes) => void;
   editMode: EditMode;
   event: BusEventType;
 };
+
+export type lineEndSelectionWatcherEntry = {
+  editMode: Array<EditMode>;
+};
+
 
 

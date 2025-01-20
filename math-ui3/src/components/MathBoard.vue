@@ -77,6 +77,7 @@ onUnmounted(() => {
   eventHelper.unregisterSvgMouseDown();
   eventHelper.unregisterSvgMouseMove();
   eventHelper.unregisterSvgMouseUp();
+  eventHelper.unregisterMouseUp();
   eventHelper.unregisterKeyUp();
   eventHelper.unregisterPaste();
   eventHelper.unregisterCopy();
@@ -142,6 +143,7 @@ async function load() {
   eventHelper.registerSvgMouseDown();
   eventHelper.registerSvgMouseMove();
   eventHelper.registerSvgMouseUp();
+  eventHelper.registerMouseUp();
   eventHelper.registerKeyUp();
   eventHelper.registerPaste();
   eventHelper.registerCopy();

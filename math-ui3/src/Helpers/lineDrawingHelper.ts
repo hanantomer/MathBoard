@@ -12,6 +12,8 @@ const cellStore = useCellStore();
 const notationStore = useNotationStore();
 
 export default function useLineDrawingHelper() {
+  let hiddenNotationUUID: string | null = null;
+
   function setLineInitialPosition(
     e: MouseEvent,
     setLinePositionCallback: (p: DotCoordinates) => void,
@@ -76,16 +78,17 @@ export default function useLineDrawingHelper() {
   }
 
   function hideMatrixLine(uuid: string) {
+    hiddenNotationUUID = uuid;
     (document.getElementById(uuid) as HTMLElement).style.display = "none";
   }
 
   function showMatrixLine() {
-    if (notationStore.getSelectedNotations().length > 0)
+    if (hiddenNotationUUID !== null) {
       (
-        document.getElementById(
-          notationStore.getSelectedNotations()!.at(0)!.uuid,
-        ) as HTMLElement
+        document.getElementById(hiddenNotationUUID) as HTMLElement
       ).style.display = "block";
+      hiddenNotationUUID = null;
+    }
   }
 
   function resetDrawing() {

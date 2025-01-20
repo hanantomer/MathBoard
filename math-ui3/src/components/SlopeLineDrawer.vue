@@ -31,9 +31,8 @@
         func: selectLine,
         event: 'EV_SLOPE_LINE_SELECTED',
       }"
-      :resetSelectionEntry="{
-        editMode: ['SLOPE_LINE_EDITING_RIGHT', 'SLOPE_LINE_EDITING_LEFT', 'SLOPE_LINE_SELECTED'],
-        func: resetDrawing,
+      :endSelectionEntry="{
+        editMode: ['SLOPE_LINE_SELECTED'],
       }"
     />
 

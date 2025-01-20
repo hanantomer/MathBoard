@@ -258,7 +258,6 @@ export const useNotationStore = defineStore("notation", () => {
   }
 
   function resetSelectedNotations() {
-    console.debug("resetSelectedNotations");
     Array.from(getSelectedNotations()).forEach((n) => (n.selected = false));
   }
 

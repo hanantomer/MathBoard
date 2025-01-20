@@ -150,12 +150,6 @@ watchHelper.watchMouseEvent(
   endMoveSelection,
 );
 
-// watchHelper.watchMouseEvent(
-//   ["AREA_SELECTED"],
-//   "EV_SVG_MOUSEUP",
-//   cancelSelectionWhenUserClickedOutside /*takes action when clicked outside of selection area*/,
-// );
-
 watchHelper.watchMouseEvent(
   ["TEXT_STARTED"],
   "EV_SVG_MOUSEUP",
