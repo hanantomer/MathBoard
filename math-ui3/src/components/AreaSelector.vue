@@ -11,9 +11,8 @@
       height: selectionRectHeight + 'px',
       background: backgroundColor,
     }"
-    v-on:mouseup="mouseup"
     v-on:mousedown="startMoving"
-    v-on:mousemove="moveSelectionByMouseDrag"
+    v-on:mouseup="endMoveSelection"
   ></v-card>
 </template>
 
@@ -43,11 +42,6 @@ const cellStore = useCellStore();
 const notationStore = useNotationStore();
 const notationMutationHelper = useNotationMutateHelper();
 const selectionHelper = useSelectionHelper();
-
-// variables
-
-//let mouseOverSelectionArea: boolean = false;
-//let mouseLeftSelectionArea: boolean = false;
 
 let lineTypes: Array<NotationType> = [
   "CONCAVECURVE",
@@ -151,6 +145,12 @@ watchHelper.watchMouseEvent(
 );
 
 watchHelper.watchMouseEvent(
+  ["AREA_MOVING"],
+  "EV_SVG_MOUSEMOVE",
+  moveSelectionByMouseDrag,
+);
+
+watchHelper.watchMouseEvent(
   ["TEXT_STARTED"],
   "EV_SVG_MOUSEUP",
   cancelTextSelectionWhenUserClickedOutside /*takes action when clicked outside of selection area*/,
@@ -163,7 +163,6 @@ function cancelSelectionWhenUserClickedOutside() {
 }
 
 function cancelTextSelectionWhenUserClickedOutside() {
-  //if (!mouseLeftSelectionArea) return;
   notationStore.resetSelectedNotations();
   resetSelectionPosition();
   editModeStore.setDefaultEditMode();
@@ -196,13 +195,12 @@ function setStartPosition(e: MouseEvent) {
 
 function startMoving(e: MouseEvent) {
   if (e.buttons !== 1) return;
-  //if (!mouseOverSelectionArea) return;
   editModeStore.setNextEditMode();
 }
 
-function mouseup(e: MouseEvent) {
-  eventBus.emit("EV_SVG_MOUSEUP", e);
-}
+//function mouseup(e: MouseEvent) {
+//  eventBus.emit("EV_SVG_MOUSEUP", e);
+//}
 
 async function updateSelectionAreaByKey(e: KeyboardEvent) {
   if (selectionRectHeight.value === 0) return;
@@ -346,8 +344,9 @@ function endSelect() {
     signalSelection();
   }
 
-  console.debug("selecting #");
-  console.debug(notationStore.getSelectedNotations().length);
+  console.debug(
+    `selecting # ${notationStore.getSelectedNotations().length}  notations`,
+  );
 
   editModeStore.setNextEditMode();
 }
