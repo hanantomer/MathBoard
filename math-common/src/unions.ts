@@ -70,6 +70,7 @@ export type EditMode =
   | "QUESTIONS_SELECTION" //  after click on questions icon
   | "ANSWERS_SELECTION" //  after click on answers icon
   | "SYMBOL" // default mode
+  | "SPECIAL_SYMBOL" // special symbol in bottom toolbar pressed
   | "EXPONENT_STARTED" // exponent button pressed
   | "EXPONENT_WRITING" // user clicked a cell following exponent button pressed
   | "EXPONENT_SELECTED" // user clicked on existing exponent
@@ -128,6 +129,7 @@ export const EditModeNotationType = new Map<
   NotationType
 >([
   ["SYMBOL", "SYMBOL"],
+  ["SPECIAL_SYMBOL", "SYMBOL"],
   ["EXPONENT_STARTED", "EXPONENT"],
   ["EXPONENT_WRITING", "EXPONENT"],
   ["TEXT_STARTED", "TEXT"],
@@ -185,6 +187,7 @@ export const EditModeCursorType = new Map<
   CursorType
 >([
   ["SYMBOL", "auto"],
+  ["SPECIAL_SYMBOL", "auto"],
   ["EXPONENT_STARTED", "auto"],
   ["EXPONENT_WRITING", "auto"],
   ["EXPONENT_SELECTED", "auto"],
@@ -239,7 +242,7 @@ export type SelectionMoveDirection =
 
 export type Color =
   | "none"
-  | "lightyellow"
+  | "yellow"
   | "lightblue"
   | "lightgreen"
   | "pink"

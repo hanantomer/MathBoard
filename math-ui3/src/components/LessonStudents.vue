@@ -1,6 +1,6 @@
 <template>
   <div>
-    <v-card>
+    <v-card class="ml-8">
       <v-card-title>
         <p style="font-size: 1vw">Online Students</p></v-card-title
       >

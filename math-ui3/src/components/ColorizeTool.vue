@@ -17,13 +17,17 @@
             <v-list-item
               v-for="(item, index) in colors"
               :key="index"
-              :value="index"
+              :active="item === selectedColor"
               v-bind:style="{
                 backgroundColor: item,
+                height: 20,
               }"
-              @click="selectColor"
+              @click="
+                selectedColor = item;
+                editModeStore.setEditMode('COLORIZING');
+              "
             >
-              <v-list-item-title>{{ item }}</v-list-item-title>
+              <v-list-item-title></v-list-item-title>
             </v-list-item>
           </v-list>
         </v-menu>
@@ -59,15 +63,9 @@ const backgroundColor = computed(() => {
     : selectedColor.value;
 });
 
-let selectedColor = ref<Color | null>(null); /// TODO move to store
+let selectedColor = ref<Color | null>(null);
 
-const colors: Color[] = [
-  "lightyellow",
-  "lightblue",
-  "lightgreen",
-  "pink",
-  "none",
-];
+const colors: Color[] = ["yellow", "lightblue", "lightgreen", "pink", "none"];
 
 watchHelper.watchMouseEvent(
   ["COLORIZING"],
@@ -81,13 +79,17 @@ watchHelper.watchMouseEvent(
   colorizeNotationByMouseDrag,
 );
 
+//watchHelper.watchEveryEditModeChange((newEditMode: EditMode) => {
+//  if (newEditMode == "COLORIZING") selectColor();
+//});
+
 // reset coorizing tool when colorizing by click or by drag ends
 watchHelper.watchMouseEvent(["COLORIZING"], "EV_SVG_MOUSEUP", resetColorizing);
 
-function selectColor(e: any) {
+function selectColor() {
   editModeStore.setEditMode("COLORIZING");
-  const color = (e.currentTarget as any).textContent as Color;
-  selectedColor.value = color;
+  //  const color = (e.currentTarget as any).textContent as Color;
+  //selectedColor.value = color;
 }
 
 function colorizeNotationByMouseDrag(e: MouseEvent) {
@@ -123,3 +125,8 @@ function resetColorizing() {
   editModeStore.setDefaultEditMode();
 }
 </script>
+<style scoped>
+.v-list-item {
+  min-height: 20px !important;
+}
+</style>

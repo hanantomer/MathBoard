@@ -277,18 +277,15 @@ function resetButtonsState() {
 .vertical-toolbar {
   flex-basis: content;
   flex-flow: column wrap !important;
-  width: 55px !important;
+  width: 70px !important;
   height: max-content !important;
   padding: 4px !important;
-  position: fixed;
-  top: 100;
-  left: 0;
-  right: 0;
+  margin-top: 30px;
 }
 
 .vertical-toolbar .v-toolbar__content {
   flex-flow: column wrap !important;
-  width: 35px !important;
+  width: 45px !important;
   height: max-content !important;
   padding: 2px !important;
 }

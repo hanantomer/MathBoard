@@ -4,33 +4,30 @@
   <exponentEditor></exponentEditor>
   <areaSelector></areaSelector>
   <v-row align="start" class="fill-heigh" no-gutters>
-    <div style="display: flex; flex-direction: row">
-      <v-sheet class="mt-14 ml-1">
-        <toolbar :key="toolbarKey"></toolbar>
+    <div style="display: flex">
+      <leftToolbar></leftToolbar>
+      <v-progress-linear
+        data-cy="pBar"
+        v-show="progressBar"
+        color="deep-purple-accent-4"
+        indeterminate
+        rounded
+        height="6"
+      ></v-progress-linear>
+      <horizontalLineDrawer></horizontalLineDrawer>
+      <sqrtDrawer></sqrtDrawer>
+      <verticalLineDrawer></verticalLineDrawer>
+      <slopeLineDrawer></slopeLineDrawer>
+      <curveDrawer :curveType="curveType"></curveDrawer>
+      <v-sheet class="mt-6 ml-4" style="padding: 0;">
+        <svg
+          v-bind:style="{ cursor: cursor }"
+          v-bind:id="svgId"
+          width="1520"
+          height="760"
+        ></svg>
       </v-sheet>
-      <div style="display: flex; flex-direction: column">
-        <v-sheet class="mt-10 ml-16">
-          <v-progress-linear
-            data-cy="pBar"
-            v-show="progressBar"
-            color="deep-purple-accent-4"
-            indeterminate
-            rounded
-            height="6"
-          ></v-progress-linear>
-          <horizontalLineDrawer></horizontalLineDrawer>
-          <sqrtDrawer></sqrtDrawer>
-          <verticalLineDrawer></verticalLineDrawer>
-          <slopeLineDrawer></slopeLineDrawer>
-          <curveDrawer :curveType="curveType"></curveDrawer>
-          <svg
-            v-bind:style="{ cursor: cursor }"
-            v-bind:id="svgId"
-            width="1600"
-            height="760"
-          ></svg>
-        </v-sheet>
-      </div>
+      <specialSymbolsToolbar class="ml-2"></specialSymbolsToolbar>
     </div>
   </v-row>
 </template>
@@ -42,7 +39,8 @@ import exponentEditor from "./ExponentEditor.vue";
 import useNotationLoadingHelper from "../helpers/notationLoadingHelper";
 import UseMatrixHelper from "../helpers/matrixHelper";
 import UseEventHelper from "../helpers/eventHelper";
-import toolbar from "./Toolbar.vue";
+import leftToolbar from "./LeftToolbar.vue";
+import specialSymbolsToolbar from "./SpecialSymbolsToolbar.vue";
 import areaSelector from "./AreaSelector.vue";
 import horizontalLineDrawer from "./HorizontalLineDrawer.vue";
 import sqrtDrawer from "./SqrtDrawer.vue";
@@ -71,7 +69,7 @@ const answerStore = useAnswerStore();
 const progressBar = ref(false);
 
 let cursor = ref<CursorType>("auto");
-let toolbarKey = ref(0);
+//let toolbarKey = ref(0);
 
 onUnmounted(() => {
   eventHelper.unregisterSvgMouseDown();
@@ -149,7 +147,7 @@ async function load() {
   eventHelper.registerCopy();
 
   progressBar.value = true;
-  toolbarKey.value++; // refresh toolbar
+  //toolbarKey.value++; // refresh toolbar
 
   try {
     notationStore.clearNotations();
