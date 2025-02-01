@@ -57,7 +57,7 @@
       height="800"
       width="1500"
       xmlns="http://www.w3.org/2000/svg"
-      style="position: absolute; pointer-events: none"
+      class="line-svg"
     >
       <line
         :x1="linePosition.p1x"

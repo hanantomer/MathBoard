@@ -4,30 +4,31 @@
   <exponentEditor></exponentEditor>
   <areaSelector></areaSelector>
   <v-row align="start" class="fill-heigh" no-gutters>
+    <v-progress-linear
+      data-cy="pBar"
+      v-show="progressBar"
+      color="deep-purple-accent-4"
+      indeterminate
+      rounded
+      height="8"
+    ></v-progress-linear>
     <div style="display: flex">
       <leftToolbar></leftToolbar>
-      <v-progress-linear
-        data-cy="pBar"
-        v-show="progressBar"
-        color="deep-purple-accent-4"
-        indeterminate
-        rounded
-        height="6"
-      ></v-progress-linear>
       <horizontalLineDrawer></horizontalLineDrawer>
       <sqrtDrawer></sqrtDrawer>
       <verticalLineDrawer></verticalLineDrawer>
       <slopeLineDrawer></slopeLineDrawer>
       <curveDrawer :curveType="curveType"></curveDrawer>
-      <v-sheet class="mt-6 ml-4" style="padding: 0;">
+      <v-sheet>
         <svg
-          v-bind:style="{ cursor: cursor }"
+          v-bind:style="{ cursor: cursor, margin: '10px' }"
           v-bind:id="svgId"
           width="1520"
           height="760"
+          margin="10"
         ></svg>
       </v-sheet>
-      <specialSymbolsToolbar class="ml-2"></specialSymbolsToolbar>
+      <specialSymbolsToolbar></specialSymbolsToolbar>
     </div>
   </v-row>
 </template>
@@ -215,13 +216,19 @@ html {
 }
 
 .line {
-  top: 4px;
   stroke: chocolate;
   position: absolute;
   display: block;
   border-bottom: solid 1px;
   border-top: solid 1px;
   z-index: 999;
+}
+
+.line-svg {
+  position: absolute;
+  pointer-events: none;
+  margin-left: 10px;
+  margin-top: 10px;
 }
 
 line:hover,

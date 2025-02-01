@@ -54,11 +54,12 @@
       }"
     >
     </line-handle>
+
     <svg
       height="800"
       width="1500"
       xmlns="http://www.w3.org/2000/svg"
-      style="position: absolute; pointer-events: none"
+      class="line-svg"
     >
       <line
         :x1="lineLeft"
@@ -117,7 +118,7 @@ let lineLeft = computed(() => {
 });
 
 let lineRight = computed(() => {
-  return linePosition.value.p2x;
+  return linePosition.value.p2x + 10;
 });
 
 let lineY = computed(() => {

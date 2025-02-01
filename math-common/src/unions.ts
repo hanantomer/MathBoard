@@ -80,7 +80,7 @@ export type EditMode =
   | "TEXT_WRITING" // user clicked a cell following text button pressed
   | "ANNOTATION_STARTED" // annotation button pressed
   | "ANNOTATION_SELECTED" // user clicked on existing annotation rectangle
-  //  "ANNOTATION_AREA_SELECTING" | // user started selecting area following annotation button pressed
+  
   | "ANNOTATION_WRITING" // user clicked a cell following annotation button pressed
   | "CELL_SELECTED" // user clicked on a cell or navigated via keys
   
@@ -112,13 +112,13 @@ export type EditMode =
   | "SQRT_DRAWING" // sqrt drawing started
   | "SQRT_EDITING" // sqrt line handle clicked 
   | "SQRT_SELECTED" // sqrt selected
+  
   | "COLORIZING" // color selected
   | "DELETING" // mouse clicked following delete button pressed
   | "AREA_SELECTING" // user started selecting area
   | "AREA_SELECTED" // user finished selecting area
   | "TEXT_AREA_SELECTING" // user started selecting area after click on free text icon
   | "TEXT_AREA_SELECTED" // user finished selecting text area
-  | "ANNOTATION_AREA_SELECTED" // user finished selecting annotation area
   | "AREA_MOVING" // user grabbed the selection area after select button pressed
   | "CHECKMARK_STARTED" // checkmark button pressed
   | "SEMICHECKMARK_STARTED" // semicheck button pressed
@@ -175,7 +175,6 @@ export const EditModeNotationType = new Map<
   ["AREA_SELECTED", "SYMBOL"],
   ["TEXT_AREA_SELECTING", "TEXT"],
   ["TEXT_AREA_SELECTED", "TEXT"],
-  ["ANNOTATION_AREA_SELECTED", "TEXT"],
   ["AREA_MOVING", "SYMBOL"],
   ["CHECKMARK_STARTED", "SYMBOL"],
   ["SEMICHECKMARK_STARTED", "SYMBOL"],
@@ -219,10 +218,9 @@ export const EditModeCursorType = new Map<
   ["DELETING", "auto"],
   ["AREA_SELECTING", "auto"],
   ["AREA_SELECTED", "auto"],
+  ["AREA_MOVING", "auto"],
   ["TEXT_AREA_SELECTING", "auto"],
   ["TEXT_AREA_SELECTED", "auto"],
-  ["ANNOTATION_AREA_SELECTED", "auto"],
-  ["AREA_MOVING", "auto"],
   ["CHECKMARK_STARTED", "auto"],
   ["SEMICHECKMARK_STARTED", "auto"],
   ["XMARK_STARTED", "auto"],

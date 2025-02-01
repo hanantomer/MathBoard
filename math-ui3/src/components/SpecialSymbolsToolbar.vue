@@ -81,7 +81,7 @@ const symbolButtons: Array<{
     tooltip: "Sum",
   },
   {
-    value: "&#8723;",
+    value: "&plusmn;",
     activeState: ref(1),
     tooltip: "Plus or Minus",
   },
