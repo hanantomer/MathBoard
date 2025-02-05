@@ -87,8 +87,8 @@ export default function eventHelper() {
 
         case "SQRT": {
           let n1 = { ...n } as SqrtNotationAttributes;
-          const numCols = (n1.toCol - n1.fromCol);
-          n1.fromCol = selectedCell.col ;
+          const numCols = n1.toCol - n1.fromCol;
+          n1.fromCol = selectedCell.col;
           n1.toCol = n1.fromCol + numCols;
           n1.row = selectedCell.row;
           notationMutationHelper.cloneNotation(n1);
@@ -171,7 +171,47 @@ export default function eventHelper() {
     if (!userStore.isTeacher) return;
     if (!cellStore.getSelectedCell()) return;
 
-    const dT = e.clipboardData; /*|| window.Clipboard*/
+    try {
+      const clipboardItems = await navigator.clipboard.read();
+      for (const clipboardItem of clipboardItems) {
+        const imageTypes = clipboardItem.types.find((type) =>
+          type.startsWith("image/"),
+        );
+        if (imageTypes) {
+          //for (const imageType of imageTypes) {
+          const base64data = await clipboardItem.getType(imageTypes);
+          if (!base64data) return;
+          const url = URL.createObjectURL(base64data);
+          let image: HTMLImageElement = new Image();
+          image.onload = () => {
+            let fromCol = cellStore.getSelectedCell()?.col;
+            let fromRow = cellStore.getSelectedCell()?.row;
+            if (!fromCol || !fromRow) return;
+            let toCol =
+              Math.ceil(image.width / cellStore.getCellHorizontalWidth()) +
+              fromCol;
+            let toRow =
+              Math.ceil(image.height / cellStore.getCellVerticalHeight()) +
+              fromRow;
+
+            notationMutationHelper.addImageNotation(
+              fromCol,
+              toCol,
+              fromRow,
+              toRow,
+              url,
+            );
+          };
+          image.src = url;
+          //}
+        }
+      }
+    } catch (err: any) {
+      console.error(err.name, err.message);
+    }
+
+    /*
+    const dT = e.clipboardData;
     const item = dT?.items[0];
 
     var reader = new FileReader();
@@ -200,6 +240,7 @@ export default function eventHelper() {
     });
 
     reader.readAsDataURL(item?.getAsFile() as Blob);
+    */
   }
 
   function emitSvgMouseDown(e: MouseEvent) {
@@ -261,7 +302,6 @@ export default function eventHelper() {
   function unregisterMouseUp() {
     document.removeEventListener("mouseup", emitMouseUp);
   }
-
 
   function emitKeyUp(key: KeyboardEvent) {
     eventBus.emit("EV_KEYUP", key);

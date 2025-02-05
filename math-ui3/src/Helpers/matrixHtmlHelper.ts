@@ -24,7 +24,7 @@ export default function useHtmlMatrixHelper() {
     return notation.selected ? "gray" : "transparent";
   }
 
-  function textBorderColor(notation: NotationAttributes): string {
+  function rectBorderColor(notation: NotationAttributes): string {
     return notation.selected ? "chocolate" : "lighgray";
   }
 
@@ -303,7 +303,7 @@ export default function useHtmlMatrixHelper() {
     if (n.notationType === "TEXT") {
       const n1 = n as RectNotationAttributes;
 
-      const bColor = textBorderColor(n ?? false);
+      const bColor = rectBorderColor(n ?? false);
 
       const height = rectNotationHeight(n as RectNotationAttributes);
       const width = rectNotationWidth(n as RectNotationAttributes);
@@ -320,7 +320,7 @@ export default function useHtmlMatrixHelper() {
     if (n.notationType === "ANNOTATION") {
       const n1 = n as AnnotationNotationAttributes;
 
-      const bColor = textBorderColor(n ?? false);
+      const bColor = rectBorderColor(n ?? false);
 
       ///TODO move static css props to a class
       return `<p id=${n1.uuid} style=
@@ -331,7 +331,8 @@ export default function useHtmlMatrixHelper() {
 
     if (n.notationType === "IMAGE") {
       let n1 = n as RectNotationAttributes;
-      return `<img id=${n1.uuid} style='border:groove 2px;border-color:${borderColor}' src='${n1.value}'>`;
+      const bColor = rectBorderColor(n ?? false);
+      return `<img id=${n1.uuid} style='border:groove 2px;border-color:${bColor}' src='${n1.value}'>`;
     }
 
     if (n.notationType === "EXPONENT") {

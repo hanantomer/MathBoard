@@ -147,6 +147,7 @@ export default function useMatrixHelper() {
           n.notationType === "SIGN" ||
           n.notationType === "SQRT" ||
           n.notationType === "TEXT" ||
+          n.notationType === "IMAGE" ||
           n.notationType === "SQRTSYMBOL" ||
           n.notationType === "SYMBOL",
       ),
@@ -171,7 +172,6 @@ export default function useMatrixHelper() {
       ),
     );
   }
-
 
   return {
     setMatrix,

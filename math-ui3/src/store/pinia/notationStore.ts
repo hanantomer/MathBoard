@@ -16,9 +16,6 @@ import {
   isRect,
   isLine,
   isPoint,
-  MultiCellAttributes,
-  DotCoordinates,
-  RectAttributes,
   SqrtNotationAttributes,
 } from "common/baseTypes";
 import { BoardType } from "common/unions";
