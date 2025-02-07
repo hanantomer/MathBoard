@@ -70,13 +70,13 @@ watchHelper.watchMouseEvent(
 // emmited by selection helper
 
 watchHelper.watchNotationSelection(
-  "CONCAVE_CURVE_SELECTED",
+  ["CONCAVE_CURVE_SELECTED"],
   "EV_CONCAVE_CURVE_SELECTED",
   curveSelected,
 );
 
 watchHelper.watchNotationSelection(
-  "CONVEX_CURVE_SELECTED",
+  ["CONVEX_CURVE_SELECTED"],
   "EV_CONVEX_CURVE_SELECTED",
   curveSelected,
 );

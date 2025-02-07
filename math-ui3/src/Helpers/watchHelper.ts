@@ -94,38 +94,22 @@ export default function () {
     })
   }
 
-  function watchSelectedCellAndDisplayNewSelected(svgId: string) {
-    watch(
-      () => cellStore.getSelectedCell() as CellAttributes,
-      (
-        newSelectedCell: CellAttributes | undefined | null,
-        oldSelectedCell: CellAttributes | undefined | null,
-      ) => {
-        setTimeout(() => {
-          matrixCellHelper.showSelectedCell(
-            svgId,
-            newSelectedCell,
-            oldSelectedCell,
-          );
-        }, 100);
-      },
-      { immediate: true, deep: true },
-    );
-  }
 
   function watchNotationSelection(
-    editMode: EditMode,
+    editModes: EditMode[],
     eventType: BusEventType,
     handler: NotationSelectionHandler,
   ) {
-    watch(
-      () => eventBus.get(editMode, eventType),
-      (notation: NotationAttributes) => {
-        if (!notation) return;
-        handler(notation);
-        eventBus.remove(eventType, editMode); // clear event from bus to allow reselction
-      },
-    );
+    editModes.forEach((editMode) => {
+      watch(
+        () => eventBus.get(editMode, eventType),
+        (notation: NotationAttributes) => {
+          if (!notation) return;
+          handler(notation);
+          eventBus.remove(eventType, editMode); // clear event from bus to allow reselction
+        },
+      );
+    });
   }
 
   function watchCustomEvent(
@@ -156,6 +140,26 @@ export default function () {
       { deep: true, immediate: true },
     );
   }
+
+  function watchSelectedCellAndDisplayNewSelected(svgId: string) {
+    watch(
+      () => cellStore.getSelectedCell() as CellAttributes,
+      (
+        newSelectedCell: CellAttributes | undefined | null,
+        oldSelectedCell: CellAttributes | undefined | null,
+      ) => {
+        setTimeout(() => {
+          matrixCellHelper.showSelectedCell(
+            svgId,
+            newSelectedCell,
+            oldSelectedCell,
+          );
+        }, 100);
+      },
+      { immediate: true, deep: true },
+    );
+  }
+
 
   return {
     watchMouseEvent,

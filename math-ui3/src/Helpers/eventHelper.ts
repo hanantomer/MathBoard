@@ -179,9 +179,10 @@ export default function eventHelper() {
         );
         if (imageTypes) {
           //for (const imageType of imageTypes) {
-          const base64data = await clipboardItem.getType(imageTypes);
-          if (!base64data) return;
-          const url = URL.createObjectURL(base64data);
+          const blob = await clipboardItem.getType(imageTypes);
+          if (!blob) return;
+          const url = URL.createObjectURL(blob);
+          const base64 = await convertBlobToBase64(blob);
           let image: HTMLImageElement = new Image();
           image.onload = () => {
             let fromCol = cellStore.getSelectedCell()?.col;
@@ -199,7 +200,7 @@ export default function eventHelper() {
               toCol,
               fromRow,
               toRow,
-              url,
+              base64,
             );
           };
           image.src = url;
@@ -337,6 +338,15 @@ export default function eventHelper() {
 
   function unregisterPaste() {
     document.removeEventListener("paste", emitPaste);
+  }
+
+  async function convertBlobToBase64(blob: Blob): Promise<string> {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onloadend = () => resolve(reader.result as string);
+      reader.onerror = reject;
+      reader.readAsDataURL(blob);
+    });
   }
 
   return {

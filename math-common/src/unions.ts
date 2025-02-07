@@ -19,6 +19,8 @@ export type BusEventType =
   | "EV_AREA_SELECTION_DONE"
   | "EV_SLOPE_LINE_SELECTED"
   | "EV_CONCAVE_CURVE_SELECTED"
+  | "EV_IMAGE_SELECTED"
+  | "EV_TEXT_SELECTED"
   | "EV_CONVEX_CURVE_SELECTED"
   | "EV_VERTICAL_LINE_SELECTED"
   | "EV_SQRT_SELECTED"
@@ -78,30 +80,26 @@ export type EditMode =
   | "TEXT_SELECTED" // user clicked on existing text rectangle
   | "TEXT_AREA_SELECTING" // user started selecting area following text button pressed
   | "TEXT_WRITING" // user clicked a cell following text button pressed
+  | "IMAGE_SELECTED" // user clicked on existing image
   | "ANNOTATION_STARTED" // annotation button pressed
   | "ANNOTATION_SELECTED" // user clicked on existing annotation rectangle
-  
   | "ANNOTATION_WRITING" // user clicked a cell following annotation button pressed
   | "CELL_SELECTED" // user clicked on a cell or navigated via keys
-  
   | "HORIZONTAL_LINE_STARTED" // horizontal line button pressed
   | "HORIZONTAL_LINE_DRAWING" // horizontal line drawing started
   | "HORIZONTAL_LINE_EDITING_RIGHT" // horizontal line handle clicked followin slope line selected
   | "HORIZONTAL_LINE_EDITING_LEFT" // horizontal line handle clicked followin slope line selected
   | "HORIZONTAL_LINE_SELECTED" // horizontal line selected
-  
   | "VERTICAL_LINE_STARTED" // vertical line button pressed
   | "VERTICAL_LINE_DRAWING" // vertical line drawing started
   | "VERTICAL_LINE_SELECTED" // vertical line selected
   | "VERTICAL_LINE_EDITING_TOP" // vertical line handle clicked followin slope line selected
   | "VERTICAL_LINE_EDITING_BOTTOM" // vertical line handle clicked followin slope line selected
-  
   | "SLOPE_LINE_STARTED" // slope line button pressed
   | "SLOPE_LINE_DRAWING" // slope line drawing started
   | "SLOPE_LINE_SELECTED" // slope line selected
   | "SLOPE_LINE_EDITING_LEFT" // slope line handle clicked followin slope line selection
   | "SLOPE_LINE_EDITING_RIGHT" // slope line handle clicked followin slope line selection
-
   | "CONCAVE_CURVE_STARTED" // concave line button pressed
   | "CONCAVE_CURVE_DRAWING" // concave line drawing started
   | "CONCAVE_CURVE_SELECTED" // concave line selected
@@ -110,9 +108,8 @@ export type EditMode =
   | "CONVEX_CURVE_SELECTED" // convex line selected
   | "SQRT_STARTED" // sqrt button pressed
   | "SQRT_DRAWING" // sqrt drawing started
-  | "SQRT_EDITING" // sqrt line handle clicked 
+  | "SQRT_EDITING" // sqrt line handle clicked
   | "SQRT_SELECTED" // sqrt selected
-  
   | "COLORIZING" // color selected
   | "DELETING" // mouse clicked following delete button pressed
   | "AREA_SELECTING" // user started selecting area

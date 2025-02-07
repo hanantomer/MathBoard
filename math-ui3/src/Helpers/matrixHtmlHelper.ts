@@ -332,6 +332,7 @@ export default function useHtmlMatrixHelper() {
     if (n.notationType === "IMAGE") {
       let n1 = n as RectNotationAttributes;
       const bColor = rectBorderColor(n ?? false);
+      //const url = URL.createObjectURL(n1.value);
       return `<img id=${n1.uuid} style='border:groove 2px;border-color:${bColor}' src='${n1.value}'>`;
     }
 

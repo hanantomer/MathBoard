@@ -87,7 +87,7 @@ watchHelper.watchMouseEvent(props.endEntry.editMode, "EV_SVG_MOUSEUP", () =>
 );
 
 watchHelper.watchNotationSelection(
-  props.selectEntry.editMode,
+  [props.selectEntry.editMode],
   props.selectEntry.event,
   (n) => lineDrawer.selectLine(n, props.selectEntry.func),
 );

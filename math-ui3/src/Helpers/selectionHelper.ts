@@ -124,6 +124,12 @@ export default function selectionHelper() {
 
     if (activeNotation.notationType === "TEXT") {
       editModeStore.setEditMode("TEXT_SELECTED");
+      eventBus.emit("EV_TEXT_SELECTED", activeNotation);
+    }
+
+    if (activeNotation.notationType === "IMAGE") {
+      editModeStore.setEditMode("IMAGE_SELECTED");
+      eventBus.emit("EV_IMAGE_SELECTED", activeNotation);
     }
 
     if (activeNotation.notationType === "ANNOTATION") {
@@ -227,7 +233,6 @@ export default function selectionHelper() {
       setSelectedCell(position);
     }
   }
-
 
   return {
     selectClickedPosition,

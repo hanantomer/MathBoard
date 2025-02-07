@@ -25,9 +25,10 @@ import { useNotationStore } from "../store/pinia/notationStore";
 import useNotationMutateHelper from "../helpers/notationMutateHelper";
 import useSelectionHelper from "../helpers/selectionHelper";
 import { NotationType, SelectionMoveDirection } from "common/unions";
-import { DotCoordinates } from "common/baseTypes";
+import { DotCoordinates, RectNotationAttributes } from "common/baseTypes";
 import useEventBusHelper from "../helpers/eventBusHelper";
 import useWatchHelper from "../helpers/watchHelper";
+import { watch } from "fs";
 
 type HorizontalDirection = "RIGHT" | "LEFT" | "NONE";
 type VerticalDirection = "UP" | "BOTTOM" | "NONE";
@@ -156,6 +157,12 @@ watchHelper.watchMouseEvent(
   cancelTextSelectionWhenUserClickedOutside /*takes action when clicked outside of selection area*/,
 );
 
+watchHelper.watchNotationSelection(
+  ["TEXT_SELECTED", "IMAGE_SELECTED"],
+  "EV_IMAGE_SELECTED",
+  selectRectNotation,
+);
+
 function cancelSelectionWhenUserClickedOutside() {
   notationStore.resetSelectedNotations();
   resetSelectionPosition();
@@ -197,10 +204,6 @@ function startMoving(e: MouseEvent) {
   if (e.buttons !== 1) return;
   editModeStore.setNextEditMode();
 }
-
-//function mouseup(e: MouseEvent) {
-//  eventBus.emit("EV_SVG_MOUSEUP", e);
-//}
 
 async function updateSelectionAreaByKey(e: KeyboardEvent) {
   if (selectionRectHeight.value === 0) return;
@@ -488,6 +491,26 @@ function signalSelection() {
     width: selectionRectWidth.value,
     height: selectionRectHeight.value,
   });
+}
+
+function selectRectNotation(): void {
+  const selectedNotation =
+    notationStore.getSelectedNotations()[0] as RectNotationAttributes;
+
+  selectionPosition.value.x1 =
+    cellStore.getSvgBoundingRect().left +
+    selectedNotation.fromCol * cellStore.getCellHorizontalWidth();
+  selectionPosition.value.x2 =
+    cellStore.getSvgBoundingRect().left +
+    selectedNotation.toCol * cellStore.getCellHorizontalWidth();
+  selectionPosition.value.y1 =
+    cellStore.getSvgBoundingRect().top +
+    selectedNotation.fromRow * cellStore.getCellVerticalHeight();
+  selectionPosition.value.y2 =
+    cellStore.getSvgBoundingRect().top +
+    selectedNotation.toRow * cellStore.getCellVerticalHeight();
+
+  editModeStore.setEditMode("AREA_SELECTED");
 }
 </script>
 
