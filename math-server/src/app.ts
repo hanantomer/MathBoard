@@ -7,7 +7,6 @@ import connection from "../../math-db/build/models/index";
 const { exec } = require("child_process");
 import { BoardTypeValues, NotationTypeValues } from "../../math-common/build/unions"
 import { createTransport } from "nodemailer";
-import { NotationAttributes } from "../../math-common/src/baseTypes";
 
 var transporter = createTransport({
     service: "gmail",
@@ -25,13 +24,11 @@ const db = useDb();
 let app = express();
 app.use(auth);
 app.use(cors());
-app.use(express.json());
-app.use(bodyParser.json({ limit: "10mb" }));
+app.use(express.json({ limit: "1mb" }));
+app.use(bodyParser.json({ limit: 52428800 }));
 app.use(
     bodyParser.urlencoded({
-        limit: "10mb",
-        extended: true,
-        parameterLimit: 5000,
+        limit: "500kb",
     })
 );
 

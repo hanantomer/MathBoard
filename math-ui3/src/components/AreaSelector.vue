@@ -12,7 +12,8 @@
       background: backgroundColor,
     }"
     v-on:mousedown="startMoving"
-    v-on:mouseup="endMoveSelection"
+    v-on:mouseup="onSelectionMopuseUp"
+    v-on:mousemove="moveSelectionByMouseDrag"
   ></v-card>
 </template>
 
@@ -451,6 +452,15 @@ async function moveSelectionByKey( ///TODO by cell or pixel
     moveHorizontal * cellStore.getCellHorizontalWidth();
   selectionPosition.value.y2 +=
     moveVertical * cellStore.getCellVerticalHeight();
+}
+
+async function onSelectionMopuseUp(e: MouseEvent) {
+  if (editModeStore.getEditMode() === "AREA_SELECTING") {
+    endSelect();
+    return;
+  }
+
+  endMoveSelection(e);
 }
 
 async function endMoveSelection(e: MouseEvent) {

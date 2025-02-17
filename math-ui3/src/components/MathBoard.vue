@@ -94,7 +94,7 @@ let curveType = computed(() => {
 });
 
 watchHelper.watchMouseEvent(
-  ["SYMBOL", "CELL_SELECTED"],
+  ["SYMBOL", "CELL_SELECTED", "SPECIAL_SYMBOL"],
   "EV_SVG_MOUSEUP",
   selectionHelper.selectClickedPosition,
 );

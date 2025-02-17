@@ -6,7 +6,7 @@ const cellStore = useCellStore();
 const editModeStore = useEditModeStore();
 
 const MIN_NUMBER_OF_POINTS = 3;
-const MOUSE_MOVE_THROTTELING_INTERVAL = 3;
+const MOUSE_MOVE_THROTTELING_INTERVAL = 2;
 
 type Point = {
   x: number;
@@ -23,25 +23,36 @@ type CurveType = "CONCAVE" | "CONVEX";
 
 let visitedPoints: Point[] = [];
 
-const curveAttributes: CurveAttributes = {
-  cpx: 0,
-  cpy: 0,
-  p1x: 0,
-  p2x: 0,
-  p1y: 0,
-  p2y: 0,
-};
+let curveAttributes: CurveAttributes | undefined = undefined
 
 let mouseMoveCount = 0;
 
 export default function curveHelper() {
+
+  function initCurve() {
+    visitedPoints = [];
+    curveAttributes = {
+        p1x: 0,
+        p1y: 0,
+        p2x: 0,
+        p2y: 0,
+        cpx: 0,
+        cpy: 0,
+      };
+  }
+
   function startCurveDrawing(e: MouseEvent) {
+
+    initCurve();
+
     const x = e.pageX - cellStore.getSvgBoundingRect().x;
     const y = e.pageY - cellStore.getSvgBoundingRect().y;
     visitedPoints = [];
     mouseMoveCount = 0;
-    curveAttributes.p1x = curveAttributes.p2x = curveAttributes.cpx = x;
-    curveAttributes.p1y = curveAttributes.p2y = curveAttributes.cpy = y;
+    if (curveAttributes) {
+      curveAttributes.p1x = curveAttributes.p2x = curveAttributes.cpx = x;
+      curveAttributes.p1y = curveAttributes.p2y = curveAttributes.cpy = y;
+    }
 
     editModeStore.setNextEditMode();
   }
@@ -84,12 +95,12 @@ export default function curveHelper() {
     return slopeChange < 0.01 /// TODO put magic numbers
       ? 0
       : slopeChange < 0.25
-      ? 5 * coeficient
+      ? 10 * coeficient
       : slopeChange < 0.5
-      ? 7 * coeficient
+      ? 14 * coeficient
       : slopeChange < 1
-      ? 9 * coeficient
-      : 12 * coeficient;
+      ? 18 * coeficient
+      : 24 * coeficient;
   }
 
   function getNormalizedConvexSlopes(
@@ -104,12 +115,12 @@ export default function curveHelper() {
       let doNormalize = false;
 
       if (slopes[i].slope >= 0) {
-        doNormalize = true;
+        //doNormalize = true;
       }
 
       // slopes are negative, verify it diminishes
       if (slopes[i].slope <= slopes[i - 1].slope && slopes[i - 1].slope !== 0) {
-        doNormalize = true;
+        //doNormalize = true;
       }
 
       if (doNormalize) {
@@ -134,12 +145,12 @@ export default function curveHelper() {
       let doNormalize = false;
 
       if (slopes[i].slope >= 0) {
-        doNormalize = true;
+        //doNormalize = true;
       }
 
       // slopes are negative, verify it increases
       if (slopes[i].slope >= slopes[i - 1].slope && slopes[i - 1].slope !== 0) {
-        doNormalize = true;
+        //doNormalize = true;
       }
 
       if (doNormalize) {
@@ -185,7 +196,6 @@ export default function curveHelper() {
     }
     return controlPointIndex;
   }
-
 
   function getSlopes(points: Point[]): PointWithSlope[] {
     const slopes: PointWithSlope[] = [];
@@ -259,7 +269,7 @@ export default function curveHelper() {
     yPos: number,
   ): boolean {
     // nothing done yet
-    if (curveAttributes.p1x === 0 && curveAttributes.p1y === 0) {
+    if (curveAttributes!.p1x === 0 && curveAttributes!.p1y === 0) {
       console.debug("not initialized");
       return false;
     }
@@ -275,35 +285,36 @@ export default function curveHelper() {
       return false;
     }
 
-    if (visitedPoints.length > 0 && !yIsGrowingOrEqual(yPos)) {
-      console.debug("y is not growing");
-      return false;
-    }
+    //if (visitedPoints.length > 0 && !yIsGrowingOrEqual(yPos)) {
+    //  console.debug("y is not growing");
+    //  return false;
+    //}
 
-    if (
-      visitedPoints.length > 1 &&
-      curveType === "CONCAVE" &&
-      !secondDeraviateIsPositive(xPos, yPos)
-    ) {
-      //console.debug("concave second deraviate is not positive");
-      //return false;
-    }
+    // if (
+    //   visitedPoints.length > 1 &&
+    //   curveType === "CONCAVE" &&
+    //   !secondDeraviateIsPositive(xPos, yPos)
+    // ) {
+    //   //console.debug("concave second deraviate is not positive");
+    //   //return false;
+    // }
 
-    if (
-      visitedPoints.length > 1 &&
-      curveType === "CONVEX" &&
-      secondDeraviateIsPositive(xPos, yPos)
-    ) {
-      //console.debug("convex second deraviate is positive");
-      //return false;
-    }
+    // if (
+    //   visitedPoints.length > 1 &&
+    //   curveType === "CONVEX" &&
+    //   secondDeraviateIsPositive(xPos, yPos)
+    // ) {
+    //   //console.debug("convex second deraviate is positive");
+    //   //return false;
+    // }
 
-    console.debug("point added:" + visitedPoints.length);
+    //console.debug("point added:" + visitedPoints.length);
     visitedPoints.push({ x: xPos, y: yPos });
 
     return true;
   }
 
+  ///TODO: support elliptic curves
   function setCurveAttributes(
     curveType: CurveType,
     xPos: number,
@@ -326,20 +337,22 @@ export default function curveHelper() {
     let controlPointIndex = getControlPointIndex(normalizedSlopes);
 
     const theta =
-      Math.atan2(yPos - curveAttributes.p1y, xPos - curveAttributes.p1x) -
+      Math.atan2(yPos - curveAttributes!.p1y, xPos - curveAttributes!.p1x) -
       Math.PI / 2; // calculate rciprocal to curve
     const turningPoint = normalizedSlopes[controlPointIndex];
 
-    const distanceFromCurve = calculateDistance(
+    let distanceFromCurve = calculateDistance(
       normalizedSlopes,
       controlPointIndex,
       curveType,
     );
 
-    curveAttributes.cpx = turningPoint.x + distanceFromCurve * Math.cos(theta);
-    curveAttributes.cpy = turningPoint.y + distanceFromCurve * Math.cos(theta);
-    curveAttributes.p2x = xPos;
-    curveAttributes.p2y = yPos;
+    //distanceFromCurve += 50;
+
+    curveAttributes!.cpx = turningPoint.x + distanceFromCurve * Math.cos(theta);
+    curveAttributes!.cpy = turningPoint.y + distanceFromCurve * Math.cos(theta);
+    curveAttributes!.p2x = xPos;
+    curveAttributes!.p2y = yPos;
   }
 
   function updateCurve(
@@ -353,7 +366,7 @@ export default function curveHelper() {
 
     setCurveAttributes(curveType, xPos, yPos);
 
-    return curveAttributes;
+    return curveAttributes!;
   }
 
   function removePointsToTheRightOfX(xPos: number) {
@@ -365,16 +378,6 @@ export default function curveHelper() {
     return curveAttributes;
   }
 
-  function endCurveDrawing() {
-    curveAttributes.p1x =
-      curveAttributes.p1y =
-      curveAttributes.p1y =
-      curveAttributes.p2y =
-      curveAttributes.cpx =
-      curveAttributes.cpy =
-        0;
-    visitedPoints = [];
-  }
 
   function getVisitedPoints() {
     return visitedPoints;
@@ -385,6 +388,6 @@ export default function curveHelper() {
     updateCurve,
     getCurveAttributes,
     getVisitedPoints,
-    endCurveDrawing,
   };
 }
+

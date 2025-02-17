@@ -11,7 +11,7 @@
           fab
           dark
           :color="item.activeState.value === 1 ? 'white' : 'green'"
-          v-on:click="selectSpecialSymbol(item.value)"
+          v-on:click="selectSpecialSymbol(item.value, item.activeState)"
           :disabled="!editEnabled"
           v-html="item.value"
         >
@@ -117,28 +117,25 @@ watchHelper.watchEndOfEditMode(["SPECIAL_SYMBOL"], resetButtonsState);
 
 watchHelper.watchMouseEvent(
   ["SPECIAL_SYMBOL"],
-  "EV_SVG_MOUSEDOWN",
+  "EV_SVG_MOUSEUP",
   addSpecialSymbolToCell,
 );
 
-function selectSpecialSymbol(item: string) {
+function selectSpecialSymbol(item: string, activeState: any) {
   editModeStore.setEditMode("SPECIAL_SYMBOL");
   selectedSymbol.value = item;
+
+  if (cellStore.getSelectedCell()) {
+    addSpecialSymbolToCell();
+  }
 }
 
-function addSpecialSymbolToCell(e: MouseEvent) {
-  if (selectedSymbol.value) {
-    cellStore.setSelectedCell(
-      screenHelper.getClickedCell({
-        x: e.pageX,
-        y: e.pageY,
-      }),
-      false,
-    );
-
+function addSpecialSymbolToCell() {
+  setTimeout(() => {
+    // let selection helper to finish its work
     notationMutateHelper.addSymbolNotation(selectedSymbol.value);
-  }
-  resetButtonsState();
+    resetButtonsState();
+  }, 0);
 }
 
 function resetButtonsState() {

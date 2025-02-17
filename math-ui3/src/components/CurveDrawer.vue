@@ -172,7 +172,7 @@ function showPoints() {
 }
 
 function endDrawCurve() {
-  const curveAttributes: CurveAttributes = curveHelper.getCurveAttributes();
+  const curveAttributes: CurveAttributes = curveHelper.getCurveAttributes()!;
 
   // drawing not started
   if (curveAttributes.p1x === 0) {
@@ -188,8 +188,8 @@ function endDrawCurve() {
   saveCurve({
     p1x: curveAttributes.p1x,
     p2x: curveAttributes.p2x,
-    p1y: Math.max(curveAttributes.p1y, curveAttributes.p2y),
-    p2y: Math.min(curveAttributes.p1y, curveAttributes.p2y),
+    p1y: curveAttributes.p1y,
+    p2y: curveAttributes.p2y,
     cpx: curveAttributes.cpx,
     cpy: curveAttributes.cpy,
   });
@@ -216,7 +216,6 @@ function saveCurve(curevAttributes: CurveAttributes) {
 }
 
 function endCurveDrawing() {
-  curveHelper.endCurveDrawing();
   editModeStore.setDefaultEditMode();
 }
 </script>
