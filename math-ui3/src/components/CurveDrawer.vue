@@ -14,7 +14,7 @@
         stroke-linecap="round"
         fill="transparent"
       ></path>
-      <circle id="cp" cx="0" cy="0" r="4"></circle>
+      <circle id="controlPoint" cx="0" cy="0" r="4"></circle>
     </svg>
   </div>
 </template>
@@ -40,9 +40,8 @@ const editModeStore = useEditModeStore();
 const cellStore = useCellStore();
 
 const show = computed(() => {
-  return (
-    editModeStore.isCurveDrawingMode() || editModeStore.isCurveSelectedMode()
-  );
+  return true;
+  //editModeStore.isCurveDrawingMode() || editModeStore.isCurveSelectedMode()
 });
 
 const curveType = computed(() => {
@@ -121,7 +120,7 @@ function setCurve(e: MouseEvent) {
 }
 
 function showControlPoint(curveAttributes: CurveAttributes) {
-  var c1 = document.getElementById("cp");
+  var c1 = document.getElementById("controlPoint");
   c1!.setAttribute("cx", curveAttributes.cpx.toString());
   c1!.setAttribute("cy", curveAttributes.cpy.toString());
 }
@@ -230,6 +229,7 @@ function endCurveDrawing() {
   border-top: solid 1px;
   z-index: 999;
 }
+
 .lineHandle {
   cursor: col-resize;
   display: block;
@@ -238,5 +238,13 @@ function endCurveDrawing() {
   width: 12px;
   height: 12px;
   border: 1, 1, 1, 1;
+}
+
+.curveControlPoint {
+  fill: aqua;
+}
+
+.elipsisControlPoint {
+  fill: yellow;
 }
 </style>

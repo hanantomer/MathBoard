@@ -23,26 +23,24 @@ type CurveType = "CONCAVE" | "CONVEX";
 
 let visitedPoints: Point[] = [];
 
-let curveAttributes: CurveAttributes | undefined = undefined
+let curveAttributes: CurveAttributes | undefined = undefined;
 
 let mouseMoveCount = 0;
 
 export default function curveHelper() {
-
   function initCurve() {
     visitedPoints = [];
     curveAttributes = {
-        p1x: 0,
-        p1y: 0,
-        p2x: 0,
-        p2y: 0,
-        cpx: 0,
-        cpy: 0,
-      };
+      p1x: 0,
+      p1y: 0,
+      p2x: 0,
+      p2y: 0,
+      cpx: 0,
+      cpy: 0,
+    };
   }
 
   function startCurveDrawing(e: MouseEvent) {
-
     initCurve();
 
     const x = e.pageX - cellStore.getSvgBoundingRect().x;
@@ -92,80 +90,53 @@ export default function curveHelper() {
       avgSlopeFromControlPoint - avgSlopeUpToControlPoint,
     );
 
-    return slopeChange < 0.01 /// TODO put magic numbers
-      ? 0
-      : slopeChange < 0.25
-      ? 10 * coeficient
-      : slopeChange < 0.5
-      ? 14 * coeficient
-      : slopeChange < 1
-      ? 18 * coeficient
-      : 24 * coeficient;
+    return slopeChange * coeficient * 10;
   }
 
-  function getNormalizedConvexSlopes(
-    slopes: PointWithSlope[],
-  ): PointWithSlope[] {
-    const normalizedSlopes: PointWithSlope[] = [];
+  function findPeakPoint(points: Point[]): number | null {
+    if (points.length < 8) return null;
 
-    normalizedSlopes.push(slopes[0]);
+    const peakCandiaites = [];
 
-    for (let i = 1; i < slopes.length - 1; i++) {
-      normalizedSlopes.push(slopes[i]);
-      let doNormalize = false;
-
-      if (slopes[i].slope >= 0) {
-        //doNormalize = true;
-      }
-
-      // slopes are negative, verify it diminishes
-      if (slopes[i].slope <= slopes[i - 1].slope && slopes[i - 1].slope !== 0) {
-        //doNormalize = true;
-      }
-
-      if (doNormalize) {
-        normalizedSlopes[i].slope = slopes[i - 1].slope + 0.1;
+    for (let i = 4; i < points.length - 4; i++) {
+      if (
+        (points[i - 3].y + points[i - 2].y + points[i - 1].y) / 3 >
+          points[i].y &&
+        points[points.length - 1].y - points[i].y + 10 >
+          points[0].y - points[i].y &&
+        (points[i + 3].y + points[i + 2].y + points[i + 1].y) / 3 > points[i].y
+      ) {
+        peakCandiaites.push(i);
       }
     }
 
-    normalizedSlopes.push(slopes[slopes.length - 1]);
-
-    return normalizedSlopes;
-  }
-
-  function getNormalizedConcaveSlopes(
-    slopes: PointWithSlope[],
-  ): PointWithSlope[] {
-    const normalizedSlopes: PointWithSlope[] = [];
-
-    normalizedSlopes.push(slopes[0]);
-
-    for (let i = 1; i < slopes.length - 1; i++) {
-      normalizedSlopes.push(slopes[i]);
-      let doNormalize = false;
-
-      if (slopes[i].slope >= 0) {
-        //doNormalize = true;
-      }
-
-      // slopes are negative, verify it increases
-      if (slopes[i].slope >= slopes[i - 1].slope && slopes[i - 1].slope !== 0) {
-        //doNormalize = true;
-      }
-
-      if (doNormalize) {
-        normalizedSlopes[i].slope = slopes[i - 1].slope - 0.1;
-      }
+    if (peakCandiaites.length > 1) {
+      return getIndexOfLowestY(peakCandiaites, points);
     }
 
-    normalizedSlopes.push(slopes[slopes.length - 1]);
+    return null;
+  }
 
-    return normalizedSlopes;
+  /// TODO: change that to get avergae x of similiar points
+  function getIndexOfLowestY(pointsIndex: number[], points: Point[]): number {
+    return pointsIndex.reduce(
+      (maxIndex, index) =>
+        points[index].y < points[maxIndex].y ? index : maxIndex,
+      0,
+    );
   }
 
   function getControlPointIndex(
     normalizedPointsWithSlope: PointWithSlope[],
   ): number {
+    const peakIndex = findPeakPoint(normalizedPointsWithSlope);
+
+    if (peakIndex) {
+      document.getElementById("controlPoint")!.setAttribute("fill", "red");
+      return peakIndex;
+    }
+    document.getElementById("controlPoint")!.setAttribute("fill", "black");
+
     let controlPointIndex: number = Math.round(
       normalizedPointsWithSlope.length / 2,
     );
@@ -178,20 +149,20 @@ export default function curveHelper() {
     let minSumWeightedStd = 0;
     for (let i = 2; i < slopes.length - 2; i++) {
       const stdSlopes1 = getStdDev(slopes.slice(0, i));
-      console.debug(`stdSlopes1:` + stdSlopes1);
+      //console.debug(`stdSlopes1:` + stdSlopes1);
 
       const stdSlopes2 = getStdDev(slopes.slice(i, slopes.length - 1));
-      console.debug(`stdSlopes2:` + stdSlopes2);
+      //console.debug(`stdSlopes2:` + stdSlopes2);
 
       const sumWeightedStd =
         (stdSlopes1 * i + stdSlopes2 * (slopes.length - i)) / slopes.length;
-      console.debug(`sumWeightedStd:` + sumWeightedStd);
+      //console.debug(`sumWeightedStd:` + sumWeightedStd);
 
       if (minSumWeightedStd === 0 || minSumWeightedStd > sumWeightedStd) {
         minSumWeightedStd = sumWeightedStd;
         controlPointIndex = i;
-        console.debug(`minSumWeightedStd:` + minSumWeightedStd);
-        console.debug(`controlPointIndex:` + controlPointIndex);
+        //console.debug(`minSumWeightedStd:` + minSumWeightedStd);
+        //console.debug(`controlPointIndex:` + controlPointIndex);
       }
     }
     return controlPointIndex;
@@ -212,7 +183,27 @@ export default function curveHelper() {
       }
       prevPoint = { x: point.x, y: point.y };
     }
+
+    setSlopesMoviongAverage(slopes);
+
     return slopes;
+  }
+
+  function setSlopesMoviongAverage(slopes: PointWithSlope[]) {
+    const windowSize = 3;
+    for (let i = 0; i < slopes.length; i++) {
+      let sum = 0;
+      let count = 0;
+      for (
+        let j = Math.max(0, i - windowSize);
+        j <= Math.min(slopes.length - 1, i + windowSize);
+        j++
+      ) {
+        sum += slopes[j].slope;
+        count++;
+      }
+      slopes[i].slope = sum / count;
+    }
   }
 
   function getStdDev(arr: number[]) {
@@ -238,31 +229,6 @@ export default function curveHelper() {
     return false;
   }
 
-  function secondDeraviateIsPositive(xPos: number, yPos: number): boolean {
-    const prevPrevPoint = visitedPoints[visitedPoints.length - 2];
-    const prevPoint = visitedPoints[visitedPoints.length - 1];
-
-    const prevFirstDeraviate =
-      (prevPrevPoint.y - prevPoint.y) / (prevPoint.x - prevPrevPoint.x);
-
-    const currentFirstDeraviate = (prevPoint.y - yPos) / (xPos - prevPoint.x);
-
-    console.debug(
-      `ppdy: ${prevPrevPoint.y - prevPoint.y},
-      ppdx:${prevPoint.x - prevPrevPoint.x}`,
-    );
-
-    console.debug(`
-      pdy: ${prevPoint.y - yPos},
-      pdx:${xPos - prevPoint.x}`);
-
-    console.debug(
-      `prevFirstDeraviate: ${prevFirstDeraviate},currentFirstDeraviate:${currentFirstDeraviate}`,
-    );
-
-    return currentFirstDeraviate >= prevFirstDeraviate;
-  }
-
   function setCurvePoints(
     curveType: CurveType,
     xPos: number,
@@ -281,32 +247,9 @@ export default function curveHelper() {
     }
 
     if (visitedPoints.length > 0 && !xIsGrowingOrEqual(xPos)) {
-      console.debug("x is not growing");
+      //      console.debug("x is not growing");
       return false;
     }
-
-    //if (visitedPoints.length > 0 && !yIsGrowingOrEqual(yPos)) {
-    //  console.debug("y is not growing");
-    //  return false;
-    //}
-
-    // if (
-    //   visitedPoints.length > 1 &&
-    //   curveType === "CONCAVE" &&
-    //   !secondDeraviateIsPositive(xPos, yPos)
-    // ) {
-    //   //console.debug("concave second deraviate is not positive");
-    //   //return false;
-    // }
-
-    // if (
-    //   visitedPoints.length > 1 &&
-    //   curveType === "CONVEX" &&
-    //   secondDeraviateIsPositive(xPos, yPos)
-    // ) {
-    //   //console.debug("convex second deraviate is positive");
-    //   //return false;
-    // }
 
     //console.debug("point added:" + visitedPoints.length);
     visitedPoints.push({ x: xPos, y: yPos });
@@ -314,7 +257,6 @@ export default function curveHelper() {
     return true;
   }
 
-  ///TODO: support elliptic curves
   function setCurveAttributes(
     curveType: CurveType,
     xPos: number,
@@ -329,25 +271,18 @@ export default function curveHelper() {
 
     const slopes = getSlopes(points);
 
-    const normalizedSlopes =
-      curveType === "CONCAVE"
-        ? getNormalizedConcaveSlopes(slopes)
-        : getNormalizedConvexSlopes(slopes);
-
-    let controlPointIndex = getControlPointIndex(normalizedSlopes);
+    let controlPointIndex = getControlPointIndex(slopes);
 
     const theta =
       Math.atan2(yPos - curveAttributes!.p1y, xPos - curveAttributes!.p1x) -
       Math.PI / 2; // calculate rciprocal to curve
-    const turningPoint = normalizedSlopes[controlPointIndex];
+    const turningPoint = slopes[controlPointIndex];
 
     let distanceFromCurve = calculateDistance(
-      normalizedSlopes,
+      slopes,
       controlPointIndex,
       curveType,
     );
-
-    //distanceFromCurve += 50;
 
     curveAttributes!.cpx = turningPoint.x + distanceFromCurve * Math.cos(theta);
     curveAttributes!.cpy = turningPoint.y + distanceFromCurve * Math.cos(theta);
@@ -371,13 +306,12 @@ export default function curveHelper() {
 
   function removePointsToTheRightOfX(xPos: number) {
     visitedPoints = visitedPoints.filter((p) => p.x <= xPos);
-    console.debug(visitedPoints);
+    //console.debug(visitedPoints);
   }
 
   function getCurveAttributes() {
     return curveAttributes;
   }
-
 
   function getVisitedPoints() {
     return visitedPoints;
@@ -390,4 +324,3 @@ export default function curveHelper() {
     getVisitedPoints,
   };
 }
-
