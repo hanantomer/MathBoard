@@ -37,7 +37,7 @@
   </v-container>
 </template>
 <script setup lang="ts">
-import NewItemDialog from "./NewItemDialog.vue";
+import NewItemDialog from "./NewBoardItemDialog.vue";
 import { formatDate } from "../../../math-common/src/globals";
 import { LessonAttributes } from "../../../math-common/src/lessonTypes";
 import { useUserStore } from "../store/pinia/userStore";

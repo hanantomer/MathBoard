@@ -88,7 +88,7 @@ const route = useRoute();
 let loginForm = ref();
 let loginFailed = false;
 let show = ref(false);
-let valid = true;
+let valid = ref<boolean>(false);
 
 let password = ref<string>();
 let email = ref<string>();
@@ -156,7 +156,6 @@ async function validateLogin() {
 
   show.value = false;
 }
-
 </script>
 <style>
 .alerttext input {

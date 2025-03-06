@@ -9,12 +9,20 @@ const bus = ref(new Map<String, any>());
 export default function () {
   function emit(event: BusEventType, e: any) {
     const key = editModeStore.getEditMode() + "_" + event;
-    bus.value.set(key, e);
+    try {
+      bus.value.set(key, e);
+    } catch (err) {
+      console.error(err);
+    }
   }
 
   function get(editMode: EditMode, eventType: BusEventType): any {
-    const res: any = bus.value.get(editMode + "_" + eventType);
-    return res;
+    try {
+      const res: any = bus.value.get(editMode + "_" + eventType);
+      return res;
+    } catch (err) {
+      console.error(err);
+    }
   }
 
   function remove(eventType: BusEventType, editMode: EditMode) {

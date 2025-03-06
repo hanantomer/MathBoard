@@ -252,9 +252,9 @@ const route = useRoute();
 
 const authHelper = useAuthHelper();
 let registerForm = ref(null);
-let acceptedTerms = ref(false);
+let acceptedTerms = ref<boolean>(false);
 let show = ref(false);
-let valid = ref(false);
+let valid = ref<boolean>(false);
 let firstName = ref("");
 let lastName = ref("");
 let email = ref("");

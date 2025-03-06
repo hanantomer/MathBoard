@@ -29,7 +29,7 @@ import { NotationType, SelectionMoveDirection } from "common/unions";
 import { DotCoordinates, RectNotationAttributes } from "common/baseTypes";
 import useEventBusHelper from "../helpers/eventBusHelper";
 import useWatchHelper from "../helpers/watchHelper";
-import { watch } from "fs";
+
 
 type HorizontalDirection = "RIGHT" | "LEFT" | "NONE";
 type VerticalDirection = "UP" | "BOTTOM" | "NONE";

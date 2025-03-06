@@ -5,8 +5,10 @@ import { useEditModeStore } from "../store/pinia/editModeStore";
 const cellStore = useCellStore();
 const editModeStore = useEditModeStore();
 
-const MIN_NUMBER_OF_POINTS = 3;
+const MIN_NUMBER_OF_POINTS = 6;
 const MOUSE_MOVE_THROTTELING_INTERVAL = 2;
+
+const visitedPointPrefix = "visitedPoint";
 
 type Point = {
   x: number;
@@ -41,6 +43,8 @@ export default function curveHelper() {
   }
 
   function startCurveDrawing(e: MouseEvent) {
+    removeVisiblePoints();
+
     initCurve();
 
     const x = e.pageX - cellStore.getSvgBoundingRect().x;
@@ -56,116 +60,32 @@ export default function curveHelper() {
   }
 
   function calculateDistance(
-    normalizedSlopes: PointWithSlope[],
-    controlPointIndex: number,
+    leftPoint: Point,
+    centerPoint: Point,
+    rightPoint: Point,
     curveType: String,
   ): number {
-    const coeficient = curveType === "CONCAVE" ? -1 : 1;
+    const coefficient = curveType === "CONCAVE" ? -1 : 1;
 
-    if (controlPointIndex === 0) {
-      return 0;
-    }
-
-    if (normalizedSlopes.length <= 3) {
-      return 0;
-    }
-
-    const avgSlopeUpToControlPoint =
-      normalizedSlopes
-        .slice(0, controlPointIndex + 1)
-        .map((p) => p.slope)
-        .reduce((a, b) => a + b) /
-        controlPointIndex +
-      1;
-
-    const avgSlopeFromControlPoint =
-      normalizedSlopes
-        .slice(controlPointIndex + 1, normalizedSlopes.length)
-        .map((p) => p.slope)
-        .reduce((a, b) => a + b) /
-        controlPointIndex +
-      1;
-
-    const slopeChange = Math.abs(
-      avgSlopeFromControlPoint - avgSlopeUpToControlPoint,
+    const ac = Math.sqrt(
+      Math.pow(centerPoint.x - leftPoint.x, 2) +
+        Math.pow(centerPoint.y - leftPoint.y, 2),
     );
 
-    return slopeChange * coeficient * 10;
-  }
-
-  function findPeakPoint(points: Point[]): number | null {
-    if (points.length < 8) return null;
-
-    const peakCandiaites = [];
-
-    for (let i = 4; i < points.length - 4; i++) {
-      if (
-        (points[i - 3].y + points[i - 2].y + points[i - 1].y) / 3 >
-          points[i].y &&
-        points[points.length - 1].y - points[i].y + 10 >
-          points[0].y - points[i].y &&
-        (points[i + 3].y + points[i + 2].y + points[i + 1].y) / 3 > points[i].y
-      ) {
-        peakCandiaites.push(i);
-      }
-    }
-
-    if (peakCandiaites.length > 1) {
-      return getIndexOfLowestY(peakCandiaites, points);
-    }
-
-    return null;
-  }
-
-  /// TODO: change that to get avergae x of similiar points
-  function getIndexOfLowestY(pointsIndex: number[], points: Point[]): number {
-    return pointsIndex.reduce(
-      (maxIndex, index) =>
-        points[index].y < points[maxIndex].y ? index : maxIndex,
-      0,
-    );
-  }
-
-  function getControlPointIndex(
-    normalizedPointsWithSlope: PointWithSlope[],
-  ): number {
-    const peakIndex = findPeakPoint(normalizedPointsWithSlope);
-
-    if (peakIndex) {
-      document.getElementById("controlPoint")!.setAttribute("fill", "red");
-      return peakIndex;
-    }
-    document.getElementById("controlPoint")!.setAttribute("fill", "black");
-
-    let controlPointIndex: number = Math.round(
-      normalizedPointsWithSlope.length / 2,
+    const bc = Math.sqrt(
+      Math.pow(centerPoint.x - rightPoint.x, 2) +
+        Math.pow(centerPoint.y - rightPoint.y, 2),
     );
 
-    if (normalizedPointsWithSlope.length < MIN_NUMBER_OF_POINTS)
-      return controlPointIndex;
+    const ab = Math.sqrt(
+      Math.pow(leftPoint.x - rightPoint.x, 2) +
+        Math.pow(leftPoint.y - rightPoint.y, 2),
+    );
 
-    const slopes = normalizedPointsWithSlope.map((p) => p.slope);
+    const cosineGama =
+      (Math.pow(ac, 2) + Math.pow(bc, 2) - Math.pow(ab, 2)) / (2 * ac * bc);
 
-    let minSumWeightedStd = 0;
-    for (let i = 2; i < slopes.length - 2; i++) {
-      const stdSlopes1 = getStdDev(slopes.slice(0, i));
-      //console.debug(`stdSlopes1:` + stdSlopes1);
-
-      const stdSlopes2 = getStdDev(slopes.slice(i, slopes.length - 1));
-      //console.debug(`stdSlopes2:` + stdSlopes2);
-
-      const sumWeightedStd =
-        (stdSlopes1 * i + stdSlopes2 * (slopes.length - i)) / slopes.length;
-      //console.debug(`sumWeightedStd:` + sumWeightedStd);
-
-      if (minSumWeightedStd === 0 || minSumWeightedStd > sumWeightedStd) {
-        minSumWeightedStd = sumWeightedStd;
-        controlPointIndex = i;
-        //console.debug(`minSumWeightedStd:` + minSumWeightedStd);
-        //console.debug(`controlPointIndex:` + controlPointIndex);
-      }
-    }
-    return controlPointIndex;
+    return (1 - cosineGama * -1) * 550 * coefficient;
   }
 
   function getSlopes(points: Point[]): PointWithSlope[] {
@@ -184,12 +104,12 @@ export default function curveHelper() {
       prevPoint = { x: point.x, y: point.y };
     }
 
-    setSlopesMoviongAverage(slopes);
+    setSlopesMovingAverage(slopes);
 
     return slopes;
   }
 
-  function setSlopesMoviongAverage(slopes: PointWithSlope[]) {
+  function setSlopesMovingAverage(slopes: PointWithSlope[]) {
     const windowSize = 3;
     for (let i = 0; i < slopes.length; i++) {
       let sum = 0;
@@ -263,29 +183,39 @@ export default function curveHelper() {
     yPos: number,
   ) {
     if (visitedPoints.length < MIN_NUMBER_OF_POINTS) {
-      //console.debug("min number of points not reached");
       return;
     }
 
-    const points = visitedPoints; //getNormalizedPoints(visitedPoints);
+    const points = getSlopes(visitedPoints);
 
-    const slopes = getSlopes(points);
+    if (points.length < MIN_NUMBER_OF_POINTS) {
+      return;
+    }
 
-    let controlPointIndex = getControlPointIndex(slopes);
+    //https://stackoverflow.com/questions/49274176/how-to-create-a-curved-svg-path-between-two-points
 
     const theta =
       Math.atan2(yPos - curveAttributes!.p1y, xPos - curveAttributes!.p1x) -
       Math.PI / 2; // calculate rciprocal to curve
-    const turningPoint = slopes[controlPointIndex];
+
+    const leftPoint = points[0];
+
+    const centerPoint = points[Math.round(points.length / 2)];
+
+    const rightPoint = points[points.length - 1];
 
     let distanceFromCurve = calculateDistance(
-      slopes,
-      controlPointIndex,
+      leftPoint,
+      centerPoint,
+      rightPoint,
       curveType,
     );
 
-    curveAttributes!.cpx = turningPoint.x + distanceFromCurve * Math.cos(theta);
-    curveAttributes!.cpy = turningPoint.y + distanceFromCurve * Math.cos(theta);
+    curveAttributes!.cpx =
+      centerPoint.x + Math.round(Math.cos(theta) * distanceFromCurve);
+    curveAttributes!.cpy =
+      centerPoint.y + Math.round(Math.sin(theta) * distanceFromCurve);
+
     curveAttributes!.p2x = xPos;
     curveAttributes!.p2y = yPos;
   }
@@ -301,12 +231,13 @@ export default function curveHelper() {
 
     setCurveAttributes(curveType, xPos, yPos);
 
+    addVisiblePoint(xPos, yPos);
+
     return curveAttributes!;
   }
 
   function removePointsToTheRightOfX(xPos: number) {
     visitedPoints = visitedPoints.filter((p) => p.x <= xPos);
-    //console.debug(visitedPoints);
   }
 
   function getCurveAttributes() {
@@ -315,6 +246,37 @@ export default function curveHelper() {
 
   function getVisitedPoints() {
     return visitedPoints;
+  }
+
+  function removeVisiblePoints() {
+    const visitedPointsCircleElements = document.querySelectorAll(
+      `[id^=${visitedPointPrefix}]`,
+    );
+    visitedPointsCircleElements.forEach((vp) => vp.parentNode?.removeChild(vp));
+  }
+
+  function addVisiblePoint(xPos: number, yPos: number) {
+    let svgns = "http://www.w3.org/2000/svg";
+    let svgContainer = document.getElementById("curveSvgId")!;
+    //    let visitedPoints = curveHelper.getVisitedPoints();
+
+    //for (let i = 0; i < visitedPoints.length; i++) {
+    const id = visitedPointPrefix + xPos + yPos;
+    let circle = document.createElementNS(svgns, "circle");
+    circle.setAttribute("id", id);
+    //circle.setAttributeNS(null, "cx", visitedPoints[i].x.toString());
+    //circle.setAttributeNS(null, "cy", visitedPoints[i].y.toString());
+    circle.setAttributeNS(null, "cx", xPos.toString());
+    circle.setAttributeNS(null, "cy", yPos.toString());
+
+    circle.setAttributeNS(null, "r", "3");
+    circle.setAttributeNS(
+      null,
+      "style",
+      "fill: none; stroke: blue; stroke-width: 1px;",
+    );
+    svgContainer.appendChild(circle);
+    //}
   }
 
   return {

@@ -1,43 +1,31 @@
 <template>
   <v-row class="fill-height">
     <v-col cols="12">
-      <mathBoard :svgId="svgId" :loaded="loaded">
-        <template #title
-          ><p class="title">{{ answerTitle }}</p></template
-        >
-      </mathBoard>
+      <mathBoard :svgId="svgId" :loaded="loaded"> </mathBoard>
     </v-col>
   </v-row>
 </template>
 
 <script setup lang="ts">
 import mathBoard from "./MathBoard.vue";
-import { computed, ref } from "vue";
+import { ref } from "vue";
 import { useUserStore } from "../store/pinia/userStore";
 import { useAnswerStore } from "../store/pinia/answerStore";
 import { watch } from "vue";
 import { useRoute } from "vue-router";
 import { useNotationStore } from "../store/pinia/notationStore";
 import { useEditModeStore } from "../store/pinia/editModeStore";
+import { useTitleStore } from "../store/pinia/titleStore";
 
 const route = useRoute();
 const userStore = useUserStore();
 const answerStore = useAnswerStore();
-const notationStore = useNotationStore();
 const editModeStore = useEditModeStore();
+const titleStore = useTitleStore();
+const notationStore = useNotationStore();
 
 let loaded = ref(false);
 const svgId = "answerSvg";
-
-let answerTitle = computed(() => {
-  return userStore.isTeacher()
-    ? `Lesson: ${
-        answerStore.getCurrentAnswer()?.question.lesson.name
-      }, Question:  ${answerStore.getCurrentAnswer()?.question
-        .name}, Student: ${answerStore.getCurrentAnswer()?.user
-        ?.firstName} ${answerStore.getCurrentAnswer()?.user?.lastName}`
-    : answerStore.getCurrentAnswer()?.question.name;
-});
 
 watch(
   route,
@@ -60,8 +48,19 @@ async function loadAnswer(answerUUId: string) {
 
   answerStore.setCurrentAnswer(answerUUId);
 
+  const answerTitle = userStore.isTeacher()
+    ? `Lesson: ${answerStore.getCurrentAnswer()?.question.lesson
+        .name}, Question:  ${answerStore.getCurrentAnswer()?.question
+        .name}, Student: ${answerStore.getCurrentAnswer()?.user
+        ?.firstName} ${answerStore.getCurrentAnswer()?.user?.lastName}`
+    : answerStore.getCurrentAnswer()?.question.name;
+
+  titleStore.setTitle(answerTitle!);
+
   notationStore.setParent(answerUUId, "ANSWER");
 
   loaded.value = true; // signal child
+
+
 }
 </script>

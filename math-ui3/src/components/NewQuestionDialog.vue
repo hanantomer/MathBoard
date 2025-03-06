@@ -94,7 +94,7 @@ const selectedLesson = computed({
 async function save() {
   const { valid, errors } = await (newQuestionForm.value as any).validate();
   if (valid) {
-    show.value = false;
+    //    show.value = false;
     eventBus.emit("EV_QUESTION_SAVED", name.value);
   }
 }

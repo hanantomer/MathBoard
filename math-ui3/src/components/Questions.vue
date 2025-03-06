@@ -104,8 +104,9 @@ watch(
 );
 
 watch(
-  () => eventBus.get("SYMBOL", "EV_QUESTION_SAVED"),
+  () => eventBus.get("QUESTIONS_SELECTION", "EV_QUESTION_SAVED"),
   (questionName: string) => {
+    closeQuestionDialog;
     addQuestion(questionName);
   },
 );
@@ -179,6 +180,10 @@ async function loadQuestions() {
 
 function openQuestionDialog() {
   questionDialog.value = true;
+}
+
+function closeQuestionDialog() {
+  questionDialog.value = false;
 }
 
 async function addQuestion(name: string) {

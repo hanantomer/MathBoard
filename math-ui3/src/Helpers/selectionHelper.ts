@@ -15,6 +15,7 @@ import usescreenHelper from "./screenHelper";
 import useNotationMutateHelper from "./notationMutateHelper";
 import useUserOutgoingOperationsHelper from "./userOutgoingOperationsHelper";
 import useEventBus from "./eventBusHelper";
+import useAuthorizationHelper from "./authorizationHelper";
 
 const eventBus = useEventBus();
 const cellStore = useCellStore();
@@ -22,8 +23,9 @@ const notationMutateHelper = useNotationMutateHelper();
 const screenHelper = usescreenHelper();
 const userOutgoingOperationsHelper = useUserOutgoingOperationsHelper();
 const lessonStore = useLessonStore();
-const editModeStore = useEditModeStore();
 const notationStore = useNotationStore();
+const authorizationHelper = useAuthorizationHelper();
+const editModeStore = useEditModeStore();
 
 export default function selectionHelper() {
   function selectNotationsOfArea(rectCoordinates: RectCoordinates) {
@@ -185,6 +187,8 @@ export default function selectionHelper() {
 
     if (!clickedCell) return;
 
+    if (!authorizationHelper.canEdit()) return;
+
     cellStore.setSelectedCell(clickedCell!, true);
 
     //if (!editModeStore.isCheckMode()) {
@@ -192,7 +196,7 @@ export default function selectionHelper() {
     //}
 
     if (notationStore.getParent().type == "LESSON") {
-      let t = await userOutgoingOperationsHelper.syncOutgoingSelectedCell(
+      await userOutgoingOperationsHelper.syncOutgoingSelectedCell(
         clickedCell,
         lessonStore.getCurrentLesson()!.uuid,
       );

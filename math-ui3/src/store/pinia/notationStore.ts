@@ -250,8 +250,7 @@ export const useNotationStore = defineStore("notation", () => {
   }
 
   function setParent(parentUUID: string, boardType: BoardType) {
-    parent.value.uuid = parentUUID;
-    parent.value.type = boardType;
+    parent.value = { uuid: parentUUID, type: boardType };
   }
 
   function resetSelectedNotations() {
@@ -302,7 +301,7 @@ export const useNotationStore = defineStore("notation", () => {
     ] as Set<String>;
 
     if (lineNotationsUUIDs) {
-      Array.from(lineNotationsUUIDs.values()).forEach((ln : any) => {
+      Array.from(lineNotationsUUIDs.values()).forEach((ln: any) => {
         notationsAtCell.push(notations.value.get(ln) as NotationAttributes);
       });
     }

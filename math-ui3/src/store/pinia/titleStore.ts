@@ -8,8 +8,8 @@ export const useTitleStore = defineStore("title", () => {
     return title.value;
   }
 
-  function setTitle(t: string) {
-    title.value = t;
+  function setTitle(newTitle: string) {
+    title.value = newTitle;
   }
 
   return {

@@ -82,13 +82,32 @@ const editModeStore = useEditModeStore();
 
 let showAccessLinkDialog = ref(false);
 
-const answerCheckMode = computed(() => {
-  return notationStore.getParent().type == "ANSWER" && userStore.isTeacher();
-});
+const answerCheckMode = ref(false);
+
+watch(
+  () => notationStore.getParent().type,
+  (type) => {
+    answerCheckMode.value = type == "ANSWER" && userStore.isTeacher();
+  },
+  { immediate: true, deep: true },
+);
+
+watch(
+  () => userStore.getCurrentUser(),
+  () => {
+    answerCheckMode.value =
+      notationStore.getParent().type == "ANSWER" && userStore.isTeacher();
+  },
+  { immediate: true, deep: true },
+);
+
+// const answerCheckMode = computed(() => {
+//   return notationStore.getParent().type == "ANSWER" && userStore.isTeacher();
+// });
 
 const modeButtons: Array<{
   name: string;
-  show_condition: boolean;
+  show_condition: any;
   editMode: EditMode;
   activeState: any;
   tooltip: string;
@@ -198,7 +217,7 @@ const modeButtons: Array<{
   },
   {
     name: "checkmark",
-    show_condition: answerCheckMode.value,
+    show_condition: answerCheckMode,
     editMode: "CHECKMARK_STARTED",
     activeState: ref(1),
     tooltip: "correct",
@@ -209,7 +228,7 @@ const modeButtons: Array<{
   },
   {
     name: "xmark",
-    show_condition: answerCheckMode.value,
+    show_condition: answerCheckMode,
     editMode: "XMARK_STARTED",
     activeState: ref(1),
     tooltip: "incorrect",
@@ -220,7 +239,7 @@ const modeButtons: Array<{
   },
   {
     name: "semicheckmark",
-    show_condition: answerCheckMode.value,
+    show_condition: answerCheckMode,
     editMode: "SEMICHECKMARK_STARTED",
     activeState: ref(1),
     tooltip: "partially correct",

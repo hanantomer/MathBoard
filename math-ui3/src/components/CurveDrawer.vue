@@ -99,6 +99,7 @@ function curveSelected(curve: CurveNotationAttributes) {
 }
 
 function setCurve(e: MouseEvent) {
+  if (e.buttons !== 1) return;
   const xPos = e.pageX - cellStore.getSvgBoundingRect().x;
   const yPos = e.pageY - cellStore.getSvgBoundingRect().y;
 
@@ -116,7 +117,7 @@ function setCurve(e: MouseEvent) {
   showControlPoint(curveAttributes);
 
   // temporarly show points map
-  showPoints();
+  //showPoints();
 }
 
 function showControlPoint(curveAttributes: CurveAttributes) {
@@ -141,33 +142,6 @@ function setCurveElement(curveAttributes: CurveAttributes) {
     curveAttributes.p2y;
 
   document.getElementById("curve")!.setAttribute("d", curve);
-}
-
-function showPoints() {
-  const visitedPointPrefix = "visitedPoint";
-  const visitedPointsCircleElements = document.querySelectorAll(
-    `[id^=${visitedPointPrefix}]`,
-  );
-  visitedPointsCircleElements.forEach((vp) => vp.parentNode?.removeChild(vp));
-
-  let svgns = "http://www.w3.org/2000/svg";
-  let svgContainer = document.getElementById("curveSvgId")!;
-  let visitedPoints = curveHelper.getVisitedPoints();
-
-  for (let i = 0; i < visitedPoints.length; i++) {
-    const id = visitedPointPrefix + i;
-    let circle = document.createElementNS(svgns, "circle");
-    circle.setAttribute("id", id);
-    circle.setAttributeNS(null, "cx", visitedPoints[i].x.toString());
-    circle.setAttributeNS(null, "cy", visitedPoints[i].y.toString());
-    circle.setAttributeNS(null, "r", "3");
-    circle.setAttributeNS(
-      null,
-      "style",
-      "fill: none; stroke: blue; stroke-width: 1px;",
-    );
-    svgContainer.appendChild(circle);
-  }
 }
 
 function endDrawCurve() {
@@ -217,6 +191,7 @@ function saveCurve(curevAttributes: CurveAttributes) {
 function endCurveDrawing() {
   editModeStore.setDefaultEditMode();
 }
+
 </script>
 
 <style>
