@@ -21,11 +21,9 @@ import {
 import { BoardType } from "common/unions";
 import { ref } from "vue";
 import useNotationCellOccupationHelper from "../../helpers/notationCellOccupationHelper";
-import useMatrixCellHelper from "../../helpers/matrixCellHelper";
 import { useCellStore } from "../../store/pinia/cellStore";
 
 const notationCellOccupationHelper = useNotationCellOccupationHelper();
-const matrixCellHelper = useMatrixCellHelper();
 
 export const useNotationStore = defineStore("notation", () => {
   // cell can occupy one point only
@@ -40,7 +38,7 @@ export const useNotationStore = defineStore("notation", () => {
   let cellLineNotationOccupationMatrix: Set<String>[][] =
     createCellMultipleNotationOccupationMatrix();
 
-  let parent = ref<Board>({ uuid: "", type: "LESSON" });
+  const parent = ref<Board>({ uuid: "", type: "LESSON" });
 
   let notations = ref(<Map<String, NotationAttributes>>new Map());
 
@@ -182,30 +180,6 @@ export const useNotationStore = defineStore("notation", () => {
           true,
         );
         break;
-      // case "HORIZONTALLINE":
-      //   notationCellOccupationHelper.updateHorizontalLineOccupationMatrix(
-      //     cellLineNotationOccupationMatrix,
-      //     notations.value.get(uuid)! as HorizontalLineNotationAttributes,
-      //     uuid,
-      //     true,
-      //   );
-      //   break;
-      // case "VERTICALLINE":
-      //   notationCellOccupationHelper.updateVerticalLineOccupationMatrix(
-      //     cellLineNotationOccupationMatrix,
-      //     notations.value.get(uuid)! as VerticalLineNotationAttributes,
-      //     true,
-      //   );
-      //   break;
-      // case "SLOPELINE":
-      //   notationCellOccupationHelper.updateSlopeLineOccupationMatrix(
-      //     cellLineNotationOccupationMatrix,
-      //     notations.value.get(uuid)! as SlopeLineNotationAttributes,
-      //     uuid,
-      //     true,
-      //   );
-      //   break;
-
       case "CONVEXCURVE":
       case "CONCAVECURVE":
         notationCellOccupationHelper.updateCurveOccupationMatrix(

@@ -71,6 +71,12 @@ const symbolButtons: Array<{
     tooltip: "Delta",
   },
   {
+    value: "&Theta;",
+    activeState: ref(1),
+    tooltip: "Theta",
+  },
+
+  {
     value: "&pi;",
     activeState: ref(1),
     tooltip: "Pi",
@@ -104,6 +110,11 @@ const symbolButtons: Array<{
     value: "&le;",
     activeState: ref(1),
     tooltip: "Lessr than or equal",
+  },
+  {
+    value: "&infin;",
+    activeState: ref(1),
+    tooltip: "Infinity",
   },
 );
 

@@ -27,7 +27,6 @@
       {{ item.tooltip }}
       <template v-slot:activator="{ props }">
         <v-btn
-          v-show="item.show_condition"
           :data-cy="item.name"
           v-bind="props"
           icon
@@ -59,12 +58,53 @@
         </v-btn>
       </template>
     </v-tooltip>
+    <v-tooltip
+      v-for="item in answerChekButtons"
+      :key="item.name"
+      v-if="answerCheckMode"
+    >
+      {{ item.tooltip }}
+      <template v-slot:activator="{ props }">
+        <v-btn
+          :data-cy="item.name"
+          v-bind="props"
+          icon
+          x-small
+          fab
+          dark
+          :color="item.activeState.value === 1 ? 'white' : 'green'"
+          v-on:click="startEditMode(item)"
+          :disabled="!editEnabled"
+        >
+          <v-icon
+            v-if="item.icon_class"
+            :style="{ transform: 'rotate(' + item.rotate + 'deg)' }"
+            ><span :class="item.icon_class">{{ item.icon }}</span></v-icon
+          >
+          <v-icon
+            v-if="item.overlay_icon"
+            :icon="item.overlay_icon"
+            style="position: absolute; left: 12px; top: 12px"
+          >
+          </v-icon>
+
+          <v-icon
+            v-if="!item.icon_class"
+            :style="{ transform: 'rotate(' + item.rotate + 'deg)' }"
+            :icon="item.icon"
+          >
+          </v-icon>
+        </v-btn>
+      </template>
+    </v-tooltip>
+
     <ColororizeTool></ColororizeTool>
   </v-toolbar>
 </template>
 
 <script setup lang="ts">
 import { watch, ref } from "vue";
+import { storeToRefs } from "pinia";
 import accessLinkDialog from "./AccessLinkDialog.vue";
 
 import { useNotationStore } from "../store/pinia/notationStore";
@@ -79,7 +119,6 @@ const authorizationHelper = useAuthorizationHelper();
 const notationStore = useNotationStore();
 const userStore = useUserStore();
 const editModeStore = useEditModeStore();
-
 let showAccessLinkDialog = ref(false);
 
 const answerCheckMode = ref(false);
@@ -92,18 +131,14 @@ watch(
   { immediate: true, deep: true },
 );
 
-watch(
-  () => userStore.getCurrentUser(),
-  () => {
-    answerCheckMode.value =
-      notationStore.getParent().type == "ANSWER" && userStore.isTeacher();
-  },
-  { immediate: true, deep: true },
-);
-
-// const answerCheckMode = computed(() => {
-//   return notationStore.getParent().type == "ANSWER" && userStore.isTeacher();
-// });
+// watch(
+//   () => userStore.getCurrentUser(),
+//   () => {
+//     answerCheckMode.value =
+//       notationStore.getParent().type == "ANSWER" && userStore.isTeacher();
+//   },
+//   { immediate: true, deep: true },
+// );
 
 const modeButtons: Array<{
   name: string;
@@ -215,9 +250,21 @@ const modeButtons: Array<{
     overlay_icon: "",
     rotate: 0,
   },
+);
+
+const answerChekButtons: Array<{
+  name: string;
+  editMode: EditMode;
+  activeState: any;
+  tooltip: string;
+  icon_class: string; // using span with class when we dont have adequate icon
+  icon: string;
+  overlay_icon: string;
+  rotate: number;
+}> = Array(
   {
     name: "checkmark",
-    show_condition: answerCheckMode,
+    show_condition: answerCheckMode.value,
     editMode: "CHECKMARK_STARTED",
     activeState: ref(1),
     tooltip: "correct",
@@ -228,7 +275,7 @@ const modeButtons: Array<{
   },
   {
     name: "xmark",
-    show_condition: answerCheckMode,
+    show_condition: answerCheckMode.value,
     editMode: "XMARK_STARTED",
     activeState: ref(1),
     tooltip: "incorrect",
@@ -239,7 +286,7 @@ const modeButtons: Array<{
   },
   {
     name: "semicheckmark",
-    show_condition: answerCheckMode,
+    show_condition: answerCheckMode.value,
     editMode: "SEMICHECKMARK_STARTED",
     activeState: ref(1),
     tooltip: "partially correct",
