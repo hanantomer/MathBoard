@@ -40,8 +40,7 @@ const editModeStore = useEditModeStore();
 const cellStore = useCellStore();
 
 const show = computed(() => {
-  return true;
-  //editModeStore.isCurveDrawingMode() || editModeStore.isCurveSelectedMode()
+  editModeStore.isCurveDrawingMode() || editModeStore.isCurveSelectedMode();
 });
 
 const curveType = computed(() => {
@@ -191,7 +190,6 @@ function saveCurve(curevAttributes: CurveAttributes) {
 function endCurveDrawing() {
   editModeStore.setDefaultEditMode();
 }
-
 </script>
 
 <style>

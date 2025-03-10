@@ -32,8 +32,11 @@ export default function useHtmlMatrixHelper() {
     return "lightyellow";
   }
 
-  function regularFontSize() {
-    return `${cellStore.getCellVerticalHeight() / 25}em`;
+  function regularFontSize(value: string) {
+    if (value.indexOf("infin") >= 0) {
+      return `${cellStore.getCellVerticalHeight() / 50}em`;
+    }
+    return `${cellStore.getCellVerticalHeight() / 30}em`;
   }
 
   function textFontSize(el: HTMLElement): string {
@@ -137,7 +140,7 @@ export default function useHtmlMatrixHelper() {
         return height(n);
       })
       .style("font-size", (n: NotationAttributes) => {
-        return fontSize(n, el);
+        return fontSize(n as PointNotationAttributes, el);
       })
       .html((n: NotationAttributes) => {
         return html(n);
@@ -273,12 +276,12 @@ export default function useHtmlMatrixHelper() {
     );
   }
 
-  function fontSize(n: NotationAttributes, el: HTMLElement) {
+  function fontSize(n: PointNotationAttributes, el: HTMLElement) {
     return n.notationType === "TEXT"
       ? textFontSize(el)
       : n.notationType === "SIGN"
       ? signFontSize()
-      : regularFontSize;
+      : regularFontSize(n.value);
   }
 
   function html(n: NotationAttributes) {

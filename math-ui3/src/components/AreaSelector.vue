@@ -22,14 +22,13 @@ import { computed, ref } from "vue";
 import { useEditModeStore } from "../store/pinia/editModeStore";
 import { useCellStore } from "../store/pinia/cellStore";
 import { useNotationStore } from "../store/pinia/notationStore";
-
-import useNotationMutateHelper from "../helpers/notationMutateHelper";
-import useSelectionHelper from "../helpers/selectionHelper";
 import { NotationType, SelectionMoveDirection } from "common/unions";
 import { DotCoordinates, RectNotationAttributes } from "common/baseTypes";
+import useNotationMutateHelper from "../helpers/notationMutateHelper";
+import useSelectionHelper from "../helpers/selectionHelper";
 import useEventBusHelper from "../helpers/eventBusHelper";
 import useWatchHelper from "../helpers/watchHelper";
-
+import UseAuthorizationHelper from "../helpers/authorizationHelper";
 
 type HorizontalDirection = "RIGHT" | "LEFT" | "NONE";
 type VerticalDirection = "UP" | "BOTTOM" | "NONE";
@@ -41,8 +40,9 @@ const watchHelper = useWatchHelper();
 const eventBus = useEventBusHelper();
 const editModeStore = useEditModeStore();
 const cellStore = useCellStore();
-const notationStore = useNotationStore();
 const notationMutationHelper = useNotationMutateHelper();
+const authorizationHelper = UseAuthorizationHelper();
+const notationStore = useNotationStore();
 const selectionHelper = useSelectionHelper();
 
 let lineTypes: Array<NotationType> = [
@@ -178,6 +178,8 @@ function cancelTextSelectionWhenUserClickedOutside() {
 
 function startAreaSelection(e: MouseEvent) {
   if (e.buttons !== 1) return;
+
+  if (!authorizationHelper.canEdit()) return;
 
   horizontalDirection = "NONE";
   verticalDirection = "NONE";

@@ -25,6 +25,7 @@ import { EditMode } from "../../../math-common/src/unions";
 import useNotationMutateHelper from "../helpers/notationMutateHelper";
 import usescreenHelper from "../helpers/screenHelper";
 import useWatchHelper from "../helpers/watchHelper";
+import { update } from "cypress/types/lodash";
 const notationMutateHelper = useNotationMutateHelper();
 const watchHelper = useWatchHelper();
 
@@ -39,7 +40,8 @@ const show = computed(() => editModeStore.getEditMode() === "TEXT_WRITING");
 const selectedNotation = computed(() =>
   notationStore.getSelectedNotations()?.length == 0
     ? null
-    : (notationStore.getSelectedNotations().at(0) as RectNotationAttributes));
+    : (notationStore.getSelectedNotations().at(0) as RectNotationAttributes),
+);
 
 //let selectedNotation: RectNotationAttributes | null = null;
 let textLeft = ref(0);
@@ -70,7 +72,6 @@ watchHelper.watchCustomEvent(
   startTextEditing,
 );
 
-
 watchHelper.watchMouseEvent(
   ["TEXT_SELECTED"],
   "EV_SVG_MOUSEDOWN",
@@ -96,11 +97,32 @@ function editSelectedTextNotation(e: MouseEvent) {
   setTimeout(() => {
     textEl.focus();
   }, 0);
+
+  //  observeTextSize(textEl);
+}
+
+function observeTextSize(textEl: HTMLTextAreaElement) {
+  textEl.onmouseup = () => {
+    const selectionPosition = {
+      left: textLeft.value,
+      top: textTop.value,
+      width: textWidth.value,
+      height: textHeight.value,
+    };
+    startTextEditing(selectionPosition);
+  };
+
+  new ResizeObserver(updateTextSize).observe(textEl);
+}
+
+function updateTextSize(entries: ResizeObserverEntry[]) {
+  const entry = entries[0];
+  textWidth.value = entry.contentRect.width;
+  textHeight.value = entry.contentRect.height;
 }
 
 // set text area dimensions upon notation selection
 function setInitialTextDimensions() {
-
   if (!selectedNotation.value) return;
 
   textLeft.value =
@@ -128,7 +150,6 @@ function setInitialTextValue() {
     textValue.value = selectedNotation.value.value;
   }
 }
-
 
 function submitText(newEditMode: EditMode, oldEditMode: any) {
   if (newEditMode === "TEXT_WRITING" || oldEditMode !== "TEXT_WRITING") {
@@ -164,11 +185,12 @@ function submitText(newEditMode: EditMode, oldEditMode: any) {
   });
 
   if (selectedNotation.value && rectCoordinates) {
-    selectedNotation.value!.value = textValue.value;
-    Object.assign(selectedNotation, rectCoordinates);
+    const updatedNotation = selectedNotation.value;
+    updatedNotation.value = textValue.value;
+    Object.assign(updatedNotation, rectCoordinates);
 
-    notationMutateHelper.updateNotation(selectedNotation.value);
-    restoreTextNotation(selectedNotation.value!.uuid);
+    notationMutateHelper.updateNotation(updatedNotation);
+    restoreTextNotation(updatedNotation.uuid);
   } else {
     notationMutateHelper.addTextNotation(textValue.value, rectCoordinates);
   }

@@ -98,13 +98,12 @@
       </template>
     </v-tooltip>
 
-    <ColororizeTool></ColororizeTool>
+    <ColororizeTool v-if="userStore.isTeacher()"></ColororizeTool>
   </v-toolbar>
 </template>
 
 <script setup lang="ts">
 import { watch, ref } from "vue";
-import { storeToRefs } from "pinia";
 import accessLinkDialog from "./AccessLinkDialog.vue";
 
 import { useNotationStore } from "../store/pinia/notationStore";
@@ -130,15 +129,6 @@ watch(
   },
   { immediate: true, deep: true },
 );
-
-// watch(
-//   () => userStore.getCurrentUser(),
-//   () => {
-//     answerCheckMode.value =
-//       notationStore.getParent().type == "ANSWER" && userStore.isTeacher();
-//   },
-//   { immediate: true, deep: true },
-// );
 
 const modeButtons: Array<{
   name: string;

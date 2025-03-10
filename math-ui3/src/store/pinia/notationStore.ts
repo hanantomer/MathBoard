@@ -65,7 +65,8 @@ export const useNotationStore = defineStore("notation", () => {
           selected: true,
         },
       );
-      addNotation(newNotation);
+
+      addNotation(newNotation, false);
     });
   }
 
@@ -140,16 +141,18 @@ export const useNotationStore = defineStore("notation", () => {
     return notations.value.get(uuid);
   }
 
-  function addNotation(notation: NotationAttributes) {
+  function addNotation(notation: NotationAttributes, doUpdateOccupationMatrix = true) {
     notation.boardType = parent.value.type;
     notations.value.set(notation.uuid, notation);
 
-    updateOccupationMatrix(
-      notation,
-      cellPointNotationOccupationMatrix,
-      cellLineNotationOccupationMatrix,
-      cellRectNotationOccupationMatrix,
-    );
+    if (doUpdateOccupationMatrix) {
+      updateOccupationMatrix(
+        notation,
+        cellPointNotationOccupationMatrix,
+        cellLineNotationOccupationMatrix,
+        cellRectNotationOccupationMatrix,
+      );
+    }
   }
 
   function addCopiedNotation(notation: NotationAttributes) {
@@ -436,14 +439,6 @@ export const useNotationStore = defineStore("notation", () => {
     cellRectNotationOccupationMatrix: (String | null)[][],
   ) {
     switch (notation.notationType) {
-      // case "SQRT":
-      //   notationCellOccupationHelper.updateMultiCellOccupationMatrix(
-      //     cellPointNotationOccupationMatrix,
-      //     notation as unknown as MultiCellAttributes,
-      //     notation.uuid,
-      //     false,
-      //   );
-      //   break;
       case "EXPONENT":
       case "ANNOTATION":
       case "SIGN":
@@ -455,32 +450,6 @@ export const useNotationStore = defineStore("notation", () => {
           false,
         );
         break;
-
-      // case "HORIZONTALLINE":
-      //   notationCellOccupationHelper.updateHorizontalLineOccupationMatrix(
-      //     cellLineNotationOccupationMatrix,
-      //     notation as unknown as HorizontalLineAttributes,
-      //     notation.uuid,
-      //     false,
-      //   );
-      //   break;
-
-      // case "VERTICALLINE":
-      //   notationCellOccupationHelper.updateVerticalLineOccupationMatrix(
-      //     cellLineNotationOccupationMatrix,
-      //     notation as VerticalLineNotationAttributes,
-      //     false,
-      //   );
-      //   break;
-
-      // case "SLOPELINE":
-      //   notationCellOccupationHelper.updateSlopeLineOccupationMatrix(
-      //     cellLineNotationOccupationMatrix,
-      //     notation as SlopeLineNotationAttributes,
-      //     notation.uuid,
-      //     false,
-      //   );
-      //   break;
 
       case "TEXT":
       case "IMAGE":

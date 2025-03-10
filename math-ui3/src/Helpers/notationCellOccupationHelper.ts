@@ -220,6 +220,7 @@ export default function notationCellOccupationHelper() {
   }
 
   function clearNotationFromMatrix(uuid: string, matrix: any) {
+    //if (uuid.startsWith("_")) return; // don not remove cloned notations, see cloneSelectedNotations in notationStore
     for (let col = 0; col < matrixDimensions.colsNum; col++) {
       for (let row = 0; row < matrixDimensions.rowsNum; row++) {
         if (matrix[col][row] === uuid) {

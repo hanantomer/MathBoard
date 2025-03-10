@@ -333,7 +333,7 @@ export default function notationMutateHelper() {
     deltaY: number,
     deltaCol: number,
     deltaRow: number,
-    keepOriginal: boolean,
+    keepOriginal: boolean, // in case moving with ctrl key pressed
   ): boolean {
     //if (!canMoveSelectedNotations(deltaCol, deltaRow)) return false;
 
