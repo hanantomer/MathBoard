@@ -33,7 +33,7 @@ export default function useHtmlMatrixHelper() {
   }
 
   function regularFontSize(value: string) {
-    if (value.indexOf("infin") >= 0) {
+    if (value?.indexOf("infin") >= 0) {
       return `${cellStore.getCellVerticalHeight() / 50}em`;
     }
     return `${cellStore.getCellVerticalHeight() / 30}em`;

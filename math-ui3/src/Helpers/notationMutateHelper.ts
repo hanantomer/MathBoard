@@ -409,7 +409,7 @@ export default function notationMutateHelper() {
           break;
         }
       }
-      notationStore.addNotation(n);
+      notationStore.addNotation(n, true);
     });
     return true;
   }
@@ -423,7 +423,7 @@ export default function notationMutateHelper() {
     notationStore
       .getSelectedNotations()
       .forEach(async (n: NotationAttributes) => {
-        notationStore.addNotation(n);
+        notationStore.addNotation(n, true);
         userOutgoingOperations.syncOutgoingUpdateNotation(n);
       });
   }
@@ -471,13 +471,13 @@ export default function notationMutateHelper() {
   ) {
     transposeHorizontalCoordinatesIfNeeded(lineNotation);
     await dbHelper.updateHorizontalLineNotationAttributes(lineNotation);
-    notationStore.addNotation(lineNotation);
+    notationStore.addNotation(lineNotation, true);
   }
 
   async function updateSqrtNotation(sqrtNotation: SqrtNotationAttributes) {
     transposeSqrtCoordinatesIfNeeded(sqrtNotation);
     await dbHelper.updateSqrtNotationAttributes(sqrtNotation);
-    notationStore.addNotation(sqrtNotation);
+    notationStore.addNotation(sqrtNotation, true);
   }
 
   async function updateVerticalLineNotation(
@@ -485,19 +485,19 @@ export default function notationMutateHelper() {
   ) {
     transposeVerticalCoordinatesIfNeeded(lineNotation);
     await dbHelper.updateVerticalLineNotationAttributes(lineNotation);
-    notationStore.addNotation(lineNotation);
+    notationStore.addNotation(lineNotation, true);
   }
 
   async function updateSlopeLineNotation(
     lineNotation: SlopeLineNotationAttributes,
   ) {
     await dbHelper.updateSlopeLineNotationAttributes(lineNotation);
-    notationStore.addNotation(lineNotation);
+    notationStore.addNotation(lineNotation, true);
   }
 
   async function updateCurveNotation(curve: CurveNotationAttributes) {
     await dbHelper.updateCurveNotationAttributes(curve);
-    notationStore.addNotation(curve);
+    notationStore.addNotation(curve, true);
   }
 
   function addPointNotation(notation: PointNotationCreationAttributes) {
@@ -608,7 +608,7 @@ export default function notationMutateHelper() {
 
     dbHelper.updateNotationValue(existingNotation);
 
-    notationStore.addNotation(existingNotation);
+    notationStore.addNotation(existingNotation, true);
 
     userOutgoingOperations.syncOutgoingUpdateNotation(existingNotation);
   }
@@ -616,7 +616,7 @@ export default function notationMutateHelper() {
   function addNotation(notation: NotationCreationAttributes) {
     dbHelper.addNotation(notation).then((newNotation) => {
       newNotation.notationType = notation.notationType;
-      notationStore.addNotation(newNotation);
+      notationStore.addNotation(newNotation, true);
 
       // sync to other participants
       if (notationStore.getParent().type === "LESSON") {
@@ -1062,7 +1062,7 @@ export default function notationMutateHelper() {
   }
 
   async function updateNotation(notation: NotationAttributes) {
-    notationStore.addNotation(notation);
+    notationStore.addNotation(notation, true);
     await dbHelper.updateNotation(notation);
     userOutgoingOperations.syncOutgoingUpdateNotation(notation);
   }

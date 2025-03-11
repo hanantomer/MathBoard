@@ -14,7 +14,7 @@
         stroke-linecap="round"
         fill="transparent"
       ></path>
-      <circle id="controlPoint" cx="0" cy="0" r="4"></circle>
+      <circle v-if="false"  id="controlPoint" cx="0" cy="0" r="4"></circle>
     </svg>
   </div>
 </template>
@@ -40,7 +40,7 @@ const editModeStore = useEditModeStore();
 const cellStore = useCellStore();
 
 const show = computed(() => {
-  editModeStore.isCurveDrawingMode() || editModeStore.isCurveSelectedMode();
+  return editModeStore.isCurveDrawingMode() || editModeStore.isCurveSelectedMode();
 });
 
 const curveType = computed(() => {
@@ -114,9 +114,6 @@ function setCurve(e: MouseEvent) {
 
   // temporarly show control point
   showControlPoint(curveAttributes);
-
-  // temporarly show points map
-  //showPoints();
 }
 
 function showControlPoint(curveAttributes: CurveAttributes) {

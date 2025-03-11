@@ -41,7 +41,7 @@ export default function userIncomingOperations() {
       .service("notationSync")
       .on("created", (notation: NotationAttributes) => {
         if (!isRelevant(notation)) return;
-        notationStore.addNotation(notation);
+        notationStore.addNotation(notation, true);
       });
 
     // sync updated notations
@@ -49,7 +49,7 @@ export default function userIncomingOperations() {
       .service("notationSync")
       .on("updated", (notation: NotationAttributes) => {
         if (!isRelevant(notation)) return;
-        notationStore.addNotation(notation);
+        notationStore.addNotation(notation, true);
       });
 
     // sync removed notations

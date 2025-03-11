@@ -126,34 +126,12 @@ export default function curveHelper() {
     }
   }
 
-  function getStdDev(arr: number[]) {
-    const mean = arr.reduce((acc, val) => acc + val, 0) / arr.length;
-    return Math.sqrt(
-      arr
-        .reduce(
-          (acc: number[], val: number) => acc.concat((val - mean) ** 2),
-          [],
-        )
-        .reduce((acc: number, val: number) => acc + val, 0) / arr.length,
-    );
-  }
-
   function xIsGrowingOrEqual(xPos: number): boolean {
     if (xPos > visitedPoints[visitedPoints.length - 1].x) return true;
     return false;
   }
 
-  function yIsGrowingOrEqual(yPos: number): boolean {
-    // y axis is flipped
-    if (yPos <= visitedPoints[visitedPoints.length - 1].y) return true;
-    return false;
-  }
-
-  function setCurvePoints(
-    curveType: CurveType,
-    xPos: number,
-    yPos: number,
-  ): boolean {
+  function setCurvePoints(xPos: number, yPos: number): boolean {
     // nothing done yet
     if (curveAttributes!.p1x === 0 && curveAttributes!.p1y === 0) {
       console.debug("not initialized");
@@ -227,7 +205,7 @@ export default function curveHelper() {
   ): CurveAttributes {
     removePointsToTheRightOfX(xPos);
 
-    setCurvePoints(curveType, xPos, yPos);
+    setCurvePoints(xPos, yPos);
 
     setCurveAttributes(curveType, xPos, yPos);
 
@@ -256,6 +234,7 @@ export default function curveHelper() {
   }
 
   function addVisiblePoint(xPos: number, yPos: number) {
+    return;
     let svgns = "http://www.w3.org/2000/svg";
     let svgContainer = document.getElementById("curveSvgId")!;
     //    let visitedPoints = curveHelper.getVisitedPoints();

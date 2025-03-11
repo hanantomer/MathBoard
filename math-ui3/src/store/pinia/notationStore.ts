@@ -126,7 +126,7 @@ export const useNotationStore = defineStore("notation", () => {
 
   function setNotations(newNotations: NotationAttributes[]) {
     newNotations.forEach((n) => {
-      addNotation(n);
+      addNotation(n, true);
     });
   }
 
@@ -141,7 +141,10 @@ export const useNotationStore = defineStore("notation", () => {
     return notations.value.get(uuid);
   }
 
-  function addNotation(notation: NotationAttributes, doUpdateOccupationMatrix = true) {
+  function addNotation(
+    notation: NotationAttributes,
+    doUpdateOccupationMatrix: boolean,
+  ) {
     notation.boardType = parent.value.type;
     notations.value.set(notation.uuid, notation);
 
