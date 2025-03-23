@@ -108,8 +108,7 @@ export default function useMatrixHelperUtils() {
       case "SQRTSYMBOL":
       case "SYMBOL":
         return n.selected ? selectionColor : htmlColor;
-      case "CONCAVECURVE":
-      case "CONVEXCURVE":
+      case "CURVE":
       case "HORIZONTALLINE":
       case "SLOPELINE":
       case "VERTICALLINE":

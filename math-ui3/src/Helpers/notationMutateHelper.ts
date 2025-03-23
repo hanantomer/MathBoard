@@ -382,8 +382,7 @@ export default function notationMutateHelper() {
           break;
         }
 
-        case "CONVEXCURVE":
-        case "CONCAVECURVE": {
+        case "CURVE": {
           (n as CurveNotationAttributes).p1x += deltaX;
           (n as CurveNotationAttributes).p2x += deltaX;
           (n as CurveNotationAttributes).p1y += deltaY;
@@ -1015,8 +1014,7 @@ export default function notationMutateHelper() {
       case "VERTICALLINE":
       case "SLOPELINE":
         return upsertLineNotation(clonedNotation);
-      case "CONCAVECURVE":
-      case "CONVEXCURVE":
+      case "CURVE":
         return upsertCurveNotation(clonedNotation);
       case "ANNOTATION":
       case "SIGN":

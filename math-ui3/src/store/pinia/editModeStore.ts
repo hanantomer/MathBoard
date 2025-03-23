@@ -16,6 +16,10 @@ export const useEditModeStore = defineStore("editMode", () => {
     );
   }
 
+  function isResizeMode() {
+    return editMode.value === "RESIZE_STARTED" || editMode.value === "RESIZING";
+  }
+
   function isAreaSelectedMode() {
     return editMode.value === "AREA_SELECTED";
   }
@@ -86,22 +90,8 @@ export const useEditModeStore = defineStore("editMode", () => {
     );
   }
 
-  function isConcaveCurveMode() {
-    return (
-      editMode.value === "CONCAVE_CURVE_STARTED" ||
-      editMode.value === "CONCAVE_CURVE_DRAWING"
-    );
-  }
-
-  function isConvexCurveMode() {
-    return (
-      editMode.value === "CONVEX_CURVE_STARTED" ||
-      editMode.value === "CONVEX_CURVE_DRAWING"
-    );
-  }
-
   function isCurveMode() {
-    return isConvexCurveMode() || isConcaveCurveMode();
+    return editMode.value === "CURVE_DRAWING";
   }
 
   function isDefaultEditMode() {
@@ -147,10 +137,7 @@ export const useEditModeStore = defineStore("editMode", () => {
   }
 
   function isCurveStartedMode() {
-    return (
-      editMode.value === "CONVEX_CURVE_STARTED" ||
-      editMode.value === "CONCAVE_CURVE_STARTED"
-    );
+    return editMode.value === "CURVE_STARTED";
   }
 
   function isSqrtStartedMode() {
@@ -177,10 +164,7 @@ export const useEditModeStore = defineStore("editMode", () => {
   }
 
   function isCurveDrawingMode() {
-    return (
-      editMode.value === "CONCAVE_CURVE_DRAWING" ||
-      editMode.value === "CONVEX_CURVE_DRAWING"
-    );
+    return editMode.value === "CURVE_DRAWING";
   }
 
   function isHorizontalLineSelectedMode() {
@@ -196,10 +180,7 @@ export const useEditModeStore = defineStore("editMode", () => {
   }
 
   function isCurveSelectedMode() {
-    return (
-      editMode.value === "CONVEX_CURVE_SELECTED" ||
-      editMode.value === "CONCAVE_CURVE_SELECTED"
-    );
+    return editMode.value === "CURVE_SELECTED";
   }
 
   function isTextStartedMode() {
@@ -297,16 +278,10 @@ export const useEditModeStore = defineStore("editMode", () => {
       case "SLOPE_LINE_STARTED":
         return setEditMode("SLOPE_LINE_DRAWING");
 
-      case "CONCAVE_CURVE_STARTED":
-        return setEditMode("CONCAVE_CURVE_DRAWING");
-      case "CONCAVE_CURVE_SELECTED":
-        return setEditMode("CONCAVE_CURVE_DRAWING");
-
-      case "CONVEX_CURVE_STARTED":
-        return setEditMode("CONVEX_CURVE_DRAWING");
-      case "CONVEX_CURVE_SELECTED":
-        return setEditMode("CONVEX_CURVE_DRAWING");
-
+      case "CURVE_STARTED":
+        return setEditMode("CURVE_DRAWING");
+      case "CURVE_SELECTED":
+        return setEditMode("CURVE_DRAWING");
       case "SQRT_STARTED":
         return setEditMode("SQRT_DRAWING");
       case "SQRT_SELECTED":
@@ -316,6 +291,10 @@ export const useEditModeStore = defineStore("editMode", () => {
         return setEditMode("AREA_SELECTED");
       case "AREA_SELECTED":
         return setEditMode("AREA_MOVING");
+
+      case "RESIZING":
+        return setEditMode("RESIZE_STARTED");
+
       default:
         return setDefaultEditMode();
     }
@@ -336,8 +315,6 @@ export const useEditModeStore = defineStore("editMode", () => {
     isExponentWritingMode,
     isSelectionMode,
     isLineMode,
-    isConcaveCurveMode,
-    isConvexCurveMode,
     isCurveMode,
     isHorizontalLineMode,
     isHorizontalLineSelectedMode,
@@ -373,6 +350,7 @@ export const useEditModeStore = defineStore("editMode", () => {
     isAnnotationStartedMode,
     isAnnotationSelectedMode,
     isCheckMode,
+    isResizeMode,
     isSelectFromListMode,
     setEditMode,
     setNextEditMode,

@@ -98,7 +98,7 @@ watchHelper.watchMouseEvent(
   "EV_MOUSEUP",
   () => {
     setTimeout(() => {
-      if (editModeStore.getEditMode() !== props.endSelectionEntry.editMode[0]/*only one even is being listned to*/)
+      if (editModeStore.getEditMode() !== props.endSelectionEntry.editMode[0]/*only one event is being listned to*/)
         lineDrawer.resetDrawing();
     }, 0);
   },

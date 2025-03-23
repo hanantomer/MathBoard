@@ -3,20 +3,20 @@ import {
 } from "sequelize-typescript";
 import User from "../../user.model";
 import Color from "../../color.model";
-import Answer from "../../answer/answer.model";
-import AnswerDecorator from "../../answer/answerDecorator";
+import Answer from "../answer.model";
+import AnswerDecorator from "../answerDecorator";
 import {
     AnswerCurveAttributes,
     AnswerCurveCreationAttributes,
 } from "../../../../../math-common/src/answerTypes";
 import { BoardType, NotationType } from "../../../../../math-common/src/unions";
 
-@AnswerDecorator("AnswerConvexCurve")
-export default class AnswerConvexCurve extends Model<
+@AnswerDecorator("AnswerCurve")
+export default class AnswerCurve extends Model<
     AnswerCurveAttributes,
     AnswerCurveCreationAttributes
 > {
-    notationType: NotationType = "CONVEXCURVE";
+    notationType: NotationType = "CURVE";
     boardType: BoardType = "ANSWER";
 
     @AllowNull(false)

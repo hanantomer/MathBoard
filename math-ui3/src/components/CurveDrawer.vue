@@ -1,9 +1,63 @@
 <template>
+  <lineWatcher
+    :startEntry="{
+      editMode: 'CURVE_STARTED',
+      func: startCurveDrawing,
+    }"
+    :drawEntry="{
+      editMode: 'CURVE_DRAWING',
+      func: setCurve,
+    }"
+    :editEntryFirstHandle="{
+      editMode: 'CURVE_EDITING_LEFT',
+      func: setCurveLeft,
+    }"
+    :editEntrySecondHandle="{
+      editMode: 'CURVE_EDITING_RIGHT',
+      func: setCurveRight,
+    }"
+    :endEntry="{
+      editMode: [
+        'CURVE_DRAWING',
+        'CURVE_EDITING_RIGHT',
+        'CURVE_EDITING_LEFT',
+        'CURVE_SELECTED',
+      ],
+      func: endDrawCurve,
+    }"
+    :selectEntry="{
+      editMode: 'CURVE_SELECTED',
+      func: selectCurve,
+      event: 'EV_CURVE_SELECTED',
+    }"
+    :endSelectionEntry="{
+      editMode: ['CURVE_SELECTED'],
+    }"
+  ></lineWatcher>
+
   <div v-show="show">
+    <line-handle
+      drawing-mode="CURVE_DRAWING"
+      editing-mode="CURVE_EDITING_LEFT"
+      v-bind:style="{
+        left: handleX1 + 'px',
+        top: handleY1 + 'px',
+      }"
+    ></line-handle>
+    <line-handle
+      drawing-mode="CURVE_DRAWING"
+      editing-mode="CURVE_EDITING_RIGHT"
+      v-bind:style="{
+        left: handleX2 + 'px',
+        top: handleY2 + 'px',
+      }"
+    ></line-handle>
+
     <svg
       id="curveSvgId"
       height="800"
       width="1500"
+      class="line-svg"
       xmlns="http://www.w3.org/2000/svg"
       style="position: absolute; pointer-events: none"
     >
@@ -14,153 +68,207 @@
         stroke-linecap="round"
         fill="transparent"
       ></path>
-      <circle v-if="false"  id="controlPoint" cx="0" cy="0" r="4"></circle>
+      <circle id="controlPoint" cx="0" cy="0" r="4"></circle>
     </svg>
   </div>
 </template>
 <script setup lang="ts">
+import lineHandle from "./LineHandle.vue";
+import lineWatcher from "./LineWatcher.vue";
 import useNotationMutateHelper from "../helpers/notationMutateHelper";
-import useCurveHelper from "../helpers/curveHelper";
-
-import { computed } from "vue";
+import { computed, ref } from "vue";
 import { useNotationStore } from "../store/pinia/notationStore";
 import { useEditModeStore } from "../store/pinia/editModeStore";
-import { useCellStore } from "../store/pinia/cellStore";
 import {
   CurveAttributes,
+  NotationAttributes,
   CurveNotationAttributes,
+  DotCoordinates,
 } from "../../../math-common/src/baseTypes";
-import useWatchHelper from "../helpers/watchHelper";
 
-const watchHelper = useWatchHelper();
+const MIN_NUMBER_OF_POINTS = 6;
+const MOUSE_MOVE_THROTTELING_INTERVAL = 2;
+
 const notationMutateHelper = useNotationMutateHelper();
-const curveHelper = useCurveHelper();
 const notationStore = useNotationStore();
 const editModeStore = useEditModeStore();
+const visitedPointPrefix = "visitedPoint";
+
+type Point = {
+  x: number;
+  y: number;
+};
+
+type PointWithSlope = {
+  x: number;
+  y: number;
+  slope: number;
+};
+
+type CurveType = "CONCAVE" | "CONVEX" | undefined;
+
+let curveType: CurveType = undefined;
+
+let visitedPoints: Point[] = [];
+
+let mouseMoveCount = 0;
+
+const curveAttributes = ref<CurveAttributes>({
+  p1x: 0,
+  p1y: 0,
+  p2x: 0,
+  p2y: 0,
+  cpx: 0,
+  cpy: 0,
+});
+
+import { useCellStore } from "../store/pinia/cellStore";
+
 const cellStore = useCellStore();
 
+const handleX1 = computed(() => {
+  return curveAttributes.value.p1x + cellStore.getSvgBoundingRect().left;
+});
+
+const handleY1 = computed(() => {
+  return curveAttributes.value.p1y + cellStore.getSvgBoundingRect().top;
+});
+
+const handleX2 = computed(() => {
+  return curveAttributes.value.p2x + cellStore.getSvgBoundingRect().left;
+});
+
+const handleY2 = computed(() => {
+  return curveAttributes.value.p2y + cellStore.getSvgBoundingRect().top;
+});
+
 const show = computed(() => {
-  return editModeStore.isCurveDrawingMode() || editModeStore.isCurveSelectedMode();
+  return (
+    editModeStore.isCurveDrawingMode() || editModeStore.isCurveSelectedMode()
+  );
 });
 
-const curveType = computed(() => {
-  return editModeStore.isConcaveCurveMode() ? "CONCAVE" : "CONVEX";
-});
+function getCurveType() {
+  const slopes = getSlopes(visitedPoints);
 
-watchHelper.watchMouseEvent(
-  ["CONVEX_CURVE_STARTED", "CONCAVE_CURVE_STARTED"],
-  "EV_SVG_MOUSEDOWN",
-  curveHelper.startCurveDrawing,
-);
+  console.debug("slopes:" + JSON.stringify(slopes));
 
-watchHelper.watchMouseEvent(
-  ["CONCAVE_CURVE_DRAWING", "CONVEX_CURVE_DRAWING"],
-  "EV_SVG_MOUSEMOVE",
-  setCurve,
-);
+  if (slopes.length < 2) {
+    return undefined;
+  }
 
-watchHelper.watchMouseEvent(
-  ["CONCAVE_CURVE_DRAWING", "CONVEX_CURVE_DRAWING"],
-  "EV_SVG_MOUSEUP",
-  endDrawCurve,
-);
+  const curveType =
+    slopes[0].slope < slopes[slopes.length - 1].slope ? "CONCAVE" : "CONVEX";
 
-// emmited by selection helper
+  console.debug("curveType:" + curveType);
 
-watchHelper.watchNotationSelection(
-  ["CONCAVE_CURVE_SELECTED"],
-  "EV_CONCAVE_CURVE_SELECTED",
-  curveSelected,
-);
+  return curveType;
+}
 
-watchHelper.watchNotationSelection(
-  ["CONVEX_CURVE_SELECTED"],
-  "EV_CONVEX_CURVE_SELECTED",
-  curveSelected,
-);
+function initCurve() {
+  curveType = undefined;
+  visitedPoints = [];
+  curveAttributes.value = {
+    p1x: 0,
+    p1y: 0,
+    p2x: 0,
+    p2y: 0,
+    cpx: 0,
+    cpy: 0,
+  };
+}
 
-watchHelper.watchMouseEvent(
-  ["CONCAVE_CURVE_SELECTED", "CONVEX_CURVE_SELECTED"],
-  "EV_SVG_MOUSEDOWN",
-  endCurveDrawing,
-);
+function setCurveLeft(p: DotCoordinates) {
+  curveAttributes.value.p1x = p.x;
+  curveAttributes.value.p1y = p.y;
+}
 
-watchHelper.watchMouseEvent(
-  ["CONVEX_CURVE_SELECTED", "CONCAVE_CURVE_SELECTED"],
-  "EV_SVG_MOUSEUP",
-  () => editModeStore.setDefaultEditMode(),
-);
+function setCurveRight(p: DotCoordinates) {
+  curveAttributes.value.p2x = p.x;
+  curveAttributes.value.p2y = p.y;
+}
 
-// event handlers
+function startCurveDrawing(p: DotCoordinates) {
+  removeVisiblePoints();
 
-function curveSelected(curve: CurveNotationAttributes) {
+  initCurve();
+
+  visitedPoints = [];
+  mouseMoveCount = 0;
+  if (curveAttributes) {
+    curveAttributes.value.p1x =
+      curveAttributes.value.p2x =
+      curveAttributes.value.cpx =
+        p.x;
+    curveAttributes.value.p1y =
+      curveAttributes.value.p2y =
+      curveAttributes.value.cpy =
+        p.y;
+  }
+}
+
+function selectCurve(curve: NotationAttributes) {
   notationStore.selectNotation(curve.uuid);
 }
 
-function setCurve(e: MouseEvent) {
-  if (e.buttons !== 1) return;
-  const xPos = e.pageX - cellStore.getSvgBoundingRect().x;
-  const yPos = e.pageY - cellStore.getSvgBoundingRect().y;
+function setCurve(p: DotCoordinates) {
+  if (!curveType || curveType === undefined) {
+    curveType = getCurveType();
+  }
 
-  const curveAttributes: CurveAttributes = curveHelper.updateCurve(
-    curveType.value,
-    xPos,
-    yPos,
-  );
+  updateCurve(curveType, p.x, p.y);
 
   if (!curveAttributes) return;
 
-  setCurveElement(curveAttributes);
+  setCurveElement();
 
   // temporarly show control point
-  showControlPoint(curveAttributes);
+  showControlPoint();
 }
 
-function showControlPoint(curveAttributes: CurveAttributes) {
+function showControlPoint() {
   var c1 = document.getElementById("controlPoint");
-  c1!.setAttribute("cx", curveAttributes.cpx.toString());
-  c1!.setAttribute("cy", curveAttributes.cpy.toString());
+  c1!.setAttribute("cx", curveAttributes.value.cpx.toString());
+  c1!.setAttribute("cy", curveAttributes.value.cpy.toString());
 }
 
-function setCurveElement(curveAttributes: CurveAttributes) {
+function setCurveElement() {
   var curve =
     "M" +
-    curveAttributes.p1x +
+    curveAttributes.value.p1x +
     " " +
-    curveAttributes.p1y +
+    curveAttributes.value.p1y +
     " Q " +
-    curveAttributes.cpx +
+    curveAttributes.value.cpx +
     " " +
-    curveAttributes.cpy +
+    curveAttributes.value.cpy +
     " " +
-    curveAttributes.p2x +
+    curveAttributes.value.p2x +
     " " +
-    curveAttributes.p2y;
+    curveAttributes.value.p2y;
 
   document.getElementById("curve")!.setAttribute("d", curve);
 }
 
 function endDrawCurve() {
-  const curveAttributes: CurveAttributes = curveHelper.getCurveAttributes()!;
-
   // drawing not started
-  if (curveAttributes.p1x === 0) {
+  if (curveAttributes.value.p1x === 0) {
     return;
   }
 
   if (
-    curveAttributes.p1x === curveAttributes.p2x &&
-    curveAttributes.p1y === curveAttributes.p2y
+    curveAttributes.value.p1x === curveAttributes.value.p2x &&
+    curveAttributes.value.p1y === curveAttributes.value.p2y
   )
     return;
 
   saveCurve({
-    p1x: curveAttributes.p1x,
-    p2x: curveAttributes.p2x,
-    p1y: curveAttributes.p1y,
-    p2y: curveAttributes.p2y,
-    cpx: curveAttributes.cpx,
-    cpy: curveAttributes.cpy,
+    p1x: curveAttributes.value.p1x,
+    p2x: curveAttributes.value.p2x,
+    p1y: curveAttributes.value.p1y,
+    p2y: curveAttributes.value.p2y,
+    cpx: curveAttributes.value.cpx,
+    cpy: curveAttributes.value.cpy,
   });
 
   editModeStore.setDefaultEditMode();
@@ -184,32 +292,196 @@ function saveCurve(curevAttributes: CurveAttributes) {
   }
 }
 
-function endCurveDrawing() {
-  editModeStore.setDefaultEditMode();
+function calculateDistance(
+  leftPoint: Point,
+  centerPoint: Point,
+  rightPoint: Point,
+  curveType: String,
+): number {
+  const coefficient = curveType === "CONCAVE" ? -1 : 1;
+
+  const ac = Math.sqrt(
+    Math.pow(centerPoint.x - leftPoint.x, 2) +
+      Math.pow(centerPoint.y - leftPoint.y, 2),
+  );
+
+  const bc = Math.sqrt(
+    Math.pow(centerPoint.x - rightPoint.x, 2) +
+      Math.pow(centerPoint.y - rightPoint.y, 2),
+  );
+
+  const ab = Math.sqrt(
+    Math.pow(leftPoint.x - rightPoint.x, 2) +
+      Math.pow(leftPoint.y - rightPoint.y, 2),
+  );
+
+  const cosineGama =
+    (Math.pow(ac, 2) + Math.pow(bc, 2) - Math.pow(ab, 2)) / (2 * ac * bc);
+
+  return (1 - cosineGama * -1) * 550 * coefficient;
+}
+
+function getSlopes(points: Point[]): PointWithSlope[] {
+  const slopes: PointWithSlope[] = [];
+  let prevPoint = { x: 0, y: 0 };
+  for (let point of points) {
+    if (prevPoint.x != 0) {
+      //      slopes.push({ x: point.x, y: point.y, slope: 0 });
+      //    } else {
+      slopes.push({
+        x: point.x,
+        y: point.y,
+        slope: (prevPoint.y - point.y) / (point.x - prevPoint.x),
+      });
+    }
+    prevPoint = { x: point.x, y: point.y };
+  }
+
+  //setSlopesMovingAverage(slopes);
+
+  return slopes;
+}
+
+function setSlopesMovingAverage(slopes: PointWithSlope[]) {
+  const windowSize = 3;
+  for (let i = 0; i < slopes.length; i++) {
+    let sum = 0;
+    let count = 0;
+    for (
+      let j = Math.max(0, i - windowSize);
+      j <= Math.min(slopes.length - 1, i + windowSize);
+      j++
+    ) {
+      sum += slopes[j].slope;
+      count++;
+    }
+    slopes[i].slope = sum / count;
+  }
+}
+
+function xIsGrowingOrEqual(xPos: number): boolean {
+  if (xPos > visitedPoints[visitedPoints.length - 1].x) return true;
+  return false;
+}
+
+function setCurvePoints(xPos: number, yPos: number): boolean {
+  // nothing done yet
+  if (curveAttributes.value.p1x === 0 && curveAttributes.value.p1y === 0) {
+    console.debug("not initialized");
+    return false;
+  }
+
+  mouseMoveCount++;
+  if (mouseMoveCount % MOUSE_MOVE_THROTTELING_INTERVAL !== 0) {
+    //console.debug("throtteling:" + mouseMoveCount);
+    return false; // throtteling mouse move events
+  }
+
+  if (visitedPoints.length > 0 && !xIsGrowingOrEqual(xPos)) {
+    //      console.debug("x is not growing");
+    return false;
+  }
+
+  //console.debug("point added:" + visitedPoints.length);
+  visitedPoints.push({ x: xPos, y: yPos });
+
+  return true;
+}
+
+function setCurveAttributes(curveType: CurveType, xPos: number, yPos: number) {
+  if (visitedPoints.length < MIN_NUMBER_OF_POINTS) {
+    return;
+  }
+
+  const points = getSlopes(visitedPoints);
+
+  if (points.length < MIN_NUMBER_OF_POINTS) {
+    return;
+  }
+
+  //https://stackoverflow.com/questions/49274176/how-to-create-a-curved-svg-path-between-two-points
+
+  const theta =
+    Math.atan2(
+      yPos - curveAttributes.value.p1y,
+      xPos - curveAttributes.value.p1x,
+    ) -
+    Math.PI / 2; // calculate rciprocal to curve
+
+  const leftPoint = points[0];
+
+  const centerPoint = points[Math.round(points.length / 2)];
+
+  const rightPoint = points[points.length - 1];
+
+  let distanceFromCurve = calculateDistance(
+    leftPoint,
+    centerPoint,
+    rightPoint,
+    curveType!,
+  );
+
+  curveAttributes.value.cpx =
+    centerPoint.x + Math.round(Math.cos(theta) * distanceFromCurve);
+  curveAttributes.value.cpy =
+    centerPoint.y + Math.round(Math.sin(theta) * distanceFromCurve);
+
+  curveAttributes.value.p2x = xPos;
+  curveAttributes.value.p2y = yPos;
+}
+
+function updateCurve(curveType: CurveType, xPos: number, yPos: number): void {
+  removePointsToTheRightOfX(xPos);
+
+  setCurvePoints(xPos, yPos);
+
+  setCurveAttributes(curveType, xPos, yPos);
+
+  //    addVisiblePoint(xPos, yPos);
+}
+
+function removePointsToTheRightOfX(xPos: number) {
+  visitedPoints = visitedPoints.filter((p) => p.x <= xPos);
+}
+
+function getVisitedPoints() {
+  return visitedPoints;
+}
+
+function removeVisiblePoints() {
+  const visitedPointsCircleElements = document.querySelectorAll(
+    `[id^=${visitedPointPrefix}]`,
+  );
+  visitedPointsCircleElements.forEach((vp) => vp.parentNode?.removeChild(vp));
+}
+
+function addVisiblePoint(xPos: number, yPos: number) {
+  //return;
+  let svgns = "http://www.w3.org/2000/svg";
+  let svgContainer = document.getElementById("curveSvgId")!;
+  //    let visitedPoints = curveHelper.getVisitedPoints();
+
+  //for (let i = 0; i < visitedPoints.length; i++) {
+  const id = visitedPointPrefix + xPos + yPos;
+  let circle = document.createElementNS(svgns, "circle");
+  circle.setAttribute("id", id);
+  //circle.setAttributeNS(null, "cx", visitedPoints[i].x.toString());
+  //circle.setAttributeNS(null, "cy", visitedPoints[i].y.toString());
+  circle.setAttributeNS(null, "cx", xPos.toString());
+  circle.setAttributeNS(null, "cy", yPos.toString());
+
+  circle.setAttributeNS(null, "r", "3");
+  circle.setAttributeNS(
+    null,
+    "style",
+    "fill: none; stroke: blue; stroke-width: 1px;",
+  );
+  svgContainer.appendChild(circle);
+  //}
 }
 </script>
 
 <style>
-.line {
-  top: 4px;
-  position: absolute;
-  color: black;
-  display: block;
-  border-bottom: solid 1px;
-  border-top: solid 1px;
-  z-index: 999;
-}
-
-.lineHandle {
-  cursor: col-resize;
-  display: block;
-  position: absolute;
-  z-index: 999;
-  width: 12px;
-  height: 12px;
-  border: 1, 1, 1, 1;
-}
-
 .curveControlPoint {
   fill: aqua;
 }

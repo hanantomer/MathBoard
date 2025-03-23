@@ -2,8 +2,28 @@
   <v-card
     v-if="show"
     variant="outlined"
-    id="selection"
     class="selection"
+    id="selection"
+    v-on:mousedown="startMoving"
+    v-on:mouseup="onSelectionMouseUp"
+    v-on:mousemove="moveSelectionByMouseDrag"
+    v-bind:style="{
+      left: selectionRectLeft + 'px',
+      top: selectionRectTop + 'px',
+      width: selectionRectWidth + 'px',
+      height: -15 + selectionRectHeight + 'px',
+      background: backgroundColor,
+    }"
+  >
+  </v-card>
+  <v-card
+    v-if="show"
+    variant="outlined"
+    class="resizable"
+    id="selectionResize"
+    v-on:mousedown="startResizing"
+    v-on:mouseup="onResizeMouseUp"
+    v-on:mousemove="resizeSelectionByMouseDrag"
     v-bind:style="{
       left: selectionRectLeft + 'px',
       top: selectionRectTop + 'px',
@@ -11,10 +31,8 @@
       height: selectionRectHeight + 'px',
       background: backgroundColor,
     }"
-    v-on:mousedown="startMoving"
-    v-on:mouseup="onSelectionMopuseUp"
-    v-on:mousemove="moveSelectionByMouseDrag"
-  ></v-card>
+  >
+  </v-card>
 </template>
 
 <script setup lang="ts">
@@ -23,7 +41,11 @@ import { useEditModeStore } from "../store/pinia/editModeStore";
 import { useCellStore } from "../store/pinia/cellStore";
 import { useNotationStore } from "../store/pinia/notationStore";
 import { NotationType, SelectionMoveDirection } from "common/unions";
-import { DotCoordinates, RectNotationAttributes } from "common/baseTypes";
+import {
+  NotationAttributes,
+  DotCoordinates,
+  RectNotationAttributes,
+} from "common/baseTypes";
 import useNotationMutateHelper from "../helpers/notationMutateHelper";
 import useSelectionHelper from "../helpers/selectionHelper";
 import useEventBusHelper from "../helpers/eventBusHelper";
@@ -46,8 +68,7 @@ const notationStore = useNotationStore();
 const selectionHelper = useSelectionHelper();
 
 let lineTypes: Array<NotationType> = [
-  "CONCAVECURVE",
-  "CONCAVECURVE",
+  "CURVE",
   "HORIZONTALLINE",
   "VERTICALLINE",
   "SLOPELINE",
@@ -67,10 +88,19 @@ let dragPosition = ref<DotCoordinates>({
 
 // computed
 
+const selectedRectElement = computed(() => {
+  return document.getElementById(getSelectedNotation().uuid);
+});
+
+const selectedRectBoundingRect = computed(() => {
+  return selectedRectElement.value?.getBoundingClientRect();
+});
+
 const show = computed(() => {
   return (
     (editModeStore.isTextSelectionMode() ||
-      editModeStore.isAreaSelectionOrMovingMode()) &&
+      editModeStore.isAreaSelectionOrMovingMode() ||
+      editModeStore.isResizeMode()) &&
     selectionPosition.value.x1 != selectionPosition.value.x2 &&
     selectionPosition.value.y1 != selectionPosition.value.y2
   );
@@ -128,17 +158,19 @@ watchHelper.watchMouseEvent(
   endSelect,
 );
 
-watchHelper.watchMouseEvent(["AREA_SELECTED"], "EV_SVG_MOUSEDOWN", () => {
-  cancelSelectionWhenUserClickedOutside();
-});
+watchHelper.watchMouseEvent(
+  ["AREA_SELECTED", "RESIZE_STARTED", "RESIZING"],
+  "EV_SVG_MOUSEDOWN",
+  () => {
+    cancelSelectionWhenUserClickedOutside();
+  },
+);
 
 watchHelper.watchKeyEvent(
   ["AREA_SELECTED"],
   "EV_KEYUP",
   updateSelectionAreaByKey,
 );
-
-//watchHelper.watchMouseEvent(["AREA_SELECTED"], "EV_SVG_MOUSEMOVE", startMoving);
 
 watchHelper.watchMouseEvent(
   ["AREA_MOVING"],
@@ -163,6 +195,61 @@ watchHelper.watchNotationSelection(
   "EV_IMAGE_SELECTED",
   selectRectNotation,
 );
+
+function getSelectedNotation() {
+  return notationStore.getSelectedNotations()[0] as RectNotationAttributes;
+}
+
+function startResizing(e: MouseEvent) {
+  if (e.buttons !== 1) return;
+
+  if (!authorizationHelper.canEdit()) return;
+
+  editModeStore.setEditMode("RESIZE_STARTED");
+}
+
+function resizeSelectionByMouseDrag(e: MouseEvent) {
+  if (e.buttons !== 1) return;
+
+  if (!editModeStore.isResizeMode()) return;
+
+  editModeStore.setEditMode("RESIZING");
+
+  verticalDirection = "BOTTOM";
+  horizontalDirection = "RIGHT";
+
+  updateSelectionArea(e);
+}
+
+async function onResizeMouseUp() {
+  getSelectedNotation().fromCol = Math.round(
+    (selectionRectLeft.value - cellStore.getSvgBoundingRect().left) /
+      cellStore.getCellHorizontalWidth(),
+  );
+
+  getSelectedNotation().toCol = Math.round(
+    (selectionRectLeft.value +
+      selectionRectWidth.value -
+      cellStore.getSvgBoundingRect().left) /
+      cellStore.getCellHorizontalWidth(),
+  );
+
+  getSelectedNotation().fromRow = Math.round(
+    (selectionRectTop.value - cellStore.getSvgBoundingRect().top) /
+      cellStore.getCellVerticalHeight(),
+  );
+
+  getSelectedNotation().toRow = Math.round(
+    (selectionRectTop.value +
+      selectionRectHeight.value -
+      cellStore.getSvgBoundingRect().top) /
+      cellStore.getCellVerticalHeight(),
+  );
+
+  await notationMutationHelper.updateNotation(getSelectedNotation());
+
+  editModeStore.setDefaultEditMode();
+}
 
 function cancelSelectionWhenUserClickedOutside() {
   notationStore.resetSelectedNotations();
@@ -360,6 +447,10 @@ function endSelect() {
 function moveSelectionByMouseDrag(e: MouseEvent) {
   if (e.buttons !== 1) return;
 
+  if (editModeStore.getEditMode() !== "AREA_MOVING") {
+    return;
+  }
+
   // initial drag position
   if (!dragPosition.value.x) {
     dragPosition.value.x = e.pageX;
@@ -456,7 +547,7 @@ async function moveSelectionByKey( ///TODO by cell or pixel
     moveVertical * cellStore.getCellVerticalHeight();
 }
 
-async function onSelectionMopuseUp(e: MouseEvent) {
+async function onSelectionMouseUp(e: MouseEvent) {
   if (editModeStore.getEditMode() === "AREA_SELECTING") {
     endSelect();
     return;
@@ -506,9 +597,20 @@ function signalSelection() {
 }
 
 function selectRectNotation(): void {
-  const selectedNotation =
-    notationStore.getSelectedNotations()[0] as RectNotationAttributes;
+  if (getSelectedNotation().notationType === "IMAGE") {
+    setSelectionPositionForImage(getSelectedNotation());
+  }
 
+  if (getSelectedNotation().notationType === "TEXT") {
+    setSelectionPositionForText(
+      getSelectedNotation() as RectNotationAttributes,
+    );
+  }
+
+  editModeStore.setEditMode("AREA_SELECTED");
+}
+
+function setSelectionPositionForText(selectedNotation: RectNotationAttributes) {
   selectionPosition.value.x1 =
     cellStore.getSvgBoundingRect().left +
     selectedNotation.fromCol * cellStore.getCellHorizontalWidth();
@@ -521,12 +623,33 @@ function selectRectNotation(): void {
   selectionPosition.value.y2 =
     cellStore.getSvgBoundingRect().top +
     selectedNotation.toRow * cellStore.getCellVerticalHeight();
+}
 
-  editModeStore.setEditMode("AREA_SELECTED");
+function setSelectionPositionForImage(selectedNotation: NotationAttributes) {
+  const rect = selectedRectBoundingRect.value!;
+
+  selectionPosition.value.x1 = rect.x;
+  selectionPosition.value.x2 = rect.x + rect.width;
+  selectionPosition.value.y1 = rect.y;
+  selectionPosition.value.y2 = rect.y + rect.height;
 }
 </script>
 
 <style>
+.resizable {
+  padding: 5px;
+  display: inline-block;
+  position: absolute;
+  resize: both;
+  overflow: hidden;
+  line-height: 0;
+}
+
+.resizable img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
 .selection {
   cursor: move; /*fallback if grab cursor is unsupported */
   cursor: grab;
@@ -534,6 +657,6 @@ function selectRectNotation(): void {
   cursor: -webkit-grab;
   position: absolute;
   z-index: 99;
-  border: 1, 1, 1, 1;
+  border-bottom: 0;
 }
 </style>

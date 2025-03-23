@@ -18,10 +18,9 @@ export type BusEventType =
   | "EV_SVG_MOUSEMOVE"
   | "EV_AREA_SELECTION_DONE"
   | "EV_SLOPE_LINE_SELECTED"
-  | "EV_CONCAVE_CURVE_SELECTED"
+  | "EV_CURVE_SELECTED"
   | "EV_IMAGE_SELECTED"
   | "EV_TEXT_SELECTED"
-  | "EV_CONVEX_CURVE_SELECTED"
   | "EV_VERTICAL_LINE_SELECTED"
   | "EV_SQRT_SELECTED"
   | "EV_HORIZONTAL_LINE_SELECTED";
@@ -33,8 +32,7 @@ export const NotationTypeValues = [
   "HORIZONTALLINE",
   "VERTICALLINE",
   "SLOPELINE",
-  "CONCAVECURVE",
-  "CONVEXCURVE",
+  "CURVE",
   "SQRT",
   "SQRTSYMBOL",
   "TEXT",
@@ -66,7 +64,6 @@ export type CursorType =
 //     "EXPONENT",
 //     "ANNOTATION",
 //   ]);
-
 export type EditMode =
   | "LESSONS_SELECTION" //  after click on lessons icon
   | "QUESTIONS_SELECTION" //  after click on questions icon
@@ -81,6 +78,8 @@ export type EditMode =
   | "TEXT_AREA_SELECTING" // user started selecting area following text button pressed
   | "TEXT_WRITING" // user clicked a cell following text button pressed
   | "IMAGE_SELECTED" // user clicked on existing image
+  | "RESIZE_STARTED" // user clicked on existing rect and clicked on resize handle
+  | "RESIZING" // user clicked on existing rect  and is resizing
   | "ANNOTATION_STARTED" // annotation button pressed
   | "ANNOTATION_SELECTED" // user clicked on existing annotation rectangle
   | "ANNOTATION_WRITING" // user clicked a cell following annotation button pressed
@@ -100,12 +99,11 @@ export type EditMode =
   | "SLOPE_LINE_SELECTED" // slope line selected
   | "SLOPE_LINE_EDITING_LEFT" // slope line handle clicked followin slope line selection
   | "SLOPE_LINE_EDITING_RIGHT" // slope line handle clicked followin slope line selection
-  | "CONCAVE_CURVE_STARTED" // concave line button pressed
-  | "CONCAVE_CURVE_DRAWING" // concave line drawing started
-  | "CONCAVE_CURVE_SELECTED" // concave line selected
-  | "CONVEX_CURVE_STARTED" // convex line button pressed
-  | "CONVEX_CURVE_DRAWING" // convex line drawing started
-  | "CONVEX_CURVE_SELECTED" // convex line selected
+  | "CURVE_STARTED" // curve button pressed
+  | "CURVE_DRAWING" // curve drawing started
+  | "CURVE_SELECTED" // curve selected
+  | "CURVE_EDITING_LEFT" //   curve left handle clicked
+  | "CURVE_EDITING_RIGHT" //  curve right handle clicked
   | "SQRT_STARTED" // sqrt button pressed
   | "SQRT_DRAWING" // sqrt drawing started
   | "SQRT_EDITING" // sqrt line handle clicked
@@ -156,12 +154,9 @@ export const EditModeNotationType = new Map<
   ["SLOPE_LINE_SELECTED", "SLOPELINE"],
   ["SLOPE_LINE_EDITING_LEFT", "SLOPELINE"],
   ["SLOPE_LINE_EDITING_RIGHT", "SLOPELINE"],
-  ["CONCAVE_CURVE_STARTED", "CONCAVECURVE"],
-  ["CONCAVE_CURVE_DRAWING", "CONCAVECURVE"],
-  ["CONCAVE_CURVE_SELECTED", "CONCAVECURVE"],
-  ["CONVEX_CURVE_STARTED", "CONVEXCURVE"],
-  ["CONVEX_CURVE_DRAWING", "CONVEXCURVE"],
-  ["CONVEX_CURVE_SELECTED", "CONVEXCURVE"],
+  ["CURVE_STARTED", "CURVE"],
+  ["CURVE_DRAWING", "CURVE"],
+  ["CURVE_SELECTED", "CURVE"],
   ["SQRT_STARTED", "SQRT"],
   ["SQRT_DRAWING", "SQRT"],
   ["SQRT_SELECTED", "SQRT"],
@@ -215,6 +210,7 @@ export const EditModeCursorType = new Map<
   ["DELETING", "auto"],
   ["AREA_SELECTING", "auto"],
   ["AREA_SELECTED", "auto"],
+  ["RESIZE_STARTED", "grabbing"],
   ["AREA_MOVING", "auto"],
   ["TEXT_AREA_SELECTING", "auto"],
   ["TEXT_AREA_SELECTED", "auto"],

@@ -186,8 +186,7 @@ export const useNotationStore = defineStore("notation", () => {
           true,
         );
         break;
-      case "CONVEXCURVE":
-      case "CONCAVECURVE":
+      case "CURVE":
         notationCellOccupationHelper.updateCurveOccupationMatrix(
           cellLineNotationOccupationMatrix,
           notations.value.get(uuid)! as CurveNotationAttributes,
@@ -463,8 +462,7 @@ export const useNotationStore = defineStore("notation", () => {
         );
         break;
 
-      case "CONVEXCURVE":
-      case "CONCAVECURVE":
+      case "CURVE":
         notationCellOccupationHelper.updateCurveOccupationMatrix(
           cellLineNotationOccupationMatrix,
           notation as CurveNotationAttributes,

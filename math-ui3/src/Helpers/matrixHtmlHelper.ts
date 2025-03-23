@@ -164,6 +164,10 @@ export default function useHtmlMatrixHelper() {
       .attr("width", (n: NotationAttributes) => {
         return width(n);
       })
+      .attr("height", (n: NotationAttributes) => {
+        return height(n);
+      })
+
       .html((n: NotationAttributes) => {
         return html(n);
       });
@@ -335,8 +339,7 @@ export default function useHtmlMatrixHelper() {
     if (n.notationType === "IMAGE") {
       let n1 = n as RectNotationAttributes;
       const bColor = rectBorderColor(n ?? false);
-      //const url = URL.createObjectURL(n1.value);
-      return `<img id=${n1.uuid} style='border:groove 2px;border-color:${bColor}' src='${n1.value}'>`;
+      return `<img id=${n1.uuid}  style='width:100%;height:100%;border:groove 2px;border-color:${bColor}' src='${n1.value}'>`;
     }
 
     if (n.notationType === "EXPONENT") {

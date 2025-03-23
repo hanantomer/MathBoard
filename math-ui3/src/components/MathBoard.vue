@@ -18,7 +18,7 @@
       <sqrtDrawer></sqrtDrawer>
       <verticalLineDrawer></verticalLineDrawer>
       <slopeLineDrawer></slopeLineDrawer>
-      <curveDrawer :curveType="curveType"></curveDrawer>
+      <curveDrawer></curveDrawer>
       <v-sheet>
         <svg
           v-bind:style="{ cursor: cursor, margin: '10px' }"
@@ -87,12 +87,6 @@ const props = defineProps({
   loaded: { type: Boolean, default: false },
 });
 
-let curveType = computed(() => {
-  return editModeStore.getEditMode() === "CONCAVE_CURVE_STARTED"
-    ? "CONCAVE"
-    : "CONVEX";
-});
-
 watchHelper.watchMouseEvent(
   ["SYMBOL", "CELL_SELECTED", "SPECIAL_SYMBOL"],
   "EV_SVG_MOUSEUP",
@@ -106,8 +100,7 @@ watchHelper.watchKeyEvent(
     "HORIZONTAL_LINE_SELECTED",
     "VERTICAL_LINE_SELECTED",
     "SLOPE_LINE_SELECTED",
-    "CONCAVE_CURVE_SELECTED",
-    "CONVEX_CURVE_SELECTED",
+    "CURVE_SELECTED",
     "SQRT_SELECTED",
     "ANNOTATION_SELECTED",
     "TEXT_SELECTED",

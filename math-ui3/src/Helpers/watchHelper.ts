@@ -133,7 +133,7 @@ export default function () {
 
   function watchNotationsEvent(svgId: string, handler: CustomEventHandler) {
     watch(
-      () => notationStore.getNotations(),  // new and old
+      () => notationStore.getNotations(),  
       () => {
         handler(svgId);
       },

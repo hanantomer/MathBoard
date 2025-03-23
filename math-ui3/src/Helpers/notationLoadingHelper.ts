@@ -86,8 +86,7 @@ export default function notationLoadingHelper() {
           boardType,
           parentUUId,
         );
-      case "CONVEXCURVE":
-      case "CONCAVECURVE":
+      case "CURVE":
         return await dbHelper.getNotations<CurveNotationAttributes>(
           notationType,
           boardType,

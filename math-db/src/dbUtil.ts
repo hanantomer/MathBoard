@@ -570,8 +570,7 @@ export default function dbUtil() {
                 break;
             }
 
-            case "CONCAVECURVE":
-            case "CONVEXCURVE": {
+            case "CURVE": {
                 const m = model as CurveNotationAttributes;
 
                 if (!(m.p1x > 0 && m.p1y > 0 && m.p2x > 0 && m.p2y >= 0)) {

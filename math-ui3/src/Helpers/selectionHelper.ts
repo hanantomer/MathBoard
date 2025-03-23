@@ -98,8 +98,7 @@ export default function selectionHelper() {
         }
         return false;
       }
-      case "CONCAVECURVE":
-      case "CONVEXCURVE": {
+      case "CURVE": {
         selectCurveNotation(notation.uuid);
         return true;
       }
@@ -153,13 +152,10 @@ export default function selectionHelper() {
   function selectCurveNotation(uuid: String) {
     const notation = notationStore.getNotation(uuid)!;
     switch (notation.notationType) {
-      case "CONCAVECURVE":
-        editModeStore.setEditMode("CONCAVE_CURVE_SELECTED");
-        eventBus.emit("EV_CONCAVE_CURVE_SELECTED", notation);
+      case "CURVE":
+        editModeStore.setEditMode("CURVE_SELECTED");
+        eventBus.emit("EV_CURVE_SELECTED", notation);
         break;
-      case "CONVEXCURVE":
-        editModeStore.setEditMode("CONVEX_CURVE_SELECTED");
-        eventBus.emit("EV_CONVEX_CURVE_SELECTED", notation);
     }
   }
 
@@ -217,8 +213,7 @@ export default function selectionHelper() {
         case "SQRT":
           selectSqrtNotation(n);
           break;
-        case "CONCAVECURVE":
-        case "CONVEXCURVE":
+        case "CURVE":
           selectCurveNotation(uuid);
           break;
         case "EXPONENT":

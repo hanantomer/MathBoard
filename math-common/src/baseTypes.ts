@@ -15,7 +15,6 @@ export type EntityAttributes = {
 
 export type NotationAttributes =
   EntityAttributes & {
-    //uuid: string;
     parentUUId: string;
     user: UserAttributes;
     notationType: NotationType;
@@ -257,7 +256,7 @@ export function isCurve(
   n: NotationType
 ): boolean {
   return (
-    n === "CONCAVECURVE" || n === "CONVEXCURVE"
+    n === "CURVE" 
   );
 }
 
