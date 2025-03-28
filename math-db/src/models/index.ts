@@ -12,6 +12,6 @@ const sequelize = config.url
 sequelize.addModels([__dirname.replace("/\\/g", "/") + "/**/*.model.js"]);    
 
 console.log("db env", env);
- console.log("db config", config);
+console.log("db config", config);
 
 export default { sequelize };

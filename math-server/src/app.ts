@@ -453,16 +453,16 @@ const errorHandler = (
 
 app.use(errorHandler);
 
-let forceDbCreate = process.env.NODE_ENV === "test";
-forceDbCreate = true;
+let forceDbCreate =
+    process.env.NODE_ENV === "test" || process.env.NODE_ENV === "development";
+//forceDbCreate = true;
 console.log("re create db =" + forceDbCreate);
 
 connection.sequelize.sync({ force: forceDbCreate }).then(() => {
-    const port = Number(process.env.API_PORT) || 17030;  
+    const port = Number(process.env.API_PORT) || 17030;
     app.listen(port, () => {
-         console.log("listening to port localhost:" + port);
-    })
-    .on("error", (e) => {
+        console.log("listening to port localhost:" + port);
+    }).on("error", (e) => {
         console.log("Error: ", e.message);
     });
     if (forceDbCreate) {

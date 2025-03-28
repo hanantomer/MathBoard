@@ -104,6 +104,7 @@ export type EditMode =
   | "CURVE_SELECTED" // curve selected
   | "CURVE_EDITING_LEFT" //   curve left handle clicked
   | "CURVE_EDITING_RIGHT" //  curve right handle clicked
+  | "CURVE_EDITING_CONTROLֹ_POINT" //  curve control point clicked
   | "SQRT_STARTED" // sqrt button pressed
   | "SQRT_DRAWING" // sqrt drawing started
   | "SQRT_EDITING" // sqrt line handle clicked
@@ -157,6 +158,7 @@ export const EditModeNotationType = new Map<
   ["CURVE_STARTED", "CURVE"],
   ["CURVE_DRAWING", "CURVE"],
   ["CURVE_SELECTED", "CURVE"],
+  ["CURVE_EDITING_CONTROLֹ_POINT", "CURVE"],
   ["SQRT_STARTED", "SQRT"],
   ["SQRT_DRAWING", "SQRT"],
   ["SQRT_SELECTED", "SQRT"],

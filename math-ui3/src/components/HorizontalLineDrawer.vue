@@ -118,7 +118,7 @@ let lineLeft = computed(() => {
 });
 
 let lineRight = computed(() => {
-  return linePosition.value.p2x + 10;
+  return linePosition.value.p2x;
 });
 
 let lineY = computed(() => {
@@ -204,9 +204,6 @@ function fixLineEdge(linePosition: HorizontalLineAttributes) {
   }
 }
 
-function resetDrawing() {
-  linePosition.value.p1x = linePosition.value.p2x = linePosition.value.py = 0;
-}
 
 function selectLine(notation: NotationAttributes) {
   const n = notation as HorizontalLineNotationAttributes;

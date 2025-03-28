@@ -21,6 +21,7 @@
         'CURVE_DRAWING',
         'CURVE_EDITING_RIGHT',
         'CURVE_EDITING_LEFT',
+        'CURVE_EDITING_CONTROLֹ_POINT',
         'CURVE_SELECTED',
       ],
       func: endDrawCurve,
@@ -68,7 +69,13 @@
         stroke-linecap="round"
         fill="transparent"
       ></path>
-      <circle id="controlPoint" cx="0" cy="0" r="4"></circle>
+      <circle
+        id="controlPoint"
+        cx="0"
+        cy="0"
+        r="8"
+        style="position: absolute; pointer-events: painted"
+      ></circle>
     </svg>
   </div>
 </template>
@@ -76,7 +83,9 @@
 import lineHandle from "./LineHandle.vue";
 import lineWatcher from "./LineWatcher.vue";
 import useNotationMutateHelper from "../helpers/notationMutateHelper";
-import { computed, ref } from "vue";
+import useWatchHelper from "../helpers/watchHelper";
+import useEventBus from "../helpers/eventBusHelper"; // Adjust the path if necessary
+import { computed, ref, onMounted } from "vue";
 import { useNotationStore } from "../store/pinia/notationStore";
 import { useEditModeStore } from "../store/pinia/editModeStore";
 import {
@@ -90,6 +99,8 @@ const MIN_NUMBER_OF_POINTS = 6;
 const MOUSE_MOVE_THROTTELING_INTERVAL = 2;
 
 const notationMutateHelper = useNotationMutateHelper();
+const watchHelper = useWatchHelper();
+const eventBus = useEventBus();
 const notationStore = useNotationStore();
 const editModeStore = useEditModeStore();
 const visitedPointPrefix = "visitedPoint";
@@ -126,6 +137,26 @@ import { useCellStore } from "../store/pinia/cellStore";
 
 const cellStore = useCellStore();
 
+onMounted(() => {
+  setTimeout(() => {
+    const controlPoint = document.getElementById("controlPoint");
+    if (controlPoint) {
+      controlPoint.addEventListener("mousedown", () => {
+        editModeStore.setEditMode("CURVE_EDITING_CONTROLֹ_POINT");
+      });
+      controlPoint.addEventListener("mouseup", (e) => {
+        eventBus.emit("EV_SVG_MOUSEUP", e);
+      });
+    }
+  });
+  const controlPoint = document.getElementById("curveSvgId");
+  if (controlPoint) {
+    controlPoint.addEventListener("mousemove", () => {
+      editModeStore.setEditMode("CURVE_EDITING_CONTROLֹ_POINT");
+    });
+  }
+});
+
 const handleX1 = computed(() => {
   return curveAttributes.value.p1x + cellStore.getSvgBoundingRect().left;
 });
@@ -147,6 +178,12 @@ const show = computed(() => {
     editModeStore.isCurveDrawingMode() || editModeStore.isCurveSelectedMode()
   );
 });
+
+watchHelper.watchMouseEvent(
+  ["CURVE_EDITING_CONTROLֹ_POINT"],
+  "EV_SVG_MOUSEMOVE",
+  setControlPoint,
+);
 
 function getCurveType() {
   const slopes = getSlopes(visitedPoints);
@@ -181,11 +218,13 @@ function initCurve() {
 function setCurveLeft(p: DotCoordinates) {
   curveAttributes.value.p1x = p.x;
   curveAttributes.value.p1y = p.y;
+  setCurveElement();
 }
 
 function setCurveRight(p: DotCoordinates) {
   curveAttributes.value.p2x = p.x;
   curveAttributes.value.p2y = p.y;
+  setCurveElement();
 }
 
 function startCurveDrawing(p: DotCoordinates) {
@@ -208,7 +247,23 @@ function startCurveDrawing(p: DotCoordinates) {
 }
 
 function selectCurve(curve: NotationAttributes) {
-  notationStore.selectNotation(curve.uuid);
+  const c = curve as CurveNotationAttributes;
+  visitedPoints = [];
+  curveAttributes.value.p1x = c.p1x;
+  curveAttributes.value.p1y = c.p1y;
+  curveAttributes.value.p2x = c.p2x;
+  curveAttributes.value.p2y = c.p2y;
+  curveAttributes.value.cpx = c.cpx;
+  curveAttributes.value.cpy = c.cpy;
+  setCurveElement();
+  showControlPoint();
+}
+
+function setControlPoint(e: MouseEvent) {
+  curveAttributes.value.cpx = e.offsetX;
+  curveAttributes.value.cpy = e.offsetY;
+  setCurveElement();
+  showControlPoint();
 }
 
 function setCurve(p: DotCoordinates) {

@@ -12,7 +12,6 @@ import {
   lineSelectWatcherEntry,
   lineEndSelectionWatcherEntry,
 } from "../../../math-common/src/baseTypes";
-import { set } from "cypress/types/lodash";
 
 const lineDrawer = useLineDrawer();
 const watchHelper = useWatchHelper();

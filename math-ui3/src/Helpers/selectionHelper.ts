@@ -151,12 +151,8 @@ export default function selectionHelper() {
 
   function selectCurveNotation(uuid: String) {
     const notation = notationStore.getNotation(uuid)!;
-    switch (notation.notationType) {
-      case "CURVE":
-        editModeStore.setEditMode("CURVE_SELECTED");
-        eventBus.emit("EV_CURVE_SELECTED", notation);
-        break;
-    }
+    editModeStore.setEditMode("CURVE_SELECTED");
+    eventBus.emit("EV_CURVE_SELECTED", notation);
   }
 
   function selectLineNotation(uuid: String) {

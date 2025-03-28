@@ -1,11 +1,10 @@
 {
   "development": {
-    "storage": "C:\\dev\\MathBoard\\math-server\\math.db",
+    "storage": "./math.db",
     "dialect": "sqlite"
   },
   "test": {
-    "storage": "C:\\dev\\MathBoard\\math-server\\mathTest.db",
+    "storage": "./mathTest.db",
     "dialect": "sqlite"
   }
-
 }

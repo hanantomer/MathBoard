@@ -90,9 +90,6 @@ export const useEditModeStore = defineStore("editMode", () => {
     );
   }
 
-  function isCurveMode() {
-    return editMode.value === "CURVE_DRAWING";
-  }
 
   function isDefaultEditMode() {
     return editMode.value === defaultEditMode;
@@ -164,7 +161,12 @@ export const useEditModeStore = defineStore("editMode", () => {
   }
 
   function isCurveDrawingMode() {
-    return editMode.value === "CURVE_DRAWING";
+    return (
+      editMode.value === "CURVE_DRAWING" ||
+      editMode.value === "CURVE_EDITING_LEFT" ||
+      editMode.value === "CURVE_EDITING_RIGHT" ||
+      editMode.value === "CURVE_EDITING_CONTROLֹ_POINT"
+    );
   }
 
   function isHorizontalLineSelectedMode() {
@@ -315,7 +317,6 @@ export const useEditModeStore = defineStore("editMode", () => {
     isExponentWritingMode,
     isSelectionMode,
     isLineMode,
-    isCurveMode,
     isHorizontalLineMode,
     isHorizontalLineSelectedMode,
     isSqrtStartedMode,

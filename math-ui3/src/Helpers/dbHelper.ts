@@ -25,7 +25,7 @@ import axiosHelper from "./axiosHelper";
 const { baseURL } = axiosHelper();
 
 export default function useDbHelper() {
-  const updateCoordinatesInterval = 2000; // while moving selection by arrow, miliseconds to wait before sync
+  const updateCoordinatesInterval = 100; // while moving selection by arrow, miliseconds to wait before sync
   let lastUpdateCoordinatesTime: number | null = null;
   let updateCoordinatesHandle: number | null = null;
 

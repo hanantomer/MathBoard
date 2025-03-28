@@ -64,8 +64,8 @@ export default function useLineDrawingHelper() {
     if (notationStore.hasSelectedNotations()) {
       showMatrixLine();
     }
-    editModeStore.setDefaultEditMode();
     endDrawingCallback();
+    editModeStore.setDefaultEditMode();
   }
 
   function selectLine(
