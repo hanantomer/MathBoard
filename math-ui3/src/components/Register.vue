@@ -289,7 +289,6 @@ watch(
   (params) => {
     if (params.name === "register") {
       redirectAfterLogin = params.query?.from?.toString() || "";
-      userType.value = redirectAfterLogin ? "STUDENT" : "TEACHER";
       show.value = true;
     }
   },
