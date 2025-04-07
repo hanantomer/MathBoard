@@ -25,7 +25,6 @@ import { EditMode } from "../../../math-common/src/unions";
 import useNotationMutateHelper from "../helpers/notationMutateHelper";
 import usescreenHelper from "../helpers/screenHelper";
 import useWatchHelper from "../helpers/watchHelper";
-import { update } from "cypress/types/lodash";
 const notationMutateHelper = useNotationMutateHelper();
 const watchHelper = useWatchHelper();
 
