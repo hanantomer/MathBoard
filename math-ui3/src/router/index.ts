@@ -1,5 +1,5 @@
 import { createRouter, createWebHistory } from "vue-router";
-import useauthenticationHelper from "../helpers/authenticationHelper";
+import useAuthenticationHelper from "../helpers/authenticationHelper";
 import { useUserStore } from "../store/pinia/userStore";
 
 const routes = [
@@ -16,7 +16,6 @@ const routes = [
     name: "contactUs",
     meta: { requiresAuth: false },
   },
-
   {
     path: "/login",
     component: () => import("@/components/Welcome.vue"),
@@ -24,9 +23,15 @@ const routes = [
     meta: { requiresAuth: false },
   },
   {
-    path: "/register",
+    path: "/registerTeacher",
     component: () => import("@/components/Welcome.vue"),
-    name: "register",
+    name: "registerTeacher",
+    meta: { requiresAuth: false, props: true },
+  },
+  {
+    path: "/registerStudent",
+    component: () => import("@/components/Welcome.vue"),
+    name: "registerStudent",
     meta: { requiresAuth: false, props: true },
   },
   {
@@ -68,13 +73,12 @@ const routes = [
 ];
 
 const router = createRouter({
-  history:  createWebHistory(),
+  history: createWebHistory(),
   routes,
 });
 
-
 router.beforeEach(async (to, from) => {
-  const authenticationHelper = useauthenticationHelper();
+  const authenticationHelper = useAuthenticationHelper();
   const userStore = useUserStore();
 
   const user = await authenticationHelper.authLocalUserByToken();
@@ -89,8 +93,10 @@ router.beforeEach(async (to, from) => {
     return;
   }
 
-  return { path: "/login", query: { from: to.path } };
+  return {
+    path: "/login",
+    query: { from: to.path },
+  };
 });
-
 
 export default router;

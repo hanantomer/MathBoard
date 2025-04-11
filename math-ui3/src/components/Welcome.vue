@@ -1,6 +1,7 @@
 <template>
-  <loginDialog @register="register"></loginDialog>
-  <registerDialog @registered="login"></registerDialog>
+  <LoginDialog @register="registerStudent"></LoginDialog>
+  <RegisterTeacherDialog @registered="login"></RegisterTeacherDialog>
+  <RegisterStudentDialog @registered="login"></RegisterStudentDialog>
   <v-main>
     <v-row>
       <v-col class="text-center" cols="12">
@@ -40,13 +41,21 @@
 
 <script setup lang="ts">
 import LoginDialog from "./Login.vue";
-import RegisterDialog from "./Register.vue";
+import RegisterStudentDialog from "./RegisterStudent.vue";
+import RegisterTeacherDialog from "./RegisterTeacher.vue";
 import { useRouter } from "vue-router";
 import { useUserStore } from "../store/pinia/userStore";
 
 const router = useRouter();
 const userStore = useUserStore();
 
+
+function registerStudent(redirectAfterLogin: string) {
+  router.push({
+    name: "registerStudent",
+    query: { from: redirectAfterLogin },
+  });
+}
 
 function login(redirectAfterLogin: string) {
   router.push({
@@ -57,13 +66,6 @@ function login(redirectAfterLogin: string) {
 
 function navToLessons() {
   router.push("/lessons");
-}
-
-function register(redirectAfterLogin: string) {
-  router.push({
-    name: "register",
-    query: { from: redirectAfterLogin },
-  });
 }
 
 const bullets = [

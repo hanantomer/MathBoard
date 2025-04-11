@@ -24,3 +24,8 @@ math-db/tsconfig.tsbuildinfo
 math-db/tsconfig.tsbuildinfo
 math-server/math.db
 math-db/tsconfig.tsbuildinfo
+math-messages/math.db
+math-messages/tsconfig.tsbuildinfo
+math-common/tsconfig.tsbuildinfo
+math-db/tsconfig.tsbuildinfo
+math-ui3/dist/index.html

@@ -11,11 +11,13 @@ import { useLessonStore } from "../store/pinia/lessonStore";
 import { useEditModeStore } from "../store/pinia/editModeStore";
 import { useNotationStore } from "../store/pinia/notationStore";
 import { useCellStore } from "../store/pinia/cellStore";
+import { useUserStore } from "../store/pinia/userStore";
 import usescreenHelper from "./screenHelper";
 import useNotationMutateHelper from "./notationMutateHelper";
 import useUserOutgoingOperationsHelper from "./userOutgoingOperationsHelper";
 import useEventBus from "./eventBusHelper";
 import useAuthorizationHelper from "./authorizationHelper";
+
 
 const eventBus = useEventBus();
 const cellStore = useCellStore();
@@ -25,6 +27,7 @@ const userOutgoingOperationsHelper = useUserOutgoingOperationsHelper();
 const lessonStore = useLessonStore();
 const notationStore = useNotationStore();
 const authorizationHelper = useAuthorizationHelper();
+const userStore = useUserStore();
 const editModeStore = useEditModeStore();
 
 export default function selectionHelper() {
@@ -191,6 +194,7 @@ export default function selectionHelper() {
       await userOutgoingOperationsHelper.syncOutgoingSelectedCell(
         clickedCell,
         lessonStore.getCurrentLesson()!.uuid,
+        userStore.getCurrentUser()!.uuid,
       );
     }
   }

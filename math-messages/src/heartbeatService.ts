@@ -14,18 +14,16 @@ export default class HeartbeatService {
       params.headers.cookie
     );
 
-    let user = await this.app
-      .service("authentication")
-      .get(access_token);
+    //let user = await this.app
+   //   .service("authentication")
+    //  .get(access_token);
 
-    if (!!user) {
+    //if (!!user) {
       return {
         lessonUUId: data.lessonUUId,
-        userUUId: user.uuid,
-        //firstName: user.firstName,
-        //lastName: user.lastName,
+        userUUId: data.userUUId,
       };
-    }
+    //}
   }
 }
 

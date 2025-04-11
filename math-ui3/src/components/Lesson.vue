@@ -71,6 +71,7 @@ async function loadLesson(lessonUUId: string) {
     setInterval(
       userOutgoingOperations.syncOutgoingHeartBeat,
       heartBeatInterval,
+      userStore.getCurrentUser()!.uuid,
       lessonStore.getCurrentLesson()!.uuid,
     );
   }

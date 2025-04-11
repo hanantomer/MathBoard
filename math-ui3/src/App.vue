@@ -186,6 +186,7 @@ const isTeacher = computed(() => userStore.isTeacher());
 
 function showLoginDialog() {
   router.push("/login");
+  //router.go(0);
 }
 
 function signOut() {
@@ -209,7 +210,6 @@ function navToAnswers() {
 function navContactUs() {
   router.push("/contactUs");
 }
-
 </script>
 <style>
 .title {

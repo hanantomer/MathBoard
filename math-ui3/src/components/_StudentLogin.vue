@@ -1,6 +1,6 @@
 <template>
   <v-dialog v-model="show" max-width="500" persistent>
-    <v-card height="400">
+    <v-card height="400" style="background-color: lightgrey">
       <v-card-text>
         <v-form ref="loginForm" v-model="valid" lazy-validation>
           <v-row>
@@ -106,8 +106,7 @@ const emit = defineEmits(["register"]);
 watch(
   route,
   (params) => {
-    show.value = false;
-    if (params.name === "login") {
+    if (params.name === "studentLogin") {
       show.value = true;
       redirectAfterLogin = params.query?.from?.toString() || "";
     }

@@ -17,8 +17,6 @@ var transporter = createTransport({
 });
 
 
-
-
 const authUtil = useAuthUtil();
 const db = useDb();
 let app = express();

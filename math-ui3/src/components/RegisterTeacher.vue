@@ -287,7 +287,8 @@ let registrationTitle = computed(() =>
 watch(
   route,
   (params) => {
-    if (params.name === "register") {
+    show.value = false;
+    if (params.name === "registerTeacher") {
       redirectAfterLogin = params.query?.from?.toString() || "";
       show.value = true;
     }

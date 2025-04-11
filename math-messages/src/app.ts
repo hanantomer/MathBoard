@@ -2,6 +2,7 @@ import { feathers } from "@feathersjs/feathers";
 
 import socketio from "@feathersjs/socketio";
 import constants from "./constants";
+import connection from "../../math-db/build/models/index";
 
 import AuthorizationService from "./authorizationService";
 import AuthenticationService from "./authenticationService";
@@ -25,12 +26,6 @@ type ServiceTypes = {
 
 const app: any = feathers<ServiceTypes>();
 
-
-// const WEB_PORT: number =
-//   Number(process.env.WEB_PORT) || 3000;
-
-// app.set("origin", "localhost:" + WEB_PORT)
-
 app.configure(
   socketio({
     cors: {
@@ -47,57 +42,104 @@ app.use("colorizedCell", new ColorizedCellSyncService(app));
 app.use("notationSync", new NotationSyncService(app));
 
 
-app.service("authorization").publish("updated", (authorization: any, ctx: any) => {
-  return [
-    app.channel(
-      constants.LESSON_CHANNEL_PREFIX +
-        authorization.lessonUUId +
-        constants.USER_CHANNEL_PREFIX +
-        authorization.userUUId
-    ),
-  ];
+app
+  .service("authorization")
+  .publish(
+    "updated",
+    (id: any, authorization: any, ctx: any) => {
+      return [
+        app.channel(
+          constants.LESSON_CHANNEL_PREFIX +
+            authorization.lessonUUId +
+            constants.USER_CHANNEL_PREFIX +
+            authorization.userUUId
+        ),
+      ];
+    }
+  );
+
+app
+  .service("heartbeat")
+  .publish(
+    "updated",
+    (id: any, heartbeat: any, ctx: any) => {
+      return [
+        app.channel(
+          constants.LESSON_CHANNEL_PREFIX +
+            heartbeat.data.lessonUUId +
+            constants.USER_CHANNEL_PREFIX +
+            heartbeat.data.userUUId
+        ),
+      ];
+    }
+  );
+
+app.service("selectedCell").publish("updated", (id: any, selectedCell: any, ctx: any) => {
+  return app.channel( constants.LESSON_CHANNEL_PREFIX + selectedCell.data.lessonUUId );
 });
 
-
-app.service("heartbeat").publish("updated", (heartbeat: any, ctx: any) => {
-  return [
-    app.channel(
-      constants.LESSON_CHANNEL_PREFIX +
-        heartbeat.lessonUUId +
-        constants.USER_CHANNEL_PREFIX +
-        heartbeat.userUUId
-    ),
-  ];
-});
-
-app.service("selectedCell").publish("updated", (selectedCell: SelectedCell, ctx: any) => {
-  return app.channel( constants.LESSON_CHANNEL_PREFIX + selectedCell.lessonUUId );
-});
-
-app.service("colorizedCell").publish("updated",(colorizedCell: ColorizedCell, ctx: any) => {
-  return app.channel(constants.LESSON_CHANNEL_PREFIX + colorizedCell.lessonUUId);
-});
+app
+  .service("colorizedCell")
+  .publish(
+    "updated",
+    (
+      id: any,
+      colorizedCell: ColorizedCell,
+      ctx: any
+    ) => {
+      return app.channel(
+        constants.LESSON_CHANNEL_PREFIX +
+          colorizedCell.lessonUUId
+      );
+    }
+  );
 
 app.service("notationSync").publish("created", (notation: LessonNotationAttributes, ctx: any) => {
   return app.channel(constants.LESSON_CHANNEL_PREFIX + notation.lesson.uuid);
 });
 
 app
-  .service("notationSync").publish("updated", (notation: LessonNotationAttributes, ctx: any ) => {
-      return app.channel(constants.LESSON_CHANNEL_PREFIX + notation.lesson.uuid );
-});
+  .service("notationSync")
+  .publish(
+    "updated",
+    (
+      id: any,
+      notation: LessonNotationAttributes,
+      ctx: any
+    ) => {
+      return app.channel(
+        constants.LESSON_CHANNEL_PREFIX +
+          notation.lesson.uuid
+      );
+    }
+  );
 
 app
-  .service("notationSync").publish("removed", (notation: LessonNotationAttributes, ctx: any ) => {
-      return app.channel(constants.LESSON_CHANNEL_PREFIX + notation.lesson.uuid );
-  });
+  .service("notationSync")
+  .publish(
+    "removed",
+    (
+      id: any,
+      notation: LessonNotationAttributes,
+      ctx: any
+    ) => {
+      return app.channel(
+        constants.LESSON_CHANNEL_PREFIX +
+          notation.lesson.uuid
+      );
+    }
+  );
  
 const PORT: number =
   Number(process.env.MESSAGING_PORT) || 18030;
 
-app.listen(PORT).then(() =>
-   console.log(
+connection.sequelize.sync({ force: false }).then(() => {
+  app.listen(PORT).then(() =>
+    console.log(
       "Feathers server listening on localhost:" + PORT
-   )
- );
+    )
+  );
+}).catch((err: any) => {
+  console.error("Unable to connect to the database:", err);
+});  
   

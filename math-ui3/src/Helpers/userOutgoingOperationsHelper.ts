@@ -13,14 +13,13 @@ export default function userOutgoingOperations() {
   async function syncOutgoingSelectedCell(
     selectedCell: CellAttributes,
     lessonUUId: string,
+    userUUId: string,
   ) {
     const feathersClient = FeathersHelper.getInstance();
     try {
-      let t = await feathersClient!
+      await feathersClient!
         .service("selectedCell")
-        .update(null, { ...selectedCell, lessonUUId: lessonUUId }, {});
-
-      return t;
+        .update(null, { ...selectedCell, lessonUUId: lessonUUId, userUUId: userUUId }, {});
     } catch (error) {
       console.log(error);
     }
@@ -58,12 +57,12 @@ export default function userOutgoingOperations() {
       .update(null, notation, {});
   }
 
-  function syncOutgoingHeartBeat(lessonUUId: string) {
+  function syncOutgoingHeartBeat(usreId: String, lessonUUId: string) {
     FeathersHelper.getInstance()
       .service("heartbeat")
-      .update(null, { lessonUUId: lessonUUId }, {});
+      .update(null, { userUUId: usreId, lessonUUId: lessonUUId }, {});
   }
-  // set student to be eligible to edit
+  // set student to be edit eligible
   function syncOutgoingAuthorizeUser(
     authorizedStudentUUId: string | null,
     revokedStudentUUId: string | null,

@@ -49,10 +49,9 @@ import verticalLineDrawer from "./VerticalLineDrawer.vue";
 import slopeLineDrawer from "./SlopeLineDrawer.vue";
 import curveDrawer from "./CurveDrawer.vue";
 import useWatchHelper from "../helpers/watchHelper";
-import { onUnmounted, ref, computed } from "vue";
+import { onUnmounted, ref } from "vue";
 import { useNotationStore } from "../store/pinia/notationStore";
 import { useCellStore } from "../store/pinia/cellStore";
-import { useEditModeStore } from "../store/pinia/editModeStore";
 import { useAnswerStore } from "../store/pinia/answerStore";
 import { CursorType, EditModeCursorType } from "common/unions";
 import useSelectionHelper from "../helpers/selectionHelper";
@@ -65,12 +64,10 @@ const selectionHelper = useSelectionHelper();
 const keyHelper = useKeyHelper();
 const eventHelper = UseEventHelper();
 const watchHelper = useWatchHelper();
-const editModeStore = useEditModeStore();
 const answerStore = useAnswerStore();
 const progressBar = ref(false);
 
 let cursor = ref<CursorType>("auto");
-//let toolbarKey = ref(0);
 
 onUnmounted(() => {
   eventHelper.unregisterSvgMouseDown();

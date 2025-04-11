@@ -17,7 +17,6 @@ const cellStore = useCellStore();
 const lessonStore = useLessonStore();
 const userStore = useUserStore();
 const studentStore = useStudentStore();
-const matrixCellHelper = UseMatrixCellHelper();
 
 export default function userIncomingOperations() {
   // check if in Lesson and not initiated by me
@@ -33,6 +32,7 @@ export default function userIncomingOperations() {
     // send auth token to server and register to accept messsages.
     // see also AuthenticationService
     feathersClient.service("authentication").create({
+      ...userStore.getCurrentUser(),
       lessonUUId: lessonStore.getCurrentLesson()!.uuid,
     });
 

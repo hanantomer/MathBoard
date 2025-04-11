@@ -3,7 +3,7 @@ import { UserAttributes } from "../../math-common/build/userTypes";
 const authUtil = useAuthUtil();
 
 export default {
-  getAccessTokenFromCookie: async function (
+  getAccessTokenFromCookie: function (
     cookie: any
   ) {
     if (!!cookie)
@@ -22,11 +22,19 @@ export default {
     
     if (!cookie) return null;
     
-    let access_token =
-      await this.getAccessTokenFromCookie(cookie);
+    let access_token =  this.getAccessTokenFromCookie(cookie);
 
-    return await authUtil.authByLocalToken(
+    const user = await authUtil.authByLocalToken(
       access_token
     );
+
+    if (!user) {
+      console.error(
+        `access_token:${access_token} not associated with any user`
+      );
+      return null;
+    }
+
+    return user;
   },
 };

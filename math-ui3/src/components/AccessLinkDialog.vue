@@ -2,7 +2,7 @@
   <v-row justify="center">
     <v-dialog
       v-model="dialog"
-      max-width="400px"
+      max-width="500px"
       persistent
       @keydown.esc="closeDialog"
     >
@@ -48,7 +48,7 @@ const props = defineProps({
   show: { type: Boolean },
 });
 
-watchHelper.watchLoadedEvent
+//watchHelper.watchLoadedEvent
 
 watch(
   () => props.show,

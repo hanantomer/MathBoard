@@ -64,10 +64,15 @@ export default function authUtils() {
             let user = await User.findOne({
                 where: { email: decodedToken.email },
             });
-            
-            if (user) {
-                userCache.set(decodedToken.email,  user);
+
+            if (!user) {
+
+                console.error(
+                    `decodedToken.email:${decodedToken.email} not found in user table`
+                );
+                return null;
             }
+            userCache.set(decodedToken.email, user);
         }
 
         return userCache.get(decodedToken.email) || null;

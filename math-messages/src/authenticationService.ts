@@ -1,10 +1,6 @@
-import useAuthUtil from "../../math-auth/build/authUtil";
-import useDbUtil from "../../math-db/build/dbUtil";
-import util from "./util";
 import constants from "./constants";
-
-const authUtil = useAuthUtil();
 import { Application } from "@feathersjs/feathers";
+import { UserAttributes } from "../../math-common/src/userTypes";
 
 export default class AuthenticationService {
   app: any;
@@ -16,47 +12,50 @@ export default class AuthenticationService {
     this.lessonStudentConnection = new Map(); // key lesson, value: set where key:userUUId
   }
 
-  async get(access_token: string) {
-    let user: any =
-      await authUtil.authByLocalToken(
-        access_token
-      );
-    if (!user) {
-      console.error(
-        `access_token:${access_token} not accociated with any user`
-      );
-      return;
-    }
-    return user;
-  }
+  // async get(access_token: string) {
+  //   let user: any =
+  //     await authUtil.authByLocalToken(
+  //       access_token
+  //     );
+  //   if (!user) {
+  //     console.error(
+  //       `access_token:${access_token} not accociated with any user`
+  //     );
+  //     return;
+  //   }
+  //   return user;
+  // }
 
   // manage user login, join user to lesson or user channels
-  async create(data: any, params: any) {
-    let user = await util.getUserFromCookie(
-      params.headers.cookie
-    );
+  async create(
+    userLesson: UserAttributes & { lessonUUId : string },
+    params: any
+  ) {
+    // let user = await util.getUserFromCookie(
+    //   params.headers.cookie
+    // );
 
-    if (!user) {
-      return;
-    }
+    // if (!user) {
+    //   return;
+    // }
 
-    if (!data.lessonUUId) {
-      return;
-    }
+    // if (!data.lessonUUId) {
+    //   return;
+    // }
 
-    if (user.userType === "TEACHER") {
+    if (userLesson.userType === "TEACHER") {
       this.joinTeacher(
         params.connection,
-        user.uuid,
-        user.email,
-        data.lessonUUId
+        userLesson.uuid,
+        userLesson.email,
+        userLesson.lessonUUId
       );
     } else {
       this.joinStudent(
         params.connection,
-        user.uuid,
-        user.email,
-        data.lessonUUId
+        userLesson.uuid,
+        userLesson.email,
+        userLesson.lessonUUId
       );
     }
 
@@ -64,11 +63,11 @@ export default class AuthenticationService {
     this.app
       .channel(
         constants.LESSON_CHANNEL_PREFIX +
-          data.lessonUUId
+          userLesson.lessonUUId
       )
       .join(params.connection);
     console.log(
-      `subscribing user: ${user.email} to lesson: ${data.lessonUUId}`
+      `subscribing user: ${userLesson.email} to lesson: ${userLesson.lessonUUId}`
     );
   }
 
@@ -107,9 +106,7 @@ export default class AuthenticationService {
 
     // join teacher to student channel
     if (
-      this.lessonAdminConnection.has(
-        lessonUUId
-      )
+      this.lessonAdminConnection.has(lessonUUId)
     ) {
       console.log(
         `subscribing admin: ${email} to student: ${userUUId}`
