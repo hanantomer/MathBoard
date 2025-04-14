@@ -1,6 +1,13 @@
 <template>
-  <v-dialog v-model="show" width="1000" height="800" persistent>
+  <v-dialog v-model="show" width="1000" height="900" persistent>
+    <v-alert
+      text="This site is currently in Beta, so it’s free to use for the near future. Due to limited capacity, we can only enroll a select number of users. All sign-in requests will require approval, and we’ll send you a confirmation email once approved."
+      title="Attention"
+      type="success"
+    >
+    </v-alert>
     <v-card style="overflow-y: hidden">
+      <v-btn style="position:absolute;right: 10px;top:10px" density="compact" icon="mdi-minus" @click="close"></v-btn>
       <v-card-title>
         {{ registrationTitle }}
       </v-card-title>
@@ -63,7 +70,7 @@
             </v-col>
           </v-row>
 
-          <v-row v-show="userType == 'TEACHER'">
+          <v-row>
             <v-col cols="12">
               <v-card>
                 <v-card-title> Terms and Conditions </v-card-title>
@@ -72,7 +79,7 @@
                   <p>
                     These Website Standard Terms and Conditions written on this
                     webpage shall manage your use of our website, Mathboard
-                    accessible at https://www.mathboard.com.
+                    accessible at https://www.themathboard.com.
                   </p>
                   <p>
                     These Terms will be applied fully and affect to your use of
@@ -215,7 +222,7 @@
               </v-card>
             </v-col>
           </v-row>
-          <v-row v-show="userType == 'TEACHER'">
+          <v-row>
             <v-col class="d-flex" cols="12" align-end>
               <v-checkbox
                 data-cy="register_accept_terms"
@@ -228,7 +235,7 @@
           <v-row>
             <v-col class="d-flex" cols="12" align-end>
               <v-btn
-                :disabled="!acceptedTerms && userType == 'TEACHER'"
+                :disabled="!acceptedTerms"
                 data-cy="register_signup"
                 color="indigo-darken-3"
                 variant="flat"
@@ -296,6 +303,16 @@ watch(
   { flush: "pre", immediate: true },
 );
 
+function close() {
+  show.value = false;
+  registerForm.value = null;
+  firstName.value = "";
+  lastName.value = "";
+  email.value = "";
+  password.value = "";
+  verify.value = "";
+}
+
 async function register() {
   let formVlidated: any = await (registerForm.value as any).validate();
   if (formVlidated.valid) {
@@ -306,9 +323,13 @@ async function register() {
       password.value,
       userType.value as UserType,
     );
-
-    registerForm.value = null;
     show.value = false;
+    registerForm.value = null;
+    firstName.value = "";
+    lastName.value = "";
+    email.value = "";
+    password.value = "";
+    verify.value = "";
     emit("registered", redirectAfterLogin);
   }
 }

@@ -1,3 +1,4 @@
+import winston from 'winston';
 import "reflect-metadata";
 import Lesson  from "./models/lesson/lesson.model"
 import StudentLesson  from "./models/lesson/studentLesson.model";
@@ -26,6 +27,19 @@ import { BoardType, NotationType } from "../../math-common/src/unions";
 import { Model, ModelCtor } from "sequelize";
 
 
+const logger = winston.createLogger({
+    level: 'info',
+    format: winston.format.combine(
+        winston.format.timestamp(),
+        winston.format.printf(({ timestamp, level, message }) => {
+            return `${timestamp} [${level.toUpperCase()}]: ${message}`;
+        })
+    ),
+    transports: [
+        new winston.transports.Console(),
+        new winston.transports.File({ filename: 'math-db.log' })
+    ]
+});
 
 let modelMap = new Map<string, ModelCtor<Model>>();
 
@@ -338,33 +352,38 @@ export default function dbUtil() {
         notationType: String,
         parentUUId: string
     ) {
+        logger.info(`Getting notations for ${boardType} ${notationType} with parent UUID: ${parentUUId}`);
 
-        const boardName = boardType.toString().toLowerCase(); // e.g lesson
+        const boardName = boardType.toString().toLowerCase();
         const boardFieldIdFieldName = boardType.toString().toLowerCase() + "Id";
-        const boardModelName = capitalize(boardName); // e.g Lesson
-        const notationTypeName = notationType.toString().toLowerCase(); // e.g. symbol
-        const notationTypeNameCapitalized = capitalize(notationTypeName); // e.g. Symbol
-        const modelName = boardModelName + notationTypeNameCapitalized; // e.g. LessonSymbol
+        const boardModelName = capitalize(boardName);
+        const notationTypeName = notationType.toString().toLowerCase();
+        const notationTypeNameCapitalized = capitalize(notationTypeName);
+        const modelName = boardModelName + notationTypeNameCapitalized;
 
         if (!parentUUId) {
-            ///TODO: report warning to log
+            logger.warn(`Parent UUID is null for ${boardType} ${notationType}`);
             return null;
         }
 
         if (!findModel(modelName)) {
-            ///TODO: report warning to log
+            logger.error(`Model ${modelName} not found`);
             return null;
         }
 
         if (!db.sequelize.models[boardModelName]) {
-            ///TODO: report warning to log
+            logger.error(`Board model ${boardModelName} not found`);
             return null;
         }
 
         let parentId = await getIdByUUId(boardModelName, parentUUId);
-        if (!parentId) return null;
+        if (!parentId) {
+            logger.warn(`Parent ID not found for UUID: ${parentUUId}`);
+            return null;
+        }
 
-        return await findModel(modelName).findAll({
+        logger.info(`Fetching notations for ${boardType} ${notationType} with parent ID: ${parentId}`);
+        const results = await findModel(modelName).findAll({
             where: {
                 [boardFieldIdFieldName]: parentId,
             },
@@ -374,6 +393,9 @@ export default function dbUtil() {
                 db.sequelize.models[boardModelName],
             ],
         });
+
+        logger.info(`Found ${results.length} notations`);
+        return results;
     }
 
     async function createNotation(
@@ -381,39 +403,43 @@ export default function dbUtil() {
         notationType: String,
         notation: NotationAttributes
     ) {
-        const modelName = getModelName(boardType, notationType); // e.g. LessonSymbol
-        const boardName = boardType.toString().toLowerCase(); // e.g lesson
-        const boardModelName = capitalize(boardName); // e.g Lesson
+        logger.info(`Creating notation of type ${notationType} for ${boardType}`);
+        const modelName = getModelName(boardType, notationType);
+        const boardName = boardType.toString().toLowerCase();
+        const boardModelName = capitalize(boardName);
 
         if (!validateModel(notation)) {
-
+            logger.error(`Invalid notation model: ${JSON.stringify(notation)}`);
             return;
         }
 
-        (notation as any).userId = (await getIdByUUId(
-            "User",
-            notation.user.uuid
-        )) as number;
+        try {
+            (notation as any).userId = (await getIdByUUId(
+                "User",
+                notation.user.uuid
+            )) as number;
 
-        
-        (notation as any)[boardName + "Id"] = (await getIdByUUId(
-            boardModelName,
-            notation.parentUUId
-        )) as number;
+            (notation as any)[boardName + "Id"] = (await getIdByUUId(
+                boardModelName,
+                notation.parentUUId
+            )) as number;
 
-        const res = await findModel(modelName).create(
-            notation as any
-        );
+            const res = await findModel(modelName).create(notation as any);
+            logger.info(`Created notation with ID: ${res.dataValues.id}`);
 
-        return await findModel(modelName).findByPk(
-            res.dataValues.id,
-            {
-                include: [
-                    User,
-                    db.sequelize.models[boardModelName],
-                ] /*e.g. include Lesson*/,
-            }
-        );
+            return await findModel(modelName).findByPk(
+                res.dataValues.id,
+                {
+                    include: [
+                        User,
+                        db.sequelize.models[boardModelName],
+                    ],
+                }
+            );
+        } catch (error) {
+            logger.error(`Error creating notation: ${error}`);
+            throw error;
+        }
     }
 
     async function updateNotation(

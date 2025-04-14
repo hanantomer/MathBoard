@@ -8,7 +8,7 @@ import AuthorizationService from "./authorizationService";
 import AuthenticationService from "./authenticationService";
 import HeartbeatService from "./heartbeatService";
 import SelectedCellSyncService from "./selectedCellSyncService";
-import ColorizedCellSyncService from "./colorizedCellSyncService";
+//import ColorizedCellSyncService from "./colorizedCellSyncService";
 import NotationSyncService from "./notationSyncService";
 import { SelectedCell, ColorizedCell } from "../../math-common/src/baseTypes";
 import { LessonNotationAttributes } from "../../math-common/src/lessonTypes";
@@ -19,7 +19,7 @@ type ServiceTypes = {
   authentication: AuthenticationService;
   heartbeat: HeartbeatService;
   selectedCell: SelectedCellSyncService;
-  colorizedCell: ColorizedCellSyncService;
+  //colorizedCell: ColorizedCellSyncService;
   notationSync: NotationSyncService;
 };
 
@@ -38,7 +38,7 @@ app.use("authorization", new AuthorizationService(app));
 app.use("authentication", new AuthenticationService(app));
 app.use("heartbeat", new HeartbeatService(app));
 app.use("selectedCell", new SelectedCellSyncService(app));
-app.use("colorizedCell", new ColorizedCellSyncService(app));
+//app.use("colorizedCell", new ColorizedCellSyncService(app));
 app.use("notationSync", new NotationSyncService(app));
 
 
@@ -50,9 +50,9 @@ app
       return [
         app.channel(
           constants.LESSON_CHANNEL_PREFIX +
-            authorization.lessonUUId +
+            authorization.data.lessonUUId +
             constants.USER_CHANNEL_PREFIX +
-            authorization.userUUId
+            authorization.data.userUUId
         ),
       ];
     }
@@ -78,21 +78,21 @@ app.service("selectedCell").publish("updated", (id: any, selectedCell: any, ctx:
   return app.channel( constants.LESSON_CHANNEL_PREFIX + selectedCell.data.lessonUUId );
 });
 
-app
-  .service("colorizedCell")
-  .publish(
-    "updated",
-    (
-      id: any,
-      colorizedCell: ColorizedCell,
-      ctx: any
-    ) => {
-      return app.channel(
-        constants.LESSON_CHANNEL_PREFIX +
-          colorizedCell.lessonUUId
-      );
-    }
-  );
+// app
+//   .service("colorizedCell")
+//   .publish(
+//     "updated",
+//     (
+//       id: any,
+//       colorizedCell: ColorizedCell,
+//       ctx: any
+//     ) => {
+//       return app.channel(
+//         constants.LESSON_CHANNEL_PREFIX +
+//           colorizedCell.lessonUUId
+//       );
+//     }
+//   );
 
 app.service("notationSync").publish("created", (notation: LessonNotationAttributes, ctx: any) => {
   return app.channel(constants.LESSON_CHANNEL_PREFIX + notation.lesson.uuid);
@@ -104,12 +104,12 @@ app
     "updated",
     (
       id: any,
-      notation: LessonNotationAttributes,
+      notation: any,
       ctx: any
     ) => {
       return app.channel(
         constants.LESSON_CHANNEL_PREFIX +
-          notation.lesson.uuid
+          notation.data.lesson.uuid
       );
     }
   );
@@ -120,12 +120,12 @@ app
     "removed",
     (
       id: any,
-      notation: LessonNotationAttributes,
+      notation: any,
       ctx: any
     ) => {
       return app.channel(
         constants.LESSON_CHANNEL_PREFIX +
-          notation.lesson.uuid
+          notation.result.lesson.uuid
       );
     }
   );

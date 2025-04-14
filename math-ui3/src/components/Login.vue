@@ -1,6 +1,6 @@
 <template>
   <v-dialog v-model="show" max-width="500" persistent>
-    <v-card height="400">
+    <v-card>
       <v-card-text>
         <v-form ref="loginForm" v-model="valid" lazy-validation>
           <v-row>
@@ -86,7 +86,7 @@ const router = useRouter();
 const route = useRoute();
 
 let loginForm = ref();
-let loginFailed = false;
+let loginFailed = ref(false);
 let show = ref(false);
 let valid = ref<boolean>(false);
 
@@ -134,11 +134,11 @@ async function validateLogin() {
   );
 
   if (!authenticatedUser) {
-    loginFailed = true;
+    loginFailed.value = true;
     return;
   }
 
-  loginFailed = false;
+  loginFailed.value = false;
 
   userStore.setCurrentUser(authenticatedUser);
 

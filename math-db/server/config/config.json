@@ -1,10 +1,10 @@
 {
   "development": {
-    "storage": "./math.db",
+    "storage": "../math-db/math.db",
     "dialect": "sqlite"
   },
   "test": {
-    "storage": "./mathTest.db",
+    "storage": "../math-db/mathTest.db",
     "dialect": "sqlite"
   }
 }

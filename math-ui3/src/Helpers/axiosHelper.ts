@@ -1,10 +1,12 @@
 import axios from "axios";
 import { useCookies } from "vue3-cookies";
+import { baseURL } from "../../../math-common/src/globals";
 const { cookies } = useCookies();
+
 
 export default function axiosHelper() {
   ///TODO: take from enviroment
-  const baseURL = "/api";
+
 
   function handleError(error: any) {
     if (error.response) {

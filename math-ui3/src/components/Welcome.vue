@@ -49,12 +49,17 @@ import { useUserStore } from "../store/pinia/userStore";
 const router = useRouter();
 const userStore = useUserStore();
 
-
 function registerStudent(redirectAfterLogin: string) {
-  router.push({
-    name: "registerStudent",
-    query: { from: redirectAfterLogin },
-  });
+  if (redirectAfterLogin) {
+    router.push({
+      name: "registerStudent",
+      query: { from: redirectAfterLogin },
+    });
+  } else {
+    router.push({
+      name: "registerTeacher",
+    });
+  }
 }
 
 function login(redirectAfterLogin: string) {

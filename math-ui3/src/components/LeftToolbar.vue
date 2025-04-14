@@ -98,7 +98,7 @@
       </template>
     </v-tooltip>
 
-    <ColororizeTool v-if="userStore.isTeacher()"></ColororizeTool>
+    <ColororizeTool></ColororizeTool>
   </v-toolbar>
 </template>
 

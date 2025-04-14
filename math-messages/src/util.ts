@@ -1,6 +1,8 @@
 import useAuthUtil from "../../math-auth/build/authUtil";
 import { UserAttributes } from "../../math-common/build/userTypes";
 const authUtil = useAuthUtil();
+import axios from "axios";
+import { baseURL } from "../../math-common/build/globals";
 
 export default {
   getAccessTokenFromCookie: function (
@@ -22,10 +24,15 @@ export default {
     
     if (!cookie) return null;
     
-    let access_token =  this.getAccessTokenFromCookie(cookie);
+    let access_token = this.getAccessTokenFromCookie(cookie);
+    
+    // const user =
+    //   await axios.get<UserAttributes>(
+    //     baseURL + "/auth"
+    //   );
 
     const user = await authUtil.authByLocalToken(
-      access_token
+     access_token
     );
 
     if (!user) {

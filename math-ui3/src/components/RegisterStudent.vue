@@ -1,13 +1,20 @@
 <template>
-  <v-dialog v-model="show" width="1000" height="800" persistent>
+  <v-dialog v-model="show" width="700" height="500" persistent>
     <v-card style="overflow-y: hidden">
       <v-card-title>
         {{ registrationTitle }}
       </v-card-title>
       <v-card-text>
+        <v-btn
+          style="position: absolute; right: 10px; top: 10px"
+          density="compact"
+          icon="mdi-minus"
+          @click="close"
+        ></v-btn>
+
         <v-form ref="registerForm" v-model="valid" lazy-validation>
           <v-row>
-            <v-col cols="4">
+            <v-col cols="3">
               <v-text-field
                 data-cy="register_fname"
                 v-model="firstName"
@@ -17,7 +24,7 @@
                 required
               ></v-text-field>
             </v-col>
-            <v-col cols="4">
+            <v-col cols="3">
               <v-text-field
                 data-cy="register_lname"
                 v-model="lastName"
@@ -27,7 +34,7 @@
                 required
               ></v-text-field>
             </v-col>
-            <v-col cols="4">
+            <v-col cols="6">
               <v-text-field
                 data-cy="register_email"
                 v-model="email"
@@ -129,6 +136,16 @@ watch(
   },
   { flush: "pre", immediate: true },
 );
+
+function close() {
+  show.value = false;
+  registerForm.value = null;
+  firstName.value = "";
+  lastName.value = "";
+  email.value = "";
+  password.value = "";
+  verify.value = "";
+}
 
 async function register() {
   let formVlidated: any = await (registerForm.value as any).validate();

@@ -1,3 +1,4 @@
+export const baseURL = "/api";
 //export const messagingHost = "/msg";  // see proxy configuration in vite.config.ts
 //export const apiHost = "/api";
 export const matrixDimensions = {

@@ -15,7 +15,8 @@
         "sequelize-typescript": "^2.1.5",
         "sqlite": "^5.0.1",
         "sqlite3": "^5.1.6",
-        "typescript": "^5.2.2"
+        "typescript": "^5.2.2",
+        "winston": "^3.17.0"
     },
     "devDependencies": {
         "@types/node": "^18.17.11",

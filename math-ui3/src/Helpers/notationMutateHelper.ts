@@ -27,6 +27,7 @@ import {
   SqrtNotationAttributes,
 } from "common/baseTypes";
 
+import { LessonNotationAttributes } from "common/lessonTypes";
 import { matrixDimensions } from "common/globals";
 import { CellAttributes } from "common/baseTypes";
 import { NotationType, SelectionMoveDirection } from "common/unions";
@@ -39,6 +40,7 @@ import useUserOutgoingOperations from "./userOutgoingOperationsHelper";
 import useMatrixCellHelper from "../helpers/matrixCellHelper";
 
 import { NotationAttributes, RectAttributes } from "common/baseTypes";
+import { LessonAttributes } from "common/lessonTypes";
 
 const matrixCellHelper = useMatrixCellHelper();
 const userStore = useUserStore();
@@ -802,7 +804,7 @@ export default function notationMutateHelper() {
         if (notationStore.getParent().type === "LESSON") {
           userOutgoingOperations.syncOutgoingRemoveNotation(
             n.uuid,
-            n.parentUUId,
+            (n as LessonNotationAttributes).lesson.uuid
           );
         }
       });
