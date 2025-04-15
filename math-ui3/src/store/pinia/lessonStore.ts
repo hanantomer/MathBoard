@@ -1,14 +1,14 @@
 //  questions of current lesson
 import { LessonAttributes, LessonCreationAttributes } from "common/lessonTypes";
 import { defineStore } from "pinia";
-import dbHelper from "../../helpers/dbHelper";
+import apiHelper from "../../helpers/apiHelper";
 import { useUserStore } from "./userStore";
 import { ref } from "vue";
 import {
   StudentLessonAttributes,
   StudentLessonCreationAttributes,
 } from "common/userTypes";
-const db = dbHelper();
+const db = apiHelper();
 
 export const useLessonStore = defineStore("lesson", () => {
   let lessons = ref<Map<String, LessonAttributes>>(new Map());

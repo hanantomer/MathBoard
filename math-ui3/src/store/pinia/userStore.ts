@@ -2,8 +2,8 @@ import { ref } from "vue";
 import { defineStore } from "pinia";
 import { UserAttributes, UserCreationAttributes } from "common/userTypes";
 
-import dbHelper from "../../helpers/dbHelper";
-const db = dbHelper();
+import apiHelper from "../../helpers/apiHelper";
+const db = apiHelper();
 
 export const useUserStore = defineStore("user", () => {
   let currentUser = ref<UserAttributes | null>();

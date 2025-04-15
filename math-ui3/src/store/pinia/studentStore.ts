@@ -1,8 +1,8 @@
 import { defineStore } from "pinia";
 import { UserAttributes } from "common/userTypes";
 import { ref } from "vue";
-import dbHelper from "../../helpers/dbHelper";
-const db = dbHelper();
+import apiHelper from "../../helpers/apiHelper";
+const db = apiHelper();
 
 export const useStudentStore = defineStore("studentanswer", () => {
   let students = ref(<Map<String, UserAttributes>>new Map());

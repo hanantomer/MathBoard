@@ -4,10 +4,10 @@ import { useQuestionStore } from "./questionStore";
 import { useUserStore } from "./userStore";
 import { ref } from "vue";
 
-import useDbHelper from "../../helpers/dbHelper";
+import useApiHelper from "../../helpers/apiHelper";
 const questionStore = useQuestionStore();
 const userStore = useUserStore();
-const db = useDbHelper();
+const db = useApiHelper();
 
 export const useAnswerStore = defineStore("answer", () => {
   let answers = ref<Map<String, AnswerAttributes>>(new Map());
@@ -65,7 +65,6 @@ export const useAnswerStore = defineStore("answer", () => {
       (a) => a.question?.uuid === questionUUId,
     );
   }
-
 
   return {
     getAnswers,

@@ -4,14 +4,14 @@ import {
   QuestionAttributes,
   QuestionCreationAttributes,
 } from "common/questionTypes";
-import useDbHelper from "../../helpers/dbHelper";
+import useApiHelper from "../../helpers/apiHelper";
 import { useLessonStore } from "./lessonStore";
 import { useUserStore } from "./userStore";
 import { ref } from "vue";
 
 const lessonStore = useLessonStore();
 const userStore = useUserStore();
-const db = useDbHelper();
+const db = useApiHelper();
 
 ///TODO: create convention for all crud operation for all stores
 
@@ -27,7 +27,9 @@ export const useQuestionStore = defineStore("question", () => {
     return currentQuestion.value;
   }
 
-  async function loadQuestion(questionUUId: string) : Promise<QuestionAttributes | null> {
+  async function loadQuestion(
+    questionUUId: string,
+  ): Promise<QuestionAttributes | null> {
     let question = await db.getQuestion(questionUUId);
 
     if (!question) return null;

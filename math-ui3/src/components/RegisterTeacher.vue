@@ -1,13 +1,12 @@
 <template>
   <v-dialog v-model="show" width="1000" height="900" persistent>
-    <v-alert
-      text="This site is currently in Beta, so it’s free to use for the near future. Due to limited capacity, we can only enroll a select number of users. All sign-in requests will require approval, and we’ll send you a confirmation email once approved."
-      title="Attention"
-      type="success"
-    >
-    </v-alert>
     <v-card style="overflow-y: hidden">
-      <v-btn style="position:absolute;right: 10px;top:10px" density="compact" icon="mdi-minus" @click="close"></v-btn>
+      <v-btn
+        style="position: absolute; right: 10px; top: 10px"
+        density="compact"
+        icon="mdi-minus"
+        @click="close"
+      ></v-btn>
       <v-card-title>
         {{ registrationTitle }}
       </v-card-title>
@@ -233,6 +232,15 @@
             </v-col>
           </v-row>
           <v-row>
+            <v-alert
+              text="This site is currently in Beta, so it’s free to use for the near future. Due to limited capacity, we can only enroll a select number of users. All sign-in requests will require approval, and we’ll send you a confirmation email once approved."
+              title="Attention"
+              type="success"
+            >
+            </v-alert>
+          </v-row>
+
+          <v-row>
             <v-col class="d-flex" cols="12" align-end>
               <v-btn
                 :disabled="!acceptedTerms"
@@ -298,6 +306,7 @@ watch(
     if (params.name === "registerTeacher") {
       redirectAfterLogin = params.query?.from?.toString() || "";
       show.value = true;
+      throw new Error("registerTeacher route is not implemented yet");
     }
   },
   { flush: "pre", immediate: true },

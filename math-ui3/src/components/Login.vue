@@ -1,5 +1,5 @@
 <template>
-  <v-dialog v-model="show" max-width="500" persistent>
+  <v-dialog v-model="show" max-width="660" persistent>
     <v-card>
       <v-card-text>
         <v-form ref="loginForm" v-model="valid" lazy-validation>
@@ -36,6 +36,16 @@
                 readonly
                 outlined
                 value="Invalid email or password"
+                prepend-inner-icon="mdi-error"
+              ></v-text-field>
+              <v-text-field
+                class="alerttext"
+                prepend-icon="mdi-account-alert"
+                v-if="userNotApproved"
+                color="#F44336"
+                readonly
+                outlined
+                value="Your account is not approved yet, we will notify you when it is approved"
                 prepend-inner-icon="mdi-error"
               ></v-text-field>
             </v-col>
@@ -87,6 +97,7 @@ const route = useRoute();
 
 let loginForm = ref();
 let loginFailed = ref(false);
+let userNotApproved = ref(false);
 let show = ref(false);
 let valid = ref<boolean>(false);
 
@@ -138,6 +149,12 @@ async function validateLogin() {
     return;
   }
 
+  if (authenticatedUser.approved === false) {
+    userNotApproved.value = true;
+    return;
+  }
+
+  userNotApproved.value = false;
   loginFailed.value = false;
 
   userStore.setCurrentUser(authenticatedUser);

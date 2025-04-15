@@ -8,17 +8,16 @@ import {
   SlopeLineNotationAttributes,
 } from "common/baseTypes";
 
-import useDbHelper from "./dbHelper";
+import useApiHelper from "./apiHelper";
 import { useNotationStore } from "../store/pinia/notationStore";
-import { BoardType, NotationType,  NotationTypeValues } from "common/unions";
+import { BoardType, NotationType, NotationTypeValues } from "common/unions";
 
 const notationStore = useNotationStore();
-const dbHelper = useDbHelper();
+const apiHelper = useApiHelper();
 
 export default function notationLoadingHelper() {
   // e.g get lesson notations
   async function loadNotations(boardType: BoardType, parentUUId: string) {
-
     let notations: NotationAttributes[] = [];
 
     for (let i = 0; i < NotationTypeValues.length; i++) {
@@ -46,7 +45,6 @@ export default function notationLoadingHelper() {
     notationType: NotationType,
     parentUUId: string,
   ): Promise<NotationAttributes[]> {
-
     if (!boardType) boardType = notationStore.getParent().type;
 
     switch (notationType) {
@@ -55,39 +53,39 @@ export default function notationLoadingHelper() {
       case "SIGN":
       case "SQRTSYMBOL":
       case "SYMBOL":
-        return await dbHelper.getNotations<PointNotationAttributes>(
+        return await apiHelper.getNotations<PointNotationAttributes>(
           notationType,
           boardType,
           parentUUId,
         );
       case "SQRT":
       case "HORIZONTALLINE":
-        return await dbHelper.getNotations<HorizontalLineNotationAttributes>(
+        return await apiHelper.getNotations<HorizontalLineNotationAttributes>(
           notationType,
           boardType,
           parentUUId,
         );
       case "VERTICALLINE":
-        return await dbHelper.getNotations<VerticalLineNotationAttributes>(
+        return await apiHelper.getNotations<VerticalLineNotationAttributes>(
           notationType,
           boardType,
           parentUUId,
         );
       case "SLOPELINE":
-        return await dbHelper.getNotations<SlopeLineNotationAttributes>(
+        return await apiHelper.getNotations<SlopeLineNotationAttributes>(
           notationType,
           boardType,
           parentUUId,
         );
       case "IMAGE":
       case "TEXT":
-        return await dbHelper.getNotations<RectNotationAttributes>(
+        return await apiHelper.getNotations<RectNotationAttributes>(
           notationType,
           boardType,
           parentUUId,
         );
       case "CURVE":
-        return await dbHelper.getNotations<CurveNotationAttributes>(
+        return await apiHelper.getNotations<CurveNotationAttributes>(
           notationType,
           boardType,
           parentUUId,

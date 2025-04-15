@@ -1,4 +1,4 @@
-import useDbHelper from "../helpers/dbHelper";
+import useApiHelper from "../helpers/apiHelper";
 
 import {
   PointNotationAttributes,
@@ -44,7 +44,7 @@ import { LessonAttributes } from "common/lessonTypes";
 
 const matrixCellHelper = useMatrixCellHelper();
 const userStore = useUserStore();
-const dbHelper = useDbHelper();
+const apiHelper = useApiHelper();
 const notationStore = useNotationStore();
 const cellStore = useCellStore();
 const editModeStore = useEditModeStore();
@@ -417,7 +417,7 @@ export default function notationMutateHelper() {
 
   // move selected notations with persistence - called upon muose up
   async function saveMovedNotations(moveDirection: SelectionMoveDirection) {
-    await dbHelper.saveMovedNotations(
+    await apiHelper.saveMovedNotations(
       getSelectedNotationsSortedByDirection(moveDirection),
     );
 
@@ -471,13 +471,13 @@ export default function notationMutateHelper() {
     lineNotation: HorizontalLineNotationAttributes,
   ) {
     transposeHorizontalCoordinatesIfNeeded(lineNotation);
-    await dbHelper.updateHorizontalLineNotationAttributes(lineNotation);
+    await apiHelper.updateHorizontalLineNotationAttributes(lineNotation);
     notationStore.addNotation(lineNotation, true);
   }
 
   async function updateSqrtNotation(sqrtNotation: SqrtNotationAttributes) {
     transposeSqrtCoordinatesIfNeeded(sqrtNotation);
-    await dbHelper.updateSqrtNotationAttributes(sqrtNotation);
+    await apiHelper.updateSqrtNotationAttributes(sqrtNotation);
     notationStore.addNotation(sqrtNotation, true);
   }
 
@@ -485,19 +485,19 @@ export default function notationMutateHelper() {
     lineNotation: VerticalLineNotationAttributes,
   ) {
     transposeVerticalCoordinatesIfNeeded(lineNotation);
-    await dbHelper.updateVerticalLineNotationAttributes(lineNotation);
+    await apiHelper.updateVerticalLineNotationAttributes(lineNotation);
     notationStore.addNotation(lineNotation, true);
   }
 
   async function updateSlopeLineNotation(
     lineNotation: SlopeLineNotationAttributes,
   ) {
-    await dbHelper.updateSlopeLineNotationAttributes(lineNotation);
+    await apiHelper.updateSlopeLineNotationAttributes(lineNotation);
     notationStore.addNotation(lineNotation, true);
   }
 
   async function updateCurveNotation(curve: CurveNotationAttributes) {
-    await dbHelper.updateCurveNotationAttributes(curve);
+    await apiHelper.updateCurveNotationAttributes(curve);
     notationStore.addNotation(curve, true);
   }
 
@@ -607,7 +607,7 @@ export default function notationMutateHelper() {
 
     setNotationAttributes(existingNotation, notation);
 
-    dbHelper.updateNotationValue(existingNotation);
+    apiHelper.updateNotationValue(existingNotation);
 
     notationStore.addNotation(existingNotation, true);
 
@@ -615,7 +615,7 @@ export default function notationMutateHelper() {
   }
 
   function addNotation(notation: NotationCreationAttributes) {
-    dbHelper.addNotation(notation).then((newNotation) => {
+    apiHelper.addNotation(notation).then((newNotation) => {
       newNotation.notationType = notation.notationType;
       notationStore.addNotation(newNotation, true);
 
@@ -791,7 +791,7 @@ export default function notationMutateHelper() {
       .getSelectedNotations()
       .forEach(async (n: NotationAttributes) => {
         // from db
-        await dbHelper.removeNotation(n);
+        await apiHelper.removeNotation(n);
       });
 
     notationStore
@@ -804,7 +804,7 @@ export default function notationMutateHelper() {
         if (notationStore.getParent().type === "LESSON") {
           userOutgoingOperations.syncOutgoingRemoveNotation(
             n.uuid,
-            (n as LessonNotationAttributes).lesson.uuid
+            (n as LessonNotationAttributes).lesson.uuid,
           );
         }
       });
@@ -1063,7 +1063,7 @@ export default function notationMutateHelper() {
 
   async function updateNotation(notation: NotationAttributes) {
     notationStore.addNotation(notation, true);
-    await dbHelper.updateNotation(notation);
+    await apiHelper.updateNotation(notation);
     userOutgoingOperations.syncOutgoingUpdateNotation(notation);
   }
 

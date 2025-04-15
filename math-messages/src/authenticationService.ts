@@ -1,49 +1,54 @@
 import constants from "./constants";
 import { Application } from "@feathersjs/feathers";
 import { UserAttributes } from "../../math-common/src/userTypes";
+import winston from "winston";
+
+const logger = winston.createLogger({
+  level: "info",
+  format: winston.format.combine(
+    winston.format.timestamp(),
+    winston.format.printf(
+      ({ timestamp, level, message }) => {
+        return `${timestamp} [${level.toUpperCase()}]: ${message}`;
+      }
+    )
+  ),
+  transports: [
+    new winston.transports.Console(),
+    new winston.transports.File({
+      filename: "authentication.log",
+    }),
+  ],
+});
 
 export default class AuthenticationService {
   app: any;
   lessonAdminConnection: Map<any, any>;
   lessonStudentConnection: Map<any, any>;
+
   constructor(app: Application) {
     this.app = app;
-    this.lessonAdminConnection = new Map(); // key lesson, value: userUUId/connection(1 only)
-    this.lessonStudentConnection = new Map(); // key lesson, value: set where key:userUUId
+    this.lessonAdminConnection = new Map();
+    this.lessonStudentConnection = new Map();
+    logger.info(
+      "Authentication service initialized"
+    );
   }
 
-  // async get(access_token: string) {
-  //   let user: any =
-  //     await authUtil.authByLocalToken(
-  //       access_token
-  //     );
-  //   if (!user) {
-  //     console.error(
-  //       `access_token:${access_token} not accociated with any user`
-  //     );
-  //     return;
-  //   }
-  //   return user;
-  // }
-
-  // manage user login, join user to lesson or user channels
   async create(
-    userLesson: UserAttributes & { lessonUUId : string },
+    userLesson: UserAttributes & {
+      lessonUUId: string;
+    },
     params: any
   ) {
-    // let user = await util.getUserFromCookie(
-    //   params.headers.cookie
-    // );
-
-    // if (!user) {
-    //   return;
-    // }
-
-    // if (!data.lessonUUId) {
-    //   return;
-    // }
+    logger.info(
+      `User ${userLesson.email} attempting to join lesson ${userLesson.lessonUUId}`
+    );
 
     if (userLesson.userType === "TEACHER") {
+      logger.info(
+        `Processing teacher join request for ${userLesson.email}`
+      );
       this.joinTeacher(
         params.connection,
         userLesson.uuid,
@@ -51,6 +56,9 @@ export default class AuthenticationService {
         userLesson.lessonUUId
       );
     } else {
+      logger.info(
+        `Processing student join request for ${userLesson.email}`
+      );
       this.joinStudent(
         params.connection,
         userLesson.uuid,
@@ -59,15 +67,14 @@ export default class AuthenticationService {
       );
     }
 
-    // either teacher or student join lesson channel
     this.app
       .channel(
         constants.LESSON_CHANNEL_PREFIX +
           userLesson.lessonUUId
       )
       .join(params.connection);
-    console.log(
-      `subscribing user: ${userLesson.email} to lesson: ${userLesson.lessonUUId}`
+    logger.info(
+      `User ${userLesson.email} joined lesson channel ${userLesson.lessonUUId}`
     );
   }
 
@@ -77,47 +84,51 @@ export default class AuthenticationService {
     email: string,
     lessonUUId: string
   ) {
+    logger.info(
+      `Student ${email} joining lesson ${lessonUUId}`
+    );
+
     if (
       !this.lessonStudentConnection.has(
         lessonUUId
       )
     ) {
+      logger.debug(
+        `Creating new student connection set for lesson ${lessonUUId}`
+      );
       this.lessonStudentConnection.set(
         lessonUUId,
         new Set()
       );
     }
+
     this.lessonStudentConnection
       .get(lessonUUId)
       .add(userUUId);
-
-    // join studnet to student channel
-    this.app
-      .channel(
-        constants.LESSON_CHANNEL_PREFIX +
-          lessonUUId +
-          constants.USER_CHANNEL_PREFIX +
-          userUUId
-      )
-      .join(connection);
-    console.log(
-      `subscribing student: ${email} to lesson: ${lessonUUId}`
+    logger.debug(
+      `Added student ${email} to lesson ${lessonUUId} connection set`
     );
 
-    // join teacher to student channel
+    const studentChannel =
+      constants.LESSON_CHANNEL_PREFIX +
+      lessonUUId +
+      constants.USER_CHANNEL_PREFIX +
+      userUUId;
+    this.app
+      .channel(studentChannel)
+      .join(connection);
+    logger.info(
+      `Student ${email} joined their individual channel in lesson ${lessonUUId}`
+    );
+
     if (
       this.lessonAdminConnection.has(lessonUUId)
     ) {
-      console.log(
-        `subscribing admin: ${email} to student: ${userUUId}`
+      logger.info(
+        `Connecting teacher to student ${email} channel in lesson ${lessonUUId}`
       );
       this.app
-        .channel(
-          constants.LESSON_CHANNEL_PREFIX +
-            lessonUUId +
-            constants.USER_CHANNEL_PREFIX +
-            userUUId
-        )
+        .channel(studentChannel)
         .join(
           this.lessonAdminConnection.get(
             lessonUUId
@@ -132,33 +143,39 @@ export default class AuthenticationService {
     email: string,
     lessonUUId: string
   ) {
-    // store admin connection when she logs on
+    logger.info(
+      `Teacher ${email} joining lesson ${lessonUUId}`
+    );
+
     this.lessonAdminConnection.set(lessonUUId, {
       userUUId: userUUId,
       connection: connection,
     });
+    logger.debug(
+      `Stored teacher connection for lesson ${lessonUUId}`
+    );
 
-    // join teacher to existing student channels
     if (
       this.lessonStudentConnection.has(lessonUUId)
     ) {
+      logger.info(
+        `Connecting teacher to existing student channels in lesson ${lessonUUId}`
+      );
       this.lessonStudentConnection
         .get(lessonUUId)
         .forEach((student: number) => {
-          // join admin to all student channels
+          const studentChannel =
+            constants.LESSON_CHANNEL_PREFIX +
+            lessonUUId +
+            constants.USER_CHANNEL_PREFIX +
+            student;
           this.app
-            .channel(
-              constants.LESSON_CHANNEL_PREFIX +
-                lessonUUId +
-                constants.USER_CHANNEL_PREFIX +
-                student
-            )
+            .channel(studentChannel)
             .join(connection);
-          console.log(
-            `subscribing admin: ${email} to student: ${student}`
+          logger.debug(
+            `Teacher ${email} joined student ${student} channel`
           );
         });
     }
   }
 }
-

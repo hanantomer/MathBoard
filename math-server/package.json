@@ -31,7 +31,8 @@
         "ts-node": "^10.9.1",
         "tsconfig-paths": "^4.2.0",
         "vue-router": "^4.4.5",
-        "vue3-cookies": "^1.0.6"
+        "vue3-cookies": "^1.0.6",
+        "winston": "^3.17.0"
     },
     "devDependencies": {
         "@types/body-parser": "^1.19.2",

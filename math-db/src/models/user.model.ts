@@ -98,4 +98,11 @@ export default class User extends Model<
         foreignKey: "answerId",
     })
     answers!: Answer[];
+
+    @Column({
+        type: DataType.BOOLEAN,
+        allowNull: false,
+        defaultValue: false,
+    })
+    approved!: boolean;
 }

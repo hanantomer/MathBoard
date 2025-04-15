@@ -1,21 +1,24 @@
+import winston from "winston";
 import express, { Request, Response, NextFunction } from "express";
 import cors from "cors";
 import bodyParser from "body-parser";
-import useAuthUtil  from "../../math-auth/build/authUtil";
-import useDb from "../../math-db/build/dbUtil"
+import useAuthUtil from "../../math-auth/build/authUtil";
+import useDb from "../../math-db/build/dbUtil";
 import connection from "../../math-db/build/models/index";
 const { exec } = require("child_process");
-import { BoardTypeValues, NotationTypeValues } from "../../math-common/build/unions"
+import {
+    BoardTypeValues,
+    NotationTypeValues,
+} from "../../math-common/build/unions";
 import { createTransport } from "nodemailer";
 
 var transporter = createTransport({
     service: "gmail",
     auth: {
-        user: "mathboard16@gmail.com",  ///TODO: move to env
+        user: "mathboard16@gmail.com", ///TODO: move to env
         pass: "uhte keto xhzb fiuz",
     },
 });
-
 
 const authUtil = useAuthUtil();
 const db = useDb();
@@ -30,9 +33,43 @@ app.use(
     })
 );
 
+const logger = winston.createLogger({
+    level: "info",
+    format: winston.format.combine(
+        winston.format.timestamp(),
+        winston.format.printf(({ timestamp, level, message }) => {
+            return `${timestamp} [${level.toUpperCase()}]: ${message}`;
+        })
+    ),
+    transports: [
+        new winston.transports.File({ filename: "client.log" }),
+    ],
+});
 
+app.post(
+    "/api/log",
+    async (req: Request, res: Response, next: NextFunction) => {
+        try {
+            if (req.body.level) {
+                logger.log({
+                    level: req.body.level,
+                    message: req.body.message,
+                });
+            } else {
+                logger.info(req.body.message);
+            }
+            return res.status(200).send("ok");
+        } catch (err) {
+            next(err);
+        }
+})
 
 async function auth(req: Request, res: Response, next: NextFunction) {
+
+    if (req.url.indexOf("/api/log") == 0) { // omit logging
+        return next();      
+    }
+
     // omit authorization enforcement when signing in
     if (req.method === "POST" && req.url.indexOf("/api/auth") == 0) {
         next();
@@ -56,11 +93,14 @@ async function auth(req: Request, res: Response, next: NextFunction) {
     }
 }
 
-
 /*verifies that authenitication header exists and  denotes a valid user
 if yes, set header userUUId
 */
-async function validateHeaderAuthentication(req: Request, res: Response, next: NextFunction) : Promise<boolean>{
+async function validateHeaderAuthentication(
+    req: Request,
+    res: Response,
+    next: NextFunction
+): Promise<boolean> {
     if (!req.headers.authorization) {
         res = res.status(401).json("unauthorized");
         return false;
@@ -68,18 +108,18 @@ async function validateHeaderAuthentication(req: Request, res: Response, next: N
     const user = await authUtil.authByLocalToken(
         req.headers.authorization.toString()
     );
-    
+
     if (!user) {
         res = res.status(401).json("invalid token");
         return false;
     }
-    
+
     if (req.url.indexOf("/api/auth") == 0) {
         res.status(200).json(user);
     }
 
     req.headers.userId = user?.id?.toString();
-    
+
     return true;
 }
 
@@ -101,8 +141,8 @@ app.post(
                 return res.status(200);
             }
         });
-    });
-
+    }
+);
 
 app.post(
     "/api/auth",
@@ -169,20 +209,28 @@ app.get(
     }
 );
 
-
 // student
-app.get("/api/students", async (req: Request, res: Response, next: NextFunction): Promise<Response | undefined> => {
-    try {
-        const { uuid } = req.query;
- 
-        if (!uuid) throw new Error("invalid arguments user uuid  must be supplied");
-    
-        return res.status(200).json(await db.getUser(uuid as string));
+app.get(
+    "/api/students",
+    async (
+        req: Request,
+        res: Response,
+        next: NextFunction
+    ): Promise<Response | undefined> => {
+        try {
+            const { uuid } = req.query;
+
+            if (!uuid)
+                throw new Error(
+                    "invalid arguments user uuid  must be supplied"
+                );
+
+            return res.status(200).json(await db.getUser(uuid as string));
+        } catch (err) {
+            next(err);
+        }
     }
-    catch (err) {
-        next(err);
-    }
-});
+);
 
 // lesson
 app.get(
@@ -206,8 +254,7 @@ app.get(
             throw new Error(
                 "invalid arguments either userUUId or lessonUUId must be supplied"
             );
-        }
-        catch (err) {
+        } catch (err) {
             next(err);
         }
     }
@@ -222,8 +269,7 @@ app.post(
     ): Promise<Response | undefined> => {
         try {
             return res.status(200).json(await db.createLesson(req.body));
-        }
-        catch (err) {
+        } catch (err) {
             next(err);
         }
     }
@@ -245,11 +291,14 @@ app.get(
                     .status(200)
                     .json(await db.getQuestions(lessonUUId as string));
             if (uuid)
-                return res.status(200).json(await db.getQuestion(uuid as string));
+                return res
+                    .status(200)
+                    .json(await db.getQuestion(uuid as string));
 
-            throw new Error("either lessonUUId or questionUUId must be supplied");
-        }
-        catch (err) {
+            throw new Error(
+                "either lessonUUId or questionUUId must be supplied"
+            );
+        } catch (err) {
             next(err);
         }
     }
@@ -257,37 +306,40 @@ app.get(
 
 app.post(
     "/api/questions",
-    async (req: Request, res: Response, next: NextFunction): Promise<Response | undefined> => {
+    async (
+        req: Request,
+        res: Response,
+        next: NextFunction
+    ): Promise<Response | undefined> => {
         try {
             return res.status(200).json(await db.createQuestion(req.body));
-        }
-        catch (err) {
+        } catch (err) {
             next(err);
         }
     }
 );
 
-
 // answer
-
 
 app.get(
     "/api/answers",
-    async (req: Request, res: Response, next: NextFunction): Promise<Response | undefined> => {
-
+    async (
+        req: Request,
+        res: Response,
+        next: NextFunction
+    ): Promise<Response | undefined> => {
         try {
             const { uuid, questionUUId } = req.query;
             if (questionUUId)
                 return res
                     .status(200)
                     .json(await db.getAnswers(questionUUId as string));
-        
+
             if (uuid)
                 return res.status(200).json(await db.getAnswer(uuid as string));
 
             throw new Error("either uuid or questionUUId must be supplied");
-        }
-        catch (err) {
+        } catch (err) {
             next(err);
         }
     }
@@ -295,36 +347,45 @@ app.get(
 
 app.post(
     "/api/answers",
-    async (req: Request, res: Response, next: NextFunction): Promise<Response | undefined> => {
+    async (
+        req: Request,
+        res: Response,
+        next: NextFunction
+    ): Promise<Response | undefined> => {
         try {
             return res.status(200).json(await db.createAnswer(req.body));
-        }
-        catch (err) {
+        } catch (err) {
             next(err);
         }
     }
 );
 
-
 // student lesson
 
 app.get(
     "/api/studentlessons",
-    async (req: Request, res: Response, next: NextFunction): Promise<Response | undefined> => {
-
+    async (
+        req: Request,
+        res: Response,
+        next: NextFunction
+    ): Promise<Response | undefined> => {
         try {
             const { userUUId, lessonUUId } = req.query;
 
-            if ((lessonUUId))
+            if (lessonUUId)
                 return res
                     .status(200)
-                    .json(await db.getStudentLesson(userUUId as string, lessonUUId as string));
-        
+                    .json(
+                        await db.getStudentLesson(
+                            userUUId as string,
+                            lessonUUId as string
+                        )
+                    );
+
             return res
                 .status(200)
                 .json(await db.getStudentLessons(userUUId as string));
-        }
-        catch (err) {
+        } catch (err) {
             next(err);
         }
     }
@@ -332,25 +393,29 @@ app.get(
 
 app.post(
     "/api/studentlessons",
-    async (req: Request, res: Response, next: NextFunction): Promise<Response | undefined> => {
+    async (
+        req: Request,
+        res: Response,
+        next: NextFunction
+    ): Promise<Response | undefined> => {
         try {
             return res.status(200).json(await db.createStudentLesson(req.body));
-        }
-        catch (err) {
+        } catch (err) {
             next(err);
         }
     }
 );
-
-
-
 
 // notations
 BoardTypeValues.forEach((boardType) => {
     NotationTypeValues.forEach((notationType) => {
         app.get(
             `/api/${boardType.toLowerCase()}${notationType.toLowerCase()}s`,
-            async (req: Request, res: Response, next: NextFunction): Promise<Response | undefined> => {
+            async (
+                req: Request,
+                res: Response,
+                next: NextFunction
+            ): Promise<Response | undefined> => {
                 try {
                     const { uuid } = req.query;
 
@@ -372,7 +437,6 @@ BoardTypeValues.forEach((boardType) => {
                     next(err);
                     return;
                 }
-               
             }
         );
 
@@ -393,8 +457,7 @@ BoardTypeValues.forEach((boardType) => {
                                 req.body
                             )
                         );
-                }
-                catch (err) {
+                } catch (err) {
                     next(err);
                 }
             }
@@ -402,7 +465,11 @@ BoardTypeValues.forEach((boardType) => {
 
         app.put(
             `/api/${boardType.toLowerCase()}${notationType.toLowerCase()}s`,
-            async (req: Request, res: Response, next: NextFunction): Promise<Response | undefined> => {
+            async (
+                req: Request,
+                res: Response,
+                next: NextFunction
+            ): Promise<Response | undefined> => {
                 try {
                     await db.updateNotation(
                         boardType,
@@ -411,30 +478,32 @@ BoardTypeValues.forEach((boardType) => {
                         req.body
                     );
                     return res.status(200).send();
-                }
-                catch (err) {
+                } catch (err) {
                     next(err);
                 }
             }
         );
 
-         app.delete(
-             `/api/${boardType.toLowerCase()}${notationType.toLowerCase()}s`,
-             async (req: Request, res: Response, next: NextFunction): Promise<Response | undefined> => {
-                 try {
-                     await db.deleteNotation(
-                         boardType,
-                         notationType,
-                         req.body.uuid,
-                     );
-                     return res.status(200).send();
-                 }
-                 catch (err) {
-                     next(err);
-                 }
-             }
-         );
-    })
+        app.delete(
+            `/api/${boardType.toLowerCase()}${notationType.toLowerCase()}s`,
+            async (
+                req: Request,
+                res: Response,
+                next: NextFunction
+            ): Promise<Response | undefined> => {
+                try {
+                    await db.deleteNotation(
+                        boardType,
+                        notationType,
+                        req.body.uuid
+                    );
+                    return res.status(200).send();
+                } catch (err) {
+                    next(err);
+                }
+            }
+        );
+    });
 });
 
 const errorHandler = (
@@ -446,7 +515,7 @@ const errorHandler = (
     console.error("unhandled error:" + err.message);
     console.error(err.cause);
     console.error(err.stack);
-    res.status(500).send({ errors: [{ message: err.message + err.cause }] });  /// TODO: log instaed 
+    res.status(500).send({ errors: [{ message: err.message + err.cause }] }); /// TODO: log instaed
 };
 
 app.use(errorHandler);

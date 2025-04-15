@@ -2,8 +2,8 @@ import { getCookie, removeCookie } from "typescript-cookie";
 import { UserType } from "common/unions";
 import { UserAttributes, UserCreationAttributes } from "common/userTypes";
 import { useUserStore } from "../store/pinia/userStore";
-import useDbHelper from "./dbHelper";
-const dbHelper = useDbHelper();
+import useApiHelper from "./apiHelper";
+const apiHelper = useApiHelper();
 
 export default function authenticationHelper() {
   function registerUser(
@@ -22,6 +22,7 @@ export default function authenticationHelper() {
       password: password,
       imageUrl: "",
       access_token: "",
+      approved: false,
       lastHeartbeatTime: new Date(),
     };
     const userStore = useUserStore();
@@ -29,18 +30,18 @@ export default function authenticationHelper() {
   }
 
   async function authGoogleUser() {
-    return await dbHelper.authGoogleUser();
+    return await apiHelper.authGoogleUser();
   }
 
   async function authLocalUserByToken() {
-    return await dbHelper.authLocalUserByToken();
+    return await apiHelper.authLocalUserByToken();
   }
 
   async function authLocalUserByUserAndPassword(
     email: string,
     password: string,
   ): Promise<UserAttributes | null> {
-    return await dbHelper.authLocalUserByPassword(email, password);
+    return await apiHelper.authLocalUserByPassword(email, password);
   }
 
   function getToken() {

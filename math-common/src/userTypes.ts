@@ -11,6 +11,7 @@ export type UserAttributes = EntityAttributes & {
   imageUrl: string;
   userType: UserType;
   lastHeartbeatTime?: Date;
+  approved: boolean;
 }
 
 export type UserCreationAttributes = Omit<UserAttributes, keyof EntityAttributes> 
