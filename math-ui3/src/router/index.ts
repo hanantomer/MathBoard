@@ -1,8 +1,8 @@
-import { createRouter, createWebHistory } from "vue-router";
+import { createRouter, createWebHistory, RouteRecordRaw } from "vue-router";
 import useAuthenticationHelper from "../helpers/authenticationHelper";
 import { useUserStore } from "../store/pinia/userStore";
 
-const routes = [
+const routes: Array<RouteRecordRaw> = [
   {
     path: "/",
     component: () => import("@/components/Welcome.vue"),
@@ -69,6 +69,11 @@ const routes = [
     component: () => import("@/components/Answer.vue"),
     name: "answer",
     meta: { requiresAuth: true },
+  },
+  {
+    path: "/reset-password",
+    name: "reset-password",
+    component: () => import("../components/ResetPassword.vue"),
   },
 ];
 

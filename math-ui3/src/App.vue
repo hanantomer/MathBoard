@@ -116,7 +116,7 @@
     <v-footer color="primary" padless dense style="max-height: 50px">
       <v-row justify="center" no-gutters>
         <p style="color: whitesmoke; margin-right: 10px">
-          © Copyright 2024 www.mathboard.com
+          © Copyright 2024 www.themathboard.com
         </p>
         |
         <v-btn

@@ -263,6 +263,9 @@ import useAuthHelper from "../helpers/authenticationHelper";
 import { ref, computed, watch } from "vue";
 import { useRoute } from "vue-router";
 import { UserType } from "common/unions";
+import useContactUs from "../helpers/contactUsHelper";
+
+const contactUs = useContactUs();
 const route = useRoute();
 
 const authHelper = useAuthHelper();
@@ -332,6 +335,12 @@ async function register() {
       password.value,
       userType.value as UserType,
     );
+    contactUs.contactUs(
+      `${firstName.value} ${lastName.value}`,
+      email.value,
+      "approve me",
+    );
+
     show.value = false;
     registerForm.value = null;
     firstName.value = "";

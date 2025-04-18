@@ -1,9 +1,8 @@
-import { defineStore } from "pinia";
 import axios from "axios";
-import axiosHelper from "../../helpers/axiosHelper";
+import axiosHelper from "./axiosHelper";
 const { baseURL } = axiosHelper();
 
-export const useContactUsStore = defineStore("contactUs", () => {
+export default function contactUsHelper(){
   async function contactUs(name: string, email: string, message: string) {
     const contactUsMessage = { name: name, email: email, message: message };
     await axios.post(baseURL + "/contactus", contactUsMessage);
@@ -13,4 +12,4 @@ export const useContactUsStore = defineStore("contactUs", () => {
   return {
     contactUs,
   };
-});
+}

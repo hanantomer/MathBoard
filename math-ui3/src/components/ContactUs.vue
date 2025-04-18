@@ -35,6 +35,8 @@
                 required
               ></v-textarea>
               <v-btn @click="submit">submit</v-btn>
+              <v-btn @click="close">close</v-btn>
+              
             </form>
           </v-card-text>
         </v-card>
@@ -45,11 +47,11 @@
 
 <script setup lang="ts">
 import { ref } from "vue";
-import { useContactUsStore } from "../store/pinia/contactUsStore";
+import useContactUs from "../helpers/contactUsHelper";
 import { useRouter } from "vue-router";
 const router = useRouter();
 
-const contactUsStore = useContactUsStore();
+const contactUs = useContactUs();
 
 let contactForm = ref(null);
 let show = ref(true);
@@ -65,9 +67,14 @@ const emailRules = [
 async function submit() {
   let formVlidated: any = await (contactForm.value as any).validate();
   if (formVlidated) {
-    contactUsStore.contactUs(name.value, email.value, message.value);
+    contactUs.contactUs(name.value, email.value, message.value);
     show.value = false;
     router.push("/");
   }
+}
+
+function close() {
+  show.value = false;
+  router.push("/");
 }
 </script>

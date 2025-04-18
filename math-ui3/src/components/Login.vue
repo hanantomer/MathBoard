@@ -1,10 +1,21 @@
 <template>
-  <v-dialog v-model="show" max-width="660" persistent>
+  <v-dialog v-model="show" max-width="600" persistent>
     <v-card>
       <v-card-text>
         <v-form ref="loginForm" v-model="valid" lazy-validation>
           <v-row>
-            <v-col cols="12">
+            <v-col cols="11"></v-col>
+            <v-col cols="1">
+              <v-btn
+                data-cy="close_login"
+                density="compact"
+                icon="mdi-minus"
+                @click="close"
+              ></v-btn>
+            </v-col>
+          </v-row>
+          <v-row>
+            <v-col cols="11">
               <v-text-field
                 data-cy="login_email"
                 v-model="email"
@@ -13,7 +24,7 @@
                 required
               ></v-text-field>
             </v-col>
-            <v-col cols="12">
+            <v-col cols="11">
               <v-text-field
                 data-cy="login_password"
                 v-model="password"
@@ -25,6 +36,15 @@
                 @keydown.enter="validateLogin"
                 counter
               ></v-text-field>
+              <v-btn
+                variant="text"
+                density="compact"
+                class="mt-1"
+                @click="forgotPassword"
+                data-cy="forgot_password"
+              >
+                Forgot Password?
+              </v-btn>
             </v-col>
 
             <v-col cols="12">
@@ -62,7 +82,7 @@
                 Log In
               </v-btn>
             </v-col>
-            <v-col cols="6">
+            <v-col cols="5">
               <span>don't have an account?</span>
             </v-col>
             <v-col class="d-flex text-start text-body2" cols="6">
@@ -105,6 +125,7 @@ let password = ref<string>();
 let email = ref<string>();
 
 let redirectAfterLogin: string = "";
+let resetEmailSent = ref(false);
 
 let rules = {
   required: (value: string) => !!value || "Required.",
@@ -134,22 +155,32 @@ function register() {
 async function validateLogin() {
   if (!email) return;
   if (!password) return;
-  let formVlidated: any = await (loginForm.value as any).validate();
+
+  let formVlidated: any = (loginForm.value as any).validate();
   if (!formVlidated) {
     return;
   }
 
-  let authenticatedUser = await authHelper.authLocalUserByUserAndPassword(
-    email.value!,
-    password.value!,
-  );
+  let authenticatedUser = null;
+
+  try {
+    authenticatedUser = await authHelper.authLocalUserByUserAndPassword(
+      email.value!,
+      password.value!,
+    );
+  } catch (error) {
+    throw new Error(`Error during login validation: ${error}`);
+  }
 
   if (!authenticatedUser) {
     loginFailed.value = true;
     return;
   }
 
-  if (authenticatedUser.approved === false) {
+  if (
+    authenticatedUser.approved === false &&
+    authenticatedUser.userType === "TEACHER"
+  ) {
     userNotApproved.value = true;
     return;
   }
@@ -173,6 +204,27 @@ async function validateLogin() {
   }
 
   show.value = false;
+}
+
+function close() {
+  show.value = false;
+  router.push("/");
+}
+
+async function forgotPassword() {
+  if (!email?.value) {
+    alert("Please enter your email address first");
+    return;
+  }
+
+  try {
+    await authHelper.sendPasswordResetEmail(email.value);
+    resetEmailSent.value = true;
+    alert("Password reset email has been sent. Please check your inbox.");
+  } catch (error) {
+    console.error("Failed to send reset email:", error);
+    alert("Failed to send reset email. Please try again later.");
+  }
 }
 </script>
 <style>

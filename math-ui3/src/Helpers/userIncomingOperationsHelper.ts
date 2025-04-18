@@ -1,20 +1,13 @@
-import {
-  SelectedCell,
-  ColorizedCell,
-  NotationAttributes,
-  CellAttributes,
-} from "common/baseTypes";
+import {SelectedCell, NotationAttributes } from "common/baseTypes";
 import { useUserStore } from "../store/pinia/userStore";
 import { useStudentStore } from "../store/pinia/studentStore";
 import { useNotationStore } from "../store/pinia/notationStore";
-import { useLessonStore } from "../store/pinia/lessonStore";
 import { useCellStore } from "../store/pinia/cellStore";
 import { FeathersHelper } from "./feathersHelper";
-import UseMatrixCellHelper from "./matrixCellHelper";
+
 
 const notationStore = useNotationStore();
 const cellStore = useCellStore();
-const lessonStore = useLessonStore();
 const userStore = useUserStore();
 const studentStore = useStudentStore();
 
@@ -31,10 +24,10 @@ export default function userIncomingOperations() {
 
     // send auth token to server and register to accept messsages.
     // see also AuthenticationService
-    feathersClient.service("authentication").create({
-      ...userStore.getCurrentUser(),
-      lessonUUId: lessonStore.getCurrentLesson()!.uuid,
-    });
+    // feathersClient.service("authentication").create({
+    //   ...userStore.getCurrentUser(),
+    //   lessonUUId: lessonStore.getCurrentLesson()!.uuid,
+    // });
 
     // sync created notations
     feathersClient

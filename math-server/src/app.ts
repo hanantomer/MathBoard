@@ -1,16 +1,18 @@
 import winston from "winston";
-import express, { Request, Response, NextFunction } from "express";
+import express, { Request, Response, NextFunction, Router } from "express";
 import cors from "cors";
-import bodyParser from "body-parser";
+import crypto from "crypto";
 import useAuthUtil from "../../math-auth/build/authUtil";
 import useDb from "../../math-db/build/dbUtil";
 import connection from "../../math-db/build/models/index";
 const { exec } = require("child_process");
+
 import {
     BoardTypeValues,
     NotationTypeValues,
 } from "../../math-common/build/unions";
 import { createTransport } from "nodemailer";
+
 
 var transporter = createTransport({
     service: "gmail",
@@ -25,13 +27,14 @@ const db = useDb();
 let app = express();
 app.use(auth);
 app.use(cors());
+app.use(express.urlencoded({ extended: true }));
 app.use(express.json({ limit: "1mb" }));
-app.use(bodyParser.json({ limit: 52428800 }));
-app.use(
-    bodyParser.urlencoded({
-        limit: "500kb",
-    })
-);
+// app.use(bodyParser.json({ limit: 52428800 }));
+// app.use(
+//     bodyParser.urlencoded({
+//         limit: "500kb",
+//     })
+// );
 
 const logger = winston.createLogger({
     level: "info",
@@ -114,9 +117,9 @@ async function validateHeaderAuthentication(
         return false;
     }
 
-    if (req.url.indexOf("/api/auth") == 0) {
-        res.status(200).json(user);
-    }
+    // if (req.url.indexOf("/api/auth") == 0) {
+    //     res.status(200).json(user);
+    // }
 
     req.headers.userId = user?.id?.toString();
 
@@ -208,6 +211,49 @@ app.get(
         }
     }
 );
+
+app.post("/api/auth/send-reset-password-mail", async (req, res) => {
+    try {
+        const { email, origin } = req.body;
+
+        // Generate a reset token
+        const resetToken = crypto.randomBytes(32).toString("hex");
+
+        // Store the token in the database with an expiration
+        await db.storeResetToken(email, resetToken);
+
+        // Send reset email
+        await sendResetEmail(
+            email,
+            `${origin}/reset-password?token=${resetToken}` 
+        );
+
+        res.status(200).json({ message: "Reset email sent" });
+    } catch (error) {
+        res.status(500).json({
+            error: "Failed to process password reset request",
+        });
+    }
+});
+
+
+app.post('/api/auth/reset-password', async (req, res) => {
+  try {
+    let { token, password } = req.body;
+    
+    const resetToken = await db.getResetToken(token);
+      
+    if (!resetToken) {
+      return res.status(400).json({ error: 'Invalid token' });
+    }
+
+    password = authUtil.encryptPasssword(password);      
+    await db.updatePassword(token, password,);
+    res.status(200).json({ message: 'Password reset successfully' });
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to reset password' });
+  }
+});
 
 // student
 app.get(
@@ -506,6 +552,22 @@ BoardTypeValues.forEach((boardType) => {
     });
 });
 
+async function sendResetEmail(email: string, resetLink: string) {
+    const mailOptions = {
+        from: "mathboard16@gmail.com",
+        to: email,
+        subject: "MathBoard Password Reset",
+        text: `You requested a password reset. Please click the following link to reset your password:\n\n${resetLink}\n\nIf you didn't request this, please ignore this email.`,
+    };
+
+    try {
+        await transporter.sendMail(mailOptions);
+    } catch (error) {
+        throw new Error("Failed to send reset email");
+    }
+}
+
+
 const errorHandler = (
     err: Error,
     req: Request,
@@ -515,7 +577,8 @@ const errorHandler = (
     console.error("unhandled error:" + err.message);
     console.error(err.cause);
     console.error(err.stack);
-    res.status(500).send({ errors: [{ message: err.message + err.cause }] }); /// TODO: log instaed
+    logger.error(err.message + err.cause);
+    res.status(500).send({ errors: [{ message: "error occured in api server" }] });
 };
 
 app.use(errorHandler);
@@ -549,3 +612,6 @@ connection.sequelize.sync({ force: forceDbCreate }).then(() => {
         );
     }
 });
+
+
+

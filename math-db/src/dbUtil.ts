@@ -60,10 +60,31 @@ export default function dbUtil() {
     // user
 
     async function getUser(uuid: string): Promise<User | null> {
-        let userId = await getIdByUUId("User", uuid);
-        if (!userId) return null;
+        try {
+            let userId;
+            try {
+                userId = await getIdByUUId("User", uuid);
+            } catch (error) {
+                logger.error(`Failed to get user ID: ${error}`);
+                throw error;
+            }
 
-        return await User.findByPk(userId);
+            if (!userId) {
+                logger.warn(`User not found for UUID: ${uuid}`);
+                return null;
+            }
+
+            try {
+                const user = await User.findByPk(userId);
+                return user;
+            } catch (error) {
+                logger.error(`Failed to find user by ID: ${error}`);
+                throw error;
+            }
+        } catch (error) {
+            logger.error(`Error in getUser: ${error}`);
+            throw error;
+        }
     }
 
     async function getUserByEmailAndPassword(
@@ -77,6 +98,29 @@ export default function dbUtil() {
             },
         });
     }
+
+    async function getResetToken(
+        token: string,
+    ): Promise<String | null> {
+        const user = await User.findOne({
+            where: {
+                reset_pasword_token: token,
+            },
+        });
+        return user?.reset_pasword_token || null;
+    }
+
+
+    async function getUserByEmail(
+        email: string,
+    ): Promise<User | null> {
+        return User.findOne({
+            where: {
+                email: email,
+            },
+        });
+    }
+
 
     async function createUser(user: UserAttributes): Promise<User> {
         return await User.create(user);
@@ -105,11 +149,28 @@ export default function dbUtil() {
     async function createLesson(
         lesson: LessonCreationAttributes
     ): Promise<Lesson> {
-        (lesson as any).userId = (await getIdByUUId(
-            "User",
-            lesson.user.uuid
-        )) as number;
-        return await Lesson.create(lesson);
+        try {
+            let userId;
+            try {
+                userId = await getIdByUUId("User", lesson.user.uuid);
+                (lesson as any).userId = userId;
+            } catch (error) {
+                logger.error(`Failed to get user ID: ${error}`);
+                throw error;
+            }
+
+            try {
+                const newLesson = await Lesson.create(lesson);
+                logger.info(`Created new lesson with ID: ${newLesson.id}`);
+                return newLesson;
+            } catch (error) {
+                logger.error(`Failed to create lesson: ${error}`);
+                throw error;
+            }
+        } catch (error) {
+            logger.error(`Error in createLesson: ${error}`);
+            throw error;
+        }
     }
 
     // student lesson
@@ -297,29 +358,45 @@ export default function dbUtil() {
         model: string,
         value: string 
     ): Promise<number | null> {
-        if (!model) {
-            throw new Error(`model: ${model} should not be null`);
+        try {
+            if (!model) {
+                throw new Error(`model: ${model} should not be null`);
+            }
+
+            if (!value) {
+                throw new Error("color should not be null");
+            }
+
+            let res;
+            try {
+                res = await findModel("color").findOne({
+                    attributes: {
+                        include: ["id"],
+                    },
+                    where: {
+                        value: value,
+                    },
+                });
+            } catch (error) {
+                logger.error(`Failed to find color: ${error}`);
+                throw error;
+            }
+
+            if (!res) {
+                try {
+                    res = await findModel("color").create({ value: value });
+                    logger.info(`Created new color with value: ${value}`);
+                } catch (error) {
+                    logger.error(`Failed to create color: ${error}`);
+                    throw error;
+                }
+            }
+
+            return res?.get("id") as number;
+        } catch (error) {
+            logger.error(`Error in getIdByColor: ${error}`);
+            throw error;
         }
-
-        if (!value) {
-            throw new Error("color should not be null");
-        }
-
-        let res = await findModel("color").findOne({
-            attributes: {
-                include: ["id"],
-            },
-            where: {
-                value: value,
-            },
-        });
-
-        // add
-        if (!res) {
-            res = await findModel("color").create({ value: value });
-        }
-
-        return res?.get("id") as number;
     }
 
     async function getColorById(
@@ -352,50 +429,65 @@ export default function dbUtil() {
         notationType: String,
         parentUUId: string
     ) {
-        logger.info(`Getting notations for ${boardType} ${notationType} with parent UUID: ${parentUUId}`);
+        try {
+            logger.info(`Getting notations for ${boardType} ${notationType} with parent UUID: ${parentUUId}`);
 
-        const boardName = boardType.toString().toLowerCase();
-        const boardFieldIdFieldName = boardType.toString().toLowerCase() + "Id";
-        const boardModelName = capitalize(boardName);
-        const notationTypeName = notationType.toString().toLowerCase();
-        const notationTypeNameCapitalized = capitalize(notationTypeName);
-        const modelName = boardModelName + notationTypeNameCapitalized;
+            const boardName = boardType.toString().toLowerCase();
+            const boardFieldIdFieldName = boardType.toString().toLowerCase() + "Id";
+            const boardModelName = capitalize(boardName);
+            const notationTypeName = notationType.toString().toLowerCase();
+            const notationTypeNameCapitalized = capitalize(notationTypeName);
+            const modelName = boardModelName + notationTypeNameCapitalized;
 
-        if (!parentUUId) {
-            logger.warn(`Parent UUID is null for ${boardType} ${notationType}`);
-            return null;
+            if (!parentUUId) {
+                logger.warn(`Parent UUID is null for ${boardType} ${notationType}`);
+                return null;
+            }
+
+            if (!findModel(modelName)) {
+                logger.error(`Model ${modelName} not found`);
+                return null;
+            }
+
+            if (!db.sequelize.models[boardModelName]) {
+                logger.error(`Board model ${boardModelName} not found`);
+                return null;
+            }
+
+            let parentId;
+            try {
+                parentId = await getIdByUUId(boardModelName, parentUUId);
+            } catch (error) {
+                logger.error(`Failed to get parent ID: ${error}`);
+                throw error;
+            }
+
+            if (!parentId) {
+                logger.warn(`Parent ID not found for UUID: ${parentUUId}`);
+                return null;
+            }
+
+            try {
+                const results = await findModel(modelName).findAll({
+                    where: {
+                        [boardFieldIdFieldName]: parentId,
+                    },
+                    include: [
+                        Color,
+                        User,
+                        db.sequelize.models[boardModelName],
+                    ],
+                });
+                logger.info(`Found ${results.length} notations`);
+                return results;
+            } catch (error) {
+                logger.error(`Failed to fetch notations: ${error}`);
+                throw error;
+            }
+        } catch (error) {
+            logger.error(`Error in getNotations: ${error}`);
+            throw error;
         }
-
-        if (!findModel(modelName)) {
-            logger.error(`Model ${modelName} not found`);
-            return null;
-        }
-
-        if (!db.sequelize.models[boardModelName]) {
-            logger.error(`Board model ${boardModelName} not found`);
-            return null;
-        }
-
-        let parentId = await getIdByUUId(boardModelName, parentUUId);
-        if (!parentId) {
-            logger.warn(`Parent ID not found for UUID: ${parentUUId}`);
-            return null;
-        }
-
-        logger.info(`Fetching notations for ${boardType} ${notationType} with parent ID: ${parentId}`);
-        const results = await findModel(modelName).findAll({
-            where: {
-                [boardFieldIdFieldName]: parentId,
-            },
-            include: [
-                Color,
-                User,
-                db.sequelize.models[boardModelName],
-            ],
-        });
-
-        logger.info(`Found ${results.length} notations`);
-        return results;
     }
 
     async function createNotation(
@@ -477,6 +569,24 @@ export default function dbUtil() {
             where: { id: id },
             logging: true,
         });
+    }
+
+    async function updatePassword(
+        token: string,
+        password: string,
+    ) {
+
+        const user = await User.findOne({
+            where: {
+                reset_pasword_token: token,
+            },
+        });
+        if (!user) {
+            throw new Error(`User with token ${token} not found`);
+        }
+        user.password = password;
+        user.reset_pasword_token = null;
+        await user.save();
     }
 
     async function deleteNotation(
@@ -608,12 +718,42 @@ export default function dbUtil() {
 
         return true;
     }
-    
+
+    async function storeResetToken(
+        email: string,
+        token: string
+    ): Promise<void> {
+        try {
+            const user = await getUserByEmail(email);
+            if (!user) {
+                throw new Error(`User with email ${email} not found`);
+            }
+            user.reset_pasword_token = token;
+            await user.save();
+        } catch (error) {
+            logger.error(`Failed to store reset token: ${error}`);
+            throw error;
+        }
+    }
+
+    function validateColAndRowRounded(model: NotationAttributes): boolean {
+        const m = model as RectNotationAttributes &
+            ExponentNotationAttributes &
+            PointNotationAttributes;
+
+        if (m.col && !Number.isSafeInteger(m.col)) return false;
+        if (m.row && !Number.isSafeInteger(m.row)) return false;
+        if (m.fromCol && !Number.isSafeInteger(m.fromCol)) return false;
+        if (m.toCol && !Number.isSafeInteger(m.toCol)) return false;
+
+        return true;
+    }
 
     return {
         getIdByUUId,
         getUser,
         createUser,
+        getUserByEmail,
         getUserByEmailAndPassword,
         getUserAnswer,
         getLesson,
@@ -632,18 +772,10 @@ export default function dbUtil() {
         createStudentLesson,
         updateNotation,
         deleteNotation,
+        storeResetToken,
+        getResetToken,
+        updatePassword,
     };
 }
 
-function validateColAndRowRounded(model: NotationAttributes) : boolean {
-    
-    const m = model as RectNotationAttributes & ExponentNotationAttributes & PointNotationAttributes;
-    
-    if (m.col && !Number.isSafeInteger(m.col)) return false;
-    if (m.row && !Number.isSafeInteger(m.row)) return false;
-    if (m.fromCol && !Number.isSafeInteger(m.fromCol)) return false;
-    if (m.toCol && !Number.isSafeInteger(m.toCol)) return false;
-
-    return true;
-}
 

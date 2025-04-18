@@ -2,6 +2,7 @@
   <v-tooltip text="colorize tool">
     <template v-slot:activator="{ props }">
       <v-btn
+        :disabled="!editEnabled"
         v-bind="props"
         v-bind:style="{
           backgroundColor: backgroundColor,
@@ -48,12 +49,18 @@ import { NotationAttributes } from "common/baseTypes";
 import { transparentColor } from "common/globals";
 
 import { Color } from "common/unions";
+import useAuthorizationHelper from "../helpers/authorizationHelper";
 
 const notationMutateHelper = useNotationMutateHelper();
+const authorizationHelper = useAuthorizationHelper();
 const watchHelper = useWatchHelper();
 const screenHelper = useScreenHelper();
 const editModeStore = useEditModeStore();
 const notationStore = useNotationStore();
+
+const editEnabled = computed(() => {
+  return authorizationHelper.canEdit();
+});
 
 const backgroundColor = computed(() => {
   return selectedColor.value === null
@@ -79,18 +86,10 @@ watchHelper.watchMouseEvent(
   colorizeNotationByMouseDrag,
 );
 
-//watchHelper.watchEveryEditModeChange((newEditMode: EditMode) => {
-//  if (newEditMode == "COLORIZING") selectColor();
-//});
 
 // reset coorizing tool when colorizing by click or by drag ends
 watchHelper.watchMouseEvent(["COLORIZING"], "EV_SVG_MOUSEUP", resetColorizing);
 
-function selectColor() {
-  editModeStore.setEditMode("COLORIZING");
-  //  const color = (e.currentTarget as any).textContent as Color;
-  //selectedColor.value = color;
-}
 
 function colorizeNotationByMouseDrag(e: MouseEvent) {
   if (e.buttons !== 1) return;
@@ -124,6 +123,7 @@ function resetColorizing() {
   selectedColor.value = null;
   editModeStore.setDefaultEditMode();
 }
+
 </script>
 <style scoped>
 .v-list-item {

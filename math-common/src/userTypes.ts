@@ -8,11 +8,12 @@ export type UserAttributes = EntityAttributes & {
   email: string;
   password: string;
   access_token: string;
+  reset_pasword_token: string|null;
   imageUrl: string;
   userType: UserType;
   lastHeartbeatTime?: Date;
   approved: boolean;
-}
+};
 
 export type UserCreationAttributes = Omit<UserAttributes, keyof EntityAttributes> 
 

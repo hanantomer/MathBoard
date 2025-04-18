@@ -87,6 +87,12 @@ export default class User extends Model<
     })
     access_token!: string;
 
+    @Column({
+        type: DataType.STRING,
+        allowNull: true,
+    })
+    reset_pasword_token!: string|null;
+
     @AllowNull(false)
     @Column({
         type: DataType.STRING,

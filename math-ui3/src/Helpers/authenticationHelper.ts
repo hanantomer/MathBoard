@@ -2,10 +2,14 @@ import { getCookie, removeCookie } from "typescript-cookie";
 import { UserType } from "common/unions";
 import { UserAttributes, UserCreationAttributes } from "common/userTypes";
 import { useUserStore } from "../store/pinia/userStore";
+import axiosHelper from "./axiosHelper";
 import useApiHelper from "./apiHelper";
-const apiHelper = useApiHelper();
+import axios from "axios";
 
-export default function authenticationHelper() {
+const apiHelper = useApiHelper();
+const { baseURL } = axiosHelper();
+
+export default function useAuthHelper() {
   function registerUser(
     firstName: string,
     lastName: string,
@@ -23,6 +27,7 @@ export default function authenticationHelper() {
       imageUrl: "",
       access_token: "",
       approved: false,
+      reset_pasword_token: null,
       lastHeartbeatTime: new Date(),
     };
     const userStore = useUserStore();
@@ -76,22 +81,29 @@ export default function authenticationHelper() {
     userStore.setCurrentUser(null);
   }
 
-  /*async function  getGoogleUser() {
-      let auth2 = await gapi.auth2.init();
-      if (!auth2.currentUser.get().isSignedIn()) {
-        return;
-      }
-      let googleUser: any = {};
-      let userProfile = auth2.currentUser.get().getBasicProfile();
-      googleUser.name = userProfile.getName();
-      googleUser.email = userProfile.getEmail();
-      googleUser.imageUrl = userProfile.getImageUrl();
-      googleUser.id_token = auth2.currentUser.get().getAuthResponse().id_token;
-      return googleUser;
-  };*/
+  async function sendPasswordResetEmail(email: string): Promise<void> {
+    try {
+      await axios.post(`${baseURL}/auth/send-reset-password-mail`, { email:email, origin:window.location.origin });
+    } catch (error) {
+      throw new Error(`Failed to send reset email: ${error}`);
+    }
+  }
+
+  async function resetPassword(
+    token: string,
+    newPassword: string,
+  ): Promise<void> {
+    try {
+      await axios.post(`${baseURL}/auth/reset-password`, {
+        token,
+        password: newPassword,
+      });
+    } catch (error) {
+      throw new Error(`Failed to reset password: ${error}`);
+    }
+  }
 
   return {
-    //getGoogleUser,
     registerUser,
     authLocalUserByToken,
     authLocalUserByUserAndPassword,
@@ -100,5 +112,7 @@ export default function authenticationHelper() {
     signedInWithGoogle,
     getToken,
     authGoogleUser,
+    sendPasswordResetEmail,
+    resetPassword,
   };
 }

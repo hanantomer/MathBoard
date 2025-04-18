@@ -1,1 +1,81 @@
 2025-04-15T16:05:59.970Z [INFO]: Authentication service initialized
+2025-04-16T06:33:36.900Z [INFO]: Authentication service initialized
+2025-04-16T09:25:58.009Z [INFO]: Authentication service initialized
+2025-04-16T09:46:32.924Z [INFO]: Authentication service initialized
+2025-04-16T09:46:48.664Z [INFO]: User hanantomer@gmail.com attempting to join lesson 2ef4b42f-1027-4144-8eb3-075aa4d225cc
+2025-04-16T09:46:48.665Z [INFO]: Processing teacher join request for hanantomer@gmail.com
+2025-04-16T09:46:48.666Z [INFO]: Teacher hanantomer@gmail.com joining lesson 2ef4b42f-1027-4144-8eb3-075aa4d225cc
+2025-04-16T09:46:48.667Z [INFO]: User hanantomer@gmail.com joined lesson channel 2ef4b42f-1027-4144-8eb3-075aa4d225cc
+2025-04-16T09:48:08.270Z [INFO]: Authentication service initialized
+2025-04-16T09:51:11.566Z [INFO]: User hanantomer1@gmail.com attempting to join lesson 2ef4b42f-1027-4144-8eb3-075aa4d225cc
+2025-04-16T09:51:11.567Z [INFO]: Processing student join request for hanantomer1@gmail.com
+2025-04-16T09:51:11.567Z [INFO]: Student hanantomer1@gmail.com joining lesson 2ef4b42f-1027-4144-8eb3-075aa4d225cc
+2025-04-16T09:51:11.568Z [INFO]: Student hanantomer1@gmail.com joined their individual channel in lesson 2ef4b42f-1027-4144-8eb3-075aa4d225cc
+2025-04-16T09:51:11.569Z [INFO]: User hanantomer1@gmail.com joined lesson channel 2ef4b42f-1027-4144-8eb3-075aa4d225cc
+2025-04-16T09:51:45.547Z [INFO]: Authentication service initialized
+2025-04-16T09:53:07.754Z [INFO]: User hanantomer1@gmail.com attempting to join lesson 2ef4b42f-1027-4144-8eb3-075aa4d225cc
+2025-04-16T09:53:07.755Z [INFO]: Processing student join request for hanantomer1@gmail.com
+2025-04-16T09:53:07.755Z [INFO]: Student hanantomer1@gmail.com joining lesson 2ef4b42f-1027-4144-8eb3-075aa4d225cc
+2025-04-16T09:53:07.756Z [INFO]: Student hanantomer1@gmail.com joined their individual channel in lesson 2ef4b42f-1027-4144-8eb3-075aa4d225cc
+2025-04-16T09:53:07.757Z [INFO]: User hanantomer1@gmail.com joined lesson channel 2ef4b42f-1027-4144-8eb3-075aa4d225cc
+2025-04-16T17:02:30.752Z [INFO]: Authentication service initialized
+2025-04-16T17:06:53.350Z [INFO]: User hanantomer@gmail.com attempting to join lesson 1156734b-a4d9-4f20-8123-e6afff6d4073
+2025-04-16T17:06:53.351Z [INFO]: Processing teacher join request for hanantomer@gmail.com
+2025-04-16T17:06:53.351Z [INFO]: Teacher hanantomer@gmail.com joining lesson 1156734b-a4d9-4f20-8123-e6afff6d4073
+2025-04-16T17:06:53.352Z [INFO]: User hanantomer@gmail.com joined lesson channel 1156734b-a4d9-4f20-8123-e6afff6d4073
+2025-04-16T17:07:42.967Z [INFO]: User hanantomer1@gmail.com attempting to join lesson 1156734b-a4d9-4f20-8123-e6afff6d4073
+2025-04-16T17:07:42.968Z [INFO]: Processing student join request for hanantomer1@gmail.com
+2025-04-16T17:07:42.969Z [INFO]: Student hanantomer1@gmail.com joining lesson 1156734b-a4d9-4f20-8123-e6afff6d4073
+2025-04-16T17:07:42.970Z [INFO]: Student hanantomer1@gmail.com joined their individual channel in lesson 1156734b-a4d9-4f20-8123-e6afff6d4073
+2025-04-16T17:07:42.971Z [INFO]: Connecting teacher to student hanantomer1@gmail.com channel in lesson 1156734b-a4d9-4f20-8123-e6afff6d4073
+2025-04-16T17:07:42.972Z [INFO]: User hanantomer1@gmail.com joined lesson channel 1156734b-a4d9-4f20-8123-e6afff6d4073
+2025-04-16T17:08:06.255Z [INFO]: Authentication service initialized
+2025-04-16T17:08:22.114Z [INFO]: User hanantomer1@gmail.com attempting to join lesson 1156734b-a4d9-4f20-8123-e6afff6d4073
+2025-04-16T17:08:22.115Z [INFO]: Processing student join request for hanantomer1@gmail.com
+2025-04-16T17:08:22.116Z [INFO]: Student hanantomer1@gmail.com joining lesson 1156734b-a4d9-4f20-8123-e6afff6d4073
+2025-04-16T17:08:22.117Z [INFO]: Student hanantomer1@gmail.com joined their individual channel in lesson 1156734b-a4d9-4f20-8123-e6afff6d4073
+2025-04-16T17:08:22.118Z [INFO]: User hanantomer1@gmail.com joined lesson channel 1156734b-a4d9-4f20-8123-e6afff6d4073
+2025-04-16T17:08:25.312Z [INFO]: User hanantomer@gmail.com attempting to join lesson 1156734b-a4d9-4f20-8123-e6afff6d4073
+2025-04-16T17:08:25.314Z [INFO]: Processing teacher join request for hanantomer@gmail.com
+2025-04-16T17:08:25.315Z [INFO]: Teacher hanantomer@gmail.com joining lesson 1156734b-a4d9-4f20-8123-e6afff6d4073
+2025-04-16T17:08:25.316Z [INFO]: Connecting teacher to existing student channels in lesson 1156734b-a4d9-4f20-8123-e6afff6d4073
+2025-04-16T17:08:25.317Z [INFO]: User hanantomer@gmail.com joined lesson channel 1156734b-a4d9-4f20-8123-e6afff6d4073
+2025-04-16T17:09:09.859Z [INFO]: User hanantomer1@gmail.com attempting to join lesson 1156734b-a4d9-4f20-8123-e6afff6d4073
+2025-04-16T17:09:09.860Z [INFO]: Processing student join request for hanantomer1@gmail.com
+2025-04-16T17:09:09.860Z [INFO]: Student hanantomer1@gmail.com joining lesson 1156734b-a4d9-4f20-8123-e6afff6d4073
+2025-04-16T17:09:09.861Z [INFO]: Student hanantomer1@gmail.com joined their individual channel in lesson 1156734b-a4d9-4f20-8123-e6afff6d4073
+2025-04-16T17:09:09.861Z [INFO]: Connecting teacher to student hanantomer1@gmail.com channel in lesson 1156734b-a4d9-4f20-8123-e6afff6d4073
+2025-04-16T17:09:09.861Z [INFO]: User hanantomer1@gmail.com joined lesson channel 1156734b-a4d9-4f20-8123-e6afff6d4073
+2025-04-16T17:09:58.089Z [INFO]: Authentication service initialized
+2025-04-16T17:10:25.420Z [INFO]: User hanantomer@gmail.com attempting to join lesson 1156734b-a4d9-4f20-8123-e6afff6d4073
+2025-04-16T17:10:29.083Z [INFO]: Processing teacher join request for hanantomer@gmail.com
+2025-04-16T17:10:32.492Z [INFO]: Teacher hanantomer@gmail.com joining lesson 1156734b-a4d9-4f20-8123-e6afff6d4073
+2025-04-16T17:10:32.493Z [INFO]: User hanantomer@gmail.com joined lesson channel 1156734b-a4d9-4f20-8123-e6afff6d4073
+2025-04-16T17:10:39.587Z [INFO]: User hanantomer1@gmail.com attempting to join lesson 1156734b-a4d9-4f20-8123-e6afff6d4073
+2025-04-16T17:10:46.123Z [INFO]: Processing student join request for hanantomer1@gmail.com
+2025-04-16T17:10:56.715Z [INFO]: Student hanantomer1@gmail.com joining lesson 1156734b-a4d9-4f20-8123-e6afff6d4073
+2025-04-16T17:10:56.716Z [INFO]: Student hanantomer1@gmail.com joined their individual channel in lesson 1156734b-a4d9-4f20-8123-e6afff6d4073
+2025-04-16T17:10:56.716Z [INFO]: Connecting teacher to student hanantomer1@gmail.com channel in lesson 1156734b-a4d9-4f20-8123-e6afff6d4073
+2025-04-16T17:10:56.717Z [INFO]: User hanantomer1@gmail.com joined lesson channel 1156734b-a4d9-4f20-8123-e6afff6d4073
+2025-04-16T17:17:28.861Z [INFO]: Authentication service initialized
+2025-04-16T17:17:35.235Z [INFO]: User hanantomer1@gmail.com attempting to join lesson 1156734b-a4d9-4f20-8123-e6afff6d4073
+2025-04-16T17:17:35.236Z [INFO]: Processing student join request for hanantomer1@gmail.com
+2025-04-16T17:17:35.237Z [INFO]: Student hanantomer1@gmail.com joining lesson 1156734b-a4d9-4f20-8123-e6afff6d4073
+2025-04-16T17:17:35.238Z [INFO]: Student hanantomer1@gmail.com joined their individual channel in lesson 1156734b-a4d9-4f20-8123-e6afff6d4073
+2025-04-16T17:17:35.239Z [INFO]: User hanantomer1@gmail.com joined lesson channel 1156734b-a4d9-4f20-8123-e6afff6d4073
+2025-04-16T17:17:35.868Z [INFO]: User hanantomer@gmail.com attempting to join lesson 1156734b-a4d9-4f20-8123-e6afff6d4073
+2025-04-16T17:17:35.870Z [INFO]: Processing teacher join request for hanantomer@gmail.com
+2025-04-16T17:17:35.870Z [INFO]: Teacher hanantomer@gmail.com joining lesson 1156734b-a4d9-4f20-8123-e6afff6d4073
+2025-04-16T17:17:35.871Z [INFO]: Connecting teacher to existing student channels in lesson 1156734b-a4d9-4f20-8123-e6afff6d4073
+2025-04-16T17:17:35.872Z [INFO]: User hanantomer@gmail.com joined lesson channel 1156734b-a4d9-4f20-8123-e6afff6d4073
+2025-04-16T19:30:30.740Z [INFO]: User hanantomer1@gmail.com attempting to join lesson 1156734b-a4d9-4f20-8123-e6afff6d4073
+2025-04-16T19:30:30.750Z [INFO]: Processing student join request for hanantomer1@gmail.com
+2025-04-16T19:30:30.751Z [INFO]: Student hanantomer1@gmail.com joining lesson 1156734b-a4d9-4f20-8123-e6afff6d4073
+2025-04-16T19:30:30.751Z [INFO]: Student hanantomer1@gmail.com joined their individual channel in lesson 1156734b-a4d9-4f20-8123-e6afff6d4073
+2025-04-16T19:30:30.752Z [INFO]: Connecting teacher to student hanantomer1@gmail.com channel in lesson 1156734b-a4d9-4f20-8123-e6afff6d4073
+2025-04-16T19:30:30.752Z [INFO]: User hanantomer1@gmail.com joined lesson channel 1156734b-a4d9-4f20-8123-e6afff6d4073
+2025-04-17T12:41:01.388Z [INFO]: Authentication service initialized
+2025-04-17T19:08:47.077Z [INFO]: Authentication service initialized
+2025-04-17T19:09:24.738Z [INFO]: Authentication service initialized
+2025-04-17T19:10:02.709Z [INFO]: Authentication service initialized
+2025-04-18T08:58:54.562Z [INFO]: Authentication service initialized
