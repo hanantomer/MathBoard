@@ -30,3 +30,4 @@ math-common/tsconfig.tsbuildinfo
 math-db/tsconfig.tsbuildinfo
 math-ui3/dist/index.html
 math-server/client.log
+math-server/client.log

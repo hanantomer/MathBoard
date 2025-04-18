@@ -233,7 +233,8 @@
           </v-row>
           <v-row>
             <v-alert
-              text="This site is currently in Beta, so it’s free to use for the near future. Due to limited capacity, we can only enroll a select number of users. All sign-in requests will require approval, and we’ll send you a confirmation email once approved."
+              text="This site is currently in Beta, so it’s free to use for the near future. Due to limited capacity, we can only enroll a select number of users. All sign-in requests will require approval, and we’ll send you a confirmation email once approved. If you encounter any outstanding issues, please reach out to us via contact us form."
+              data-cy="register_alert"
               title="Attention"
               type="success"
             >
