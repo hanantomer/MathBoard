@@ -6,13 +6,13 @@ export default function QuestionDecorator(tableName: string) {
         BoardDecorator(tableName)(target);
         DefaultScope(() => ({
             attributes: {
-                exclude: ["QuestionId"],
+                exclude: ["questionId"],
             },
         }))(target);
         Table({
             indexes: [
                 {
-                    fields: ["QuestionId"],
+                    fields: ["questionId"],
                 },
             ],
         })(target);

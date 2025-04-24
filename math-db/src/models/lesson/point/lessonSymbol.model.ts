@@ -33,7 +33,7 @@ export default class LessonSymbol extends Model<
     @ForeignKey(() => Lesson)
     @Column({
         field: "lessonId",
-        type: DataType.NUMBER,
+        type: DataType.INTEGER,
         unique: "active_unique",
     })
     lessonId!: number;

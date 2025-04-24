@@ -79,3 +79,25 @@
 2025-04-17T19:09:24.738Z [INFO]: Authentication service initialized
 2025-04-17T19:10:02.709Z [INFO]: Authentication service initialized
 2025-04-18T08:58:54.562Z [INFO]: Authentication service initialized
+2025-04-22T16:09:54.101Z [INFO]: Authentication service initialized
+2025-04-22T18:11:06.150Z [INFO]: Authentication service initialized
+2025-04-23T13:58:03.074Z [INFO]: Authentication service initialized
+2025-04-23T17:36:58.945Z [INFO]: User hanantomer@gmail.com attempting to join lesson 197a1b6d-a3fc-4ec5-9476-8b63e0f46fce
+2025-04-23T17:36:58.948Z [INFO]: Processing teacher join request for hanantomer@gmail.com
+2025-04-23T17:36:58.949Z [INFO]: Teacher hanantomer@gmail.com joining lesson 197a1b6d-a3fc-4ec5-9476-8b63e0f46fce
+2025-04-23T17:36:58.951Z [INFO]: User hanantomer@gmail.com joined lesson channel 197a1b6d-a3fc-4ec5-9476-8b63e0f46fce
+2025-04-23T18:26:49.353Z [INFO]: User hanantomer@gmail.com attempting to join lesson 197a1b6d-a3fc-4ec5-9476-8b63e0f46fce
+2025-04-23T18:26:49.355Z [INFO]: Processing teacher join request for hanantomer@gmail.com
+2025-04-23T18:26:49.356Z [INFO]: Teacher hanantomer@gmail.com joining lesson 197a1b6d-a3fc-4ec5-9476-8b63e0f46fce
+2025-04-23T18:26:49.356Z [INFO]: User hanantomer@gmail.com joined lesson channel 197a1b6d-a3fc-4ec5-9476-8b63e0f46fce
+2025-04-24T15:13:21.310Z [INFO]: Authentication service initialized
+2025-04-24T15:41:58.370Z [INFO]: User hanantomer@gmail.com attempting to join lesson 4fbc9763-7592-4eab-88f2-c87be059586b
+2025-04-24T15:41:58.374Z [INFO]: Processing teacher join request for hanantomer@gmail.com
+2025-04-24T15:41:58.374Z [INFO]: Teacher hanantomer@gmail.com joining lesson 4fbc9763-7592-4eab-88f2-c87be059586b
+2025-04-24T15:41:58.376Z [INFO]: User hanantomer@gmail.com joined lesson channel 4fbc9763-7592-4eab-88f2-c87be059586b
+2025-04-24T15:47:22.787Z [INFO]: User yl@gmail.com attempting to join lesson 4fbc9763-7592-4eab-88f2-c87be059586b
+2025-04-24T15:47:22.788Z [INFO]: Processing student join request for yl@gmail.com
+2025-04-24T15:47:22.789Z [INFO]: Student yl@gmail.com joining lesson 4fbc9763-7592-4eab-88f2-c87be059586b
+2025-04-24T15:47:22.790Z [INFO]: Student yl@gmail.com joined their individual channel in lesson 4fbc9763-7592-4eab-88f2-c87be059586b
+2025-04-24T15:47:22.790Z [INFO]: Connecting teacher to student yl@gmail.com channel in lesson 4fbc9763-7592-4eab-88f2-c87be059586b
+2025-04-24T15:47:22.791Z [INFO]: User yl@gmail.com joined lesson channel 4fbc9763-7592-4eab-88f2-c87be059586b

@@ -16,6 +16,9 @@ export const useEditModeStore = defineStore("editMode", () => {
     );
   }
 
+  function isCurveEditingControlPointMode() {
+    return editMode.value === "CURVE_EDITING_CONTROLֹ_POINT";}
+
   function isResizeMode() {
     return editMode.value === "RESIZE_STARTED" || editMode.value === "RESIZING";
   }
@@ -353,6 +356,7 @@ export const useEditModeStore = defineStore("editMode", () => {
     isCheckMode,
     isResizeMode,
     isSelectFromListMode,
+    isCurveEditingControlPointMode,
     setEditMode,
     setNextEditMode,
     setDefaultEditMode,

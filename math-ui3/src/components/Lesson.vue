@@ -52,6 +52,9 @@ watch(
 );
 
 async function loadLesson(lessonUUId: string) {
+  if (lessonUUId.indexOf("sl_") == 0) {
+    lessonUUId = lessonUUId.substring(3);
+  }
   editModeStore.setDefaultEditMode();
   // store might not be loaded yet
   if (!lessonStore.getLessons().get(lessonUUId)) {

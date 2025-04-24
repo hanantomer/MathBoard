@@ -310,7 +310,6 @@ watch(
     if (params.name === "registerTeacher") {
       redirectAfterLogin = params.query?.from?.toString() || "";
       show.value = true;
-      throw new Error("registerTeacher route is not implemented yet");
     }
   },
   { flush: "pre", immediate: true },

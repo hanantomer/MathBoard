@@ -1,10 +1,14 @@
 {
   "development": {
-    "storage": "../math-db/math.db",
-    "dialect": "sqlite"
+      "dialect": "postgres",
+      "url": "DEV_DATABASE_URL"
   },
   "test": {
-    "storage": "../math-db/mathTest.db",
-    "dialect": "sqlite"
+      "dialect": "postgres",
+      "use_env_variable": "TEST_DATABASE_URL"
+  },
+  "prod": {
+      "dialect": "postgres",
+      "use_env_variable": "DATABASE_URL"
   }
 }

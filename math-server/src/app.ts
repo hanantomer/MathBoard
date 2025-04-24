@@ -117,9 +117,9 @@ async function validateHeaderAuthentication(
         return false;
     }
 
-    // if (req.url.indexOf("/api/auth") == 0) {
-    //     res.status(200).json(user);
-    // }
+    if (req.url.indexOf("/api/auth") == 0) {
+         res.status(200).json(user);
+     }
 
     req.headers.userId = user?.id?.toString();
 

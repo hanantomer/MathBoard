@@ -229,3 +229,1181 @@
     at ReactiveEffect.run (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:423:19)
     at instance.update (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:7212:52)
     at updateComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:7039:18)
+2025-04-22T16:17:25.591Z [ERROR]: Error: registerTeacher route is not implemented yet
+    at watch.flush (http://localhost:3000/src/components/RegisterTeacher.vue:47:17)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1565:18)
+    at callWithAsyncErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1573:17)
+    at job (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:3162:9)
+    at flushPreFlushCbs (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1710:7)
+    at updateComponentPreRender (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:7230:5)
+    at ReactiveEffect.componentUpdateFn [as fn] (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:7148:11)
+    at ReactiveEffect.run (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:423:19)
+    at instance.update (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:7212:52)
+    at updateComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:7039:18)
+2025-04-22T16:22:44.854Z [ERROR]: TypeError: Cannot read properties of null (reading 'validate')
+    at validateLogin (http://localhost:3000/src/components/Login.vue:51:42)
+    at http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:9415:60
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1565:18)
+    at callWithAsyncErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1573:17)
+    at callWithAsyncErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1583:17)
+    at HTMLButtonElement.invoker (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:9397:5)
+2025-04-22T16:24:47.956Z [ERROR]: TypeError: Cannot read properties of null (reading 'validate')
+    at validateLogin (http://localhost:3000/src/components/Login.vue:51:42)
+    at http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:9415:60
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1565:18)
+    at callWithAsyncErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1573:17)
+    at callWithAsyncErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1583:17)
+    at HTMLButtonElement.invoker (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:9397:5)
+2025-04-22T16:25:39.765Z [ERROR]: TypeError: Cannot read properties of null (reading 'validate')
+    at validateLogin (http://localhost:3000/src/components/Login.vue:51:42)
+    at http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:9415:60
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1565:18)
+    at callWithAsyncErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1573:17)
+    at callWithAsyncErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1583:17)
+    at HTMLButtonElement.invoker (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:9397:5)
+2025-04-22T19:22:35.185Z [ERROR]: Error: registerTeacher route is not implemented yet
+    at watch.flush (http://localhost:3000/src/components/RegisterTeacher.vue:47:17)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1565:18)
+    at callWithAsyncErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1573:17)
+    at job (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:3162:9)
+    at flushPreFlushCbs (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1710:7)
+    at updateComponentPreRender (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:7230:5)
+    at ReactiveEffect.componentUpdateFn [as fn] (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:7148:11)
+    at ReactiveEffect.run (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:423:19)
+    at instance.update (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:7212:52)
+    at updateComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:7039:18)
+2025-04-23T14:03:49.260Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-04-23T14:03:49.294Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-04-23T14:03:49.306Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-04-23T14:03:49.562Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-04-23T14:04:02.052Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-04-23T17:36:57.182Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-04-23T17:37:16.305Z [ERROR]: Error: {"p1x":82,"p2x":82,"p1y":338,"p2y":339}is invalid: p2x must be greater than p1x
+    at validateSlopePosition (http://localhost:3000/src/components/SlopeLineDrawer.vue:91:15)
+    at drawLine (http://localhost:3000/src/components/SlopeLineDrawer.vue:66:7)
+    at Object.drawNewLine (http://localhost:3000/src/helpers/lineDrawingHelper.ts:25:5)
+    at http://localhost:3000/src/components/LineWatcher.vue:53:25
+    at http://localhost:3000/src/helpers/watchHelper.ts:18:11
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1565:18)
+    at callWithAsyncErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1573:17)
+    at job (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:3162:9)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1565:32)
+    at flushJobs (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1763:9)
+2025-04-23T17:37:16.309Z [ERROR]: Error: {"p1x":83,"p2x":82,"p1y":335,"p2y":339}is invalid: p2x must be greater than p1x
+    at validateSlopePosition (http://localhost:3000/src/components/SlopeLineDrawer.vue:91:15)
+    at drawLine (http://localhost:3000/src/components/SlopeLineDrawer.vue:66:7)
+    at Object.drawNewLine (http://localhost:3000/src/helpers/lineDrawingHelper.ts:25:5)
+    at http://localhost:3000/src/components/LineWatcher.vue:53:25
+    at http://localhost:3000/src/helpers/watchHelper.ts:18:11
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1565:18)
+    at callWithAsyncErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1573:17)
+    at job (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:3162:9)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1565:32)
+    at flushJobs (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1763:9)
+2025-04-23T17:37:16.323Z [ERROR]: Error: {"p1x":86,"p2x":82,"p1y":334,"p2y":339}is invalid: p2x must be greater than p1x
+    at validateSlopePosition (http://localhost:3000/src/components/SlopeLineDrawer.vue:91:15)
+    at drawLine (http://localhost:3000/src/components/SlopeLineDrawer.vue:66:7)
+    at Object.drawNewLine (http://localhost:3000/src/helpers/lineDrawingHelper.ts:25:5)
+    at http://localhost:3000/src/components/LineWatcher.vue:53:25
+    at http://localhost:3000/src/helpers/watchHelper.ts:18:11
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1565:18)
+    at callWithAsyncErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1573:17)
+    at job (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:3162:9)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1565:32)
+    at flushJobs (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1763:9)
+2025-04-23T17:37:16.340Z [ERROR]: Error: {"p1x":92,"p2x":82,"p1y":330,"p2y":339}is invalid: p2x must be greater than p1x
+    at validateSlopePosition (http://localhost:3000/src/components/SlopeLineDrawer.vue:91:15)
+    at drawLine (http://localhost:3000/src/components/SlopeLineDrawer.vue:66:7)
+    at Object.drawNewLine (http://localhost:3000/src/helpers/lineDrawingHelper.ts:25:5)
+    at http://localhost:3000/src/components/LineWatcher.vue:53:25
+    at http://localhost:3000/src/helpers/watchHelper.ts:18:11
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1565:18)
+    at callWithAsyncErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1573:17)
+    at job (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:3162:9)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1565:32)
+    at flushJobs (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1763:9)
+2025-04-23T17:37:16.356Z [ERROR]: Error: {"p1x":107,"p2x":82,"p1y":323,"p2y":339}is invalid: p2x must be greater than p1x
+    at validateSlopePosition (http://localhost:3000/src/components/SlopeLineDrawer.vue:91:15)
+    at drawLine (http://localhost:3000/src/components/SlopeLineDrawer.vue:66:7)
+    at Object.drawNewLine (http://localhost:3000/src/helpers/lineDrawingHelper.ts:25:5)
+    at http://localhost:3000/src/components/LineWatcher.vue:53:25
+    at http://localhost:3000/src/helpers/watchHelper.ts:18:11
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1565:18)
+    at callWithAsyncErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1573:17)
+    at job (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:3162:9)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1565:32)
+    at flushJobs (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1763:9)
+2025-04-23T17:37:16.621Z [ERROR]: Error: {"p1x":119,"p2x":82,"p1y":313,"p2y":339}is invalid: p2x must be greater than p1x
+    at validateSlopePosition (http://localhost:3000/src/components/SlopeLineDrawer.vue:91:15)
+    at drawLine (http://localhost:3000/src/components/SlopeLineDrawer.vue:66:7)
+    at Object.drawNewLine (http://localhost:3000/src/helpers/lineDrawingHelper.ts:25:5)
+    at http://localhost:3000/src/components/LineWatcher.vue:53:25
+    at http://localhost:3000/src/helpers/watchHelper.ts:18:11
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1565:18)
+    at callWithAsyncErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1573:17)
+    at job (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:3162:9)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1565:32)
+    at flushJobs (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1763:9)
+2025-04-23T17:37:16.624Z [ERROR]: Error: {"p1x":133,"p2x":82,"p1y":298,"p2y":339}is invalid: p2x must be greater than p1x
+    at validateSlopePosition (http://localhost:3000/src/components/SlopeLineDrawer.vue:91:15)
+    at drawLine (http://localhost:3000/src/components/SlopeLineDrawer.vue:66:7)
+    at Object.drawNewLine (http://localhost:3000/src/helpers/lineDrawingHelper.ts:25:5)
+    at http://localhost:3000/src/components/LineWatcher.vue:53:25
+    at http://localhost:3000/src/helpers/watchHelper.ts:18:11
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1565:18)
+    at callWithAsyncErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1573:17)
+    at job (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:3162:9)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1565:32)
+    at flushJobs (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1763:9)
+2025-04-23T17:37:16.632Z [ERROR]: Error: {"p1x":149,"p2x":82,"p1y":278,"p2y":339}is invalid: p2x must be greater than p1x
+    at validateSlopePosition (http://localhost:3000/src/components/SlopeLineDrawer.vue:91:15)
+    at drawLine (http://localhost:3000/src/components/SlopeLineDrawer.vue:66:7)
+    at Object.drawNewLine (http://localhost:3000/src/helpers/lineDrawingHelper.ts:25:5)
+    at http://localhost:3000/src/components/LineWatcher.vue:53:25
+    at http://localhost:3000/src/helpers/watchHelper.ts:18:11
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1565:18)
+    at callWithAsyncErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1573:17)
+    at job (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:3162:9)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1565:32)
+    at flushJobs (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1763:9)
+2025-04-23T17:37:16.653Z [ERROR]: Error: {"p1x":167,"p2x":82,"p1y":254,"p2y":339}is invalid: p2x must be greater than p1x
+    at validateSlopePosition (http://localhost:3000/src/components/SlopeLineDrawer.vue:91:15)
+    at drawLine (http://localhost:3000/src/components/SlopeLineDrawer.vue:66:7)
+    at Object.drawNewLine (http://localhost:3000/src/helpers/lineDrawingHelper.ts:25:5)
+    at http://localhost:3000/src/components/LineWatcher.vue:53:25
+    at http://localhost:3000/src/helpers/watchHelper.ts:18:11
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1565:18)
+    at callWithAsyncErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1573:17)
+    at job (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:3162:9)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1565:32)
+    at flushJobs (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1763:9)
+2025-04-23T17:37:16.670Z [ERROR]: Error: {"p1x":181,"p2x":82,"p1y":237,"p2y":339}is invalid: p2x must be greater than p1x
+    at validateSlopePosition (http://localhost:3000/src/components/SlopeLineDrawer.vue:91:15)
+    at drawLine (http://localhost:3000/src/components/SlopeLineDrawer.vue:66:7)
+    at Object.drawNewLine (http://localhost:3000/src/helpers/lineDrawingHelper.ts:25:5)
+    at http://localhost:3000/src/components/LineWatcher.vue:53:25
+    at http://localhost:3000/src/helpers/watchHelper.ts:18:11
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1565:18)
+    at callWithAsyncErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1573:17)
+    at job (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:3162:9)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1565:32)
+    at flushJobs (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1763:9)
+2025-04-23T17:37:16.933Z [ERROR]: Error: {"p1x":194,"p2x":82,"p1y":225,"p2y":339}is invalid: p2x must be greater than p1x
+    at validateSlopePosition (http://localhost:3000/src/components/SlopeLineDrawer.vue:91:15)
+    at drawLine (http://localhost:3000/src/components/SlopeLineDrawer.vue:66:7)
+    at Object.drawNewLine (http://localhost:3000/src/helpers/lineDrawingHelper.ts:25:5)
+    at http://localhost:3000/src/components/LineWatcher.vue:53:25
+    at http://localhost:3000/src/helpers/watchHelper.ts:18:11
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1565:18)
+    at callWithAsyncErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1573:17)
+    at job (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:3162:9)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1565:32)
+    at flushJobs (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1763:9)
+2025-04-23T17:37:16.935Z [ERROR]: Error: {"p1x":203,"p2x":82,"p1y":222,"p2y":339}is invalid: p2x must be greater than p1x
+    at validateSlopePosition (http://localhost:3000/src/components/SlopeLineDrawer.vue:91:15)
+    at drawLine (http://localhost:3000/src/components/SlopeLineDrawer.vue:66:7)
+    at Object.drawNewLine (http://localhost:3000/src/helpers/lineDrawingHelper.ts:25:5)
+    at http://localhost:3000/src/components/LineWatcher.vue:53:25
+    at http://localhost:3000/src/helpers/watchHelper.ts:18:11
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1565:18)
+    at callWithAsyncErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1573:17)
+    at job (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:3162:9)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1565:32)
+    at flushJobs (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1763:9)
+2025-04-23T17:37:16.939Z [ERROR]: Error: {"p1x":208,"p2x":82,"p1y":219,"p2y":339}is invalid: p2x must be greater than p1x
+    at validateSlopePosition (http://localhost:3000/src/components/SlopeLineDrawer.vue:91:15)
+    at drawLine (http://localhost:3000/src/components/SlopeLineDrawer.vue:66:7)
+    at Object.drawNewLine (http://localhost:3000/src/helpers/lineDrawingHelper.ts:25:5)
+    at http://localhost:3000/src/components/LineWatcher.vue:53:25
+    at http://localhost:3000/src/helpers/watchHelper.ts:18:11
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1565:18)
+    at callWithAsyncErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1573:17)
+    at job (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:3162:9)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1565:32)
+    at flushJobs (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1763:9)
+2025-04-23T17:37:16.972Z [ERROR]: Error: {"p1x":212,"p2x":82,"p1y":214,"p2y":339}is invalid: p2x must be greater than p1x
+    at validateSlopePosition (http://localhost:3000/src/components/SlopeLineDrawer.vue:91:15)
+    at drawLine (http://localhost:3000/src/components/SlopeLineDrawer.vue:66:7)
+    at Object.drawNewLine (http://localhost:3000/src/helpers/lineDrawingHelper.ts:25:5)
+    at http://localhost:3000/src/components/LineWatcher.vue:53:25
+    at http://localhost:3000/src/helpers/watchHelper.ts:18:11
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1565:18)
+    at callWithAsyncErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1573:17)
+    at job (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:3162:9)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1565:32)
+    at flushJobs (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1763:9)
+2025-04-23T17:37:16.976Z [ERROR]: Error: {"p1x":219,"p2x":82,"p1y":203,"p2y":339}is invalid: p2x must be greater than p1x
+    at validateSlopePosition (http://localhost:3000/src/components/SlopeLineDrawer.vue:91:15)
+    at drawLine (http://localhost:3000/src/components/SlopeLineDrawer.vue:66:7)
+    at Object.drawNewLine (http://localhost:3000/src/helpers/lineDrawingHelper.ts:25:5)
+    at http://localhost:3000/src/components/LineWatcher.vue:53:25
+    at http://localhost:3000/src/helpers/watchHelper.ts:18:11
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1565:18)
+    at callWithAsyncErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1573:17)
+    at job (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:3162:9)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1565:32)
+    at flushJobs (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1763:9)
+2025-04-23T17:37:17.254Z [ERROR]: Error: {"p1x":222,"p2x":82,"p1y":196,"p2y":339}is invalid: p2x must be greater than p1x
+    at validateSlopePosition (http://localhost:3000/src/components/SlopeLineDrawer.vue:91:15)
+    at drawLine (http://localhost:3000/src/components/SlopeLineDrawer.vue:66:7)
+    at Object.drawNewLine (http://localhost:3000/src/helpers/lineDrawingHelper.ts:25:5)
+    at http://localhost:3000/src/components/LineWatcher.vue:53:25
+    at http://localhost:3000/src/helpers/watchHelper.ts:18:11
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1565:18)
+    at callWithAsyncErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1573:17)
+    at job (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:3162:9)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1565:32)
+    at flushJobs (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1763:9)
+2025-04-23T17:37:17.256Z [ERROR]: Error: {"p1x":222,"p2x":82,"p1y":200,"p2y":339}is invalid: p2x must be greater than p1x
+    at validateSlopePosition (http://localhost:3000/src/components/SlopeLineDrawer.vue:91:15)
+    at drawLine (http://localhost:3000/src/components/SlopeLineDrawer.vue:66:7)
+    at Object.drawNewLine (http://localhost:3000/src/helpers/lineDrawingHelper.ts:25:5)
+    at http://localhost:3000/src/components/LineWatcher.vue:53:25
+    at http://localhost:3000/src/helpers/watchHelper.ts:18:11
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1565:18)
+    at callWithAsyncErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1573:17)
+    at job (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:3162:9)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1565:32)
+    at flushJobs (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1763:9)
+2025-04-23T17:37:17.258Z [ERROR]: Error: {"p1x":222,"p2x":82,"p1y":197,"p2y":339}is invalid: p2x must be greater than p1x
+    at validateSlopePosition (http://localhost:3000/src/components/SlopeLineDrawer.vue:91:15)
+    at drawLine (http://localhost:3000/src/components/SlopeLineDrawer.vue:66:7)
+    at Object.drawNewLine (http://localhost:3000/src/helpers/lineDrawingHelper.ts:25:5)
+    at http://localhost:3000/src/components/LineWatcher.vue:53:25
+    at http://localhost:3000/src/helpers/watchHelper.ts:18:11
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1565:18)
+    at callWithAsyncErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1573:17)
+    at job (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:3162:9)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1565:32)
+    at flushJobs (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1763:9)
+2025-04-23T17:37:17.288Z [ERROR]: Error: {"p1x":223,"p2x":82,"p1y":194,"p2y":339}is invalid: p2x must be greater than p1x
+    at validateSlopePosition (http://localhost:3000/src/components/SlopeLineDrawer.vue:91:15)
+    at drawLine (http://localhost:3000/src/components/SlopeLineDrawer.vue:66:7)
+    at Object.drawNewLine (http://localhost:3000/src/helpers/lineDrawingHelper.ts:25:5)
+    at http://localhost:3000/src/components/LineWatcher.vue:53:25
+    at http://localhost:3000/src/helpers/watchHelper.ts:18:11
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1565:18)
+    at callWithAsyncErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1573:17)
+    at job (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:3162:9)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1565:32)
+    at flushJobs (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1763:9)
+2025-04-23T17:37:17.290Z [ERROR]: Error: {"p1x":222,"p2x":82,"p1y":190,"p2y":339}is invalid: p2x must be greater than p1x
+    at validateSlopePosition (http://localhost:3000/src/components/SlopeLineDrawer.vue:91:15)
+    at drawLine (http://localhost:3000/src/components/SlopeLineDrawer.vue:66:7)
+    at Object.drawNewLine (http://localhost:3000/src/helpers/lineDrawingHelper.ts:25:5)
+    at http://localhost:3000/src/components/LineWatcher.vue:53:25
+    at http://localhost:3000/src/helpers/watchHelper.ts:18:11
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1565:18)
+    at callWithAsyncErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1573:17)
+    at job (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:3162:9)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1565:32)
+    at flushJobs (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1763:9)
+2025-04-23T17:37:17.574Z [ERROR]: Error: {"p1x":223,"p2x":82,"p1y":186,"p2y":339}is invalid: p2x must be greater than p1x
+    at validateSlopePosition (http://localhost:3000/src/components/SlopeLineDrawer.vue:91:15)
+    at drawLine (http://localhost:3000/src/components/SlopeLineDrawer.vue:66:7)
+    at Object.drawNewLine (http://localhost:3000/src/helpers/lineDrawingHelper.ts:25:5)
+    at http://localhost:3000/src/components/LineWatcher.vue:53:25
+    at http://localhost:3000/src/helpers/watchHelper.ts:18:11
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1565:18)
+    at callWithAsyncErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1573:17)
+    at job (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:3162:9)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1565:32)
+    at flushJobs (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1763:9)
+2025-04-23T17:37:17.576Z [ERROR]: Error: {"p1x":226,"p2x":82,"p1y":183,"p2y":339}is invalid: p2x must be greater than p1x
+    at validateSlopePosition (http://localhost:3000/src/components/SlopeLineDrawer.vue:91:15)
+    at drawLine (http://localhost:3000/src/components/SlopeLineDrawer.vue:66:7)
+    at Object.drawNewLine (http://localhost:3000/src/helpers/lineDrawingHelper.ts:25:5)
+    at http://localhost:3000/src/components/LineWatcher.vue:53:25
+    at http://localhost:3000/src/helpers/watchHelper.ts:18:11
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1565:18)
+    at callWithAsyncErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1573:17)
+    at job (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:3162:9)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1565:32)
+    at flushJobs (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1763:9)
+2025-04-23T17:37:17.578Z [ERROR]: Error: {"p1x":229,"p2x":82,"p1y":180,"p2y":339}is invalid: p2x must be greater than p1x
+    at validateSlopePosition (http://localhost:3000/src/components/SlopeLineDrawer.vue:91:15)
+    at drawLine (http://localhost:3000/src/components/SlopeLineDrawer.vue:66:7)
+    at Object.drawNewLine (http://localhost:3000/src/helpers/lineDrawingHelper.ts:25:5)
+    at http://localhost:3000/src/components/LineWatcher.vue:53:25
+    at http://localhost:3000/src/helpers/watchHelper.ts:18:11
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1565:18)
+    at callWithAsyncErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1573:17)
+    at job (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:3162:9)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1565:32)
+    at flushJobs (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1763:9)
+2025-04-23T17:37:17.592Z [ERROR]: Error: {"p1x":230,"p2x":82,"p1y":177,"p2y":339}is invalid: p2x must be greater than p1x
+    at validateSlopePosition (http://localhost:3000/src/components/SlopeLineDrawer.vue:91:15)
+    at drawLine (http://localhost:3000/src/components/SlopeLineDrawer.vue:66:7)
+    at Object.drawNewLine (http://localhost:3000/src/helpers/lineDrawingHelper.ts:25:5)
+    at http://localhost:3000/src/components/LineWatcher.vue:53:25
+    at http://localhost:3000/src/helpers/watchHelper.ts:18:11
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1565:18)
+    at callWithAsyncErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1573:17)
+    at job (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:3162:9)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1565:32)
+    at flushJobs (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1763:9)
+2025-04-23T17:37:17.597Z [ERROR]: Error: {"p1x":233,"p2x":82,"p1y":176,"p2y":339}is invalid: p2x must be greater than p1x
+    at validateSlopePosition (http://localhost:3000/src/components/SlopeLineDrawer.vue:91:15)
+    at drawLine (http://localhost:3000/src/components/SlopeLineDrawer.vue:66:7)
+    at Object.drawNewLine (http://localhost:3000/src/helpers/lineDrawingHelper.ts:25:5)
+    at http://localhost:3000/src/components/LineWatcher.vue:53:25
+    at http://localhost:3000/src/helpers/watchHelper.ts:18:11
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1565:18)
+    at callWithAsyncErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1573:17)
+    at job (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:3162:9)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1565:32)
+    at flushJobs (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1763:9)
+2025-04-23T17:37:17.886Z [ERROR]: Error: {"p1x":236,"p2x":82,"p1y":173,"p2y":339}is invalid: p2x must be greater than p1x
+    at validateSlopePosition (http://localhost:3000/src/components/SlopeLineDrawer.vue:91:15)
+    at drawLine (http://localhost:3000/src/components/SlopeLineDrawer.vue:66:7)
+    at Object.drawNewLine (http://localhost:3000/src/helpers/lineDrawingHelper.ts:25:5)
+    at http://localhost:3000/src/components/LineWatcher.vue:53:25
+    at http://localhost:3000/src/helpers/watchHelper.ts:18:11
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1565:18)
+    at callWithAsyncErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1573:17)
+    at job (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:3162:9)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1565:32)
+    at flushJobs (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1763:9)
+2025-04-23T17:37:17.888Z [ERROR]: Error: {"p1x":244,"p2x":82,"p1y":167,"p2y":339}is invalid: p2x must be greater than p1x
+    at validateSlopePosition (http://localhost:3000/src/components/SlopeLineDrawer.vue:91:15)
+    at drawLine (http://localhost:3000/src/components/SlopeLineDrawer.vue:66:7)
+    at Object.drawNewLine (http://localhost:3000/src/helpers/lineDrawingHelper.ts:25:5)
+    at http://localhost:3000/src/components/LineWatcher.vue:53:25
+    at http://localhost:3000/src/helpers/watchHelper.ts:18:11
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1565:18)
+    at callWithAsyncErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1573:17)
+    at job (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:3162:9)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1565:32)
+    at flushJobs (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1763:9)
+2025-04-23T17:37:17.890Z [ERROR]: Error: {"p1x":249,"p2x":82,"p1y":163,"p2y":339}is invalid: p2x must be greater than p1x
+    at validateSlopePosition (http://localhost:3000/src/components/SlopeLineDrawer.vue:91:15)
+    at drawLine (http://localhost:3000/src/components/SlopeLineDrawer.vue:66:7)
+    at Object.drawNewLine (http://localhost:3000/src/helpers/lineDrawingHelper.ts:25:5)
+    at http://localhost:3000/src/components/LineWatcher.vue:53:25
+    at http://localhost:3000/src/helpers/watchHelper.ts:18:11
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1565:18)
+    at callWithAsyncErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1573:17)
+    at job (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:3162:9)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1565:32)
+    at flushJobs (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1763:9)
+2025-04-23T17:37:17.902Z [ERROR]: Error: {"p1x":252,"p2x":82,"p1y":161,"p2y":339}is invalid: p2x must be greater than p1x
+    at validateSlopePosition (http://localhost:3000/src/components/SlopeLineDrawer.vue:91:15)
+    at drawLine (http://localhost:3000/src/components/SlopeLineDrawer.vue:66:7)
+    at Object.drawNewLine (http://localhost:3000/src/helpers/lineDrawingHelper.ts:25:5)
+    at http://localhost:3000/src/components/LineWatcher.vue:53:25
+    at http://localhost:3000/src/helpers/watchHelper.ts:18:11
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1565:18)
+    at callWithAsyncErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1573:17)
+    at job (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:3162:9)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1565:32)
+    at flushJobs (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1763:9)
+2025-04-23T17:37:17.903Z [ERROR]: Error: {"p1x":254,"p2x":82,"p1y":159,"p2y":339}is invalid: p2x must be greater than p1x
+    at validateSlopePosition (http://localhost:3000/src/components/SlopeLineDrawer.vue:91:15)
+    at drawLine (http://localhost:3000/src/components/SlopeLineDrawer.vue:66:7)
+    at Object.drawNewLine (http://localhost:3000/src/helpers/lineDrawingHelper.ts:25:5)
+    at http://localhost:3000/src/components/LineWatcher.vue:53:25
+    at http://localhost:3000/src/helpers/watchHelper.ts:18:11
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1565:18)
+    at callWithAsyncErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1573:17)
+    at job (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:3162:9)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1565:32)
+    at flushJobs (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1763:9)
+2025-04-23T17:37:18.199Z [ERROR]: Error: {"p1x":257,"p2x":82,"p1y":157,"p2y":339}is invalid: p2x must be greater than p1x
+    at validateSlopePosition (http://localhost:3000/src/components/SlopeLineDrawer.vue:91:15)
+    at drawLine (http://localhost:3000/src/components/SlopeLineDrawer.vue:66:7)
+    at Object.drawNewLine (http://localhost:3000/src/helpers/lineDrawingHelper.ts:25:5)
+    at http://localhost:3000/src/components/LineWatcher.vue:53:25
+    at http://localhost:3000/src/helpers/watchHelper.ts:18:11
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1565:18)
+    at callWithAsyncErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1573:17)
+    at job (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:3162:9)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1565:32)
+    at flushJobs (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1763:9)
+2025-04-23T17:37:18.201Z [ERROR]: Error: {"p1x":265,"p2x":82,"p1y":151,"p2y":339}is invalid: p2x must be greater than p1x
+    at validateSlopePosition (http://localhost:3000/src/components/SlopeLineDrawer.vue:91:15)
+    at drawLine (http://localhost:3000/src/components/SlopeLineDrawer.vue:66:7)
+    at Object.drawNewLine (http://localhost:3000/src/helpers/lineDrawingHelper.ts:25:5)
+    at http://localhost:3000/src/components/LineWatcher.vue:53:25
+    at http://localhost:3000/src/helpers/watchHelper.ts:18:11
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1565:18)
+    at callWithAsyncErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1573:17)
+    at job (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:3162:9)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1565:32)
+    at flushJobs (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1763:9)
+2025-04-23T17:37:18.204Z [ERROR]: Error: {"p1x":273,"p2x":82,"p1y":149,"p2y":339}is invalid: p2x must be greater than p1x
+    at validateSlopePosition (http://localhost:3000/src/components/SlopeLineDrawer.vue:91:15)
+    at drawLine (http://localhost:3000/src/components/SlopeLineDrawer.vue:66:7)
+    at Object.drawNewLine (http://localhost:3000/src/helpers/lineDrawingHelper.ts:25:5)
+    at http://localhost:3000/src/components/LineWatcher.vue:53:25
+    at http://localhost:3000/src/helpers/watchHelper.ts:18:11
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1565:18)
+    at callWithAsyncErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1573:17)
+    at job (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:3162:9)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1565:32)
+    at flushJobs (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1763:9)
+2025-04-23T17:37:18.209Z [ERROR]: Error: {"p1x":276,"p2x":82,"p1y":145,"p2y":339}is invalid: p2x must be greater than p1x
+    at validateSlopePosition (http://localhost:3000/src/components/SlopeLineDrawer.vue:91:15)
+    at drawLine (http://localhost:3000/src/components/SlopeLineDrawer.vue:66:7)
+    at Object.drawNewLine (http://localhost:3000/src/helpers/lineDrawingHelper.ts:25:5)
+    at http://localhost:3000/src/components/LineWatcher.vue:53:25
+    at http://localhost:3000/src/helpers/watchHelper.ts:18:11
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1565:18)
+    at callWithAsyncErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1573:17)
+    at job (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:3162:9)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1565:32)
+    at flushJobs (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1763:9)
+2025-04-23T17:37:18.212Z [ERROR]: Error: {"p1x":277,"p2x":82,"p1y":144,"p2y":339}is invalid: p2x must be greater than p1x
+    at validateSlopePosition (http://localhost:3000/src/components/SlopeLineDrawer.vue:91:15)
+    at drawLine (http://localhost:3000/src/components/SlopeLineDrawer.vue:66:7)
+    at Object.drawNewLine (http://localhost:3000/src/helpers/lineDrawingHelper.ts:25:5)
+    at http://localhost:3000/src/components/LineWatcher.vue:53:25
+    at http://localhost:3000/src/helpers/watchHelper.ts:18:11
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1565:18)
+    at callWithAsyncErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1573:17)
+    at job (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:3162:9)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1565:32)
+    at flushJobs (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1763:9)
+2025-04-23T17:37:18.508Z [ERROR]: Error: {"p1x":279,"p2x":82,"p1y":142,"p2y":339}is invalid: p2x must be greater than p1x
+    at validateSlopePosition (http://localhost:3000/src/components/SlopeLineDrawer.vue:91:15)
+    at drawLine (http://localhost:3000/src/components/SlopeLineDrawer.vue:66:7)
+    at Object.drawNewLine (http://localhost:3000/src/helpers/lineDrawingHelper.ts:25:5)
+    at http://localhost:3000/src/components/LineWatcher.vue:53:25
+    at http://localhost:3000/src/helpers/watchHelper.ts:18:11
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1565:18)
+    at callWithAsyncErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1573:17)
+    at job (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:3162:9)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1565:32)
+    at flushJobs (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1763:9)
+2025-04-23T17:37:18.510Z [ERROR]: Error: {"p1x":278,"p2x":82,"p1y":136,"p2y":339}is invalid: p2x must be greater than p1x
+    at validateSlopePosition (http://localhost:3000/src/components/SlopeLineDrawer.vue:91:15)
+    at drawLine (http://localhost:3000/src/components/SlopeLineDrawer.vue:66:7)
+    at Object.drawNewLine (http://localhost:3000/src/helpers/lineDrawingHelper.ts:25:5)
+    at http://localhost:3000/src/components/LineWatcher.vue:53:25
+    at http://localhost:3000/src/helpers/watchHelper.ts:18:11
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1565:18)
+    at callWithAsyncErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1573:17)
+    at job (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:3162:9)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1565:32)
+    at flushJobs (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1763:9)
+2025-04-23T17:37:18.513Z [ERROR]: Error: {"p1x":284,"p2x":82,"p1y":131,"p2y":339}is invalid: p2x must be greater than p1x
+    at validateSlopePosition (http://localhost:3000/src/components/SlopeLineDrawer.vue:91:15)
+    at drawLine (http://localhost:3000/src/components/SlopeLineDrawer.vue:66:7)
+    at Object.drawNewLine (http://localhost:3000/src/helpers/lineDrawingHelper.ts:25:5)
+    at http://localhost:3000/src/components/LineWatcher.vue:53:25
+    at http://localhost:3000/src/helpers/watchHelper.ts:18:11
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1565:18)
+    at callWithAsyncErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1573:17)
+    at job (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:3162:9)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1565:32)
+    at flushJobs (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1763:9)
+2025-04-23T17:37:18.517Z [ERROR]: Error: {"p1x":291,"p2x":82,"p1y":127,"p2y":339}is invalid: p2x must be greater than p1x
+    at validateSlopePosition (http://localhost:3000/src/components/SlopeLineDrawer.vue:91:15)
+    at drawLine (http://localhost:3000/src/components/SlopeLineDrawer.vue:66:7)
+    at Object.drawNewLine (http://localhost:3000/src/helpers/lineDrawingHelper.ts:25:5)
+    at http://localhost:3000/src/components/LineWatcher.vue:53:25
+    at http://localhost:3000/src/helpers/watchHelper.ts:18:11
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1565:18)
+    at callWithAsyncErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1573:17)
+    at job (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:3162:9)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1565:32)
+    at flushJobs (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1763:9)
+2025-04-23T17:37:18.520Z [ERROR]: Error: {"p1x":294,"p2x":82,"p1y":123,"p2y":339}is invalid: p2x must be greater than p1x
+    at validateSlopePosition (http://localhost:3000/src/components/SlopeLineDrawer.vue:91:15)
+    at drawLine (http://localhost:3000/src/components/SlopeLineDrawer.vue:66:7)
+    at Object.drawNewLine (http://localhost:3000/src/helpers/lineDrawingHelper.ts:25:5)
+    at http://localhost:3000/src/components/LineWatcher.vue:53:25
+    at http://localhost:3000/src/helpers/watchHelper.ts:18:11
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1565:18)
+    at callWithAsyncErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1573:17)
+    at job (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:3162:9)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1565:32)
+    at flushJobs (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1763:9)
+2025-04-23T17:37:18.830Z [ERROR]: Error: {"p1x":301,"p2x":82,"p1y":123,"p2y":339}is invalid: p2x must be greater than p1x
+    at validateSlopePosition (http://localhost:3000/src/components/SlopeLineDrawer.vue:91:15)
+    at drawLine (http://localhost:3000/src/components/SlopeLineDrawer.vue:66:7)
+    at Object.drawNewLine (http://localhost:3000/src/helpers/lineDrawingHelper.ts:25:5)
+    at http://localhost:3000/src/components/LineWatcher.vue:53:25
+    at http://localhost:3000/src/helpers/watchHelper.ts:18:11
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1565:18)
+    at callWithAsyncErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1573:17)
+    at job (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:3162:9)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1565:32)
+    at flushJobs (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1763:9)
+2025-04-23T17:37:18.832Z [ERROR]: Error: {"p1x":307,"p2x":82,"p1y":124,"p2y":339}is invalid: p2x must be greater than p1x
+    at validateSlopePosition (http://localhost:3000/src/components/SlopeLineDrawer.vue:91:15)
+    at drawLine (http://localhost:3000/src/components/SlopeLineDrawer.vue:66:7)
+    at Object.drawNewLine (http://localhost:3000/src/helpers/lineDrawingHelper.ts:25:5)
+    at http://localhost:3000/src/components/LineWatcher.vue:53:25
+    at http://localhost:3000/src/helpers/watchHelper.ts:18:11
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1565:18)
+    at callWithAsyncErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1573:17)
+    at job (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:3162:9)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1565:32)
+    at flushJobs (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1763:9)
+2025-04-23T17:37:18.834Z [ERROR]: Error: {"p1x":313,"p2x":82,"p1y":124,"p2y":339}is invalid: p2x must be greater than p1x
+    at validateSlopePosition (http://localhost:3000/src/components/SlopeLineDrawer.vue:91:15)
+    at drawLine (http://localhost:3000/src/components/SlopeLineDrawer.vue:66:7)
+    at Object.drawNewLine (http://localhost:3000/src/helpers/lineDrawingHelper.ts:25:5)
+    at http://localhost:3000/src/components/LineWatcher.vue:53:25
+    at http://localhost:3000/src/helpers/watchHelper.ts:18:11
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1565:18)
+    at callWithAsyncErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1573:17)
+    at job (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:3162:9)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1565:32)
+    at flushJobs (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1763:9)
+2025-04-23T17:37:18.836Z [ERROR]: Error: {"p1x":314,"p2x":82,"p1y":123,"p2y":339}is invalid: p2x must be greater than p1x
+    at validateSlopePosition (http://localhost:3000/src/components/SlopeLineDrawer.vue:91:15)
+    at drawLine (http://localhost:3000/src/components/SlopeLineDrawer.vue:66:7)
+    at Object.drawNewLine (http://localhost:3000/src/helpers/lineDrawingHelper.ts:25:5)
+    at http://localhost:3000/src/components/LineWatcher.vue:53:25
+    at http://localhost:3000/src/helpers/watchHelper.ts:18:11
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1565:18)
+    at callWithAsyncErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1573:17)
+    at job (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:3162:9)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1565:32)
+    at flushJobs (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1763:9)
+2025-04-23T17:37:18.838Z [ERROR]: Error: {"p1x":316,"p2x":82,"p1y":122,"p2y":339}is invalid: p2x must be greater than p1x
+    at validateSlopePosition (http://localhost:3000/src/components/SlopeLineDrawer.vue:91:15)
+    at drawLine (http://localhost:3000/src/components/SlopeLineDrawer.vue:66:7)
+    at Object.drawNewLine (http://localhost:3000/src/helpers/lineDrawingHelper.ts:25:5)
+    at http://localhost:3000/src/components/LineWatcher.vue:53:25
+    at http://localhost:3000/src/helpers/watchHelper.ts:18:11
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1565:18)
+    at callWithAsyncErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1573:17)
+    at job (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:3162:9)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1565:32)
+    at flushJobs (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1763:9)
+2025-04-23T17:37:19.147Z [ERROR]: Error: {"p1x":316,"p2x":82,"p1y":120,"p2y":339}is invalid: p2x must be greater than p1x
+    at validateSlopePosition (http://localhost:3000/src/components/SlopeLineDrawer.vue:91:15)
+    at drawLine (http://localhost:3000/src/components/SlopeLineDrawer.vue:66:7)
+    at Object.drawNewLine (http://localhost:3000/src/helpers/lineDrawingHelper.ts:25:5)
+    at http://localhost:3000/src/components/LineWatcher.vue:53:25
+    at http://localhost:3000/src/helpers/watchHelper.ts:18:11
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1565:18)
+    at callWithAsyncErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1573:17)
+    at job (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:3162:9)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1565:32)
+    at flushJobs (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1763:9)
+2025-04-23T17:37:19.892Z [ERROR]: Error: {"p1x":316,"p2x":82,"p1y":119,"p2y":339}is invalid: p2x must be greater than p1x
+    at validateSlopePosition (http://localhost:3000/src/components/SlopeLineDrawer.vue:91:15)
+    at drawLine (http://localhost:3000/src/components/SlopeLineDrawer.vue:66:7)
+    at Object.drawNewLine (http://localhost:3000/src/helpers/lineDrawingHelper.ts:25:5)
+    at http://localhost:3000/src/components/LineWatcher.vue:53:25
+    at http://localhost:3000/src/helpers/watchHelper.ts:18:11
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1565:18)
+    at callWithAsyncErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1573:17)
+    at job (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:3162:9)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1565:32)
+    at flushJobs (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1763:9)
+2025-04-23T17:37:20.093Z [ERROR]: Error: {"p1x":314,"p2x":82,"p1y":118,"p2y":339}is invalid: p2x must be greater than p1x
+    at validateSlopePosition (http://localhost:3000/src/components/SlopeLineDrawer.vue:91:15)
+    at drawLine (http://localhost:3000/src/components/SlopeLineDrawer.vue:66:7)
+    at Object.drawNewLine (http://localhost:3000/src/helpers/lineDrawingHelper.ts:25:5)
+    at http://localhost:3000/src/components/LineWatcher.vue:53:25
+    at http://localhost:3000/src/helpers/watchHelper.ts:18:11
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1565:18)
+    at callWithAsyncErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1573:17)
+    at job (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:3162:9)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1565:32)
+    at flushJobs (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1763:9)
+2025-04-23T17:37:20.242Z [ERROR]: Error: {"p1x":314,"p2x":82,"p1y":117,"p2y":339}is invalid: p2x must be greater than p1x
+    at validateSlopePosition (http://localhost:3000/src/components/SlopeLineDrawer.vue:91:15)
+    at drawLine (http://localhost:3000/src/components/SlopeLineDrawer.vue:66:7)
+    at Object.drawNewLine (http://localhost:3000/src/helpers/lineDrawingHelper.ts:25:5)
+    at http://localhost:3000/src/components/LineWatcher.vue:53:25
+    at http://localhost:3000/src/helpers/watchHelper.ts:18:11
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1565:18)
+    at callWithAsyncErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1573:17)
+    at job (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:3162:9)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1565:32)
+    at flushJobs (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1763:9)
+2025-04-23T17:37:20.262Z [ERROR]: Error: {"p1x":316,"p2x":82,"p1y":115,"p2y":339}is invalid: p2x must be greater than p1x
+    at validateSlopePosition (http://localhost:3000/src/components/SlopeLineDrawer.vue:91:15)
+    at drawLine (http://localhost:3000/src/components/SlopeLineDrawer.vue:66:7)
+    at Object.drawNewLine (http://localhost:3000/src/helpers/lineDrawingHelper.ts:25:5)
+    at http://localhost:3000/src/components/LineWatcher.vue:53:25
+    at http://localhost:3000/src/helpers/watchHelper.ts:18:11
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1565:18)
+    at callWithAsyncErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1573:17)
+    at job (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:3162:9)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1565:32)
+    at flushJobs (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1763:9)
+2025-04-23T17:37:20.277Z [ERROR]: Error: {"p1x":317,"p2x":82,"p1y":114,"p2y":339}is invalid: p2x must be greater than p1x
+    at validateSlopePosition (http://localhost:3000/src/components/SlopeLineDrawer.vue:91:15)
+    at drawLine (http://localhost:3000/src/components/SlopeLineDrawer.vue:66:7)
+    at Object.drawNewLine (http://localhost:3000/src/helpers/lineDrawingHelper.ts:25:5)
+    at http://localhost:3000/src/components/LineWatcher.vue:53:25
+    at http://localhost:3000/src/helpers/watchHelper.ts:18:11
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1565:18)
+    at callWithAsyncErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1573:17)
+    at job (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:3162:9)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1565:32)
+    at flushJobs (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1763:9)
+2025-04-23T17:37:21.183Z [ERROR]: Error: {"p1x":323,"p2x":82,"p1y":116,"p2y":339}is invalid: p2x must be greater than p1x
+    at validateSlopePosition (http://localhost:3000/src/components/SlopeLineDrawer.vue:91:15)
+    at drawLine (http://localhost:3000/src/components/SlopeLineDrawer.vue:66:7)
+    at Object.drawNewLine (http://localhost:3000/src/helpers/lineDrawingHelper.ts:25:5)
+    at http://localhost:3000/src/components/LineWatcher.vue:53:25
+    at http://localhost:3000/src/helpers/watchHelper.ts:18:11
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1565:18)
+    at callWithAsyncErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1573:17)
+    at job (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:3162:9)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1565:32)
+    at flushJobs (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1763:9)
+2025-04-23T17:37:21.727Z [ERROR]: invalid model:{"p1x":323,"p2x":79,"p1y":114,"p2y":340,"boardType":"LESSON","parentUUId":"197a1b6d-a3fc-4ec5-9476-8b63e0f46fce","notationType":"SLOPELINE","user":{"id":1,"uuid":"de253010-452b-40a3-99fe-bbbca56238c8","firstName":"Hanan","lastName":"Tomer","email":"hanantomer@gmail.com","imageUrl":"","access_token":"","reset_pasword_token":null,"userType":"TEACHER","approved":false,"createdAt":"2025-04-23T13:59:32.480Z","updatedAt":"2025-04-23T13:59:32.480Z"}}undefined
+2025-04-23T17:37:27.188Z [ERROR]: Error: {"p1x":83,"p2x":83,"p1y":338,"p2y":341}is invalid: p2x must be greater than p1x
+    at validateSlopePosition (http://localhost:3000/src/components/SlopeLineDrawer.vue:91:15)
+    at drawLine (http://localhost:3000/src/components/SlopeLineDrawer.vue:66:7)
+    at Object.drawNewLine (http://localhost:3000/src/helpers/lineDrawingHelper.ts:25:5)
+    at http://localhost:3000/src/components/LineWatcher.vue:53:25
+    at http://localhost:3000/src/helpers/watchHelper.ts:18:11
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1565:18)
+    at callWithAsyncErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1573:17)
+    at job (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:3162:9)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1565:32)
+    at flushJobs (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1763:9)
+2025-04-23T17:37:27.205Z [ERROR]: Error: {"p1x":84,"p2x":83,"p1y":337,"p2y":341}is invalid: p2x must be greater than p1x
+    at validateSlopePosition (http://localhost:3000/src/components/SlopeLineDrawer.vue:91:15)
+    at drawLine (http://localhost:3000/src/components/SlopeLineDrawer.vue:66:7)
+    at Object.drawNewLine (http://localhost:3000/src/helpers/lineDrawingHelper.ts:25:5)
+    at http://localhost:3000/src/components/LineWatcher.vue:53:25
+    at http://localhost:3000/src/helpers/watchHelper.ts:18:11
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1565:18)
+    at callWithAsyncErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1573:17)
+    at job (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:3162:9)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1565:32)
+    at flushJobs (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1763:9)
+2025-04-23T17:37:27.235Z [ERROR]: Error: {"p1x":87,"p2x":83,"p1y":336,"p2y":341}is invalid: p2x must be greater than p1x
+    at validateSlopePosition (http://localhost:3000/src/components/SlopeLineDrawer.vue:91:15)
+    at drawLine (http://localhost:3000/src/components/SlopeLineDrawer.vue:66:7)
+    at Object.drawNewLine (http://localhost:3000/src/helpers/lineDrawingHelper.ts:25:5)
+    at http://localhost:3000/src/components/LineWatcher.vue:53:25
+    at http://localhost:3000/src/helpers/watchHelper.ts:18:11
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1565:18)
+    at callWithAsyncErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1573:17)
+    at job (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:3162:9)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1565:32)
+    at flushJobs (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1763:9)
+2025-04-23T17:37:27.239Z [ERROR]: Error: {"p1x":91,"p2x":83,"p1y":335,"p2y":341}is invalid: p2x must be greater than p1x
+    at validateSlopePosition (http://localhost:3000/src/components/SlopeLineDrawer.vue:91:15)
+    at drawLine (http://localhost:3000/src/components/SlopeLineDrawer.vue:66:7)
+    at Object.drawNewLine (http://localhost:3000/src/helpers/lineDrawingHelper.ts:25:5)
+    at http://localhost:3000/src/components/LineWatcher.vue:53:25
+    at http://localhost:3000/src/helpers/watchHelper.ts:18:11
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1565:18)
+    at callWithAsyncErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1573:17)
+    at job (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:3162:9)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1565:32)
+    at flushJobs (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1763:9)
+2025-04-23T17:37:27.254Z [ERROR]: Error: {"p1x":93,"p2x":83,"p1y":333,"p2y":341}is invalid: p2x must be greater than p1x
+    at validateSlopePosition (http://localhost:3000/src/components/SlopeLineDrawer.vue:91:15)
+    at drawLine (http://localhost:3000/src/components/SlopeLineDrawer.vue:66:7)
+    at Object.drawNewLine (http://localhost:3000/src/helpers/lineDrawingHelper.ts:25:5)
+    at http://localhost:3000/src/components/LineWatcher.vue:53:25
+    at http://localhost:3000/src/helpers/watchHelper.ts:18:11
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1565:18)
+    at callWithAsyncErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1573:17)
+    at job (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:3162:9)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1565:32)
+    at flushJobs (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1763:9)
+2025-04-23T17:37:27.500Z [ERROR]: Error: {"p1x":94,"p2x":83,"p1y":332,"p2y":341}is invalid: p2x must be greater than p1x
+    at validateSlopePosition (http://localhost:3000/src/components/SlopeLineDrawer.vue:91:15)
+    at drawLine (http://localhost:3000/src/components/SlopeLineDrawer.vue:66:7)
+    at Object.drawNewLine (http://localhost:3000/src/helpers/lineDrawingHelper.ts:25:5)
+    at http://localhost:3000/src/components/LineWatcher.vue:53:25
+    at http://localhost:3000/src/helpers/watchHelper.ts:18:11
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1565:18)
+    at callWithAsyncErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1573:17)
+    at job (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:3162:9)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1565:32)
+    at flushJobs (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1763:9)
+2025-04-23T17:37:27.516Z [ERROR]: Error: {"p1x":97,"p2x":83,"p1y":330,"p2y":341}is invalid: p2x must be greater than p1x
+    at validateSlopePosition (http://localhost:3000/src/components/SlopeLineDrawer.vue:91:15)
+    at drawLine (http://localhost:3000/src/components/SlopeLineDrawer.vue:66:7)
+    at Object.drawNewLine (http://localhost:3000/src/helpers/lineDrawingHelper.ts:25:5)
+    at http://localhost:3000/src/components/LineWatcher.vue:53:25
+    at http://localhost:3000/src/helpers/watchHelper.ts:18:11
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1565:18)
+    at callWithAsyncErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1573:17)
+    at job (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:3162:9)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1565:32)
+    at flushJobs (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1763:9)
+2025-04-23T17:37:27.559Z [ERROR]: Error: {"p1x":100,"p2x":83,"p1y":328,"p2y":341}is invalid: p2x must be greater than p1x
+    at validateSlopePosition (http://localhost:3000/src/components/SlopeLineDrawer.vue:91:15)
+    at drawLine (http://localhost:3000/src/components/SlopeLineDrawer.vue:66:7)
+    at Object.drawNewLine (http://localhost:3000/src/helpers/lineDrawingHelper.ts:25:5)
+    at http://localhost:3000/src/components/LineWatcher.vue:53:25
+    at http://localhost:3000/src/helpers/watchHelper.ts:18:11
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1565:18)
+    at callWithAsyncErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1573:17)
+    at job (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:3162:9)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1565:32)
+    at flushJobs (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1763:9)
+2025-04-23T17:37:27.561Z [ERROR]: Error: {"p1x":114,"p2x":83,"p1y":320,"p2y":341}is invalid: p2x must be greater than p1x
+    at validateSlopePosition (http://localhost:3000/src/components/SlopeLineDrawer.vue:91:15)
+    at drawLine (http://localhost:3000/src/components/SlopeLineDrawer.vue:66:7)
+    at Object.drawNewLine (http://localhost:3000/src/helpers/lineDrawingHelper.ts:25:5)
+    at http://localhost:3000/src/components/LineWatcher.vue:53:25
+    at http://localhost:3000/src/helpers/watchHelper.ts:18:11
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1565:18)
+    at callWithAsyncErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1573:17)
+    at job (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:3162:9)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1565:32)
+    at flushJobs (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1763:9)
+2025-04-23T17:37:27.563Z [ERROR]: Error: {"p1x":141,"p2x":83,"p1y":303,"p2y":341}is invalid: p2x must be greater than p1x
+    at validateSlopePosition (http://localhost:3000/src/components/SlopeLineDrawer.vue:91:15)
+    at drawLine (http://localhost:3000/src/components/SlopeLineDrawer.vue:66:7)
+    at Object.drawNewLine (http://localhost:3000/src/helpers/lineDrawingHelper.ts:25:5)
+    at http://localhost:3000/src/components/LineWatcher.vue:53:25
+    at http://localhost:3000/src/helpers/watchHelper.ts:18:11
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1565:18)
+    at callWithAsyncErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1573:17)
+    at job (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:3162:9)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1565:32)
+    at flushJobs (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1763:9)
+2025-04-23T17:37:27.823Z [ERROR]: Error: {"p1x":178,"p2x":83,"p1y":281,"p2y":341}is invalid: p2x must be greater than p1x
+    at validateSlopePosition (http://localhost:3000/src/components/SlopeLineDrawer.vue:91:15)
+    at drawLine (http://localhost:3000/src/components/SlopeLineDrawer.vue:66:7)
+    at Object.drawNewLine (http://localhost:3000/src/helpers/lineDrawingHelper.ts:25:5)
+    at http://localhost:3000/src/components/LineWatcher.vue:53:25
+    at http://localhost:3000/src/helpers/watchHelper.ts:18:11
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1565:18)
+    at callWithAsyncErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1573:17)
+    at job (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:3162:9)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1565:32)
+    at flushJobs (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1763:9)
+2025-04-23T17:37:27.825Z [ERROR]: Error: {"p1x":193,"p2x":83,"p1y":271,"p2y":341}is invalid: p2x must be greater than p1x
+    at validateSlopePosition (http://localhost:3000/src/components/SlopeLineDrawer.vue:91:15)
+    at drawLine (http://localhost:3000/src/components/SlopeLineDrawer.vue:66:7)
+    at Object.drawNewLine (http://localhost:3000/src/helpers/lineDrawingHelper.ts:25:5)
+    at http://localhost:3000/src/components/LineWatcher.vue:53:25
+    at http://localhost:3000/src/helpers/watchHelper.ts:18:11
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1565:18)
+    at callWithAsyncErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1573:17)
+    at job (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:3162:9)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1565:32)
+    at flushJobs (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1763:9)
+2025-04-23T17:37:27.879Z [ERROR]: Error: {"p1x":199,"p2x":83,"p1y":264,"p2y":341}is invalid: p2x must be greater than p1x
+    at validateSlopePosition (http://localhost:3000/src/components/SlopeLineDrawer.vue:91:15)
+    at drawLine (http://localhost:3000/src/components/SlopeLineDrawer.vue:66:7)
+    at Object.drawNewLine (http://localhost:3000/src/helpers/lineDrawingHelper.ts:25:5)
+    at http://localhost:3000/src/components/LineWatcher.vue:53:25
+    at http://localhost:3000/src/helpers/watchHelper.ts:18:11
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1565:18)
+    at callWithAsyncErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1573:17)
+    at job (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:3162:9)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1565:32)
+    at flushJobs (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1763:9)
+2025-04-23T17:37:27.881Z [ERROR]: Error: {"p1x":203,"p2x":83,"p1y":261,"p2y":341}is invalid: p2x must be greater than p1x
+    at validateSlopePosition (http://localhost:3000/src/components/SlopeLineDrawer.vue:91:15)
+    at drawLine (http://localhost:3000/src/components/SlopeLineDrawer.vue:66:7)
+    at Object.drawNewLine (http://localhost:3000/src/helpers/lineDrawingHelper.ts:25:5)
+    at http://localhost:3000/src/components/LineWatcher.vue:53:25
+    at http://localhost:3000/src/helpers/watchHelper.ts:18:11
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1565:18)
+    at callWithAsyncErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1573:17)
+    at job (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:3162:9)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1565:32)
+    at flushJobs (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1763:9)
+2025-04-23T17:37:27.884Z [ERROR]: Error: {"p1x":207,"p2x":83,"p1y":258,"p2y":341}is invalid: p2x must be greater than p1x
+    at validateSlopePosition (http://localhost:3000/src/components/SlopeLineDrawer.vue:91:15)
+    at drawLine (http://localhost:3000/src/components/SlopeLineDrawer.vue:66:7)
+    at Object.drawNewLine (http://localhost:3000/src/helpers/lineDrawingHelper.ts:25:5)
+    at http://localhost:3000/src/components/LineWatcher.vue:53:25
+    at http://localhost:3000/src/helpers/watchHelper.ts:18:11
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1565:18)
+    at callWithAsyncErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1573:17)
+    at job (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:3162:9)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1565:32)
+    at flushJobs (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1763:9)
+2025-04-23T17:37:28.138Z [ERROR]: Error: {"p1x":213,"p2x":83,"p1y":252,"p2y":341}is invalid: p2x must be greater than p1x
+    at validateSlopePosition (http://localhost:3000/src/components/SlopeLineDrawer.vue:91:15)
+    at drawLine (http://localhost:3000/src/components/SlopeLineDrawer.vue:66:7)
+    at Object.drawNewLine (http://localhost:3000/src/helpers/lineDrawingHelper.ts:25:5)
+    at http://localhost:3000/src/components/LineWatcher.vue:53:25
+    at http://localhost:3000/src/helpers/watchHelper.ts:18:11
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1565:18)
+    at callWithAsyncErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1573:17)
+    at job (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:3162:9)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1565:32)
+    at flushJobs (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1763:9)
+2025-04-23T17:37:28.140Z [ERROR]: Error: {"p1x":223,"p2x":83,"p1y":245,"p2y":341}is invalid: p2x must be greater than p1x
+    at validateSlopePosition (http://localhost:3000/src/components/SlopeLineDrawer.vue:91:15)
+    at drawLine (http://localhost:3000/src/components/SlopeLineDrawer.vue:66:7)
+    at Object.drawNewLine (http://localhost:3000/src/helpers/lineDrawingHelper.ts:25:5)
+    at http://localhost:3000/src/components/LineWatcher.vue:53:25
+    at http://localhost:3000/src/helpers/watchHelper.ts:18:11
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1565:18)
+    at callWithAsyncErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1573:17)
+    at job (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:3162:9)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1565:32)
+    at flushJobs (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1763:9)
+2025-04-23T17:37:28.198Z [ERROR]: Error: {"p1x":237,"p2x":83,"p1y":235,"p2y":341}is invalid: p2x must be greater than p1x
+    at validateSlopePosition (http://localhost:3000/src/components/SlopeLineDrawer.vue:91:15)
+    at drawLine (http://localhost:3000/src/components/SlopeLineDrawer.vue:66:7)
+    at Object.drawNewLine (http://localhost:3000/src/helpers/lineDrawingHelper.ts:25:5)
+    at http://localhost:3000/src/components/LineWatcher.vue:53:25
+    at http://localhost:3000/src/helpers/watchHelper.ts:18:11
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1565:18)
+    at callWithAsyncErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1573:17)
+    at job (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:3162:9)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1565:32)
+    at flushJobs (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1763:9)
+2025-04-23T17:37:28.200Z [ERROR]: Error: {"p1x":250,"p2x":83,"p1y":226,"p2y":341}is invalid: p2x must be greater than p1x
+    at validateSlopePosition (http://localhost:3000/src/components/SlopeLineDrawer.vue:91:15)
+    at drawLine (http://localhost:3000/src/components/SlopeLineDrawer.vue:66:7)
+    at Object.drawNewLine (http://localhost:3000/src/helpers/lineDrawingHelper.ts:25:5)
+    at http://localhost:3000/src/components/LineWatcher.vue:53:25
+    at http://localhost:3000/src/helpers/watchHelper.ts:18:11
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1565:18)
+    at callWithAsyncErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1573:17)
+    at job (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:3162:9)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1565:32)
+    at flushJobs (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1763:9)
+2025-04-23T17:37:28.202Z [ERROR]: Error: {"p1x":257,"p2x":83,"p1y":219,"p2y":341}is invalid: p2x must be greater than p1x
+    at validateSlopePosition (http://localhost:3000/src/components/SlopeLineDrawer.vue:91:15)
+    at drawLine (http://localhost:3000/src/components/SlopeLineDrawer.vue:66:7)
+    at Object.drawNewLine (http://localhost:3000/src/helpers/lineDrawingHelper.ts:25:5)
+    at http://localhost:3000/src/components/LineWatcher.vue:53:25
+    at http://localhost:3000/src/helpers/watchHelper.ts:18:11
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1565:18)
+    at callWithAsyncErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1573:17)
+    at job (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:3162:9)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1565:32)
+    at flushJobs (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1763:9)
+2025-04-23T17:37:28.449Z [ERROR]: Error: {"p1x":259,"p2x":83,"p1y":214,"p2y":341}is invalid: p2x must be greater than p1x
+    at validateSlopePosition (http://localhost:3000/src/components/SlopeLineDrawer.vue:91:15)
+    at drawLine (http://localhost:3000/src/components/SlopeLineDrawer.vue:66:7)
+    at Object.drawNewLine (http://localhost:3000/src/helpers/lineDrawingHelper.ts:25:5)
+    at http://localhost:3000/src/components/LineWatcher.vue:53:25
+    at http://localhost:3000/src/helpers/watchHelper.ts:18:11
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1565:18)
+    at callWithAsyncErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1573:17)
+    at job (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:3162:9)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1565:32)
+    at flushJobs (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1763:9)
+2025-04-23T17:37:28.451Z [ERROR]: Error: {"p1x":261,"p2x":83,"p1y":212,"p2y":341}is invalid: p2x must be greater than p1x
+    at validateSlopePosition (http://localhost:3000/src/components/SlopeLineDrawer.vue:91:15)
+    at drawLine (http://localhost:3000/src/components/SlopeLineDrawer.vue:66:7)
+    at Object.drawNewLine (http://localhost:3000/src/helpers/lineDrawingHelper.ts:25:5)
+    at http://localhost:3000/src/components/LineWatcher.vue:53:25
+    at http://localhost:3000/src/helpers/watchHelper.ts:18:11
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1565:18)
+    at callWithAsyncErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1573:17)
+    at job (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:3162:9)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1565:32)
+    at flushJobs (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1763:9)
+2025-04-23T17:37:28.509Z [ERROR]: Error: {"p1x":265,"p2x":83,"p1y":211,"p2y":341}is invalid: p2x must be greater than p1x
+    at validateSlopePosition (http://localhost:3000/src/components/SlopeLineDrawer.vue:91:15)
+    at drawLine (http://localhost:3000/src/components/SlopeLineDrawer.vue:66:7)
+    at Object.drawNewLine (http://localhost:3000/src/helpers/lineDrawingHelper.ts:25:5)
+    at http://localhost:3000/src/components/LineWatcher.vue:53:25
+    at http://localhost:3000/src/helpers/watchHelper.ts:18:11
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1565:18)
+    at callWithAsyncErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1573:17)
+    at job (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:3162:9)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1565:32)
+    at flushJobs (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1763:9)
+2025-04-23T17:37:28.510Z [ERROR]: Error: {"p1x":269,"p2x":83,"p1y":209,"p2y":341}is invalid: p2x must be greater than p1x
+    at validateSlopePosition (http://localhost:3000/src/components/SlopeLineDrawer.vue:91:15)
+    at drawLine (http://localhost:3000/src/components/SlopeLineDrawer.vue:66:7)
+    at Object.drawNewLine (http://localhost:3000/src/helpers/lineDrawingHelper.ts:25:5)
+    at http://localhost:3000/src/components/LineWatcher.vue:53:25
+    at http://localhost:3000/src/helpers/watchHelper.ts:18:11
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1565:18)
+    at callWithAsyncErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1573:17)
+    at job (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:3162:9)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1565:32)
+    at flushJobs (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1763:9)
+2025-04-23T17:37:28.513Z [ERROR]: Error: {"p1x":273,"p2x":83,"p1y":204,"p2y":341}is invalid: p2x must be greater than p1x
+    at validateSlopePosition (http://localhost:3000/src/components/SlopeLineDrawer.vue:91:15)
+    at drawLine (http://localhost:3000/src/components/SlopeLineDrawer.vue:66:7)
+    at Object.drawNewLine (http://localhost:3000/src/helpers/lineDrawingHelper.ts:25:5)
+    at http://localhost:3000/src/components/LineWatcher.vue:53:25
+    at http://localhost:3000/src/helpers/watchHelper.ts:18:11
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1565:18)
+    at callWithAsyncErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1573:17)
+    at job (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:3162:9)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1565:32)
+    at flushJobs (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1763:9)
+2025-04-23T17:37:28.754Z [ERROR]: Error: {"p1x":281,"p2x":83,"p1y":197,"p2y":341}is invalid: p2x must be greater than p1x
+    at validateSlopePosition (http://localhost:3000/src/components/SlopeLineDrawer.vue:91:15)
+    at drawLine (http://localhost:3000/src/components/SlopeLineDrawer.vue:66:7)
+    at Object.drawNewLine (http://localhost:3000/src/helpers/lineDrawingHelper.ts:25:5)
+    at http://localhost:3000/src/components/LineWatcher.vue:53:25
+    at http://localhost:3000/src/helpers/watchHelper.ts:18:11
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1565:18)
+    at callWithAsyncErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1573:17)
+    at job (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:3162:9)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1565:32)
+    at flushJobs (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1763:9)
+2025-04-23T17:37:28.758Z [ERROR]: Error: {"p1x":290,"p2x":83,"p1y":190,"p2y":341}is invalid: p2x must be greater than p1x
+    at validateSlopePosition (http://localhost:3000/src/components/SlopeLineDrawer.vue:91:15)
+    at drawLine (http://localhost:3000/src/components/SlopeLineDrawer.vue:66:7)
+    at Object.drawNewLine (http://localhost:3000/src/helpers/lineDrawingHelper.ts:25:5)
+    at http://localhost:3000/src/components/LineWatcher.vue:53:25
+    at http://localhost:3000/src/helpers/watchHelper.ts:18:11
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1565:18)
+    at callWithAsyncErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1573:17)
+    at job (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:3162:9)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1565:32)
+    at flushJobs (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1763:9)
+2025-04-23T17:37:28.818Z [ERROR]: Error: {"p1x":295,"p2x":83,"p1y":182,"p2y":341}is invalid: p2x must be greater than p1x
+    at validateSlopePosition (http://localhost:3000/src/components/SlopeLineDrawer.vue:91:15)
+    at drawLine (http://localhost:3000/src/components/SlopeLineDrawer.vue:66:7)
+    at Object.drawNewLine (http://localhost:3000/src/helpers/lineDrawingHelper.ts:25:5)
+    at http://localhost:3000/src/components/LineWatcher.vue:53:25
+    at http://localhost:3000/src/helpers/watchHelper.ts:18:11
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1565:18)
+    at callWithAsyncErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1573:17)
+    at job (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:3162:9)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1565:32)
+    at flushJobs (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1763:9)
+2025-04-23T17:37:28.820Z [ERROR]: Error: {"p1x":301,"p2x":83,"p1y":170,"p2y":341}is invalid: p2x must be greater than p1x
+    at validateSlopePosition (http://localhost:3000/src/components/SlopeLineDrawer.vue:91:15)
+    at drawLine (http://localhost:3000/src/components/SlopeLineDrawer.vue:66:7)
+    at Object.drawNewLine (http://localhost:3000/src/helpers/lineDrawingHelper.ts:25:5)
+    at http://localhost:3000/src/components/LineWatcher.vue:53:25
+    at http://localhost:3000/src/helpers/watchHelper.ts:18:11
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1565:18)
+    at callWithAsyncErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1573:17)
+    at job (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:3162:9)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1565:32)
+    at flushJobs (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1763:9)
+2025-04-23T17:37:28.822Z [ERROR]: Error: {"p1x":308,"p2x":83,"p1y":162,"p2y":341}is invalid: p2x must be greater than p1x
+    at validateSlopePosition (http://localhost:3000/src/components/SlopeLineDrawer.vue:91:15)
+    at drawLine (http://localhost:3000/src/components/SlopeLineDrawer.vue:66:7)
+    at Object.drawNewLine (http://localhost:3000/src/helpers/lineDrawingHelper.ts:25:5)
+    at http://localhost:3000/src/components/LineWatcher.vue:53:25
+    at http://localhost:3000/src/helpers/watchHelper.ts:18:11
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1565:18)
+    at callWithAsyncErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1573:17)
+    at job (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:3162:9)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1565:32)
+    at flushJobs (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1763:9)
+2025-04-23T17:37:29.078Z [ERROR]: Error: {"p1x":312,"p2x":83,"p1y":156,"p2y":341}is invalid: p2x must be greater than p1x
+    at validateSlopePosition (http://localhost:3000/src/components/SlopeLineDrawer.vue:91:15)
+    at drawLine (http://localhost:3000/src/components/SlopeLineDrawer.vue:66:7)
+    at Object.drawNewLine (http://localhost:3000/src/helpers/lineDrawingHelper.ts:25:5)
+    at http://localhost:3000/src/components/LineWatcher.vue:53:25
+    at http://localhost:3000/src/helpers/watchHelper.ts:18:11
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1565:18)
+    at callWithAsyncErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1573:17)
+    at job (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:3162:9)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1565:32)
+    at flushJobs (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1763:9)
+2025-04-23T17:37:29.080Z [ERROR]: Error: {"p1x":313,"p2x":83,"p1y":155,"p2y":341}is invalid: p2x must be greater than p1x
+    at validateSlopePosition (http://localhost:3000/src/components/SlopeLineDrawer.vue:91:15)
+    at drawLine (http://localhost:3000/src/components/SlopeLineDrawer.vue:66:7)
+    at Object.drawNewLine (http://localhost:3000/src/helpers/lineDrawingHelper.ts:25:5)
+    at http://localhost:3000/src/components/LineWatcher.vue:53:25
+    at http://localhost:3000/src/helpers/watchHelper.ts:18:11
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1565:18)
+    at callWithAsyncErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1573:17)
+    at job (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:3162:9)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1565:32)
+    at flushJobs (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1763:9)
+2025-04-23T17:37:29.138Z [ERROR]: Error: {"p1x":313,"p2x":83,"p1y":153,"p2y":341}is invalid: p2x must be greater than p1x
+    at validateSlopePosition (http://localhost:3000/src/components/SlopeLineDrawer.vue:91:15)
+    at drawLine (http://localhost:3000/src/components/SlopeLineDrawer.vue:66:7)
+    at Object.drawNewLine (http://localhost:3000/src/helpers/lineDrawingHelper.ts:25:5)
+    at http://localhost:3000/src/components/LineWatcher.vue:53:25
+    at http://localhost:3000/src/helpers/watchHelper.ts:18:11
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1565:18)
+    at callWithAsyncErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1573:17)
+    at job (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:3162:9)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1565:32)
+    at flushJobs (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1763:9)
+2025-04-23T17:37:29.140Z [ERROR]: Error: {"p1x":315,"p2x":83,"p1y":150,"p2y":341}is invalid: p2x must be greater than p1x
+    at validateSlopePosition (http://localhost:3000/src/components/SlopeLineDrawer.vue:91:15)
+    at drawLine (http://localhost:3000/src/components/SlopeLineDrawer.vue:66:7)
+    at Object.drawNewLine (http://localhost:3000/src/helpers/lineDrawingHelper.ts:25:5)
+    at http://localhost:3000/src/components/LineWatcher.vue:53:25
+    at http://localhost:3000/src/helpers/watchHelper.ts:18:11
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1565:18)
+    at callWithAsyncErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1573:17)
+    at job (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:3162:9)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1565:32)
+    at flushJobs (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1763:9)
+2025-04-23T17:37:29.142Z [ERROR]: Error: {"p1x":316,"p2x":83,"p1y":147,"p2y":341}is invalid: p2x must be greater than p1x
+    at validateSlopePosition (http://localhost:3000/src/components/SlopeLineDrawer.vue:91:15)
+    at drawLine (http://localhost:3000/src/components/SlopeLineDrawer.vue:66:7)
+    at Object.drawNewLine (http://localhost:3000/src/helpers/lineDrawingHelper.ts:25:5)
+    at http://localhost:3000/src/components/LineWatcher.vue:53:25
+    at http://localhost:3000/src/helpers/watchHelper.ts:18:11
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1565:18)
+    at callWithAsyncErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1573:17)
+    at job (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:3162:9)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1565:32)
+    at flushJobs (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1763:9)
+2025-04-23T17:37:29.388Z [ERROR]: Error: {"p1x":317,"p2x":83,"p1y":142,"p2y":341}is invalid: p2x must be greater than p1x
+    at validateSlopePosition (http://localhost:3000/src/components/SlopeLineDrawer.vue:91:15)
+    at drawLine (http://localhost:3000/src/components/SlopeLineDrawer.vue:66:7)
+    at Object.drawNewLine (http://localhost:3000/src/helpers/lineDrawingHelper.ts:25:5)
+    at http://localhost:3000/src/components/LineWatcher.vue:53:25
+    at http://localhost:3000/src/helpers/watchHelper.ts:18:11
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1565:18)
+    at callWithAsyncErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1573:17)
+    at job (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:3162:9)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1565:32)
+    at flushJobs (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1763:9)
+2025-04-23T17:37:29.390Z [ERROR]: Error: {"p1x":318,"p2x":83,"p1y":138,"p2y":341}is invalid: p2x must be greater than p1x
+    at validateSlopePosition (http://localhost:3000/src/components/SlopeLineDrawer.vue:91:15)
+    at drawLine (http://localhost:3000/src/components/SlopeLineDrawer.vue:66:7)
+    at Object.drawNewLine (http://localhost:3000/src/helpers/lineDrawingHelper.ts:25:5)
+    at http://localhost:3000/src/components/LineWatcher.vue:53:25
+    at http://localhost:3000/src/helpers/watchHelper.ts:18:11
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1565:18)
+    at callWithAsyncErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1573:17)
+    at job (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:3162:9)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1565:32)
+    at flushJobs (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1763:9)
+2025-04-23T17:37:29.448Z [ERROR]: Error: {"p1x":319,"p2x":83,"p1y":133,"p2y":341}is invalid: p2x must be greater than p1x
+    at validateSlopePosition (http://localhost:3000/src/components/SlopeLineDrawer.vue:91:15)
+    at drawLine (http://localhost:3000/src/components/SlopeLineDrawer.vue:66:7)
+    at Object.drawNewLine (http://localhost:3000/src/helpers/lineDrawingHelper.ts:25:5)
+    at http://localhost:3000/src/components/LineWatcher.vue:53:25
+    at http://localhost:3000/src/helpers/watchHelper.ts:18:11
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1565:18)
+    at callWithAsyncErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1573:17)
+    at job (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:3162:9)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1565:32)
+    at flushJobs (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1763:9)
+2025-04-23T17:37:29.450Z [ERROR]: Error: {"p1x":319,"p2x":83,"p1y":132,"p2y":341}is invalid: p2x must be greater than p1x
+    at validateSlopePosition (http://localhost:3000/src/components/SlopeLineDrawer.vue:91:15)
+    at drawLine (http://localhost:3000/src/components/SlopeLineDrawer.vue:66:7)
+    at Object.drawNewLine (http://localhost:3000/src/helpers/lineDrawingHelper.ts:25:5)
+    at http://localhost:3000/src/components/LineWatcher.vue:53:25
+    at http://localhost:3000/src/helpers/watchHelper.ts:18:11
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1565:18)
+    at callWithAsyncErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1573:17)
+    at job (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:3162:9)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1565:32)
+    at flushJobs (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1763:9)
+2025-04-23T17:37:29.452Z [ERROR]: Error: {"p1x":319,"p2x":83,"p1y":130,"p2y":341}is invalid: p2x must be greater than p1x
+    at validateSlopePosition (http://localhost:3000/src/components/SlopeLineDrawer.vue:91:15)
+    at drawLine (http://localhost:3000/src/components/SlopeLineDrawer.vue:66:7)
+    at Object.drawNewLine (http://localhost:3000/src/helpers/lineDrawingHelper.ts:25:5)
+    at http://localhost:3000/src/components/LineWatcher.vue:53:25
+    at http://localhost:3000/src/helpers/watchHelper.ts:18:11
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1565:18)
+    at callWithAsyncErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1573:17)
+    at job (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:3162:9)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1565:32)
+    at flushJobs (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1763:9)
+2025-04-23T17:37:29.698Z [ERROR]: Error: {"p1x":319,"p2x":83,"p1y":127,"p2y":341}is invalid: p2x must be greater than p1x
+    at validateSlopePosition (http://localhost:3000/src/components/SlopeLineDrawer.vue:91:15)
+    at drawLine (http://localhost:3000/src/components/SlopeLineDrawer.vue:66:7)
+    at Object.drawNewLine (http://localhost:3000/src/helpers/lineDrawingHelper.ts:25:5)
+    at http://localhost:3000/src/components/LineWatcher.vue:53:25
+    at http://localhost:3000/src/helpers/watchHelper.ts:18:11
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1565:18)
+    at callWithAsyncErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1573:17)
+    at job (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:3162:9)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1565:32)
+    at flushJobs (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1763:9)
+2025-04-23T17:37:29.700Z [ERROR]: Error: {"p1x":319,"p2x":83,"p1y":125,"p2y":341}is invalid: p2x must be greater than p1x
+    at validateSlopePosition (http://localhost:3000/src/components/SlopeLineDrawer.vue:91:15)
+    at drawLine (http://localhost:3000/src/components/SlopeLineDrawer.vue:66:7)
+    at Object.drawNewLine (http://localhost:3000/src/helpers/lineDrawingHelper.ts:25:5)
+    at http://localhost:3000/src/components/LineWatcher.vue:53:25
+    at http://localhost:3000/src/helpers/watchHelper.ts:18:11
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1565:18)
+    at callWithAsyncErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1573:17)
+    at job (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:3162:9)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1565:32)
+    at flushJobs (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1763:9)
+2025-04-23T17:37:29.754Z [ERROR]: Error: {"p1x":319,"p2x":83,"p1y":123,"p2y":341}is invalid: p2x must be greater than p1x
+    at validateSlopePosition (http://localhost:3000/src/components/SlopeLineDrawer.vue:91:15)
+    at drawLine (http://localhost:3000/src/components/SlopeLineDrawer.vue:66:7)
+    at Object.drawNewLine (http://localhost:3000/src/helpers/lineDrawingHelper.ts:25:5)
+    at http://localhost:3000/src/components/LineWatcher.vue:53:25
+    at http://localhost:3000/src/helpers/watchHelper.ts:18:11
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1565:18)
+    at callWithAsyncErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1573:17)
+    at job (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:3162:9)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1565:32)
+    at flushJobs (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1763:9)
+2025-04-23T17:37:29.759Z [ERROR]: Error: {"p1x":319,"p2x":83,"p1y":122,"p2y":341}is invalid: p2x must be greater than p1x
+    at validateSlopePosition (http://localhost:3000/src/components/SlopeLineDrawer.vue:91:15)
+    at drawLine (http://localhost:3000/src/components/SlopeLineDrawer.vue:66:7)
+    at Object.drawNewLine (http://localhost:3000/src/helpers/lineDrawingHelper.ts:25:5)
+    at http://localhost:3000/src/components/LineWatcher.vue:53:25
+    at http://localhost:3000/src/helpers/watchHelper.ts:18:11
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1565:18)
+    at callWithAsyncErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1573:17)
+    at job (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:3162:9)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1565:32)
+    at flushJobs (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1763:9)
+2025-04-23T17:37:29.760Z [ERROR]: Error: {"p1x":319,"p2x":83,"p1y":118,"p2y":341}is invalid: p2x must be greater than p1x
+    at validateSlopePosition (http://localhost:3000/src/components/SlopeLineDrawer.vue:91:15)
+    at drawLine (http://localhost:3000/src/components/SlopeLineDrawer.vue:66:7)
+    at Object.drawNewLine (http://localhost:3000/src/helpers/lineDrawingHelper.ts:25:5)
+    at http://localhost:3000/src/components/LineWatcher.vue:53:25
+    at http://localhost:3000/src/helpers/watchHelper.ts:18:11
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1565:18)
+    at callWithAsyncErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1573:17)
+    at job (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:3162:9)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1565:32)
+    at flushJobs (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1763:9)
+2025-04-23T17:37:30.010Z [ERROR]: Error: {"p1x":318,"p2x":83,"p1y":115,"p2y":341}is invalid: p2x must be greater than p1x
+    at validateSlopePosition (http://localhost:3000/src/components/SlopeLineDrawer.vue:91:15)
+    at drawLine (http://localhost:3000/src/components/SlopeLineDrawer.vue:66:7)
+    at Object.drawNewLine (http://localhost:3000/src/helpers/lineDrawingHelper.ts:25:5)
+    at http://localhost:3000/src/components/LineWatcher.vue:53:25
+    at http://localhost:3000/src/helpers/watchHelper.ts:18:11
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1565:18)
+    at callWithAsyncErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1573:17)
+    at job (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:3162:9)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1565:32)
+    at flushJobs (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1763:9)
+2025-04-23T17:37:30.012Z [ERROR]: Error: {"p1x":317,"p2x":83,"p1y":114,"p2y":341}is invalid: p2x must be greater than p1x
+    at validateSlopePosition (http://localhost:3000/src/components/SlopeLineDrawer.vue:91:15)
+    at drawLine (http://localhost:3000/src/components/SlopeLineDrawer.vue:66:7)
+    at Object.drawNewLine (http://localhost:3000/src/helpers/lineDrawingHelper.ts:25:5)
+    at http://localhost:3000/src/components/LineWatcher.vue:53:25
+    at http://localhost:3000/src/helpers/watchHelper.ts:18:11
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1565:18)
+    at callWithAsyncErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1573:17)
+    at job (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:3162:9)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1565:32)
+    at flushJobs (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1763:9)
+2025-04-23T17:37:30.066Z [ERROR]: Error: {"p1x":317,"p2x":83,"p1y":112,"p2y":341}is invalid: p2x must be greater than p1x
+    at validateSlopePosition (http://localhost:3000/src/components/SlopeLineDrawer.vue:91:15)
+    at drawLine (http://localhost:3000/src/components/SlopeLineDrawer.vue:66:7)
+    at Object.drawNewLine (http://localhost:3000/src/helpers/lineDrawingHelper.ts:25:5)
+    at http://localhost:3000/src/components/LineWatcher.vue:53:25
+    at http://localhost:3000/src/helpers/watchHelper.ts:18:11
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1565:18)
+    at callWithAsyncErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1573:17)
+    at job (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:3162:9)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1565:32)
+    at flushJobs (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1763:9)
+2025-04-23T17:37:30.071Z [ERROR]: invalid model:{"p1x":323,"p2x":79,"p1y":114,"p2y":340,"boardType":"LESSON","parentUUId":"197a1b6d-a3fc-4ec5-9476-8b63e0f46fce","notationType":"SLOPELINE","user":{"id":1,"uuid":"de253010-452b-40a3-99fe-bbbca56238c8","firstName":"Hanan","lastName":"Tomer","email":"hanantomer@gmail.com","imageUrl":"","access_token":"","reset_pasword_token":null,"userType":"TEACHER","approved":false,"createdAt":"2025-04-23T13:59:32.480Z","updatedAt":"2025-04-23T13:59:32.480Z"}}undefined
+2025-04-23T17:39:15.028Z [ERROR]: invalid model:{"px":106,"p1y":377,"p2y":377,"boardType":"LESSON","parentUUId":"197a1b6d-a3fc-4ec5-9476-8b63e0f46fce","notationType":"VERTICALLINE","user":{"id":1,"uuid":"de253010-452b-40a3-99fe-bbbca56238c8","firstName":"Hanan","lastName":"Tomer","email":"hanantomer@gmail.com","imageUrl":"","access_token":"","reset_pasword_token":null,"userType":"TEACHER","approved":false,"createdAt":"2025-04-23T13:59:32.480Z","updatedAt":"2025-04-23T13:59:32.480Z"}}undefined
+2025-04-23T18:26:47.696Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-04-24T15:41:52.759Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-04-24T15:41:56.939Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-04-24T15:42:54.944Z [ERROR]: ReferenceError: le is not defined
+    at loadLesson (http://localhost:3000/src/components/Lesson.vue?t=1745509374726:42:7)
+    at watch.immediate (http://localhost:3000/src/components/Lesson.vue?t=1745509374726:37:15)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1565:18)
+    at callWithAsyncErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1573:17)
+    at job (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:3162:9)
+    at doWatch (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:3193:7)
+    at watch (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:3050:10)
+    at setup (http://localhost:3000/src/components/Lesson.vue?t=1745509374726:34:5)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1565:18)
+    at setupStatefulComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:8631:25)
+2025-04-24T15:43:00.915Z [ERROR]: ReferenceError: lesson is not defined
+    at loadLesson (http://localhost:3000/src/components/Lesson.vue?t=1745509380413:42:7)
+    at watch.immediate (http://localhost:3000/src/components/Lesson.vue?t=1745509380413:37:15)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1565:18)
+    at callWithAsyncErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1573:17)
+    at job (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:3162:9)
+    at doWatch (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:3193:7)
+    at watch (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:3050:10)
+    at setup (http://localhost:3000/src/components/Lesson.vue?t=1745509380413:34:5)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:1565:18)
+    at setupStatefulComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=1c0eafce:8631:25)
+2025-04-24T15:47:21.696Z [ERROR]: Cannot set headers after they are sent to the clientundefined

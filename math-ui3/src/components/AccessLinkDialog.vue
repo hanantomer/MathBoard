@@ -58,7 +58,7 @@ watch(
 );
 
 const link = computed(() => {
-  return `${window.location.origin}/lesson/${lessonStore.getCurrentLesson()
+  return `${window.location.origin}/lesson/sl_${lessonStore.getCurrentLesson()
     ?.uuid}`;
 });
 

@@ -5,9 +5,12 @@ const config = require('../../server/config/config.json')[
     env
 ];
 
-const sequelize = config.url
-    ? new Sequelize(config.url, config)
-    : new Sequelize(config.database, config.username, config.password, config);
+const url = process.env[config.url]!;
+
+const sequelize = new Sequelize(url, config);
+    //config.url
+    //? new Sequelize(config.url, config)
+    //: new Sequelize(config.database, config.username, config.password, config);
 
 sequelize.addModels([__dirname.replace("/\\/g", "/") + "/**/*.model.js"]);    
 

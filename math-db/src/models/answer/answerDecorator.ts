@@ -7,13 +7,13 @@ export default function AnswerDecorator(tableName: string) {
         BoardDecorator(tableName)(target);
         DefaultScope(() => ({
             attributes: {
-                exclude: ["AnswerId"],
+                exclude: ["answerId"],
             },
         }))(target);
         Table({
             indexes: [
                 {
-                    fields: ["AnswerId"],
+                    fields: ["answerId"],
                 },
             ],
         })(target);

@@ -1,5 +1,5 @@
 <template>
-  <LoginDialog @register="registerStudent"></LoginDialog>
+  <LoginDialog @register="register"></LoginDialog>
   <RegisterTeacherDialog @registered="login"></RegisterTeacherDialog>
   <RegisterStudentDialog @registered="login"></RegisterStudentDialog>
   <v-main>
@@ -49,8 +49,8 @@ import { useUserStore } from "../store/pinia/userStore";
 const router = useRouter();
 const userStore = useUserStore();
 
-function registerStudent(redirectAfterLogin: string) {
-  if (redirectAfterLogin) {
+function register(studentLink: boolean, redirectAfterLogin: string) {
+  if (studentLink) {
     router.push({
       name: "registerStudent",
       query: { from: redirectAfterLogin },

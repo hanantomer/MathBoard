@@ -127,6 +127,8 @@ let email = ref<string>();
 let redirectAfterLogin: string = "";
 let resetEmailSent = ref(false);
 
+let studentLink = false;
+
 let rules = {
   required: (value: string) => !!value || "Required.",
   min: (v: string) => (v && v.length >= 8) || "Min 8 characters",
@@ -141,6 +143,7 @@ watch(
     show.value = false;
     if (params.name === "login") {
       show.value = true;
+      studentLink = params.query?.from?.toString().indexOf("/lesson/sl_") === 0;
       redirectAfterLogin = params.query?.from?.toString() || "";
     }
   },
@@ -149,7 +152,7 @@ watch(
 
 function register() {
   show.value = false;
-  emit("register", redirectAfterLogin);
+  emit("register", studentLink, redirectAfterLogin);
 }
 
 async function validateLogin() {
@@ -176,6 +179,8 @@ async function validateLogin() {
     loginFailed.value = true;
     return;
   }
+
+  loginFailed.value = false;
 
   if (
     authenticatedUser.approved === false &&
@@ -230,5 +235,6 @@ async function forgotPassword() {
 <style>
 .alerttext input {
   color: red !important;
+  font-size: small;
 }
 </style>

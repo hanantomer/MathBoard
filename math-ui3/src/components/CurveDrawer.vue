@@ -142,19 +142,22 @@ onMounted(() => {
     const controlPoint = document.getElementById("controlPoint");
     if (controlPoint) {
       controlPoint.addEventListener("mousedown", () => {
-        editModeStore.setEditMode("CURVE_EDITING_CONTROLֹ_POINT");
+        if (!editModeStore.isCurveEditingControlPointMode()) {
+          editModeStore.setEditMode("CURVE_EDITING_CONTROLֹ_POINT");
+        }
+
       });
       controlPoint.addEventListener("mouseup", (e) => {
         eventBus.emit("EV_SVG_MOUSEUP", e);
       });
     }
   });
-  const controlPoint = document.getElementById("curveSvgId");
-  if (controlPoint) {
-    controlPoint.addEventListener("mousemove", () => {
-      editModeStore.setEditMode("CURVE_EDITING_CONTROLֹ_POINT");
-    });
-  }
+  // const controlPoint = document.getElementById("curveSvgId");
+  // if (controlPoint) {
+  //   controlPoint.addEventListener("mousemove", () => {
+  //     editModeStore.setEditMode("CURVE_EDITING_CONTROLֹ_POINT");
+  //   });
+  // }
 });
 
 const handleX1 = computed(() => {
