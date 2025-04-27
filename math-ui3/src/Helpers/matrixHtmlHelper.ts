@@ -20,10 +20,6 @@ const cellStore = useCellStore();
 const matrixCellHelper = useMatrixCellHelper();
 
 export default function useHtmlMatrixHelper() {
-  function borderColor(notation: NotationAttributes): string {
-    return notation.selected ? "gray" : "transparent";
-  }
-
   function rectBorderColor(notation: NotationAttributes): string {
     return notation.selected ? "chocolate" : "lighgray";
   }
@@ -36,6 +32,10 @@ export default function useHtmlMatrixHelper() {
     if (value?.indexOf("infin") >= 0) {
       return `${cellStore.getCellVerticalHeight() / 50}em`;
     }
+    if (value?.indexOf("&#") === 0) {
+      return `${cellStore.getCellVerticalHeight() / 45}em`;
+    }
+
     return `${cellStore.getCellVerticalHeight() / 30}em`;
   }
 
@@ -326,8 +326,6 @@ export default function useHtmlMatrixHelper() {
 
     if (n.notationType === "ANNOTATION") {
       const n1 = n as AnnotationNotationAttributes;
-
-      const bColor = rectBorderColor(n ?? false);
 
       ///TODO move static css props to a class
       return `<p id=${n1.uuid} style=

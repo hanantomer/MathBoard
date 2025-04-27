@@ -40,6 +40,13 @@
             <v-btn data-cy="button-login" color="blue darken-1" type="submit">
               Save
             </v-btn>
+                   <v-btn
+              data-cy="button-close"
+              color="blue darken-1"
+              v-on:click="close"
+            >
+              Close
+            </v-btn>
           </v-card-actions>
         </v-card>
       </v-form>
@@ -59,6 +66,8 @@ const name = ref();
 const newQuestionForm = ref(null);
 
 const requiredRules = [(v: string) => !!v || "required field"];
+
+const emit = defineEmits(["close"]);
 
 const props = defineProps({
   dialog: {
@@ -92,10 +101,14 @@ const selectedLesson = computed({
 });
 
 async function save() {
-  const { valid, errors } = await (newQuestionForm.value as any).validate();
+  const { valid } = await (newQuestionForm.value as any).validate();
   if (valid) {
-    //    show.value = false;
     eventBus.emit("EV_QUESTION_SAVED", name.value);
   }
 }
+
+function close() {
+  emit("close");
+}
+
 </script>

@@ -186,10 +186,6 @@ export default function selectionHelper() {
 
     cellStore.setSelectedCell(clickedCell!, true);
 
-    //if (!editModeStore.isCheckMode()) {
-    //  editModeStore.setEditMode("CELL_SELECTED");
-    //}
-
     if (notationStore.getParent().type == "LESSON") {
       await userOutgoingOperationsHelper.syncOutgoingSelectedCell(
         clickedCell,

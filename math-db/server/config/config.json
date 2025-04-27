@@ -1,7 +1,8 @@
 {
   "development": {
       "dialect": "postgres",
-      "url": "DEV_DATABASE_URL"
+      "url": "DEV_DATABASE_URL",
+      "logQueryParameters": true
   },
   "test": {
       "dialect": "postgres",

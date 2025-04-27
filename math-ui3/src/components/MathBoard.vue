@@ -3,7 +3,7 @@
   <freeTextEditor></freeTextEditor>
   <exponentEditor></exponentEditor>
   <areaSelector></areaSelector>
-  <v-row align="start" class="fill-heigh" no-gutters>
+  <v-row align="start" class="fill-height" no-gutters>
     <v-progress-linear
       data-cy="pBar"
       v-show="progressBar"
@@ -24,8 +24,7 @@
           v-bind:style="{ cursor: cursor, margin: '10px' }"
           v-bind:id="svgId"
           width="1520"
-          height="760"
-          margin="10"
+          height="820"
         ></svg>
       </v-sheet>
       <specialSymbolsToolbar></specialSymbolsToolbar>
@@ -49,6 +48,7 @@ import verticalLineDrawer from "./VerticalLineDrawer.vue";
 import slopeLineDrawer from "./SlopeLineDrawer.vue";
 import curveDrawer from "./CurveDrawer.vue";
 import useWatchHelper from "../helpers/watchHelper";
+import useNotationMutationHelper from "../helpers/notationMutateHelper";
 import { onUnmounted, ref } from "vue";
 import { useNotationStore } from "../store/pinia/notationStore";
 import { useCellStore } from "../store/pinia/cellStore";
@@ -64,6 +64,7 @@ const selectionHelper = useSelectionHelper();
 const keyHelper = useKeyHelper();
 const eventHelper = UseEventHelper();
 const watchHelper = useWatchHelper();
+const notationMutateHelper = useNotationMutationHelper();
 const answerStore = useAnswerStore();
 const progressBar = ref(false);
 
@@ -88,6 +89,12 @@ watchHelper.watchMouseEvent(
   ["SYMBOL", "CELL_SELECTED", "SPECIAL_SYMBOL"],
   "EV_SVG_MOUSEUP",
   selectionHelper.selectClickedPosition,
+);
+
+watchHelper.watchMouseEvent(
+  ["XMARK_STARTED", "CHECKMARK_STARTED", "SEMICHECKMARK_STARTED"],
+  "EV_SVG_MOUSEUP",
+  notationMutateHelper.addMarkNotation,
 );
 
 watchHelper.watchKeyEvent(

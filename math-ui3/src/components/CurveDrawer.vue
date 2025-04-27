@@ -145,7 +145,6 @@ onMounted(() => {
         if (!editModeStore.isCurveEditingControlPointMode()) {
           editModeStore.setEditMode("CURVE_EDITING_CONTROLֹ_POINT");
         }
-
       });
       controlPoint.addEventListener("mouseup", (e) => {
         eventBus.emit("EV_SVG_MOUSEUP", e);
@@ -193,8 +192,8 @@ function getCurveType() {
 
   console.debug("slopes:" + JSON.stringify(slopes));
 
-  if (slopes.length < 2) {
-    return undefined;
+  if (slopes.length < 5) {
+    return undefined; // cannot determine curve type
   }
 
   const curveType =
@@ -314,11 +313,13 @@ function endDrawCurve() {
     return;
   }
 
+  // drawing not finished
   if (
     curveAttributes.value.p1x === curveAttributes.value.p2x &&
     curveAttributes.value.p1y === curveAttributes.value.p2y
-  )
+  ) {
     return;
+  }
 
   saveCurve({
     p1x: curveAttributes.value.p1x,
@@ -329,7 +330,9 @@ function endDrawCurve() {
     cpy: curveAttributes.value.cpy,
   });
 
-  editModeStore.setDefaultEditMode();
+  //setTimeout(() => {
+  //  editModeStore.setDefaultEditMode();
+  //}, 20000);
 }
 
 function saveCurve(curevAttributes: CurveAttributes) {
@@ -350,7 +353,7 @@ function saveCurve(curevAttributes: CurveAttributes) {
   }
 }
 
-function calculateDistance(
+function calculateControlPointDistance(
   leftPoint: Point,
   centerPoint: Point,
   rightPoint: Point,
@@ -384,8 +387,6 @@ function getSlopes(points: Point[]): PointWithSlope[] {
   let prevPoint = { x: 0, y: 0 };
   for (let point of points) {
     if (prevPoint.x != 0) {
-      //      slopes.push({ x: point.x, y: point.y, slope: 0 });
-      //    } else {
       slopes.push({
         x: point.x,
         y: point.y,
@@ -472,7 +473,7 @@ function setCurveAttributes(curveType: CurveType, xPos: number, yPos: number) {
 
   const rightPoint = points[points.length - 1];
 
-  let distanceFromCurve = calculateDistance(
+  let distanceFromCurve = calculateControlPointDistance(
     leftPoint,
     centerPoint,
     rightPoint,
@@ -495,15 +496,11 @@ function updateCurve(curveType: CurveType, xPos: number, yPos: number): void {
 
   setCurveAttributes(curveType, xPos, yPos);
 
-  //    addVisiblePoint(xPos, yPos);
+  //addVisiblePoint(xPos, yPos);
 }
 
 function removePointsToTheRightOfX(xPos: number) {
   visitedPoints = visitedPoints.filter((p) => p.x <= xPos);
-}
-
-function getVisitedPoints() {
-  return visitedPoints;
 }
 
 function removeVisiblePoints() {

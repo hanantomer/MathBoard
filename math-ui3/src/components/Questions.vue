@@ -16,7 +16,10 @@
       </v-card>
     </v-dialog>
 
-    <NewQuestionDialog :dialog="questionDialog"></NewQuestionDialog>
+    <NewQuestionDialog
+      :dialog="questionDialog"
+      @close="questionDialog = false"
+    ></NewQuestionDialog>
     <v-card class="mx-auto" max-width="800" min-height="600">
       <v-toolbar color="primary" dark>
         <v-toolbar-title>Questions</v-toolbar-title>
@@ -106,7 +109,7 @@ watch(
 watch(
   () => eventBus.get("QUESTIONS_SELECTION", "EV_QUESTION_SAVED"),
   (questionName: string) => {
-    closeQuestionDialog;
+    closeQuestionDialog();
     addQuestion(questionName);
   },
 );

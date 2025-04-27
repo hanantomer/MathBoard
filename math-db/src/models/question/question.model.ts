@@ -46,8 +46,7 @@ export default class Question extends Model<
 
     @AllowNull(false)
     @Column({
-        type: DataType.UUID,
-        defaultValue: DataType.UUIDV4,
+        type: DataType.STRING,
     })
     name!: string;
 }

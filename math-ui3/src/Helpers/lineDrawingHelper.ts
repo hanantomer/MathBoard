@@ -65,6 +65,7 @@ export default function useLineDrawingHelper() {
       showMatrixLine();
     }
     endDrawingCallback();
+
     editModeStore.setDefaultEditMode();
   }
 

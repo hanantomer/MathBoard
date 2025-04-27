@@ -57,6 +57,9 @@ export default function useCurveMatrixHelper() {
       })
       .attr("stroke", (n: CurveNotationAttributes) => {
         return matrixHelperUtils.getColor(n);
+      })
+      .style("display", () => {
+        return "block";
       });
   }
 

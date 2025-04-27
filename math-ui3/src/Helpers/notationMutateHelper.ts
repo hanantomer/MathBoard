@@ -38,11 +38,12 @@ import { useEditModeStore } from "../store/pinia/editModeStore";
 import useAuthorizationHelper from "./authorizationHelper";
 import useUserOutgoingOperations from "./userOutgoingOperationsHelper";
 import useMatrixCellHelper from "../helpers/matrixCellHelper";
+import useScreenHelper from "../helpers/screenHelper";
 
 import { NotationAttributes, RectAttributes } from "common/baseTypes";
-import { LessonAttributes } from "common/lessonTypes";
 
 const matrixCellHelper = useMatrixCellHelper();
+const screenHelper = useScreenHelper();
 const userStore = useUserStore();
 const apiHelper = useApiHelper();
 const notationStore = useNotationStore();
@@ -767,7 +768,17 @@ export default function notationMutateHelper() {
     );
   }
 
-  function addMarkNotation() {
+  function addMarkNotation(e: MouseEvent) {
+    if (!authorizationHelper.canEdit()) return;
+
+    const position = { x: e.pageX, y: e.pageY };
+
+    let clickedCell = screenHelper.getClickedCell(position);
+
+    if (!clickedCell) return;
+
+    cellStore.setSelectedCell(clickedCell!, false);
+
     if (editModeStore.getEditMode() == "CHECKMARK_STARTED") {
       addSymbolNotation("&#x2714");
       return;

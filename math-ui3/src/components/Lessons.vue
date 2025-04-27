@@ -1,11 +1,11 @@
 <template>
   <v-container>
-    <NewItemDialog
+    <NewBoardItemDialog
       :dialog="lessonDialog"
       :title="lessonDialogTitle"
       @close="lessonDialog = false"
       @save="addLesson"
-    ></NewItemDialog>
+    ></NewBoardItemDialog>
     <v-card class="mx-auto mt-4" max-width="800" min-height="600">
       <v-toolbar color="primary" dark>
         <v-toolbar-title>{{ title }}</v-toolbar-title>
@@ -37,7 +37,7 @@
   </v-container>
 </template>
 <script setup lang="ts">
-import NewItemDialog from "./NewBoardItemDialog.vue";
+import NewBoardItemDialog from "./NewBoardItemDialog.vue";
 import { formatDate } from "../../../math-common/src/globals";
 import { LessonAttributes } from "../../../math-common/src/lessonTypes";
 import { useUserStore } from "../store/pinia/userStore";
