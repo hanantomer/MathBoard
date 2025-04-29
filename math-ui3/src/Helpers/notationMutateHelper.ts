@@ -506,6 +506,10 @@ export default function notationMutateHelper() {
     editModeStore.setDefaultEditMode();
     notationStore.resetSelectedNotations();
 
+    if (isCellInQuestionArea(notation)) {
+      return;
+    }
+
     let overlappedSameTypeNotation = findOverlapPointNotation(notation);
 
     // update
@@ -802,7 +806,7 @@ export default function notationMutateHelper() {
       .getSelectedNotations()
       .forEach(async (n: NotationAttributes) => {
         // from db
-        await apiHelper.removeNotation(n);
+        await apiHelper.deleteNotation(n);
       });
 
     notationStore

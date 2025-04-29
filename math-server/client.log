@@ -2227,3 +2227,138 @@
 2025-04-27T15:43:09.422Z [ERROR]: Cannot set headers after they are sent to the clientundefined
 2025-04-27T15:43:10.916Z [ERROR]: Cannot set headers after they are sent to the clientundefined
 2025-04-27T15:44:38.760Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-04-27T15:48:04.579Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-04-27T15:49:00.885Z [ERROR]: WHERE parameter "id" has invalid "undefined" valueundefined
+2025-04-27T15:49:00.889Z [ERROR]: WHERE parameter "id" has invalid "undefined" valueundefined
+2025-04-27T15:49:00.893Z [ERROR]: WHERE parameter "id" has invalid "undefined" valueundefined
+2025-04-27T15:49:00.897Z [ERROR]: WHERE parameter "id" has invalid "undefined" valueundefined
+2025-04-27T15:49:06.864Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-04-27T15:49:42.378Z [ERROR]: WHERE parameter "id" has invalid "undefined" valueundefined
+2025-04-27T15:49:42.383Z [ERROR]: WHERE parameter "id" has invalid "undefined" valueundefined
+2025-04-27T15:49:42.387Z [ERROR]: WHERE parameter "id" has invalid "undefined" valueundefined
+2025-04-27T15:49:42.392Z [ERROR]: WHERE parameter "id" has invalid "undefined" valueundefined
+2025-04-27T15:49:44.050Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-04-27T15:49:50.179Z [ERROR]: WHERE parameter "id" has invalid "undefined" valueundefined
+2025-04-27T15:49:50.499Z [ERROR]: WHERE parameter "id" has invalid "undefined" valueundefined
+2025-04-27T15:49:50.503Z [ERROR]: WHERE parameter "id" has invalid "undefined" valueundefined
+2025-04-27T15:49:50.507Z [ERROR]: WHERE parameter "id" has invalid "undefined" valueundefined
+2025-04-27T15:49:52.517Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-04-27T15:49:58.301Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-04-28T16:49:00.673Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-04-28T16:49:05.849Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-04-28T16:49:13.983Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-04-28T16:49:19.963Z [ERROR]: TypeError: Cannot read properties of undefined (reading 'uuid')
+    at http://localhost:3000/src/components/Questions.vue:82:101
+    at Array.filter (<anonymous>)
+    at ReactiveEffect.fn (http://localhost:3000/src/components/Questions.vue:82:64)
+    at ReactiveEffect.run (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:423:19)
+    at get value (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:1383:35)
+    at unref (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:1263:29)
+    at Object.get (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:1269:35)
+    at http://localhost:3000/src/components/Questions.vue:280:27
+    at Proxy.renderFnWithContext (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:2175:13)
+    at default (http://localhost:3000/node_modules/.vite/deps/vuetify_lib_components_VCard_index__mjs.js?v=90e3c4b0:418:58)
+2025-04-28T16:49:20.081Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-04-28T16:49:46.764Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-04-28T16:49:51.913Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-04-28T16:49:53.297Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-04-28T16:58:46.583Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-04-28T17:01:34.700Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-04-28T17:01:48.262Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-04-28T17:02:38.015Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-04-28T17:03:43.675Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-04-28T17:03:48.423Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-04-28T17:03:56.817Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-04-28T17:04:40.112Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-04-28T17:04:48.494Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-04-28T17:05:00.834Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-04-28T17:05:12.708Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-04-28T17:05:18.941Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-04-28T17:05:35.146Z [ERROR]: WHERE parameter "id" has invalid "undefined" valueundefined
+2025-04-28T17:05:38.707Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-04-28T17:06:10.229Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-04-28T17:06:21.340Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-04-28T17:06:31.589Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-04-28T17:15:02.657Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-04-28T17:18:49.727Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-04-28T17:18:50.228Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-04-28T17:21:24.058Z [ERROR]: WHERE parameter "id" has invalid "undefined" valueundefined
+2025-04-28T17:21:33.534Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-04-28T17:21:43.635Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-04-28T17:27:10.413Z [ERROR]: WHERE parameter "id" has invalid "undefined" valueundefined
+2025-04-28T19:35:10.148Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-04-28T19:35:34.200Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-04-28T19:35:41.533Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-04-28T19:36:55.858Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-04-28T19:37:20.892Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-04-28T19:37:34.149Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-04-28T19:37:38.727Z [ERROR]: TypeError: Cannot read properties of undefined (reading 'uuid')
+    at http://localhost:3000/src/components/Questions.vue?t=1745860728920:82:101
+    at Array.filter (<anonymous>)
+    at ReactiveEffect.fn (http://localhost:3000/src/components/Questions.vue?t=1745860728920:82:64)
+    at ReactiveEffect.run (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:423:19)
+    at get value (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:1383:35)
+    at unref (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:1263:29)
+    at Object.get (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:1269:35)
+    at http://localhost:3000/src/components/Questions.vue?t=1745860728920:280:27
+    at Proxy.renderFnWithContext (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:2175:13)
+    at default (http://localhost:3000/node_modules/.vite/deps/vuetify_lib_components_VCard_index__mjs.js?v=90e3c4b0:418:58)
+2025-04-28T19:37:38.732Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-04-28T19:37:56.823Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-04-28T19:38:01.307Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-04-28T19:38:02.954Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-04-28T19:41:58.094Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-04-28T19:42:15.059Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-04-28T19:42:34.395Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-04-28T19:43:22.348Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-04-28T19:43:44.739Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-04-28T19:43:48.134Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-04-28T19:43:49.820Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-04-28T19:43:52.830Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-04-28T19:43:59.532Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-04-28T19:44:22.734Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-04-28T19:44:37.082Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-04-28T19:44:42.324Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-04-28T19:44:44.747Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-04-28T19:45:18.855Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-04-28T19:45:25.469Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-04-28T19:45:45.646Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-04-28T19:46:39.245Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-04-28T19:47:20.772Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-04-28T19:47:45.327Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-04-28T19:50:33.477Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-04-28T19:50:47.793Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-04-28T19:50:54.717Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-04-28T19:51:24.180Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-04-28T19:51:43.330Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-04-28T19:51:47.942Z [ERROR]: TypeError: Cannot read properties of undefined (reading 'uuid')
+    at http://localhost:3000/src/components/Questions.vue?t=1745860728920:82:101
+    at Array.filter (<anonymous>)
+    at ReactiveEffect.fn (http://localhost:3000/src/components/Questions.vue?t=1745860728920:82:64)
+    at ReactiveEffect.run (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:423:19)
+    at get value (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:1383:35)
+    at unref (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:1263:29)
+    at Object.get (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:1269:35)
+    at http://localhost:3000/src/components/Questions.vue?t=1745860728920:280:27
+    at Proxy.renderFnWithContext (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:2175:13)
+    at default (http://localhost:3000/node_modules/.vite/deps/vuetify_lib_components_VCard_index__mjs.js?v=90e3c4b0:418:58)
+2025-04-28T19:51:47.948Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-04-28T19:52:04.838Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-04-28T19:52:06.652Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-04-28T19:52:22.072Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-04-28T19:52:27.453Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-04-28T19:52:33.476Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-04-28T19:52:55.050Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-04-28T19:53:07.615Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-04-28T19:53:17.855Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-04-28T19:54:10.887Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-04-28T19:54:10.892Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-04-28T19:54:10.898Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-04-28T19:54:14.049Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-04-28T19:54:16.790Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-04-28T19:54:18.348Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-04-28T19:54:37.851Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-04-29T16:10:23.119Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-04-29T16:11:31.775Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-04-29T16:11:36.196Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-04-29T16:15:58.706Z [ERROR]: Cannot set headers after they are sent to the clientundefined

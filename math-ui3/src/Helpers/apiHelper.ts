@@ -519,7 +519,7 @@ export default function useApiHelper() {
     }
   }
 
-  async function removeNotation(notation: NotationAttributes) {
+  async function deleteNotation(notation: NotationAttributes) {
     try {
       return axios.delete(
         baseURL +
@@ -578,7 +578,7 @@ export default function useApiHelper() {
     updateNotationValue,
     updateNotation,
     saveMovedNotations,
-    removeNotation,
+    deleteNotation,
     log
   };
 }

@@ -29,12 +29,7 @@ app.use(auth);
 app.use(cors());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json({ limit: "1mb" }));
-// app.use(bodyParser.json({ limit: 52428800 }));
-// app.use(
-//     bodyParser.urlencoded({
-//         limit: "500kb",
-//     })
-// );
+
 
 const logger = winston.createLogger({
     level: "info",
@@ -125,6 +120,23 @@ async function validateHeaderAuthentication(
 
     return true;
 }
+
+app.all("/*", async function (req, res, next) {
+    const { uuid } = req.body; 
+    if (!uuid) {
+        next();
+        return;
+    }
+
+    const user = await db.getUser(uuid as string);
+    const userFromHeader = await authUtil.authByLocalToken(
+        req.headers.authorization!.toString()
+    );
+
+    if (user?.id === userFromHeader?.id) {
+        next();
+    }
+});
 
 app.post(
     "/api/contactus",
