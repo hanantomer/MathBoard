@@ -45,12 +45,14 @@ import {
   NotationAttributes,
   DotCoordinates,
   RectNotationAttributes,
+  isRect,
 } from "common/baseTypes";
 import useNotationMutateHelper from "../helpers/notationMutateHelper";
 import useSelectionHelper from "../helpers/selectionHelper";
 import useEventBusHelper from "../helpers/eventBusHelper";
 import useWatchHelper from "../helpers/watchHelper";
 import UseAuthorizationHelper from "../helpers/authorizationHelper";
+import { get } from "cypress/types/lodash";
 
 type HorizontalDirection = "RIGHT" | "LEFT" | "NONE";
 type VerticalDirection = "UP" | "BOTTOM" | "NONE";
@@ -89,7 +91,7 @@ let dragPosition = ref<DotCoordinates>({
 // computed
 
 const selectedRectElement = computed(() => {
-  return document.getElementById(getSelectedNotation().uuid);
+  return document.getElementById(getSelectedRect()!.uuid);
 });
 
 const selectedRectBoundingRect = computed(() => {
@@ -196,8 +198,14 @@ watchHelper.watchNotationSelection(
   selectRectNotation,
 );
 
-function getSelectedNotation() {
-  return notationStore.getSelectedNotations()[0] as RectNotationAttributes;
+function getSelectedRect() {
+  if (
+    notationStore.getSelectedNotations().length > 0 &&
+    isRect(notationStore.getSelectedNotations()[0].notationType)
+  ) {
+    return notationStore.getSelectedNotations()[0] as RectNotationAttributes;
+  }
+  return null;
 }
 
 function startResizing(e: MouseEvent) {
@@ -222,33 +230,37 @@ function resizeSelectionByMouseDrag(e: MouseEvent) {
 }
 
 async function onResizeMouseUp() {
-  getSelectedNotation().fromCol = Math.round(
+  editModeStore.setEditMode("AREA_SELECTED");
+
+  let selectedRect = getSelectedRect();
+
+  if (!selectedRect) return;
+
+  selectedRect.fromCol = Math.round(
     (selectionRectLeft.value - cellStore.getSvgBoundingRect().left) /
       cellStore.getCellHorizontalWidth(),
   );
 
-  getSelectedNotation().toCol = Math.round(
+  selectedRect.toCol = Math.round(
     (selectionRectLeft.value +
       selectionRectWidth.value -
       cellStore.getSvgBoundingRect().left) /
       cellStore.getCellHorizontalWidth(),
   );
 
-  getSelectedNotation().fromRow = Math.round(
+  getSelectedRect()!.fromRow = Math.round(
     (selectionRectTop.value - cellStore.getSvgBoundingRect().top) /
       cellStore.getCellVerticalHeight(),
   );
 
-  getSelectedNotation().toRow = Math.round(
+  getSelectedRect()!.toRow = Math.round(
     (selectionRectTop.value +
       selectionRectHeight.value -
       cellStore.getSvgBoundingRect().top) /
       cellStore.getCellVerticalHeight(),
   );
 
-  await notationMutationHelper.updateNotation(getSelectedNotation());
-
-  editModeStore.setDefaultEditMode();
+  await notationMutationHelper.updateNotation(getSelectedRect()!);
 }
 
 function cancelSelectionWhenUserClickedOutside() {
@@ -533,7 +545,7 @@ function moveAtPixelScale(e: MouseEvent) {
   }
 }
 
-async function moveSelectionByKey( ///TODO by cell or pixel
+async function moveSelectionByKey(
   moveHorizontal: number,
   moveVertical: number,
 ) {
@@ -597,14 +609,12 @@ function signalSelection() {
 }
 
 function selectRectNotation(): void {
-  if (getSelectedNotation().notationType === "IMAGE") {
-    setSelectionPositionForImage(getSelectedNotation());
+  if (getSelectedRect()!.notationType === "IMAGE") {
+    setSelectionPositionForImage(getSelectedRect()!);
   }
 
-  if (getSelectedNotation().notationType === "TEXT") {
-    setSelectionPositionForText(
-      getSelectedNotation() as RectNotationAttributes,
-    );
+  if (getSelectedRect()!.notationType === "TEXT") {
+    setSelectionPositionForText(getSelectedRect() as RectNotationAttributes);
   }
 
   editModeStore.setEditMode("AREA_SELECTED");

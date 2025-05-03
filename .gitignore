@@ -34,3 +34,8 @@ math-server/client.log
 math-ui3/tsconfig.tsbuildinfo
 math-server/client.log
 math-server/math-db.log
+math-messages/authentication.log
+math-server/math-db.log
+math-server/client.log
+math-ui3/tsconfig.tsbuildinfo
+math-ui3/dist/index.html

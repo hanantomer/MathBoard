@@ -2362,3 +2362,293 @@
 2025-04-29T16:11:31.775Z [ERROR]: Cannot set headers after they are sent to the clientundefined
 2025-04-29T16:11:36.196Z [ERROR]: Cannot set headers after they are sent to the clientundefined
 2025-04-29T16:15:58.706Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-04-29T16:56:24.399Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-04-29T17:15:20.344Z [ERROR]: ReferenceError: editMode is not defined
+    at http://localhost:3000/src/helpers/watchHelper.ts?t=1745946918814:80:26
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:1565:32)
+    at ReactiveEffect.getter [as fn] (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:3099:22)
+    at ReactiveEffect.run (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:423:19)
+    at doWatch (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:3195:26)
+    at watch (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:3050:10)
+    at Object.watchCustomEvent (http://localhost:3000/src/helpers/watchHelper.ts?t=1745946918814:79:5)
+    at setup (http://localhost:3000/src/components/FreeTextEditor.vue?t=1745946918814:40:17)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:1565:18)
+    at setupStatefulComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:8631:25)
+2025-04-29T17:15:33.508Z [ERROR]: TypeError: editModes.forEach is not a function
+    at Object.watchCustomEvent (http://localhost:3000/src/helpers/watchHelper.ts?t=1745946932772:79:15)
+    at setup (http://localhost:3000/src/components/FreeTextEditor.vue?t=1745946932772:40:17)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:1565:18)
+    at setupStatefulComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:8631:25)
+    at setupComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:8592:36)
+    at mountComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:6997:7)
+    at processComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:6963:9)
+    at patch (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:6436:11)
+    at patchBlockChildren (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:6823:7)
+    at processFragment (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:6911:9)
+2025-04-29T17:15:36.136Z [ERROR]: TypeError: editModes.forEach is not a function
+    at Object.watchCustomEvent (http://localhost:3000/src/helpers/watchHelper.ts?t=1745946935718:79:15)
+    at setup (http://localhost:3000/src/components/FreeTextEditor.vue?t=1745946935718:40:17)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:1565:18)
+    at setupStatefulComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:8631:25)
+    at setupComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:8592:36)
+    at mountComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:6997:7)
+    at processComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:6963:9)
+    at patch (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:6436:11)
+    at patchBlockChildren (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:6823:7)
+    at processFragment (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:6911:9)
+2025-04-29T17:16:22.155Z [ERROR]: TypeError: editModes.forEach is not a function
+    at Object.watchCustomEvent (http://localhost:3000/src/helpers/watchHelper.ts?t=1745946935718:79:15)
+    at setup (http://localhost:3000/src/components/MathBoard.vue?t=1745946982053:88:17)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:1565:18)
+    at setupStatefulComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:8631:25)
+    at setupComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:8592:36)
+    at mountComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:6997:7)
+    at processComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:6963:9)
+    at patch (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:6436:11)
+    at patchKeyedChildren (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:7496:11)
+    at patchChildren (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:7277:11)
+2025-04-29T17:16:24.067Z [ERROR]: TypeError: editModes.forEach is not a function
+    at Object.watchCustomEvent (http://localhost:3000/src/helpers/watchHelper.ts?t=1745946935718:79:15)
+    at setup (http://localhost:3000/src/components/MathBoard.vue?t=1745946983559:88:17)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:1565:18)
+    at setupStatefulComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:8631:25)
+    at setupComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:8592:36)
+    at mountComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:6997:7)
+    at processComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:6963:9)
+    at patch (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:6436:11)
+    at patchKeyedChildren (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:7496:11)
+    at patchChildren (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:7277:11)
+2025-04-29T17:16:26.307Z [ERROR]: TypeError: editModes.forEach is not a function
+    at Object.watchCustomEvent (http://localhost:3000/src/helpers/watchHelper.ts?t=1745946935718:79:15)
+    at setup (http://localhost:3000/src/components/MathBoard.vue?t=1745946986237:88:17)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:1565:18)
+    at setupStatefulComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:8631:25)
+    at setupComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:8592:36)
+    at mountComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:6997:7)
+    at processComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:6963:9)
+    at patch (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:6436:11)
+    at patchKeyedChildren (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:7496:11)
+    at patchChildren (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:7277:11)
+2025-04-29T17:16:48.853Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-04-29T17:29:51.937Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-04-29T17:30:33.322Z [ERROR]: TypeError: Cannot set properties of undefined (setting 'fromCol')
+    at onResizeMouseUp (http://localhost:3000/src/components/AreaSelector.vue?t=1745946935718:142:37)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:1565:18)
+    at callWithAsyncErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:1573:17)
+    at HTMLDivElement.invoker (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:9397:5)
+2025-04-29T17:38:54.933Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-04-29T17:40:09.742Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-04-29T17:40:23.506Z [ERROR]: TypeError: Cannot set properties of undefined (setting 'fromCol')
+    at onResizeMouseUp (http://localhost:3000/src/components/AreaSelector.vue:142:37)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:1565:18)
+    at callWithAsyncErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:1573:17)
+    at HTMLDivElement.invoker (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:9397:5)
+2025-04-29T17:47:42.317Z [ERROR]: TypeError: Cannot set properties of undefined (setting 'fromCol')
+    at onResizeMouseUp (http://localhost:3000/src/components/AreaSelector.vue:142:37)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:1565:18)
+    at callWithAsyncErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:1573:17)
+    at HTMLDivElement.invoker (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:9397:5)
+2025-04-29T17:51:10.867Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-04-29T17:53:14.481Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-04-29T17:54:03.346Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-04-29T18:16:23.260Z [ERROR]: ReferenceError: getSelectedNotation is not defined
+    at onResizeMouseUp (http://localhost:3000/src/components/AreaSelector.vue?t=1745949065460:151:7)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:1565:18)
+    at callWithAsyncErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:1573:17)
+    at HTMLDivElement.invoker (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:9397:5)
+2025-04-29T18:16:35.117Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-04-30T14:06:00.127Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-04-30T14:06:04.439Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-04-30T14:07:40.809Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-04-30T14:19:23.712Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-04-30T14:19:37.704Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-04-30T15:50:02.217Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-04-30T15:53:47.063Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-04-30T15:54:30.514Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-04-30T15:59:16.472Z [ERROR]: notNull Violation: LessonSymbol.lessonId cannot be nullundefined
+2025-04-30T15:59:33.072Z [ERROR]: notNull Violation: LessonSymbol.lessonId cannot be nullundefined
+2025-04-30T15:59:37.018Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-04-30T15:59:44.250Z [ERROR]: Error: lesson 2c2364f3-6061-43d7-90f4-4635665e9ee9 does not exists
+    at Proxy.loadLesson (http://localhost:3000/src/store/pinia/lessonStore.ts:19:13)
+    at async loadLesson (http://localhost:3000/src/components/Lesson.vue:47:9)
+    at async watch.immediate (http://localhost:3000/src/components/Lesson.vue:37:9)
+2025-04-30T15:59:49.064Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-04-30T15:59:50.130Z [ERROR]: Error: lesson 2c2364f3-6061-43d7-90f4-4635665e9ee9 does not exists
+    at Proxy.loadLesson (http://localhost:3000/src/store/pinia/lessonStore.ts:19:13)
+    at async loadLesson (http://localhost:3000/src/components/Lesson.vue:47:9)
+    at async watch.immediate (http://localhost:3000/src/components/Lesson.vue:37:9)
+2025-04-30T15:59:55.014Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-04-30T15:59:58.583Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-02T08:29:33.103Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-02T08:29:43.786Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-02T08:33:15.714Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-02T08:33:19.812Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-02T08:41:34.675Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-02T08:41:38.410Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-02T08:48:37.533Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-02T08:48:42.597Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-02T08:49:11.673Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-02T08:49:22.823Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-02T08:49:26.738Z [ERROR]: TypeError: Cannot read properties of undefined (reading 'uuid')
+    at http://localhost:3000/src/components/Questions.vue:82:101
+    at Array.filter (<anonymous>)
+    at ReactiveEffect.fn (http://localhost:3000/src/components/Questions.vue:82:64)
+    at ReactiveEffect.run (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:423:19)
+    at get value (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:1383:35)
+    at unref (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:1263:29)
+    at Object.get (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:1269:35)
+    at http://localhost:3000/src/components/Questions.vue:280:27
+    at Proxy.renderFnWithContext (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:2175:13)
+    at default (http://localhost:3000/node_modules/.vite/deps/vuetify_lib_components_VCard_index__mjs.js?v=90e3c4b0:418:58)
+2025-05-02T08:49:27.062Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-02T08:50:06.531Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-02T08:50:12.219Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-02T08:50:13.791Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-02T08:50:21.423Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-02T08:50:30.910Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-02T08:51:20.042Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-02T08:51:39.908Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-02T09:56:20.315Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-02T09:58:11.157Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-02T09:58:20.061Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-02T09:58:33.021Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-02T09:58:34.033Z [ERROR]: invalid input syntax for type uuid: "undefined"undefined
+2025-05-02T09:58:34.043Z [ERROR]: Error: Failed to get lesson undefined: Cannot destructure property 'data' of '(intermediate value)' as it is undefined.
+    at Object.getLesson (http://localhost:3000/src/helpers/apiHelper.ts:329:13)
+    at async Proxy.loadLesson (http://localhost:3000/src/store/pinia/lessonStore.ts:17:14)
+    at async loadLesson (http://localhost:3000/src/components/Lesson.vue:47:9)
+    at async watch.immediate (http://localhost:3000/src/components/Lesson.vue:37:9)
+2025-05-02T10:01:40.078Z [ERROR]: ReferenceError: Cannot access 'questionStore2' before initialization
+    at setup (http://localhost:3000/src/components/AccessLinkDialog.vue?t=1746180100045:14:28)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:1565:18)
+    at setupStatefulComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:8631:25)
+    at setupComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:8592:36)
+    at mountComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:6997:7)
+    at processComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:6963:9)
+    at patch (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:6436:11)
+    at patchBlockChildren (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:6823:7)
+    at processFragment (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:6911:9)
+    at patch (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:6410:9)
+2025-05-02T10:01:49.385Z [ERROR]: ReferenceError: Cannot access 'questionStore' before initialization
+    at setup (http://localhost:3000/src/components/AccessLinkDialog.vue?t=1746180109049:14:27)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:1565:18)
+    at setupStatefulComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:8631:25)
+    at setupComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:8592:36)
+    at mountComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:6997:7)
+    at processComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:6963:9)
+    at patch (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:6436:11)
+    at patchBlockChildren (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:6823:7)
+    at processFragment (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:6911:9)
+    at patch (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:6410:9)
+2025-05-02T10:01:52.373Z [ERROR]: ReferenceError: Cannot access 'questionStore' before initialization
+    at setup (http://localhost:3000/src/components/AccessLinkDialog.vue?t=1746180112307:14:27)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:1565:18)
+    at setupStatefulComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:8631:25)
+    at setupComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:8592:36)
+    at mountComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:6997:7)
+    at processComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:6963:9)
+    at patch (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:6436:11)
+    at patchBlockChildren (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:6823:7)
+    at processFragment (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:6911:9)
+    at patch (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:6410:9)
+2025-05-02T10:01:53.905Z [ERROR]: ReferenceError: Cannot access 'questionStore' before initialization
+    at setup (http://localhost:3000/src/components/AccessLinkDialog.vue?t=1746180113558:14:27)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:1565:18)
+    at setupStatefulComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:8631:25)
+    at setupComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:8592:36)
+    at mountComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:6997:7)
+    at processComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:6963:9)
+    at patch (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:6436:11)
+    at patchBlockChildren (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:6823:7)
+    at processFragment (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:6911:9)
+    at patch (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:6410:9)
+2025-05-02T10:07:58.026Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-02T10:09:27.661Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-02T10:09:51.905Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-02T10:10:02.047Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-02T10:10:03.886Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-02T10:10:15.962Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-02T10:10:25.253Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-02T10:49:41.842Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-02T10:51:09.572Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-02T10:52:03.593Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-02T10:52:21.922Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-02T10:52:33.026Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-02T10:52:47.618Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-02T10:52:54.009Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-02T10:53:17.583Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-02T10:53:30.933Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-02T11:06:37.306Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-02T11:06:38.637Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-02T11:07:14.724Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-02T11:07:24.220Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-02T11:07:42.081Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-02T11:07:50.951Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-02T11:08:01.951Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-02T11:08:20.958Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-02T11:08:40.589Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-02T11:10:57.949Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-02T11:12:00.235Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-02T11:12:46.116Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-02T11:14:43.621Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-02T11:19:04.387Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-02T11:19:46.024Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-02T11:21:21.930Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-02T11:24:32.828Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-02T12:28:59.085Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-02T12:30:04.809Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-02T12:32:21.112Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-02T12:32:54.162Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-02T12:33:56.891Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-02T12:34:34.670Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-02T12:35:04.671Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-02T12:37:19.690Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-02T12:42:07.379Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-02T12:42:18.692Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-02T12:46:45.989Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-02T12:47:18.680Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-02T12:47:33.379Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-02T12:47:39.307Z [ERROR]: notNull Violation: LessonSymbol.col cannot be null,
+notNull Violation: LessonSymbol.row cannot be nullundefined
+2025-05-02T12:47:53.057Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-02T12:48:08.434Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-02T13:48:26.184Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-02T13:48:44.913Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-02T13:49:09.447Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-02T13:50:29.681Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-02T13:51:39.654Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-02T13:54:12.675Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-02T13:54:35.530Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-02T13:54:52.872Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-02T13:55:22.398Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-02T13:55:26.406Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-02T13:55:32.146Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-02T13:55:34.010Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-02T13:56:04.236Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-02T13:56:14.556Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-02T14:54:57.162Z [ERROR]: value too long for type character varying(255)undefined
+2025-05-02T14:55:01.199Z [ERROR]: value too long for type character varying(255)undefined
+2025-05-02T14:55:09.001Z [ERROR]: value too long for type character varying(255)undefined
+2025-05-02T14:55:33.821Z [ERROR]: value too long for type character varying(255)undefined
+2025-05-02T15:00:40.350Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-02T15:01:04.411Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-02T15:06:40.816Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-02T15:06:59.871Z [ERROR]: value too long for type character varying(255)undefined
+2025-05-02T15:07:07.242Z [ERROR]: value too long for type character varying(255)undefined
+2025-05-02T15:07:43.630Z [ERROR]: value too long for type character varying(255)undefined
+2025-05-02T15:07:56.114Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-02T15:27:11.564Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-02T15:27:13.735Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-02T15:27:16.018Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-02T15:27:32.395Z [ERROR]: value too long for type character varying(255)undefined
+2025-05-03T20:20:04.512Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-03T20:20:07.177Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-03T20:21:22.153Z [ERROR]: value too long for type character varying(255)undefined
+2025-05-03T20:22:34.507Z [ERROR]: value too long for type character varying(255)undefined
+2025-05-03T20:22:39.890Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-03T20:23:53.988Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-03T20:25:16.963Z [ERROR]: value too long for type character varying(255)undefined
+2025-05-03T20:28:54.874Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-03T20:28:57.260Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-03T20:29:50.567Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-03T20:31:25.282Z [ERROR]: Cannot set headers after they are sent to the clientundefined

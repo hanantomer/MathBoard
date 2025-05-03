@@ -66,7 +66,7 @@ watchHelper.watchMouseEvent(
 
 // area selector signals the selected position
 watchHelper.watchCustomEvent(
-  "TEXT_AREA_SELECTING",
+  ["TEXT_AREA_SELECTING"],
   "EV_AREA_SELECTION_DONE",
   startTextEditing,
 );
@@ -97,27 +97,9 @@ function editSelectedTextNotation(e: MouseEvent) {
     textEl.focus();
   }, 0);
 
-  //  observeTextSize(textEl);
-}
-
-function observeTextSize(textEl: HTMLTextAreaElement) {
-  textEl.onmouseup = () => {
-    const selectionPosition = {
-      left: textLeft.value,
-      top: textTop.value,
-      width: textWidth.value,
-      height: textHeight.value,
-    };
-    startTextEditing(selectionPosition);
-  };
-
-  new ResizeObserver(updateTextSize).observe(textEl);
-}
-
-function updateTextSize(entries: ResizeObserverEntry[]) {
-  const entry = entries[0];
-  textWidth.value = entry.contentRect.width;
-  textHeight.value = entry.contentRect.height;
+  //textEl.onmouseup = () => {
+  //  editModeStore.setDefaultEditMode();
+  //};
 }
 
 // set text area dimensions upon notation selection

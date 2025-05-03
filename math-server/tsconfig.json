@@ -16,6 +16,7 @@
             "*": ["../node_modules/@types"],
             "auth/*": ["../math-auth/src/*"]
         },
+        "skipLibCheck": true,
         "sourceMap": true,
         "resolveJsonModule": true,
     },

@@ -60,7 +60,14 @@ let lessonDialogTitle =
 const menu = [{ icon: "plus", title: "Add" }];
 let itemsPerPage = 10;
 
-onMounted(() => lessonStore.loadLessons());
+onMounted(async () => {
+  await lessonStore.loadLessons();
+
+  if (lessonStore.getLessons().size === 0 && userStore.isTeacher()) {
+    openLessonDialog();
+    return;
+  }
+});
 
 watch(
   route,
@@ -69,7 +76,6 @@ watch(
   },
   { immediate: true },
 );
-
 
 const headers = computed(() => [
   {

@@ -60,7 +60,7 @@ export default class LessonImage extends Model<
     toRow!: number;
 
     @AllowNull(false)
-    @Column({ type: DataType.STRING })
+    @Column({ type: DataType.TEXT })
     value!: string;
 
     @BelongsTo(() => Color, {

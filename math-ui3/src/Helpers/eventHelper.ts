@@ -158,10 +158,20 @@ export default function eventHelper() {
   }
 
   async function pasteText(e: ClipboardEvent) {
-    e.clipboardData?.items[0].getAsString((content) => {
-      content.split("").forEach((c) => {
+    const clipboardItems = await navigator.clipboard.read();
+    if (!clipboardItems.length) return;
+    if (!cellStore.getSelectedCell()) return;
+    if (!userStore.isTeacher) return;
+    if (clipboardItems[0].types.length === 0) return;
+    if (clipboardItems[0].types[0] !== "text/plain") return;
+
+    let text = await navigator.clipboard.readText();
+
+    if (!text) return;
+    text.split("").forEach((c) => {
+      if (c !== " ") {
         notationMutationHelper.addSymbolNotation(c);
-      });
+      }
     });
   }
 
@@ -171,13 +181,13 @@ export default function eventHelper() {
     if (!cellStore.getSelectedCell()) return;
 
     try {
+      window.focus();
       const clipboardItems = await navigator.clipboard.read();
       for (const clipboardItem of clipboardItems) {
         const imageTypes = clipboardItem.types.find((type) =>
           type.startsWith("image/"),
         );
         if (imageTypes) {
-          //for (const imageType of imageTypes) {
           const blob = await clipboardItem.getType(imageTypes);
           if (!blob) return;
           const url = URL.createObjectURL(blob);
@@ -202,8 +212,10 @@ export default function eventHelper() {
               base64,
             );
           };
-          image.src = url;
-          //}
+          image.src = base64.toString();
+          image.onerror = () => {
+            console.error("Error loading image from clipboard");
+          };
         }
       }
     } catch (err: any) {

@@ -81,7 +81,10 @@ export default function () {
     });
   }
 
-  function watchEndOfEditMode(oldEditModes: EditMode[], handler: EditModeHandler) {
+  function watchEndOfEditMode(
+    oldEditModes: EditMode[],
+    handler: EditModeHandler,
+  ) {
     oldEditModes.forEach((oldEditMode) => {
       watch(
         () => editModeStore.getEditMode() as EditMode,
@@ -91,9 +94,8 @@ export default function () {
           }
         },
       );
-    })
+    });
   }
-
 
   function watchNotationSelection(
     editModes: EditMode[],
@@ -113,16 +115,18 @@ export default function () {
   }
 
   function watchCustomEvent(
-    editMode: EditMode,
+    editModes: EditMode[],
     eventType: BusEventType,
     handler: CustomEventHandler,
   ) {
-    watch(
-      () => eventBus.get(editMode, eventType),
-      (data: any) => {
-        handler(data);
-      },
-    );
+    editModes.forEach((editMode) => {
+      watch(
+        () => eventBus.get(editMode, eventType),
+        (data: any) => {
+          handler(data);
+        },
+      );
+    });
   }
 
   function watchLoadedEvent(props: any, handler: PropEventHandler) {
@@ -133,7 +137,7 @@ export default function () {
 
   function watchNotationsEvent(svgId: string, handler: CustomEventHandler) {
     watch(
-      () => notationStore.getNotations(),  
+      () => notationStore.getNotations(),
       () => {
         handler(svgId);
       },
@@ -159,7 +163,6 @@ export default function () {
       { immediate: true, deep: true },
     );
   }
-
 
   return {
     watchMouseEvent,

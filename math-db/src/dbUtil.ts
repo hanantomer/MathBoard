@@ -16,15 +16,17 @@ import {
     RectNotationAttributes,
     SlopeLineNotationAttributes,
     VerticalLineNotationAttributes,
-    SqrtNotationAttributes
+    SqrtNotationAttributes,
+    EntityAttributes
 } from "../../math-common/src/baseTypes";
 import { UserAttributes, StudentLessonCreationAttributes} from "../../math-common/build/userTypes";
 import { LessonCreationAttributes } from "../../math-common/src/lessonTypes";
 import { QuestionCreationAttributes } from "../../math-common/build/questionTypes";
 import { AnswerAttributes, AnswerCreationAttributes } from "../../math-common/build/answerTypes";
 import { capitalize } from "../../math-common/build/utils";
-import { BoardType, NotationType } from "../../math-common/src/unions";
+import { BoardType, NotationType, BoardTypeValues, NotationTypeValues, } from "../../math-common/build/unions";
 import { Model, ModelCtor } from "sequelize";
+
 
 
 const logger = winston.createLogger({
@@ -43,6 +45,9 @@ const logger = winston.createLogger({
 
 let modelMap = new Map<string, ModelCtor<Model>>();
 
+let modelByUrlMap = new Map<string, ModelCtor<Model>>();
+
+
 export default function dbUtil() {
 
     // find model with case insensetivity
@@ -55,6 +60,19 @@ export default function dbUtil() {
 
         return modelMap.get(modelName.toLowerCase())!;
     }
+
+    function getModelNameByUrl(url: string) {
+
+        if (!modelByUrlMap.has(url)) {
+            const boardType = BoardTypeValues.filter(f => url.toUpperCase().indexOf(f) > -1)[0] as BoardType;
+            const notationType = NotationTypeValues.filter(f => url.toUpperCase().indexOf(f) > -1)[0] as NotationType;
+            const modelName = getModelName(boardType, notationType);
+            modelByUrlMap.set(url, findModel(modelName));
+        }
+
+        return modelByUrlMap.get(url)!;
+    }
+
 
     
     // user
@@ -331,8 +349,6 @@ export default function dbUtil() {
         model: string,
         uuid: string
     ): Promise<number | null> {
-
-        
 
         if (!model) {
             throw new Error(`model: ${model} should not be null`);
@@ -749,6 +765,27 @@ export default function dbUtil() {
         return true;
     }
 
+
+    async function getUserIdOfNotation(uuid: string, url: string) {
+        const model = getModelNameByUrl(url);
+
+        let res = await model.findOne({
+            attributes: {
+                include: ["userId"],
+            },
+            where: {
+                uuid: uuid,
+            },
+        }) as any;
+
+        if (!res) {
+            logger.error(`No notation found for UUID: ${uuid} and URL: ${url}`);
+            return null;
+        }
+        
+        return res.userId as number;
+    }
+
     return {
         getIdByUUId,
         getUser,
@@ -775,6 +812,7 @@ export default function dbUtil() {
         storeResetToken,
         getResetToken,
         updatePassword,
+        getUserIdOfNotation,
     };
 }
 

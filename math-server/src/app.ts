@@ -121,19 +121,27 @@ async function validateHeaderAuthentication(
     return true;
 }
 
-app.all("/*", async function (req, res, next) {
+// verify that the user is the same as the one in the body
+app.all("/*", async function (req: Request, res, next) {
+
+    if( req.method !== "PUT" && req.method !== "DELETE") {
+        next();
+        return;
+    }
+
     const { uuid } = req.body; 
     if (!uuid) {
         next();
         return;
     }
 
-    const user = await db.getUser(uuid as string);
+    const userId = await db.getUserIdOfNotation(uuid, req.url);    
+    
     const userFromHeader = await authUtil.authByLocalToken(
         req.headers.authorization!.toString()
     );
 
-    if (user?.id === userFromHeader?.id) {
+    if (userId === userFromHeader?.id) {
         next();
     }
 });

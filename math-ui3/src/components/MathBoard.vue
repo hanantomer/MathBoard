@@ -120,11 +120,11 @@ watchHelper.watchEveryEditModeChange(
 
 watchHelper.watchSelectedCellAndDisplayNewSelected(props.svgId);
 
-watchHelper.watchCustomEvent("SYMBOL", "EV_COPY", () => {
+watchHelper.watchCustomEvent(["SYMBOL", "CELL_SELECTED"], "EV_COPY", () => {
   eventHelper.copy();
 });
 
-watchHelper.watchCustomEvent("SYMBOL", "EV_PASTE", (e: ClipboardEvent) => {
+watchHelper.watchCustomEvent(["SYMBOL", "CELL_SELECTED"], "EV_PASTE", (e: ClipboardEvent) => {
   eventHelper.paste(e);
 });
 

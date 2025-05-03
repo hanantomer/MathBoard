@@ -36,10 +36,10 @@
 <script setup lang="ts">
 import { computed, ref, watch } from "vue";
 import { useLessonStore } from "../store/pinia/lessonStore";
-import useWatchHelper from "../helpers/watchHelper";
+import { useQuestionStore } from "../store/pinia/questionStore";
 
-const watchHelper = useWatchHelper();
 const lessonStore = useLessonStore();
+const questionStore = useQuestionStore();
 const emit = defineEmits(["close"]);
 
 const dialog = ref(false);
@@ -58,8 +58,10 @@ watch(
 );
 
 const link = computed(() => {
-  return `${window.location.origin}/lesson/sl_${lessonStore.getCurrentLesson()
-    ?.uuid}`;
+  if (lessonStore.getCurrentLesson()) {
+    return `${window.location.origin}/lesson/sl_${lessonStore.getCurrentLesson()?.uuid}`
+  }
+  return `${window.location.origin}/lesson/sl_${questionStore.getCurrentQuestion()?.lesson?.uuid}`
 });
 
 function copy() {
