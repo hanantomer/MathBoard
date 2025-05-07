@@ -6,6 +6,7 @@ import {
   CurveAttributes, 
   CellAttributes, 
   RectAttributes, 
+  CircleAttributes,
   SingleValueAttributes,
   BoardAttributes,
   EntityAttributes,
@@ -56,4 +57,12 @@ export type AnswerRectAttributes = EntityAttributes & NotationAttributes & RectA
 
 export type AnswerRectCreationAttributes = Omit<AnswerRectAttributes, keyof EntityAttributes>     
 
+// circle
+
+export type AnswerCircleAttributes = EntityAttributes & NotationAttributes & CircleAttributes &  AnswerNotationAttributes;
+
+export type AnswerCircleCreationAttributes = Omit<
+  AnswerCircleAttributes,
+  keyof EntityAttributes
+>;
 

@@ -10,14 +10,17 @@ import {
   VerticalLineNotationAttributes,
   SlopeLineNotationAttributes,
   CurveAttributes,
+  CircleAttributes,
   HorizontalLineAttributes,
   VerticalLineAttributes,
   SlopeLineAttributes,
   CurveNotationAttributes,
+  CircleNotationAttributes,
   HorizontalLineNotationCreationAttributes,
   VerticalLineNotationCreationAttributes,
   SlopeLineNotationCreationAttributes,
   CurveNotationCreationAttributes,
+  CircleNotationCreationAttributes,
   ExponentNotationCreationAttributes,
   AnnotationNotationCreationAttributes,
   SqrtNotationCreationAttributes,
@@ -502,6 +505,11 @@ export default function notationMutateHelper() {
     notationStore.addNotation(curve, true);
   }
 
+  async function updateCircleNotation(circle: CircleNotationAttributes) {
+    await apiHelper.updateCircleNotationAttributes(circle);
+    notationStore.addNotation(circle, true);
+  }
+
   function addPointNotation(notation: PointNotationCreationAttributes) {
     editModeStore.setDefaultEditMode();
     notationStore.resetSelectedNotations();
@@ -578,6 +586,22 @@ export default function notationMutateHelper() {
 
     addNotation(notation);
   }
+
+  function upsertCircleNotation(notation: CircleNotationCreationAttributes) {
+    editModeStore.setDefaultEditMode();
+    notationStore.resetSelectedNotations();
+
+    let overlappedAnyTypeNotation: NotationAttributes | undefined =
+      findOverlapNotationsOfAnyTypeButLine(notation);
+
+    // don't allow override of other type notation
+    if (overlappedAnyTypeNotation) {
+      return;
+    }
+
+    addNotation(notation);
+  }
+
 
   function upsertRectNotation(newNotation: RectNotationCreationAttributes) {
     editModeStore.setDefaultEditMode();
@@ -1019,6 +1043,25 @@ export default function notationMutateHelper() {
     upsertCurveNotation(curveNotation);
   }
 
+
+
+  function addCircleNotation(
+    circleAttributes: CircleAttributes,
+    notationType: NotationType,
+  ) {
+    let circleNotation: CircleNotationCreationAttributes = {
+      cx: circleAttributes.cx,
+      cy: circleAttributes.cy,
+      r: circleAttributes.r,
+      boardType: notationStore.getParent().type,
+      parentUUId: notationStore.getParent().uuid,
+      notationType: notationType,
+      user: userStore.getCurrentUser()!,
+    };
+    upsertCircleNotation(circleNotation);
+  }
+
+
   function cloneNotation(notation: Readonly<NotationAttributes>) {
     let clonedNotation = { ...notation } as any;
     clonedNotation.id = undefined;
@@ -1033,6 +1076,8 @@ export default function notationMutateHelper() {
         return upsertLineNotation(clonedNotation);
       case "CURVE":
         return upsertCurveNotation(clonedNotation);
+      case "CIRCLE":
+        return upsertCircleNotation(clonedNotation);
       case "ANNOTATION":
       case "SIGN":
       case "SQRTSYMBOL":
@@ -1099,6 +1144,7 @@ export default function notationMutateHelper() {
   }
 
   return {
+    addCircleNotation,
     addCurveNotation,
     addHorizontalLineNotation,
     addImageNotation,
@@ -1121,6 +1167,7 @@ export default function notationMutateHelper() {
     updateVerticalLineNotation,
     updateSlopeLineNotation,
     updateCurveNotation,
+    updateCircleNotation,
     updateNotation,
     selectNotation,
     selectNotationByCoordinates,

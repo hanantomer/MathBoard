@@ -185,6 +185,17 @@ const modeButtons: Array<{
     overlay_icon: "",
     rotate: 260,
   },
+    {
+    name: "circle",
+    show_condition: true,
+    editMode: "CIRCLE_STARTED",
+    activeState: ref(1),
+    tooltip: "circle",
+    icon_class: "material-symbols-outlined",
+    icon: "circle",
+    overlay_icon: "",
+    rotate: 0,
+  },
   {
     name: "sqrt",
     show_condition: true,

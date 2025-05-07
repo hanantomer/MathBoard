@@ -9,7 +9,8 @@ import {
   SingleValueAttributes,
   BoardAttributes,
   EntityAttributes,
-  NotationAttributes
+  NotationAttributes,
+  CircleAttributes
 } from "./baseTypes";
 
 // question
@@ -65,3 +66,14 @@ export type QuestionExponentAttributes = EntityAttributes & NotationAttributes &
 export type QuestionExponentCreationAttributes = Omit<QuestionExponentAttributes, keyof EntityAttributes>     
 
 
+// circle
+
+export type QuestionCircleAttributes = EntityAttributes &
+  NotationAttributes &
+  CircleAttributes &
+  QuestionNotationAttributes;
+
+export type QuestionCircleCreationAttributes = Omit<
+  QuestionCircleAttributes,
+  keyof EntityAttributes
+>;

@@ -105,6 +105,13 @@ export type CurveAttributes = {
   cpy: number; // control point y
 };
 
+export type CircleAttributes = {
+  cx: number; // center x
+  cy: number; // center y
+  r: number; // radius
+};
+
+
 export type RectAttributes = {
   fromCol: number;
   toCol: number;
@@ -153,7 +160,13 @@ export type SlopeLineNotationAttributes =
 export type CurveNotationAttributes =
   EntityAttributes &
     NotationAttributes &
-    CurveAttributes;
+  CurveAttributes;
+    
+export type CircleNotationAttributes =
+  EntityAttributes &
+    NotationAttributes &
+    CircleAttributes;
+
 
 export type RectNotationAttributes =
   EntityAttributes &
@@ -218,6 +231,13 @@ export type CurveNotationCreationAttributes =
     NotationAttributes & CurveAttributes,
     "uuid"
   >;
+
+export type CircleNotationCreationAttributes =
+  Omit<
+    NotationAttributes & CircleAttributes,
+    "uuid"
+  >;
+
 export type ExponentNotationCreationAttributes =
   Omit<
     EntityAttributes &

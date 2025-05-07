@@ -19,6 +19,7 @@
       <verticalLineDrawer></verticalLineDrawer>
       <slopeLineDrawer></slopeLineDrawer>
       <curveDrawer></curveDrawer>
+      <circleDrawer></circleDrawer>
       <v-sheet>
         <svg
           v-bind:style="{ cursor: cursor, margin: '10px' }"
@@ -47,6 +48,7 @@ import sqrtDrawer from "./SqrtDrawer.vue";
 import verticalLineDrawer from "./VerticalLineDrawer.vue";
 import slopeLineDrawer from "./SlopeLineDrawer.vue";
 import curveDrawer from "./CurveDrawer.vue";
+import circleDrawer from "./CircleDrawer.vue";
 import useWatchHelper from "../helpers/watchHelper";
 import useNotationMutationHelper from "../helpers/notationMutateHelper";
 import { onUnmounted, ref } from "vue";

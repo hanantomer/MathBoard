@@ -40,7 +40,8 @@
     <line-handle
       drawing-mode="CURVE_DRAWING"
       editing-mode="CURVE_EDITING_LEFT"
-      v-bind:style="{
+
+v-bind:style="{
         left: handleX1 + 'px',
         top: handleY1 + 'px',
       }"
@@ -329,10 +330,6 @@ function endDrawCurve() {
     cpx: curveAttributes.value.cpx,
     cpy: curveAttributes.value.cpy,
   });
-
-  //setTimeout(() => {
-  //  editModeStore.setDefaultEditMode();
-  //}, 20000);
 }
 
 function saveCurve(curevAttributes: CurveAttributes) {

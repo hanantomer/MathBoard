@@ -17,7 +17,8 @@ export const useEditModeStore = defineStore("editMode", () => {
   }
 
   function isCurveEditingControlPointMode() {
-    return editMode.value === "CURVE_EDITING_CONTROLֹ_POINT";}
+    return editMode.value === "CURVE_EDITING_CONTROLֹ_POINT";
+  }
 
   function isResizeMode() {
     return editMode.value === "RESIZE_STARTED" || editMode.value === "RESIZING";
@@ -93,7 +94,6 @@ export const useEditModeStore = defineStore("editMode", () => {
     );
   }
 
-
   function isDefaultEditMode() {
     return editMode.value === defaultEditMode;
   }
@@ -165,10 +165,16 @@ export const useEditModeStore = defineStore("editMode", () => {
 
   function isCurveDrawingMode() {
     return (
-      editMode.value === "CURVE_DRAWING" ||
+      editMode.value === "CIRCLE_DRAWING" ||
       editMode.value === "CURVE_EDITING_LEFT" ||
       editMode.value === "CURVE_EDITING_RIGHT" ||
       editMode.value === "CURVE_EDITING_CONTROLֹ_POINT"
+    );
+  }
+
+  function isCircleDrawingMode() {
+    return (
+      editMode.value === "CIRCLE_DRAWING" || editMode.value === "CIRCLE_EDITING"
     );
   }
 
@@ -186,6 +192,10 @@ export const useEditModeStore = defineStore("editMode", () => {
 
   function isCurveSelectedMode() {
     return editMode.value === "CURVE_SELECTED";
+  }
+
+  function isCircleSelectedMode() {
+    return editMode.value === "CIRCLE_SELECTED";
   }
 
   function isTextStartedMode() {
@@ -287,6 +297,12 @@ export const useEditModeStore = defineStore("editMode", () => {
         return setEditMode("CURVE_DRAWING");
       case "CURVE_SELECTED":
         return setEditMode("CURVE_DRAWING");
+
+      case "CIRCLE_STARTED":
+        return setEditMode("CIRCLE_DRAWING");
+      case "CIRCLE_SELECTED":
+        return setEditMode("CIRCLE_DRAWING");
+
       case "SQRT_STARTED":
         return setEditMode("SQRT_DRAWING");
       case "SQRT_SELECTED":
@@ -340,6 +356,8 @@ export const useEditModeStore = defineStore("editMode", () => {
     isSlopeLineDrawingMode,
     isSlopeLineEditingMode,
     isCurveDrawingMode,
+    isCircleDrawingMode,
+    isCircleSelectedMode,
     isSelectedMode,
     isSqrtMode,
     isSqrtEditMode,

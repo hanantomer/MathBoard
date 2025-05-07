@@ -7,6 +7,7 @@ import {
   VerticalLineNotationAttributes,
   CurveNotationAttributes,
   SqrtNotationAttributes,
+  CircleNotationAttributes,
 } from "common/baseTypes";
 import {
   UserAttributes,
@@ -420,6 +421,30 @@ export default function useApiHelper() {
     }
   }
 
+    async function updateCircleNotationAttributes(
+      circle: CircleNotationAttributes,
+    ) {
+      try {
+        return axios.put(
+          baseURL +
+            `/${circle.boardType.toLowerCase()}${circle.notationType.toLowerCase()}s`,
+          {
+            uuid: circle.uuid,
+            cx: circle.cx,
+            cy: circle.cy,
+            r: circle.r,
+          },
+        );
+      } catch (error) {
+        throw new Error(
+          `Failed to update circle notation attributes: ${
+            (error as AxiosError).message
+          }`,
+        );
+      }
+    }
+
+
   async function getLesson(lessonUUId: string): Promise<LessonAttributes> {
     try {
       const { data } = await axios.get<LessonAttributes>(
@@ -575,10 +600,11 @@ export default function useApiHelper() {
     updateVerticalLineNotationAttributes,
     updateSlopeLineNotationAttributes,
     updateCurveNotationAttributes,
+    updateCircleNotationAttributes,
     updateNotationValue,
     updateNotation,
     saveMovedNotations,
     deleteNotation,
-    log
+    log,
   };
 }

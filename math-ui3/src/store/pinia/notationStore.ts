@@ -217,7 +217,6 @@ export const useNotationStore = defineStore("notation", () => {
     const notation = notations.value.get(uuid);
     if (!notation) return;
     notation.selected = true;
-    console.debug("select Notation");
   }
 
   function setParent(parentUUID: string, boardType: BoardType) {
@@ -292,7 +291,6 @@ export const useNotationStore = defineStore("notation", () => {
 
     notationsUUIDsToSelect.forEach((uuid) => {
       selectNotation(uuid);
-      //notations.value.get(uuid)!.selected = true;
     });
   }
 

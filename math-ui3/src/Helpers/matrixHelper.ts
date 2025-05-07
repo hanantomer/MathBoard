@@ -10,10 +10,13 @@ import { cellSpace } from "common/globals";
 import { NotationAttributes } from "common/baseTypes";
 import useLineHelper from "./matrixLineHelper";
 import useCurveHelper from "./matrixCurveHelper";
+import useCircleHelper from "./matrixCircleHelper";
+
 import useHtmlHelper from "./matrixHtmlHelper";
 
 const lineHelper = useLineHelper();
 const curveHelper = useCurveHelper();
+const circleHelper = useCircleHelper();
 const cellStore = useCellStore();
 const notationStore = useNotationStore();
 const htmlHelper = useHtmlHelper();
@@ -157,10 +160,17 @@ export default function useMatrixHelper() {
     lineHelper.mergeLineNotations(
       svgId,
       notations.filter(
-        (n) =>
-          n.notationType === "HORIZONTALLINE" ||
-          n.notationType === "VERTICALLINE" ||
-          n.notationType === "SLOPELINE",
+      (n) =>
+        n.notationType === "HORIZONTALLINE" ||
+        n.notationType === "VERTICALLINE" ||
+        n.notationType === "SLOPELINE",
+      ),
+    );
+
+    circleHelper.mergeCircleNotations(
+      svgId,
+      notations.filter(
+      (n) => n.notationType === "CIRCLE",
       ),
     );
 

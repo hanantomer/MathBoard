@@ -1,6 +1,5 @@
 import * as d3 from "d3";
 import { NotationAttributes, CurveNotationAttributes } from "common/baseTypes";
-import { lineColor, selectionColor } from "common/globals";
 import useMatrixHelperUtils from "./matrixHelperUtils";
 const matrixHelperUtils = useMatrixHelperUtils();
 

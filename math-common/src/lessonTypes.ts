@@ -10,6 +10,7 @@ import {
   EntityAttributes,
   NotationAttributes,
   ExponentNotationAttributes,
+  CircleAttributes,
 } from "./baseTypes";
 
 // lesson
@@ -110,3 +111,12 @@ export type LessonNotationAttributes =
   NotationAttributes & {
     lesson: LessonAttributes;
   };
+
+// circle
+
+export type LessonCircleAttributes = EntityAttributes & NotationAttributes & CircleAttributes &  LessonNotationAttributes;
+
+export type LessonCircleCreationAttributes = Omit<
+  LessonCircleAttributes,
+  keyof EntityAttributes
+>;

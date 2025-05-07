@@ -112,6 +112,9 @@ export default function useMatrixHelperUtils() {
       case "HORIZONTALLINE":
       case "SLOPELINE":
       case "VERTICALLINE":
+      case "IMAGE":
+      case "TEXT":
+      case "CIRCLE":
         return n.selected
           ? selectionColor
           : n.color?.value
@@ -119,11 +122,7 @@ export default function useMatrixHelperUtils() {
           : lineColor;
     }
 
-    return n.selected
-      ? selectionColor
-      : //: n.color?.value
-        //? n.color.value
-        lineColor;
+    return n.selected ? selectionColor : lineColor;
   }
 
   return {

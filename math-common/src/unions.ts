@@ -19,6 +19,7 @@ export type BusEventType =
   | "EV_AREA_SELECTION_DONE"
   | "EV_SLOPE_LINE_SELECTED"
   | "EV_CURVE_SELECTED"
+  | "EV_CIRCLE_SELECTED"
   | "EV_IMAGE_SELECTED"
   | "EV_TEXT_SELECTED"
   | "EV_VERTICAL_LINE_SELECTED"
@@ -33,6 +34,7 @@ export const NotationTypeValues = [
   "VERTICALLINE",
   "SLOPELINE",
   "CURVE",
+  "CIRCLE",
   "SQRT",
   "SQRTSYMBOL",
   "TEXT",
@@ -57,13 +59,6 @@ export type CursorType =
   | "text"
   | "wait";
 
-// export const NotationTypeBackgroundColorizing =
-//   new Set<NotationType>([
-//     "SYMBOL",
-//     "SIGN",
-//     "EXPONENT",
-//     "ANNOTATION",
-//   ]);
 export type EditMode =
   | "LESSONS_SELECTION" //  after click on lessons icon
   | "QUESTIONS_SELECTION" //  after click on questions icon
@@ -105,6 +100,10 @@ export type EditMode =
   | "CURVE_EDITING_LEFT" //   curve left handle clicked
   | "CURVE_EDITING_RIGHT" //  curve right handle clicked
   | "CURVE_EDITING_CONTROLֹ_POINT" //  curve control point clicked
+  | "CIRCLE_STARTED" // circle button pressed
+  | "CIRCLE_DRAWING" // circle drawing started
+  | "CIRCLE_SELECTED" // circle selected
+  | "CIRCLE_EDITING" // circle left handle clicked
   | "SQRT_STARTED" // sqrt button pressed
   | "SQRT_DRAWING" // sqrt drawing started
   | "SQRT_EDITING" // sqrt line handle clicked
@@ -158,7 +157,22 @@ export const EditModeNotationType = new Map<
   ["CURVE_STARTED", "CURVE"],
   ["CURVE_DRAWING", "CURVE"],
   ["CURVE_SELECTED", "CURVE"],
+  ["CURVE_EDITING_LEFT", "CURVE"],
+  ["CURVE_EDITING_RIGHT", "CURVE"],
   ["CURVE_EDITING_CONTROLֹ_POINT", "CURVE"],
+  ["CIRCLE_STARTED", "CIRCLE"],
+  ["CIRCLE_DRAWING", "CIRCLE"],
+  ["CIRCLE_SELECTED", "CIRCLE"],
+  ["CIRCLE_EDITING", "CIRCLE"],
+  ["CURVE_EDITING_CONTROLֹ_POINT", "CURVE"],
+  ["TEXT_WRITING", "TEXT"],
+  ["TEXT_SELECTED", "TEXT"],
+  ["IMAGE_SELECTED", "IMAGE"],
+  ["ANNOTATION_STARTED", "ANNOTATION"],
+  ["ANNOTATION_SELECTED", "ANNOTATION"],
+  ["ANNOTATION_WRITING", "ANNOTATION"],
+  ["TEXT_AREA_SELECTING", "TEXT"],
+  ["TEXT_AREA_SELECTED", "TEXT"],
   ["SQRT_STARTED", "SQRT"],
   ["SQRT_DRAWING", "SQRT"],
   ["SQRT_SELECTED", "SQRT"],

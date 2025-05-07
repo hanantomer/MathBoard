@@ -18,7 +18,6 @@ import useUserOutgoingOperationsHelper from "./userOutgoingOperationsHelper";
 import useEventBus from "./eventBusHelper";
 import useAuthorizationHelper from "./authorizationHelper";
 
-
 const eventBus = useEventBus();
 const cellStore = useCellStore();
 const notationMutateHelper = useNotationMutateHelper();
@@ -158,6 +157,12 @@ export default function selectionHelper() {
     eventBus.emit("EV_CURVE_SELECTED", notation);
   }
 
+  function selectCircleNotation(uuid: String) {
+    const notation = notationStore.getNotation(uuid)!;
+    editModeStore.setEditMode("CIRCLE_SELECTED");
+    eventBus.emit("EV_CIRCLE_SELECTED", notation);
+  }
+
   function selectLineNotation(uuid: String) {
     const notation = notationStore.getNotation(uuid)!;
     switch (notation.notationType) {
@@ -212,6 +217,9 @@ export default function selectionHelper() {
         case "CURVE":
           selectCurveNotation(uuid);
           break;
+        case "CIRCLE":
+          selectCircleNotation(uuid);
+          break;
         case "EXPONENT":
         case "IMAGE":
         case "TEXT":
@@ -233,8 +241,6 @@ export default function selectionHelper() {
     selectClickedPosition,
     selectNotationAtPosition,
     selectNotationsOfArea,
-    selectLineNotation,
-    selectCurveNotation,
     setSelectedCell,
   };
 }

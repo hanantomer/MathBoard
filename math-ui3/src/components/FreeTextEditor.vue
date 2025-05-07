@@ -213,6 +213,8 @@ function startTextEditing(selectionPosition: any) {
   textWidth.value = selectionPosition.width;
   setTimeout('document.getElementById("textAreaEl").focus()', 100);
 }
+
+
 </script>
 <style>
 textarea {

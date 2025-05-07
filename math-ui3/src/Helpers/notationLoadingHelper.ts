@@ -3,6 +3,7 @@ import {
   PointNotationAttributes,
   RectNotationAttributes,
   CurveNotationAttributes,
+  CircleNotationAttributes,
   HorizontalLineNotationAttributes,
   VerticalLineNotationAttributes,
   SlopeLineNotationAttributes,
@@ -86,6 +87,12 @@ export default function notationLoadingHelper() {
         );
       case "CURVE":
         return await apiHelper.getNotations<CurveNotationAttributes>(
+          notationType,
+          boardType,
+          parentUUId,
+        );
+      case "CIRCLE":
+        return await apiHelper.getNotations<CircleNotationAttributes>(
           notationType,
           boardType,
           parentUUId,

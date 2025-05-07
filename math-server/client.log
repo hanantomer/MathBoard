@@ -2652,3 +2652,557 @@ notNull Violation: LessonSymbol.row cannot be nullundefined
 2025-05-03T20:28:57.260Z [ERROR]: Cannot set headers after they are sent to the clientundefined
 2025-05-03T20:29:50.567Z [ERROR]: Cannot set headers after they are sent to the clientundefined
 2025-05-03T20:31:25.282Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-04T14:00:40.296Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-04T14:00:44.015Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-04T14:00:47.018Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-04T16:12:09.200Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-04T16:12:36.119Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-04T16:12:40.080Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-04T16:12:42.449Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-04T16:12:46.973Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-04T16:12:50.688Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-04T16:13:09.573Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-04T16:13:22.134Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-04T16:13:24.134Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-04T16:13:37.329Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-04T16:13:51.221Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-04T16:13:54.221Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-04T16:13:56.860Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-04T16:13:59.879Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-04T16:14:01.260Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-04T16:14:02.980Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-04T16:14:08.682Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-04T16:14:10.495Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-05T10:45:09.978Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-05T10:45:13.774Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-05T12:58:26.920Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-05T12:59:41.153Z [ERROR]: invalid input syntax for type integer: "115.83609109426992"undefined
+2025-05-05T13:00:22.097Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-05T13:01:21.335Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-05T13:05:32.984Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-05T13:05:45.376Z [ERROR]: invalid input syntax for type integer: "206.00970850908945"undefined
+2025-05-05T13:06:06.481Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-05T13:08:50.328Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-05T13:09:28.244Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-05T13:09:45.571Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-05T13:10:15.465Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-05T13:11:59.174Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-05T13:12:17.845Z [ERROR]: invalid input syntax for type integer: "54.037024344425184"undefined
+2025-05-05T13:13:45.583Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-05T13:14:53.174Z [ERROR]: invalid input syntax for type integer: "150.6154042586614"undefined
+2025-05-05T13:14:59.763Z [ERROR]: invalid input syntax for type integer: "186.93581786270923"undefined
+2025-05-05T13:15:14.781Z [ERROR]: invalid input syntax for type integer: "69.1158447825099"undefined
+2025-05-05T13:15:26.341Z [ERROR]: invalid input syntax for type integer: "1.4142135623730951"undefined
+2025-05-05T13:16:01.120Z [ERROR]: invalid input syntax for type integer: "60.14149981501958"undefined
+2025-05-05T13:17:23.852Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-05T16:31:13.994Z [ERROR]: ReferenceError: circleHelper is not defined
+    at refreshScreen (http://localhost:3000/src/helpers/matrixHelper.ts?t=1746462673726:102:5)
+    at watch.deep (http://localhost:3000/src/helpers/watchHelper.ts?t=1746442174760:98:9)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:1565:18)
+    at callWithAsyncErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:1573:17)
+    at job (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:3162:9)
+    at doWatch (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:3193:7)
+    at watch (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:3050:10)
+    at Object.watchNotationsEvent (http://localhost:3000/src/helpers/watchHelper.ts?t=1746442174760:95:5)
+    at setup (http://localhost:3000/src/components/MathBoard.vue?t=1746462673726:93:17)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:1565:18)
+2025-05-05T16:31:27.975Z [ERROR]: ReferenceError: circleHelper is not defined
+    at refreshScreen (http://localhost:3000/src/helpers/matrixHelper.ts?t=1746462687464:102:5)
+    at watch.deep (http://localhost:3000/src/helpers/watchHelper.ts?t=1746442174760:98:9)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:1565:18)
+    at callWithAsyncErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:1573:17)
+    at job (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:3162:9)
+    at doWatch (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:3193:7)
+    at watch (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:3050:10)
+    at Object.watchNotationsEvent (http://localhost:3000/src/helpers/watchHelper.ts?t=1746442174760:95:5)
+    at setup (http://localhost:3000/src/components/MathBoard.vue?t=1746462687464:93:17)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:1565:18)
+2025-05-05T16:31:30.862Z [ERROR]: ReferenceError: circleHelper is not defined
+    at refreshScreen (http://localhost:3000/src/helpers/matrixHelper.ts?t=1746462690642:102:5)
+    at watch.deep (http://localhost:3000/src/helpers/watchHelper.ts?t=1746442174760:98:9)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:1565:18)
+    at callWithAsyncErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:1573:17)
+    at job (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:3162:9)
+    at doWatch (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:3193:7)
+    at watch (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:3050:10)
+    at Object.watchNotationsEvent (http://localhost:3000/src/helpers/watchHelper.ts?t=1746442174760:95:5)
+    at setup (http://localhost:3000/src/components/MathBoard.vue?t=1746462690642:93:17)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:1565:18)
+2025-05-05T16:31:33.201Z [ERROR]: ReferenceError: circleHelper is not defined
+    at refreshScreen (http://localhost:3000/src/helpers/matrixHelper.ts?t=1746462692719:102:5)
+    at watch.deep (http://localhost:3000/src/helpers/watchHelper.ts?t=1746442174760:98:9)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:1565:18)
+    at callWithAsyncErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:1573:17)
+    at job (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:3162:9)
+    at doWatch (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:3193:7)
+    at watch (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:3050:10)
+    at Object.watchNotationsEvent (http://localhost:3000/src/helpers/watchHelper.ts?t=1746442174760:95:5)
+    at setup (http://localhost:3000/src/components/MathBoard.vue?t=1746462692719:93:17)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:1565:18)
+2025-05-05T16:31:38.553Z [ERROR]: ReferenceError: circleHelper is not defined
+    at refreshScreen (http://localhost:3000/src/helpers/matrixHelper.ts?t=1746462698367:102:5)
+    at watch.deep (http://localhost:3000/src/helpers/watchHelper.ts?t=1746442174760:98:9)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:1565:18)
+    at callWithAsyncErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:1573:17)
+    at job (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:3162:9)
+    at doWatch (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:3193:7)
+    at watch (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:3050:10)
+    at Object.watchNotationsEvent (http://localhost:3000/src/helpers/watchHelper.ts?t=1746442174760:95:5)
+    at setup (http://localhost:3000/src/components/MathBoard.vue?t=1746462698367:93:17)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:1565:18)
+2025-05-05T16:31:40.251Z [ERROR]: ReferenceError: circleHelper is not defined
+    at refreshScreen (http://localhost:3000/src/helpers/matrixHelper.ts?t=1746462699735:102:5)
+    at watch.deep (http://localhost:3000/src/helpers/watchHelper.ts?t=1746442174760:98:9)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:1565:18)
+    at callWithAsyncErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:1573:17)
+    at job (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:3162:9)
+    at doWatch (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:3193:7)
+    at watch (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:3050:10)
+    at Object.watchNotationsEvent (http://localhost:3000/src/helpers/watchHelper.ts?t=1746442174760:95:5)
+    at setup (http://localhost:3000/src/components/MathBoard.vue?t=1746462699735:93:17)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:1565:18)
+2025-05-05T16:31:45.073Z [ERROR]: ReferenceError: circleHelper is not defined
+    at refreshScreen (http://localhost:3000/src/helpers/matrixHelper.ts?t=1746462704552:102:5)
+    at watch.deep (http://localhost:3000/src/helpers/watchHelper.ts?t=1746442174760:98:9)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:1565:18)
+    at callWithAsyncErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:1573:17)
+    at job (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:3162:9)
+    at doWatch (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:3193:7)
+    at watch (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:3050:10)
+    at Object.watchNotationsEvent (http://localhost:3000/src/helpers/watchHelper.ts?t=1746442174760:95:5)
+    at setup (http://localhost:3000/src/components/MathBoard.vue?t=1746462704552:93:17)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:1565:18)
+2025-05-05T16:31:47.028Z [ERROR]: ReferenceError: circleHelper is not defined
+    at refreshScreen (http://localhost:3000/src/helpers/matrixHelper.ts?t=1746462706836:102:5)
+    at watch.deep (http://localhost:3000/src/helpers/watchHelper.ts?t=1746442174760:98:9)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:1565:18)
+    at callWithAsyncErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:1573:17)
+    at job (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:3162:9)
+    at doWatch (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:3193:7)
+    at watch (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:3050:10)
+    at Object.watchNotationsEvent (http://localhost:3000/src/helpers/watchHelper.ts?t=1746442174760:95:5)
+    at setup (http://localhost:3000/src/components/MathBoard.vue?t=1746462706836:93:17)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:1565:18)
+2025-05-05T16:31:53.234Z [ERROR]: ReferenceError: circleHelper is not defined
+    at refreshScreen (http://localhost:3000/src/helpers/matrixHelper.ts?t=1746462712624:102:5)
+    at watch.deep (http://localhost:3000/src/helpers/watchHelper.ts?t=1746442174760:98:9)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:1565:18)
+    at callWithAsyncErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:1573:17)
+    at job (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:3162:9)
+    at doWatch (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:3193:7)
+    at watch (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:3050:10)
+    at Object.watchNotationsEvent (http://localhost:3000/src/helpers/watchHelper.ts?t=1746442174760:95:5)
+    at setup (http://localhost:3000/src/components/MathBoard.vue?t=1746462712624:93:17)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:1565:18)
+2025-05-05T16:32:20.892Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-05T16:32:39.009Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-05T16:34:05.934Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-05T16:35:47.714Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-05T16:38:52.917Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-05T16:40:39.550Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-05T19:46:10.846Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-05T19:46:28.758Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-06T13:57:08.649Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-06T13:57:11.180Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-06T14:05:03.497Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-06T14:05:17.763Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-06T14:05:37.003Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-06T14:07:43.294Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-06T14:08:18.343Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-06T14:09:05.699Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-06T14:15:00.856Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-06T14:15:43.681Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-06T14:16:53.416Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-06T14:17:07.445Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-06T14:17:35.791Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-06T14:17:52.069Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-06T14:18:26.180Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-06T14:20:51.321Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-06T14:21:14.917Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-06T14:22:45.930Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-06T14:24:09.507Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-06T14:24:29.763Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-06T16:26:22.547Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-06T16:28:20.795Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-06T16:54:41.709Z [ERROR]: TypeError: editModeStore.isCircleSelectedMode is not a function
+    at ReactiveEffect.fn (http://localhost:3000/src/components/CircleDrawer.vue?t=1746550481650:23:67)
+    at ReactiveEffect.run (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:423:19)
+    at get value (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:1383:35)
+    at unref (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:1263:29)
+    at Object.get (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:1269:35)
+    at Proxy._sfc_render (http://localhost:3000/src/components/CircleDrawer.vue?t=1746550481650:163:25)
+    at renderComponentRoot (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:2224:17)
+    at ReactiveEffect.componentUpdateFn [as fn] (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:7099:46)
+    at ReactiveEffect.run (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:423:19)
+    at instance.update (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:7212:52)
+2025-05-06T16:56:05.300Z [ERROR]: TypeError: watchHelper.watch is not a function
+    at setup (http://localhost:3000/src/components/CircleDrawer.vue?t=1746550565238:36:17)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:1565:18)
+    at setupStatefulComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:8631:25)
+    at setupComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:8592:36)
+    at mountComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:6997:7)
+    at processComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:6963:9)
+    at patch (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:6436:11)
+    at patchKeyedChildren (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:7496:11)
+    at patchChildren (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:7277:11)
+    at patchElement (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:6728:7)
+2025-05-06T16:57:18.927Z [ERROR]: ReferenceError: se is not defined
+    at setup (http://localhost:3000/src/components/CircleDrawer.vue?t=1746550638591:39:7)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:1565:18)
+    at setupStatefulComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:8631:25)
+    at setupComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:8592:36)
+    at mountComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:6997:7)
+    at processComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:6963:9)
+    at patch (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:6436:11)
+    at patchKeyedChildren (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:7496:11)
+    at patchChildren (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:7277:11)
+    at patchElement (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:6728:7)
+2025-05-06T16:57:25.647Z [ERROR]: ReferenceError: selectCircle is not defined
+    at setup (http://localhost:3000/src/components/CircleDrawer.vue?t=1746550645618:39:7)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:1565:18)
+    at setupStatefulComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:8631:25)
+    at setupComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:8592:36)
+    at mountComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:6997:7)
+    at processComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:6963:9)
+    at patch (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:6436:11)
+    at patchKeyedChildren (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:7496:11)
+    at patchChildren (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:7277:11)
+    at patchElement (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:6728:7)
+2025-05-06T16:58:25.035Z [ERROR]: ReferenceError: selectCircle is not defined
+    at setup (http://localhost:3000/src/components/CircleDrawer.vue?t=1746550704676:39:7)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:1565:18)
+    at setupStatefulComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:8631:25)
+    at setupComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:8592:36)
+    at mountComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:6997:7)
+    at processComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:6963:9)
+    at patch (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:6436:11)
+    at patchKeyedChildren (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:7496:11)
+    at patchChildren (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:7277:11)
+    at patchElement (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:6728:7)
+2025-05-06T16:59:47.935Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-06T17:00:31.208Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-06T17:00:49.114Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-06T17:01:43.812Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-06T17:02:25.537Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-06T17:03:21.337Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-07T10:13:38.142Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-07T10:13:42.928Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-07T10:13:48.399Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-07T10:14:58.902Z [ERROR]: TypeError: editModeStore.isCDrawingMode is not a function
+    at ReactiveEffect.fn (http://localhost:3000/src/components/CircleDrawer.vue?t=1746612898369:23:28)
+    at ReactiveEffect.run (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:423:19)
+    at get value (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:1383:35)
+    at unref (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:1263:29)
+    at Object.get (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:1269:35)
+    at Proxy._sfc_render (http://localhost:3000/src/components/CircleDrawer.vue?t=1746612898369:134:21)
+    at renderComponentRoot (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:2224:17)
+    at ReactiveEffect.componentUpdateFn [as fn] (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:7099:46)
+    at ReactiveEffect.run (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:423:19)
+    at instance.update (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:7212:52)
+2025-05-07T10:15:08.511Z [ERROR]: TypeError: editModeStore.isCircleSelectedMode is not a function
+    at ReactiveEffect.fn (http://localhost:3000/src/components/CircleDrawer.vue?t=1746612908172:23:67)
+    at ReactiveEffect.run (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:423:19)
+    at get value (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:1383:35)
+    at unref (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:1263:29)
+    at Object.get (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:1269:35)
+    at Proxy._sfc_render (http://localhost:3000/src/components/CircleDrawer.vue?t=1746612908172:134:21)
+    at renderComponentRoot (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:2224:17)
+    at ReactiveEffect.componentUpdateFn [as fn] (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:7099:46)
+    at ReactiveEffect.run (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:423:19)
+    at instance.update (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:7212:52)
+2025-05-07T10:15:36.448Z [ERROR]: TypeError: editModeStore.isCircleSelectedMode is not a function
+    at ReactiveEffect.fn (http://localhost:3000/src/components/CircleDrawer.vue?t=1746612934508:23:67)
+    at ReactiveEffect.run (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:423:19)
+    at get value (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:1383:35)
+    at unref (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:1263:29)
+    at Object.get (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:1269:35)
+    at Proxy._sfc_render (http://localhost:3000/src/components/CircleDrawer.vue?t=1746612934508:134:21)
+    at renderComponentRoot (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:2224:17)
+    at ReactiveEffect.componentUpdateFn [as fn] (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:7099:46)
+    at ReactiveEffect.run (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:423:19)
+    at instance.update (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:7212:52)
+2025-05-07T10:15:42.769Z [ERROR]: TypeError: editModeStore.isCircleSelectedMode is not a function
+    at ReactiveEffect.fn (http://localhost:3000/src/components/CircleDrawer.vue?t=1746612941471:23:67)
+    at ReactiveEffect.run (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:423:19)
+    at get value (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:1383:35)
+    at unref (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:1263:29)
+    at Object.get (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:1269:35)
+    at Proxy._sfc_render (http://localhost:3000/src/components/CircleDrawer.vue?t=1746612941471:134:21)
+    at renderComponentRoot (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:2224:17)
+    at ReactiveEffect.componentUpdateFn [as fn] (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:7099:46)
+    at ReactiveEffect.run (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:423:19)
+    at instance.update (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:7212:52)
+2025-05-07T10:15:46.097Z [ERROR]: TypeError: editModeStore.isCircleSelectedMode is not a function
+    at ReactiveEffect.fn (http://localhost:3000/src/components/CircleDrawer.vue?t=1746612944807:23:67)
+    at ReactiveEffect.run (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:423:19)
+    at get value (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:1383:35)
+    at unref (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:1263:29)
+    at Object.get (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:1269:35)
+    at Proxy._sfc_render (http://localhost:3000/src/components/CircleDrawer.vue?t=1746612944807:134:21)
+    at renderComponentRoot (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:2224:17)
+    at ReactiveEffect.componentUpdateFn [as fn] (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:7099:46)
+    at ReactiveEffect.run (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:423:19)
+    at instance.update (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:7212:52)
+2025-05-07T10:15:47.871Z [ERROR]: TypeError: editModeStore.isCircleSelectedMode is not a function
+    at ReactiveEffect.fn (http://localhost:3000/src/components/CircleDrawer.vue?t=1746612946337:23:67)
+    at ReactiveEffect.run (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:423:19)
+    at get value (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:1383:35)
+    at unref (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:1263:29)
+    at Object.get (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:1269:35)
+    at Proxy._sfc_render (http://localhost:3000/src/components/CircleDrawer.vue?t=1746612946337:134:21)
+    at renderComponentRoot (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:2224:17)
+    at ReactiveEffect.componentUpdateFn [as fn] (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:7099:46)
+    at ReactiveEffect.run (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:423:19)
+    at instance.update (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:7212:52)
+2025-05-07T10:15:49.769Z [ERROR]: TypeError: editModeStore.isCircleSelectedMode is not a function
+    at ReactiveEffect.fn (http://localhost:3000/src/components/CircleDrawer.vue?t=1746612948307:23:67)
+    at ReactiveEffect.run (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:423:19)
+    at get value (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:1383:35)
+    at unref (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:1263:29)
+    at Object.get (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:1269:35)
+    at Proxy._sfc_render (http://localhost:3000/src/components/CircleDrawer.vue?t=1746612948307:134:21)
+    at renderComponentRoot (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:2224:17)
+    at ReactiveEffect.componentUpdateFn [as fn] (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:7099:46)
+    at ReactiveEffect.run (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:423:19)
+    at instance.update (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:7212:52)
+2025-05-07T10:30:47.515Z [ERROR]: TypeError: editModeStore.isCircleSelectedMode is not a function
+    at ReactiveEffect.fn (http://localhost:3000/src/components/CircleDrawer.vue?t=1746613844834:23:67)
+    at ReactiveEffect.run (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:423:19)
+    at get value (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:1383:35)
+    at unref (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:1263:29)
+    at Object.get (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:1269:35)
+    at Proxy._sfc_render (http://localhost:3000/src/components/CircleDrawer.vue?t=1746613844834:134:21)
+    at renderComponentRoot (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:2224:17)
+    at ReactiveEffect.componentUpdateFn [as fn] (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:7099:46)
+    at ReactiveEffect.run (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:423:19)
+    at instance.update (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:7212:52)
+2025-05-07T10:30:47.784Z [ERROR]: TypeError: editModeStore.isCircleSelectedMode is not a function
+    at ReactiveEffect.fn (http://localhost:3000/src/components/CircleDrawer.vue?t=1746613845703:23:67)
+    at ReactiveEffect.run (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:423:19)
+    at get value (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:1383:35)
+    at unref (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:1263:29)
+    at Object.get (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:1269:35)
+    at Proxy._sfc_render (http://localhost:3000/src/components/CircleDrawer.vue?t=1746613845703:134:21)
+    at renderComponentRoot (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:2224:17)
+    at ReactiveEffect.componentUpdateFn [as fn] (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:7099:46)
+    at ReactiveEffect.run (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:423:19)
+    at instance.update (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:7212:52)
+2025-05-07T10:33:40.310Z [ERROR]: TypeError: editModeStore.isCircleSelectedMode is not a function
+    at ReactiveEffect.fn (http://localhost:3000/src/components/CircleDrawer.vue?t=1746613845703:23:67)
+    at ReactiveEffect.run (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:423:19)
+    at get value (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:1383:35)
+    at unref (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:1263:29)
+    at Object.get (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:1269:35)
+    at Proxy._sfc_render (http://localhost:3000/src/components/CircleDrawer.vue?t=1746613845703:134:21)
+    at renderComponentRoot (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:2224:17)
+    at ReactiveEffect.componentUpdateFn [as fn] (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:7162:26)
+    at ReactiveEffect.run (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:423:19)
+    at instance.update (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:7212:52)
+2025-05-07T10:33:42.310Z [ERROR]: TypeError: editModeStore.isCircleSelectedMode is not a function
+    at ReactiveEffect.fn (http://localhost:3000/src/components/CircleDrawer.vue?t=1746613845703:23:67)
+    at ReactiveEffect.run (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:423:19)
+    at get value (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:1383:35)
+    at unref (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:1263:29)
+    at Object.get (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:1269:35)
+    at Proxy._sfc_render (http://localhost:3000/src/components/CircleDrawer.vue?t=1746613845703:134:21)
+    at renderComponentRoot (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:2224:17)
+    at ReactiveEffect.componentUpdateFn [as fn] (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:7162:26)
+    at ReactiveEffect.run (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:423:19)
+    at instance.update (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:7212:52)
+2025-05-07T10:33:43.344Z [ERROR]: TypeError: Cannot read properties of null (reading 'setAttribute')
+    at setCircleElement (http://localhost:3000/src/components/CircleDrawer.vue?t=1746613845703:63:14)
+    at selectCircle (http://localhost:3000/src/components/CircleDrawer.vue?t=1746613845703:53:7)
+    at http://localhost:3000/src/helpers/watchHelper.ts?t=1746613845703:83:11
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:1565:18)
+    at callWithAsyncErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:1573:17)
+    at job (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:3162:9)
+    at flushPreFlushCbs (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:1710:7)
+    at updateComponentPreRender (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:7230:5)
+    at ReactiveEffect.componentUpdateFn [as fn] (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:7148:11)
+    at ReactiveEffect.run (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:423:19)
+2025-05-07T10:33:43.345Z [ERROR]: TypeError: editModeStore.isCircleSelectedMode is not a function
+    at ReactiveEffect.fn (http://localhost:3000/src/components/CircleDrawer.vue?t=1746613845703:23:67)
+    at ReactiveEffect.run (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:423:19)
+    at get value (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:1383:35)
+    at unref (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:1263:29)
+    at Object.get (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:1269:35)
+    at Proxy._sfc_render (http://localhost:3000/src/components/CircleDrawer.vue?t=1746613845703:134:21)
+    at renderComponentRoot (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:2224:17)
+    at ReactiveEffect.componentUpdateFn [as fn] (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:7162:26)
+    at ReactiveEffect.run (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:423:19)
+    at instance.update (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:7212:52)
+2025-05-07T10:37:23.383Z [ERROR]: TypeError: editModeStore.isCircleSelectedMode is not a function
+    at ReactiveEffect.fn (http://localhost:3000/src/components/CircleDrawer.vue?t=1746614241565:23:67)
+    at ReactiveEffect.run (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:423:19)
+    at get value (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:1383:35)
+    at unref (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:1263:29)
+    at Object.get (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:1269:35)
+    at Proxy._sfc_render (http://localhost:3000/src/components/CircleDrawer.vue?t=1746614241565:134:21)
+    at renderComponentRoot (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:2224:17)
+    at ReactiveEffect.componentUpdateFn [as fn] (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:7099:46)
+    at ReactiveEffect.run (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:423:19)
+    at instance.update (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:7212:52)
+2025-05-07T10:37:29.836Z [ERROR]: TypeError: editModeStore.isCircleSelectedMode is not a function
+    at ReactiveEffect.fn (http://localhost:3000/src/components/CircleDrawer.vue?t=1746614245003:23:67)
+    at ReactiveEffect.run (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:423:19)
+    at get value (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:1383:35)
+    at unref (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:1263:29)
+    at Object.get (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:1269:35)
+    at Proxy._sfc_render (http://localhost:3000/src/components/CircleDrawer.vue?t=1746614245003:134:21)
+    at renderComponentRoot (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:2224:17)
+    at ReactiveEffect.componentUpdateFn [as fn] (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:7099:46)
+    at ReactiveEffect.run (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:423:19)
+    at instance.update (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:7212:52)
+2025-05-07T10:37:31.400Z [ERROR]: TypeError: editModeStore.isCircleSelectedMode is not a function
+    at ReactiveEffect.fn (http://localhost:3000/src/components/CircleDrawer.vue?t=1746614249357:23:67)
+    at ReactiveEffect.run (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:423:19)
+    at get value (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:1383:35)
+    at unref (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:1263:29)
+    at Object.get (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:1269:35)
+    at Proxy._sfc_render (http://localhost:3000/src/components/CircleDrawer.vue?t=1746614249357:134:21)
+    at renderComponentRoot (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:2224:17)
+    at ReactiveEffect.componentUpdateFn [as fn] (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:7099:46)
+    at ReactiveEffect.run (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:423:19)
+    at instance.update (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:7212:52)
+2025-05-07T10:37:31.723Z [ERROR]: TypeError: editModeStore.isCircleSelectedMode is not a function
+    at ReactiveEffect.fn (http://localhost:3000/src/components/CircleDrawer.vue?t=1746614247802:23:67)
+    at ReactiveEffect.run (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:423:19)
+    at get value (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:1383:35)
+    at unref (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:1263:29)
+    at Object.get (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:1269:35)
+    at Proxy._sfc_render (http://localhost:3000/src/components/CircleDrawer.vue?t=1746614247802:134:21)
+    at renderComponentRoot (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:2224:17)
+    at ReactiveEffect.componentUpdateFn [as fn] (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:7099:46)
+    at ReactiveEffect.run (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:423:19)
+    at instance.update (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:7212:52)
+2025-05-07T10:37:33.936Z [ERROR]: TypeError: editModeStore.isCircleSelectedMode is not a function
+    at ReactiveEffect.fn (http://localhost:3000/src/components/CircleDrawer.vue?t=1746614251893:23:67)
+    at ReactiveEffect.run (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:423:19)
+    at get value (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:1383:35)
+    at unref (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:1263:29)
+    at Object.get (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:1269:35)
+    at Proxy._sfc_render (http://localhost:3000/src/components/CircleDrawer.vue?t=1746614251893:134:21)
+    at renderComponentRoot (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:2224:17)
+    at ReactiveEffect.componentUpdateFn [as fn] (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:7099:46)
+    at ReactiveEffect.run (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:423:19)
+    at instance.update (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:7212:52)
+2025-05-07T10:37:39.327Z [ERROR]: TypeError: editModeStore.isCircleSelectedMode is not a function
+    at ReactiveEffect.fn (http://localhost:3000/src/components/CircleDrawer.vue?t=1746614257979:23:67)
+    at ReactiveEffect.run (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:423:19)
+    at get value (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:1383:35)
+    at unref (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:1263:29)
+    at Object.get (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:1269:35)
+    at Proxy._sfc_render (http://localhost:3000/src/components/CircleDrawer.vue?t=1746614257979:134:21)
+    at renderComponentRoot (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:2224:17)
+    at ReactiveEffect.componentUpdateFn [as fn] (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:7099:46)
+    at ReactiveEffect.run (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:423:19)
+    at instance.update (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:7212:52)
+2025-05-07T10:37:47.371Z [ERROR]: TypeError: editModeStore.isCircleSelectedMode is not a function
+    at ReactiveEffect.fn (http://localhost:3000/src/components/CircleDrawer.vue?t=1746614265724:23:67)
+    at ReactiveEffect.run (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:423:19)
+    at get value (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:1383:35)
+    at unref (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:1263:29)
+    at Object.get (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:1269:35)
+    at Proxy._sfc_render (http://localhost:3000/src/components/CircleDrawer.vue?t=1746614265724:134:21)
+    at renderComponentRoot (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:2224:17)
+    at ReactiveEffect.componentUpdateFn [as fn] (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:7099:46)
+    at ReactiveEffect.run (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:423:19)
+    at instance.update (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:7212:52)
+2025-05-07T10:37:51.841Z [ERROR]: TypeError: editModeStore.isCircleSelectedMode is not a function
+    at ReactiveEffect.fn (http://localhost:3000/src/components/CircleDrawer.vue?t=1746614270374:23:67)
+    at ReactiveEffect.run (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:423:19)
+    at get value (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:1383:35)
+    at unref (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:1263:29)
+    at Object.get (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:1269:35)
+    at Proxy._sfc_render (http://localhost:3000/src/components/CircleDrawer.vue?t=1746614270374:134:21)
+    at renderComponentRoot (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:2224:17)
+    at ReactiveEffect.componentUpdateFn [as fn] (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:7099:46)
+    at ReactiveEffect.run (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:423:19)
+    at instance.update (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:7212:52)
+2025-05-07T10:37:54.166Z [ERROR]: TypeError: editModeStore.isCircleSelectedMode is not a function
+    at ReactiveEffect.fn (http://localhost:3000/src/components/CircleDrawer.vue?t=1746614272128:23:67)
+    at ReactiveEffect.run (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:423:19)
+    at get value (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:1383:35)
+    at unref (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:1263:29)
+    at Object.get (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:1269:35)
+    at Proxy._sfc_render (http://localhost:3000/src/components/CircleDrawer.vue?t=1746614272128:134:21)
+    at renderComponentRoot (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:2224:17)
+    at ReactiveEffect.componentUpdateFn [as fn] (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:7099:46)
+    at ReactiveEffect.run (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:423:19)
+    at instance.update (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:7212:52)
+2025-05-07T10:37:56.093Z [ERROR]: TypeError: editModeStore.isCircleSelectedMode is not a function
+    at ReactiveEffect.fn (http://localhost:3000/src/components/CircleDrawer.vue?t=1746614274026:23:67)
+    at ReactiveEffect.run (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:423:19)
+    at get value (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:1383:35)
+    at unref (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:1263:29)
+    at Object.get (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:1269:35)
+    at Proxy._sfc_render (http://localhost:3000/src/components/CircleDrawer.vue?t=1746614274026:134:21)
+    at renderComponentRoot (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:2224:17)
+    at ReactiveEffect.componentUpdateFn [as fn] (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:7099:46)
+    at ReactiveEffect.run (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:423:19)
+    at instance.update (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:7212:52)
+2025-05-07T10:39:36.991Z [ERROR]: TypeError: editModeStore.isCircleSelectedMode is not a function
+    at ReactiveEffect.fn (http://localhost:3000/src/components/CircleDrawer.vue?t=1746614274026:23:67)
+    at ReactiveEffect.run (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:423:19)
+    at get value (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:1383:35)
+    at unref (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:1263:29)
+    at Object.get (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:1269:35)
+    at Proxy._sfc_render (http://localhost:3000/src/components/CircleDrawer.vue?t=1746614274026:134:21)
+    at renderComponentRoot (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:2224:17)
+    at ReactiveEffect.componentUpdateFn [as fn] (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:7162:26)
+    at ReactiveEffect.run (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:423:19)
+    at instance.update (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:7212:52)
+2025-05-07T10:41:48.959Z [ERROR]: TypeError: editModeStore.isCircleSelectedMode is not a function
+    at ReactiveEffect.fn (http://localhost:3000/src/components/CircleDrawer.vue?t=1746614501215:23:67)
+    at ReactiveEffect.run (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:423:19)
+    at get value (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:1383:35)
+    at unref (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:1263:29)
+    at Object.get (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:1269:35)
+    at Proxy._sfc_render (http://localhost:3000/src/components/CircleDrawer.vue?t=1746614501215:134:21)
+    at renderComponentRoot (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:2224:17)
+    at ReactiveEffect.componentUpdateFn [as fn] (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:7099:46)
+    at ReactiveEffect.run (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:423:19)
+    at instance.update (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:7212:52)
+2025-05-07T10:41:56.765Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-07T10:47:13.945Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-07T10:48:46.835Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-07T10:57:27.678Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-07T11:07:19.708Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-07T11:09:18.967Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-07T12:42:35.171Z [ERROR]: ReferenceError: curveAttributes is not defined
+    at ReactiveEffect.fn (http://localhost:3000/src/components/CircleDrawer.vue?t=1746621755068:23:7)
+    at ReactiveEffect.run (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:423:19)
+    at get value (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:1383:35)
+    at unref (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:1263:29)
+    at Object.get (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:1269:35)
+    at Proxy._sfc_render (http://localhost:3000/src/components/CircleDrawer.vue?t=1746621755068:158:24)
+    at renderComponentRoot (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:2224:17)
+    at ReactiveEffect.componentUpdateFn [as fn] (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:7099:46)
+    at ReactiveEffect.run (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:423:19)
+    at instance.update (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:7212:52)
+2025-05-07T12:42:55.996Z [ERROR]: ReferenceError: cellStore is not defined
+    at ReactiveEffect.fn (http://localhost:3000/src/components/CircleDrawer.vue?t=1746621775642:23:43)
+    at ReactiveEffect.run (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:423:19)
+    at get value (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:1383:35)
+    at unref (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:1263:29)
+    at Object.get (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:1269:35)
+    at Proxy._sfc_render (http://localhost:3000/src/components/CircleDrawer.vue?t=1746621775642:158:24)
+    at renderComponentRoot (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:2224:17)
+    at ReactiveEffect.componentUpdateFn [as fn] (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:7099:46)
+    at ReactiveEffect.run (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:423:19)
+    at instance.update (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:7212:52)
+2025-05-07T12:43:04.023Z [ERROR]: ReferenceError: cellStore is not defined
+    at ReactiveEffect.fn (http://localhost:3000/src/components/CircleDrawer.vue?t=1746621783976:23:42)
+    at ReactiveEffect.run (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:423:19)
+    at get value (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:1383:35)
+    at unref (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:1263:29)
+    at Object.get (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:1269:35)
+    at Proxy._sfc_render (http://localhost:3000/src/components/CircleDrawer.vue?t=1746621783976:158:24)
+    at renderComponentRoot (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:2224:17)
+    at ReactiveEffect.componentUpdateFn [as fn] (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:7099:46)
+    at ReactiveEffect.run (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:423:19)
+    at instance.update (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=90e3c4b0:7212:52)
+2025-05-07T12:49:08.731Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-07T12:49:58.736Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-07T12:50:19.690Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-07T12:50:38.086Z [ERROR]: Cannot set headers after they are sent to the clientundefined
