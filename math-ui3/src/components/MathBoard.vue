@@ -111,6 +111,7 @@ watchHelper.watchKeyEvent(
     "ANNOTATION_SELECTED",
     "TEXT_SELECTED",
     "EXPONENT_SELECTED",
+    "CIRCLE_SELECTED",
   ],
   "EV_KEYUP",
   keyHelper.keyUpHandler,
@@ -126,9 +127,13 @@ watchHelper.watchCustomEvent(["SYMBOL", "CELL_SELECTED"], "EV_COPY", () => {
   eventHelper.copy();
 });
 
-watchHelper.watchCustomEvent(["SYMBOL", "CELL_SELECTED"], "EV_PASTE", (e: ClipboardEvent) => {
-  eventHelper.paste(e);
-});
+watchHelper.watchCustomEvent(
+  ["SYMBOL", "CELL_SELECTED"],
+  "EV_PASTE",
+  (e: ClipboardEvent) => {
+    eventHelper.paste(e);
+  },
+);
 
 // wait for child(e.g lesson) loaded signal
 watchHelper.watchLoadedEvent(props, load);

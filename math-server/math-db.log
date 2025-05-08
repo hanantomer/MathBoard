@@ -10835,3 +10835,1370 @@ notNull Violation: LessonSymbol.row cannot be null
 2025-05-07T12:50:41.640Z [INFO]: Found 0 notations
 2025-05-07T12:56:58.872Z [INFO]: Creating notation of type SYMBOL for LESSON
 2025-05-07T12:56:59.074Z [INFO]: Created notation with ID: 1
+2025-05-08T07:54:31.312Z [INFO]: Created new lesson with ID: 1
+2025-05-08T07:54:32.483Z [INFO]: Getting notations for LESSON SYMBOL with parent UUID: 7dd62b37-ddd8-489e-a10d-dcbf92bd0ce6
+2025-05-08T07:54:32.499Z [INFO]: Found 0 notations
+2025-05-08T07:54:32.538Z [INFO]: Getting notations for LESSON SIGN with parent UUID: 7dd62b37-ddd8-489e-a10d-dcbf92bd0ce6
+2025-05-08T07:54:32.560Z [INFO]: Found 0 notations
+2025-05-08T07:54:32.872Z [INFO]: Getting notations for LESSON EXPONENT with parent UUID: 7dd62b37-ddd8-489e-a10d-dcbf92bd0ce6
+2025-05-08T07:54:32.883Z [INFO]: Found 0 notations
+2025-05-08T07:54:33.199Z [INFO]: Getting notations for LESSON HORIZONTALLINE with parent UUID: 7dd62b37-ddd8-489e-a10d-dcbf92bd0ce6
+2025-05-08T07:54:33.209Z [INFO]: Found 0 notations
+2025-05-08T07:54:33.462Z [INFO]: Getting notations for LESSON VERTICALLINE with parent UUID: 7dd62b37-ddd8-489e-a10d-dcbf92bd0ce6
+2025-05-08T07:54:33.471Z [INFO]: Found 0 notations
+2025-05-08T07:54:33.525Z [INFO]: Getting notations for LESSON SLOPELINE with parent UUID: 7dd62b37-ddd8-489e-a10d-dcbf92bd0ce6
+2025-05-08T07:54:33.533Z [INFO]: Found 0 notations
+2025-05-08T07:54:33.790Z [INFO]: Getting notations for LESSON CURVE with parent UUID: 7dd62b37-ddd8-489e-a10d-dcbf92bd0ce6
+2025-05-08T07:54:33.799Z [INFO]: Found 0 notations
+2025-05-08T07:54:33.853Z [INFO]: Getting notations for LESSON CIRCLE with parent UUID: 7dd62b37-ddd8-489e-a10d-dcbf92bd0ce6
+2025-05-08T07:54:33.861Z [INFO]: Found 0 notations
+2025-05-08T07:54:34.116Z [INFO]: Getting notations for LESSON SQRT with parent UUID: 7dd62b37-ddd8-489e-a10d-dcbf92bd0ce6
+2025-05-08T07:54:34.124Z [INFO]: Found 0 notations
+2025-05-08T07:54:34.180Z [INFO]: Getting notations for LESSON SQRTSYMBOL with parent UUID: 7dd62b37-ddd8-489e-a10d-dcbf92bd0ce6
+2025-05-08T07:54:34.182Z [ERROR]: Model LessonSqrtsymbol not found
+2025-05-08T07:54:34.444Z [INFO]: Getting notations for LESSON TEXT with parent UUID: 7dd62b37-ddd8-489e-a10d-dcbf92bd0ce6
+2025-05-08T07:54:34.451Z [INFO]: Found 0 notations
+2025-05-08T07:54:34.489Z [INFO]: Getting notations for LESSON ANNOTATION with parent UUID: 7dd62b37-ddd8-489e-a10d-dcbf92bd0ce6
+2025-05-08T07:54:34.497Z [INFO]: Found 0 notations
+2025-05-08T07:54:34.769Z [INFO]: Getting notations for LESSON IMAGE with parent UUID: 7dd62b37-ddd8-489e-a10d-dcbf92bd0ce6
+2025-05-08T07:54:34.781Z [INFO]: Found 0 notations
+2025-05-08T07:54:37.333Z [INFO]: Creating notation of type SYMBOL for LESSON
+2025-05-08T07:54:37.345Z [INFO]: Created notation with ID: 1
+2025-05-08T07:54:48.204Z [INFO]: Creating notation of type CIRCLE for LESSON
+2025-05-08T07:54:48.356Z [INFO]: Created notation with ID: 1
+2025-05-08T08:02:04.301Z [INFO]: Creating notation of type CIRCLE for LESSON
+2025-05-08T08:02:04.391Z [INFO]: Created notation with ID: 2
+2025-05-08T08:02:32.757Z [INFO]: Getting notations for LESSON SYMBOL with parent UUID: 7dd62b37-ddd8-489e-a10d-dcbf92bd0ce6
+2025-05-08T08:02:32.778Z [INFO]: Found 1 notations
+2025-05-08T08:02:33.095Z [INFO]: Getting notations for LESSON SIGN with parent UUID: 7dd62b37-ddd8-489e-a10d-dcbf92bd0ce6
+2025-05-08T08:02:33.102Z [INFO]: Found 0 notations
+2025-05-08T08:02:33.418Z [INFO]: Getting notations for LESSON EXPONENT with parent UUID: 7dd62b37-ddd8-489e-a10d-dcbf92bd0ce6
+2025-05-08T08:02:33.425Z [INFO]: Found 0 notations
+2025-05-08T08:02:33.679Z [INFO]: Getting notations for LESSON HORIZONTALLINE with parent UUID: 7dd62b37-ddd8-489e-a10d-dcbf92bd0ce6
+2025-05-08T08:02:33.686Z [INFO]: Found 0 notations
+2025-05-08T08:02:33.742Z [INFO]: Getting notations for LESSON VERTICALLINE with parent UUID: 7dd62b37-ddd8-489e-a10d-dcbf92bd0ce6
+2025-05-08T08:02:33.749Z [INFO]: Found 0 notations
+2025-05-08T08:02:33.996Z [INFO]: Getting notations for LESSON SLOPELINE with parent UUID: 7dd62b37-ddd8-489e-a10d-dcbf92bd0ce6
+2025-05-08T08:02:34.003Z [INFO]: Found 0 notations
+2025-05-08T08:02:34.060Z [INFO]: Getting notations for LESSON CURVE with parent UUID: 7dd62b37-ddd8-489e-a10d-dcbf92bd0ce6
+2025-05-08T08:02:34.066Z [INFO]: Found 0 notations
+2025-05-08T08:02:34.325Z [INFO]: Getting notations for LESSON CIRCLE with parent UUID: 7dd62b37-ddd8-489e-a10d-dcbf92bd0ce6
+2025-05-08T08:02:34.334Z [INFO]: Found 2 notations
+2025-05-08T08:02:34.387Z [INFO]: Getting notations for LESSON SQRT with parent UUID: 7dd62b37-ddd8-489e-a10d-dcbf92bd0ce6
+2025-05-08T08:02:34.394Z [INFO]: Found 0 notations
+2025-05-08T08:02:34.644Z [INFO]: Getting notations for LESSON SQRTSYMBOL with parent UUID: 7dd62b37-ddd8-489e-a10d-dcbf92bd0ce6
+2025-05-08T08:02:34.645Z [ERROR]: Model LessonSqrtsymbol not found
+2025-05-08T08:02:34.705Z [INFO]: Getting notations for LESSON TEXT with parent UUID: 7dd62b37-ddd8-489e-a10d-dcbf92bd0ce6
+2025-05-08T08:02:34.712Z [INFO]: Found 0 notations
+2025-05-08T08:02:34.964Z [INFO]: Getting notations for LESSON ANNOTATION with parent UUID: 7dd62b37-ddd8-489e-a10d-dcbf92bd0ce6
+2025-05-08T08:02:34.972Z [INFO]: Found 0 notations
+2025-05-08T08:02:35.025Z [INFO]: Getting notations for LESSON IMAGE with parent UUID: 7dd62b37-ddd8-489e-a10d-dcbf92bd0ce6
+2025-05-08T08:02:35.032Z [INFO]: Found 0 notations
+2025-05-08T08:06:14.550Z [INFO]: Creating notation of type CIRCLE for LESSON
+2025-05-08T08:06:14.651Z [INFO]: Created notation with ID: 3
+2025-05-08T09:41:30.060Z [INFO]: Getting notations for LESSON SYMBOL with parent UUID: 7dd62b37-ddd8-489e-a10d-dcbf92bd0ce6
+2025-05-08T09:41:30.088Z [INFO]: Found 1 notations
+2025-05-08T09:41:30.397Z [INFO]: Getting notations for LESSON SIGN with parent UUID: 7dd62b37-ddd8-489e-a10d-dcbf92bd0ce6
+2025-05-08T09:41:30.407Z [INFO]: Found 0 notations
+2025-05-08T09:41:30.723Z [INFO]: Getting notations for LESSON EXPONENT with parent UUID: 7dd62b37-ddd8-489e-a10d-dcbf92bd0ce6
+2025-05-08T09:41:30.731Z [INFO]: Found 0 notations
+2025-05-08T09:41:30.988Z [INFO]: Getting notations for LESSON HORIZONTALLINE with parent UUID: 7dd62b37-ddd8-489e-a10d-dcbf92bd0ce6
+2025-05-08T09:41:30.996Z [INFO]: Found 0 notations
+2025-05-08T09:41:31.052Z [INFO]: Getting notations for LESSON VERTICALLINE with parent UUID: 7dd62b37-ddd8-489e-a10d-dcbf92bd0ce6
+2025-05-08T09:41:31.059Z [INFO]: Found 0 notations
+2025-05-08T09:41:31.314Z [INFO]: Getting notations for LESSON SLOPELINE with parent UUID: 7dd62b37-ddd8-489e-a10d-dcbf92bd0ce6
+2025-05-08T09:41:31.322Z [INFO]: Found 0 notations
+2025-05-08T09:41:31.375Z [INFO]: Getting notations for LESSON CURVE with parent UUID: 7dd62b37-ddd8-489e-a10d-dcbf92bd0ce6
+2025-05-08T09:41:31.382Z [INFO]: Found 0 notations
+2025-05-08T09:41:31.641Z [INFO]: Getting notations for LESSON CIRCLE with parent UUID: 7dd62b37-ddd8-489e-a10d-dcbf92bd0ce6
+2025-05-08T09:41:31.651Z [INFO]: Found 3 notations
+2025-05-08T09:41:31.704Z [INFO]: Getting notations for LESSON SQRT with parent UUID: 7dd62b37-ddd8-489e-a10d-dcbf92bd0ce6
+2025-05-08T09:41:31.711Z [INFO]: Found 0 notations
+2025-05-08T09:41:31.970Z [INFO]: Getting notations for LESSON SQRTSYMBOL with parent UUID: 7dd62b37-ddd8-489e-a10d-dcbf92bd0ce6
+2025-05-08T09:41:31.971Z [ERROR]: Model LessonSqrtsymbol not found
+2025-05-08T09:41:32.030Z [INFO]: Getting notations for LESSON TEXT with parent UUID: 7dd62b37-ddd8-489e-a10d-dcbf92bd0ce6
+2025-05-08T09:41:32.038Z [INFO]: Found 0 notations
+2025-05-08T09:41:32.293Z [INFO]: Getting notations for LESSON ANNOTATION with parent UUID: 7dd62b37-ddd8-489e-a10d-dcbf92bd0ce6
+2025-05-08T09:41:32.300Z [INFO]: Found 0 notations
+2025-05-08T09:41:32.355Z [INFO]: Getting notations for LESSON IMAGE with parent UUID: 7dd62b37-ddd8-489e-a10d-dcbf92bd0ce6
+2025-05-08T09:41:32.361Z [INFO]: Found 0 notations
+2025-05-08T09:42:42.268Z [INFO]: Getting notations for LESSON SYMBOL with parent UUID: 7dd62b37-ddd8-489e-a10d-dcbf92bd0ce6
+2025-05-08T09:42:42.290Z [INFO]: Found 1 notations
+2025-05-08T09:42:42.606Z [INFO]: Getting notations for LESSON SIGN with parent UUID: 7dd62b37-ddd8-489e-a10d-dcbf92bd0ce6
+2025-05-08T09:42:42.616Z [INFO]: Found 0 notations
+2025-05-08T09:42:42.924Z [INFO]: Getting notations for LESSON EXPONENT with parent UUID: 7dd62b37-ddd8-489e-a10d-dcbf92bd0ce6
+2025-05-08T09:42:42.933Z [INFO]: Found 0 notations
+2025-05-08T09:42:43.187Z [INFO]: Getting notations for LESSON HORIZONTALLINE with parent UUID: 7dd62b37-ddd8-489e-a10d-dcbf92bd0ce6
+2025-05-08T09:42:43.197Z [INFO]: Found 0 notations
+2025-05-08T09:42:43.247Z [INFO]: Getting notations for LESSON VERTICALLINE with parent UUID: 7dd62b37-ddd8-489e-a10d-dcbf92bd0ce6
+2025-05-08T09:42:43.254Z [INFO]: Found 0 notations
+2025-05-08T09:42:43.513Z [INFO]: Getting notations for LESSON SLOPELINE with parent UUID: 7dd62b37-ddd8-489e-a10d-dcbf92bd0ce6
+2025-05-08T09:42:43.520Z [INFO]: Found 0 notations
+2025-05-08T09:42:43.574Z [INFO]: Getting notations for LESSON CURVE with parent UUID: 7dd62b37-ddd8-489e-a10d-dcbf92bd0ce6
+2025-05-08T09:42:43.582Z [INFO]: Found 0 notations
+2025-05-08T09:42:43.836Z [INFO]: Getting notations for LESSON CIRCLE with parent UUID: 7dd62b37-ddd8-489e-a10d-dcbf92bd0ce6
+2025-05-08T09:42:43.848Z [INFO]: Found 3 notations
+2025-05-08T09:42:43.898Z [INFO]: Getting notations for LESSON SQRT with parent UUID: 7dd62b37-ddd8-489e-a10d-dcbf92bd0ce6
+2025-05-08T09:42:43.905Z [INFO]: Found 0 notations
+2025-05-08T09:42:44.165Z [INFO]: Getting notations for LESSON SQRTSYMBOL with parent UUID: 7dd62b37-ddd8-489e-a10d-dcbf92bd0ce6
+2025-05-08T09:42:44.166Z [ERROR]: Model LessonSqrtsymbol not found
+2025-05-08T09:42:44.227Z [INFO]: Getting notations for LESSON TEXT with parent UUID: 7dd62b37-ddd8-489e-a10d-dcbf92bd0ce6
+2025-05-08T09:42:44.236Z [INFO]: Found 0 notations
+2025-05-08T09:42:44.491Z [INFO]: Getting notations for LESSON ANNOTATION with parent UUID: 7dd62b37-ddd8-489e-a10d-dcbf92bd0ce6
+2025-05-08T09:42:44.501Z [INFO]: Found 0 notations
+2025-05-08T09:42:44.553Z [INFO]: Getting notations for LESSON IMAGE with parent UUID: 7dd62b37-ddd8-489e-a10d-dcbf92bd0ce6
+2025-05-08T09:42:44.564Z [INFO]: Found 0 notations
+2025-05-08T09:43:31.079Z [INFO]: Created new lesson with ID: 1
+2025-05-08T09:43:31.279Z [INFO]: Getting notations for LESSON SYMBOL with parent UUID: f7b10bed-5eed-4afb-b832-51bf6501ee0c
+2025-05-08T09:43:31.293Z [INFO]: Found 0 notations
+2025-05-08T09:43:31.300Z [INFO]: Getting notations for LESSON SIGN with parent UUID: f7b10bed-5eed-4afb-b832-51bf6501ee0c
+2025-05-08T09:43:31.311Z [INFO]: Found 0 notations
+2025-05-08T09:43:31.631Z [INFO]: Getting notations for LESSON EXPONENT with parent UUID: f7b10bed-5eed-4afb-b832-51bf6501ee0c
+2025-05-08T09:43:31.641Z [INFO]: Found 0 notations
+2025-05-08T09:43:31.875Z [INFO]: Getting notations for LESSON HORIZONTALLINE with parent UUID: f7b10bed-5eed-4afb-b832-51bf6501ee0c
+2025-05-08T09:43:31.883Z [INFO]: Found 0 notations
+2025-05-08T09:43:31.950Z [INFO]: Getting notations for LESSON VERTICALLINE with parent UUID: f7b10bed-5eed-4afb-b832-51bf6501ee0c
+2025-05-08T09:43:31.959Z [INFO]: Found 0 notations
+2025-05-08T09:43:32.197Z [INFO]: Getting notations for LESSON SLOPELINE with parent UUID: f7b10bed-5eed-4afb-b832-51bf6501ee0c
+2025-05-08T09:43:32.205Z [INFO]: Found 0 notations
+2025-05-08T09:43:32.274Z [INFO]: Getting notations for LESSON CURVE with parent UUID: f7b10bed-5eed-4afb-b832-51bf6501ee0c
+2025-05-08T09:43:32.281Z [INFO]: Found 0 notations
+2025-05-08T09:43:32.519Z [INFO]: Getting notations for LESSON CIRCLE with parent UUID: f7b10bed-5eed-4afb-b832-51bf6501ee0c
+2025-05-08T09:43:32.527Z [INFO]: Found 0 notations
+2025-05-08T09:43:32.596Z [INFO]: Getting notations for LESSON SQRT with parent UUID: f7b10bed-5eed-4afb-b832-51bf6501ee0c
+2025-05-08T09:43:32.604Z [INFO]: Found 0 notations
+2025-05-08T09:43:32.846Z [INFO]: Getting notations for LESSON SQRTSYMBOL with parent UUID: f7b10bed-5eed-4afb-b832-51bf6501ee0c
+2025-05-08T09:43:32.847Z [ERROR]: Model LessonSqrtsymbol not found
+2025-05-08T09:43:32.922Z [INFO]: Getting notations for LESSON TEXT with parent UUID: f7b10bed-5eed-4afb-b832-51bf6501ee0c
+2025-05-08T09:43:32.929Z [INFO]: Found 0 notations
+2025-05-08T09:43:33.169Z [INFO]: Getting notations for LESSON ANNOTATION with parent UUID: f7b10bed-5eed-4afb-b832-51bf6501ee0c
+2025-05-08T09:43:33.176Z [INFO]: Found 0 notations
+2025-05-08T09:43:33.247Z [INFO]: Getting notations for LESSON IMAGE with parent UUID: f7b10bed-5eed-4afb-b832-51bf6501ee0c
+2025-05-08T09:43:33.254Z [INFO]: Found 0 notations
+2025-05-08T09:43:49.271Z [INFO]: Creating notation of type CIRCLE for LESSON
+2025-05-08T09:43:49.383Z [INFO]: Created notation with ID: 1
+2025-05-08T09:45:18.666Z [INFO]: Getting notations for LESSON SYMBOL with parent UUID: f7b10bed-5eed-4afb-b832-51bf6501ee0c
+2025-05-08T09:45:18.684Z [INFO]: Found 0 notations
+2025-05-08T09:45:18.702Z [INFO]: Getting notations for LESSON SIGN with parent UUID: f7b10bed-5eed-4afb-b832-51bf6501ee0c
+2025-05-08T09:45:18.722Z [INFO]: Found 0 notations
+2025-05-08T09:45:19.046Z [INFO]: Getting notations for LESSON EXPONENT with parent UUID: f7b10bed-5eed-4afb-b832-51bf6501ee0c
+2025-05-08T09:45:19.063Z [INFO]: Found 0 notations
+2025-05-08T09:45:19.401Z [INFO]: Getting notations for LESSON HORIZONTALLINE with parent UUID: f7b10bed-5eed-4afb-b832-51bf6501ee0c
+2025-05-08T09:45:19.408Z [INFO]: Found 0 notations
+2025-05-08T09:45:19.652Z [INFO]: Getting notations for LESSON VERTICALLINE with parent UUID: f7b10bed-5eed-4afb-b832-51bf6501ee0c
+2025-05-08T09:45:19.660Z [INFO]: Found 0 notations
+2025-05-08T09:45:19.729Z [INFO]: Getting notations for LESSON SLOPELINE with parent UUID: f7b10bed-5eed-4afb-b832-51bf6501ee0c
+2025-05-08T09:45:19.736Z [INFO]: Found 0 notations
+2025-05-08T09:45:19.981Z [INFO]: Getting notations for LESSON CURVE with parent UUID: f7b10bed-5eed-4afb-b832-51bf6501ee0c
+2025-05-08T09:45:19.987Z [INFO]: Found 0 notations
+2025-05-08T09:45:20.058Z [INFO]: Getting notations for LESSON CIRCLE with parent UUID: f7b10bed-5eed-4afb-b832-51bf6501ee0c
+2025-05-08T09:45:20.068Z [INFO]: Found 1 notations
+2025-05-08T09:45:20.304Z [INFO]: Getting notations for LESSON SQRT with parent UUID: f7b10bed-5eed-4afb-b832-51bf6501ee0c
+2025-05-08T09:45:20.315Z [INFO]: Found 0 notations
+2025-05-08T09:45:20.380Z [INFO]: Getting notations for LESSON SQRTSYMBOL with parent UUID: f7b10bed-5eed-4afb-b832-51bf6501ee0c
+2025-05-08T09:45:20.381Z [ERROR]: Model LessonSqrtsymbol not found
+2025-05-08T09:45:20.627Z [INFO]: Getting notations for LESSON TEXT with parent UUID: f7b10bed-5eed-4afb-b832-51bf6501ee0c
+2025-05-08T09:45:20.633Z [INFO]: Found 0 notations
+2025-05-08T09:45:20.691Z [INFO]: Getting notations for LESSON ANNOTATION with parent UUID: f7b10bed-5eed-4afb-b832-51bf6501ee0c
+2025-05-08T09:45:20.698Z [INFO]: Found 0 notations
+2025-05-08T09:45:20.951Z [INFO]: Getting notations for LESSON IMAGE with parent UUID: f7b10bed-5eed-4afb-b832-51bf6501ee0c
+2025-05-08T09:45:20.958Z [INFO]: Found 0 notations
+2025-05-08T09:45:51.696Z [INFO]: Getting notations for LESSON SYMBOL with parent UUID: f7b10bed-5eed-4afb-b832-51bf6501ee0c
+2025-05-08T09:45:51.709Z [INFO]: Found 0 notations
+2025-05-08T09:45:52.035Z [INFO]: Getting notations for LESSON SIGN with parent UUID: f7b10bed-5eed-4afb-b832-51bf6501ee0c
+2025-05-08T09:45:52.048Z [INFO]: Found 0 notations
+2025-05-08T09:45:52.371Z [INFO]: Getting notations for LESSON EXPONENT with parent UUID: f7b10bed-5eed-4afb-b832-51bf6501ee0c
+2025-05-08T09:45:52.379Z [INFO]: Found 0 notations
+2025-05-08T09:45:52.620Z [INFO]: Getting notations for LESSON HORIZONTALLINE with parent UUID: f7b10bed-5eed-4afb-b832-51bf6501ee0c
+2025-05-08T09:45:52.627Z [INFO]: Found 0 notations
+2025-05-08T09:45:52.699Z [INFO]: Getting notations for LESSON VERTICALLINE with parent UUID: f7b10bed-5eed-4afb-b832-51bf6501ee0c
+2025-05-08T09:45:52.706Z [INFO]: Found 0 notations
+2025-05-08T09:45:52.948Z [INFO]: Getting notations for LESSON SLOPELINE with parent UUID: f7b10bed-5eed-4afb-b832-51bf6501ee0c
+2025-05-08T09:45:52.956Z [INFO]: Found 0 notations
+2025-05-08T09:45:53.028Z [INFO]: Getting notations for LESSON CURVE with parent UUID: f7b10bed-5eed-4afb-b832-51bf6501ee0c
+2025-05-08T09:45:53.034Z [INFO]: Found 0 notations
+2025-05-08T09:45:53.276Z [INFO]: Getting notations for LESSON CIRCLE with parent UUID: f7b10bed-5eed-4afb-b832-51bf6501ee0c
+2025-05-08T09:45:53.284Z [INFO]: Found 1 notations
+2025-05-08T09:45:53.353Z [INFO]: Getting notations for LESSON SQRT with parent UUID: f7b10bed-5eed-4afb-b832-51bf6501ee0c
+2025-05-08T09:45:53.361Z [INFO]: Found 0 notations
+2025-05-08T09:45:53.604Z [INFO]: Getting notations for LESSON SQRTSYMBOL with parent UUID: f7b10bed-5eed-4afb-b832-51bf6501ee0c
+2025-05-08T09:45:53.606Z [ERROR]: Model LessonSqrtsymbol not found
+2025-05-08T09:45:53.682Z [INFO]: Getting notations for LESSON TEXT with parent UUID: f7b10bed-5eed-4afb-b832-51bf6501ee0c
+2025-05-08T09:45:53.690Z [INFO]: Found 0 notations
+2025-05-08T09:45:53.915Z [INFO]: Getting notations for LESSON ANNOTATION with parent UUID: f7b10bed-5eed-4afb-b832-51bf6501ee0c
+2025-05-08T09:45:53.923Z [INFO]: Found 0 notations
+2025-05-08T09:45:54.026Z [INFO]: Getting notations for LESSON IMAGE with parent UUID: f7b10bed-5eed-4afb-b832-51bf6501ee0c
+2025-05-08T09:45:54.032Z [INFO]: Found 0 notations
+2025-05-08T09:47:18.585Z [INFO]: Getting notations for LESSON SYMBOL with parent UUID: f7b10bed-5eed-4afb-b832-51bf6501ee0c
+2025-05-08T09:47:18.598Z [INFO]: Found 0 notations
+2025-05-08T09:47:18.623Z [INFO]: Getting notations for LESSON SIGN with parent UUID: f7b10bed-5eed-4afb-b832-51bf6501ee0c
+2025-05-08T09:47:18.638Z [INFO]: Found 0 notations
+2025-05-08T09:47:18.954Z [INFO]: Getting notations for LESSON EXPONENT with parent UUID: f7b10bed-5eed-4afb-b832-51bf6501ee0c
+2025-05-08T09:47:18.965Z [INFO]: Found 0 notations
+2025-05-08T09:47:19.282Z [INFO]: Getting notations for LESSON HORIZONTALLINE with parent UUID: f7b10bed-5eed-4afb-b832-51bf6501ee0c
+2025-05-08T09:47:19.289Z [INFO]: Found 0 notations
+2025-05-08T09:47:19.540Z [INFO]: Getting notations for LESSON VERTICALLINE with parent UUID: f7b10bed-5eed-4afb-b832-51bf6501ee0c
+2025-05-08T09:47:19.547Z [INFO]: Found 0 notations
+2025-05-08T09:47:19.600Z [INFO]: Getting notations for LESSON SLOPELINE with parent UUID: f7b10bed-5eed-4afb-b832-51bf6501ee0c
+2025-05-08T09:47:19.606Z [INFO]: Found 0 notations
+2025-05-08T09:47:19.868Z [INFO]: Getting notations for LESSON CURVE with parent UUID: f7b10bed-5eed-4afb-b832-51bf6501ee0c
+2025-05-08T09:47:19.875Z [INFO]: Found 0 notations
+2025-05-08T09:47:19.929Z [INFO]: Getting notations for LESSON CIRCLE with parent UUID: f7b10bed-5eed-4afb-b832-51bf6501ee0c
+2025-05-08T09:47:19.938Z [INFO]: Found 1 notations
+2025-05-08T09:47:20.186Z [INFO]: Getting notations for LESSON SQRT with parent UUID: f7b10bed-5eed-4afb-b832-51bf6501ee0c
+2025-05-08T09:47:20.193Z [INFO]: Found 0 notations
+2025-05-08T09:47:20.250Z [INFO]: Getting notations for LESSON SQRTSYMBOL with parent UUID: f7b10bed-5eed-4afb-b832-51bf6501ee0c
+2025-05-08T09:47:20.251Z [ERROR]: Model LessonSqrtsymbol not found
+2025-05-08T09:47:20.515Z [INFO]: Getting notations for LESSON TEXT with parent UUID: f7b10bed-5eed-4afb-b832-51bf6501ee0c
+2025-05-08T09:47:20.522Z [INFO]: Found 0 notations
+2025-05-08T09:47:20.563Z [INFO]: Getting notations for LESSON ANNOTATION with parent UUID: f7b10bed-5eed-4afb-b832-51bf6501ee0c
+2025-05-08T09:47:20.570Z [INFO]: Found 0 notations
+2025-05-08T09:47:20.835Z [INFO]: Getting notations for LESSON IMAGE with parent UUID: f7b10bed-5eed-4afb-b832-51bf6501ee0c
+2025-05-08T09:47:20.844Z [INFO]: Found 0 notations
+2025-05-08T15:00:25.455Z [INFO]: Getting notations for LESSON SYMBOL with parent UUID: f7b10bed-5eed-4afb-b832-51bf6501ee0c
+2025-05-08T15:00:25.485Z [INFO]: Found 0 notations
+2025-05-08T15:00:25.504Z [INFO]: Getting notations for LESSON SIGN with parent UUID: f7b10bed-5eed-4afb-b832-51bf6501ee0c
+2025-05-08T15:00:25.518Z [INFO]: Found 0 notations
+2025-05-08T15:00:25.845Z [INFO]: Getting notations for LESSON EXPONENT with parent UUID: f7b10bed-5eed-4afb-b832-51bf6501ee0c
+2025-05-08T15:00:25.853Z [INFO]: Found 0 notations
+2025-05-08T15:00:26.177Z [INFO]: Getting notations for LESSON HORIZONTALLINE with parent UUID: f7b10bed-5eed-4afb-b832-51bf6501ee0c
+2025-05-08T15:00:26.185Z [INFO]: Found 0 notations
+2025-05-08T15:00:26.442Z [INFO]: Getting notations for LESSON VERTICALLINE with parent UUID: f7b10bed-5eed-4afb-b832-51bf6501ee0c
+2025-05-08T15:00:26.450Z [INFO]: Found 0 notations
+2025-05-08T15:00:26.508Z [INFO]: Getting notations for LESSON SLOPELINE with parent UUID: f7b10bed-5eed-4afb-b832-51bf6501ee0c
+2025-05-08T15:00:26.515Z [INFO]: Found 0 notations
+2025-05-08T15:00:26.762Z [INFO]: Getting notations for LESSON CURVE with parent UUID: f7b10bed-5eed-4afb-b832-51bf6501ee0c
+2025-05-08T15:00:26.769Z [INFO]: Found 0 notations
+2025-05-08T15:00:26.831Z [INFO]: Getting notations for LESSON CIRCLE with parent UUID: f7b10bed-5eed-4afb-b832-51bf6501ee0c
+2025-05-08T15:00:26.846Z [INFO]: Found 1 notations
+2025-05-08T15:00:27.128Z [INFO]: Getting notations for LESSON SQRT with parent UUID: f7b10bed-5eed-4afb-b832-51bf6501ee0c
+2025-05-08T15:00:27.136Z [INFO]: Found 0 notations
+2025-05-08T15:00:27.177Z [INFO]: Getting notations for LESSON SQRTSYMBOL with parent UUID: f7b10bed-5eed-4afb-b832-51bf6501ee0c
+2025-05-08T15:00:27.179Z [ERROR]: Model LessonSqrtsymbol not found
+2025-05-08T15:00:27.456Z [INFO]: Getting notations for LESSON TEXT with parent UUID: f7b10bed-5eed-4afb-b832-51bf6501ee0c
+2025-05-08T15:00:27.463Z [INFO]: Found 0 notations
+2025-05-08T15:00:27.491Z [INFO]: Getting notations for LESSON ANNOTATION with parent UUID: f7b10bed-5eed-4afb-b832-51bf6501ee0c
+2025-05-08T15:00:27.499Z [INFO]: Found 0 notations
+2025-05-08T15:00:27.778Z [INFO]: Getting notations for LESSON IMAGE with parent UUID: f7b10bed-5eed-4afb-b832-51bf6501ee0c
+2025-05-08T15:00:27.789Z [INFO]: Found 0 notations
+2025-05-08T15:00:40.433Z [INFO]: Getting notations for LESSON SYMBOL with parent UUID: f7b10bed-5eed-4afb-b832-51bf6501ee0c
+2025-05-08T15:00:40.441Z [INFO]: Found 0 notations
+2025-05-08T15:00:40.479Z [INFO]: Getting notations for LESSON SIGN with parent UUID: f7b10bed-5eed-4afb-b832-51bf6501ee0c
+2025-05-08T15:00:40.489Z [INFO]: Found 0 notations
+2025-05-08T15:00:40.809Z [INFO]: Getting notations for LESSON EXPONENT with parent UUID: f7b10bed-5eed-4afb-b832-51bf6501ee0c
+2025-05-08T15:00:40.814Z [INFO]: Found 0 notations
+2025-05-08T15:00:41.128Z [INFO]: Getting notations for LESSON HORIZONTALLINE with parent UUID: f7b10bed-5eed-4afb-b832-51bf6501ee0c
+2025-05-08T15:00:41.134Z [INFO]: Found 0 notations
+2025-05-08T15:00:41.390Z [INFO]: Getting notations for LESSON VERTICALLINE with parent UUID: f7b10bed-5eed-4afb-b832-51bf6501ee0c
+2025-05-08T15:00:41.395Z [INFO]: Found 0 notations
+2025-05-08T15:00:41.456Z [INFO]: Getting notations for LESSON SLOPELINE with parent UUID: f7b10bed-5eed-4afb-b832-51bf6501ee0c
+2025-05-08T15:00:41.462Z [INFO]: Found 0 notations
+2025-05-08T15:00:41.704Z [INFO]: Getting notations for LESSON CURVE with parent UUID: f7b10bed-5eed-4afb-b832-51bf6501ee0c
+2025-05-08T15:00:41.710Z [INFO]: Found 0 notations
+2025-05-08T15:00:41.771Z [INFO]: Getting notations for LESSON CIRCLE with parent UUID: f7b10bed-5eed-4afb-b832-51bf6501ee0c
+2025-05-08T15:00:41.777Z [INFO]: Found 0 notations
+2025-05-08T15:00:42.031Z [INFO]: Getting notations for LESSON SQRT with parent UUID: f7b10bed-5eed-4afb-b832-51bf6501ee0c
+2025-05-08T15:00:42.041Z [INFO]: Found 0 notations
+2025-05-08T15:00:42.095Z [INFO]: Getting notations for LESSON SQRTSYMBOL with parent UUID: f7b10bed-5eed-4afb-b832-51bf6501ee0c
+2025-05-08T15:00:42.096Z [ERROR]: Model LessonSqrtsymbol not found
+2025-05-08T15:00:42.365Z [INFO]: Getting notations for LESSON TEXT with parent UUID: f7b10bed-5eed-4afb-b832-51bf6501ee0c
+2025-05-08T15:00:42.374Z [INFO]: Found 0 notations
+2025-05-08T15:00:42.408Z [INFO]: Getting notations for LESSON ANNOTATION with parent UUID: f7b10bed-5eed-4afb-b832-51bf6501ee0c
+2025-05-08T15:00:42.413Z [INFO]: Found 0 notations
+2025-05-08T15:00:42.693Z [INFO]: Getting notations for LESSON IMAGE with parent UUID: f7b10bed-5eed-4afb-b832-51bf6501ee0c
+2025-05-08T15:00:42.698Z [INFO]: Found 0 notations
+2025-05-08T15:01:54.654Z [INFO]: Creating notation of type CIRCLE for LESSON
+2025-05-08T15:01:54.868Z [INFO]: Created notation with ID: 2
+2025-05-08T15:02:20.512Z [INFO]: Getting notations for LESSON SYMBOL with parent UUID: f7b10bed-5eed-4afb-b832-51bf6501ee0c
+2025-05-08T15:02:20.533Z [INFO]: Found 0 notations
+2025-05-08T15:02:20.848Z [INFO]: Getting notations for LESSON SIGN with parent UUID: f7b10bed-5eed-4afb-b832-51bf6501ee0c
+2025-05-08T15:02:20.857Z [INFO]: Found 0 notations
+2025-05-08T15:02:21.177Z [INFO]: Getting notations for LESSON EXPONENT with parent UUID: f7b10bed-5eed-4afb-b832-51bf6501ee0c
+2025-05-08T15:02:21.184Z [INFO]: Found 0 notations
+2025-05-08T15:02:21.443Z [INFO]: Getting notations for LESSON HORIZONTALLINE with parent UUID: f7b10bed-5eed-4afb-b832-51bf6501ee0c
+2025-05-08T15:02:21.449Z [INFO]: Found 0 notations
+2025-05-08T15:02:21.505Z [INFO]: Getting notations for LESSON VERTICALLINE with parent UUID: f7b10bed-5eed-4afb-b832-51bf6501ee0c
+2025-05-08T15:02:21.513Z [INFO]: Found 0 notations
+2025-05-08T15:02:21.771Z [INFO]: Getting notations for LESSON SLOPELINE with parent UUID: f7b10bed-5eed-4afb-b832-51bf6501ee0c
+2025-05-08T15:02:21.779Z [INFO]: Found 0 notations
+2025-05-08T15:02:21.834Z [INFO]: Getting notations for LESSON CURVE with parent UUID: f7b10bed-5eed-4afb-b832-51bf6501ee0c
+2025-05-08T15:02:21.842Z [INFO]: Found 0 notations
+2025-05-08T15:02:22.100Z [INFO]: Getting notations for LESSON CIRCLE with parent UUID: f7b10bed-5eed-4afb-b832-51bf6501ee0c
+2025-05-08T15:02:22.109Z [INFO]: Found 1 notations
+2025-05-08T15:02:22.163Z [INFO]: Getting notations for LESSON SQRT with parent UUID: f7b10bed-5eed-4afb-b832-51bf6501ee0c
+2025-05-08T15:02:22.169Z [INFO]: Found 0 notations
+2025-05-08T15:02:22.426Z [INFO]: Getting notations for LESSON SQRTSYMBOL with parent UUID: f7b10bed-5eed-4afb-b832-51bf6501ee0c
+2025-05-08T15:02:22.427Z [ERROR]: Model LessonSqrtsymbol not found
+2025-05-08T15:02:22.486Z [INFO]: Getting notations for LESSON TEXT with parent UUID: f7b10bed-5eed-4afb-b832-51bf6501ee0c
+2025-05-08T15:02:22.495Z [INFO]: Found 0 notations
+2025-05-08T15:02:22.736Z [INFO]: Getting notations for LESSON ANNOTATION with parent UUID: f7b10bed-5eed-4afb-b832-51bf6501ee0c
+2025-05-08T15:02:22.743Z [INFO]: Found 0 notations
+2025-05-08T15:02:22.814Z [INFO]: Getting notations for LESSON IMAGE with parent UUID: f7b10bed-5eed-4afb-b832-51bf6501ee0c
+2025-05-08T15:02:22.830Z [INFO]: Found 0 notations
+2025-05-08T15:02:48.658Z [INFO]: Getting notations for LESSON SYMBOL with parent UUID: f7b10bed-5eed-4afb-b832-51bf6501ee0c
+2025-05-08T15:02:48.667Z [INFO]: Found 0 notations
+2025-05-08T15:02:48.739Z [INFO]: Getting notations for LESSON SIGN with parent UUID: f7b10bed-5eed-4afb-b832-51bf6501ee0c
+2025-05-08T15:02:48.748Z [INFO]: Found 0 notations
+2025-05-08T15:02:49.053Z [INFO]: Getting notations for LESSON EXPONENT with parent UUID: f7b10bed-5eed-4afb-b832-51bf6501ee0c
+2025-05-08T15:02:49.064Z [INFO]: Found 0 notations
+2025-05-08T15:02:49.073Z [INFO]: Getting notations for LESSON HORIZONTALLINE with parent UUID: f7b10bed-5eed-4afb-b832-51bf6501ee0c
+2025-05-08T15:02:49.082Z [INFO]: Found 0 notations
+2025-05-08T15:02:49.396Z [INFO]: Getting notations for LESSON VERTICALLINE with parent UUID: f7b10bed-5eed-4afb-b832-51bf6501ee0c
+2025-05-08T15:02:49.402Z [INFO]: Found 0 notations
+2025-05-08T15:02:49.666Z [INFO]: Getting notations for LESSON SLOPELINE with parent UUID: f7b10bed-5eed-4afb-b832-51bf6501ee0c
+2025-05-08T15:02:49.674Z [INFO]: Found 0 notations
+2025-05-08T15:02:49.712Z [INFO]: Getting notations for LESSON CURVE with parent UUID: f7b10bed-5eed-4afb-b832-51bf6501ee0c
+2025-05-08T15:02:49.719Z [INFO]: Found 0 notations
+2025-05-08T15:02:49.991Z [INFO]: Getting notations for LESSON CIRCLE with parent UUID: f7b10bed-5eed-4afb-b832-51bf6501ee0c
+2025-05-08T15:02:50.001Z [INFO]: Found 1 notations
+2025-05-08T15:02:50.036Z [INFO]: Getting notations for LESSON SQRT with parent UUID: f7b10bed-5eed-4afb-b832-51bf6501ee0c
+2025-05-08T15:02:50.044Z [INFO]: Found 0 notations
+2025-05-08T15:02:50.318Z [INFO]: Getting notations for LESSON SQRTSYMBOL with parent UUID: f7b10bed-5eed-4afb-b832-51bf6501ee0c
+2025-05-08T15:02:50.320Z [ERROR]: Model LessonSqrtsymbol not found
+2025-05-08T15:02:50.364Z [INFO]: Getting notations for LESSON TEXT with parent UUID: f7b10bed-5eed-4afb-b832-51bf6501ee0c
+2025-05-08T15:02:50.373Z [INFO]: Found 0 notations
+2025-05-08T15:02:50.629Z [INFO]: Getting notations for LESSON ANNOTATION with parent UUID: f7b10bed-5eed-4afb-b832-51bf6501ee0c
+2025-05-08T15:02:50.637Z [INFO]: Found 0 notations
+2025-05-08T15:02:50.691Z [INFO]: Getting notations for LESSON IMAGE with parent UUID: f7b10bed-5eed-4afb-b832-51bf6501ee0c
+2025-05-08T15:02:50.698Z [INFO]: Found 0 notations
+2025-05-08T15:03:01.844Z [INFO]: Getting notations for LESSON SYMBOL with parent UUID: f7b10bed-5eed-4afb-b832-51bf6501ee0c
+2025-05-08T15:03:01.854Z [INFO]: Found 0 notations
+2025-05-08T15:03:02.198Z [INFO]: Getting notations for LESSON SIGN with parent UUID: f7b10bed-5eed-4afb-b832-51bf6501ee0c
+2025-05-08T15:03:02.208Z [INFO]: Found 0 notations
+2025-05-08T15:03:02.523Z [INFO]: Getting notations for LESSON EXPONENT with parent UUID: f7b10bed-5eed-4afb-b832-51bf6501ee0c
+2025-05-08T15:03:02.529Z [INFO]: Found 0 notations
+2025-05-08T15:03:02.789Z [INFO]: Getting notations for LESSON HORIZONTALLINE with parent UUID: f7b10bed-5eed-4afb-b832-51bf6501ee0c
+2025-05-08T15:03:02.795Z [INFO]: Found 0 notations
+2025-05-08T15:03:02.836Z [INFO]: Getting notations for LESSON VERTICALLINE with parent UUID: f7b10bed-5eed-4afb-b832-51bf6501ee0c
+2025-05-08T15:03:02.847Z [INFO]: Found 0 notations
+2025-05-08T15:03:03.115Z [INFO]: Getting notations for LESSON SLOPELINE with parent UUID: f7b10bed-5eed-4afb-b832-51bf6501ee0c
+2025-05-08T15:03:03.122Z [INFO]: Found 0 notations
+2025-05-08T15:03:03.163Z [INFO]: Getting notations for LESSON CURVE with parent UUID: f7b10bed-5eed-4afb-b832-51bf6501ee0c
+2025-05-08T15:03:03.170Z [INFO]: Found 0 notations
+2025-05-08T15:03:03.443Z [INFO]: Getting notations for LESSON CIRCLE with parent UUID: f7b10bed-5eed-4afb-b832-51bf6501ee0c
+2025-05-08T15:03:03.508Z [INFO]: Found 1 notations
+2025-05-08T15:03:03.517Z [INFO]: Getting notations for LESSON SQRT with parent UUID: f7b10bed-5eed-4afb-b832-51bf6501ee0c
+2025-05-08T15:03:03.526Z [INFO]: Found 0 notations
+2025-05-08T15:03:03.847Z [INFO]: Getting notations for LESSON SQRTSYMBOL with parent UUID: f7b10bed-5eed-4afb-b832-51bf6501ee0c
+2025-05-08T15:03:03.849Z [ERROR]: Model LessonSqrtsymbol not found
+2025-05-08T15:03:04.096Z [INFO]: Getting notations for LESSON TEXT with parent UUID: f7b10bed-5eed-4afb-b832-51bf6501ee0c
+2025-05-08T15:03:04.102Z [INFO]: Found 0 notations
+2025-05-08T15:03:04.158Z [INFO]: Getting notations for LESSON ANNOTATION with parent UUID: f7b10bed-5eed-4afb-b832-51bf6501ee0c
+2025-05-08T15:03:04.165Z [INFO]: Found 0 notations
+2025-05-08T15:03:04.421Z [INFO]: Getting notations for LESSON IMAGE with parent UUID: f7b10bed-5eed-4afb-b832-51bf6501ee0c
+2025-05-08T15:03:04.429Z [INFO]: Found 0 notations
+2025-05-08T15:03:22.365Z [INFO]: Creating notation of type SLOPELINE for LESSON
+2025-05-08T15:03:22.569Z [INFO]: Created notation with ID: 1
+2025-05-08T15:03:33.741Z [INFO]: Creating notation of type SLOPELINE for LESSON
+2025-05-08T15:03:33.861Z [INFO]: Created notation with ID: 2
+2025-05-08T15:03:44.981Z [INFO]: Creating notation of type SLOPELINE for LESSON
+2025-05-08T15:03:59.335Z [INFO]: Creating notation of type SLOPELINE for LESSON
+2025-05-08T15:04:13.575Z [INFO]: Creating notation of type SLOPELINE for LESSON
+2025-05-08T15:04:34.709Z [INFO]: Creating notation of type SLOPELINE for LESSON
+2025-05-08T15:07:43.005Z [INFO]: Creating notation of type SLOPELINE for LESSON
+2025-05-08T15:15:55.019Z [INFO]: Getting notations for LESSON SYMBOL with parent UUID: f7b10bed-5eed-4afb-b832-51bf6501ee0c
+2025-05-08T15:15:55.034Z [INFO]: Found 0 notations
+2025-05-08T15:15:55.109Z [INFO]: Getting notations for LESSON SIGN with parent UUID: f7b10bed-5eed-4afb-b832-51bf6501ee0c
+2025-05-08T15:15:55.121Z [INFO]: Found 0 notations
+2025-05-08T15:15:55.422Z [INFO]: Getting notations for LESSON EXPONENT with parent UUID: f7b10bed-5eed-4afb-b832-51bf6501ee0c
+2025-05-08T15:15:55.435Z [INFO]: Found 0 notations
+2025-05-08T15:15:55.441Z [INFO]: Getting notations for LESSON HORIZONTALLINE with parent UUID: f7b10bed-5eed-4afb-b832-51bf6501ee0c
+2025-05-08T15:15:55.451Z [INFO]: Found 0 notations
+2025-05-08T15:15:55.768Z [INFO]: Getting notations for LESSON VERTICALLINE with parent UUID: f7b10bed-5eed-4afb-b832-51bf6501ee0c
+2025-05-08T15:15:55.777Z [INFO]: Found 0 notations
+2025-05-08T15:15:56.031Z [INFO]: Getting notations for LESSON SLOPELINE with parent UUID: f7b10bed-5eed-4afb-b832-51bf6501ee0c
+2025-05-08T15:15:56.041Z [INFO]: Found 2 notations
+2025-05-08T15:15:56.099Z [INFO]: Getting notations for LESSON CURVE with parent UUID: f7b10bed-5eed-4afb-b832-51bf6501ee0c
+2025-05-08T15:15:56.109Z [INFO]: Found 0 notations
+2025-05-08T15:15:56.360Z [INFO]: Getting notations for LESSON CIRCLE with parent UUID: f7b10bed-5eed-4afb-b832-51bf6501ee0c
+2025-05-08T15:15:56.372Z [INFO]: Found 1 notations
+2025-05-08T15:15:56.419Z [INFO]: Getting notations for LESSON SQRT with parent UUID: f7b10bed-5eed-4afb-b832-51bf6501ee0c
+2025-05-08T15:15:56.428Z [INFO]: Found 0 notations
+2025-05-08T15:15:56.719Z [INFO]: Getting notations for LESSON SQRTSYMBOL with parent UUID: f7b10bed-5eed-4afb-b832-51bf6501ee0c
+2025-05-08T15:15:56.721Z [ERROR]: Model LessonSqrtsymbol not found
+2025-05-08T15:15:56.751Z [INFO]: Getting notations for LESSON TEXT with parent UUID: f7b10bed-5eed-4afb-b832-51bf6501ee0c
+2025-05-08T15:15:56.762Z [INFO]: Found 0 notations
+2025-05-08T15:15:57.041Z [INFO]: Getting notations for LESSON ANNOTATION with parent UUID: f7b10bed-5eed-4afb-b832-51bf6501ee0c
+2025-05-08T15:15:57.060Z [INFO]: Found 0 notations
+2025-05-08T15:15:57.087Z [INFO]: Getting notations for LESSON IMAGE with parent UUID: f7b10bed-5eed-4afb-b832-51bf6501ee0c
+2025-05-08T15:15:57.102Z [INFO]: Found 0 notations
+2025-05-08T15:18:22.357Z [INFO]: Created new lesson with ID: 1
+2025-05-08T15:18:23.215Z [INFO]: Getting notations for LESSON SYMBOL with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T15:18:23.234Z [INFO]: Found 0 notations
+2025-05-08T15:18:23.293Z [INFO]: Getting notations for LESSON SIGN with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T15:18:23.310Z [INFO]: Found 0 notations
+2025-05-08T15:18:23.637Z [INFO]: Getting notations for LESSON EXPONENT with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T15:18:23.645Z [INFO]: Found 0 notations
+2025-05-08T15:18:23.967Z [INFO]: Getting notations for LESSON HORIZONTALLINE with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T15:18:23.975Z [INFO]: Found 0 notations
+2025-05-08T15:18:24.232Z [INFO]: Getting notations for LESSON VERTICALLINE with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T15:18:24.240Z [INFO]: Found 0 notations
+2025-05-08T15:18:24.299Z [INFO]: Getting notations for LESSON SLOPELINE with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T15:18:24.306Z [INFO]: Found 0 notations
+2025-05-08T15:18:24.548Z [INFO]: Getting notations for LESSON CURVE with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T15:18:24.555Z [INFO]: Found 0 notations
+2025-05-08T15:18:24.614Z [INFO]: Getting notations for LESSON CIRCLE with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T15:18:24.622Z [INFO]: Found 0 notations
+2025-05-08T15:18:24.866Z [INFO]: Getting notations for LESSON SQRT with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T15:18:24.873Z [INFO]: Found 0 notations
+2025-05-08T15:18:24.933Z [INFO]: Getting notations for LESSON SQRTSYMBOL with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T15:18:24.935Z [ERROR]: Model LessonSqrtsymbol not found
+2025-05-08T15:18:25.181Z [INFO]: Getting notations for LESSON TEXT with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T15:18:25.189Z [INFO]: Found 0 notations
+2025-05-08T15:18:25.248Z [INFO]: Getting notations for LESSON ANNOTATION with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T15:18:25.255Z [INFO]: Found 0 notations
+2025-05-08T15:18:25.498Z [INFO]: Getting notations for LESSON IMAGE with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T15:18:25.506Z [INFO]: Found 0 notations
+2025-05-08T16:29:15.574Z [INFO]: Getting notations for LESSON SYMBOL with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T16:29:15.800Z [INFO]: Found 0 notations
+2025-05-08T16:29:15.829Z [INFO]: Getting notations for LESSON SIGN with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T16:29:15.838Z [INFO]: Found 0 notations
+2025-05-08T16:29:15.865Z [INFO]: Getting notations for LESSON EXPONENT with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T16:29:15.897Z [INFO]: Found 0 notations
+2025-05-08T16:29:16.099Z [INFO]: Getting notations for LESSON HORIZONTALLINE with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T16:29:16.111Z [INFO]: Found 0 notations
+2025-05-08T16:29:16.123Z [INFO]: Getting notations for LESSON VERTICALLINE with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T16:29:16.135Z [INFO]: Found 0 notations
+2025-05-08T16:29:16.159Z [INFO]: Getting notations for LESSON SLOPELINE with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T16:29:16.171Z [INFO]: Found 0 notations
+2025-05-08T16:29:16.491Z [INFO]: Getting notations for LESSON CURVE with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T16:29:16.500Z [INFO]: Found 0 notations
+2025-05-08T16:29:16.753Z [INFO]: Getting notations for LESSON CIRCLE with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T16:29:16.763Z [INFO]: Found 0 notations
+2025-05-08T16:29:16.817Z [INFO]: Getting notations for LESSON SQRT with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T16:29:16.825Z [INFO]: Found 0 notations
+2025-05-08T16:29:17.082Z [INFO]: Getting notations for LESSON SQRTSYMBOL with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T16:29:17.084Z [ERROR]: Model LessonSqrtsymbol not found
+2025-05-08T16:29:17.153Z [INFO]: Getting notations for LESSON TEXT with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T16:29:17.165Z [INFO]: Found 0 notations
+2025-05-08T16:29:17.409Z [INFO]: Getting notations for LESSON ANNOTATION with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T16:29:17.418Z [INFO]: Found 0 notations
+2025-05-08T16:29:17.488Z [INFO]: Getting notations for LESSON IMAGE with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T16:29:17.501Z [INFO]: Found 0 notations
+2025-05-08T16:29:37.831Z [INFO]: Getting notations for LESSON SYMBOL with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T16:29:38.149Z [INFO]: Found 0 notations
+2025-05-08T16:29:38.164Z [INFO]: Getting notations for LESSON SIGN with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T16:29:38.175Z [INFO]: Found 0 notations
+2025-05-08T16:29:38.193Z [INFO]: Getting notations for LESSON EXPONENT with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T16:29:38.202Z [INFO]: Found 0 notations
+2025-05-08T16:29:38.215Z [INFO]: Getting notations for LESSON HORIZONTALLINE with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T16:29:38.223Z [INFO]: Found 0 notations
+2025-05-08T16:29:38.234Z [INFO]: Getting notations for LESSON VERTICALLINE with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T16:29:38.245Z [INFO]: Found 0 notations
+2025-05-08T16:29:38.263Z [INFO]: Getting notations for LESSON SLOPELINE with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T16:29:38.276Z [INFO]: Found 0 notations
+2025-05-08T16:29:38.596Z [INFO]: Getting notations for LESSON CURVE with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T16:29:38.605Z [INFO]: Found 0 notations
+2025-05-08T16:29:38.855Z [INFO]: Getting notations for LESSON CIRCLE with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T16:29:38.863Z [INFO]: Found 0 notations
+2025-05-08T16:29:38.931Z [INFO]: Getting notations for LESSON SQRT with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T16:29:38.939Z [INFO]: Found 0 notations
+2025-05-08T16:29:39.181Z [INFO]: Getting notations for LESSON SQRTSYMBOL with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T16:29:39.182Z [ERROR]: Model LessonSqrtsymbol not found
+2025-05-08T16:29:39.261Z [INFO]: Getting notations for LESSON TEXT with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T16:29:39.270Z [INFO]: Found 0 notations
+2025-05-08T16:29:39.491Z [INFO]: Getting notations for LESSON ANNOTATION with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T16:29:39.499Z [INFO]: Found 0 notations
+2025-05-08T16:29:39.583Z [INFO]: Getting notations for LESSON IMAGE with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T16:29:39.590Z [INFO]: Found 0 notations
+2025-05-08T16:30:01.070Z [INFO]: Getting notations for LESSON SYMBOL with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T16:30:01.258Z [INFO]: Found 0 notations
+2025-05-08T16:30:01.269Z [INFO]: Getting notations for LESSON SIGN with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T16:30:01.280Z [INFO]: Found 0 notations
+2025-05-08T16:30:01.293Z [INFO]: Getting notations for LESSON EXPONENT with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T16:30:01.303Z [INFO]: Found 0 notations
+2025-05-08T16:30:01.315Z [INFO]: Getting notations for LESSON HORIZONTALLINE with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T16:30:01.326Z [INFO]: Found 0 notations
+2025-05-08T16:30:01.335Z [INFO]: Getting notations for LESSON VERTICALLINE with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T16:30:01.345Z [INFO]: Found 0 notations
+2025-05-08T16:30:01.355Z [INFO]: Getting notations for LESSON SLOPELINE with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T16:30:01.365Z [INFO]: Found 0 notations
+2025-05-08T16:30:01.684Z [INFO]: Getting notations for LESSON CURVE with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T16:30:01.695Z [INFO]: Found 0 notations
+2025-05-08T16:30:01.945Z [INFO]: Getting notations for LESSON CIRCLE with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T16:30:01.952Z [INFO]: Found 0 notations
+2025-05-08T16:30:02.007Z [INFO]: Getting notations for LESSON SQRT with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T16:30:02.014Z [INFO]: Found 0 notations
+2025-05-08T16:30:02.272Z [INFO]: Getting notations for LESSON SQRTSYMBOL with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T16:30:02.273Z [ERROR]: Model LessonSqrtsymbol not found
+2025-05-08T16:30:02.371Z [INFO]: Getting notations for LESSON TEXT with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T16:30:02.381Z [INFO]: Found 0 notations
+2025-05-08T16:30:02.583Z [INFO]: Getting notations for LESSON ANNOTATION with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T16:30:02.592Z [INFO]: Found 0 notations
+2025-05-08T16:30:02.708Z [INFO]: Getting notations for LESSON IMAGE with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T16:30:02.715Z [INFO]: Found 0 notations
+2025-05-08T16:31:19.238Z [INFO]: Getting notations for LESSON SYMBOL with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T16:31:19.360Z [INFO]: Found 0 notations
+2025-05-08T16:31:19.368Z [INFO]: Getting notations for LESSON SIGN with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T16:31:19.377Z [INFO]: Found 0 notations
+2025-05-08T16:31:19.387Z [INFO]: Getting notations for LESSON EXPONENT with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T16:31:19.398Z [INFO]: Found 0 notations
+2025-05-08T16:31:19.407Z [INFO]: Getting notations for LESSON HORIZONTALLINE with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T16:31:19.421Z [INFO]: Found 0 notations
+2025-05-08T16:31:19.429Z [INFO]: Getting notations for LESSON VERTICALLINE with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T16:31:19.438Z [INFO]: Found 0 notations
+2025-05-08T16:31:19.446Z [INFO]: Getting notations for LESSON SLOPELINE with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T16:31:19.454Z [INFO]: Found 0 notations
+2025-05-08T16:31:19.774Z [INFO]: Getting notations for LESSON CURVE with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T16:31:19.786Z [INFO]: Found 0 notations
+2025-05-08T16:31:20.026Z [INFO]: Getting notations for LESSON CIRCLE with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T16:31:20.037Z [INFO]: Found 0 notations
+2025-05-08T16:31:20.103Z [INFO]: Getting notations for LESSON SQRT with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T16:31:20.112Z [INFO]: Found 0 notations
+2025-05-08T16:31:20.357Z [INFO]: Getting notations for LESSON SQRTSYMBOL with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T16:31:20.359Z [ERROR]: Model LessonSqrtsymbol not found
+2025-05-08T16:31:20.433Z [INFO]: Getting notations for LESSON TEXT with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T16:31:20.442Z [INFO]: Found 0 notations
+2025-05-08T16:31:20.686Z [INFO]: Getting notations for LESSON ANNOTATION with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T16:31:20.696Z [INFO]: Found 0 notations
+2025-05-08T16:31:20.765Z [INFO]: Getting notations for LESSON IMAGE with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T16:31:20.774Z [INFO]: Found 0 notations
+2025-05-08T16:31:41.220Z [INFO]: Getting notations for LESSON SYMBOL with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T16:31:41.535Z [INFO]: Found 0 notations
+2025-05-08T16:31:41.552Z [INFO]: Getting notations for LESSON SIGN with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T16:31:41.565Z [INFO]: Found 0 notations
+2025-05-08T16:31:41.579Z [INFO]: Getting notations for LESSON EXPONENT with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T16:31:41.589Z [INFO]: Found 0 notations
+2025-05-08T16:31:41.602Z [INFO]: Getting notations for LESSON HORIZONTALLINE with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T16:31:41.613Z [INFO]: Found 0 notations
+2025-05-08T16:31:41.629Z [INFO]: Getting notations for LESSON VERTICALLINE with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T16:31:41.641Z [INFO]: Found 0 notations
+2025-05-08T16:31:41.663Z [INFO]: Getting notations for LESSON SLOPELINE with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T16:31:41.674Z [INFO]: Found 0 notations
+2025-05-08T16:31:42.000Z [INFO]: Getting notations for LESSON CURVE with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T16:31:42.014Z [INFO]: Found 0 notations
+2025-05-08T16:31:42.262Z [INFO]: Getting notations for LESSON CIRCLE with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T16:31:42.270Z [INFO]: Found 0 notations
+2025-05-08T16:31:42.338Z [INFO]: Getting notations for LESSON SQRT with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T16:31:42.346Z [INFO]: Found 0 notations
+2025-05-08T16:31:42.588Z [INFO]: Getting notations for LESSON SQRTSYMBOL with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T16:31:42.589Z [ERROR]: Model LessonSqrtsymbol not found
+2025-05-08T16:31:42.664Z [INFO]: Getting notations for LESSON TEXT with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T16:31:42.671Z [INFO]: Found 0 notations
+2025-05-08T16:31:42.912Z [INFO]: Getting notations for LESSON ANNOTATION with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T16:31:42.919Z [INFO]: Found 0 notations
+2025-05-08T16:31:42.991Z [INFO]: Getting notations for LESSON IMAGE with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T16:31:42.999Z [INFO]: Found 0 notations
+2025-05-08T16:31:48.999Z [INFO]: Getting notations for LESSON SYMBOL with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T16:31:49.007Z [INFO]: Found 0 notations
+2025-05-08T16:31:49.049Z [INFO]: Getting notations for LESSON SIGN with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T16:31:49.058Z [INFO]: Found 0 notations
+2025-05-08T16:31:49.102Z [INFO]: Getting notations for LESSON EXPONENT with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T16:31:49.112Z [INFO]: Found 0 notations
+2025-05-08T16:31:49.119Z [INFO]: Getting notations for LESSON HORIZONTALLINE with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T16:31:49.130Z [INFO]: Found 0 notations
+2025-05-08T16:31:49.164Z [INFO]: Getting notations for LESSON VERTICALLINE with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T16:31:49.175Z [INFO]: Found 0 notations
+2025-05-08T16:31:49.186Z [INFO]: Getting notations for LESSON SLOPELINE with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T16:31:49.197Z [INFO]: Found 0 notations
+2025-05-08T16:31:49.512Z [INFO]: Getting notations for LESSON CURVE with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T16:31:49.518Z [INFO]: Found 0 notations
+2025-05-08T16:31:49.775Z [INFO]: Getting notations for LESSON CIRCLE with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T16:31:49.781Z [INFO]: Found 0 notations
+2025-05-08T16:31:49.839Z [INFO]: Getting notations for LESSON SQRT with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T16:31:49.848Z [INFO]: Found 0 notations
+2025-05-08T16:31:50.094Z [INFO]: Getting notations for LESSON SQRTSYMBOL with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T16:31:50.095Z [ERROR]: Model LessonSqrtsymbol not found
+2025-05-08T16:31:50.157Z [INFO]: Getting notations for LESSON TEXT with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T16:31:50.165Z [INFO]: Found 0 notations
+2025-05-08T16:31:50.419Z [INFO]: Getting notations for LESSON ANNOTATION with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T16:31:50.426Z [INFO]: Found 0 notations
+2025-05-08T16:31:50.482Z [INFO]: Getting notations for LESSON IMAGE with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T16:31:50.489Z [INFO]: Found 0 notations
+2025-05-08T16:32:15.393Z [INFO]: Getting notations for LESSON SYMBOL with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T16:32:15.697Z [INFO]: Found 0 notations
+2025-05-08T16:32:15.753Z [INFO]: Getting notations for LESSON SIGN with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T16:32:15.763Z [INFO]: Found 0 notations
+2025-05-08T16:32:15.774Z [INFO]: Getting notations for LESSON EXPONENT with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T16:32:15.784Z [INFO]: Found 0 notations
+2025-05-08T16:32:15.813Z [INFO]: Getting notations for LESSON HORIZONTALLINE with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T16:32:15.823Z [INFO]: Found 0 notations
+2025-05-08T16:32:15.831Z [INFO]: Getting notations for LESSON VERTICALLINE with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T16:32:15.843Z [INFO]: Found 0 notations
+2025-05-08T16:32:15.857Z [INFO]: Getting notations for LESSON SLOPELINE with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T16:32:15.866Z [INFO]: Found 0 notations
+2025-05-08T16:32:16.193Z [INFO]: Getting notations for LESSON CURVE with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T16:32:16.202Z [INFO]: Found 0 notations
+2025-05-08T16:32:16.444Z [INFO]: Getting notations for LESSON CIRCLE with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T16:32:16.453Z [INFO]: Found 0 notations
+2025-05-08T16:32:16.524Z [INFO]: Getting notations for LESSON SQRT with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T16:32:16.533Z [INFO]: Found 0 notations
+2025-05-08T16:32:16.778Z [INFO]: Getting notations for LESSON SQRTSYMBOL with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T16:32:16.779Z [ERROR]: Model LessonSqrtsymbol not found
+2025-05-08T16:32:16.855Z [INFO]: Getting notations for LESSON TEXT with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T16:32:16.863Z [INFO]: Found 0 notations
+2025-05-08T16:32:17.091Z [INFO]: Getting notations for LESSON ANNOTATION with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T16:32:17.099Z [INFO]: Found 0 notations
+2025-05-08T16:32:17.181Z [INFO]: Getting notations for LESSON IMAGE with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T16:32:17.188Z [INFO]: Found 0 notations
+2025-05-08T16:32:50.811Z [INFO]: Getting notations for LESSON SYMBOL with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T16:32:51.295Z [INFO]: Found 0 notations
+2025-05-08T16:32:51.312Z [INFO]: Getting notations for LESSON SIGN with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T16:32:51.322Z [INFO]: Found 0 notations
+2025-05-08T16:32:51.332Z [INFO]: Getting notations for LESSON EXPONENT with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T16:32:51.345Z [INFO]: Found 0 notations
+2025-05-08T16:32:51.358Z [INFO]: Getting notations for LESSON HORIZONTALLINE with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T16:32:51.372Z [INFO]: Found 0 notations
+2025-05-08T16:32:51.412Z [INFO]: Getting notations for LESSON VERTICALLINE with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T16:32:51.423Z [INFO]: Found 0 notations
+2025-05-08T16:32:51.432Z [INFO]: Getting notations for LESSON SLOPELINE with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T16:32:51.441Z [INFO]: Found 0 notations
+2025-05-08T16:32:51.765Z [INFO]: Getting notations for LESSON CURVE with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T16:32:51.775Z [INFO]: Found 0 notations
+2025-05-08T16:32:52.011Z [INFO]: Getting notations for LESSON CIRCLE with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T16:32:52.020Z [INFO]: Found 0 notations
+2025-05-08T16:32:52.092Z [INFO]: Getting notations for LESSON SQRT with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T16:32:52.102Z [INFO]: Found 0 notations
+2025-05-08T16:32:52.335Z [INFO]: Getting notations for LESSON SQRTSYMBOL with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T16:32:52.338Z [ERROR]: Model LessonSqrtsymbol not found
+2025-05-08T16:32:52.429Z [INFO]: Getting notations for LESSON TEXT with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T16:32:52.438Z [INFO]: Found 0 notations
+2025-05-08T16:32:52.662Z [INFO]: Getting notations for LESSON ANNOTATION with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T16:32:52.672Z [INFO]: Found 0 notations
+2025-05-08T16:32:52.755Z [INFO]: Getting notations for LESSON IMAGE with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T16:32:52.763Z [INFO]: Found 0 notations
+2025-05-08T16:32:58.130Z [INFO]: Getting notations for LESSON SYMBOL with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T16:32:58.137Z [INFO]: Found 0 notations
+2025-05-08T16:32:58.176Z [INFO]: Getting notations for LESSON SIGN with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T16:32:58.185Z [INFO]: Found 0 notations
+2025-05-08T16:32:58.253Z [INFO]: Getting notations for LESSON EXPONENT with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T16:32:58.260Z [INFO]: Found 0 notations
+2025-05-08T16:32:58.275Z [INFO]: Getting notations for LESSON HORIZONTALLINE with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T16:32:58.286Z [INFO]: Found 0 notations
+2025-05-08T16:32:58.298Z [INFO]: Getting notations for LESSON VERTICALLINE with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T16:32:58.308Z [INFO]: Found 0 notations
+2025-05-08T16:32:58.319Z [INFO]: Getting notations for LESSON SLOPELINE with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T16:32:58.327Z [INFO]: Found 0 notations
+2025-05-08T16:32:58.650Z [INFO]: Getting notations for LESSON CURVE with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T16:32:58.657Z [INFO]: Found 0 notations
+2025-05-08T16:32:58.917Z [INFO]: Getting notations for LESSON CIRCLE with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T16:32:58.924Z [INFO]: Found 0 notations
+2025-05-08T16:32:58.976Z [INFO]: Getting notations for LESSON SQRT with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T16:32:58.982Z [INFO]: Found 0 notations
+2025-05-08T16:32:59.242Z [INFO]: Getting notations for LESSON SQRTSYMBOL with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T16:32:59.244Z [ERROR]: Model LessonSqrtsymbol not found
+2025-05-08T16:32:59.305Z [INFO]: Getting notations for LESSON TEXT with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T16:32:59.313Z [INFO]: Found 0 notations
+2025-05-08T16:32:59.555Z [INFO]: Getting notations for LESSON ANNOTATION with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T16:32:59.562Z [INFO]: Found 0 notations
+2025-05-08T16:32:59.634Z [INFO]: Getting notations for LESSON IMAGE with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T16:32:59.643Z [INFO]: Found 0 notations
+2025-05-08T16:33:36.482Z [INFO]: Getting notations for LESSON SYMBOL with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T16:33:36.764Z [INFO]: Found 0 notations
+2025-05-08T16:33:36.783Z [INFO]: Getting notations for LESSON SIGN with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T16:33:36.799Z [INFO]: Found 0 notations
+2025-05-08T16:33:36.816Z [INFO]: Getting notations for LESSON EXPONENT with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T16:33:36.839Z [INFO]: Found 0 notations
+2025-05-08T16:33:36.855Z [INFO]: Getting notations for LESSON HORIZONTALLINE with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T16:33:36.873Z [INFO]: Found 0 notations
+2025-05-08T16:33:36.890Z [INFO]: Getting notations for LESSON VERTICALLINE with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T16:33:36.906Z [INFO]: Found 0 notations
+2025-05-08T16:33:36.920Z [INFO]: Getting notations for LESSON SLOPELINE with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T16:33:36.933Z [INFO]: Found 0 notations
+2025-05-08T16:33:37.250Z [INFO]: Getting notations for LESSON CURVE with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T16:33:37.261Z [INFO]: Found 0 notations
+2025-05-08T16:33:37.514Z [INFO]: Getting notations for LESSON CIRCLE with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T16:33:37.524Z [INFO]: Found 0 notations
+2025-05-08T16:33:37.576Z [INFO]: Getting notations for LESSON SQRT with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T16:33:37.587Z [INFO]: Found 0 notations
+2025-05-08T16:33:37.842Z [INFO]: Getting notations for LESSON SQRTSYMBOL with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T16:33:37.844Z [ERROR]: Model LessonSqrtsymbol not found
+2025-05-08T16:33:37.903Z [INFO]: Getting notations for LESSON TEXT with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T16:33:37.911Z [INFO]: Found 0 notations
+2025-05-08T16:33:38.168Z [INFO]: Getting notations for LESSON ANNOTATION with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T16:33:38.176Z [INFO]: Found 0 notations
+2025-05-08T16:33:38.233Z [INFO]: Getting notations for LESSON IMAGE with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T16:33:38.243Z [INFO]: Found 0 notations
+2025-05-08T16:35:03.228Z [INFO]: Getting notations for LESSON SYMBOL with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T16:35:03.531Z [INFO]: Found 0 notations
+2025-05-08T16:35:03.558Z [INFO]: Getting notations for LESSON SIGN with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T16:35:03.571Z [INFO]: Found 0 notations
+2025-05-08T16:35:03.596Z [INFO]: Getting notations for LESSON EXPONENT with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T16:35:03.608Z [INFO]: Found 0 notations
+2025-05-08T16:35:03.625Z [INFO]: Getting notations for LESSON HORIZONTALLINE with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T16:35:03.636Z [INFO]: Found 0 notations
+2025-05-08T16:35:03.644Z [INFO]: Getting notations for LESSON VERTICALLINE with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T16:35:03.657Z [INFO]: Found 0 notations
+2025-05-08T16:35:03.671Z [INFO]: Getting notations for LESSON SLOPELINE with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T16:35:03.682Z [INFO]: Found 0 notations
+2025-05-08T16:35:03.998Z [INFO]: Getting notations for LESSON CURVE with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T16:35:04.010Z [INFO]: Found 0 notations
+2025-05-08T16:35:04.261Z [INFO]: Getting notations for LESSON CIRCLE with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T16:35:04.271Z [INFO]: Found 0 notations
+2025-05-08T16:35:04.322Z [INFO]: Getting notations for LESSON SQRT with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T16:35:04.332Z [INFO]: Found 0 notations
+2025-05-08T16:35:04.593Z [INFO]: Getting notations for LESSON SQRTSYMBOL with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T16:35:04.596Z [ERROR]: Model LessonSqrtsymbol not found
+2025-05-08T16:35:04.660Z [INFO]: Getting notations for LESSON TEXT with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T16:35:04.668Z [INFO]: Found 0 notations
+2025-05-08T16:35:04.920Z [INFO]: Getting notations for LESSON ANNOTATION with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T16:35:04.930Z [INFO]: Found 0 notations
+2025-05-08T16:35:04.989Z [INFO]: Getting notations for LESSON IMAGE with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T16:35:04.999Z [INFO]: Found 0 notations
+2025-05-08T16:35:19.582Z [INFO]: Getting notations for LESSON SYMBOL with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T16:35:19.995Z [INFO]: Found 0 notations
+2025-05-08T16:35:20.013Z [INFO]: Getting notations for LESSON SIGN with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T16:35:20.027Z [INFO]: Found 0 notations
+2025-05-08T16:35:20.038Z [INFO]: Getting notations for LESSON EXPONENT with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T16:35:20.054Z [INFO]: Found 0 notations
+2025-05-08T16:35:20.066Z [INFO]: Getting notations for LESSON HORIZONTALLINE with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T16:35:20.078Z [INFO]: Found 0 notations
+2025-05-08T16:35:20.089Z [INFO]: Getting notations for LESSON VERTICALLINE with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T16:35:20.098Z [INFO]: Found 0 notations
+2025-05-08T16:35:20.113Z [INFO]: Getting notations for LESSON SLOPELINE with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T16:35:20.127Z [INFO]: Found 0 notations
+2025-05-08T16:35:20.466Z [INFO]: Getting notations for LESSON CURVE with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T16:35:20.480Z [INFO]: Found 0 notations
+2025-05-08T16:35:20.726Z [INFO]: Getting notations for LESSON CIRCLE with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T16:35:20.738Z [INFO]: Found 0 notations
+2025-05-08T16:35:20.806Z [INFO]: Getting notations for LESSON SQRT with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T16:35:20.815Z [INFO]: Found 0 notations
+2025-05-08T16:35:21.057Z [INFO]: Getting notations for LESSON SQRTSYMBOL with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T16:35:21.059Z [ERROR]: Model LessonSqrtsymbol not found
+2025-05-08T16:35:21.142Z [INFO]: Getting notations for LESSON TEXT with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T16:35:21.155Z [INFO]: Found 0 notations
+2025-05-08T16:35:21.385Z [INFO]: Getting notations for LESSON ANNOTATION with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T16:35:21.394Z [INFO]: Found 0 notations
+2025-05-08T16:35:21.472Z [INFO]: Getting notations for LESSON IMAGE with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T16:35:21.484Z [INFO]: Found 0 notations
+2025-05-08T16:35:26.673Z [INFO]: Getting notations for LESSON SYMBOL with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T16:35:26.679Z [INFO]: Found 0 notations
+2025-05-08T16:35:26.726Z [INFO]: Getting notations for LESSON SIGN with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T16:35:26.740Z [INFO]: Found 0 notations
+2025-05-08T16:35:26.810Z [INFO]: Getting notations for LESSON EXPONENT with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T16:35:26.824Z [INFO]: Found 0 notations
+2025-05-08T16:35:26.996Z [INFO]: Getting notations for LESSON HORIZONTALLINE with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T16:35:27.010Z [INFO]: Found 0 notations
+2025-05-08T16:35:27.051Z [INFO]: Getting notations for LESSON VERTICALLINE with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T16:35:27.059Z [INFO]: Found 0 notations
+2025-05-08T16:35:27.074Z [INFO]: Getting notations for LESSON SLOPELINE with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T16:35:27.093Z [INFO]: Found 0 notations
+2025-05-08T16:35:27.438Z [INFO]: Getting notations for LESSON CURVE with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T16:35:27.446Z [INFO]: Found 0 notations
+2025-05-08T16:35:27.705Z [INFO]: Getting notations for LESSON CIRCLE with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T16:35:27.712Z [INFO]: Found 0 notations
+2025-05-08T16:35:27.771Z [INFO]: Getting notations for LESSON SQRT with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T16:35:27.777Z [INFO]: Found 0 notations
+2025-05-08T16:35:28.040Z [INFO]: Getting notations for LESSON SQRTSYMBOL with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T16:35:28.044Z [ERROR]: Model LessonSqrtsymbol not found
+2025-05-08T16:35:28.096Z [INFO]: Getting notations for LESSON TEXT with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T16:35:28.105Z [INFO]: Found 0 notations
+2025-05-08T16:35:28.374Z [INFO]: Getting notations for LESSON ANNOTATION with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T16:35:28.381Z [INFO]: Found 0 notations
+2025-05-08T16:35:28.424Z [INFO]: Getting notations for LESSON IMAGE with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T16:35:28.433Z [INFO]: Found 0 notations
+2025-05-08T16:35:34.746Z [INFO]: Getting notations for LESSON SYMBOL with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T16:35:34.754Z [INFO]: Found 0 notations
+2025-05-08T16:35:34.792Z [INFO]: Getting notations for LESSON SIGN with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T16:35:34.802Z [INFO]: Found 0 notations
+2025-05-08T16:35:34.813Z [INFO]: Getting notations for LESSON EXPONENT with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T16:35:34.823Z [INFO]: Found 0 notations
+2025-05-08T16:35:34.834Z [INFO]: Getting notations for LESSON HORIZONTALLINE with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T16:35:34.840Z [INFO]: Found 0 notations
+2025-05-08T16:35:34.850Z [INFO]: Getting notations for LESSON VERTICALLINE with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T16:35:34.857Z [INFO]: Found 0 notations
+2025-05-08T16:35:34.868Z [INFO]: Getting notations for LESSON SLOPELINE with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T16:35:34.875Z [INFO]: Found 0 notations
+2025-05-08T16:35:35.197Z [INFO]: Getting notations for LESSON CURVE with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T16:35:35.204Z [INFO]: Found 0 notations
+2025-05-08T16:35:35.442Z [INFO]: Getting notations for LESSON CIRCLE with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T16:35:35.451Z [INFO]: Found 0 notations
+2025-05-08T16:35:35.521Z [INFO]: Getting notations for LESSON SQRT with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T16:35:35.529Z [INFO]: Found 0 notations
+2025-05-08T16:35:35.771Z [INFO]: Getting notations for LESSON SQRTSYMBOL with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T16:35:35.773Z [ERROR]: Model LessonSqrtsymbol not found
+2025-05-08T16:35:35.853Z [INFO]: Getting notations for LESSON TEXT with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T16:35:35.861Z [INFO]: Found 0 notations
+2025-05-08T16:35:36.084Z [INFO]: Getting notations for LESSON ANNOTATION with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T16:35:36.091Z [INFO]: Found 0 notations
+2025-05-08T16:35:36.173Z [INFO]: Getting notations for LESSON IMAGE with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T16:35:36.181Z [INFO]: Found 0 notations
+2025-05-08T16:35:55.110Z [INFO]: Getting notations for LESSON SYMBOL with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T16:35:55.373Z [INFO]: Found 0 notations
+2025-05-08T16:35:55.473Z [INFO]: Getting notations for LESSON SIGN with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T16:35:55.486Z [INFO]: Found 0 notations
+2025-05-08T16:35:55.519Z [INFO]: Getting notations for LESSON EXPONENT with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T16:35:55.532Z [INFO]: Found 0 notations
+2025-05-08T16:35:55.552Z [INFO]: Getting notations for LESSON HORIZONTALLINE with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T16:35:55.565Z [INFO]: Found 0 notations
+2025-05-08T16:35:55.603Z [INFO]: Getting notations for LESSON VERTICALLINE with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T16:35:55.614Z [INFO]: Found 0 notations
+2025-05-08T16:35:55.631Z [INFO]: Getting notations for LESSON SLOPELINE with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T16:35:55.641Z [INFO]: Found 0 notations
+2025-05-08T16:35:55.956Z [INFO]: Getting notations for LESSON CURVE with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T16:35:55.965Z [INFO]: Found 0 notations
+2025-05-08T16:35:56.218Z [INFO]: Getting notations for LESSON CIRCLE with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T16:35:56.227Z [INFO]: Found 0 notations
+2025-05-08T16:35:56.281Z [INFO]: Getting notations for LESSON SQRT with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T16:35:56.291Z [INFO]: Found 0 notations
+2025-05-08T16:35:56.555Z [INFO]: Getting notations for LESSON SQRTSYMBOL with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T16:35:56.558Z [ERROR]: Model LessonSqrtsymbol not found
+2025-05-08T16:35:56.617Z [INFO]: Getting notations for LESSON TEXT with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T16:35:56.625Z [INFO]: Found 0 notations
+2025-05-08T16:35:56.869Z [INFO]: Getting notations for LESSON ANNOTATION with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T16:35:56.878Z [INFO]: Found 0 notations
+2025-05-08T16:35:56.936Z [INFO]: Getting notations for LESSON IMAGE with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T16:35:56.944Z [INFO]: Found 0 notations
+2025-05-08T16:36:02.260Z [INFO]: Getting notations for LESSON SYMBOL with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T16:36:02.268Z [INFO]: Found 0 notations
+2025-05-08T16:36:02.310Z [INFO]: Getting notations for LESSON SIGN with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T16:36:02.323Z [INFO]: Found 0 notations
+2025-05-08T16:36:02.403Z [INFO]: Getting notations for LESSON EXPONENT with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T16:36:02.411Z [INFO]: Found 0 notations
+2025-05-08T16:36:02.589Z [INFO]: Getting notations for LESSON HORIZONTALLINE with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T16:36:02.597Z [INFO]: Found 0 notations
+2025-05-08T16:36:02.718Z [INFO]: Getting notations for LESSON VERTICALLINE with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T16:36:02.727Z [INFO]: Found 0 notations
+2025-05-08T16:36:02.751Z [INFO]: Getting notations for LESSON SLOPELINE with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T16:36:02.760Z [INFO]: Found 0 notations
+2025-05-08T16:36:03.100Z [INFO]: Getting notations for LESSON CURVE with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T16:36:03.108Z [INFO]: Found 0 notations
+2025-05-08T16:36:03.358Z [INFO]: Getting notations for LESSON CIRCLE with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T16:36:03.367Z [INFO]: Found 0 notations
+2025-05-08T16:36:03.429Z [INFO]: Getting notations for LESSON SQRT with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T16:36:03.437Z [INFO]: Found 0 notations
+2025-05-08T16:36:03.688Z [INFO]: Getting notations for LESSON SQRTSYMBOL with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T16:36:03.692Z [ERROR]: Model LessonSqrtsymbol not found
+2025-05-08T16:36:03.756Z [INFO]: Getting notations for LESSON TEXT with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T16:36:03.768Z [INFO]: Found 0 notations
+2025-05-08T16:36:04.018Z [INFO]: Getting notations for LESSON ANNOTATION with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T16:36:04.025Z [INFO]: Found 0 notations
+2025-05-08T16:36:04.083Z [INFO]: Getting notations for LESSON IMAGE with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T16:36:04.091Z [INFO]: Found 0 notations
+2025-05-08T16:39:30.889Z [INFO]: Getting notations for LESSON SYMBOL with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T16:39:31.223Z [INFO]: Found 0 notations
+2025-05-08T16:39:31.243Z [INFO]: Getting notations for LESSON SIGN with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T16:39:31.262Z [INFO]: Found 0 notations
+2025-05-08T16:39:31.276Z [INFO]: Getting notations for LESSON EXPONENT with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T16:39:31.290Z [INFO]: Found 0 notations
+2025-05-08T16:39:31.298Z [INFO]: Getting notations for LESSON HORIZONTALLINE with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T16:39:31.310Z [INFO]: Found 0 notations
+2025-05-08T16:39:31.319Z [INFO]: Getting notations for LESSON VERTICALLINE with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T16:39:31.331Z [INFO]: Found 0 notations
+2025-05-08T16:39:31.343Z [INFO]: Getting notations for LESSON SLOPELINE with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T16:39:31.356Z [INFO]: Found 0 notations
+2025-05-08T16:39:31.667Z [INFO]: Getting notations for LESSON CURVE with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T16:39:31.680Z [INFO]: Found 0 notations
+2025-05-08T16:39:31.933Z [INFO]: Getting notations for LESSON CIRCLE with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T16:39:31.943Z [INFO]: Found 0 notations
+2025-05-08T16:39:32.010Z [INFO]: Getting notations for LESSON SQRT with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T16:39:32.021Z [INFO]: Found 0 notations
+2025-05-08T16:39:32.261Z [INFO]: Getting notations for LESSON SQRTSYMBOL with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T16:39:32.264Z [ERROR]: Model LessonSqrtsymbol not found
+2025-05-08T16:39:32.340Z [INFO]: Getting notations for LESSON TEXT with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T16:39:32.349Z [INFO]: Found 0 notations
+2025-05-08T16:39:32.588Z [INFO]: Getting notations for LESSON ANNOTATION with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T16:39:32.597Z [INFO]: Found 0 notations
+2025-05-08T16:39:32.666Z [INFO]: Getting notations for LESSON IMAGE with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T16:39:32.676Z [INFO]: Found 0 notations
+2025-05-08T16:39:42.857Z [INFO]: Getting notations for LESSON SYMBOL with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T16:39:42.867Z [INFO]: Found 0 notations
+2025-05-08T16:39:43.133Z [INFO]: Getting notations for LESSON SIGN with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T16:39:43.144Z [INFO]: Found 0 notations
+2025-05-08T16:39:43.189Z [INFO]: Getting notations for LESSON EXPONENT with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T16:39:43.201Z [INFO]: Found 0 notations
+2025-05-08T16:39:43.220Z [INFO]: Getting notations for LESSON HORIZONTALLINE with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T16:39:43.230Z [INFO]: Found 0 notations
+2025-05-08T16:39:43.249Z [INFO]: Getting notations for LESSON VERTICALLINE with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T16:39:43.263Z [INFO]: Found 0 notations
+2025-05-08T16:39:43.276Z [INFO]: Getting notations for LESSON SLOPELINE with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T16:39:43.286Z [INFO]: Found 0 notations
+2025-05-08T16:39:43.610Z [INFO]: Getting notations for LESSON CURVE with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T16:39:43.622Z [INFO]: Found 0 notations
+2025-05-08T16:39:43.877Z [INFO]: Getting notations for LESSON CIRCLE with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T16:39:43.885Z [INFO]: Found 0 notations
+2025-05-08T16:39:43.951Z [INFO]: Getting notations for LESSON SQRT with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T16:39:43.966Z [INFO]: Found 0 notations
+2025-05-08T16:39:44.215Z [INFO]: Getting notations for LESSON SQRTSYMBOL with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T16:39:44.218Z [ERROR]: Model LessonSqrtsymbol not found
+2025-05-08T16:39:44.430Z [INFO]: Getting notations for LESSON TEXT with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T16:39:44.443Z [INFO]: Found 0 notations
+2025-05-08T16:39:44.545Z [INFO]: Getting notations for LESSON ANNOTATION with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T16:39:44.556Z [INFO]: Found 0 notations
+2025-05-08T16:39:45.237Z [INFO]: Getting notations for LESSON IMAGE with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T16:39:45.249Z [INFO]: Found 0 notations
+2025-05-08T16:39:45.566Z [INFO]: Getting notations for LESSON SYMBOL with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T16:39:45.574Z [INFO]: Found 0 notations
+2025-05-08T16:39:45.623Z [INFO]: Getting notations for LESSON SIGN with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T16:39:45.636Z [INFO]: Found 0 notations
+2025-05-08T16:39:45.647Z [INFO]: Getting notations for LESSON EXPONENT with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T16:39:45.657Z [INFO]: Found 0 notations
+2025-05-08T16:39:45.664Z [INFO]: Getting notations for LESSON HORIZONTALLINE with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T16:39:45.675Z [INFO]: Found 0 notations
+2025-05-08T16:39:45.683Z [INFO]: Getting notations for LESSON VERTICALLINE with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T16:39:45.693Z [INFO]: Found 0 notations
+2025-05-08T16:39:46.005Z [INFO]: Getting notations for LESSON SLOPELINE with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T16:39:46.015Z [INFO]: Found 0 notations
+2025-05-08T16:39:46.265Z [INFO]: Getting notations for LESSON CURVE with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T16:39:46.274Z [INFO]: Found 0 notations
+2025-05-08T16:39:46.327Z [INFO]: Getting notations for LESSON CIRCLE with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T16:39:46.337Z [INFO]: Found 0 notations
+2025-05-08T16:39:46.591Z [INFO]: Getting notations for LESSON SQRT with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T16:39:46.598Z [INFO]: Found 0 notations
+2025-05-08T16:39:46.656Z [INFO]: Getting notations for LESSON SQRTSYMBOL with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T16:39:46.659Z [ERROR]: Model LessonSqrtsymbol not found
+2025-05-08T16:39:46.928Z [INFO]: Getting notations for LESSON TEXT with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T16:39:46.936Z [INFO]: Found 0 notations
+2025-05-08T16:39:46.983Z [INFO]: Getting notations for LESSON ANNOTATION with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T16:39:46.992Z [INFO]: Found 0 notations
+2025-05-08T16:39:47.250Z [INFO]: Getting notations for LESSON IMAGE with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T16:39:47.260Z [INFO]: Found 0 notations
+2025-05-08T16:40:14.830Z [INFO]: Getting notations for LESSON SYMBOL with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T16:40:14.852Z [INFO]: Found 0 notations
+2025-05-08T16:40:14.872Z [INFO]: Getting notations for LESSON SIGN with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T16:40:14.893Z [INFO]: Found 0 notations
+2025-05-08T16:40:15.208Z [INFO]: Getting notations for LESSON EXPONENT with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T16:40:15.219Z [INFO]: Found 0 notations
+2025-05-08T16:40:15.541Z [INFO]: Getting notations for LESSON HORIZONTALLINE with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T16:40:15.553Z [INFO]: Found 0 notations
+2025-05-08T16:40:15.790Z [INFO]: Getting notations for LESSON VERTICALLINE with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T16:40:15.798Z [INFO]: Found 0 notations
+2025-05-08T16:40:15.868Z [INFO]: Getting notations for LESSON SLOPELINE with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T16:40:15.876Z [INFO]: Found 0 notations
+2025-05-08T16:40:16.118Z [INFO]: Getting notations for LESSON CURVE with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T16:40:16.128Z [INFO]: Found 0 notations
+2025-05-08T16:40:16.196Z [INFO]: Getting notations for LESSON CIRCLE with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T16:40:16.206Z [INFO]: Found 0 notations
+2025-05-08T16:40:16.440Z [INFO]: Getting notations for LESSON SQRT with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T16:40:16.449Z [INFO]: Found 0 notations
+2025-05-08T16:40:16.520Z [INFO]: Getting notations for LESSON SQRTSYMBOL with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T16:40:16.523Z [ERROR]: Model LessonSqrtsymbol not found
+2025-05-08T16:40:16.770Z [INFO]: Getting notations for LESSON TEXT with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T16:40:16.779Z [INFO]: Found 0 notations
+2025-05-08T16:40:16.846Z [INFO]: Getting notations for LESSON ANNOTATION with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T16:40:16.856Z [INFO]: Found 0 notations
+2025-05-08T16:40:17.095Z [INFO]: Getting notations for LESSON IMAGE with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T16:40:17.108Z [INFO]: Found 0 notations
+2025-05-08T16:42:03.896Z [INFO]: Getting notations for LESSON SYMBOL with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T16:42:03.907Z [INFO]: Found 0 notations
+2025-05-08T16:42:03.942Z [INFO]: Getting notations for LESSON SIGN with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T16:42:03.954Z [INFO]: Found 0 notations
+2025-05-08T16:42:04.276Z [INFO]: Getting notations for LESSON EXPONENT with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T16:42:04.287Z [INFO]: Found 0 notations
+2025-05-08T16:42:04.614Z [INFO]: Getting notations for LESSON HORIZONTALLINE with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T16:42:04.628Z [INFO]: Found 0 notations
+2025-05-08T16:42:04.863Z [INFO]: Getting notations for LESSON VERTICALLINE with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T16:42:04.876Z [INFO]: Found 0 notations
+2025-05-08T16:42:04.943Z [INFO]: Getting notations for LESSON SLOPELINE with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T16:42:04.954Z [INFO]: Found 0 notations
+2025-05-08T16:42:05.192Z [INFO]: Getting notations for LESSON CURVE with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T16:42:05.204Z [INFO]: Found 0 notations
+2025-05-08T16:42:05.272Z [INFO]: Getting notations for LESSON CIRCLE with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T16:42:05.283Z [INFO]: Found 0 notations
+2025-05-08T16:42:05.516Z [INFO]: Getting notations for LESSON SQRT with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T16:42:05.530Z [INFO]: Found 0 notations
+2025-05-08T16:42:05.595Z [INFO]: Getting notations for LESSON SQRTSYMBOL with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T16:42:05.598Z [ERROR]: Model LessonSqrtsymbol not found
+2025-05-08T16:42:05.848Z [INFO]: Getting notations for LESSON TEXT with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T16:42:05.859Z [INFO]: Found 0 notations
+2025-05-08T16:42:08.016Z [INFO]: Getting notations for LESSON SYMBOL with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T16:42:08.024Z [INFO]: Found 0 notations
+2025-05-08T16:42:08.058Z [INFO]: Getting notations for LESSON SIGN with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T16:42:08.067Z [INFO]: Found 0 notations
+2025-05-08T16:42:08.410Z [INFO]: Getting notations for LESSON EXPONENT with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T16:42:08.425Z [INFO]: Found 0 notations
+2025-05-08T16:42:08.744Z [INFO]: Getting notations for LESSON HORIZONTALLINE with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T16:42:08.752Z [INFO]: Found 0 notations
+2025-05-08T16:42:09.012Z [INFO]: Getting notations for LESSON VERTICALLINE with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T16:42:09.019Z [INFO]: Found 0 notations
+2025-05-08T16:42:09.068Z [INFO]: Getting notations for LESSON SLOPELINE with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T16:42:09.077Z [INFO]: Found 0 notations
+2025-05-08T16:42:09.349Z [INFO]: Getting notations for LESSON CURVE with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T16:42:09.362Z [INFO]: Found 0 notations
+2025-05-08T16:42:09.467Z [INFO]: Getting notations for LESSON CIRCLE with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T16:42:09.479Z [INFO]: Found 0 notations
+2025-05-08T16:42:09.802Z [INFO]: Getting notations for LESSON SQRT with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T16:42:09.816Z [INFO]: Found 0 notations
+2025-05-08T16:42:10.065Z [INFO]: Getting notations for LESSON SQRTSYMBOL with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T16:42:10.067Z [ERROR]: Model LessonSqrtsymbol not found
+2025-05-08T16:42:10.238Z [INFO]: Getting notations for LESSON TEXT with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T16:42:10.246Z [INFO]: Found 0 notations
+2025-05-08T16:42:10.425Z [INFO]: Getting notations for LESSON ANNOTATION with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T16:42:10.445Z [INFO]: Found 0 notations
+2025-05-08T16:42:14.379Z [INFO]: Getting notations for LESSON SYMBOL with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T16:42:14.392Z [INFO]: Found 0 notations
+2025-05-08T16:42:14.451Z [INFO]: Getting notations for LESSON SIGN with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T16:42:14.469Z [INFO]: Found 0 notations
+2025-05-08T16:42:14.797Z [INFO]: Getting notations for LESSON EXPONENT with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T16:42:14.815Z [INFO]: Found 0 notations
+2025-05-08T16:42:15.135Z [INFO]: Getting notations for LESSON HORIZONTALLINE with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T16:42:15.145Z [INFO]: Found 0 notations
+2025-05-08T16:42:15.396Z [INFO]: Getting notations for LESSON VERTICALLINE with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T16:42:15.404Z [INFO]: Found 0 notations
+2025-05-08T16:42:15.456Z [INFO]: Getting notations for LESSON SLOPELINE with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T16:42:15.462Z [INFO]: Found 0 notations
+2025-05-08T16:42:15.722Z [INFO]: Getting notations for LESSON CURVE with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T16:42:15.731Z [INFO]: Found 0 notations
+2025-05-08T16:42:15.784Z [INFO]: Getting notations for LESSON CIRCLE with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T16:42:15.793Z [INFO]: Found 0 notations
+2025-05-08T16:42:16.047Z [INFO]: Getting notations for LESSON SQRT with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T16:42:16.057Z [INFO]: Found 0 notations
+2025-05-08T16:42:16.108Z [INFO]: Getting notations for LESSON SQRTSYMBOL with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T16:42:16.111Z [ERROR]: Model LessonSqrtsymbol not found
+2025-05-08T16:42:16.370Z [INFO]: Getting notations for LESSON TEXT with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T16:42:16.377Z [INFO]: Found 0 notations
+2025-05-08T16:42:16.418Z [INFO]: Getting notations for LESSON ANNOTATION with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T16:42:16.425Z [INFO]: Found 0 notations
+2025-05-08T16:42:16.699Z [INFO]: Getting notations for LESSON IMAGE with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T16:42:16.711Z [INFO]: Found 0 notations
+2025-05-08T17:20:13.709Z [INFO]: Getting notations for LESSON SYMBOL with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T17:20:13.726Z [INFO]: Found 0 notations
+2025-05-08T17:20:14.165Z [INFO]: Getting notations for LESSON SIGN with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T17:20:14.180Z [INFO]: Found 0 notations
+2025-05-08T17:20:14.411Z [INFO]: Getting notations for LESSON EXPONENT with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T17:20:14.422Z [INFO]: Found 0 notations
+2025-05-08T17:20:14.494Z [INFO]: Getting notations for LESSON HORIZONTALLINE with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T17:20:14.503Z [INFO]: Found 0 notations
+2025-05-08T17:20:14.736Z [INFO]: Getting notations for LESSON VERTICALLINE with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T17:20:14.748Z [INFO]: Found 0 notations
+2025-05-08T17:20:14.831Z [INFO]: Getting notations for LESSON SLOPELINE with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T17:20:14.839Z [INFO]: Found 0 notations
+2025-05-08T17:20:15.067Z [INFO]: Getting notations for LESSON CURVE with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T17:20:15.077Z [INFO]: Found 0 notations
+2025-05-08T17:20:15.162Z [INFO]: Getting notations for LESSON CIRCLE with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T17:20:15.170Z [INFO]: Found 0 notations
+2025-05-08T17:20:15.394Z [INFO]: Getting notations for LESSON SQRT with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T17:20:15.403Z [INFO]: Found 0 notations
+2025-05-08T17:20:15.487Z [INFO]: Getting notations for LESSON SQRTSYMBOL with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T17:20:15.490Z [ERROR]: Model LessonSqrtsymbol not found
+2025-05-08T17:20:15.726Z [INFO]: Getting notations for LESSON TEXT with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T17:20:15.735Z [INFO]: Found 0 notations
+2025-05-08T17:20:15.805Z [INFO]: Getting notations for LESSON ANNOTATION with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T17:20:15.815Z [INFO]: Found 0 notations
+2025-05-08T17:20:16.059Z [INFO]: Getting notations for LESSON IMAGE with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T17:20:16.069Z [INFO]: Found 0 notations
+2025-05-08T17:27:19.477Z [INFO]: Getting notations for LESSON SYMBOL with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T17:27:19.503Z [INFO]: Found 0 notations
+2025-05-08T17:27:19.517Z [INFO]: Getting notations for LESSON SIGN with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T17:27:19.530Z [INFO]: Found 0 notations
+2025-05-08T17:27:19.853Z [INFO]: Getting notations for LESSON EXPONENT with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T17:27:19.869Z [INFO]: Found 0 notations
+2025-05-08T17:27:20.203Z [INFO]: Getting notations for LESSON HORIZONTALLINE with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T17:27:20.221Z [INFO]: Found 0 notations
+2025-05-08T17:27:20.454Z [INFO]: Getting notations for LESSON VERTICALLINE with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T17:27:20.467Z [INFO]: Found 0 notations
+2025-05-08T17:27:20.546Z [INFO]: Getting notations for LESSON SLOPELINE with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T17:27:20.555Z [INFO]: Found 0 notations
+2025-05-08T17:27:20.795Z [INFO]: Getting notations for LESSON CURVE with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T17:27:20.803Z [INFO]: Found 0 notations
+2025-05-08T17:27:20.874Z [INFO]: Getting notations for LESSON CIRCLE with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T17:27:20.885Z [INFO]: Found 0 notations
+2025-05-08T17:27:21.121Z [INFO]: Getting notations for LESSON SQRT with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T17:27:21.133Z [INFO]: Found 0 notations
+2025-05-08T17:27:21.232Z [INFO]: Getting notations for LESSON SQRTSYMBOL with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T17:27:21.233Z [ERROR]: Model LessonSqrtsymbol not found
+2025-05-08T17:27:21.443Z [INFO]: Getting notations for LESSON TEXT with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T17:27:21.451Z [INFO]: Found 0 notations
+2025-05-08T17:27:21.548Z [INFO]: Getting notations for LESSON ANNOTATION with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T17:27:21.555Z [INFO]: Found 0 notations
+2025-05-08T17:27:21.765Z [INFO]: Getting notations for LESSON IMAGE with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T17:27:21.774Z [INFO]: Found 0 notations
+2025-05-08T17:28:24.681Z [INFO]: Getting notations for LESSON SYMBOL with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T17:28:24.699Z [INFO]: Found 0 notations
+2025-05-08T17:28:24.723Z [INFO]: Getting notations for LESSON SIGN with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T17:28:24.737Z [INFO]: Found 0 notations
+2025-05-08T17:28:25.054Z [INFO]: Getting notations for LESSON EXPONENT with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T17:28:25.064Z [INFO]: Found 0 notations
+2025-05-08T17:28:25.390Z [INFO]: Getting notations for LESSON HORIZONTALLINE with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T17:28:25.398Z [INFO]: Found 0 notations
+2025-05-08T17:28:25.656Z [INFO]: Getting notations for LESSON VERTICALLINE with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T17:28:25.663Z [INFO]: Found 0 notations
+2025-05-08T17:28:25.727Z [INFO]: Getting notations for LESSON SLOPELINE with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T17:28:25.743Z [INFO]: Found 0 notations
+2025-05-08T17:28:28.536Z [INFO]: Getting notations for LESSON SYMBOL with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T17:28:28.544Z [INFO]: Found 0 notations
+2025-05-08T17:28:34.334Z [INFO]: Getting notations for LESSON SYMBOL with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T17:28:34.343Z [INFO]: Found 0 notations
+2025-05-08T17:28:34.392Z [INFO]: Getting notations for LESSON SIGN with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T17:28:34.400Z [INFO]: Found 0 notations
+2025-05-08T17:28:34.726Z [INFO]: Getting notations for LESSON EXPONENT with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T17:28:34.741Z [INFO]: Found 0 notations
+2025-05-08T17:28:34.990Z [INFO]: Getting notations for LESSON HORIZONTALLINE with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T17:28:34.997Z [INFO]: Found 0 notations
+2025-05-08T17:28:35.054Z [INFO]: Getting notations for LESSON VERTICALLINE with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T17:28:35.060Z [INFO]: Found 0 notations
+2025-05-08T17:28:35.320Z [INFO]: Getting notations for LESSON SLOPELINE with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T17:28:35.327Z [INFO]: Found 0 notations
+2025-05-08T17:28:35.384Z [INFO]: Getting notations for LESSON CURVE with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T17:28:35.392Z [INFO]: Found 0 notations
+2025-05-08T17:28:35.650Z [INFO]: Getting notations for LESSON CIRCLE with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T17:28:35.659Z [INFO]: Found 0 notations
+2025-05-08T17:28:35.711Z [INFO]: Getting notations for LESSON SQRT with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T17:28:35.725Z [INFO]: Found 0 notations
+2025-05-08T17:28:35.995Z [INFO]: Getting notations for LESSON SQRTSYMBOL with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T17:28:35.998Z [ERROR]: Model LessonSqrtsymbol not found
+2025-05-08T17:28:39.557Z [INFO]: Getting notations for LESSON SYMBOL with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T17:28:39.567Z [INFO]: Found 0 notations
+2025-05-08T17:28:39.609Z [INFO]: Getting notations for LESSON SIGN with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T17:28:39.623Z [INFO]: Found 0 notations
+2025-05-08T17:28:40.040Z [INFO]: Getting notations for LESSON EXPONENT with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T17:28:40.052Z [INFO]: Found 0 notations
+2025-05-08T17:28:40.371Z [INFO]: Getting notations for LESSON HORIZONTALLINE with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T17:28:40.378Z [INFO]: Found 0 notations
+2025-05-08T17:28:40.632Z [INFO]: Getting notations for LESSON VERTICALLINE with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T17:28:40.642Z [INFO]: Found 0 notations
+2025-05-08T17:28:40.694Z [INFO]: Getting notations for LESSON SLOPELINE with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T17:28:40.702Z [INFO]: Found 0 notations
+2025-05-08T17:28:40.960Z [INFO]: Getting notations for LESSON CURVE with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T17:28:40.969Z [INFO]: Found 0 notations
+2025-05-08T17:28:41.021Z [INFO]: Getting notations for LESSON CIRCLE with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T17:28:41.028Z [INFO]: Found 0 notations
+2025-05-08T17:28:41.289Z [INFO]: Getting notations for LESSON SQRT with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T17:28:41.295Z [INFO]: Found 0 notations
+2025-05-08T17:28:41.353Z [INFO]: Getting notations for LESSON SQRTSYMBOL with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T17:28:41.355Z [ERROR]: Model LessonSqrtsymbol not found
+2025-05-08T17:28:41.618Z [INFO]: Getting notations for LESSON TEXT with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T17:28:41.626Z [INFO]: Found 0 notations
+2025-05-08T17:28:41.666Z [INFO]: Getting notations for LESSON ANNOTATION with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T17:28:41.674Z [INFO]: Found 0 notations
+2025-05-08T17:28:41.946Z [INFO]: Getting notations for LESSON IMAGE with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T17:28:41.955Z [INFO]: Found 0 notations
+2025-05-08T17:28:58.673Z [INFO]: Getting notations for LESSON SYMBOL with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T17:28:58.685Z [INFO]: Found 0 notations
+2025-05-08T17:28:58.702Z [INFO]: Getting notations for LESSON SIGN with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T17:28:58.714Z [INFO]: Found 0 notations
+2025-05-08T17:28:59.023Z [INFO]: Getting notations for LESSON EXPONENT with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T17:28:59.035Z [INFO]: Found 0 notations
+2025-05-08T17:28:59.351Z [INFO]: Getting notations for LESSON HORIZONTALLINE with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T17:28:59.359Z [INFO]: Found 0 notations
+2025-05-08T17:28:59.615Z [INFO]: Getting notations for LESSON VERTICALLINE with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T17:28:59.623Z [INFO]: Found 0 notations
+2025-05-08T17:28:59.678Z [INFO]: Getting notations for LESSON SLOPELINE with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T17:28:59.686Z [INFO]: Found 0 notations
+2025-05-08T17:28:59.942Z [INFO]: Getting notations for LESSON CURVE with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T17:28:59.951Z [INFO]: Found 0 notations
+2025-05-08T17:29:00.006Z [INFO]: Getting notations for LESSON CIRCLE with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T17:29:00.016Z [INFO]: Found 0 notations
+2025-05-08T17:29:00.273Z [INFO]: Getting notations for LESSON SQRT with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T17:29:00.285Z [INFO]: Found 0 notations
+2025-05-08T17:29:00.336Z [INFO]: Getting notations for LESSON SQRTSYMBOL with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T17:29:00.338Z [ERROR]: Model LessonSqrtsymbol not found
+2025-05-08T17:29:00.605Z [INFO]: Getting notations for LESSON TEXT with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T17:29:00.615Z [INFO]: Found 0 notations
+2025-05-08T17:29:00.651Z [INFO]: Getting notations for LESSON ANNOTATION with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T17:29:00.660Z [INFO]: Found 0 notations
+2025-05-08T17:29:00.935Z [INFO]: Getting notations for LESSON IMAGE with parent UUID: 3460d113-31d3-47c4-8366-78a04c8eea85
+2025-05-08T17:29:00.943Z [INFO]: Found 0 notations
+2025-05-08T17:29:03.842Z [INFO]: Creating notation of type CIRCLE for LESSON
+2025-05-08T17:29:03.883Z [INFO]: Created notation with ID: 1
+2025-05-08T17:29:15.350Z [INFO]: Creating notation of type SLOPELINE for LESSON
+2025-05-08T17:29:15.352Z [ERROR]: Model validation failed: p1x (164) must be < p2x (72)
+2025-05-08T17:31:53.042Z [INFO]: Creating notation of type SLOPELINE for LESSON
+2025-05-08T17:31:53.140Z [INFO]: Created notation with ID: 1
+2025-05-08T17:32:00.207Z [INFO]: Creating notation of type SLOPELINE for LESSON
+2025-05-08T17:32:00.219Z [INFO]: Created notation with ID: 2
+2025-05-08T17:32:11.701Z [INFO]: Creating notation of type SLOPELINE for LESSON
+2025-05-08T17:32:11.702Z [ERROR]: Model validation failed: p1x (189) must be < p2x (71)
+2025-05-08T17:33:48.607Z [INFO]: Created new lesson with ID: 1
+2025-05-08T17:33:49.486Z [INFO]: Getting notations for LESSON SYMBOL with parent UUID: 9a02af6a-8cdc-4ecc-9ced-1bcfc28a3539
+2025-05-08T17:33:49.497Z [INFO]: Found 0 notations
+2025-05-08T17:33:49.552Z [INFO]: Getting notations for LESSON SIGN with parent UUID: 9a02af6a-8cdc-4ecc-9ced-1bcfc28a3539
+2025-05-08T17:33:49.568Z [INFO]: Found 0 notations
+2025-05-08T17:33:49.889Z [INFO]: Getting notations for LESSON EXPONENT with parent UUID: 9a02af6a-8cdc-4ecc-9ced-1bcfc28a3539
+2025-05-08T17:33:49.901Z [INFO]: Found 0 notations
+2025-05-08T17:33:50.221Z [INFO]: Getting notations for LESSON HORIZONTALLINE with parent UUID: 9a02af6a-8cdc-4ecc-9ced-1bcfc28a3539
+2025-05-08T17:33:50.230Z [INFO]: Found 0 notations
+2025-05-08T17:33:50.472Z [INFO]: Getting notations for LESSON VERTICALLINE with parent UUID: 9a02af6a-8cdc-4ecc-9ced-1bcfc28a3539
+2025-05-08T17:33:50.483Z [INFO]: Found 0 notations
+2025-05-08T17:33:50.553Z [INFO]: Getting notations for LESSON SLOPELINE with parent UUID: 9a02af6a-8cdc-4ecc-9ced-1bcfc28a3539
+2025-05-08T17:33:50.560Z [INFO]: Found 0 notations
+2025-05-08T17:33:50.800Z [INFO]: Getting notations for LESSON CURVE with parent UUID: 9a02af6a-8cdc-4ecc-9ced-1bcfc28a3539
+2025-05-08T17:33:50.808Z [INFO]: Found 0 notations
+2025-05-08T17:33:50.875Z [INFO]: Getting notations for LESSON CIRCLE with parent UUID: 9a02af6a-8cdc-4ecc-9ced-1bcfc28a3539
+2025-05-08T17:33:50.885Z [INFO]: Found 0 notations
+2025-05-08T17:33:51.122Z [INFO]: Getting notations for LESSON SQRT with parent UUID: 9a02af6a-8cdc-4ecc-9ced-1bcfc28a3539
+2025-05-08T17:33:51.134Z [INFO]: Found 0 notations
+2025-05-08T17:33:51.203Z [INFO]: Getting notations for LESSON SQRTSYMBOL with parent UUID: 9a02af6a-8cdc-4ecc-9ced-1bcfc28a3539
+2025-05-08T17:33:51.204Z [ERROR]: Model LessonSqrtsymbol not found
+2025-05-08T17:33:51.451Z [INFO]: Getting notations for LESSON TEXT with parent UUID: 9a02af6a-8cdc-4ecc-9ced-1bcfc28a3539
+2025-05-08T17:33:51.459Z [INFO]: Found 0 notations
+2025-05-08T17:33:51.526Z [INFO]: Getting notations for LESSON ANNOTATION with parent UUID: 9a02af6a-8cdc-4ecc-9ced-1bcfc28a3539
+2025-05-08T17:33:51.538Z [INFO]: Found 0 notations
+2025-05-08T17:33:51.774Z [INFO]: Getting notations for LESSON IMAGE with parent UUID: 9a02af6a-8cdc-4ecc-9ced-1bcfc28a3539
+2025-05-08T17:33:51.784Z [INFO]: Found 0 notations
+2025-05-08T17:33:53.224Z [INFO]: Creating notation of type CIRCLE for LESSON
+2025-05-08T17:33:53.241Z [INFO]: Created notation with ID: 1
+2025-05-08T17:34:04.929Z [INFO]: Creating notation of type SLOPELINE for LESSON
+2025-05-08T17:34:04.932Z [ERROR]: Model validation failed: p1x (310) must be < p2x (167)
+2025-05-08T17:50:55.745Z [INFO]: Getting notations for LESSON SYMBOL with parent UUID: 9a02af6a-8cdc-4ecc-9ced-1bcfc28a3539
+2025-05-08T17:50:55.768Z [INFO]: Found 0 notations
+2025-05-08T17:50:55.786Z [INFO]: Getting notations for LESSON SIGN with parent UUID: 9a02af6a-8cdc-4ecc-9ced-1bcfc28a3539
+2025-05-08T17:50:55.801Z [INFO]: Found 0 notations
+2025-05-08T17:50:56.112Z [INFO]: Getting notations for LESSON EXPONENT with parent UUID: 9a02af6a-8cdc-4ecc-9ced-1bcfc28a3539
+2025-05-08T17:50:56.123Z [INFO]: Found 0 notations
+2025-05-08T17:50:56.434Z [INFO]: Getting notations for LESSON HORIZONTALLINE with parent UUID: 9a02af6a-8cdc-4ecc-9ced-1bcfc28a3539
+2025-05-08T17:50:56.442Z [INFO]: Found 0 notations
+2025-05-08T17:50:56.689Z [INFO]: Getting notations for LESSON VERTICALLINE with parent UUID: 9a02af6a-8cdc-4ecc-9ced-1bcfc28a3539
+2025-05-08T17:50:56.697Z [INFO]: Found 0 notations
+2025-05-08T17:50:56.764Z [INFO]: Getting notations for LESSON SLOPELINE with parent UUID: 9a02af6a-8cdc-4ecc-9ced-1bcfc28a3539
+2025-05-08T17:50:56.772Z [INFO]: Found 0 notations
+2025-05-08T17:50:57.007Z [INFO]: Getting notations for LESSON CURVE with parent UUID: 9a02af6a-8cdc-4ecc-9ced-1bcfc28a3539
+2025-05-08T17:50:57.018Z [INFO]: Found 0 notations
+2025-05-08T17:50:57.085Z [INFO]: Getting notations for LESSON CIRCLE with parent UUID: 9a02af6a-8cdc-4ecc-9ced-1bcfc28a3539
+2025-05-08T17:50:57.095Z [INFO]: Found 1 notations
+2025-05-08T17:50:57.335Z [INFO]: Getting notations for LESSON SQRT with parent UUID: 9a02af6a-8cdc-4ecc-9ced-1bcfc28a3539
+2025-05-08T17:50:57.348Z [INFO]: Found 0 notations
+2025-05-08T17:50:57.419Z [INFO]: Getting notations for LESSON SQRTSYMBOL with parent UUID: 9a02af6a-8cdc-4ecc-9ced-1bcfc28a3539
+2025-05-08T17:50:57.421Z [ERROR]: Model LessonSqrtsymbol not found
+2025-05-08T17:50:57.663Z [INFO]: Getting notations for LESSON TEXT with parent UUID: 9a02af6a-8cdc-4ecc-9ced-1bcfc28a3539
+2025-05-08T17:50:57.671Z [INFO]: Found 0 notations
+2025-05-08T17:50:57.737Z [INFO]: Getting notations for LESSON ANNOTATION with parent UUID: 9a02af6a-8cdc-4ecc-9ced-1bcfc28a3539
+2025-05-08T17:50:57.744Z [INFO]: Found 0 notations
+2025-05-08T17:50:57.980Z [INFO]: Getting notations for LESSON IMAGE with parent UUID: 9a02af6a-8cdc-4ecc-9ced-1bcfc28a3539
+2025-05-08T17:50:57.991Z [INFO]: Found 0 notations
+2025-05-08T17:51:57.855Z [INFO]: Getting notations for LESSON SYMBOL with parent UUID: 9a02af6a-8cdc-4ecc-9ced-1bcfc28a3539
+2025-05-08T17:51:57.869Z [INFO]: Found 0 notations
+2025-05-08T17:51:57.889Z [INFO]: Getting notations for LESSON SIGN with parent UUID: 9a02af6a-8cdc-4ecc-9ced-1bcfc28a3539
+2025-05-08T17:51:57.902Z [INFO]: Found 0 notations
+2025-05-08T17:51:58.219Z [INFO]: Getting notations for LESSON EXPONENT with parent UUID: 9a02af6a-8cdc-4ecc-9ced-1bcfc28a3539
+2025-05-08T17:51:58.231Z [INFO]: Found 0 notations
+2025-05-08T17:51:58.549Z [INFO]: Getting notations for LESSON HORIZONTALLINE with parent UUID: 9a02af6a-8cdc-4ecc-9ced-1bcfc28a3539
+2025-05-08T17:51:58.558Z [INFO]: Found 0 notations
+2025-05-08T17:51:58.802Z [INFO]: Getting notations for LESSON VERTICALLINE with parent UUID: 9a02af6a-8cdc-4ecc-9ced-1bcfc28a3539
+2025-05-08T17:51:58.811Z [INFO]: Found 0 notations
+2025-05-08T17:51:58.882Z [INFO]: Getting notations for LESSON SLOPELINE with parent UUID: 9a02af6a-8cdc-4ecc-9ced-1bcfc28a3539
+2025-05-08T17:51:58.890Z [INFO]: Found 0 notations
+2025-05-08T17:51:59.122Z [INFO]: Getting notations for LESSON CURVE with parent UUID: 9a02af6a-8cdc-4ecc-9ced-1bcfc28a3539
+2025-05-08T17:51:59.130Z [INFO]: Found 0 notations
+2025-05-08T17:51:59.200Z [INFO]: Getting notations for LESSON CIRCLE with parent UUID: 9a02af6a-8cdc-4ecc-9ced-1bcfc28a3539
+2025-05-08T17:51:59.210Z [INFO]: Found 1 notations
+2025-05-08T17:51:59.449Z [INFO]: Getting notations for LESSON SQRT with parent UUID: 9a02af6a-8cdc-4ecc-9ced-1bcfc28a3539
+2025-05-08T17:51:59.456Z [INFO]: Found 0 notations
+2025-05-08T17:51:59.536Z [INFO]: Getting notations for LESSON SQRTSYMBOL with parent UUID: 9a02af6a-8cdc-4ecc-9ced-1bcfc28a3539
+2025-05-08T17:51:59.539Z [ERROR]: Model LessonSqrtsymbol not found
+2025-05-08T17:51:59.772Z [INFO]: Getting notations for LESSON TEXT with parent UUID: 9a02af6a-8cdc-4ecc-9ced-1bcfc28a3539
+2025-05-08T17:51:59.780Z [INFO]: Found 0 notations
+2025-05-08T17:51:59.859Z [INFO]: Getting notations for LESSON ANNOTATION with parent UUID: 9a02af6a-8cdc-4ecc-9ced-1bcfc28a3539
+2025-05-08T17:51:59.866Z [INFO]: Found 0 notations
+2025-05-08T17:52:00.098Z [INFO]: Getting notations for LESSON IMAGE with parent UUID: 9a02af6a-8cdc-4ecc-9ced-1bcfc28a3539
+2025-05-08T17:52:00.110Z [INFO]: Found 0 notations
+2025-05-08T17:54:00.692Z [INFO]: Getting notations for LESSON SYMBOL with parent UUID: 9a02af6a-8cdc-4ecc-9ced-1bcfc28a3539
+2025-05-08T17:54:00.725Z [INFO]: Found 0 notations
+2025-05-08T17:54:00.737Z [INFO]: Getting notations for LESSON SIGN with parent UUID: 9a02af6a-8cdc-4ecc-9ced-1bcfc28a3539
+2025-05-08T17:54:00.748Z [INFO]: Found 0 notations
+2025-05-08T17:54:01.073Z [INFO]: Getting notations for LESSON EXPONENT with parent UUID: 9a02af6a-8cdc-4ecc-9ced-1bcfc28a3539
+2025-05-08T17:54:01.086Z [INFO]: Found 0 notations
+2025-05-08T17:54:01.434Z [INFO]: Getting notations for LESSON HORIZONTALLINE with parent UUID: 9a02af6a-8cdc-4ecc-9ced-1bcfc28a3539
+2025-05-08T17:54:01.447Z [INFO]: Found 0 notations
+2025-05-08T17:54:01.686Z [INFO]: Getting notations for LESSON VERTICALLINE with parent UUID: 9a02af6a-8cdc-4ecc-9ced-1bcfc28a3539
+2025-05-08T17:54:01.696Z [INFO]: Found 0 notations
+2025-05-08T17:54:01.770Z [INFO]: Getting notations for LESSON SLOPELINE with parent UUID: 9a02af6a-8cdc-4ecc-9ced-1bcfc28a3539
+2025-05-08T17:54:01.778Z [INFO]: Found 0 notations
+2025-05-08T17:54:02.013Z [INFO]: Getting notations for LESSON CURVE with parent UUID: 9a02af6a-8cdc-4ecc-9ced-1bcfc28a3539
+2025-05-08T17:54:02.020Z [INFO]: Found 0 notations
+2025-05-08T17:54:02.091Z [INFO]: Getting notations for LESSON CIRCLE with parent UUID: 9a02af6a-8cdc-4ecc-9ced-1bcfc28a3539
+2025-05-08T17:54:02.103Z [INFO]: Found 1 notations
+2025-05-08T17:54:02.338Z [INFO]: Getting notations for LESSON SQRT with parent UUID: 9a02af6a-8cdc-4ecc-9ced-1bcfc28a3539
+2025-05-08T17:54:02.349Z [INFO]: Found 0 notations
+2025-05-08T17:54:02.422Z [INFO]: Getting notations for LESSON SQRTSYMBOL with parent UUID: 9a02af6a-8cdc-4ecc-9ced-1bcfc28a3539
+2025-05-08T17:54:02.425Z [ERROR]: Model LessonSqrtsymbol not found
+2025-05-08T17:54:02.658Z [INFO]: Getting notations for LESSON TEXT with parent UUID: 9a02af6a-8cdc-4ecc-9ced-1bcfc28a3539
+2025-05-08T17:54:02.667Z [INFO]: Found 0 notations
+2025-05-08T17:54:02.740Z [INFO]: Getting notations for LESSON ANNOTATION with parent UUID: 9a02af6a-8cdc-4ecc-9ced-1bcfc28a3539
+2025-05-08T17:54:02.749Z [INFO]: Found 0 notations
+2025-05-08T17:54:02.987Z [INFO]: Getting notations for LESSON IMAGE with parent UUID: 9a02af6a-8cdc-4ecc-9ced-1bcfc28a3539
+2025-05-08T17:54:02.998Z [INFO]: Found 0 notations
+2025-05-08T17:55:14.692Z [INFO]: Getting notations for LESSON SYMBOL with parent UUID: 9a02af6a-8cdc-4ecc-9ced-1bcfc28a3539
+2025-05-08T17:55:14.705Z [INFO]: Found 0 notations
+2025-05-08T17:55:14.845Z [INFO]: Getting notations for LESSON SIGN with parent UUID: 9a02af6a-8cdc-4ecc-9ced-1bcfc28a3539
+2025-05-08T17:55:14.856Z [INFO]: Found 0 notations
+2025-05-08T17:55:15.162Z [INFO]: Getting notations for LESSON EXPONENT with parent UUID: 9a02af6a-8cdc-4ecc-9ced-1bcfc28a3539
+2025-05-08T17:55:15.175Z [INFO]: Found 0 notations
+2025-05-08T17:55:15.182Z [INFO]: Getting notations for LESSON HORIZONTALLINE with parent UUID: 9a02af6a-8cdc-4ecc-9ced-1bcfc28a3539
+2025-05-08T17:55:15.192Z [INFO]: Found 0 notations
+2025-05-08T17:55:15.504Z [INFO]: Getting notations for LESSON VERTICALLINE with parent UUID: 9a02af6a-8cdc-4ecc-9ced-1bcfc28a3539
+2025-05-08T17:55:15.512Z [INFO]: Found 0 notations
+2025-05-08T17:55:15.759Z [INFO]: Getting notations for LESSON SLOPELINE with parent UUID: 9a02af6a-8cdc-4ecc-9ced-1bcfc28a3539
+2025-05-08T17:55:15.798Z [INFO]: Found 0 notations
+2025-05-08T17:55:15.824Z [INFO]: Getting notations for LESSON CURVE with parent UUID: 9a02af6a-8cdc-4ecc-9ced-1bcfc28a3539
+2025-05-08T17:55:15.832Z [INFO]: Found 0 notations
+2025-05-08T17:55:16.117Z [INFO]: Getting notations for LESSON CIRCLE with parent UUID: 9a02af6a-8cdc-4ecc-9ced-1bcfc28a3539
+2025-05-08T17:55:16.130Z [INFO]: Found 1 notations
+2025-05-08T17:55:16.157Z [INFO]: Getting notations for LESSON SQRT with parent UUID: 9a02af6a-8cdc-4ecc-9ced-1bcfc28a3539
+2025-05-08T17:55:16.164Z [INFO]: Found 0 notations
+2025-05-08T17:55:16.447Z [INFO]: Getting notations for LESSON SQRTSYMBOL with parent UUID: 9a02af6a-8cdc-4ecc-9ced-1bcfc28a3539
+2025-05-08T17:55:16.449Z [ERROR]: Model LessonSqrtsymbol not found
+2025-05-08T17:55:16.490Z [INFO]: Getting notations for LESSON TEXT with parent UUID: 9a02af6a-8cdc-4ecc-9ced-1bcfc28a3539
+2025-05-08T17:55:16.497Z [INFO]: Found 0 notations
+2025-05-08T17:55:16.774Z [INFO]: Getting notations for LESSON ANNOTATION with parent UUID: 9a02af6a-8cdc-4ecc-9ced-1bcfc28a3539
+2025-05-08T17:55:16.782Z [INFO]: Found 0 notations
+2025-05-08T17:55:16.817Z [INFO]: Getting notations for LESSON IMAGE with parent UUID: 9a02af6a-8cdc-4ecc-9ced-1bcfc28a3539
+2025-05-08T17:55:16.830Z [INFO]: Found 0 notations
+2025-05-08T17:55:35.991Z [INFO]: Getting notations for LESSON SYMBOL with parent UUID: 9a02af6a-8cdc-4ecc-9ced-1bcfc28a3539
+2025-05-08T17:55:36.011Z [INFO]: Found 0 notations
+2025-05-08T17:55:36.040Z [INFO]: Getting notations for LESSON SIGN with parent UUID: 9a02af6a-8cdc-4ecc-9ced-1bcfc28a3539
+2025-05-08T17:55:36.056Z [INFO]: Found 0 notations
+2025-05-08T17:55:36.391Z [INFO]: Getting notations for LESSON EXPONENT with parent UUID: 9a02af6a-8cdc-4ecc-9ced-1bcfc28a3539
+2025-05-08T17:55:36.401Z [INFO]: Found 0 notations
+2025-05-08T17:55:36.721Z [INFO]: Getting notations for LESSON HORIZONTALLINE with parent UUID: 9a02af6a-8cdc-4ecc-9ced-1bcfc28a3539
+2025-05-08T17:55:36.729Z [INFO]: Found 0 notations
+2025-05-08T17:55:36.977Z [INFO]: Getting notations for LESSON VERTICALLINE with parent UUID: 9a02af6a-8cdc-4ecc-9ced-1bcfc28a3539
+2025-05-08T17:55:36.985Z [INFO]: Found 0 notations
+2025-05-08T17:55:37.040Z [INFO]: Getting notations for LESSON SLOPELINE with parent UUID: 9a02af6a-8cdc-4ecc-9ced-1bcfc28a3539
+2025-05-08T17:55:37.047Z [INFO]: Found 0 notations
+2025-05-08T17:55:37.298Z [INFO]: Getting notations for LESSON CURVE with parent UUID: 9a02af6a-8cdc-4ecc-9ced-1bcfc28a3539
+2025-05-08T17:55:37.306Z [INFO]: Found 0 notations
+2025-05-08T17:55:37.361Z [INFO]: Getting notations for LESSON CIRCLE with parent UUID: 9a02af6a-8cdc-4ecc-9ced-1bcfc28a3539
+2025-05-08T17:55:37.373Z [INFO]: Found 1 notations
+2025-05-08T17:55:37.629Z [INFO]: Getting notations for LESSON SQRT with parent UUID: 9a02af6a-8cdc-4ecc-9ced-1bcfc28a3539
+2025-05-08T17:55:37.640Z [INFO]: Found 0 notations
+2025-05-08T17:55:37.682Z [INFO]: Getting notations for LESSON SQRTSYMBOL with parent UUID: 9a02af6a-8cdc-4ecc-9ced-1bcfc28a3539
+2025-05-08T17:55:37.683Z [ERROR]: Model LessonSqrtsymbol not found
+2025-05-08T17:55:37.961Z [INFO]: Getting notations for LESSON TEXT with parent UUID: 9a02af6a-8cdc-4ecc-9ced-1bcfc28a3539
+2025-05-08T17:55:37.970Z [INFO]: Found 0 notations
+2025-05-08T17:55:37.997Z [INFO]: Getting notations for LESSON ANNOTATION with parent UUID: 9a02af6a-8cdc-4ecc-9ced-1bcfc28a3539
+2025-05-08T17:55:38.007Z [INFO]: Found 0 notations
+2025-05-08T17:55:38.291Z [INFO]: Getting notations for LESSON IMAGE with parent UUID: 9a02af6a-8cdc-4ecc-9ced-1bcfc28a3539
+2025-05-08T17:55:38.302Z [INFO]: Found 0 notations
+2025-05-08T17:57:58.411Z [INFO]: Getting notations for LESSON SYMBOL with parent UUID: 9a02af6a-8cdc-4ecc-9ced-1bcfc28a3539
+2025-05-08T17:57:58.428Z [INFO]: Found 0 notations
+2025-05-08T17:57:58.443Z [INFO]: Getting notations for LESSON SIGN with parent UUID: 9a02af6a-8cdc-4ecc-9ced-1bcfc28a3539
+2025-05-08T17:57:58.454Z [INFO]: Found 0 notations
+2025-05-08T17:57:58.774Z [INFO]: Getting notations for LESSON EXPONENT with parent UUID: 9a02af6a-8cdc-4ecc-9ced-1bcfc28a3539
+2025-05-08T17:57:58.786Z [INFO]: Found 0 notations
+2025-05-08T17:57:59.094Z [INFO]: Getting notations for LESSON HORIZONTALLINE with parent UUID: 9a02af6a-8cdc-4ecc-9ced-1bcfc28a3539
+2025-05-08T17:57:59.106Z [INFO]: Found 0 notations
+2025-05-08T17:57:59.358Z [INFO]: Getting notations for LESSON VERTICALLINE with parent UUID: 9a02af6a-8cdc-4ecc-9ced-1bcfc28a3539
+2025-05-08T17:57:59.366Z [INFO]: Found 0 notations
+2025-05-08T17:57:59.419Z [INFO]: Getting notations for LESSON SLOPELINE with parent UUID: 9a02af6a-8cdc-4ecc-9ced-1bcfc28a3539
+2025-05-08T17:57:59.425Z [INFO]: Found 0 notations
+2025-05-08T17:57:59.683Z [INFO]: Getting notations for LESSON CURVE with parent UUID: 9a02af6a-8cdc-4ecc-9ced-1bcfc28a3539
+2025-05-08T17:57:59.692Z [INFO]: Found 0 notations
+2025-05-08T17:57:59.744Z [INFO]: Getting notations for LESSON CIRCLE with parent UUID: 9a02af6a-8cdc-4ecc-9ced-1bcfc28a3539
+2025-05-08T17:57:59.754Z [INFO]: Found 1 notations
+2025-05-08T17:58:00.005Z [INFO]: Getting notations for LESSON SQRT with parent UUID: 9a02af6a-8cdc-4ecc-9ced-1bcfc28a3539
+2025-05-08T17:58:00.013Z [INFO]: Found 0 notations
+2025-05-08T17:58:00.064Z [INFO]: Getting notations for LESSON SQRTSYMBOL with parent UUID: 9a02af6a-8cdc-4ecc-9ced-1bcfc28a3539
+2025-05-08T17:58:00.066Z [ERROR]: Model LessonSqrtsymbol not found
+2025-05-08T17:58:00.336Z [INFO]: Getting notations for LESSON TEXT with parent UUID: 9a02af6a-8cdc-4ecc-9ced-1bcfc28a3539
+2025-05-08T17:58:00.342Z [INFO]: Found 0 notations
+2025-05-08T17:58:00.385Z [INFO]: Getting notations for LESSON ANNOTATION with parent UUID: 9a02af6a-8cdc-4ecc-9ced-1bcfc28a3539
+2025-05-08T17:58:00.392Z [INFO]: Found 0 notations
+2025-05-08T17:58:00.651Z [INFO]: Getting notations for LESSON IMAGE with parent UUID: 9a02af6a-8cdc-4ecc-9ced-1bcfc28a3539
+2025-05-08T17:58:00.659Z [INFO]: Found 0 notations
+2025-05-08T18:01:04.234Z [INFO]: Getting notations for LESSON SYMBOL with parent UUID: 9a02af6a-8cdc-4ecc-9ced-1bcfc28a3539
+2025-05-08T18:01:04.255Z [INFO]: Found 0 notations
+2025-05-08T18:01:04.270Z [INFO]: Getting notations for LESSON SIGN with parent UUID: 9a02af6a-8cdc-4ecc-9ced-1bcfc28a3539
+2025-05-08T18:01:04.282Z [INFO]: Found 0 notations
+2025-05-08T18:01:04.603Z [INFO]: Getting notations for LESSON EXPONENT with parent UUID: 9a02af6a-8cdc-4ecc-9ced-1bcfc28a3539
+2025-05-08T18:01:04.614Z [INFO]: Found 0 notations
+2025-05-08T18:01:04.926Z [INFO]: Getting notations for LESSON HORIZONTALLINE with parent UUID: 9a02af6a-8cdc-4ecc-9ced-1bcfc28a3539
+2025-05-08T18:01:04.937Z [INFO]: Found 0 notations
+2025-05-08T18:01:05.182Z [INFO]: Getting notations for LESSON VERTICALLINE with parent UUID: 9a02af6a-8cdc-4ecc-9ced-1bcfc28a3539
+2025-05-08T18:01:05.190Z [INFO]: Found 0 notations
+2025-05-08T18:01:05.259Z [INFO]: Getting notations for LESSON SLOPELINE with parent UUID: 9a02af6a-8cdc-4ecc-9ced-1bcfc28a3539
+2025-05-08T18:01:05.267Z [INFO]: Found 0 notations
+2025-05-08T18:01:05.502Z [INFO]: Getting notations for LESSON CURVE with parent UUID: 9a02af6a-8cdc-4ecc-9ced-1bcfc28a3539
+2025-05-08T18:01:05.509Z [INFO]: Found 0 notations
+2025-05-08T18:01:05.579Z [INFO]: Getting notations for LESSON CIRCLE with parent UUID: 9a02af6a-8cdc-4ecc-9ced-1bcfc28a3539
+2025-05-08T18:01:05.588Z [INFO]: Found 1 notations
+2025-05-08T18:01:05.834Z [INFO]: Getting notations for LESSON SQRT with parent UUID: 9a02af6a-8cdc-4ecc-9ced-1bcfc28a3539
+2025-05-08T18:01:05.841Z [INFO]: Found 0 notations
+2025-05-08T18:01:05.900Z [INFO]: Getting notations for LESSON SQRTSYMBOL with parent UUID: 9a02af6a-8cdc-4ecc-9ced-1bcfc28a3539
+2025-05-08T18:01:05.902Z [ERROR]: Model LessonSqrtsymbol not found
+2025-05-08T18:01:06.153Z [INFO]: Getting notations for LESSON TEXT with parent UUID: 9a02af6a-8cdc-4ecc-9ced-1bcfc28a3539
+2025-05-08T18:01:06.161Z [INFO]: Found 0 notations
+2025-05-08T18:01:06.221Z [INFO]: Getting notations for LESSON ANNOTATION with parent UUID: 9a02af6a-8cdc-4ecc-9ced-1bcfc28a3539
+2025-05-08T18:01:06.229Z [INFO]: Found 0 notations
+2025-05-08T18:01:06.478Z [INFO]: Getting notations for LESSON IMAGE with parent UUID: 9a02af6a-8cdc-4ecc-9ced-1bcfc28a3539
+2025-05-08T18:01:06.489Z [INFO]: Found 0 notations

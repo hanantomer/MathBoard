@@ -57,7 +57,6 @@ const notationStore = useNotationStore();
 const editModeStore = useEditModeStore();
 const cellStore = useCellStore();
 
-
 const circleAttributes = ref<CircleAttributes>({
   cx: 0,
   cy: 0,
@@ -65,25 +64,27 @@ const circleAttributes = ref<CircleAttributes>({
 });
 
 const handleX1 = computed(() => {
-  return circleAttributes.value.cx -
+  return (
+    circleAttributes.value.cx -
     circleAttributes.value.r +
-    cellStore.getSvgBoundingRect().left;
+    cellStore.getSvgBoundingRect().left - 5
+  );
 });
 
 const handleY1 = computed(() => {
-  return circleAttributes.value.cy +
-    cellStore.getSvgBoundingRect().left;
+  return circleAttributes.value.cy + cellStore.getSvgBoundingRect().left;
 });
 
 const handleX2 = computed(() => {
-  return circleAttributes.value.cx +
+  return (
+    circleAttributes.value.cx +
     circleAttributes.value.r +
-    cellStore.getSvgBoundingRect().left;
+    cellStore.getSvgBoundingRect().left 
+  );
 });
 
 const handleY2 = computed(() => {
-  return circleAttributes.value.cy +
-    cellStore.getSvgBoundingRect().left;
+  return circleAttributes.value.cy + cellStore.getSvgBoundingRect().left;
 });
 
 const show = computed(() => {
@@ -133,6 +134,7 @@ function selectCircle(circle: CircleNotationAttributes) {
   circleAttributes.value.cy = c.cy;
   circleAttributes.value.r = c.r;
   setCircleElement();
+  notationStore.selectNotation(c.uuid);
 }
 
 function setRadius(e: MouseEvent) {

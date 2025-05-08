@@ -13,6 +13,7 @@ import {
   VerticalLineNotationAttributes,
   SlopeLineNotationAttributes,
   CurveNotationAttributes,
+  CircleNotationAttributes,
   isRect,
   isLine,
   isPoint,
@@ -185,6 +186,12 @@ export const useNotationStore = defineStore("notation", () => {
           true,
         );
         break;
+      case "CIRCLE":
+        notationCellOccupationHelper.updateCircleOccupationMatrix(
+          cellRectNotationOccupationMatrix,
+          notations.value.get(uuid)! as CircleNotationAttributes,
+          true,
+        );
 
       case "IMAGE":
       case "TEXT":
@@ -263,8 +270,6 @@ export const useNotationStore = defineStore("notation", () => {
     }
 
     // line
-
-    ///TODO: remove occupation matrix population of lines
 
     const lineNotationsUUIDs = cellLineNotationOccupationMatrix[cell.col][
       cell.row
@@ -458,6 +463,14 @@ export const useNotationStore = defineStore("notation", () => {
           notation as CurveNotationAttributes,
           false,
         );
+        break;
+      case "CIRCLE":
+        notationCellOccupationHelper.updateCircleOccupationMatrix(
+          cellRectNotationOccupationMatrix,
+          notation as CircleNotationAttributes,
+          false,
+        );
+        break;
     }
   }
 

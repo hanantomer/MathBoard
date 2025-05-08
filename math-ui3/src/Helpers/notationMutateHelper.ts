@@ -398,6 +398,12 @@ export default function notationMutateHelper() {
           break;
         }
 
+        case "CIRCLE": {
+          (n as CircleNotationAttributes).cx += deltaX;
+          (n as CircleNotationAttributes).cy += deltaY;
+          break;
+        }
+
         case "SQRT": {
           (n as unknown as MultiCellAttributes).fromCol += deltaCol;
           (n as unknown as MultiCellAttributes).toCol += deltaCol;
@@ -601,7 +607,6 @@ export default function notationMutateHelper() {
 
     addNotation(notation);
   }
-
 
   function upsertRectNotation(newNotation: RectNotationCreationAttributes) {
     editModeStore.setDefaultEditMode();
@@ -1043,8 +1048,6 @@ export default function notationMutateHelper() {
     upsertCurveNotation(curveNotation);
   }
 
-
-
   function addCircleNotation(
     circleAttributes: CircleAttributes,
     notationType: NotationType,
@@ -1060,7 +1063,6 @@ export default function notationMutateHelper() {
     };
     upsertCircleNotation(circleNotation);
   }
-
 
   function cloneNotation(notation: Readonly<NotationAttributes>) {
     let clonedNotation = { ...notation } as any;

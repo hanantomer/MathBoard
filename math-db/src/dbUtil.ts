@@ -627,112 +627,103 @@ export default function dbUtil() {
     }
 
     function validateModel(model: NotationAttributes): boolean {
-
-        if (!validateColAndRowRounded(model)) {
-            throw new Error(JSON.stringify(model) + ": has a non rounded col or row");
+        try {
+            if (!validateColAndRowRounded(model)) {
+                throw new Error(`Non-integer grid coordinates found in model: ${JSON.stringify(model)}`);
+            }
+            
+            switch (model.notationType) {
+                case "TEXT":
+                case "IMAGE": {
+                    const m = model as RectNotationAttributes;
+                    validateRectNotation(m);
+                    break;
+                }
+                case "EXPONENT": {
+                    const m = model as ExponentNotationAttributes;
+                    validateExponentNotation(m);
+                    break;
+                }
+                case "SIGN":
+                case "SYMBOL": {
+                    const m = model as PointNotationAttributes;
+                    validatePointNotation(m);
+                    break;
+                }
+                case "SQRT": {
+                    const m = model as SqrtNotationAttributes;
+                    validateSqrtNotation(m);
+                    break;
+                }
+                case "SLOPELINE": {
+                    const m = model as SlopeLineNotationAttributes;
+                    validateSlopeLineNotation(m);
+                    break;
+                }
+                case "VERTICALLINE": {
+                    const m = model as VerticalLineNotationAttributes;
+                    validateVerticalLineNotation(m);
+                    break;
+                }
+                case "CURVE": {
+                    const m = model as CurveNotationAttributes;
+                    validateCurveNotation(m);
+                    break;
+                }
+            }
+            return true;
+        } catch (error: any) {
+            logger.error(`Model validation failed: ${error.message}`);
+            throw error;
         }
-        
-        switch (model.notationType) {
-            case "TEXT":
-            case "IMAGE": {
-                const m = model as RectNotationAttributes;
+    }
 
-                if (
-                    !(
-                        m.fromCol >= 0 &&
-                        m.fromCol >= 0 &&
-                        m.toCol >= 0 &&
-                        m.toRow >= 0 &&
-                        m.fromCol <= m.toCol
-                    )
-                ) {
-                    throw new Error("invalid model:" + JSON.stringify(m));
-                }
-                break;
-            }
+    function validateRectNotation(m: RectNotationAttributes): void {
+        if (m.fromCol < 0) throw new Error(`fromCol must be >= 0, got ${m.fromCol}`);
+        if (m.toCol < 0) throw new Error(`toCol must be >= 0, got ${m.toCol}`);
+        if (m.toRow < 0) throw new Error(`toRow must be >= 0, got ${m.toRow}`);
+        if (m.fromCol > m.toCol) throw new Error(`fromCol (${m.fromCol}) must be <= toCol (${m.toCol})`);
+    }
 
-            case "EXPONENT": {
-                const m = model as ExponentNotationAttributes;
-
-                if (
-                    !(
-                        (m.col ?? 0) >= 0 &&
-                        (m.row ?? 0) >= 0 &&
-                        (!m.exponent ||  m.exponent.toString().length > 0)
-                    )
-                ) {
-                    throw new Error("invalid model:" + JSON.stringify(m));
-                }
-                break;
-            }
-
-            case "SIGN":
-            case "SYMBOL": {
-                const m = model as PointNotationAttributes;
-                if (!((m.col ?? 0) >= 0 && (m.row ?? 0) >= 0)) {
-                    throw new Error("invalid model:" + JSON.stringify(m));
-                }
-                break;
-            }
-
-            case "SQRT":
-             {
-                const m = model as SqrtNotationAttributes;
-                if (
-                    !(
-                        m.fromCol >= 0 &&
-                        m.toCol >= 0 &&
-                        m.row >= 0 &&
-                        m.fromCol < m.toCol
-                    )
-                ) {
-                    throw new Error("invalid model:" + JSON.stringify(m));
-                }
-                break;
-            }
-            case "SLOPELINE": {
-                const m = model as SlopeLineNotationAttributes;
-                if (
-                    !(
-                        m.p1x >= 0 &&
-                        m.p2x >= 0 &&
-                        m.p1x < m.p2x &&
-                        m.p1y >= 0 &&
-                        m.p2y >= 0 &&
-                        m.p2x != m.p1x &&
-                        m.p1y != m.p2y
-                    )
-                ) {
-                    throw new Error("invalid model:" + JSON.stringify(m));
-                }
-                break;
-            }
-            case "VERTICALLINE": {
-                const m = model as VerticalLineNotationAttributes;
-                if (
-                    !(
-                        m.px >= 0 &&
-                        m.p1y >= 0 &&
-                        m.p2y >= 0 &&
-                        m.p1y < m.p2y
-                    )
-                ) {
-                    throw new Error("invalid model:" + JSON.stringify(m));
-                }
-                break;
-            }
-
-            case "CURVE": {
-                const m = model as CurveNotationAttributes;
-
-                if (!(m.p1x > 0 && m.p1y > 0 && m.p2x > 0 && m.p2y >= 0)) {
-                    throw new Error("invalid model:" + JSON.stringify(m));
-                }
-                break;
-            }
+    function validateExponentNotation(m: ExponentNotationAttributes): void {
+        if ((m.col ?? 0) < 0) throw new Error(`col must be >= 0, got ${m.col}`);
+        if ((m.row ?? 0) < 0) throw new Error(`row must be >= 0, got ${m.row}`);
+        if (m.exponent && m.exponent.toString().length === 0) {
+            throw new Error('exponent cannot be empty if provided');
         }
+    }
 
-        return true;
+    function validatePointNotation(m: PointNotationAttributes): void {
+        if ((m.col ?? 0) < 0) throw new Error(`col must be >= 0, got ${m.col}`);
+        if ((m.row ?? 0) < 0) throw new Error(`row must be >= 0, got ${m.row}`);
+    }
+
+    function validateSqrtNotation(m: SqrtNotationAttributes): void {
+        if (m.fromCol < 0) throw new Error(`fromCol must be >= 0, got ${m.fromCol}`);
+        if (m.toCol < 0) throw new Error(`toCol must be >= 0, got ${m.toCol}`);
+        if (m.row < 0) throw new Error(`row must be >= 0, got ${m.row}`);
+        if (m.fromCol >= m.toCol) throw new Error(`fromCol (${m.fromCol}) must be < toCol (${m.toCol})`);
+    }
+
+    function validateSlopeLineNotation(m: SlopeLineNotationAttributes): void {
+        if (m.p1x < 0) throw new Error(`p1x must be >= 0, got ${m.p1x}`);
+        if (m.p2x < 0) throw new Error(`p2x must be >= 0, got ${m.p2x}`);
+        if (m.p1y < 0) throw new Error(`p1y must be >= 0, got ${m.p1y}`);
+        if (m.p2y < 0) throw new Error(`p2y must be >= 0, got ${m.p2y}`);
+   }
+
+    function validateVerticalLineNotation(m: VerticalLineNotationAttributes): void {
+        if (m.px < 0) throw new Error(`px must be >= 0, got ${m.px}`);
+        if (m.p1y < 0) throw new Error(`p1y must be >= 0, got ${m.p1y}`);
+        if (m.p2y < 0) throw new Error(`p2y must be >= 0, got ${m.p2y}`);
+        if (m.p1y >= m.p2y) throw new Error(`p1y (${m.p1y}) must be < p2y (${m.p2y})`);
+    }
+
+    function validateCurveNotation(m: CurveNotationAttributes): void {
+        if (m.p1x <= 0) throw new Error(`p1x must be > 0, got ${m.p1x}`);
+        if (m.p1y <= 0) throw new Error(`p1y must be > 0, got ${m.p1y}`);
+        if (m.p2x <= 0) throw new Error(`p2x must be > 0, got ${m.p2x}`);
+        if (m.p2y < 0) throw new Error(`p2y must be >= 0, got ${m.p2y}`);
     }
 
     async function storeResetToken(

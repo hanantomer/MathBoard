@@ -1,4 +1,5 @@
 import {
+  RectCoordinates,
   PointNotationAttributes,
   HorizontalLineAttributes,
   VerticalLineNotationAttributes,
@@ -6,12 +7,16 @@ import {
   CurveNotationAttributes,
   SlopeLineAttributes,
   MultiCellAttributes,
+  CircleNotationAttributes,
+  RectAttributes,
 } from "common/baseTypes";
 
 import { matrixDimensions } from "common/globals";
 import { useCellStore } from "../store/pinia/cellStore";
+import useScreenHelper from "./screenHelper";
 
 const cellStore = useCellStore();
+const screenHelper = useScreenHelper();
 
 export default function notationCellOccupationHelper() {
   // point occupation matrix holds only one notation per cell
@@ -47,15 +52,6 @@ export default function notationCellOccupationHelper() {
     doRemove: boolean,
   ) {
     if (!validateRowAndCol(col, row)) return;
-    //clearLineNotationFromMatrix(uuid, matrix);
-    /*if (doRemove) {
-      for (let i = 0; i < matrix[col][row].length; i++) {
-        if (matrix[col][row][i] === uuid) {
-          matrix[col][row][i] = null;
-        }
-      }
-      return;
-    }*/
 
     if (doRemove) return;
 
@@ -174,13 +170,14 @@ export default function notationCellOccupationHelper() {
     }
   }
 
+
   function updateCurveOccupationMatrix(
     matrix: any,
     notation: CurveNotationAttributes,
     doRemove: boolean,
   ) {
     if (!cellStore.getSvgId) return;
-    clearLineNotationFromMatrix(notation.uuid, matrix);
+    clearNotationFromMatrix(notation.uuid, matrix);
 
     // get curve-enclosing-triangle and mark all cells intersecting
     // with the edges which emerge from the control point
@@ -210,6 +207,38 @@ export default function notationCellOccupationHelper() {
     );
   }
 
+  function updateCircleOccupationMatrix(
+    matrix: any,
+    notation: CircleNotationAttributes,
+    doRemove: boolean,
+  ) {
+
+    if (!cellStore.getSvgId) return;
+    clearNotationFromMatrix(notation.uuid, matrix);
+
+    const rectCoordinates: RectCoordinates = {
+      topLeft: {
+        x: notation.cx - notation.r,
+        y: notation.cy - notation.r
+      },
+      bottomRight: {
+        x: notation.cx + notation.r,
+        y: notation.cy + notation.r
+      }
+    }
+
+    const rectAttributes : RectAttributes = screenHelper.getRectAttributes(rectCoordinates);
+
+    for (let col = rectAttributes.fromCol; col <= rectAttributes.toCol; col++) {
+      for (let row = rectAttributes.fromRow; row <= rectAttributes.toRow; row++) {
+        if (validateRowAndCol(col, row)) {
+          matrix[col][row] = doRemove ? null : notation.uuid;
+        }
+      }
+    }
+  }
+
+
   function validateRowAndCol(col: number, row: number): boolean {
     return (
       col < matrixDimensions.colsNum &&
@@ -220,25 +249,11 @@ export default function notationCellOccupationHelper() {
   }
 
   function clearNotationFromMatrix(uuid: string, matrix: any) {
-    //if (uuid.startsWith("_")) return; // don not remove cloned notations, see cloneSelectedNotations in notationStore
     for (let col = 0; col < matrixDimensions.colsNum; col++) {
       for (let row = 0; row < matrixDimensions.rowsNum; row++) {
         if (matrix[col][row] === uuid) {
           matrix[col][row] = null;
         }
-      }
-    }
-  }
-
-  function clearLineNotationFromMatrix(uuid: string, matrix: any) {
-    for (let col = 0; col < matrixDimensions.colsNum; col++) {
-      for (let row = 0; row < matrixDimensions.rowsNum; row++) {
-        (matrix[col][row] as Set<String>).delete(uuid);
-        // for (let sub = 0; sub < matrix[col][row].length; sub++) {
-        //   if (matrix[col][row][sub] === uuid) {
-        //     matrix[col][row][sub] = null;
-        //   }
-        // }
       }
     }
   }
@@ -250,6 +265,7 @@ export default function notationCellOccupationHelper() {
     updateVerticalLineOccupationMatrix,
     updateSlopeLineOccupationMatrix,
     updateCurveOccupationMatrix,
+    updateCircleOccupationMatrix,
     updateRectOccupationMatrix,
   };
 }

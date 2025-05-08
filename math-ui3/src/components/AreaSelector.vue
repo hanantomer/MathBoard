@@ -471,14 +471,14 @@ function moveSelectionByMouseDrag(e: MouseEvent) {
     return;
   }
 
-  if (onlyLinesAraSelected()) {
+  if (onlyLinesOrCircleAraSelected()) {
     moveAtPixelScale(e);
   } else {
     moveAtCellScale(e);
   }
 }
 
-function onlyLinesAraSelected() {
+function onlyLinesOrCircleAraSelected() {
   return (
     notationStore
       .getSelectedNotations()
