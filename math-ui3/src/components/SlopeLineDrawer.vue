@@ -170,7 +170,7 @@ function drawLine(p: DotCoordinates) {
     linePosition.value.p1y = p.y;
   }
 
-  validateSlopePosition();
+  //validateSlopePosition();
 }
 
 function selectLine(notation: NotationAttributes) {
@@ -206,14 +206,14 @@ function resetDrawing() {
       0;
 }
 
-function validateSlopePosition() {
-  if (linePosition.value.p1x >= linePosition.value.p2x) {
-    throw new Error(
-      JSON.stringify(linePosition.value) +
-        "is invalid: p2x must be greater than p1x",
-    );
-  }
-}
+// function validateSlopePosition() {
+//   if (linePosition.value.p1x >= linePosition.value.p2x) {
+//     throw new Error(
+//       JSON.stringify(linePosition.value) +
+//         "is invalid: p2x must be greater than p1x",
+//     );
+//   }
+// }
 
 function getSlopeTypeForNewLine(xPos: number, yPos: number): SlopeType {
   if (

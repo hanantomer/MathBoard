@@ -12,6 +12,7 @@
       rounded
       height="8"
     ></v-progress-linear>
+    <statusBar></statusBar>
     <div style="display: flex">
       <leftToolbar></leftToolbar>
       <horizontalLineDrawer></horizontalLineDrawer>
@@ -30,16 +31,18 @@
       </v-sheet>
       <specialSymbolsToolbar></specialSymbolsToolbar>
     </div>
+
   </v-row>
 </template>
 
 <script setup lang="ts">
+import StatusBar from "./StatusBar.vue";
 import freeTextEditor from "./FreeTextEditor.vue";
 import annotationEditor from "./AnnotationEditor.vue";
 import exponentEditor from "./ExponentEditor.vue";
 import useNotationLoadingHelper from "../helpers/notationLoadingHelper";
-import UseMatrixHelper from "../helpers/matrixHelper";
-import UseEventHelper from "../helpers/eventHelper";
+import useMatrixHelper from "../helpers/matrixHelper";
+import useEventHelper from "../helpers/eventHelper";
 import leftToolbar from "./LeftToolbar.vue";
 import specialSymbolsToolbar from "./SpecialSymbolsToolbar.vue";
 import areaSelector from "./AreaSelector.vue";
@@ -61,10 +64,10 @@ import useKeyHelper from "../helpers/keyHelper";
 const notationLoadingHelper = useNotationLoadingHelper();
 const notationStore = useNotationStore();
 const cellStore = useCellStore();
-const matrixHelper = UseMatrixHelper();
+const matrixHelper = useMatrixHelper();
 const selectionHelper = useSelectionHelper();
 const keyHelper = useKeyHelper();
-const eventHelper = UseEventHelper();
+const eventHelper = useEventHelper();
 const watchHelper = useWatchHelper();
 const notationMutateHelper = useNotationMutationHelper();
 const answerStore = useAnswerStore();

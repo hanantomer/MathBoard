@@ -165,7 +165,7 @@ export const useEditModeStore = defineStore("editMode", () => {
 
   function isCurveDrawingMode() {
     return (
-      editMode.value === "CIRCLE_DRAWING" ||
+      editMode.value === "CURVE_DRAWING" ||
       editMode.value === "CURVE_EDITING_LEFT" ||
       editMode.value === "CURVE_EDITING_RIGHT" ||
       editMode.value === "CURVE_EDITING_CONTROLֹ_POINT"

@@ -155,7 +155,7 @@ watchHelper.watchMouseEvent(
 );
 
 watchHelper.watchMouseEvent(
-  ["AREA_SELECTING", "TEXT_AREA_SELECTING"],
+  ["AREA_SELECTING", "TEXT_AREA_SELECTING", "RESIZING"],
   "EV_SVG_MOUSEUP",
   endSelect,
 );
@@ -560,7 +560,11 @@ async function moveSelectionByKey(
 }
 
 async function onSelectionMouseUp(e: MouseEvent) {
-  if (editModeStore.getEditMode() === "AREA_SELECTING") {
+  if (
+    editModeStore.getEditMode() === "AREA_SELECTING" ||
+    editModeStore.getEditMode() === "RESIZING"
+  ) {
+    //if (e.buttons !== 1) return;
     endSelect();
     return;
   }

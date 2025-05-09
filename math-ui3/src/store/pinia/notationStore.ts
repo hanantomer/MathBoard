@@ -251,7 +251,7 @@ export const useNotationStore = defineStore("notation", () => {
       cell.row
     ] as String;
 
-    if (poinNotationUUId) {
+    if (poinNotationUUId && notations.value.get(poinNotationUUId)) {
       notationsAtCell.push(
         notations.value.get(poinNotationUUId) as NotationAttributes,
       );
@@ -263,7 +263,7 @@ export const useNotationStore = defineStore("notation", () => {
       cell.row
     ] as String;
 
-    if (rectNotationUUId) {
+    if (rectNotationUUId && notations.value.get(rectNotationUUId)) {
       notationsAtCell.push(
         notations.value.get(rectNotationUUId) as NotationAttributes,
       );
@@ -277,7 +277,9 @@ export const useNotationStore = defineStore("notation", () => {
 
     if (lineNotationsUUIDs) {
       Array.from(lineNotationsUUIDs.values()).forEach((ln: any) => {
-        notationsAtCell.push(notations.value.get(ln) as NotationAttributes);
+        if (notations.value.get(ln)) {
+          notationsAtCell.push(notations.value.get(ln) as NotationAttributes);
+        }
       });
     }
 
@@ -290,7 +292,9 @@ export const useNotationStore = defineStore("notation", () => {
     for (let i = 0; i < areaCells.length; i++) {
       const notationsAtCell = getNotationsAtCell(areaCells[i]);
       for (let j = 0; j < notationsAtCell.length; j++) {
-        notationsUUIDsToSelect.add(notationsAtCell[j].uuid);
+        if (notationsAtCell[j]) {
+          notationsUUIDsToSelect.add(notationsAtCell[j].uuid);
+        }
       }
     }
 

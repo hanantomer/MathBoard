@@ -41,7 +41,7 @@
       drawing-mode="CURVE_DRAWING"
       editing-mode="CURVE_EDITING_LEFT"
 
-v-bind:style="{
+      v-bind:style="{
         left: handleX1 + 'px',
         top: handleY1 + 'px',
       }"
@@ -96,6 +96,10 @@ import {
   DotCoordinates,
 } from "../../../math-common/src/baseTypes";
 
+import { useCellStore } from "../store/pinia/cellStore";
+const cellStore = useCellStore();
+
+
 const MIN_NUMBER_OF_POINTS = 6;
 const MOUSE_MOVE_THROTTELING_INTERVAL = 2;
 
@@ -134,9 +138,6 @@ const curveAttributes = ref<CurveAttributes>({
   cpy: 0,
 });
 
-import { useCellStore } from "../store/pinia/cellStore";
-
-const cellStore = useCellStore();
 
 onMounted(() => {
   setTimeout(() => {
