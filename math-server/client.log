@@ -6221,3 +6221,121 @@ notNull Violation: LessonSymbol.row cannot be nullundefined
 2025-05-09T14:30:45.065Z [ERROR]: Cannot set headers after they are sent to the clientundefined
 2025-05-09T14:31:36.672Z [ERROR]: Cannot set headers after they are sent to the clientundefined
 2025-05-09T14:31:49.005Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-09T14:32:28.153Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-09T14:32:50.653Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-09T14:35:11.511Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-09T14:35:15.288Z [ERROR]: TypeError: Cannot read properties of undefined (reading 'uuid')
+    at http://localhost:3000/src/components/Questions.vue:82:101
+    at Array.filter (<anonymous>)
+    at ReactiveEffect.fn (http://localhost:3000/src/components/Questions.vue:82:64)
+    at ReactiveEffect.run (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:423:19)
+    at get value (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:1383:35)
+    at unref (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:1263:29)
+    at Object.get (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:1269:35)
+    at http://localhost:3000/src/components/Questions.vue:280:27
+    at Proxy.renderFnWithContext (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:2175:13)
+    at default (http://localhost:3000/node_modules/.vite/deps/vuetify_lib_components_VCard_index__mjs.js?v=d77ff067:418:58)
+2025-05-09T14:35:15.324Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-09T15:27:40.990Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-09T15:27:43.309Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-09T15:27:45.520Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-09T15:30:40.754Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-09T15:30:52.769Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-09T15:31:27.182Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-09T15:34:04.179Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-09T15:34:27.846Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-09T15:34:54.992Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-09T15:41:45.658Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-09T15:42:02.218Z [ERROR]: invalid input syntax for type integer: "682.5"undefined
+2025-05-09T15:42:38.174Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-09T15:42:41.936Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-09T15:42:54.842Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-09T15:45:23.046Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-09T15:45:26.634Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-09T15:45:35.386Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-09T15:45:51.085Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-09T15:46:04.821Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-10T17:56:08.689Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-10T17:56:12.078Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-10T17:56:42.710Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-10T18:55:58.220Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-10T18:56:02.132Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-10T18:56:02.947Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-10T18:56:16.469Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-10T18:56:18.880Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-10T18:56:22.108Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-10T18:56:24.085Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-10T18:56:25.331Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-10T18:56:26.730Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-10T18:56:29.573Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-10T18:56:31.376Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-10T18:56:50.565Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-10T18:56:52.044Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-10T18:57:02.546Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-10T18:57:04.908Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-10T18:57:10.291Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-10T18:57:19.111Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-10T18:57:22.205Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-10T18:57:23.391Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-10T18:57:25.464Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-10T18:57:40.743Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-10T18:57:43.638Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-10T18:59:44.949Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-10T18:59:47.203Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-10T18:59:59.755Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-10T19:00:02.875Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-10T19:00:06.030Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-10T19:00:08.200Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-10T19:01:33.734Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-10T19:01:37.711Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-10T19:01:39.949Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-10T19:01:44.097Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-10T19:02:16.594Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-10T19:02:19.821Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-10T19:02:32.142Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-10T19:04:10.352Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-10T19:04:12.331Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-10T19:04:41.825Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-10T19:04:46.390Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-10T19:04:48.894Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-10T19:05:03.327Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-10T19:05:07.591Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-10T19:05:14.618Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-10T19:05:17.678Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-10T19:06:06.287Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-10T19:06:09.028Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-10T19:06:15.696Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-10T19:06:25.280Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-10T19:06:31.983Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-10T19:06:43.255Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-10T19:09:41.808Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-10T19:10:52.797Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-10T19:11:00.061Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-10T19:11:04.004Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-10T19:12:32.180Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-10T19:20:23.393Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-10T19:20:25.960Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-10T19:20:31.911Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-10T19:20:33.095Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-10T19:20:34.426Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-10T19:20:37.598Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-10T19:20:40.998Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-10T19:20:49.263Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-10T19:20:50.501Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-10T19:21:31.891Z [ERROR]: invalid input syntax for type integer: "543.0392300405528"undefined
+2025-05-10T19:21:38.136Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-10T19:22:27.154Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-10T19:22:34.092Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-10T19:22:36.110Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-10T19:22:37.362Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-10T19:22:39.023Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-10T19:22:46.679Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-10T19:22:48.777Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-10T19:22:51.053Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-10T19:23:18.732Z [ERROR]: invalid input syntax for type integer: "561.7153257248837"undefined
+2025-05-10T19:24:49.065Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-10T19:24:50.979Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-10T19:24:54.315Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-10T19:24:56.622Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-10T20:53:43.457Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-10T20:55:54.575Z [ERROR]: Cannot set headers after they are sent to the clientundefined

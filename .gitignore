@@ -42,3 +42,8 @@ math-ui3/dist/index.html
 math-server/math-db.log
 math-server/client.log
 math-server/math-db.log
+math-messages/authentication.log
+math-server/client.log
+math-server/math-db.log
+math-server/client.log
+math-server/math-db.log

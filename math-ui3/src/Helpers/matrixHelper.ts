@@ -93,12 +93,6 @@ export default function useMatrixHelper() {
         if (notation.notationType === "SQRT") {
           enrichedNotations.push(getSqrtSymbol(notation));
         }
-
-        // if (notation.notationType === "SYMBOL") {
-        //   let pointNotation = notation as PointNotationAttributes;
-        //   pointNotation.followsFraction = symbolFollowsFraction(pointNotation);
-        //   console.debug(pointNotation);
-        // }
       }
     }
     return enrichedNotations;

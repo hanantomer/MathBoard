@@ -107,7 +107,11 @@ export default function useMatrixHelperUtils() {
       case "SQRT":
       case "SQRTSYMBOL":
       case "SYMBOL":
-        return n.selected ? selectionColor : htmlColor;
+        return n.selected
+          ? selectionColor
+          : n.color?.value
+          ? n.color.value
+          : htmlColor;
       case "CURVE":
       case "HORIZONTALLINE":
       case "SLOPELINE":
@@ -121,8 +125,6 @@ export default function useMatrixHelperUtils() {
           ? n.color.value
           : lineColor;
     }
-
-    return n.selected ? selectionColor : lineColor;
   }
 
   return {

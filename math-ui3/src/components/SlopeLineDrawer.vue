@@ -169,8 +169,6 @@ function drawLine(p: DotCoordinates) {
     linePosition.value.p1x = p.x;
     linePosition.value.p1y = p.y;
   }
-
-  //validateSlopePosition();
 }
 
 function selectLine(notation: NotationAttributes) {
@@ -198,22 +196,6 @@ function modifyLineRight(p: DotCoordinates) {
   linePosition.value.p2y = p.y;
 }
 
-function resetDrawing() {
-  linePosition.value.p1x =
-    linePosition.value.p2x =
-    linePosition.value.p1y =
-    linePosition.value.p2y =
-      0;
-}
-
-// function validateSlopePosition() {
-//   if (linePosition.value.p1x >= linePosition.value.p2x) {
-//     throw new Error(
-//       JSON.stringify(linePosition.value) +
-//         "is invalid: p2x must be greater than p1x",
-//     );
-//   }
-// }
 
 function getSlopeTypeForNewLine(xPos: number, yPos: number): SlopeType {
   if (
@@ -259,12 +241,6 @@ function endDrawing() {
   }
 
   saveSlopeLine();
-
-  // linePosition.value.p1x =
-  //   linePosition.value.p2x =
-  //   linePosition.value.p1y =
-  //   linePosition.value.p2y =
-  //     0;
 }
 
 function saveSlopeLine() {

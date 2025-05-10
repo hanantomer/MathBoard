@@ -9,7 +9,7 @@ import {
   RectNotationAttributes,
   SlopeLineNotationAttributes,
   VerticalLineNotationAttributes,
-  CurveNotationAttributes,
+  CircleNotationAttributes,
   RectAttributes,
   MultiCellAttributes,
 } from "../../../math-common/src/baseTypes";
@@ -44,7 +44,7 @@ export default function screenHelper() {
 
     return {
       x: clickedCell.col * cellWidth + cellStore.getSvgBoundingRect().left,
-      y: clickedCell.row  * cellHeight + cellStore.getSvgBoundingRect().top,
+      y: clickedCell.row * cellHeight + cellStore.getSvgBoundingRect().top,
     };
   }
 
@@ -95,23 +95,19 @@ export default function screenHelper() {
     let cells: CellAttributes[] = [];
 
     const areaFromCol = Math.floor(
-      (rectCoordinates.topLeft.x) /
-        cellStore.getCellHorizontalWidth(),
+      rectCoordinates.topLeft.x / cellStore.getCellHorizontalWidth(),
     );
 
     const areaToCol = Math.floor(
-      (rectCoordinates.bottomRight.x) /
-        cellStore.getCellHorizontalWidth(),
+      rectCoordinates.bottomRight.x / cellStore.getCellHorizontalWidth(),
     );
 
     const areaFromRow = Math.floor(
-      (rectCoordinates.topLeft.y) /
-        cellStore.getCellVerticalHeight(),
+      rectCoordinates.topLeft.y / cellStore.getCellVerticalHeight(),
     );
 
     const areaToRow = Math.floor(
-      (rectCoordinates.bottomRight.y) /
-        cellStore.getCellVerticalHeight(),
+      rectCoordinates.bottomRight.y / cellStore.getCellVerticalHeight(),
     );
 
     for (let i = areaFromCol; i <= areaToCol; i++) {
@@ -180,7 +176,6 @@ export default function screenHelper() {
           });
           break;
         }
-
       }
     }
 
@@ -374,7 +369,8 @@ export default function screenHelper() {
         (n) =>
           n.notationType === "HORIZONTALLINE" ||
           n.notationType === "SLOPELINE" ||
-          n.notationType === "VERTICALLINE",
+          n.notationType === "VERTICALLINE" ||
+          n.notationType === "CIRCLE",
       )
       .forEach((n) => {
         switch (n.notationType) {
@@ -435,10 +431,65 @@ export default function screenHelper() {
             }
             break;
           }
+          case "CIRCLE": {
+            const n1 = n as CircleNotationAttributes;
+            let circleCircumferencePoint = getNearestPointOnCircleCircumference(
+              dot,
+              n1.cx,
+              n1.cy,
+              n1.r,
+            );
+            let distance = getPointsDistance(circleCircumferencePoint, dot);
+            if (distance < maxDistance) {
+              nearPoint = circleCircumferencePoint;
+              return;
+            }
+            break;
+          }
         }
       });
 
     return nearPoint;
+  }
+
+  function getNearestPointOnCircleCircumference(
+    dot: DotCoordinates,
+    centerX: number,
+    centerY: number,
+    radius: number,
+  ): DotCoordinates {
+    // Vector from center to point
+    const dx = dot.x - centerX;
+    const dy = dot.y - centerY;
+
+    // Calculate the distance from center to point
+    const distance = Math.sqrt(dx * dx + dy * dy);
+
+    // If distance is 0, return a point on the circle at 0 degrees
+    if (distance === 0) {
+      return {
+        x: Math.round(centerX + radius),
+        y: Math.round(centerY),
+      };
+    }
+
+    // Calculate the scaling factor to project the point onto the circle
+    const scale = radius / distance;
+
+    // Return the point on the circumference
+    return {
+      x: Math.round(centerX + dx * scale),
+      y: Math.round(centerY + dy * scale),
+    };
+  }
+
+  function getPointsDistance(
+    point1: DotCoordinates,
+    point2: DotCoordinates,
+  ): number {
+    const dx = point2.x - point1.x;
+    const dy = point2.y - point1.y;
+    return Math.sqrt(dx * dx + dy * dy);
   }
 
   return {
@@ -454,5 +505,6 @@ export default function screenHelper() {
     getRectAttributes,
     getMultiCellLineAttributes,
     getCloseLineEdge,
+    getPointsDistance,
   };
 }

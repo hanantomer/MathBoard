@@ -34,7 +34,9 @@ export default function useApiHelper() {
     try {
       await axios.post(baseURL + "/log", { level: "error", message: message });
     } catch (error) {
-      throw new Error(`Failed to log message: ${(error as AxiosError).message}`);
+      throw new Error(
+        `Failed to log message: ${(error as AxiosError).message}`,
+      );
     }
   }
 
@@ -43,7 +45,9 @@ export default function useApiHelper() {
       const { data } = await axios.get<UserAttributes>(baseURL + "/users");
       return data;
     } catch (error) {
-      throw new Error(`Failed to authenticate Google user: ${(error as AxiosError).message}`);
+      throw new Error(
+        `Failed to authenticate Google user: ${(error as AxiosError).message}`,
+      );
     }
   }
 
@@ -52,7 +56,11 @@ export default function useApiHelper() {
       const res = await axios.get<UserAttributes>(baseURL + "/auth");
       return res?.data;
     } catch (error) {
-      throw new Error(`Failed to authenticate user by token: ${(error as AxiosError).message}`);
+      throw new Error(
+        `Failed to authenticate user by token: ${
+          (error as AxiosError).message
+        }`,
+      );
     }
   }
 
@@ -67,7 +75,11 @@ export default function useApiHelper() {
       });
       return res?.data;
     } catch (error) {
-      throw new Error(`Failed to authenticate user ${email}: ${(error as AxiosError).message}`);
+      throw new Error(
+        `Failed to authenticate user ${email}: ${
+          (error as AxiosError).message
+        }`,
+      );
     }
   }
 
@@ -78,7 +90,9 @@ export default function useApiHelper() {
       const res = await axios.post<UserAttributes>(baseURL + "/users", user);
       return res?.data;
     } catch (error) {
-      throw new Error(`Failed to register user: ${(error as AxiosError).message}`);
+      throw new Error(
+        `Failed to register user: ${(error as AxiosError).message}`,
+      );
     }
   }
 
@@ -98,7 +112,11 @@ export default function useApiHelper() {
         studentLesson,
       );
     } catch (error) {
-      throw new Error(`Failed to add lesson to shared lessons: ${(error as AxiosError).message}`);
+      throw new Error(
+        `Failed to add lesson to shared lessons: ${
+          (error as AxiosError).message
+        }`,
+      );
     }
   }
 
@@ -126,7 +144,9 @@ export default function useApiHelper() {
       );
       return newQuestion.data;
     } catch (error) {
-      throw new Error(`Failed to add question: ${(error as AxiosError).message}`);
+      throw new Error(
+        `Failed to add question: ${(error as AxiosError).message}`,
+      );
     }
   }
 
@@ -155,7 +175,9 @@ export default function useApiHelper() {
       );
       return res.data;
     } catch (error) {
-      throw new Error(`Failed to add notation: ${(error as AxiosError).message}`);
+      throw new Error(
+        `Failed to add notation: ${(error as AxiosError).message}`,
+      );
     }
   }
 
@@ -197,7 +219,9 @@ export default function useApiHelper() {
           }
 
           if ((newNotation as any).question) {
-            (newNotation as any).parentUUId = (newNotation as any).question.uuid;
+            (newNotation as any).parentUUId = (
+              newNotation as any
+            ).question.uuid;
             delete (newNotation as any).question;
           }
 
@@ -212,7 +236,9 @@ export default function useApiHelper() {
             newNotation,
           );
         } catch (error) {
-          throw new Error(`Failed to save moved notations: ${(error as AxiosError).message}`);
+          throw new Error(
+            `Failed to save moved notations: ${(error as AxiosError).message}`,
+          );
         }
       }
 
@@ -223,7 +249,9 @@ export default function useApiHelper() {
           { uuid: notation.uuid, ...attributes },
         );
       } catch (error) {
-        throw new Error(`Failed to save moved notations: ${(error as AxiosError).message}`);
+        throw new Error(
+          `Failed to save moved notations: ${(error as AxiosError).message}`,
+        );
       }
     });
   }
@@ -291,6 +319,13 @@ export default function useApiHelper() {
             cpx: (notation as any)["cpx"],
             cpy: (notation as any)["cpy"],
           }
+        : // circle
+        "cx" in notation && "cy" in notation && "r" in notation
+        ? {
+            cx: Math.round((notation as any)["cx"]),
+            cy: Math.round((notation as any)["cy"]),
+            r: Math.round((notation as any)["r"]),
+          }
         : null;
 
     return cooerdinates;
@@ -308,7 +343,9 @@ export default function useApiHelper() {
         },
       );
     } catch (error) {
-      throw new Error(`Failed to update notation value: ${(error as AxiosError).message}`);
+      throw new Error(
+        `Failed to update notation value: ${(error as AxiosError).message}`,
+      );
     }
   }
 
@@ -320,7 +357,9 @@ export default function useApiHelper() {
         notation,
       );
     } catch (error) {
-      throw new Error(`Failed to update notation: ${(error as AxiosError).message}`);
+      throw new Error(
+        `Failed to update notation: ${(error as AxiosError).message}`,
+      );
     }
   }
 
@@ -339,7 +378,11 @@ export default function useApiHelper() {
         },
       );
     } catch (error) {
-      throw new Error(`Failed to update horizontal line notation attributes: ${(error as AxiosError).message}`);
+      throw new Error(
+        `Failed to update horizontal line notation attributes: ${
+          (error as AxiosError).message
+        }`,
+      );
     }
   }
 
@@ -358,7 +401,11 @@ export default function useApiHelper() {
         },
       );
     } catch (error) {
-      throw new Error(`Failed to update sqrt notation attributes: ${(error as AxiosError).message}`);
+      throw new Error(
+        `Failed to update sqrt notation attributes: ${
+          (error as AxiosError).message
+        }`,
+      );
     }
   }
 
@@ -377,7 +424,11 @@ export default function useApiHelper() {
         },
       );
     } catch (error) {
-      throw new Error(`Failed to update vertical line notation attributes: ${(error as AxiosError).message}`);
+      throw new Error(
+        `Failed to update vertical line notation attributes: ${
+          (error as AxiosError).message
+        }`,
+      );
     }
   }
 
@@ -397,7 +448,11 @@ export default function useApiHelper() {
         },
       );
     } catch (error) {
-      throw new Error(`Failed to update slope line notation attributes: ${(error as AxiosError).message}`);
+      throw new Error(
+        `Failed to update slope line notation attributes: ${
+          (error as AxiosError).message
+        }`,
+      );
     }
   }
 
@@ -417,33 +472,36 @@ export default function useApiHelper() {
         },
       );
     } catch (error) {
-      throw new Error(`Failed to update curve notation attributes: ${(error as AxiosError).message}`);
+      throw new Error(
+        `Failed to update curve notation attributes: ${
+          (error as AxiosError).message
+        }`,
+      );
     }
   }
 
-    async function updateCircleNotationAttributes(
-      circle: CircleNotationAttributes,
-    ) {
-      try {
-        return axios.put(
-          baseURL +
-            `/${circle.boardType.toLowerCase()}${circle.notationType.toLowerCase()}s`,
-          {
-            uuid: circle.uuid,
-            cx: circle.cx,
-            cy: circle.cy,
-            r: circle.r,
-          },
-        );
-      } catch (error) {
-        throw new Error(
-          `Failed to update circle notation attributes: ${
-            (error as AxiosError).message
-          }`,
-        );
-      }
+  async function updateCircleNotationAttributes(
+    circle: CircleNotationAttributes,
+  ) {
+    try {
+      return axios.put(
+        baseURL +
+          `/${circle.boardType.toLowerCase()}${circle.notationType.toLowerCase()}s`,
+        {
+          uuid: circle.uuid,
+          cx: circle.cx,
+          cy: circle.cy,
+          r: circle.r,
+        },
+      );
+    } catch (error) {
+      throw new Error(
+        `Failed to update circle notation attributes: ${
+          (error as AxiosError).message
+        }`,
+      );
     }
-
+  }
 
   async function getLesson(lessonUUId: string): Promise<LessonAttributes> {
     try {
@@ -452,7 +510,9 @@ export default function useApiHelper() {
       );
       return data;
     } catch (error) {
-      throw new Error(`Failed to get lesson ${lessonUUId}: ${(error as AxiosError).message}`);
+      throw new Error(
+        `Failed to get lesson ${lessonUUId}: ${(error as AxiosError).message}`,
+      );
     }
   }
 
@@ -463,7 +523,9 @@ export default function useApiHelper() {
       );
       return data;
     } catch (error) {
-      throw new Error(`Failed to get user ${userUUId}: ${(error as AxiosError).message}`);
+      throw new Error(
+        `Failed to get user ${userUUId}: ${(error as AxiosError).message}`,
+      );
     }
   }
 
@@ -476,7 +538,11 @@ export default function useApiHelper() {
       );
       return data;
     } catch (error) {
-      throw new Error(`Failed to get question ${questionUUId}: ${(error as AxiosError).message}`);
+      throw new Error(
+        `Failed to get question ${questionUUId}: ${
+          (error as AxiosError).message
+        }`,
+      );
     }
   }
 
@@ -487,7 +553,9 @@ export default function useApiHelper() {
       );
       return data;
     } catch (error) {
-      throw new Error(`Failed to get answer ${answerUUId}: ${(error as AxiosError).message}`);
+      throw new Error(
+        `Failed to get answer ${answerUUId}: ${(error as AxiosError).message}`,
+      );
     }
   }
 
@@ -501,7 +569,11 @@ export default function useApiHelper() {
 
       return data;
     } catch (error) {
-      throw new Error(`Failed to get teacher lessons for user ${userUUId}: ${(error as AxiosError).message}`);
+      throw new Error(
+        `Failed to get teacher lessons for user ${userUUId}: ${
+          (error as AxiosError).message
+        }`,
+      );
     }
   }
 
@@ -515,7 +587,11 @@ export default function useApiHelper() {
 
       return data;
     } catch (error) {
-      throw new Error(`Failed to get student lessons for user ${userUUId}: ${(error as AxiosError).message}`);
+      throw new Error(
+        `Failed to get student lessons for user ${userUUId}: ${
+          (error as AxiosError).message
+        }`,
+      );
     }
   }
 
@@ -528,7 +604,11 @@ export default function useApiHelper() {
       );
       return data;
     } catch (error) {
-      throw new Error(`Failed to get questions for lesson ${lessonUUId}: ${(error as AxiosError).message}`);
+      throw new Error(
+        `Failed to get questions for lesson ${lessonUUId}: ${
+          (error as AxiosError).message
+        }`,
+      );
     }
   }
 
@@ -540,7 +620,11 @@ export default function useApiHelper() {
 
       return data;
     } catch (error) {
-      throw new Error(`Failed to get answers for question ${questionUUId}: ${(error as AxiosError).message}`);
+      throw new Error(
+        `Failed to get answers for question ${questionUUId}: ${
+          (error as AxiosError).message
+        }`,
+      );
     }
   }
 
@@ -548,13 +632,15 @@ export default function useApiHelper() {
     try {
       return axios.delete(
         baseURL +
-          `/${notation.boardType.toString().toLowerCase()}${notation.notationType
+          `/${notation.boardType
             .toString()
-            .toLowerCase()}s`,
+            .toLowerCase()}${notation.notationType.toString().toLowerCase()}s`,
         { data: notation },
       );
     } catch (error) {
-      throw new Error(`Failed to remove notation: ${(error as AxiosError).message}`);
+      throw new Error(
+        `Failed to remove notation: ${(error as AxiosError).message}`,
+      );
     }
   }
 
@@ -572,7 +658,11 @@ export default function useApiHelper() {
       const { data } = await axios.get<T[]>(uri);
       return data;
     } catch (error) {
-      throw new Error(`Failed to get notations for ${boardType} ${notationType}: ${(error as AxiosError).message}`);
+      throw new Error(
+        `Failed to get notations for ${boardType} ${notationType}: ${
+          (error as AxiosError).message
+        }`,
+      );
     }
   }
 
