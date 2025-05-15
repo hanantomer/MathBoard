@@ -2544,3 +2544,12 @@
 2025-05-15T18:32:58.411Z [INFO]: Processing teacher join request for hanantomer@gmail.com
 2025-05-15T18:32:58.411Z [INFO]: Teacher hanantomer@gmail.com joining lesson 49adce2f-2dee-4a86-8439-54b90e11519b
 2025-05-15T18:32:58.412Z [INFO]: User hanantomer@gmail.com joined lesson channel 49adce2f-2dee-4a86-8439-54b90e11519b
+2025-05-15T18:47:44.084Z [INFO]: Authentication service initialized
+2025-05-15T18:47:47.770Z [INFO]: User hanantomer@gmail.com attempting to join lesson 49adce2f-2dee-4a86-8439-54b90e11519b
+2025-05-15T18:47:47.771Z [INFO]: Processing teacher join request for hanantomer@gmail.com
+2025-05-15T18:47:47.772Z [INFO]: Teacher hanantomer@gmail.com joining lesson 49adce2f-2dee-4a86-8439-54b90e11519b
+2025-05-15T18:47:47.773Z [INFO]: User hanantomer@gmail.com joined lesson channel 49adce2f-2dee-4a86-8439-54b90e11519b
+2025-05-15T19:02:34.698Z [INFO]: User hanantomer@gmail.com attempting to join lesson 0d9b153b-5ae1-460a-8d82-cf397c9b0aad
+2025-05-15T19:02:34.702Z [INFO]: Processing teacher join request for hanantomer@gmail.com
+2025-05-15T19:02:34.703Z [INFO]: Teacher hanantomer@gmail.com joining lesson 0d9b153b-5ae1-460a-8d82-cf397c9b0aad
+2025-05-15T19:02:34.704Z [INFO]: User hanantomer@gmail.com joined lesson channel 0d9b153b-5ae1-460a-8d82-cf397c9b0aad
