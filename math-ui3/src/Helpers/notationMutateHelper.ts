@@ -30,6 +30,8 @@ import {
   SqrtNotationAttributes,
 } from "common/baseTypes";
 
+import { clonedNotationUUIdPrefix } from "common/globals";
+
 import { LessonNotationAttributes } from "common/lessonTypes";
 import { matrixDimensions } from "common/globals";
 import { CellAttributes } from "common/baseTypes";
@@ -54,6 +56,10 @@ const cellStore = useCellStore();
 const editModeStore = useEditModeStore();
 const authorizationHelper = useAuthorizationHelper();
 const userOutgoingOperations = useUserOutgoingOperations();
+
+const updateCoordinatesInterval = 100; // while moving selection by arrow, miliseconds to wait before sync
+let lastUpdateCoordinatesTime: number | null = null;
+let updateCoordinatesHandle: number | null = null;
 
 export default function notationMutateHelper() {
   function pointAtCellCoordinates(
@@ -426,17 +432,167 @@ export default function notationMutateHelper() {
   }
 
   // move selected notations with persistence - called upon muose up
-  async function saveMovedNotations(moveDirection: SelectionMoveDirection) {
-    await apiHelper.saveMovedNotations(
-      getSelectedNotationsSortedByDirection(moveDirection),
-    );
+  // async function saveMovedNotations(moveDirection: SelectionMoveDirection) {
+  //   await apiHelper.saveMovedNotations(
+  //     getSelectedNotationsSortedByDirection(moveDirection),
+  //   );
 
-    notationStore
-      .getSelectedNotations()
-      .forEach(async (n: NotationAttributes) => {
-        notationStore.addNotation(n, true);
-        userOutgoingOperations.syncOutgoingUpdateNotation(n);
-      });
+  //   notationStore
+  //     .getSelectedNotations()
+  //     .forEach(async (n: NotationAttributes) => {
+  //       notationStore.addNotation(n, true);
+  //       userOutgoingOperations.syncOutgoingUpdateNotation(n);
+  //     });
+  // }
+
+  async function saveMovedNotations(moveDirection: SelectionMoveDirection) {
+    const notations = getSelectedNotationsSortedByDirection(moveDirection);
+
+    const currentTime = Date.now();
+    if (
+      lastUpdateCoordinatesTime == null ||
+      lastUpdateCoordinatesTime - currentTime > updateCoordinatesInterval
+    ) {
+      if (updateCoordinatesHandle) window.clearTimeout(updateCoordinatesHandle);
+
+      updateCoordinatesHandle = window.setTimeout(
+        saveMovedNotationsDelayed,
+        updateCoordinatesInterval,
+        notations,
+      );
+    }
+    lastUpdateCoordinatesTime = Date.now();
+  }
+
+  async function saveMovedNotationsDelayed(notations: NotationAttributes[]) {
+    if (!notations || notations.length === 0) return;
+
+    // Check if these are cloned notations that need to be inserted
+    const isClonedNotation =
+      notations[0].uuid.indexOf(clonedNotationUUIdPrefix) === 0;
+
+    if (isClonedNotation) {
+      await insertMovedNotations(notations);
+    } else {
+      await updateMovedNotations(notations);
+    }
+
+    lastUpdateCoordinatesTime = null;
+  }
+
+  async function insertMovedNotations(notations: NotationAttributes[]) {
+    await Promise.all(
+      notations.map(async (notation) => {
+        const attributes = getNotationCoordinates(notation);
+        if (!attributes) return;
+
+        notationStore.deleteNotation(notation.uuid);
+
+        delete (notation as any).uuid;
+
+        if ((notation as any).lesson) {
+          (notation as any).parentUUId = (notation as any).lesson.uuid;
+          delete (notation as any).lesson;
+        }
+
+        if ((notation as any).question) {
+          (notation as any).parentUUId = (notation as any).question.uuid;
+          delete (notation as any).question;
+        }
+
+        if ((notation as any).answer) {
+          (notation as any).parentUUId = (notation as any).answer.uuid;
+          delete (notation as any).answer;
+        }
+
+        addNotation(notation) as any;
+      }),
+    );
+  }
+
+  async function updateMovedNotations(notations: NotationAttributes[]) {
+    await Promise.all(
+      notations.map(async (notation) => {
+        const attributes = getNotationCoordinates(notation);
+        if (!attributes) return;
+        updateNotation(notation);
+      }),
+    );
+  }
+
+  function getNotationCoordinates(notation: any) {
+    const cooerdinates =
+      // point
+      "col" in notation
+        ? {
+            col: (notation as any)["col"],
+            row: (notation as any)["row"],
+          }
+        : // line
+        "fromCol" in notation && "row" in notation
+        ? {
+            fromCol: (notation as any)["fromCol"],
+            toCol: (notation as any)["toCol"],
+            row: (notation as any)["row"],
+          }
+        : // rect
+        "fromRow" in notation && "fromCol" in notation
+        ? {
+            fromCol: (notation as any)["fromCol"],
+            toCol: (notation as any)["toCol"],
+            fromRow: (notation as any)["fromRow"],
+            toRow: (notation as any)["toRow"],
+          }
+        : // horizontal line
+        "p1x" in notation && "p2x" in notation && "py" in notation
+        ? {
+            p1x: (notation as any)["p1x"],
+            p2x: (notation as any)["p2x"],
+            py: (notation as any)["py"],
+          }
+        : // vertical line
+        "px" in notation && "p1y" in notation && "p2y" in notation
+        ? {
+            px: (notation as any)["px"],
+            p1y: (notation as any)["p1y"],
+            p2y: (notation as any)["p2y"],
+          }
+        : // sloped line
+        "p1x" in notation &&
+          "p2x" in notation &&
+          "p1y" in notation &&
+          "p2y" in notation
+        ? {
+            p1x: (notation as any)["p1x"],
+            p2x: (notation as any)["p2x"],
+            p1y: (notation as any)["p1y"],
+            p2y: (notation as any)["p2y"],
+          }
+        : // sloped line
+        "p1x" in notation &&
+          "p2x" in notation &&
+          "p1y" in notation &&
+          "p2y" in notation &&
+          "cpx" in notation &&
+          "cpy" in notation
+        ? {
+            p1x: (notation as any)["p1x"],
+            p2x: (notation as any)["p2x"],
+            p1y: (notation as any)["p1y"],
+            p2y: (notation as any)["p2y"],
+            cpx: (notation as any)["cpx"],
+            cpy: (notation as any)["cpy"],
+          }
+        : // circle
+        "cx" in notation && "cy" in notation && "r" in notation
+        ? {
+            cx: Math.round((notation as any)["cx"]),
+            cy: Math.round((notation as any)["cy"]),
+            r: Math.round((notation as any)["r"]),
+          }
+        : null;
+
+    return cooerdinates;
   }
 
   // sort selected notations that we first update the outer and the the inner
@@ -1145,6 +1301,49 @@ export default function notationMutateHelper() {
     return cellStore.getCellVerticalHeight();
   }
 
+  function handleDeleteKey() {
+    if (notationStore.getSelectedNotations().length) {
+      deleteSelectedNotations();
+    }
+
+    if (editModeStore.getEditMode() === "AREA_SELECTED") {
+      return;
+    }
+
+    collapseNotationsToSelectedCell();
+    notationStore.selectNotationsOfCells([cellStore.getSelectedCell()]);
+  }
+
+  function collapseNotationsToSelectedCell() {
+    const cell = cellStore.getSelectedCell();
+    if (!cell) return;
+
+    for (
+      let col = cellStore.getSelectedCell().col;
+      col < matrixDimensions.colsNum;
+      col++
+    ) {
+      const notations = notationStore.getNotationsAtCell({
+        row: cell.row,
+        col: col,
+      });
+      if (notations.length === 1) {
+        const notation = notations[0];
+
+        if (
+          notation.notationType !== "SIGN" &&
+          notation.notationType !== "EXPONENT" &&
+          notation.notationType !== "SYMBOL"
+        ) {
+          break;
+        }
+
+        (notation as PointNotationAttributes).col--;
+        updateNotation(notation);
+      }
+    }
+  }
+
   return {
     addCircleNotation,
     addCurveNotation,
@@ -1162,6 +1361,7 @@ export default function notationMutateHelper() {
     deleteSelectedNotations,
     moveSelectedNotations,
     moveSelectedNotationsAtCellScale,
+    handleDeleteKey,
     isNotationInQuestionArea,
     isCellInQuestionArea,
     updateHorizontalLineNotation,

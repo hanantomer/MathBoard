@@ -102,16 +102,16 @@ export default function screenHelper() {
       rectCoordinates.bottomRight.x / cellStore.getCellHorizontalWidth(),
     );
 
-    const areaFromRow = Math.floor(
+    const areaFromRow = Math.round(
       rectCoordinates.topLeft.y / cellStore.getCellVerticalHeight(),
     );
 
-    const areaToRow = Math.floor(
+    const areaToRow = Math.round(
       rectCoordinates.bottomRight.y / cellStore.getCellVerticalHeight(),
     );
 
     for (let i = areaFromCol; i <= areaToCol; i++) {
-      for (let j = areaFromRow; j <= areaToRow; j++) {
+      for (let j = areaFromRow; j < areaToRow; j++) {
         cells.push({ col: i, row: j });
       }
     }

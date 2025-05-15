@@ -5,6 +5,7 @@ export const matrixDimensions = {
   rowsNum: 24,
   colsNum: 96,
 };
+export const clonedNotationUUIdPrefix = "cloned_";
 export const transparentColor = "#4d6a96";
 export const selectionColor = "chocolate";
 export const lineColor = "darkgreen";

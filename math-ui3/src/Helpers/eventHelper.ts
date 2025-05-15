@@ -165,12 +165,27 @@ export default function eventHelper() {
     if (clipboardItems[0].types.length === 0) return;
     if (clipboardItems[0].types[0] !== "text/plain") return;
 
-    let text = await navigator.clipboard.readText();
+    const initialCell = cellStore.getSelectedCell()!;
+    let currentRow = initialCell.row;
+    let currentCol = initialCell.col;
 
+    let text = await navigator.clipboard.readText();
     if (!text) return;
+
     text.split("").forEach((c) => {
-      if (c !== " ") {
+      if (c === "\n") {
+        // Move to next row and reset column
+        currentRow++;
+        currentCol = initialCell.col;
+        cellStore.setSelectedCell({ row: currentRow, col: currentCol }, false);
+      } else if (c !== " ") {
         notationMutationHelper.addSymbolNotation(c);
+        // Move to next column
+        currentCol++;
+      } else {
+        // For space, just move to next column
+        currentCol++;
+        cellStore.setSelectedCell({ row: currentRow, col: currentCol }, false);
       }
     });
   }

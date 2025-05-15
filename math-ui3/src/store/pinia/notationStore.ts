@@ -1,7 +1,7 @@
 // notations of current board(lesson, question or answers)
 //  questions of current lesson
 import { defineStore } from "pinia";
-import { matrixDimensions } from "common/globals";
+import { matrixDimensions, clonedNotationUUIdPrefix } from "common/globals";
 import {
   Board,
   NotationAttributes,
@@ -45,8 +45,6 @@ export const useNotationStore = defineStore("notation", () => {
 
   let copiedNotations = ref(<Map<String, NotationAttributes>>new Map());
 
-  let selectedCell = ref(<CellAttributes>{ col: 0, row: 0 });
-
   function getSelectedNotations(): NotationAttributes[] {
     return Array.from(notations.value.values()).filter(
       (n) => n.selected === true,
@@ -57,22 +55,18 @@ export const useNotationStore = defineStore("notation", () => {
   // the new set will be selected instead of the old
   function cloneSelectedNotations() {
     Array.from(getSelectedNotations()).forEach((n) => {
-      if (n.uuid.indexOf("_") === 0) return; // clone only after the first movement
+      if (n.uuid.indexOf(clonedNotationUUIdPrefix) === 0) return; // clone only after the first movement
       n.selected = undefined;
       let newNotation: NotationAttributes = Object.assign(
         { ...n },
         {
-          uuid: "_" + n.uuid,
+          uuid: clonedNotationUUIdPrefix + n.uuid,
           selected: true,
         },
       );
 
       addNotation(newNotation, false);
     });
-  }
-
-  function getSelectedCell() {
-    return selectedCell.value;
   }
 
   function getParent() {
@@ -88,26 +82,6 @@ export const useNotationStore = defineStore("notation", () => {
       .filter((n) => isPoint(n.notationType))
       .map((n) => n as PointNotationAttributes);
   }
-
-  // function getHorizontalLineNotations(): HorizontalLineNotationAttributes[] {
-  //   return Array.from(notations.value.values())
-  //     .filter(
-  //       (n) => NotationTypeShape.get(n.notationType) === "HORIZONTAL_LINE",
-  //     )
-  //     .map((n) => n as HorizontalLineNotationAttributes);
-  // }
-
-  // function getVerticalLineNotations(): VerticalLineNotationAttributes[] {
-  //   return Array.from(notations.value.values())
-  //     .filter((n) => NotationTypeShape.get(n.notationType) === "VERTICAL_LINE")
-  //     .map((n) => n as VerticalLineNotationAttributes);
-  // }
-
-  // function getSlopeLineNotations(): SlopeLineNotationAttributes[] {
-  //   return Array.from(notations.value.values())
-  //     .filter((n) => NotationTypeShape.get(n.notationType) === "SLOPE_LINE")
-  //     .map((n) => n as SlopeLineNotationAttributes);
-  // }
 
   function getRectNotations(): RectNotationAttributes[] {
     return Array.from(notations.value.values())
@@ -146,6 +120,10 @@ export const useNotationStore = defineStore("notation", () => {
     notation: NotationAttributes,
     doUpdateOccupationMatrix: boolean,
   ) {
+    if (!notation.uuid) {
+      console.error("addNotation: Notation uuid is undefined");
+      return;
+    }
     notation.boardType = parent.value.type;
     notations.value.set(notation.uuid, notation);
 
@@ -222,7 +200,12 @@ export const useNotationStore = defineStore("notation", () => {
 
   function selectNotation(uuid: string) {
     const notation = notations.value.get(uuid);
-    if (!notation) return;
+
+    if (!notation) {
+      console.error("selectNotation: Notation not found with uuid:", uuid);
+      return;
+    }
+
     notation.selected = true;
   }
 
@@ -480,27 +463,27 @@ export const useNotationStore = defineStore("notation", () => {
 
   return {
     addNotation,
+    clearCopiedNotations,
+    clearNotations,
+    cloneSelectedNotations,
+    deleteNotation,
+    getCopiedNotations,
     getNotation,
     getNotations,
+    getNotationsAtCell,
+    getParent,
     getPointNotations,
     getRectNotations,
-    getCopiedNotations,
-    getNotationsAtCell,
-    isSymbolPartOfFraction,
-    isSymbolAdjecentToHorizontalLine,
+    getSelectedNotations,
     hasSelectedNotations,
+    isSymbolAdjecentToHorizontalLine,
+    isSymbolPartOfFraction,
+    resetSelectedNotations,
+    selectNotation,
     selectNotationsOfCells,
     selectNotationsOfRectCoordinates,
-    getSelectedNotations,
-    getParent,
-    setNotations,
     setCopiedNotations,
-    selectNotation,
+    setNotations,
     setParent,
-    resetSelectedNotations,
-    deleteNotation,
-    clearNotations,
-    clearCopiedNotations,
-    cloneSelectedNotations,
   };
 });

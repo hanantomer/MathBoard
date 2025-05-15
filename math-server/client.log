@@ -6339,3 +6339,702 @@ notNull Violation: LessonSymbol.row cannot be nullundefined
 2025-05-10T19:24:56.622Z [ERROR]: Cannot set headers after they are sent to the clientundefined
 2025-05-10T20:53:43.457Z [ERROR]: Cannot set headers after they are sent to the clientundefined
 2025-05-10T20:55:54.575Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-11T16:25:00.034Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-11T16:27:50.733Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-11T16:27:53.694Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-11T17:08:22.604Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-11T17:17:16.312Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-11T17:17:27.972Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-11T17:17:30.204Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-11T17:17:31.549Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-11T17:17:33.508Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-11T17:19:11.560Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-11T17:19:16.848Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-11T17:19:19.071Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-11T17:19:20.207Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-11T17:19:22.807Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-11T17:19:38.270Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-11T17:20:51.735Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-11T17:22:33.544Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-11T17:22:38.012Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-11T17:24:10.846Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-11T17:24:13.786Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-11T17:24:16.992Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-11T17:24:52.702Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-11T17:25:27.623Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-11T17:25:36.157Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-11T17:28:25.490Z [ERROR]: Cannot set headers after they are sent to the clientundefined
+2025-05-12T13:34:08.758Z [ERROR]: Server error occurred
+2025-05-12T13:34:12.681Z [ERROR]: Server error occurred
+2025-05-12T13:37:02.024Z [ERROR]: Server error occurred
+2025-05-12T13:37:18.752Z [ERROR]: Server error occurred
+2025-05-12T13:42:51.217Z [ERROR]: Server error occurred
+2025-05-12T13:42:54.840Z [ERROR]: Server error occurred
+2025-05-12T13:44:00.909Z [ERROR]: Unhandled Rejection
+2025-05-12T13:45:32.413Z [ERROR]: Server error occurred
+2025-05-12T13:45:35.770Z [ERROR]: Server error occurred
+2025-05-12T13:46:08.239Z [ERROR]: Unhandled Rejection
+2025-05-12T14:04:04.977Z [ERROR]: Server error occurred
+2025-05-12T14:04:09.142Z [ERROR]: Server error occurred
+2025-05-12T14:04:14.600Z [ERROR]: Server error occurred
+2025-05-12T14:04:16.977Z [ERROR]: Server error occurred
+2025-05-12T14:04:19.519Z [ERROR]: Server error occurred
+2025-05-12T14:04:24.811Z [ERROR]: Server error occurred
+2025-05-12T14:04:28.572Z [ERROR]: Server error occurred
+2025-05-12T14:04:35.602Z [ERROR]: Server error occurred
+2025-05-12T14:04:38.836Z [ERROR]: Server error occurred
+2025-05-12T14:04:42.368Z [ERROR]: Server error occurred
+2025-05-12T14:05:53.989Z [ERROR]: Server error occurred
+2025-05-12T14:05:56.821Z [ERROR]: Server error occurred
+2025-05-12T14:06:13.880Z [ERROR]: Server error occurred
+2025-05-12T14:06:22.082Z [ERROR]: Server error occurred
+2025-05-12T14:06:26.007Z [ERROR]: Server error occurred
+2025-05-12T14:06:41.111Z [ERROR]: Server error occurred
+2025-05-12T14:07:33.842Z [ERROR]: Server error occurred
+2025-05-12T14:08:29.659Z [ERROR]: Server error occurred
+2025-05-12T14:08:31.524Z [ERROR]: Server error occurred
+2025-05-12T14:08:52.337Z [ERROR]: Server error occurred
+2025-05-12T14:09:12.068Z [ERROR]: Server error occurred
+2025-05-12T14:09:37.043Z [ERROR]: Server error occurred
+2025-05-12T14:09:39.419Z [ERROR]: Server error occurred
+2025-05-12T14:09:41.213Z [ERROR]: Server error occurred
+2025-05-12T14:09:48.761Z [ERROR]: Server error occurred
+2025-05-12T14:09:52.950Z [ERROR]: Server error occurred
+2025-05-12T14:11:17.851Z [ERROR]: Server error occurred
+2025-05-12T14:11:19.995Z [ERROR]: Server error occurred
+2025-05-12T14:11:22.422Z [ERROR]: Server error occurred
+2025-05-12T14:11:34.583Z [ERROR]: Server error occurred
+2025-05-12T14:11:40.484Z [ERROR]: Server error occurred
+2025-05-12T14:11:43.786Z [ERROR]: Server error occurred
+2025-05-12T14:11:45.789Z [ERROR]: Server error occurred
+2025-05-12T14:11:56.071Z [ERROR]: Server error occurred
+2025-05-12T14:12:09.805Z [ERROR]: Server error occurred
+2025-05-12T14:12:28.535Z [ERROR]: Server error occurred
+2025-05-12T14:12:57.359Z [ERROR]: Server error occurred
+2025-05-12T14:13:11.711Z [ERROR]: Server error occurred
+2025-05-12T17:22:49.226Z [ERROR]: Server error occurred
+2025-05-12T17:24:30.503Z [ERROR]: Server error occurred
+2025-05-12T17:24:47.851Z [ERROR]: Server error occurred
+2025-05-12T17:25:30.157Z [ERROR]: Server error occurred
+2025-05-12T17:25:46.716Z [ERROR]: Server error occurred
+2025-05-12T17:25:52.771Z [ERROR]: Server error occurred
+2025-05-12T17:26:11.458Z [ERROR]: Server error occurred
+2025-05-12T17:26:19.853Z [ERROR]: Server error occurred
+2025-05-12T17:27:16.503Z [ERROR]: Server error occurred
+2025-05-12T17:28:39.138Z [ERROR]: Unhandled Rejection
+2025-05-12T17:28:39.140Z [ERROR]: Unhandled Rejection
+2025-05-12T17:28:39.141Z [ERROR]: Unhandled Rejection
+2025-05-12T17:28:39.142Z [ERROR]: Unhandled Rejection
+2025-05-12T17:28:39.143Z [ERROR]: Unhandled Rejection
+2025-05-12T17:28:39.144Z [ERROR]: Unhandled Rejection
+2025-05-12T17:32:11.872Z [ERROR]: Server error occurred
+2025-05-12T17:32:21.685Z [ERROR]: Server error occurred
+2025-05-12T17:32:21.689Z [ERROR]: Server error occurred
+2025-05-12T17:32:21.713Z [ERROR]: Server error occurred
+2025-05-12T17:32:21.721Z [ERROR]: Server error occurred
+2025-05-12T17:32:21.726Z [ERROR]: Server error occurred
+2025-05-12T17:32:21.733Z [ERROR]: Server error occurred
+2025-05-12T17:32:22.031Z [ERROR]: Server error occurred
+2025-05-12T17:32:22.035Z [ERROR]: Server error occurred
+2025-05-12T17:32:22.047Z [ERROR]: Server error occurred
+2025-05-12T17:32:28.517Z [ERROR]: TypeError: Cannot read properties of undefined (reading 'notationType')
+    at selectClickedPosition (http://localhost:3000/src/helpers/selectionHelper.ts?t=1747071020679:163:17)
+    at http://localhost:3000/src/helpers/watchHelper.ts?t=1747058853039:18:11
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:1565:18)
+    at callWithAsyncErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:1573:17)
+    at job (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:3162:9)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:1565:32)
+    at flushJobs (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:1763:9)
+2025-05-12T17:32:29.814Z [ERROR]: TypeError: Cannot read properties of undefined (reading 'notationType')
+    at selectClickedPosition (http://localhost:3000/src/helpers/selectionHelper.ts?t=1747071020679:163:17)
+    at http://localhost:3000/src/helpers/watchHelper.ts?t=1747058853039:18:11
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:1565:18)
+    at callWithAsyncErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:1573:17)
+    at job (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:3162:9)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:1565:32)
+    at flushJobs (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:1763:9)
+2025-05-12T17:32:32.459Z [ERROR]: TypeError: Cannot read properties of undefined (reading 'notationType')
+    at selectClickedPosition (http://localhost:3000/src/helpers/selectionHelper.ts?t=1747071020679:163:17)
+    at http://localhost:3000/src/helpers/watchHelper.ts?t=1747058853039:18:11
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:1565:18)
+    at callWithAsyncErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:1573:17)
+    at job (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:3162:9)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:1565:32)
+    at flushJobs (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:1763:9)
+2025-05-12T17:32:32.795Z [ERROR]: TypeError: Cannot read properties of undefined (reading 'notationType')
+    at selectClickedPosition (http://localhost:3000/src/helpers/selectionHelper.ts?t=1747071020679:163:17)
+    at http://localhost:3000/src/helpers/watchHelper.ts?t=1747058853039:18:11
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:1565:18)
+    at callWithAsyncErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:1573:17)
+    at job (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:3162:9)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:1565:32)
+    at flushJobs (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:1763:9)
+2025-05-12T17:32:33.756Z [ERROR]: TypeError: Cannot read properties of undefined (reading 'notationType')
+    at selectClickedPosition (http://localhost:3000/src/helpers/selectionHelper.ts?t=1747071020679:163:17)
+    at http://localhost:3000/src/helpers/watchHelper.ts?t=1747058853039:18:11
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:1565:18)
+    at callWithAsyncErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:1573:17)
+    at job (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:3162:9)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:1565:32)
+    at flushJobs (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:1763:9)
+2025-05-12T17:32:34.227Z [ERROR]: TypeError: Cannot read properties of undefined (reading 'notationType')
+    at selectClickedPosition (http://localhost:3000/src/helpers/selectionHelper.ts?t=1747071020679:163:17)
+    at http://localhost:3000/src/helpers/watchHelper.ts?t=1747058853039:18:11
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:1565:18)
+    at callWithAsyncErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:1573:17)
+    at job (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:3162:9)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:1565:32)
+    at flushJobs (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:1763:9)
+2025-05-12T17:32:46.325Z [ERROR]: TypeError: Cannot read properties of undefined (reading 'notationType')
+    at selectClickedPosition (http://localhost:3000/src/helpers/selectionHelper.ts?t=1747071020679:163:17)
+    at http://localhost:3000/src/helpers/watchHelper.ts?t=1747058853039:18:11
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:1565:18)
+    at callWithAsyncErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:1573:17)
+    at job (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:3162:9)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:1565:32)
+    at flushJobs (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:1763:9)
+2025-05-12T18:31:41.273Z [ERROR]: TypeError: Cannot read properties of undefined (reading 'notationType')
+    at selectClickedPosition (http://localhost:3000/src/helpers/selectionHelper.ts?t=1747071020679:163:17)
+    at http://localhost:3000/src/helpers/watchHelper.ts?t=1747058853039:18:11
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:1565:18)
+    at callWithAsyncErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:1573:17)
+    at job (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:3162:9)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:1565:32)
+    at flushJobs (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:1763:9)
+2025-05-12T18:31:44.139Z [ERROR]: Server error occurred
+2025-05-12T18:32:49.304Z [ERROR]: Server error occurred
+2025-05-12T18:38:27.073Z [ERROR]: Server error occurred
+2025-05-12T18:39:00.367Z [ERROR]: Server error occurred
+2025-05-12T18:47:47.326Z [ERROR]: Server error occurred
+2025-05-12T18:48:10.741Z [ERROR]: Server error occurred
+2025-05-12T18:49:37.151Z [ERROR]: Server error occurred
+2025-05-12T18:50:28.266Z [ERROR]: Server error occurred
+2025-05-12T18:50:33.006Z [ERROR]: Server error occurred
+2025-05-12T18:50:34.342Z [ERROR]: Server error occurred
+2025-05-12T18:50:40.410Z [ERROR]: Server error occurred
+2025-05-12T18:50:46.267Z [ERROR]: Server error occurred
+2025-05-12T18:50:52.187Z [ERROR]: Server error occurred
+2025-05-12T18:50:56.404Z [ERROR]: Server error occurred
+2025-05-12T18:51:00.976Z [ERROR]: Server error occurred
+2025-05-12T18:51:06.786Z [ERROR]: Server error occurred
+2025-05-12T18:51:14.763Z [ERROR]: Server error occurred
+2025-05-12T18:51:16.908Z [ERROR]: Server error occurred
+2025-05-12T18:51:18.724Z [ERROR]: Server error occurred
+2025-05-12T18:51:23.456Z [ERROR]: Server error occurred
+2025-05-12T18:51:27.982Z [ERROR]: Server error occurred
+2025-05-12T18:51:33.849Z [ERROR]: Server error occurred
+2025-05-12T18:51:39.728Z [ERROR]: Server error occurred
+2025-05-12T18:51:43.620Z [ERROR]: Server error occurred
+2025-05-12T18:51:44.856Z [ERROR]: Server error occurred
+2025-05-12T18:52:23.103Z [ERROR]: Server error occurred
+2025-05-12T18:53:04.717Z [ERROR]: Server error occurred
+2025-05-12T18:54:03.318Z [ERROR]: Server error occurred
+2025-05-12T18:54:50.952Z [ERROR]: Server error occurred
+2025-05-12T18:54:58.519Z [ERROR]: Server error occurred
+2025-05-12T18:55:53.601Z [ERROR]: Server error occurred
+2025-05-12T18:55:56.147Z [ERROR]: Server error occurred
+2025-05-12T18:55:59.946Z [ERROR]: Server error occurred
+2025-05-12T18:58:31.888Z [ERROR]: Server error occurred
+2025-05-12T18:58:35.978Z [ERROR]: Server error occurred
+2025-05-12T18:58:38.055Z [ERROR]: Server error occurred
+2025-05-12T18:58:47.506Z [ERROR]: Server error occurred
+2025-05-12T18:59:02.412Z [ERROR]: Server error occurred
+2025-05-12T18:59:12.061Z [ERROR]: Server error occurred
+2025-05-12T18:59:12.412Z [ERROR]: Server error occurred
+2025-05-12T18:59:12.420Z [ERROR]: Server error occurred
+2025-05-12T18:59:12.430Z [ERROR]: Server error occurred
+2025-05-12T18:59:12.455Z [ERROR]: Server error occurred
+2025-05-12T18:59:12.460Z [ERROR]: Server error occurred
+2025-05-12T18:59:12.469Z [ERROR]: Server error occurred
+2025-05-12T18:59:12.744Z [ERROR]: Server error occurred
+2025-05-12T19:01:32.604Z [ERROR]: Server error occurred
+2025-05-12T19:01:36.661Z [ERROR]: Server error occurred
+2025-05-12T19:01:43.255Z [ERROR]: Server error occurred
+2025-05-12T19:01:50.791Z [ERROR]: Server error occurred
+2025-05-12T19:01:58.194Z [ERROR]: Server error occurred
+2025-05-12T19:01:59.919Z [ERROR]: Server error occurred
+2025-05-12T19:02:03.084Z [ERROR]: Server error occurred
+2025-05-12T19:02:08.613Z [ERROR]: Server error occurred
+2025-05-12T19:02:18.447Z [ERROR]: Server error occurred
+2025-05-12T19:02:28.960Z [ERROR]: Server error occurred
+2025-05-12T19:02:28.969Z [ERROR]: Server error occurred
+2025-05-12T19:02:28.977Z [ERROR]: Server error occurred
+2025-05-12T19:02:28.997Z [ERROR]: Server error occurred
+2025-05-12T19:02:29.017Z [ERROR]: Server error occurred
+2025-05-12T19:02:29.021Z [ERROR]: Server error occurred
+2025-05-12T19:02:29.351Z [ERROR]: Server error occurred
+2025-05-12T19:02:29.357Z [ERROR]: Server error occurred
+2025-05-12T19:03:58.634Z [ERROR]: Server error occurred
+2025-05-12T19:06:17.678Z [ERROR]: Server error occurred
+2025-05-12T19:06:41.024Z [ERROR]: Server error occurred
+2025-05-12T19:06:41.197Z [ERROR]: Server error occurred
+2025-05-12T19:06:41.209Z [ERROR]: Server error occurred
+2025-05-12T19:06:41.219Z [ERROR]: Server error occurred
+2025-05-12T19:06:41.226Z [ERROR]: Server error occurred
+2025-05-12T19:06:41.233Z [ERROR]: Server error occurred
+2025-05-12T19:06:41.416Z [ERROR]: Server error occurred
+2025-05-12T19:06:41.527Z [ERROR]: Server error occurred
+2025-05-12T19:08:23.381Z [ERROR]: Server error occurred
+2025-05-12T19:09:48.301Z [ERROR]: Server error occurred
+2025-05-12T19:09:56.248Z [ERROR]: Server error occurred
+2025-05-12T19:10:05.553Z [ERROR]: Server error occurred
+2025-05-12T19:10:05.563Z [ERROR]: Server error occurred
+2025-05-12T19:10:05.636Z [ERROR]: Server error occurred
+2025-05-12T19:10:05.644Z [ERROR]: Server error occurred
+2025-05-12T19:10:05.662Z [ERROR]: Server error occurred
+2025-05-12T19:10:05.665Z [ERROR]: Server error occurred
+2025-05-12T19:10:05.955Z [ERROR]: Server error occurred
+2025-05-12T19:10:05.963Z [ERROR]: Server error occurred
+2025-05-12T19:10:59.924Z [ERROR]: Server error occurred
+2025-05-12T19:11:28.181Z [ERROR]: Server error occurred
+2025-05-12T19:15:30.306Z [ERROR]: Server error occurred
+2025-05-12T19:15:49.741Z [ERROR]: Server error occurred
+2025-05-12T19:15:49.745Z [ERROR]: Server error occurred
+2025-05-12T19:15:49.751Z [ERROR]: Server error occurred
+2025-05-12T19:15:49.756Z [ERROR]: Server error occurred
+2025-05-12T19:15:49.761Z [ERROR]: Server error occurred
+2025-05-12T19:15:49.776Z [ERROR]: Server error occurred
+2025-05-12T19:15:50.092Z [ERROR]: Server error occurred
+2025-05-12T19:15:50.097Z [ERROR]: Server error occurred
+2025-05-12T19:21:19.885Z [ERROR]: Server error occurred
+2025-05-13T06:55:56.942Z [ERROR]: Server error occurred
+2025-05-13T06:56:32.251Z [ERROR]: Server error occurred
+2025-05-13T06:56:38.345Z [ERROR]: Server error occurred
+2025-05-13T06:57:42.051Z [ERROR]: Server error occurred
+2025-05-13T06:58:24.484Z [ERROR]: Server error occurred
+2025-05-13T06:58:27.051Z [ERROR]: Server error occurred
+2025-05-13T06:58:30.696Z [ERROR]: Server error occurred
+2025-05-13T07:01:43.299Z [ERROR]: Server error occurred
+2025-05-13T07:09:35.913Z [ERROR]: Server error occurred
+2025-05-13T07:09:36.190Z [ERROR]: Server error occurred
+2025-05-13T07:11:41.123Z [ERROR]: Server error occurred
+2025-05-13T07:11:44.043Z [ERROR]: Server error occurred
+2025-05-13T07:11:48.873Z [ERROR]: Server error occurred
+2025-05-13T07:11:52.202Z [ERROR]: Server error occurred
+2025-05-13T07:12:00.891Z [ERROR]: Server error occurred
+2025-05-13T07:12:57.051Z [ERROR]: TypeError: Cannot read properties of undefined (reading 'notationType')
+    at selectClickedPosition (http://localhost:3000/src/helpers/selectionHelper.ts?t=1747120311366:163:17)
+    at http://localhost:3000/src/helpers/watchHelper.ts:18:11
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:1565:18)
+    at callWithAsyncErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:1573:17)
+    at job (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:3162:9)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:1565:32)
+    at flushJobs (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:1763:9)
+2025-05-13T07:13:02.849Z [ERROR]: TypeError: Cannot read properties of undefined (reading 'notationType')
+    at selectClickedPosition (http://localhost:3000/src/helpers/selectionHelper.ts?t=1747120311366:163:17)
+    at http://localhost:3000/src/helpers/watchHelper.ts:18:11
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:1565:18)
+    at callWithAsyncErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:1573:17)
+    at job (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:3162:9)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:1565:32)
+    at flushJobs (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:1763:9)
+2025-05-13T07:13:33.433Z [ERROR]: Server error occurred
+2025-05-13T07:16:02.920Z [ERROR]: Server error occurred
+2025-05-13T07:16:04.376Z [ERROR]: Server error occurred
+2025-05-13T07:16:11.504Z [ERROR]: Server error occurred
+2025-05-13T07:16:15.522Z [ERROR]: Server error occurred
+2025-05-13T07:16:18.043Z [ERROR]: Server error occurred
+2025-05-13T07:16:19.934Z [ERROR]: Server error occurred
+2025-05-13T07:16:29.760Z [ERROR]: Server error occurred
+2025-05-13T07:17:31.446Z [ERROR]: TypeError: Cannot read properties of undefined (reading 'notationType')
+    at selectClickedPosition (http://localhost:3000/src/helpers/selectionHelper.ts?t=1747120579107:163:17)
+    at http://localhost:3000/src/helpers/watchHelper.ts:18:11
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:1565:18)
+    at callWithAsyncErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:1573:17)
+    at job (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:3162:9)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:1565:32)
+    at flushJobs (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:1763:9)
+2025-05-13T07:17:38.605Z [ERROR]: TypeError: Cannot read properties of undefined (reading 'notationType')
+    at selectClickedPosition (http://localhost:3000/src/helpers/selectionHelper.ts?t=1747120579107:163:17)
+    at http://localhost:3000/src/helpers/watchHelper.ts:18:11
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:1565:18)
+    at callWithAsyncErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:1573:17)
+    at job (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:3162:9)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:1565:32)
+    at flushJobs (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:1763:9)
+2025-05-13T08:28:00.975Z [ERROR]: TypeError: Cannot read properties of undefined (reading 'notationType')
+    at selectClickedPosition (http://localhost:3000/src/helpers/selectionHelper.ts?t=1747120579107:163:17)
+    at http://localhost:3000/src/helpers/watchHelper.ts:18:11
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:1565:18)
+    at callWithAsyncErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:1573:17)
+    at job (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:3162:9)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:1565:32)
+    at flushJobs (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:1763:9)
+2025-05-13T08:30:16.111Z [ERROR]: Server error occurred
+2025-05-13T08:30:43.757Z [ERROR]: Server error occurred
+2025-05-13T08:31:28.230Z [ERROR]: Server error occurred
+2025-05-13T08:35:31.585Z [ERROR]: Server error occurred
+2025-05-13T08:36:55.298Z [ERROR]: Server error occurred
+2025-05-13T08:40:29.890Z [ERROR]: Server error occurred
+2025-05-13T08:40:31.652Z [ERROR]: Server error occurred
+2025-05-13T08:40:41.939Z [ERROR]: Server error occurred
+2025-05-13T08:41:05.727Z [ERROR]: Server error occurred
+2025-05-13T08:41:07.697Z [ERROR]: Server error occurred
+2025-05-13T08:41:30.595Z [ERROR]: Server error occurred
+2025-05-13T08:41:33.994Z [ERROR]: Server error occurred
+2025-05-13T08:41:36.691Z [ERROR]: Server error occurred
+2025-05-13T08:42:08.307Z [ERROR]: Server error occurred
+2025-05-13T13:53:38.371Z [ERROR]: Server error occurred
+2025-05-13T14:02:33.473Z [ERROR]: Server error occurred
+2025-05-13T14:06:58.436Z [ERROR]: Unhandled Rejection
+2025-05-13T16:09:31.308Z [ERROR]: Server error occurred
+2025-05-13T16:10:44.438Z [ERROR]: Server error occurred
+2025-05-13T16:12:10.446Z [ERROR]: TypeError: Cannot read properties of undefined (reading 'notationType')
+    at selectClickedPosition (http://localhost:3000/src/helpers/selectionHelper.ts?t=1747152222322:163:17)
+    at http://localhost:3000/src/helpers/watchHelper.ts:18:11
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:1565:18)
+    at callWithAsyncErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:1573:17)
+    at job (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:3162:9)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:1565:32)
+    at flushJobs (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:1763:9)
+2025-05-13T16:12:16.565Z [ERROR]: TypeError: Cannot read properties of undefined (reading 'notationType')
+    at selectClickedPosition (http://localhost:3000/src/helpers/selectionHelper.ts?t=1747152222322:163:17)
+    at http://localhost:3000/src/helpers/watchHelper.ts:18:11
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:1565:18)
+    at callWithAsyncErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:1573:17)
+    at job (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:3162:9)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:1565:32)
+    at flushJobs (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:1763:9)
+2025-05-13T16:12:19.042Z [ERROR]: TypeError: Cannot read properties of undefined (reading 'notationType')
+    at selectClickedPosition (http://localhost:3000/src/helpers/selectionHelper.ts?t=1747152222322:163:17)
+    at http://localhost:3000/src/helpers/watchHelper.ts:18:11
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:1565:18)
+    at callWithAsyncErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:1573:17)
+    at job (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:3162:9)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:1565:32)
+    at flushJobs (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:1763:9)
+2025-05-13T16:12:45.508Z [ERROR]: Server error occurred
+2025-05-13T16:12:56.501Z [ERROR]: Server error occurred
+2025-05-13T16:13:41.053Z [ERROR]: Server error occurred
+2025-05-13T16:14:09.497Z [ERROR]: Server error occurred
+2025-05-13T16:17:15.476Z [ERROR]: Server error occurred
+2025-05-13T16:17:26.913Z [ERROR]: Server error occurred
+2025-05-13T16:19:38.987Z [ERROR]: Server error occurred
+2025-05-13T16:21:48.960Z [ERROR]: Server error occurred
+2025-05-13T16:25:23.755Z [ERROR]: Server error occurred
+2025-05-13T16:45:52.925Z [ERROR]: Server error occurred
+2025-05-13T17:28:02.387Z [ERROR]: Server error occurred
+2025-05-13T17:28:04.123Z [ERROR]: Server error occurred
+2025-05-13T17:28:05.949Z [ERROR]: Server error occurred
+2025-05-13T17:28:06.710Z [ERROR]: Server error occurred
+2025-05-13T17:28:10.192Z [ERROR]: Server error occurred
+2025-05-13T17:28:11.145Z [ERROR]: Server error occurred
+2025-05-13T17:28:11.820Z [ERROR]: Server error occurred
+2025-05-13T17:28:13.368Z [ERROR]: Server error occurred
+2025-05-13T17:28:19.282Z [ERROR]: Server error occurred
+2025-05-13T17:28:20.253Z [ERROR]: Server error occurred
+2025-05-13T17:28:25.866Z [ERROR]: Server error occurred
+2025-05-13T17:28:27.375Z [ERROR]: Server error occurred
+2025-05-13T17:28:27.935Z [ERROR]: Server error occurred
+2025-05-13T17:28:29.402Z [ERROR]: Server error occurred
+2025-05-13T17:28:29.479Z [ERROR]: Server error occurred
+2025-05-13T17:28:30.947Z [ERROR]: Server error occurred
+2025-05-13T17:28:34.767Z [ERROR]: Server error occurred
+2025-05-13T17:28:35.699Z [ERROR]: Server error occurred
+2025-05-13T17:28:37.419Z [ERROR]: Server error occurred
+2025-05-13T17:28:40.074Z [ERROR]: Server error occurred
+2025-05-13T17:28:40.613Z [ERROR]: Server error occurred
+2025-05-13T17:28:42.949Z [ERROR]: Server error occurred
+2025-05-13T17:29:49.928Z [ERROR]: Server error occurred
+2025-05-13T17:30:29.311Z [ERROR]: Server error occurred
+2025-05-13T17:33:29.308Z [ERROR]: Server error occurred
+2025-05-13T17:33:30.446Z [ERROR]: Server error occurred
+2025-05-13T17:33:33.415Z [ERROR]: Server error occurred
+2025-05-13T17:33:34.534Z [ERROR]: Server error occurred
+2025-05-13T17:34:02.653Z [ERROR]: Server error occurred
+2025-05-13T17:34:03.660Z [ERROR]: Server error occurred
+2025-05-13T17:35:13.075Z [ERROR]: Server error occurred
+2025-05-13T17:35:14.231Z [ERROR]: Server error occurred
+2025-05-13T17:35:18.244Z [ERROR]: Server error occurred
+2025-05-13T17:35:19.485Z [ERROR]: Server error occurred
+2025-05-13T17:41:16.235Z [ERROR]: Server error occurred
+2025-05-13T17:41:17.397Z [ERROR]: Server error occurred
+2025-05-13T17:41:26.565Z [ERROR]: Server error occurred
+2025-05-13T17:41:28.596Z [ERROR]: Server error occurred
+2025-05-13T17:41:43.681Z [ERROR]: Server error occurred
+2025-05-13T17:41:45.267Z [ERROR]: Server error occurred
+2025-05-13T17:43:04.267Z [ERROR]: Server error occurred
+2025-05-13T17:43:31.332Z [ERROR]: Server error occurred
+2025-05-13T17:43:35.601Z [ERROR]: Server error occurred
+2025-05-13T17:46:51.009Z [ERROR]: Server error occurred
+2025-05-13T17:46:53.997Z [ERROR]: TypeError: Cannot read properties of undefined (reading 'notationType')
+    at selectClickedPosition (http://localhost:3000/src/helpers/selectionHelper.ts?t=1747158102658:164:17)
+    at http://localhost:3000/src/helpers/watchHelper.ts?t=1747158102658:18:11
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:1565:18)
+    at callWithAsyncErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:1573:17)
+    at job (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:3162:9)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:1565:32)
+    at flushJobs (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:1763:9)
+2025-05-13T17:46:59.690Z [ERROR]: TypeError: Cannot read properties of undefined (reading 'notationType')
+    at selectClickedPosition (http://localhost:3000/src/helpers/selectionHelper.ts?t=1747158102658:164:17)
+    at http://localhost:3000/src/helpers/watchHelper.ts?t=1747158102658:18:11
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:1565:18)
+    at callWithAsyncErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:1573:17)
+    at job (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:3162:9)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:1565:32)
+    at flushJobs (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:1763:9)
+2025-05-13T17:47:02.403Z [ERROR]: Server error occurred
+2025-05-13T17:48:27.340Z [ERROR]: Server error occurred
+2025-05-13T17:48:31.831Z [ERROR]: Server error occurred
+2025-05-13T17:48:44.479Z [ERROR]: Server error occurred
+2025-05-13T17:49:09.846Z [ERROR]: Server error occurred
+2025-05-13T17:50:18.493Z [ERROR]: Server error occurred
+2025-05-13T17:50:32.991Z [ERROR]: Server error occurred
+2025-05-13T17:51:24.251Z [ERROR]: Server error occurred
+2025-05-13T17:51:25.002Z [ERROR]: Server error occurred
+2025-05-13T17:51:31.905Z [ERROR]: Server error occurred
+2025-05-13T17:51:33.107Z [ERROR]: Server error occurred
+2025-05-13T17:51:35.434Z [ERROR]: Server error occurred
+2025-05-13T17:51:36.399Z [ERROR]: Server error occurred
+2025-05-13T17:51:44.394Z [ERROR]: Server error occurred
+2025-05-13T17:51:44.442Z [ERROR]: Server error occurred
+2025-05-13T17:51:47.051Z [ERROR]: Server error occurred
+2025-05-13T17:51:49.607Z [ERROR]: Server error occurred
+2025-05-13T17:51:49.920Z [ERROR]: Server error occurred
+2025-05-13T17:51:51.749Z [ERROR]: Server error occurred
+2025-05-13T17:51:52.045Z [ERROR]: Server error occurred
+2025-05-13T17:51:54.127Z [ERROR]: Server error occurred
+2025-05-13T17:51:59.609Z [ERROR]: Server error occurred
+2025-05-13T17:52:01.277Z [ERROR]: Server error occurred
+2025-05-13T17:52:02.641Z [ERROR]: Server error occurred
+2025-05-13T17:52:06.292Z [ERROR]: Server error occurred
+2025-05-13T17:53:00.791Z [ERROR]: Unhandled Rejection
+2025-05-13T17:53:41.979Z [ERROR]: Server error occurred
+2025-05-13T17:54:58.212Z [ERROR]: Server error occurred
+2025-05-13T17:55:25.477Z [ERROR]: Server error occurred
+2025-05-13T17:56:50.987Z [ERROR]: Server error occurred
+2025-05-13T17:58:27.992Z [ERROR]: Server error occurred
+2025-05-13T17:59:04.359Z [ERROR]: Server error occurred
+2025-05-13T17:59:44.664Z [ERROR]: Server error occurred
+2025-05-13T17:59:53.721Z [ERROR]: Server error occurred
+2025-05-13T18:00:08.284Z [ERROR]: Server error occurred
+2025-05-13T19:55:13.593Z [ERROR]: Server error occurred
+2025-05-14T18:25:13.749Z [ERROR]: Server error occurred
+2025-05-14T18:25:17.839Z [ERROR]: Server error occurred
+2025-05-14T18:42:58.373Z [ERROR]: Server error occurred
+2025-05-14T18:43:07.339Z [ERROR]: TypeError: Cannot read properties of undefined (reading 'notationType')
+    at collapseNotationsToSelectedCell (http://localhost:3000/src/helpers/notationMutateHelper.ts?t=1747248161640:872:24)
+    at Object.handleDeleteKey (http://localhost:3000/src/helpers/notationMutateHelper.ts?t=1747248161640:859:7)
+    at handleDeletionKey (http://localhost:3000/src/helpers/keyHelper.ts?t=1747248161640:38:26)
+    at keyUpHandler (http://localhost:3000/src/helpers/keyHelper.ts?t=1747248161640:22:16)
+    at http://localhost:3000/src/helpers/watchHelper.ts:28:11
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:1565:18)
+    at callWithAsyncErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:1573:17)
+    at job (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:3162:9)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:1565:32)
+    at flushJobs (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:1763:9)
+2025-05-14T18:43:31.567Z [ERROR]: Server error occurred
+2025-05-14T18:43:55.620Z [ERROR]: Server error occurred
+2025-05-14T18:43:55.635Z [ERROR]: Server error occurred
+2025-05-14T18:43:55.837Z [ERROR]: Server error occurred
+2025-05-14T18:43:55.847Z [ERROR]: Server error occurred
+2025-05-14T18:43:55.865Z [ERROR]: Server error occurred
+2025-05-14T18:43:55.897Z [ERROR]: Server error occurred
+2025-05-14T18:43:55.941Z [ERROR]: Server error occurred
+2025-05-14T18:43:55.956Z [ERROR]: Server error occurred
+2025-05-14T18:43:56.167Z [ERROR]: Server error occurred
+2025-05-14T18:43:56.178Z [ERROR]: Server error occurred
+2025-05-14T18:43:56.189Z [ERROR]: Server error occurred
+2025-05-14T18:43:56.223Z [ERROR]: Server error occurred
+2025-05-14T18:43:56.255Z [ERROR]: Server error occurred
+2025-05-14T18:43:56.271Z [ERROR]: Server error occurred
+2025-05-14T18:43:56.494Z [ERROR]: Server error occurred
+2025-05-14T18:43:56.502Z [ERROR]: Server error occurred
+2025-05-14T18:43:56.519Z [ERROR]: Server error occurred
+2025-05-14T18:43:56.537Z [ERROR]: Server error occurred
+2025-05-14T18:43:56.598Z [ERROR]: Server error occurred
+2025-05-14T18:43:56.611Z [ERROR]: Server error occurred
+2025-05-14T18:43:56.823Z [ERROR]: Server error occurred
+2025-05-14T18:43:56.832Z [ERROR]: Server error occurred
+2025-05-14T18:43:57.000Z [ERROR]: Server error occurred
+2025-05-14T18:43:57.007Z [ERROR]: Server error occurred
+2025-05-14T18:43:57.011Z [ERROR]: Server error occurred
+2025-05-14T18:43:58.329Z [ERROR]: Server error occurred
+2025-05-14T18:43:58.332Z [ERROR]: Server error occurred
+2025-05-14T18:44:01.841Z [ERROR]: Server error occurred
+2025-05-14T18:44:02.469Z [ERROR]: Server error occurred
+2025-05-14T18:44:02.474Z [ERROR]: Server error occurred
+2025-05-14T18:44:02.879Z [ERROR]: Server error occurred
+2025-05-15T10:10:33.513Z [ERROR]: Server error occurred
+2025-05-15T10:10:37.837Z [ERROR]: Server error occurred
+2025-05-15T10:10:42.264Z [ERROR]: Server error occurred
+2025-05-15T10:10:55.866Z [ERROR]: Server error occurred
+2025-05-15T10:10:57.483Z [ERROR]: Server error occurred
+2025-05-15T10:10:57.787Z [ERROR]: Server error occurred
+2025-05-15T10:11:03.642Z [ERROR]: Server error occurred
+2025-05-15T10:11:09.057Z [ERROR]: Server error occurred
+2025-05-15T10:11:14.818Z [ERROR]: Server error occurred
+2025-05-15T10:11:14.835Z [ERROR]: Server error occurred
+2025-05-15T10:16:41.428Z [ERROR]: Server error occurred
+2025-05-15T10:19:53.614Z [ERROR]: Server error occurred
+2025-05-15T10:23:09.097Z [ERROR]: Server error occurred
+2025-05-15T10:23:24.952Z [ERROR]: Server error occurred
+2025-05-15T10:23:42.372Z [ERROR]: Server error occurred
+2025-05-15T10:27:57.508Z [ERROR]: Server error occurred
+2025-05-15T10:28:43.862Z [ERROR]: Server error occurred
+2025-05-15T10:29:58.069Z [ERROR]: Server error occurred
+2025-05-15T10:30:20.215Z [ERROR]: Server error occurred
+2025-05-15T10:30:21.340Z [ERROR]: Server error occurred
+2025-05-15T10:30:21.367Z [ERROR]: Server error occurred
+2025-05-15T10:30:21.369Z [ERROR]: Server error occurred
+2025-05-15T10:30:21.371Z [ERROR]: Server error occurred
+2025-05-15T10:30:21.374Z [ERROR]: Server error occurred
+2025-05-15T10:30:22.075Z [ERROR]: Server error occurred
+2025-05-15T10:30:22.404Z [ERROR]: Server error occurred
+2025-05-15T10:30:22.406Z [ERROR]: Server error occurred
+2025-05-15T10:30:22.408Z [ERROR]: Server error occurred
+2025-05-15T10:30:23.238Z [ERROR]: Server error occurred
+2025-05-15T10:30:23.241Z [ERROR]: Server error occurred
+2025-05-15T10:30:23.243Z [ERROR]: Server error occurred
+2025-05-15T10:30:23.645Z [ERROR]: Server error occurred
+2025-05-15T10:30:23.958Z [ERROR]: Server error occurred
+2025-05-15T10:30:24.815Z [ERROR]: Server error occurred
+2025-05-15T16:56:27.788Z [ERROR]: Server error occurred
+2025-05-15T16:56:37.132Z [ERROR]: Server error occurred
+2025-05-15T16:56:37.135Z [ERROR]: Server error occurred
+2025-05-15T17:10:26.496Z [ERROR]: Server error occurred
+2025-05-15T17:10:47.770Z [ERROR]: Server error occurred
+2025-05-15T17:10:48.095Z [ERROR]: Server error occurred
+2025-05-15T17:10:48.099Z [ERROR]: Server error occurred
+2025-05-15T17:10:48.132Z [ERROR]: Server error occurred
+2025-05-15T17:10:48.134Z [ERROR]: Server error occurred
+2025-05-15T17:10:48.139Z [ERROR]: Server error occurred
+2025-05-15T17:10:48.464Z [ERROR]: Server error occurred
+2025-05-15T17:10:48.755Z [ERROR]: Server error occurred
+2025-05-15T17:10:54.639Z [ERROR]: Server error occurred
+2025-05-15T17:10:54.941Z [ERROR]: Server error occurred
+2025-05-15T17:10:54.954Z [ERROR]: Server error occurred
+2025-05-15T17:10:55.008Z [ERROR]: Server error occurred
+2025-05-15T17:10:55.016Z [ERROR]: Server error occurred
+2025-05-15T17:10:55.024Z [ERROR]: Server error occurred
+2025-05-15T17:10:55.036Z [ERROR]: Server error occurred
+2025-05-15T17:10:55.253Z [ERROR]: Server error occurred
+2025-05-15T17:10:55.265Z [ERROR]: Server error occurred
+2025-05-15T17:10:55.339Z [ERROR]: Server error occurred
+2025-05-15T17:10:55.341Z [ERROR]: Server error occurred
+2025-05-15T17:10:55.358Z [ERROR]: Server error occurred
+2025-05-15T17:10:55.360Z [ERROR]: Server error occurred
+2025-05-15T17:10:55.568Z [ERROR]: Server error occurred
+2025-05-15T17:10:55.580Z [ERROR]: Server error occurred
+2025-05-15T17:10:55.665Z [ERROR]: Server error occurred
+2025-05-15T17:11:06.123Z [ERROR]: Server error occurred
+2025-05-15T17:11:06.134Z [ERROR]: Server error occurred
+2025-05-15T17:11:06.322Z [ERROR]: Server error occurred
+2025-05-15T17:11:06.324Z [ERROR]: Server error occurred
+2025-05-15T17:11:06.455Z [ERROR]: Server error occurred
+2025-05-15T17:11:06.457Z [ERROR]: Server error occurred
+2025-05-15T17:11:06.459Z [ERROR]: Server error occurred
+2025-05-15T17:11:06.469Z [ERROR]: Server error occurred
+2025-05-15T17:11:06.646Z [ERROR]: Server error occurred
+2025-05-15T17:11:06.653Z [ERROR]: Server error occurred
+2025-05-15T17:11:06.775Z [ERROR]: Server error occurred
+2025-05-15T17:11:06.777Z [ERROR]: Server error occurred
+2025-05-15T17:11:06.794Z [ERROR]: Server error occurred
+2025-05-15T17:11:06.796Z [ERROR]: Server error occurred
+2025-05-15T17:11:06.978Z [ERROR]: Server error occurred
+2025-05-15T17:11:06.980Z [ERROR]: Server error occurred
+2025-05-15T17:11:07.103Z [ERROR]: Server error occurred
+2025-05-15T17:11:07.105Z [ERROR]: Server error occurred
+2025-05-15T17:11:07.119Z [ERROR]: Server error occurred
+2025-05-15T17:11:08.755Z [ERROR]: Server error occurred
+2025-05-15T17:11:08.769Z [ERROR]: Server error occurred
+2025-05-15T17:11:08.910Z [ERROR]: Server error occurred
+2025-05-15T17:11:08.912Z [ERROR]: Server error occurred
+2025-05-15T17:11:09.076Z [ERROR]: Server error occurred
+2025-05-15T17:11:09.101Z [ERROR]: Server error occurred
+2025-05-15T17:11:09.103Z [ERROR]: Server error occurred
+2025-05-15T17:11:09.105Z [ERROR]: Server error occurred
+2025-05-15T17:11:09.236Z [ERROR]: Server error occurred
+2025-05-15T17:11:09.237Z [ERROR]: Server error occurred
+2025-05-15T17:11:09.387Z [ERROR]: Server error occurred
+2025-05-15T17:11:09.431Z [ERROR]: Server error occurred
+2025-05-15T17:11:09.433Z [ERROR]: Server error occurred
+2025-05-15T17:11:09.435Z [ERROR]: Server error occurred
+2025-05-15T17:11:09.564Z [ERROR]: Server error occurred
+2025-05-15T17:11:09.567Z [ERROR]: Server error occurred
+2025-05-15T17:11:09.700Z [ERROR]: Server error occurred
+2025-05-15T17:11:09.760Z [ERROR]: Server error occurred
+2025-05-15T17:11:09.761Z [ERROR]: Server error occurred
+2025-05-15T17:11:09.763Z [ERROR]: Server error occurred
+2025-05-15T17:11:09.893Z [ERROR]: Server error occurred
+2025-05-15T17:11:09.895Z [ERROR]: Server error occurred
+2025-05-15T17:11:10.014Z [ERROR]: Server error occurred
+2025-05-15T17:11:10.089Z [ERROR]: Server error occurred
+2025-05-15T17:11:12.098Z [ERROR]: Server error occurred
+2025-05-15T17:11:12.101Z [ERROR]: Server error occurred
+2025-05-15T17:11:12.188Z [ERROR]: Server error occurred
+2025-05-15T17:11:12.197Z [ERROR]: Server error occurred
+2025-05-15T17:11:12.232Z [ERROR]: Server error occurred
+2025-05-15T17:11:12.445Z [ERROR]: Server error occurred
+2025-05-15T17:11:12.447Z [ERROR]: Server error occurred
+2025-05-15T17:11:12.449Z [ERROR]: Server error occurred
+2025-05-15T17:11:12.516Z [ERROR]: Server error occurred
+2025-05-15T17:11:12.518Z [ERROR]: Server error occurred
+2025-05-15T17:11:12.555Z [ERROR]: Server error occurred
+2025-05-15T17:11:12.759Z [ERROR]: Server error occurred
+2025-05-15T17:11:12.778Z [ERROR]: Server error occurred
+2025-05-15T17:11:16.257Z [ERROR]: Server error occurred
+2025-05-15T17:11:20.214Z [ERROR]: Server error occurred
+2025-05-15T17:11:20.219Z [ERROR]: Server error occurred
+2025-05-15T17:11:20.411Z [ERROR]: Server error occurred
+2025-05-15T17:11:25.474Z [ERROR]: Server error occurred
+2025-05-15T17:11:25.476Z [ERROR]: Server error occurred
+2025-05-15T17:11:25.731Z [ERROR]: Server error occurred
+2025-05-15T17:11:25.733Z [ERROR]: Server error occurred
+2025-05-15T17:11:25.735Z [ERROR]: Server error occurred
+2025-05-15T17:11:25.812Z [ERROR]: Server error occurred
+2025-05-15T17:11:25.814Z [ERROR]: Server error occurred
+2025-05-15T17:11:26.063Z [ERROR]: Server error occurred
+2025-05-15T17:11:26.147Z [ERROR]: Server error occurred
+2025-05-15T17:11:26.412Z [ERROR]: Server error occurred
+2025-05-15T17:11:39.922Z [ERROR]: Server error occurred
+2025-05-15T17:11:39.924Z [ERROR]: Server error occurred
+2025-05-15T17:11:39.940Z [ERROR]: Server error occurred
+2025-05-15T17:11:39.973Z [ERROR]: Server error occurred
+2025-05-15T17:11:40.256Z [ERROR]: Server error occurred
+2025-05-15T17:11:40.277Z [ERROR]: Server error occurred
+2025-05-15T17:11:40.283Z [ERROR]: Server error occurred
+2025-05-15T17:11:40.305Z [ERROR]: Server error occurred
+2025-05-15T17:11:40.590Z [ERROR]: Server error occurred
+2025-05-15T17:11:41.298Z [ERROR]: Server error occurred
+2025-05-15T17:11:41.536Z [ERROR]: Server error occurred
+2025-05-15T17:11:41.537Z [ERROR]: Server error occurred
+2025-05-15T17:12:28.411Z [ERROR]: Server error occurred
+2025-05-15T17:12:28.726Z [ERROR]: Server error occurred
+2025-05-15T17:12:28.729Z [ERROR]: Server error occurred
+2025-05-15T17:12:28.742Z [ERROR]: Server error occurred
+2025-05-15T17:12:29.322Z [ERROR]: Server error occurred
+2025-05-15T17:12:29.705Z [ERROR]: Server error occurred
+2025-05-15T17:16:34.365Z [ERROR]: Server error occurred
+2025-05-15T17:16:46.352Z [ERROR]: Server error occurred
+2025-05-15T17:16:55.843Z [ERROR]: Server error occurred
+2025-05-15T17:16:55.845Z [ERROR]: Server error occurred
+2025-05-15T17:16:55.849Z [ERROR]: Server error occurred
+2025-05-15T17:16:56.160Z [ERROR]: Server error occurred
+2025-05-15T17:16:57.197Z [ERROR]: Server error occurred
+2025-05-15T17:16:59.132Z [ERROR]: Server error occurred
+2025-05-15T17:16:59.152Z [ERROR]: Server error occurred
+2025-05-15T17:17:03.779Z [ERROR]: Server error occurred
+2025-05-15T17:17:19.466Z [ERROR]: Server error occurred
+2025-05-15T17:17:19.474Z [ERROR]: Server error occurred
+2025-05-15T17:18:49.793Z [ERROR]: Server error occurred
+2025-05-15T17:19:37.479Z [ERROR]: Server error occurred
+2025-05-15T17:19:48.707Z [ERROR]: Server error occurred
+2025-05-15T17:19:48.714Z [ERROR]: Server error occurred
+2025-05-15T17:21:25.127Z [ERROR]: Server error occurred
+2025-05-15T17:21:25.131Z [ERROR]: Server error occurred
+2025-05-15T17:21:25.146Z [ERROR]: Server error occurred
+2025-05-15T17:21:25.153Z [ERROR]: Server error occurred
+2025-05-15T17:21:25.438Z [ERROR]: Server error occurred
+2025-05-15T17:21:25.467Z [ERROR]: Server error occurred
+2025-05-15T17:21:25.470Z [ERROR]: Server error occurred
+2025-05-15T17:55:45.086Z [ERROR]: Server error occurred
+2025-05-15T17:55:45.092Z [ERROR]: Server error occurred
+2025-05-15T17:55:45.112Z [ERROR]: Server error occurred
+2025-05-15T17:55:45.412Z [ERROR]: Server error occurred
+2025-05-15T17:55:45.425Z [ERROR]: Server error occurred
+2025-05-15T17:55:45.427Z [ERROR]: Server error occurred
+2025-05-15T17:55:45.446Z [ERROR]: Server error occurred
+2025-05-15T17:55:45.449Z [ERROR]: Server error occurred
+2025-05-15T17:57:19.824Z [ERROR]: Server error occurred
+2025-05-15T17:57:35.556Z [ERROR]: Server error occurred

@@ -6,6 +6,7 @@ import {
   SlopeLineNotationAttributes,
   MultiCellAttributes,
 } from "common/baseTypes";
+
 import { NotationAttributes } from "common/baseTypes";
 import { useLessonStore } from "../store/pinia/lessonStore";
 import { useEditModeStore } from "../store/pinia/editModeStore";
@@ -36,6 +37,8 @@ export default function selectionHelper() {
 
     const areaCells =
       screenHelper.getRectCoordinatesOccupiedCells(rectCoordinates);
+
+    console.log("areaCells", areaCells);
 
     notationStore.selectNotationsOfCells(areaCells);
 

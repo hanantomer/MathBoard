@@ -42,7 +42,9 @@ export default function () {
   }
 
   function handleDeletionKey() {
-    notationMutateHelper.deleteSelectedNotations();
+    notationMutateHelper.handleDeleteKey();
+
+    matrixCellHelper.setNextCell(0, 0);
 
     editModeStore.setDefaultEditMode();
   }

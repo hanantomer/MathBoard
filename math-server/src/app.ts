@@ -22,6 +22,26 @@ var transporter = createTransport({
     },
 });
 
+process.on('uncaughtException', (error: Error) => {
+    logger.error({
+        message: 'Uncaught Exception',
+        error: error.message,
+        stack: error.stack
+    });
+    // Give time for logging before exiting
+    setTimeout(() => {
+        process.exit(1);
+    }, 1000);
+});
+
+process.on('unhandledRejection', (reason: any, promise: Promise<any>) => {
+    logger.error({
+        message: 'Unhandled Rejection',
+        reason: reason instanceof Error ? reason.message : reason,
+        stack: reason instanceof Error ? reason.stack : undefined
+    });
+});
+
 const authUtil = useAuthUtil();
 const db = useDb();
 let app = express();
@@ -35,14 +55,23 @@ const logger = winston.createLogger({
     level: "info",
     format: winston.format.combine(
         winston.format.timestamp(),
-        winston.format.printf(({ timestamp, level, message }) => {
-            return `${timestamp} [${level.toUpperCase()}]: ${message}`;
+        winston.format.printf(({ timestamp, level, path, message, error, origin, parent,  sql, sqlMessage, fields}) => {
+            return `${timestamp} [${level.toUpperCase()}]: ${path},  
+            ${message}, 
+            ${error ? error : ''},   
+            ${origin ? origin : ''},
+            ${parent ? parent : ''},
+            ${sql ? sql : ''}, fields: 
+            ${fields ? JSON.stringify(fields) : ''},
+            ${sqlMessage ? sqlMessage : ''} }`;
         })
     ),
     transports: [
-        new winston.transports.File({ filename: "client.log" }),
+        new winston.transports.File({ filename: "server.log" }),
     ],
 });
+
+
 
 app.post(
     "/api/log",
@@ -589,16 +618,41 @@ async function sendResetEmail(email: string, resetLink: string) {
 
 
 const errorHandler = (
-    err: Error,
+    err: Error & { fields: string, original: any, parent: any },
     req: Request,
     res: Response,
     next: NextFunction
 ) => {
-    console.error("unhandled error:" + err.message);
-    console.error(err.cause);
-    console.error(err.stack);
-    logger.error(err.message + err.cause);
-    res.status(500).send({ errors: [{ message: "error occured in api server" }] });
+    // Check if it's a Sequelize error
+    const isSequelizeError = !!(err as any).sql;
+    
+    // Log error details
+    logger.error({
+        message: 'Server error occurred',
+        type: isSequelizeError ? 'Database Error' : 'Application Error',
+        error: err.message,
+        path: req.path,
+        fields: err.fields,
+        original: err.original,
+        parent: err.parent,
+        method: req.method,
+        stack: process.env.NODE_ENV === 'development' ? err.stack : undefined,
+        sql: isSequelizeError ? (err as any).sql : undefined,
+        sqlMessage: isSequelizeError ? (err as any).original?.sqlMessage : undefined
+    });
+
+    // Send appropriate response
+    if (isSequelizeError) {
+        return res.status(503).json({
+            error: 'Database operation failed',
+            message: process.env.NODE_ENV === 'development' ? err.message : 'Internal server error'
+        });
+    }
+
+    return res.status(500).json({
+        error: 'Server error occurred',
+        message: process.env.NODE_ENV === 'development' ? err.message : 'Internal server error'
+    });
 };
 
 app.use(errorHandler);

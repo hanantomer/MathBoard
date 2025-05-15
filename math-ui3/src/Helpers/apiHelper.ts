@@ -26,9 +26,6 @@ import axiosHelper from "./axiosHelper";
 const { baseURL } = axiosHelper();
 
 export default function useApiHelper() {
-  const updateCoordinatesInterval = 100; // while moving selection by arrow, miliseconds to wait before sync
-  let lastUpdateCoordinatesTime: number | null = null;
-  let updateCoordinatesHandle: number | null = null;
 
   async function log(message: string) {
     try {
@@ -176,160 +173,11 @@ export default function useApiHelper() {
       return res.data;
     } catch (error) {
       throw new Error(
-        `Failed to add notation: ${(error as AxiosError).message}`,
+        `Failed to add notation:${notation},  ${(error as AxiosError).message}`,
       );
     }
   }
 
-  async function saveMovedNotations(notations: NotationAttributes[]) {
-    const currentTime = Date.now();
-    if (
-      lastUpdateCoordinatesTime == null ||
-      lastUpdateCoordinatesTime - currentTime > updateCoordinatesInterval
-    ) {
-      if (updateCoordinatesHandle) window.clearTimeout(updateCoordinatesHandle);
-
-      updateCoordinatesHandle = window.setTimeout(
-        saveMovedNotationsDelayed,
-        updateCoordinatesInterval,
-        notations,
-      );
-    }
-    lastUpdateCoordinatesTime = Date.now();
-  }
-
-  async function saveMovedNotationsDelayed(notations: NotationAttributes[]) {
-    notations.forEach(async (notation) => {
-      const attributes = getNotationCoordinates(notation);
-
-      lastUpdateCoordinatesTime = null;
-
-      if (!attributes) return;
-
-      if (
-        notation.uuid.indexOf("_") ===
-        0 /*see cloneSelectedNotations in notationStore*/
-      ) {
-        try {
-          const { uuid, ...newNotation } = notation;
-
-          if ((newNotation as any).lesson) {
-            (newNotation as any).parentUUId = (newNotation as any).lesson.uuid;
-            delete (newNotation as any).lesson;
-          }
-
-          if ((newNotation as any).question) {
-            (newNotation as any).parentUUId = (
-              newNotation as any
-            ).question.uuid;
-            delete (newNotation as any).question;
-          }
-
-          if ((newNotation as any).answer) {
-            (newNotation as any).parentUUId = (newNotation as any).answer.uuid;
-            delete (newNotation as any).lesson;
-          }
-
-          return await axios.post<NotationCreationAttributes>(
-            baseURL +
-              `/${newNotation.boardType.toLowerCase()}${newNotation.notationType.toLowerCase()}s`,
-            newNotation,
-          );
-        } catch (error) {
-          throw new Error(
-            `Failed to save moved notations: ${(error as AxiosError).message}`,
-          );
-        }
-      }
-
-      try {
-        return await axios.put<NotationAttributes>(
-          baseURL +
-            `/${notation.boardType.toLowerCase()}${notation.notationType.toLowerCase()}s`,
-          { uuid: notation.uuid, ...attributes },
-        );
-      } catch (error) {
-        throw new Error(
-          `Failed to save moved notations: ${(error as AxiosError).message}`,
-        );
-      }
-    });
-  }
-
-  function getNotationCoordinates(notation: any) {
-    const cooerdinates =
-      // point
-      "col" in notation
-        ? {
-            col: (notation as any)["col"],
-            row: (notation as any)["row"],
-          }
-        : // line
-        "fromCol" in notation && "row" in notation
-        ? {
-            fromCol: (notation as any)["fromCol"],
-            toCol: (notation as any)["toCol"],
-            row: (notation as any)["row"],
-          }
-        : // rect
-        "fromRow" in notation && "fromCol" in notation
-        ? {
-            fromCol: (notation as any)["fromCol"],
-            toCol: (notation as any)["toCol"],
-            fromRow: (notation as any)["fromRow"],
-            toRow: (notation as any)["toRow"],
-          }
-        : // horizontal line
-        "p1x" in notation && "p2x" in notation && "py" in notation
-        ? {
-            p1x: (notation as any)["p1x"],
-            p2x: (notation as any)["p2x"],
-            py: (notation as any)["py"],
-          }
-        : // vertical line
-        "px" in notation && "p1y" in notation && "p2y" in notation
-        ? {
-            px: (notation as any)["px"],
-            p1y: (notation as any)["p1y"],
-            p2y: (notation as any)["p2y"],
-          }
-        : // sloped line
-        "p1x" in notation &&
-          "p2x" in notation &&
-          "p1y" in notation &&
-          "p2y" in notation
-        ? {
-            p1x: (notation as any)["p1x"],
-            p2x: (notation as any)["p2x"],
-            p1y: (notation as any)["p1y"],
-            p2y: (notation as any)["p2y"],
-          }
-        : // sloped line
-        "p1x" in notation &&
-          "p2x" in notation &&
-          "p1y" in notation &&
-          "p2y" in notation &&
-          "cpx" in notation &&
-          "cpy" in notation
-        ? {
-            p1x: (notation as any)["p1x"],
-            p2x: (notation as any)["p2x"],
-            p1y: (notation as any)["p1y"],
-            p2y: (notation as any)["p2y"],
-            cpx: (notation as any)["cpx"],
-            cpy: (notation as any)["cpy"],
-          }
-        : // circle
-        "cx" in notation && "cy" in notation && "r" in notation
-        ? {
-            cx: Math.round((notation as any)["cx"]),
-            cy: Math.round((notation as any)["cy"]),
-            r: Math.round((notation as any)["r"]),
-          }
-        : null;
-
-    return cooerdinates;
-  }
 
   async function updateNotationValue(notation: NotationAttributes) {
     if ("value" in notation === false) return null;
@@ -358,7 +206,7 @@ export default function useApiHelper() {
       );
     } catch (error) {
       throw new Error(
-        `Failed to update notation: ${(error as AxiosError).message}`,
+        `Failed to update notation:  ${(error as AxiosError).message}`,
       );
     }
   }
@@ -693,7 +541,7 @@ export default function useApiHelper() {
     updateCircleNotationAttributes,
     updateNotationValue,
     updateNotation,
-    saveMovedNotations,
+    //saveMovedNotations,
     deleteNotation,
     log,
   };

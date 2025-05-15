@@ -1,0 +1,152 @@
+2025-05-15T19:04:27.626Z [ERROR]: /api/auth,  Server error occurred, Cannot set headers after they are sent to the client, , fields: , }
+2025-05-15T19:04:30.468Z [ERROR]: /api/auth,  Server error occurred, Cannot set headers after they are sent to the client, , fields: , }
+2025-05-15T19:04:35.851Z [ERROR]: /api/lessonsymbols,  Server error occurred, Validation error, UPDATE "LessonSymbol" SET "col"=$1,"row"=$2,"value"=$3,"colorId"=$4,"updatedAt"=$5 WHERE "id" = $6, fields: , }
+2025-05-15T19:04:35.873Z [ERROR]: /api/lessonsymbols,  Server error occurred, Validation error, UPDATE "LessonSymbol" SET "col"=$1,"row"=$2,"value"=$3,"colorId"=$4,"updatedAt"=$5 WHERE "id" = $6, fields: , }
+2025-05-15T19:06:43.441Z [ERROR]: /api/lessonsymbols,  Server error occurred, Validation error, UPDATE "LessonSymbol" SET "col"=$1,"row"=$2,"value"=$3,"colorId"=$4,"updatedAt"=$5 WHERE "id" = $6, fields: , }
+2025-05-15T19:11:41.168Z [ERROR]: /api/auth,  Server error occurred, Cannot set headers after they are sent to the client, , fields: , }
+2025-05-15T19:11:45.746Z [ERROR]: /api/auth,  Server error occurred, Cannot set headers after they are sent to the client, , fields: , }
+2025-05-15T19:11:58.912Z [ERROR]: /api/lessonsymbols,  Server error occurred, Validation error, UPDATE "LessonSymbol" SET "col"=$1,"row"=$2,"value"=$3,"colorId"=$4,"updatedAt"=$5 WHERE "id" = $6, fields: [object Object], }
+2025-05-15T19:12:10.188Z [ERROR]: /api/lessonsymbols,  Server error occurred, Validation error, UPDATE "LessonSymbol" SET "col"=$1,"row"=$2,"value"=$3,"colorId"=$4,"updatedAt"=$5 WHERE "id" = $6, fields: [object Object], }
+2025-05-15T19:12:10.195Z [ERROR]: /api/lessonsymbols,  Server error occurred, Validation error, UPDATE "LessonSymbol" SET "col"=$1,"row"=$2,"value"=$3,"colorId"=$4,"updatedAt"=$5 WHERE "id" = $6, fields: [object Object], }
+2025-05-15T19:12:10.258Z [ERROR]: /api/lessonsymbols,  Server error occurred, Validation error, UPDATE "LessonSymbol" SET "col"=$1,"row"=$2,"value"=$3,"colorId"=$4,"updatedAt"=$5 WHERE "id" = $6, fields: [object Object], }
+2025-05-15T19:12:10.269Z [ERROR]: /api/lessonsymbols,  Server error occurred, Validation error, UPDATE "LessonSymbol" SET "col"=$1,"row"=$2,"value"=$3,"colorId"=$4,"updatedAt"=$5 WHERE "id" = $6, fields: [object Object], }
+2025-05-15T19:12:10.694Z [ERROR]: /api/lessonsymbols,  Server error occurred, Validation error, UPDATE "LessonSymbol" SET "col"=$1,"row"=$2,"value"=$3,"colorId"=$4,"updatedAt"=$5 WHERE "id" = $6, fields: [object Object], }
+2025-05-15T19:12:10.719Z [ERROR]: /api/lessonsymbols,  Server error occurred, Validation error, UPDATE "LessonSymbol" SET "col"=$1,"row"=$2,"value"=$3,"colorId"=$4,"updatedAt"=$5 WHERE "id" = $6, fields: [object Object], }
+2025-05-15T19:12:10.732Z [ERROR]: /api/lessonsymbols,  Server error occurred, Validation error, UPDATE "LessonSymbol" SET "col"=$1,"row"=$2,"value"=$3,"colorId"=$4,"updatedAt"=$5 WHERE "id" = $6, fields: [object Object], }
+2025-05-15T19:12:11.023Z [ERROR]: /api/lessonsymbols,  Server error occurred, Validation error, UPDATE "LessonSymbol" SET "col"=$1,"row"=$2,"value"=$3,"colorId"=$4,"updatedAt"=$5 WHERE "id" = $6, fields: [object Object], }
+2025-05-15T19:12:13.614Z [ERROR]: /api/lessonsymbols,  Server error occurred, Validation error, UPDATE "LessonSymbol" SET "col"=$1,"row"=$2,"value"=$3,"colorId"=$4,"updatedAt"=$5 WHERE "id" = $6, fields: [object Object], }
+2025-05-15T19:12:13.654Z [ERROR]: /api/lessonsymbols,  Server error occurred, Validation error, UPDATE "LessonSymbol" SET "col"=$1,"row"=$2,"value"=$3,"colorId"=$4,"updatedAt"=$5 WHERE "id" = $6, fields: [object Object], }
+2025-05-15T19:12:13.677Z [ERROR]: /api/lessonsymbols,  Server error occurred, Validation error, UPDATE "LessonSymbol" SET "col"=$1,"row"=$2,"value"=$3,"colorId"=$4,"updatedAt"=$5 WHERE "id" = $6, fields: [object Object], }
+2025-05-15T19:12:13.919Z [ERROR]: /api/lessonsymbols,  Server error occurred, Validation error, UPDATE "LessonSymbol" SET "col"=$1,"row"=$2,"value"=$3,"colorId"=$4,"updatedAt"=$5 WHERE "id" = $6, fields: [object Object], }
+2025-05-15T19:12:13.952Z [ERROR]: /api/lessonsymbols,  Server error occurred, Validation error, UPDATE "LessonSymbol" SET "col"=$1,"row"=$2,"value"=$3,"colorId"=$4,"updatedAt"=$5 WHERE "id" = $6, fields: [object Object], }
+2025-05-15T19:12:13.970Z [ERROR]: /api/lessonsymbols,  Server error occurred, Validation error, UPDATE "LessonSymbol" SET "col"=$1,"row"=$2,"value"=$3,"colorId"=$4,"updatedAt"=$5 WHERE "id" = $6, fields: [object Object], }
+2025-05-15T19:12:14.233Z [ERROR]: /api/lessonsymbols,  Server error occurred, Validation error, UPDATE "LessonSymbol" SET "col"=$1,"row"=$2,"value"=$3,"colorId"=$4,"updatedAt"=$5 WHERE "id" = $6, fields: [object Object], }
+2025-05-15T19:13:53.471Z [ERROR]: /api/auth,  Server error occurred, Cannot set headers after they are sent to the client, , fields: , }
+2025-05-15T19:13:56.416Z [ERROR]: /api/auth,  Server error occurred, Cannot set headers after they are sent to the client, , fields: , }
+2025-05-15T19:14:04.613Z [ERROR]: /api/lessonsymbols,  Server error occurred, Validation error, UPDATE "LessonSymbol" SET "col"=$1,"row"=$2,"value"=$3,"colorId"=$4,"updatedAt"=$5 WHERE "id" = $6, fields: {"lessonId":"1","col":"21","row":"7"}, }
+2025-05-15T19:14:04.769Z [ERROR]: /api/lessonsymbols,  Server error occurred, Validation error, UPDATE "LessonSymbol" SET "col"=$1,"row"=$2,"value"=$3,"colorId"=$4,"updatedAt"=$5 WHERE "id" = $6, fields: {"lessonId":"1","col":"22","row":"7"}, }
+2025-05-15T19:14:04.839Z [ERROR]: /api/lessonsymbols,  Server error occurred, Validation error, UPDATE "LessonSymbol" SET "col"=$1,"row"=$2,"value"=$3,"colorId"=$4,"updatedAt"=$5 WHERE "id" = $6, fields: {"lessonId":"1","col":"23","row":"7"}, }
+2025-05-15T19:14:04.862Z [ERROR]: /api/lessonsymbols,  Server error occurred, Validation error, UPDATE "LessonSymbol" SET "col"=$1,"row"=$2,"value"=$3,"colorId"=$4,"updatedAt"=$5 WHERE "id" = $6, fields: {"lessonId":"1","col":"24","row":"7"}, }
+2025-05-15T19:14:04.890Z [ERROR]: /api/lessonsymbols,  Server error occurred, Validation error, UPDATE "LessonSymbol" SET "col"=$1,"row"=$2,"value"=$3,"colorId"=$4,"updatedAt"=$5 WHERE "id" = $6, fields: {"lessonId":"1","col":"25","row":"7"}, }
+2025-05-15T19:14:06.501Z [ERROR]: /api/lessonsymbols,  Server error occurred, Validation error, UPDATE "LessonSymbol" SET "col"=$1,"row"=$2,"value"=$3,"colorId"=$4,"updatedAt"=$5 WHERE "id" = $6, fields: {"lessonId":"1","col":"20","row":"7"}, }
+2025-05-15T19:15:13.035Z [ERROR]: /api/lessonsymbols,  Server error occurred, Validation error, UPDATE "LessonSymbol" SET "col"=$1,"row"=$2,"value"=$3,"colorId"=$4,"updatedAt"=$5 WHERE "id" = $6, fields: {"lessonId":"1","col":"20","row":"9"}, }
+2025-05-15T19:18:31.319Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-15T19:18:32.849Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-15T19:18:35.570Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-15T19:18:42.268Z [ERROR]: /api/lessonsymbols,  
+            Server error occurred, 
+            Validation error,   
+            ,
+            error: duplicate key value violates unique constraint "LessonSymbol_lessonId_col_row_key",
+            UPDATE "LessonSymbol" SET "col"=$1,"row"=$2,"value"=$3,"colorId"=$4,"updatedAt"=$5 WHERE "id" = $6, fields: 
+            {"lessonId":"1","col":"19","row":"7"},
+             }
+2025-05-15T19:18:48.501Z [ERROR]: /api/lessonsymbols,  
+            Server error occurred, 
+            Validation error,   
+            ,
+            error: duplicate key value violates unique constraint "LessonSymbol_lessonId_col_row_key",
+            UPDATE "LessonSymbol" SET "col"=$1,"row"=$2,"value"=$3,"colorId"=$4,"updatedAt"=$5 WHERE "id" = $6, fields: 
+            {"lessonId":"1","col":"20","row":"7"},
+             }
+2025-05-15T19:18:48.506Z [ERROR]: /api/lessonsymbols,  
+            Server error occurred, 
+            Validation error,   
+            ,
+            error: duplicate key value violates unique constraint "LessonSymbol_lessonId_col_row_key",
+            UPDATE "LessonSymbol" SET "col"=$1,"row"=$2,"value"=$3,"colorId"=$4,"updatedAt"=$5 WHERE "id" = $6, fields: 
+            {"lessonId":"1","col":"21","row":"7"},
+             }
+2025-05-15T19:18:48.551Z [ERROR]: /api/lessonsymbols,  
+            Server error occurred, 
+            Validation error,   
+            ,
+            error: duplicate key value violates unique constraint "LessonSymbol_lessonId_col_row_key",
+            UPDATE "LessonSymbol" SET "col"=$1,"row"=$2,"value"=$3,"colorId"=$4,"updatedAt"=$5 WHERE "id" = $6, fields: 
+            {"lessonId":"1","col":"22","row":"7"},
+             }
+2025-05-15T19:18:48.556Z [ERROR]: /api/lessonsymbols,  
+            Server error occurred, 
+            Validation error,   
+            ,
+            error: duplicate key value violates unique constraint "LessonSymbol_lessonId_col_row_key",
+            UPDATE "LessonSymbol" SET "col"=$1,"row"=$2,"value"=$3,"colorId"=$4,"updatedAt"=$5 WHERE "id" = $6, fields: 
+            {"lessonId":"1","col":"23","row":"7"},
+             }
+2025-05-15T19:18:48.950Z [ERROR]: /api/lessonsymbols,  
+            Server error occurred, 
+            Validation error,   
+            ,
+            error: duplicate key value violates unique constraint "LessonSymbol_lessonId_col_row_key",
+            UPDATE "LessonSymbol" SET "col"=$1,"row"=$2,"value"=$3,"colorId"=$4,"updatedAt"=$5 WHERE "id" = $6, fields: 
+            {"lessonId":"1","col":"20","row":"7"},
+             }
+2025-05-15T19:18:49.287Z [ERROR]: /api/lessonsymbols,  
+            Server error occurred, 
+            Validation error,   
+            ,
+            error: duplicate key value violates unique constraint "LessonSymbol_lessonId_col_row_key",
+            UPDATE "LessonSymbol" SET "col"=$1,"row"=$2,"value"=$3,"colorId"=$4,"updatedAt"=$5 WHERE "id" = $6, fields: 
+            {"lessonId":"1","col":"22","row":"7"},
+             }
+2025-05-15T19:18:49.648Z [ERROR]: /api/lessonsymbols,  
+            Server error occurred, 
+            Validation error,   
+            ,
+            error: duplicate key value violates unique constraint "LessonSymbol_lessonId_col_row_key",
+            UPDATE "LessonSymbol" SET "col"=$1,"row"=$2,"value"=$3,"colorId"=$4,"updatedAt"=$5 WHERE "id" = $6, fields: 
+            {"lessonId":"1","col":"16","row":"7"},
+             }
+2025-05-15T19:18:49.663Z [ERROR]: /api/lessonsymbols,  
+            Server error occurred, 
+            Validation error,   
+            ,
+            error: duplicate key value violates unique constraint "LessonSymbol_lessonId_col_row_key",
+            UPDATE "LessonSymbol" SET "col"=$1,"row"=$2,"value"=$3,"colorId"=$4,"updatedAt"=$5 WHERE "id" = $6, fields: 
+            {"lessonId":"1","col":"17","row":"7"},
+             }
+2025-05-15T19:18:49.930Z [ERROR]: /api/lessonsymbols,  
+            Server error occurred, 
+            Validation error,   
+            ,
+            error: duplicate key value violates unique constraint "LessonSymbol_lessonId_col_row_key",
+            UPDATE "LessonSymbol" SET "col"=$1,"row"=$2,"value"=$3,"colorId"=$4,"updatedAt"=$5 WHERE "id" = $6, fields: 
+            {"lessonId":"1","col":"18","row":"7"},
+             }
+2025-05-15T19:18:49.943Z [ERROR]: /api/lessonsymbols,  
+            Server error occurred, 
+            Validation error,   
+            ,
+            error: duplicate key value violates unique constraint "LessonSymbol_lessonId_col_row_key",
+            UPDATE "LessonSymbol" SET "col"=$1,"row"=$2,"value"=$3,"colorId"=$4,"updatedAt"=$5 WHERE "id" = $6, fields: 
+            {"lessonId":"1","col":"19","row":"7"},
+             }
+2025-05-15T19:18:49.960Z [ERROR]: /api/lessonsymbols,  
+            Server error occurred, 
+            Validation error,   
+            ,
+            error: duplicate key value violates unique constraint "LessonSymbol_lessonId_col_row_key",
+            UPDATE "LessonSymbol" SET "col"=$1,"row"=$2,"value"=$3,"colorId"=$4,"updatedAt"=$5 WHERE "id" = $6, fields: 
+            {"lessonId":"1","col":"20","row":"7"},
+             }

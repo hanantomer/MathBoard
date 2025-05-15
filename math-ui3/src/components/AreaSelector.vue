@@ -11,12 +11,12 @@
       left: selectionRectLeft + 'px',
       top: selectionRectTop + 'px',
       width: selectionRectWidth + 'px',
-      height: -15 + selectionRectHeight + 'px',
+      height: selectionRectHeight + 'px',
       background: backgroundColor,
     }"
   >
   </v-card>
-  <v-card
+  <!-- <v-card
     v-if="show"
     variant="outlined"
     class="resizable"
@@ -32,7 +32,7 @@
       background: backgroundColor,
     }"
   >
-  </v-card>
+  </v-card> -->
 </template>
 
 <script setup lang="ts">
@@ -101,11 +101,14 @@ const selectedRectBoundingRect = computed(() => {
 const show = computed(() => {
   return (
     (editModeStore.isTextSelectionMode() ||
-      editModeStore.isAreaSelectionOrMovingMode() ||
-      editModeStore.isResizeMode()) &&
+      editModeStore.isAreaSelectionOrMovingMode()) &&
     selectionPosition.value.x1 != selectionPosition.value.x2 &&
     selectionPosition.value.y1 != selectionPosition.value.y2
   );
+});
+
+const showResizeControl = computed(() => {
+  return editModeStore.isResizeMode();
 });
 
 const backgroundColor = computed(() => {
@@ -564,7 +567,6 @@ async function onSelectionMouseUp(e: MouseEvent) {
     editModeStore.getEditMode() === "AREA_SELECTING" ||
     editModeStore.getEditMode() === "RESIZING"
   ) {
-    //if (e.buttons !== 1) return;
     endSelect();
     return;
   }
@@ -647,6 +649,7 @@ function setSelectionPositionForImage(selectedNotation: NotationAttributes) {
   selectionPosition.value.y1 = rect.y;
   selectionPosition.value.y2 = rect.y + rect.height;
 }
+
 </script>
 
 <style>
@@ -671,6 +674,6 @@ function setSelectionPositionForImage(selectedNotation: NotationAttributes) {
   cursor: -webkit-grab;
   position: absolute;
   z-index: 99;
-  border-bottom: 0;
+  /*border-bottom: 0;*/
 }
 </style>
