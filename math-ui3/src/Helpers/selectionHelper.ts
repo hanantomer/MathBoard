@@ -41,7 +41,6 @@ export default function selectionHelper() {
     console.log("areaCells", areaCells);
 
     notationStore.selectNotationsOfCells(areaCells);
-
     notationStore.selectNotationsOfRectCoordinates(rectCoordinates);
   }
 
