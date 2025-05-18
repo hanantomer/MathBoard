@@ -30,6 +30,10 @@
       func: selectLine,
       event: 'EV_VERTICAL_LINE_SELECTED',
     }"
+    :moveByKeyEntry="{
+      editMode: 'VERTICAL_LINE_SELECTED',
+      func: moveLine,
+    }"
     :endSelectionEntry="{
       editMode: ['VERTICAL_LINE_SELECTED'],
     }"
@@ -223,23 +227,12 @@ function selectLine(notation: NotationAttributes) {
   linePosition.value.px = n.px;
   linePosition.value.p1y = n.p1y;
   linePosition.value.p2y = n.p2y;
-
-  // if (lineNotation.notationType === "HORIZONTALLINE") {
-  //   Object.assign(linePosition, lineNotation);
-  // }
-
-  // if (lineNotation.notationType === "SQRT") {
-  //   linePosition.p1x =
-  //     (lineNotation as SqrtNotationAttributes).fromCol *
-  //     cellStore.getCellHorizontalWidth();
-
-  //   linePosition.p2x =
-  //     (lineNotation as SqrtNotationAttributes).toCol *
-  //     cellStore.getCellHorizontalWidth();
-
-  //   linePosition.py =
-  //     (lineNotation as SqrtNotationAttributes).row *
-  //     cellStore.getCellVerticalHeight();
-  // }
 }
+
+function moveLine(moveX: number, moveY: number) {
+  linePosition.value.px += moveX;
+  linePosition.value.p1y += moveY;
+  linePosition.value.p2y += moveY;
+}
+
 </script>

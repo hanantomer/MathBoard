@@ -60,6 +60,7 @@ const userOutgoingOperations = useUserOutgoingOperations();
 const updateCoordinatesInterval = 100; // while moving selection by arrow, miliseconds to wait before sync
 let lastUpdateCoordinatesTime: number | null = null;
 let updateCoordinatesHandle: number | null = null;
+let deleteKeyLock = false; // Add lock variable at the top with other variables
 
 export default function notationMutateHelper() {
   function pointAtCellCoordinates(
@@ -339,41 +340,9 @@ export default function notationMutateHelper() {
     return moveSelectedNotations(0, 0, deltaCol, deltaRow, keepOriginal);
   }
 
-  // move without persistence - called during  mouse move - don't bother the database during move
-  function moveSelectedNotations(
-    deltaX: number,
-    deltaY: number,
-    deltaCol: number,
-    deltaRow: number,
-    keepOriginal: boolean, // in case moving with ctrl key pressed
-  ): boolean {
-    //if (!canMoveSelectedNotations(deltaCol, deltaRow)) return false;
-
-    if (keepOriginal) {
-      notationStore.cloneSelectedNotations();
-    }
-
+  function moveSelectedPixelNotations(deltaX: number, deltaY: number): boolean {
     notationStore.getSelectedNotations().forEach((n: NotationAttributes) => {
       switch (n.notationType) {
-        case "EXPONENT":
-        case "ANNOTATION":
-        case "SIGN":
-        case "SQRTSYMBOL":
-        case "SYMBOL":
-          matrixCellHelper.unColorizeNotationCells(n);
-      }
-
-      switch (n.notationType) {
-        case "EXPONENT":
-        case "ANNOTATION":
-        case "SIGN":
-        case "SQRTSYMBOL":
-        case "SYMBOL": {
-          (n as PointNotationAttributes).col += deltaCol;
-          (n as PointNotationAttributes).row += deltaRow;
-          break;
-        }
-
         case "HORIZONTALLINE": {
           (n as HorizontalLineNotationAttributes).p1x += deltaX;
           (n as HorizontalLineNotationAttributes).p2x += deltaX;
@@ -393,7 +362,6 @@ export default function notationMutateHelper() {
           (n as SlopeLineNotationAttributes).p2y += deltaY;
           break;
         }
-
         case "CURVE": {
           (n as CurveNotationAttributes).p1x += deltaX;
           (n as CurveNotationAttributes).p2x += deltaX;
@@ -403,20 +371,44 @@ export default function notationMutateHelper() {
           (n as CurveNotationAttributes).cpy += deltaY;
           break;
         }
-
         case "CIRCLE": {
           (n as CircleNotationAttributes).cx += deltaX;
           (n as CircleNotationAttributes).cy += deltaY;
           break;
         }
+      }
+      notationStore.addNotation(n, true);
+    });
+    return true;
+  }
 
+  function moveSelectedCellNotations(
+    deltaCol: number,
+    deltaRow: number,
+    keepOriginal: boolean,
+  ): boolean {
+    if (keepOriginal) {
+      notationStore.cloneSelectedNotations();
+    }
+
+    notationStore.getSelectedNotations().forEach((n: NotationAttributes) => {
+      switch (n.notationType) {
+        case "EXPONENT":
+        case "ANNOTATION":
+        case "SIGN":
+        case "SQRTSYMBOL":
+        case "SYMBOL": {
+          matrixCellHelper.unColorizeNotationCells(n);
+          (n as PointNotationAttributes).col += deltaCol;
+          (n as PointNotationAttributes).row += deltaRow;
+          break;
+        }
         case "SQRT": {
           (n as unknown as MultiCellAttributes).fromCol += deltaCol;
           (n as unknown as MultiCellAttributes).toCol += deltaCol;
           (n as unknown as MultiCellAttributes).row += deltaRow;
           break;
         }
-
         case "IMAGE":
         case "TEXT": {
           (n as RectNotationAttributes).fromCol += deltaCol;
@@ -431,21 +423,24 @@ export default function notationMutateHelper() {
     return true;
   }
 
-  // move selected notations with persistence - called upon muose up
-  // async function saveMovedNotations(moveDirection: SelectionMoveDirection) {
-  //   await apiHelper.saveMovedNotations(
-  //     getSelectedNotationsSortedByDirection(moveDirection),
-  //   );
+  // Update the original function to use the new split functions
+  function moveSelectedNotations(
+    deltaX: number,
+    deltaY: number,
+    deltaCol: number,
+    deltaRow: number,
+    keepOriginal: boolean,
+  ): boolean {
+    //if (!canMoveSelectedNotations(deltaCol, deltaRow)) return false;
 
-  //   notationStore
-  //     .getSelectedNotations()
-  //     .forEach(async (n: NotationAttributes) => {
-  //       notationStore.addNotation(n, true);
-  //       userOutgoingOperations.syncOutgoingUpdateNotation(n);
-  //     });
-  // }
+    if (deltaX !== 0 || deltaY !== 0) {
+      return moveSelectedPixelNotations(deltaX, deltaY);
+    }
 
-  async function saveMovedNotations(moveDirection: SelectionMoveDirection) {
+    return moveSelectedCellNotations(deltaCol, deltaRow, keepOriginal);
+  }
+
+  function saveMovedNotations(moveDirection: SelectionMoveDirection) {
     const notations = getSelectedNotationsSortedByDirection(moveDirection);
 
     const currentTime = Date.now();
@@ -984,7 +979,7 @@ export default function notationMutateHelper() {
     }
   }
 
-  function deleteSelectedNotations() {
+  async function deleteSelectedNotations() {
     if (!authorizationHelper.canEdit()) return;
 
     notationStore
@@ -1301,17 +1296,29 @@ export default function notationMutateHelper() {
     return cellStore.getCellVerticalHeight();
   }
 
-  function handleDeleteKey() {
-    if (notationStore.getSelectedNotations().length) {
-      deleteSelectedNotations();
-    }
-
-    if (editModeStore.getEditMode() === "AREA_SELECTED") {
+  async function handleDeleteKey() {
+    // Check if function is already running
+    if (deleteKeyLock) {
       return;
     }
 
-    collapseNotationsToSelectedCell();
-    notationStore.selectNotationsOfCells([cellStore.getSelectedCell()]);
+    try {
+      deleteKeyLock = true;
+
+      if (notationStore.getSelectedNotations().length) {
+        await deleteSelectedNotations();
+      }
+
+      if (editModeStore.getEditMode() === "AREA_SELECTED") {
+        return;
+      }
+
+      await collapseNotationsToSelectedCell();
+      notationStore.selectNotionsOfCells([cellStore.getSelectedCell()]);
+    } finally {
+      // Always release the lock
+      deleteKeyLock = false;
+    }
   }
 
   function collapseNotationsToSelectedCell() {

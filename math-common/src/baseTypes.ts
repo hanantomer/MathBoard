@@ -310,12 +310,6 @@ export type SlopeType =
   | "NEGATIVE"
   | "NONE";
 
-// export type SlopeDrawerAttributes = {
-//   linePosition: SlopeLineAttributes;
-//   slopeType: SlopeType;
-//   movementDirection: MovementDirection;
-// };
-
 export type lineWatcherEntry = {
    func: (p: DotCoordinates) => void
    editMode: EditMode
@@ -326,16 +320,18 @@ export type lineSaveWatcherEntry = {
    editMode: Array<EditMode>
 }
 
-// export type lineResetSelectionWatcherEntry = {
-//   func: () => void;
-//   editMode: Array<EditMode>;
-// };
+export type lineMoveWatcherEntry = {
+  func: (moveX :number, moveY: number) => void;
+  editMode: EditMode;
+};
+
 
 export type lineSelectWatcherEntry = {
   func: (notation: NotationAttributes) => void;
   editMode: EditMode;
   event: BusEventType;
 };
+
 
 export type lineEndSelectionWatcherEntry = {
   editMode: Array<EditMode>;

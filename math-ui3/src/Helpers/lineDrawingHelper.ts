@@ -60,6 +60,30 @@ export default function useLineDrawingHelper() {
     modifyLineCallback(position);
   }
 
+  function moveLine(e: KeyboardEvent, moveLineCallback: (moveX: number, moveY: number) => void) {
+    let moveX = 0;
+    let moveY = 0;
+    switch (e.key) {
+      case "ArrowUp":
+        moveY = -1;
+        break;
+      case "ArrowDown":
+        moveY = 1;
+        break;
+      case "ArrowLeft":
+        moveX = -1;
+        break;
+      case "ArrowRight":
+        moveX = 1;
+        break;
+      default:
+        return;
+    }
+    if (moveX !== 0 || moveY !== 0) {
+      moveLineCallback(moveX, moveY);
+    }
+  }
+
   function endDrawing(endDrawingCallback: () => void) {
     if (notationStore.hasSelectedNotations()) {
       showMatrixLine();
@@ -105,6 +129,7 @@ export default function useLineDrawingHelper() {
     showMatrixLine,
     resetDrawing,
     modifyLine,
+    moveLine,
     endDrawing,
   };
 }

@@ -30,6 +30,10 @@
       func: selectLine,
       event: 'EV_HORIZONTAL_LINE_SELECTED',
     }"
+    :moveByKeyEntry="{
+      editMode: 'HORIZONTAL_LINE_SELECTED',
+      func: moveLine,
+    }"
     :endSelectionEntry="{
       editMode: ['HORIZONTAL_LINE_SELECTED'],
     }"
@@ -212,4 +216,11 @@ function selectLine(notation: NotationAttributes) {
   linePosition.value.p2x = n.p2x;
   linePosition.value.py = n.py;
 }
+
+function moveLine(moveX: number, moveY: number) {
+  linePosition.value.p1x += moveX;
+  linePosition.value.p2x += moveX;
+  linePosition.value.py += moveY;
+}
+
 </script>

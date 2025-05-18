@@ -9,7 +9,7 @@
               <v-btn
                 data-cy="close_login"
                 density="compact"
-                icon="mdi-minus"
+                icon="mdi-window-close"
                 @click="close"
               ></v-btn>
             </v-col>

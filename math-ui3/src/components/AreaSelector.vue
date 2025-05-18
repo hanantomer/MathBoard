@@ -174,7 +174,7 @@ watchHelper.watchMouseEvent(
 watchHelper.watchKeyEvent(
   ["AREA_SELECTED"],
   "EV_KEYUP",
-  updateSelectionAreaByKey,
+  handleKeyUp,
 );
 
 watchHelper.watchMouseEvent(
@@ -310,7 +310,7 @@ function startMoving(e: MouseEvent) {
   editModeStore.setNextEditMode();
 }
 
-async function updateSelectionAreaByKey(e: KeyboardEvent) {
+async function handleKeyUp(e: KeyboardEvent) {
   if (selectionRectHeight.value === 0) return;
 
   switch (e.code) {

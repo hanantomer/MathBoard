@@ -31,6 +31,10 @@
       func: selectCurve,
       event: 'EV_CURVE_SELECTED',
     }"
+    :moveByKeyEntry="{
+      editMode: 'CURVE_SELECTED',
+      func: moveCurve,
+    }"
     :endSelectionEntry="{
       editMode: ['CURVE_SELECTED'],
     }"
@@ -283,6 +287,20 @@ function setCurve(p: DotCoordinates) {
 
   // temporarly show control point
   showControlPoint();
+}
+
+function moveCurve(moveX: number, moveY: number) {
+  if (curveAttributes.value.p1x === 0 && curveAttributes.value.p1y === 0) {
+    return;
+  }
+
+  curveAttributes.value.p1x += moveX;
+  curveAttributes.value.p1y += moveY;
+
+  curveAttributes.value.p2x += moveX;
+  curveAttributes.value.p2y += moveY;
+
+  setCurveElement();
 }
 
 function showControlPoint() {

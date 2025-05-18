@@ -185,7 +185,7 @@ const modeButtons: Array<{
     overlay_icon: "",
     rotate: 260,
   },
-    {
+  {
     name: "circle",
     show_condition: true,
     editMode: "CIRCLE_STARTED",
@@ -282,7 +282,7 @@ const answerChekButtons: Array<{
     tooltip: "partially correct",
     icon_class: "",
     icon: "mdi-checkbox-marked-circle-outline",
-    overlay_icon: "mdi-minus",
+    overlay_icon: "mdi-window-close",
     rotate: 0,
   },
 );

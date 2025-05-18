@@ -99,7 +99,15 @@ export default function () {
       code === "Plus" ||
       code === "Equal" ||
       code === "Slash" ||
+      code === "Comma" ||
+      code === "Backquote" ||
+      code === "Shiftright" ||
+      code === "Shifleft" ||
+      code === "Semicolon" ||
+      code === "Colon" ||
       code === "Backslash" ||
+      code === "BracketLeft" ||
+      code === "BracketRight" ||
       code === "Period"
     )
       return "SYMBOL";

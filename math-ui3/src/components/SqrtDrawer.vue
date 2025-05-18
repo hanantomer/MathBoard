@@ -25,6 +25,10 @@
       func: selectSqrt,
       event: 'EV_SQRT_SELECTED',
     }"
+    :moveByKeyEntry="{
+      editMode: 'SQRT_SELECTED',
+      func: moveSqrt,
+    }"
     :endSelectionEntry="{
       editMode: ['SQRT_EDITING']
     }"
@@ -186,5 +190,12 @@ function selectSqrt(notation: NotationAttributes) {
 
   linePosition.value.py = n.row * cellStore.getCellVerticalHeight();
 }
+
+function moveSqrt(moveX: number, moveY: number) {
+  linePosition.value.p1x += moveX;
+  linePosition.value.p2x += moveX;
+  linePosition.value.py += moveY;
+}
+
 </script>
 

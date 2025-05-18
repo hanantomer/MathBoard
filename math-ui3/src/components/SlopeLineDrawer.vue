@@ -31,6 +31,10 @@
         func: selectLine,
         event: 'EV_SLOPE_LINE_SELECTED',
       }"
+      :moveByKeyEntry="{
+        editMode: 'SLOPE_LINE_SELECTED',
+        func: moveLine,
+      }"
       :endSelectionEntry="{
         editMode: ['SLOPE_LINE_SELECTED'],
       }"
@@ -280,5 +284,13 @@ function fixLineEdge() {
     linePosition.value.p2x = nearLineLeftEdge.x;
     linePosition.value.p2y = nearLineLeftEdge.y;
   }
+}
+
+function moveLine(moveX: number, moveY: number) {
+
+    linePosition.value.p1y += moveY;
+    linePosition.value.p2y += moveY;
+    linePosition.value.p1x += moveX;
+    linePosition.value.p2x += moveX;
 }
 </script>

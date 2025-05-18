@@ -11,11 +11,12 @@ import {
   lineSaveWatcherEntry,
   lineSelectWatcherEntry,
   lineEndSelectionWatcherEntry,
+  lineMoveWatcherEntry,
 } from "../../../math-common/src/baseTypes";
 
 const lineDrawer = useLineDrawer();
 const watchHelper = useWatchHelper();
-const editModeStore = useEditModeStore();
+
 
 // each prop entry holds a stage of the line drawing process
 const props = defineProps({
@@ -46,6 +47,11 @@ const props = defineProps({
 
   selectEntry: {
     type: Object as PropType<lineSelectWatcherEntry>,
+    required: true,
+  },
+
+  moveByKeyEntry: {
+    type: Object as PropType<lineMoveWatcherEntry>,
     required: true,
   },
 
@@ -91,15 +97,50 @@ watchHelper.watchNotationSelection(
   (n) => lineDrawer.selectLine(n, props.selectEntry.func),
 );
 
-
-watchHelper.watchMouseEvent(
-  props.endSelectionEntry.editMode,
-  "EV_MOUSEUP",
-  () => {
-    setTimeout(() => {
-      if (editModeStore.getEditMode() !== props.endSelectionEntry.editMode[0]/*only one event is being listned to*/)
-        lineDrawer.resetDrawing();
-    }, 0);
-  },
+watchHelper.watchKeyEvent(
+  [props.selectEntry.editMode],
+  "EV_KEYUP",
+  (e: KeyboardEvent) => lineDrawer.moveLine(e, props.moveByKeyEntry.func),
 );
+
+
+
+
+// watchHelper.watchMouseEvent(
+//   props.endSelectionEntry.editMode,
+//   "EV_MOUSEUP",
+//   () => {
+//     setTimeout(() => {
+//       if (
+//         editModeStore.getEditMode() !==
+//         props.endSelectionEntry
+//           .editMode[0] /*only one event is being listned to*/
+//       )
+//         lineDrawer.resetDrawing();
+//     }, 0);
+//   },
+// );
+
+//
+watchHelper.watchEndOfEditMode(
+  ["CURVE_DRAWING",
+    "CURVE_EDITING_CONTROLֹ_POINT",
+    "CURVE_EDITING_LEFT",
+    "CURVE_EDITING_RIGHT",
+    "SLOPE_LINE_DRAWING",
+    "SLOPE_LINE_EDITING_LEFT",
+    "SLOPE_LINE_EDITING_RIGHT",
+    "HORIZONTAL_LINE_DRAWING",
+    "HORIZONTAL_LINE_EDITING_LEFT",
+    "HORIZONTAL_LINE_EDITING_RIGHT",
+    "VERTICAL_LINE_DRAWING",
+    "VERTICAL_LINE_EDITING_TOP",
+    "VERTICAL_LINE_EDITING_BOTTOM"],
+    () => {
+      setTimeout(() => {
+        lineDrawer.resetDrawing();
+      }, 0);
+});
+//);
+//});
 </script>

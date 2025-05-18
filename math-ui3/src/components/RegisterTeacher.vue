@@ -4,7 +4,7 @@
       <v-btn
         style="position: absolute; right: 10px; top: 10px"
         density="compact"
-        icon="mdi-minus"
+        icon="mdi-window-close"
         @click="close"
       ></v-btn>
       <v-card-title>
