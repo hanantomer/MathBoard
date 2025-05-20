@@ -172,7 +172,7 @@ function submitExponent() {
 
     notationMutateHelper.updateNotation(selectedNotation.value);
   } else {
-    notationMutateHelper.addExponentNotation(exponent.value, clickedCell);
+    notationMutateHelper.addExponentNotation(exponent.value, clickedCell!);
   }
 }
 </script>
