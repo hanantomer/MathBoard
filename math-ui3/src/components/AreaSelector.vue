@@ -71,6 +71,7 @@ const selectionHelper = useSelectionHelper();
 
 let lineTypes: Array<NotationType> = [
   "CURVE",
+  "CIRCLE",
   "HORIZONTALLINE",
   "VERTICALLINE",
   "SLOPELINE",
@@ -87,6 +88,8 @@ let dragPosition = ref<DotCoordinates>({
   x: 0,
   y: 0,
 });
+
+let dragStarted = false;
 
 // computed
 
@@ -171,11 +174,7 @@ watchHelper.watchMouseEvent(
   },
 );
 
-watchHelper.watchKeyEvent(
-  ["AREA_SELECTED"],
-  "EV_KEYUP",
-  handleKeyUp,
-);
+watchHelper.watchKeyEvent(["AREA_SELECTED"], "EV_KEYUP", handleKeyUp);
 
 watchHelper.watchMouseEvent(
   ["AREA_MOVING"],
@@ -499,12 +498,13 @@ function moveAtCellScale(e: MouseEvent) {
   );
 
   if (Math.abs(deltaCol) > 0 || Math.abs(deltaRow) > 0) {
-    notationMutationHelper.moveSelectedNotations(
-      deltaCol * cellStore.getCellHorizontalWidth(),
-      deltaRow * cellStore.getCellVerticalHeight(),
+    // clone only at start of dragging
+    const doClone = e.ctrlKey && !dragStarted;
+    dragStarted = true;
+    notationMutationHelper.moveSelectedNotationsAtCellScale(
       deltaCol,
       deltaRow,
-      e.ctrlKey,
+      doClone,
     );
 
     moveSelectionBox(deltaCol, deltaRow);
@@ -530,13 +530,7 @@ function moveAtPixelScale(e: MouseEvent) {
   const deltaY = e.pageY - dragPosition.value.y;
 
   if (deltaX != 0 || deltaY != 0) {
-    notationMutationHelper.moveSelectedNotations(
-      deltaX,
-      deltaY,
-      0,
-      0,
-      e.ctrlKey,
-    );
+    notationMutationHelper.moveSelectedNotationsAtPixelScale(deltaX, deltaY);
 
     selectionPosition.value.x1 += deltaX;
     selectionPosition.value.y1 += deltaY;
@@ -595,6 +589,7 @@ async function endMoveSelection(e: MouseEvent) {
 }
 
 function resetSelectionPosition() {
+  dragStarted = false;
   dragPosition.value.x =
     dragPosition.value.y =
     selectionPosition.value.x1 =
@@ -649,7 +644,6 @@ function setSelectionPositionForImage(selectedNotation: NotationAttributes) {
   selectionPosition.value.y1 = rect.y;
   selectionPosition.value.y2 = rect.y + rect.height;
 }
-
 </script>
 
 <style>

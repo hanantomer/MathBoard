@@ -332,15 +332,10 @@ export default function notationMutateHelper() {
     return true;
   }
 
-  function moveSelectedNotationsAtCellScale(
-    deltaCol: number,
-    deltaRow: number,
-    keepOriginal: boolean,
-  ) {
-    return moveSelectedNotations(0, 0, deltaCol, deltaRow, keepOriginal);
-  }
-
-  function moveSelectedPixelNotations(deltaX: number, deltaY: number): boolean {
+  function moveSelectedNotationsAtPixelScale(
+    deltaX: number,
+    deltaY: number,
+  ): boolean {
     notationStore.getSelectedNotations().forEach((n: NotationAttributes) => {
       switch (n.notationType) {
         case "HORIZONTALLINE": {
@@ -382,7 +377,7 @@ export default function notationMutateHelper() {
     return true;
   }
 
-  function moveSelectedCellNotations(
+  function moveSelectedNotationsAtCellScale(
     deltaCol: number,
     deltaRow: number,
     keepOriginal: boolean,
@@ -423,7 +418,7 @@ export default function notationMutateHelper() {
     return true;
   }
 
-  // Update the original function to use the new split functions
+  /*
   function moveSelectedNotations(
     deltaX: number,
     deltaY: number,
@@ -437,8 +432,9 @@ export default function notationMutateHelper() {
       return moveSelectedPixelNotations(deltaX, deltaY);
     }
 
-    return moveSelectedCellNotations(deltaCol, deltaRow, keepOriginal);
+    return moveSelectedNotationsAtCellScale(deltaCol, deltaRow, keepOriginal);
   }
+  */
 
   function saveMovedNotations(moveDirection: SelectionMoveDirection) {
     const notations = getSelectedNotationsSortedByDirection(moveDirection);
@@ -478,9 +474,6 @@ export default function notationMutateHelper() {
   async function insertMovedNotations(notations: NotationAttributes[]) {
     await Promise.all(
       notations.map(async (notation) => {
-        const attributes = getNotationCoordinates(notation);
-        if (!attributes) return;
-
         notationStore.deleteNotation(notation.uuid);
 
         delete (notation as any).uuid;
@@ -1062,10 +1055,10 @@ export default function notationMutateHelper() {
     addPointNotation(notation);
   }
 
-  function addExponentNotation(exponent: string) {
+  function addExponentNotation(exponent: string, clickedCell: CellAttributes) {
     let notation: ExponentNotationCreationAttributes = {
-      col: getSelectedCell()!.col,
-      row: getSelectedCell()!.row,
+      col: clickedCell!.col,
+      row: clickedCell!.row,
       exponent: exponent,
       boardType: notationStore.getParent().type,
       parentUUId: notationStore.getParent().uuid,
@@ -1074,7 +1067,11 @@ export default function notationMutateHelper() {
     };
 
     addNotation(notation);
-    matrixCellHelper.setNextCell(1, 0);
+    cellStore.setSelectedCell(
+      { col: clickedCell.col + 1, row: clickedCell.row },
+      false,
+    );
+    //matrixCellHelper.setNextCell(1, 0);
   }
 
   function addSymbolNotation(value: string) {
@@ -1314,7 +1311,7 @@ export default function notationMutateHelper() {
       }
 
       await collapseNotationsToSelectedCell();
-      notationStore.selectNotionsOfCells([cellStore.getSelectedCell()]);
+      notationStore.selectNotationsOfCells([cellStore.getSelectedCell()]);
     } finally {
       // Always release the lock
       deleteKeyLock = false;
@@ -1366,7 +1363,7 @@ export default function notationMutateHelper() {
     addExponentNotation,
     cloneNotation,
     deleteSelectedNotations,
-    moveSelectedNotations,
+    moveSelectedNotationsAtPixelScale,
     moveSelectedNotationsAtCellScale,
     handleDeleteKey,
     isNotationInQuestionArea,

@@ -200,7 +200,6 @@ function modifyLineRight(p: DotCoordinates) {
   linePosition.value.p2y = p.y;
 }
 
-
 function getSlopeTypeForNewLine(xPos: number, yPos: number): SlopeType {
   if (
     /*moving up and right*/
@@ -265,6 +264,8 @@ function saveSlopeLine() {
 }
 
 function fixLineEdge() {
+
+
   const nearLineRightEdge = screenHelper.getCloseLineEdge({
     x: linePosition.value.p1x,
     y: linePosition.value.p1y,
@@ -287,10 +288,10 @@ function fixLineEdge() {
 }
 
 function moveLine(moveX: number, moveY: number) {
-
-    linePosition.value.p1y += moveY;
-    linePosition.value.p2y += moveY;
-    linePosition.value.p1x += moveX;
-    linePosition.value.p2x += moveX;
+  linePosition.value.p1y += moveY;
+  linePosition.value.p2y += moveY;
+  linePosition.value.p1x += moveX;
+  linePosition.value.p2x += moveX;
+  saveSlopeLine;
 }
 </script>

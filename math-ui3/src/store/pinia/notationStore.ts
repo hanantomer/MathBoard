@@ -55,7 +55,6 @@ export const useNotationStore = defineStore("notation", () => {
   // the new set will be selected instead of the old
   function cloneSelectedNotations() {
     Array.from(getSelectedNotations()).forEach((n) => {
-      if (n.uuid.indexOf(clonedNotationUUIdPrefix) === 0) return; // clone only after the first movement
       n.selected = undefined;
       let newNotation: NotationAttributes = Object.assign(
         { ...n },
@@ -265,7 +264,6 @@ export const useNotationStore = defineStore("notation", () => {
         }
       });
     }
-
     return notationsAtCell;
   }
 

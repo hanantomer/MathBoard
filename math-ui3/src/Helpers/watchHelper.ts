@@ -83,14 +83,19 @@ export default function () {
 
   function watchEndOfEditMode(
     oldEditModes: EditMode[],
+    excludeNewEditModes: EditMode[],
     handler: EditModeHandler,
   ) {
     oldEditModes.forEach((oldEditMode) => {
       watch(
         () => editModeStore.getEditMode() as EditMode,
-        (nEditMode: EditMode, oEditMode: EditMode) => {
-          if (nEditMode !== oldEditMode && oEditMode === oldEditMode) {
-            handler(nEditMode, oEditMode);
+        (newEditMode: EditMode, oEditMode: EditMode) => {
+          if (
+            newEditMode !== oldEditMode &&
+            oEditMode === oldEditMode &&
+            !excludeNewEditModes.includes(newEditMode)
+          ) {
+            handler(newEditMode, oEditMode);
           }
         },
       );

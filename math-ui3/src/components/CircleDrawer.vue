@@ -79,7 +79,7 @@ const handleX2 = computed(() => {
   return (
     circleAttributes.value.cx +
     circleAttributes.value.r +
-    cellStore.getSvgBoundingRect().left 
+    cellStore.getSvgBoundingRect().left
   );
 });
 
@@ -113,12 +113,43 @@ watchHelper.watchCustomEvent(
   selectCircle,
 );
 
-// user clicked outside of text rect after text selection
 watchHelper.watchMouseEvent(
   ["CIRCLE_SELECTED"],
   "EV_SVG_MOUSEDOWN",
   resetCircleSelection,
 );
+
+watchHelper.watchKeyEvent(
+  ["CIRCLE_SELECTED"],
+  "EV_KEYUP",
+  function moveCircle(e: KeyboardEvent) {
+    if (!notationStore.getSelectedNotations().length) return;
+
+    const step = 1;
+    switch (e.key) {
+      case 'ArrowLeft':
+        circleAttributes.value.cx -= step;
+        break;
+      case 'ArrowRight':
+        circleAttributes.value.cx += step;
+        break;
+      case 'ArrowUp':
+        circleAttributes.value.cy -= step;
+        break;
+      case 'ArrowDown':
+        circleAttributes.value.cy += step;
+        break;
+    }
+
+    setCircleElement();
+    saveCircle({
+      cx: circleAttributes.value.cx,
+      cy: circleAttributes.value.cy,
+      r: circleAttributes.value.r,
+    });
+  }
+);
+
 
 function initCircle(e: MouseEvent) {
   editModeStore.setNextEditMode();

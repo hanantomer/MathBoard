@@ -11,7 +11,7 @@ import {
   RectAttributes,
 } from "common/baseTypes";
 
-import { matrixDimensions } from "common/globals";
+import { matrixDimensions, clonedNotationUUIdPrefix } from "common/globals";
 import { useCellStore } from "../store/pinia/cellStore";
 import useScreenHelper from "./screenHelper";
 
@@ -25,6 +25,10 @@ export default function notationCellOccupationHelper() {
     notation: PointNotationAttributes,
     doRemove: boolean,
   ) {
+    if (notation.uuid.startsWith(clonedNotationUUIdPrefix)) {
+      return;
+    }
+
     if (!validateRowAndCol(notation.col, notation.row)) return;
     clearNotationFromMatrix(notation.uuid, matrix);
     matrix[notation.col][notation.row] = doRemove ? null : notation.uuid;
@@ -128,9 +132,9 @@ export default function notationCellOccupationHelper() {
     if (doRemove) return;
 
     const fromCol = Math.round(
-      notation.p1x / cellStore.getCellHorizontalWidth(),
+      Math.min(notation.p1x, notation.p2x) / cellStore.getCellHorizontalWidth(),
     );
-    const toCol = Math.round(notation.p2x / cellStore.getCellHorizontalWidth());
+    const toCol = Math.round(Math.max(notation.p1x, notation.p2x) / cellStore.getCellHorizontalWidth());
     const fromRow = Math.round(
       notation.p1y / cellStore.getCellVerticalHeight(),
     );
@@ -169,7 +173,6 @@ export default function notationCellOccupationHelper() {
       }
     }
   }
-
 
   function updateCurveOccupationMatrix(
     matrix: any,
@@ -212,32 +215,35 @@ export default function notationCellOccupationHelper() {
     notation: CircleNotationAttributes,
     doRemove: boolean,
   ) {
-
     if (!cellStore.getSvgId) return;
     clearNotationFromMatrix(notation.uuid, matrix);
 
     const rectCoordinates: RectCoordinates = {
       topLeft: {
         x: notation.cx - notation.r,
-        y: notation.cy - notation.r
+        y: notation.cy - notation.r,
       },
       bottomRight: {
         x: notation.cx + notation.r,
-        y: notation.cy + notation.r
-      }
-    }
+        y: notation.cy + notation.r,
+      },
+    };
 
-    const rectAttributes : RectAttributes = screenHelper.getRectAttributes(rectCoordinates);
+    const rectAttributes: RectAttributes =
+      screenHelper.getRectAttributes(rectCoordinates);
 
     for (let col = rectAttributes.fromCol; col <= rectAttributes.toCol; col++) {
-      for (let row = rectAttributes.fromRow; row <= rectAttributes.toRow; row++) {
+      for (
+        let row = rectAttributes.fromRow;
+        row <= rectAttributes.toRow;
+        row++
+      ) {
         if (validateRowAndCol(col, row)) {
           matrix[col][row] = doRemove ? null : notation.uuid;
         }
       }
     }
   }
-
 
   function validateRowAndCol(col: number, row: number): boolean {
     return (
@@ -249,6 +255,7 @@ export default function notationCellOccupationHelper() {
   }
 
   function clearNotationFromMatrix(uuid: string, matrix: any) {
+    console.log("clearNotationFromMatrix", uuid);
     for (let col = 0; col < matrixDimensions.colsNum; col++) {
       for (let row = 0; row < matrixDimensions.rowsNum; row++) {
         if (matrix[col][row] === uuid) {

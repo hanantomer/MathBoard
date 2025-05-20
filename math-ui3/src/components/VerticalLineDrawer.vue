@@ -172,6 +172,7 @@ function modifyLineBottom(p: DotCoordinates) {
 }
 
 function fixLineEdge(linePosition: VerticalLineAttributes) {
+
   const nearLineRightEdge = screenHelper.getCloseLineEdge({
     x: linePosition.px,
     y: linePosition.p1y,
@@ -233,6 +234,7 @@ function moveLine(moveX: number, moveY: number) {
   linePosition.value.px += moveX;
   linePosition.value.p1y += moveY;
   linePosition.value.p2y += moveY;
+  saveVerticalLine();
 }
 
 </script>

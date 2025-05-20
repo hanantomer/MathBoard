@@ -124,7 +124,7 @@ const editEnabled = computed(() => {
   return authorizationHelper.canEdit();
 });
 
-watchHelper.watchEndOfEditMode(["SPECIAL_SYMBOL"], resetButtonsState);
+watchHelper.watchEndOfEditMode(["SPECIAL_SYMBOL"], [],  resetButtonsState);
 
 watchHelper.watchMouseEvent(
   ["SPECIAL_SYMBOL"],

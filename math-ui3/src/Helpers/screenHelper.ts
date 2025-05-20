@@ -123,8 +123,11 @@ export default function screenHelper() {
   function getNotationAtCoordinates(
     DotCoordinates: DotCoordinates,
   ): NotationAttributes | null {
+
     const notationStore = useNotationStore();
+
     const clickedCell = getClickedCell(DotCoordinates);
+
     const notationsAtCell = notationStore.getNotationsAtCell(clickedCell);
 
     if (!notationsAtCell?.length) return null;
@@ -357,14 +360,20 @@ export default function screenHelper() {
     return nominator / deNominator;
   }
 
-  function getCloseLineEdge(dot: DotCoordinates): DotCoordinates | null {
+  function getCloseLineEdge(
+    dot: DotCoordinates): DotCoordinates | null {
+
+
     const maxDistance = 7;
     const notationStore = useNotationStore();
-
     let nearPoint = null;
+
+    const selectedNotationUUId = notationStore.getSelectedNotations()?.at(0)
+      ?.uuid;
 
     notationStore
       .getNotations()
+      .filter((n) => n.uuid !== selectedNotationUUId)
       .filter(
         (n) =>
           n.notationType === "HORIZONTALLINE" ||

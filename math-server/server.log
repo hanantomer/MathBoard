@@ -3028,3 +3028,1957 @@
             UPDATE "LessonSymbol" SET "col"=$1,"row"=$2,"value"=$3,"colorId"=$4,"updatedAt"=$5 WHERE "id" = $6, fields: 
             {"lessonId":"1","col":"41","row":"12"},
              }
+2025-05-18T19:07:27.613Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-18T19:08:37.168Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-18T19:08:40.624Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-18T19:11:05.111Z [ERROR]: /api/lessonsymbols,  
+            Server error occurred, 
+            Validation error,   
+            ,
+            error: duplicate key value violates unique constraint "LessonSymbol_lessonId_col_row_key",
+            UPDATE "LessonSymbol" SET "col"=$1,"row"=$2,"value"=$3,"colorId"=$4,"updatedAt"=$5 WHERE "id" = $6, fields: 
+            {"lessonId":"1","col":"28","row":"6"},
+             }
+2025-05-18T19:18:43.664Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-18T19:21:47.665Z [ERROR]: /api/lessonsymbols,  
+            Server error occurred, 
+            Validation error,   
+            ,
+            error: duplicate key value violates unique constraint "LessonSymbol_lessonId_col_row_key",
+            UPDATE "LessonSymbol" SET "col"=$1,"row"=$2,"value"=$3,"colorId"=$4,"updatedAt"=$5 WHERE "id" = $6, fields: 
+            {"lessonId":"1","col":"22","row":"11"},
+             }
+2025-05-18T19:21:47.676Z [ERROR]: /api/lessonsymbols,  
+            Server error occurred, 
+            Validation error,   
+            ,
+            error: duplicate key value violates unique constraint "LessonSymbol_lessonId_col_row_key",
+            UPDATE "LessonSymbol" SET "col"=$1,"row"=$2,"value"=$3,"colorId"=$4,"updatedAt"=$5 WHERE "id" = $6, fields: 
+            {"lessonId":"1","col":"21","row":"11"},
+             }
+2025-05-18T19:21:52.522Z [ERROR]: /api/lessonsymbols,  
+            Server error occurred, 
+            Validation error,   
+            ,
+            error: duplicate key value violates unique constraint "LessonSymbol_lessonId_col_row_key",
+            UPDATE "LessonSymbol" SET "col"=$1,"row"=$2,"value"=$3,"colorId"=$4,"updatedAt"=$5 WHERE "id" = $6, fields: 
+            {"lessonId":"1","col":"25","row":"11"},
+             }
+2025-05-18T19:21:52.525Z [ERROR]: /api/lessonsymbols,  
+            Server error occurred, 
+            Validation error,   
+            ,
+            error: duplicate key value violates unique constraint "LessonSymbol_lessonId_col_row_key",
+            UPDATE "LessonSymbol" SET "col"=$1,"row"=$2,"value"=$3,"colorId"=$4,"updatedAt"=$5 WHERE "id" = $6, fields: 
+            {"lessonId":"1","col":"24","row":"11"},
+             }
+2025-05-18T19:21:52.960Z [ERROR]: /api/lessonsymbols,  
+            Server error occurred, 
+            Validation error,   
+            ,
+            error: duplicate key value violates unique constraint "LessonSymbol_lessonId_col_row_key",
+            UPDATE "LessonSymbol" SET "col"=$1,"row"=$2,"value"=$3,"colorId"=$4,"updatedAt"=$5 WHERE "id" = $6, fields: 
+            {"lessonId":"1","col":"26","row":"11"},
+             }
+2025-05-19T09:20:28.791Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-19T09:20:31.765Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-19T09:20:36.170Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-19T09:20:55.733Z [ERROR]: /api/lessonsymbols,  
+            Server error occurred, 
+            Validation error,   
+            ,
+            error: duplicate key value violates unique constraint "LessonSymbol_lessonId_col_row_key",
+            UPDATE "LessonSymbol" SET "col"=$1,"row"=$2,"value"=$3,"colorId"=$4,"updatedAt"=$5 WHERE "id" = $6, fields: 
+            {"lessonId":"1","col":"32","row":"5"},
+             }
+2025-05-19T09:20:58.511Z [ERROR]: /api/lessonsymbols/,  
+            Server error occurred, 
+            Validation error,   
+            ,
+            error: duplicate key value violates unique constraint "LessonSymbol_lessonId_col_row_key",
+            INSERT INTO "LessonSymbol" ("id","uuid","lessonId","col","row","value","createdAt","updatedAt","userId","colorId") VALUES (DEFAULT,$1,$2,$3,$4,$5,$6,$7,$8,$9) RETURNING "id","uuid","lessonId","col","row","value","createdAt","updatedAt","userId","colorId";, fields: 
+            {"lessonId":"1","col":"35","row":"5"},
+             }
+2025-05-19T09:20:58.515Z [ERROR]: /api/lessonsymbols/,  
+            Server error occurred, 
+            Validation error,   
+            ,
+            error: duplicate key value violates unique constraint "LessonSymbol_lessonId_col_row_key",
+            INSERT INTO "LessonSymbol" ("id","uuid","lessonId","col","row","value","createdAt","updatedAt","userId","colorId") VALUES (DEFAULT,$1,$2,$3,$4,$5,$6,$7,$8,$9) RETURNING "id","uuid","lessonId","col","row","value","createdAt","updatedAt","userId","colorId";, fields: 
+            {"lessonId":"1","col":"34","row":"5"},
+             }
+2025-05-19T09:21:12.561Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-19T11:49:43.577Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-19T12:01:52.884Z [ERROR]: undefined,  
+            ReferenceError: moveSelectedNotations is not defined
+    at notationMutateHelper (http://localhost:3000/src/helpers/notationMutateHelper.ts?t=1747656112401:905:5)
+    at setup (http://localhost:3000/src/components/AnnotationEditor.vue?t=1747656112401:13:34)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:1565:18)
+    at setupStatefulComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:8631:25)
+    at setupComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:8592:36)
+    at mountComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:6997:7)
+    at processComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:6963:9)
+    at patch (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:6436:11)
+    at patchBlockChildren (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:6823:7)
+    at processFragment (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:6911:9), 
+            ,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-19T12:01:52.891Z [ERROR]: undefined,  
+            ReferenceError: moveSelectedNotations is not defined
+    at notationMutateHelper (http://localhost:3000/src/helpers/notationMutateHelper.ts?t=1747656112401:905:5)
+    at setup (http://localhost:3000/src/components/FreeTextEditor.vue?t=1747656112401:14:34)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:1565:18)
+    at setupStatefulComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:8631:25)
+    at setupComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:8592:36)
+    at mountComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:6997:7)
+    at processComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:6963:9)
+    at patch (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:6436:11)
+    at patchBlockChildren (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:6823:7)
+    at processFragment (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:6911:9), 
+            ,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-19T12:01:52.897Z [ERROR]: undefined,  
+            ReferenceError: moveSelectedNotations is not defined
+    at notationMutateHelper (http://localhost:3000/src/helpers/notationMutateHelper.ts?t=1747656112401:905:5)
+    at setup (http://localhost:3000/src/components/ExponentEditor.vue?t=1747656112401:14:34)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:1565:18)
+    at setupStatefulComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:8631:25)
+    at setupComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:8592:36)
+    at mountComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:6997:7)
+    at processComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:6963:9)
+    at patch (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:6436:11)
+    at patchBlockChildren (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:6823:7)
+    at processFragment (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:6911:9), 
+            ,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-19T12:01:52.900Z [ERROR]: undefined,  
+            ReferenceError: moveSelectedNotations is not defined
+    at notationMutateHelper (http://localhost:3000/src/helpers/notationMutateHelper.ts?t=1747656112401:905:5)
+    at setup (http://localhost:3000/src/components/SpecialSymbolsToolbar.vue?t=1747656112401:19:34)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:1565:18)
+    at setupStatefulComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:8631:25)
+    at setupComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:8592:36)
+    at mountComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:6997:7)
+    at processComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:6963:9)
+    at patch (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:6436:11)
+    at patchKeyedChildren (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:7496:11)
+    at patchChildren (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:7277:11), 
+            ,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-19T12:01:52.903Z [ERROR]: undefined,  
+            ReferenceError: moveSelectedNotations is not defined
+    at notationMutateHelper (http://localhost:3000/src/helpers/notationMutateHelper.ts?t=1747656112401:905:5)
+    at setup (http://localhost:3000/src/components/CircleDrawer.vue?t=1747656112401:13:34)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:1565:18)
+    at setupStatefulComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:8631:25)
+    at setupComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:8592:36)
+    at mountComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:6997:7)
+    at processComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:6963:9)
+    at patch (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:6436:11)
+    at patchKeyedChildren (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:7496:11)
+    at patchChildren (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:7277:11), 
+            ,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-19T12:01:52.905Z [ERROR]: undefined,  
+            ReferenceError: moveSelectedNotations is not defined
+    at notationMutateHelper (http://localhost:3000/src/helpers/notationMutateHelper.ts?t=1747656112401:905:5)
+    at setup (http://localhost:3000/src/components/CurveDrawer.vue?t=1747656112401:19:34)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:1565:18)
+    at setupStatefulComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:8631:25)
+    at setupComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:8592:36)
+    at mountComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:6997:7)
+    at processComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:6963:9)
+    at patch (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:6436:11)
+    at patchKeyedChildren (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:7496:11)
+    at patchChildren (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:7277:11), 
+            ,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-19T12:01:53.192Z [ERROR]: undefined,  
+            ReferenceError: moveSelectedNotations is not defined
+    at notationMutateHelper (http://localhost:3000/src/helpers/notationMutateHelper.ts?t=1747656112401:905:5)
+    at setup (http://localhost:3000/src/components/SlopeLineDrawer.vue?t=1747656112401:18:34)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:1565:18)
+    at setupStatefulComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:8631:25)
+    at setupComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:8592:36)
+    at mountComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:6997:7)
+    at processComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:6963:9)
+    at patch (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:6436:11)
+    at patchKeyedChildren (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:7496:11)
+    at patchChildren (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:7277:11), 
+            ,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-19T12:01:53.209Z [ERROR]: undefined,  
+            TypeError: Cannot read properties of undefined (reading 'p1x')
+    at Proxy._sfc_render (http://localhost:3000/src/components/SlopeLineDrawer.vue?t=1747656112401:251:35)
+    at renderComponentRoot (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:2224:17)
+    at ReactiveEffect.componentUpdateFn [as fn] (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:7099:46)
+    at ReactiveEffect.run (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:423:19)
+    at instance.update (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:7212:52)
+    at setupRenderEffect (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:7220:5)
+    at mountComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:7010:5)
+    at processComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:6963:9)
+    at patch (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:6436:11)
+    at patchKeyedChildren (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:7496:11), 
+            ,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-19T12:01:53.213Z [ERROR]: undefined,  
+            ReferenceError: moveSelectedNotations is not defined
+    at notationMutateHelper (http://localhost:3000/src/helpers/notationMutateHelper.ts?t=1747656112401:905:5)
+    at setup (http://localhost:3000/src/components/VerticalLineDrawer.vue?t=1747656112401:18:34)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:1565:18)
+    at setupStatefulComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:8631:25)
+    at setupComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:8592:36)
+    at mountComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:6997:7)
+    at processComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:6963:9)
+    at patch (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:6436:11)
+    at patchKeyedChildren (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:7496:11)
+    at patchChildren (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:7277:11), 
+            ,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-19T12:01:53.218Z [ERROR]: undefined,  
+            TypeError: Cannot read properties of undefined (reading 'px')
+    at Proxy._sfc_render (http://localhost:3000/src/components/VerticalLineDrawer.vue?t=1747656112401:205:39)
+    at renderComponentRoot (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:2224:17)
+    at ReactiveEffect.componentUpdateFn [as fn] (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:7099:46)
+    at ReactiveEffect.run (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:423:19)
+    at instance.update (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:7212:52)
+    at setupRenderEffect (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:7220:5)
+    at mountComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:7010:5)
+    at processComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:6963:9)
+    at patch (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:6436:11)
+    at patchKeyedChildren (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:7496:11), 
+            ,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-19T12:01:53.220Z [ERROR]: undefined,  
+            ReferenceError: moveSelectedNotations is not defined
+    at notationMutateHelper (http://localhost:3000/src/helpers/notationMutateHelper.ts?t=1747656112401:905:5)
+    at setup (http://localhost:3000/src/components/SqrtDrawer.vue?t=1747656112401:16:34)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:1565:18)
+    at setupStatefulComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:8631:25)
+    at setupComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:8592:36)
+    at mountComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:6997:7)
+    at processComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:6963:9)
+    at patch (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:6436:11)
+    at patchKeyedChildren (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:7496:11)
+    at patchChildren (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:7277:11), 
+            ,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-19T12:01:53.224Z [ERROR]: undefined,  
+            ReferenceError: moveSelectedNotations is not defined
+    at notationMutateHelper (http://localhost:3000/src/helpers/notationMutateHelper.ts?t=1747656112401:905:5)
+    at setup (http://localhost:3000/src/components/HorizontalLineDrawer.vue?t=1747656112401:17:34)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:1565:18)
+    at setupStatefulComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:8631:25)
+    at setupComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:8592:36)
+    at mountComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:6997:7)
+    at processComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:6963:9)
+    at patch (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:6436:11)
+    at patchKeyedChildren (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:7496:11)
+    at patchChildren (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:7277:11), 
+            ,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-19T12:01:53.502Z [ERROR]: undefined,  
+            ReferenceError: moveSelectedNotations is not defined
+    at notationMutateHelper (http://localhost:3000/src/helpers/notationMutateHelper.ts?t=1747656112401:905:5)
+    at setup (http://localhost:3000/src/components/ColorizeTool.vue?t=1747656112401:14:34)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:1565:18)
+    at setupStatefulComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:8631:25)
+    at setupComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:8592:36)
+    at mountComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:6997:7)
+    at processComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:6963:9)
+    at patch (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:6436:11)
+    at patchKeyedChildren (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:7496:11)
+    at patchChildren (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:7277:11), 
+            ,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-19T12:02:14.137Z [ERROR]: undefined,  
+            ReferenceError: moveSelectedNotations is not defined
+    at notationMutateHelper (http://localhost:3000/src/helpers/notationMutateHelper.ts?t=1747656133400:905:5)
+    at setup (http://localhost:3000/src/components/AnnotationEditor.vue?t=1747656133400:13:34)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:1565:18)
+    at setupStatefulComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:8631:25)
+    at setupComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:8592:36)
+    at mountComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:6997:7)
+    at processComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:6963:9)
+    at patch (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:6436:11)
+    at patchBlockChildren (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:6823:7)
+    at processFragment (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:6911:9), 
+            ,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-19T12:02:14.141Z [ERROR]: undefined,  
+            ReferenceError: moveSelectedNotations is not defined
+    at notationMutateHelper (http://localhost:3000/src/helpers/notationMutateHelper.ts?t=1747656133400:905:5)
+    at setup (http://localhost:3000/src/components/FreeTextEditor.vue?t=1747656133400:14:34)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:1565:18)
+    at setupStatefulComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:8631:25)
+    at setupComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:8592:36)
+    at mountComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:6997:7)
+    at processComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:6963:9)
+    at patch (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:6436:11)
+    at patchBlockChildren (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:6823:7)
+    at processFragment (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:6911:9), 
+            ,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-19T12:02:14.144Z [ERROR]: undefined,  
+            ReferenceError: moveSelectedNotations is not defined
+    at notationMutateHelper (http://localhost:3000/src/helpers/notationMutateHelper.ts?t=1747656133400:905:5)
+    at setup (http://localhost:3000/src/components/ExponentEditor.vue?t=1747656133400:14:34)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:1565:18)
+    at setupStatefulComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:8631:25)
+    at setupComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:8592:36)
+    at mountComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:6997:7)
+    at processComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:6963:9)
+    at patch (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:6436:11)
+    at patchBlockChildren (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:6823:7)
+    at processFragment (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:6911:9), 
+            ,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-19T12:02:14.148Z [ERROR]: undefined,  
+            ReferenceError: moveSelectedNotations is not defined
+    at notationMutateHelper (http://localhost:3000/src/helpers/notationMutateHelper.ts?t=1747656133400:905:5)
+    at setup (http://localhost:3000/src/components/SpecialSymbolsToolbar.vue?t=1747656133400:19:34)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:1565:18)
+    at setupStatefulComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:8631:25)
+    at setupComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:8592:36)
+    at mountComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:6997:7)
+    at processComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:6963:9)
+    at patch (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:6436:11)
+    at patchKeyedChildren (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:7496:11)
+    at patchChildren (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:7277:11), 
+            ,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-19T12:02:14.152Z [ERROR]: undefined,  
+            ReferenceError: moveSelectedNotations is not defined
+    at notationMutateHelper (http://localhost:3000/src/helpers/notationMutateHelper.ts?t=1747656133400:905:5)
+    at setup (http://localhost:3000/src/components/CircleDrawer.vue?t=1747656133400:13:34)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:1565:18)
+    at setupStatefulComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:8631:25)
+    at setupComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:8592:36)
+    at mountComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:6997:7)
+    at processComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:6963:9)
+    at patch (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:6436:11)
+    at patchKeyedChildren (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:7496:11)
+    at patchChildren (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:7277:11), 
+            ,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-19T12:02:14.155Z [ERROR]: undefined,  
+            ReferenceError: moveSelectedNotations is not defined
+    at notationMutateHelper (http://localhost:3000/src/helpers/notationMutateHelper.ts?t=1747656133400:905:5)
+    at setup (http://localhost:3000/src/components/CurveDrawer.vue?t=1747656133400:19:34)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:1565:18)
+    at setupStatefulComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:8631:25)
+    at setupComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:8592:36)
+    at mountComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:6997:7)
+    at processComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:6963:9)
+    at patch (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:6436:11)
+    at patchKeyedChildren (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:7496:11)
+    at patchChildren (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:7277:11), 
+            ,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-19T12:02:14.457Z [ERROR]: undefined,  
+            ReferenceError: moveSelectedNotations is not defined
+    at notationMutateHelper (http://localhost:3000/src/helpers/notationMutateHelper.ts?t=1747656133400:905:5)
+    at setup (http://localhost:3000/src/components/SlopeLineDrawer.vue?t=1747656133400:18:34)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:1565:18)
+    at setupStatefulComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:8631:25)
+    at setupComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:8592:36)
+    at mountComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:6997:7)
+    at processComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:6963:9)
+    at patch (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:6436:11)
+    at patchKeyedChildren (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:7496:11)
+    at patchChildren (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:7277:11), 
+            ,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-19T12:02:14.459Z [ERROR]: undefined,  
+            TypeError: Cannot read properties of undefined (reading 'p1x')
+    at Proxy._sfc_render (http://localhost:3000/src/components/SlopeLineDrawer.vue?t=1747656133400:251:35)
+    at renderComponentRoot (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:2224:17)
+    at ReactiveEffect.componentUpdateFn [as fn] (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:7099:46)
+    at ReactiveEffect.run (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:423:19)
+    at instance.update (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:7212:52)
+    at setupRenderEffect (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:7220:5)
+    at mountComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:7010:5)
+    at processComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:6963:9)
+    at patch (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:6436:11)
+    at patchKeyedChildren (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:7496:11), 
+            ,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-19T12:02:14.462Z [ERROR]: undefined,  
+            ReferenceError: moveSelectedNotations is not defined
+    at notationMutateHelper (http://localhost:3000/src/helpers/notationMutateHelper.ts?t=1747656133400:905:5)
+    at setup (http://localhost:3000/src/components/VerticalLineDrawer.vue?t=1747656133400:18:34)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:1565:18)
+    at setupStatefulComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:8631:25)
+    at setupComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:8592:36)
+    at mountComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:6997:7)
+    at processComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:6963:9)
+    at patch (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:6436:11)
+    at patchKeyedChildren (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:7496:11)
+    at patchChildren (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:7277:11), 
+            ,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-19T12:02:14.464Z [ERROR]: undefined,  
+            TypeError: Cannot read properties of undefined (reading 'px')
+    at Proxy._sfc_render (http://localhost:3000/src/components/VerticalLineDrawer.vue?t=1747656133400:205:39)
+    at renderComponentRoot (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:2224:17)
+    at ReactiveEffect.componentUpdateFn [as fn] (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:7099:46)
+    at ReactiveEffect.run (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:423:19)
+    at instance.update (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:7212:52)
+    at setupRenderEffect (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:7220:5)
+    at mountComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:7010:5)
+    at processComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:6963:9)
+    at patch (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:6436:11)
+    at patchKeyedChildren (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:7496:11), 
+            ,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-19T12:02:14.470Z [ERROR]: undefined,  
+            ReferenceError: moveSelectedNotations is not defined
+    at notationMutateHelper (http://localhost:3000/src/helpers/notationMutateHelper.ts?t=1747656133400:905:5)
+    at setup (http://localhost:3000/src/components/SqrtDrawer.vue?t=1747656133400:16:34)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:1565:18)
+    at setupStatefulComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:8631:25)
+    at setupComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:8592:36)
+    at mountComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:6997:7)
+    at processComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:6963:9)
+    at patch (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:6436:11)
+    at patchKeyedChildren (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:7496:11)
+    at patchChildren (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:7277:11), 
+            ,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-19T12:02:14.472Z [ERROR]: undefined,  
+            ReferenceError: moveSelectedNotations is not defined
+    at notationMutateHelper (http://localhost:3000/src/helpers/notationMutateHelper.ts?t=1747656133400:905:5)
+    at setup (http://localhost:3000/src/components/HorizontalLineDrawer.vue?t=1747656133400:17:34)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:1565:18)
+    at setupStatefulComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:8631:25)
+    at setupComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:8592:36)
+    at mountComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:6997:7)
+    at processComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:6963:9)
+    at patch (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:6436:11)
+    at patchKeyedChildren (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:7496:11)
+    at patchChildren (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:7277:11), 
+            ,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-19T12:02:14.764Z [ERROR]: undefined,  
+            ReferenceError: moveSelectedNotations is not defined
+    at notationMutateHelper (http://localhost:3000/src/helpers/notationMutateHelper.ts?t=1747656133400:905:5)
+    at setup (http://localhost:3000/src/components/ColorizeTool.vue?t=1747656133400:14:34)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:1565:18)
+    at setupStatefulComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:8631:25)
+    at setupComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:8592:36)
+    at mountComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:6997:7)
+    at processComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:6963:9)
+    at patch (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:6436:11)
+    at patchKeyedChildren (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:7496:11)
+    at patchChildren (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:7277:11), 
+            ,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-19T12:02:17.457Z [ERROR]: undefined,  
+            ReferenceError: moveSelectedNotations is not defined
+    at notationMutateHelper (http://localhost:3000/src/helpers/notationMutateHelper.ts?t=1747656136721:905:5)
+    at setup (http://localhost:3000/src/components/FreeTextEditor.vue?t=1747656136721:14:34)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:1565:18)
+    at setupStatefulComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:8631:25)
+    at setupComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:8592:36)
+    at mountComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:6997:7)
+    at processComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:6963:9)
+    at patch (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:6436:11)
+    at patchBlockChildren (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:6823:7)
+    at processFragment (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:6911:9), 
+            ,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-19T12:02:17.464Z [ERROR]: undefined,  
+            ReferenceError: moveSelectedNotations is not defined
+    at notationMutateHelper (http://localhost:3000/src/helpers/notationMutateHelper.ts?t=1747656136721:905:5)
+    at setup (http://localhost:3000/src/components/AnnotationEditor.vue?t=1747656136721:13:34)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:1565:18)
+    at setupStatefulComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:8631:25)
+    at setupComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:8592:36)
+    at mountComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:6997:7)
+    at processComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:6963:9)
+    at patch (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:6436:11)
+    at patchBlockChildren (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:6823:7)
+    at processFragment (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:6911:9), 
+            ,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-19T12:02:17.468Z [ERROR]: undefined,  
+            ReferenceError: moveSelectedNotations is not defined
+    at notationMutateHelper (http://localhost:3000/src/helpers/notationMutateHelper.ts?t=1747656136721:905:5)
+    at setup (http://localhost:3000/src/components/ExponentEditor.vue?t=1747656136721:14:34)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:1565:18)
+    at setupStatefulComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:8631:25)
+    at setupComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:8592:36)
+    at mountComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:6997:7)
+    at processComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:6963:9)
+    at patch (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:6436:11)
+    at patchBlockChildren (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:6823:7)
+    at processFragment (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:6911:9), 
+            ,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-19T12:02:17.470Z [ERROR]: undefined,  
+            ReferenceError: moveSelectedNotations is not defined
+    at notationMutateHelper (http://localhost:3000/src/helpers/notationMutateHelper.ts?t=1747656136721:905:5)
+    at setup (http://localhost:3000/src/components/CircleDrawer.vue?t=1747656136721:13:34)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:1565:18)
+    at setupStatefulComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:8631:25)
+    at setupComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:8592:36)
+    at mountComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:6997:7)
+    at processComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:6963:9)
+    at patch (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:6436:11)
+    at patchKeyedChildren (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:7496:11)
+    at patchChildren (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:7277:11), 
+            ,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-19T12:02:17.472Z [ERROR]: undefined,  
+            ReferenceError: moveSelectedNotations is not defined
+    at notationMutateHelper (http://localhost:3000/src/helpers/notationMutateHelper.ts?t=1747656136721:905:5)
+    at setup (http://localhost:3000/src/components/CurveDrawer.vue?t=1747656136721:19:34)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:1565:18)
+    at setupStatefulComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:8631:25)
+    at setupComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:8592:36)
+    at mountComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:6997:7)
+    at processComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:6963:9)
+    at patch (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:6436:11)
+    at patchKeyedChildren (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:7496:11)
+    at patchChildren (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:7277:11), 
+            ,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-19T12:02:17.476Z [ERROR]: undefined,  
+            ReferenceError: moveSelectedNotations is not defined
+    at notationMutateHelper (http://localhost:3000/src/helpers/notationMutateHelper.ts?t=1747656136721:905:5)
+    at setup (http://localhost:3000/src/components/SpecialSymbolsToolbar.vue?t=1747656136721:19:34)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:1565:18)
+    at setupStatefulComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:8631:25)
+    at setupComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:8592:36)
+    at mountComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:6997:7)
+    at processComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:6963:9)
+    at patch (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:6436:11)
+    at patchKeyedChildren (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:7496:11)
+    at patchChildren (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:7277:11), 
+            ,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-19T12:02:17.777Z [ERROR]: undefined,  
+            ReferenceError: moveSelectedNotations is not defined
+    at notationMutateHelper (http://localhost:3000/src/helpers/notationMutateHelper.ts?t=1747656136721:905:5)
+    at setup (http://localhost:3000/src/components/SlopeLineDrawer.vue?t=1747656136721:18:34)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:1565:18)
+    at setupStatefulComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:8631:25)
+    at setupComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:8592:36)
+    at mountComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:6997:7)
+    at processComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:6963:9)
+    at patch (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:6436:11)
+    at patchKeyedChildren (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:7496:11)
+    at patchChildren (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:7277:11), 
+            ,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-19T12:02:17.779Z [ERROR]: undefined,  
+            TypeError: Cannot read properties of undefined (reading 'p1x')
+    at Proxy._sfc_render (http://localhost:3000/src/components/SlopeLineDrawer.vue?t=1747656136721:251:35)
+    at renderComponentRoot (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:2224:17)
+    at ReactiveEffect.componentUpdateFn [as fn] (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:7099:46)
+    at ReactiveEffect.run (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:423:19)
+    at instance.update (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:7212:52)
+    at setupRenderEffect (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:7220:5)
+    at mountComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:7010:5)
+    at processComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:6963:9)
+    at patch (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:6436:11)
+    at patchKeyedChildren (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:7496:11), 
+            ,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-19T12:02:17.782Z [ERROR]: undefined,  
+            ReferenceError: moveSelectedNotations is not defined
+    at notationMutateHelper (http://localhost:3000/src/helpers/notationMutateHelper.ts?t=1747656136721:905:5)
+    at setup (http://localhost:3000/src/components/VerticalLineDrawer.vue?t=1747656136721:18:34)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:1565:18)
+    at setupStatefulComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:8631:25)
+    at setupComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:8592:36)
+    at mountComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:6997:7)
+    at processComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:6963:9)
+    at patch (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:6436:11)
+    at patchKeyedChildren (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:7496:11)
+    at patchChildren (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:7277:11), 
+            ,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-19T12:02:17.784Z [ERROR]: undefined,  
+            TypeError: Cannot read properties of undefined (reading 'px')
+    at Proxy._sfc_render (http://localhost:3000/src/components/VerticalLineDrawer.vue?t=1747656136721:205:39)
+    at renderComponentRoot (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:2224:17)
+    at ReactiveEffect.componentUpdateFn [as fn] (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:7099:46)
+    at ReactiveEffect.run (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:423:19)
+    at instance.update (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:7212:52)
+    at setupRenderEffect (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:7220:5)
+    at mountComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:7010:5)
+    at processComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:6963:9)
+    at patch (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:6436:11)
+    at patchKeyedChildren (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:7496:11), 
+            ,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-19T12:02:17.789Z [ERROR]: undefined,  
+            ReferenceError: moveSelectedNotations is not defined
+    at notationMutateHelper (http://localhost:3000/src/helpers/notationMutateHelper.ts?t=1747656136721:905:5)
+    at setup (http://localhost:3000/src/components/SqrtDrawer.vue?t=1747656136721:16:34)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:1565:18)
+    at setupStatefulComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:8631:25)
+    at setupComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:8592:36)
+    at mountComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:6997:7)
+    at processComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:6963:9)
+    at patch (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:6436:11)
+    at patchKeyedChildren (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:7496:11)
+    at patchChildren (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:7277:11), 
+            ,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-19T12:02:17.792Z [ERROR]: undefined,  
+            ReferenceError: moveSelectedNotations is not defined
+    at notationMutateHelper (http://localhost:3000/src/helpers/notationMutateHelper.ts?t=1747656136721:905:5)
+    at setup (http://localhost:3000/src/components/HorizontalLineDrawer.vue?t=1747656136721:17:34)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:1565:18)
+    at setupStatefulComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:8631:25)
+    at setupComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:8592:36)
+    at mountComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:6997:7)
+    at processComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:6963:9)
+    at patch (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:6436:11)
+    at patchKeyedChildren (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:7496:11)
+    at patchChildren (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:7277:11), 
+            ,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-19T12:02:18.088Z [ERROR]: undefined,  
+            ReferenceError: moveSelectedNotations is not defined
+    at notationMutateHelper (http://localhost:3000/src/helpers/notationMutateHelper.ts?t=1747656136721:905:5)
+    at setup (http://localhost:3000/src/components/ColorizeTool.vue?t=1747656136721:14:34)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:1565:18)
+    at setupStatefulComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:8631:25)
+    at setupComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:8592:36)
+    at mountComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:6997:7)
+    at processComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:6963:9)
+    at patch (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:6436:11)
+    at patchKeyedChildren (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:7496:11)
+    at patchChildren (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:7277:11), 
+            ,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-19T12:02:20.768Z [ERROR]: undefined,  
+            ReferenceError: moveSelectedNotations is not defined
+    at notationMutateHelper (http://localhost:3000/src/helpers/notationMutateHelper.ts?t=1747656139967:905:5)
+    at setup (http://localhost:3000/src/components/AnnotationEditor.vue?t=1747656139967:13:34)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:1565:18)
+    at setupStatefulComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:8631:25)
+    at setupComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:8592:36)
+    at mountComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:6997:7)
+    at processComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:6963:9)
+    at patch (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:6436:11)
+    at patchBlockChildren (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:6823:7)
+    at processFragment (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:6911:9), 
+            ,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-19T12:02:20.771Z [ERROR]: undefined,  
+            ReferenceError: moveSelectedNotations is not defined
+    at notationMutateHelper (http://localhost:3000/src/helpers/notationMutateHelper.ts?t=1747656139967:905:5)
+    at setup (http://localhost:3000/src/components/FreeTextEditor.vue?t=1747656139967:14:34)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:1565:18)
+    at setupStatefulComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:8631:25)
+    at setupComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:8592:36)
+    at mountComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:6997:7)
+    at processComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:6963:9)
+    at patch (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:6436:11)
+    at patchBlockChildren (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:6823:7)
+    at processFragment (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:6911:9), 
+            ,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-19T12:02:20.783Z [ERROR]: undefined,  
+            ReferenceError: moveSelectedNotations is not defined
+    at notationMutateHelper (http://localhost:3000/src/helpers/notationMutateHelper.ts?t=1747656139967:905:5)
+    at setup (http://localhost:3000/src/components/ExponentEditor.vue?t=1747656139967:14:34)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:1565:18)
+    at setupStatefulComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:8631:25)
+    at setupComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:8592:36)
+    at mountComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:6997:7)
+    at processComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:6963:9)
+    at patch (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:6436:11)
+    at patchBlockChildren (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:6823:7)
+    at processFragment (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:6911:9), 
+            ,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-19T12:02:20.786Z [ERROR]: undefined,  
+            ReferenceError: moveSelectedNotations is not defined
+    at notationMutateHelper (http://localhost:3000/src/helpers/notationMutateHelper.ts?t=1747656139967:905:5)
+    at setup (http://localhost:3000/src/components/SpecialSymbolsToolbar.vue?t=1747656139967:19:34)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:1565:18)
+    at setupStatefulComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:8631:25)
+    at setupComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:8592:36)
+    at mountComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:6997:7)
+    at processComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:6963:9)
+    at patch (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:6436:11)
+    at patchKeyedChildren (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:7496:11)
+    at patchChildren (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:7277:11), 
+            ,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-19T12:02:20.788Z [ERROR]: undefined,  
+            ReferenceError: moveSelectedNotations is not defined
+    at notationMutateHelper (http://localhost:3000/src/helpers/notationMutateHelper.ts?t=1747656139967:905:5)
+    at setup (http://localhost:3000/src/components/CircleDrawer.vue?t=1747656139967:13:34)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:1565:18)
+    at setupStatefulComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:8631:25)
+    at setupComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:8592:36)
+    at mountComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:6997:7)
+    at processComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:6963:9)
+    at patch (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:6436:11)
+    at patchKeyedChildren (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:7496:11)
+    at patchChildren (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:7277:11), 
+            ,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-19T12:02:20.791Z [ERROR]: undefined,  
+            ReferenceError: moveSelectedNotations is not defined
+    at notationMutateHelper (http://localhost:3000/src/helpers/notationMutateHelper.ts?t=1747656139967:905:5)
+    at setup (http://localhost:3000/src/components/CurveDrawer.vue?t=1747656139967:19:34)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:1565:18)
+    at setupStatefulComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:8631:25)
+    at setupComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:8592:36)
+    at mountComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:6997:7)
+    at processComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:6963:9)
+    at patch (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:6436:11)
+    at patchKeyedChildren (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:7496:11)
+    at patchChildren (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:7277:11), 
+            ,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-19T12:02:21.081Z [ERROR]: undefined,  
+            ReferenceError: moveSelectedNotations is not defined
+    at notationMutateHelper (http://localhost:3000/src/helpers/notationMutateHelper.ts?t=1747656139967:905:5)
+    at setup (http://localhost:3000/src/components/SlopeLineDrawer.vue?t=1747656139967:18:34)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:1565:18)
+    at setupStatefulComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:8631:25)
+    at setupComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:8592:36)
+    at mountComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:6997:7)
+    at processComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:6963:9)
+    at patch (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:6436:11)
+    at patchKeyedChildren (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:7496:11)
+    at patchChildren (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:7277:11), 
+            ,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-19T12:02:21.086Z [ERROR]: undefined,  
+            TypeError: Cannot read properties of undefined (reading 'p1x')
+    at Proxy._sfc_render (http://localhost:3000/src/components/SlopeLineDrawer.vue?t=1747656139967:251:35)
+    at renderComponentRoot (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:2224:17)
+    at ReactiveEffect.componentUpdateFn [as fn] (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:7099:46)
+    at ReactiveEffect.run (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:423:19)
+    at instance.update (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:7212:52)
+    at setupRenderEffect (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:7220:5)
+    at mountComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:7010:5)
+    at processComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:6963:9)
+    at patch (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:6436:11)
+    at patchKeyedChildren (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:7496:11), 
+            ,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-19T12:02:21.092Z [ERROR]: undefined,  
+            ReferenceError: moveSelectedNotations is not defined
+    at notationMutateHelper (http://localhost:3000/src/helpers/notationMutateHelper.ts?t=1747656139967:905:5)
+    at setup (http://localhost:3000/src/components/VerticalLineDrawer.vue?t=1747656139967:18:34)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:1565:18)
+    at setupStatefulComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:8631:25)
+    at setupComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:8592:36)
+    at mountComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:6997:7)
+    at processComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:6963:9)
+    at patch (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:6436:11)
+    at patchKeyedChildren (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:7496:11)
+    at patchChildren (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:7277:11), 
+            ,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-19T12:02:21.096Z [ERROR]: undefined,  
+            TypeError: Cannot read properties of undefined (reading 'px')
+    at Proxy._sfc_render (http://localhost:3000/src/components/VerticalLineDrawer.vue?t=1747656139967:205:39)
+    at renderComponentRoot (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:2224:17)
+    at ReactiveEffect.componentUpdateFn [as fn] (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:7099:46)
+    at ReactiveEffect.run (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:423:19)
+    at instance.update (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:7212:52)
+    at setupRenderEffect (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:7220:5)
+    at mountComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:7010:5)
+    at processComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:6963:9)
+    at patch (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:6436:11)
+    at patchKeyedChildren (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:7496:11), 
+            ,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-19T12:02:21.098Z [ERROR]: undefined,  
+            ReferenceError: moveSelectedNotations is not defined
+    at notationMutateHelper (http://localhost:3000/src/helpers/notationMutateHelper.ts?t=1747656139967:905:5)
+    at setup (http://localhost:3000/src/components/SqrtDrawer.vue?t=1747656139967:16:34)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:1565:18)
+    at setupStatefulComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:8631:25)
+    at setupComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:8592:36)
+    at mountComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:6997:7)
+    at processComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:6963:9)
+    at patch (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:6436:11)
+    at patchKeyedChildren (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:7496:11)
+    at patchChildren (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:7277:11), 
+            ,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-19T12:02:21.103Z [ERROR]: undefined,  
+            ReferenceError: moveSelectedNotations is not defined
+    at notationMutateHelper (http://localhost:3000/src/helpers/notationMutateHelper.ts?t=1747656139967:905:5)
+    at setup (http://localhost:3000/src/components/HorizontalLineDrawer.vue?t=1747656139967:17:34)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:1565:18)
+    at setupStatefulComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:8631:25)
+    at setupComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:8592:36)
+    at mountComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:6997:7)
+    at processComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:6963:9)
+    at patch (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:6436:11)
+    at patchKeyedChildren (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:7496:11)
+    at patchChildren (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:7277:11), 
+            ,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-19T12:02:21.389Z [ERROR]: undefined,  
+            ReferenceError: moveSelectedNotations is not defined
+    at notationMutateHelper (http://localhost:3000/src/helpers/notationMutateHelper.ts?t=1747656139967:905:5)
+    at setup (http://localhost:3000/src/components/ColorizeTool.vue?t=1747656139967:14:34)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:1565:18)
+    at setupStatefulComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:8631:25)
+    at setupComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:8592:36)
+    at mountComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:6997:7)
+    at processComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:6963:9)
+    at patch (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:6436:11)
+    at patchKeyedChildren (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:7496:11)
+    at patchChildren (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:7277:11), 
+            ,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-19T12:02:39.428Z [ERROR]: undefined,  
+            ReferenceError: moveSelectedNotations is not defined
+    at notationMutateHelper (http://localhost:3000/src/helpers/notationMutateHelper.ts?t=1747656158419:905:5)
+    at setup (http://localhost:3000/src/components/AnnotationEditor.vue?t=1747656158419:13:34)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:1565:18)
+    at setupStatefulComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:8631:25)
+    at setupComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:8592:36)
+    at mountComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:6997:7)
+    at processComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:6963:9)
+    at patch (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:6436:11)
+    at patchBlockChildren (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:6823:7)
+    at processFragment (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:6911:9), 
+            ,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-19T12:02:39.431Z [ERROR]: undefined,  
+            ReferenceError: moveSelectedNotations is not defined
+    at notationMutateHelper (http://localhost:3000/src/helpers/notationMutateHelper.ts?t=1747656158419:905:5)
+    at setup (http://localhost:3000/src/components/FreeTextEditor.vue?t=1747656158419:14:34)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:1565:18)
+    at setupStatefulComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:8631:25)
+    at setupComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:8592:36)
+    at mountComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:6997:7)
+    at processComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:6963:9)
+    at patch (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:6436:11)
+    at patchBlockChildren (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:6823:7)
+    at processFragment (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:6911:9), 
+            ,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-19T12:02:39.437Z [ERROR]: undefined,  
+            ReferenceError: moveSelectedNotations is not defined
+    at notationMutateHelper (http://localhost:3000/src/helpers/notationMutateHelper.ts?t=1747656158419:905:5)
+    at setup (http://localhost:3000/src/components/ExponentEditor.vue?t=1747656158419:14:34)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:1565:18)
+    at setupStatefulComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:8631:25)
+    at setupComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:8592:36)
+    at mountComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:6997:7)
+    at processComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:6963:9)
+    at patch (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:6436:11)
+    at patchBlockChildren (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:6823:7)
+    at processFragment (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:6911:9), 
+            ,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-19T12:02:39.441Z [ERROR]: undefined,  
+            ReferenceError: moveSelectedNotations is not defined
+    at notationMutateHelper (http://localhost:3000/src/helpers/notationMutateHelper.ts?t=1747656158419:905:5)
+    at setup (http://localhost:3000/src/components/CircleDrawer.vue?t=1747656158419:13:34)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:1565:18)
+    at setupStatefulComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:8631:25)
+    at setupComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:8592:36)
+    at mountComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:6997:7)
+    at processComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:6963:9)
+    at patch (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:6436:11)
+    at patchKeyedChildren (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:7496:11)
+    at patchChildren (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:7277:11), 
+            ,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-19T12:02:39.445Z [ERROR]: undefined,  
+            ReferenceError: moveSelectedNotations is not defined
+    at notationMutateHelper (http://localhost:3000/src/helpers/notationMutateHelper.ts?t=1747656158419:905:5)
+    at setup (http://localhost:3000/src/components/SpecialSymbolsToolbar.vue?t=1747656158419:19:34)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:1565:18)
+    at setupStatefulComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:8631:25)
+    at setupComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:8592:36)
+    at mountComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:6997:7)
+    at processComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:6963:9)
+    at patch (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:6436:11)
+    at patchKeyedChildren (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:7496:11)
+    at patchChildren (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:7277:11), 
+            ,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-19T12:02:39.447Z [ERROR]: undefined,  
+            ReferenceError: moveSelectedNotations is not defined
+    at notationMutateHelper (http://localhost:3000/src/helpers/notationMutateHelper.ts?t=1747656158419:905:5)
+    at setup (http://localhost:3000/src/components/CurveDrawer.vue?t=1747656158419:19:34)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:1565:18)
+    at setupStatefulComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:8631:25)
+    at setupComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:8592:36)
+    at mountComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:6997:7)
+    at processComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:6963:9)
+    at patch (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:6436:11)
+    at patchKeyedChildren (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:7496:11)
+    at patchChildren (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:7277:11), 
+            ,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-19T12:02:39.740Z [ERROR]: undefined,  
+            ReferenceError: moveSelectedNotations is not defined
+    at notationMutateHelper (http://localhost:3000/src/helpers/notationMutateHelper.ts?t=1747656158419:905:5)
+    at setup (http://localhost:3000/src/components/SlopeLineDrawer.vue?t=1747656158419:18:34)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:1565:18)
+    at setupStatefulComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:8631:25)
+    at setupComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:8592:36)
+    at mountComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:6997:7)
+    at processComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:6963:9)
+    at patch (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:6436:11)
+    at patchKeyedChildren (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:7496:11)
+    at patchChildren (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:7277:11), 
+            ,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-19T12:02:39.742Z [ERROR]: undefined,  
+            TypeError: Cannot read properties of undefined (reading 'p1x')
+    at Proxy._sfc_render (http://localhost:3000/src/components/SlopeLineDrawer.vue?t=1747656158419:251:35)
+    at renderComponentRoot (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:2224:17)
+    at ReactiveEffect.componentUpdateFn [as fn] (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:7099:46)
+    at ReactiveEffect.run (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:423:19)
+    at instance.update (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:7212:52)
+    at setupRenderEffect (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:7220:5)
+    at mountComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:7010:5)
+    at processComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:6963:9)
+    at patch (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:6436:11)
+    at patchKeyedChildren (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:7496:11), 
+            ,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-19T12:02:39.746Z [ERROR]: undefined,  
+            ReferenceError: moveSelectedNotations is not defined
+    at notationMutateHelper (http://localhost:3000/src/helpers/notationMutateHelper.ts?t=1747656158419:905:5)
+    at setup (http://localhost:3000/src/components/VerticalLineDrawer.vue?t=1747656158419:18:34)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:1565:18)
+    at setupStatefulComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:8631:25)
+    at setupComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:8592:36)
+    at mountComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:6997:7)
+    at processComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:6963:9)
+    at patch (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:6436:11)
+    at patchKeyedChildren (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:7496:11)
+    at patchChildren (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:7277:11), 
+            ,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-19T12:02:39.751Z [ERROR]: undefined,  
+            TypeError: Cannot read properties of undefined (reading 'px')
+    at Proxy._sfc_render (http://localhost:3000/src/components/VerticalLineDrawer.vue?t=1747656158419:205:39)
+    at renderComponentRoot (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:2224:17)
+    at ReactiveEffect.componentUpdateFn [as fn] (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:7099:46)
+    at ReactiveEffect.run (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:423:19)
+    at instance.update (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:7212:52)
+    at setupRenderEffect (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:7220:5)
+    at mountComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:7010:5)
+    at processComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:6963:9)
+    at patch (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:6436:11)
+    at patchKeyedChildren (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:7496:11), 
+            ,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-19T12:02:39.756Z [ERROR]: undefined,  
+            ReferenceError: moveSelectedNotations is not defined
+    at notationMutateHelper (http://localhost:3000/src/helpers/notationMutateHelper.ts?t=1747656158419:905:5)
+    at setup (http://localhost:3000/src/components/SqrtDrawer.vue?t=1747656158419:16:34)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:1565:18)
+    at setupStatefulComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:8631:25)
+    at setupComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:8592:36)
+    at mountComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:6997:7)
+    at processComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:6963:9)
+    at patch (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:6436:11)
+    at patchKeyedChildren (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:7496:11)
+    at patchChildren (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:7277:11), 
+            ,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-19T12:02:39.758Z [ERROR]: undefined,  
+            ReferenceError: moveSelectedNotations is not defined
+    at notationMutateHelper (http://localhost:3000/src/helpers/notationMutateHelper.ts?t=1747656158419:905:5)
+    at setup (http://localhost:3000/src/components/HorizontalLineDrawer.vue?t=1747656158419:17:34)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:1565:18)
+    at setupStatefulComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:8631:25)
+    at setupComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:8592:36)
+    at mountComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:6997:7)
+    at processComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:6963:9)
+    at patch (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:6436:11)
+    at patchKeyedChildren (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:7496:11)
+    at patchChildren (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:7277:11), 
+            ,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-19T12:02:40.050Z [ERROR]: undefined,  
+            ReferenceError: moveSelectedNotations is not defined
+    at notationMutateHelper (http://localhost:3000/src/helpers/notationMutateHelper.ts?t=1747656158419:905:5)
+    at setup (http://localhost:3000/src/components/ColorizeTool.vue?t=1747656158419:14:34)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:1565:18)
+    at setupStatefulComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:8631:25)
+    at setupComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:8592:36)
+    at mountComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:6997:7)
+    at processComponent (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:6963:9)
+    at patch (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:6436:11)
+    at patchKeyedChildren (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:7496:11)
+    at patchChildren (http://localhost:3000/node_modules/.vite/deps/chunk-J6475X5X.js?v=d77ff067:7277:11), 
+            ,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-19T12:05:17.895Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-19T12:06:14.014Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-19T12:15:05.783Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-19T12:19:43.126Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-19T12:24:11.833Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-19T12:25:51.984Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-19T17:52:49.431Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-19T17:54:37.642Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-19T17:54:53.429Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-19T17:55:07.851Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-19T17:55:12.452Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-19T17:55:16.801Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-19T17:55:20.249Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-19T17:55:24.942Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-19T17:56:47.121Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-19T17:57:00.327Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-19T17:57:15.071Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-19T17:59:08.861Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-19T17:59:11.835Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-19T17:59:15.908Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-19T17:59:56.533Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-19T18:00:06.921Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-19T18:00:24.841Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-19T18:00:27.157Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-19T18:07:51.765Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-19T18:08:15.931Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-19T18:08:26.732Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-19T18:09:02.832Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-19T18:10:57.373Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-19T18:16:51.199Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-19T18:18:10.237Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-19T18:18:45.106Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-19T18:18:47.762Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-19T18:18:50.341Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-19T18:18:52.235Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-19T18:18:55.270Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-19T18:18:57.256Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-19T18:20:56.062Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-19T18:20:58.508Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-19T18:21:02.291Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-19T18:21:04.612Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-19T18:21:09.264Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-19T18:21:10.931Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-19T18:21:13.197Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-19T18:21:15.393Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-19T18:21:18.257Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-19T18:21:21.805Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-19T18:21:24.588Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-19T18:21:36.414Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-19T18:21:39.804Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-19T18:21:44.899Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-19T18:21:46.411Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-19T18:21:47.475Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-19T18:21:51.373Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-19T18:21:53.519Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-19T18:21:56.269Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-19T18:22:03.923Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-19T18:22:10.551Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-19T19:16:48.899Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-19T19:18:30.964Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-19T19:19:12.639Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-19T19:20:04.914Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-19T19:23:26.095Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-19T19:23:45.689Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-19T19:24:34.620Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-19T19:24:50.131Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-19T19:30:13.130Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-19T19:30:22.945Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-19T19:30:26.044Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-19T19:30:28.668Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-19T19:30:33.324Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-19T19:30:41.439Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-19T19:30:50.053Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-19T19:31:03.031Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-19T19:31:04.658Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-19T19:32:55.934Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-19T19:32:57.561Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-19T19:33:04.958Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-19T19:33:20.729Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-19T19:33:32.315Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }

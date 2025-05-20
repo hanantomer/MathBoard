@@ -31,7 +31,6 @@
       </v-sheet>
       <specialSymbolsToolbar></specialSymbolsToolbar>
     </div>
-
   </v-row>
 </template>
 
@@ -239,9 +238,11 @@ html {
 }
 
 line:hover,
+circle:hover,
 path:hover {
   stroke-width: 4.5;
 }
+
 
 .sqrt {
   border-bottom: solid 1px;

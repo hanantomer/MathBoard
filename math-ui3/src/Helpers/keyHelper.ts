@@ -50,6 +50,12 @@ export default function () {
   }
 
   function handleMovementKey(key: string) {
+
+    if (editModeStore.getEditMode() !== "CELL_SELECTED") {
+      return;
+    }
+
+
     if (key === "ArrowLeft" || key === "Backspace") {
       matrixCellHelper.setNextCell(-1, 0);
     }

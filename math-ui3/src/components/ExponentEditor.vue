@@ -22,7 +22,7 @@ import { computed, ref } from "vue";
 import { useEditModeStore } from "../store/pinia/editModeStore";
 import { useCellStore } from "../store/pinia/cellStore";
 import { useNotationStore } from "../store/pinia/notationStore";
-import { ExponentNotationAttributes } from "../../../math-common/src/baseTypes";
+import { CellAttributes, ExponentNotationAttributes } from "../../../math-common/src/baseTypes";
 import useNotationMutateHelper from "../helpers/notationMutateHelper";
 import useScreenHelper from "../helpers/screenHelper";
 import useWatchHelper from "../helpers/watchHelper";
@@ -52,6 +52,8 @@ const selectedNotation = computed(() =>
 
 const show = computed(() => editModeStore.getEditMode() === "EXPONENT_WRITING");
 
+let clickedCell: CellAttributes| undefined = undefined;
+
 // user clicked on exponent icon and then clicked on a cell
 
 watchHelper.watchMouseEvent(
@@ -74,7 +76,7 @@ watchHelper.watchMouseEvent(
 );
 
 // edit mode changed from "EXPONENT_WRITING" either by cell clik or toolbar click
-watchHelper.watchEndOfEditMode(["EXPONENT_WRITING"], submitExponent);
+watchHelper.watchEndOfEditMode(["EXPONENT_WRITING"], [], submitExponent);
 
 // user typed Enter -> end editing and move to next edit mode to submit
 watchHelper.watchKeyEvent(
@@ -97,13 +99,23 @@ function startNewExponentAtMousePosition(e: MouseEvent) {
 
   editModeStore.setNextEditMode();
 
-  cellStore.setSelectedCell(
-    screenHelper.getClickedCell({
+  clickedCell = screenHelper.getClickedCell({
+    x: e.pageX,
+    y: e.pageY,
+  });
+
+  screenHelper.getClickedCell({
       x: e.pageX,
       y: e.pageY,
     }),
-    false,
-  );
+
+  // cellStore.setSelectedCell(
+  //   screenHelper.getClickedCell({
+  //     x: e.pageX,
+  //     y: e.pageY,
+  //   }),
+  //   false,
+  // );
 
   setInitialExponentValue();
 
@@ -114,13 +126,13 @@ function startNewExponentAtMousePosition(e: MouseEvent) {
 
 function setExponentPosition() {
   const clickedCoordinates = screenHelper.getClickedCellTopLeftCoordinates(
-    cellStore.getSelectedCell(),
+    clickedCell!
   );
 
   leftPosition.value = clickedCoordinates.x;
   topPosition.value = clickedCoordinates.y;
 
-  width.value = cellStore.getCellHorizontalWidth() -1;
+  width.value = cellStore.getCellHorizontalWidth() - 1;
   height.value = cellStore.getCellVerticalHeight() / 2;
 }
 
@@ -160,7 +172,7 @@ function submitExponent() {
 
     notationMutateHelper.updateNotation(selectedNotation.value);
   } else {
-    notationMutateHelper.addExponentNotation(exponent.value);
+    notationMutateHelper.addExponentNotation(exponent.value, clickedCell);
   }
 }
 </script>

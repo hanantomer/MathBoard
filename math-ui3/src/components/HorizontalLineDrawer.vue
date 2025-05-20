@@ -187,6 +187,8 @@ function saveLine() {
 }
 
 function fixLineEdge(linePosition: HorizontalLineAttributes) {
+
+
   const nearLineRightEdge = screenHelper.getCloseLineEdge({
     x: linePosition.p1x,
     y: linePosition.py,
@@ -208,7 +210,6 @@ function fixLineEdge(linePosition: HorizontalLineAttributes) {
   }
 }
 
-
 function selectLine(notation: NotationAttributes) {
   const n = notation as HorizontalLineNotationAttributes;
 
@@ -221,6 +222,6 @@ function moveLine(moveX: number, moveY: number) {
   linePosition.value.p1x += moveX;
   linePosition.value.p2x += moveX;
   linePosition.value.py += moveY;
+  saveLine();
 }
-
 </script>

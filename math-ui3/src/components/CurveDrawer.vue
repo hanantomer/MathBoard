@@ -44,7 +44,6 @@
     <line-handle
       drawing-mode="CURVE_DRAWING"
       editing-mode="CURVE_EDITING_LEFT"
-
       v-bind:style="{
         left: handleX1 + 'px',
         top: handleY1 + 'px',
@@ -103,7 +102,6 @@ import {
 import { useCellStore } from "../store/pinia/cellStore";
 const cellStore = useCellStore();
 
-
 const MIN_NUMBER_OF_POINTS = 6;
 const MOUSE_MOVE_THROTTELING_INTERVAL = 2;
 
@@ -141,7 +139,6 @@ const curveAttributes = ref<CurveAttributes>({
   cpx: 0,
   cpy: 0,
 });
-
 
 onMounted(() => {
   setTimeout(() => {
@@ -301,6 +298,8 @@ function moveCurve(moveX: number, moveY: number) {
   curveAttributes.value.p2y += moveY;
 
   setCurveElement();
+
+  saveCurve(curveAttributes.value);
 }
 
 function showControlPoint() {
