@@ -355,9 +355,20 @@ export default function useHtmlMatrixHelper() {
 
     let n1 = n as PointNotationAttributes;
     const top = n1.followsFraction ? "75%" : "50%";
+
+    // const value =
+    //   n1.value.startsWith("&") || n1.value.length === 1
+    //     ? n1.value
+    //     : `<sup><i>${n1.value}</i></sup>`;
+
+    const leftMargin =
+      n1.value.startsWith("&") || n1.value.length === 1 ? "20%" : "2%";
+    const fSize =
+      n1.value.startsWith("&") || n1.value.length === 1 ? "1.1em" : "0.75em";
+
     ///TODO: move static css props to a class
     return `<p id=${n1.uuid} style='z-index:100;color:${color};font-weight:${fontWeight}; position: absolute;top:${top};transform:
-    translateY(-50%);left:20%;font-size:1.1em'>${n1.value}</p>`;
+    translateY(-50%);left:${leftMargin};font-size:${fSize}'>${n1.value}</p>`;
   }
 
   return {

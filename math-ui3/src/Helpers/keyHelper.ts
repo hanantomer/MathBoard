@@ -20,6 +20,10 @@ export default function () {
 
     if (!authorizationHelper.canEdit()) return;
 
+    if (editModeStore.getEditMode() === "TEXT_WRITING") return;
+
+    if (editModeStore.getEditMode() === "ANNOTATION_WRITING") return;
+
     switch (classifyKeyCode(code)) {
       case "DELETION": {
         return handleDeletionKey();
@@ -50,11 +54,9 @@ export default function () {
   }
 
   function handleMovementKey(key: string) {
-
     if (editModeStore.getEditMode() !== "CELL_SELECTED") {
       return;
     }
-
 
     if (key === "ArrowLeft" || key === "Backspace") {
       matrixCellHelper.setNextCell(-1, 0);

@@ -22,6 +22,7 @@ export type BusEventType =
   | "EV_CIRCLE_SELECTED"
   | "EV_IMAGE_SELECTED"
   | "EV_TEXT_SELECTED"
+  | "EV_SPECIAL_SYMBOL_SELECTED"
   | "EV_VERTICAL_LINE_SELECTED"
   | "EV_SQRT_SELECTED"
   | "EV_HORIZONTAL_LINE_SELECTED";
@@ -64,7 +65,7 @@ export type EditMode =
   | "QUESTIONS_SELECTION" //  after click on questions icon
   | "ANSWERS_SELECTION" //  after click on answers icon
   | "SYMBOL" // default mode
-  | "SPECIAL_SYMBOL" // special symbol in bottom toolbar pressed
+  | "SPECIAL_SYMBOL_SELECTED" // special symbol in bottom toolbar pressed
   | "EXPONENT_STARTED" // exponent button pressed
   | "EXPONENT_WRITING" // user clicked a cell following exponent button pressed
   | "EXPONENT_SELECTED" // user clicked on existing exponent
@@ -124,7 +125,7 @@ export const EditModeNotationType = new Map<
   NotationType
 >([
   ["SYMBOL", "SYMBOL"],
-  ["SPECIAL_SYMBOL", "SYMBOL"],
+  ["SPECIAL_SYMBOL_SELECTED", "SYMBOL"],
   ["EXPONENT_STARTED", "EXPONENT"],
   ["EXPONENT_WRITING", "EXPONENT"],
   ["TEXT_STARTED", "TEXT"],
@@ -194,7 +195,7 @@ export const EditModeCursorType = new Map<
   CursorType
 >([
   ["SYMBOL", "auto"],
-  ["SPECIAL_SYMBOL", "auto"],
+  ["SPECIAL_SYMBOL_SELECTED", "auto"],
   ["EXPONENT_STARTED", "auto"],
   ["EXPONENT_WRITING", "auto"],
   ["EXPONENT_SELECTED", "auto"],
@@ -255,7 +256,7 @@ export type Color =
   | "pink"
   | "transparent";
 
-export type LineHandleType  =  
+export type LineHandleType =
   | "top"
   | "bottom"
   | "right"

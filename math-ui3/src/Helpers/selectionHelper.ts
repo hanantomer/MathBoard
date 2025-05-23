@@ -35,6 +35,8 @@ export default function selectionHelper() {
     // must be initialized here to prevent circular refernce
     const notationStore = useNotationStore();
 
+    console.log("rectCoordinates", rectCoordinates);
+
     const areaCells =
       screenHelper.getRectCoordinatesOccupiedCells(rectCoordinates);
 

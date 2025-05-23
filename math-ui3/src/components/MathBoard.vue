@@ -90,7 +90,7 @@ const props = defineProps({
 });
 
 watchHelper.watchMouseEvent(
-  ["SYMBOL", "CELL_SELECTED", "SPECIAL_SYMBOL"],
+  ["SYMBOL", "CELL_SELECTED", "SPECIAL_SYMBOL_SELECTED"],
   "EV_SVG_MOUSEUP",
   selectionHelper.selectClickedPosition,
 );
@@ -242,7 +242,6 @@ circle:hover,
 path:hover {
   stroke-width: 4.5;
 }
-
 
 .sqrt {
   border-bottom: solid 1px;

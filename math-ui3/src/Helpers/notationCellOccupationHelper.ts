@@ -134,7 +134,9 @@ export default function notationCellOccupationHelper() {
     const fromCol = Math.round(
       Math.min(notation.p1x, notation.p2x) / cellStore.getCellHorizontalWidth(),
     );
-    const toCol = Math.round(Math.max(notation.p1x, notation.p2x) / cellStore.getCellHorizontalWidth());
+    const toCol = Math.round(
+      Math.max(notation.p1x, notation.p2x) / cellStore.getCellHorizontalWidth(),
+    );
     const fromRow = Math.round(
       notation.p1y / cellStore.getCellVerticalHeight(),
     );
@@ -255,7 +257,6 @@ export default function notationCellOccupationHelper() {
   }
 
   function clearNotationFromMatrix(uuid: string, matrix: any) {
-    console.log("clearNotationFromMatrix", uuid);
     for (let col = 0; col < matrixDimensions.colsNum; col++) {
       for (let row = 0; row < matrixDimensions.rowsNum; row++) {
         if (matrix[col][row] === uuid) {

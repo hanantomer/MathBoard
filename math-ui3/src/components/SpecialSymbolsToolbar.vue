@@ -10,8 +10,7 @@
           xx-small
           fab
           dark
-          :color="item.activeState.value === 1 ? 'white' : 'green'"
-          v-on:click="selectSpecialSymbol(item.value, item.activeState)"
+          v-on:mousedown="selectSpecialSymbol(item.value, item.activeState)"
           :disabled="!editEnabled"
           v-html="item.value"
         >
@@ -28,17 +27,19 @@ import { useCellStore } from "../store/pinia/cellStore";
 import { useEditModeStore } from "../store/pinia/editModeStore";
 import { computed } from "vue";
 
+import useEventBus from "../helpers/eventBusHelper";
 import useAuthorizationHelper from "../helpers/authorizationHelper";
 import useScreenHelper from "../helpers/screenHelper";
 import useWatchHelper from "../helpers/watchHelper";
 import useNotationMutateHelper from "../helpers/notationMutateHelper";
+import { event } from "cypress/types/jquery";
 
 const authorizationHelper = useAuthorizationHelper();
 const editModeStore = useEditModeStore();
 const cellStore = useCellStore();
 const watchHelper = useWatchHelper();
-const screenHelper = useScreenHelper();
 const notationMutateHelper = useNotationMutateHelper();
+const eventBus = useEventBus();
 
 const symbolButtons: Array<{
   value: string;
@@ -116,6 +117,26 @@ const symbolButtons: Array<{
     activeState: ref(1),
     tooltip: "Infinity",
   },
+  {
+    value: "<sup><i>sin</i></sup>",
+    activeState: ref(1),
+    tooltip: "Sine",
+  },
+  {
+    value: "<sup><i>cos</i></sup>",
+    activeState: ref(1),
+    tooltip: "Cosine",
+  },
+  {
+    value: "<sup><i>tan</i></sup>",
+    activeState: ref(1),
+    tooltip: "Tangens",
+  },
+  {
+    value: "<sup><i>cot</i></sup>",
+    activeState: ref(1),
+    tooltip: "Cotangens",
+  },
 );
 
 let selectedSymbol = ref("");
@@ -124,27 +145,37 @@ const editEnabled = computed(() => {
   return authorizationHelper.canEdit();
 });
 
-watchHelper.watchEndOfEditMode(["SPECIAL_SYMBOL"], [],  resetButtonsState);
+// watchHelper.watchEndOfEditMode(
+//   ["SPECIAL_SYMBOL_SELECTED"],
+//   [],
+//   resetButtonsState,
+// );
 
-watchHelper.watchMouseEvent(
-  ["SPECIAL_SYMBOL"],
-  "EV_SVG_MOUSEUP",
-  addSpecialSymbolToCell,
-);
+// watchHelper.watchMouseEvent(
+//   ["SPECIAL_SYMBOL_SELECTED"],
+//   "EV_SVG_MOUSEUP",
+//   addSpecialSymbol,
+// );
 
 function selectSpecialSymbol(item: string, activeState: any) {
-  editModeStore.setEditMode("SPECIAL_SYMBOL");
   selectedSymbol.value = item;
 
   if (cellStore.getSelectedCell()) {
-    addSpecialSymbolToCell();
+    addSpecialSymbol();
   }
 }
 
-function addSpecialSymbolToCell() {
+function addSpecialSymbol() {
   setTimeout(() => {
-    // let selection helper to finish its work
-    notationMutateHelper.addSymbolNotation(selectedSymbol.value);
+    if (
+      editModeStore.isTextWritingMode() ||
+      editModeStore.isAnnotationWritingMode()
+    ) {
+      //      editModeStore.setEditMode("SPECIAL_SYMBOL_SELECTED");
+      eventBus.emit("EV_SPECIAL_SYMBOL_SELECTED", selectedSymbol.value);
+    } else {
+      notationMutateHelper.addSymbolNotation(selectedSymbol.value);
+    }
     resetButtonsState();
   }, 0);
 }

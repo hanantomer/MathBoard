@@ -88,7 +88,7 @@ import lineHandle from "./LineHandle.vue";
 import lineWatcher from "./LineWatcher.vue";
 import useNotationMutateHelper from "../helpers/notationMutateHelper";
 import useWatchHelper from "../helpers/watchHelper";
-import useEventBus from "../helpers/eventBusHelper"; // Adjust the path if necessary
+import useEventBus from "../helpers/eventBusHelper";  
 import { computed, ref, onMounted } from "vue";
 import { useNotationStore } from "../store/pinia/notationStore";
 import { useEditModeStore } from "../store/pinia/editModeStore";

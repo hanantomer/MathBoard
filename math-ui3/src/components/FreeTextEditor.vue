@@ -1,16 +1,5 @@
 <template>
-  <textarea
-    v-show="show"
-    class="freeText"
-    v-bind:style="{
-      left: textLeft + 'px',
-      top: textTop + 'px',
-      width: textWidth + 'px',
-      height: textHeight + 'px',
-    }"
-    id="textAreaEl"
-    v-model="textValue"
-  >
+  <textarea v-show="show" class="freeText" id="textAreaEl" v-model="textValue">
   </textarea>
 </template>
 
@@ -42,12 +31,6 @@ const selectedNotation = computed(() =>
     : (notationStore.getSelectedNotations().at(0) as RectNotationAttributes),
 );
 
-//let selectedNotation: RectNotationAttributes | null = null;
-let textLeft = ref(0);
-let textTop = ref(0);
-let textHeight = ref(0);
-let textWidth = ref(0);
-
 watchHelper.watchEveryEditModeChange(submitText);
 
 // user clicked outside of text rect during edit
@@ -77,6 +60,12 @@ watchHelper.watchMouseEvent(
   editSelectedTextNotation,
 );
 
+watchHelper.watchCustomEvent(
+  ["TEXT_WRITING"],
+  "EV_SPECIAL_SYMBOL_SELECTED",
+  addSpecialSymbol,
+);
+
 function editSelectedTextNotation(e: MouseEvent) {
   const el = e.target as Element;
   if (el.tagName !== "TEXTAREA") {
@@ -96,33 +85,37 @@ function editSelectedTextNotation(e: MouseEvent) {
   setTimeout(() => {
     textEl.focus();
   }, 0);
-
-  //textEl.onmouseup = () => {
-  //  editModeStore.setDefaultEditMode();
-  //};
 }
 
 // set text area dimensions upon notation selection
 function setInitialTextDimensions() {
   if (!selectedNotation.value) return;
 
-  textLeft.value =
+  const textAreaEl = document.getElementById(
+    "textAreaEl",
+  )! as HTMLTextAreaElement;
+
+  textAreaEl.style.left =
     cellStore.getSvgBoundingRect().x +
     window.scrollX +
-    selectedNotation.value.fromCol * cellStore.getCellHorizontalWidth();
+    selectedNotation.value.fromCol * cellStore.getCellHorizontalWidth() +
+    "px";
 
-  textTop.value =
+  textAreaEl.style.top =
     cellStore.getSvgBoundingRect().y +
     window.scrollY +
-    selectedNotation.value.fromRow * cellStore.getCellVerticalHeight();
+    selectedNotation.value.fromRow * cellStore.getCellVerticalHeight() +
+    "px";
 
-  textHeight.value =
+  textAreaEl.style.height =
     (selectedNotation.value.toRow - selectedNotation.value.fromRow + 1) *
-    cellStore.getCellVerticalHeight();
+      cellStore.getCellVerticalHeight() +
+    "px";
 
-  textWidth.value =
+  textAreaEl.style.width =
     (selectedNotation.value.toCol - selectedNotation.value.fromCol + 1) *
-    cellStore.getCellHorizontalWidth();
+      cellStore.getCellHorizontalWidth() +
+    "px";
 }
 
 function setInitialTextValue() {
@@ -137,31 +130,25 @@ function submitText(newEditMode: EditMode, oldEditMode: any) {
     return;
   }
 
+  const textAreaEl = document.getElementById(
+    "textAreaEl",
+  )! as HTMLTextAreaElement;
+
   editModeStore.setNextEditMode();
 
-  const textAreaEl = document.getElementById("textAreaEl")!;
-
-  textLeft.value = parseInt(textAreaEl.style.left.replace("px", ""));
-  textWidth.value = parseInt(textAreaEl.style.width.replace("px", ""));
-  textTop.value = parseInt(textAreaEl.style.top.replace("px", ""));
-  textHeight.value = parseInt(textAreaEl.style.height.replace("px", ""));
+  const left = parseInt(textAreaEl.style.left.replace("px", ""));
+  const top = parseInt(textAreaEl.style.top.replace("px", ""));
+  const width = parseInt(textAreaEl.style.width.replace("px", ""));
+  const height = parseInt(textAreaEl.style.height.replace("px", ""));
 
   const rectCoordinates = screenHelper.getRectAttributes({
     topLeft: {
-      x: textLeft.value + window.scrollX - cellStore.getSvgBoundingRect().x,
-      y: textTop.value + window.scrollY - cellStore.getSvgBoundingRect().y,
+      x: left + window.scrollX - cellStore.getSvgBoundingRect().x,
+      y: top + window.scrollY - cellStore.getSvgBoundingRect().y,
     },
     bottomRight: {
-      x:
-        textLeft.value +
-        textWidth.value +
-        window.scrollX -
-        cellStore.getSvgBoundingRect().x,
-      y:
-        textTop.value +
-        textHeight.value +
-        window.scrollY -
-        cellStore.getSvgBoundingRect().y,
+      x: left + width + window.scrollX - cellStore.getSvgBoundingRect().x,
+      y: top + height + window.scrollY - cellStore.getSvgBoundingRect().y,
     },
   });
 
@@ -207,14 +194,44 @@ function resetTextSelection(e: MouseEvent) {
 
 function startTextEditing(selectionPosition: any) {
   setInitialTextValue();
-  textLeft.value = selectionPosition.left;
-  textTop.value = selectionPosition.top;
-  textHeight.value = selectionPosition.height;
-  textWidth.value = selectionPosition.width;
+  const textAreaEl = document.getElementById(
+    "textAreaEl",
+  )! as HTMLTextAreaElement;
+  textAreaEl.style.left = selectionPosition.left + "px";
+  textAreaEl.style.top = selectionPosition.top + "px";
+  textAreaEl.style.height = selectionPosition.height + "px";
+  textAreaEl.style.width = selectionPosition.width + "px";
+
   setTimeout('document.getElementById("textAreaEl").focus()', 100);
 }
 
+function addSpecialSymbol(symbol: String): void {
+  const textArea = document.getElementById("textAreaEl") as HTMLTextAreaElement;
 
+  // Get cursor position
+  const start = textArea.selectionStart;
+  const end = textArea.selectionEnd;
+
+  // Create a temporary div to decode HTML entities
+  const decoder = document.createElement("div");
+  decoder.innerHTML = symbol.toString();
+  const decodedSymbol = decoder.textContent || decoder.innerText;
+
+  // Insert decoded symbol at cursor position
+  textValue.value =
+    textValue.value.substring(0, start) +
+    decodedSymbol +
+    textValue.value.substring(end);
+
+  // Reset cursor position after symbol
+  setTimeout(() => {
+    textArea.focus();
+    textArea.setSelectionRange(
+      start + decodedSymbol.length,
+      start + decodedSymbol.length,
+    );
+  }, 0);
+}
 </script>
 <style>
 textarea {

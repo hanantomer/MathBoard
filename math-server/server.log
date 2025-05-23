@@ -5520,3 +5520,836 @@
             , fields: 
             ,
              }
+2025-05-21T10:11:32.607Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-21T10:11:50.205Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-21T10:11:55.583Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-21T11:31:59.368Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-21T14:36:10.800Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-21T14:37:04.511Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-21T14:37:45.570Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-21T14:38:01.863Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-21T14:38:13.052Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-21T15:44:35.248Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-21T15:49:13.467Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-21T15:49:20.786Z [ERROR]: /api/lessonsymbols,  
+            Server error occurred, 
+            col must be >= 0, got -1,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-21T15:53:03.618Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-21T15:53:49.469Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-21T15:54:35.030Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-21T15:56:06.396Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-21T15:56:45.503Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-21T15:57:15.738Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-21T15:57:30.923Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-21T15:58:16.019Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-21T15:58:30.528Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-21T15:58:40.308Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-21T15:59:14.371Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-21T15:59:27.121Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-21T16:34:33.120Z [ERROR]: /api/lessonsymbols/,  
+            Server error occurred, 
+            notNull Violation: LessonSymbol.col cannot be null,
+notNull Violation: LessonSymbol.row cannot be null,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-21T16:34:41.869Z [ERROR]: /api/lessonsymbols/,  
+            Server error occurred, 
+            notNull Violation: LessonSymbol.col cannot be null,
+notNull Violation: LessonSymbol.row cannot be null,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-21T17:06:35.183Z [ERROR]: /api/lessonsymbols/,  
+            Server error occurred, 
+            notNull Violation: LessonSymbol.col cannot be null,
+notNull Violation: LessonSymbol.row cannot be null,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-21T17:07:57.390Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-21T17:12:56.770Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-21T17:14:26.415Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-21T18:40:09.775Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-22T14:56:20.248Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-22T14:56:22.884Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-22T14:56:48.875Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-22T14:56:50.981Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-22T14:56:53.503Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-22T14:56:56.352Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-22T14:57:00.799Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-22T14:57:02.991Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-22T14:57:10.823Z [ERROR]: undefined,  
+            TypeError: Cannot read properties of null (reading 'style')
+    at startTextEditing (http://localhost:3000/src/components/FreeTextEditor.vue:127:18)
+    at http://localhost:3000/src/helpers/watchHelper.ts:83:11
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2289:19)
+    at callWithAsyncErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2296:17)
+    at baseWatchOptions.call (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:8372:47)
+    at job (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2015:18)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2289:33)
+    at flushJobs (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2498:9), 
+            ,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-22T14:57:47.573Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-22T14:58:20.305Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-22T14:58:50.200Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-22T14:59:08.155Z [ERROR]: /api/lessonsymbols/,  
+            Server error occurred, 
+            notNull Violation: LessonSymbol.col cannot be null,
+notNull Violation: LessonSymbol.row cannot be null,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-22T14:59:15.579Z [ERROR]: /api/lessonsymbols/,  
+            Server error occurred, 
+            notNull Violation: LessonSymbol.col cannot be null,
+notNull Violation: LessonSymbol.row cannot be null,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-22T14:59:33.937Z [ERROR]: /api/lessonsymbols/,  
+            Server error occurred, 
+            notNull Violation: LessonSymbol.col cannot be null,
+notNull Violation: LessonSymbol.row cannot be null,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-22T15:02:47.528Z [ERROR]: /api/lessonsymbols/,  
+            Server error occurred, 
+            notNull Violation: LessonSymbol.col cannot be null,
+notNull Violation: LessonSymbol.row cannot be null,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-22T15:02:49.084Z [ERROR]: /api/lessonsymbols/,  
+            Server error occurred, 
+            notNull Violation: LessonSymbol.col cannot be null,
+notNull Violation: LessonSymbol.row cannot be null,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-22T15:02:56.728Z [ERROR]: /api/lessonsymbols/,  
+            Server error occurred, 
+            notNull Violation: LessonSymbol.col cannot be null,
+notNull Violation: LessonSymbol.row cannot be null,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-22T15:02:58.689Z [ERROR]: /api/lessonsymbols/,  
+            Server error occurred, 
+            notNull Violation: LessonSymbol.col cannot be null,
+notNull Violation: LessonSymbol.row cannot be null,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-22T15:03:05.328Z [ERROR]: /api/lessonsymbols/,  
+            Server error occurred, 
+            notNull Violation: LessonSymbol.col cannot be null,
+notNull Violation: LessonSymbol.row cannot be null,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-22T15:03:39.940Z [ERROR]: /api/lessonsymbols/,  
+            Server error occurred, 
+            notNull Violation: LessonSymbol.col cannot be null,
+notNull Violation: LessonSymbol.row cannot be null,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-22T15:03:43.881Z [ERROR]: /api/lessonsymbols/,  
+            Server error occurred, 
+            notNull Violation: LessonSymbol.col cannot be null,
+notNull Violation: LessonSymbol.row cannot be null,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-22T15:04:13.191Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-22T15:04:43.013Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-22T15:12:09.516Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-22T15:12:19.441Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-22T15:14:59.438Z [ERROR]: /api/lessonsymbols/,  
+            Server error occurred, 
+            notNull Violation: LessonSymbol.col cannot be null,
+notNull Violation: LessonSymbol.row cannot be null,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-22T15:15:03.068Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-22T15:15:20.896Z [ERROR]: /api/lessonsymbols/,  
+            Server error occurred, 
+            notNull Violation: LessonSymbol.col cannot be null,
+notNull Violation: LessonSymbol.row cannot be null,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-22T15:15:28.658Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-22T15:16:06.615Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-22T15:50:52.340Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-22T16:04:00.880Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-22T16:04:59.560Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-22T16:06:47.282Z [ERROR]: /api/lessonsymbols/,  
+            Server error occurred, 
+            notNull Violation: LessonSymbol.col cannot be null,
+notNull Violation: LessonSymbol.row cannot be null,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-22T16:20:12.250Z [ERROR]: undefined,  
+            ReferenceError: addSpecialSymbol is not defined
+    at setup (http://localhost:3000/src/components/FreeTextEditor.vue?t=1747930812163:50:7)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2289:19)
+    at setupStatefulComponent (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:10085:25)
+    at setupComponent (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:10046:36)
+    at mountComponent (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:7368:7)
+    at processComponent (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:7334:9)
+    at patch (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:6849:11)
+    at patchKeyedChildren (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:7883:11)
+    at patchChildren (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:7664:11)
+    at processFragment (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:7308:9), 
+            ,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-22T16:24:03.238Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-22T16:24:18.368Z [ERROR]: /api/lessonsymbols/,  
+            Server error occurred, 
+            notNull Violation: LessonSymbol.col cannot be null,
+notNull Violation: LessonSymbol.row cannot be null,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-22T16:24:41.679Z [ERROR]: /api/lessonsymbols/,  
+            Server error occurred, 
+            notNull Violation: LessonSymbol.col cannot be null,
+notNull Violation: LessonSymbol.row cannot be null,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-22T16:25:29.717Z [ERROR]: /api/lessonsymbols/,  
+            Server error occurred, 
+            notNull Violation: LessonSymbol.col cannot be null,
+notNull Violation: LessonSymbol.row cannot be null,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-22T16:30:39.807Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-22T16:31:09.291Z [ERROR]: /api/lessonsymbols/,  
+            Server error occurred, 
+            notNull Violation: LessonSymbol.col cannot be null,
+notNull Violation: LessonSymbol.row cannot be null,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-22T16:32:18.296Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-22T16:32:28.871Z [ERROR]: /api/lessonsymbols/,  
+            Server error occurred, 
+            notNull Violation: LessonSymbol.col cannot be null,
+notNull Violation: LessonSymbol.row cannot be null,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-22T16:59:59.279Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-22T17:00:31.657Z [ERROR]: /api/lessonsymbols/,  
+            Server error occurred, 
+            notNull Violation: LessonSymbol.col cannot be null,
+notNull Violation: LessonSymbol.row cannot be null,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-22T17:00:38.989Z [ERROR]: /api/lessonsymbols/,  
+            Server error occurred, 
+            notNull Violation: LessonSymbol.col cannot be null,
+notNull Violation: LessonSymbol.row cannot be null,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-22T17:00:45.890Z [ERROR]: /api/lessonsymbols/,  
+            Server error occurred, 
+            notNull Violation: LessonSymbol.col cannot be null,
+notNull Violation: LessonSymbol.row cannot be null,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-22T17:00:58.707Z [ERROR]: /api/lessonsymbols/,  
+            Server error occurred, 
+            notNull Violation: LessonSymbol.col cannot be null,
+notNull Violation: LessonSymbol.row cannot be null,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-22T17:01:26.456Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-22T17:01:33.476Z [ERROR]: /api/lessonsymbols/,  
+            Server error occurred, 
+            notNull Violation: LessonSymbol.col cannot be null,
+notNull Violation: LessonSymbol.row cannot be null,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-22T17:04:20.349Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-22T17:05:08.867Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-22T17:05:26.115Z [ERROR]: /api/lessonsymbols/,  
+            Server error occurred, 
+            notNull Violation: LessonSymbol.col cannot be null,
+notNull Violation: LessonSymbol.row cannot be null,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-22T17:06:28.798Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-22T17:06:46.119Z [ERROR]: /api/lessonsymbols/,  
+            Server error occurred, 
+            notNull Violation: LessonSymbol.col cannot be null,
+notNull Violation: LessonSymbol.row cannot be null,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-22T17:13:42.456Z [ERROR]: undefined,  
+            ReferenceError: c is not defined
+    at setup (http://localhost:3000/src/components/SpecialSymbolsToolbar.vue?t=1747934022336:18:5)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2289:19)
+    at setupStatefulComponent (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:10085:25)
+    at setupComponent (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:10046:36)
+    at mountComponent (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:7368:7)
+    at processComponent (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:7334:9)
+    at patch (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:6849:11)
+    at patchKeyedChildren (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:7883:11)
+    at patchChildren (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:7664:11)
+    at patchElement (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:7134:7), 
+            ,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-22T19:43:13.198Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-22T19:46:39.861Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-22T19:46:49.496Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-22T19:48:30.496Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-22T19:50:36.614Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-22T19:50:54.420Z [ERROR]: /api/lessonsymbols/,  
+            Server error occurred, 
+            notNull Violation: LessonSymbol.col cannot be null,
+notNull Violation: LessonSymbol.row cannot be null,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-22T19:51:36.459Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-22T19:56:26.235Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-22T19:56:58.397Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }

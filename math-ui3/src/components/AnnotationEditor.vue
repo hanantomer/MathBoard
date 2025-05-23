@@ -2,7 +2,7 @@
   <input
     v-show="show"
     class ="annotation"
-    maxlength="4"
+    maxlength="3"
     v-bind:style="{
       top: annotationTop + 'px',
       left: annotationLeft + 'px',

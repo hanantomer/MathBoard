@@ -437,12 +437,18 @@ function endSelect() {
   if (editModeStore.getEditMode() === "AREA_SELECTING") {
     selectionHelper.selectNotationsOfArea({
       topLeft: {
-        x: selectionPosition.value.x1 - cellStore.getSvgBoundingRect().left,
-        y: selectionPosition.value.y1 - cellStore.getSvgBoundingRect().top,
+        x: selectionRectLeft.value - cellStore.getSvgBoundingRect().left,
+        y: selectionRectTop.value - cellStore.getSvgBoundingRect().top,
       },
       bottomRight: {
-        x: selectionPosition.value.x2 - cellStore.getSvgBoundingRect().left,
-        y: selectionPosition.value.y2 - cellStore.getSvgBoundingRect().top,
+        x:
+          selectionRectLeft.value +
+          selectionRectWidth.value -
+          cellStore.getSvgBoundingRect().left,
+        y:
+          selectionRectTop.value +
+          selectionRectHeight.value -
+          cellStore.getSvgBoundingRect().top,
       },
     });
   }
