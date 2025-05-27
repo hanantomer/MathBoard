@@ -171,26 +171,71 @@ function modifyLineBottom(p: DotCoordinates) {
   setY("bottom", p.y);
 }
 
-function fixLineEdge(linePosition: VerticalLineAttributes) {
-
-  const nearLineRightEdge = screenHelper.getCloseLineEdge({
+function fixLineTopEdge(linePosition: VerticalLineAttributes) {
+  const lineTopPosition = {
     x: linePosition.px,
     y: linePosition.p1y,
-  });
+  };
 
-  if (nearLineRightEdge != null) {
-    linePosition.px = nearLineRightEdge.x;
-    linePosition.p1y = nearLineRightEdge.y;
+  // notation edge at top
+  const nearNoatationAtTop =
+    screenHelper.getNearestNotationEdge(lineTopPosition);
+
+  if (nearNoatationAtTop != null) {
+    linePosition.px = nearNoatationAtTop.x;
+    linePosition.p1y = nearNoatationAtTop.y;
   }
 
-  const nearLineLeftEdge = screenHelper.getCloseLineEdge({
+  if (nearNoatationAtTop == null) {
+    // cell X edge at top
+    const nearCellXBorderAtTop =
+      screenHelper.getNearestCellXBorder(lineTopPosition);
+
+    if (nearCellXBorderAtTop != null) {
+      linePosition.px = nearCellXBorderAtTop;
+    }
+
+    // cell Y edge at top
+    const nearCellYBorderAtTop =
+      screenHelper.getNearestCellYBorder(lineTopPosition);
+
+    if (nearCellYBorderAtTop != null) {
+      linePosition.p1y = nearCellYBorderAtTop;
+    }
+  }
+}
+
+function fixLineBottomEdge(linePosition: VerticalLineAttributes) {
+  const lineBottomPosition = {
     x: linePosition.px,
     y: linePosition.p2y,
-  });
+  };
 
-  if (nearLineLeftEdge != null) {
-    linePosition.px = nearLineLeftEdge.x;
-    linePosition.p2y = nearLineLeftEdge.y;
+  // notation edge at bottom
+  const nearNoatationAtBottom =
+    screenHelper.getNearestNotationEdge(lineBottomPosition);
+
+  if (nearNoatationAtBottom != null) {
+    linePosition.px = nearNoatationAtBottom.x;
+    linePosition.p2y = nearNoatationAtBottom.y;
+  }
+
+  if (nearNoatationAtBottom == null) {
+    // cell X edge at bottom
+    const nearCellXBorderAtBottom =
+      screenHelper.getNearestCellXBorder(lineBottomPosition);
+
+    if (nearCellXBorderAtBottom != null) {
+      linePosition.px = nearCellXBorderAtBottom;
+    }
+
+    // cell Y edge at bottom
+    const nearCellYBorderAtBottom =
+      screenHelper.getNearestCellYBorder(lineBottomPosition);
+
+    if (nearCellYBorderAtBottom != null) {
+      linePosition.p2y = nearCellYBorderAtBottom;
+    }
   }
 }
 
@@ -200,7 +245,9 @@ function endDrawing() {
 }
 
 function saveVerticalLine() {
-  fixLineEdge(linePosition.value);
+
+  fixLineBottomEdge(linePosition.value);
+  fixLineTopEdge(linePosition.value);
 
   if (notationStore.getSelectedNotations().length > 0) {
     let updatedLine = {

@@ -100,7 +100,7 @@ watchHelper.watchMouseEvent(
 
 
 function startTextEditing(e: MouseEvent) {
-  annotationCell.value = screenHelper.getClickedCell({
+  annotationCell.value = screenHelper.getCell({
     x: e.pageX,
     y: e.pageY,
   });

@@ -1,19 +1,24 @@
 <template>
-  <v-toolbar color="primary" dark class="vertical-toolbar" density="compact">
-    <v-tooltip v-for="item in symbolButtons" :key="item.value">
-      {{ item.tooltip }}
+  <v-toolbar color="primary" dark :class="toolbarClass">
+    <v-tooltip v-for="(symbol, index) in specialSymbols" :key="symbol.name">
+      {{ symbol.tooltip }} {{ symbol.shortcut ? `(${symbol.shortcut})` : "" }}
       <template v-slot:activator="{ props }">
         <v-btn
-          style="margin-inline-start: -6px; width: 10px"
-          :data-cy="item.value"
+          class="special-symbol"
+          style="max-height: 35px"
           v-bind="props"
-          xx-small
+          icon
+          x-small
           fab
           dark
-          v-on:mousedown="selectSpecialSymbol(item.value, item.activeState)"
-          :disabled="!editEnabled"
-          v-html="item.value"
+          :tabindex="symbol.tabIndex"
+          :aria-label="symbol.tooltip"
+          :aria-keyshortcuts="symbol.shortcut"
+          role="button"
+          :id="`special-symbol-${symbol.name}`"
+          @click="() => addSpecialSymbol(symbol.value)"
         >
+          <span v-html="symbol.value"></span>
         </v-btn>
       </template>
     </v-tooltip>
@@ -21,182 +26,175 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue";
-
-import { useCellStore } from "../store/pinia/cellStore";
+import { ref, computed } from "vue";
+import { useToolbarNavigation } from "../helpers/ToolbarNavigationHelper";
 import { useEditModeStore } from "../store/pinia/editModeStore";
-import { computed } from "vue";
-
-import useEventBus from "../helpers/eventBusHelper";
-import useAuthorizationHelper from "../helpers/authorizationHelper";
-import useScreenHelper from "../helpers/screenHelper";
 import useWatchHelper from "../helpers/watchHelper";
 import useNotationMutateHelper from "../helpers/notationMutateHelper";
-import { event } from "cypress/types/jquery";
+import useEventBusHelper from "../helpers/eventBusHelper";
 
-const authorizationHelper = useAuthorizationHelper();
 const editModeStore = useEditModeStore();
-const cellStore = useCellStore();
-const watchHelper = useWatchHelper();
+const eventBus = useEventBusHelper();
 const notationMutateHelper = useNotationMutateHelper();
-const eventBus = useEventBus();
+const toolbarNavigation = useToolbarNavigation();
+const watchHelper = useWatchHelper();
 
-const symbolButtons: Array<{
-  value: string;
-  activeState: any;
-  tooltip: string;
-}> = Array(
+const toolbarClass = computed(() => {
+  return "vertical-toolbar specialSymbolsToolbar";
+});
+
+const specialSymbols = ref([
   {
-    value: "&#8737",
-    activeState: ref(1),
-    tooltip: "Angle",
-  },
-  {
+    name: "alpha",
     value: "&alpha;",
-    activeState: ref(1),
-    tooltip: "Alfa",
+    tooltip: "Alpha",
+    tabIndex: 1,
   },
   {
+    name: "beta",
     value: "&beta;",
-    activeState: ref(1),
     tooltip: "Beta",
+    tabIndex: 2,
   },
   {
+    name: "gamma",
     value: "&gamma;",
-    activeState: ref(1),
     tooltip: "Gama",
+    tabIndex: 3,
   },
   {
+    name: "delta",
     value: "&delta;",
-    activeState: ref(1),
     tooltip: "Delta",
+    tabIndex: 4,
   },
   {
+    name: "Theta",
     value: "&Theta;",
-    activeState: ref(1),
     tooltip: "Theta",
+    tabIndex: 5,
   },
-
   {
+    name: "pi",
     value: "&pi;",
-    activeState: ref(1),
     tooltip: "Pi",
+    tabIndex: 6,
   },
   {
+    name: "sum",
     value: "&sum;",
-    activeState: ref(1),
     tooltip: "Sum",
+    tabIndex: 7,
   },
   {
+    name: "plusmn",
     value: "&plusmn;",
-    activeState: ref(1),
     tooltip: "Plus or Minus",
+    shortcut: "Alt+8",
+    tabIndex: 8,
   },
   {
+    name: "int",
     value: "&int;",
-    activeState: ref(1),
     tooltip: "Integral",
+    tabIndex: 9,
   },
   {
+    name: "ne",
     value: "&ne;",
-    activeState: ref(1),
     tooltip: "Not equal",
+    tabIndex: 10,
   },
   {
+    name: "ge",
     value: "&ge;",
-    activeState: ref(1),
     tooltip: "Greater than or equal",
+    tabIndex: 11,
   },
   {
+    name: "le",
     value: "&le;",
-    activeState: ref(1),
     tooltip: "Lessr than or equal",
+    shortcut: "Alt+Shift+2",
+    tabIndex: 12,
   },
   {
+    name: "infin",
     value: "&infin;",
-    activeState: ref(1),
     tooltip: "Infinity",
+    tabIndex: 13,
   },
   {
+    name: "sin",
     value: "<sup><i>sin</i></sup>",
-    activeState: ref(1),
     tooltip: "Sine",
+    tabIndex: 14,
   },
   {
+    name: "cos",
     value: "<sup><i>cos</i></sup>",
-    activeState: ref(1),
     tooltip: "Cosine",
+    tabIndex: 15,
   },
   {
+    name: "tan",
     value: "<sup><i>tan</i></sup>",
-    activeState: ref(1),
     tooltip: "Tangens",
+    tabIndex: 16,
   },
   {
+    name: "cot",
     value: "<sup><i>cot</i></sup>",
-    activeState: ref(1),
     tooltip: "Cotangens",
+    tabIndex: 17,
   },
-);
+]).value.map((symbol) => ({
+  ...symbol,
+  action: () => addSpecialSymbol(symbol.value),
+}));
+
+const emit = defineEmits(["symbol-selected"]);
 
 let selectedSymbol = ref("");
 
-const editEnabled = computed(() => {
-  return authorizationHelper.canEdit();
-});
+watchHelper.watchKeyEvent(
+  ["CELL_SELECTED", "SYMBOL"],
+  "EV_KEYUP",
+  (e: KeyboardEvent) =>
+    toolbarNavigation.handleKeyboardNavigation(e, toolbarClass.value),
+);
 
-// watchHelper.watchEndOfEditMode(
-//   ["SPECIAL_SYMBOL_SELECTED"],
-//   [],
-//   resetButtonsState,
-// );
+watchHelper.watchKeyEvent(
+  ["CELL_SELECTED", "SYMBOL"],
+  "EV_KEYUP",
+  (e: KeyboardEvent) => toolbarNavigation.handleShortcuts(e, specialSymbols),
+);
 
-// watchHelper.watchMouseEvent(
-//   ["SPECIAL_SYMBOL_SELECTED"],
-//   "EV_SVG_MOUSEUP",
-//   addSpecialSymbol,
-// );
-
-function selectSpecialSymbol(item: string, activeState: any) {
+function addSpecialSymbol(item: string) {
   selectedSymbol.value = item;
-
-  if (cellStore.getSelectedCell()) {
-    addSpecialSymbol();
-  }
-}
-
-function addSpecialSymbol() {
   setTimeout(() => {
     if (
       editModeStore.isTextWritingMode() ||
       editModeStore.isAnnotationWritingMode()
     ) {
-      //      editModeStore.setEditMode("SPECIAL_SYMBOL_SELECTED");
       eventBus.emit("EV_SPECIAL_SYMBOL_SELECTED", selectedSymbol.value);
     } else {
       notationMutateHelper.addSymbolNotation(selectedSymbol.value);
     }
-    resetButtonsState();
   }, 0);
-}
-
-function resetButtonsState() {
-  symbolButtons.forEach((b) => {
-    b.activeState.value = 1;
-  });
 }
 </script>
 
-<style>
-.right-toolbar {
-  width: 35px !important;
+<style scoped>
+.vertical-toolbar {
+  flex-basis: content;
+  flex-flow: column wrap !important;
+  width: 70px !important;
   height: max-content !important;
   padding: 4px !important;
 }
 
-.right-toolbar .v-toolbar__content {
-  width: 35px !important;
-  height: max-content !important;
-  padding: 2px !important;
+.vertical-toolbar .v-toolbar__content {
+  flex-flow: column wrap !important;
 }
 </style>

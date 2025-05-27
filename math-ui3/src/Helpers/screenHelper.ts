@@ -19,10 +19,13 @@ import { useCellStore } from "../store/pinia/cellStore";
 
 const cellStore = useCellStore();
 
+const maxNotationDistance = 8;
+const maxCellDistance = 5;
+
 export default function screenHelper() {
   type NotationDistance = { notation: NotationAttributes; distance: number };
 
-  function getClickedCell(dotCoordinates: DotCoordinates): CellAttributes {
+  function getCell(dotCoordinates: DotCoordinates): CellAttributes {
     const clickedCellCol = Math.floor(
       (dotCoordinates.x - cellStore.getSvgBoundingRect().left) /
         cellStore.getCellHorizontalWidth(),
@@ -36,15 +39,19 @@ export default function screenHelper() {
     return { col: clickedCellCol, row: clickedCellRow };
   }
 
-  function getClickedCellTopLeftCoordinates(
+  function getCellTopLeftCoordinates(
     clickedCell: CellAttributes,
   ): DotCoordinates {
     const cellWidth = cellStore.getCellHorizontalWidth();
     const cellHeight = cellStore.getCellVerticalHeight();
 
     return {
-      x: clickedCell.col * cellWidth + cellStore.getSvgBoundingRect().left,
-      y: clickedCell.row * cellHeight + cellStore.getSvgBoundingRect().top,
+      x: Math.round(
+        clickedCell.col * cellWidth + cellStore.getSvgBoundingRect().left,
+      ),
+      y: Math.round(
+        clickedCell.row * cellHeight + cellStore.getSvgBoundingRect().top,
+      ),
     };
   }
 
@@ -123,10 +130,9 @@ export default function screenHelper() {
   function getNotationAtCoordinates(
     DotCoordinates: DotCoordinates,
   ): NotationAttributes | null {
-
     const notationStore = useNotationStore();
 
-    const clickedCell = getClickedCell(DotCoordinates);
+    const clickedCell = getCell(DotCoordinates);
 
     const notationsAtCell = notationStore.getNotationsAtCell(clickedCell);
 
@@ -360,11 +366,7 @@ export default function screenHelper() {
     return nominator / deNominator;
   }
 
-  function getCloseLineEdge(
-    dot: DotCoordinates): DotCoordinates | null {
-
-
-    const maxDistance = 7;
+  function getNearestNotationEdge(dot: DotCoordinates): DotCoordinates | null {
     const notationStore = useNotationStore();
     let nearPoint = null;
 
@@ -390,13 +392,12 @@ export default function screenHelper() {
               n1.p1x,
               n1.py,
             );
-            if (distance < maxDistance) {
+            if (distance < maxNotationDistance) {
               nearPoint = { x: n1.p1x, y: n1.py };
               return;
             }
-
             distance = getClickedPosDistanceFromLineEdge(dot, n1.p2x, n1.py);
-            if (distance < maxDistance) {
+            if (distance < maxNotationDistance) {
               nearPoint = { x: n1.p2x, y: n1.py };
               return;
             }
@@ -409,13 +410,12 @@ export default function screenHelper() {
               n1.p1x,
               n1.p1y,
             );
-            if (distance < maxDistance) {
+            if (distance < maxNotationDistance) {
               nearPoint = { x: n1.p1x, y: n1.p1y };
               return;
             }
-
             distance = getClickedPosDistanceFromLineEdge(dot, n1.p2x, n1.p2y);
-            if (distance < maxDistance) {
+            if (distance < maxNotationDistance) {
               nearPoint = { x: n1.p2x, y: n1.p2y };
               return;
             }
@@ -428,13 +428,12 @@ export default function screenHelper() {
               n1.px,
               n1.p1y,
             );
-            if (distance < maxDistance) {
+            if (distance < maxNotationDistance) {
               nearPoint = { x: n1.px, y: n1.p1y };
               return;
             }
-
             distance = getClickedPosDistanceFromLineEdge(dot, n1.px, n1.p2y);
-            if (distance < maxDistance) {
+            if (distance < maxNotationDistance) {
               nearPoint = { x: n1.px, y: n1.p2y };
               return;
             }
@@ -449,7 +448,7 @@ export default function screenHelper() {
               n1.r,
             );
             let distance = getPointsDistance(circleCircumferencePoint, dot);
-            if (distance < maxDistance) {
+            if (distance < maxNotationDistance) {
               nearPoint = circleCircumferencePoint;
               return;
             }
@@ -460,6 +459,21 @@ export default function screenHelper() {
 
     return nearPoint;
   }
+
+  // function getCloseLineEdge(dot: DotCoordinates): DotCoordinates | null {
+  //   const notationEdge = getCloseNotationEdge(dot);
+  //   if (notationEdge) return notationEdge;
+
+  //   return getCloseCellEdge(dot);
+  // }
+
+  // function getCloseCellXEdge(xPos: number): number | null {
+
+  //   const cellEdgePoint = getNearestCellBorder();
+  //   const distance = getPointsDistance(cellEdgePoint, dot);
+
+  //   return distance < maxDistance ? cellEdgePoint : null;
+  // }
 
   function getNearestPointOnCircleCircumference(
     dot: DotCoordinates,
@@ -492,13 +506,55 @@ export default function screenHelper() {
     };
   }
 
+  function getNearestCellXBorder(dot: DotCoordinates): number | null {
+    const cellWidth = cellStore.getCellHorizontalWidth();
+    const cell = getCell({
+      x: dot.x + cellStore.getSvgBoundingRect().left,
+      y: dot.y + cellStore.getSvgBoundingRect().top,
+    });
+    const left =
+      getCellTopLeftCoordinates(cell).x - cellStore.getSvgBoundingRect().left;
+    const right = left + Math.floor(cellWidth);
+
+    if (Math.abs(left - dot.x) < maxCellDistance) {
+      return left;
+    }
+
+    if (Math.abs(right - dot.x) < maxCellDistance) {
+      return right;
+    }
+
+    return null;
+  }
+
+  function getNearestCellYBorder(dot: DotCoordinates): number | null {
+    const cellHeight = cellStore.getCellVerticalHeight();
+    const cell = getCell({
+      x: dot.x + cellStore.getSvgBoundingRect().left,
+      y: dot.y + cellStore.getSvgBoundingRect().top,
+    });
+    const top =
+      getCellTopLeftCoordinates(cell).y - cellStore.getSvgBoundingRect().top;
+    const bottom = top + Math.round(cellHeight);
+
+    if (Math.abs(top - dot.y) < maxCellDistance) {
+      return top;
+    }
+
+    if (Math.abs(bottom - dot.y) < maxCellDistance) {
+      return bottom;
+    }
+
+    return null;
+  }
+
   function getPointsDistance(
     point1: DotCoordinates,
     point2: DotCoordinates,
   ): number {
     const dx = point2.x - point1.x;
     const dy = point2.y - point1.y;
-    return Math.sqrt(dx * dx + dy * dy);
+    return Math.round(Math.sqrt(dx * dx + dy * dy));
   }
 
   return {
@@ -508,12 +564,14 @@ export default function screenHelper() {
     getClickedPosDistanceFromExponent,
     getClickedPosDistanceFromSqrt,
     getNotationAtCoordinates,
-    getClickedCell,
+    getCell,
     getRectCoordinatesOccupiedCells,
-    getClickedCellTopLeftCoordinates,
+    getCellTopLeftCoordinates,
     getRectAttributes,
     getMultiCellLineAttributes,
-    getCloseLineEdge,
+    getNearestNotationEdge,
+    getNearestCellXBorder,
+    getNearestCellYBorder,
     getPointsDistance,
   };
 }

@@ -99,23 +99,15 @@ function startNewExponentAtMousePosition(e: MouseEvent) {
 
   editModeStore.setNextEditMode();
 
-  clickedCell = screenHelper.getClickedCell({
+  clickedCell = screenHelper.getCell({
     x: e.pageX,
     y: e.pageY,
   });
 
-  screenHelper.getClickedCell({
+  screenHelper.getCell({
       x: e.pageX,
       y: e.pageY,
     }),
-
-  // cellStore.setSelectedCell(
-  //   screenHelper.getClickedCell({
-  //     x: e.pageX,
-  //     y: e.pageY,
-  //   }),
-  //   false,
-  // );
 
   setInitialExponentValue();
 
@@ -125,7 +117,7 @@ function startNewExponentAtMousePosition(e: MouseEvent) {
 }
 
 function setExponentPosition() {
-  const clickedCoordinates = screenHelper.getClickedCellTopLeftCoordinates(
+  const clickedCoordinates = screenHelper.getCellTopLeftCoordinates(
     clickedCell!
   );
 

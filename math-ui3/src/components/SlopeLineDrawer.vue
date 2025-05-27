@@ -247,7 +247,8 @@ function endDrawing() {
 }
 
 function saveSlopeLine() {
-  fixLineEdge();
+  fixLineLeftEdge(linePosition.value);
+  fixLineRightEdge(linePosition.value);
 
   if (notationStore.getSelectedNotations().length > 0) {
     let updatedLine = {
@@ -263,20 +264,26 @@ function saveSlopeLine() {
   }
 }
 
+/*
 function fixLineEdge() {
 
-
-  const nearLineRightEdge = screenHelper.getCloseLineEdge({
+  // right
+  const nearLineRightEdge = screenHelper.getNearestNotationEdge({
     x: linePosition.value.p1x,
     y: linePosition.value.p1y,
   });
+
+  if (nearLineRightEdge == null) {
+    screenHelper.getClos
+  }
 
   if (nearLineRightEdge != null) {
     linePosition.value.p1x = nearLineRightEdge.x;
     linePosition.value.p1y = nearLineRightEdge.y;
   }
 
-  const nearLineLeftEdge = screenHelper.getCloseLineEdge({
+
+  const nearLineLeftEdge = screenHelper.getCloseNotationEdge({
     x: linePosition.value.p2x,
     y: linePosition.value.p2y,
   });
@@ -285,7 +292,76 @@ function fixLineEdge() {
     linePosition.value.p2x = nearLineLeftEdge.x;
     linePosition.value.p2y = nearLineLeftEdge.y;
   }
+}*/
+
+function fixLineRightEdge(linePosition: SlopeLineAttributes) {
+  const lineRightPosition = {
+    x: linePosition.p2x,
+    y: linePosition.p2y,
+  };
+
+  // notation edge at right
+  const nearNoatationAtRight =
+    screenHelper.getNearestNotationEdge(lineRightPosition);
+
+  if (nearNoatationAtRight != null) {
+    linePosition.p2x = nearNoatationAtRight.x;
+    linePosition.p2y = nearNoatationAtRight.y;
+  }
+
+  if (nearNoatationAtRight == null) {
+    // cell X edge at right
+    const nearCellXBorderAtRight =
+      screenHelper.getNearestCellXBorder(lineRightPosition);
+
+    if (nearCellXBorderAtRight != null) {
+      linePosition.p2x = nearCellXBorderAtRight;
+    }
+
+    // cell Y edge at right
+    const nearCellYBorderAtRight =
+      screenHelper.getNearestCellYBorder(lineRightPosition);
+
+    if (nearCellYBorderAtRight != null) {
+      linePosition.p2y = nearCellYBorderAtRight;
+    }
+  }
 }
+
+function fixLineLeftEdge(linePosition: SlopeLineAttributes) {
+  const lineLeftPosition = {
+    x: linePosition.p1x,
+    y: linePosition.p1y,
+  };
+
+  // notation edge at left
+  const nearNoatationAtLeft =
+    screenHelper.getNearestNotationEdge(lineLeftPosition);
+
+  if (nearNoatationAtLeft != null) {
+    linePosition.p1x = nearNoatationAtLeft.x;
+    linePosition.p1y = nearNoatationAtLeft.y;
+  }
+
+  if (nearNoatationAtLeft == null) {
+    // cell X edge at left
+    const nearCellXBorderAtLeft =
+      screenHelper.getNearestCellXBorder(lineLeftPosition);
+
+    if (nearCellXBorderAtLeft != null) {
+      linePosition.p1x = nearCellXBorderAtLeft;
+    }
+
+    // cell Y edge at right
+    const nearCellYBorderAtLeft =
+      screenHelper.getNearestCellYBorder(lineLeftPosition);
+
+    if (nearCellYBorderAtLeft != null) {
+      linePosition.p1y = nearCellYBorderAtLeft;
+    }
+  }
+}
+
 
 function moveLine(moveX: number, moveY: number) {
   linePosition.value.p1y += moveY;

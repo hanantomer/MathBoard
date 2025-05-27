@@ -4,7 +4,7 @@
     @close="closeAccessLinkDialog"
   ></accessLinkDialog>
 
-  <v-toolbar color="primary" dark class="vertical-toolbar" height="600">
+  <v-toolbar color="primary" dark :class="toolbarClass" height="600">
     <v-tooltip
       text="Invite students via access link"
       v-if="userStore.isTeacher()"
@@ -33,9 +33,13 @@
           x-small
           fab
           dark
-          :color="item.activeState.value === 1 ? 'white' : 'green'"
+          :color="
+            item.editMode === editModeStore.getEditMode() ? 'green' : 'white'
+          "
           v-on:click="startEditMode(item)"
           :disabled="!editEnabled"
+          :aria-label="item.tooltip"
+          role="button"
         >
           <v-icon
             v-if="item.icon_class"
@@ -58,6 +62,7 @@
         </v-btn>
       </template>
     </v-tooltip>
+
     <v-tooltip
       v-for="item in answerChekButtons"
       :key="item.name"
@@ -72,7 +77,9 @@
           x-small
           fab
           dark
-          :color="item.activeState.value === 1 ? 'white' : 'green'"
+          :color="
+            item.editMode === editModeStore.getEditMode() ? 'green' : 'white'
+          "
           v-on:click="startEditMode(item)"
           :disabled="!editEnabled"
         >
@@ -110,17 +117,24 @@ import { useNotationStore } from "../store/pinia/notationStore";
 import { useEditModeStore } from "../store/pinia/editModeStore";
 import { computed } from "vue";
 import { useUserStore } from "../store/pinia/userStore";
-import useAuthorizationHelper from "../helpers/authorizationHelper";
 import { EditMode } from "common/unions";
+import { useToolbarNavigation } from "../helpers/ToolbarNavigationHelper";
 import ColororizeTool from "./ColorizeTool.vue";
+import useAuthorizationHelper from "../helpers/authorizationHelper";
+import useWatchHelper from "../helpers/watchHelper";
 
+const watchHelper = useWatchHelper();
 const authorizationHelper = useAuthorizationHelper();
 const notationStore = useNotationStore();
 const userStore = useUserStore();
 const editModeStore = useEditModeStore();
 let showAccessLinkDialog = ref(false);
-
+const toolbarNavigation = useToolbarNavigation();
 const answerCheckMode = ref(false);
+
+const toolbarClass = computed(() => {
+  return "vertical-toolbar leftToolbar";
+});
 
 watch(
   () => notationStore.getParent().type,
@@ -134,129 +148,132 @@ const modeButtons: Array<{
   name: string;
   show_condition: any;
   editMode: EditMode;
-  activeState: any;
   tooltip: string;
-  icon_class: string; // using span with class when we dont have adequate icon
+  icon_class: string;
   icon: string;
   overlay_icon: string;
   rotate: number;
+  tabIndex: number;
+  action: () => void;
 }> = Array(
-  {
-    name: "horizontalLine",
-    show_condition: true,
-    editMode: "HORIZONTAL_LINE_STARTED",
-    activeState: ref(1),
-    tooltip: "Horizontal Line",
-    icon_class: "material-symbols-outlined",
-    icon: "horizontal_rule",
-    overlay_icon: "",
-    rotate: 0,
-  },
-  {
-    name: "verticalLine",
-    show_condition: true,
-    editMode: "VERTICAL_LINE_STARTED",
-    activeState: ref(1),
-    tooltip: "Vertical Line",
-    icon_class: "material-symbols-outlined",
-    icon: "horizontal_rule",
-    overlay_icon: "",
-    rotate: 90,
-  },
-  {
-    name: "slopeLine",
-    show_condition: true,
-    editMode: "SLOPE_LINE_STARTED",
-    activeState: ref(1),
-    tooltip: "Slope Line",
-    icon_class: "material-symbols-outlined",
-    icon: "horizontal_rule",
-    overlay_icon: "",
-    rotate: 120,
-  },
-  {
-    name: "curve",
-    show_condition: true,
-    editMode: "CURVE_STARTED",
-    activeState: ref(1),
-    tooltip: "curve",
-    icon_class: "material-symbols-outlined",
-    icon: "line_curve",
-    overlay_icon: "",
-    rotate: 260,
-  },
-  {
-    name: "circle",
-    show_condition: true,
-    editMode: "CIRCLE_STARTED",
-    activeState: ref(1),
-    tooltip: "circle",
-    icon_class: "material-symbols-outlined",
-    icon: "circle",
-    overlay_icon: "",
-    rotate: 0,
-  },
-  {
-    name: "sqrt",
-    show_condition: true,
-    editMode: "SQRT_STARTED",
-    activeState: ref(1),
-    tooltip: "Sqrt",
-    icon_class: "",
-    icon: "mdi-square-root",
-    overlay_icon: "",
-    rotate: 0,
-  },
-  {
-    name: "exponent",
-    show_condition: true,
-    editMode: "EXPONENT_STARTED",
-    activeState: ref(1),
-    tooltip: "exponent",
-    icon_class: "",
-    icon: "mdi-exponent",
-    overlay_icon: "",
-    rotate: 0,
-  },
   {
     name: "free text",
     show_condition: true,
-    editMode: "TEXT_STARTED",
-    activeState: ref(1),
+    editMode: "TEXT_STARTED" as EditMode,
     tooltip: "free text",
     icon_class: "",
     icon: "mdi-text",
     overlay_icon: "",
     rotate: 0,
+    tabIndex: 1,
+  },
+  {
+    name: "horizontalLine",
+    show_condition: true,
+    editMode: "HORIZONTAL_LINE_STARTED" as EditMode,
+    tooltip: "Horizontal Line",
+    icon_class: "material-symbols-outlined",
+    icon: "horizontal_rule",
+    overlay_icon: "",
+    rotate: 0,
+    tabIndex: 2,
+  },
+  {
+    name: "verticalLine",
+    show_condition: true,
+    editMode: "VERTICAL_LINE_STARTED" as EditMode,
+    tooltip: "Vertical Line",
+    icon_class: "material-symbols-outlined",
+    icon: "horizontal_rule",
+    overlay_icon: "",
+    rotate: 90,
+    tabIndex: 3,
+  },
+  {
+    name: "slopeLine",
+    show_condition: true,
+    editMode: "SLOPE_LINE_STARTED" as EditMode,
+    tooltip: "Slope Line",
+    icon_class: "material-symbols-outlined",
+    icon: "horizontal_rule",
+    overlay_icon: "",
+    rotate: 120,
+    tabIndex: 4,
+  },
+  {
+    name: "curve",
+    show_condition: true,
+    editMode: "CURVE_STARTED" as EditMode,
+    tooltip: "curve",
+    icon_class: "material-symbols-outlined",
+    icon: "line_curve",
+    overlay_icon: "",
+    rotate: 260,
+    tabIndex: 5,
+  },
+  {
+    name: "circle",
+    show_condition: true,
+    editMode: "CIRCLE_STARTED" as EditMode,
+    tooltip: "circle",
+    icon_class: "material-symbols-outlined",
+    icon: "circle",
+    overlay_icon: "",
+    rotate: 0,
+    tabIndex: 5,
+  },
+  {
+    name: "sqrt",
+    show_condition: true,
+    editMode: "SQRT_STARTED" as EditMode,
+    tooltip: "Sqrt",
+    icon_class: "",
+    icon: "mdi-square-root",
+    overlay_icon: "",
+    rotate: 0,
+    tabIndex: 6,
+  },
+  {
+    name: "exponent",
+    show_condition: true,
+    editMode: "EXPONENT_STARTED" as EditMode,
+    tooltip: "exponent",
+    icon_class: "",
+    icon: "mdi-exponent",
+    overlay_icon: "",
+    rotate: 0,
+    tabIndex: 7,
   },
   {
     name: "annotation",
     show_condition: true,
-    editMode: "ANNOTATION_STARTED",
-    activeState: ref(1),
+    editMode: "ANNOTATION_STARTED" as EditMode,
     tooltip: "annotation",
     icon_class: "",
     icon: "mdi-text-short",
     overlay_icon: "",
     rotate: 0,
+    tabIndex: 6,
   },
-);
+).map((symbol) => ({
+  ...symbol,
+  action: () => editModeStore.setEditMode(symbol.editMode as EditMode),
+}));
 
 const answerChekButtons: Array<{
   name: string;
   editMode: EditMode;
-  activeState: any;
   tooltip: string;
-  icon_class: string; // using span with class when we dont have adequate icon
+  icon_class: string;
   icon: string;
   overlay_icon: string;
   rotate: number;
+  action: () => void;
 }> = Array(
   {
     name: "checkmark",
     show_condition: answerCheckMode.value,
-    editMode: "CHECKMARK_STARTED",
-    activeState: ref(1),
+    editMode: "CHECKMARK_STARTED" as EditMode,
     tooltip: "correct",
     icon_class: "",
     icon: "mdi-checkbox-marked-circle-outline",
@@ -266,8 +283,7 @@ const answerChekButtons: Array<{
   {
     name: "xmark",
     show_condition: answerCheckMode.value,
-    editMode: "XMARK_STARTED",
-    activeState: ref(1),
+    editMode: "XMARK_STARTED" as EditMode,
     tooltip: "incorrect",
     icon_class: "",
     icon: "mdi-close-outline",
@@ -277,31 +293,42 @@ const answerChekButtons: Array<{
   {
     name: "semicheckmark",
     show_condition: answerCheckMode.value,
-    editMode: "SEMICHECKMARK_STARTED",
-    activeState: ref(1),
+    editMode: "SEMICHECKMARK_STARTED" as EditMode,
     tooltip: "partially correct",
     icon_class: "",
     icon: "mdi-checkbox-marked-circle-outline",
     overlay_icon: "mdi-window-close",
     rotate: 0,
   },
+).map((symbol) => ({
+  ...symbol,
+  action: () => editModeStore.setEditMode(symbol.editMode as EditMode),
+}));
+
+// watchHelper.watchEveryEditModeChange((editMode) => {
+//   const matchedButton = modeButtons.find((b) => b.editMode === editMode);
+//   if (matchedButton) matchedButton.activeState.value = 0;
+// });
+
+//  watchHelper.watchEndOfEditMode(
+//    ["CELL_SELECTED", "AREA_SELECTED", "SYMBOL"],
+//    [],
+//    () => {
+//      resetButtonsState();
+//    },
+//  );
+
+watchHelper.watchKeyEvent(
+  ["CELL_SELECTED", "SYMBOL"],
+  "EV_KEYUP",
+  (e: KeyboardEvent) =>
+    toolbarNavigation.handleKeyboardNavigation(e, toolbarClass.value),
 );
 
-watch(
-  () => editModeStore.getEditMode(),
-  (editMode) => {
-    if (
-      editMode === editModeStore.getDefaultEditMode() ||
-      editMode == "CELL_SELECTED" ||
-      editMode == "AREA_SELECTED"
-    ) {
-      resetButtonsState();
-    }
-
-    const matchedButton = modeButtons.find((b) => b.editMode === editMode);
-    if (matchedButton) matchedButton.activeState.value = 0;
-  },
-  { immediate: true, deep: true },
+watchHelper.watchKeyEvent(
+  ["CELL_SELECTED", "SYMBOL"],
+  "EV_KEYUP",
+  (e: KeyboardEvent) => toolbarNavigation.handleShortcuts(e, modeButtons),
 );
 
 function openAccessLinkDialog() {
@@ -317,16 +344,16 @@ const editEnabled = computed(() => {
 });
 
 function startEditMode(item: any) {
-  resetButtonsState();
+  //resetButtonsState();
   notationStore.resetSelectedNotations();
   editModeStore.setEditMode(item.editMode); // watcher sets activeState to 0
 }
 
-function resetButtonsState() {
-  modeButtons.forEach((b) => {
-    b.activeState.value = 1;
-  });
-}
+// function resetButtonsState() {
+//   modeButtons.forEach((b) => {
+//     b.activeState.value = 1;
+//   });
+// }
 </script>
 
 <style>

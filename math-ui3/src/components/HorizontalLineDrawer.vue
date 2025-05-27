@@ -130,15 +130,15 @@ let lineY = computed(() => {
 });
 
 let handleLeft = computed(() => {
-  return lineLeft.value + (cellStore.getSvgBoundingRect().left ?? 0) - 1;
+  return lineLeft.value + (cellStore.getSvgBoundingRect().left ?? 0) + 1;
 });
 
 let handleRight = computed(() => {
-  return lineRight.value + (cellStore.getSvgBoundingRect().left ?? 0) + 1;
+  return lineRight.value + (cellStore.getSvgBoundingRect().left ?? 0) - 5;
 });
 
 let handleY = computed(() => {
-  return lineY.value + (cellStore.getSvgBoundingRect().top ?? 0) - 1;
+  return lineY.value + (cellStore.getSvgBoundingRect().top ?? 0) + 1;
 });
 
 // methods
@@ -169,7 +169,8 @@ function modifyLineRight(p: DotCoordinates) {
 }
 
 function saveLine() {
-  fixLineEdge(linePosition.value);
+  fixLineLeftEdge();
+  fixLineRightEdge();
 
   if (notationStore.getSelectedNotations().length > 0) {
     let updatedLine = {
@@ -186,27 +187,71 @@ function saveLine() {
   }
 }
 
-function fixLineEdge(linePosition: HorizontalLineAttributes) {
+function fixLineRightEdge() {
+  const lineRightPosition = {
+    x: linePosition.value.p2x,
+    y: linePosition.value.py,
+  };
 
+  // notation edge at right
+  const nearNoatationAtRight =
+    screenHelper.getNearestNotationEdge(lineRightPosition);
 
-  const nearLineRightEdge = screenHelper.getCloseLineEdge({
-    x: linePosition.p1x,
-    y: linePosition.py,
-  });
-
-  if (nearLineRightEdge != null) {
-    linePosition.p1x = nearLineRightEdge.x;
-    linePosition.py = nearLineRightEdge.y;
+  if (nearNoatationAtRight != null) {
+    linePosition.value.p2x = nearNoatationAtRight.x;
+    linePosition.value.py = nearNoatationAtRight.y;
   }
 
-  const nearLineLeftEdge = screenHelper.getCloseLineEdge({
-    x: linePosition.p2x,
-    y: linePosition.py,
-  });
+  if (nearNoatationAtRight == null) {
+    // cell X edge at right
+    const nearCellXBorderAtRight =
+      screenHelper.getNearestCellXBorder(lineRightPosition);
 
-  if (nearLineLeftEdge != null) {
-    linePosition.p2x = nearLineLeftEdge.x;
-    linePosition.py = nearLineLeftEdge.y;
+    if (nearCellXBorderAtRight != null) {
+      linePosition.value.p2x = nearCellXBorderAtRight;
+    }
+
+    // cell Y edge at right
+    const nearCellYBorderAtRight =
+      screenHelper.getNearestCellYBorder(lineRightPosition);
+
+    if (nearCellYBorderAtRight != null) {
+      linePosition.value.py = nearCellYBorderAtRight;
+    }
+  }
+}
+
+function fixLineLeftEdge() {
+  const lineLeftPosition = {
+    x: linePosition.value.p1x,
+    y: linePosition.value.py,
+  };
+
+  // notation edge at left
+  const nearNoatationAtLeft =
+    screenHelper.getNearestNotationEdge(lineLeftPosition);
+
+  if (nearNoatationAtLeft != null) {
+    linePosition.value.p1x = nearNoatationAtLeft.x;
+    linePosition.value.py = nearNoatationAtLeft.y;
+  }
+
+  if (nearNoatationAtLeft == null) {
+    // cell X edge at left
+    const nearCellXBorderAtLeft =
+      screenHelper.getNearestCellXBorder(lineLeftPosition);
+
+    if (nearCellXBorderAtLeft != null) {
+      linePosition.value.p1x = nearCellXBorderAtLeft;
+    }
+
+    // cell Y edge at right
+    const nearCellYBorderAtLeft =
+      screenHelper.getNearestCellYBorder(lineLeftPosition);
+
+    if (nearCellYBorderAtLeft != null) {
+      linePosition.value.py = nearCellYBorderAtLeft;
+    }
   }
 }
 

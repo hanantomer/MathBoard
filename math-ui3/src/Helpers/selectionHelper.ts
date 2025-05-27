@@ -187,7 +187,7 @@ export default function selectionHelper() {
 
   async function setSelectedCell(position: DotCoordinates) {
     const notationStore = useNotationStore();
-    let clickedCell = screenHelper.getClickedCell(position);
+    let clickedCell = screenHelper.getCell(position);
 
     if (!clickedCell) return;
 

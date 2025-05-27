@@ -109,8 +109,6 @@ export default function useMatrixHelperUtils() {
       case "SYMBOL":
         return n.selected
           ? selectionColor
-          : n.color?.value
-          ? n.color.value
           : htmlColor;
       case "CURVE":
       case "HORIZONTALLINE":

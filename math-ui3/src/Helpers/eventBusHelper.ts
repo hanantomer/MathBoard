@@ -1,4 +1,4 @@
-import { ref, computed } from "vue";
+import { ref } from "vue";
 import { BusEventType, EditMode } from "../../../math-common/src/unions";
 import { useEditModeStore } from "../store/pinia/editModeStore";
 

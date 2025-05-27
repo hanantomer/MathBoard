@@ -950,7 +950,7 @@ export default function notationMutateHelper() {
 
     const position = { x: e.pageX, y: e.pageY };
 
-    let clickedCell = screenHelper.getClickedCell(position);
+    let clickedCell = screenHelper.getCell(position);
 
     if (!clickedCell) return;
 

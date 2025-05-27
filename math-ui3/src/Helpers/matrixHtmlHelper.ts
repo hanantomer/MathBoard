@@ -345,7 +345,7 @@ export default function useHtmlMatrixHelper() {
 
       const exponentHtml = `<p id=${
         n1.uuid
-      } style='color:${color};font-weight:${fontWeight};
+      } style='position:absolute;right:1px;top:-2px;color:${color};font-weight:${fontWeight};
       font-size:${exponentFontSize()}'>${n1.exponent}</p>`;
 
       return exponentHtml;
