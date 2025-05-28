@@ -90,7 +90,7 @@ export default function useLineDrawingHelper() {
     }
     endDrawingCallback();
 
-    editModeStore.setDefaultEditMode();
+   // editModeStore.setDefaultEditMode();
   }
 
   function selectLine(

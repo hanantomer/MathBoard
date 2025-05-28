@@ -311,9 +311,9 @@ export type SlopeType =
   | "NONE";
 
 export type lineWatcherEntry = {
-   func: (p: DotCoordinates) => void
-   editMode: EditMode
-}
+  func: (p: DotCoordinates) => void;
+  editMode: Array<EditMode>;
+};
 
 export type lineSaveWatcherEntry = {
    func: () => void
@@ -321,14 +321,14 @@ export type lineSaveWatcherEntry = {
 }
 
 export type lineMoveWatcherEntry = {
-  func: (moveX :number, moveY: number) => void;
-  editMode: EditMode;
+  func: (moveX: number, moveY: number) => void;
+  editMode: Array<EditMode>;
 };
 
 
 export type lineSelectWatcherEntry = {
   func: (notation: NotationAttributes) => void;
-  editMode: EditMode;
+  editMode: Array<EditMode>;
   event: BusEventType;
 };
 

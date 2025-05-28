@@ -1,19 +1,19 @@
 <template>
   <lineWatcher
     :startEntry="{
-      editMode: 'VERTICAL_LINE_STARTED',
+      editMode: ['VERTICAL_LINE_STARTED'],
       func: setInitialLinePosition,
     }"
     :drawEntry="{
-      editMode: 'VERTICAL_LINE_DRAWING',
+      editMode: ['VERTICAL_LINE_DRAWING'],
       func: drawLine,
     }"
     :editEntryFirstHandle="{
-      editMode: 'VERTICAL_LINE_EDITING_TOP',
+      editMode: ['VERTICAL_LINE_EDITING_TOP'],
       func: modifyLineTop,
     }"
     :editEntrySecondHandle="{
-      editMode: 'VERTICAL_LINE_EDITING_BOTTOM',
+      editMode: ['VERTICAL_LINE_EDITING_BOTTOM'],
       func: modifyLineBottom,
     }"
     :endEntry="{
@@ -26,12 +26,12 @@
       func: endDrawing,
     }"
     :selectEntry="{
-      editMode: 'VERTICAL_LINE_SELECTED',
+      editMode: ['VERTICAL_LINE_SELECTED'],
       func: selectLine,
       event: 'EV_VERTICAL_LINE_SELECTED',
     }"
     :moveByKeyEntry="{
-      editMode: 'VERTICAL_LINE_SELECTED',
+      editMode: ['VERTICAL_LINE_SELECTED'],
       func: moveLine,
     }"
     :endSelectionEntry="{
@@ -245,7 +245,6 @@ function endDrawing() {
 }
 
 function saveVerticalLine() {
-
   fixLineBottomEdge(linePosition.value);
   fixLineTopEdge(linePosition.value);
 
@@ -283,5 +282,4 @@ function moveLine(moveX: number, moveY: number) {
   linePosition.value.p2y += moveY;
   saveVerticalLine();
 }
-
 </script>

@@ -364,7 +364,7 @@ export default function useHtmlMatrixHelper() {
     const leftMargin =
       n1.value.startsWith("&") || n1.value.length === 1 ? "20%" : "2%";
     const fSize =
-      n1.value.startsWith("&") || n1.value.length === 1 ? "1.1em" : "0.75em";
+      n1.value.indexOf("&") >= 0 || n1.value.length === 1 ? "1.1em" : "0.75em";
 
     ///TODO: move static css props to a class
     return `<p id=${n1.uuid} style='z-index:100;color:${color};font-weight:${fontWeight}; position: absolute;top:${top};transform:

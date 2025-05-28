@@ -692,7 +692,13 @@ export default function notationMutateHelper() {
       | VerticalLineNotationCreationAttributes
       | SlopeLineNotationCreationAttributes,
   ) {
-    editModeStore.setDefaultEditMode();
+    // allow adding more lines if polygon
+    if (editModeStore.getEditMode() === "POLYGON_DRAWING") {
+      editModeStore.setEditMode("POLYGON_STARTED");
+    } else {
+      editModeStore.setDefaultEditMode();
+    }
+
     notationStore.resetSelectedNotations();
 
     let overlappedAnyTypeNotation: NotationAttributes | undefined =
@@ -1160,10 +1166,7 @@ export default function notationMutateHelper() {
     upsertLineNotation(notation);
   }
 
-  function addSlopeLineNotation(
-    slopeLineAttributes: SlopeLineAttributes,
-    notationType: NotationType,
-  ) {
+  function addSlopeLineNotation(slopeLineAttributes: SlopeLineAttributes) {
     let lineNotation: SlopeLineNotationCreationAttributes = {
       p1x: slopeLineAttributes.p1x,
       p2x: slopeLineAttributes.p2x,
@@ -1171,7 +1174,7 @@ export default function notationMutateHelper() {
       p2y: slopeLineAttributes.p2y,
       boardType: notationStore.getParent().type,
       parentUUId: notationStore.getParent().uuid,
-      notationType: notationType,
+      notationType: "SLOPELINE",
       user: userStore.getCurrentUser()!,
     };
     upsertLineNotation(lineNotation);

@@ -5,7 +5,7 @@
       <template v-slot:activator="{ props }">
         <v-btn
           class="special-symbol"
-          style="max-height: 35px"
+          style="max-height: 30px"
           v-bind="props"
           icon
           x-small
@@ -148,6 +148,43 @@ const specialSymbols = ref([
     tooltip: "Cotangens",
     tabIndex: 17,
   },
+  {
+    name: "triangle",
+    value: "<sup><i>&#x25B2</i></sup>",
+    tooltip: "Triangle",
+    tabIndex: 18,
+  },
+  {
+    name: "prependicular",
+    value: "<sup><i>&#10178</i></sup>",
+    tooltip: "Prependicular",
+    tabIndex: 19,
+  },
+  {
+    name: "parallel",
+    value: "<sup><i>&#8741;</i></sup>",
+    tooltip: "Parallel",
+    tabIndex: 20,
+  },
+  {
+    name: "emptySet",
+    value: "<sup><i>&#8709;</i></sup>",
+    tooltip: "Empty Set",
+    tabIndex: 21,
+  },
+  {
+    name: "union",
+    value: "<sup><i>&#8746;</i></sup>",
+    tooltip: "Union",
+    tabIndex: 22,
+  },
+  {
+    name: "intersection",
+    value: "<sup><i>&#8745;</i></sup>",
+    tooltip: "Intersection",
+    tabIndex: 23,
+  },
+
 ]).value.map((symbol) => ({
   ...symbol,
   action: () => addSpecialSymbol(symbol.value),

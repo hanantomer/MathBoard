@@ -1,19 +1,19 @@
 <template>
   <lineWatcher
     :startEntry="{
-      editMode: 'SQRT_STARTED',
+      editMode: ['SQRT_STARTED'],
       func: setInitialPosition,
     }"
     :drawEntry="{
-      editMode: 'SQRT_DRAWING',
+      editMode: ['SQRT_DRAWING'],
       func: drawLine,
     }"
     :editEntryFirstHandle="{
-      editMode: 'SQRT_EDITING',
+      editMode: ['SQRT_EDITING'],
       func: modify,
     }"
     :editEntrySecondHandle="{
-      editMode: 'SQRT_EDITING',
+      editMode: ['SQRT_EDITING'],
       func: modify,
     }"
     :endEntry="{
@@ -21,16 +21,16 @@
       func: endDrawing,
     }"
     :selectEntry="{
-      editMode: 'SQRT_SELECTED',
+      editMode: ['SQRT_SELECTED'],
       func: selectSqrt,
       event: 'EV_SQRT_SELECTED',
     }"
     :moveByKeyEntry="{
-      editMode: 'SQRT_SELECTED',
+      editMode: ['SQRT_SELECTED'],
       func: moveSqrt,
     }"
     :endSelectionEntry="{
-      editMode: ['SQRT_EDITING']
+      editMode: ['SQRT_EDITING'],
     }"
   />
   <div v-if="show">
@@ -123,7 +123,7 @@ let sqrtSymbolLeft = computed(() => {
 });
 
 let sqrtSymbolY = computed(() => {
-  return linePosition.value.py + (cellStore.getSvgBoundingRect().top ?? 0) -5;
+  return linePosition.value.py + (cellStore.getSvgBoundingRect().top ?? 0) - 5;
 });
 
 let handleX = computed(() => {
@@ -196,6 +196,4 @@ function moveSqrt(moveX: number, moveY: number) {
   linePosition.value.p2x += moveX;
   linePosition.value.py += moveY;
 }
-
 </script>
-

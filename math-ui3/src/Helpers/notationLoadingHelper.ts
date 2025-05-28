@@ -97,6 +97,8 @@ export default function notationLoadingHelper() {
           boardType,
           parentUUId,
         );
+      case "POLYGON":
+        return [];
 
       default:
         throw new Error(`${notationType} :notation type is invalid`);

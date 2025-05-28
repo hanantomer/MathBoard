@@ -1,19 +1,19 @@
 <template>
   <lineWatcher
     :startEntry="{
-      editMode: 'CURVE_STARTED',
+      editMode: ['CURVE_STARTED'],
       func: startCurveDrawing,
     }"
     :drawEntry="{
-      editMode: 'CURVE_DRAWING',
+      editMode: ['CURVE_DRAWING'],
       func: setCurve,
     }"
     :editEntryFirstHandle="{
-      editMode: 'CURVE_EDITING_LEFT',
+      editMode: ['CURVE_EDITING_LEFT'],
       func: setCurveLeft,
     }"
     :editEntrySecondHandle="{
-      editMode: 'CURVE_EDITING_RIGHT',
+      editMode: ['CURVE_EDITING_RIGHT'],
       func: setCurveRight,
     }"
     :endEntry="{
@@ -27,12 +27,12 @@
       func: endDrawCurve,
     }"
     :selectEntry="{
-      editMode: 'CURVE_SELECTED',
+      editMode: ['CURVE_SELECTED'],
       func: selectCurve,
       event: 'EV_CURVE_SELECTED',
     }"
     :moveByKeyEntry="{
-      editMode: 'CURVE_SELECTED',
+      editMode: ['CURVE_SELECTED'],
       func: moveCurve,
     }"
     :endSelectionEntry="{
@@ -88,7 +88,7 @@ import lineHandle from "./LineHandle.vue";
 import lineWatcher from "./LineWatcher.vue";
 import useNotationMutateHelper from "../helpers/notationMutateHelper";
 import useWatchHelper from "../helpers/watchHelper";
-import useEventBus from "../helpers/eventBusHelper";  
+import useEventBus from "../helpers/eventBusHelper";
 import { computed, ref, onMounted } from "vue";
 import { useNotationStore } from "../store/pinia/notationStore";
 import { useEditModeStore } from "../store/pinia/editModeStore";

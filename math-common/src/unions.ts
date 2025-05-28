@@ -33,6 +33,7 @@ export const NotationTypeValues = [
   "EXPONENT",
   "HORIZONTALLINE",
   "VERTICALLINE",
+  "POLYGON",
   "SLOPELINE",
   "CURVE",
   "CIRCLE",
@@ -86,6 +87,8 @@ export type EditMode =
   | "HORIZONTAL_LINE_EDITING_LEFT" // horizontal line handle clicked followin slope line selected
   | "HORIZONTAL_LINE_SELECTED" // horizontal line selected
   | "VERTICAL_LINE_STARTED" // vertical line button pressed
+  | "POLYGON_STARTED" // polygon button pressed
+  | "POLYGON_DRAWING" // polygon drawing started
   | "VERTICAL_LINE_DRAWING" // vertical line drawing started
   | "VERTICAL_LINE_SELECTED" // vertical line selected
   | "VERTICAL_LINE_EDITING_TOP" // vertical line handle clicked followin slope line selected
@@ -143,6 +146,8 @@ export const EditModeNotationType = new Map<
   ],
   ["HORIZONTAL_LINE_SELECTED", "HORIZONTALLINE"],
   ["VERTICAL_LINE_STARTED", "VERTICALLINE"],
+  ["POLYGON_STARTED", "POLYGON"],
+  ["POLYGON_DRAWING", "POLYGON"],
   ["VERTICAL_LINE_DRAWING", "VERTICALLINE"],
   ["VERTICAL_LINE_SELECTED", "VERTICALLINE"],
   ["VERTICAL_LINE_EDITING_TOP", "VERTICALLINE"],
@@ -208,6 +213,7 @@ export const EditModeCursorType = new Map<
   ["HORIZONTAL_LINE_EDITING_RIGHT", "auto"],
   ["HORIZONTAL_LINE_SELECTED", "auto"],
   ["VERTICAL_LINE_STARTED", "auto"],
+  ["POLYGON_STARTED", "auto"],
   ["VERTICAL_LINE_DRAWING", "auto"],
   ["VERTICAL_LINE_EDITING_BOTTOM", "auto"],
   ["VERTICAL_LINE_EDITING_TOP", "auto"],

@@ -79,6 +79,7 @@ export const useEditModeStore = defineStore("editMode", () => {
 
   function isSlopeLineMode() {
     return (
+      editMode.value === "POLYGON_STARTED" ||
       editMode.value === "SLOPE_LINE_STARTED" ||
       editMode.value === "SLOPE_LINE_DRAWING" ||
       editMode.value === "SLOPE_LINE_EDITING_LEFT" ||
@@ -153,7 +154,10 @@ export const useEditModeStore = defineStore("editMode", () => {
   }
 
   function isSlopeLineDrawingMode() {
-    return editMode.value === "SLOPE_LINE_DRAWING";
+    return (
+      editMode.value === "SLOPE_LINE_DRAWING" ||
+      editMode.value === "POLYGON_DRAWING"
+    );
   }
 
   function isSlopeLineEditingMode() {
@@ -289,6 +293,9 @@ export const useEditModeStore = defineStore("editMode", () => {
 
       case "VERTICAL_LINE_STARTED":
         return setEditMode("VERTICAL_LINE_DRAWING");
+
+      case "POLYGON_STARTED":
+        return setEditMode("POLYGON_DRAWING");
 
       case "SLOPE_LINE_STARTED":
         return setEditMode("SLOPE_LINE_DRAWING");

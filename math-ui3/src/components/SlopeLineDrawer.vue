@@ -2,19 +2,19 @@
   <div v-show="show">
     <lineWatcher
       :startEntry="{
-        editMode: 'SLOPE_LINE_STARTED',
+        editMode: ['SLOPE_LINE_STARTED', 'POLYGON_STARTED'],
         func: setInitialPosition,
       }"
       :drawEntry="{
-        editMode: 'SLOPE_LINE_DRAWING',
+        editMode: ['SLOPE_LINE_DRAWING', 'POLYGON_DRAWING'],
         func: drawLine,
       }"
       :editEntryFirstHandle="{
-        editMode: 'SLOPE_LINE_EDITING_LEFT',
+        editMode: ['SLOPE_LINE_EDITING_LEFT'],
         func: modifyLineLeft,
       }"
       :editEntrySecondHandle="{
-        editMode: 'SLOPE_LINE_EDITING_RIGHT',
+        editMode: ['SLOPE_LINE_EDITING_RIGHT'],
         func: modifyLineRight,
       }"
       :endEntry="{
@@ -23,16 +23,17 @@
           'SLOPE_LINE_EDITING_RIGHT',
           'SLOPE_LINE_EDITING_LEFT',
           'SLOPE_LINE_SELECTED',
+          'POLYGON_DRAWING'
         ],
         func: endDrawing,
       }"
       :selectEntry="{
-        editMode: 'SLOPE_LINE_SELECTED',
+        editMode: ['SLOPE_LINE_SELECTED'],
         func: selectLine,
-        event: 'EV_SLOPE_LINE_SELECTED',
+        event: 'EV_SLOPE_LINE_SELECTED', ///TODO handle polygon
       }"
       :moveByKeyEntry="{
-        editMode: 'SLOPE_LINE_SELECTED',
+        editMode: ['SLOPE_LINE_SELECTED'],
         func: moveLine,
       }"
       :endSelectionEntry="{
@@ -260,7 +261,7 @@ function saveSlopeLine() {
       updatedLine as SlopeLineNotationAttributes,
     );
   } else {
-    notationMutateHelper.addSlopeLineNotation(linePosition.value, "SLOPELINE");
+    notationMutateHelper.addSlopeLineNotation(linePosition.value);
   }
 }
 
@@ -361,7 +362,6 @@ function fixLineLeftEdge(linePosition: SlopeLineAttributes) {
     }
   }
 }
-
 
 function moveLine(moveX: number, moveY: number) {
   linePosition.value.p1y += moveY;

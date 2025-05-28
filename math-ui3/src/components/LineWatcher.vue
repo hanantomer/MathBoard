@@ -3,7 +3,6 @@
 <script setup lang="ts">
 import useWatchHelper from "../helpers/watchHelper";
 import useLineDrawer from "../helpers/lineDrawingHelper";
-import { useEditModeStore } from "../store/pinia/editModeStore";
 import { PropType } from "vue";
 
 import {
@@ -62,7 +61,7 @@ const props = defineProps({
 });
 
 watchHelper.watchMouseEvent(
-  [props.startEntry.editMode],
+  props.startEntry.editMode,
   "EV_SVG_MOUSEDOWN",
   (e: MouseEvent) => {
     lineDrawer.setLineInitialPosition(e, props.startEntry.func);
@@ -70,19 +69,19 @@ watchHelper.watchMouseEvent(
 );
 
 watchHelper.watchMouseEvent(
-  [props.drawEntry.editMode],
+  props.drawEntry.editMode,
   "EV_SVG_MOUSEMOVE",
   (e: MouseEvent) => lineDrawer.drawNewLine(e, props.drawEntry.func),
 );
 
 watchHelper.watchMouseEvent(
-  [props.editEntryFirstHandle.editMode],
+  props.editEntryFirstHandle.editMode,
   "EV_SVG_MOUSEMOVE",
   (e: MouseEvent) => lineDrawer.modifyLine(e, props.editEntryFirstHandle.func),
 );
 
 watchHelper.watchMouseEvent(
-  [props.editEntrySecondHandle.editMode],
+  props.editEntrySecondHandle.editMode,
   "EV_SVG_MOUSEMOVE",
   (e: MouseEvent) => lineDrawer.modifyLine(e, props.editEntrySecondHandle.func),
 );
@@ -92,35 +91,17 @@ watchHelper.watchMouseEvent(props.endEntry.editMode, "EV_SVG_MOUSEUP", () =>
 );
 
 watchHelper.watchNotationSelection(
-  [props.selectEntry.editMode],
+  props.selectEntry.editMode,
   props.selectEntry.event,
   (n) => lineDrawer.selectLine(n, props.selectEntry.func),
 );
 
 watchHelper.watchKeyEvent(
-  [props.selectEntry.editMode],
+  props.selectEntry.editMode,
   "EV_KEYUP",
   (e: KeyboardEvent) => lineDrawer.moveLine(e, props.moveByKeyEntry.func),
 );
 
-
-
-// watchHelper.watchMouseEvent(
-//   props.endSelectionEntry.editMode,
-//   "EV_MOUSEUP",
-//   () => {
-//     setTimeout(() => {
-//       if (
-//         editModeStore.getEditMode() !==
-//         props.endSelectionEntry
-//           .editMode[0] /*only one event is being listned to*/
-//       )
-//         lineDrawer.resetDrawing();
-//     }, 0);
-//   },
-// );
-
-//
 watchHelper.watchEndOfEditMode(
   ["CURVE_DRAWING",
     "CURVE_EDITING_CONTROLֹ_POINT",

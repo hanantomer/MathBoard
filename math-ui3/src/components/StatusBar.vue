@@ -27,6 +27,7 @@ const editModeStatusText = {
   ANNOTATION_WRITING: "Type annotation text and then click outside or press enter",
   HORIZONTAL_LINE_STARTED: "Draw a horizontal line on screen",
   VERTICAL_LINE_STARTED: "Draw a vertical line on screen",
+  POLYGON_STARTED: "Draw a polygon on screen, line by line",
   SLOPE_LINE_STARTED: "Draw a sloped line on screen",
   CHECKMARK_STARTED: "Click on a cell to create a checkmark",
   SEMICHECKMARK_STARTED: "Click on a cell to create a semi checkmark",

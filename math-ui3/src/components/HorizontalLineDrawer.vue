@@ -1,19 +1,19 @@
 <template>
   <lineWatcher
     :startEntry="{
-      editMode: 'HORIZONTAL_LINE_STARTED',
+      editMode: ['HORIZONTAL_LINE_STARTED'],
       func: setInitialLinePosition,
     }"
     :drawEntry="{
-      editMode: 'HORIZONTAL_LINE_DRAWING',
+      editMode: ['HORIZONTAL_LINE_DRAWING'],
       func: drawLine,
     }"
     :editEntryFirstHandle="{
-      editMode: 'HORIZONTAL_LINE_EDITING_LEFT',
+      editMode: ['HORIZONTAL_LINE_EDITING_LEFT'],
       func: modifyLineLeft,
     }"
     :editEntrySecondHandle="{
-      editMode: 'HORIZONTAL_LINE_EDITING_RIGHT',
+      editMode: ['HORIZONTAL_LINE_EDITING_RIGHT'],
       func: modifyLineRight,
     }"
     :endEntry="{
@@ -26,12 +26,12 @@
       func: saveLine,
     }"
     :selectEntry="{
-      editMode: 'HORIZONTAL_LINE_SELECTED',
+      editMode: ['HORIZONTAL_LINE_SELECTED'],
       func: selectLine,
       event: 'EV_HORIZONTAL_LINE_SELECTED',
     }"
     :moveByKeyEntry="{
-      editMode: 'HORIZONTAL_LINE_SELECTED',
+      editMode: ['HORIZONTAL_LINE_SELECTED'],
       func: moveLine,
     }"
     :endSelectionEntry="{

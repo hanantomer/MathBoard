@@ -4118,3 +4118,461 @@
 2025-05-26T18:15:11.408Z [INFO]: Processing teacher join request for hanantomer@gmail.com
 2025-05-26T18:15:11.409Z [INFO]: Teacher hanantomer@gmail.com joining lesson c8d5918a-4fcf-410a-bed6-38abb7fc55fd
 2025-05-26T18:15:11.409Z [INFO]: User hanantomer@gmail.com joined lesson channel c8d5918a-4fcf-410a-bed6-38abb7fc55fd
+2025-05-27T13:44:20.127Z [INFO]: Authentication service initialized
+2025-05-27T13:49:44.031Z [INFO]: User hanantomer@gmail.com attempting to join lesson fa5efd61-356a-4258-b9ba-93d116520bf3
+2025-05-27T13:49:44.032Z [INFO]: Processing teacher join request for hanantomer@gmail.com
+2025-05-27T13:49:44.033Z [INFO]: Teacher hanantomer@gmail.com joining lesson fa5efd61-356a-4258-b9ba-93d116520bf3
+2025-05-27T13:49:44.034Z [INFO]: User hanantomer@gmail.com joined lesson channel fa5efd61-356a-4258-b9ba-93d116520bf3
+2025-05-27T14:19:26.834Z [INFO]: User hanantomer@gmail.com attempting to join lesson fa5efd61-356a-4258-b9ba-93d116520bf3
+2025-05-27T14:19:26.837Z [INFO]: Processing teacher join request for hanantomer@gmail.com
+2025-05-27T14:19:26.838Z [INFO]: Teacher hanantomer@gmail.com joining lesson fa5efd61-356a-4258-b9ba-93d116520bf3
+2025-05-27T14:19:26.839Z [INFO]: User hanantomer@gmail.com joined lesson channel fa5efd61-356a-4258-b9ba-93d116520bf3
+2025-05-27T14:21:54.086Z [INFO]: User hanantomer@gmail.com attempting to join lesson fa5efd61-356a-4258-b9ba-93d116520bf3
+2025-05-27T14:21:54.089Z [INFO]: Processing teacher join request for hanantomer@gmail.com
+2025-05-27T14:21:54.089Z [INFO]: Teacher hanantomer@gmail.com joining lesson fa5efd61-356a-4258-b9ba-93d116520bf3
+2025-05-27T14:21:54.090Z [INFO]: User hanantomer@gmail.com joined lesson channel fa5efd61-356a-4258-b9ba-93d116520bf3
+2025-05-27T14:22:10.777Z [INFO]: User hanantomer@gmail.com attempting to join lesson fa5efd61-356a-4258-b9ba-93d116520bf3
+2025-05-27T14:22:10.778Z [INFO]: Processing teacher join request for hanantomer@gmail.com
+2025-05-27T14:22:10.778Z [INFO]: Teacher hanantomer@gmail.com joining lesson fa5efd61-356a-4258-b9ba-93d116520bf3
+2025-05-27T14:22:10.779Z [INFO]: User hanantomer@gmail.com joined lesson channel fa5efd61-356a-4258-b9ba-93d116520bf3
+2025-05-27T14:22:17.475Z [INFO]: User hanantomer@gmail.com attempting to join lesson fa5efd61-356a-4258-b9ba-93d116520bf3
+2025-05-27T14:22:17.477Z [INFO]: Processing teacher join request for hanantomer@gmail.com
+2025-05-27T14:22:17.477Z [INFO]: Teacher hanantomer@gmail.com joining lesson fa5efd61-356a-4258-b9ba-93d116520bf3
+2025-05-27T14:22:17.478Z [INFO]: User hanantomer@gmail.com joined lesson channel fa5efd61-356a-4258-b9ba-93d116520bf3
+2025-05-27T14:22:19.546Z [INFO]: User hanantomer@gmail.com attempting to join lesson fa5efd61-356a-4258-b9ba-93d116520bf3
+2025-05-27T14:22:19.547Z [INFO]: Processing teacher join request for hanantomer@gmail.com
+2025-05-27T14:22:19.548Z [INFO]: Teacher hanantomer@gmail.com joining lesson fa5efd61-356a-4258-b9ba-93d116520bf3
+2025-05-27T14:22:19.549Z [INFO]: User hanantomer@gmail.com joined lesson channel fa5efd61-356a-4258-b9ba-93d116520bf3
+2025-05-27T14:22:23.656Z [INFO]: User hanantomer@gmail.com attempting to join lesson fa5efd61-356a-4258-b9ba-93d116520bf3
+2025-05-27T14:22:23.656Z [INFO]: Processing teacher join request for hanantomer@gmail.com
+2025-05-27T14:22:23.657Z [INFO]: Teacher hanantomer@gmail.com joining lesson fa5efd61-356a-4258-b9ba-93d116520bf3
+2025-05-27T14:22:23.657Z [INFO]: User hanantomer@gmail.com joined lesson channel fa5efd61-356a-4258-b9ba-93d116520bf3
+2025-05-27T14:22:27.885Z [INFO]: User hanantomer@gmail.com attempting to join lesson fa5efd61-356a-4258-b9ba-93d116520bf3
+2025-05-27T14:22:27.886Z [INFO]: Processing teacher join request for hanantomer@gmail.com
+2025-05-27T14:22:27.886Z [INFO]: Teacher hanantomer@gmail.com joining lesson fa5efd61-356a-4258-b9ba-93d116520bf3
+2025-05-27T14:22:27.887Z [INFO]: User hanantomer@gmail.com joined lesson channel fa5efd61-356a-4258-b9ba-93d116520bf3
+2025-05-27T14:22:34.837Z [INFO]: User hanantomer@gmail.com attempting to join lesson fa5efd61-356a-4258-b9ba-93d116520bf3
+2025-05-27T14:22:34.837Z [INFO]: Processing teacher join request for hanantomer@gmail.com
+2025-05-27T14:22:34.838Z [INFO]: Teacher hanantomer@gmail.com joining lesson fa5efd61-356a-4258-b9ba-93d116520bf3
+2025-05-27T14:22:34.838Z [INFO]: User hanantomer@gmail.com joined lesson channel fa5efd61-356a-4258-b9ba-93d116520bf3
+2025-05-27T14:22:41.601Z [INFO]: User hanantomer@gmail.com attempting to join lesson fa5efd61-356a-4258-b9ba-93d116520bf3
+2025-05-27T14:22:41.602Z [INFO]: Processing teacher join request for hanantomer@gmail.com
+2025-05-27T14:22:41.602Z [INFO]: Teacher hanantomer@gmail.com joining lesson fa5efd61-356a-4258-b9ba-93d116520bf3
+2025-05-27T14:22:41.603Z [INFO]: User hanantomer@gmail.com joined lesson channel fa5efd61-356a-4258-b9ba-93d116520bf3
+2025-05-27T14:22:45.768Z [INFO]: User hanantomer@gmail.com attempting to join lesson fa5efd61-356a-4258-b9ba-93d116520bf3
+2025-05-27T14:22:45.769Z [INFO]: Processing teacher join request for hanantomer@gmail.com
+2025-05-27T14:22:45.769Z [INFO]: Teacher hanantomer@gmail.com joining lesson fa5efd61-356a-4258-b9ba-93d116520bf3
+2025-05-27T14:22:45.770Z [INFO]: User hanantomer@gmail.com joined lesson channel fa5efd61-356a-4258-b9ba-93d116520bf3
+2025-05-27T14:22:49.051Z [INFO]: User hanantomer@gmail.com attempting to join lesson fa5efd61-356a-4258-b9ba-93d116520bf3
+2025-05-27T14:22:49.052Z [INFO]: Processing teacher join request for hanantomer@gmail.com
+2025-05-27T14:22:49.052Z [INFO]: Teacher hanantomer@gmail.com joining lesson fa5efd61-356a-4258-b9ba-93d116520bf3
+2025-05-27T14:22:49.052Z [INFO]: User hanantomer@gmail.com joined lesson channel fa5efd61-356a-4258-b9ba-93d116520bf3
+2025-05-27T14:22:59.589Z [INFO]: User hanantomer@gmail.com attempting to join lesson fa5efd61-356a-4258-b9ba-93d116520bf3
+2025-05-27T14:22:59.590Z [INFO]: Processing teacher join request for hanantomer@gmail.com
+2025-05-27T14:22:59.590Z [INFO]: Teacher hanantomer@gmail.com joining lesson fa5efd61-356a-4258-b9ba-93d116520bf3
+2025-05-27T14:22:59.591Z [INFO]: User hanantomer@gmail.com joined lesson channel fa5efd61-356a-4258-b9ba-93d116520bf3
+2025-05-27T14:23:10.056Z [INFO]: User hanantomer@gmail.com attempting to join lesson fa5efd61-356a-4258-b9ba-93d116520bf3
+2025-05-27T14:23:10.057Z [INFO]: Processing teacher join request for hanantomer@gmail.com
+2025-05-27T14:23:10.057Z [INFO]: Teacher hanantomer@gmail.com joining lesson fa5efd61-356a-4258-b9ba-93d116520bf3
+2025-05-27T14:23:10.058Z [INFO]: User hanantomer@gmail.com joined lesson channel fa5efd61-356a-4258-b9ba-93d116520bf3
+2025-05-27T14:23:14.615Z [INFO]: User hanantomer@gmail.com attempting to join lesson fa5efd61-356a-4258-b9ba-93d116520bf3
+2025-05-27T14:23:14.616Z [INFO]: Processing teacher join request for hanantomer@gmail.com
+2025-05-27T14:23:14.616Z [INFO]: Teacher hanantomer@gmail.com joining lesson fa5efd61-356a-4258-b9ba-93d116520bf3
+2025-05-27T14:23:14.617Z [INFO]: User hanantomer@gmail.com joined lesson channel fa5efd61-356a-4258-b9ba-93d116520bf3
+2025-05-27T14:23:21.582Z [INFO]: User hanantomer@gmail.com attempting to join lesson fa5efd61-356a-4258-b9ba-93d116520bf3
+2025-05-27T14:23:21.583Z [INFO]: Processing teacher join request for hanantomer@gmail.com
+2025-05-27T14:23:21.583Z [INFO]: Teacher hanantomer@gmail.com joining lesson fa5efd61-356a-4258-b9ba-93d116520bf3
+2025-05-27T14:23:21.584Z [INFO]: User hanantomer@gmail.com joined lesson channel fa5efd61-356a-4258-b9ba-93d116520bf3
+2025-05-27T14:23:29.634Z [INFO]: User hanantomer@gmail.com attempting to join lesson fa5efd61-356a-4258-b9ba-93d116520bf3
+2025-05-27T14:23:29.634Z [INFO]: Processing teacher join request for hanantomer@gmail.com
+2025-05-27T14:23:29.635Z [INFO]: Teacher hanantomer@gmail.com joining lesson fa5efd61-356a-4258-b9ba-93d116520bf3
+2025-05-27T14:23:29.635Z [INFO]: User hanantomer@gmail.com joined lesson channel fa5efd61-356a-4258-b9ba-93d116520bf3
+2025-05-27T14:23:35.159Z [INFO]: User hanantomer@gmail.com attempting to join lesson fa5efd61-356a-4258-b9ba-93d116520bf3
+2025-05-27T14:23:35.160Z [INFO]: Processing teacher join request for hanantomer@gmail.com
+2025-05-27T14:23:35.161Z [INFO]: Teacher hanantomer@gmail.com joining lesson fa5efd61-356a-4258-b9ba-93d116520bf3
+2025-05-27T14:23:35.161Z [INFO]: User hanantomer@gmail.com joined lesson channel fa5efd61-356a-4258-b9ba-93d116520bf3
+2025-05-27T14:23:44.248Z [INFO]: User hanantomer@gmail.com attempting to join lesson fa5efd61-356a-4258-b9ba-93d116520bf3
+2025-05-27T14:23:44.249Z [INFO]: Processing teacher join request for hanantomer@gmail.com
+2025-05-27T14:23:44.250Z [INFO]: Teacher hanantomer@gmail.com joining lesson fa5efd61-356a-4258-b9ba-93d116520bf3
+2025-05-27T14:23:44.250Z [INFO]: User hanantomer@gmail.com joined lesson channel fa5efd61-356a-4258-b9ba-93d116520bf3
+2025-05-27T14:29:44.526Z [INFO]: User hanantomer@gmail.com attempting to join lesson fa5efd61-356a-4258-b9ba-93d116520bf3
+2025-05-27T14:29:44.527Z [INFO]: Processing teacher join request for hanantomer@gmail.com
+2025-05-27T14:29:44.528Z [INFO]: Teacher hanantomer@gmail.com joining lesson fa5efd61-356a-4258-b9ba-93d116520bf3
+2025-05-27T14:29:44.528Z [INFO]: User hanantomer@gmail.com joined lesson channel fa5efd61-356a-4258-b9ba-93d116520bf3
+2025-05-27T14:30:57.269Z [INFO]: User hanantomer@gmail.com attempting to join lesson fa5efd61-356a-4258-b9ba-93d116520bf3
+2025-05-27T14:30:57.269Z [INFO]: Processing teacher join request for hanantomer@gmail.com
+2025-05-27T14:30:57.270Z [INFO]: Teacher hanantomer@gmail.com joining lesson fa5efd61-356a-4258-b9ba-93d116520bf3
+2025-05-27T14:30:57.270Z [INFO]: User hanantomer@gmail.com joined lesson channel fa5efd61-356a-4258-b9ba-93d116520bf3
+2025-05-27T14:33:31.354Z [INFO]: User hanantomer@gmail.com attempting to join lesson fa5efd61-356a-4258-b9ba-93d116520bf3
+2025-05-27T14:33:31.355Z [INFO]: Processing teacher join request for hanantomer@gmail.com
+2025-05-27T14:33:31.356Z [INFO]: Teacher hanantomer@gmail.com joining lesson fa5efd61-356a-4258-b9ba-93d116520bf3
+2025-05-27T14:33:31.356Z [INFO]: User hanantomer@gmail.com joined lesson channel fa5efd61-356a-4258-b9ba-93d116520bf3
+2025-05-27T14:35:57.792Z [INFO]: User hanantomer@gmail.com attempting to join lesson fa5efd61-356a-4258-b9ba-93d116520bf3
+2025-05-27T14:35:57.793Z [INFO]: Processing teacher join request for hanantomer@gmail.com
+2025-05-27T14:35:57.794Z [INFO]: Teacher hanantomer@gmail.com joining lesson fa5efd61-356a-4258-b9ba-93d116520bf3
+2025-05-27T14:35:57.794Z [INFO]: User hanantomer@gmail.com joined lesson channel fa5efd61-356a-4258-b9ba-93d116520bf3
+2025-05-27T14:38:09.952Z [INFO]: User hanantomer@gmail.com attempting to join lesson fa5efd61-356a-4258-b9ba-93d116520bf3
+2025-05-27T14:38:09.953Z [INFO]: Processing teacher join request for hanantomer@gmail.com
+2025-05-27T14:38:09.953Z [INFO]: Teacher hanantomer@gmail.com joining lesson fa5efd61-356a-4258-b9ba-93d116520bf3
+2025-05-27T14:38:09.954Z [INFO]: User hanantomer@gmail.com joined lesson channel fa5efd61-356a-4258-b9ba-93d116520bf3
+2025-05-27T14:38:47.139Z [INFO]: User hanantomer@gmail.com attempting to join lesson fa5efd61-356a-4258-b9ba-93d116520bf3
+2025-05-27T14:38:47.140Z [INFO]: Processing teacher join request for hanantomer@gmail.com
+2025-05-27T14:38:47.141Z [INFO]: Teacher hanantomer@gmail.com joining lesson fa5efd61-356a-4258-b9ba-93d116520bf3
+2025-05-27T14:38:47.141Z [INFO]: User hanantomer@gmail.com joined lesson channel fa5efd61-356a-4258-b9ba-93d116520bf3
+2025-05-27T14:42:26.331Z [INFO]: User hanantomer@gmail.com attempting to join lesson fa5efd61-356a-4258-b9ba-93d116520bf3
+2025-05-27T14:42:26.332Z [INFO]: Processing teacher join request for hanantomer@gmail.com
+2025-05-27T14:42:26.332Z [INFO]: Teacher hanantomer@gmail.com joining lesson fa5efd61-356a-4258-b9ba-93d116520bf3
+2025-05-27T14:42:26.333Z [INFO]: User hanantomer@gmail.com joined lesson channel fa5efd61-356a-4258-b9ba-93d116520bf3
+2025-05-27T14:42:55.330Z [INFO]: User hanantomer@gmail.com attempting to join lesson fa5efd61-356a-4258-b9ba-93d116520bf3
+2025-05-27T14:42:55.330Z [INFO]: Processing teacher join request for hanantomer@gmail.com
+2025-05-27T14:42:55.331Z [INFO]: Teacher hanantomer@gmail.com joining lesson fa5efd61-356a-4258-b9ba-93d116520bf3
+2025-05-27T14:42:55.331Z [INFO]: User hanantomer@gmail.com joined lesson channel fa5efd61-356a-4258-b9ba-93d116520bf3
+2025-05-27T14:43:44.795Z [INFO]: User hanantomer@gmail.com attempting to join lesson fa5efd61-356a-4258-b9ba-93d116520bf3
+2025-05-27T14:43:44.796Z [INFO]: Processing teacher join request for hanantomer@gmail.com
+2025-05-27T14:43:44.796Z [INFO]: Teacher hanantomer@gmail.com joining lesson fa5efd61-356a-4258-b9ba-93d116520bf3
+2025-05-27T14:43:44.797Z [INFO]: User hanantomer@gmail.com joined lesson channel fa5efd61-356a-4258-b9ba-93d116520bf3
+2025-05-27T14:59:16.679Z [INFO]: User hanantomer@gmail.com attempting to join lesson fa5efd61-356a-4258-b9ba-93d116520bf3
+2025-05-27T14:59:16.680Z [INFO]: Processing teacher join request for hanantomer@gmail.com
+2025-05-27T14:59:16.680Z [INFO]: Teacher hanantomer@gmail.com joining lesson fa5efd61-356a-4258-b9ba-93d116520bf3
+2025-05-27T14:59:16.681Z [INFO]: User hanantomer@gmail.com joined lesson channel fa5efd61-356a-4258-b9ba-93d116520bf3
+2025-05-27T14:59:36.171Z [INFO]: User hanantomer@gmail.com attempting to join lesson fa5efd61-356a-4258-b9ba-93d116520bf3
+2025-05-27T14:59:36.172Z [INFO]: Processing teacher join request for hanantomer@gmail.com
+2025-05-27T14:59:36.173Z [INFO]: Teacher hanantomer@gmail.com joining lesson fa5efd61-356a-4258-b9ba-93d116520bf3
+2025-05-27T14:59:36.174Z [INFO]: User hanantomer@gmail.com joined lesson channel fa5efd61-356a-4258-b9ba-93d116520bf3
+2025-05-27T15:00:53.376Z [INFO]: User hanantomer@gmail.com attempting to join lesson fa5efd61-356a-4258-b9ba-93d116520bf3
+2025-05-27T15:00:53.376Z [INFO]: Processing teacher join request for hanantomer@gmail.com
+2025-05-27T15:00:53.377Z [INFO]: Teacher hanantomer@gmail.com joining lesson fa5efd61-356a-4258-b9ba-93d116520bf3
+2025-05-27T15:00:53.377Z [INFO]: User hanantomer@gmail.com joined lesson channel fa5efd61-356a-4258-b9ba-93d116520bf3
+2025-05-27T15:01:35.487Z [INFO]: User hanantomer@gmail.com attempting to join lesson fa5efd61-356a-4258-b9ba-93d116520bf3
+2025-05-27T15:01:35.488Z [INFO]: Processing teacher join request for hanantomer@gmail.com
+2025-05-27T15:01:35.489Z [INFO]: Teacher hanantomer@gmail.com joining lesson fa5efd61-356a-4258-b9ba-93d116520bf3
+2025-05-27T15:01:35.489Z [INFO]: User hanantomer@gmail.com joined lesson channel fa5efd61-356a-4258-b9ba-93d116520bf3
+2025-05-27T15:06:53.953Z [INFO]: User hanantomer@gmail.com attempting to join lesson fa5efd61-356a-4258-b9ba-93d116520bf3
+2025-05-27T15:06:53.954Z [INFO]: Processing teacher join request for hanantomer@gmail.com
+2025-05-27T15:06:53.954Z [INFO]: Teacher hanantomer@gmail.com joining lesson fa5efd61-356a-4258-b9ba-93d116520bf3
+2025-05-27T15:06:53.955Z [INFO]: User hanantomer@gmail.com joined lesson channel fa5efd61-356a-4258-b9ba-93d116520bf3
+2025-05-27T15:10:24.167Z [INFO]: User hanantomer@gmail.com attempting to join lesson fa5efd61-356a-4258-b9ba-93d116520bf3
+2025-05-27T15:10:24.168Z [INFO]: Processing teacher join request for hanantomer@gmail.com
+2025-05-27T15:10:24.169Z [INFO]: Teacher hanantomer@gmail.com joining lesson fa5efd61-356a-4258-b9ba-93d116520bf3
+2025-05-27T15:10:24.169Z [INFO]: User hanantomer@gmail.com joined lesson channel fa5efd61-356a-4258-b9ba-93d116520bf3
+2025-05-27T15:11:23.658Z [INFO]: User hanantomer@gmail.com attempting to join lesson fa5efd61-356a-4258-b9ba-93d116520bf3
+2025-05-27T15:11:23.659Z [INFO]: Processing teacher join request for hanantomer@gmail.com
+2025-05-27T15:11:23.660Z [INFO]: Teacher hanantomer@gmail.com joining lesson fa5efd61-356a-4258-b9ba-93d116520bf3
+2025-05-27T15:11:23.661Z [INFO]: User hanantomer@gmail.com joined lesson channel fa5efd61-356a-4258-b9ba-93d116520bf3
+2025-05-27T16:52:46.024Z [INFO]: User hanantomer@gmail.com attempting to join lesson fa5efd61-356a-4258-b9ba-93d116520bf3
+2025-05-27T16:52:46.026Z [INFO]: Processing teacher join request for hanantomer@gmail.com
+2025-05-27T16:52:46.026Z [INFO]: Teacher hanantomer@gmail.com joining lesson fa5efd61-356a-4258-b9ba-93d116520bf3
+2025-05-27T16:52:46.027Z [INFO]: User hanantomer@gmail.com joined lesson channel fa5efd61-356a-4258-b9ba-93d116520bf3
+2025-05-27T16:54:24.858Z [INFO]: User hanantomer@gmail.com attempting to join lesson fa5efd61-356a-4258-b9ba-93d116520bf3
+2025-05-27T16:54:24.860Z [INFO]: Processing teacher join request for hanantomer@gmail.com
+2025-05-27T16:54:24.860Z [INFO]: Teacher hanantomer@gmail.com joining lesson fa5efd61-356a-4258-b9ba-93d116520bf3
+2025-05-27T16:54:24.862Z [INFO]: User hanantomer@gmail.com joined lesson channel fa5efd61-356a-4258-b9ba-93d116520bf3
+2025-05-27T16:56:11.365Z [INFO]: User hanantomer@gmail.com attempting to join lesson fa5efd61-356a-4258-b9ba-93d116520bf3
+2025-05-27T16:56:11.366Z [INFO]: Processing teacher join request for hanantomer@gmail.com
+2025-05-27T16:56:11.366Z [INFO]: Teacher hanantomer@gmail.com joining lesson fa5efd61-356a-4258-b9ba-93d116520bf3
+2025-05-27T16:56:11.367Z [INFO]: User hanantomer@gmail.com joined lesson channel fa5efd61-356a-4258-b9ba-93d116520bf3
+2025-05-27T16:57:42.869Z [INFO]: User hanantomer@gmail.com attempting to join lesson fa5efd61-356a-4258-b9ba-93d116520bf3
+2025-05-27T16:57:42.870Z [INFO]: Processing teacher join request for hanantomer@gmail.com
+2025-05-27T16:57:42.871Z [INFO]: Teacher hanantomer@gmail.com joining lesson fa5efd61-356a-4258-b9ba-93d116520bf3
+2025-05-27T16:57:42.871Z [INFO]: User hanantomer@gmail.com joined lesson channel fa5efd61-356a-4258-b9ba-93d116520bf3
+2025-05-27T17:04:39.375Z [INFO]: User hanantomer@gmail.com attempting to join lesson fa5efd61-356a-4258-b9ba-93d116520bf3
+2025-05-27T17:04:39.376Z [INFO]: Processing teacher join request for hanantomer@gmail.com
+2025-05-27T17:04:39.377Z [INFO]: Teacher hanantomer@gmail.com joining lesson fa5efd61-356a-4258-b9ba-93d116520bf3
+2025-05-27T17:04:39.377Z [INFO]: User hanantomer@gmail.com joined lesson channel fa5efd61-356a-4258-b9ba-93d116520bf3
+2025-05-27T17:13:39.044Z [INFO]: User hanantomer@gmail.com attempting to join lesson fa5efd61-356a-4258-b9ba-93d116520bf3
+2025-05-27T17:13:39.045Z [INFO]: Processing teacher join request for hanantomer@gmail.com
+2025-05-27T17:13:39.045Z [INFO]: Teacher hanantomer@gmail.com joining lesson fa5efd61-356a-4258-b9ba-93d116520bf3
+2025-05-27T17:13:39.046Z [INFO]: User hanantomer@gmail.com joined lesson channel fa5efd61-356a-4258-b9ba-93d116520bf3
+2025-05-27T17:16:17.515Z [INFO]: User hanantomer@gmail.com attempting to join lesson fa5efd61-356a-4258-b9ba-93d116520bf3
+2025-05-27T17:16:17.517Z [INFO]: Processing teacher join request for hanantomer@gmail.com
+2025-05-27T17:16:17.517Z [INFO]: Teacher hanantomer@gmail.com joining lesson fa5efd61-356a-4258-b9ba-93d116520bf3
+2025-05-27T17:16:17.518Z [INFO]: User hanantomer@gmail.com joined lesson channel fa5efd61-356a-4258-b9ba-93d116520bf3
+2025-05-27T17:17:32.976Z [INFO]: User hanantomer@gmail.com attempting to join lesson fa5efd61-356a-4258-b9ba-93d116520bf3
+2025-05-27T17:17:32.978Z [INFO]: Processing teacher join request for hanantomer@gmail.com
+2025-05-27T17:17:32.978Z [INFO]: Teacher hanantomer@gmail.com joining lesson fa5efd61-356a-4258-b9ba-93d116520bf3
+2025-05-27T17:17:32.979Z [INFO]: User hanantomer@gmail.com joined lesson channel fa5efd61-356a-4258-b9ba-93d116520bf3
+2025-05-27T17:27:57.179Z [INFO]: User hanantomer@gmail.com attempting to join lesson fa5efd61-356a-4258-b9ba-93d116520bf3
+2025-05-27T17:27:57.180Z [INFO]: Processing teacher join request for hanantomer@gmail.com
+2025-05-27T17:27:57.181Z [INFO]: Teacher hanantomer@gmail.com joining lesson fa5efd61-356a-4258-b9ba-93d116520bf3
+2025-05-27T17:27:57.181Z [INFO]: User hanantomer@gmail.com joined lesson channel fa5efd61-356a-4258-b9ba-93d116520bf3
+2025-05-27T17:30:15.964Z [INFO]: User hanantomer@gmail.com attempting to join lesson fa5efd61-356a-4258-b9ba-93d116520bf3
+2025-05-27T17:30:15.966Z [INFO]: Processing teacher join request for hanantomer@gmail.com
+2025-05-27T17:30:15.967Z [INFO]: Teacher hanantomer@gmail.com joining lesson fa5efd61-356a-4258-b9ba-93d116520bf3
+2025-05-27T17:30:15.967Z [INFO]: User hanantomer@gmail.com joined lesson channel fa5efd61-356a-4258-b9ba-93d116520bf3
+2025-05-27T17:30:19.878Z [INFO]: User hanantomer@gmail.com attempting to join lesson fa5efd61-356a-4258-b9ba-93d116520bf3
+2025-05-27T17:30:19.880Z [INFO]: Processing teacher join request for hanantomer@gmail.com
+2025-05-27T17:30:19.880Z [INFO]: Teacher hanantomer@gmail.com joining lesson fa5efd61-356a-4258-b9ba-93d116520bf3
+2025-05-27T17:30:19.881Z [INFO]: User hanantomer@gmail.com joined lesson channel fa5efd61-356a-4258-b9ba-93d116520bf3
+2025-05-27T17:30:28.976Z [INFO]: User hanantomer@gmail.com attempting to join lesson fa5efd61-356a-4258-b9ba-93d116520bf3
+2025-05-27T17:30:28.977Z [INFO]: Processing teacher join request for hanantomer@gmail.com
+2025-05-27T17:30:28.978Z [INFO]: Teacher hanantomer@gmail.com joining lesson fa5efd61-356a-4258-b9ba-93d116520bf3
+2025-05-27T17:30:28.978Z [INFO]: User hanantomer@gmail.com joined lesson channel fa5efd61-356a-4258-b9ba-93d116520bf3
+2025-05-27T17:30:49.471Z [INFO]: User hanantomer@gmail.com attempting to join lesson fa5efd61-356a-4258-b9ba-93d116520bf3
+2025-05-27T17:30:49.472Z [INFO]: Processing teacher join request for hanantomer@gmail.com
+2025-05-27T17:30:49.473Z [INFO]: Teacher hanantomer@gmail.com joining lesson fa5efd61-356a-4258-b9ba-93d116520bf3
+2025-05-27T17:30:49.473Z [INFO]: User hanantomer@gmail.com joined lesson channel fa5efd61-356a-4258-b9ba-93d116520bf3
+2025-05-27T17:56:32.995Z [INFO]: User hanantomer@gmail.com attempting to join lesson fa5efd61-356a-4258-b9ba-93d116520bf3
+2025-05-27T17:56:33.001Z [INFO]: Processing teacher join request for hanantomer@gmail.com
+2025-05-27T17:56:33.001Z [INFO]: Teacher hanantomer@gmail.com joining lesson fa5efd61-356a-4258-b9ba-93d116520bf3
+2025-05-27T17:56:33.002Z [INFO]: User hanantomer@gmail.com joined lesson channel fa5efd61-356a-4258-b9ba-93d116520bf3
+2025-05-27T17:57:41.924Z [INFO]: User hanantomer@gmail.com attempting to join lesson fa5efd61-356a-4258-b9ba-93d116520bf3
+2025-05-27T17:57:41.927Z [INFO]: Processing teacher join request for hanantomer@gmail.com
+2025-05-27T17:57:41.928Z [INFO]: Teacher hanantomer@gmail.com joining lesson fa5efd61-356a-4258-b9ba-93d116520bf3
+2025-05-27T17:57:41.928Z [INFO]: User hanantomer@gmail.com joined lesson channel fa5efd61-356a-4258-b9ba-93d116520bf3
+2025-05-27T17:57:59.473Z [INFO]: User hanantomer@gmail.com attempting to join lesson fa5efd61-356a-4258-b9ba-93d116520bf3
+2025-05-27T17:57:59.475Z [INFO]: Processing teacher join request for hanantomer@gmail.com
+2025-05-27T17:57:59.475Z [INFO]: Teacher hanantomer@gmail.com joining lesson fa5efd61-356a-4258-b9ba-93d116520bf3
+2025-05-27T17:57:59.476Z [INFO]: User hanantomer@gmail.com joined lesson channel fa5efd61-356a-4258-b9ba-93d116520bf3
+2025-05-27T17:58:10.643Z [INFO]: User hanantomer@gmail.com attempting to join lesson fa5efd61-356a-4258-b9ba-93d116520bf3
+2025-05-27T17:58:10.644Z [INFO]: Processing teacher join request for hanantomer@gmail.com
+2025-05-27T17:58:10.644Z [INFO]: Teacher hanantomer@gmail.com joining lesson fa5efd61-356a-4258-b9ba-93d116520bf3
+2025-05-27T17:58:10.645Z [INFO]: User hanantomer@gmail.com joined lesson channel fa5efd61-356a-4258-b9ba-93d116520bf3
+2025-05-27T17:58:27.620Z [INFO]: User hanantomer@gmail.com attempting to join lesson fa5efd61-356a-4258-b9ba-93d116520bf3
+2025-05-27T17:58:27.620Z [INFO]: Processing teacher join request for hanantomer@gmail.com
+2025-05-27T17:58:27.621Z [INFO]: Teacher hanantomer@gmail.com joining lesson fa5efd61-356a-4258-b9ba-93d116520bf3
+2025-05-27T17:58:27.621Z [INFO]: User hanantomer@gmail.com joined lesson channel fa5efd61-356a-4258-b9ba-93d116520bf3
+2025-05-27T17:58:30.684Z [INFO]: User hanantomer@gmail.com attempting to join lesson fa5efd61-356a-4258-b9ba-93d116520bf3
+2025-05-27T17:58:30.685Z [INFO]: Processing teacher join request for hanantomer@gmail.com
+2025-05-27T17:58:30.686Z [INFO]: Teacher hanantomer@gmail.com joining lesson fa5efd61-356a-4258-b9ba-93d116520bf3
+2025-05-27T17:58:30.686Z [INFO]: User hanantomer@gmail.com joined lesson channel fa5efd61-356a-4258-b9ba-93d116520bf3
+2025-05-27T17:58:34.115Z [INFO]: User hanantomer@gmail.com attempting to join lesson fa5efd61-356a-4258-b9ba-93d116520bf3
+2025-05-27T17:58:34.117Z [INFO]: Processing teacher join request for hanantomer@gmail.com
+2025-05-27T17:58:34.117Z [INFO]: Teacher hanantomer@gmail.com joining lesson fa5efd61-356a-4258-b9ba-93d116520bf3
+2025-05-27T17:58:34.117Z [INFO]: User hanantomer@gmail.com joined lesson channel fa5efd61-356a-4258-b9ba-93d116520bf3
+2025-05-27T17:58:57.434Z [INFO]: User hanantomer@gmail.com attempting to join lesson fa5efd61-356a-4258-b9ba-93d116520bf3
+2025-05-27T17:58:57.435Z [INFO]: Processing teacher join request for hanantomer@gmail.com
+2025-05-27T17:58:57.435Z [INFO]: Teacher hanantomer@gmail.com joining lesson fa5efd61-356a-4258-b9ba-93d116520bf3
+2025-05-27T17:58:57.435Z [INFO]: User hanantomer@gmail.com joined lesson channel fa5efd61-356a-4258-b9ba-93d116520bf3
+2025-05-28T06:41:57.383Z [INFO]: Authentication service initialized
+2025-05-28T06:44:12.996Z [INFO]: User hanantomer@gmail.com attempting to join lesson 274490e1-a14c-4722-a5f5-d82a8d6b746b
+2025-05-28T06:44:12.997Z [INFO]: Processing teacher join request for hanantomer@gmail.com
+2025-05-28T06:44:12.997Z [INFO]: Teacher hanantomer@gmail.com joining lesson 274490e1-a14c-4722-a5f5-d82a8d6b746b
+2025-05-28T06:44:12.998Z [INFO]: User hanantomer@gmail.com joined lesson channel 274490e1-a14c-4722-a5f5-d82a8d6b746b
+2025-05-28T07:05:08.349Z [INFO]: User hanantomer@gmail.com attempting to join lesson 274490e1-a14c-4722-a5f5-d82a8d6b746b
+2025-05-28T07:05:08.352Z [INFO]: Processing teacher join request for hanantomer@gmail.com
+2025-05-28T07:05:08.353Z [INFO]: Teacher hanantomer@gmail.com joining lesson 274490e1-a14c-4722-a5f5-d82a8d6b746b
+2025-05-28T07:05:08.354Z [INFO]: User hanantomer@gmail.com joined lesson channel 274490e1-a14c-4722-a5f5-d82a8d6b746b
+2025-05-28T07:05:18.169Z [INFO]: User hanantomer@gmail.com attempting to join lesson 274490e1-a14c-4722-a5f5-d82a8d6b746b
+2025-05-28T07:05:18.170Z [INFO]: Processing teacher join request for hanantomer@gmail.com
+2025-05-28T07:05:18.170Z [INFO]: Teacher hanantomer@gmail.com joining lesson 274490e1-a14c-4722-a5f5-d82a8d6b746b
+2025-05-28T07:05:18.170Z [INFO]: User hanantomer@gmail.com joined lesson channel 274490e1-a14c-4722-a5f5-d82a8d6b746b
+2025-05-28T07:05:30.465Z [INFO]: User hanantomer@gmail.com attempting to join lesson 274490e1-a14c-4722-a5f5-d82a8d6b746b
+2025-05-28T07:05:30.467Z [INFO]: Processing teacher join request for hanantomer@gmail.com
+2025-05-28T07:05:30.467Z [INFO]: Teacher hanantomer@gmail.com joining lesson 274490e1-a14c-4722-a5f5-d82a8d6b746b
+2025-05-28T07:05:30.468Z [INFO]: User hanantomer@gmail.com joined lesson channel 274490e1-a14c-4722-a5f5-d82a8d6b746b
+2025-05-28T07:05:47.602Z [INFO]: User hanantomer@gmail.com attempting to join lesson 274490e1-a14c-4722-a5f5-d82a8d6b746b
+2025-05-28T07:05:47.603Z [INFO]: Processing teacher join request for hanantomer@gmail.com
+2025-05-28T07:05:47.603Z [INFO]: Teacher hanantomer@gmail.com joining lesson 274490e1-a14c-4722-a5f5-d82a8d6b746b
+2025-05-28T07:05:47.604Z [INFO]: User hanantomer@gmail.com joined lesson channel 274490e1-a14c-4722-a5f5-d82a8d6b746b
+2025-05-28T07:05:55.174Z [INFO]: User hanantomer@gmail.com attempting to join lesson 274490e1-a14c-4722-a5f5-d82a8d6b746b
+2025-05-28T07:05:55.175Z [INFO]: Processing teacher join request for hanantomer@gmail.com
+2025-05-28T07:05:55.176Z [INFO]: Teacher hanantomer@gmail.com joining lesson 274490e1-a14c-4722-a5f5-d82a8d6b746b
+2025-05-28T07:05:55.176Z [INFO]: User hanantomer@gmail.com joined lesson channel 274490e1-a14c-4722-a5f5-d82a8d6b746b
+2025-05-28T07:06:00.025Z [INFO]: User hanantomer@gmail.com attempting to join lesson 274490e1-a14c-4722-a5f5-d82a8d6b746b
+2025-05-28T07:06:00.026Z [INFO]: Processing teacher join request for hanantomer@gmail.com
+2025-05-28T07:06:00.027Z [INFO]: Teacher hanantomer@gmail.com joining lesson 274490e1-a14c-4722-a5f5-d82a8d6b746b
+2025-05-28T07:06:00.028Z [INFO]: User hanantomer@gmail.com joined lesson channel 274490e1-a14c-4722-a5f5-d82a8d6b746b
+2025-05-28T07:06:02.924Z [INFO]: User hanantomer@gmail.com attempting to join lesson 274490e1-a14c-4722-a5f5-d82a8d6b746b
+2025-05-28T07:06:02.925Z [INFO]: Processing teacher join request for hanantomer@gmail.com
+2025-05-28T07:06:02.925Z [INFO]: Teacher hanantomer@gmail.com joining lesson 274490e1-a14c-4722-a5f5-d82a8d6b746b
+2025-05-28T07:06:02.926Z [INFO]: User hanantomer@gmail.com joined lesson channel 274490e1-a14c-4722-a5f5-d82a8d6b746b
+2025-05-28T07:06:15.196Z [INFO]: User hanantomer@gmail.com attempting to join lesson 274490e1-a14c-4722-a5f5-d82a8d6b746b
+2025-05-28T07:06:15.197Z [INFO]: Processing teacher join request for hanantomer@gmail.com
+2025-05-28T07:06:15.197Z [INFO]: Teacher hanantomer@gmail.com joining lesson 274490e1-a14c-4722-a5f5-d82a8d6b746b
+2025-05-28T07:06:15.198Z [INFO]: User hanantomer@gmail.com joined lesson channel 274490e1-a14c-4722-a5f5-d82a8d6b746b
+2025-05-28T07:06:19.597Z [INFO]: User hanantomer@gmail.com attempting to join lesson 274490e1-a14c-4722-a5f5-d82a8d6b746b
+2025-05-28T07:06:19.598Z [INFO]: Processing teacher join request for hanantomer@gmail.com
+2025-05-28T07:06:19.599Z [INFO]: Teacher hanantomer@gmail.com joining lesson 274490e1-a14c-4722-a5f5-d82a8d6b746b
+2025-05-28T07:06:19.600Z [INFO]: User hanantomer@gmail.com joined lesson channel 274490e1-a14c-4722-a5f5-d82a8d6b746b
+2025-05-28T07:06:22.581Z [INFO]: User hanantomer@gmail.com attempting to join lesson 274490e1-a14c-4722-a5f5-d82a8d6b746b
+2025-05-28T07:06:22.582Z [INFO]: Processing teacher join request for hanantomer@gmail.com
+2025-05-28T07:06:22.582Z [INFO]: Teacher hanantomer@gmail.com joining lesson 274490e1-a14c-4722-a5f5-d82a8d6b746b
+2025-05-28T07:06:22.584Z [INFO]: User hanantomer@gmail.com joined lesson channel 274490e1-a14c-4722-a5f5-d82a8d6b746b
+2025-05-28T07:06:50.005Z [INFO]: User hanantomer@gmail.com attempting to join lesson 274490e1-a14c-4722-a5f5-d82a8d6b746b
+2025-05-28T07:06:50.006Z [INFO]: Processing teacher join request for hanantomer@gmail.com
+2025-05-28T07:06:50.007Z [INFO]: Teacher hanantomer@gmail.com joining lesson 274490e1-a14c-4722-a5f5-d82a8d6b746b
+2025-05-28T07:06:50.007Z [INFO]: User hanantomer@gmail.com joined lesson channel 274490e1-a14c-4722-a5f5-d82a8d6b746b
+2025-05-28T07:06:52.315Z [INFO]: User hanantomer@gmail.com attempting to join lesson 274490e1-a14c-4722-a5f5-d82a8d6b746b
+2025-05-28T07:06:52.315Z [INFO]: Processing teacher join request for hanantomer@gmail.com
+2025-05-28T07:06:52.316Z [INFO]: Teacher hanantomer@gmail.com joining lesson 274490e1-a14c-4722-a5f5-d82a8d6b746b
+2025-05-28T07:06:52.316Z [INFO]: User hanantomer@gmail.com joined lesson channel 274490e1-a14c-4722-a5f5-d82a8d6b746b
+2025-05-28T07:07:06.415Z [INFO]: User hanantomer@gmail.com attempting to join lesson 274490e1-a14c-4722-a5f5-d82a8d6b746b
+2025-05-28T07:07:06.416Z [INFO]: Processing teacher join request for hanantomer@gmail.com
+2025-05-28T07:07:06.417Z [INFO]: Teacher hanantomer@gmail.com joining lesson 274490e1-a14c-4722-a5f5-d82a8d6b746b
+2025-05-28T07:07:06.417Z [INFO]: User hanantomer@gmail.com joined lesson channel 274490e1-a14c-4722-a5f5-d82a8d6b746b
+2025-05-28T07:07:14.533Z [INFO]: User hanantomer@gmail.com attempting to join lesson 274490e1-a14c-4722-a5f5-d82a8d6b746b
+2025-05-28T07:07:14.534Z [INFO]: Processing teacher join request for hanantomer@gmail.com
+2025-05-28T07:07:14.534Z [INFO]: Teacher hanantomer@gmail.com joining lesson 274490e1-a14c-4722-a5f5-d82a8d6b746b
+2025-05-28T07:07:14.535Z [INFO]: User hanantomer@gmail.com joined lesson channel 274490e1-a14c-4722-a5f5-d82a8d6b746b
+2025-05-28T07:07:34.661Z [INFO]: User hanantomer@gmail.com attempting to join lesson 274490e1-a14c-4722-a5f5-d82a8d6b746b
+2025-05-28T07:07:34.662Z [INFO]: Processing teacher join request for hanantomer@gmail.com
+2025-05-28T07:07:34.663Z [INFO]: Teacher hanantomer@gmail.com joining lesson 274490e1-a14c-4722-a5f5-d82a8d6b746b
+2025-05-28T07:07:34.663Z [INFO]: User hanantomer@gmail.com joined lesson channel 274490e1-a14c-4722-a5f5-d82a8d6b746b
+2025-05-28T07:07:54.026Z [INFO]: User hanantomer@gmail.com attempting to join lesson 274490e1-a14c-4722-a5f5-d82a8d6b746b
+2025-05-28T07:07:54.027Z [INFO]: Processing teacher join request for hanantomer@gmail.com
+2025-05-28T07:07:54.028Z [INFO]: Teacher hanantomer@gmail.com joining lesson 274490e1-a14c-4722-a5f5-d82a8d6b746b
+2025-05-28T07:07:54.028Z [INFO]: User hanantomer@gmail.com joined lesson channel 274490e1-a14c-4722-a5f5-d82a8d6b746b
+2025-05-28T07:07:56.350Z [INFO]: User hanantomer@gmail.com attempting to join lesson 274490e1-a14c-4722-a5f5-d82a8d6b746b
+2025-05-28T07:07:56.351Z [INFO]: Processing teacher join request for hanantomer@gmail.com
+2025-05-28T07:07:56.351Z [INFO]: Teacher hanantomer@gmail.com joining lesson 274490e1-a14c-4722-a5f5-d82a8d6b746b
+2025-05-28T07:07:56.352Z [INFO]: User hanantomer@gmail.com joined lesson channel 274490e1-a14c-4722-a5f5-d82a8d6b746b
+2025-05-28T07:09:38.555Z [INFO]: User hanantomer@gmail.com attempting to join lesson 274490e1-a14c-4722-a5f5-d82a8d6b746b
+2025-05-28T07:09:38.557Z [INFO]: Processing teacher join request for hanantomer@gmail.com
+2025-05-28T07:09:38.561Z [INFO]: Teacher hanantomer@gmail.com joining lesson 274490e1-a14c-4722-a5f5-d82a8d6b746b
+2025-05-28T07:09:38.562Z [INFO]: User hanantomer@gmail.com joined lesson channel 274490e1-a14c-4722-a5f5-d82a8d6b746b
+2025-05-28T07:09:48.263Z [INFO]: User hanantomer@gmail.com attempting to join lesson 274490e1-a14c-4722-a5f5-d82a8d6b746b
+2025-05-28T07:09:48.264Z [INFO]: Processing teacher join request for hanantomer@gmail.com
+2025-05-28T07:09:48.265Z [INFO]: Teacher hanantomer@gmail.com joining lesson 274490e1-a14c-4722-a5f5-d82a8d6b746b
+2025-05-28T07:09:48.265Z [INFO]: User hanantomer@gmail.com joined lesson channel 274490e1-a14c-4722-a5f5-d82a8d6b746b
+2025-05-28T07:10:14.154Z [INFO]: User hanantomer@gmail.com attempting to join lesson 274490e1-a14c-4722-a5f5-d82a8d6b746b
+2025-05-28T07:10:14.156Z [INFO]: Processing teacher join request for hanantomer@gmail.com
+2025-05-28T07:10:14.157Z [INFO]: Teacher hanantomer@gmail.com joining lesson 274490e1-a14c-4722-a5f5-d82a8d6b746b
+2025-05-28T07:10:14.157Z [INFO]: User hanantomer@gmail.com joined lesson channel 274490e1-a14c-4722-a5f5-d82a8d6b746b
+2025-05-28T07:10:22.129Z [INFO]: User hanantomer@gmail.com attempting to join lesson 274490e1-a14c-4722-a5f5-d82a8d6b746b
+2025-05-28T07:10:22.130Z [INFO]: Processing teacher join request for hanantomer@gmail.com
+2025-05-28T07:10:22.131Z [INFO]: Teacher hanantomer@gmail.com joining lesson 274490e1-a14c-4722-a5f5-d82a8d6b746b
+2025-05-28T07:10:22.131Z [INFO]: User hanantomer@gmail.com joined lesson channel 274490e1-a14c-4722-a5f5-d82a8d6b746b
+2025-05-28T07:10:25.110Z [INFO]: User hanantomer@gmail.com attempting to join lesson 274490e1-a14c-4722-a5f5-d82a8d6b746b
+2025-05-28T07:10:25.111Z [INFO]: Processing teacher join request for hanantomer@gmail.com
+2025-05-28T07:10:25.112Z [INFO]: Teacher hanantomer@gmail.com joining lesson 274490e1-a14c-4722-a5f5-d82a8d6b746b
+2025-05-28T07:10:25.112Z [INFO]: User hanantomer@gmail.com joined lesson channel 274490e1-a14c-4722-a5f5-d82a8d6b746b
+2025-05-28T07:10:31.101Z [INFO]: User hanantomer@gmail.com attempting to join lesson 274490e1-a14c-4722-a5f5-d82a8d6b746b
+2025-05-28T07:10:31.102Z [INFO]: Processing teacher join request for hanantomer@gmail.com
+2025-05-28T07:10:31.103Z [INFO]: Teacher hanantomer@gmail.com joining lesson 274490e1-a14c-4722-a5f5-d82a8d6b746b
+2025-05-28T07:10:31.106Z [INFO]: User hanantomer@gmail.com joined lesson channel 274490e1-a14c-4722-a5f5-d82a8d6b746b
+2025-05-28T07:10:33.614Z [INFO]: User hanantomer@gmail.com attempting to join lesson 274490e1-a14c-4722-a5f5-d82a8d6b746b
+2025-05-28T07:10:33.615Z [INFO]: Processing teacher join request for hanantomer@gmail.com
+2025-05-28T07:10:33.615Z [INFO]: Teacher hanantomer@gmail.com joining lesson 274490e1-a14c-4722-a5f5-d82a8d6b746b
+2025-05-28T07:10:33.616Z [INFO]: User hanantomer@gmail.com joined lesson channel 274490e1-a14c-4722-a5f5-d82a8d6b746b
+2025-05-28T15:35:57.892Z [INFO]: User hanantomer@gmail.com attempting to join lesson 274490e1-a14c-4722-a5f5-d82a8d6b746b
+2025-05-28T15:35:57.893Z [INFO]: Processing teacher join request for hanantomer@gmail.com
+2025-05-28T15:35:57.894Z [INFO]: Teacher hanantomer@gmail.com joining lesson 274490e1-a14c-4722-a5f5-d82a8d6b746b
+2025-05-28T15:35:57.894Z [INFO]: User hanantomer@gmail.com joined lesson channel 274490e1-a14c-4722-a5f5-d82a8d6b746b
+2025-05-28T15:36:01.041Z [INFO]: User hanantomer@gmail.com attempting to join lesson 274490e1-a14c-4722-a5f5-d82a8d6b746b
+2025-05-28T15:36:01.042Z [INFO]: Processing teacher join request for hanantomer@gmail.com
+2025-05-28T15:36:01.042Z [INFO]: Teacher hanantomer@gmail.com joining lesson 274490e1-a14c-4722-a5f5-d82a8d6b746b
+2025-05-28T15:36:01.043Z [INFO]: User hanantomer@gmail.com joined lesson channel 274490e1-a14c-4722-a5f5-d82a8d6b746b
+2025-05-28T15:36:04.458Z [INFO]: User hanantomer@gmail.com attempting to join lesson 274490e1-a14c-4722-a5f5-d82a8d6b746b
+2025-05-28T15:36:04.459Z [INFO]: Processing teacher join request for hanantomer@gmail.com
+2025-05-28T15:36:04.460Z [INFO]: Teacher hanantomer@gmail.com joining lesson 274490e1-a14c-4722-a5f5-d82a8d6b746b
+2025-05-28T15:36:04.461Z [INFO]: User hanantomer@gmail.com joined lesson channel 274490e1-a14c-4722-a5f5-d82a8d6b746b
+2025-05-28T15:36:30.284Z [INFO]: User hanantomer@gmail.com attempting to join lesson 274490e1-a14c-4722-a5f5-d82a8d6b746b
+2025-05-28T15:36:30.289Z [INFO]: Processing teacher join request for hanantomer@gmail.com
+2025-05-28T15:36:30.289Z [INFO]: Teacher hanantomer@gmail.com joining lesson 274490e1-a14c-4722-a5f5-d82a8d6b746b
+2025-05-28T15:36:30.290Z [INFO]: User hanantomer@gmail.com joined lesson channel 274490e1-a14c-4722-a5f5-d82a8d6b746b
+2025-05-28T15:36:33.105Z [INFO]: User hanantomer@gmail.com attempting to join lesson 274490e1-a14c-4722-a5f5-d82a8d6b746b
+2025-05-28T15:36:33.106Z [INFO]: Processing teacher join request for hanantomer@gmail.com
+2025-05-28T15:36:33.107Z [INFO]: Teacher hanantomer@gmail.com joining lesson 274490e1-a14c-4722-a5f5-d82a8d6b746b
+2025-05-28T15:36:33.107Z [INFO]: User hanantomer@gmail.com joined lesson channel 274490e1-a14c-4722-a5f5-d82a8d6b746b
+2025-05-28T15:36:37.818Z [INFO]: User hanantomer@gmail.com attempting to join lesson 274490e1-a14c-4722-a5f5-d82a8d6b746b
+2025-05-28T15:36:37.819Z [INFO]: Processing teacher join request for hanantomer@gmail.com
+2025-05-28T15:36:37.820Z [INFO]: Teacher hanantomer@gmail.com joining lesson 274490e1-a14c-4722-a5f5-d82a8d6b746b
+2025-05-28T15:36:37.820Z [INFO]: User hanantomer@gmail.com joined lesson channel 274490e1-a14c-4722-a5f5-d82a8d6b746b
+2025-05-28T15:36:43.186Z [INFO]: User hanantomer@gmail.com attempting to join lesson 274490e1-a14c-4722-a5f5-d82a8d6b746b
+2025-05-28T15:36:43.187Z [INFO]: Processing teacher join request for hanantomer@gmail.com
+2025-05-28T15:36:43.187Z [INFO]: Teacher hanantomer@gmail.com joining lesson 274490e1-a14c-4722-a5f5-d82a8d6b746b
+2025-05-28T15:36:43.188Z [INFO]: User hanantomer@gmail.com joined lesson channel 274490e1-a14c-4722-a5f5-d82a8d6b746b
+2025-05-28T15:36:46.155Z [INFO]: User hanantomer@gmail.com attempting to join lesson 274490e1-a14c-4722-a5f5-d82a8d6b746b
+2025-05-28T15:36:46.156Z [INFO]: Processing teacher join request for hanantomer@gmail.com
+2025-05-28T15:36:46.156Z [INFO]: Teacher hanantomer@gmail.com joining lesson 274490e1-a14c-4722-a5f5-d82a8d6b746b
+2025-05-28T15:36:46.157Z [INFO]: User hanantomer@gmail.com joined lesson channel 274490e1-a14c-4722-a5f5-d82a8d6b746b
+2025-05-28T15:37:17.212Z [INFO]: User hanantomer@gmail.com attempting to join lesson 274490e1-a14c-4722-a5f5-d82a8d6b746b
+2025-05-28T15:37:17.213Z [INFO]: Processing teacher join request for hanantomer@gmail.com
+2025-05-28T15:37:17.213Z [INFO]: Teacher hanantomer@gmail.com joining lesson 274490e1-a14c-4722-a5f5-d82a8d6b746b
+2025-05-28T15:37:17.214Z [INFO]: User hanantomer@gmail.com joined lesson channel 274490e1-a14c-4722-a5f5-d82a8d6b746b
+2025-05-28T15:37:21.614Z [INFO]: User hanantomer@gmail.com attempting to join lesson 274490e1-a14c-4722-a5f5-d82a8d6b746b
+2025-05-28T15:37:21.615Z [INFO]: Processing teacher join request for hanantomer@gmail.com
+2025-05-28T15:37:21.616Z [INFO]: Teacher hanantomer@gmail.com joining lesson 274490e1-a14c-4722-a5f5-d82a8d6b746b
+2025-05-28T15:37:21.616Z [INFO]: User hanantomer@gmail.com joined lesson channel 274490e1-a14c-4722-a5f5-d82a8d6b746b
+2025-05-28T15:37:24.051Z [INFO]: User hanantomer@gmail.com attempting to join lesson 274490e1-a14c-4722-a5f5-d82a8d6b746b
+2025-05-28T15:37:24.052Z [INFO]: Processing teacher join request for hanantomer@gmail.com
+2025-05-28T15:37:24.052Z [INFO]: Teacher hanantomer@gmail.com joining lesson 274490e1-a14c-4722-a5f5-d82a8d6b746b
+2025-05-28T15:37:24.053Z [INFO]: User hanantomer@gmail.com joined lesson channel 274490e1-a14c-4722-a5f5-d82a8d6b746b
+2025-05-28T15:37:28.878Z [INFO]: User hanantomer@gmail.com attempting to join lesson 274490e1-a14c-4722-a5f5-d82a8d6b746b
+2025-05-28T15:37:28.879Z [INFO]: Processing teacher join request for hanantomer@gmail.com
+2025-05-28T15:37:28.880Z [INFO]: Teacher hanantomer@gmail.com joining lesson 274490e1-a14c-4722-a5f5-d82a8d6b746b
+2025-05-28T15:37:28.880Z [INFO]: User hanantomer@gmail.com joined lesson channel 274490e1-a14c-4722-a5f5-d82a8d6b746b
+2025-05-28T15:37:33.306Z [INFO]: User hanantomer@gmail.com attempting to join lesson 274490e1-a14c-4722-a5f5-d82a8d6b746b
+2025-05-28T15:37:33.307Z [INFO]: Processing teacher join request for hanantomer@gmail.com
+2025-05-28T15:37:33.308Z [INFO]: Teacher hanantomer@gmail.com joining lesson 274490e1-a14c-4722-a5f5-d82a8d6b746b
+2025-05-28T15:37:33.308Z [INFO]: User hanantomer@gmail.com joined lesson channel 274490e1-a14c-4722-a5f5-d82a8d6b746b
+2025-05-28T15:37:44.184Z [INFO]: User hanantomer@gmail.com attempting to join lesson 274490e1-a14c-4722-a5f5-d82a8d6b746b
+2025-05-28T15:37:44.185Z [INFO]: Processing teacher join request for hanantomer@gmail.com
+2025-05-28T15:37:44.185Z [INFO]: Teacher hanantomer@gmail.com joining lesson 274490e1-a14c-4722-a5f5-d82a8d6b746b
+2025-05-28T15:37:44.186Z [INFO]: User hanantomer@gmail.com joined lesson channel 274490e1-a14c-4722-a5f5-d82a8d6b746b
+2025-05-28T15:37:54.007Z [INFO]: User hanantomer@gmail.com attempting to join lesson 274490e1-a14c-4722-a5f5-d82a8d6b746b
+2025-05-28T15:37:54.009Z [INFO]: Processing teacher join request for hanantomer@gmail.com
+2025-05-28T15:37:54.010Z [INFO]: Teacher hanantomer@gmail.com joining lesson 274490e1-a14c-4722-a5f5-d82a8d6b746b
+2025-05-28T15:37:54.010Z [INFO]: User hanantomer@gmail.com joined lesson channel 274490e1-a14c-4722-a5f5-d82a8d6b746b
+2025-05-28T15:38:00.159Z [INFO]: User hanantomer@gmail.com attempting to join lesson 274490e1-a14c-4722-a5f5-d82a8d6b746b
+2025-05-28T15:38:00.160Z [INFO]: Processing teacher join request for hanantomer@gmail.com
+2025-05-28T15:38:00.160Z [INFO]: Teacher hanantomer@gmail.com joining lesson 274490e1-a14c-4722-a5f5-d82a8d6b746b
+2025-05-28T15:38:00.161Z [INFO]: User hanantomer@gmail.com joined lesson channel 274490e1-a14c-4722-a5f5-d82a8d6b746b
+2025-05-28T15:38:02.036Z [INFO]: User hanantomer@gmail.com attempting to join lesson 274490e1-a14c-4722-a5f5-d82a8d6b746b
+2025-05-28T15:38:02.037Z [INFO]: Processing teacher join request for hanantomer@gmail.com
+2025-05-28T15:38:02.037Z [INFO]: Teacher hanantomer@gmail.com joining lesson 274490e1-a14c-4722-a5f5-d82a8d6b746b
+2025-05-28T15:38:02.038Z [INFO]: User hanantomer@gmail.com joined lesson channel 274490e1-a14c-4722-a5f5-d82a8d6b746b
+2025-05-28T15:38:03.725Z [INFO]: User hanantomer@gmail.com attempting to join lesson 274490e1-a14c-4722-a5f5-d82a8d6b746b
+2025-05-28T15:38:03.726Z [INFO]: Processing teacher join request for hanantomer@gmail.com
+2025-05-28T15:38:03.727Z [INFO]: Teacher hanantomer@gmail.com joining lesson 274490e1-a14c-4722-a5f5-d82a8d6b746b
+2025-05-28T15:38:03.727Z [INFO]: User hanantomer@gmail.com joined lesson channel 274490e1-a14c-4722-a5f5-d82a8d6b746b
+2025-05-28T15:38:26.205Z [INFO]: User hanantomer@gmail.com attempting to join lesson 274490e1-a14c-4722-a5f5-d82a8d6b746b
+2025-05-28T15:38:26.206Z [INFO]: Processing teacher join request for hanantomer@gmail.com
+2025-05-28T15:38:26.206Z [INFO]: Teacher hanantomer@gmail.com joining lesson 274490e1-a14c-4722-a5f5-d82a8d6b746b
+2025-05-28T15:38:26.206Z [INFO]: User hanantomer@gmail.com joined lesson channel 274490e1-a14c-4722-a5f5-d82a8d6b746b
+2025-05-28T15:38:32.636Z [INFO]: User hanantomer@gmail.com attempting to join lesson 274490e1-a14c-4722-a5f5-d82a8d6b746b
+2025-05-28T15:38:32.637Z [INFO]: Processing teacher join request for hanantomer@gmail.com
+2025-05-28T15:38:32.638Z [INFO]: Teacher hanantomer@gmail.com joining lesson 274490e1-a14c-4722-a5f5-d82a8d6b746b
+2025-05-28T15:38:32.638Z [INFO]: User hanantomer@gmail.com joined lesson channel 274490e1-a14c-4722-a5f5-d82a8d6b746b
+2025-05-28T15:38:39.688Z [INFO]: User hanantomer@gmail.com attempting to join lesson 274490e1-a14c-4722-a5f5-d82a8d6b746b
+2025-05-28T15:38:39.689Z [INFO]: Processing teacher join request for hanantomer@gmail.com
+2025-05-28T15:38:39.689Z [INFO]: Teacher hanantomer@gmail.com joining lesson 274490e1-a14c-4722-a5f5-d82a8d6b746b
+2025-05-28T15:38:39.689Z [INFO]: User hanantomer@gmail.com joined lesson channel 274490e1-a14c-4722-a5f5-d82a8d6b746b
+2025-05-28T15:38:50.570Z [INFO]: User hanantomer@gmail.com attempting to join lesson 274490e1-a14c-4722-a5f5-d82a8d6b746b
+2025-05-28T15:38:50.570Z [INFO]: Processing teacher join request for hanantomer@gmail.com
+2025-05-28T15:38:50.571Z [INFO]: Teacher hanantomer@gmail.com joining lesson 274490e1-a14c-4722-a5f5-d82a8d6b746b
+2025-05-28T15:38:50.571Z [INFO]: User hanantomer@gmail.com joined lesson channel 274490e1-a14c-4722-a5f5-d82a8d6b746b
+2025-05-28T15:38:58.594Z [INFO]: User hanantomer@gmail.com attempting to join lesson 274490e1-a14c-4722-a5f5-d82a8d6b746b
+2025-05-28T15:38:58.595Z [INFO]: Processing teacher join request for hanantomer@gmail.com
+2025-05-28T15:38:58.595Z [INFO]: Teacher hanantomer@gmail.com joining lesson 274490e1-a14c-4722-a5f5-d82a8d6b746b
+2025-05-28T15:38:58.596Z [INFO]: User hanantomer@gmail.com joined lesson channel 274490e1-a14c-4722-a5f5-d82a8d6b746b
+2025-05-28T15:39:09.163Z [INFO]: User hanantomer@gmail.com attempting to join lesson 274490e1-a14c-4722-a5f5-d82a8d6b746b
+2025-05-28T15:39:09.165Z [INFO]: Processing teacher join request for hanantomer@gmail.com
+2025-05-28T15:39:09.165Z [INFO]: Teacher hanantomer@gmail.com joining lesson 274490e1-a14c-4722-a5f5-d82a8d6b746b
+2025-05-28T15:39:09.166Z [INFO]: User hanantomer@gmail.com joined lesson channel 274490e1-a14c-4722-a5f5-d82a8d6b746b
+2025-05-28T15:39:21.716Z [INFO]: User hanantomer@gmail.com attempting to join lesson 274490e1-a14c-4722-a5f5-d82a8d6b746b
+2025-05-28T15:39:21.717Z [INFO]: Processing teacher join request for hanantomer@gmail.com
+2025-05-28T15:39:21.718Z [INFO]: Teacher hanantomer@gmail.com joining lesson 274490e1-a14c-4722-a5f5-d82a8d6b746b
+2025-05-28T15:39:21.718Z [INFO]: User hanantomer@gmail.com joined lesson channel 274490e1-a14c-4722-a5f5-d82a8d6b746b
+2025-05-28T15:39:26.772Z [INFO]: User hanantomer@gmail.com attempting to join lesson 274490e1-a14c-4722-a5f5-d82a8d6b746b
+2025-05-28T15:39:26.773Z [INFO]: Processing teacher join request for hanantomer@gmail.com
+2025-05-28T15:39:26.774Z [INFO]: Teacher hanantomer@gmail.com joining lesson 274490e1-a14c-4722-a5f5-d82a8d6b746b
+2025-05-28T15:39:26.774Z [INFO]: User hanantomer@gmail.com joined lesson channel 274490e1-a14c-4722-a5f5-d82a8d6b746b
+2025-05-28T15:40:07.277Z [INFO]: User hanantomer@gmail.com attempting to join lesson 274490e1-a14c-4722-a5f5-d82a8d6b746b
+2025-05-28T15:40:07.278Z [INFO]: Processing teacher join request for hanantomer@gmail.com
+2025-05-28T15:40:07.279Z [INFO]: Teacher hanantomer@gmail.com joining lesson 274490e1-a14c-4722-a5f5-d82a8d6b746b
+2025-05-28T15:40:07.279Z [INFO]: User hanantomer@gmail.com joined lesson channel 274490e1-a14c-4722-a5f5-d82a8d6b746b
+2025-05-28T15:40:11.884Z [INFO]: User hanantomer@gmail.com attempting to join lesson 274490e1-a14c-4722-a5f5-d82a8d6b746b
+2025-05-28T15:40:11.885Z [INFO]: Processing teacher join request for hanantomer@gmail.com
+2025-05-28T15:40:11.886Z [INFO]: Teacher hanantomer@gmail.com joining lesson 274490e1-a14c-4722-a5f5-d82a8d6b746b
+2025-05-28T15:40:11.886Z [INFO]: User hanantomer@gmail.com joined lesson channel 274490e1-a14c-4722-a5f5-d82a8d6b746b
+2025-05-28T15:40:19.578Z [INFO]: User hanantomer@gmail.com attempting to join lesson 274490e1-a14c-4722-a5f5-d82a8d6b746b
+2025-05-28T15:40:19.579Z [INFO]: Processing teacher join request for hanantomer@gmail.com
+2025-05-28T15:40:19.580Z [INFO]: Teacher hanantomer@gmail.com joining lesson 274490e1-a14c-4722-a5f5-d82a8d6b746b
+2025-05-28T15:40:19.580Z [INFO]: User hanantomer@gmail.com joined lesson channel 274490e1-a14c-4722-a5f5-d82a8d6b746b
+2025-05-28T15:49:51.982Z [INFO]: User hanantomer@gmail.com attempting to join lesson 274490e1-a14c-4722-a5f5-d82a8d6b746b
+2025-05-28T15:49:51.983Z [INFO]: Processing teacher join request for hanantomer@gmail.com
+2025-05-28T15:49:51.983Z [INFO]: Teacher hanantomer@gmail.com joining lesson 274490e1-a14c-4722-a5f5-d82a8d6b746b
+2025-05-28T15:49:51.984Z [INFO]: User hanantomer@gmail.com joined lesson channel 274490e1-a14c-4722-a5f5-d82a8d6b746b
+2025-05-28T15:49:55.435Z [INFO]: User hanantomer@gmail.com attempting to join lesson 274490e1-a14c-4722-a5f5-d82a8d6b746b
+2025-05-28T15:49:55.436Z [INFO]: Processing teacher join request for hanantomer@gmail.com
+2025-05-28T15:49:55.437Z [INFO]: Teacher hanantomer@gmail.com joining lesson 274490e1-a14c-4722-a5f5-d82a8d6b746b
+2025-05-28T15:49:55.437Z [INFO]: User hanantomer@gmail.com joined lesson channel 274490e1-a14c-4722-a5f5-d82a8d6b746b
+2025-05-28T15:50:03.439Z [INFO]: User hanantomer@gmail.com attempting to join lesson 274490e1-a14c-4722-a5f5-d82a8d6b746b
+2025-05-28T15:50:03.440Z [INFO]: Processing teacher join request for hanantomer@gmail.com
+2025-05-28T15:50:03.442Z [INFO]: Teacher hanantomer@gmail.com joining lesson 274490e1-a14c-4722-a5f5-d82a8d6b746b
+2025-05-28T15:50:03.443Z [INFO]: User hanantomer@gmail.com joined lesson channel 274490e1-a14c-4722-a5f5-d82a8d6b746b
+2025-05-28T15:50:10.477Z [INFO]: User hanantomer@gmail.com attempting to join lesson 274490e1-a14c-4722-a5f5-d82a8d6b746b
+2025-05-28T15:50:10.478Z [INFO]: Processing teacher join request for hanantomer@gmail.com
+2025-05-28T15:50:10.479Z [INFO]: Teacher hanantomer@gmail.com joining lesson 274490e1-a14c-4722-a5f5-d82a8d6b746b
+2025-05-28T15:50:10.479Z [INFO]: User hanantomer@gmail.com joined lesson channel 274490e1-a14c-4722-a5f5-d82a8d6b746b
