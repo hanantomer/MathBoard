@@ -348,6 +348,7 @@ function endDrawCurve() {
     cpx: curveAttributes.value.cpx,
     cpy: curveAttributes.value.cpy,
   });
+  editModeStore.setDefaultEditMode();
 }
 
 function saveCurve(curevAttributes: CurveAttributes) {

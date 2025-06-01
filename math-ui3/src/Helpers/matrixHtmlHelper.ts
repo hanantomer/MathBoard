@@ -176,7 +176,6 @@ export default function useHtmlMatrixHelper() {
   function col(n: NotationAttributes): number | null {
     switch (n.notationType) {
       case "EXPONENT":
-      case "ANNOTATION":
       case "SIGN":
       case "SQRTSYMBOL":
       case "SYMBOL": {
@@ -199,7 +198,6 @@ export default function useHtmlMatrixHelper() {
   function row(n: NotationAttributes) {
     switch (n.notationType) {
       case "EXPONENT":
-      case "ANNOTATION":
       case "SQRTSYMBOL":
       case "SIGN":
       case "SYMBOL":
@@ -218,6 +216,11 @@ export default function useHtmlMatrixHelper() {
   }
 
   function x(n: NotationAttributes): number | null {
+
+    if (n.notationType === "ANNOTATION") {
+      return (n as AnnotationNotationAttributes).x;
+    }
+
     let colIdx = col(n);
     let deltaX =
       n.notationType === "SQRTSYMBOL"
@@ -228,6 +231,12 @@ export default function useHtmlMatrixHelper() {
   }
 
   function y(n: NotationAttributes) {
+
+    if (n.notationType === "ANNOTATION") {
+      return (n as AnnotationNotationAttributes).y;
+    }
+
+
     let rowIdx = row(n);
     if (!rowIdx) return null;
     let deltaY =

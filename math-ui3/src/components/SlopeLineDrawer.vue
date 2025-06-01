@@ -23,7 +23,7 @@
           'SLOPE_LINE_EDITING_RIGHT',
           'SLOPE_LINE_EDITING_LEFT',
           'SLOPE_LINE_SELECTED',
-          'POLYGON_DRAWING'
+          'POLYGON_DRAWING',
         ],
         func: endDrawing,
       }"
@@ -100,6 +100,10 @@ const notationMutateHelper = useNotationMutateHelper();
 
 // vars
 
+const POLYGON_SAVE_DELAY = 1000;
+
+let drawingTimer: number | null = null;
+
 let modifyRight = false;
 
 let movementDirection: MovementDirection = "NONE";
@@ -149,6 +153,10 @@ function setInitialPosition(p: DotCoordinates) {
 }
 
 function drawLine(p: DotCoordinates) {
+  if (editModeStore.isPolygonDrawingMode()) {
+    handlePolygonTimer(p);
+  }
+
   if (slopeType === "NONE") {
     slopeType = getSlopeTypeForNewLine(p.x, p.y);
   }
@@ -174,6 +182,21 @@ function drawLine(p: DotCoordinates) {
     linePosition.value.p1x = p.x;
     linePosition.value.p1y = p.y;
   }
+}
+
+function handlePolygonTimer(p: DotCoordinates) {
+  // Clear any existing timer
+  if (drawingTimer) {
+    clearTimeout(drawingTimer);
+  }
+
+  // Start new timer
+  drawingTimer = window.setTimeout(() => {
+    saveSlopeLine();
+    setInitialPosition(p);
+    editModeStore.setNextEditMode();
+    drawingTimer = null;
+  }, POLYGON_SAVE_DELAY);
 }
 
 function selectLine(notation: NotationAttributes) {
@@ -228,6 +251,22 @@ function getMovementDirection(yPos: number): MovementDirection {
 }
 
 function endDrawing() {
+  if (editModeStore.isPolygonDrawingMode() && drawingTimer) {
+    clearTimeout(drawingTimer);
+    drawingTimer = null;
+  }
+
+  if (
+    editModeStore.isSlopeLineDrawingMode() ||
+    editModeStore.isSlopeLineEditingMode()
+  ) {
+    saveSlopeLine();
+  }
+
+  editModeStore.setDefaultEditMode();
+}
+
+function saveSlopeLine() {
   if (
     linePosition.value.p1x === 0 &&
     linePosition.value.p1y === 0 &&
@@ -244,10 +283,6 @@ function endDrawing() {
     return;
   }
 
-  saveSlopeLine();
-}
-
-function saveSlopeLine() {
   fixLineLeftEdge(linePosition.value);
   fixLineRightEdge(linePosition.value);
 
@@ -264,36 +299,6 @@ function saveSlopeLine() {
     notationMutateHelper.addSlopeLineNotation(linePosition.value);
   }
 }
-
-/*
-function fixLineEdge() {
-
-  // right
-  const nearLineRightEdge = screenHelper.getNearestNotationEdge({
-    x: linePosition.value.p1x,
-    y: linePosition.value.p1y,
-  });
-
-  if (nearLineRightEdge == null) {
-    screenHelper.getClos
-  }
-
-  if (nearLineRightEdge != null) {
-    linePosition.value.p1x = nearLineRightEdge.x;
-    linePosition.value.p1y = nearLineRightEdge.y;
-  }
-
-
-  const nearLineLeftEdge = screenHelper.getCloseNotationEdge({
-    x: linePosition.value.p2x,
-    y: linePosition.value.p2y,
-  });
-
-  if (nearLineLeftEdge != null) {
-    linePosition.value.p2x = nearLineLeftEdge.x;
-    linePosition.value.p2y = nearLineLeftEdge.y;
-  }
-}*/
 
 function fixLineRightEdge(linePosition: SlopeLineAttributes) {
   const lineRightPosition = {

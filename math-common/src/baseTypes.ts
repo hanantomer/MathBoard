@@ -183,7 +183,7 @@ export type ExponentNotationAttributes =
 export type AnnotationNotationAttributes =
   EntityAttributes &
     NotationAttributes &
-    CellAttributes &
+    DotCoordinates &
     SingleValueAttributes;
 
 export type SqrtNotationAttributes =
@@ -250,7 +250,7 @@ export type AnnotationNotationCreationAttributes =
   Omit<
     EntityAttributes &
       NotationAttributes &
-      CellAttributes &
+      DotCoordinates &
       SingleValueAttributes,
     "uuid"
   >;

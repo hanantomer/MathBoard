@@ -44,11 +44,11 @@ export default class LessonAnnotation extends Model<
 
     @AllowNull(false)
     @Column({ type: DataType.INTEGER })
-    col!: number;
+    x!: number;
 
     @AllowNull(false)
     @Column({ type: DataType.INTEGER })
-    row!: number;
+    y!: number;
 
     @AllowNull(false)
     @Column({ type: DataType.STRING })

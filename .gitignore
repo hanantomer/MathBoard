@@ -54,3 +54,6 @@ math-server/math-db.log
 math-server/server.log
 math-ui3/tsconfig.node.tsbuildinfo
 math-ui3/tsconfig.tsbuildinfo
+math-common/tsconfig.tsbuildinfo
+math-db/tsconfig.tsbuildinfo
+math-messages/authentication.log

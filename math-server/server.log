@@ -11422,3 +11422,2303 @@ notNull Violation: LessonSymbol.row cannot be null,
             , fields: 
             ,
              }
+2025-05-28T15:56:37.751Z [ERROR]: undefined,  
+            TypeError: editMode.forEach is not a function
+    at Object.watchMouseEvent (http://localhost:3000/src/helpers/watchHelper.ts?t=1748447405118:14:14)
+    at setup (http://localhost:3000/src/components/LineWatcher.vue?t=1748447797692:52:17)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2289:19)
+    at setupStatefulComponent (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:10085:25)
+    at setupComponent (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:10046:36)
+    at mountComponent (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:7368:7)
+    at processComponent (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:7334:9)
+    at patch (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:6849:11)
+    at patchKeyedChildren (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:7883:11)
+    at patchChildren (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:7664:11), 
+            ,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-28T15:56:37.757Z [ERROR]: undefined,  
+            TypeError: editMode.forEach is not a function
+    at Object.watchMouseEvent (http://localhost:3000/src/helpers/watchHelper.ts?t=1748447405118:14:14)
+    at setup (http://localhost:3000/src/components/LineWatcher.vue?t=1748447797692:52:17)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2289:19)
+    at setupStatefulComponent (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:10085:25)
+    at setupComponent (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:10046:36)
+    at mountComponent (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:7368:7)
+    at processComponent (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:7334:9)
+    at patch (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:6849:11)
+    at patchKeyedChildren (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:7883:11)
+    at patchChildren (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:7664:11), 
+            ,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-28T15:56:38.051Z [ERROR]: undefined,  
+            TypeError: editModes.forEach is not a function
+    at Object.watchNotationSelection (http://localhost:3000/src/helpers/watchHelper.ts?t=1748447405118:66:15)
+    at setup (http://localhost:3000/src/components/LineWatcher.vue?t=1748447797692:72:17)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2289:19)
+    at setupStatefulComponent (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:10085:25)
+    at setupComponent (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:10046:36)
+    at mountComponent (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:7368:7)
+    at processComponent (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:7334:9)
+    at patch (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:6849:11)
+    at patchKeyedChildren (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:7883:11)
+    at patchChildren (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:7664:11), 
+            ,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-28T15:56:39.345Z [ERROR]: undefined,  
+            TypeError: editMode.forEach is not a function
+    at Object.watchMouseEvent (http://localhost:3000/src/helpers/watchHelper.ts?t=1748447405118:14:14)
+    at setup (http://localhost:3000/src/components/LineWatcher.vue?t=1748447799001:52:17)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2289:19)
+    at setupStatefulComponent (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:10085:25)
+    at setupComponent (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:10046:36)
+    at mountComponent (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:7368:7)
+    at processComponent (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:7334:9)
+    at patch (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:6849:11)
+    at patchKeyedChildren (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:7883:11)
+    at patchChildren (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:7664:11), 
+            ,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-28T15:56:39.580Z [ERROR]: undefined,  
+            TypeError: editMode.forEach is not a function
+    at Object.watchMouseEvent (http://localhost:3000/src/helpers/watchHelper.ts?t=1748447405118:14:14)
+    at setup (http://localhost:3000/src/components/LineWatcher.vue?t=1748447799001:52:17)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2289:19)
+    at setupStatefulComponent (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:10085:25)
+    at setupComponent (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:10046:36)
+    at mountComponent (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:7368:7)
+    at processComponent (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:7334:9)
+    at patch (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:6849:11)
+    at patchKeyedChildren (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:7883:11)
+    at patchChildren (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:7664:11), 
+            ,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-28T15:56:39.655Z [ERROR]: undefined,  
+            TypeError: editModes.forEach is not a function
+    at Object.watchNotationSelection (http://localhost:3000/src/helpers/watchHelper.ts?t=1748447405118:66:15)
+    at setup (http://localhost:3000/src/components/LineWatcher.vue?t=1748447799001:72:17)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2289:19)
+    at setupStatefulComponent (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:10085:25)
+    at setupComponent (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:10046:36)
+    at mountComponent (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:7368:7)
+    at processComponent (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:7334:9)
+    at patch (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:6849:11)
+    at patchKeyedChildren (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:7883:11)
+    at patchChildren (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:7664:11), 
+            ,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-28T15:56:42.240Z [ERROR]: undefined,  
+            TypeError: editMode.forEach is not a function
+    at Object.watchMouseEvent (http://localhost:3000/src/helpers/watchHelper.ts?t=1748447405118:14:14)
+    at setup (http://localhost:3000/src/components/LineWatcher.vue?t=1748447801871:45:17)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2289:19)
+    at setupStatefulComponent (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:10085:25)
+    at setupComponent (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:10046:36)
+    at mountComponent (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:7368:7)
+    at processComponent (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:7334:9)
+    at patch (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:6849:11)
+    at patchKeyedChildren (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:7883:11)
+    at patchChildren (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:7664:11), 
+            ,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-28T15:56:42.449Z [ERROR]: undefined,  
+            TypeError: editMode.forEach is not a function
+    at Object.watchMouseEvent (http://localhost:3000/src/helpers/watchHelper.ts?t=1748447405118:14:14)
+    at setup (http://localhost:3000/src/components/LineWatcher.vue?t=1748447801871:45:17)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2289:19)
+    at setupStatefulComponent (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:10085:25)
+    at setupComponent (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:10046:36)
+    at mountComponent (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:7368:7)
+    at processComponent (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:7334:9)
+    at patch (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:6849:11)
+    at patchKeyedChildren (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:7883:11)
+    at patchChildren (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:7664:11), 
+            ,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-28T15:56:42.551Z [ERROR]: undefined,  
+            TypeError: editModes.forEach is not a function
+    at Object.watchNotationSelection (http://localhost:3000/src/helpers/watchHelper.ts?t=1748447405118:66:15)
+    at setup (http://localhost:3000/src/components/LineWatcher.vue?t=1748447801871:72:17)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2289:19)
+    at setupStatefulComponent (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:10085:25)
+    at setupComponent (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:10046:36)
+    at mountComponent (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:7368:7)
+    at processComponent (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:7334:9)
+    at patch (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:6849:11)
+    at patchKeyedChildren (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:7883:11)
+    at patchChildren (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:7664:11), 
+            ,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-28T16:01:54.830Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-28T16:02:01.281Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-28T16:03:02.256Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-28T16:05:39.486Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-28T16:05:47.049Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-28T16:05:49.138Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-28T16:05:50.541Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-28T16:05:53.805Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-28T16:05:57.421Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-28T18:14:16.659Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-28T18:14:17.269Z [ERROR]: undefined,  
+            TypeError: Cannot read properties of null (reading 'validate')
+    at validateLogin (http://localhost:3000/src/components/Login.vue:54:42)
+    at http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:11340:45
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2289:19)
+    at callWithAsyncErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2296:17)
+    at callWithAsyncErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2307:19)
+    at HTMLButtonElement.invoker (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:11311:5), 
+            ,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-28T18:14:31.782Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-28T18:14:33.446Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-28T18:16:10.212Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-28T18:17:06.118Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-28T18:17:08.813Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-28T18:17:11.556Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-28T18:17:16.737Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-28T18:17:18.515Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-28T18:22:53.475Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-28T18:27:52.802Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-28T18:29:38.625Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-28T18:33:15.567Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-28T18:33:55.062Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-28T18:47:28.024Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-28T18:53:45.747Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-29T17:01:17.052Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-29T17:01:19.321Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-29T17:01:22.775Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-29T17:04:37.949Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-29T17:09:58.377Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-29T17:13:27.058Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-29T17:54:57.388Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-29T18:15:30.899Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-29T18:57:23.937Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-30T10:10:37.881Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-30T10:10:39.680Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-30T10:10:42.588Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-30T10:12:40.253Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-30T10:52:26.049Z [ERROR]: undefined,  
+            ReferenceError: isLine is not defined
+    at setup (http://localhost:3000/src/components/SlopeLineDrawer.vue?t=1748602345957:180:5)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2289:19)
+    at setupStatefulComponent (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:10085:25)
+    at setupComponent (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:10046:36)
+    at mountComponent (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:7368:7)
+    at processComponent (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:7334:9)
+    at patch (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:6849:11)
+    at patchKeyedChildren (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:7883:11)
+    at patchChildren (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:7664:11)
+    at patchElement (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:7134:7), 
+            ,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-30T10:52:26.055Z [ERROR]: undefined,  
+            TypeError: Cannot read properties of undefined (reading 'p1x')
+    at Proxy._sfc_render (http://localhost:3000/src/components/SlopeLineDrawer.vue?t=1748602345957:295:35)
+    at renderComponentRoot (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:8679:17)
+    at ReactiveEffect.componentUpdateFn [as fn] (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:7472:46)
+    at ReactiveEffect.run (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:494:19)
+    at setupRenderEffect (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:7607:5)
+    at mountComponent (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:7382:7)
+    at processComponent (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:7334:9)
+    at patch (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:6849:11)
+    at patchKeyedChildren (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:7883:11)
+    at patchChildren (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:7664:11), 
+            ,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-30T10:52:34.488Z [ERROR]: undefined,  
+            ReferenceError: isLineLong is not defined
+    at setup (http://localhost:3000/src/components/SlopeLineDrawer.vue?t=1748602354073:180:5)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2289:19)
+    at setupStatefulComponent (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:10085:25)
+    at setupComponent (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:10046:36)
+    at mountComponent (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:7368:7)
+    at processComponent (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:7334:9)
+    at patch (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:6849:11)
+    at patchKeyedChildren (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:7883:11)
+    at patchChildren (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:7664:11)
+    at patchElement (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:7134:7), 
+            ,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-30T10:52:34.655Z [ERROR]: undefined,  
+            TypeError: Cannot read properties of undefined (reading 'p1x')
+    at Proxy._sfc_render (http://localhost:3000/src/components/SlopeLineDrawer.vue?t=1748602354073:295:35)
+    at renderComponentRoot (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:8679:17)
+    at ReactiveEffect.componentUpdateFn [as fn] (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:7472:46)
+    at ReactiveEffect.run (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:494:19)
+    at setupRenderEffect (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:7607:5)
+    at mountComponent (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:7382:7)
+    at processComponent (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:7334:9)
+    at patch (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:6849:11)
+    at patchKeyedChildren (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:7883:11)
+    at patchChildren (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:7664:11), 
+            ,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-30T10:52:35.861Z [ERROR]: undefined,  
+            ReferenceError: isLineLongEnough is not defined
+    at setup (http://localhost:3000/src/components/SlopeLineDrawer.vue?t=1748602355789:180:5)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2289:19)
+    at setupStatefulComponent (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:10085:25)
+    at setupComponent (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:10046:36)
+    at mountComponent (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:7368:7)
+    at processComponent (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:7334:9)
+    at patch (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:6849:11)
+    at patchKeyedChildren (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:7883:11)
+    at patchChildren (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:7664:11)
+    at patchElement (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:7134:7), 
+            ,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-30T10:52:36.168Z [ERROR]: undefined,  
+            TypeError: Cannot read properties of undefined (reading 'p1x')
+    at Proxy._sfc_render (http://localhost:3000/src/components/SlopeLineDrawer.vue?t=1748602355789:295:35)
+    at renderComponentRoot (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:8679:17)
+    at ReactiveEffect.componentUpdateFn [as fn] (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:7472:46)
+    at ReactiveEffect.run (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:494:19)
+    at setupRenderEffect (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:7607:5)
+    at mountComponent (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:7382:7)
+    at processComponent (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:7334:9)
+    at patch (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:6849:11)
+    at patchKeyedChildren (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:7883:11)
+    at patchChildren (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:7664:11), 
+            ,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-30T12:15:40.469Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-30T12:17:44.667Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-30T13:13:44.331Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-30T13:37:50.484Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-30T13:44:11.651Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-30T13:45:45.148Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-30T14:56:44.796Z [ERROR]: undefined,  
+            TypeError: Cannot read properties of undefined (reading 'p1x')
+    at Proxy._sfc_render (http://localhost:3000/src/components/SlopeLineDrawer.vue?t=1748617004649:304:35)
+    at renderComponentRoot (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:8679:17)
+    at ReactiveEffect.componentUpdateFn [as fn] (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:7472:46)
+    at ReactiveEffect.run (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:494:19)
+    at setupRenderEffect (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:7607:5)
+    at mountComponent (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:7382:7)
+    at processComponent (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:7334:9)
+    at patch (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:6849:11)
+    at patchKeyedChildren (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:7883:11)
+    at patchChildren (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:7664:11), 
+            ,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-30T14:56:44.821Z [ERROR]: undefined,  
+            ReferenceError: coant is not defined
+    at setup (http://localhost:3000/src/components/SlopeLineDrawer.vue?t=1748617004649:19:5)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2289:19)
+    at setupStatefulComponent (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:10085:25)
+    at setupComponent (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:10046:36)
+    at mountComponent (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:7368:7)
+    at processComponent (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:7334:9)
+    at patch (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:6849:11)
+    at patchKeyedChildren (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:7883:11)
+    at patchChildren (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:7664:11)
+    at patchElement (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:7134:7), 
+            ,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-30T15:22:27.691Z [ERROR]: undefined,  
+            ReferenceError: p is not defined
+    at isSlopeChanged (http://localhost:3000/src/components/SlopeLineDrawer.vue?t=1748618315189:193:34)
+    at drawLine (http://localhost:3000/src/components/SlopeLineDrawer.vue?t=1748618315189:54:28)
+    at Object.drawNewLine (http://localhost:3000/src/helpers/lineDrawingHelper.ts:25:5)
+    at http://localhost:3000/src/components/LineWatcher.vue:55:25
+    at http://localhost:3000/src/helpers/watchHelper.ts:18:11
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2289:19)
+    at callWithAsyncErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2296:17)
+    at baseWatchOptions.call (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:8372:47)
+    at job (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2015:18)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2289:33), 
+            ,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-30T15:22:27.702Z [ERROR]: undefined,  
+            ReferenceError: p is not defined
+    at isSlopeChanged (http://localhost:3000/src/components/SlopeLineDrawer.vue?t=1748618315189:193:34)
+    at drawLine (http://localhost:3000/src/components/SlopeLineDrawer.vue?t=1748618315189:54:28)
+    at Object.drawNewLine (http://localhost:3000/src/helpers/lineDrawingHelper.ts:25:5)
+    at http://localhost:3000/src/components/LineWatcher.vue:55:25
+    at http://localhost:3000/src/helpers/watchHelper.ts:18:11
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2289:19)
+    at callWithAsyncErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2296:17)
+    at baseWatchOptions.call (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:8372:47)
+    at job (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2015:18)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2289:33), 
+            ,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-30T15:22:27.707Z [ERROR]: undefined,  
+            ReferenceError: p is not defined
+    at isSlopeChanged (http://localhost:3000/src/components/SlopeLineDrawer.vue?t=1748618315189:193:34)
+    at drawLine (http://localhost:3000/src/components/SlopeLineDrawer.vue?t=1748618315189:54:28)
+    at Object.drawNewLine (http://localhost:3000/src/helpers/lineDrawingHelper.ts:25:5)
+    at http://localhost:3000/src/components/LineWatcher.vue:55:25
+    at http://localhost:3000/src/helpers/watchHelper.ts:18:11
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2289:19)
+    at callWithAsyncErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2296:17)
+    at baseWatchOptions.call (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:8372:47)
+    at job (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2015:18)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2289:33), 
+            ,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-30T15:22:27.712Z [ERROR]: undefined,  
+            ReferenceError: p is not defined
+    at isSlopeChanged (http://localhost:3000/src/components/SlopeLineDrawer.vue?t=1748618315189:193:34)
+    at drawLine (http://localhost:3000/src/components/SlopeLineDrawer.vue?t=1748618315189:54:28)
+    at Object.drawNewLine (http://localhost:3000/src/helpers/lineDrawingHelper.ts:25:5)
+    at http://localhost:3000/src/components/LineWatcher.vue:55:25
+    at http://localhost:3000/src/helpers/watchHelper.ts:18:11
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2289:19)
+    at callWithAsyncErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2296:17)
+    at baseWatchOptions.call (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:8372:47)
+    at job (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2015:18)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2289:33), 
+            ,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-30T15:22:27.714Z [ERROR]: undefined,  
+            ReferenceError: p is not defined
+    at isSlopeChanged (http://localhost:3000/src/components/SlopeLineDrawer.vue?t=1748618315189:193:34)
+    at drawLine (http://localhost:3000/src/components/SlopeLineDrawer.vue?t=1748618315189:54:28)
+    at Object.drawNewLine (http://localhost:3000/src/helpers/lineDrawingHelper.ts:25:5)
+    at http://localhost:3000/src/components/LineWatcher.vue:55:25
+    at http://localhost:3000/src/helpers/watchHelper.ts:18:11
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2289:19)
+    at callWithAsyncErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2296:17)
+    at baseWatchOptions.call (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:8372:47)
+    at job (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2015:18)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2289:33), 
+            ,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-30T15:22:27.732Z [ERROR]: undefined,  
+            ReferenceError: p is not defined
+    at isSlopeChanged (http://localhost:3000/src/components/SlopeLineDrawer.vue?t=1748618315189:193:34)
+    at drawLine (http://localhost:3000/src/components/SlopeLineDrawer.vue?t=1748618315189:54:28)
+    at Object.drawNewLine (http://localhost:3000/src/helpers/lineDrawingHelper.ts:25:5)
+    at http://localhost:3000/src/components/LineWatcher.vue:55:25
+    at http://localhost:3000/src/helpers/watchHelper.ts:18:11
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2289:19)
+    at callWithAsyncErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2296:17)
+    at baseWatchOptions.call (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:8372:47)
+    at job (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2015:18)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2289:33), 
+            ,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-30T15:22:28.007Z [ERROR]: undefined,  
+            ReferenceError: p is not defined
+    at isSlopeChanged (http://localhost:3000/src/components/SlopeLineDrawer.vue?t=1748618315189:193:34)
+    at drawLine (http://localhost:3000/src/components/SlopeLineDrawer.vue?t=1748618315189:54:28)
+    at Object.drawNewLine (http://localhost:3000/src/helpers/lineDrawingHelper.ts:25:5)
+    at http://localhost:3000/src/components/LineWatcher.vue:55:25
+    at http://localhost:3000/src/helpers/watchHelper.ts:18:11
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2289:19)
+    at callWithAsyncErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2296:17)
+    at baseWatchOptions.call (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:8372:47)
+    at job (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2015:18)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2289:33), 
+            ,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-30T15:22:28.013Z [ERROR]: undefined,  
+            ReferenceError: p is not defined
+    at isSlopeChanged (http://localhost:3000/src/components/SlopeLineDrawer.vue?t=1748618315189:193:34)
+    at drawLine (http://localhost:3000/src/components/SlopeLineDrawer.vue?t=1748618315189:54:28)
+    at Object.drawNewLine (http://localhost:3000/src/helpers/lineDrawingHelper.ts:25:5)
+    at http://localhost:3000/src/components/LineWatcher.vue:55:25
+    at http://localhost:3000/src/helpers/watchHelper.ts:18:11
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2289:19)
+    at callWithAsyncErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2296:17)
+    at baseWatchOptions.call (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:8372:47)
+    at job (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2015:18)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2289:33), 
+            ,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-30T15:22:28.017Z [ERROR]: undefined,  
+            ReferenceError: p is not defined
+    at isSlopeChanged (http://localhost:3000/src/components/SlopeLineDrawer.vue?t=1748618315189:193:34)
+    at drawLine (http://localhost:3000/src/components/SlopeLineDrawer.vue?t=1748618315189:54:28)
+    at Object.drawNewLine (http://localhost:3000/src/helpers/lineDrawingHelper.ts:25:5)
+    at http://localhost:3000/src/components/LineWatcher.vue:55:25
+    at http://localhost:3000/src/helpers/watchHelper.ts:18:11
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2289:19)
+    at callWithAsyncErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2296:17)
+    at baseWatchOptions.call (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:8372:47)
+    at job (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2015:18)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2289:33), 
+            ,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-30T15:22:28.025Z [ERROR]: undefined,  
+            ReferenceError: p is not defined
+    at isSlopeChanged (http://localhost:3000/src/components/SlopeLineDrawer.vue?t=1748618315189:193:34)
+    at drawLine (http://localhost:3000/src/components/SlopeLineDrawer.vue?t=1748618315189:54:28)
+    at Object.drawNewLine (http://localhost:3000/src/helpers/lineDrawingHelper.ts:25:5)
+    at http://localhost:3000/src/components/LineWatcher.vue:55:25
+    at http://localhost:3000/src/helpers/watchHelper.ts:18:11
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2289:19)
+    at callWithAsyncErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2296:17)
+    at baseWatchOptions.call (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:8372:47)
+    at job (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2015:18)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2289:33), 
+            ,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-30T15:22:28.027Z [ERROR]: undefined,  
+            ReferenceError: p is not defined
+    at isSlopeChanged (http://localhost:3000/src/components/SlopeLineDrawer.vue?t=1748618315189:193:34)
+    at drawLine (http://localhost:3000/src/components/SlopeLineDrawer.vue?t=1748618315189:54:28)
+    at Object.drawNewLine (http://localhost:3000/src/helpers/lineDrawingHelper.ts:25:5)
+    at http://localhost:3000/src/components/LineWatcher.vue:55:25
+    at http://localhost:3000/src/helpers/watchHelper.ts:18:11
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2289:19)
+    at callWithAsyncErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2296:17)
+    at baseWatchOptions.call (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:8372:47)
+    at job (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2015:18)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2289:33), 
+            ,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-30T15:22:28.044Z [ERROR]: undefined,  
+            ReferenceError: p is not defined
+    at isSlopeChanged (http://localhost:3000/src/components/SlopeLineDrawer.vue?t=1748618315189:193:34)
+    at drawLine (http://localhost:3000/src/components/SlopeLineDrawer.vue?t=1748618315189:54:28)
+    at Object.drawNewLine (http://localhost:3000/src/helpers/lineDrawingHelper.ts:25:5)
+    at http://localhost:3000/src/components/LineWatcher.vue:55:25
+    at http://localhost:3000/src/helpers/watchHelper.ts:18:11
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2289:19)
+    at callWithAsyncErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2296:17)
+    at baseWatchOptions.call (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:8372:47)
+    at job (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2015:18)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2289:33), 
+            ,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-30T15:22:28.321Z [ERROR]: undefined,  
+            ReferenceError: p is not defined
+    at isSlopeChanged (http://localhost:3000/src/components/SlopeLineDrawer.vue?t=1748618315189:193:34)
+    at drawLine (http://localhost:3000/src/components/SlopeLineDrawer.vue?t=1748618315189:54:28)
+    at Object.drawNewLine (http://localhost:3000/src/helpers/lineDrawingHelper.ts:25:5)
+    at http://localhost:3000/src/components/LineWatcher.vue:55:25
+    at http://localhost:3000/src/helpers/watchHelper.ts:18:11
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2289:19)
+    at callWithAsyncErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2296:17)
+    at baseWatchOptions.call (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:8372:47)
+    at job (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2015:18)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2289:33), 
+            ,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-30T15:22:28.323Z [ERROR]: undefined,  
+            ReferenceError: p is not defined
+    at isSlopeChanged (http://localhost:3000/src/components/SlopeLineDrawer.vue?t=1748618315189:193:34)
+    at drawLine (http://localhost:3000/src/components/SlopeLineDrawer.vue?t=1748618315189:54:28)
+    at Object.drawNewLine (http://localhost:3000/src/helpers/lineDrawingHelper.ts:25:5)
+    at http://localhost:3000/src/components/LineWatcher.vue:55:25
+    at http://localhost:3000/src/helpers/watchHelper.ts:18:11
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2289:19)
+    at callWithAsyncErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2296:17)
+    at baseWatchOptions.call (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:8372:47)
+    at job (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2015:18)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2289:33), 
+            ,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-30T15:22:28.327Z [ERROR]: undefined,  
+            ReferenceError: p is not defined
+    at isSlopeChanged (http://localhost:3000/src/components/SlopeLineDrawer.vue?t=1748618315189:193:34)
+    at drawLine (http://localhost:3000/src/components/SlopeLineDrawer.vue?t=1748618315189:54:28)
+    at Object.drawNewLine (http://localhost:3000/src/helpers/lineDrawingHelper.ts:25:5)
+    at http://localhost:3000/src/components/LineWatcher.vue:55:25
+    at http://localhost:3000/src/helpers/watchHelper.ts:18:11
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2289:19)
+    at callWithAsyncErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2296:17)
+    at baseWatchOptions.call (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:8372:47)
+    at job (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2015:18)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2289:33), 
+            ,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-30T15:22:28.334Z [ERROR]: undefined,  
+            ReferenceError: p is not defined
+    at isSlopeChanged (http://localhost:3000/src/components/SlopeLineDrawer.vue?t=1748618315189:193:34)
+    at drawLine (http://localhost:3000/src/components/SlopeLineDrawer.vue?t=1748618315189:54:28)
+    at Object.drawNewLine (http://localhost:3000/src/helpers/lineDrawingHelper.ts:25:5)
+    at http://localhost:3000/src/components/LineWatcher.vue:55:25
+    at http://localhost:3000/src/helpers/watchHelper.ts:18:11
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2289:19)
+    at callWithAsyncErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2296:17)
+    at baseWatchOptions.call (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:8372:47)
+    at job (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2015:18)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2289:33), 
+            ,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-30T15:22:28.339Z [ERROR]: undefined,  
+            ReferenceError: p is not defined
+    at isSlopeChanged (http://localhost:3000/src/components/SlopeLineDrawer.vue?t=1748618315189:193:34)
+    at drawLine (http://localhost:3000/src/components/SlopeLineDrawer.vue?t=1748618315189:54:28)
+    at Object.drawNewLine (http://localhost:3000/src/helpers/lineDrawingHelper.ts:25:5)
+    at http://localhost:3000/src/components/LineWatcher.vue:55:25
+    at http://localhost:3000/src/helpers/watchHelper.ts:18:11
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2289:19)
+    at callWithAsyncErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2296:17)
+    at baseWatchOptions.call (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:8372:47)
+    at job (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2015:18)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2289:33), 
+            ,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-30T15:22:28.364Z [ERROR]: undefined,  
+            ReferenceError: p is not defined
+    at isSlopeChanged (http://localhost:3000/src/components/SlopeLineDrawer.vue?t=1748618315189:193:34)
+    at drawLine (http://localhost:3000/src/components/SlopeLineDrawer.vue?t=1748618315189:54:28)
+    at Object.drawNewLine (http://localhost:3000/src/helpers/lineDrawingHelper.ts:25:5)
+    at http://localhost:3000/src/components/LineWatcher.vue:55:25
+    at http://localhost:3000/src/helpers/watchHelper.ts:18:11
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2289:19)
+    at callWithAsyncErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2296:17)
+    at baseWatchOptions.call (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:8372:47)
+    at job (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2015:18)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2289:33), 
+            ,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-30T15:22:28.630Z [ERROR]: undefined,  
+            ReferenceError: p is not defined
+    at isSlopeChanged (http://localhost:3000/src/components/SlopeLineDrawer.vue?t=1748618315189:193:34)
+    at drawLine (http://localhost:3000/src/components/SlopeLineDrawer.vue?t=1748618315189:54:28)
+    at Object.drawNewLine (http://localhost:3000/src/helpers/lineDrawingHelper.ts:25:5)
+    at http://localhost:3000/src/components/LineWatcher.vue:55:25
+    at http://localhost:3000/src/helpers/watchHelper.ts:18:11
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2289:19)
+    at callWithAsyncErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2296:17)
+    at baseWatchOptions.call (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:8372:47)
+    at job (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2015:18)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2289:33), 
+            ,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-30T15:22:28.632Z [ERROR]: undefined,  
+            ReferenceError: p is not defined
+    at isSlopeChanged (http://localhost:3000/src/components/SlopeLineDrawer.vue?t=1748618315189:193:34)
+    at drawLine (http://localhost:3000/src/components/SlopeLineDrawer.vue?t=1748618315189:54:28)
+    at Object.drawNewLine (http://localhost:3000/src/helpers/lineDrawingHelper.ts:25:5)
+    at http://localhost:3000/src/components/LineWatcher.vue:55:25
+    at http://localhost:3000/src/helpers/watchHelper.ts:18:11
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2289:19)
+    at callWithAsyncErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2296:17)
+    at baseWatchOptions.call (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:8372:47)
+    at job (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2015:18)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2289:33), 
+            ,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-30T15:22:28.637Z [ERROR]: undefined,  
+            ReferenceError: p is not defined
+    at isSlopeChanged (http://localhost:3000/src/components/SlopeLineDrawer.vue?t=1748618315189:193:34)
+    at drawLine (http://localhost:3000/src/components/SlopeLineDrawer.vue?t=1748618315189:54:28)
+    at Object.drawNewLine (http://localhost:3000/src/helpers/lineDrawingHelper.ts:25:5)
+    at http://localhost:3000/src/components/LineWatcher.vue:55:25
+    at http://localhost:3000/src/helpers/watchHelper.ts:18:11
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2289:19)
+    at callWithAsyncErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2296:17)
+    at baseWatchOptions.call (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:8372:47)
+    at job (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2015:18)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2289:33), 
+            ,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-30T15:22:28.642Z [ERROR]: undefined,  
+            ReferenceError: p is not defined
+    at isSlopeChanged (http://localhost:3000/src/components/SlopeLineDrawer.vue?t=1748618315189:193:34)
+    at drawLine (http://localhost:3000/src/components/SlopeLineDrawer.vue?t=1748618315189:54:28)
+    at Object.drawNewLine (http://localhost:3000/src/helpers/lineDrawingHelper.ts:25:5)
+    at http://localhost:3000/src/components/LineWatcher.vue:55:25
+    at http://localhost:3000/src/helpers/watchHelper.ts:18:11
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2289:19)
+    at callWithAsyncErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2296:17)
+    at baseWatchOptions.call (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:8372:47)
+    at job (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2015:18)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2289:33), 
+            ,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-30T15:22:28.646Z [ERROR]: undefined,  
+            ReferenceError: p is not defined
+    at isSlopeChanged (http://localhost:3000/src/components/SlopeLineDrawer.vue?t=1748618315189:193:34)
+    at drawLine (http://localhost:3000/src/components/SlopeLineDrawer.vue?t=1748618315189:54:28)
+    at Object.drawNewLine (http://localhost:3000/src/helpers/lineDrawingHelper.ts:25:5)
+    at http://localhost:3000/src/components/LineWatcher.vue:55:25
+    at http://localhost:3000/src/helpers/watchHelper.ts:18:11
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2289:19)
+    at callWithAsyncErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2296:17)
+    at baseWatchOptions.call (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:8372:47)
+    at job (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2015:18)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2289:33), 
+            ,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-30T15:22:28.677Z [ERROR]: undefined,  
+            ReferenceError: p is not defined
+    at isSlopeChanged (http://localhost:3000/src/components/SlopeLineDrawer.vue?t=1748618315189:193:34)
+    at drawLine (http://localhost:3000/src/components/SlopeLineDrawer.vue?t=1748618315189:54:28)
+    at Object.drawNewLine (http://localhost:3000/src/helpers/lineDrawingHelper.ts:25:5)
+    at http://localhost:3000/src/components/LineWatcher.vue:55:25
+    at http://localhost:3000/src/helpers/watchHelper.ts:18:11
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2289:19)
+    at callWithAsyncErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2296:17)
+    at baseWatchOptions.call (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:8372:47)
+    at job (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2015:18)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2289:33), 
+            ,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-30T15:22:28.946Z [ERROR]: undefined,  
+            ReferenceError: p is not defined
+    at isSlopeChanged (http://localhost:3000/src/components/SlopeLineDrawer.vue?t=1748618315189:193:34)
+    at drawLine (http://localhost:3000/src/components/SlopeLineDrawer.vue?t=1748618315189:54:28)
+    at Object.drawNewLine (http://localhost:3000/src/helpers/lineDrawingHelper.ts:25:5)
+    at http://localhost:3000/src/components/LineWatcher.vue:55:25
+    at http://localhost:3000/src/helpers/watchHelper.ts:18:11
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2289:19)
+    at callWithAsyncErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2296:17)
+    at baseWatchOptions.call (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:8372:47)
+    at job (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2015:18)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2289:33), 
+            ,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-30T15:22:28.948Z [ERROR]: undefined,  
+            ReferenceError: p is not defined
+    at isSlopeChanged (http://localhost:3000/src/components/SlopeLineDrawer.vue?t=1748618315189:193:34)
+    at drawLine (http://localhost:3000/src/components/SlopeLineDrawer.vue?t=1748618315189:54:28)
+    at Object.drawNewLine (http://localhost:3000/src/helpers/lineDrawingHelper.ts:25:5)
+    at http://localhost:3000/src/components/LineWatcher.vue:55:25
+    at http://localhost:3000/src/helpers/watchHelper.ts:18:11
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2289:19)
+    at callWithAsyncErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2296:17)
+    at baseWatchOptions.call (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:8372:47)
+    at job (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2015:18)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2289:33), 
+            ,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-30T15:22:28.952Z [ERROR]: undefined,  
+            ReferenceError: p is not defined
+    at isSlopeChanged (http://localhost:3000/src/components/SlopeLineDrawer.vue?t=1748618315189:193:34)
+    at drawLine (http://localhost:3000/src/components/SlopeLineDrawer.vue?t=1748618315189:54:28)
+    at Object.drawNewLine (http://localhost:3000/src/helpers/lineDrawingHelper.ts:25:5)
+    at http://localhost:3000/src/components/LineWatcher.vue:55:25
+    at http://localhost:3000/src/helpers/watchHelper.ts:18:11
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2289:19)
+    at callWithAsyncErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2296:17)
+    at baseWatchOptions.call (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:8372:47)
+    at job (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2015:18)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2289:33), 
+            ,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-30T15:22:28.971Z [ERROR]: undefined,  
+            ReferenceError: p is not defined
+    at isSlopeChanged (http://localhost:3000/src/components/SlopeLineDrawer.vue?t=1748618315189:193:34)
+    at drawLine (http://localhost:3000/src/components/SlopeLineDrawer.vue?t=1748618315189:54:28)
+    at Object.drawNewLine (http://localhost:3000/src/helpers/lineDrawingHelper.ts:25:5)
+    at http://localhost:3000/src/components/LineWatcher.vue:55:25
+    at http://localhost:3000/src/helpers/watchHelper.ts:18:11
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2289:19)
+    at callWithAsyncErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2296:17)
+    at baseWatchOptions.call (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:8372:47)
+    at job (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2015:18)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2289:33), 
+            ,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-30T15:22:28.974Z [ERROR]: undefined,  
+            ReferenceError: p is not defined
+    at isSlopeChanged (http://localhost:3000/src/components/SlopeLineDrawer.vue?t=1748618315189:193:34)
+    at drawLine (http://localhost:3000/src/components/SlopeLineDrawer.vue?t=1748618315189:54:28)
+    at Object.drawNewLine (http://localhost:3000/src/helpers/lineDrawingHelper.ts:25:5)
+    at http://localhost:3000/src/components/LineWatcher.vue:55:25
+    at http://localhost:3000/src/helpers/watchHelper.ts:18:11
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2289:19)
+    at callWithAsyncErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2296:17)
+    at baseWatchOptions.call (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:8372:47)
+    at job (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2015:18)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2289:33), 
+            ,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-30T15:22:28.991Z [ERROR]: undefined,  
+            ReferenceError: p is not defined
+    at isSlopeChanged (http://localhost:3000/src/components/SlopeLineDrawer.vue?t=1748618315189:193:34)
+    at drawLine (http://localhost:3000/src/components/SlopeLineDrawer.vue?t=1748618315189:54:28)
+    at Object.drawNewLine (http://localhost:3000/src/helpers/lineDrawingHelper.ts:25:5)
+    at http://localhost:3000/src/components/LineWatcher.vue:55:25
+    at http://localhost:3000/src/helpers/watchHelper.ts:18:11
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2289:19)
+    at callWithAsyncErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2296:17)
+    at baseWatchOptions.call (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:8372:47)
+    at job (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2015:18)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2289:33), 
+            ,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-30T15:22:29.255Z [ERROR]: undefined,  
+            ReferenceError: p is not defined
+    at isSlopeChanged (http://localhost:3000/src/components/SlopeLineDrawer.vue?t=1748618315189:193:34)
+    at drawLine (http://localhost:3000/src/components/SlopeLineDrawer.vue?t=1748618315189:54:28)
+    at Object.drawNewLine (http://localhost:3000/src/helpers/lineDrawingHelper.ts:25:5)
+    at http://localhost:3000/src/components/LineWatcher.vue:55:25
+    at http://localhost:3000/src/helpers/watchHelper.ts:18:11
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2289:19)
+    at callWithAsyncErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2296:17)
+    at baseWatchOptions.call (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:8372:47)
+    at job (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2015:18)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2289:33), 
+            ,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-30T15:22:29.261Z [ERROR]: undefined,  
+            ReferenceError: p is not defined
+    at isSlopeChanged (http://localhost:3000/src/components/SlopeLineDrawer.vue?t=1748618315189:193:34)
+    at drawLine (http://localhost:3000/src/components/SlopeLineDrawer.vue?t=1748618315189:54:28)
+    at Object.drawNewLine (http://localhost:3000/src/helpers/lineDrawingHelper.ts:25:5)
+    at http://localhost:3000/src/components/LineWatcher.vue:55:25
+    at http://localhost:3000/src/helpers/watchHelper.ts:18:11
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2289:19)
+    at callWithAsyncErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2296:17)
+    at baseWatchOptions.call (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:8372:47)
+    at job (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2015:18)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2289:33), 
+            ,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-30T15:22:29.264Z [ERROR]: undefined,  
+            ReferenceError: p is not defined
+    at isSlopeChanged (http://localhost:3000/src/components/SlopeLineDrawer.vue?t=1748618315189:193:34)
+    at drawLine (http://localhost:3000/src/components/SlopeLineDrawer.vue?t=1748618315189:54:28)
+    at Object.drawNewLine (http://localhost:3000/src/helpers/lineDrawingHelper.ts:25:5)
+    at http://localhost:3000/src/components/LineWatcher.vue:55:25
+    at http://localhost:3000/src/helpers/watchHelper.ts:18:11
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2289:19)
+    at callWithAsyncErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2296:17)
+    at baseWatchOptions.call (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:8372:47)
+    at job (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2015:18)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2289:33), 
+            ,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-30T15:22:29.286Z [ERROR]: undefined,  
+            ReferenceError: p is not defined
+    at isSlopeChanged (http://localhost:3000/src/components/SlopeLineDrawer.vue?t=1748618315189:193:34)
+    at drawLine (http://localhost:3000/src/components/SlopeLineDrawer.vue?t=1748618315189:54:28)
+    at Object.drawNewLine (http://localhost:3000/src/helpers/lineDrawingHelper.ts:25:5)
+    at http://localhost:3000/src/components/LineWatcher.vue:55:25
+    at http://localhost:3000/src/helpers/watchHelper.ts:18:11
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2289:19)
+    at callWithAsyncErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2296:17)
+    at baseWatchOptions.call (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:8372:47)
+    at job (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2015:18)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2289:33), 
+            ,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-30T15:22:29.288Z [ERROR]: undefined,  
+            ReferenceError: p is not defined
+    at isSlopeChanged (http://localhost:3000/src/components/SlopeLineDrawer.vue?t=1748618315189:193:34)
+    at drawLine (http://localhost:3000/src/components/SlopeLineDrawer.vue?t=1748618315189:54:28)
+    at Object.drawNewLine (http://localhost:3000/src/helpers/lineDrawingHelper.ts:25:5)
+    at http://localhost:3000/src/components/LineWatcher.vue:55:25
+    at http://localhost:3000/src/helpers/watchHelper.ts:18:11
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2289:19)
+    at callWithAsyncErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2296:17)
+    at baseWatchOptions.call (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:8372:47)
+    at job (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2015:18)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2289:33), 
+            ,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-30T15:22:29.299Z [ERROR]: undefined,  
+            ReferenceError: p is not defined
+    at isSlopeChanged (http://localhost:3000/src/components/SlopeLineDrawer.vue?t=1748618315189:193:34)
+    at drawLine (http://localhost:3000/src/components/SlopeLineDrawer.vue?t=1748618315189:54:28)
+    at Object.drawNewLine (http://localhost:3000/src/helpers/lineDrawingHelper.ts:25:5)
+    at http://localhost:3000/src/components/LineWatcher.vue:55:25
+    at http://localhost:3000/src/helpers/watchHelper.ts:18:11
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2289:19)
+    at callWithAsyncErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2296:17)
+    at baseWatchOptions.call (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:8372:47)
+    at job (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2015:18)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2289:33), 
+            ,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-30T15:22:29.566Z [ERROR]: undefined,  
+            ReferenceError: p is not defined
+    at isSlopeChanged (http://localhost:3000/src/components/SlopeLineDrawer.vue?t=1748618315189:193:34)
+    at drawLine (http://localhost:3000/src/components/SlopeLineDrawer.vue?t=1748618315189:54:28)
+    at Object.drawNewLine (http://localhost:3000/src/helpers/lineDrawingHelper.ts:25:5)
+    at http://localhost:3000/src/components/LineWatcher.vue:55:25
+    at http://localhost:3000/src/helpers/watchHelper.ts:18:11
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2289:19)
+    at callWithAsyncErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2296:17)
+    at baseWatchOptions.call (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:8372:47)
+    at job (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2015:18)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2289:33), 
+            ,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-30T15:22:29.568Z [ERROR]: undefined,  
+            ReferenceError: p is not defined
+    at isSlopeChanged (http://localhost:3000/src/components/SlopeLineDrawer.vue?t=1748618315189:193:34)
+    at drawLine (http://localhost:3000/src/components/SlopeLineDrawer.vue?t=1748618315189:54:28)
+    at Object.drawNewLine (http://localhost:3000/src/helpers/lineDrawingHelper.ts:25:5)
+    at http://localhost:3000/src/components/LineWatcher.vue:55:25
+    at http://localhost:3000/src/helpers/watchHelper.ts:18:11
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2289:19)
+    at callWithAsyncErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2296:17)
+    at baseWatchOptions.call (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:8372:47)
+    at job (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2015:18)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2289:33), 
+            ,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-30T15:22:29.573Z [ERROR]: undefined,  
+            ReferenceError: p is not defined
+    at isSlopeChanged (http://localhost:3000/src/components/SlopeLineDrawer.vue?t=1748618315189:193:34)
+    at drawLine (http://localhost:3000/src/components/SlopeLineDrawer.vue?t=1748618315189:54:28)
+    at Object.drawNewLine (http://localhost:3000/src/helpers/lineDrawingHelper.ts:25:5)
+    at http://localhost:3000/src/components/LineWatcher.vue:55:25
+    at http://localhost:3000/src/helpers/watchHelper.ts:18:11
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2289:19)
+    at callWithAsyncErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2296:17)
+    at baseWatchOptions.call (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:8372:47)
+    at job (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2015:18)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2289:33), 
+            ,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-30T15:22:29.598Z [ERROR]: undefined,  
+            ReferenceError: p is not defined
+    at isSlopeChanged (http://localhost:3000/src/components/SlopeLineDrawer.vue?t=1748618315189:193:34)
+    at drawLine (http://localhost:3000/src/components/SlopeLineDrawer.vue?t=1748618315189:54:28)
+    at Object.drawNewLine (http://localhost:3000/src/helpers/lineDrawingHelper.ts:25:5)
+    at http://localhost:3000/src/components/LineWatcher.vue:55:25
+    at http://localhost:3000/src/helpers/watchHelper.ts:18:11
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2289:19)
+    at callWithAsyncErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2296:17)
+    at baseWatchOptions.call (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:8372:47)
+    at job (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2015:18)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2289:33), 
+            ,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-30T15:22:29.601Z [ERROR]: undefined,  
+            ReferenceError: p is not defined
+    at isSlopeChanged (http://localhost:3000/src/components/SlopeLineDrawer.vue?t=1748618315189:193:34)
+    at drawLine (http://localhost:3000/src/components/SlopeLineDrawer.vue?t=1748618315189:54:28)
+    at Object.drawNewLine (http://localhost:3000/src/helpers/lineDrawingHelper.ts:25:5)
+    at http://localhost:3000/src/components/LineWatcher.vue:55:25
+    at http://localhost:3000/src/helpers/watchHelper.ts:18:11
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2289:19)
+    at callWithAsyncErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2296:17)
+    at baseWatchOptions.call (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:8372:47)
+    at job (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2015:18)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2289:33), 
+            ,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-30T15:22:29.608Z [ERROR]: undefined,  
+            ReferenceError: p is not defined
+    at isSlopeChanged (http://localhost:3000/src/components/SlopeLineDrawer.vue?t=1748618315189:193:34)
+    at drawLine (http://localhost:3000/src/components/SlopeLineDrawer.vue?t=1748618315189:54:28)
+    at Object.drawNewLine (http://localhost:3000/src/helpers/lineDrawingHelper.ts:25:5)
+    at http://localhost:3000/src/components/LineWatcher.vue:55:25
+    at http://localhost:3000/src/helpers/watchHelper.ts:18:11
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2289:19)
+    at callWithAsyncErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2296:17)
+    at baseWatchOptions.call (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:8372:47)
+    at job (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2015:18)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2289:33), 
+            ,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-30T15:22:29.879Z [ERROR]: undefined,  
+            ReferenceError: p is not defined
+    at isSlopeChanged (http://localhost:3000/src/components/SlopeLineDrawer.vue?t=1748618315189:193:34)
+    at drawLine (http://localhost:3000/src/components/SlopeLineDrawer.vue?t=1748618315189:54:28)
+    at Object.drawNewLine (http://localhost:3000/src/helpers/lineDrawingHelper.ts:25:5)
+    at http://localhost:3000/src/components/LineWatcher.vue:55:25
+    at http://localhost:3000/src/helpers/watchHelper.ts:18:11
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2289:19)
+    at callWithAsyncErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2296:17)
+    at baseWatchOptions.call (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:8372:47)
+    at job (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2015:18)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2289:33), 
+            ,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-30T15:22:29.882Z [ERROR]: undefined,  
+            ReferenceError: p is not defined
+    at isSlopeChanged (http://localhost:3000/src/components/SlopeLineDrawer.vue?t=1748618315189:193:34)
+    at drawLine (http://localhost:3000/src/components/SlopeLineDrawer.vue?t=1748618315189:54:28)
+    at Object.drawNewLine (http://localhost:3000/src/helpers/lineDrawingHelper.ts:25:5)
+    at http://localhost:3000/src/components/LineWatcher.vue:55:25
+    at http://localhost:3000/src/helpers/watchHelper.ts:18:11
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2289:19)
+    at callWithAsyncErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2296:17)
+    at baseWatchOptions.call (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:8372:47)
+    at job (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2015:18)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2289:33), 
+            ,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-30T15:22:29.887Z [ERROR]: undefined,  
+            ReferenceError: p is not defined
+    at isSlopeChanged (http://localhost:3000/src/components/SlopeLineDrawer.vue?t=1748618315189:193:34)
+    at drawLine (http://localhost:3000/src/components/SlopeLineDrawer.vue?t=1748618315189:54:28)
+    at Object.drawNewLine (http://localhost:3000/src/helpers/lineDrawingHelper.ts:25:5)
+    at http://localhost:3000/src/components/LineWatcher.vue:55:25
+    at http://localhost:3000/src/helpers/watchHelper.ts:18:11
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2289:19)
+    at callWithAsyncErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2296:17)
+    at baseWatchOptions.call (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:8372:47)
+    at job (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2015:18)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2289:33), 
+            ,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-30T15:22:29.936Z [ERROR]: undefined,  
+            ReferenceError: p is not defined
+    at isSlopeChanged (http://localhost:3000/src/components/SlopeLineDrawer.vue?t=1748618315189:193:34)
+    at drawLine (http://localhost:3000/src/components/SlopeLineDrawer.vue?t=1748618315189:54:28)
+    at Object.drawNewLine (http://localhost:3000/src/helpers/lineDrawingHelper.ts:25:5)
+    at http://localhost:3000/src/components/LineWatcher.vue:55:25
+    at http://localhost:3000/src/helpers/watchHelper.ts:18:11
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2289:19)
+    at callWithAsyncErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2296:17)
+    at baseWatchOptions.call (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:8372:47)
+    at job (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2015:18)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2289:33), 
+            ,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-30T15:22:29.939Z [ERROR]: undefined,  
+            ReferenceError: p is not defined
+    at isSlopeChanged (http://localhost:3000/src/components/SlopeLineDrawer.vue?t=1748618315189:193:34)
+    at drawLine (http://localhost:3000/src/components/SlopeLineDrawer.vue?t=1748618315189:54:28)
+    at Object.drawNewLine (http://localhost:3000/src/helpers/lineDrawingHelper.ts:25:5)
+    at http://localhost:3000/src/components/LineWatcher.vue:55:25
+    at http://localhost:3000/src/helpers/watchHelper.ts:18:11
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2289:19)
+    at callWithAsyncErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2296:17)
+    at baseWatchOptions.call (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:8372:47)
+    at job (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2015:18)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2289:33), 
+            ,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-30T15:22:29.948Z [ERROR]: undefined,  
+            ReferenceError: p is not defined
+    at isSlopeChanged (http://localhost:3000/src/components/SlopeLineDrawer.vue?t=1748618315189:193:34)
+    at drawLine (http://localhost:3000/src/components/SlopeLineDrawer.vue?t=1748618315189:54:28)
+    at Object.drawNewLine (http://localhost:3000/src/helpers/lineDrawingHelper.ts:25:5)
+    at http://localhost:3000/src/components/LineWatcher.vue:55:25
+    at http://localhost:3000/src/helpers/watchHelper.ts:18:11
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2289:19)
+    at callWithAsyncErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2296:17)
+    at baseWatchOptions.call (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:8372:47)
+    at job (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2015:18)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2289:33), 
+            ,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-30T15:22:30.190Z [ERROR]: undefined,  
+            ReferenceError: p is not defined
+    at isSlopeChanged (http://localhost:3000/src/components/SlopeLineDrawer.vue?t=1748618315189:193:34)
+    at drawLine (http://localhost:3000/src/components/SlopeLineDrawer.vue?t=1748618315189:54:28)
+    at Object.drawNewLine (http://localhost:3000/src/helpers/lineDrawingHelper.ts:25:5)
+    at http://localhost:3000/src/components/LineWatcher.vue:55:25
+    at http://localhost:3000/src/helpers/watchHelper.ts:18:11
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2289:19)
+    at callWithAsyncErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2296:17)
+    at baseWatchOptions.call (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:8372:47)
+    at job (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2015:18)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2289:33), 
+            ,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-31T21:16:23.675Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-31T21:16:26.591Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-05-31T21:16:45.955Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-06-01T06:57:37.606Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-06-01T06:57:39.965Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-06-01T06:57:41.649Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-06-01T06:58:44.285Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-06-01T07:00:19.680Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-06-01T07:00:56.771Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-06-01T07:03:42.426Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-06-01T07:05:32.368Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-06-01T07:07:03.336Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-06-01T07:08:12.858Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-06-01T07:10:54.619Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-06-01T07:11:20.922Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-06-01T09:54:47.207Z [ERROR]: undefined,  
+            ReferenceError: hendle is not defined
+    at setup (http://localhost:3000/src/components/SlopeLineDrawer.vue?t=1748771687004:77:5)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2289:19)
+    at setupStatefulComponent (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:10085:25)
+    at setupComponent (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:10046:36)
+    at mountComponent (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:7368:7)
+    at processComponent (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:7334:9)
+    at patch (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:6849:11)
+    at patchKeyedChildren (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:7883:11)
+    at patchChildren (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:7664:11)
+    at patchElement (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:7134:7), 
+            ,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-06-01T09:54:47.417Z [ERROR]: undefined,  
+            TypeError: Cannot read properties of undefined (reading 'p1x')
+    at Proxy._sfc_render (http://localhost:3000/src/components/SlopeLineDrawer.vue?t=1748771687004:298:35)
+    at renderComponentRoot (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:8679:17)
+    at ReactiveEffect.componentUpdateFn [as fn] (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:7472:46)
+    at ReactiveEffect.run (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:494:19)
+    at setupRenderEffect (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:7607:5)
+    at mountComponent (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:7382:7)
+    at processComponent (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:7334:9)
+    at patch (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:6849:11)
+    at patchKeyedChildren (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:7883:11)
+    at patchChildren (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:7664:11), 
+            ,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-06-01T09:54:52.216Z [ERROR]: undefined,  
+            ReferenceError: hendlePolygonTimer is not defined
+    at setup (http://localhost:3000/src/components/SlopeLineDrawer.vue?t=1748771691849:77:5)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2289:19)
+    at setupStatefulComponent (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:10085:25)
+    at setupComponent (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:10046:36)
+    at mountComponent (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:7368:7)
+    at processComponent (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:7334:9)
+    at patch (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:6849:11)
+    at patchKeyedChildren (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:7883:11)
+    at patchChildren (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:7664:11)
+    at patchElement (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:7134:7), 
+            ,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-06-01T09:54:52.420Z [ERROR]: undefined,  
+            TypeError: Cannot read properties of undefined (reading 'p1x')
+    at Proxy._sfc_render (http://localhost:3000/src/components/SlopeLineDrawer.vue?t=1748771691849:298:35)
+    at renderComponentRoot (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:8679:17)
+    at ReactiveEffect.componentUpdateFn [as fn] (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:7472:46)
+    at ReactiveEffect.run (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:494:19)
+    at setupRenderEffect (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:7607:5)
+    at mountComponent (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:7382:7)
+    at processComponent (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:7334:9)
+    at patch (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:6849:11)
+    at patchKeyedChildren (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:7883:11)
+    at patchChildren (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:7664:11), 
+            ,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-06-01T09:56:32.546Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-06-01T09:56:39.879Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-06-01T09:56:44.303Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-06-01T09:56:51.093Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-06-01T09:56:53.272Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-06-01T09:56:55.865Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-06-01T09:56:59.344Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-06-01T09:57:05.627Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-06-01T09:57:07.102Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-06-01T10:01:27.542Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-06-01T10:15:13.791Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-06-01T10:18:19.575Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-06-01T10:19:10.793Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-06-01T11:27:53.671Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-06-01T13:13:24.719Z [ERROR]: undefined,  
+            ReferenceError: POLYGON_SAVE_DELAY is not defined
+    at setup (http://localhost:3000/src/components/SlopeLineDrawer.vue?t=1748783604353:19:5)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2289:19)
+    at setupStatefulComponent (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:10085:25)
+    at setupComponent (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:10046:36)
+    at mountComponent (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:7368:7)
+    at processComponent (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:7334:9)
+    at patch (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:6849:11)
+    at patchKeyedChildren (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:7883:11)
+    at patchChildren (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:7664:11)
+    at patchElement (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:7134:7), 
+            ,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-06-01T13:13:24.925Z [ERROR]: undefined,  
+            TypeError: Cannot read properties of undefined (reading 'p1x')
+    at Proxy._sfc_render (http://localhost:3000/src/components/SlopeLineDrawer.vue?t=1748783604353:306:35)
+    at renderComponentRoot (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:8679:17)
+    at ReactiveEffect.componentUpdateFn [as fn] (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:7472:46)
+    at ReactiveEffect.run (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:494:19)
+    at setupRenderEffect (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:7607:5)
+    at mountComponent (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:7382:7)
+    at processComponent (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:7334:9)
+    at patch (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:6849:11)
+    at patchKeyedChildren (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:7883:11)
+    at patchChildren (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:7664:11), 
+            ,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-06-01T15:18:18.177Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-06-01T15:22:57.901Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-06-01T15:23:12.113Z [ERROR]: /api/lessonsymbols,  
+            Server error occurred, 
+            Validation error,   
+            ,
+            error: duplicate key value violates unique constraint "LessonSymbol_lessonId_col_row_key",
+            UPDATE "LessonSymbol" SET "col"=$1,"row"=$2,"value"=$3,"colorId"=$4,"updatedAt"=$5 WHERE "id" = $6, fields: 
+            {"lessonId":"1","col":"58","row":"13"},
+             }
+2025-06-01T15:23:12.115Z [ERROR]: /api/lessonsymbols,  
+            Server error occurred, 
+            Validation error,   
+            ,
+            error: duplicate key value violates unique constraint "LessonSymbol_lessonId_col_row_key",
+            UPDATE "LessonSymbol" SET "col"=$1,"row"=$2,"value"=$3,"colorId"=$4,"updatedAt"=$5 WHERE "id" = $6, fields: 
+            {"lessonId":"1","col":"58","row":"11"},
+             }
+2025-06-01T15:23:13.212Z [ERROR]: /api/lessonslopelines,  
+            Server error occurred, 
+            invalid input syntax for type integer: "209.5",   
+            ,
+            error: invalid input syntax for type integer: "209.5",
+            UPDATE "LessonSlopeLine" SET "p1x"=$1,"p2x"=$2,"p1y"=$3,"p2y"=$4,"colorId"=$5,"updatedAt"=$6 WHERE "id" = $7, fields: 
+            ,
+             }
+2025-06-01T15:23:13.217Z [ERROR]: /api/lessonslopelines,  
+            Server error occurred, 
+            invalid input syntax for type integer: "209.5",   
+            ,
+            error: invalid input syntax for type integer: "209.5",
+            UPDATE "LessonSlopeLine" SET "p1x"=$1,"p2x"=$2,"p1y"=$3,"p2y"=$4,"colorId"=$5,"updatedAt"=$6 WHERE "id" = $7, fields: 
+            ,
+             }
+2025-06-01T15:23:13.225Z [ERROR]: /api/lessonslopelines,  
+            Server error occurred, 
+            invalid input syntax for type integer: "397.5",   
+            ,
+            error: invalid input syntax for type integer: "397.5",
+            UPDATE "LessonSlopeLine" SET "p1x"=$1,"p2x"=$2,"p1y"=$3,"p2y"=$4,"colorId"=$5,"updatedAt"=$6 WHERE "id" = $7, fields: 
+            ,
+             }
+2025-06-01T15:23:13.233Z [ERROR]: /api/lessonslopelines,  
+            Server error occurred, 
+            invalid input syntax for type integer: "647.5",   
+            ,
+            error: invalid input syntax for type integer: "647.5",
+            UPDATE "LessonSlopeLine" SET "p1x"=$1,"p2x"=$2,"p1y"=$3,"p2y"=$4,"colorId"=$5,"updatedAt"=$6 WHERE "id" = $7, fields: 
+            ,
+             }
+2025-06-01T15:37:52.054Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-06-01T15:37:54.917Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-06-01T15:37:57.609Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-06-01T15:38:01.441Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-06-01T15:38:03.202Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-06-01T15:38:06.791Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-06-01T15:38:37.988Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-06-01T15:38:40.186Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-06-01T15:38:58.637Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-06-01T15:43:30.793Z [ERROR]: undefined,  
+            ReferenceError: annotationCell is not defined
+    at ComputedRefImpl.fn (http://localhost:3000/src/components/AnnotationEditor.vue?t=1748792610029:27:66)
+    at refreshComputed (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:651:29)
+    at get value (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:1849:5)
+    at unref (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:1721:30)
+    at Object.get (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:1727:64)
+    at Proxy._sfc_render (http://localhost:3000/src/components/AnnotationEditor.vue?t=1748792610029:130:21)
+    at renderComponentRoot (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:8679:17)
+    at ReactiveEffect.componentUpdateFn [as fn] (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:7472:46)
+    at ReactiveEffect.run (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:494:19)
+    at setupRenderEffect (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:7607:5), 
+            ,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-06-01T15:43:37.698Z [ERROR]: undefined,  
+            ReferenceError: annotationCell is not defined
+    at ComputedRefImpl.fn (http://localhost:3000/src/components/AnnotationEditor.vue?t=1748792617626:27:66)
+    at refreshComputed (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:651:29)
+    at get value (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:1849:5)
+    at unref (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:1721:30)
+    at Object.get (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:1727:64)
+    at Proxy._sfc_render (http://localhost:3000/src/components/AnnotationEditor.vue?t=1748792617626:130:21)
+    at renderComponentRoot (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:8679:17)
+    at ReactiveEffect.componentUpdateFn [as fn] (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:7472:46)
+    at ReactiveEffect.run (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:494:19)
+    at setupRenderEffect (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:7607:5), 
+            ,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-06-01T15:43:39.767Z [ERROR]: undefined,  
+            ReferenceError: annotationCell is not defined
+    at ComputedRefImpl.fn (http://localhost:3000/src/components/AnnotationEditor.vue?t=1748792619410:27:66)
+    at refreshComputed (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:651:29)
+    at get value (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:1849:5)
+    at unref (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:1721:30)
+    at Object.get (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:1727:64)
+    at Proxy._sfc_render (http://localhost:3000/src/components/AnnotationEditor.vue?t=1748792619410:130:21)
+    at renderComponentRoot (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:8679:17)
+    at ReactiveEffect.componentUpdateFn [as fn] (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:7472:46)
+    at ReactiveEffect.run (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:494:19)
+    at setupRenderEffect (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:7607:5), 
+            ,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-06-01T15:43:41.260Z [ERROR]: undefined,  
+            ReferenceError: annotationCell is not defined
+    at ComputedRefImpl.fn (http://localhost:3000/src/components/AnnotationEditor.vue?t=1748792621222:27:66)
+    at refreshComputed (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:651:29)
+    at get value (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:1849:5)
+    at unref (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:1721:30)
+    at Object.get (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:1727:64)
+    at Proxy._sfc_render (http://localhost:3000/src/components/AnnotationEditor.vue?t=1748792621222:130:21)
+    at renderComponentRoot (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:8679:17)
+    at ReactiveEffect.componentUpdateFn [as fn] (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:7472:46)
+    at ReactiveEffect.run (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:494:19)
+    at setupRenderEffect (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:7607:5), 
+            ,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-06-01T15:43:45.329Z [ERROR]: undefined,  
+            ReferenceError: annotationCell is not defined
+    at ComputedRefImpl.fn (http://localhost:3000/src/components/AnnotationEditor.vue?t=1748792624985:27:66)
+    at refreshComputed (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:651:29)
+    at get value (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:1849:5)
+    at unref (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:1721:30)
+    at Object.get (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:1727:64)
+    at Proxy._sfc_render (http://localhost:3000/src/components/AnnotationEditor.vue?t=1748792624985:130:21)
+    at renderComponentRoot (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:8679:17)
+    at ReactiveEffect.componentUpdateFn [as fn] (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:7472:46)
+    at ReactiveEffect.run (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:494:19)
+    at setupRenderEffect (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:7607:5), 
+            ,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-06-01T15:43:48.327Z [ERROR]: undefined,  
+            ReferenceError: annotationCell is not defined
+    at ComputedRefImpl.fn (http://localhost:3000/src/components/AnnotationEditor.vue?t=1748792628285:27:66)
+    at refreshComputed (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:651:29)
+    at get value (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:1849:5)
+    at unref (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:1721:30)
+    at Object.get (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:1727:64)
+    at Proxy._sfc_render (http://localhost:3000/src/components/AnnotationEditor.vue?t=1748792628285:130:21)
+    at renderComponentRoot (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:8679:17)
+    at ReactiveEffect.componentUpdateFn [as fn] (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:7472:46)
+    at ReactiveEffect.run (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:494:19)
+    at setupRenderEffect (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:7607:5), 
+            ,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-06-01T15:43:51.087Z [ERROR]: undefined,  
+            ReferenceError: annotationCell is not defined
+    at ComputedRefImpl.fn (http://localhost:3000/src/components/AnnotationEditor.vue?t=1748792630707:27:66)
+    at refreshComputed (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:651:29)
+    at get value (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:1849:5)
+    at unref (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:1721:30)
+    at Object.get (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:1727:64)
+    at Proxy._sfc_render (http://localhost:3000/src/components/AnnotationEditor.vue?t=1748792630707:130:21)
+    at renderComponentRoot (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:8679:17)
+    at ReactiveEffect.componentUpdateFn [as fn] (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:7472:46)
+    at ReactiveEffect.run (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:494:19)
+    at setupRenderEffect (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:7607:5), 
+            ,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-06-01T15:43:53.369Z [ERROR]: undefined,  
+            ReferenceError: annotationCell is not defined
+    at ComputedRefImpl.fn (http://localhost:3000/src/components/AnnotationEditor.vue?t=1748792633329:27:66)
+    at refreshComputed (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:651:29)
+    at get value (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:1849:5)
+    at unref (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:1721:30)
+    at Object.get (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:1727:64)
+    at Proxy._sfc_render (http://localhost:3000/src/components/AnnotationEditor.vue?t=1748792633329:130:21)
+    at renderComponentRoot (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:8679:17)
+    at ReactiveEffect.componentUpdateFn [as fn] (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:7472:46)
+    at ReactiveEffect.run (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:494:19)
+    at setupRenderEffect (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:7607:5), 
+            ,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-06-01T15:44:16.826Z [ERROR]: undefined,  
+            ReferenceError: annotationPoint is not defined
+    at ComputedRefImpl.fn (http://localhost:3000/src/components/AnnotationEditor.vue?t=1748792656486:27:66)
+    at refreshComputed (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:651:29)
+    at get value (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:1849:5)
+    at unref (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:1721:30)
+    at Object.get (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:1727:64)
+    at Proxy._sfc_render (http://localhost:3000/src/components/AnnotationEditor.vue?t=1748792656486:130:21)
+    at renderComponentRoot (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:8679:17)
+    at ReactiveEffect.componentUpdateFn [as fn] (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:7472:46)
+    at ReactiveEffect.run (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:494:19)
+    at setupRenderEffect (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:7607:5), 
+            ,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-06-01T15:44:20.443Z [ERROR]: undefined,  
+            ReferenceError: annotationPoint is not defined
+    at ComputedRefImpl.fn (http://localhost:3000/src/components/AnnotationEditor.vue?t=1748792660399:27:66)
+    at refreshComputed (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:651:29)
+    at get value (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:1849:5)
+    at unref (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:1721:30)
+    at Object.get (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:1727:64)
+    at Proxy._sfc_render (http://localhost:3000/src/components/AnnotationEditor.vue?t=1748792660399:130:21)
+    at renderComponentRoot (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:8679:17)
+    at ReactiveEffect.componentUpdateFn [as fn] (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:7472:46)
+    at ReactiveEffect.run (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:494:19)
+    at setupRenderEffect (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:7607:5), 
+            ,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-06-01T15:44:22.743Z [ERROR]: undefined,  
+            ReferenceError: annotationPoint is not defined
+    at ComputedRefImpl.fn (http://localhost:3000/src/components/AnnotationEditor.vue?t=1748792662279:27:65)
+    at refreshComputed (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:651:29)
+    at get value (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:1849:5)
+    at unref (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:1721:30)
+    at Object.get (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:1727:64)
+    at Proxy._sfc_render (http://localhost:3000/src/components/AnnotationEditor.vue?t=1748792662279:130:21)
+    at renderComponentRoot (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:8679:17)
+    at ReactiveEffect.componentUpdateFn [as fn] (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:7472:46)
+    at ReactiveEffect.run (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:494:19)
+    at setupRenderEffect (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:7607:5), 
+            ,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-06-01T15:44:42.603Z [ERROR]: undefined,  
+            ReferenceError: annotationPoint is not defined
+    at ComputedRefImpl.fn (http://localhost:3000/src/components/AnnotationEditor.vue?t=1748792682260:27:35)
+    at refreshComputed (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:651:29)
+    at get value (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:1849:5)
+    at unref (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:1721:30)
+    at Object.get (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:1727:64)
+    at Proxy._sfc_render (http://localhost:3000/src/components/AnnotationEditor.vue?t=1748792682260:130:21)
+    at renderComponentRoot (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:8679:17)
+    at ReactiveEffect.componentUpdateFn [as fn] (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:7472:46)
+    at ReactiveEffect.run (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:494:19)
+    at setupRenderEffect (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:7607:5), 
+            ,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-06-01T15:45:18.537Z [ERROR]: undefined,  
+            ReferenceError: annotationPoint is not defined
+    at ComputedRefImpl.fn (http://localhost:3000/src/components/AnnotationEditor.vue?t=1748792718193:27:35)
+    at refreshComputed (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:651:29)
+    at get value (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:1849:5)
+    at unref (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:1721:30)
+    at Object.get (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:1727:64)
+    at Proxy._sfc_render (http://localhost:3000/src/components/AnnotationEditor.vue?t=1748792718193:126:21)
+    at renderComponentRoot (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:8679:17)
+    at ReactiveEffect.componentUpdateFn [as fn] (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:7472:46)
+    at ReactiveEffect.run (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:494:19)
+    at setupRenderEffect (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:7607:5), 
+            ,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-06-01T15:45:22.935Z [ERROR]: undefined,  
+            ReferenceError: annotationPoint is not defined
+    at ComputedRefImpl.fn (http://localhost:3000/src/components/AnnotationEditor.vue?t=1748792722594:27:35)
+    at refreshComputed (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:651:29)
+    at get value (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:1849:5)
+    at unref (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:1721:30)
+    at Object.get (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:1727:64)
+    at Proxy._sfc_render (http://localhost:3000/src/components/AnnotationEditor.vue?t=1748792722594:126:21)
+    at renderComponentRoot (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:8679:17)
+    at ReactiveEffect.componentUpdateFn [as fn] (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:7472:46)
+    at ReactiveEffect.run (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:494:19)
+    at setupRenderEffect (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:7607:5), 
+            ,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-06-01T15:45:23.776Z [ERROR]: undefined,  
+            ReferenceError: annotationCell is not defined
+    at ComputedRefImpl.fn (http://localhost:3000/src/components/AnnotationEditor.vue?t=1748792723731:30:65)
+    at refreshComputed (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:651:29)
+    at get value (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:1849:5)
+    at unref (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:1721:30)
+    at Object.get (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:1727:64)
+    at Proxy._sfc_render (http://localhost:3000/src/components/AnnotationEditor.vue?t=1748792723731:127:22)
+    at renderComponentRoot (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:8679:17)
+    at ReactiveEffect.componentUpdateFn [as fn] (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:7472:46)
+    at ReactiveEffect.run (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:494:19)
+    at setupRenderEffect (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:7607:5), 
+            ,   
+            ,
+            ,
+            , fields: 
+            ,
+             }

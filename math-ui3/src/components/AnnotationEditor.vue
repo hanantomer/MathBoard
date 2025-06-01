@@ -48,19 +48,11 @@ const show = computed(
 );
 
 const annotationTop = computed(
-  () =>
-    cellStore.getSvgBoundingRect().y +
-    window.scrollY +
-    (annotationCell.value.row + 0.2) * cellStore.getCellVerticalHeight() -
-    1,
+  () => annotationPoint.value.y
 );
 
 const annotationLeft = computed(
-  () =>
-    cellStore.getSvgBoundingRect().x +
-    window.scrollX +
-    annotationCell.value.col * cellStore.getCellHorizontalWidth() -
-    1,
+  () =>annotationPoint.value.x
 );
 
 const annotationWidth = computed(() => cellStore.getCellHorizontalWidth());
@@ -70,7 +62,7 @@ const annotationHeight = computed(
 );
 
 
-let annotationCell = ref({ col: 0, row: 0 });
+const annotationPoint = ref({ x: -1, y: -1 });
 
 watchHelper.watchEndOfEditMode(["ANNOTATION_WRITING"],[],  save);
 
@@ -100,10 +92,10 @@ watchHelper.watchMouseEvent(
 
 
 function startTextEditing(e: MouseEvent) {
-  annotationCell.value = screenHelper.getCell({
+  annotationPoint.value = {
     x: e.pageX,
     y: e.pageY,
-  });
+  };
 
   editModeStore.setNextEditMode();
   setInitialTextValue();
@@ -143,7 +135,7 @@ function save() {
   } else {
     notationMutateHelper.addAnnotationNotation(
       annotaionValue.value,
-      annotationCell.value,
+      annotationPoint.value,
     );
   }
 }

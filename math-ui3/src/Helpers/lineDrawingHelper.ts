@@ -60,7 +60,10 @@ export default function useLineDrawingHelper() {
     modifyLineCallback(position);
   }
 
-  function moveLine(e: KeyboardEvent, moveLineCallback: (moveX: number, moveY: number) => void) {
+  function moveLine(
+    e: KeyboardEvent,
+    moveLineCallback: (moveX: number, moveY: number) => void,
+  ) {
     let moveX = 0;
     let moveY = 0;
     switch (e.key) {
@@ -89,8 +92,6 @@ export default function useLineDrawingHelper() {
       showMatrixLine();
     }
     endDrawingCallback();
-
-   // editModeStore.setDefaultEditMode();
   }
 
   function selectLine(

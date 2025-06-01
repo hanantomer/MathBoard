@@ -87,6 +87,13 @@ export const useEditModeStore = defineStore("editMode", () => {
     );
   }
 
+  function isPolygonDrawingMode() {
+    return (
+      editMode.value === "POLYGON_DRAWING"
+    );
+  }
+
+
   function isSqrtMode() {
     return (
       editMode.value === "SQRT_STARTED" ||
@@ -381,6 +388,7 @@ export const useEditModeStore = defineStore("editMode", () => {
     isCheckMode,
     isResizeMode,
     isSelectFromListMode,
+    isPolygonDrawingMode,
     isCurveEditingControlPointMode,
     setEditMode,
     setNextEditMode,

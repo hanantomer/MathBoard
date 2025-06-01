@@ -28,6 +28,7 @@ import {
   isRect,
   MultiCellAttributes,
   SqrtNotationAttributes,
+  DotCoordinates,
 } from "common/baseTypes";
 
 import { clonedNotationUUIdPrefix } from "common/globals";
@@ -398,6 +399,15 @@ export default function notationMutateHelper() {
           (n as PointNotationAttributes).row += deltaRow;
           break;
         }
+        case "SLOPELINE":
+          const delatX = deltaCol * cellStore.getCellHorizontalWidth();
+          const deltaY = deltaRow * cellStore.getCellVerticalHeight();
+          (n as unknown as SlopeLineAttributes).p1x += delatX;
+          (n as unknown as SlopeLineAttributes).p2x += delatX;
+          (n as unknown as SlopeLineAttributes).p1y += deltaY;
+          (n as unknown as SlopeLineAttributes).p2y += deltaY;
+          break;
+
         case "SQRT": {
           (n as unknown as MultiCellAttributes).fromCol += deltaCol;
           (n as unknown as MultiCellAttributes).toCol += deltaCol;
@@ -660,7 +670,7 @@ export default function notationMutateHelper() {
     notationStore.addNotation(circle, true);
   }
 
-  function addPointNotation(notation: PointNotationCreationAttributes) {
+  function addCellNotation(notation: PointNotationCreationAttributes) {
     editModeStore.setDefaultEditMode();
     notationStore.resetSelectedNotations();
 
@@ -1044,13 +1054,10 @@ export default function notationMutateHelper() {
     upsertRectNotation(notation);
   }
 
-  function addAnnotationNotation(
-    value: string,
-    annotationCells: CellAttributes,
-  ) {
+  function addAnnotationNotation(value: string, point: DotCoordinates) {
     let notation: AnnotationNotationCreationAttributes = {
-      col: annotationCells.col,
-      row: annotationCells.row,
+      x: point.x,
+      y: point.y,
       value: value,
       boardType: notationStore.getParent().type,
       parentUUId: notationStore.getParent().uuid,
@@ -1058,7 +1065,7 @@ export default function notationMutateHelper() {
       user: userStore.getCurrentUser()!,
     };
 
-    addPointNotation(notation);
+    addNotation(notation); /// TODO: check if need to check cell occupation
   }
 
   function addExponentNotation(exponent: string, clickedCell: CellAttributes) {
@@ -1094,7 +1101,7 @@ export default function notationMutateHelper() {
       user: userStore.getCurrentUser()!,
     };
 
-    addPointNotation(notation);
+    addCellNotation(notation);
 
     matrixCellHelper.setNextCell(1, 0);
   }
@@ -1235,7 +1242,7 @@ export default function notationMutateHelper() {
       case "SIGN":
       case "SQRTSYMBOL":
       case "SYMBOL":
-        return addPointNotation(clonedNotation);
+        return addCellNotation(clonedNotation);
       case "IMAGE":
       case "TEXT":
         return upsertRectNotation(clonedNotation);
