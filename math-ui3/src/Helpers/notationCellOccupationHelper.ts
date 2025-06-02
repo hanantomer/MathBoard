@@ -9,6 +9,7 @@ import {
   MultiCellAttributes,
   CircleNotationAttributes,
   RectAttributes,
+  AnnotationNotationAttributes,
 } from "common/baseTypes";
 
 import { matrixDimensions, clonedNotationUUIdPrefix } from "common/globals";
@@ -87,6 +88,18 @@ export default function notationCellOccupationHelper() {
         updateLineOccupationMatrixCell(col, row - 1, matrix, uuid, doRemove);
       }
     }
+  }
+
+  function updateAnnotationOccupationMatrix(
+    matrix: any,
+    notation: AnnotationNotationAttributes,
+    uuid: string,
+    doRemove: boolean,
+  ) {
+
+    const col = Math.round(notation.x / cellStore.getCellHorizontalWidth());
+    const row = Math.round(notation.y / cellStore.getCellVerticalHeight());
+    updatePointOccupationMatrix(matrix, { ...notation, col: col, row:row, followsFraction: false}, doRemove);
   }
 
   function updateVerticalLineOccupationMatrix(
@@ -268,6 +281,7 @@ export default function notationCellOccupationHelper() {
 
   return {
     updatePointOccupationMatrix,
+    updateAnnotationOccupationMatrix,
     updateMultiCellOccupationMatrix,
     updateHorizontalLineOccupationMatrix,
     updateVerticalLineOccupationMatrix,

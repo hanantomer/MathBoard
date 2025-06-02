@@ -13722,3 +13722,38 @@ notNull Violation: LessonSymbol.row cannot be null,
             , fields: 
             ,
              }
+2025-06-01T15:54:57.234Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-06-01T15:54:58.161Z [ERROR]: undefined,  
+            Error: lesson 9f67215c-51d0-4b8d-b049-cf07417233c2 does not exists
+    at Proxy.loadLesson (http://localhost:3000/src/store/pinia/lessonStore.ts:19:13)
+    at async loadLesson (http://localhost:3000/src/components/Lesson.vue?t=1748793207964:47:9)
+    at async watch.immediate (http://localhost:3000/src/components/Lesson.vue?t=1748793207964:37:9), 
+            ,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-06-01T15:55:13.038Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-06-01T15:55:16.044Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }

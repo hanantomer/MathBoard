@@ -1,7 +1,7 @@
 <template>
   <input
     v-show="show"
-    class ="annotation"
+    class="annotation"
     maxlength="3"
     v-bind:style="{
       top: annotationTop + 'px',
@@ -42,18 +42,13 @@ const selectedNotation = computed(() =>
         .at(0) as AnnotationNotationAttributes),
 );
 
-
 const show = computed(
   () => editModeStore.getEditMode() === "ANNOTATION_WRITING",
 );
 
-const annotationTop = computed(
-  () => annotationPoint.value.y
-);
+const annotationTop = computed(() => annotationPoint.value.y);
 
-const annotationLeft = computed(
-  () =>annotationPoint.value.x
-);
+const annotationLeft = computed(() => annotationPoint.value.x);
 
 const annotationWidth = computed(() => cellStore.getCellHorizontalWidth());
 
@@ -61,10 +56,9 @@ const annotationHeight = computed(
   () => cellStore.getCellVerticalHeight() / 2 + 2,
 );
 
-
 const annotationPoint = ref({ x: -1, y: -1 });
 
-watchHelper.watchEndOfEditMode(["ANNOTATION_WRITING"],[],  save);
+watchHelper.watchEndOfEditMode(["ANNOTATION_WRITING"], [], save);
 
 watchHelper.watchMouseEvent(
   ["ANNOTATION_STARTED"],
@@ -89,7 +83,6 @@ watchHelper.watchMouseEvent(
   "EV_SVG_MOUSEDOWN",
   editSelectedAnnotation,
 );
-
 
 function startTextEditing(e: MouseEvent) {
   annotationPoint.value = {
@@ -133,10 +126,10 @@ function save() {
     notationMutateHelper.updateNotation(selectedNotation.value);
     restoreTextNotation(selectedNotation.value.uuid);
   } else {
-    notationMutateHelper.addAnnotationNotation(
-      annotaionValue.value,
-      annotationPoint.value,
-    );
+    notationMutateHelper.addAnnotationNotation(annotaionValue.value, {
+      x: annotationPoint.value.x - cellStore.getSvgBoundingRect().x,
+      y: annotationPoint.value.y - cellStore.getSvgBoundingRect().y,
+    });
   }
 }
 

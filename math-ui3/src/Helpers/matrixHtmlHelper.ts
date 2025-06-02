@@ -233,7 +233,7 @@ export default function useHtmlMatrixHelper() {
   function y(n: NotationAttributes) {
 
     if (n.notationType === "ANNOTATION") {
-      return (n as AnnotationNotationAttributes).y;
+      return (n as AnnotationNotationAttributes).y -7;
     }
 
 

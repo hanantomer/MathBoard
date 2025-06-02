@@ -18,11 +18,13 @@ import {
   isLine,
   isPoint,
   SqrtNotationAttributes,
+  AnnotationNotationAttributes,
 } from "common/baseTypes";
 import { BoardType } from "common/unions";
 import { ref } from "vue";
 import useNotationCellOccupationHelper from "../../helpers/notationCellOccupationHelper";
 import { useCellStore } from "../../store/pinia/cellStore";
+import { line } from "d3";
 
 const notationCellOccupationHelper = useNotationCellOccupationHelper();
 
@@ -146,7 +148,6 @@ export const useNotationStore = defineStore("notation", () => {
 
     switch (notation.notationType) {
       case "EXPONENT":
-      case "ANNOTATION":
       case "SIGN":
       case "SQRTSYMBOL":
       case "SYMBOL":
@@ -156,6 +157,7 @@ export const useNotationStore = defineStore("notation", () => {
           true,
         );
         break;
+
       case "CURVE":
         notationCellOccupationHelper.updateCurveOccupationMatrix(
           cellLineNotationOccupationMatrix,
@@ -422,7 +424,6 @@ export const useNotationStore = defineStore("notation", () => {
   ) {
     switch (notation.notationType) {
       case "EXPONENT":
-      case "ANNOTATION":
       case "SIGN":
       case "SQRTSYMBOL":
       case "SYMBOL":
@@ -432,6 +433,13 @@ export const useNotationStore = defineStore("notation", () => {
           false,
         );
         break;
+
+      case "ANNOTATION":
+        notationCellOccupationHelper.updateAnnotationOccupationMatrix(
+          cellPointNotationOccupationMatrix,
+          notation as AnnotationNotationAttributes,
+          false,
+        );
 
       case "TEXT":
       case "IMAGE":
