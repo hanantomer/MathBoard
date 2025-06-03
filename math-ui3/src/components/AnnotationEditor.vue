@@ -87,7 +87,7 @@ watchHelper.watchMouseEvent(
 function startTextEditing(e: MouseEvent) {
   annotationPoint.value = {
     x: e.pageX,
-    y: e.pageY,
+    y: e.pageY - 7,
   };
 
   editModeStore.setNextEditMode();

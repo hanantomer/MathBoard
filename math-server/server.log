@@ -13757,3 +13757,219 @@ notNull Violation: LessonSymbol.row cannot be null,
             , fields: 
             ,
              }
+2025-06-02T18:45:56.654Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-06-02T18:45:59.497Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-06-02T18:53:04.232Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-06-02T18:57:03.318Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-06-02T18:58:23.583Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-06-02T18:58:48.330Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-06-02T19:28:52.276Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-06-02T19:28:58.834Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-06-02T19:29:03.243Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-06-02T19:29:23.172Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-06-02T19:29:26.438Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-06-02T19:29:31.903Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-06-02T19:29:44.240Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-06-02T19:29:47.892Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-06-02T19:30:06.442Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-06-02T19:30:09.143Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-06-02T19:30:17.348Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-06-02T19:30:28.419Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-06-02T19:30:43.045Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-06-02T19:30:46.118Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-06-02T19:30:59.984Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-06-02T19:38:13.694Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-06-02T19:38:17.525Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-06-02T19:40:18.902Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-06-02T19:40:23.732Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-06-02T19:40:37.048Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-06-02T19:42:09.486Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }

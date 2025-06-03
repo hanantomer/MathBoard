@@ -93,7 +93,6 @@ export default function notationCellOccupationHelper() {
   function updateAnnotationOccupationMatrix(
     matrix: any,
     notation: AnnotationNotationAttributes,
-    uuid: string,
     doRemove: boolean,
   ) {
 

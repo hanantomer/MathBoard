@@ -29,6 +29,7 @@ import {
   MultiCellAttributes,
   SqrtNotationAttributes,
   DotCoordinates,
+  AnnotationNotationAttributes,
 } from "common/baseTypes";
 
 import { clonedNotationUUIdPrefix } from "common/globals";
@@ -372,6 +373,12 @@ export default function notationMutateHelper() {
           (n as CircleNotationAttributes).cy += deltaY;
           break;
         }
+
+        case "ANNOTATION": {
+          (n as AnnotationNotationAttributes).x += deltaX;
+          (n as AnnotationNotationAttributes).y += deltaY;
+          break;
+        }
       }
       notationStore.addNotation(n, true);
     });
@@ -383,29 +390,34 @@ export default function notationMutateHelper() {
     deltaRow: number,
     keepOriginal: boolean,
   ): boolean {
+
     if (keepOriginal) {
       notationStore.cloneSelectedNotations();
     }
 
     notationStore.getSelectedNotations().forEach((n: NotationAttributes) => {
+      matrixCellHelper.unColorizeNotationCells(n);
+      const deltaX = deltaCol * cellStore.getCellHorizontalWidth();
+      const deltaY = deltaRow * cellStore.getCellVerticalHeight();
       switch (n.notationType) {
         case "EXPONENT":
-        case "ANNOTATION":
         case "SIGN":
         case "SQRTSYMBOL":
         case "SYMBOL": {
-          matrixCellHelper.unColorizeNotationCells(n);
           (n as PointNotationAttributes).col += deltaCol;
           (n as PointNotationAttributes).row += deltaRow;
           break;
         }
         case "SLOPELINE":
-          const delatX = deltaCol * cellStore.getCellHorizontalWidth();
-          const deltaY = deltaRow * cellStore.getCellVerticalHeight();
-          (n as unknown as SlopeLineAttributes).p1x += delatX;
-          (n as unknown as SlopeLineAttributes).p2x += delatX;
+          (n as unknown as SlopeLineAttributes).p1x += deltaX;
+          (n as unknown as SlopeLineAttributes).p2x += deltaX;
           (n as unknown as SlopeLineAttributes).p1y += deltaY;
           (n as unknown as SlopeLineAttributes).p2y += deltaY;
+          break;
+
+        case "ANNOTATION":
+          (n as unknown as AnnotationNotationAttributes).x += deltaX;
+          (n as unknown as AnnotationNotationAttributes).y += deltaY;
           break;
 
         case "SQRT": {
@@ -587,6 +599,12 @@ export default function notationMutateHelper() {
             cx: Math.round((notation as any)["cx"]),
             cy: Math.round((notation as any)["cy"]),
             r: Math.round((notation as any)["r"]),
+          }
+        : // annotation
+        "x" in notation && "y" in notation
+        ? {
+            x: Math.round((notation as any)["x"]),
+            y: Math.round((notation as any)["y"]),
           }
         : null;
 

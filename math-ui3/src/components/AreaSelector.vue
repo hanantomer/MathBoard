@@ -74,6 +74,7 @@ let lineTypes: Array<NotationType> = [
   "HORIZONTALLINE",
   "VERTICALLINE",
   "SLOPELINE",
+  "ANNOTATION"
 ];
 
 let selectionPosition = ref({
@@ -478,14 +479,14 @@ function moveSelectionByMouseDrag(e: MouseEvent) {
     return;
   }
 
-  if (onlyLinesOrCircleAraSelected()) {
+  if (onlyLinesAnnotationsOrCircleAraSelected()) {
     moveAtPixelScale(e);
   } else {
     moveAtCellScale(e);
   }
 }
 
-function onlyLinesOrCircleAraSelected() {
+function onlyLinesAnnotationsOrCircleAraSelected() {
   return (
     notationStore
       .getSelectedNotations()
