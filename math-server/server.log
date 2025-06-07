@@ -15733,3 +15733,27 @@ notNull Violation: LessonSymbol.row cannot be null,
             , fields: 
             ,
              }
+2025-06-07T20:26:38.350Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-06-07T20:26:41.466Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-06-07T20:30:05.612Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
