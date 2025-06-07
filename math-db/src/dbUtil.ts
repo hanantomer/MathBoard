@@ -688,7 +688,7 @@ export default function dbUtil() {
     function validateExponentNotation(m: ExponentNotationAttributes): void {
         if ((m.col ?? 0) < 0) throw new Error(`col must be >= 0, got ${m.col}`);
         if ((m.row ?? 0) < 0) throw new Error(`row must be >= 0, got ${m.row}`);
-        if (m.exponent && m.exponent.toString().length === 0) {
+        if (m.value && m.value.toString().length === 0) {
             throw new Error('exponent cannot be empty if provided');
         }
     }

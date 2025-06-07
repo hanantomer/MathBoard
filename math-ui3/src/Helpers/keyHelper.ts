@@ -54,7 +54,10 @@ export default function () {
   }
 
   function handleMovementKey(key: string) {
-    if (editModeStore.getEditMode() !== "CELL_SELECTED") {
+    if (
+      editModeStore.getEditMode() !== "CELL_SELECTED" &&
+      editModeStore.getEditMode() !== "SYMBOL"
+    ) {
       return;
     }
 

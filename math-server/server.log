@@ -13973,3 +13973,1763 @@ notNull Violation: LessonSymbol.row cannot be null,
             , fields: 
             ,
              }
+2025-06-03T17:16:18.579Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-06-03T17:16:24.447Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-06-03T17:16:27.658Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-06-03T17:16:46.410Z [ERROR]: /api/lessonslopelines,  
+            Server error occurred, 
+            invalid input syntax for type integer: "437.5",   
+            ,
+            error: invalid input syntax for type integer: "437.5",
+            UPDATE "LessonSlopeLine" SET "p1x"=$1,"p2x"=$2,"p1y"=$3,"p2y"=$4,"colorId"=$5,"updatedAt"=$6 WHERE "id" = $7, fields: 
+            ,
+             }
+2025-06-03T18:23:26.173Z [ERROR]: undefined,  
+            ReferenceError: ANNOTATION is not defined
+    at setup (http://localhost:3000/src/components/AreaSelector.vue?t=1748975005763:34:7)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2289:19)
+    at setupStatefulComponent (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:10085:25)
+    at setupComponent (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:10046:36)
+    at mountComponent (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:7368:7)
+    at processComponent (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:7334:9)
+    at patch (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:6849:11)
+    at patchKeyedChildren (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:7883:11)
+    at patchChildren (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:7664:11)
+    at processFragment (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:7308:9), 
+            ,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-06-03T18:28:10.073Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-06-03T18:28:23.874Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-06-03T18:31:49.285Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-06-03T18:31:59.926Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-06-03T18:32:08.086Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-06-03T18:33:26.095Z [ERROR]: /api/lessonslopelines,  
+            Server error occurred, 
+            invalid input syntax for type integer: "898.5",   
+            ,
+            error: invalid input syntax for type integer: "898.5",
+            UPDATE "LessonSlopeLine" SET "p1x"=$1,"p2x"=$2,"p1y"=$3,"p2y"=$4,"colorId"=$5,"updatedAt"=$6 WHERE "id" = $7, fields: 
+            ,
+             }
+2025-06-03T18:33:26.264Z [ERROR]: /api/lessonslopelines,  
+            Server error occurred, 
+            invalid input syntax for type integer: "933.5",   
+            ,
+            error: invalid input syntax for type integer: "933.5",
+            UPDATE "LessonSlopeLine" SET "p1x"=$1,"p2x"=$2,"p1y"=$3,"p2y"=$4,"colorId"=$5,"updatedAt"=$6 WHERE "id" = $7, fields: 
+            ,
+             }
+2025-06-03T18:33:27.539Z [ERROR]: /api/lessonslopelines,  
+            Server error occurred, 
+            invalid input syntax for type integer: "933.5",   
+            ,
+            error: invalid input syntax for type integer: "933.5",
+            UPDATE "LessonSlopeLine" SET "p1x"=$1,"p2x"=$2,"p1y"=$3,"p2y"=$4,"colorId"=$5,"updatedAt"=$6 WHERE "id" = $7, fields: 
+            ,
+             }
+2025-06-03T18:33:28.744Z [ERROR]: /api/lessonslopelines,  
+            Server error occurred, 
+            invalid input syntax for type integer: "898.5",   
+            ,
+            error: invalid input syntax for type integer: "898.5",
+            UPDATE "LessonSlopeLine" SET "p1x"=$1,"p2x"=$2,"p1y"=$3,"p2y"=$4,"colorId"=$5,"updatedAt"=$6 WHERE "id" = $7, fields: 
+            ,
+             }
+2025-06-03T18:33:29.057Z [ERROR]: /api/lessonslopelines,  
+            Server error occurred, 
+            invalid input syntax for type integer: "863.5",   
+            ,
+            error: invalid input syntax for type integer: "863.5",
+            UPDATE "LessonSlopeLine" SET "p1x"=$1,"p2x"=$2,"p1y"=$3,"p2y"=$4,"colorId"=$5,"updatedAt"=$6 WHERE "id" = $7, fields: 
+            ,
+             }
+2025-06-03T18:33:29.496Z [ERROR]: /api/lessonslopelines,  
+            Server error occurred, 
+            invalid input syntax for type integer: "863.5",   
+            ,
+            error: invalid input syntax for type integer: "863.5",
+            UPDATE "LessonSlopeLine" SET "p1x"=$1,"p2x"=$2,"p1y"=$3,"p2y"=$4,"colorId"=$5,"updatedAt"=$6 WHERE "id" = $7, fields: 
+            ,
+             }
+2025-06-03T18:33:30.275Z [ERROR]: /api/lessonslopelines,  
+            Server error occurred, 
+            invalid input syntax for type integer: "898.5",   
+            ,
+            error: invalid input syntax for type integer: "898.5",
+            UPDATE "LessonSlopeLine" SET "p1x"=$1,"p2x"=$2,"p1y"=$3,"p2y"=$4,"colorId"=$5,"updatedAt"=$6 WHERE "id" = $7, fields: 
+            ,
+             }
+2025-06-03T18:33:30.461Z [ERROR]: /api/lessonslopelines,  
+            Server error occurred, 
+            invalid input syntax for type integer: "933.5",   
+            ,
+            error: invalid input syntax for type integer: "933.5",
+            UPDATE "LessonSlopeLine" SET "p1x"=$1,"p2x"=$2,"p1y"=$3,"p2y"=$4,"colorId"=$5,"updatedAt"=$6 WHERE "id" = $7, fields: 
+            ,
+             }
+2025-06-03T18:33:36.953Z [ERROR]: /api/lessonslopelines,  
+            Server error occurred, 
+            invalid input syntax for type integer: "968.5",   
+            ,
+            error: invalid input syntax for type integer: "968.5",
+            UPDATE "LessonSlopeLine" SET "p1x"=$1,"p2x"=$2,"p1y"=$3,"p2y"=$4,"colorId"=$5,"updatedAt"=$6 WHERE "id" = $7, fields: 
+            ,
+             }
+2025-06-03T18:33:37.953Z [ERROR]: /api/lessonslopelines,  
+            Server error occurred, 
+            invalid input syntax for type integer: "968.5",   
+            ,
+            error: invalid input syntax for type integer: "968.5",
+            UPDATE "LessonSlopeLine" SET "p1x"=$1,"p2x"=$2,"p1y"=$3,"p2y"=$4,"colorId"=$5,"updatedAt"=$6 WHERE "id" = $7, fields: 
+            ,
+             }
+2025-06-03T18:33:38.185Z [ERROR]: /api/lessonslopelines,  
+            Server error occurred, 
+            invalid input syntax for type integer: "933.5",   
+            ,
+            error: invalid input syntax for type integer: "933.5",
+            UPDATE "LessonSlopeLine" SET "p1x"=$1,"p2x"=$2,"p1y"=$3,"p2y"=$4,"colorId"=$5,"updatedAt"=$6 WHERE "id" = $7, fields: 
+            ,
+             }
+2025-06-03T18:38:15.461Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-06-03T18:38:30.300Z [ERROR]: /api/lessonslopelines,  
+            Server error occurred, 
+            invalid input syntax for type integer: "933.5",   
+            ,
+            error: invalid input syntax for type integer: "933.5",
+            UPDATE "LessonSlopeLine" SET "p1x"=$1,"p2x"=$2,"p1y"=$3,"p2y"=$4,"colorId"=$5,"updatedAt"=$6 WHERE "id" = $7, fields: 
+            ,
+             }
+2025-06-03T18:40:44.241Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-06-03T18:41:28.852Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-06-03T18:43:13.016Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-06-03T18:43:18.793Z [ERROR]: /api/lessonannotations,  
+            Server error occurred, 
+            invalid input syntax for type integer: "252.5",   
+            ,
+            error: invalid input syntax for type integer: "252.5",
+            UPDATE "LessonAnnotation" SET "x"=$1,"y"=$2,"value"=$3,"colorId"=$4,"updatedAt"=$5 WHERE "id" = $6, fields: 
+            ,
+             }
+2025-06-03T18:43:21.611Z [ERROR]: /api/lessonannotations,  
+            Server error occurred, 
+            invalid input syntax for type integer: "287.5",   
+            ,
+            error: invalid input syntax for type integer: "287.5",
+            UPDATE "LessonAnnotation" SET "x"=$1,"y"=$2,"value"=$3,"colorId"=$4,"updatedAt"=$5 WHERE "id" = $6, fields: 
+            ,
+             }
+2025-06-03T18:43:23.350Z [ERROR]: /api/lessonannotations,  
+            Server error occurred, 
+            invalid input syntax for type integer: "322.5",   
+            ,
+            error: invalid input syntax for type integer: "322.5",
+            UPDATE "LessonAnnotation" SET "x"=$1,"y"=$2,"value"=$3,"colorId"=$4,"updatedAt"=$5 WHERE "id" = $6, fields: 
+            ,
+             }
+2025-06-03T18:43:24.454Z [ERROR]: /api/lessonannotations,  
+            Server error occurred, 
+            invalid input syntax for type integer: "357.5",   
+            ,
+            error: invalid input syntax for type integer: "357.5",
+            UPDATE "LessonAnnotation" SET "x"=$1,"y"=$2,"value"=$3,"colorId"=$4,"updatedAt"=$5 WHERE "id" = $6, fields: 
+            ,
+             }
+2025-06-03T18:44:33.024Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-06-03T18:44:39.625Z [ERROR]: /api/lessonannotations,  
+            Server error occurred, 
+            invalid input syntax for type integer: "357.5",   
+            ,
+            error: invalid input syntax for type integer: "357.5",
+            UPDATE "LessonAnnotation" SET "x"=$1,"y"=$2,"value"=$3,"colorId"=$4,"updatedAt"=$5 WHERE "id" = $6, fields: 
+            ,
+             }
+2025-06-03T18:44:40.662Z [ERROR]: /api/lessonannotations,  
+            Server error occurred, 
+            invalid input syntax for type integer: "392.5",   
+            ,
+            error: invalid input syntax for type integer: "392.5",
+            UPDATE "LessonAnnotation" SET "x"=$1,"y"=$2,"value"=$3,"colorId"=$4,"updatedAt"=$5 WHERE "id" = $6, fields: 
+            ,
+             }
+2025-06-03T18:44:41.602Z [ERROR]: /api/lessonannotations,  
+            Server error occurred, 
+            invalid input syntax for type integer: "427.5",   
+            ,
+            error: invalid input syntax for type integer: "427.5",
+            UPDATE "LessonAnnotation" SET "x"=$1,"y"=$2,"value"=$3,"colorId"=$4,"updatedAt"=$5 WHERE "id" = $6, fields: 
+            ,
+             }
+2025-06-03T18:44:45.135Z [ERROR]: /api/lessonslopelines,  
+            Server error occurred, 
+            invalid input syntax for type integer: "933.5",   
+            ,
+            error: invalid input syntax for type integer: "933.5",
+            UPDATE "LessonSlopeLine" SET "p1x"=$1,"p2x"=$2,"p1y"=$3,"p2y"=$4,"colorId"=$5,"updatedAt"=$6 WHERE "id" = $7, fields: 
+            ,
+             }
+2025-06-03T18:44:45.446Z [ERROR]: /api/lessonannotations,  
+            Server error occurred, 
+            invalid input syntax for type integer: "462.5",   
+            ,
+            error: invalid input syntax for type integer: "462.5",
+            UPDATE "LessonAnnotation" SET "x"=$1,"y"=$2,"value"=$3,"colorId"=$4,"updatedAt"=$5 WHERE "id" = $6, fields: 
+            ,
+             }
+2025-06-03T18:44:45.860Z [ERROR]: /api/lessonslopelines,  
+            Server error occurred, 
+            invalid input syntax for type integer: "968.5",   
+            ,
+            error: invalid input syntax for type integer: "968.5",
+            UPDATE "LessonSlopeLine" SET "p1x"=$1,"p2x"=$2,"p1y"=$3,"p2y"=$4,"colorId"=$5,"updatedAt"=$6 WHERE "id" = $7, fields: 
+            ,
+             }
+2025-06-03T18:44:45.862Z [ERROR]: /api/lessonannotations,  
+            Server error occurred, 
+            invalid input syntax for type integer: "497.5",   
+            ,
+            error: invalid input syntax for type integer: "497.5",
+            UPDATE "LessonAnnotation" SET "x"=$1,"y"=$2,"value"=$3,"colorId"=$4,"updatedAt"=$5 WHERE "id" = $6, fields: 
+            ,
+             }
+2025-06-03T18:44:46.780Z [ERROR]: /api/lessonslopelines,  
+            Server error occurred, 
+            invalid input syntax for type integer: "933.5",   
+            ,
+            error: invalid input syntax for type integer: "933.5",
+            UPDATE "LessonSlopeLine" SET "p1x"=$1,"p2x"=$2,"p1y"=$3,"p2y"=$4,"colorId"=$5,"updatedAt"=$6 WHERE "id" = $7, fields: 
+            ,
+             }
+2025-06-03T18:44:46.899Z [ERROR]: /api/lessonannotations,  
+            Server error occurred, 
+            invalid input syntax for type integer: "462.5",   
+            ,
+            error: invalid input syntax for type integer: "462.5",
+            UPDATE "LessonAnnotation" SET "x"=$1,"y"=$2,"value"=$3,"colorId"=$4,"updatedAt"=$5 WHERE "id" = $6, fields: 
+            ,
+             }
+2025-06-03T18:44:47.081Z [ERROR]: /api/lessonslopelines,  
+            Server error occurred, 
+            invalid input syntax for type integer: "898.5",   
+            ,
+            error: invalid input syntax for type integer: "898.5",
+            UPDATE "LessonSlopeLine" SET "p1x"=$1,"p2x"=$2,"p1y"=$3,"p2y"=$4,"colorId"=$5,"updatedAt"=$6 WHERE "id" = $7, fields: 
+            ,
+             }
+2025-06-03T18:44:47.246Z [ERROR]: /api/lessonannotations,  
+            Server error occurred, 
+            invalid input syntax for type integer: "427.5",   
+            ,
+            error: invalid input syntax for type integer: "427.5",
+            UPDATE "LessonAnnotation" SET "x"=$1,"y"=$2,"value"=$3,"colorId"=$4,"updatedAt"=$5 WHERE "id" = $6, fields: 
+            ,
+             }
+2025-06-03T18:44:47.388Z [ERROR]: /api/lessonslopelines,  
+            Server error occurred, 
+            invalid input syntax for type integer: "863.5",   
+            ,
+            error: invalid input syntax for type integer: "863.5",
+            UPDATE "LessonSlopeLine" SET "p1x"=$1,"p2x"=$2,"p1y"=$3,"p2y"=$4,"colorId"=$5,"updatedAt"=$6 WHERE "id" = $7, fields: 
+            ,
+             }
+2025-06-03T18:44:47.560Z [ERROR]: /api/lessonannotations,  
+            Server error occurred, 
+            invalid input syntax for type integer: "392.5",   
+            ,
+            error: invalid input syntax for type integer: "392.5",
+            UPDATE "LessonAnnotation" SET "x"=$1,"y"=$2,"value"=$3,"colorId"=$4,"updatedAt"=$5 WHERE "id" = $6, fields: 
+            ,
+             }
+2025-06-03T18:44:47.734Z [ERROR]: /api/lessonslopelines,  
+            Server error occurred, 
+            invalid input syntax for type integer: "828.5",   
+            ,
+            error: invalid input syntax for type integer: "828.5",
+            UPDATE "LessonSlopeLine" SET "p1x"=$1,"p2x"=$2,"p1y"=$3,"p2y"=$4,"colorId"=$5,"updatedAt"=$6 WHERE "id" = $7, fields: 
+            ,
+             }
+2025-06-03T18:44:47.889Z [ERROR]: /api/lessonannotations,  
+            Server error occurred, 
+            invalid input syntax for type integer: "357.5",   
+            ,
+            error: invalid input syntax for type integer: "357.5",
+            UPDATE "LessonAnnotation" SET "x"=$1,"y"=$2,"value"=$3,"colorId"=$4,"updatedAt"=$5 WHERE "id" = $6, fields: 
+            ,
+             }
+2025-06-03T18:44:48.130Z [ERROR]: /api/lessonslopelines,  
+            Server error occurred, 
+            invalid input syntax for type integer: "793.5",   
+            ,
+            error: invalid input syntax for type integer: "793.5",
+            UPDATE "LessonSlopeLine" SET "p1x"=$1,"p2x"=$2,"p1y"=$3,"p2y"=$4,"colorId"=$5,"updatedAt"=$6 WHERE "id" = $7, fields: 
+            ,
+             }
+2025-06-03T18:44:48.317Z [ERROR]: /api/lessonannotations,  
+            Server error occurred, 
+            invalid input syntax for type integer: "322.5",   
+            ,
+            error: invalid input syntax for type integer: "322.5",
+            UPDATE "LessonAnnotation" SET "x"=$1,"y"=$2,"value"=$3,"colorId"=$4,"updatedAt"=$5 WHERE "id" = $6, fields: 
+            ,
+             }
+2025-06-03T18:44:50.997Z [ERROR]: /api/lessonslopelines,  
+            Server error occurred, 
+            invalid input syntax for type integer: "793.5",   
+            ,
+            error: invalid input syntax for type integer: "793.5",
+            UPDATE "LessonSlopeLine" SET "p1x"=$1,"p2x"=$2,"p1y"=$3,"p2y"=$4,"colorId"=$5,"updatedAt"=$6 WHERE "id" = $7, fields: 
+            ,
+             }
+2025-06-03T18:44:50.999Z [ERROR]: /api/lessonannotations,  
+            Server error occurred, 
+            invalid input syntax for type integer: "322.5",   
+            ,
+            error: invalid input syntax for type integer: "322.5",
+            UPDATE "LessonAnnotation" SET "x"=$1,"y"=$2,"value"=$3,"colorId"=$4,"updatedAt"=$5 WHERE "id" = $6, fields: 
+            ,
+             }
+2025-06-03T18:44:51.365Z [ERROR]: /api/lessonslopelines,  
+            Server error occurred, 
+            invalid input syntax for type integer: "828.5",   
+            ,
+            error: invalid input syntax for type integer: "828.5",
+            UPDATE "LessonSlopeLine" SET "p1x"=$1,"p2x"=$2,"p1y"=$3,"p2y"=$4,"colorId"=$5,"updatedAt"=$6 WHERE "id" = $7, fields: 
+            ,
+             }
+2025-06-03T18:44:51.373Z [ERROR]: /api/lessonannotations,  
+            Server error occurred, 
+            invalid input syntax for type integer: "357.5",   
+            ,
+            error: invalid input syntax for type integer: "357.5",
+            UPDATE "LessonAnnotation" SET "x"=$1,"y"=$2,"value"=$3,"colorId"=$4,"updatedAt"=$5 WHERE "id" = $6, fields: 
+            ,
+             }
+2025-06-03T18:44:51.791Z [ERROR]: /api/lessonslopelines,  
+            Server error occurred, 
+            invalid input syntax for type integer: "863.5",   
+            ,
+            error: invalid input syntax for type integer: "863.5",
+            UPDATE "LessonSlopeLine" SET "p1x"=$1,"p2x"=$2,"p1y"=$3,"p2y"=$4,"colorId"=$5,"updatedAt"=$6 WHERE "id" = $7, fields: 
+            ,
+             }
+2025-06-03T18:44:51.792Z [ERROR]: /api/lessonannotations,  
+            Server error occurred, 
+            invalid input syntax for type integer: "392.5",   
+            ,
+            error: invalid input syntax for type integer: "392.5",
+            UPDATE "LessonAnnotation" SET "x"=$1,"y"=$2,"value"=$3,"colorId"=$4,"updatedAt"=$5 WHERE "id" = $6, fields: 
+            ,
+             }
+2025-06-03T18:44:52.873Z [ERROR]: /api/lessonslopelines,  
+            Server error occurred, 
+            invalid input syntax for type integer: "863.5",   
+            ,
+            error: invalid input syntax for type integer: "863.5",
+            UPDATE "LessonSlopeLine" SET "p1x"=$1,"p2x"=$2,"p1y"=$3,"p2y"=$4,"colorId"=$5,"updatedAt"=$6 WHERE "id" = $7, fields: 
+            ,
+             }
+2025-06-03T18:44:52.875Z [ERROR]: /api/lessonannotations,  
+            Server error occurred, 
+            invalid input syntax for type integer: "392.5",   
+            ,
+            error: invalid input syntax for type integer: "392.5",
+            UPDATE "LessonAnnotation" SET "x"=$1,"y"=$2,"value"=$3,"colorId"=$4,"updatedAt"=$5 WHERE "id" = $6, fields: 
+            ,
+             }
+2025-06-03T18:45:01.271Z [ERROR]: /api/lessonslopelines,  
+            Server error occurred, 
+            invalid input syntax for type integer: "791.5",   
+            ,
+            error: invalid input syntax for type integer: "791.5",
+            UPDATE "LessonSlopeLine" SET "p1x"=$1,"p2x"=$2,"p1y"=$3,"p2y"=$4,"colorId"=$5,"updatedAt"=$6 WHERE "id" = $7, fields: 
+            ,
+             }
+2025-06-03T18:45:01.586Z [ERROR]: /api/lessonannotations,  
+            Server error occurred, 
+            invalid input syntax for type integer: "320.5",   
+            ,
+            error: invalid input syntax for type integer: "320.5",
+            UPDATE "LessonAnnotation" SET "x"=$1,"y"=$2,"value"=$3,"colorId"=$4,"updatedAt"=$5 WHERE "id" = $6, fields: 
+            ,
+             }
+2025-06-03T18:45:03.775Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-06-03T19:36:24.717Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-06-03T19:36:26.601Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-06-03T19:40:02.917Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-06-04T13:50:57.401Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-06-04T13:52:04.283Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-06-04T13:52:07.286Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-06-04T15:33:27.336Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-06-04T15:35:40.046Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-06-04T15:35:42.706Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-06-04T15:40:34.338Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-06-04T15:43:27.694Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-06-04T15:44:42.804Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-06-04T15:46:14.701Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-06-04T15:47:22.292Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-06-04T15:48:03.723Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-06-04T15:48:18.571Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-06-04T16:58:11.167Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-06-04T17:04:47.038Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-06-04T17:06:18.713Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-06-04T17:06:45.521Z [ERROR]: /api/lessonsymbols/,  
+            Server error occurred, 
+            Validation error,   
+            ,
+            error: duplicate key value violates unique constraint "LessonSymbol_lessonId_col_row_key",
+            INSERT INTO "LessonSymbol" ("id","uuid","lessonId","col","row","value","createdAt","updatedAt","userId") VALUES (DEFAULT,$1,$2,$3,$4,$5,$6,$7,$8) RETURNING "id","uuid","lessonId","col","row","value","createdAt","updatedAt","userId","colorId";, fields: 
+            {"lessonId":"1","col":"20","row":"8"},
+             }
+2025-06-04T17:06:50.941Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-06-04T17:07:08.703Z [ERROR]: /api/lessonsymbols/,  
+            Server error occurred, 
+            Validation error,   
+            ,
+            error: duplicate key value violates unique constraint "LessonSymbol_lessonId_col_row_key",
+            INSERT INTO "LessonSymbol" ("id","uuid","lessonId","col","row","value","createdAt","updatedAt","userId") VALUES (DEFAULT,$1,$2,$3,$4,$5,$6,$7,$8) RETURNING "id","uuid","lessonId","col","row","value","createdAt","updatedAt","userId","colorId";, fields: 
+            {"lessonId":"1","col":"20","row":"8"},
+             }
+2025-06-04T17:07:19.659Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-06-04T17:07:49.923Z [ERROR]: /api/lessonsymbols/,  
+            Server error occurred, 
+            Validation error,   
+            ,
+            error: duplicate key value violates unique constraint "LessonSymbol_lessonId_col_row_key",
+            INSERT INTO "LessonSymbol" ("id","uuid","lessonId","col","row","value","createdAt","updatedAt","userId") VALUES (DEFAULT,$1,$2,$3,$4,$5,$6,$7,$8) RETURNING "id","uuid","lessonId","col","row","value","createdAt","updatedAt","userId","colorId";, fields: 
+            {"lessonId":"1","col":"20","row":"8"},
+             }
+2025-06-04T17:09:57.497Z [ERROR]: /api/lessonsymbols/,  
+            Server error occurred, 
+            Validation error,   
+            ,
+            error: duplicate key value violates unique constraint "LessonSymbol_lessonId_col_row_key",
+            INSERT INTO "LessonSymbol" ("id","uuid","lessonId","col","row","value","createdAt","updatedAt","userId") VALUES (DEFAULT,$1,$2,$3,$4,$5,$6,$7,$8) RETURNING "id","uuid","lessonId","col","row","value","createdAt","updatedAt","userId","colorId";, fields: 
+            {"lessonId":"1","col":"20","row":"8"},
+             }
+2025-06-04T17:10:44.853Z [ERROR]: /api/lessonsymbols/,  
+            Server error occurred, 
+            Validation error,   
+            ,
+            error: duplicate key value violates unique constraint "LessonSymbol_lessonId_col_row_key",
+            INSERT INTO "LessonSymbol" ("id","uuid","lessonId","col","row","value","createdAt","updatedAt","userId") VALUES (DEFAULT,$1,$2,$3,$4,$5,$6,$7,$8) RETURNING "id","uuid","lessonId","col","row","value","createdAt","updatedAt","userId","colorId";, fields: 
+            {"lessonId":"1","col":"20","row":"8"},
+             }
+2025-06-04T17:13:21.357Z [ERROR]: /api/lessonsymbols/,  
+            Server error occurred, 
+            Validation error,   
+            ,
+            error: duplicate key value violates unique constraint "LessonSymbol_lessonId_col_row_key",
+            INSERT INTO "LessonSymbol" ("id","uuid","lessonId","col","row","value","createdAt","updatedAt","userId") VALUES (DEFAULT,$1,$2,$3,$4,$5,$6,$7,$8) RETURNING "id","uuid","lessonId","col","row","value","createdAt","updatedAt","userId","colorId";, fields: 
+            {"lessonId":"1","col":"20","row":"8"},
+             }
+2025-06-04T17:15:42.696Z [ERROR]: /api/lessonsymbols/,  
+            Server error occurred, 
+            Validation error,   
+            ,
+            error: duplicate key value violates unique constraint "LessonSymbol_lessonId_col_row_key",
+            INSERT INTO "LessonSymbol" ("id","uuid","lessonId","col","row","value","createdAt","updatedAt","userId") VALUES (DEFAULT,$1,$2,$3,$4,$5,$6,$7,$8) RETURNING "id","uuid","lessonId","col","row","value","createdAt","updatedAt","userId","colorId";, fields: 
+            {"lessonId":"1","col":"20","row":"8"},
+             }
+2025-06-04T17:20:35.621Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-06-04T17:20:39.361Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-06-04T17:20:47.689Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-06-04T17:20:50.348Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-06-04T17:23:13.625Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-06-04T17:23:40.166Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-06-04T18:19:32.990Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-06-04T18:19:36.725Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-06-04T18:21:20.346Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-06-04T18:22:06.203Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-06-04T18:26:45.879Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-06-05T17:31:44.303Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-06-05T17:31:47.107Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-06-05T17:49:40.509Z [ERROR]: undefined,  
+            Unhandled Rejection, 
+            ,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-06-05T18:33:48.305Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-06-05T18:34:09.676Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-06-05T18:34:17.348Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-06-05T18:40:10.954Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-06-05T18:42:32.034Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-06-05T18:42:42.835Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-06-06T07:26:33.347Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-06-06T07:26:35.296Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-06-06T07:26:38.341Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-06-06T07:27:14.044Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-06-06T07:27:30.620Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-06-06T07:28:12.216Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-06-06T08:06:25.586Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-06-06T08:06:44.061Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-06-06T08:07:03.754Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-06-06T08:07:22.310Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-06-06T08:07:37.093Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-06-06T08:07:58.338Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-06-06T08:28:47.012Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-06-06T08:31:09.538Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-06-06T10:08:48.389Z [ERROR]: undefined,  
+            ReferenceError: watxhHe is not defined
+    at setup (http://localhost:3000/src/components/ExponentEditor.vue?t=1749204528337:52:5)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2289:19)
+    at setupStatefulComponent (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:10085:25)
+    at setupComponent (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:10046:36)
+    at mountComponent (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:7368:7)
+    at processComponent (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:7334:9)
+    at patch (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:6849:11)
+    at patchKeyedChildren (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:7883:11)
+    at patchChildren (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:7664:11)
+    at processFragment (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:7308:9), 
+            ,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-06-06T10:08:52.958Z [ERROR]: undefined,  
+            ReferenceError: watxhHelper is not defined
+    at setup (http://localhost:3000/src/components/ExponentEditor.vue?t=1749204532846:52:5)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2289:19)
+    at setupStatefulComponent (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:10085:25)
+    at setupComponent (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:10046:36)
+    at mountComponent (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:7368:7)
+    at processComponent (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:7334:9)
+    at patch (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:6849:11)
+    at patchKeyedChildren (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:7883:11)
+    at patchChildren (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:7664:11)
+    at processFragment (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:7308:9), 
+            ,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-06-06T10:08:57.540Z [ERROR]: undefined,  
+            ReferenceError: watxhHelper is not defined
+    at setup (http://localhost:3000/src/components/ExponentEditor.vue?t=1749204537186:52:5)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2289:19)
+    at setupStatefulComponent (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:10085:25)
+    at setupComponent (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:10046:36)
+    at mountComponent (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:7368:7)
+    at processComponent (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:7334:9)
+    at patch (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:6849:11)
+    at patchKeyedChildren (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:7883:11)
+    at patchChildren (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:7664:11)
+    at processFragment (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:7308:9), 
+            ,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-06-06T10:09:42.447Z [ERROR]: undefined,  
+            ReferenceError: watxhHelper is not defined
+    at setup (http://localhost:3000/src/components/ExponentEditor.vue?t=1749204582402:52:5)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2289:19)
+    at setupStatefulComponent (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:10085:25)
+    at setupComponent (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:10046:36)
+    at mountComponent (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:7368:7)
+    at processComponent (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:7334:9)
+    at patch (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:6849:11)
+    at patchKeyedChildren (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:7883:11)
+    at patchChildren (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:7664:11)
+    at processFragment (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:7308:9), 
+            ,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-06-06T10:10:30.470Z [ERROR]: undefined,  
+            ReferenceError: watxhHelper is not defined
+    at setup (http://localhost:3000/src/components/ExponentEditor.vue?t=1749204630419:52:5)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2289:19)
+    at setupStatefulComponent (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:10085:25)
+    at setupComponent (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:10046:36)
+    at mountComponent (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:7368:7)
+    at processComponent (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:7334:9)
+    at patch (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:6849:11)
+    at patchKeyedChildren (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:7883:11)
+    at patchChildren (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:7664:11)
+    at processFragment (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:7308:9), 
+            ,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-06-06T10:10:31.499Z [ERROR]: undefined,  
+            ReferenceError: watxhHelper is not defined
+    at setup (http://localhost:3000/src/components/ExponentEditor.vue?t=1749204631442:52:5)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2289:19)
+    at setupStatefulComponent (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:10085:25)
+    at setupComponent (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:10046:36)
+    at mountComponent (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:7368:7)
+    at processComponent (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:7334:9)
+    at patch (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:6849:11)
+    at patchKeyedChildren (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:7883:11)
+    at patchChildren (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:7664:11)
+    at processFragment (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:7308:9), 
+            ,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-06-06T10:12:35.710Z [ERROR]: undefined,  
+            ReferenceError: sta is not defined
+    at setup (http://localhost:3000/src/components/ExponentEditor.vue?t=1749204755628:55:7)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2289:19)
+    at setupStatefulComponent (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:10085:25)
+    at setupComponent (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:10046:36)
+    at mountComponent (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:7368:7)
+    at processComponent (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:7334:9)
+    at patch (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:6849:11)
+    at patchKeyedChildren (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:7883:11)
+    at patchChildren (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:7664:11)
+    at processFragment (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:7308:9), 
+            ,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-06-06T10:25:43.712Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-06-06T10:26:04.864Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-06-06T10:27:44.217Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-06-06T10:27:56.584Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-06-06T10:28:10.446Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-06-06T10:28:37.015Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-06-06T10:28:56.218Z [ERROR]: /api/lessonexponents/,  
+            Server error occurred, 
+            invalid input syntax for type integer: "zx",   
+            ,
+            error: invalid input syntax for type integer: "zx",
+            INSERT INTO "LessonExponent" ("id","uuid","col","row","exponent","createdAt","updatedAt","userId","lessonId") VALUES (DEFAULT,$1,$2,$3,$4,$5,$6,$7,$8) RETURNING "id","uuid","col","row","exponent","createdAt","updatedAt","userId","lessonId","colorId";, fields: 
+            ,
+             }
+2025-06-06T10:29:03.367Z [ERROR]: /api/lessonsqrts/,  
+            Server error occurred, 
+            fromCol (28) must be < toCol (28),   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-06-06T10:29:14.894Z [ERROR]: /api/lessonexponents/,  
+            Server error occurred, 
+            invalid input syntax for type integer: "33x",   
+            ,
+            error: invalid input syntax for type integer: "33x",
+            INSERT INTO "LessonExponent" ("id","uuid","col","row","exponent","createdAt","updatedAt","userId","lessonId") VALUES (DEFAULT,$1,$2,$3,$4,$5,$6,$7,$8) RETURNING "id","uuid","col","row","exponent","createdAt","updatedAt","userId","lessonId","colorId";, fields: 
+            ,
+             }
+2025-06-06T10:29:29.482Z [ERROR]: /api/lessonexponents/,  
+            Server error occurred, 
+            invalid input syntax for type integer: "x",   
+            ,
+            error: invalid input syntax for type integer: "x",
+            INSERT INTO "LessonExponent" ("id","uuid","col","row","exponent","createdAt","updatedAt","userId","lessonId") VALUES (DEFAULT,$1,$2,$3,$4,$5,$6,$7,$8) RETURNING "id","uuid","col","row","exponent","createdAt","updatedAt","userId","lessonId","colorId";, fields: 
+            ,
+             }
+2025-06-06T10:39:19.246Z [ERROR]: /api/lessonexponents/,  
+            Server error occurred, 
+            invalid input syntax for type integer: "x",   
+            ,
+            error: invalid input syntax for type integer: "x",
+            INSERT INTO "LessonExponent" ("id","uuid","col","row","exponent","createdAt","updatedAt","userId","lessonId") VALUES (DEFAULT,$1,$2,$3,$4,$5,$6,$7,$8) RETURNING "id","uuid","col","row","exponent","createdAt","updatedAt","userId","lessonId","colorId";, fields: 
+            ,
+             }
+2025-06-06T11:21:06.044Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-06-06T11:21:08.727Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-06-06T11:23:02.440Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-06-06T11:23:12.750Z [ERROR]: undefined,  
+            TypeError: Cannot read properties of undefined (reading 'col')
+    at Object.addExponentNotation (http://localhost:3000/src/helpers/notationMutateHelper.ts?t=1749197181751:694:24)
+    at submitExponent (http://localhost:3000/src/components/ExponentEditor.vue?t=1749205602281:116:30)
+    at http://localhost:3000/src/helpers/watchHelper.ts:59:13
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2289:19)
+    at callWithAsyncErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2296:17)
+    at baseWatchOptions.call (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:8372:47)
+    at job (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2015:18)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2289:33)
+    at flushJobs (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2498:9), 
+            ,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-06-06T11:23:14.546Z [ERROR]: undefined,  
+            TypeError: Cannot read properties of undefined (reading 'col')
+    at Object.addExponentNotation (http://localhost:3000/src/helpers/notationMutateHelper.ts?t=1749197181751:694:24)
+    at submitExponent (http://localhost:3000/src/components/ExponentEditor.vue?t=1749205602281:116:30)
+    at http://localhost:3000/src/helpers/watchHelper.ts:59:13
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2289:19)
+    at callWithAsyncErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2296:17)
+    at baseWatchOptions.call (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:8372:47)
+    at job (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2015:18)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2289:33)
+    at flushJobs (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2498:9), 
+            ,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-06-06T11:23:17.026Z [ERROR]: undefined,  
+            TypeError: Cannot read properties of undefined (reading 'col')
+    at Object.addExponentNotation (http://localhost:3000/src/helpers/notationMutateHelper.ts?t=1749197181751:694:24)
+    at submitExponent (http://localhost:3000/src/components/ExponentEditor.vue?t=1749205602281:116:30)
+    at http://localhost:3000/src/helpers/watchHelper.ts:59:13
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2289:19)
+    at callWithAsyncErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2296:17)
+    at baseWatchOptions.call (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:8372:47)
+    at job (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2015:18)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2289:33)
+    at flushJobs (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2498:9), 
+            ,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-06-06T11:26:26.396Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-06-06T11:26:52.007Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-06-06T11:27:13.721Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-06-06T11:28:54.305Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-06-06T12:26:17.633Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-06-06T12:26:51.435Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-06-06T13:49:53.518Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-06-06T13:56:43.635Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-06-06T13:58:49.116Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-06-06T14:00:04.754Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-06-06T14:00:13.267Z [ERROR]: undefined,  
+            TypeError: Cannot read properties of undefined (reading 'col')
+    at Object.addExponentNotation (http://localhost:3000/src/helpers/notationMutateHelper.ts?t=1749197181751:694:24)
+    at submitExponent (http://localhost:3000/src/components/ExponentEditor.vue?t=1749218400347:117:30)
+    at http://localhost:3000/src/helpers/watchHelper.ts:59:13
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2289:19)
+    at callWithAsyncErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2296:17)
+    at baseWatchOptions.call (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:8372:47)
+    at job (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2015:18)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2289:33)
+    at flushJobs (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2498:9), 
+            ,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-06-06T14:00:28.104Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-06-06T14:00:56.816Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-06-06T14:01:28.257Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-06-06T14:05:38.050Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-06-06T14:05:57.307Z [ERROR]: undefined,  
+            TypeError: Cannot read properties of undefined (reading 'col')
+    at Object.addExponentNotation (http://localhost:3000/src/helpers/notationMutateHelper.ts?t=1749197181751:694:24)
+    at submitExponent (http://localhost:3000/src/components/ExponentEditor.vue?t=1749218730817:117:30)
+    at http://localhost:3000/src/helpers/watchHelper.ts:59:13
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2289:19)
+    at callWithAsyncErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2296:17)
+    at baseWatchOptions.call (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:8372:47)
+    at job (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2015:18)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2289:33)
+    at flushJobs (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2498:9), 
+            ,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-06-06T14:06:00.638Z [ERROR]: undefined,  
+            TypeError: Cannot read properties of undefined (reading 'col')
+    at Object.addExponentNotation (http://localhost:3000/src/helpers/notationMutateHelper.ts?t=1749197181751:694:24)
+    at submitExponent (http://localhost:3000/src/components/ExponentEditor.vue?t=1749218730817:117:30)
+    at http://localhost:3000/src/helpers/watchHelper.ts:59:13
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2289:19)
+    at callWithAsyncErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2296:17)
+    at baseWatchOptions.call (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:8372:47)
+    at job (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2015:18)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2289:33)
+    at flushJobs (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2498:9), 
+            ,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-06-06T14:06:02.290Z [ERROR]: undefined,  
+            ReferenceError: setInitialExponentValue is not defined
+    at startNewExponentAtSelectedCellPosition (http://localhost:3000/src/components/ExponentEditor.vue?t=1749218730817:65:7)
+    at http://localhost:3000/src/helpers/watchHelper.ts:47:13
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2289:19)
+    at callWithAsyncErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2296:17)
+    at baseWatchOptions.call (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:8372:47)
+    at job (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2015:18)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2289:33)
+    at flushJobs (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2498:9), 
+            ,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-06-06T14:06:03.452Z [ERROR]: undefined,  
+            ReferenceError: setInitialExponentValue is not defined
+    at startNewExponentAtMousePosition (http://localhost:3000/src/components/ExponentEditor.vue?t=1749218730817:81:11)
+    at http://localhost:3000/src/helpers/watchHelper.ts:18:11
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2289:19)
+    at callWithAsyncErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2296:17)
+    at baseWatchOptions.call (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:8372:47)
+    at job (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2015:18)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2289:33)
+    at flushJobs (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2498:9), 
+            ,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-06-06T14:06:10.905Z [ERROR]: undefined,  
+            ReferenceError: setInitialExponentValue is not defined
+    at startNewExponentAtMousePosition (http://localhost:3000/src/components/ExponentEditor.vue?t=1749218730817:81:11)
+    at http://localhost:3000/src/helpers/watchHelper.ts:18:11
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2289:19)
+    at callWithAsyncErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2296:17)
+    at baseWatchOptions.call (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:8372:47)
+    at job (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2015:18)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2289:33)
+    at flushJobs (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2498:9), 
+            ,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-06-06T14:06:39.559Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-06-06T14:06:49.934Z [ERROR]: undefined,  
+            TypeError: Cannot read properties of undefined (reading 'col')
+    at Object.addExponentNotation (http://localhost:3000/src/helpers/notationMutateHelper.ts?t=1749197181751:694:24)
+    at submitExponent (http://localhost:3000/src/components/ExponentEditor.vue?t=1749218796341:113:30)
+    at http://localhost:3000/src/helpers/watchHelper.ts:59:13
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2289:19)
+    at callWithAsyncErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2296:17)
+    at baseWatchOptions.call (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:8372:47)
+    at job (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2015:18)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2289:33)
+    at flushJobs (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2498:9), 
+            ,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-06-06T14:06:51.250Z [ERROR]: undefined,  
+            TypeError: Cannot read properties of undefined (reading 'col')
+    at Object.addExponentNotation (http://localhost:3000/src/helpers/notationMutateHelper.ts?t=1749197181751:694:24)
+    at submitExponent (http://localhost:3000/src/components/ExponentEditor.vue?t=1749218796341:113:30)
+    at http://localhost:3000/src/helpers/watchHelper.ts:59:13
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2289:19)
+    at callWithAsyncErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2296:17)
+    at baseWatchOptions.call (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:8372:47)
+    at job (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2015:18)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2289:33)
+    at flushJobs (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2498:9), 
+            ,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-06-06T14:07:06.195Z [ERROR]: undefined,  
+            ReferenceError: setInitialExponentValue is not defined
+    at startNewExponentAtMousePosition (http://localhost:3000/src/components/ExponentEditor.vue?t=1749218796341:81:11)
+    at http://localhost:3000/src/helpers/watchHelper.ts:18:11
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2289:19)
+    at callWithAsyncErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2296:17)
+    at baseWatchOptions.call (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:8372:47)
+    at job (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2015:18)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2289:33)
+    at flushJobs (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2498:9), 
+            ,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-06-06T14:07:29.679Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-06-06T14:07:42.166Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-06-06T14:07:54.790Z [ERROR]: undefined,  
+            ReferenceError: setInitialExponentValue is not defined
+    at startNewExponentAtMousePosition (http://localhost:3000/src/components/ExponentEditor.vue?t=1749218845811:81:11)
+    at http://localhost:3000/src/helpers/watchHelper.ts:18:11
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2289:19)
+    at callWithAsyncErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2296:17)
+    at baseWatchOptions.call (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:8372:47)
+    at job (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2015:18)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2289:33)
+    at flushJobs (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2498:9), 
+            ,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-06-06T14:07:58.959Z [ERROR]: undefined,  
+            ReferenceError: setInitialExponentValue is not defined
+    at startNewExponentAtSelectedCellPosition (http://localhost:3000/src/components/ExponentEditor.vue?t=1749218845811:65:7)
+    at http://localhost:3000/src/helpers/watchHelper.ts:47:13
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2289:19)
+    at callWithAsyncErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2296:17)
+    at baseWatchOptions.call (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:8372:47)
+    at job (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2015:18)
+    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2289:33)
+    at flushJobs (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2498:9), 
+            ,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-06-06T14:11:04.270Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-06-06T14:11:18.397Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-06-06T14:13:52.969Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-06-06T14:36:17.653Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-06-06T14:41:48.131Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-06-06T14:42:55.884Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-06-06T14:44:41.663Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-06-06T14:45:33.388Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-06-06T14:51:00.455Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-06-06T14:51:03.044Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-06-06T14:51:32.533Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-06-06T14:52:33.780Z [ERROR]: /api/lessonexponents/,  
+            Server error occurred, 
+            notNull Violation: LessonExponent.exponent cannot be null,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-06-06T14:57:51.415Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-06-06T14:58:42.350Z [ERROR]: /api/lessonexponents/,  
+            Server error occurred, 
+            notNull Violation: LessonExponent.exponent cannot be null,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-06-06T14:58:46.511Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-06-06T14:59:07.755Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-06-06T14:59:21.783Z [ERROR]: /api/lessonexponents/,  
+            Server error occurred, 
+            notNull Violation: LessonExponent.exponent cannot be null,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-06-06T15:15:40.050Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-06-06T15:15:42.529Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-06-06T15:16:37.074Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-06-06T15:17:33.751Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-06-06T15:29:08.553Z [ERROR]: /api/auth,  
+            Server error occurred, 
+            Cannot set headers after they are sent to the client,   
+            ,
+            ,
+            , fields: 
+            ,
+             }

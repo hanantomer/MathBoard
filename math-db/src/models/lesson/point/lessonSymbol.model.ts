@@ -34,7 +34,7 @@ export default class LessonSymbol extends Model<
     @Column({
         field: "lessonId",
         type: DataType.INTEGER,
-        unique: "active_unique",
+       
     })
     lessonId!: number;
 
@@ -46,11 +46,11 @@ export default class LessonSymbol extends Model<
     lesson!: Lesson;
 
     @AllowNull(false)
-    @Column({ type: DataType.INTEGER, unique: "active_unique" })
+    @Column({ type: DataType.INTEGER})
     col!: number;
 
     @AllowNull(false)
-    @Column({ type: DataType.INTEGER, unique: "active_unique" })
+    @Column({ type: DataType.INTEGER})
     row!: number;
 
     @AllowNull(false)

@@ -2,7 +2,7 @@ import {
   BoardType,
   NotationType,
   EditMode,
-  BusEventType
+  BusEventType,
 } from "./unions";
 import { UserAttributes } from "./userTypes";
 
@@ -24,7 +24,7 @@ export type NotationAttributes =
   };
 
 export type ExponentAttributes = {
-  exponent: string;
+  value: string;
 };
 
 export type NotationCreationAttributes = Omit<
@@ -59,7 +59,6 @@ export type RectCoordinates = {
   topLeft: DotCoordinates;
   bottomRight: DotCoordinates;
 };
-
 
 export type CellAttributes = {
   col: number;
@@ -111,7 +110,6 @@ export type CircleAttributes = {
   r: number; // radius
 };
 
-
 export type RectAttributes = {
   fromCol: number;
   toCol: number;
@@ -160,13 +158,12 @@ export type SlopeLineNotationAttributes =
 export type CurveNotationAttributes =
   EntityAttributes &
     NotationAttributes &
-  CurveAttributes;
-    
+    CurveAttributes;
+
 export type CircleNotationAttributes =
   EntityAttributes &
     NotationAttributes &
     CircleAttributes;
-
 
 export type RectNotationAttributes =
   EntityAttributes &
@@ -275,18 +272,17 @@ export function isLine(n: NotationType): boolean {
 export function isCurve(
   n: NotationType
 ): boolean {
-  return (
-    n === "CURVE" 
-  );
+  return n === "CURVE";
 }
 
-export function isPoint(
+export function isCellNotation(
   n: NotationType
 ): boolean {
   return (
     n === "ANNOTATION" ||
     n === "SIGN" ||
     n === "SQRTSYMBOL" ||
+    n === "EXPONENT" ||
     n === "SYMBOL"
   );
 }
@@ -316,15 +312,14 @@ export type lineWatcherEntry = {
 };
 
 export type lineSaveWatcherEntry = {
-   func: () => void
-   editMode: Array<EditMode>
-}
+  func: () => void;
+  editMode: Array<EditMode>;
+};
 
 export type lineMoveWatcherEntry = {
   func: (moveX: number, moveY: number) => void;
   editMode: Array<EditMode>;
 };
-
 
 export type lineSelectWatcherEntry = {
   func: (notation: NotationAttributes) => void;
@@ -332,10 +327,6 @@ export type lineSelectWatcherEntry = {
   event: BusEventType;
 };
 
-
 export type lineEndSelectionWatcherEntry = {
   editMode: Array<EditMode>;
 };
-
-
-

@@ -50,8 +50,8 @@ export default class QuestionExponent extends Model<
 
 
     @AllowNull(false)
-    @Column({ type: DataType.INTEGER })
-    exponent!: string;
+    @Column({ type: DataType.STRING })
+    value!: string;
 
     @BelongsTo(() => Color, {
         foreignKey: { name: "colorId", field: "colorId", allowNull: true },

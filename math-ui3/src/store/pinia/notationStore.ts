@@ -16,7 +16,7 @@ import {
   CircleNotationAttributes,
   isRect,
   isLine,
-  isPoint,
+  isCellNotation,
   SqrtNotationAttributes,
   AnnotationNotationAttributes,
 } from "common/baseTypes";
@@ -25,12 +25,18 @@ import { ref } from "vue";
 import useNotationCellOccupationHelper from "../../helpers/notationCellOccupationHelper";
 import { useCellStore } from "../../store/pinia/cellStore";
 import { line } from "d3";
+import { dot } from "node:test/reporters";
 
 const notationCellOccupationHelper = useNotationCellOccupationHelper();
 
 export const useNotationStore = defineStore("notation", () => {
+  // special occupation matrix for dot notation since it coexists in a cell
+  // with other notations
+  let dotNotationOccupationMatrix: (String | null)[][] =
+    createCellSingleNotationOccupationMatrix();
+
   // cell can occupy one point only
-  let cellPointNotationOccupationMatrix: (String | null)[][] =
+  let symbolNotationOccupationMatrix: (String | null)[][] =
     createCellSingleNotationOccupationMatrix();
 
   // cell can occupy one rect only
@@ -80,7 +86,7 @@ export const useNotationStore = defineStore("notation", () => {
 
   function getPointNotations(): PointNotationAttributes[] {
     return Array.from(notations.value.values())
-      .filter((n) => isPoint(n.notationType))
+      .filter((n) => isCellNotation(n.notationType))
       .map((n) => n as PointNotationAttributes);
   }
 
@@ -131,7 +137,8 @@ export const useNotationStore = defineStore("notation", () => {
     if (doUpdateOccupationMatrix) {
       updateOccupationMatrix(
         notation,
-        cellPointNotationOccupationMatrix,
+        dotNotationOccupationMatrix,
+        symbolNotationOccupationMatrix,
         cellLineNotationOccupationMatrix,
         cellRectNotationOccupationMatrix,
       );
@@ -151,13 +158,20 @@ export const useNotationStore = defineStore("notation", () => {
       case "SIGN":
       case "SQRTSYMBOL":
       case "SYMBOL":
-        notationCellOccupationHelper.updatePointOccupationMatrix(
-          cellPointNotationOccupationMatrix,
-          notations.value.get(uuid)! as PointNotationAttributes,
-          true,
-        );
+        if ((notation as PointNotationAttributes).value === ".") {
+          notationCellOccupationHelper.updatePointOccupationMatrix(
+            dotNotationOccupationMatrix,
+            notations.value.get(uuid)! as PointNotationAttributes,
+            true,
+          );
+        } else {
+          notationCellOccupationHelper.updatePointOccupationMatrix(
+            symbolNotationOccupationMatrix,
+            notations.value.get(uuid)! as PointNotationAttributes,
+            true,
+          );
+        }
         break;
-
       case "CURVE":
         notationCellOccupationHelper.updateCurveOccupationMatrix(
           cellLineNotationOccupationMatrix,
@@ -187,8 +201,8 @@ export const useNotationStore = defineStore("notation", () => {
 
   function clearNotations() {
     notations.value.clear();
-    cellPointNotationOccupationMatrix =
-      createCellSingleNotationOccupationMatrix();
+    dotNotationOccupationMatrix = createCellSingleNotationOccupationMatrix();
+    symbolNotationOccupationMatrix = createCellSingleNotationOccupationMatrix();
     cellRectNotationOccupationMatrix =
       createCellSingleNotationOccupationMatrix();
     cellLineNotationOccupationMatrix =
@@ -231,13 +245,25 @@ export const useNotationStore = defineStore("notation", () => {
 
     // point
 
-    const poinNotationUUId = cellPointNotationOccupationMatrix[cell.col][
+    const dotNotationUUId = dotNotationOccupationMatrix[cell.col][
       cell.row
     ] as String;
 
-    if (poinNotationUUId && notations.value.get(poinNotationUUId)) {
+    if (dotNotationUUId && notations.value.get(dotNotationUUId)) {
       notationsAtCell.push(
-        notations.value.get(poinNotationUUId) as NotationAttributes,
+        notations.value.get(dotNotationUUId) as NotationAttributes,
+      );
+    }
+
+    // symbol
+
+    const symbolNotationUUId = symbolNotationOccupationMatrix[cell.col][
+      cell.row
+    ] as String;
+
+    if (symbolNotationUUId && notations.value.get(symbolNotationUUId)) {
+      notationsAtCell.push(
+        notations.value.get(symbolNotationUUId) as NotationAttributes,
       );
     }
 
@@ -418,7 +444,8 @@ export const useNotationStore = defineStore("notation", () => {
 
   function updateOccupationMatrix(
     notation: NotationAttributes,
-    cellPointNotationOccupationMatrix: (String | null)[][],
+    dotNotationOccupationMatrix: (String | null)[][],
+    symbolNotationOccupationMatrix: (String | null)[][],
     cellLineNotationOccupationMatrix: Set<String>[][],
     cellRectNotationOccupationMatrix: (String | null)[][],
   ) {
@@ -427,16 +454,24 @@ export const useNotationStore = defineStore("notation", () => {
       case "SIGN":
       case "SQRTSYMBOL":
       case "SYMBOL":
-        notationCellOccupationHelper.updatePointOccupationMatrix(
-          cellPointNotationOccupationMatrix,
-          notation as PointNotationAttributes,
-          false,
-        );
+        if ((notation as PointNotationAttributes).value === ".") {
+          notationCellOccupationHelper.updatePointOccupationMatrix(
+            dotNotationOccupationMatrix,
+            notation as PointNotationAttributes,
+            false,
+          );
+        } else {
+          notationCellOccupationHelper.updatePointOccupationMatrix(
+            symbolNotationOccupationMatrix,
+            notation as PointNotationAttributes,
+            false,
+          );
+        }
         break;
 
       case "ANNOTATION":
         notationCellOccupationHelper.updateAnnotationOccupationMatrix(
-          cellPointNotationOccupationMatrix,
+          symbolNotationOccupationMatrix,
           notation as AnnotationNotationAttributes,
           false,
         );

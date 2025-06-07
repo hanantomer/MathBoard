@@ -48,7 +48,7 @@ export default function useHtmlMatrixHelper() {
   }
 
   function exponentFontSize() {
-    return `0.55em`;
+    return `0.5em`;
   }
 
   function mergeHtmlNotations(
@@ -216,7 +216,6 @@ export default function useHtmlMatrixHelper() {
   }
 
   function x(n: NotationAttributes): number | null {
-
     if (n.notationType === "ANNOTATION") {
       return (n as AnnotationNotationAttributes).x;
     }
@@ -231,11 +230,9 @@ export default function useHtmlMatrixHelper() {
   }
 
   function y(n: NotationAttributes) {
-
     if (n.notationType === "ANNOTATION") {
-      return (n as AnnotationNotationAttributes).y -7;
+      return (n as AnnotationNotationAttributes).y - 7;
     }
-
 
     let rowIdx = row(n);
     if (!rowIdx) return null;
@@ -336,7 +333,6 @@ export default function useHtmlMatrixHelper() {
     if (n.notationType === "ANNOTATION") {
       const n1 = n as AnnotationNotationAttributes;
 
-      ///TODO move static css props to a class
       return `<p id=${n1.uuid} style=
             'background:lightyellow; z-index:100;color:${color};font-weight:${fontWeight};
             position: absolute;top:50%;transform:
@@ -354,8 +350,8 @@ export default function useHtmlMatrixHelper() {
 
       const exponentHtml = `<p id=${
         n1.uuid
-      } style='position:absolute;left:3px;top:-2px;color:${color};font-weight:${fontWeight};
-      font-size:${exponentFontSize()}'>${n1.exponent}</p>`;
+      } style='position:absolute;left:0px;top:2px;color:${color};font-weight:${fontWeight};
+      font-size:${exponentFontSize()}'>${n1.value}</p>`;
 
       return exponentHtml;
     }
@@ -365,19 +361,20 @@ export default function useHtmlMatrixHelper() {
     let n1 = n as PointNotationAttributes;
     const top = n1.followsFraction ? "75%" : "50%";
 
-    // const value =
-    //   n1.value.startsWith("&") || n1.value.length === 1
-    //     ? n1.value
-    //     : `<sup><i>${n1.value}</i></sup>`;
-
     const leftMargin =
-      n1.value.startsWith("&") || n1.value.length === 1 ? "20%" : "2%";
+      n1.value === "."
+        ? "-5%"
+        : n1.value.startsWith("&") || n1.value.length === 1
+        ? "20%"
+        : "2%";
     const fSize =
       n1.value.indexOf("&") >= 0 || n1.value.length === 1 ? "1.1em" : "0.75em";
 
+    const topMargin = n1.value === "." ? "5px" : "0px";
+
     ///TODO: move static css props to a class
     return `<p id=${n1.uuid} style='z-index:100;color:${color};font-weight:${fontWeight}; position: absolute;top:${top};transform:
-    translateY(-50%);left:${leftMargin};font-size:${fSize}'>${n1.value}</p>`;
+    translateY(-0%);top:${topMargin};left:${leftMargin};font-size:${fSize}'>${n1.value}</p>`;
   }
 
   return {

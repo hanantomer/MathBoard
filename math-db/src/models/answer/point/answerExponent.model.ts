@@ -46,8 +46,8 @@ export default class AnswerExponent extends Model<
     row!: number;
 
     @AllowNull(false)
-    @Column({ type: DataType.INTEGER })
-    exponent!: string;
+    @Column({ type: DataType.STRING })
+    value!: string;
 
     @BelongsTo(() => Color, {
         foreignKey: { name: "colorId", field: "colorId", allowNull: true },

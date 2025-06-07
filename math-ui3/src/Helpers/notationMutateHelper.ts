@@ -24,7 +24,7 @@ import {
   ExponentNotationCreationAttributes,
   AnnotationNotationCreationAttributes,
   SqrtNotationCreationAttributes,
-  isPoint,
+  isCellNotation,
   isRect,
   MultiCellAttributes,
   SqrtNotationAttributes,
@@ -147,16 +147,19 @@ export default function notationMutateHelper() {
       );
   }
 
-  function findOverlapPointNotation(
+  function findOverlapCellNotation(
     notation: PointNotationCreationAttributes,
   ): PointNotationAttributes | undefined {
     return notationStore
       .getPointNotations()
       .find((n2: PointNotationAttributes) => {
-        return pointAtCellCoordinates(
-          notation as PointNotationAttributes,
-          n2,
-          getUserUUId(),
+        return (
+          n2.value !== "." &&
+          pointAtCellCoordinates(
+            notation as PointNotationAttributes,
+            n2,
+            getUserUUId(),
+          )
         );
       });
   }
@@ -179,13 +182,14 @@ export default function notationMutateHelper() {
     notation: NotationCreationAttributes,
   ): NotationAttributes | undefined {
     return notationStore.getNotations().find((n2: NotationAttributes) => {
-      if (isPoint(n2.notationType))
+      if (isCellNotation(n2.notationType))
         return (
-          pointAtCellCoordinates(
-            notation as PointNotationAttributes,
-            n2 as PointNotationAttributes,
-            getUserUUId(),
-          ) ??
+          ((n2 as PointNotationAttributes).value !== "." &&
+            pointAtCellCoordinates(
+              notation as PointNotationAttributes,
+              n2 as PointNotationAttributes,
+              getUserUUId(),
+            )) ??
           rectAtCellCoordinates(
             notation as RectNotationAttributes,
             n2 as PointNotationAttributes,
@@ -228,7 +232,7 @@ export default function notationMutateHelper() {
     notationStore.getSelectedNotations().forEach((n: NotationAttributes) => {
       if (isNotationInQuestionArea(n, deltaCol, deltaRow)) return false;
 
-      if (isPoint(n.notationType)) {
+      if (isCellNotation(n.notationType)) {
         if (
           (n as PointNotationAttributes).col + deltaCol >
           matrixDimensions.colsNum
@@ -390,7 +394,6 @@ export default function notationMutateHelper() {
     deltaRow: number,
     keepOriginal: boolean,
   ): boolean {
-
     if (keepOriginal) {
       notationStore.cloneSelectedNotations();
     }
@@ -461,20 +464,32 @@ export default function notationMutateHelper() {
   function saveMovedNotations(moveDirection: SelectionMoveDirection) {
     const notations = getSelectedNotationsSortedByDirection(moveDirection);
 
-    const currentTime = Date.now();
-    if (
-      lastUpdateCoordinatesTime == null ||
-      lastUpdateCoordinatesTime - currentTime > updateCoordinatesInterval
-    ) {
-      if (updateCoordinatesHandle) window.clearTimeout(updateCoordinatesHandle);
+    if (!notations || notations.length === 0) return;
 
-      updateCoordinatesHandle = window.setTimeout(
-        saveMovedNotationsDelayed,
-        updateCoordinatesInterval,
-        notations,
-      );
+    // Check if these are cloned notations that need to be inserted
+    const isClonedNotation =
+      notations[0].uuid.indexOf(clonedNotationUUIdPrefix) === 0;
+
+    if (isClonedNotation) {
+      insertMovedNotations(notations);
+    } else {
+      updateMovedNotations(notations);
     }
-    lastUpdateCoordinatesTime = Date.now();
+
+    // const currentTime = Date.now();
+    // if (
+    //   lastUpdateCoordinatesTime == null ||
+    //   lastUpdateCoordinatesTime - currentTime > updateCoordinatesInterval
+    // ) {
+    //   if (updateCoordinatesHandle) window.clearTimeout(updateCoordinatesHandle);
+
+    //   updateCoordinatesHandle = window.setTimeout(
+    //     saveMovedNotationsDelayed,
+    //     updateCoordinatesInterval,
+    //     notations,
+    //   );
+    // }
+    // lastUpdateCoordinatesTime = Date.now();
   }
 
   async function saveMovedNotationsDelayed(notations: NotationAttributes[]) {
@@ -696,7 +711,7 @@ export default function notationMutateHelper() {
       return;
     }
 
-    let overlappedSameTypeNotation = findOverlapPointNotation(notation);
+    let overlappedSameTypeNotation = findOverlapCellNotation(notation);
 
     // update
     if (overlappedSameTypeNotation) {
@@ -844,6 +859,7 @@ export default function notationMutateHelper() {
   ) {
     switch (existingNotation.notationType) {
       case "ANNOTATION":
+      case "EXPONENT":
       case "SIGN":
       case "SQRTSYMBOL":
       case "SYMBOL": {
@@ -1087,22 +1103,21 @@ export default function notationMutateHelper() {
   }
 
   function addExponentNotation(exponent: string, clickedCell: CellAttributes) {
-    let notation: ExponentNotationCreationAttributes = {
+    let notation: PointNotationCreationAttributes = {
       col: clickedCell!.col,
       row: clickedCell!.row,
-      exponent: exponent,
+      value: exponent,
       boardType: notationStore.getParent().type,
       parentUUId: notationStore.getParent().uuid,
       notationType: "EXPONENT",
       user: userStore.getCurrentUser()!,
     };
 
-    addNotation(notation);
+    addCellNotation(notation);
     cellStore.setSelectedCell(
       { col: clickedCell.col + 1, row: clickedCell.row },
       false,
     );
-    //matrixCellHelper.setNextCell(1, 0);
   }
 
   function addSymbolNotation(value: string) {
@@ -1121,7 +1136,9 @@ export default function notationMutateHelper() {
 
     addCellNotation(notation);
 
-    matrixCellHelper.setNextCell(1, 0);
+    if (notation.value != ".") {
+      matrixCellHelper.setNextCell(1, 0);
+    }
   }
 
   function getSelectedCell(): CellAttributes | null {

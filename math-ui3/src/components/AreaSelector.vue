@@ -16,23 +16,6 @@
     }"
   >
   </v-card>
-  <!-- <v-card
-    v-if="show"
-    variant="outlined"
-    class="resizable"
-    id="selectionResize"
-    v-on:mousedown="startResizing"
-    v-on:mouseup="onResizeMouseUp"
-    v-on:mousemove="resizeSelectionByMouseDrag"
-    v-bind:style="{
-      left: selectionRectLeft + 'px',
-      top: selectionRectTop + 'px',
-      width: selectionRectWidth + 'px',
-      height: selectionRectHeight + 'px',
-      background: backgroundColor,
-    }"
-  >
-  </v-card> -->
 </template>
 
 <script setup lang="ts">
@@ -74,7 +57,7 @@ let lineTypes: Array<NotationType> = [
   "HORIZONTALLINE",
   "VERTICALLINE",
   "SLOPELINE",
-  "ANNOTATION"
+  "ANNOTATION",
 ];
 
 let selectionPosition = ref({
@@ -210,61 +193,6 @@ function getSelectedRect() {
   return null;
 }
 
-function startResizing(e: MouseEvent) {
-  if (e.buttons !== 1) return;
-
-  if (!authorizationHelper.canEdit()) return;
-
-  editModeStore.setEditMode("RESIZE_STARTED");
-}
-
-function resizeSelectionByMouseDrag(e: MouseEvent) {
-  if (e.buttons !== 1) return;
-
-  if (!editModeStore.isResizeMode()) return;
-
-  editModeStore.setEditMode("RESIZING");
-
-  verticalDirection = "BOTTOM";
-  horizontalDirection = "RIGHT";
-
-  updateSelectionArea(e);
-}
-
-async function onResizeMouseUp() {
-  editModeStore.setEditMode("AREA_SELECTED");
-
-  let selectedRect = getSelectedRect();
-
-  if (!selectedRect) return;
-
-  selectedRect.fromCol = Math.round(
-    (selectionRectLeft.value - cellStore.getSvgBoundingRect().left) /
-      cellStore.getCellHorizontalWidth(),
-  );
-
-  selectedRect.toCol = Math.round(
-    (selectionRectLeft.value +
-      selectionRectWidth.value -
-      cellStore.getSvgBoundingRect().left) /
-      cellStore.getCellHorizontalWidth(),
-  );
-
-  getSelectedRect()!.fromRow = Math.round(
-    (selectionRectTop.value - cellStore.getSvgBoundingRect().top) /
-      cellStore.getCellVerticalHeight(),
-  );
-
-  getSelectedRect()!.toRow = Math.round(
-    (selectionRectTop.value +
-      selectionRectHeight.value -
-      cellStore.getSvgBoundingRect().top) /
-      cellStore.getCellVerticalHeight(),
-  );
-
-  await notationMutationHelper.updateNotation(getSelectedRect()!);
-}
-
 function cancelSelectionWhenUserClickedOutside() {
   notationStore.resetSelectedNotations();
   resetSelectionPosition();
@@ -318,51 +246,31 @@ async function handleKeyUp(e: KeyboardEvent) {
       editModeStore.setDefaultEditMode();
     case "ArrowLeft":
       if (
-        !notationMutationHelper.moveSelectedNotationsAtCellScale(
-          -1,
-          0,
-          e.ctrlKey,
-        )
+        !notationMutationHelper.moveSelectedNotationsAtCellScale(-1, 0, false)
       )
         return;
       await moveSelectionByKey(-1, 0);
-      await notationMutationHelper.saveMovedNotations("LEFT");
+      notationMutationHelper.saveMovedNotations("LEFT");
       break;
     case "ArrowRight":
-      if (
-        !notationMutationHelper.moveSelectedNotationsAtCellScale(
-          1,
-          0,
-          e.ctrlKey,
-        )
-      )
+      if (!notationMutationHelper.moveSelectedNotationsAtCellScale(1, 0, false))
         return;
       moveSelectionByKey(1, 0);
-      await notationMutationHelper.saveMovedNotations("RIGHT");
+      notationMutationHelper.saveMovedNotations("RIGHT");
       break;
     case "ArrowDown":
-      if (
-        !notationMutationHelper.moveSelectedNotationsAtCellScale(
-          0,
-          1,
-          e.ctrlKey,
-        )
-      )
+      if (!notationMutationHelper.moveSelectedNotationsAtCellScale(0, 1, false))
         return;
       moveSelectionByKey(0, 1);
       await notationMutationHelper.saveMovedNotations("BOTTOM");
       break;
     case "ArrowUp":
       if (
-        !notationMutationHelper.moveSelectedNotationsAtCellScale(
-          0,
-          -1,
-          e.ctrlKey,
-        )
+        !notationMutationHelper.moveSelectedNotationsAtCellScale(0, -1, false)
       )
         return;
       moveSelectionByKey(0, -1);
-      await notationMutationHelper.saveMovedNotations("TOP");
+      notationMutationHelper.saveMovedNotations("TOP");
       break;
   }
 }
@@ -588,7 +496,7 @@ async function endMoveSelection(e: MouseEvent) {
       ? "LEFTTOP"
       : "LEFT";
 
-  await notationMutationHelper.saveMovedNotations(moveDirection);
+  notationMutationHelper.saveMovedNotations(moveDirection);
   notationStore.resetSelectedNotations();
   resetSelectionPosition();
   editModeStore.setDefaultEditMode();

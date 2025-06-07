@@ -2,6 +2,7 @@
   <input
     v-show="show"
     v-bind:style="{
+      backgroundColor: 'lightyellow',
       left: leftPosition + 'px',
       top: topPosition + 'px',
       width: width + 'px',
@@ -22,7 +23,10 @@ import { computed, ref } from "vue";
 import { useEditModeStore } from "../store/pinia/editModeStore";
 import { useCellStore } from "../store/pinia/cellStore";
 import { useNotationStore } from "../store/pinia/notationStore";
-import { CellAttributes, ExponentNotationAttributes } from "../../../math-common/src/baseTypes";
+import {
+  CellAttributes,
+  ExponentNotationAttributes,
+} from "../../../math-common/src/baseTypes";
 import useNotationMutateHelper from "../helpers/notationMutateHelper";
 import useScreenHelper from "../helpers/screenHelper";
 import useWatchHelper from "../helpers/watchHelper";
@@ -52,7 +56,7 @@ const selectedNotation = computed(() =>
 
 const show = computed(() => editModeStore.getEditMode() === "EXPONENT_WRITING");
 
-let clickedCell: CellAttributes| undefined = undefined;
+let clickedCell: CellAttributes | undefined = undefined;
 
 // user clicked on exponent icon and then clicked on a cell
 
@@ -85,13 +89,29 @@ watchHelper.watchKeyEvent(
   endEditingByEnterKey,
 );
 
-///TODO: move to helper
+watchHelper.watchEditModeTransition(
+  ["CELL_SELECTED"],
+  "EXPONENT_STARTED",
+  startNewExponentAtSelectedCellPosition,
+);
 
 function endEditingByEnterKey(e: KeyboardEvent) {
   const { code } = e;
   if (code === "Enter") {
     editModeStore.setNextEditMode();
   }
+}
+
+function startNewExponentAtSelectedCellPosition() {
+  clickedCell = cellStore.getSelectedCell();
+
+  setInitialExponentValue();
+
+  setExponentPosition();
+
+  editModeStore.setEditMode("EXPONENT_WRITING");
+
+  setTimeout(`document.getElementById("exponent")?.focus();`, 0);
 }
 
 function startNewExponentAtMousePosition(e: MouseEvent) {
@@ -105,11 +125,10 @@ function startNewExponentAtMousePosition(e: MouseEvent) {
   });
 
   screenHelper.getCell({
-      x: e.pageX,
-      y: e.pageY,
-    }),
-
-  setInitialExponentValue();
+    x: e.pageX,
+    y: e.pageY,
+  }),
+    setInitialExponentValue();
 
   setExponentPosition();
 
@@ -118,7 +137,7 @@ function startNewExponentAtMousePosition(e: MouseEvent) {
 
 function setExponentPosition() {
   const clickedCoordinates = screenHelper.getCellTopLeftCoordinates(
-    clickedCell!
+    clickedCell!,
   );
 
   leftPosition.value = clickedCoordinates.x;
@@ -147,7 +166,7 @@ function editSelectedExponentNotation() {
 
   setSelectedExponentPosition();
 
-  exponent.value = selectedNotation.value?.exponent!;
+  notationMutateHelper.deleteSelectedNotations();
 }
 
 function setInitialExponentValue() {
@@ -160,7 +179,7 @@ function submitExponent() {
   if (!exponent.value) return;
 
   if (selectedNotation.value) {
-    selectedNotation.value!.exponent = exponent.value;
+    selectedNotation.value!.value = exponent.value;
 
     notationMutateHelper.updateNotation(selectedNotation.value);
   } else {

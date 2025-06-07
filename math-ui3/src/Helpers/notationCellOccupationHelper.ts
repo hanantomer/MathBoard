@@ -101,6 +101,7 @@ export default function notationCellOccupationHelper() {
     updatePointOccupationMatrix(matrix, { ...notation, col: col, row:row, followsFraction: false}, doRemove);
   }
 
+
   function updateVerticalLineOccupationMatrix(
     matrix: any,
     notation: VerticalLineNotationAttributes,
