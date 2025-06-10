@@ -100,6 +100,7 @@ import {
 } from "../../../math-common/src/baseTypes";
 
 import { useCellStore } from "../store/pinia/cellStore";
+import useSelectionHelper from "../helpers/selectionHelper";
 const cellStore = useCellStore();
 
 const MIN_NUMBER_OF_POINTS = 6;
@@ -111,6 +112,7 @@ const eventBus = useEventBus();
 const notationStore = useNotationStore();
 const editModeStore = useEditModeStore();
 const visitedPointPrefix = "visitedPoint";
+const selectionHelper = useSelectionHelper();
 
 type Point = {
   x: number;
@@ -351,7 +353,7 @@ function endDrawCurve() {
   editModeStore.setDefaultEditMode();
 }
 
-function saveCurve(curevAttributes: CurveAttributes) {
+async function saveCurve(curevAttributes: CurveAttributes) {
   if (notationStore.getSelectedNotations().length > 0) {
     let updatedCurve = {
       ...notationStore.getSelectedNotations().at(0)!,
@@ -362,10 +364,11 @@ function saveCurve(curevAttributes: CurveAttributes) {
       updatedCurve as CurveNotationAttributes,
     );
   } else {
-    notationMutateHelper.addCurveNotation(
+    const uuid =  await notationMutateHelper.addCurveNotation(
       curevAttributes,
       editModeStore.getNotationTypeByEditMode(),
     );
+    selectionHelper.selectCurveNotation(uuid);
   }
 }
 
@@ -511,8 +514,6 @@ function updateCurve(curveType: CurveType, xPos: number, yPos: number): void {
   setCurvePoints(xPos, yPos);
 
   setCurveAttributes(curveType, xPos, yPos);
-
-  //addVisiblePoint(xPos, yPos);
 }
 
 function removePointsToTheRightOfX(xPos: number) {

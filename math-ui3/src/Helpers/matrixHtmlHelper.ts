@@ -2,7 +2,6 @@ import * as d3 from "d3";
 import {
   NotationAttributes,
   PointNotationAttributes,
-  ExponentNotationAttributes,
   RectNotationAttributes,
   CellAttributes,
   RectAttributes,
@@ -51,6 +50,10 @@ export default function useHtmlMatrixHelper() {
     return `0.5em`;
   }
 
+  function logbaseFontSize() {
+    return `0.7em`;
+  }
+
   function mergeHtmlNotations(
     svgId: string,
     notations: NotationAttributes[],
@@ -83,6 +86,7 @@ export default function useHtmlMatrixHelper() {
         return pointNotationHeight(n as PointNotationAttributes) + 2;
       case "SIGN":
       case "EXPONENT":
+      case "LOGBASE":
       case "SYMBOL":
       case "SQRT":
       case "SQRTSYMBOL": {
@@ -176,6 +180,7 @@ export default function useHtmlMatrixHelper() {
   function col(n: NotationAttributes): number | null {
     switch (n.notationType) {
       case "EXPONENT":
+      case "LOGBASE":
       case "SIGN":
       case "SQRTSYMBOL":
       case "SYMBOL": {
@@ -198,6 +203,7 @@ export default function useHtmlMatrixHelper() {
   function row(n: NotationAttributes) {
     switch (n.notationType) {
       case "EXPONENT":
+      case "LOGBASE":
       case "SQRTSYMBOL":
       case "SIGN":
       case "SYMBOL":
@@ -256,6 +262,10 @@ export default function useHtmlMatrixHelper() {
       }
 
       case "EXPONENT": {
+        return cellStore.getCellHorizontalWidth();
+      }
+
+      case "LOGBASE": {
         return cellStore.getCellHorizontalWidth();
       }
 
@@ -346,7 +356,7 @@ export default function useHtmlMatrixHelper() {
     }
 
     if (n.notationType === "EXPONENT") {
-      const n1 = n as ExponentNotationAttributes;
+      const n1 = n as PointNotationAttributes;
 
       const exponentHtml = `<p id=${
         n1.uuid
@@ -356,6 +366,17 @@ export default function useHtmlMatrixHelper() {
       return exponentHtml;
     }
 
+    if (n.notationType === "LOGBASE") {
+      const n1 = n as PointNotationAttributes;
+
+      const logbaseHtml = `<p id=${
+        n1.uuid
+      } style='position:absolute;left:0px;top:18px;color:${color};font-weight:${fontWeight};
+      font-size:${logbaseFontSize()}'>${n1.value}</p>`;
+
+      return logbaseHtml;
+    }
+
     // Symbol
 
     let n1 = n as PointNotationAttributes;
@@ -363,14 +384,31 @@ export default function useHtmlMatrixHelper() {
 
     const leftMargin =
       n1.value === "."
-        ? "-5%"
+        ? "-15%"
         : n1.value.startsWith("&") || n1.value.length === 1
         ? "20%"
-        : "2%";
+        : "0%";
     const fSize =
-      n1.value.indexOf("&") >= 0 || n1.value.length === 1 ? "1.1em" : "0.75em";
+      n1.value.indexOf("&") >= 0 || n1.value.length === 1
+        ? "1.1em"
+        : n1.value.indexOf("cos") >= 0 ||
+          n1.value.indexOf("sin") >= 0 ||
+          n1.value.indexOf("tan") >= 0 ||
+          n1.value.indexOf("cot") >= 0 ||
+          n1.value.indexOf("log") >= 0
+        ? "0.7em"
+        : "0.75em";
 
-    const topMargin = n1.value === "." ? "5px" : "0px";
+    const topMargin =
+      n1.value === "."
+        ? "5px"
+        : n1.value.indexOf("cos") >= 0 ||
+          n1.value.indexOf("sin") >= 0 ||
+          n1.value.indexOf("tan") >= 0 ||
+          n1.value.indexOf("cot") >= 0 ||
+          n1.value.indexOf("log") >= 0
+        ? "4px"
+        : "0px";
 
     ///TODO: move static css props to a class
     return `<p id=${n1.uuid} style='z-index:100;color:${color};font-weight:${fontWeight}; position: absolute;top:${top};transform:

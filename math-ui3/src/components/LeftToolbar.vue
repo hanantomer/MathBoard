@@ -122,8 +122,10 @@ import { useToolbarNavigation } from "../helpers/ToolbarNavigationHelper";
 import ColororizeTool from "./ColorizeTool.vue";
 import useAuthorizationHelper from "../helpers/authorizationHelper";
 import useWatchHelper from "../helpers/watchHelper";
+import useNotationMutateHelper from "../helpers/notationMutateHelper";
 
 const watchHelper = useWatchHelper();
+const notationMutateHelper = useNotationMutateHelper();
 const authorizationHelper = useAuthorizationHelper();
 const notationStore = useNotationStore();
 const userStore = useUserStore();
@@ -212,7 +214,7 @@ const modeButtons: Array<{
     rotate: 260,
     tabIndex: 5,
   },
-    {
+  {
     name: "circle",
     show_condition: true,
     editMode: "CIRCLE_STARTED" as EditMode,
@@ -238,12 +240,25 @@ const modeButtons: Array<{
     name: "exponent",
     show_condition: true,
     editMode: "EXPONENT_STARTED" as EditMode,
-    tooltip: "exponent",
+    tooltip: "exponent Alt+x",
     icon_class: "",
     icon: "mdi-exponent",
     overlay_icon: "",
     rotate: 0,
     tabIndex: 8,
+    shortcut: "Alt+x",
+  },
+  {
+    name: "log",
+    show_condition: true,
+    editMode: "LOG_STARTED" as EditMode,
+    tooltip: "log Alt+l",
+    icon_class: "",
+    icon: "mdi-math-log",
+    overlay_icon: "",
+    rotate: 0,
+    tabIndex: 8,
+    shortcut: "Alt+l",
   },
 ).map((symbol) => ({
   ...symbol,
@@ -295,19 +310,6 @@ const answerChekButtons: Array<{
   action: () => editModeStore.setEditMode(symbol.editMode as EditMode),
 }));
 
-// watchHelper.watchEveryEditModeChange((editMode) => {
-//   const matchedButton = modeButtons.find((b) => b.editMode === editMode);
-//   if (matchedButton) matchedButton.activeState.value = 0;
-// });
-
-//  watchHelper.watchEndOfEditMode(
-//    ["CELL_SELECTED", "AREA_SELECTED", "SYMBOL"],
-//    [],
-//    () => {
-//      resetButtonsState();
-//    },
-//  );
-
 watchHelper.watchKeyEvent(
   ["CELL_SELECTED", "SYMBOL"],
   "EV_KEYUP",
@@ -319,6 +321,12 @@ watchHelper.watchKeyEvent(
   ["CELL_SELECTED", "SYMBOL"],
   "EV_KEYUP",
   (e: KeyboardEvent) => toolbarNavigation.handleShortcuts(e, modeButtons),
+);
+
+watchHelper.watchEditModeTransition(
+  ["CELL_SELECTED", "SYMBOL"],
+  "LOG_STARTED",
+  () => notationMutateHelper.addSymbolNotation("log"),
 );
 
 function openAccessLinkDialog() {
@@ -334,16 +342,9 @@ const editEnabled = computed(() => {
 });
 
 function startEditMode(item: any) {
-  //resetButtonsState();
   notationStore.resetSelectedNotations();
   editModeStore.setEditMode(item.editMode); // watcher sets activeState to 0
 }
-
-// function resetButtonsState() {
-//   modeButtons.forEach((b) => {
-//     b.activeState.value = 1;
-//   });
-// }
 </script>
 
 <style>

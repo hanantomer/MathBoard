@@ -9,8 +9,8 @@ import {
   BoardAttributes,
   EntityAttributes,
   NotationAttributes,
-  ExponentNotationAttributes,
   CircleAttributes,
+  PointNotationAttributes,
 } from "./baseTypes";
 
 // lesson
@@ -96,10 +96,9 @@ export type LessonRectCreationAttributes = Omit<
 
 // exponent
 
-export type LessonExponentAttributes =
-  LessonAttributes &
-    LessonNotationAttributes &
-    ExponentNotationAttributes;
+export type LessonExponentAttributes = LessonAttributes &
+  LessonNotationAttributes &
+  PointNotationAttributes;
 
 export type LessonExponentCreationAttributes =
   Omit<

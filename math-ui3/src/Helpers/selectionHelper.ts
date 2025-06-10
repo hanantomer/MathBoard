@@ -109,6 +109,7 @@ export default function selectionHelper() {
         return true;
       }
       case "EXPONENT":
+      case "LOGBASE":
       case "IMAGE":
       case "TEXT":
       case "ANNOTATION":
@@ -225,6 +226,7 @@ export default function selectionHelper() {
           selectCircleNotation(uuid);
           break;
         case "EXPONENT":
+        case "LOGBASE":
         case "IMAGE":
         case "TEXT":
         case "ANNOTATION":
@@ -246,5 +248,6 @@ export default function selectionHelper() {
     selectNotationAtPosition,
     selectNotationsOfArea,
     setSelectedCell,
+    selectCurveNotation,
   };
 }

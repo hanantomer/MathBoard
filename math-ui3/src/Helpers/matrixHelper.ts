@@ -85,6 +85,7 @@ export default function useMatrixHelper() {
 
   function enrichNotations(notations: NotationAttributes[]) {
     let enrichedNotations: NotationAttributes[] = [];
+
     for (const key in notations) {
       if (Object.hasOwnProperty.call(notations, key)) {
         const notation = notations[key];
@@ -141,6 +142,7 @@ export default function useMatrixHelper() {
         (n) =>
           n.notationType === "ANNOTATION" ||
           n.notationType === "EXPONENT" ||
+          n.notationType === "LOGBASE" ||
           n.notationType === "SIGN" ||
           n.notationType === "SQRT" ||
           n.notationType === "TEXT" ||
@@ -154,26 +156,21 @@ export default function useMatrixHelper() {
     lineHelper.mergeLineNotations(
       svgId,
       notations.filter(
-      (n) =>
-        n.notationType === "HORIZONTALLINE" ||
-        n.notationType === "VERTICALLINE" ||
-        n.notationType === "SLOPELINE",
+        (n) =>
+          n.notationType === "HORIZONTALLINE" ||
+          n.notationType === "VERTICALLINE" ||
+          n.notationType === "SLOPELINE",
       ),
     );
 
     circleHelper.mergeCircleNotations(
       svgId,
-      notations.filter(
-      (n) => n.notationType === "CIRCLE",
-      ),
+      notations.filter((n) => n.notationType === "CIRCLE"),
     );
 
     curveHelper.mergeCurveNotations(
       svgId,
-      notations.filter(
-        (n) =>
-          n.notationType === "CURVE" ,
-      ),
+      notations.filter((n) => n.notationType === "CURVE"),
     );
   }
 

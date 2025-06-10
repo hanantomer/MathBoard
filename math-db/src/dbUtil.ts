@@ -10,14 +10,12 @@ import db from "./models/index";
 
 import {
     CurveNotationAttributes,
-    ExponentNotationAttributes,
     NotationAttributes,
     PointNotationAttributes,
     RectNotationAttributes,
     SlopeLineNotationAttributes,
     VerticalLineNotationAttributes,
-    SqrtNotationAttributes,
-    EntityAttributes
+    SqrtNotationAttributes
 } from "../../math-common/src/baseTypes";
 import { UserAttributes, StudentLessonCreationAttributes} from "../../math-common/build/userTypes";
 import { LessonCreationAttributes } from "../../math-common/src/lessonTypes";
@@ -639,8 +637,9 @@ export default function dbUtil() {
                     validateRectNotation(m);
                     break;
                 }
+                case "LOGBASE":
                 case "EXPONENT": {
-                    const m = model as ExponentNotationAttributes;
+                    const m = model as PointNotationAttributes;
                     validateExponentNotation(m);
                     break;
                 }
@@ -685,11 +684,11 @@ export default function dbUtil() {
         if (m.fromCol > m.toCol) throw new Error(`fromCol (${m.fromCol}) must be <= toCol (${m.toCol})`);
     }
 
-    function validateExponentNotation(m: ExponentNotationAttributes): void {
+    function validateExponentNotation(m: PointNotationAttributes): void {
         if ((m.col ?? 0) < 0) throw new Error(`col must be >= 0, got ${m.col}`);
         if ((m.row ?? 0) < 0) throw new Error(`row must be >= 0, got ${m.row}`);
         if (m.value && m.value.toString().length === 0) {
-            throw new Error('exponent cannot be empty if provided');
+            throw new Error("exponent cannot be empty if provided");
         }
     }
 
@@ -745,7 +744,6 @@ export default function dbUtil() {
 
     function validateColAndRowRounded(model: NotationAttributes): boolean {
         const m = model as RectNotationAttributes &
-            ExponentNotationAttributes &
             PointNotationAttributes;
 
         if (m.col && !Number.isSafeInteger(m.col)) return false;

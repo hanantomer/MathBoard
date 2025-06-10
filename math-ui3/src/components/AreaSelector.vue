@@ -6,7 +6,7 @@
     id="selection"
     v-on:mousedown="startMoving"
     v-on:mouseup="onSelectionMouseUp"
-    v-on:mousemove="moveSelectionByMouseDrag"
+    v-on:mousemove="handleMouseDrag"
     v-bind:style="{
       left: selectionRectLeft + 'px',
       top: selectionRectTop + 'px',
@@ -168,7 +168,7 @@ watchHelper.watchMouseEvent(
 watchHelper.watchMouseEvent(
   ["AREA_MOVING"],
   "EV_SVG_MOUSEMOVE",
-  moveSelectionByMouseDrag,
+  handleMouseDrag,
 );
 
 watchHelper.watchMouseEvent(
@@ -372,25 +372,31 @@ function endSelect() {
   editModeStore.setNextEditMode();
 }
 
-function moveSelectionByMouseDrag(e: MouseEvent) {
+function handleMouseDrag(e: MouseEvent) {
   if (e.buttons !== 1) return;
 
-  if (editModeStore.getEditMode() !== "AREA_MOVING") {
+  if (
+    editModeStore.getEditMode() === "AREA_SELECTING" ||
+    editModeStore.getEditMode() === "TEXT_AREA_SELECTING"
+  ) {
+    updateSelectionArea(e);
     return;
   }
 
-  // initial drag position
-  if (!dragPosition.value.x) {
-    dragPosition.value.x = e.pageX;
-    dragPosition.value.y = e.pageY;
-    console.debug("initial drag");
-    return;
-  }
+  if (editModeStore.getEditMode() === "AREA_MOVING") {
+    // initial drag position
+    if (!dragPosition.value.x) {
+      dragPosition.value.x = e.pageX;
+      dragPosition.value.y = e.pageY;
+      console.debug("initial drag");
+      return;
+    }
 
-  if (onlyLinesAnnotationsOrCircleAraSelected()) {
-    moveAtPixelScale(e);
-  } else {
-    moveAtCellScale(e);
+    if (onlyLinesAnnotationsOrCircleAraSelected()) {
+      moveAtPixelScale(e);
+    } else {
+      moveAtCellScale(e);
+    }
   }
 }
 

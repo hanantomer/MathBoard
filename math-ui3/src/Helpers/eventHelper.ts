@@ -13,8 +13,6 @@ import {
   VerticalLineNotationAttributes,
   SlopeLineNotationAttributes,
   CurveNotationAttributes,
-  MultiCellAttributes,
-  ExponentNotationAttributes,
   SqrtNotationAttributes,
 } from "common/baseTypes";
 

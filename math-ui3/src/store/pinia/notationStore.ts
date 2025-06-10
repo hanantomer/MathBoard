@@ -22,11 +22,8 @@ import {
 } from "common/baseTypes";
 import { BoardType } from "common/unions";
 import { ref } from "vue";
-import useNotationCellOccupationHelper from "../../helpers/notationCellOccupationHelper";
 import { useCellStore } from "../../store/pinia/cellStore";
-import { line } from "d3";
-import { dot } from "node:test/reporters";
-
+import useNotationCellOccupationHelper from "../../helpers/notationCellOccupationHelper";
 const notationCellOccupationHelper = useNotationCellOccupationHelper();
 
 export const useNotationStore = defineStore("notation", () => {
@@ -155,6 +152,7 @@ export const useNotationStore = defineStore("notation", () => {
 
     switch (notation.notationType) {
       case "EXPONENT":
+      case "LOGBASE":
       case "SIGN":
       case "SQRTSYMBOL":
       case "SYMBOL":
@@ -451,6 +449,7 @@ export const useNotationStore = defineStore("notation", () => {
   ) {
     switch (notation.notationType) {
       case "EXPONENT":
+      case "LOGBASE":
       case "SIGN":
       case "SQRTSYMBOL":
       case "SYMBOL":

@@ -8,6 +8,7 @@ export type BoardType =
   (typeof BoardTypeValues)[number];
 
 export type BusEventType =
+  | "EV_ALT_CLICK"
   | "EV_QUESTION_SAVED"
   | "EV_COPY"
   | "EV_PASTE"
@@ -30,6 +31,7 @@ export type BusEventType =
 export const NotationTypeValues = [
   "SYMBOL",
   "SIGN",
+  "LOGBASE",
   "EXPONENT",
   "HORIZONTALLINE",
   "VERTICALLINE",
@@ -67,6 +69,7 @@ export type EditMode =
   | "ANSWERS_SELECTION" //  after click on answers icon
   | "SYMBOL" // default mode
   | "SPECIAL_SYMBOL_SELECTED" // special symbol in bottom toolbar pressed
+  | "LOG_STARTED" // log button pressed
   | "EXPONENT_STARTED" // exponent button pressed
   | "EXPONENT_WRITING" // user clicked a cell following exponent button pressed
   | "EXPONENT_SELECTED" // user clicked on existing exponent

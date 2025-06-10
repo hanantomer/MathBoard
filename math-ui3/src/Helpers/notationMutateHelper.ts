@@ -155,6 +155,8 @@ export default function notationMutateHelper() {
       .find((n2: PointNotationAttributes) => {
         return (
           n2.value !== "." &&
+          n2.value !== "(" &&
+          n2.value !== ")" &&
           pointAtCellCoordinates(
             notation as PointNotationAttributes,
             n2,
@@ -185,6 +187,8 @@ export default function notationMutateHelper() {
       if (isCellNotation(n2.notationType))
         return (
           ((n2 as PointNotationAttributes).value !== "." &&
+            (n2 as PointNotationAttributes).value !== "(" &&
+            (n2 as PointNotationAttributes).value !== ")" &&
             pointAtCellCoordinates(
               notation as PointNotationAttributes,
               n2 as PointNotationAttributes,
@@ -404,6 +408,7 @@ export default function notationMutateHelper() {
       const deltaY = deltaRow * cellStore.getCellVerticalHeight();
       switch (n.notationType) {
         case "EXPONENT":
+        case "LOGBASE":
         case "SIGN":
         case "SQRTSYMBOL":
         case "SYMBOL": {
@@ -771,7 +776,7 @@ export default function notationMutateHelper() {
     addNotation(notation);
   }
 
-  function upsertCurveNotation(notation: CurveNotationCreationAttributes) {
+  async function upsertCurveNotation(notation: CurveNotationCreationAttributes): Promise<string> {
     editModeStore.setDefaultEditMode();
     notationStore.resetSelectedNotations();
 
@@ -780,10 +785,10 @@ export default function notationMutateHelper() {
 
     // don't allow override of other type notation
     if (overlappedAnyTypeNotation) {
-      return;
+      return "";
     }
 
-    addNotation(notation);
+    return await addNotation(notation);
   }
 
   function upsertCircleNotation(notation: CircleNotationCreationAttributes) {
@@ -841,8 +846,9 @@ export default function notationMutateHelper() {
     userOutgoingOperations.syncOutgoingUpdateNotation(existingNotation);
   }
 
-  function addNotation(notation: NotationCreationAttributes) {
-    apiHelper.addNotation(notation).then((newNotation) => {
+  async function addNotation(notation: NotationCreationAttributes): Promise<string> {
+    try {
+      const newNotation = await apiHelper.addNotation(notation);
       newNotation.notationType = notation.notationType;
       notationStore.addNotation(newNotation, true);
 
@@ -850,7 +856,11 @@ export default function notationMutateHelper() {
       if (notationStore.getParent().type === "LESSON") {
         userOutgoingOperations.syncOutgoingAddNotation(newNotation);
       }
-    });
+      return newNotation.uuid;
+    } catch (error) {
+      console.error("Error adding notation:", error);
+      return "";
+    }
   }
 
   function setNotationAttributes(
@@ -1124,19 +1134,34 @@ export default function notationMutateHelper() {
     const symbolCell = getSelectedCell();
     if (!symbolCell) return;
 
+    // Check previous cell for "log"
+    const previousCell = {
+      col: symbolCell.col - 1,
+      row: symbolCell.row,
+    };
+
+    const previousNotations = notationStore.getNotationsAtCell(previousCell);
+    const isLogBase = previousNotations.some(
+      (n) =>
+        n.notationType === "SYMBOL" &&
+        (n as PointNotationAttributes).value === "log",
+    );
+
     let notation: PointNotationCreationAttributes = {
       col: symbolCell.col,
       row: symbolCell.row,
       value: value,
       boardType: notationStore.getParent().type,
       parentUUId: notationStore.getParent().uuid,
-      notationType: "SYMBOL",
+      notationType: isLogBase ? "LOGBASE" : "SYMBOL",
       user: userStore.getCurrentUser()!,
     };
 
     addCellNotation(notation);
 
-    if (notation.value != ".") {
+    if (
+      notation.value != "."
+    ) {
       matrixCellHelper.setNextCell(1, 0);
     }
   }
@@ -1222,10 +1247,10 @@ export default function notationMutateHelper() {
     upsertLineNotation(lineNotation);
   }
 
-  function addCurveNotation(
+  async function addCurveNotation(
     curveAttributes: CurveAttributes,
     notationType: NotationType,
-  ) {
+  ): Promise<string> {
     let curveNotation: CurveNotationCreationAttributes = {
       p1x: curveAttributes.p1x,
       p2x: curveAttributes.p2x,
@@ -1238,7 +1263,7 @@ export default function notationMutateHelper() {
       notationType: notationType,
       user: userStore.getCurrentUser()!,
     };
-    upsertCurveNotation(curveNotation);
+     return await  upsertCurveNotation(curveNotation);
   }
 
   function addCircleNotation(

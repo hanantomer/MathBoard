@@ -23,6 +23,7 @@ export default function useMatrixHelperUtils() {
   function getCol(n: NotationAttributes): number {
     switch (n.notationType) {
       case "EXPONENT":
+      case "LOGBASE":
       case "ANNOTATION":
       case "SIGN":
       case "SYMBOL":
@@ -103,13 +104,12 @@ export default function useMatrixHelperUtils() {
     switch (n.notationType) {
       case "ANNOTATION":
       case "EXPONENT":
+      case "LOGBASE":
       case "SIGN":
       case "SQRT":
       case "SQRTSYMBOL":
       case "SYMBOL":
-        return n.selected
-          ? selectionColor
-          : htmlColor;
+        return n.selected ? selectionColor : htmlColor;
       case "CURVE":
       case "HORIZONTALLINE":
       case "SLOPELINE":

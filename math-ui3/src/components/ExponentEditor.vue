@@ -25,7 +25,7 @@ import { useCellStore } from "../store/pinia/cellStore";
 import { useNotationStore } from "../store/pinia/notationStore";
 import {
   CellAttributes,
-  ExponentNotationAttributes,
+  PointNotationAttributes,
 } from "../../../math-common/src/baseTypes";
 import useNotationMutateHelper from "../helpers/notationMutateHelper";
 import useScreenHelper from "../helpers/screenHelper";
@@ -51,7 +51,7 @@ const selectedNotation = computed(() =>
     ? null
     : (notationStore
         .getSelectedNotations()
-        .at(0) as ExponentNotationAttributes),
+        .at(0) as PointNotationAttributes),
 );
 
 const show = computed(() => editModeStore.getEditMode() === "EXPONENT_WRITING");

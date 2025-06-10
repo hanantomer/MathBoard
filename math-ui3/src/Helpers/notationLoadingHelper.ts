@@ -50,6 +50,7 @@ export default function notationLoadingHelper() {
 
     switch (notationType) {
       case "EXPONENT":
+      case "LOGBASE":
       case "ANNOTATION":
       case "SIGN":
       case "SQRTSYMBOL":

@@ -153,6 +153,7 @@ export default function screenHelper() {
 
       switch (n?.notationType) {
         case "EXPONENT":
+        case "LOGBASE":
         case "ANNOTATION":
         case "SYMBOL":
         case "SQRTSYMBOL":

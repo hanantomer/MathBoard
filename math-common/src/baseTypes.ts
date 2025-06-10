@@ -171,11 +171,6 @@ export type RectNotationAttributes =
     RectAttributes &
     SingleValueAttributes;
 
-export type ExponentNotationAttributes =
-  EntityAttributes &
-    NotationAttributes &
-    CellAttributes &
-    ExponentAttributes;
 
 export type AnnotationNotationAttributes =
   EntityAttributes &

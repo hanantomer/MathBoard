@@ -35,8 +35,8 @@ function endEdit(e: MouseEvent) {
   cursor: col-resize;
   position: absolute;
   display: block;
-  width: 6px;
-  height: 6px;
+  width: 8px;
+  height: 8px;
   border: 2, 2, 2, 2;
   z-index: 999;
 }
