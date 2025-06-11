@@ -126,7 +126,7 @@ const selectionRectHeight = computed(() => {
 // area selection watchers
 
 watchHelper.watchMouseEvent(
-  ["SYMBOL", "CELL_SELECTED"],
+  ["CELL_SELECTED"],
   "EV_SVG_MOUSEMOVE",
   startAreaSelection,
 );

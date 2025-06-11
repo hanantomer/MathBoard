@@ -90,7 +90,7 @@ const props = defineProps({
 });
 
 watchHelper.watchMouseEvent(
-  ["SYMBOL", "CELL_SELECTED", "SPECIAL_SYMBOL_SELECTED"],
+  ["CELL_SELECTED", "SPECIAL_SYMBOL_SELECTED"],
   "EV_SVG_MOUSEUP",
   selectionHelper.selectClickedPosition,
 );
@@ -103,7 +103,6 @@ watchHelper.watchMouseEvent(
 
 watchHelper.watchKeyEvent(
   [
-    "SYMBOL",
     "CELL_SELECTED",
     "HORIZONTAL_LINE_SELECTED",
     "VERTICAL_LINE_SELECTED",
@@ -125,12 +124,12 @@ watchHelper.watchEveryEditModeChange(
 
 watchHelper.watchSelectedCellAndDisplayNewSelected(props.svgId);
 
-watchHelper.watchCustomEvent(["SYMBOL", "CELL_SELECTED"], "EV_COPY", () => {
+watchHelper.watchCustomEvent(["CELL_SELECTED"], "EV_COPY", () => {
   eventHelper.copy();
 });
 
 watchHelper.watchCustomEvent(
-  ["SYMBOL", "CELL_SELECTED"],
+  ["CELL_SELECTED"],
   "EV_PASTE",
   (e: ClipboardEvent) => {
     eventHelper.paste(e);

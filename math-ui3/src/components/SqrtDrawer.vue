@@ -17,7 +17,7 @@
       func: modify,
     }"
     :endEntry="{
-      editMode: ['SQRT_DRAWING', 'SQRT_EDITING', 'SQRT_SELECTED'],
+      editMode: ['SQRT_DRAWING', 'SQRT_EDITING'],
       func: endDrawing,
     }"
     :selectEntry="{
@@ -158,6 +158,10 @@ function endDrawing() {
   );
 
   saveSqrt({ fromCol: fromCol, toCol: toCol, row: row });
+
+  editModeStore.setDefaultEditMode();
+
+  notationStore.resetSelectedNotations();
 
   resetDrawing();
 }

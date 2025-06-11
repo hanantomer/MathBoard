@@ -3,9 +3,10 @@ import { EditMode, EditModeNotationType, NotationType } from "common/unions";
 import { ref } from "vue";
 
 export const useEditModeStore = defineStore("editMode", () => {
-  let editMode = ref<EditMode>("SYMBOL");
 
-  const defaultEditMode: EditMode = "SYMBOL";
+  let editMode = ref<EditMode>("CELL_SELECTED");
+
+  const defaultEditMode: EditMode = "CELL_SELECTED";
 
   function isAreaSelectionOrMovingMode() {
     return (

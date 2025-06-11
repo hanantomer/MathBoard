@@ -136,21 +136,16 @@ const emit = defineEmits(["symbol-selected"]);
 
 let selectedSymbol = ref("");
 
-watchHelper.watchKeyEvent(
-  ["CELL_SELECTED", "SYMBOL"],
-  "EV_KEYUP",
-  (e: KeyboardEvent) =>
-    toolbarNavigation.handleKeyboardNavigation(e, toolbarClass.value),
+watchHelper.watchKeyEvent(["CELL_SELECTED"], "EV_KEYUP", (e: KeyboardEvent) =>
+  toolbarNavigation.handleKeyboardNavigation(e, toolbarClass.value),
 );
 
-watchHelper.watchKeyEvent(
-  ["CELL_SELECTED", "SYMBOL"],
-  "EV_KEYUP",
-  (e: KeyboardEvent) => toolbarNavigation.handleShortcuts(e, specialSymbols),
+watchHelper.watchKeyEvent(["CELL_SELECTED"], "EV_KEYUP", (e: KeyboardEvent) =>
+  toolbarNavigation.handleShortcuts(e, specialSymbols),
 );
 
 // watchHelper.watchKeyEvent(
-//   ["CELL_SELECTED", "SYMBOL"],
+//   ["CELL_SELECTED"],
 //   "EV_ALT_CLICK",
 //   (e: KeyboardEvent) => toolbarNavigation.handleShortcuts(e, specialSymbols),
 // );

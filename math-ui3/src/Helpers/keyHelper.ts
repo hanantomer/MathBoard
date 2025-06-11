@@ -50,13 +50,12 @@ export default function () {
 
     matrixCellHelper.setNextCell(0, 0);
 
-    editModeStore.setDefaultEditMode();
+    //editModeStore.setDefaultEditMode();
   }
 
   function handleMovementKey(key: string) {
     if (
-      editModeStore.getEditMode() !== "CELL_SELECTED" &&
-      editModeStore.getEditMode() !== "SYMBOL"
+      editModeStore.getEditMode() !== "CELL_SELECTED" 
     ) {
       return;
     }

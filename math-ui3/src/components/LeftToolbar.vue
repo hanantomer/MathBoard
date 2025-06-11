@@ -310,23 +310,16 @@ const answerChekButtons: Array<{
   action: () => editModeStore.setEditMode(symbol.editMode as EditMode),
 }));
 
-watchHelper.watchKeyEvent(
-  ["CELL_SELECTED", "SYMBOL"],
-  "EV_KEYUP",
-  (e: KeyboardEvent) =>
-    toolbarNavigation.handleKeyboardNavigation(e, toolbarClass.value),
+watchHelper.watchKeyEvent(["CELL_SELECTED"], "EV_KEYUP", (e: KeyboardEvent) =>
+  toolbarNavigation.handleKeyboardNavigation(e, toolbarClass.value),
 );
 
-watchHelper.watchKeyEvent(
-  ["CELL_SELECTED", "SYMBOL"],
-  "EV_KEYUP",
-  (e: KeyboardEvent) => toolbarNavigation.handleShortcuts(e, modeButtons),
+watchHelper.watchKeyEvent(["CELL_SELECTED"], "EV_KEYUP", (e: KeyboardEvent) =>
+  toolbarNavigation.handleShortcuts(e, modeButtons),
 );
 
-watchHelper.watchEditModeTransition(
-  ["CELL_SELECTED", "SYMBOL"],
-  "LOG_STARTED",
-  () => notationMutateHelper.addSymbolNotation("log"),
+watchHelper.watchEditModeTransition(["CELL_SELECTED"], "LOG_STARTED", () =>
+  notationMutateHelper.addSymbolNotation("log"),
 );
 
 function openAccessLinkDialog() {

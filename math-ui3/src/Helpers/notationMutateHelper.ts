@@ -709,7 +709,7 @@ export default function notationMutateHelper() {
   }
 
   function addCellNotation(notation: PointNotationCreationAttributes) {
-    editModeStore.setDefaultEditMode();
+    //    editModeStore.setDefaultEditMode();
     notationStore.resetSelectedNotations();
 
     if (isCellInQuestionArea(notation)) {
@@ -743,71 +743,71 @@ export default function notationMutateHelper() {
     // allow adding more lines if polygon
     if (editModeStore.getEditMode() === "POLYGON_DRAWING") {
       editModeStore.setEditMode("POLYGON_STARTED");
-    } else {
-      editModeStore.setDefaultEditMode();
     }
 
     notationStore.resetSelectedNotations();
 
-    let overlappedAnyTypeNotation: NotationAttributes | undefined =
-      findOverlapNotationsOfAnyTypeButLine(notation);
+    // let overlappedAnyTypeNotation: NotationAttributes | undefined =
+    //   findOverlapNotationsOfAnyTypeButLine(notation);
 
-    // don't allow override of other type notation
-    if (overlappedAnyTypeNotation) {
-      return;
-    }
+    // // don't allow override of other type notation
+    // if (overlappedAnyTypeNotation) {
+    //   return;
+    // }
 
     addNotation(notation);
   }
 
   ///TODO : check if real needed or just one upsert notation for all types
   function upsertSqrtNotation(notation: SqrtNotationCreationAttributes) {
-    editModeStore.setDefaultEditMode();
+    //    editModeStore.setDefaultEditMode();
     notationStore.resetSelectedNotations();
 
-    let overlappedAnyTypeNotation: NotationAttributes | undefined =
-      findOverlapNotationsOfAnyTypeButLine(notation);
+    //let overlappedAnyTypeNotation: NotationAttributes | undefined =
+    //  findOverlapNotationsOfAnyTypeButLine(notation);
 
     // don't allow override of other type notation
-    if (overlappedAnyTypeNotation) {
-      return;
-    }
+    //if (overlappedAnyTypeNotation) {
+    //  return;
+    //}
 
     addNotation(notation);
   }
 
-  async function upsertCurveNotation(notation: CurveNotationCreationAttributes): Promise<string> {
-    editModeStore.setDefaultEditMode();
+  async function upsertCurveNotation(
+    notation: CurveNotationCreationAttributes,
+  ): Promise<string> {
+    //editModeStore.setDefaultEditMode();
     notationStore.resetSelectedNotations();
 
-    let overlappedAnyTypeNotation: NotationAttributes | undefined =
-      findOverlapNotationsOfAnyTypeButLine(notation);
+    // let overlappedAnyTypeNotation: NotationAttributes | undefined =
+    //   findOverlapNotationsOfAnyTypeButLine(notation);
 
-    // don't allow override of other type notation
-    if (overlappedAnyTypeNotation) {
-      return "";
-    }
+    // // don't allow override of other type notation
+    // if (overlappedAnyTypeNotation) {
+    //   return "";
+    // }
 
     return await addNotation(notation);
   }
 
   function upsertCircleNotation(notation: CircleNotationCreationAttributes) {
-    editModeStore.setDefaultEditMode();
+    //    editModeStore.setDefaultEditMode();
     notationStore.resetSelectedNotations();
 
-    let overlappedAnyTypeNotation: NotationAttributes | undefined =
-      findOverlapNotationsOfAnyTypeButLine(notation);
+    // let overlappedAnyTypeNotation: NotationAttributes | undefined =
+    //   findOverlapNotationsOfAnyTypeButLine(notation);
 
-    // don't allow override of other type notation
-    if (overlappedAnyTypeNotation) {
-      return;
-    }
+    // // don't allow override of other type notation
+    // if (overlappedAnyTypeNotation) {
+    //   return;
+    // }
 
     addNotation(notation);
   }
 
   function upsertRectNotation(newNotation: RectNotationCreationAttributes) {
-    editModeStore.setDefaultEditMode();
+    //    editModeStore.setDefaultEditMode();
     notationStore.resetSelectedNotations();
 
     let overlappedSameTypeNotation = findOverlapRectNotation(newNotation);
@@ -846,7 +846,9 @@ export default function notationMutateHelper() {
     userOutgoingOperations.syncOutgoingUpdateNotation(existingNotation);
   }
 
-  async function addNotation(notation: NotationCreationAttributes): Promise<string> {
+  async function addNotation(
+    notation: NotationCreationAttributes,
+  ): Promise<string> {
     try {
       const newNotation = await apiHelper.addNotation(notation);
       newNotation.notationType = notation.notationType;
@@ -1159,9 +1161,7 @@ export default function notationMutateHelper() {
 
     addCellNotation(notation);
 
-    if (
-      notation.value != "."
-    ) {
+    if (notation.value != ".") {
       matrixCellHelper.setNextCell(1, 0);
     }
   }
@@ -1263,7 +1263,7 @@ export default function notationMutateHelper() {
       notationType: notationType,
       user: userStore.getCurrentUser()!,
     };
-     return await  upsertCurveNotation(curveNotation);
+    return await upsertCurveNotation(curveNotation);
   }
 
   function addCircleNotation(

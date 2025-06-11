@@ -67,7 +67,6 @@ export type EditMode =
   | "LESSONS_SELECTION" //  after click on lessons icon
   | "QUESTIONS_SELECTION" //  after click on questions icon
   | "ANSWERS_SELECTION" //  after click on answers icon
-  | "SYMBOL" // default mode
   | "SPECIAL_SYMBOL_SELECTED" // special symbol in bottom toolbar pressed
   | "LOG_STARTED" // log button pressed
   | "EXPONENT_STARTED" // exponent button pressed
@@ -130,7 +129,6 @@ export const EditModeNotationType = new Map<
   EditMode,
   NotationType
 >([
-  ["SYMBOL", "SYMBOL"],
   ["SPECIAL_SYMBOL_SELECTED", "SYMBOL"],
   ["EXPONENT_STARTED", "EXPONENT"],
   ["EXPONENT_WRITING", "EXPONENT"],
@@ -202,7 +200,7 @@ export const EditModeCursorType = new Map<
   EditMode,
   CursorType
 >([
-  ["SYMBOL", "auto"],
+
   ["SPECIAL_SYMBOL_SELECTED", "auto"],
   ["EXPONENT_STARTED", "auto"],
   ["EXPONENT_WRITING", "auto"],

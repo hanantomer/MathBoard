@@ -120,7 +120,7 @@ export default function useLineDrawingHelper() {
   function resetDrawing() {
     showMatrixLine();
     notationStore.resetSelectedNotations();
-    editModeStore.setDefaultEditMode();
+    //editModeStore.setDefaultEditMode();
   }
 
   return {
