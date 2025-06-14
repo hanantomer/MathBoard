@@ -44,12 +44,11 @@ export const useCellStore = defineStore("cell", () => {
     return (cellVerticalHight.value - 1) / 2;
   }
 
-
   function setCellVerticalHeight(size: number) {
     cellVerticalHight.value = size;
   }
 
-  function getSelectedCell() : CellAttributes {
+  function getSelectedCell(): CellAttributes {
     return selectedCell.value;
   }
 

@@ -53,7 +53,6 @@ export default function notationLoadingHelper() {
       case "LOGBASE":
       case "ANNOTATION":
       case "SIGN":
-      case "SQRTSYMBOL":
       case "SYMBOL":
         return await apiHelper.getNotations<PointNotationAttributes>(
           notationType,
@@ -99,6 +98,7 @@ export default function notationLoadingHelper() {
           parentUUId,
         );
       case "POLYGON":
+      case "SQRTSYMBOL":
         return [];
 
       default:

@@ -12,6 +12,7 @@ import { ref } from 'vue';
           x-small
           fab
           dark
+          :disabled="!editEnabled"
           :tabindex="symbol.tabIndex"
           :aria-label="symbol.tooltip"
           :aria-keyshortcuts="symbol.shortcut"
@@ -33,12 +34,19 @@ import { useEditModeStore } from "../store/pinia/editModeStore";
 import useWatchHelper from "../helpers/watchHelper";
 import useNotationMutateHelper from "../helpers/notationMutateHelper";
 import useEventBusHelper from "../helpers/eventBusHelper";
+import useAuthorizationHelper from "../helpers/authorizationHelper";
 
 const editModeStore = useEditModeStore();
 const eventBus = useEventBusHelper();
 const notationMutateHelper = useNotationMutateHelper();
 const toolbarNavigation = useToolbarNavigation();
 const watchHelper = useWatchHelper();
+const authorizationHelper = useAuthorizationHelper();
+
+
+const editEnabled = computed(() => {
+  return authorizationHelper.canEdit();
+});
 
 const toolbarClass = computed(() => {
   return "vertical-toolbar specialSymbolsToolbar";

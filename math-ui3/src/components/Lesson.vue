@@ -55,7 +55,8 @@ async function loadLesson(lessonUUId: string) {
   if (lessonUUId.indexOf("sl_") == 0) {
     lessonUUId = lessonUUId.substring(3);
   }
-  editModeStore.setDefaultEditMode();
+  cellStore.setSelectedCell({ col: 1, row: 1 }, true);
+
   // store might not be loaded yet
   if (!lessonStore.getLessons().get(lessonUUId)) {
     await lessonStore.loadLesson(lessonUUId);

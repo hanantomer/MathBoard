@@ -23,7 +23,7 @@ var transporter = createTransport({
 });
 
 process.on('uncaughtException', (error: Error) => {
-    logger.error({
+    serverLogger.error({
         message: 'Uncaught Exception',
         error: error.message,
         stack: error.stack
@@ -35,7 +35,7 @@ process.on('uncaughtException', (error: Error) => {
 });
 
 process.on('unhandledRejection', (reason: any, promise: Promise<any>) => {
-    logger.error({
+    serverLogger.error({
         message: 'Unhandled Rejection',
         reason: reason instanceof Error ? reason.message : reason,
         stack: reason instanceof Error ? reason.stack : undefined
@@ -51,11 +51,11 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.json({ limit: "1mb" }));
 
 
-const logger = winston.createLogger({
+const serverLogger = winston.createLogger({
     level: "info",
     format: winston.format.combine(
         winston.format.timestamp(),
-        winston.format.printf(({ timestamp, level, path, message, error, origin, parent,  sql, sqlMessage, fields}) => {
+        winston.format.printf(({ timestamp, level, path, message, error, origin, parent, sql, sqlMessage, fields}) => {
             return `${timestamp} [${level.toUpperCase()}]: ${path},  
             ${message}, 
             ${error ? error : ''},   
@@ -71,6 +71,19 @@ const logger = winston.createLogger({
     ],
 });
 
+const clientLogger = winston.createLogger({
+    level: "info",
+    format: winston.format.combine(
+        winston.format.timestamp(),
+        winston.format.printf(({ timestamp, level, message }) => {
+            return `${timestamp} [${level.toUpperCase()}]: ${message}`;
+        })
+    ),
+    transports: [
+        new winston.transports.File({ filename: "client.log" }),
+    ],
+});
+
 
 
 app.post(
@@ -78,12 +91,12 @@ app.post(
     async (req: Request, res: Response, next: NextFunction) => {
         try {
             if (req.body.level) {
-                logger.log({
+                clientLogger.log({
                     level: req.body.level,
                     message: req.body.message,
                 });
             } else {
-                logger.info(req.body.message);
+                clientLogger.info(req.body.message);
             }
             return res.status(200).send("ok");
         } catch (err) {
@@ -137,6 +150,9 @@ async function validateHeaderAuthentication(
     );
 
     if (!user) {
+        serverLogger.error(
+            "Invalid token:" + req.headers.authorization.toString()
+        );
         res = res.status(401).json("invalid token");
         return false;
     }
@@ -623,11 +639,9 @@ const errorHandler = (
     res: Response,
     next: NextFunction
 ) => {
-    // Check if it's a Sequelize error
     const isSequelizeError = !!(err as any).sql;
     
-    // Log error details
-    logger.error({
+    serverLogger.error({
         message: 'Server error occurred',
         type: isSequelizeError ? 'Database Error' : 'Application Error',
         error: err.message,

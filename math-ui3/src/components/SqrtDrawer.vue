@@ -118,12 +118,12 @@ let sqrtY = computed(() => {
 
 let sqrtSymbolLeft = computed(() => {
   return (
-    linePosition.value.p1x + (cellStore.getSvgBoundingRect().left ?? 0) - 6
+    linePosition.value.p1x + (cellStore.getSvgBoundingRect().left ?? 0)
   );
 });
 
 let sqrtSymbolY = computed(() => {
-  return linePosition.value.py + (cellStore.getSvgBoundingRect().top ?? 0) - 5;
+  return linePosition.value.py + (cellStore.getSvgBoundingRect().top ?? 0) - 8;
 });
 
 let handleX = computed(() => {
@@ -171,6 +171,10 @@ function modify(p: DotCoordinates) {
 }
 
 function saveSqrt(sqrtAttributes: MultiCellAttributes) {
+  if (sqrtAttributes.fromCol === sqrtAttributes.toCol) {
+    return;
+  }
+
   if (notationStore.getSelectedNotations().length > 0) {
     let updatedSqrt = {
       ...notationStore.getSelectedNotations().at(0)!,

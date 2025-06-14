@@ -72,7 +72,7 @@ const backgroundColor = computed(() => {
 
 let selectedColor = ref<Color | null>(null);
 
-const colors: Color[] = ["yellow", "lightblue", "lightgreen", "pink", "none"];
+const colors: Color[] = ["ciyan", "blue", "green", "purple", "orange", "red", "yellow",  "gray", "lightgray", "darkgray", "lightblue", "lightgreen", "pink", "none"];
 
 watchHelper.watchMouseEvent(
   ["COLORIZING"],

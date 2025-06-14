@@ -73,7 +73,7 @@ export default function useHtmlMatrixHelper() {
         },
         (exit) => {
           if (!exit.empty()) {
-            matrixCellHelper.unColorizeNotationCells(exit.datum() as any);
+            //matrixCellHelper.unColorizeNotationCells(exit.datum() as any);
           }
           return utils.removeNotations(exit);
         },
@@ -315,12 +315,12 @@ export default function useHtmlMatrixHelper() {
     //     userStore.getCurrentUser()?.uuid != n.user.uuid
 
     if (n.notationType === "SQRT") {
-      return `<span id=${n.uuid} class=sqrt style='color:${color}'></span>`;
+      return `<span id=${n.uuid} class=sqrt style='margin-top:5px; position:relative;color:${color}'></span>`;
     }
 
     if (n.notationType === "SQRTSYMBOL") {
       color = n.color?.value ? n.color?.value : color;
-      return `<p id=${n.uuid} class='sqrtsymbol' style='color:${color}'>&#x221A;</p>`;
+      return `<p id=${n.uuid} class='sqrtsymbol' style='margin-top:-6px;margin-left:6px;color:${color}'>&#x221A;</p>`;
     }
 
     if (n.notationType === "TEXT") {
@@ -346,7 +346,7 @@ export default function useHtmlMatrixHelper() {
       return `<p id=${n1.uuid} style=
             'background:lightyellow; z-index:100;color:${color};font-weight:${fontWeight};
             position: absolute;top:50%;transform:
-           translateY(-50%);font-size:0.48em'>${n1.value}</p>`;
+           translateY(-50%);font-size:0.6em'>${n1.value}</p>`;
     }
 
     if (n.notationType === "IMAGE") {
@@ -396,7 +396,7 @@ export default function useHtmlMatrixHelper() {
           n1.value.indexOf("tan") >= 0 ||
           n1.value.indexOf("cot") >= 0 ||
           n1.value.indexOf("log") >= 0
-        ? "0.7em"
+        ? "0.6em"
         : "0.75em";
 
     const topMargin =

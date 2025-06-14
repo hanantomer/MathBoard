@@ -239,7 +239,7 @@ html {
 line:hover,
 circle:hover,
 path:hover {
-  stroke-width: 4.5;
+  stroke-width: 5.5;
 }
 
 .sqrt {
@@ -247,8 +247,7 @@ path:hover {
   border-top: solid 1px;
   z-index: 999;
   display: block;
-  position: relative;
-  top: 2px;
+  position: absolute;
 }
 
 .sqrt:hover {
@@ -259,8 +258,6 @@ path:hover {
 .sqrtsymbol {
   position: absolute;
   color: chocolate;
-  margin-top: -8px;
-  margin-left: 8px;
   z-index: 999;
   font-weight: bold;
   font-size: 1.7em;

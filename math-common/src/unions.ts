@@ -200,7 +200,6 @@ export const EditModeCursorType = new Map<
   EditMode,
   CursorType
 >([
-
   ["SPECIAL_SYMBOL_SELECTED", "auto"],
   ["EXPONENT_STARTED", "auto"],
   ["EXPONENT_WRITING", "auto"],
@@ -257,6 +256,15 @@ export type SelectionMoveDirection =
 
 export type Color =
   | "none"
+  | "gray"
+  | "lightgray"
+  | "darkgray"
+  | "ciyan"
+  | "blue"
+  | "green"
+  | "purple"
+  | "orange"
+  | "red"
   | "yellow"
   | "lightblue"
   | "lightgreen"

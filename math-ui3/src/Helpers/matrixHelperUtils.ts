@@ -79,23 +79,14 @@ export default function useMatrixHelperUtils() {
   function colorizeNotationCells(n: NotationAttributes) {
     switch (n.notationType) {
       case "ANNOTATION":
+      case "LOGBASE":
+      case "EXPONENT":
       case "SIGN":
       case "SYMBOL": {
         const n1 = n as PointNotationAttributes;
         if (n1.row == undefined || n1.col == undefined) return;
         const cell = { col: n1.col, row: n1.row };
         matrixCellHelper.colorizeCell(cell, n.color?.value);
-        break;
-      }
-
-      case "EXPONENT": {
-        const n1 = n as unknown as MultiCellAttributes;
-        if (!n1.fromCol || !n1.fromCol || !n1.toCol) return;
-
-        for (let i = n1.fromCol; i <= n1.toCol; i++) {
-          const cell = { col: i, row: n1.row };
-          matrixCellHelper.colorizeCell(cell, n.color?.value);
-        }
         break;
       }
     }
@@ -106,9 +97,7 @@ export default function useMatrixHelperUtils() {
       case "EXPONENT":
       case "LOGBASE":
       case "SIGN":
-      case "SQRT":
-      case "SQRTSYMBOL":
-      case "SYMBOL":
+      case "SYMBOL": // color is applied to the cell
         return n.selected ? selectionColor : htmlColor;
       case "CURVE":
       case "HORIZONTALLINE":
@@ -117,6 +106,8 @@ export default function useMatrixHelperUtils() {
       case "IMAGE":
       case "TEXT":
       case "CIRCLE":
+      case "SQRT":
+      case "SQRTSYMBOL":
         return n.selected
           ? selectionColor
           : n.color?.value

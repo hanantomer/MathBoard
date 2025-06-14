@@ -157,7 +157,7 @@ function endEditingByEnterKey(e: KeyboardEvent) {
 .annotation {
   border: none;
   outline: none;
-  background-color: lightyellow;
+  background-color: rgb(216, 216, 79);
   position: absolute;
   padding: 0px;
   font-size: 0.5em;

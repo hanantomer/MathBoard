@@ -59,9 +59,6 @@ const editModeStore = useEditModeStore();
 const authorizationHelper = useAuthorizationHelper();
 const userOutgoingOperations = useUserOutgoingOperations();
 
-const updateCoordinatesInterval = 100; // while moving selection by arrow, miliseconds to wait before sync
-let lastUpdateCoordinatesTime: number | null = null;
-let updateCoordinatesHandle: number | null = null;
 let deleteKeyLock = false; // Add lock variable at the top with other variables
 
 export default function notationMutateHelper() {
@@ -403,7 +400,7 @@ export default function notationMutateHelper() {
     }
 
     notationStore.getSelectedNotations().forEach((n: NotationAttributes) => {
-      matrixCellHelper.unColorizeNotationCells(n);
+      matrixCellHelper.resetAllCellColors();
       const deltaX = deltaCol * cellStore.getCellHorizontalWidth();
       const deltaY = deltaRow * cellStore.getCellVerticalHeight();
       switch (n.notationType) {
@@ -509,8 +506,6 @@ export default function notationMutateHelper() {
     } else {
       await updateMovedNotations(notations);
     }
-
-    lastUpdateCoordinatesTime = null;
   }
 
   async function insertMovedNotations(notations: NotationAttributes[]) {
@@ -817,13 +812,13 @@ export default function notationMutateHelper() {
       updateFromExistingNotation(overlappedSameTypeNotation, newNotation);
     }
 
-    let overlappedAnyTypeNotation: NotationAttributes | undefined =
-      findOverlapNotationsOfAnyTypeButLine(newNotation);
+    //let overlappedAnyTypeNotation: NotationAttributes | undefined =
+    //  findOverlapNotationsOfAnyTypeButLine(newNotation);
 
     // don't allow override of other type notation
-    if (overlappedAnyTypeNotation) {
-      return;
-    }
+    //if (overlappedAnyTypeNotation) {
+    //  return;
+   // }
 
     addNotation(newNotation);
   }

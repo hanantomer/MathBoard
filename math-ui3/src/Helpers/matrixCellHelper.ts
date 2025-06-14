@@ -1,4 +1,9 @@
-import { CellAttributes, HorizontalLineAttributes, MultiCellAttributes, NotationAttributes } from "common/baseTypes";
+import {
+  CellAttributes,
+  HorizontalLineAttributes,
+  MultiCellAttributes,
+  NotationAttributes,
+} from "common/baseTypes";
 import {
   matrixDimensions,
   defaultdCellStroke,
@@ -69,7 +74,10 @@ export default function useMatrixCellHelper() {
     }
   }
 
-  function colorizeCell(cell: CellAttributes, color: string | null | undefined) {
+  function colorizeCell(
+    cell: CellAttributes,
+    color: string | null | undefined,
+  ) {
     if (!color) color = "";
     let rectElm = document
       ?.querySelector<HTMLElement>(
@@ -80,17 +88,17 @@ export default function useMatrixCellHelper() {
     if (rectElm?.style) rectElm.style.fill = color;
   }
 
-  function unColorizeNotationCells(n: any ) {
-    if (n.col && n.row) {
-      colorizeCell({ col: n.col, row: n.row }, "");
-    }
+  // function unColorizeNotationCells(n: any) {
+  //   if (n.col && n.row) {
+  //     colorizeCell({ col: n.col, row: n.row }, "");
+  //   }
 
-    if (n.fromCol && n.toCol && n.row) {
-      for (let i = n.fromCol; i <= n.toCol; i++) {
-        colorizeCell({ col: i, row: n.row }, "");
-      }
-    }
-  }
+  //   if (n.fromCol && n.toCol && n.row) {
+  //     for (let i = n.fromCol; i <= n.toCol; i++) {
+  //       colorizeCell({ col: i, row: n.row }, "");
+  //     }
+  //   }
+  // }
 
   // called by store watcher. see mathboard.vue
   function showSelectedCell(
@@ -124,10 +132,29 @@ export default function useMatrixCellHelper() {
     }
   }
 
+  function resetAllCellColors() {
+    const svg = document.querySelector(`svg[id="${cellStore.getSvgId()}"]`);
+    if (!svg) return;
+
+    for (let row = 0; row < matrixDimensions.rowsNum; row++) {
+      const rowGroup = svg.querySelector<HTMLElement>(`g[row="${row}"]`);
+      if (!rowGroup) continue;
+
+      for (let col = 0; col < matrixDimensions.colsNum; col++) {
+        const cell = rowGroup.querySelector<HTMLElement>(`rect[col="${col}"]`);
+        if (cell?.style) {
+          cell.style.fill = "";
+        }
+      }
+    }
+  }
+
   return {
     colorizeCell,
-    unColorizeNotationCells,
+    //unColorizeNotationCells,
+    resetAllCellColors,
     setNextCell,
     showSelectedCell,
+    
   };
 }

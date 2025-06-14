@@ -1,12 +1,4 @@
-2025-06-10T15:25:00.250Z [ERROR]: /api/lessonsqrts,  
-            Server error occurred, 
-            fromCol (0) must be < toCol (0),   
-            ,
-            ,
-            , fields: 
-            ,
-             }
-2025-06-10T15:25:07.782Z [ERROR]: /api/auth,  
+2025-06-12T19:21:32.270Z [ERROR]: /api/auth,  
             Server error occurred, 
             Cannot set headers after they are sent to the client,   
             ,
@@ -14,31 +6,7 @@
             , fields: 
             ,
              }
-2025-06-10T15:29:54.167Z [ERROR]: /api/lessonsqrts,  
-            Server error occurred, 
-            fromCol (0) must be < toCol (0),   
-            ,
-            ,
-            , fields: 
-            ,
-             }
-2025-06-10T15:30:07.681Z [ERROR]: /api/lessonsqrts,  
-            Server error occurred, 
-            fromCol (0) must be < toCol (0),   
-            ,
-            ,
-            , fields: 
-            ,
-             }
-2025-06-10T15:30:36.582Z [ERROR]: /api/lessonsqrts,  
-            Server error occurred, 
-            fromCol (0) must be < toCol (0),   
-            ,
-            ,
-            , fields: 
-            ,
-             }
-2025-06-10T16:42:56.252Z [ERROR]: /api/auth,  
+2025-06-13T09:57:16.567Z [ERROR]: /api/auth,  
             Server error occurred, 
             Cannot set headers after they are sent to the client,   
             ,
@@ -46,7 +14,7 @@
             , fields: 
             ,
              }
-2025-06-10T16:43:23.267Z [ERROR]: /api/auth,  
+2025-06-13T09:57:18.706Z [ERROR]: /api/auth,  
             Server error occurred, 
             Cannot set headers after they are sent to the client,   
             ,
@@ -54,7 +22,7 @@
             , fields: 
             ,
              }
-2025-06-10T16:44:13.890Z [ERROR]: /api/auth,  
+2025-06-13T09:57:22.045Z [ERROR]: /api/auth,  
             Server error occurred, 
             Cannot set headers after they are sent to the client,   
             ,
@@ -62,7 +30,7 @@
             , fields: 
             ,
              }
-2025-06-10T16:45:37.698Z [ERROR]: /api/auth,  
+2025-06-13T09:58:45.762Z [ERROR]: /api/auth,  
             Server error occurred, 
             Cannot set headers after they are sent to the client,   
             ,
@@ -70,7 +38,7 @@
             , fields: 
             ,
              }
-2025-06-10T16:46:29.398Z [ERROR]: /api/auth,  
+2025-06-13T09:59:54.312Z [ERROR]: /api/auth,  
             Server error occurred, 
             Cannot set headers after they are sent to the client,   
             ,
@@ -78,7 +46,7 @@
             , fields: 
             ,
              }
-2025-06-10T16:47:03.001Z [ERROR]: /api/auth,  
+2025-06-13T10:01:01.193Z [ERROR]: /api/auth,  
             Server error occurred, 
             Cannot set headers after they are sent to the client,   
             ,
@@ -86,111 +54,7 @@
             , fields: 
             ,
              }
-2025-06-10T16:58:10.439Z [ERROR]: /api/lessonsqrts,  
-            Server error occurred, 
-            fromCol (0) must be < toCol (0),   
-            ,
-            ,
-            , fields: 
-            ,
-             }
-2025-06-10T16:58:12.519Z [ERROR]: /api/lessonsqrts,  
-            Server error occurred, 
-            fromCol (0) must be < toCol (0),   
-            ,
-            ,
-            , fields: 
-            ,
-             }
-2025-06-10T16:58:14.136Z [ERROR]: /api/lessonsqrts,  
-            Server error occurred, 
-            fromCol (0) must be < toCol (0),   
-            ,
-            ,
-            , fields: 
-            ,
-             }
-2025-06-10T16:58:14.854Z [ERROR]: /api/lessonsqrts,  
-            Server error occurred, 
-            fromCol (0) must be < toCol (0),   
-            ,
-            ,
-            , fields: 
-            ,
-             }
-2025-06-10T16:58:16.188Z [ERROR]: /api/lessonsqrts,  
-            Server error occurred, 
-            fromCol (0) must be < toCol (0),   
-            ,
-            ,
-            , fields: 
-            ,
-             }
-2025-06-10T16:58:20.927Z [ERROR]: /api/lessonsqrts,  
-            Server error occurred, 
-            fromCol (0) must be < toCol (0),   
-            ,
-            ,
-            , fields: 
-            ,
-             }
-2025-06-10T16:58:23.072Z [ERROR]: /api/lessonsqrts,  
-            Server error occurred, 
-            fromCol (0) must be < toCol (0),   
-            ,
-            ,
-            , fields: 
-            ,
-             }
-2025-06-10T16:58:32.851Z [ERROR]: undefined,  
-            TypeError: Cannot read properties of undefined (reading 'notationType')
-    at selectClickedPosition (http://localhost:3000/src/helpers/selectionHelper.ts?t=1749566172393:166:17)
-    at http://localhost:3000/src/helpers/watchHelper.ts?t=1749564240727:18:11
-    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2289:19)
-    at callWithAsyncErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2296:17)
-    at baseWatchOptions.call (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:8372:47)
-    at job (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2015:18)
-    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2289:33)
-    at flushJobs (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2498:9), 
-            ,   
-            ,
-            ,
-            , fields: 
-            ,
-             }
-2025-06-10T16:58:33.521Z [ERROR]: undefined,  
-            TypeError: Cannot read properties of undefined (reading 'notationType')
-    at selectClickedPosition (http://localhost:3000/src/helpers/selectionHelper.ts?t=1749566172393:166:17)
-    at http://localhost:3000/src/helpers/watchHelper.ts?t=1749564240727:18:11
-    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2289:19)
-    at callWithAsyncErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2296:17)
-    at baseWatchOptions.call (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:8372:47)
-    at job (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2015:18)
-    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2289:33)
-    at flushJobs (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2498:9), 
-            ,   
-            ,
-            ,
-            , fields: 
-            ,
-             }
-2025-06-10T16:58:39.404Z [ERROR]: undefined,  
-            TypeError: Cannot read properties of undefined (reading 'notationType')
-    at selectClickedPosition (http://localhost:3000/src/helpers/selectionHelper.ts?t=1749566172393:166:17)
-    at http://localhost:3000/src/helpers/watchHelper.ts?t=1749564240727:18:11
-    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2289:19)
-    at callWithAsyncErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2296:17)
-    at baseWatchOptions.call (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:8372:47)
-    at job (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2015:18)
-    at callWithErrorHandling (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2289:33)
-    at flushJobs (http://localhost:3000/node_modules/.vite/deps/chunk-GNBNPM2D.js?v=d838276b:2498:9), 
-            ,   
-            ,
-            ,
-            , fields: 
-            ,
-             }
-2025-06-10T16:58:41.012Z [ERROR]: /api/auth,  
+2025-06-13T10:03:23.594Z [ERROR]: /api/auth,  
             Server error occurred, 
             Cannot set headers after they are sent to the client,   
             ,
@@ -198,23 +62,7 @@
             , fields: 
             ,
              }
-2025-06-10T16:59:23.378Z [ERROR]: /api/lessonsqrts,  
-            Server error occurred, 
-            fromCol (0) must be < toCol (0),   
-            ,
-            ,
-            , fields: 
-            ,
-             }
-2025-06-10T16:59:24.489Z [ERROR]: /api/lessonsqrts,  
-            Server error occurred, 
-            fromCol (0) must be < toCol (0),   
-            ,
-            ,
-            , fields: 
-            ,
-             }
-2025-06-10T17:00:12.434Z [ERROR]: /api/auth,  
+2025-06-13T10:04:35.792Z [ERROR]: /api/auth,  
             Server error occurred, 
             Cannot set headers after they are sent to the client,   
             ,
@@ -222,15 +70,7 @@
             , fields: 
             ,
              }
-2025-06-10T17:00:37.120Z [ERROR]: /api/lessonsqrts,  
-            Server error occurred, 
-            fromCol (0) must be < toCol (0),   
-            ,
-            ,
-            , fields: 
-            ,
-             }
-2025-06-10T17:10:21.700Z [ERROR]: /api/auth,  
+2025-06-13T10:04:50.557Z [ERROR]: /api/auth,  
             Server error occurred, 
             Cannot set headers after they are sent to the client,   
             ,
@@ -238,7 +78,7 @@
             , fields: 
             ,
              }
-2025-06-10T17:12:04.861Z [ERROR]: /api/auth,  
+2025-06-13T10:05:42.878Z [ERROR]: /api/auth,  
             Server error occurred, 
             Cannot set headers after they are sent to the client,   
             ,
@@ -246,7 +86,7 @@
             , fields: 
             ,
              }
-2025-06-10T17:15:27.073Z [ERROR]: /api/auth,  
+2025-06-13T10:06:00.767Z [ERROR]: /api/auth,  
             Server error occurred, 
             Cannot set headers after they are sent to the client,   
             ,
@@ -254,7 +94,15 @@
             , fields: 
             ,
              }
-2025-06-10T17:15:38.152Z [ERROR]: /api/auth,  
+2025-06-13T10:14:15.584Z [ERROR]: /api/lessonsqrts/,  
+            Server error occurred, 
+            fromCol (21) must be < toCol (21),   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-06-13T11:37:31.777Z [ERROR]: /api/auth,  
             Server error occurred, 
             Cannot set headers after they are sent to the client,   
             ,
@@ -262,7 +110,15 @@
             , fields: 
             ,
              }
-2025-06-10T17:54:31.817Z [ERROR]: /api/auth,  
+2025-06-13T11:47:48.763Z [ERROR]: /api/lessonsqrts/,  
+            Server error occurred, 
+            fromCol (31) must be < toCol (31),   
+            ,
+            ,
+            , fields: 
+            ,
+             }
+2025-06-13T12:02:37.005Z [ERROR]: /api/auth,  
             Server error occurred, 
             Cannot set headers after they are sent to the client,   
             ,
@@ -270,7 +126,7 @@
             , fields: 
             ,
              }
-2025-06-11T17:06:42.928Z [ERROR]: /api/auth,  
+2025-06-13T12:03:27.960Z [ERROR]: /api/auth,  
             Server error occurred, 
             Cannot set headers after they are sent to the client,   
             ,
@@ -278,7 +134,7 @@
             , fields: 
             ,
              }
-2025-06-11T17:06:45.987Z [ERROR]: /api/auth,  
+2025-06-13T12:04:06.635Z [ERROR]: /api/auth,  
             Server error occurred, 
             Cannot set headers after they are sent to the client,   
             ,
@@ -286,7 +142,7 @@
             , fields: 
             ,
              }
-2025-06-11T17:06:48.847Z [ERROR]: /api/auth,  
+2025-06-13T12:04:48.877Z [ERROR]: /api/auth,  
             Server error occurred, 
             Cannot set headers after they are sent to the client,   
             ,
@@ -294,15 +150,7 @@
             , fields: 
             ,
              }
-2025-06-11T17:09:54.159Z [ERROR]: /api/lessonsqrts/,  
-            Server error occurred, 
-            fromCol (0) must be < toCol (0),   
-            ,
-            ,
-            , fields: 
-            ,
-             }
-2025-06-11T17:11:17.253Z [ERROR]: /api/auth,  
+2025-06-13T12:05:02.798Z [ERROR]: /api/auth,  
             Server error occurred, 
             Cannot set headers after they are sent to the client,   
             ,
@@ -310,7 +158,7 @@
             , fields: 
             ,
              }
-2025-06-11T17:11:34.807Z [ERROR]: /api/auth,  
+2025-06-13T12:05:18.914Z [ERROR]: /api/auth,  
             Server error occurred, 
             Cannot set headers after they are sent to the client,   
             ,
@@ -318,39 +166,7 @@
             , fields: 
             ,
              }
-2025-06-11T17:12:19.445Z [ERROR]: /api/lessonsqrts/,  
-            Server error occurred, 
-            fromCol (0) must be < toCol (0),   
-            ,
-            ,
-            , fields: 
-            ,
-             }
-2025-06-11T17:13:33.746Z [ERROR]: /api/lessonsqrts/,  
-            Server error occurred, 
-            fromCol (0) must be < toCol (0),   
-            ,
-            ,
-            , fields: 
-            ,
-             }
-2025-06-11T17:13:42.191Z [ERROR]: /api/lessonsqrts/,  
-            Server error occurred, 
-            fromCol (0) must be < toCol (0),   
-            ,
-            ,
-            , fields: 
-            ,
-             }
-2025-06-11T17:13:48.256Z [ERROR]: /api/lessonsqrts/,  
-            Server error occurred, 
-            fromCol (0) must be < toCol (0),   
-            ,
-            ,
-            , fields: 
-            ,
-             }
-2025-06-11T17:14:02.736Z [ERROR]: /api/auth,  
+2025-06-13T12:05:39.296Z [ERROR]: /api/auth,  
             Server error occurred, 
             Cannot set headers after they are sent to the client,   
             ,
@@ -358,15 +174,7 @@
             , fields: 
             ,
              }
-2025-06-11T17:15:24.306Z [ERROR]: /api/lessonsqrts,  
-            Server error occurred, 
-            fromCol (0) must be < toCol (0),   
-            ,
-            ,
-            , fields: 
-            ,
-             }
-2025-06-11T17:16:00.506Z [ERROR]: /api/auth,  
+2025-06-13T12:07:46.016Z [ERROR]: /api/auth,  
             Server error occurred, 
             Cannot set headers after they are sent to the client,   
             ,
@@ -374,7 +182,7 @@
             , fields: 
             ,
              }
-2025-06-11T17:18:07.395Z [ERROR]: /api/auth,  
+2025-06-13T12:08:17.212Z [ERROR]: /api/auth,  
             Server error occurred, 
             Cannot set headers after they are sent to the client,   
             ,
@@ -382,15 +190,7 @@
             , fields: 
             ,
              }
-2025-06-11T17:19:18.708Z [ERROR]: /api/lessonsqrts,  
-            Server error occurred, 
-            fromCol (0) must be < toCol (0),   
-            ,
-            ,
-            , fields: 
-            ,
-             }
-2025-06-11T17:19:52.629Z [ERROR]: /api/auth,  
+2025-06-13T12:08:33.122Z [ERROR]: /api/auth,  
             Server error occurred, 
             Cannot set headers after they are sent to the client,   
             ,
@@ -398,7 +198,7 @@
             , fields: 
             ,
              }
-2025-06-11T17:21:06.075Z [ERROR]: /api/auth,  
+2025-06-13T12:09:28.538Z [ERROR]: /api/auth,  
             Server error occurred, 
             Cannot set headers after they are sent to the client,   
             ,
@@ -406,7 +206,7 @@
             , fields: 
             ,
              }
-2025-06-11T17:23:12.074Z [ERROR]: /api/auth,  
+2025-06-13T12:20:37.543Z [ERROR]: /api/auth,  
             Server error occurred, 
             Cannot set headers after they are sent to the client,   
             ,
@@ -414,7 +214,7 @@
             , fields: 
             ,
              }
-2025-06-11T17:23:51.656Z [ERROR]: /api/auth,  
+2025-06-13T12:34:21.589Z [ERROR]: /api/auth,  
             Server error occurred, 
             Cannot set headers after they are sent to the client,   
             ,
@@ -422,7 +222,7 @@
             , fields: 
             ,
              }
-2025-06-11T17:23:55.540Z [ERROR]: /api/auth,  
+2025-06-13T12:34:39.651Z [ERROR]: /api/auth,  
             Server error occurred, 
             Cannot set headers after they are sent to the client,   
             ,
@@ -430,7 +230,7 @@
             , fields: 
             ,
              }
-2025-06-11T17:24:06.123Z [ERROR]: /api/auth,  
+2025-06-13T12:51:31.321Z [ERROR]: /api/auth,  
             Server error occurred, 
             Cannot set headers after they are sent to the client,   
             ,
@@ -438,7 +238,7 @@
             , fields: 
             ,
              }
-2025-06-11T17:24:08.172Z [ERROR]: /api/auth,  
+2025-06-13T14:06:20.044Z [ERROR]: /api/auth,  
             Server error occurred, 
             Cannot set headers after they are sent to the client,   
             ,
@@ -446,7 +246,15 @@
             , fields: 
             ,
              }
-2025-06-11T17:24:09.402Z [ERROR]: /api/auth,  
+2025-06-13T14:09:06.271Z [ERROR]: /api/lessonslopelines,  
+            Server error occurred, 
+            invalid input syntax for type integer: "742.5",   
+            ,
+            error: invalid input syntax for type integer: "742.5",
+            UPDATE "LessonSlopeLine" SET "p1x"=$1,"p2x"=$2,"p1y"=$3,"p2y"=$4,"colorId"=$5,"updatedAt"=$6 WHERE "id" = $7, fields: 
+            ,
+             }
+2025-06-13T14:10:27.380Z [ERROR]: /api/auth,  
             Server error occurred, 
             Cannot set headers after they are sent to the client,   
             ,
@@ -454,7 +262,7 @@
             , fields: 
             ,
              }
-2025-06-11T17:24:16.983Z [ERROR]: /api/auth,  
+2025-06-13T14:11:19.652Z [ERROR]: /api/auth,  
             Server error occurred, 
             Cannot set headers after they are sent to the client,   
             ,
@@ -462,7 +270,7 @@
             , fields: 
             ,
              }
-2025-06-11T17:24:21.633Z [ERROR]: /api/auth,  
+2025-06-13T14:12:12.296Z [ERROR]: /api/auth,  
             Server error occurred, 
             Cannot set headers after they are sent to the client,   
             ,
@@ -470,7 +278,7 @@
             , fields: 
             ,
              }
-2025-06-11T17:24:27.888Z [ERROR]: /api/auth,  
+2025-06-13T14:30:40.248Z [ERROR]: /api/auth,  
             Server error occurred, 
             Cannot set headers after they are sent to the client,   
             ,
@@ -478,7 +286,7 @@
             , fields: 
             ,
              }
-2025-06-11T17:24:31.995Z [ERROR]: /api/auth,  
+2025-06-13T15:39:59.287Z [ERROR]: /api/auth,  
             Server error occurred, 
             Cannot set headers after they are sent to the client,   
             ,
@@ -486,39 +294,7 @@
             , fields: 
             ,
              }
-2025-06-11T17:25:02.708Z [ERROR]: /api/auth,  
-            Server error occurred, 
-            Cannot set headers after they are sent to the client,   
-            ,
-            ,
-            , fields: 
-            ,
-             }
-2025-06-11T17:25:37.338Z [ERROR]: /api/auth,  
-            Server error occurred, 
-            Cannot set headers after they are sent to the client,   
-            ,
-            ,
-            , fields: 
-            ,
-             }
-2025-06-11T17:25:40.379Z [ERROR]: /api/auth,  
-            Server error occurred, 
-            Cannot set headers after they are sent to the client,   
-            ,
-            ,
-            , fields: 
-            ,
-             }
-2025-06-11T17:25:58.087Z [ERROR]: /api/auth,  
-            Server error occurred, 
-            Cannot set headers after they are sent to the client,   
-            ,
-            ,
-            , fields: 
-            ,
-             }
-2025-06-11T17:26:39.244Z [ERROR]: /api/auth,  
+2025-06-13T15:50:29.494Z [ERROR]: /api/auth,  
             Server error occurred, 
             Cannot set headers after they are sent to the client,   
             ,
