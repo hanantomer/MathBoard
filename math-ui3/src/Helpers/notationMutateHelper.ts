@@ -400,7 +400,6 @@ export default function notationMutateHelper() {
     }
 
     notationStore.getSelectedNotations().forEach((n: NotationAttributes) => {
-      matrixCellHelper.resetAllCellColors();
       const deltaX = deltaCol * cellStore.getCellHorizontalWidth();
       const deltaY = deltaRow * cellStore.getCellVerticalHeight();
       switch (n.notationType) {

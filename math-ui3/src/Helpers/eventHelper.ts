@@ -176,14 +176,14 @@ export default function eventHelper() {
         currentRow++;
         currentCol = initialCell.col;
         cellStore.setSelectedCell({ row: currentRow, col: currentCol }, false);
-      } else if (c !== " ") {
+      } else if (c.trim().length !== 0) {
         notationMutationHelper.addSymbolNotation(c);
         // Move to next column
         currentCol++;
       } else {
         // For space, just move to next column
-        currentCol++;
-        cellStore.setSelectedCell({ row: currentRow, col: currentCol }, false);
+        //currentCol++;
+        //cellStore.setSelectedCell({ row: currentRow, col: currentCol }, false);
       }
     });
   }

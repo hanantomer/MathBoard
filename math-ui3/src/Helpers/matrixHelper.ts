@@ -11,9 +11,11 @@ import { NotationAttributes } from "common/baseTypes";
 import useLineHelper from "./matrixLineHelper";
 import useCurveHelper from "./matrixCurveHelper";
 import useCircleHelper from "./matrixCircleHelper";
+import useMatrixCellHelper from "./matrixCellHelper";
 
 import useHtmlHelper from "./matrixHtmlHelper";
 
+const matrixCellHelper = useMatrixCellHelper();
 const lineHelper = useLineHelper();
 const curveHelper = useCurveHelper();
 const circleHelper = useCircleHelper();
@@ -128,6 +130,9 @@ export default function useMatrixHelper() {
   }
 
   function refreshScreen(svgId: string) {
+
+    matrixCellHelper.resetAllCellColors();
+
     let notations: NotationAttributes[] = [];
 
     const svgElement = document!.getElementById(svgId);
