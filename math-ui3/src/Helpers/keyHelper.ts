@@ -49,13 +49,11 @@ export default function () {
     notationMutateHelper.handleDeleteKey();
 
     matrixCellHelper.setNextCell(0, 0);
-
-    //editModeStore.setDefaultEditMode();
   }
 
   function handleMovementKey(key: string) {
     if (
-      editModeStore.getEditMode() !== "CELL_SELECTED" 
+      editModeStore.getEditMode() !== "CELL_SELECTED"
     ) {
       return;
     }

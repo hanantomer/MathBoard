@@ -6085,3 +6085,24 @@
 2025-06-15T18:48:19.073Z [INFO]: Processing teacher join request for hanantomer@gmail.com
 2025-06-15T18:48:19.074Z [INFO]: Teacher hanantomer@gmail.com joining lesson e5192cfc-1db4-4392-bb96-b311d461c389
 2025-06-15T18:48:19.074Z [INFO]: User hanantomer@gmail.com joined lesson channel e5192cfc-1db4-4392-bb96-b311d461c389
+2025-06-16T16:33:03.266Z [INFO]: Authentication service initialized
+2025-06-16T16:33:18.908Z [INFO]: User hanantomer@gmail.com attempting to join lesson ff6113fc-60b6-418b-b59a-17c494ccfc68
+2025-06-16T16:33:18.909Z [INFO]: Processing teacher join request for hanantomer@gmail.com
+2025-06-16T16:33:18.910Z [INFO]: Teacher hanantomer@gmail.com joining lesson ff6113fc-60b6-418b-b59a-17c494ccfc68
+2025-06-16T16:33:18.911Z [INFO]: User hanantomer@gmail.com joined lesson channel ff6113fc-60b6-418b-b59a-17c494ccfc68
+2025-06-16T16:33:58.110Z [INFO]: User hanantomer@gmail.com attempting to join lesson ff6113fc-60b6-418b-b59a-17c494ccfc68
+2025-06-16T16:33:58.111Z [INFO]: Processing teacher join request for hanantomer@gmail.com
+2025-06-16T16:33:58.112Z [INFO]: Teacher hanantomer@gmail.com joining lesson ff6113fc-60b6-418b-b59a-17c494ccfc68
+2025-06-16T16:33:58.113Z [INFO]: User hanantomer@gmail.com joined lesson channel ff6113fc-60b6-418b-b59a-17c494ccfc68
+2025-06-16T16:34:06.359Z [INFO]: User hanantomer@gmail.com attempting to join lesson ff6113fc-60b6-418b-b59a-17c494ccfc68
+2025-06-16T16:34:06.360Z [INFO]: Processing teacher join request for hanantomer@gmail.com
+2025-06-16T16:34:06.360Z [INFO]: Teacher hanantomer@gmail.com joining lesson ff6113fc-60b6-418b-b59a-17c494ccfc68
+2025-06-16T16:34:06.361Z [INFO]: User hanantomer@gmail.com joined lesson channel ff6113fc-60b6-418b-b59a-17c494ccfc68
+2025-06-16T16:36:25.561Z [INFO]: User hanantomer@gmail.com attempting to join lesson ff6113fc-60b6-418b-b59a-17c494ccfc68
+2025-06-16T16:36:25.562Z [INFO]: Processing teacher join request for hanantomer@gmail.com
+2025-06-16T16:36:25.562Z [INFO]: Teacher hanantomer@gmail.com joining lesson ff6113fc-60b6-418b-b59a-17c494ccfc68
+2025-06-16T16:36:25.563Z [INFO]: User hanantomer@gmail.com joined lesson channel ff6113fc-60b6-418b-b59a-17c494ccfc68
+2025-06-16T16:38:35.852Z [INFO]: User hanantomer@gmail.com attempting to join lesson ff6113fc-60b6-418b-b59a-17c494ccfc68
+2025-06-16T16:38:35.853Z [INFO]: Processing teacher join request for hanantomer@gmail.com
+2025-06-16T16:38:35.853Z [INFO]: Teacher hanantomer@gmail.com joining lesson ff6113fc-60b6-418b-b59a-17c494ccfc68
+2025-06-16T16:38:35.854Z [INFO]: User hanantomer@gmail.com joined lesson channel ff6113fc-60b6-418b-b59a-17c494ccfc68

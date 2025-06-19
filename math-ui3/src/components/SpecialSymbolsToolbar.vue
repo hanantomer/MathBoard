@@ -180,11 +180,6 @@ watchHelper.watchKeyEvent(["CELL_SELECTED"], "EV_KEYUP", (e: KeyboardEvent) =>
   toolbarNavigation.handleShortcuts(e, specialSymbols),
 );
 
-// watchHelper.watchKeyEvent(
-//   ["CELL_SELECTED"],
-//   "EV_ALT_CLICK",
-//   (e: KeyboardEvent) => toolbarNavigation.handleShortcuts(e, specialSymbols),
-// );
 
 function addSpecialSymbol(item: string) {
   selectedSymbol.value = item;

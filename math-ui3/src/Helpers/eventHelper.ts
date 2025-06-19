@@ -180,10 +180,6 @@ export default function eventHelper() {
         notationMutationHelper.addSymbolNotation(c);
         // Move to next column
         currentCol++;
-      } else {
-        // For space, just move to next column
-        //currentCol++;
-        //cellStore.setSelectedCell({ row: currentRow, col: currentCol }, false);
       }
     });
   }
@@ -234,38 +230,6 @@ export default function eventHelper() {
     } catch (err: any) {
       console.error(err.name, err.message);
     }
-
-    /*
-    const dT = e.clipboardData;
-    const item = dT?.items[0];
-
-    var reader = new FileReader();
-    reader.addEventListener("load", () => {
-      const base64data = reader.result;
-      if (!base64data) return;
-      let image: HTMLImageElement = new Image();
-      image.src = base64data?.toString();
-      image.onload = () => {
-        let fromCol = cellStore.getSelectedCell()?.col;
-        let fromRow = cellStore.getSelectedCell()?.row;
-        if (!fromCol || !fromRow) return;
-        let toCol =
-          Math.ceil(image.width / cellStore.getCellHorizontalWidth()) + fromCol;
-        let toRow =
-          Math.ceil(image.height / cellStore.getCellVerticalHeight()) + fromRow;
-
-        notationMutationHelper.addImageNotation(
-          fromCol,
-          toCol,
-          fromRow,
-          toRow,
-          base64data.toString(),
-        );
-      };
-    });
-
-    reader.readAsDataURL(item?.getAsFile() as Blob);
-    */
   }
 
   function emitSvgMouseDown(e: MouseEvent) {
