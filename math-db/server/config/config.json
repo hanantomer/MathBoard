@@ -12,5 +12,4 @@
       "dialect": "postgres",
       "url": "DATABASE_URL"
   }
-
 }
