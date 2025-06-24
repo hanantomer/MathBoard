@@ -672,8 +672,8 @@ const errorHandler = (
 app.use(errorHandler);
 
 let forceDbCreate =
-    process.env.NODE_ENV === "test" || process.env.NODE_ENV === "development";
-//forceDbCreate = true;
+    process.env.NODE_ENV === "development";
+
 console.log("re create db =" + forceDbCreate);
 
 connection.sequelize.sync({ force: forceDbCreate }).then(() => {
