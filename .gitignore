@@ -50,3 +50,8 @@ coverage/
 # Ignore image processing outputs
 imageProccesing/output/
 math-auth/tsconfig.tsbuildinfo
+math-common/tsconfig.tsbuildinfo
+math-db/tsconfig.tsbuildinfo
+math-server/tsconfig.tsbuildinfo
+math-ui/tsconfig.tsbuildinfo
+
