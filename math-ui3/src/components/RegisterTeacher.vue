@@ -1,5 +1,5 @@
 <template>
-  <v-dialog v-model="show" width="1000" height="900" persistent>
+  <v-dialog v-model="show" width="1000" height="700" persistent>
     <v-card style="overflow-y: hidden">
       <v-btn
         style="position: absolute; right: 10px; top: 10px"
@@ -73,7 +73,7 @@
             <v-col cols="12">
               <v-card>
                 <v-card-title> Terms and Conditions </v-card-title>
-                <v-card-text style="height: 110px; overflow-y: auto">
+                <v-card-text style="height: 80px; overflow-y: auto">
                   <h4>Introduction</h4>
                   <p>
                     These Website Standard Terms and Conditions written on this
@@ -232,7 +232,7 @@
             </v-col>
           </v-row>
           <v-row>
-            <v-alert
+            <v-alert height="120"
               text="This site is currently in Beta, so it’s free to use for the near future. Due to limited capacity, we can only enroll a select number of users. All sign-in requests will require approval, and we’ll send you a confirmation email once approved. If you encounter any outstanding issues, please reach out to us via contact us form."
               data-cy="register_alert"
               title="Attention"
