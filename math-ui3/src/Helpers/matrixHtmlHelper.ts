@@ -11,12 +11,10 @@ import {
 import { useCellStore } from "../store/pinia/cellStore";
 import useUtils from "./matrixHelperUtils";
 import { useUserStore } from "../store/pinia/userStore";
-import useMatrixCellHelper from "./matrixCellHelper";
 
 const userStore = useUserStore();
 const utils = useUtils();
 const cellStore = useCellStore();
-const matrixCellHelper = useMatrixCellHelper();
 
 export default function useHtmlMatrixHelper() {
   function rectBorderColor(notation: NotationAttributes): string {
@@ -304,6 +302,23 @@ export default function useHtmlMatrixHelper() {
       : regularFontSize(n.value);
   }
 
+  /**
+   * Generates an HTML string representation for a given notation attribute object.
+   * The output varies based on the `notationType` property of the input, supporting types such as
+   * "SQRT", "SQRTSYMBOL", "TEXT", "ANNOTATION", "IMAGE", "EXPONENT", "LOGBASE", and default symbol types.
+   *
+   * - For "SQRT" and "SQRTSYMBOL", returns styled HTML for square root notation.
+   * - For "TEXT", returns a styled `<textarea>` with directionality based on content.
+   * - For "ANNOTATION", returns a styled annotation `<p>` element.
+   * - For "IMAGE", returns an `<img>` tag with border styling.
+   * - For "EXPONENT" and "LOGBASE", returns absolutely positioned `<p>` elements for exponents and log bases.
+   * - For other symbol types, returns a styled `<p>` element with dynamic positioning and font size.
+   *
+   * The function applies user-specific color and font weight, and uses various helpers for style calculation.
+   *
+   * @param n - The notation attribute object describing the mathematical notation to render.
+   * @returns An HTML string representing the notation, styled and structured according to its type.
+   */
   function html(n: NotationAttributes) {
     utils.colorizeNotationCells(n);
 
@@ -335,9 +350,9 @@ export default function useHtmlMatrixHelper() {
         n1.uuid
       } style='resize:none; overflow:hidden;width:${width}px;
               height:${height}px;background-color:${textBackgroundColor()};
-              border:groove 2px;border-color:${bColor};'>${
-                n1.value
-              }</textarea>`;
+              border:groove 2px;border-color:${bColor};' dir='${
+                /[\u0590-\u05FF\u0600-\u06FF]/.test(n1.value) ? "rtl" : "ltr"
+              }'>${n1.value}</textarea>`;
     }
 
     if (n.notationType === "ANNOTATION") {

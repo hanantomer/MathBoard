@@ -1,5 +1,5 @@
 import winston from "winston";
-import express, { Request, Response, NextFunction, Router } from "express";
+import express, { Request, Response, NextFunction } from "express";
 import cors from "cors";
 import crypto from "crypto";
 import useAuthUtil from "../../math-auth/build/authUtil";
@@ -12,6 +12,7 @@ import {
     NotationTypeValues,
 } from "../../math-common/build/unions";
 import { createTransport } from "nodemailer";
+import path from "path";
 
 
 var transporter = createTransport({
@@ -55,19 +56,34 @@ const serverLogger = winston.createLogger({
     level: "info",
     format: winston.format.combine(
         winston.format.timestamp(),
-        winston.format.printf(({ timestamp, level, path, message, error, origin, parent, sql, sqlMessage, fields}) => {
-            return `${timestamp} [${level.toUpperCase()}]: ${path},  
+        winston.format.printf(
+            ({
+                timestamp,
+                level,
+                path,
+                message,
+                error,
+                origin,
+                parent,
+                sql,
+                sqlMessage,
+                fields,
+            }) => {
+                return `${timestamp} [${level.toUpperCase()}]: ${path},  
             ${message}, 
-            ${error ? error : ''},   
-            ${origin ? origin : ''},
-            ${parent ? parent : ''},
-            ${sql ? sql : ''}, fields: 
-            ${fields ? JSON.stringify(fields) : ''},
-            ${sqlMessage ? sqlMessage : ''} }`;
-        })
+            ${error ? error : ""},   
+            ${origin ? origin : ""},
+            ${parent ? parent : ""},
+            ${sql ? sql : ""}, fields: 
+            ${fields ? JSON.stringify(fields) : ""},
+            ${sqlMessage ? sqlMessage : ""} }`;
+            }
+        )
     ),
     transports: [
-        new winston.transports.File({ filename: "server.log" }),
+        new winston.transports.File({
+            filename: path.join(__dirname, "logs", "server.log"),
+        }),
     ],
 });
 
@@ -80,7 +96,9 @@ const clientLogger = winston.createLogger({
         })
     ),
     transports: [
-        new winston.transports.File({ filename: "client.log" }),
+        new winston.transports.File({
+           filename: path.join(__dirname, "logs", "client.log")
+        }),
     ],
 });
 

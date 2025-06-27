@@ -7,6 +7,7 @@ import Answer  from "./models/answer/answer.model";
 import User from "./models/user.model";
 import Color from "./models/color.model";
 import db from "./models/index";
+import path from "path";
 
 import {
     CurveNotationAttributes,
@@ -37,7 +38,9 @@ const logger = winston.createLogger({
     ),
     transports: [
         new winston.transports.Console(),
-        new winston.transports.File({ filename: 'math-db.log' })
+        new winston.transports.File({
+            filename: path.join(__dirname, "logs", "db.log")
+        })
     ]
 });
 
