@@ -2,7 +2,6 @@ import { defineStore } from "pinia";
 import { UserAttributes } from "common/userTypes";
 import { ref } from "vue";
 import apiHelper from "../../helpers/apiHelper";
-const db = apiHelper();
 
 export const useStudentStore = defineStore("studentanswer", () => {
   let students = ref(<Map<String, UserAttributes>>new Map());
@@ -18,6 +17,7 @@ export const useStudentStore = defineStore("studentanswer", () => {
   }
 
   async function setStudentHeartbeat(userUUId: string) {
+    const db = apiHelper();
     if (!students.value.get(userUUId)) {
       const user = await db.getUser(userUUId);
       students.value.set(user.uuid, user);

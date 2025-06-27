@@ -8,7 +8,6 @@ import {
   StudentLessonAttributes,
   StudentLessonCreationAttributes,
 } from "common/userTypes";
-const db = apiHelper();
 
 export const useLessonStore = defineStore("lesson", () => {
   let lessons = ref<Map<String, LessonAttributes>>(new Map());
@@ -23,9 +22,8 @@ export const useLessonStore = defineStore("lesson", () => {
   }
 
   async function loadLesson(lessonUUId: string) {
-    let lesson = null;
-
-    lesson = await db.getLesson(lessonUUId);
+    const db = apiHelper();
+    let lesson = await db.getLesson(lessonUUId);
 
     if (!lesson) {
       throw new Error(`lesson ${lessonUUId} does not exists`);
@@ -39,6 +37,7 @@ export const useLessonStore = defineStore("lesson", () => {
     const userStore = useUserStore();
     let userUUId = userStore.getCurrentUser()!.uuid;
 
+    const db = apiHelper();
     if (userStore.isTeacher()) {
       const lessonsFromDB = await db.getTeacherLessons(userUUId);
       if (!lessonsFromDB) return;
@@ -60,6 +59,7 @@ export const useLessonStore = defineStore("lesson", () => {
 
   async function addLesson(lessonName: string): Promise<LessonAttributes> {
     const userStore = useUserStore();
+    const db = apiHelper();
     const lesson: LessonCreationAttributes = {
       name: lessonName,
       user: userStore.getCurrentUser()!,
@@ -72,6 +72,7 @@ export const useLessonStore = defineStore("lesson", () => {
 
   async function addLessonToSharedLessons() {
     const userStore = useUserStore();
+    const db = apiHelper();
     let studentLesson: StudentLessonCreationAttributes = {
       user: userStore.getCurrentUser()!,
       lesson: currentLesson.value!,

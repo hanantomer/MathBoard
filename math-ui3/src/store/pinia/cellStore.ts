@@ -7,8 +7,6 @@ import { CellAttributes } from "common/baseTypes";
 import { useEditModeStore } from "./editModeStore";
 import { cellSpace } from "common/globals";
 
-const editModeStore = useEditModeStore();
-
 export const useCellStore = defineStore("cell", () => {
   let svgId: string | undefined = undefined;
 
@@ -57,7 +55,11 @@ export const useCellStore = defineStore("cell", () => {
     setEditMode: boolean,
   ) {
     selectedCell.value = newSelectedCell;
-    if (setEditMode) editModeStore.setEditMode("CELL_SELECTED");
+    if (setEditMode) {
+      // Call useEditModeStore inside the function, not at the top level
+      const editModeStore = useEditModeStore();
+      editModeStore.setEditMode("CELL_SELECTED");
+    }
   }
 
   function resetSelectedCell() {

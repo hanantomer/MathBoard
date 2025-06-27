@@ -9,10 +9,6 @@ import { useLessonStore } from "./lessonStore";
 import { useUserStore } from "./userStore";
 import { ref } from "vue";
 
-const lessonStore = useLessonStore();
-const userStore = useUserStore();
-const db = useApiHelper();
-
 ///TODO: create convention for all crud operation for all stores
 
 export const useQuestionStore = defineStore("question", () => {
@@ -30,6 +26,7 @@ export const useQuestionStore = defineStore("question", () => {
   async function loadQuestion(
     questionUUId: string,
   ): Promise<QuestionAttributes | null> {
+    const db = useApiHelper();
     let question = await db.getQuestion(questionUUId);
 
     if (!question) return null;
@@ -40,10 +37,11 @@ export const useQuestionStore = defineStore("question", () => {
   }
 
   async function loadQuestions() {
-    //if (!lessonStore.getCurrentLesson()) return;
+    const lessonStore = useLessonStore();
+    const db = useApiHelper();
 
     if (!lessonStore.getLessons().size) {
-      lessonStore.loadLessons();
+      await lessonStore.loadLessons();
     }
 
     let questionsFromDb = await db.getQuestions(
@@ -55,6 +53,10 @@ export const useQuestionStore = defineStore("question", () => {
   }
 
   async function addQuestion(questionName: string) {
+    const userStore = useUserStore();
+    const lessonStore = useLessonStore();
+    const db = useApiHelper();
+
     let question: QuestionCreationAttributes = {
       name: questionName,
       user: userStore.getCurrentUser()!,

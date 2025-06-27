@@ -22,9 +22,7 @@ import {
 } from "common/baseTypes";
 import { BoardType } from "common/unions";
 import { ref } from "vue";
-import { useCellStore } from "../../store/pinia/cellStore";
 import useNotationCellOccupationHelper from "../../helpers/notationCellOccupationHelper";
-const notationCellOccupationHelper = useNotationCellOccupationHelper();
 
 export const useNotationStore = defineStore("notation", () => {
   // special occupation matrix for dot notation since it coexists in a cell
@@ -132,12 +130,14 @@ export const useNotationStore = defineStore("notation", () => {
     notations.value.set(notation.uuid, notation);
 
     if (doUpdateOccupationMatrix) {
+      const notationCellOccupationHelper = useNotationCellOccupationHelper();
       updateOccupationMatrix(
         notation,
         dotNotationOccupationMatrix,
         symbolNotationOccupationMatrix,
         cellLineNotationOccupationMatrix,
         cellRectNotationOccupationMatrix,
+        notationCellOccupationHelper,
       );
     }
   }
@@ -149,6 +149,7 @@ export const useNotationStore = defineStore("notation", () => {
 
   function deleteNotation(uuid: string) {
     const notation = notations.value.get(uuid)!;
+    const notationCellOccupationHelper = useNotationCellOccupationHelper();
 
     switch (notation.notationType) {
       case "EXPONENT":
@@ -349,6 +350,8 @@ export const useNotationStore = defineStore("notation", () => {
     sqrt: SqrtNotationAttributes,
     rect: RectCoordinates,
   ): boolean {
+    // Move useCellStore inside the function
+    const { useCellStore } = require("../../store/pinia/cellStore");
     const cellStore = useCellStore();
     const x1 = sqrt.fromCol * cellStore.getCellHorizontalWidth();
     const x2 = sqrt.toCol * cellStore.getCellHorizontalWidth();
@@ -446,6 +449,9 @@ export const useNotationStore = defineStore("notation", () => {
     symbolNotationOccupationMatrix: (String | null)[][],
     cellLineNotationOccupationMatrix: Set<String>[][],
     cellRectNotationOccupationMatrix: (String | null)[][],
+    notationCellOccupationHelper: ReturnType<
+      typeof useNotationCellOccupationHelper
+    >,
   ) {
     switch (notation.notationType) {
       case "EXPONENT":

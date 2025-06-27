@@ -3,7 +3,6 @@ import { defineStore } from "pinia";
 import { UserAttributes, UserCreationAttributes } from "common/userTypes";
 
 import apiHelper from "../../helpers/apiHelper";
-const db = apiHelper();
 
 export const useUserStore = defineStore("user", () => {
   let currentUser = ref<UserAttributes | null>();
@@ -29,8 +28,9 @@ export const useUserStore = defineStore("user", () => {
     currentUser.value = user;
   }
 
-  function registerUser(user: UserCreationAttributes) {
-    db.registerUser(user); /// todo set to current
+  async function registerUser(user: UserCreationAttributes) {
+    const db = apiHelper();
+    await db.registerUser(user); // todo: set to current
   }
 
   return {

@@ -5,9 +5,6 @@ import { useUserStore } from "./userStore";
 import { ref } from "vue";
 
 import useApiHelper from "../../helpers/apiHelper";
-const questionStore = useQuestionStore();
-const userStore = useUserStore();
-const db = useApiHelper();
 
 export const useAnswerStore = defineStore("answer", () => {
   let answers = ref<Map<String, AnswerAttributes>>(new Map());
@@ -24,6 +21,7 @@ export const useAnswerStore = defineStore("answer", () => {
   async function loadAnswer(
     answerUUId: string,
   ): Promise<AnswerAttributes | null> {
+    const db = useApiHelper();
     const answer = await db.getAnswer(answerUUId);
 
     if (!answer) return null;
@@ -34,6 +32,8 @@ export const useAnswerStore = defineStore("answer", () => {
   }
 
   async function loadAnswers() {
+    const db = useApiHelper();
+    const questionStore = useQuestionStore();
     const answersFromDb = await db.getAnswers(
       questionStore.getCurrentQuestion()!.uuid,
     );
@@ -43,6 +43,9 @@ export const useAnswerStore = defineStore("answer", () => {
   }
 
   async function addAnswer(questionUUId: string) {
+    const db = useApiHelper();
+    const questionStore = useQuestionStore();
+    const userStore = useUserStore();
     // add new answer
     let answer = <AnswerAttributes>{};
     answer.question = questionStore.getQuestions().get(questionUUId)!;
