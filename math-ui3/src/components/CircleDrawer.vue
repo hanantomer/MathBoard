@@ -205,7 +205,6 @@ function saveCircle(circleAttributes: CircleAttributes) {
   } else {
     notationMutateHelper.addCircleNotation(
       circleAttributes,
-      editModeStore.getNotationTypeByEditMode(),
     );
   }
 }

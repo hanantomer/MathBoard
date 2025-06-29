@@ -365,8 +365,7 @@ async function saveCurve(curevAttributes: CurveAttributes) {
     );
   } else {
     const uuid =  await notationMutateHelper.addCurveNotation(
-      curevAttributes,
-      editModeStore.getNotationTypeByEditMode(),
+      curevAttributes
     );
     selectionHelper.selectCurveNotation(uuid);
   }

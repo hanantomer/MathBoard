@@ -777,22 +777,6 @@ export default function notationMutateHelper() {
     addNotation(notation);
   }
 
-  async function addCurveNotation(
-    notation: CurveNotationCreationAttributes,
-  ): Promise<string> {
-    //editModeStore.setDefaultEditMode();
-    notationStore.resetSelectedNotations();
-
-    // let overlappedAnyTypeNotation: NotationAttributes | undefined =
-    //   findOverlapNotationsOfAnyTypeButLine(notation);
-
-    // // don't allow override of other type notation
-    // if (overlappedAnyTypeNotation) {
-    //   return "";
-    // }
-
-    return await addNotation(notation);
-  }
 
   function upsertRectNotation(newNotation: RectNotationCreationAttributes) {
     //    editModeStore.setDefaultEditMode();
@@ -1233,8 +1217,7 @@ export default function notationMutateHelper() {
   }
 
   async function addCurveNotation(
-    curveAttributes: CurveAttributes,
-    notationType: NotationType,
+    curveAttributes: CurveAttributes
   ): Promise<string> {
     let curveNotation: CurveNotationCreationAttributes = {
       p1x: curveAttributes.p1x,
@@ -1245,7 +1228,7 @@ export default function notationMutateHelper() {
       cpy: curveAttributes.cpy,
       boardType: notationStore.getParent().type,
       parentUUId: notationStore.getParent().uuid,
-      notationType: notationType,
+      notationType: "CURVE",
       user: userStore.getCurrentUser()!,
     };
     notationStore.resetSelectedNotations();
