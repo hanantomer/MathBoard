@@ -5,6 +5,7 @@ import {
   HorizontalLineNotationAttributes,
   SlopeLineNotationAttributes,
   MultiCellAttributes,
+  CellAttributes,
 } from "common/baseTypes";
 
 import { NotationAttributes } from "common/baseTypes";
@@ -186,19 +187,16 @@ export default function selectionHelper() {
     }
   }
 
-  async function setSelectedCell(position: DotCoordinates) {
+  async function setSelectedCell(cell: CellAttributes, setEditMode: boolean) {
     const notationStore = useNotationStore();
-    let clickedCell = screenHelper.getCell(position);
-
-    if (!clickedCell) return;
 
     if (!authorizationHelper.canEdit()) return;
 
-    cellStore.setSelectedCell(clickedCell!, true);
+    cellStore.setSelectedCell(cell!, setEditMode);
 
     if (notationStore.getParent().type == "LESSON") {
       await userOutgoingOperationsHelper.syncOutgoingSelectedCell(
-        clickedCell,
+        cell,
         lessonStore.getCurrentLesson()!.uuid,
         userStore.getCurrentUser()!.uuid,
       );
@@ -239,7 +237,9 @@ export default function selectionHelper() {
       }
     } else {
       const position = { x: e.pageX, y: e.pageY };
-      setSelectedCell(position);
+      let clickedCell = screenHelper.getCell(position);
+      if (!clickedCell) return;
+      setSelectedCell(clickedCell, true);
     }
   }
 

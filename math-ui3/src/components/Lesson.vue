@@ -24,6 +24,8 @@ import { useEditModeStore } from "../store/pinia/editModeStore";
 import { useTitleStore } from "../store/pinia/titleStore";
 import { useCellStore } from "../store/pinia/cellStore";
 import lessonStudents from "./LessonStudents.vue";
+import useSelectionHelper from "../helpers/selectionHelper";
+const selectionHelper = useSelectionHelper();
 
 const route = useRoute();
 
@@ -35,6 +37,7 @@ const titleStore = useTitleStore();
 const cellStore = useCellStore();
 const userOutgoingOperations = useUserOutgoingOperations();
 const userIncomingOperations = useUserIncomingOperations();
+
 
 let loaded = ref(false);
 const svgId = "lessonSvg";
@@ -52,10 +55,12 @@ watch(
 );
 
 async function loadLesson(lessonUUId: string) {
+  // for student link remove the prefix "sl_"
   if (lessonUUId.indexOf("sl_") == 0) {
     lessonUUId = lessonUUId.substring(3);
   }
-  cellStore.setSelectedCell({ col: 1, row: 1 }, true);
+
+  selectionHelper.setSelectedCell({ col: 1, row: 1 }, true);
 
   // store might not be loaded yet
   if (!lessonStore.getLessons().get(lessonUUId)) {

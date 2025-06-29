@@ -11,14 +11,7 @@ class selectedCellSyncService {
     data: any,
     params: any
   ) {
-    // let user = await util.getUserFromCookie(
-    //   params.headers.cookie
-    // );
-
-    //if (user?.id) {
-    //data.userUUId = data.;
     return data;
-    //}
   }
 }
 export default selectedCellSyncService;

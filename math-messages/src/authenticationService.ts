@@ -2,6 +2,7 @@ import constants from "./constants";
 import { Application } from "@feathersjs/feathers";
 import { UserAttributes } from "../../math-common/src/userTypes";
 import winston from "winston";
+import path from "path";
 
 const logger = winston.createLogger({
   level: "info",
@@ -16,7 +17,7 @@ const logger = winston.createLogger({
   transports: [
     new winston.transports.Console(),
     new winston.transports.File({
-      filename: "authentication.log",
+      filename: path.join(__dirname, "authentication.log"),
     }),
   ],
 });

@@ -1,7 +1,7 @@
 import { useUserStore } from "../store/pinia/userStore";
-import { useEditModeStore } from "../store/pinia/editModeStore";
 import { useNotationStore } from "../store/pinia/notationStore";
 import { useCellStore } from "../store/pinia/cellStore";
+
 
 import useNotationMutationHelper from "./notationMutateHelper";
 import useEventBus from "../helpers/eventBusHelper";
@@ -15,6 +15,9 @@ import {
   CurveNotationAttributes,
   SqrtNotationAttributes,
 } from "common/baseTypes";
+
+import useSelectionHelper from "../helpers/selectionHelper";
+const selectionHelper = useSelectionHelper();
 
 const userStore = useUserStore();
 const notationStore = useNotationStore();
@@ -175,7 +178,12 @@ export default function eventHelper() {
         // Move to next row and reset column
         currentRow++;
         currentCol = initialCell.col;
-        cellStore.setSelectedCell({ row: currentRow, col: currentCol }, false);
+
+        selectionHelper.setSelectedCell(
+          { row: currentRow, col: currentCol },
+          false,
+        );
+
       } else if (c.trim().length !== 0) {
         notationMutationHelper.addSymbolNotation(c);
         // Move to next column

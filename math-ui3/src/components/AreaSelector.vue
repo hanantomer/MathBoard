@@ -35,7 +35,9 @@ import useSelectionHelper from "../helpers/selectionHelper";
 import useEventBusHelper from "../helpers/eventBusHelper";
 import useWatchHelper from "../helpers/watchHelper";
 import UseAuthorizationHelper from "../helpers/authorizationHelper";
+import useScreenHelper from "../helpers/screenHelper";
 
+const screenHelper = useScreenHelper();
 type HorizontalDirection = "RIGHT" | "LEFT" | "NONE";
 type VerticalDirection = "UP" | "BOTTOM" | "NONE";
 
@@ -334,10 +336,13 @@ function endSelect() {
     Math.abs(selectionPosition.value.x1 - selectionPosition.value.x2) < 5 ||
     Math.abs(selectionPosition.value.y1 - selectionPosition.value.y2) < 5
   ) {
-    selectionHelper.setSelectedCell({
+    let clickedCell = screenHelper.getCell({
       x: selectionPosition.value.x1,
       y: selectionPosition.value.y1,
     });
+    if (!clickedCell) return;
+
+    selectionHelper.setSelectedCell(clickedCell, true);
     editModeStore.setDefaultEditMode();
     return;
   }

@@ -17,6 +17,7 @@ yarn-debug.log*
 yarn-error.log*
 server.log
 cliens.log
+uthentication.log
 
 # Build output
 dist/
@@ -54,4 +55,5 @@ math-common/tsconfig.tsbuildinfo
 math-db/tsconfig.tsbuildinfo
 math-server/tsconfig.tsbuildinfo
 math-ui/tsconfig.tsbuildinfo
+
 

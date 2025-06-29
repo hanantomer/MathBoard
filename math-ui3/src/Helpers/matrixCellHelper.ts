@@ -11,7 +11,9 @@ import {
 } from "common/globals";
 
 import { useCellStore } from "../store/pinia/cellStore";
+import useSelectionHelper from "./selectionHelper";
 
+const selectionHelper = useSelectionHelper();
 const cellStore = useCellStore();
 
 export default function useMatrixCellHelper() {
@@ -70,7 +72,7 @@ export default function useMatrixCellHelper() {
   function setNextCell(horizontalStep: number, verticalStep: number) {
     let nextCell = getNextCell(horizontalStep, verticalStep);
     if (nextCell) {
-      cellStore.setSelectedCell(nextCell, true);
+      selectionHelper.setSelectedCell(nextCell, true);
     }
   }
 
@@ -155,6 +157,6 @@ export default function useMatrixCellHelper() {
     resetAllCellColors,
     setNextCell,
     showSelectedCell,
-    
+
   };
 }

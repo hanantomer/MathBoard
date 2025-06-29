@@ -22,6 +22,7 @@ import {
 } from "common/baseTypes";
 import { BoardType } from "common/unions";
 import { ref } from "vue";
+import { useCellStore } from "./cellStore";
 import useNotationCellOccupationHelper from "../../helpers/notationCellOccupationHelper";
 
 export const useNotationStore = defineStore("notation", () => {
@@ -351,7 +352,6 @@ export const useNotationStore = defineStore("notation", () => {
     rect: RectCoordinates,
   ): boolean {
     // Move useCellStore inside the function
-    const { useCellStore } = require("../../store/pinia/cellStore");
     const cellStore = useCellStore();
     const x1 = sqrt.fromCol * cellStore.getCellHorizontalWidth();
     const x2 = sqrt.toCol * cellStore.getCellHorizontalWidth();
