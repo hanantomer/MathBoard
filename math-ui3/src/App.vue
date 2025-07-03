@@ -127,8 +127,19 @@
           href="../privacyPolicy.html"
           target="_blank"
         >
-          Privacy Policy</v-btn
+          Privacy Policy
+        </v-btn>
+        |
+        <v-btn
+          style="background-color: transparent; color: whitesmoke"
+          class="ml-1"
+          height="25"
+          flat
+          href="/tutorials/tutorial.webm"
+          target="_blank"
         >
+          Tutorial Video
+        </v-btn>
         |
         <v-btn
           style="background-color: transparent; color: whitesmoke"
@@ -137,7 +148,7 @@
           flat
           v-on:click="navContactUs"
         >
-          Contact Us</v-btn
+          Contact Us          </v-btn
         >
       </v-row>
     </v-footer>

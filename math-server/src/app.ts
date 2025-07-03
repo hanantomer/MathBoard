@@ -177,6 +177,7 @@ async function validateHeaderAuthentication(
 
     if (req.url.indexOf("/api/auth") == 0) {
          res.status(200).json(user);
+         return false; // Prevent further response
      }
 
     req.headers.userId = user?.id?.toString();

@@ -2,7 +2,6 @@ import { useUserStore } from "../store/pinia/userStore";
 import { useNotationStore } from "../store/pinia/notationStore";
 import { useCellStore } from "../store/pinia/cellStore";
 
-
 import useNotationMutationHelper from "./notationMutateHelper";
 import useEventBus from "../helpers/eventBusHelper";
 import {
@@ -14,6 +13,7 @@ import {
   SlopeLineNotationAttributes,
   CurveNotationAttributes,
   SqrtNotationAttributes,
+  CellAttributes,
 } from "common/baseTypes";
 
 import useSelectionHelper from "../helpers/selectionHelper";
@@ -46,10 +46,17 @@ export default function eventHelper() {
       e.clipboardData?.items.length &&
       e.clipboardData?.items[0].kind === "string" &&
       e.clipboardData?.types[0].match("^text/plain")
-    )
+    ) {
       return pasteText(e);
+    }
 
-    if (e.clipboardData?.types[0] === "Files") return pasteImage(e);
+    // Support both Files and Google Docs images (which may come as text/html)
+    if (
+      e.clipboardData?.types.includes("Files") ||
+      e.clipboardData?.types.includes("text/html")
+    ) {
+      return pasteImage(e);
+    }
   }
 
   async function pasteNotations() {
@@ -183,7 +190,6 @@ export default function eventHelper() {
           { row: currentRow, col: currentCol },
           false,
         );
-
       } else if (c.trim().length !== 0) {
         notationMutationHelper.addSymbolNotation(c);
         // Move to next column
@@ -192,51 +198,171 @@ export default function eventHelper() {
     });
   }
 
-  async function pasteImage(e: ClipboardEvent) {
-    // disallow adding image by student
-    if (!userStore.isTeacher) return;
-    if (!cellStore.getSelectedCell()) return;
+  async function pasteImage(e: ClipboardEvent): Promise<void> {
+    if (!userStore.isTeacher || !cellStore.getSelectedCell()) return;
 
     try {
       window.focus();
-      const clipboardItems = await navigator.clipboard.read();
-      for (const clipboardItem of clipboardItems) {
-        const imageTypes = clipboardItem.types.find((type) =>
-          type.startsWith("image/"),
-        );
-        if (imageTypes) {
-          const blob = await clipboardItem.getType(imageTypes);
-          if (!blob) return;
-          const url = URL.createObjectURL(blob);
-          const base64 = await convertBlobToBase64(blob);
-          let image: HTMLImageElement = new Image();
-          image.onload = () => {
-            let fromCol = cellStore.getSelectedCell()?.col;
-            let fromRow = cellStore.getSelectedCell()?.row;
-            if (!fromCol || !fromRow) return;
-            let toCol =
-              Math.ceil(image.width / cellStore.getCellHorizontalWidth()) +
-              fromCol;
-            let toRow =
-              Math.ceil(image.height / cellStore.getCellVerticalHeight()) +
-              fromRow;
+      let htmlData: string | null = null;
 
-            notationMutationHelper.addImageNotation(
-              fromCol,
-              toCol,
-              fromRow,
-              toRow,
-              base64,
+      // Log available clipboard MIME types for debugging
+      if (e.clipboardData) {
+        console.debug("Clipboard MIME types:", e.clipboardData.types);
+        htmlData = e.clipboardData.getData("text/html");
+      }
+
+      // First, try the Clipboard API
+      if (navigator.clipboard?.read) {
+        console.debug("Attempting Clipboard API read...");
+        const clipboardItems = await navigator.clipboard.read();
+        for (const clipboardItem of clipboardItems) {
+          console.debug("Clipboard item types:", clipboardItem.types);
+          const imageType = clipboardItem.types.find((type: string) =>
+            type.startsWith("image/"),
+          );
+          if (imageType) {
+            console.debug("Found image type:", imageType);
+            const blob: Blob = await clipboardItem.getType(imageType);
+            if (!blob) return;
+            const base64: string = await convertBlobToBase64(blob);
+            await processImage(base64);
+            return;
+          }
+          const htmlType = clipboardItem.types.find((type: string) =>
+            type.startsWith("text/html"),
+          );
+          if (htmlType && e.clipboardData) {
+            console.debug("Found html type:", htmlType);
+            if (htmlData) {
+              console.debug("HTML Clipboard Data:", htmlData);
+              const match: RegExpMatchArray | null = htmlData.match(
+                /<img[^>]+src=["']([^"']+)["']/i,
+              );
+              if (match && match[1]) {
+                console.debug("Found image src in HTML:", match[1]);
+                const src: string = match[1];
+                const base64: string = src.startsWith("data:image/")
+                  ? src
+                  : await fetchImageAsBase64(src);
+                await processImage(base64);
+                return;
+              } else {
+                console.warn("No image found in HTML clipboard data");
+              }
+            }
+          }
+        }
+        console.debug("No image found in Clipboard API");
+      } else {
+        console.debug("Clipboard API not available");
+      }
+
+      // Fallback: Handle clipboard data from event
+
+      if (e.clipboardData) {
+        // Check for binary image data
+        const items: DataTransferItemList = e.clipboardData.items;
+        for (const item of Array.from(items)) {
+          if (item.type.startsWith("image/")) {
+            console.debug("Found binary image in clipboard, type:", item.type);
+            const blob: File | null = item.getAsFile();
+            if (blob) {
+              const base64: string = await convertBlobToBase64(blob);
+              await processImage(base64);
+              return;
+            }
+          }
+        }
+
+        // Check for base64 or URL in text/html
+        const htmlData: string = e.clipboardData.getData("text/html");
+
+        if (htmlData) {
+          console.debug("HTML Clipboard Data:", htmlData);
+          const match: RegExpMatchArray | null = htmlData.match(
+            /<img[^>]+src=["']([^"']+)["']/i,
+          );
+          if (match && match[1]) {
+            console.debug("Found image src in HTML:", match[1]);
+            const src: string = match[1];
+            const base64: string = src.startsWith("data:image/")
+              ? src
+              : await fetchImageAsBase64(src);
+            await processImage(base64);
+            return;
+          } else {
+            console.warn("No image found in HTML clipboard data");
+          }
+        } else {
+          console.warn("No HTML clipboard data available");
+        }
+
+        // Additional debugging: Check other MIME types
+        for (const type of e.clipboardData.types) {
+          if (type !== "text/html" && !type.startsWith("image/")) {
+            console.debug(
+              `Clipboard data for type ${type}:`,
+              e.clipboardData.getData(type),
             );
-          };
-          image.src = base64.toString();
-          image.onerror = () => {
-            console.error("Error loading image from clipboard");
-          };
+          }
         }
       }
-    } catch (err: any) {
-      console.error(err.name, err.message);
+    } catch (err: unknown) {
+      const error = err as Error;
+      console.error(
+        "Paste image error:",
+        error.name,
+        error.message,
+        error.stack,
+      );
+    }
+  }
+
+  // Helper function to process the image
+  async function processImage(base64: string): Promise<void> {
+    const image: HTMLImageElement = new Image();
+    return new Promise<void>((resolve, reject) => {
+      image.onload = () => {
+        const selectedCell: CellAttributes | null = cellStore.getSelectedCell();
+        if (!selectedCell) {
+          reject(new Error("No selected cell"));
+          return;
+        }
+        const { col: fromCol, row: fromRow } = selectedCell;
+        const toCol: number =
+          Math.ceil(image.width / cellStore.getCellHorizontalWidth()) + fromCol;
+        const toRow: number =
+          Math.ceil(image.height / cellStore.getCellVerticalHeight()) + fromRow;
+
+        notationMutationHelper.addImageNotation(
+          fromCol,
+          toCol,
+          fromRow,
+          toRow,
+          base64,
+        );
+        resolve();
+      };
+      image.onerror = () => {
+        console.error("Error loading image from base64");
+        reject(new Error("Failed to load image"));
+      };
+      image.src = base64;
+    });
+  }
+
+  // Fetch image from URL and convert to Base64
+  async function fetchImageAsBase64(url: string): Promise<string> {
+    try {
+      const response: Response = await fetch(url);
+      if (!response.ok)
+        throw new Error(`HTTP error! status: ${response.status}`);
+      const blob: Blob = await response.blob();
+      return await convertBlobToBase64(blob);
+    } catch (err: unknown) {
+      const error = err as Error;
+      console.error("Failed to fetch image:", error.message);
+      throw error;
     }
   }
 
