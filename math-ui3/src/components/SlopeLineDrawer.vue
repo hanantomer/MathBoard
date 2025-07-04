@@ -266,7 +266,7 @@ function endDrawing() {
   editModeStore.setDefaultEditMode();
 }
 
-function saveSlopeLine() {
+function saveSlopeLine(fixEdge: boolean = true) {
   if (
     linePosition.value.p1x === 0 &&
     linePosition.value.p1y === 0 &&
@@ -283,8 +283,10 @@ function saveSlopeLine() {
     return;
   }
 
-  fixLineLeftEdge(linePosition.value);
-  fixLineRightEdge(linePosition.value);
+  if (fixEdge) {
+    fixLineLeftEdge(linePosition.value);
+    fixLineRightEdge(linePosition.value);
+  }
 
   if (notationStore.getSelectedNotations().length > 0) {
     let updatedLine = {
@@ -368,11 +370,20 @@ function fixLineLeftEdge(linePosition: SlopeLineAttributes) {
   }
 }
 
+function applyMoveToLine(dx: number, dy: number) {
+  linePosition.value.p1y += dy;
+  linePosition.value.p2y += dy;
+  linePosition.value.p1x += dx;
+  linePosition.value.p2x += dx;
+}
+
 function moveLine(moveX: number, moveY: number) {
-  linePosition.value.p1y += moveY;
-  linePosition.value.p2y += moveY;
-  linePosition.value.p1x += moveX;
-  linePosition.value.p2x += moveX;
-  saveSlopeLine;
+  applyMoveToLine(moveX, moveY);
+  saveSlopeLine();
+}
+
+function moveLineByKey(moveX: number, moveY: number) {
+  applyMoveToLine(moveX, moveY);
+  saveSlopeLine(false);
 }
 </script>

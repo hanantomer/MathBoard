@@ -205,7 +205,7 @@ app.all("/*", async function (req: Request, res, next) {
         req.headers.authorization!.toString()
     );
 
-    if (userId === userFromHeader?.id) {
+    if (userFromHeader?.userType === 'TEACHER' ||  userId === userFromHeader?.id) {
         next();
     }
 });
