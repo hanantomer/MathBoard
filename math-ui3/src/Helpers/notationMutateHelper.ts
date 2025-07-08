@@ -8,17 +8,17 @@ import {
   NotationCreationAttributes,
   HorizontalLineNotationAttributes,
   VerticalLineNotationAttributes,
-  SlopeLineNotationAttributes,
+  LineNotationAttributes,
   CurveAttributes,
   CircleAttributes,
   HorizontalLineAttributes,
   VerticalLineAttributes,
-  SlopeLineAttributes,
+  LineAttributes,
   CurveNotationAttributes,
   CircleNotationAttributes,
   HorizontalLineNotationCreationAttributes,
   VerticalLineNotationCreationAttributes,
-  SlopeLineNotationCreationAttributes,
+  LineNotationCreationAttributes,
   CurveNotationCreationAttributes,
   CircleNotationCreationAttributes,
   ExponentNotationCreationAttributes,
@@ -259,44 +259,8 @@ export default function notationMutateHelper() {
       }
 
       switch (n.notationType) {
-        case "HORIZONTALLINE": {
-          const n1 = n as HorizontalLineNotationAttributes;
-          if (n1.p2x + deltaCol * getColWidth() > getMostRightCoordinate()) {
-            return false;
-          }
-
-          if (n1.p1x + deltaCol * getColWidth() < 1) return false;
-
-          if (n1.py + deltaRow * getRowHeight() > getMostBottomCoordinate()) {
-            return false;
-          }
-
-          if (n1.p2x + deltaCol * getColWidth() < 1) {
-            return false;
-          }
-        }
-
-        case "VERTICALLINE": {
-          const n1 = n as VerticalLineNotationAttributes;
-          if (n1.px + deltaCol * getColWidth() > getMostRightCoordinate()) {
-            return false;
-          }
-
-          if (n1.p2y + deltaRow * getRowHeight() > matrixDimensions.rowsNum) {
-            return false;
-          }
-
-          if (n1.p1y + deltaRow * getRowHeight() < 1) {
-            return false;
-          }
-
-          if (n1.p2y + deltaRow * getRowHeight() > getMostBottomCoordinate()) {
-            return false;
-          }
-        }
-
-        case "SLOPELINE": {
-          const n1 = n as SlopeLineNotationAttributes;
+        case "LINE": {
+          const n1 = n as LineNotationAttributes;
           if (n1.p2x + deltaCol * getColWidth() > getMostRightCoordinate()) {
             return false;
           }
@@ -348,23 +312,11 @@ export default function notationMutateHelper() {
   ): boolean {
     notationStore.getSelectedNotations().forEach((n: NotationAttributes) => {
       switch (n.notationType) {
-        case "HORIZONTALLINE": {
-          (n as HorizontalLineNotationAttributes).p1x += deltaX;
-          (n as HorizontalLineNotationAttributes).p2x += deltaX;
-          (n as HorizontalLineNotationAttributes).py += deltaY;
-          break;
-        }
-        case "VERTICALLINE": {
-          (n as VerticalLineNotationAttributes).px += deltaX;
-          (n as VerticalLineNotationAttributes).p1y += deltaY;
-          (n as VerticalLineNotationAttributes).p2y += deltaY;
-          break;
-        }
-        case "SLOPELINE": {
-          (n as SlopeLineNotationAttributes).p1x += deltaX;
-          (n as SlopeLineNotationAttributes).p2x += deltaX;
-          (n as SlopeLineNotationAttributes).p1y += deltaY;
-          (n as SlopeLineNotationAttributes).p2y += deltaY;
+        case "LINE": {
+          (n as LineNotationAttributes).p1x += deltaX;
+          (n as LineNotationAttributes).p2x += deltaX;
+          (n as LineNotationAttributes).p1y += deltaY;
+          (n as LineNotationAttributes).p2y += deltaY;
           break;
         }
         case "CURVE": {
@@ -415,11 +367,11 @@ export default function notationMutateHelper() {
           (n as PointNotationAttributes).row += deltaRow;
           break;
         }
-        case "SLOPELINE":
-          (n as unknown as SlopeLineAttributes).p1x += deltaX;
-          (n as unknown as SlopeLineAttributes).p2x += deltaX;
-          (n as unknown as SlopeLineAttributes).p1y += deltaY;
-          (n as unknown as SlopeLineAttributes).p2y += deltaY;
+        case "LINE":
+          (n as unknown as LineAttributes).p1x += deltaX;
+          (n as unknown as LineAttributes).p2x += deltaX;
+          (n as unknown as LineAttributes).p1y += deltaY;
+          (n as unknown as LineAttributes).p2y += deltaY;
           break;
 
         case "ANNOTATION":
@@ -691,10 +643,8 @@ export default function notationMutateHelper() {
     userOutgoingOperations.syncOutgoingUpdateNotation(lineNotation);
   }
 
-  async function updateSlopeLineNotation(
-    lineNotation: SlopeLineNotationAttributes,
-  ) {
-    await apiHelper.updateSlopeLineNotationAttributes(lineNotation);
+  async function updateLineNotation(lineNotation: LineNotationAttributes) {
+    await apiHelper.updateLineNotationAttributes(lineNotation);
     notationStore.addNotation(lineNotation, true);
     userOutgoingOperations.syncOutgoingUpdateNotation(lineNotation);
   }
@@ -738,11 +688,18 @@ export default function notationMutateHelper() {
   }
 
   function addLineNotation(
-    notation:
-      | HorizontalLineNotationCreationAttributes
-      | VerticalLineNotationCreationAttributes
-      | SlopeLineNotationCreationAttributes,
+   lineAttributes: LineAttributes,
   ) {
+
+    let lineNotation: LineNotationCreationAttributes = {
+      ...lineAttributes,
+      boardType: notationStore.getParent().type,
+      parentUUId: notationStore.getParent().uuid,
+      notationType: "LINE",
+      user: userStore.getCurrentUser()!,
+    };
+
+
     // allow adding more lines if polygon
     if (editModeStore.getEditMode() === "POLYGON_DRAWING") {
       editModeStore.setEditMode("POLYGON_STARTED");
@@ -750,33 +707,16 @@ export default function notationMutateHelper() {
 
     notationStore.resetSelectedNotations();
 
-    // let overlappedAnyTypeNotation: NotationAttributes | undefined =
-    //   findOverlapNotationsOfAnyTypeButLine(notation);
-
-    // // don't allow override of other type notation
-    // if (overlappedAnyTypeNotation) {
-    //   return;
-    // }
-
-    addNotation(notation);
+    addNotation(lineNotation);
   }
 
   ///TODO : check if real needed or just one upsert notation for all types
   function upsertSqrtNotation(notation: SqrtNotationCreationAttributes) {
-    //    editModeStore.setDefaultEditMode();
+
     notationStore.resetSelectedNotations();
-
-    //let overlappedAnyTypeNotation: NotationAttributes | undefined =
-    //  findOverlapNotationsOfAnyTypeButLine(notation);
-
-    // don't allow override of other type notation
-    //if (overlappedAnyTypeNotation) {
-    //  return;
-    //}
 
     addNotation(notation);
   }
-
 
   function upsertRectNotation(newNotation: RectNotationCreationAttributes) {
     //    editModeStore.setDefaultEditMode();
@@ -858,29 +798,9 @@ export default function notationMutateHelper() {
         ).value;
         break;
       }
-      case "HORIZONTALLINE": {
-        const n1 = existingNotation as HorizontalLineNotationAttributes;
-        const n = notation as HorizontalLineNotationAttributes;
-
-        n1.p1x = n.p1x;
-        n1.p2x = n.p2x;
-        n1.py = n.py;
-
-        break;
-      }
-      case "VERTICALLINE": {
-        const n1 = existingNotation as VerticalLineNotationAttributes;
-        const n = notation as VerticalLineNotationAttributes;
-
-        n1.p1y = n.p1y;
-        n1.p2y = n.p2y;
-        n1.px = n.px;
-
-        break;
-      }
-      case "SLOPELINE": {
-        const n1 = existingNotation as SlopeLineNotationAttributes;
-        const n = notation as SlopeLineNotationAttributes;
+       case "LINE": {
+        const n1 = existingNotation as LineNotationAttributes;
+        const n = notation as LineNotationAttributes;
 
         n1.p1x = n.p1x;
         n1.p2x = n.p2x;
@@ -1164,60 +1084,9 @@ export default function notationMutateHelper() {
     upsertSqrtNotation(sqrtNotation);
   }
 
-  function addHorizontalLineNotation(
-    horizontalLineAttributes: HorizontalLineAttributes,
-    notationType: NotationType,
-  ) {
-    transposeHorizontalCoordinatesIfNeeded(horizontalLineAttributes);
-
-    let lineNotation: HorizontalLineNotationCreationAttributes = {
-      p1x: horizontalLineAttributes.p1x,
-      p2x: horizontalLineAttributes.p2x,
-      py: horizontalLineAttributes.py,
-      boardType: notationStore.getParent().type,
-      parentUUId: notationStore.getParent().uuid,
-      notationType: notationType,
-      user: userStore.getCurrentUser()!,
-    };
-
-    addLineNotation(lineNotation);
-  }
-
-  function addVerticalLineNotation(
-    verticalLineAttributes: VerticalLineAttributes,
-    notationType: NotationType,
-  ) {
-    transposeVerticalCoordinatesIfNeeded(verticalLineAttributes);
-
-    let notation: VerticalLineNotationCreationAttributes = {
-      px: verticalLineAttributes.px,
-      p1y: verticalLineAttributes.p1y,
-      p2y: verticalLineAttributes.p2y,
-      boardType: notationStore.getParent().type,
-      parentUUId: notationStore.getParent().uuid,
-      notationType: notationType,
-      user: userStore.getCurrentUser()!,
-    };
-
-    addLineNotation(notation);
-  }
-
-  function addSlopeLineNotation(slopeLineAttributes: SlopeLineAttributes) {
-    let lineNotation: SlopeLineNotationCreationAttributes = {
-      p1x: slopeLineAttributes.p1x,
-      p2x: slopeLineAttributes.p2x,
-      p1y: slopeLineAttributes.p1y,
-      p2y: slopeLineAttributes.p2y,
-      boardType: notationStore.getParent().type,
-      parentUUId: notationStore.getParent().uuid,
-      notationType: "SLOPELINE",
-      user: userStore.getCurrentUser()!,
-    };
-    addLineNotation(lineNotation);
-  }
 
   async function addCurveNotation(
-    curveAttributes: CurveAttributes
+    curveAttributes: CurveAttributes,
   ): Promise<string> {
     let curveNotation: CurveNotationCreationAttributes = {
       p1x: curveAttributes.p1x,
@@ -1257,9 +1126,7 @@ export default function notationMutateHelper() {
 
     switch (notation.notationType) {
       case "SQRT":
-      case "HORIZONTALLINE":
-      case "VERTICALLINE":
-      case "SLOPELINE":
+      case "LINE":
         return addLineNotation(clonedNotation);
       case "CURVE":
         return addCurveNotation(clonedNotation);
@@ -1388,11 +1255,9 @@ export default function notationMutateHelper() {
   return {
     addCircleNotation,
     addCurveNotation,
-    addHorizontalLineNotation,
     addImageNotation,
     addMarkNotation,
-    addVerticalLineNotation,
-    addSlopeLineNotation,
+    addLineNotation,
     addSymbolNotation,
     addTextNotation,
     addAnnotationNotation,
@@ -1408,7 +1273,7 @@ export default function notationMutateHelper() {
     updateHorizontalLineNotation,
     updateSqrtNotation,
     updateVerticalLineNotation,
-    updateSlopeLineNotation,
+    updateLineNotation,
     updateCurveNotation,
     updateCircleNotation,
     updateNotation,

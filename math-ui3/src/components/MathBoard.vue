@@ -18,7 +18,7 @@
       <horizontalLineDrawer></horizontalLineDrawer>
       <sqrtDrawer></sqrtDrawer>
       <verticalLineDrawer></verticalLineDrawer>
-      <slopeLineDrawer></slopeLineDrawer>
+      <lineDrawer></lineDrawer>
       <curveDrawer></curveDrawer>
       <circleDrawer></circleDrawer>
       <v-sheet>
@@ -45,10 +45,8 @@ import useEventHelper from "../helpers/eventHelper";
 import leftToolbar from "./LeftToolbar.vue";
 import specialSymbolsToolbar from "./SpecialSymbolsToolbar.vue";
 import areaSelector from "./AreaSelector.vue";
-import horizontalLineDrawer from "./HorizontalLineDrawer.vue";
 import sqrtDrawer from "./SqrtDrawer.vue";
-import verticalLineDrawer from "./VerticalLineDrawer.vue";
-import slopeLineDrawer from "./SlopeLineDrawer.vue";
+import lineDrawer from "./LineDrawer.vue";
 import curveDrawer from "./CurveDrawer.vue";
 import circleDrawer from "./CircleDrawer.vue";
 import useWatchHelper from "../helpers/watchHelper";
@@ -104,9 +102,7 @@ watchHelper.watchMouseEvent(
 watchHelper.watchKeyEvent(
   [
     "CELL_SELECTED",
-    "HORIZONTAL_LINE_SELECTED",
-    "VERTICAL_LINE_SELECTED",
-    "SLOPE_LINE_SELECTED",
+    "LINE_SELECTED",
     "CURVE_SELECTED",
     "SQRT_SELECTED",
     "ANNOTATION_SELECTED",

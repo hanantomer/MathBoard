@@ -195,7 +195,7 @@ const modeButtons: Array<{
   {
     name: "slopeLine",
     show_condition: true,
-    editMode: "SLOPE_LINE_STARTED" as EditMode,
+    editMode: "LINE_STARTED" as EditMode,
     tooltip: "Line",
     icon_class: "material-symbols-outlined",
     icon: "horizontal_rule",

@@ -6,14 +6,14 @@ import Color from "../../color.model";
 import Answer from "../../answer/answer.model";
 import AnswerDecorator from "../../answer/answerDecorator";
 import {
-    AnswerSlopeLineAttributes,
-    AnswerSlopeLineCreationAttributes,
+    AnswerLineAttributes,
+    AnswerLineCreationAttributes,
 } from "../../../../../math-common/src/answerTypes";
 
 @AnswerDecorator("AnswerSlopeline")
-export default class AnswerSlopeLine extends Model<
-    AnswerSlopeLineAttributes,
-    AnswerSlopeLineCreationAttributes
+export default class AnswerLine extends Model<
+    AnswerLineAttributes,
+    AnswerLineCreationAttributes
 > {
     notationType = "SlopeLINE";
     boardType = "ANSWER";

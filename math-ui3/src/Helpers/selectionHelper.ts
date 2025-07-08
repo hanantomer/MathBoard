@@ -1,9 +1,7 @@
 import {
   RectCoordinates,
   DotCoordinates,
-  VerticalLineNotationAttributes,
-  HorizontalLineNotationAttributes,
-  SlopeLineNotationAttributes,
+  LineNotationAttributes,
   MultiCellAttributes,
   CellAttributes,
 } from "common/baseTypes";
@@ -68,37 +66,12 @@ export default function selectionHelper() {
         }
         break;
 
-      case "HORIZONTALLINE":
-        const horizontalLineNotation =
-          notation as HorizontalLineNotationAttributes;
-        if (
-          screenHelper.getClickedPosDistanceFromHorizontalLine(
-            dotCoordinates,
-            horizontalLineNotation,
-          ) < maxDistanceToSelect
-        ) {
-          selectLineNotation(notation.uuid);
-          return true;
-        }
-      case "VERTICALLINE":
-        const verticalLineNotation = notation as VerticalLineNotationAttributes;
-        if (
-          screenHelper.getClickedPosDistanceFromVerticalLine(
-            dotCoordinates,
-            verticalLineNotation,
-          ) < maxDistanceToSelect
-        ) {
-          selectLineNotation(notation.uuid);
-          return true;
-        }
-        return false;
-      case "SLOPELINE": {
-        const slopeLineNotation = notation as SlopeLineNotationAttributes;
-        const distanceFromLine =
-          screenHelper.getClickedPosDistanceFromSlopeLine(
-            dotCoordinates,
-            slopeLineNotation,
-          );
+      case "LINE": {
+        const slopeLineNotation = notation as LineNotationAttributes;
+        const distanceFromLine = screenHelper.getClickedPosDistanceFromLine(
+          dotCoordinates,
+          slopeLineNotation,
+        );
         if (distanceFromLine < maxDistanceToSelect) {
           selectLineNotation(notation.uuid);
           return true;
@@ -172,17 +145,10 @@ export default function selectionHelper() {
   function selectLineNotation(uuid: String) {
     const notation = notationStore.getNotation(uuid)!;
     switch (notation.notationType) {
-      case "HORIZONTALLINE":
-        editModeStore.setEditMode("HORIZONTAL_LINE_SELECTED");
-        eventBus.emit("EV_HORIZONTAL_LINE_SELECTED", notation);
-        break;
-      case "VERTICALLINE":
-        editModeStore.setEditMode("VERTICAL_LINE_SELECTED");
-        eventBus.emit("EV_VERTICAL_LINE_SELECTED", notation);
-        break;
-      case "SLOPELINE":
-        editModeStore.setEditMode("SLOPE_LINE_SELECTED");
-        eventBus.emit("EV_SLOPE_LINE_SELECTED", notation);
+
+      case "LINE":
+        editModeStore.setEditMode("LINE_SELECTED");
+        eventBus.emit("EV_LINE_SELECTED", notation);
         break;
     }
   }
@@ -209,9 +175,7 @@ export default function selectionHelper() {
     if (uuid) {
       const n = notationStore.getNotation(uuid)!;
       switch (n.notationType) {
-        case "HORIZONTALLINE":
-        case "SLOPELINE":
-        case "VERTICALLINE":
+        case "LINE":
           selectLineNotation(uuid);
           break;
         case "SQRT":

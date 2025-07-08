@@ -7,7 +7,7 @@ import {
   HorizontalLineAttributes,
   PointNotationAttributes,
   RectNotationAttributes,
-  SlopeLineNotationAttributes,
+  LineNotationAttributes,
   VerticalLineNotationAttributes,
   CircleNotationAttributes,
   RectAttributes,
@@ -348,9 +348,9 @@ export default function screenHelper() {
   }
 
   //https://en.wikipedia.org/wiki/Distance_from_a_point_to_a_line
-  function getClickedPosDistanceFromSlopeLine(
+  function getClickedPosDistanceFromLine(
     DotCoordinates: DotCoordinates,
-    n: SlopeLineNotationAttributes,
+    n: LineNotationAttributes,
   ): number {
     const x = DotCoordinates.x - cellStore.getSvgBoundingRect().left;
 
@@ -379,33 +379,13 @@ export default function screenHelper() {
       .filter((n) => n.uuid !== selectedNotationUUId)
       .filter(
         (n) =>
-          n.notationType === "HORIZONTALLINE" ||
-          n.notationType === "SLOPELINE" ||
-          n.notationType === "VERTICALLINE" ||
+          n.notationType === "LINE" ||
           n.notationType === "CIRCLE",
       )
       .forEach((n) => {
         switch (n.notationType) {
-          case "HORIZONTALLINE": {
-            const n1 = n as HorizontalLineNotationAttributes;
-            let distance = getClickedPosDistanceFromLineEdge(
-              dot,
-              n1.p1x,
-              n1.py,
-            );
-            if (distance < maxNotationDistance) {
-              nearPoint = { x: n1.p1x, y: n1.py };
-              return;
-            }
-            distance = getClickedPosDistanceFromLineEdge(dot, n1.p2x, n1.py);
-            if (distance < maxNotationDistance) {
-              nearPoint = { x: n1.p2x, y: n1.py };
-              return;
-            }
-            break;
-          }
-          case "SLOPELINE": {
-            const n1 = n as SlopeLineNotationAttributes;
+          case "LINE": {
+            const n1 = n as LineNotationAttributes;
             let distance = getClickedPosDistanceFromLineEdge(
               dot,
               n1.p1x,
@@ -418,24 +398,6 @@ export default function screenHelper() {
             distance = getClickedPosDistanceFromLineEdge(dot, n1.p2x, n1.p2y);
             if (distance < maxNotationDistance) {
               nearPoint = { x: n1.p2x, y: n1.p2y };
-              return;
-            }
-            break;
-          }
-          case "VERTICALLINE": {
-            const n1 = n as VerticalLineNotationAttributes;
-            let distance = getClickedPosDistanceFromLineEdge(
-              dot,
-              n1.px,
-              n1.p1y,
-            );
-            if (distance < maxNotationDistance) {
-              nearPoint = { x: n1.px, y: n1.p1y };
-              return;
-            }
-            distance = getClickedPosDistanceFromLineEdge(dot, n1.px, n1.p2y);
-            if (distance < maxNotationDistance) {
-              nearPoint = { x: n1.px, y: n1.p2y };
               return;
             }
             break;
@@ -559,7 +521,7 @@ export default function screenHelper() {
   }
 
   return {
-    getClickedPosDistanceFromSlopeLine,
+    getClickedPosDistanceFromLine,
     getClickedPosDistanceFromVerticalLine,
     getClickedPosDistanceFromHorizontalLine,
     getClickedPosDistanceFromExponent,

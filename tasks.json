@@ -1,0 +1,38 @@
+{
+    "version": "2.0.0",
+    
+        "tasks": [
+            {
+                "label": "clean server",
+                "type": "process",
+                "command": "c:/dev/MathBoard/math-server/clean.bat",
+                "args": [
+                    "/q",
+                    "/s"
+                ],
+                "echoCommand": true
+            },
+            {
+                "label": "build server",
+                "type": "typescript",
+                "dependsOn": [
+                    "clean server"
+                ],
+                "tsconfig": "tsconfig.json",
+                "problemMatcher": [
+                    "$tsc"
+                ],
+                "group": {
+                    "kind": "build",
+                    "isDefault": true
+                },
+            },
+            {
+                "type": "npm",
+                "script": "dev",
+                "problemMatcher": [],
+                "label": "npm: dev",
+                "detail": "node ./build/app.js"
+            }
+        ],
+}

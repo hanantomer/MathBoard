@@ -14,7 +14,7 @@ import {
     NotationAttributes,
     PointNotationAttributes,
     RectNotationAttributes,
-    SlopeLineNotationAttributes,
+    LineNotationAttributes,
     VerticalLineNotationAttributes,
     SqrtNotationAttributes
 } from "../../math-common/src/baseTypes";
@@ -657,14 +657,9 @@ export default function dbUtil() {
                     validateSqrtNotation(m);
                     break;
                 }
-                case "SLOPELINE": {
-                    const m = model as SlopeLineNotationAttributes;
-                    validateSlopeLineNotation(m);
-                    break;
-                }
-                case "VERTICALLINE": {
-                    const m = model as VerticalLineNotationAttributes;
-                    validateVerticalLineNotation(m);
+                case "LINE": {
+                    const m = model as LineNotationAttributes;
+                    validateLineNotation(m);
                     break;
                 }
                 case "CURVE": {
@@ -707,7 +702,7 @@ export default function dbUtil() {
         if (m.fromCol >= m.toCol) throw new Error(`fromCol (${m.fromCol}) must be < toCol (${m.toCol})`);
     }
 
-    function validateSlopeLineNotation(m: SlopeLineNotationAttributes): void {
+    function validateLineNotation(m: LineNotationAttributes): void {
         if (m.p1x < 0) throw new Error(`p1x must be >= 0, got ${m.p1x}`);
         if (m.p2x < 0) throw new Error(`p2x must be >= 0, got ${m.p2x}`);
         if (m.p1y < 0) throw new Error(`p1y must be >= 0, got ${m.p1y}`);

@@ -1,17 +1,13 @@
 import * as d3 from "d3";
 import {
   NotationAttributes,
-  HorizontalLineNotationAttributes,
-  SlopeLineNotationAttributes,
-  VerticalLineNotationAttributes,
+  LineNotationAttributes,
+
 } from "common/baseTypes";
 
 import useMatrixHelperUtils from "./matrixHelperUtils";
 const matrixHelperUtils = useMatrixHelperUtils();
 
-type LineNotationAttributes = HorizontalLineNotationAttributes &
-  VerticalLineNotationAttributes &
-  SlopeLineNotationAttributes;
 
 export default function useLineMatrixHelper() {
   function mergeLineNotations(svgId: string, notations: NotationAttributes[]) {
@@ -40,16 +36,16 @@ export default function useLineMatrixHelper() {
         return n.uuid;
       })
       .attr("x1", (n: LineNotationAttributes) => {
-        return n.px ?? n.p1x;
+        return n.p1x;
       })
       .attr("x2", (n: LineNotationAttributes) => {
-        return n.px ?? n.p2x;
+        return n.p2x;
       })
       .attr("y1", (n: LineNotationAttributes) => {
-        return n.py ?? n.p1y;
+        return n.p1y;
       })
       .attr("y2", (n: LineNotationAttributes) => {
-        return n.py ?? n.p2y;
+        return  n.p2y;
       })
       .attr("stroke-width", (n: LineNotationAttributes) => {
         return "2";
@@ -65,16 +61,16 @@ export default function useLineMatrixHelper() {
         return n.uuid;
       })
       .attr("x1", (n: LineNotationAttributes) => {
-        return n.px ?? n.p1x;
+        return n.p1x;
       })
       .attr("x2", (n: LineNotationAttributes) => {
-        return n.px ?? n.p2x;
+        return n.p2x;
       })
       .attr("y1", (n: LineNotationAttributes) => {
-        return n.py ?? n.p1y;
+        return n.p1y;
       })
       .attr("y2", (n: LineNotationAttributes) => {
-        return n.py ?? n.p2y;
+        return n.p2y;
       })
       .attr("stroke-width", () => {
         return 2;

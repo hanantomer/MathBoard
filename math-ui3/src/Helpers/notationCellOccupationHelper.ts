@@ -5,7 +5,7 @@ import {
   VerticalLineNotationAttributes,
   RectNotationAttributes,
   CurveNotationAttributes,
-  SlopeLineAttributes,
+  LineAttributes,
   MultiCellAttributes,
   CircleNotationAttributes,
   RectAttributes,
@@ -95,12 +95,14 @@ export default function notationCellOccupationHelper() {
     notation: AnnotationNotationAttributes,
     doRemove: boolean,
   ) {
-
     const col = Math.round(notation.x / cellStore.getCellHorizontalWidth());
     const row = Math.round(notation.y / cellStore.getCellVerticalHeight());
-    updatePointOccupationMatrix(matrix, { ...notation, col: col, row:row, followsFraction: false}, doRemove);
+    updatePointOccupationMatrix(
+      matrix,
+      { ...notation, col: col, row: row, followsFraction: false },
+      doRemove,
+    );
   }
-
 
   function updateVerticalLineOccupationMatrix(
     matrix: any,
@@ -134,9 +136,9 @@ export default function notationCellOccupationHelper() {
   }
 
   /// populate occupation matrix to encompass the sloped line
-  function updateSlopeLineOccupationMatrix(
+  function updateLineOccupationMatrix(
     matrix: any,
-    notation: SlopeLineAttributes,
+    notation: LineAttributes,
     uuid: string,
     doRemove: boolean,
   ) {
@@ -200,7 +202,7 @@ export default function notationCellOccupationHelper() {
     // get curve-enclosing-triangle and mark all cells intersecting
     // with the edges which emerge from the control point
 
-    updateSlopeLineOccupationMatrix(
+    updateLineOccupationMatrix(
       matrix,
       {
         p1x: notation.p1x,
@@ -212,7 +214,7 @@ export default function notationCellOccupationHelper() {
       doRemove,
     );
 
-    updateSlopeLineOccupationMatrix(
+    updateLineOccupationMatrix(
       matrix,
       {
         p1x: notation.p2x,
@@ -285,7 +287,7 @@ export default function notationCellOccupationHelper() {
     updateMultiCellOccupationMatrix,
     updateHorizontalLineOccupationMatrix,
     updateVerticalLineOccupationMatrix,
-    updateSlopeLineOccupationMatrix,
+    updateLineOccupationMatrix,
     updateCurveOccupationMatrix,
     updateCircleOccupationMatrix,
     updateRectOccupationMatrix,

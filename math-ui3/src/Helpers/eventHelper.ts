@@ -10,7 +10,7 @@ import {
   RectNotationAttributes,
   HorizontalLineNotationAttributes,
   VerticalLineNotationAttributes,
-  SlopeLineNotationAttributes,
+  LineNotationAttributes,
   CurveNotationAttributes,
   SqrtNotationAttributes,
   CellAttributes,
@@ -83,16 +83,6 @@ export default function eventHelper() {
           break;
         }
 
-        case "HORIZONTALLINE": {
-          let n1 = { ...n } as HorizontalLineNotationAttributes;
-          const lineWidth = n1.p2x - n1.p1x;
-          n1.p1x = selectedCell.col * cellStore.getCellHorizontalWidth();
-          n1.p2x = n1.p1x + lineWidth;
-          n1.py = selectedCell.row * cellStore.getCellVerticalHeight();
-          notationMutationHelper.cloneNotation(n1);
-          break;
-        }
-
         case "SQRT": {
           let n1 = { ...n } as SqrtNotationAttributes;
           const numCols = n1.toCol - n1.fromCol;
@@ -103,18 +93,9 @@ export default function eventHelper() {
           break;
         }
 
-        case "VERTICALLINE": {
-          let n1 = { ...n } as VerticalLineNotationAttributes;
-          const lineHeight = n1.p2y - n1.p1y;
-          n1.p1y = selectedCell.row * cellStore.getCellVerticalHeight();
-          n1.p2y = n1.p1y + lineHeight;
-          n1.px = selectedCell.col * cellStore.getCellHorizontalWidth();
-          notationMutationHelper.cloneNotation(n1);
-          break;
-        }
 
-        case "SLOPELINE": {
-          let n1 = { ...n } as SlopeLineNotationAttributes;
+        case "LINE": {
+          let n1 = { ...n } as LineNotationAttributes;
           const lineWidth = n1.p2x - n1.p1x;
           const lineHeight = n1.p2y - n1.p1y;
           n1.p1x = selectedCell.col * cellStore.getCellHorizontalWidth();
@@ -180,6 +161,8 @@ export default function eventHelper() {
     let text = await navigator.clipboard.readText();
     if (!text) return;
 
+    const maxtotalNotationsToPaet = 30;
+    let totalNotationsPasted = 0;
     text.split("").forEach((c) => {
       if (c === "\n") {
         // Move to next row and reset column
@@ -192,6 +175,10 @@ export default function eventHelper() {
         );
       } else if (c.trim().length !== 0) {
         notationMutationHelper.addSymbolNotation(c);
+        totalNotationsPasted++;
+        if (totalNotationsPasted >= maxtotalNotationsToPaet) {
+          return;
+        }
         // Move to next column
         currentCol++;
       }

@@ -11,7 +11,7 @@ import {
   RectNotationAttributes,
   HorizontalLineNotationAttributes,
   VerticalLineNotationAttributes,
-  SlopeLineNotationAttributes,
+  LineNotationAttributes,
   CurveNotationAttributes,
   CircleNotationAttributes,
   isRect,
@@ -322,21 +322,9 @@ export const useNotationStore = defineStore("notation", () => {
             rect,
           );
           break;
-        case "HORIZONTALLINE":
-          doIntersects = checkHorizontalLineIntersection(
-            l as HorizontalLineNotationAttributes,
-            rect,
-          );
-          break;
-        case "VERTICALLINE":
-          doIntersects = checkVerticalLineIntersection(
-            l as VerticalLineNotationAttributes,
-            rect,
-          );
-          break;
-        case "SLOPELINE":
-          doIntersects = checkSlopeLineIntersection(
-            l as SlopeLineNotationAttributes,
+        case "LINE":
+          doIntersects = checkLineIntersection(
+            l as LineNotationAttributes,
             rect,
           );
           break;
@@ -387,8 +375,8 @@ export const useNotationStore = defineStore("notation", () => {
     return true;
   }
 
-  function checkSlopeLineIntersection(
-    line: SlopeLineNotationAttributes,
+  function checkLineIntersection(
+    line: LineNotationAttributes,
     rect: RectCoordinates,
   ): boolean {
     if (line.p2x < rect.topLeft.x) return false; // line left of rect

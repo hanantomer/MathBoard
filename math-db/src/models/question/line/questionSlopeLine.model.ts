@@ -6,14 +6,14 @@ import Color from "../../color.model";
 import Question from "../../question/question.model";
 import QuestionDecorator from "../../question/questionDecorator";
 import {
-    QuestionSlopeLineAttributes,
-    QuestionSlopeLineCreationAttributes,
+    QuestionLineAttributes,
+    QuestionLineCreationAttributes,
 } from "../../../../../math-common/src/questionTypes";
 
-@QuestionDecorator("QuestionSlopeLine")
-export default class QuestionSlopeLine extends Model<
-    QuestionSlopeLineAttributes,
-    QuestionSlopeLineCreationAttributes
+@QuestionDecorator("QuestionLine")
+export default class QuestionLine extends Model<
+    QuestionLineAttributes,
+    QuestionLineCreationAttributes
 > {
     notationType = "SlopeLINE";
     boardType = "ANSWER";

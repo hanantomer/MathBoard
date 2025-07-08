@@ -56,9 +56,7 @@ const selectionHelper = useSelectionHelper();
 let lineTypes: Array<NotationType> = [
   "CURVE",
   "CIRCLE",
-  "HORIZONTALLINE",
-  "VERTICALLINE",
-  "SLOPELINE",
+  "LINE",
   "ANNOTATION",
 ];
 

@@ -2,56 +2,56 @@
   <div v-show="show">
     <lineWatcher
       :startEntry="{
-        editMode: ['SLOPE_LINE_STARTED', 'POLYGON_STARTED'],
+        editMode: ['LINE_STARTED', 'POLYGON_STARTED'],
         func: setInitialPosition,
       }"
       :drawEntry="{
-        editMode: ['SLOPE_LINE_DRAWING', 'POLYGON_DRAWING'],
+        editMode: ['LINE_DRAWING', 'POLYGON_DRAWING'],
         func: drawLine,
       }"
       :editEntryFirstHandle="{
-        editMode: ['SLOPE_LINE_EDITING_LEFT'],
+        editMode: ['LINE_EDITING_LEFT'],
         func: modifyLineLeft,
       }"
       :editEntrySecondHandle="{
-        editMode: ['SLOPE_LINE_EDITING_RIGHT'],
+        editMode: ['LINE_EDITING_RIGHT'],
         func: modifyLineRight,
       }"
       :endEntry="{
         editMode: [
-          'SLOPE_LINE_DRAWING',
-          'SLOPE_LINE_EDITING_RIGHT',
-          'SLOPE_LINE_EDITING_LEFT',
-          'SLOPE_LINE_SELECTED',
+          'LINE_DRAWING',
+          'LINE_EDITING_RIGHT',
+          'LINE_EDITING_LEFT',
+          'LINE_SELECTED',
           'POLYGON_DRAWING',
         ],
         func: endDrawing,
       }"
       :selectEntry="{
-        editMode: ['SLOPE_LINE_SELECTED'],
+        editMode: ['LINE_SELECTED'],
         func: selectLine,
-        event: 'EV_SLOPE_LINE_SELECTED', ///TODO handle polygon
+        event: 'EV_LINE_SELECTED', ///TODO handle polygon
       }"
       :moveByKeyEntry="{
-        editMode: ['SLOPE_LINE_SELECTED'],
+        editMode: ['LINE_SELECTED'],
         func: moveLine,
       }"
       :endSelectionEntry="{
-        editMode: ['SLOPE_LINE_SELECTED'],
+        editMode: ['LINE_SELECTED'],
       }"
     />
 
     <line-handle
-      drawing-mode="SLOPE_LINE_DRAWING"
-      editing-mode="SLOPE_LINE_EDITING_LEFT"
+      drawing-mode="LINE_DRAWING"
+      editing-mode="LINE_EDITING_LEFT"
       v-bind:style="{
         left: handleLeft + 'px',
         top: handleTop + 'px',
       }"
     ></line-handle>
     <line-handle
-      drawing-mode="SLOPE_LINE_DRAWING"
-      editing-mode="SLOPE_LINE_EDITING_RIGHT"
+      drawing-mode="LINE_DRAWING"
+      editing-mode="LINE_EDITING_RIGHT"
       v-bind:style="{
         left: handleRight + 'px',
         top: handleBottom + 'px',
@@ -75,23 +75,25 @@
   </div>
 </template>
 <script setup lang="ts">
-import { computed, ref } from "vue";
+import { computed, ref, watch } from "vue";
 import { useCellStore } from "../store/pinia/cellStore";
 import { useEditModeStore } from "../store/pinia/editModeStore";
 import { useNotationStore } from "../store/pinia/notationStore";
 import {
   SlopeType,
-  SlopeLineAttributes,
+  LineAttributes,
   MovementDirection,
   DotCoordinates,
-  SlopeLineNotationAttributes,
+  LineNotationAttributes,
   NotationAttributes,
 } from "../../../math-common/src/baseTypes";
+import useEventBus from "../helpers/eventBusHelper";
 import lineWatcher from "./LineWatcher.vue";
 import lineHandle from "./LineHandle.vue";
 import useScreenHelper from "../helpers/screenHelper"; // Add this line
 import useNotationMutateHelper from "../helpers/notationMutateHelper"; // Add this line
 
+const eventBus = useEventBus();
 const editModeStore = useEditModeStore();
 const notationStore = useNotationStore();
 const cellStore = useCellStore();
@@ -110,20 +112,36 @@ let movementDirection: MovementDirection = "NONE";
 
 let slopeType: SlopeType = "NONE";
 
-const linePosition = ref<SlopeLineAttributes>({
+const linePosition = ref<LineAttributes>({
   p1x: 0,
   p2x: 0,
   p1y: 0,
   p2y: 0,
 });
 
+// watch
+// Watch for any change in linePosition's properties
+watch(
+  linePosition,
+  (newVal) => {
+    const height = Math.round(
+      Math.abs(newVal.p2y - newVal.p1y) / cellStore.getCellHorizontalWidth(),
+    );
+    const width = Math.round(
+      Math.abs(newVal.p2x - newVal.p1x) / cellStore.getCellHorizontalWidth(),
+    );
+    const LineStatus = `Line width: ${width}, Line height: ${height}`;
+    eventBus.emit("EV_LINE_CHANGED", LineStatus);
+  },
+  { deep: true },
+);
 // computed
 
 const show = computed(() => {
   return (
-    editModeStore.isSlopeLineDrawingMode() ||
-    editModeStore.isSlopeLineSelectedMode() ||
-    editModeStore.isSlopeLineEditingMode()
+    editModeStore.isLineDrawingMode() ||
+    editModeStore.isLineSelectedMode() ||
+    editModeStore.isLineEditingMode()
   );
 });
 
@@ -192,7 +210,7 @@ function handlePolygonTimer(p: DotCoordinates) {
 
   // Start new timer
   drawingTimer = window.setTimeout(() => {
-    saveSlopeLine();
+    saveLine();
     setInitialPosition(p);
     editModeStore.setNextEditMode();
     drawingTimer = null;
@@ -200,7 +218,7 @@ function handlePolygonTimer(p: DotCoordinates) {
 }
 
 function selectLine(notation: NotationAttributes) {
-  const n = notation as SlopeLineNotationAttributes;
+  const n = notation as LineNotationAttributes;
 
   slopeType = getSlopeTypeForExistingLine(n);
 
@@ -237,9 +255,7 @@ function getSlopeTypeForNewLine(xPos: number, yPos: number): SlopeType {
   return "NEGATIVE";
 }
 
-function getSlopeTypeForExistingLine(
-  slopeLine: SlopeLineAttributes,
-): SlopeType {
+function getSlopeTypeForExistingLine(slopeLine: LineAttributes): SlopeType {
   return slopeLine.p2y < slopeLine.p1y ? "POSITIVE" : "NEGATIVE";
 }
 
@@ -256,17 +272,14 @@ function endDrawing() {
     drawingTimer = null;
   }
 
-  if (
-    editModeStore.isSlopeLineDrawingMode() ||
-    editModeStore.isSlopeLineEditingMode()
-  ) {
-    saveSlopeLine();
+  if (editModeStore.isLineDrawingMode() || editModeStore.isLineEditingMode()) {
+    saveLine();
   }
 
   editModeStore.setDefaultEditMode();
 }
 
-function saveSlopeLine(fixEdge: boolean = true) {
+function saveLine(fixEdge: boolean = true) {
   if (
     linePosition.value.p1x === 0 &&
     linePosition.value.p1y === 0 &&
@@ -294,15 +307,15 @@ function saveSlopeLine(fixEdge: boolean = true) {
       ...linePosition.value,
     };
 
-    notationMutateHelper.updateSlopeLineNotation(
-      updatedLine as SlopeLineNotationAttributes,
+    notationMutateHelper.updateLineNotation(
+      updatedLine as LineNotationAttributes,
     );
   } else {
-    notationMutateHelper.addSlopeLineNotation(linePosition.value);
+    notationMutateHelper.addLineNotation(linePosition.value);
   }
 }
 
-function fixLineRightEdge(linePosition: SlopeLineAttributes) {
+function fixLineRightEdge(linePosition: LineAttributes) {
   const lineRightPosition = {
     x: linePosition.p2x,
     y: linePosition.p2y,
@@ -336,7 +349,7 @@ function fixLineRightEdge(linePosition: SlopeLineAttributes) {
   }
 }
 
-function fixLineLeftEdge(linePosition: SlopeLineAttributes) {
+function fixLineLeftEdge(linePosition: LineAttributes) {
   const lineLeftPosition = {
     x: linePosition.p1x,
     y: linePosition.p1y,
@@ -379,11 +392,11 @@ function applyMoveToLine(dx: number, dy: number) {
 
 function moveLine(moveX: number, moveY: number) {
   applyMoveToLine(moveX, moveY);
-  saveSlopeLine();
+  saveLine();
 }
 
 function moveLineByKey(moveX: number, moveY: number) {
   applyMoveToLine(moveX, moveY);
-  saveSlopeLine(false);
+  saveLine(false);
 }
 </script>

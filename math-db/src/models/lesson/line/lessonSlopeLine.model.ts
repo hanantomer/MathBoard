@@ -6,14 +6,14 @@ import Color from "../../color.model";
 import Lesson from "../../lesson/lesson.model";
 import LessonDecorator from "../../lesson/lessonDecorator";
 import {
-    LessonSlopeLineAttributes,
-    LessonSlopeLineCreationAttributes,
+    LessonLineAttributes,
+    LessonLineCreationAttributes,
 } from "../../../../../math-common/src/lessonTypes";
 
-@LessonDecorator("LessonSlopeLine")
-export default class LessonSlopeLine extends Model<
-    LessonSlopeLineAttributes,
-    LessonSlopeLineCreationAttributes
+@LessonDecorator("LessonLine")
+export default class LessonLine extends Model<
+    LessonLineAttributes,
+    LessonLineCreationAttributes
 > {
     notationType = "SlopeLINE";
     boardType = "ANSWER";

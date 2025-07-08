@@ -153,10 +153,8 @@ export default function useMatrixCellHelper() {
 
   return {
     colorizeCell,
-    //unColorizeNotationCells,
     resetAllCellColors,
     setNextCell,
     showSelectedCell,
-
   };
 }

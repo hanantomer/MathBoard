@@ -17,7 +17,7 @@
               >Get Started</v-btn
             >
             <v-btn
-              v-if="userStore.getCurrentUser()"
+              v-if="userStore.isTeacher()"
               color="orange"
               v-on:click="navToLessons"
               >Open or create a lesson</v-btn

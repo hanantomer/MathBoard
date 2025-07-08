@@ -100,9 +100,7 @@ export default function useMatrixHelperUtils() {
       case "SYMBOL": // color is applied to the cell
         return n.selected ? selectionColor : htmlColor;
       case "CURVE":
-      case "HORIZONTALLINE":
-      case "SLOPELINE":
-      case "VERTICALLINE":
+      case "LINE":
       case "IMAGE":
       case "TEXT":
       case "CIRCLE":

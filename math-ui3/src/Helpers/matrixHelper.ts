@@ -162,9 +162,7 @@ export default function useMatrixHelper() {
       svgId,
       notations.filter(
         (n) =>
-          n.notationType === "HORIZONTALLINE" ||
-          n.notationType === "VERTICALLINE" ||
-          n.notationType === "SLOPELINE",
+          n.notationType === "LINE",
       ),
     );
 

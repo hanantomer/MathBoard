@@ -88,7 +88,7 @@ export type VerticalLineAttributes = {
   p2y: number;
 };
 
-export type SlopeLineAttributes = {
+export type LineAttributes = {
   p1x: number; // left
   p2x: number; // right
   p1y: number; // y which corresponds to x1, if the slope is positive this is the bottom(and higher) y and vice versa
@@ -150,10 +150,10 @@ export type VerticalLineNotationAttributes =
     NotationAttributes &
     VerticalLineAttributes;
 
-export type SlopeLineNotationAttributes =
+export type LineNotationAttributes =
   EntityAttributes &
     NotationAttributes &
-    SlopeLineAttributes;
+    LineAttributes;
 
 export type CurveNotationAttributes =
   EntityAttributes &
@@ -170,7 +170,6 @@ export type RectNotationAttributes =
     NotationAttributes &
     RectAttributes &
     SingleValueAttributes;
-
 
 export type AnnotationNotationAttributes =
   EntityAttributes &
@@ -207,11 +206,10 @@ export type VerticalLineNotationCreationAttributes =
     NotationAttributes & VerticalLineAttributes,
     "uuid"
   >;
-export type SlopeLineNotationCreationAttributes =
-  Omit<
-    NotationAttributes & SlopeLineAttributes,
-    "uuid"
-  >;
+export type LineNotationCreationAttributes = Omit<
+  NotationAttributes & LineAttributes,
+  "uuid"
+>;
 export type RectNotationCreationAttributes = Omit<
   NotationAttributes &
     RectAttributes &
@@ -257,10 +255,8 @@ export function isRect(n: NotationType): boolean {
 
 export function isLine(n: NotationType): boolean {
   return (
-    n === "HORIZONTALLINE" ||
     n === "SQRT" ||
-    n === "VERTICALLINE" ||
-    n === "SLOPELINE"
+    n === "LINE"
   );
 }
 

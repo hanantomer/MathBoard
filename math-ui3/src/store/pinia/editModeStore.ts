@@ -3,7 +3,6 @@ import { EditMode, EditModeNotationType, NotationType } from "common/unions";
 import { ref } from "vue";
 
 export const useEditModeStore = defineStore("editMode", () => {
-
   let editMode = ref<EditMode>("CELL_SELECTED");
 
   const defaultEditMode: EditMode = "CELL_SELECTED";
@@ -38,7 +37,7 @@ export const useEditModeStore = defineStore("editMode", () => {
   function isSelectedMode() {
     return (
       editMode.value === "AREA_SELECTED" ||
-      editMode.value === "HORIZONTAL_LINE_SELECTED" ||
+      editMode.value === "LINE_SELECTED" ||
       editMode.value === "SQRT_SELECTED"
     );
   }
@@ -51,49 +50,20 @@ export const useEditModeStore = defineStore("editMode", () => {
     );
   }
 
+
   function isLineMode() {
     return (
-      isHorizontalLineMode() ||
-      isVerticalLineMode() ||
-      isSlopeLineMode() ||
-      isSqrtMode()
-    );
-  }
-
-  function isHorizontalLineMode() {
-    return (
-      editMode.value === "HORIZONTAL_LINE_STARTED" ||
-      editMode.value === "HORIZONTAL_LINE_DRAWING" ||
-      editMode.value === "HORIZONTAL_LINE_EDITING_LEFT" ||
-      editMode.value === "HORIZONTAL_LINE_EDITING_RIGHT"
-    );
-  }
-
-  function isVerticalLineMode() {
-    return (
-      editMode.value === "VERTICAL_LINE_STARTED" ||
-      editMode.value === "VERTICAL_LINE_DRAWING" ||
-      editMode.value === "VERTICAL_LINE_EDITING_BOTTOM" ||
-      editMode.value === "VERTICAL_LINE_EDITING_TOP"
-    );
-  }
-
-  function isSlopeLineMode() {
-    return (
       editMode.value === "POLYGON_STARTED" ||
-      editMode.value === "SLOPE_LINE_STARTED" ||
-      editMode.value === "SLOPE_LINE_DRAWING" ||
-      editMode.value === "SLOPE_LINE_EDITING_LEFT" ||
-      editMode.value === "SLOPE_LINE_EDITING_RIGHT"
+      editMode.value === "LINE_STARTED" ||
+      editMode.value === "LINE_DRAWING" ||
+      editMode.value === "LINE_EDITING_LEFT" ||
+      editMode.value === "LINE_EDITING_RIGHT"
     );
   }
 
   function isPolygonDrawingMode() {
-    return (
-      editMode.value === "POLYGON_DRAWING"
-    );
+    return editMode.value === "POLYGON_DRAWING";
   }
-
 
   function isSqrtMode() {
     return (
@@ -116,33 +86,27 @@ export const useEditModeStore = defineStore("editMode", () => {
   }
 
   function isHorizontalLineDrawingMode() {
-    return editMode.value === "HORIZONTAL_LINE_DRAWING";
+    return editMode.value === "LINE_DRAWING";
   }
 
   function isHorizontalLineEditingMode() {
     return (
-      editMode.value === "HORIZONTAL_LINE_EDITING_LEFT" ||
-      editMode.value === "HORIZONTAL_LINE_EDITING_RIGHT"
+      editMode.value === "LINE_EDITING_LEFT" ||
+      editMode.value === "LINE_EDITING_RIGHT"
     );
   }
 
-  function isVerticalLineEditingMode() {
-    return (
-      editMode.value === "VERTICAL_LINE_EDITING_TOP" ||
-      editMode.value === "VERTICAL_LINE_EDITING_BOTTOM"
-    );
-  }
 
   function isSqrtDrawingMode() {
     return editMode.value === "SQRT_DRAWING";
   }
 
   function isHorizontalLineStartedMode() {
-    return editMode.value === "HORIZONTAL_LINE_STARTED";
+    return editMode.value === "LINE_STARTED";
   }
 
-  function isSlopeLineStartedMode() {
-    return editMode.value === "SLOPE_LINE_STARTED";
+  function isLineStartedMode() {
+    return editMode.value === "LINE_STARTED";
   }
 
   function isCurveStartedMode() {
@@ -153,25 +117,17 @@ export const useEditModeStore = defineStore("editMode", () => {
     return editMode.value === "SQRT_STARTED";
   }
 
-  function isVerticalLineStartedMode() {
-    return editMode.value === "VERTICAL_LINE_STARTED";
-  }
 
-  function isVerticalLineDrawingMode() {
-    return editMode.value === "VERTICAL_LINE_DRAWING";
-  }
-
-  function isSlopeLineDrawingMode() {
+  function isLineDrawingMode() {
     return (
-      editMode.value === "SLOPE_LINE_DRAWING" ||
-      editMode.value === "POLYGON_DRAWING"
+      editMode.value === "LINE_DRAWING" || editMode.value === "POLYGON_DRAWING"
     );
   }
 
-  function isSlopeLineEditingMode() {
+  function isLineEditingMode() {
     return (
-      editMode.value === "SLOPE_LINE_EDITING_LEFT" ||
-      editMode.value === "SLOPE_LINE_EDITING_RIGHT"
+      editMode.value === "LINE_EDITING_LEFT" ||
+      editMode.value === "LINE_EDITING_RIGHT"
     );
   }
 
@@ -190,16 +146,8 @@ export const useEditModeStore = defineStore("editMode", () => {
     );
   }
 
-  function isHorizontalLineSelectedMode() {
-    return editMode.value === "HORIZONTAL_LINE_SELECTED";
-  }
-
-  function isVerticalLineSelectedMode() {
-    return editMode.value === "VERTICAL_LINE_SELECTED";
-  }
-
-  function isSlopeLineSelectedMode() {
-    return editMode.value === "SLOPE_LINE_SELECTED";
+  function isLineSelectedMode() {
+    return editMode.value === "LINE_SELECTED";
   }
 
   function isCurveSelectedMode() {
@@ -296,17 +244,11 @@ export const useEditModeStore = defineStore("editMode", () => {
       case "EXPONENT_STARTED":
         return setEditMode("EXPONENT_WRITING");
 
-      case "HORIZONTAL_LINE_STARTED":
-        return setEditMode("HORIZONTAL_LINE_DRAWING");
-
-      case "VERTICAL_LINE_STARTED":
-        return setEditMode("VERTICAL_LINE_DRAWING");
-
       case "POLYGON_STARTED":
         return setEditMode("POLYGON_DRAWING");
 
-      case "SLOPE_LINE_STARTED":
-        return setEditMode("SLOPE_LINE_DRAWING");
+      case "LINE_STARTED":
+        return setEditMode("LINE_DRAWING");
 
       case "CURVE_STARTED":
         return setEditMode("CURVE_DRAWING");
@@ -351,25 +293,14 @@ export const useEditModeStore = defineStore("editMode", () => {
     isExponentWritingMode,
     isSelectionMode,
     isLineMode,
-    isHorizontalLineMode,
-    isHorizontalLineSelectedMode,
     isSqrtStartedMode,
-    isHorizontalLineStartedMode,
-    isHorizontalLineDrawingMode,
-    isHorizontalLineEditingMode,
     isSqrtDrawingMode,
-    isVerticalLineMode,
-    isVerticalLineSelectedMode,
-    isVerticalLineStartedMode,
-    isVerticalLineDrawingMode,
-    isVerticalLineEditingMode,
-    isSlopeLineMode,
-    isSlopeLineSelectedMode,
+    isLineSelectedMode,
     isCurveSelectedMode,
-    isSlopeLineStartedMode,
+    isLineStartedMode,
     isCurveStartedMode,
-    isSlopeLineDrawingMode,
-    isSlopeLineEditingMode,
+    isLineDrawingMode,
+    isLineEditingMode,
     isCurveDrawingMode,
     isCircleDrawingMode,
     isCircleSelectedMode,

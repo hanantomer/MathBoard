@@ -6,7 +6,7 @@ import {
   CircleNotationAttributes,
   HorizontalLineNotationAttributes,
   VerticalLineNotationAttributes,
-  SlopeLineNotationAttributes,
+  LineNotationAttributes,
 } from "common/baseTypes";
 
 import useApiHelper from "./apiHelper";
@@ -60,20 +60,8 @@ export default function notationLoadingHelper() {
           parentUUId,
         );
       case "SQRT":
-      case "HORIZONTALLINE":
-        return await apiHelper.getNotations<HorizontalLineNotationAttributes>(
-          notationType,
-          boardType,
-          parentUUId,
-        );
-      case "VERTICALLINE":
-        return await apiHelper.getNotations<VerticalLineNotationAttributes>(
-          notationType,
-          boardType,
-          parentUUId,
-        );
-      case "SLOPELINE":
-        return await apiHelper.getNotations<SlopeLineNotationAttributes>(
+      case "LINE":
+        return await apiHelper.getNotations<LineNotationAttributes>(
           notationType,
           boardType,
           parentUUId,

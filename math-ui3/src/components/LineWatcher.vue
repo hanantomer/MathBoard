@@ -16,7 +16,6 @@ import {
 const lineDrawer = useLineDrawer();
 const watchHelper = useWatchHelper();
 
-
 // each prop entry holds a stage of the line drawing process
 const props = defineProps({
   startEntry: {
@@ -103,37 +102,34 @@ watchHelper.watchKeyEvent(
 );
 
 watchHelper.watchEndOfEditMode(
-  ["CURVE_DRAWING",
+  [
+    "CURVE_DRAWING",
     "CURVE_EDITING_CONTROLֹ_POINT",
     "CURVE_EDITING_LEFT",
     "CURVE_EDITING_RIGHT",
     "CURVE_SELECTED",
-    "SLOPE_LINE_DRAWING",
-    "SLOPE_LINE_EDITING_LEFT",
-    "SLOPE_LINE_EDITING_RIGHT",
-    "SLOPE_LINE_SELECTED",
-    "HORIZONTAL_LINE_DRAWING",
-    "HORIZONTAL_LINE_EDITING_LEFT",
-    "HORIZONTAL_LINE_EDITING_RIGHT",
-    "HORIZONTAL_LINE_SELECTED",
-    "VERTICAL_LINE_DRAWING",
-    "VERTICAL_LINE_EDITING_TOP",
-    "VERTICAL_LINE_EDITING_BOTTOM",
-    "VERTICAL_LINE_SELECTED",],
-  ["CURVE_EDITING_CONTROLֹ_POINT",
+    "LINE_DRAWING",
+    "LINE_EDITING_LEFT",
+    "LINE_EDITING_RIGHT",
+    "LINE_SELECTED",
+    "LINE_DRAWING",
+    "LINE_EDITING_LEFT",
+    "LINE_EDITING_RIGHT",
+    "LINE_SELECTED",
+  ],
+  [
+    "CURVE_EDITING_CONTROLֹ_POINT",
     "CURVE_EDITING_LEFT",
     "CURVE_EDITING_RIGHT",
-    "SLOPE_LINE_EDITING_LEFT",
-    "SLOPE_LINE_EDITING_RIGHT",
-    "HORIZONTAL_LINE_EDITING_LEFT",
-    "HORIZONTAL_LINE_EDITING_RIGHT",
-    "VERTICAL_LINE_EDITING_TOP",
-    "VERTICAL_LINE_EDITING_BOTTOM",
-    ],
-    () => {
-      setTimeout(() => {
-        lineDrawer.resetDrawing();
-      }, 0);
-});
-
+    "LINE_EDITING_LEFT",
+    "LINE_EDITING_RIGHT",
+    "LINE_EDITING_LEFT",
+    "LINE_EDITING_RIGHT",
+  ],
+  () => {
+    setTimeout(() => {
+      lineDrawer.resetDrawing();
+    }, 0);
+  },
+);
 </script>

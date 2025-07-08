@@ -1,7 +1,7 @@
 import {
   HorizontalLineAttributes,
   VerticalLineAttributes,
-  SlopeLineAttributes,
+  LineAttributes,
   CurveAttributes,
   CellAttributes,
   RectAttributes,
@@ -47,16 +47,15 @@ export type LessonVerticalLineCreationAttributes =
     keyof EntityAttributes
   >;
 
-export type LessonSlopeLineAttributes =
+export type LessonLineAttributes =
   EntityAttributes &
     NotationAttributes &
-    SlopeLineAttributes;
+    LineAttributes;
 
-export type LessonSlopeLineCreationAttributes =
-  Omit<
-    LessonSlopeLineAttributes,
-    keyof EntityAttributes
-  >;
+export type LessonLineCreationAttributes = Omit<
+  LessonLineAttributes,
+  keyof EntityAttributes
+>;
 
 export type LessonCurveAttributes =
   EntityAttributes &
@@ -96,9 +95,10 @@ export type LessonRectCreationAttributes = Omit<
 
 // exponent
 
-export type LessonExponentAttributes = LessonAttributes &
-  LessonNotationAttributes &
-  PointNotationAttributes;
+export type LessonExponentAttributes =
+  LessonAttributes &
+    LessonNotationAttributes &
+    PointNotationAttributes;
 
 export type LessonExponentCreationAttributes =
   Omit<
@@ -113,7 +113,11 @@ export type LessonNotationAttributes =
 
 // circle
 
-export type LessonCircleAttributes = EntityAttributes & NotationAttributes & CircleAttributes &  LessonNotationAttributes;
+export type LessonCircleAttributes =
+  EntityAttributes &
+    NotationAttributes &
+    CircleAttributes &
+    LessonNotationAttributes;
 
 export type LessonCircleCreationAttributes = Omit<
   LessonCircleAttributes,

@@ -3,7 +3,7 @@ import {
   HorizontalLineNotationAttributes,
   NotationAttributes,
   NotationCreationAttributes,
-  SlopeLineNotationAttributes,
+  LineNotationAttributes,
   VerticalLineNotationAttributes,
   CurveNotationAttributes,
   SqrtNotationAttributes,
@@ -26,7 +26,6 @@ import axiosHelper from "./axiosHelper";
 const { baseURL } = axiosHelper();
 
 export default function useApiHelper() {
-
   async function log(message: string) {
     try {
       await axios.post(baseURL + "/log", { level: "error", message: message });
@@ -178,7 +177,6 @@ export default function useApiHelper() {
     }
   }
 
-
   async function updateNotationValue(notation: NotationAttributes) {
     if ("value" in notation === false) return null;
     try {
@@ -280,8 +278,8 @@ export default function useApiHelper() {
     }
   }
 
-  async function updateSlopeLineNotationAttributes(
-    lineNotation: SlopeLineNotationAttributes,
+  async function updateLineNotationAttributes(
+    lineNotation: LineNotationAttributes,
   ) {
     try {
       return axios.put(
@@ -536,7 +534,7 @@ export default function useApiHelper() {
     updateHorizontalLineNotationAttributes,
     updateSqrtNotationAttributes,
     updateVerticalLineNotationAttributes,
-    updateSlopeLineNotationAttributes,
+    updateLineNotationAttributes,
     updateCurveNotationAttributes,
     updateCircleNotationAttributes,
     updateNotationValue,
