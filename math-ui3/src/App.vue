@@ -13,8 +13,8 @@
         max-height="35"
         max-width="35"
         contain
+        style="max-width: 35px; width: 100%; height: auto"
       ></v-img>
-
       <v-img
         class="mx-2"
         src="./assets/logo.png"
@@ -113,43 +113,46 @@
       <router-view></router-view>
     </v-main>
 
-    <v-footer color="primary" padless dense style="max-height: 50px">
+    <v-footer color="primary" padless dense>
       <v-row justify="center" no-gutters>
-        <p style="color: whitesmoke; margin-right: 10px">
-          © Copyright 2024 www.themathboard.com
-        </p>
-        |
-        <v-btn
-          style="background-color: transparent; color: whitesmoke"
-          class="ml-1"
-          height="25"
-          flat
-          href="../privacyPolicy.html"
-          target="_blank"
-        >
-          Privacy Policy
-        </v-btn>
-        |
-        <v-btn
-          style="background-color: transparent; color: whitesmoke"
-          class="ml-1"
-          height="25"
-          flat
-          href="/tutorials/tutorial.webm"
-          target="_blank"
-        >
-          Tutorial Video
-        </v-btn>
-        |
-        <v-btn
-          style="background-color: transparent; color: whitesmoke"
-          class="ml-1"
-          height="25"
-          flat
-          v-on:click="navContactUs"
-        >
-          Contact Us          </v-btn
-        >
+        <v-col cols="12" sm="auto" class="text-center">
+          <p style="color: whitesmoke; margin-right: 10px">
+            © Copyright 2024 www.themathboard.com
+          </p>
+        </v-col>
+        <v-col cols="12" sm="auto" class="text-center">
+          <v-btn
+            style="background-color: transparent; color: whitesmoke"
+            class="ml-1"
+            height="25"
+            flat
+            href="../privacyPolicy.html"
+            target="_blank"
+          >
+            Privacy Policy
+          </v-btn>
+          |
+          <v-btn
+            style="background-color: transparent; color: whitesmoke"
+            class="ml-1"
+            height="25"
+            flat
+            href="/tutorials/tutorial.webm"
+            target="_blank"
+          >
+            Tutorial Video
+          </v-btn>
+          |
+          <v-btn
+            style="background-color: transparent; color: whitesmoke"
+            class="ml-1"
+            height="25"
+            flat
+            v-on:click="navContactUs"
+          >
+            Contact Us
+          </v-btn>
+        </v-col>
       </v-row>
     </v-footer>
   </v-app>
