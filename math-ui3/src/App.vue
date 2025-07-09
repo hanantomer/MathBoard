@@ -1,12 +1,6 @@
 <template>
   <v-app id="app" full-height>
-    <v-app-bar
-      style="max-height: 80px; padding-right: 30px"
-      color="primary"
-      dark
-      dense
-      elevation="8"
-    >
+    <v-app-bar app color="primary" dark dense elevation="8">
       <v-img
         class="mx-2"
         src="./assets/beta.png"
@@ -113,7 +107,7 @@
       <router-view></router-view>
     </v-main>
 
-    <v-footer color="primary" padless dense>
+    <v-footer color="primary" padless dense app>
       <v-row justify="center" no-gutters>
         <v-col cols="12" sm="auto" class="text-center">
           <p style="color: whitesmoke; margin-right: 10px">

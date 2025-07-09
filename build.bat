@@ -12,7 +12,6 @@ if %ERRORLEVEL% == 0 (
 cd /d "%PARENT_DIR%"
 
 :: Git operations
-git reset --hard
 git pull
 
 :: Process math-common

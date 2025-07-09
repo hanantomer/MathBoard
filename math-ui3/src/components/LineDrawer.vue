@@ -255,8 +255,8 @@ function getSlopeTypeForNewLine(xPos: number, yPos: number): SlopeType {
   return "NEGATIVE";
 }
 
-function getSlopeTypeForExistingLine(slopeLine: LineAttributes): SlopeType {
-  return slopeLine.p2y < slopeLine.p1y ? "POSITIVE" : "NEGATIVE";
+function getSlopeTypeForExistingLine(line: LineAttributes): SlopeType {
+  return line.p2y < line.p1y ? "POSITIVE" : "NEGATIVE";
 }
 
 function getMovementDirection(yPos: number): MovementDirection {

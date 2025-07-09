@@ -67,10 +67,10 @@ export default function selectionHelper() {
         break;
 
       case "LINE": {
-        const slopeLineNotation = notation as LineNotationAttributes;
+        const lineNotation = notation as LineNotationAttributes;
         const distanceFromLine = screenHelper.getClickedPosDistanceFromLine(
           dotCoordinates,
-          slopeLineNotation,
+          lineNotation,
         );
         if (distanceFromLine < maxDistanceToSelect) {
           selectLineNotation(notation.uuid);

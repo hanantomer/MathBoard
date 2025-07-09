@@ -15,7 +15,7 @@ export default class QuestionLine extends Model<
     QuestionLineAttributes,
     QuestionLineCreationAttributes
 > {
-    notationType = "SlopeLINE";
+    notationType = "LINE";
     boardType = "ANSWER";
 
     @AllowNull(false)

@@ -193,7 +193,7 @@ const modeButtons: Array<{
     tabIndex: 3,
   },
   {
-    name: "slopeLine",
+    name: "Line",
     show_condition: true,
     editMode: "LINE_STARTED" as EditMode,
     tooltip: "Line",

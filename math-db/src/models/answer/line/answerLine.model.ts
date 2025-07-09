@@ -10,12 +10,12 @@ import {
     AnswerLineCreationAttributes,
 } from "../../../../../math-common/src/answerTypes";
 
-@AnswerDecorator("AnswerSlopeline")
+@AnswerDecorator("AnswerLine")
 export default class AnswerLine extends Model<
     AnswerLineAttributes,
     AnswerLineCreationAttributes
 > {
-    notationType = "SlopeLINE";
+    notationType = "LINE";
     boardType = "ANSWER";
 
     @AllowNull(false)

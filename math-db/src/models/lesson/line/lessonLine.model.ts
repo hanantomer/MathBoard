@@ -15,7 +15,7 @@ export default class LessonLine extends Model<
     LessonLineAttributes,
     LessonLineCreationAttributes
 > {
-    notationType = "SlopeLINE";
+    notationType = "LINE";
     boardType = "ANSWER";
 
     @AllowNull(false)
