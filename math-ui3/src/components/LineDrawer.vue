@@ -30,7 +30,7 @@
       :selectEntry="{
         editMode: ['LINE_SELECTED'],
         func: selectLine,
-        event: 'EV_LINE_SELECTED', ///TODO handle polygon
+        event: 'EV_LINE_SELECTED', 
       }"
       :moveByKeyEntry="{
         editMode: ['LINE_SELECTED'],

@@ -50,12 +50,14 @@ import {
   CircleAttributes,
   CircleNotationAttributes,
 } from "../../../math-common/build/baseTypes";
+import useEventBusHelper from "../helpers/eventBusHelper";
 
 const notationMutateHelper = useNotationMutateHelper();
 const watchHelper = useWatchHelper();
 const notationStore = useNotationStore();
 const editModeStore = useEditModeStore();
 const cellStore = useCellStore();
+const eventBusHelper = useEventBusHelper();
 
 const circleAttributes = ref<CircleAttributes>({
   cx: 0,
@@ -67,7 +69,8 @@ const handleX1 = computed(() => {
   return (
     circleAttributes.value.cx -
     circleAttributes.value.r +
-    cellStore.getSvgBoundingRect().left - 5
+    cellStore.getSvgBoundingRect().left -
+    5
   );
 });
 
@@ -127,16 +130,16 @@ watchHelper.watchKeyEvent(
 
     const step = 1;
     switch (e.key) {
-      case 'ArrowLeft':
+      case "ArrowLeft":
         circleAttributes.value.cx -= step;
         break;
-      case 'ArrowRight':
+      case "ArrowRight":
         circleAttributes.value.cx += step;
         break;
-      case 'ArrowUp':
+      case "ArrowUp":
         circleAttributes.value.cy -= step;
         break;
-      case 'ArrowDown':
+      case "ArrowDown":
         circleAttributes.value.cy += step;
         break;
     }
@@ -147,9 +150,8 @@ watchHelper.watchKeyEvent(
       cy: circleAttributes.value.cy,
       r: circleAttributes.value.r,
     });
-  }
+  },
 );
-
 
 function initCircle(e: MouseEvent) {
   editModeStore.setNextEditMode();
@@ -166,6 +168,7 @@ function selectCircle(circle: CircleNotationAttributes) {
   circleAttributes.value.r = c.r;
   setCircleElement();
   notationStore.selectNotation(c.uuid);
+  eventBusHelper.remove("EV_CIRCLE_SELECTED", "CIRCLE_SELECTED");
 }
 
 function setRadius(e: MouseEvent) {
@@ -203,9 +206,7 @@ function saveCircle(circleAttributes: CircleAttributes) {
       updatedCircle as CircleNotationAttributes,
     );
   } else {
-    notationMutateHelper.addCircleNotation(
-      circleAttributes,
-    );
+    notationMutateHelper.addCircleNotation(circleAttributes);
   }
 }
 
