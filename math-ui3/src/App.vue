@@ -126,7 +126,7 @@
             Privacy Policy
           </v-btn>
           |
-          <v-btn
+          <!-- <v-btn
             style="background-color: transparent; color: whitesmoke"
             class="ml-1"
             height="25"
@@ -134,8 +134,8 @@
             href="/tutorials/tutorial.webm"
             target="_blank"
           >
-            Tutorial Video
-          </v-btn>
+            Tutorial
+          </v-btn> -->
           |
           <v-btn
             style="background-color: transparent; color: whitesmoke"
