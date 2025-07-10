@@ -76,17 +76,6 @@ export type ColorizedCell = CellAttributes & {
   color: string;
 };
 
-export type HorizontalLineAttributes = {
-  p1x: number;
-  p2x: number;
-  py: number;
-};
-
-export type VerticalLineAttributes = {
-  px: number;
-  p1y: number;
-  p2y: number;
-};
 
 export type LineAttributes = {
   p1x: number; // left
@@ -140,15 +129,6 @@ export type PointNotationAttributes =
     SingleValueAttributes &
     SymbolAttributes;
 
-export type HorizontalLineNotationAttributes =
-  EntityAttributes &
-    NotationAttributes &
-    HorizontalLineAttributes;
-
-export type VerticalLineNotationAttributes =
-  EntityAttributes &
-    NotationAttributes &
-    VerticalLineAttributes;
 
 export type LineNotationAttributes =
   EntityAttributes &

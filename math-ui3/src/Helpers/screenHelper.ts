@@ -3,14 +3,12 @@ import {
   RectCoordinates,
   NotationAttributes,
   CellAttributes,
-  HorizontalLineNotationAttributes,
-  HorizontalLineAttributes,
   PointNotationAttributes,
   RectNotationAttributes,
   LineNotationAttributes,
-  VerticalLineNotationAttributes,
   CircleNotationAttributes,
   RectAttributes,
+  LineAttributes,
   MultiCellAttributes,
 } from "../../../math-common/src/baseTypes";
 
@@ -84,7 +82,7 @@ export default function screenHelper() {
 
   function getMultiCellLineAttributes(
     n: MultiCellAttributes,
-  ): HorizontalLineAttributes {
+  ): LineAttributes {
     const x1 = cellStore.getCellHorizontalWidth() * n.fromCol;
     const x2 = cellStore.getCellHorizontalWidth() * n.toCol;
     const y = cellStore.getCellVerticalHeight() * n.row;
@@ -92,7 +90,8 @@ export default function screenHelper() {
     return {
       p1x: x1,
       p2x: x2,
-      py: y,
+      p1y: y,
+      p2y: y,
     };
   }
 
@@ -179,7 +178,7 @@ export default function screenHelper() {
           let n1 = n as unknown as MultiCellAttributes;
           notationDistanceList.push({
             notation: n,
-            distance: getClickedPosDistanceFromHorizontalLine(
+            distance: getClickedPosDistanceFromLine(
               DotCoordinates,
               getMultiCellLineAttributes(n1),
             ),
@@ -280,24 +279,6 @@ export default function screenHelper() {
     return Math.sqrt(a + b);
   }
 
-  function getClickedPosDistanceFromHorizontalLine(
-    DotCoordinates: DotCoordinates,
-    n: HorizontalLineAttributes,
-  ): number {
-    const x = DotCoordinates.x - cellStore.getSvgBoundingRect().left;
-
-    const y = DotCoordinates.y - cellStore.getSvgBoundingRect().top;
-
-    const horizontalDistance =
-      x < n.p1x ? n.p2x - x : x > n.p2x ? x - n.p2x : 0;
-
-    const verticalDistance = Math.abs(n.py - y);
-
-    const a = Math.pow(horizontalDistance, 2);
-    const b = Math.pow(verticalDistance, 2);
-
-    return Math.sqrt(a + b);
-  }
 
   function getClickedPosDistanceFromLineEdge(
     DotCoordinates: DotCoordinates,
@@ -322,35 +303,17 @@ export default function screenHelper() {
     dotCoordinates: DotCoordinates,
     sqrtCoordinates: MultiCellAttributes,
   ): number {
-    return getClickedPosDistanceFromHorizontalLine(
+    return getClickedPosDistanceFromLine(
       dotCoordinates,
       getMultiCellLineAttributes(sqrtCoordinates),
     );
   }
 
-  function getClickedPosDistanceFromVerticalLine(
-    DotCoordinates: DotCoordinates,
-    n: VerticalLineNotationAttributes,
-  ): number {
-    const x = DotCoordinates.x - cellStore.getSvgBoundingRect().left;
-
-    const y = DotCoordinates.y - cellStore.getSvgBoundingRect().top;
-
-    const horizontalDistance = Math.abs(n.px - x);
-
-    const verticalDistance =
-      y < n.p1y ? n.p1y - DotCoordinates.y : y > n.p2y ? y - n.p2y : 0;
-
-    const a = Math.pow(horizontalDistance, 2);
-    const b = Math.pow(verticalDistance, 2);
-
-    return Math.sqrt(a + b);
-  }
 
   //https://en.wikipedia.org/wiki/Distance_from_a_point_to_a_line
   function getClickedPosDistanceFromLine(
     DotCoordinates: DotCoordinates,
-    n: LineNotationAttributes,
+    n: LineAttributes,
   ): number {
     const x = DotCoordinates.x - cellStore.getSvgBoundingRect().left;
 
@@ -522,8 +485,6 @@ export default function screenHelper() {
 
   return {
     getClickedPosDistanceFromLine,
-    getClickedPosDistanceFromVerticalLine,
-    getClickedPosDistanceFromHorizontalLine,
     getClickedPosDistanceFromExponent,
     getClickedPosDistanceFromSqrt,
     getNotationAtCoordinates,

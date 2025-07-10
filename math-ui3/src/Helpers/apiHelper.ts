@@ -1,10 +1,8 @@
 import { NotationType } from "common/unions";
 import {
-  HorizontalLineNotationAttributes,
   NotationAttributes,
   NotationCreationAttributes,
   LineNotationAttributes,
-  VerticalLineNotationAttributes,
   CurveNotationAttributes,
   SqrtNotationAttributes,
   CircleNotationAttributes,
@@ -209,28 +207,6 @@ export default function useApiHelper() {
     }
   }
 
-  async function updateHorizontalLineNotationAttributes(
-    lineNotation: HorizontalLineNotationAttributes,
-  ) {
-    try {
-      return axios.put(
-        baseURL +
-          `/${lineNotation.boardType.toLowerCase()}${lineNotation.notationType.toLowerCase()}s`,
-        {
-          uuid: lineNotation.uuid,
-          p1x: lineNotation.p1x,
-          p2x: lineNotation.p2x,
-          py: lineNotation.py,
-        },
-      );
-    } catch (error) {
-      throw new Error(
-        `Failed to update horizontal line notation attributes: ${
-          (error as AxiosError).message
-        }`,
-      );
-    }
-  }
 
   async function updateSqrtNotationAttributes(
     sqrtNotation: SqrtNotationAttributes,
@@ -255,28 +231,6 @@ export default function useApiHelper() {
     }
   }
 
-  async function updateVerticalLineNotationAttributes(
-    lineNotation: VerticalLineNotationAttributes,
-  ) {
-    try {
-      return axios.put(
-        baseURL +
-          `/${lineNotation.boardType.toLowerCase()}${lineNotation.notationType.toLowerCase()}s`,
-        {
-          uuid: lineNotation.uuid,
-          px: lineNotation.px,
-          p1y: lineNotation.p1y,
-          p2y: lineNotation.p2y,
-        },
-      );
-    } catch (error) {
-      throw new Error(
-        `Failed to update vertical line notation attributes: ${
-          (error as AxiosError).message
-        }`,
-      );
-    }
-  }
 
   async function updateLineNotationAttributes(
     lineNotation: LineNotationAttributes,
@@ -531,15 +485,12 @@ export default function useApiHelper() {
     addQuestion,
     addAnswer,
     addNotation,
-    updateHorizontalLineNotationAttributes,
     updateSqrtNotationAttributes,
-    updateVerticalLineNotationAttributes,
     updateLineNotationAttributes,
     updateCurveNotationAttributes,
     updateCircleNotationAttributes,
     updateNotationValue,
     updateNotation,
-    //saveMovedNotations,
     deleteNotation,
     log,
   };

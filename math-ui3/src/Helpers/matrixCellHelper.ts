@@ -1,6 +1,5 @@
 import {
   CellAttributes,
-  HorizontalLineAttributes,
   MultiCellAttributes,
   NotationAttributes,
 } from "common/baseTypes";

@@ -76,11 +76,11 @@ import { useNotationStore } from "../store/pinia/notationStore";
 import { useCellStore } from "../store/pinia/cellStore";
 import { useEditModeStore } from "../store/pinia/editModeStore";
 import {
-  HorizontalLineAttributes,
   DotCoordinates,
   SqrtNotationAttributes,
   NotationAttributes,
   MultiCellAttributes,
+  LineAttributes,
 } from "../../../math-common/src/baseTypes";
 import lineHandle from "./LineHandle.vue";
 import lineWatcher from "./LineWatcher.vue";
@@ -90,10 +90,11 @@ const editModeStore = useEditModeStore();
 const cellStore = useCellStore();
 const notationMutateHelper = useNotationMutateHelper();
 
-let linePosition = ref(<HorizontalLineAttributes>{
+let linePosition = ref(<LineAttributes>{
   p1x: 0,
   p2x: 0,
-  py: 0,
+  p1y: 0,
+  p2y: 0,
 });
 
 const show = computed(() => {
@@ -113,7 +114,7 @@ let sqrtLeft = computed(() => {
 });
 
 let sqrtY = computed(() => {
-  return linePosition.value.py;
+  return linePosition.value.p1y;
 });
 
 let sqrtSymbolLeft = computed(() => {
@@ -123,7 +124,7 @@ let sqrtSymbolLeft = computed(() => {
 });
 
 let sqrtSymbolY = computed(() => {
-  return linePosition.value.py + (cellStore.getSvgBoundingRect().top ?? 0) - 8;
+  return linePosition.value.p1y + (cellStore.getSvgBoundingRect().top ?? 0) - 8;
 });
 
 let handleX = computed(() => {
@@ -137,7 +138,8 @@ let handleY = computed(() => {
 function setInitialPosition(p: DotCoordinates) {
   linePosition.value.p1x = p.x;
   linePosition.value.p2x = p.x;
-  linePosition.value.py = p.y;
+  linePosition.value.p1y = p.y;
+  linePosition.value.p2y = p.y;
 }
 
 function drawLine(p: DotCoordinates) {
@@ -154,7 +156,7 @@ function endDrawing() {
   );
 
   let row = Math.round(
-    linePosition.value.py / cellStore.getCellVerticalHeight(),
+    linePosition.value.p1y / cellStore.getCellVerticalHeight(),
   );
 
   saveSqrt({ fromCol: fromCol, toCol: toCol, row: row });
@@ -186,7 +188,7 @@ function saveSqrt(sqrtAttributes: MultiCellAttributes) {
 }
 
 function resetDrawing() {
-  linePosition.value.p1x = linePosition.value.p2x = linePosition.value.py = 0;
+  linePosition.value.p1x = linePosition.value.p2x = linePosition.value.p1y = linePosition.value.p2y = 0;
 }
 
 function selectSqrt(notation: NotationAttributes) {
@@ -196,12 +198,15 @@ function selectSqrt(notation: NotationAttributes) {
 
   linePosition.value.p2x = n.toCol * cellStore.getCellHorizontalWidth();
 
-  linePosition.value.py = n.row * cellStore.getCellVerticalHeight();
+  linePosition.value.p1y = n.row * cellStore.getCellVerticalHeight();
+
+  linePosition.value.p2y = n.row * cellStore.getCellVerticalHeight();
 }
 
 function moveSqrt(moveX: number, moveY: number) {
   linePosition.value.p1x += moveX;
   linePosition.value.p2x += moveX;
-  linePosition.value.py += moveY;
+  linePosition.value.p1y += moveY;
+  linePosition.value.p2y += moveY;
 }
 </script>

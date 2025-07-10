@@ -9,8 +9,6 @@ import {
   RectCoordinates,
   PointNotationAttributes,
   RectNotationAttributes,
-  HorizontalLineNotationAttributes,
-  VerticalLineNotationAttributes,
   LineNotationAttributes,
   CurveNotationAttributes,
   CircleNotationAttributes,
@@ -353,28 +351,7 @@ export const useNotationStore = defineStore("notation", () => {
     return true;
   }
 
-  function checkHorizontalLineIntersection(
-    line: HorizontalLineNotationAttributes,
-    rect: RectCoordinates,
-  ): boolean {
-    if (line.p2x < rect.topLeft.x) return false; // line left of rect
-    if (line.p1x > rect.bottomRight.x) return false; // line right of rect
-    if (line.py > rect.bottomRight.y) return false; // line below rect
-    if (line.py < rect.topLeft.y) return false; // line above rect
-    return true;
-  }
-
-  function checkVerticalLineIntersection(
-    line: VerticalLineNotationAttributes,
-    rect: RectCoordinates,
-  ): boolean {
-    if (line.px < rect.topLeft.x) return false; // line left of rect
-    if (line.px > rect.bottomRight.x) return false; // line right of rect
-    if (line.p2y < rect.topLeft.y) return false; // line above rect
-    if (line.p1y > rect.bottomRight.y) return false; // line below rect
-    return true;
-  }
-
+  
   function checkLineIntersection(
     line: LineNotationAttributes,
     rect: RectCoordinates,

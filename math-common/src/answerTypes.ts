@@ -1,7 +1,5 @@
 import { QuestionAttributes } from "./questionTypes";
 import {
-  HorizontalLineAttributes,
-  VerticalLineAttributes,
   LineAttributes,
   CurveAttributes,
   CellAttributes,

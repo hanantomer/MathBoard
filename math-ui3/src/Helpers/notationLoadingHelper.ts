@@ -4,8 +4,6 @@ import {
   RectNotationAttributes,
   CurveNotationAttributes,
   CircleNotationAttributes,
-  HorizontalLineNotationAttributes,
-  VerticalLineNotationAttributes,
   LineNotationAttributes,
 } from "common/baseTypes";
 

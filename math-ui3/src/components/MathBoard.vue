@@ -15,9 +15,7 @@
     <statusBar></statusBar>
     <div style="display: flex">
       <leftToolbar></leftToolbar>
-      <horizontalLineDrawer></horizontalLineDrawer>
       <sqrtDrawer></sqrtDrawer>
-      <verticalLineDrawer></verticalLineDrawer>
       <lineDrawer></lineDrawer>
       <curveDrawer></curveDrawer>
       <circleDrawer></circleDrawer>

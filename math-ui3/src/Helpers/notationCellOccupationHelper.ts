@@ -1,8 +1,7 @@
 import {
   RectCoordinates,
   PointNotationAttributes,
-  HorizontalLineAttributes,
-  VerticalLineNotationAttributes,
+
   RectNotationAttributes,
   CurveNotationAttributes,
   LineAttributes,
@@ -68,27 +67,6 @@ export default function notationCellOccupationHelper() {
     (matrix[col][row] as Set<String>).add(uuid);
   }
 
-  function updateHorizontalLineOccupationMatrix(
-    matrix: any,
-    notation: HorizontalLineAttributes,
-    uuid: string,
-    doRemove: boolean,
-  ) {
-    const fromCol = Math.round(
-      notation.p1x / cellStore.getCellHorizontalWidth(),
-    );
-    const toCol = Math.round(notation.p2x / cellStore.getCellHorizontalWidth());
-    const row = Math.round(notation.py / cellStore.getCellVerticalHeight());
-
-    for (let col = fromCol; col <= toCol; col++) {
-      if (validateRowAndCol(col, row)) {
-        if (validateRowAndCol(col, row - 1))
-          // occupy 2 rows
-          updateLineOccupationMatrixCell(col, row, matrix, uuid, doRemove);
-        updateLineOccupationMatrixCell(col, row - 1, matrix, uuid, doRemove);
-      }
-    }
-  }
 
   function updateAnnotationOccupationMatrix(
     matrix: any,
@@ -104,36 +82,6 @@ export default function notationCellOccupationHelper() {
     );
   }
 
-  function updateVerticalLineOccupationMatrix(
-    matrix: any,
-    notation: VerticalLineNotationAttributes,
-    doRemove: boolean,
-  ) {
-    clearNotationFromMatrix(notation.uuid, matrix);
-    const fromRow = Math.round(
-      notation.p1y / cellStore.getCellVerticalHeight(),
-    );
-    const toRow = Math.round(notation.p2y / cellStore.getCellVerticalHeight());
-    const col = Math.round(notation.px / cellStore.getCellHorizontalWidth());
-
-    for (let i = fromRow; i <= toRow; i++) {
-      if (validateRowAndCol(i, matrixDimensions.rowsNum)) {
-        updateLineOccupationMatrixCell(col, i, matrix, notation.uuid, doRemove);
-      }
-
-      if (validateRowAndCol(i, matrixDimensions.rowsNum - 1)) {
-        updateLineOccupationMatrixCell(
-          col - 1,
-          i,
-          matrix,
-          notation.uuid,
-          doRemove,
-        );
-
-        updateLineOccupationMatrixCell(col, i, matrix, notation.uuid, doRemove);
-      }
-    }
-  }
 
   /// populate occupation matrix to encompass the sloped line
   function updateLineOccupationMatrix(
@@ -285,8 +233,6 @@ export default function notationCellOccupationHelper() {
     updatePointOccupationMatrix,
     updateAnnotationOccupationMatrix,
     updateMultiCellOccupationMatrix,
-    updateHorizontalLineOccupationMatrix,
-    updateVerticalLineOccupationMatrix,
     updateLineOccupationMatrix,
     updateCurveOccupationMatrix,
     updateCircleOccupationMatrix,

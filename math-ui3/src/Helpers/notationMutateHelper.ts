@@ -6,22 +6,15 @@ import {
   PointNotationCreationAttributes,
   RectNotationCreationAttributes,
   NotationCreationAttributes,
-  HorizontalLineNotationAttributes,
-  VerticalLineNotationAttributes,
   LineNotationAttributes,
   CurveAttributes,
   CircleAttributes,
-  HorizontalLineAttributes,
-  VerticalLineAttributes,
   LineAttributes,
   CurveNotationAttributes,
   CircleNotationAttributes,
-  HorizontalLineNotationCreationAttributes,
-  VerticalLineNotationCreationAttributes,
   LineNotationCreationAttributes,
   CurveNotationCreationAttributes,
   CircleNotationCreationAttributes,
-  ExponentNotationCreationAttributes,
   AnnotationNotationCreationAttributes,
   SqrtNotationCreationAttributes,
   isCellNotation,
@@ -618,15 +611,6 @@ export default function notationMutateHelper() {
       : notationStore.getSelectedNotations();
   }
 
-  async function updateHorizontalLineNotation(
-    lineNotation: HorizontalLineNotationAttributes,
-  ) {
-    transposeHorizontalCoordinatesIfNeeded(lineNotation);
-    await apiHelper.updateHorizontalLineNotationAttributes(lineNotation);
-    notationStore.addNotation(lineNotation, true);
-    userOutgoingOperations.syncOutgoingUpdateNotation(lineNotation);
-  }
-
   async function updateSqrtNotation(sqrtNotation: SqrtNotationAttributes) {
     transposeSqrtCoordinatesIfNeeded(sqrtNotation);
     await apiHelper.updateSqrtNotationAttributes(sqrtNotation);
@@ -634,14 +618,6 @@ export default function notationMutateHelper() {
     userOutgoingOperations.syncOutgoingUpdateNotation(sqrtNotation);
   }
 
-  async function updateVerticalLineNotation(
-    lineNotation: VerticalLineNotationAttributes,
-  ) {
-    transposeVerticalCoordinatesIfNeeded(lineNotation);
-    await apiHelper.updateVerticalLineNotationAttributes(lineNotation);
-    notationStore.addNotation(lineNotation, true);
-    userOutgoingOperations.syncOutgoingUpdateNotation(lineNotation);
-  }
 
   async function updateLineNotation(lineNotation: LineNotationAttributes) {
     await apiHelper.updateLineNotationAttributes(lineNotation);
@@ -1147,26 +1123,6 @@ export default function notationMutateHelper() {
     return userStore.getCurrentUser()!.uuid;
   }
 
-  function transposeVerticalCoordinatesIfNeeded(
-    coordinates: VerticalLineAttributes,
-  ) {
-    if (coordinates.p1y > coordinates.p2y) {
-      const y1 = coordinates.p1y;
-      coordinates.p1y = coordinates.p2y;
-      coordinates.p2y = y1;
-    }
-  }
-
-  function transposeHorizontalCoordinatesIfNeeded(
-    coordinates: HorizontalLineAttributes,
-  ) {
-    if (coordinates.p1x > coordinates.p2x) {
-      const x1 = coordinates.p1x;
-      coordinates.p1x = coordinates.p2x;
-      coordinates.p2x = x1;
-    }
-  }
-
   function transposeSqrtCoordinatesIfNeeded(notation: MultiCellAttributes) {
     if (notation.fromCol > notation.toCol) {
       const fromCol = notation.fromCol;
@@ -1270,9 +1226,7 @@ export default function notationMutateHelper() {
     handleDeleteKey,
     isNotationInQuestionArea,
     isCellInQuestionArea,
-    updateHorizontalLineNotation,
     updateSqrtNotation,
-    updateVerticalLineNotation,
     updateLineNotation,
     updateCurveNotation,
     updateCircleNotation,

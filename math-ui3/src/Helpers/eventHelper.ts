@@ -8,8 +8,6 @@ import {
   NotationAttributes,
   PointNotationAttributes,
   RectNotationAttributes,
-  HorizontalLineNotationAttributes,
-  VerticalLineNotationAttributes,
   LineNotationAttributes,
   CurveNotationAttributes,
   SqrtNotationAttributes,
