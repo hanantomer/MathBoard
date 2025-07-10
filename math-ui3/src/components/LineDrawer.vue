@@ -30,7 +30,7 @@
       :selectEntry="{
         editMode: ['LINE_SELECTED'],
         func: selectLine,
-        event: 'EV_LINE_SELECTED', 
+        event: 'EV_LINE_SELECTED',
       }"
       :moveByKeyEntry="{
         editMode: ['LINE_SELECTED'],
@@ -119,7 +119,7 @@ const linePosition = ref<LineAttributes>({
   p2y: 0,
 });
 
-// watch
+
 // Watch for any change in linePosition's properties
 watch(
   linePosition,
@@ -135,6 +135,7 @@ watch(
   },
   { deep: true },
 );
+
 // computed
 
 const show = computed(() => {

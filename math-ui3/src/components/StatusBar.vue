@@ -40,7 +40,7 @@ const editModeStatusText = {
 watchHelper.watchEveryEditModeChange(setStatusBarText);
 
 watchHelper.watchCustomEvent(
-  ["LINE_DRAWING", "LINE_EDITING_LEFT", "LINE_EDITING_RIGHT"],
+  ["LINE_DRAWING", "LINE_EDITING_LEFT", "LINE_EDITING_RIGHT", "POLYGON_DRAWING"],
   "EV_LINE_CHANGED",
   setStatusBarLineIndication,
 );
