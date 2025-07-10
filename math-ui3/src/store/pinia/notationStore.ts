@@ -351,7 +351,7 @@ export const useNotationStore = defineStore("notation", () => {
     return true;
   }
 
-  
+
   function checkLineIntersection(
     line: LineNotationAttributes,
     rect: RectCoordinates,
@@ -389,7 +389,7 @@ export const useNotationStore = defineStore("notation", () => {
     return getSelectedNotations().length > 0;
   }
 
-  function isSymbolAdjecentToHorizontalLine(
+  function isSymbolAdjecentToLine(
     cell: CellAttributes,
     maxDistance: number,
   ): boolean {
@@ -487,7 +487,7 @@ export const useNotationStore = defineStore("notation", () => {
     getRectNotations,
     getSelectedNotations,
     hasSelectedNotations,
-    isSymbolAdjecentToHorizontalLine,
+    isSymbolAdjecentToLine,
     isSymbolPartOfFraction,
     resetSelectedNotations,
     selectNotation,

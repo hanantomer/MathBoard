@@ -1,7 +1,5 @@
 import { LessonAttributes } from "./lessonTypes";
 import {
-  HorizontalLineAttributes,
-  VerticalLineAttributes,
   LineAttributes,
   CurveAttributes,
   CellAttributes,
@@ -33,30 +31,6 @@ type QuestionNotationAttributes = {
 };
 
 // line
-
-export type QuestionHorizontalLineAttributes =
-  EntityAttributes &
-    NotationAttributes &
-    HorizontalLineAttributes &
-    QuestionNotationAttributes;
-
-export type QuestionHorizontalLineCreationAttributes =
-  Omit<
-    QuestionHorizontalLineAttributes,
-    keyof EntityAttributes
-  >;
-
-export type QuestionVerticalLineAttributes =
-  EntityAttributes &
-    NotationAttributes &
-    VerticalLineAttributes &
-    QuestionNotationAttributes;
-
-export type QuestionVerticalLineCreationAttributes =
-  Omit<
-    QuestionVerticalLineAttributes,
-    keyof EntityAttributes
-  >;
 
 export type QuestionLineAttributes =
   EntityAttributes &

@@ -85,24 +85,8 @@ export const useEditModeStore = defineStore("editMode", () => {
     return editMode.value === "SQRT_SELECTED";
   }
 
-  function isHorizontalLineDrawingMode() {
-    return editMode.value === "LINE_DRAWING";
-  }
-
-  function isHorizontalLineEditingMode() {
-    return (
-      editMode.value === "LINE_EDITING_LEFT" ||
-      editMode.value === "LINE_EDITING_RIGHT"
-    );
-  }
-
-
   function isSqrtDrawingMode() {
     return editMode.value === "SQRT_DRAWING";
-  }
-
-  function isHorizontalLineStartedMode() {
-    return editMode.value === "LINE_STARTED";
   }
 
   function isLineStartedMode() {

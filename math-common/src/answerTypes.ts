@@ -31,29 +31,6 @@ type AnswerNotationAttributes = {
 
 // line
 
-export type AnswerHorizontalLineAttributes =
-  EntityAttributes &
-    NotationAttributes &
-    HorizontalLineAttributes &
-    AnswerNotationAttributes;
-
-export type AnswerHorizontalLineCreationAttributes =
-  Omit<
-    AnswerHorizontalLineAttributes,
-    keyof EntityAttributes
-  >;
-
-export type AnswerVerticalLineAttributes =
-  EntityAttributes &
-    NotationAttributes &
-    VerticalLineAttributes &
-    AnswerNotationAttributes;
-
-export type AnswerVerticalLineCreationAttributes =
-  Omit<
-    AnswerVerticalLineAttributes,
-    keyof EntityAttributes
-  >;
 
 export type AnswerLineAttributes =
   EntityAttributes &

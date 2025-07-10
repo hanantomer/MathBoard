@@ -4,14 +4,14 @@ import Color from "../../color.model";
 import Question from "../question.model";
 import QuestionDecorator from "../questionDecorator";
 import {
-    QuestionHorizontalLineAttributes,
-    QuestionHorizontalLineCreationAttributes,
+    QuestionLineAttributes,
+    QuestionLineCreationAttributes,
 } from "../../../../../math-common/src/questionTypes";
 
 @QuestionDecorator("QuestionSqrt")
 export default class QuestionSqrt extends Model<
-    QuestionHorizontalLineAttributes,
-    QuestionHorizontalLineCreationAttributes
+    QuestionLineAttributes,
+    QuestionLineCreationAttributes
 > {
     notationType = "SQRT";
     boardType = "QUESTION";

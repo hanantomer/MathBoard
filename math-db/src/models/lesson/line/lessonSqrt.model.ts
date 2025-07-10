@@ -1,8 +1,8 @@
 import LessonDecorator from "../lessonDecorator";
 import { Model, Column, BelongsTo, ForeignKey, DataType, AllowNull } from "sequelize-typescript";
 import {
-    LessonHorizontalLineAttributes,
-    LessonHorizontalLineCreationAttributes,
+    LessonLineAttributes,
+    LessonLineCreationAttributes,
 } from "../../../../../math-common/src/lessonTypes";
 import User from "../../user.model";
 import Color from "../../color.model";
@@ -10,8 +10,8 @@ import Lesson from "../../lesson/lesson.model";
 
 @LessonDecorator("LessonSqrt")
 export default class LessonSqrt extends Model<
-    LessonHorizontalLineAttributes,
-    LessonHorizontalLineCreationAttributes
+    LessonLineAttributes,
+    LessonLineCreationAttributes
 > {
     notationType = "SQRT";
     boardType = "LESSON";

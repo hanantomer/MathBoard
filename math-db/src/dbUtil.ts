@@ -15,7 +15,6 @@ import {
     PointNotationAttributes,
     RectNotationAttributes,
     LineNotationAttributes,
-    VerticalLineNotationAttributes,
     SqrtNotationAttributes
 } from "../../math-common/src/baseTypes";
 import { UserAttributes, StudentLessonCreationAttributes} from "../../math-common/build/userTypes";
@@ -709,12 +708,6 @@ export default function dbUtil() {
         if (m.p2y < 0) throw new Error(`p2y must be >= 0, got ${m.p2y}`);
    }
 
-    function validateVerticalLineNotation(m: VerticalLineNotationAttributes): void {
-        if (m.px < 0) throw new Error(`px must be >= 0, got ${m.px}`);
-        if (m.p1y < 0) throw new Error(`p1y must be >= 0, got ${m.p1y}`);
-        if (m.p2y < 0) throw new Error(`p2y must be >= 0, got ${m.p2y}`);
-        if (m.p1y >= m.p2y) throw new Error(`p1y (${m.p1y}) must be < p2y (${m.p2y})`);
-    }
 
     function validateCurveNotation(m: CurveNotationAttributes): void {
         if (m.p1x <= 0) throw new Error(`p1x must be > 0, got ${m.p1x}`);

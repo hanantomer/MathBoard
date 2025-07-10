@@ -109,7 +109,7 @@ export default function useMatrixHelper() {
     }
 
     if (
-      notationStore.isSymbolAdjecentToHorizontalLine(notation, maxLineDistance)
+      notationStore.isSymbolAdjecentToLine(notation, maxLineDistance)
     ) {
       return true;
     }

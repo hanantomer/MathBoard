@@ -1,6 +1,4 @@
 import {
-  HorizontalLineAttributes,
-  VerticalLineAttributes,
   LineAttributes,
   CurveAttributes,
   CellAttributes,
@@ -25,27 +23,6 @@ export type LessonCreationAttributes = Omit<
 
 // line
 
-export type LessonHorizontalLineAttributes =
-  EntityAttributes &
-    NotationAttributes &
-    HorizontalLineAttributes;
-
-export type LessonHorizontalLineCreationAttributes =
-  Omit<
-    LessonHorizontalLineAttributes,
-    keyof EntityAttributes
-  >;
-
-export type LessonVerticalLineAttributes =
-  EntityAttributes &
-    NotationAttributes &
-    VerticalLineAttributes;
-
-export type LessonVerticalLineCreationAttributes =
-  Omit<
-    LessonVerticalLineAttributes,
-    keyof EntityAttributes
-  >;
 
 export type LessonLineAttributes =
   EntityAttributes &

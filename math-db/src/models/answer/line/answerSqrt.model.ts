@@ -4,15 +4,15 @@ import User from "../../user.model";
 import Color from "../../color.model";
 import Answer from "../../answer/answer.model";
 import {
-    AnswerHorizontalLineAttributes,
-    AnswerHorizontalLineCreationAttributes,
+    AnswerLineAttributes,
+    AnswerLineCreationAttributes,
 } from "../../../../../math-common/src/answerTypes";
 
         
 @AnswerDecorator("AnswerSqrt")
 export default class AnswerSqrt extends Model<
-    AnswerHorizontalLineAttributes,
-    AnswerHorizontalLineCreationAttributes
+    AnswerLineAttributes,
+    AnswerLineCreationAttributes
 > {
     notationType = "SQRT";
     boardType = "ANSWER";

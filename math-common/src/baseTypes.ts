@@ -176,16 +176,7 @@ export type SqrtNotationCreationAttributes = Omit<
   "uuid"
 >;
 
-export type HorizontalLineNotationCreationAttributes =
-  Omit<
-    NotationAttributes & HorizontalLineAttributes,
-    "uuid"
-  >;
-export type VerticalLineNotationCreationAttributes =
-  Omit<
-    NotationAttributes & VerticalLineAttributes,
-    "uuid"
-  >;
+
 export type LineNotationCreationAttributes = Omit<
   NotationAttributes & LineAttributes,
   "uuid"
