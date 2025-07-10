@@ -545,7 +545,7 @@ export default function dbUtil() {
                 }
             );
         } catch (error) {
-            logger.error(`Error creating notation: ${error}`);
+            logger.error(`Error creating notation: ${error}\n${error instanceof Error ? error.stack : ''}`);
             throw error;
         }
     }
