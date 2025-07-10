@@ -125,7 +125,7 @@
           >
             Privacy Policy
           </v-btn>
-          |
+          
           <!-- <v-btn
             style="background-color: transparent; color: whitesmoke"
             class="ml-1"
@@ -136,7 +136,7 @@
           >
             Tutorial
           </v-btn> -->
-          |
+          
           <v-btn
             style="background-color: transparent; color: whitesmoke"
             class="ml-1"
