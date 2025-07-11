@@ -80,9 +80,7 @@ export default function screenHelper() {
     };
   }
 
-  function getMultiCellLineAttributes(
-    n: MultiCellAttributes,
-  ): LineAttributes {
+  function getMultiCellLineAttributes(n: MultiCellAttributes): LineAttributes {
     const x1 = cellStore.getCellHorizontalWidth() * n.fromCol;
     const x2 = cellStore.getCellHorizontalWidth() * n.toCol;
     const y = cellStore.getCellVerticalHeight() * n.row;
@@ -133,7 +131,31 @@ export default function screenHelper() {
 
     const clickedCell = getCell(DotCoordinates);
 
-    const notationsAtCell = notationStore.getNotationsAtCell(clickedCell);
+    let notationsAtCell = notationStore.getNotationsAtCell(clickedCell);
+
+    // If there are multiple notations and a mixture of rect/circle and non-rect/circle, remove rects and circles for lower priority
+    if (
+      notationsAtCell?.length > 1 &&
+      notationsAtCell.some(
+        (n) =>
+          n.notationType === "IMAGE" ||
+          n.notationType === "TEXT" ||
+          n.notationType === "CIRCLE",
+      ) &&
+      notationsAtCell.some(
+        (n) =>
+          n.notationType !== "IMAGE" &&
+          n.notationType !== "TEXT" &&
+          n.notationType !== "CIRCLE",
+      )
+    ) {
+      notationsAtCell = notationsAtCell.filter(
+        (n) =>
+          n.notationType !== "IMAGE" &&
+          n.notationType !== "TEXT" &&
+          n.notationType !== "CIRCLE",
+      );
+    }
 
     if (!notationsAtCell?.length) return null;
 
@@ -279,7 +301,6 @@ export default function screenHelper() {
     return Math.sqrt(a + b);
   }
 
-
   function getClickedPosDistanceFromLineEdge(
     DotCoordinates: DotCoordinates,
     nx: number,
@@ -308,7 +329,6 @@ export default function screenHelper() {
       getMultiCellLineAttributes(sqrtCoordinates),
     );
   }
-
 
   //https://en.wikipedia.org/wiki/Distance_from_a_point_to_a_line
   function getClickedPosDistanceFromLine(
@@ -340,11 +360,7 @@ export default function screenHelper() {
     notationStore
       .getNotations()
       .filter((n) => n.uuid !== selectedNotationUUId)
-      .filter(
-        (n) =>
-          n.notationType === "LINE" ||
-          n.notationType === "CIRCLE",
-      )
+      .filter((n) => n.notationType === "LINE" || n.notationType === "CIRCLE")
       .forEach((n) => {
         switch (n.notationType) {
           case "LINE": {
