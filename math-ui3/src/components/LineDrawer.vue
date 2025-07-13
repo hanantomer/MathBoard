@@ -40,8 +40,8 @@
         editMode: ['LINE_SELECTED'],
       }"
     />
-
     <line-handle
+      v-show="editModeStore.isLineMode()"
       drawing-mode="LINE_DRAWING"
       editing-mode="LINE_EDITING_LEFT"
       v-bind:style="{
@@ -50,6 +50,7 @@
       }"
     ></line-handle>
     <line-handle
+      v-show="editModeStore.isLineMode()"
       drawing-mode="LINE_DRAWING"
       editing-mode="LINE_EDITING_RIGHT"
       v-bind:style="{
@@ -88,11 +89,13 @@ import {
   NotationAttributes,
 } from "../../../math-common/src/baseTypes";
 import useEventBus from "../helpers/eventBusHelper";
+import useWatchHelper from "../helpers/watchHelper";
 import lineWatcher from "./LineWatcher.vue";
 import lineHandle from "./LineHandle.vue";
 import useScreenHelper from "../helpers/screenHelper"; // Add this line
 import useNotationMutateHelper from "../helpers/notationMutateHelper"; // Add this line
 
+const watchHelper = useWatchHelper();
 const eventBus = useEventBus();
 const editModeStore = useEditModeStore();
 const notationStore = useNotationStore();
@@ -101,12 +104,6 @@ const screenHelper = useScreenHelper();
 const notationMutateHelper = useNotationMutateHelper();
 
 // vars
-
-const POLYGON_SAVE_DELAY = 1000;
-
-let drawingTimer: number | null = null;
-
-let modifyRight = false;
 
 let movementDirection: MovementDirection = "NONE";
 
@@ -119,6 +116,11 @@ const linePosition = ref<LineAttributes>({
   p2y: 0,
 });
 
+const modifyRight = computed(
+  () =>
+    (slopeType === "POSITIVE" && movementDirection === "UP") ||
+    (slopeType === "NEGATIVE" && movementDirection === "DOWN"),
+);
 
 // Watch for any change in linePosition's properties
 watch(
@@ -162,6 +164,33 @@ let handleBottom = computed(() => {
   return linePosition.value.p2y + (cellStore.getSvgBoundingRect().top ?? 0);
 });
 
+watchHelper.watchMouseEvent(
+  ["POLYGON_DRAWING"],
+  "EV_SVG_MOUSEDOWN",
+  resetPolygonDrawing,
+);
+
+function resetPolygonDrawing(e: MouseEvent) {
+  const position = {
+    x: e.pageX - cellStore.getSvgBoundingRect().x,
+    y: e.pageY - cellStore.getSvgBoundingRect().y,
+  };
+
+  // Check if p is close enough to either edge of linePosition
+  const distP1 = Math.sqrt(
+    Math.pow(position.x - linePosition.value.p1x, 2) +
+      Math.pow(position.y - linePosition.value.p1y, 2),
+  );
+  const distP2 = Math.sqrt(
+    Math.pow(position.x - linePosition.value.p2x, 2) +
+      Math.pow(position.y - linePosition.value.p2y, 2),
+  );
+
+  if (distP1 > 25 && distP2 > 25) {
+    editModeStore.setDefaultEditMode();
+  }
+}
+
 function setInitialPosition(p: DotCoordinates) {
   linePosition.value.p1x = p.x;
   linePosition.value.p2x = p.x;
@@ -172,10 +201,6 @@ function setInitialPosition(p: DotCoordinates) {
 }
 
 function drawLine(p: DotCoordinates) {
-  if (editModeStore.isPolygonDrawingMode()) {
-    handlePolygonTimer(p);
-  }
-
   if (slopeType === "NONE") {
     slopeType = getSlopeTypeForNewLine(p.x, p.y);
   }
@@ -190,32 +215,13 @@ function drawLine(p: DotCoordinates) {
   // 3. upper right to lower left. direction is DOWN and slopeType is POSITIVE
   // 4. lower left to upper right. direction is UP and slopeType is POSITIVE
 
-  modifyRight =
-    (slopeType === "POSITIVE" && movementDirection === "UP") ||
-    (slopeType === "NEGATIVE" && movementDirection === "DOWN");
-
-  if (modifyRight) {
+  if (modifyRight.value) {
     linePosition.value.p2x = p.x;
     linePosition.value.p2y = p.y;
   } else {
     linePosition.value.p1x = p.x;
     linePosition.value.p1y = p.y;
   }
-}
-
-function handlePolygonTimer(p: DotCoordinates) {
-  // Clear any existing timer
-  if (drawingTimer) {
-    clearTimeout(drawingTimer);
-  }
-
-  // Start new timer
-  drawingTimer = window.setTimeout(() => {
-    saveLine();
-    setInitialPosition(p);
-    editModeStore.setNextEditMode();
-    drawingTimer = null;
-  }, POLYGON_SAVE_DELAY);
 }
 
 function selectLine(notation: NotationAttributes) {
@@ -268,13 +274,16 @@ function getMovementDirection(yPos: number): MovementDirection {
 }
 
 function endDrawing() {
-  if (editModeStore.isPolygonDrawingMode() && drawingTimer) {
-    clearTimeout(drawingTimer);
-    drawingTimer = null;
-  }
-
-  if (editModeStore.isLineDrawingMode() || editModeStore.isLineEditingMode()) {
-    saveLine();
+  saveLine();
+  if (editModeStore.isPolygonDrawingMode()) {
+    if (modifyRight.value) {
+      linePosition.value.p1x = linePosition.value.p2x;
+      linePosition.value.p1y = linePosition.value.p2y;
+    } else {
+      linePosition.value.p2x = linePosition.value.p1x;
+      linePosition.value.p2y = linePosition.value.p1y;
+    }
+    return;
   }
 
   editModeStore.setDefaultEditMode();
@@ -298,8 +307,25 @@ function saveLine(fixEdge: boolean = true) {
   }
 
   if (fixEdge) {
-    fixLineLeftEdge(linePosition.value);
-    fixLineRightEdge(linePosition.value);
+    linePosition.value.p1x = getAdjustedEdge({
+      x: linePosition.value.p1x,
+      y: linePosition.value.p1y,
+    }).x;
+
+    linePosition.value.p1y = getAdjustedEdge({
+      x: linePosition.value.p1x,
+      y: linePosition.value.p1y,
+    }).y;
+
+    linePosition.value.p2x = getAdjustedEdge({
+      x: linePosition.value.p2x,
+      y: linePosition.value.p2y,
+    }).x;
+
+    linePosition.value.p2y = getAdjustedEdge({
+      x: linePosition.value.p2x,
+      y: linePosition.value.p2y,
+    }).y;
   }
 
   if (notationStore.getSelectedNotations().length > 0) {
@@ -316,72 +342,36 @@ function saveLine(fixEdge: boolean = true) {
   }
 }
 
-function fixLineRightEdge(linePosition: LineAttributes) {
-  const lineRightPosition = {
-    x: linePosition.p2x,
-    y: linePosition.p2y,
-  };
-
-  // notation edge at right
-  const nearNoatationAtRight =
-    screenHelper.getNearestNotationEdge(lineRightPosition);
-
-  if (nearNoatationAtRight != null) {
-    linePosition.p2x = nearNoatationAtRight.x;
-    linePosition.p2y = nearNoatationAtRight.y;
-  }
-
-  if (nearNoatationAtRight == null) {
-    // cell X edge at right
-    const nearCellXBorderAtRight =
-      screenHelper.getNearestCellXBorder(lineRightPosition);
-
-    if (nearCellXBorderAtRight != null) {
-      linePosition.p2x = nearCellXBorderAtRight;
-    }
-
-    // cell Y edge at right
-    const nearCellYBorderAtRight =
-      screenHelper.getNearestCellYBorder(lineRightPosition);
-
-    if (nearCellYBorderAtRight != null) {
-      linePosition.p2y = nearCellYBorderAtRight;
-    }
-  }
-}
-
-function fixLineLeftEdge(linePosition: LineAttributes) {
-  const lineLeftPosition = {
-    x: linePosition.p1x,
-    y: linePosition.p1y,
-  };
-
+function getAdjustedEdge(point: DotCoordinates): DotCoordinates {
   // notation edge at left
-  const nearNoatationAtLeft =
-    screenHelper.getNearestNotationEdge(lineLeftPosition);
+  const nearNoatationAtLeft = screenHelper.getNearestNotationEdge(point);
 
   if (nearNoatationAtLeft != null) {
-    linePosition.p1x = nearNoatationAtLeft.x;
-    linePosition.p1y = nearNoatationAtLeft.y;
+    return { x: nearNoatationAtLeft.x, y: nearNoatationAtLeft.y };
   }
 
-  if (nearNoatationAtLeft == null) {
-    // cell X edge at left
-    const nearCellXBorderAtLeft =
-      screenHelper.getNearestCellXBorder(lineLeftPosition);
+  // intersection with other line
+  const nearestIntersection = screenHelper.getNearestNotationPoint(point);
 
-    if (nearCellXBorderAtLeft != null) {
-      linePosition.p1x = nearCellXBorderAtLeft;
-    }
-
-    // cell Y edge at right
-    const nearCellYBorderAtLeft =
-      screenHelper.getNearestCellYBorder(lineLeftPosition);
-
-    if (nearCellYBorderAtLeft != null) {
-      linePosition.p1y = nearCellYBorderAtLeft;
-    }
+  if (nearestIntersection != null) {
+    return { x: nearestIntersection.x, y: nearestIntersection.y };
   }
+
+  // cell X edge
+  const nearCellXBorder = screenHelper.getNearestCellXBorder(point);
+
+  if (nearCellXBorder != null) {
+    return { x: nearCellXBorder, y: point.y };
+  }
+
+  // cell Y edge at right
+  const nearCellYBorder = screenHelper.getNearestCellYBorder(point);
+
+  if (nearCellYBorder != null) {
+    return { x: point.x, y: nearCellYBorder };
+  }
+
+  return point;
 }
 
 function applyMoveToLine(dx: number, dy: number) {

@@ -91,7 +91,6 @@ export default function eventHelper() {
           break;
         }
 
-
         case "LINE": {
           let n1 = { ...n } as LineNotationAttributes;
           const lineWidth = n1.p2x - n1.p1x;
@@ -308,23 +307,64 @@ export default function eventHelper() {
     const image: HTMLImageElement = new Image();
     return new Promise<void>((resolve, reject) => {
       image.onload = () => {
+        // Convert image to grayscale using canvas
+        const canvas = document.createElement("canvas");
+        canvas.width = image.width;
+        canvas.height = image.height;
+        const ctx = canvas.getContext("2d");
+        if (!ctx) {
+          reject(new Error("Failed to get canvas context"));
+          return;
+        }
+        ctx.drawImage(image, 0, 0);
+        const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+        for (let i = 0; i < imgData.data.length; i += 4) {
+          const avg = Math.round(
+            (imgData.data[i] + imgData.data[i + 1] + imgData.data[i + 2]) / 3,
+          );
+          imgData.data[i] = avg; // R
+          imgData.data[i + 1] = avg; // G
+          imgData.data[i + 2] = avg; // B
+          // Alpha remains unchanged
+        }
+        ctx.putImageData(imgData, 0, 0);
+        const grayscaleBase64 = canvas.toDataURL();
+
+        // Check base64 size (rough estimate)
+        const base64SizeBytes = Math.ceil(
+          ((grayscaleBase64.length - "data:image/png;base64,".length) * 3) / 4,
+        );
+        if (base64SizeBytes > 1024 * 1024) {
+          // 1 MB
+          alert("Image is too large(max- 1 mb)");
+          reject(new Error("Image is too large(max- 1 mb)"));
+          return;
+        }
+
         const selectedCell: CellAttributes | null = cellStore.getSelectedCell();
         if (!selectedCell) {
           reject(new Error("No selected cell"));
           return;
         }
         const { col: fromCol, row: fromRow } = selectedCell;
+
+        // Limit image width to maximum 1000 pixels
+        const displayWidth = Math.min(image.width, 1000);
+        const displayHeight = image.height * (displayWidth / image.width);
+
         const toCol: number =
-          Math.ceil(image.width / cellStore.getCellHorizontalWidth()) + fromCol;
+          Math.ceil(displayWidth / cellStore.getCellHorizontalWidth()) +
+          fromCol;
         const toRow: number =
-          Math.ceil(image.height / cellStore.getCellVerticalHeight()) + fromRow;
+          Math.ceil(displayHeight / cellStore.getCellVerticalHeight()) +
+          fromRow;
 
         notationMutationHelper.addImageNotation(
           fromCol,
           toCol,
           fromRow,
           toRow,
-          base64,
+          grayscaleBase64,
         );
         resolve();
       };

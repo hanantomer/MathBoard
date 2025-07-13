@@ -367,7 +367,7 @@ export default function useHtmlMatrixHelper() {
     if (n.notationType === "IMAGE") {
       let n1 = n as RectNotationAttributes;
       const bColor = rectBorderColor(n ?? false);
-      return `<img id=${n1.uuid}  style='width:100%;height:100%;border:groove 2px;border-color:${bColor}' src='${n1.value}'>`;
+      return `<img draggable="false"  id=${n1.uuid}  style='width:100%;height:100%;border:groove 2px;border-color:${bColor}' src='${n1.value}'>`;
     }
 
     if (n.notationType === "EXPONENT") {

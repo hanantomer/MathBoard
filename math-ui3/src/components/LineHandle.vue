@@ -32,6 +32,7 @@ function endEdit(e: MouseEvent) {
 </script>
 <style>
 .lineHandle {
+  background-color: lightgray ;
   cursor: col-resize;
   position: absolute;
   display: block;

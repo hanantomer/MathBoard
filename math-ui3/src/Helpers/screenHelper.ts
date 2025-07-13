@@ -17,8 +17,8 @@ import { useCellStore } from "../store/pinia/cellStore";
 
 const cellStore = useCellStore();
 
-const maxNotationDistance = 8;
-const maxCellDistance = 5;
+const maxNotationDistance = 6;
+const maxCellDistance = 3;
 
 export default function screenHelper() {
   type NotationDistance = { notation: NotationAttributes; distance: number };
@@ -402,21 +402,6 @@ export default function screenHelper() {
     return nearPoint;
   }
 
-  // function getCloseLineEdge(dot: DotCoordinates): DotCoordinates | null {
-  //   const notationEdge = getCloseNotationEdge(dot);
-  //   if (notationEdge) return notationEdge;
-
-  //   return getCloseCellEdge(dot);
-  // }
-
-  // function getCloseCellXEdge(xPos: number): number | null {
-
-  //   const cellEdgePoint = getNearestCellBorder();
-  //   const distance = getPointsDistance(cellEdgePoint, dot);
-
-  //   return distance < maxDistance ? cellEdgePoint : null;
-  // }
-
   function getNearestPointOnCircleCircumference(
     dot: DotCoordinates,
     centerX: number,
@@ -499,6 +484,60 @@ export default function screenHelper() {
     return Math.round(Math.sqrt(dx * dx + dy * dy));
   }
 
+  function getNearestNotationPoint(dot: DotCoordinates): DotCoordinates | null {
+    const notationStore = useNotationStore();
+    let nearestPoint: DotCoordinates | null = null;
+    let minDistance = Infinity;
+
+    const selectedNotationUUId = notationStore.getSelectedNotations()?.at(0)
+      ?.uuid;
+
+    notationStore
+      .getNotations()
+      .filter((n) => n.uuid !== selectedNotationUUId)
+      .filter((n) => n.notationType === "LINE")
+      .forEach((n) => {
+        let candidatePoint: DotCoordinates | null = null;
+        let distance = Infinity;
+        const n1 = n as LineNotationAttributes;
+        // Find the nearest point on the line segment to the dot
+        candidatePoint = getNearestPointOnLine(dot, n1);
+        distance = getPointsDistance(candidatePoint, dot);
+        if (distance < maxNotationDistance && distance < minDistance) {
+          minDistance = distance;
+          nearestPoint = candidatePoint;
+        }
+      });
+
+    return nearestPoint;
+  }
+
+  // Helper function: nearest point on a line segment to a dot
+  function getNearestPointOnLine(
+    dot: DotCoordinates,
+    line: LineNotationAttributes,
+  ): DotCoordinates {
+    const { p1x, p1y, p2x, p2y } = line;
+    const x0 = dot.x,
+      y0 = dot.y;
+    const x1 = p1x,
+      y1 = p1y,
+      x2 = p2x,
+      y2 = p2y;
+
+    const dx = x2 - x1;
+    const dy = y2 - y1;
+    if (dx === 0 && dy === 0) return { x: x1, y: y1 }; // Line is a point
+
+    // Project point onto the line, clamped to the segment
+    const t = ((x0 - x1) * dx + (y0 - y1) * dy) / (dx * dx + dy * dy);
+    const tClamped = Math.max(0, Math.min(1, t));
+    return {
+      x: Math.round(x1 + tClamped * dx),
+      y: Math.round(y1 + tClamped * dy),
+    };
+  }
+
   return {
     getClickedPosDistanceFromLine,
     getClickedPosDistanceFromExponent,
@@ -513,5 +552,6 @@ export default function screenHelper() {
     getNearestCellXBorder,
     getNearestCellYBorder,
     getPointsDistance,
+    getNearestNotationPoint,
   };
 }

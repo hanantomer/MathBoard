@@ -53,12 +53,7 @@ const authorizationHelper = UseAuthorizationHelper();
 const notationStore = useNotationStore();
 const selectionHelper = useSelectionHelper();
 
-let lineTypes: Array<NotationType> = [
-  "CURVE",
-  "CIRCLE",
-  "LINE",
-  "ANNOTATION",
-];
+let lineTypes: Array<NotationType> = ["CURVE", "CIRCLE", "LINE", "ANNOTATION"];
 
 let selectionPosition = ref({
   x1: 0, //left
@@ -241,6 +236,7 @@ async function handleKeyUp(e: KeyboardEvent) {
   if (selectionRectHeight.value === 0) return;
 
   switch (e.code) {
+    case "Backspace":
     case "Delete":
       notationMutationHelper.deleteSelectedNotations();
       editModeStore.setDefaultEditMode();

@@ -677,9 +677,9 @@ export default function notationMutateHelper() {
 
 
     // allow adding more lines if polygon
-    if (editModeStore.getEditMode() === "POLYGON_DRAWING") {
-      editModeStore.setEditMode("POLYGON_STARTED");
-    }
+    //if (editModeStore.getEditMode() === "POLYGON_DRAWING") {
+    //  editModeStore.setEditMode("POLYGON_STARTED");
+    //}
 
     notationStore.resetSelectedNotations();
 

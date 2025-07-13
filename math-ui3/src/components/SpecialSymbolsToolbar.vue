@@ -141,17 +141,17 @@ const specialSymbols = ref([
   },
 
   // Trigonometric functions
-  { name: "sin", value: "sin", tooltip: "Sine", tabIndex: 17 },
-  { name: "cos", value: "cos", tooltip: "Cosine", tabIndex: 18 },
-  { name: "tan", value: "tan", tooltip: "Tangent", tabIndex: 19 },
-  { name: "cot", value: "cot", tooltip: "Cotangent", tabIndex: 20 },
-  {
-    name: "separator",
-    value: "",
-    tooltip: "",
-    tabIndex: -1,
-    isSeparator: true,
-  },
+  // { name: "sin", value: "sin", tooltip: "Sine", tabIndex: 17 },
+  // { name: "cos", value: "cos", tooltip: "Cosine", tabIndex: 18 },
+  // { name: "tan", value: "tan", tooltip: "Tangent", tabIndex: 19 },
+  // { name: "cot", value: "cot", tooltip: "Cotangent", tabIndex: 20 },
+  // {
+  //   name: "separator",
+  //   value: "",
+  //   tooltip: "",
+  //   tabIndex: -1,
+  //   isSeparator: true,
+  // },
 
   // Geometric symbols
   { name: "angle", value: "&ang;", tooltip: "Angle", tabIndex: 21 },

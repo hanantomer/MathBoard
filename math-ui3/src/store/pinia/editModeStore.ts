@@ -50,12 +50,10 @@ export const useEditModeStore = defineStore("editMode", () => {
     );
   }
 
-
   function isLineMode() {
     return (
-      editMode.value === "POLYGON_STARTED" ||
-      editMode.value === "LINE_STARTED" ||
       editMode.value === "LINE_DRAWING" ||
+      editMode.value === "LINE_SELECTED" ||
       editMode.value === "LINE_EDITING_LEFT" ||
       editMode.value === "LINE_EDITING_RIGHT"
     );
@@ -100,7 +98,6 @@ export const useEditModeStore = defineStore("editMode", () => {
   function isSqrtStartedMode() {
     return editMode.value === "SQRT_STARTED";
   }
-
 
   function isLineDrawingMode() {
     return (
