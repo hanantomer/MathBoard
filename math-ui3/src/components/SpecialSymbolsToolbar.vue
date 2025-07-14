@@ -156,6 +156,8 @@ const specialSymbols = ref([
   // Geometric symbols
   { name: "angle", value: "&ang;", tooltip: "Angle", tabIndex: 21 },
   { name: "triangle", value: "&#x25B2", tooltip: "Triangle", tabIndex: 22 },
+  { name: "perimeter", value: "<math><mi>P</mi></math>", tooltip: "Perimeter", tabIndex: 22 },
+  { name: "area", value: "<math><mi>A</mi></math>", tooltip: "Area", tabIndex: 22 },
   {
     name: "perpendicular",
     value: "&#10178",

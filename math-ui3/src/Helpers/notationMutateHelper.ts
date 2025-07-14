@@ -392,24 +392,6 @@ export default function notationMutateHelper() {
     return true;
   }
 
-  /*
-  function moveSelectedNotations(
-    deltaX: number,
-    deltaY: number,
-    deltaCol: number,
-    deltaRow: number,
-    keepOriginal: boolean,
-  ): boolean {
-    //if (!canMoveSelectedNotations(deltaCol, deltaRow)) return false;
-
-    if (deltaX !== 0 || deltaY !== 0) {
-      return moveSelectedPixelNotations(deltaX, deltaY);
-    }
-
-    return moveSelectedNotationsAtCellScale(deltaCol, deltaRow, keepOriginal);
-  }
-  */
-
   function saveMovedNotations(moveDirection: SelectionMoveDirection) {
     const notations = getSelectedNotationsSortedByDirection(moveDirection);
 
@@ -424,21 +406,6 @@ export default function notationMutateHelper() {
     } else {
       updateMovedNotations(notations);
     }
-
-    // const currentTime = Date.now();
-    // if (
-    //   lastUpdateCoordinatesTime == null ||
-    //   lastUpdateCoordinatesTime - currentTime > updateCoordinatesInterval
-    // ) {
-    //   if (updateCoordinatesHandle) window.clearTimeout(updateCoordinatesHandle);
-
-    //   updateCoordinatesHandle = window.setTimeout(
-    //     saveMovedNotationsDelayed,
-    //     updateCoordinatesInterval,
-    //     notations,
-    //   );
-    // }
-    // lastUpdateCoordinatesTime = Date.now();
   }
 
   async function saveMovedNotationsDelayed(notations: NotationAttributes[]) {
@@ -675,12 +642,6 @@ export default function notationMutateHelper() {
       user: userStore.getCurrentUser()!,
     };
 
-
-    // allow adding more lines if polygon
-    //if (editModeStore.getEditMode() === "POLYGON_DRAWING") {
-    //  editModeStore.setEditMode("POLYGON_STARTED");
-    //}
-
     notationStore.resetSelectedNotations();
 
     addNotation(lineNotation);
@@ -704,14 +665,6 @@ export default function notationMutateHelper() {
     if (overlappedSameTypeNotation) {
       updateFromExistingNotation(overlappedSameTypeNotation, newNotation);
     }
-
-    //let overlappedAnyTypeNotation: NotationAttributes | undefined =
-    //  findOverlapNotationsOfAnyTypeButLine(newNotation);
-
-    // don't allow override of other type notation
-    //if (overlappedAnyTypeNotation) {
-    //  return;
-    // }
 
     addNotation(newNotation);
   }

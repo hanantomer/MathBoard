@@ -41,7 +41,7 @@ export default function useHtmlMatrixHelper() {
   }
 
   function signFontSize() {
-    return `${cellStore.getCellVerticalHeight() / 28}em`;
+    return `${cellStore.getCellVerticalHeight() / 24}em`;
   }
 
   function exponentFontSize() {
@@ -404,7 +404,7 @@ export default function useHtmlMatrixHelper() {
 
     const leftMargin =
       n1.value === "."
-        ? "-15%"
+        ? "-10%"
         : n1.value.startsWith("&") || n1.value.length === 1
         ? "20%"
         : "0%";
