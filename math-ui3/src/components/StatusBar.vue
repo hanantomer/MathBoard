@@ -26,6 +26,7 @@ const editModeStatusText = {
   SQRT_STARTED: "Draw a line on screen to create a square root",
   CURVE_STARTED: "Draw a curve on screen",
   EXPONENT_STARTED: "Click on a cell to create an exponent",
+  EXPONENT_WRITING: "Type exponent and then click outside or press enter",
   CIRCLE_STARTED: "Draw a circle on screen",
   ANNOTATION_STARTED: "Click on a cell to add annotation",
   ANNOTATION_WRITING:
@@ -35,18 +36,25 @@ const editModeStatusText = {
   CHECKMARK_STARTED: "Click on a cell to create a checkmark",
   SEMICHECKMARK_STARTED: "Click on a cell to create a semi checkmark",
   XMARK_STARTED: "Click on a cell to create an xmark",
+  COLORIZING:
+    "Click on a cell to colorize it or drag slowly to colorize multiple cells",
+
 };
 
 watchHelper.watchEveryEditModeChange(setStatusBarText);
 
 watchHelper.watchCustomEvent(
-  ["LINE_DRAWING", "LINE_EDITING_LEFT", "LINE_EDITING_RIGHT", "POLYGON_DRAWING"],
+  [
+    "LINE_DRAWING",
+    "LINE_EDITING_LEFT",
+    "LINE_EDITING_RIGHT",
+    "POLYGON_DRAWING",
+  ],
   "EV_LINE_CHANGED",
   setStatusBarLineIndication,
 );
 
-function setStatusBarLineIndication(lineStatus: string)
-{
+function setStatusBarLineIndication(lineStatus: string) {
   text.value = lineStatus;
 
   snackbar.value = true;
