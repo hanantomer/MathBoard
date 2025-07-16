@@ -1,7 +1,7 @@
 <template>
   <div
     class="text-center"
-    style="position: absolute !important; bottom: 200; width: 100%"
+    style="position: absolute !important; bottom: 300; width: 100%"
   >
     <v-snackbar v-model="snackbar" :timeout="timeout">{{ text }} </v-snackbar>
   </div>
@@ -11,12 +11,8 @@
 import { ref } from "vue";
 import { EditMode } from "common/unions";
 import useWatchHelper from "../helpers/watchHelper";
-import { useCellStore } from "../store/pinia/cellStore";
-
-import { LineAttributes } from "common/baseTypes";
 
 const watchHelper = useWatchHelper();
-const cellStore = useCellStore();
 const snackbar = ref(false);
 const text = ref("");
 const timeout = ref(10000);
@@ -38,7 +34,6 @@ const editModeStatusText = {
   XMARK_STARTED: "Click on a cell to create an xmark",
   COLORIZING:
     "Click on a cell to colorize it or drag slowly to colorize multiple cells",
-
 };
 
 watchHelper.watchEveryEditModeChange(setStatusBarText);

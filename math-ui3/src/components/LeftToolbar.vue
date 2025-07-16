@@ -4,6 +4,19 @@
     @close="closeAccessLinkDialog"
   ></accessLinkDialog>
 
+  <div style="position: absolute; top: 20%; left: 20%">
+    <v-alert
+      color="#C51162"
+      icon="mdi-image"
+      theme="dark"
+      v-model="showPasteImageHelpMessage"
+      closable
+      title="Attention"
+      >Copy an image to the clipboard, click a cell, then press ctrl+v to
+      paste</v-alert
+    >
+  </div>
+
   <v-toolbar color="primary" dark :class="toolbarClass" height="600">
     <v-tooltip
       text="Invite students via access link"
@@ -19,6 +32,21 @@
           fab
           dark
           ><v-icon>mdi-account-plus</v-icon></v-btn
+        >
+      </template>
+    </v-tooltip>
+
+    <v-tooltip text="Paste image" v-if="userStore.isTeacher()">
+      <template v-slot:activator="{ props }">
+        <v-btn
+          v-bind="props"
+          icon
+          @click.stop="openPasteImageHelpMessage"
+          color="white"
+          x-small
+          fab
+          dark
+          ><v-icon>mdi-image</v-icon></v-btn
         >
       </template>
     </v-tooltip>
@@ -145,6 +173,8 @@ watch(
   },
   { immediate: true, deep: true },
 );
+
+const showPasteImageHelpMessage = ref(false);
 
 const modeButtons: Array<{
   name: string;
@@ -324,6 +354,10 @@ watchHelper.watchEditModeTransition(["CELL_SELECTED"], "LOG_STARTED", () =>
 
 function openAccessLinkDialog() {
   showAccessLinkDialog.value = true;
+}
+
+function openPasteImageHelpMessage() {
+  showPasteImageHelpMessage.value = true;
 }
 
 function closeAccessLinkDialog() {

@@ -145,7 +145,6 @@ export default function selectionHelper() {
   function selectLineNotation(uuid: String) {
     const notation = notationStore.getNotation(uuid)!;
     switch (notation.notationType) {
-
       case "LINE":
         editModeStore.setEditMode("LINE_SELECTED");
         eventBus.emit("EV_LINE_SELECTED", notation);
@@ -160,7 +159,10 @@ export default function selectionHelper() {
 
     cellStore.setSelectedCell(cell!, setEditMode);
 
-    if (notationStore.getParent().type == "LESSON") {
+    if (
+      lessonStore.getCurrentLesson() &&
+      notationStore.getParent().type == "LESSON"
+    ) {
       await userOutgoingOperationsHelper.syncOutgoingSelectedCell(
         cell,
         lessonStore.getCurrentLesson()!.uuid,
