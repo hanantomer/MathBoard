@@ -11,10 +11,11 @@
       theme="dark"
       v-model="showPasteImageHelpMessage"
       closable
-      title="Attention"
-      >Copy an image to the clipboard, click a cell, then press ctrl+v to
-      paste</v-alert
+      title="Paste Image Instructions"
     >
+      To paste an image, first copy it to your clipboard. Then, click on the
+      desired cell and press Ctrl+V.
+    </v-alert>
   </div>
 
   <v-toolbar color="primary" dark :class="toolbarClass" height="600">
