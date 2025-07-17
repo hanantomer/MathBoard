@@ -48,8 +48,8 @@ const db = useDb();
 let app = express();
 app.use(auth);
 app.use(cors());
-app.use(express.urlencoded({ extended: true }));
-app.use(express.json({ limit: "3mb" }));
+app.use(express.urlencoded({ extended: true, limit: "2mb" })); // Increase limit
+app.use(express.json({ limit: "1mb" }));
 
 const serverLogger = winston.createLogger({
     level: "info",

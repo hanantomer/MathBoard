@@ -147,8 +147,7 @@ async function load() {
   eventHelper.registerCopy();
 
   progressBar.value = true;
-  //toolbarKey.value++; // refresh toolbar
-
+  
   try {
     notationStore.clearNotations();
 

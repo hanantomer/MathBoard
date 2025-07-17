@@ -206,6 +206,7 @@ export default function selectionHelper() {
       let clickedCell = screenHelper.getCell(position);
       if (!clickedCell) return;
       setSelectedCell(clickedCell, true);
+      selectNotationAtPosition(position);
     }
   }
 

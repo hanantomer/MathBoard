@@ -4,7 +4,15 @@
     @close="closeAccessLinkDialog"
   ></accessLinkDialog>
 
-  <div style="position: absolute; top: 20%; left: 20%">
+  <div
+    style="
+      position: absolute;
+      top: 20%;
+      left: 20%;
+      max-width: 600px;
+      z-index: 1000;
+    "
+  >
     <v-alert
       color="#C51162"
       icon="mdi-image"
@@ -23,9 +31,9 @@
       v-model="showSelectionHelpMessage"
       closable
       title="Selection Instructions"
-    >To select an area, drag the mouse over the desired region.
-Then, drag the rectangle to move the selected notations, or use Ctrl+drag to copy them.
-To delete the selected notations, press Delete or Backspace.
+      >To select an area, drag the mouse over the desired region.
+      Then, drag the rectangle to move the selected notations, or use Ctrl+drag to copy
+      them. To delete the selected notations, press Delete or Backspace.
     </v-alert>
   </div>
 
@@ -63,7 +71,7 @@ To delete the selected notations, press Delete or Backspace.
       </template>
     </v-tooltip>
 
-    <v-tooltip text="Select notationse"">
+    <v-tooltip text="Select notations">
       <template v-slot:activator="{ props }">
         <v-btn
           v-bind="props"
@@ -391,7 +399,6 @@ function openPasteImageHelpMessage() {
 function openSelectionHelpMessage() {
   showSelectionHelpMessage.value = true;
 }
-
 
 function closeAccessLinkDialog() {
   showAccessLinkDialog.value = false;

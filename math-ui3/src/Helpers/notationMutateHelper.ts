@@ -585,7 +585,6 @@ export default function notationMutateHelper() {
     userOutgoingOperations.syncOutgoingUpdateNotation(sqrtNotation);
   }
 
-
   async function updateLineNotation(lineNotation: LineNotationAttributes) {
     await apiHelper.updateLineNotationAttributes(lineNotation);
     notationStore.addNotation(lineNotation, true);
@@ -605,7 +604,6 @@ export default function notationMutateHelper() {
   }
 
   function addCellNotation(notation: PointNotationCreationAttributes) {
-    //    editModeStore.setDefaultEditMode();
     notationStore.resetSelectedNotations();
 
     if (isCellInQuestionArea(notation)) {
@@ -630,10 +628,7 @@ export default function notationMutateHelper() {
     addNotation(notation);
   }
 
-  function addLineNotation(
-   lineAttributes: LineAttributes,
-  ) {
-
+  function addLineNotation(lineAttributes: LineAttributes) {
     let lineNotation: LineNotationCreationAttributes = {
       ...lineAttributes,
       boardType: notationStore.getParent().type,
@@ -649,14 +644,12 @@ export default function notationMutateHelper() {
 
   ///TODO : check if real needed or just one upsert notation for all types
   function upsertSqrtNotation(notation: SqrtNotationCreationAttributes) {
-
     notationStore.resetSelectedNotations();
 
     addNotation(notation);
   }
 
   function upsertRectNotation(newNotation: RectNotationCreationAttributes) {
-    //    editModeStore.setDefaultEditMode();
     notationStore.resetSelectedNotations();
 
     let overlappedSameTypeNotation = findOverlapRectNotation(newNotation);
@@ -727,7 +720,7 @@ export default function notationMutateHelper() {
         ).value;
         break;
       }
-       case "LINE": {
+      case "LINE": {
         const n1 = existingNotation as LineNotationAttributes;
         const n = notation as LineNotationAttributes;
 
@@ -1013,7 +1006,6 @@ export default function notationMutateHelper() {
     upsertSqrtNotation(sqrtNotation);
   }
 
-
   async function addCurveNotation(
     curveAttributes: CurveAttributes,
   ): Promise<string> {
@@ -1117,13 +1109,14 @@ export default function notationMutateHelper() {
 
       if (notationStore.getSelectedNotations().length) {
         await deleteSelectedNotations();
+        return;
       }
 
       if (editModeStore.getEditMode() === "AREA_SELECTED") {
         return;
       }
 
-      await collapseNotationsToSelectedCell();
+      collapseNotationsToSelectedCell();
       notationStore.selectNotationsOfCells([cellStore.getSelectedCell()]);
     } finally {
       // Always release the lock
