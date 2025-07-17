@@ -16,6 +16,17 @@
       To paste an image, first copy it to your clipboard. Then, click on the
       desired cell and press Ctrl+V.
     </v-alert>
+    <v-alert
+      color="#C51162"
+      icon="mdi-image"
+      theme="dark"
+      v-model="showSelectionHelpMessage"
+      closable
+      title="Selection Instructions"
+    >To select an area, drag the mouse over the desired region.
+Then, drag the rectangle to move the selected notations, or use Ctrl+drag to copy them.
+To delete the selected notations, press Delete or Backspace.
+    </v-alert>
   </div>
 
   <v-toolbar color="primary" dark :class="toolbarClass" height="600">
@@ -48,6 +59,21 @@
           fab
           dark
           ><v-icon>mdi-image</v-icon></v-btn
+        >
+      </template>
+    </v-tooltip>
+
+    <v-tooltip text="Select notationse"">
+      <template v-slot:activator="{ props }">
+        <v-btn
+          v-bind="props"
+          icon
+          @click.stop="openSelectionHelpMessage"
+          color="white"
+          x-small
+          fab
+          dark
+          ><v-icon>mdi-selection</v-icon></v-btn
         >
       </template>
     </v-tooltip>
@@ -176,6 +202,7 @@ watch(
 );
 
 const showPasteImageHelpMessage = ref(false);
+const showSelectionHelpMessage = ref(false);
 
 const modeButtons: Array<{
   name: string;
@@ -360,6 +387,11 @@ function openAccessLinkDialog() {
 function openPasteImageHelpMessage() {
   showPasteImageHelpMessage.value = true;
 }
+
+function openSelectionHelpMessage() {
+  showSelectionHelpMessage.value = true;
+}
+
 
 function closeAccessLinkDialog() {
   showAccessLinkDialog.value = false;
