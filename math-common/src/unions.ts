@@ -82,9 +82,9 @@ export type EditMode =
   | "CELL_SELECTED" // user clicked on a cell or navigated via keys
   | "POLYGON_STARTED" // polygon button pressed
   | "POLYGON_DRAWING" // polygon drawing started
-  | "LINE_STARTED" // slope line button pressed
-  | "LINE_DRAWING" // slope line drawing started
-  | "LINE_SELECTED" // slope line selected
+  | "LINE_STARTED" //  line button pressed
+  | "LINE_DRAWING" // line drawing started
+  | "LINE_SELECTED" // line selected
   | "LINE_EDITING_LEFT" // slope line handle clicked followin slope line selection
   | "LINE_EDITING_RIGHT" // slope line handle clicked followin slope line selection
   | "CURVE_STARTED" // curve button pressed

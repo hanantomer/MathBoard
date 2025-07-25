@@ -108,9 +108,7 @@ export default function useMatrixHelper() {
       return false;
     }
 
-    if (
-      notationStore.isSymbolAdjecentToLine(notation, maxLineDistance)
-    ) {
+    if (notationStore.isSymbolAdjecentToLine(notation, maxLineDistance)) {
       return true;
     }
 
@@ -130,7 +128,6 @@ export default function useMatrixHelper() {
   }
 
   function refreshScreen(svgId: string) {
-
     matrixCellHelper.resetAllCellColors();
 
     let notations: NotationAttributes[] = [];
@@ -160,10 +157,7 @@ export default function useMatrixHelper() {
 
     lineHelper.mergeLineNotations(
       svgId,
-      notations.filter(
-        (n) =>
-          n.notationType === "LINE",
-      ),
+      notations.filter((n) => n.notationType === "LINE"),
     );
 
     circleHelper.mergeCircleNotations(

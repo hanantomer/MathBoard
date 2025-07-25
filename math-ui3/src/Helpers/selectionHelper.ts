@@ -144,12 +144,8 @@ export default function selectionHelper() {
 
   function selectLineNotation(uuid: String) {
     const notation = notationStore.getNotation(uuid)!;
-    switch (notation.notationType) {
-      case "LINE":
-        editModeStore.setEditMode("LINE_SELECTED");
-        eventBus.emit("EV_LINE_SELECTED", notation);
-        break;
-    }
+    editModeStore.setEditMode("LINE_SELECTED");
+    eventBus.emit("EV_LINE_SELECTED", notation);
   }
 
   async function setSelectedCell(cell: CellAttributes, setEditMode: boolean) {
@@ -175,32 +171,7 @@ export default function selectionHelper() {
     notationStore.resetSelectedNotations();
     const uuid = (e.target as any).id;
     if (uuid) {
-      const n = notationStore.getNotation(uuid)!;
-      switch (n.notationType) {
-        case "LINE":
-          selectLineNotation(uuid);
-          break;
-        case "SQRT":
-          selectSqrtNotation(n);
-          break;
-        case "CURVE":
-          selectCurveNotation(uuid);
-          break;
-        case "CIRCLE":
-          selectCircleNotation(uuid);
-          break;
-        case "EXPONENT":
-        case "LOGBASE":
-        case "IMAGE":
-        case "TEXT":
-        case "ANNOTATION":
-        case "SIGN":
-        case "SYMBOL":
-        case "SQRTSYMBOL": {
-          selectPointOrRectNotation(n);
-          break;
-        }
-      }
+      selectNotation(uuid);
     } else {
       const position = { x: e.pageX, y: e.pageY };
       let clickedCell = screenHelper.getCell(position);
@@ -210,11 +181,43 @@ export default function selectionHelper() {
     }
   }
 
+  function selectNotation(uuid: string) {
+    const n = notationStore.getNotation(uuid)!;
+    switch (n.notationType) {
+      case "LINE":
+        selectLineNotation(uuid);
+        break;
+      case "SQRT":
+        selectSqrtNotation(n);
+        break;
+      case "CURVE":
+        selectCurveNotation(uuid);
+        break;
+      case "CIRCLE":
+        selectCircleNotation(uuid);
+        break;
+      case "EXPONENT":
+      case "LOGBASE":
+      case "IMAGE":
+      case "TEXT":
+      case "ANNOTATION":
+      case "SIGN":
+      case "SYMBOL":
+      case "SQRTSYMBOL": {
+        selectPointOrRectNotation(n);
+        break;
+      }
+    }
+  }
+
   return {
     selectClickedPosition,
+    selectNotation,
     selectNotationAtPosition,
     selectNotationsOfArea,
     setSelectedCell,
     selectCurveNotation,
+    selectCircleNotation,
+    selectLineNotation,
   };
 }

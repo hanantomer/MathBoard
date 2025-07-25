@@ -147,7 +147,7 @@ async function load() {
   eventHelper.registerCopy();
 
   progressBar.value = true;
-  
+
   try {
     notationStore.clearNotations();
 

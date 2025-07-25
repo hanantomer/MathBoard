@@ -335,12 +335,12 @@ export default function useHtmlMatrixHelper() {
     //     userStore.getCurrentUser()?.uuid != n.user.uuid
 
     if (n.notationType === "SQRT") {
-      return `<span id=${n.uuid} class=sqrt style='margin-top:5px; position:relative;color:${color}'></span>`;
+      return `<span id='${n.uuid}' class=sqrt style='margin-top:5px; position:relative;color:${color}'></span>`;
     }
 
     if (n.notationType === "SQRTSYMBOL") {
       color = n.color?.value ? n.color?.value : color;
-      return `<p id=${n.uuid} class='sqrtsymbol' style='margin-top:-6px;margin-left:6px;color:${color}'>&#x221A;</p>`;
+      return `<p id='${n.uuid}' class='sqrtsymbol' style='margin-top:-6px;margin-left:6px;color:${color}'>&#x221A;</p>`;
     }
 
     if (n.notationType === "TEXT") {

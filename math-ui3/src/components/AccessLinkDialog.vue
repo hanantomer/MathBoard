@@ -21,6 +21,15 @@
                 ></v-text-field>
               </v-col>
             </v-row>
+            <v-row>
+              <v-col cols="12">
+                <v-alert color="#C51162" theme="dark">
+                  When a student goes online, their name will appear in the
+                  online students list on the right, and clicking their name
+                  will toggle their ability to edit and add notations
+                </v-alert>
+              </v-col>
+            </v-row>
           </v-container>
         </v-card-text>
         <v-card-actions>
@@ -59,9 +68,12 @@ watch(
 
 const link = computed(() => {
   if (lessonStore.getCurrentLesson()) {
-    return `${window.location.origin}/lesson/sl_${lessonStore.getCurrentLesson()?.uuid}`
+    return `${window.location.origin}/lesson/sl_${lessonStore.getCurrentLesson()
+      ?.uuid}`;
   }
-  return `${window.location.origin}/lesson/sl_${questionStore.getCurrentQuestion()?.lesson?.uuid}`
+  return `${
+    window.location.origin
+  }/lesson/sl_${questionStore.getCurrentQuestion()?.lesson?.uuid}`;
 });
 
 function copy() {

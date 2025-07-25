@@ -16,7 +16,7 @@
       editMode: ['SQRT_EDITING'],
       func: modify,
     }"
-    :endEntry="{
+    :saveEntry="{
       editMode: ['SQRT_DRAWING', 'SQRT_EDITING'],
       func: endDrawing,
     }"
@@ -29,8 +29,8 @@
       editMode: ['SQRT_SELECTED'],
       func: moveSqrt,
     }"
-    :endSelectionEntry="{
-      editMode: ['SQRT_EDITING'],
+    :endEntry="{
+      editMode: ['SQRT_SELECTED'],
     }"
   />
   <div v-if="show">
@@ -119,12 +119,14 @@ let sqrtY = computed(() => {
 
 let sqrtSymbolLeft = computed(() => {
   return (
-    linePosition.value.p1x + (cellStore.getSvgBoundingRect().left ?? 0)
+    linePosition.value.p1x + (cellStore.getSvgBoundingRect().left ?? 0) + 2
   );
 });
 
 let sqrtSymbolY = computed(() => {
-  return linePosition.value.p1y + (cellStore.getSvgBoundingRect().top ?? 0) - 8;
+  return (
+    linePosition.value.p1y + (cellStore.getSvgBoundingRect().top ?? 0) - 10
+  );
 });
 
 let handleX = computed(() => {
@@ -146,7 +148,7 @@ function drawLine(p: DotCoordinates) {
   linePosition.value.p2x = p.x;
 }
 
-function endDrawing() {
+async function endDrawing(): Promise<string> {
   const fromCol = Math.round(
     linePosition.value.p1x / cellStore.getCellHorizontalWidth(),
   );
@@ -159,36 +161,32 @@ function endDrawing() {
     linePosition.value.p1y / cellStore.getCellVerticalHeight(),
   );
 
-  saveSqrt({ fromCol: fromCol, toCol: toCol, row: row });
+  const uuid = await saveSqrt({ fromCol: fromCol, toCol: toCol, row: row });
 
-  editModeStore.setDefaultEditMode();
-
-  notationStore.resetSelectedNotations();
-
-  resetDrawing();
+  return uuid;
 }
 
 function modify(p: DotCoordinates) {
   linePosition.value.p2x = p.x;
 }
 
-function saveSqrt(sqrtAttributes: MultiCellAttributes) {
-  if (sqrtAttributes.fromCol === sqrtAttributes.toCol) {
-    return;
-  }
-
+async function saveSqrt(sqrtAttributes: MultiCellAttributes): Promise<string> {
   if (notationStore.getSelectedNotations().length > 0) {
     let updatedSqrt = {
       ...notationStore.getSelectedNotations().at(0)!,
       ...sqrtAttributes,
     };
 
-    notationMutateHelper.updateSqrtNotation(updatedSqrt);
-  } else notationMutateHelper.addSqrtNotation(sqrtAttributes, "SQRT");
+    return await notationMutateHelper.updateSqrtNotation(updatedSqrt);
+  } else return await notationMutateHelper.addSqrtNotation(sqrtAttributes);
 }
 
 function resetDrawing() {
-  linePosition.value.p1x = linePosition.value.p2x = linePosition.value.p1y = linePosition.value.p2y = 0;
+  linePosition.value.p1x =
+    linePosition.value.p2x =
+    linePosition.value.p1y =
+    linePosition.value.p2y =
+      0;
 }
 
 function selectSqrt(notation: NotationAttributes) {

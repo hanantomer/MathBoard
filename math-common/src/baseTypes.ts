@@ -274,7 +274,7 @@ export type lineWatcherEntry = {
 };
 
 export type lineSaveWatcherEntry = {
-  func: () => void;
+  func: () => Promise<string>;
   editMode: Array<EditMode>;
 };
 

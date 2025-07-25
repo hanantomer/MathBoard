@@ -9,7 +9,7 @@
       position: absolute;
       top: 20%;
       left: 20%;
-      max-width: 600px;
+      max-width: 575px;
       z-index: 1000;
     "
   >
@@ -34,6 +34,7 @@
       >To select an area, drag the mouse over the desired region.
       Then, drag the rectangle to move the selected notations, or use Ctrl+drag to copy
       them. To delete the selected notations, press Delete or Backspace.
+      Another option, is to click on a single notation to select it.
     </v-alert>
   </div>
 
@@ -71,7 +72,7 @@
       </template>
     </v-tooltip>
 
-    <v-tooltip text="Select notations">
+    <v-tooltip text="Select notations" v-if="userStore.isTeacher()">
       <template v-slot:activator="{ props }">
         <v-btn
           v-bind="props"

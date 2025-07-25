@@ -14,20 +14,23 @@
             <v-avatar>
               <v-img :src="student.imageUrl"></v-img>
             </v-avatar>
-            <v-list-item-title
-              style="font-size: 0.9vw"
-              v-text="getStudentDisplayName(student)"
-            >
-            </v-list-item-title>
-            <v-btn
-              class="[mx-2]"
-              fab
-              dark
-              x-small
-              :color="getStudentAuhorizationColor(student.uuid)"
-            >
-              <v-icon dark> mdi-pencil </v-icon>
-            </v-btn>
+            <v-tooltip bottom :text="toggleEditingTooltip(student.uuid)">
+              <template #activator="{ props }">
+                <v-list-item-title
+                  v-text="getStudentDisplayName(student)"
+                  v-bind="props"
+                ></v-list-item-title>
+                <v-btn
+                  class="[mx-2]"
+                  fab
+                  dark
+                  x-small
+                  :color="getStudentAuhorizationColor(student.uuid)"
+                >
+                  <v-icon dark> mdi-pencil </v-icon>
+                </v-btn>
+              </template>
+            </v-tooltip>
           </v-list-item>
         </v-list>
         <p v-else>No stuedents have yet shown up to this class</p>
@@ -47,6 +50,12 @@ const studentStore = useStudentStore();
 const lessonStore = useLessonStore();
 const userOutgoingOperations = UseUserOutgoingOperations();
 
+function toggleEditingTooltip(studentUUId: string): string {
+  return studentStore.getAuthorizedStudentUUId() == studentUUId
+    ? "Click to disable editing for this student"
+    : "Click to enable editing for this student";
+}
+
 const students = computed(() => {
   return studentStore.getStudents();
 });
@@ -58,7 +67,7 @@ function getStudentDisplayName(student: UserAttributes) {
 function getStudentAuhorizationColor(studentUUId: string) {
   return studentStore.getAuthorizedStudentUUId() === studentUUId
     ? "blue"
-    : "green";
+    : "grey";
 }
 
 function toggleStudentAuthorization(student: UserAttributes) {

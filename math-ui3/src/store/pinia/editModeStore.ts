@@ -36,6 +36,7 @@ export const useEditModeStore = defineStore("editMode", () => {
 
   function isSelectedMode() {
     return (
+      editMode.value === "CIRCLE_SELECTED" ||
       editMode.value === "AREA_SELECTED" ||
       editMode.value === "LINE_SELECTED" ||
       editMode.value === "SQRT_SELECTED"
@@ -100,9 +101,7 @@ export const useEditModeStore = defineStore("editMode", () => {
   }
 
   function isLineDrawingMode() {
-    return (
-      editMode.value === "LINE_DRAWING" || editMode.value === "POLYGON_DRAWING"
-    );
+    return editMode.value === "LINE_DRAWING";
   }
 
   function isLineEditingMode() {
@@ -204,7 +203,10 @@ export const useEditModeStore = defineStore("editMode", () => {
   }
 
   function setEditMode(newEditMode: EditMode) {
-    console.debug("new edit mode:" + newEditMode);
+    console.debug(
+      `old edit mode: ${editMode.value}, new edit mode: ${newEditMode} `,
+    );
+
     editMode.value = newEditMode;
   }
 
@@ -216,6 +218,7 @@ export const useEditModeStore = defineStore("editMode", () => {
     switch (editMode.value) {
       case "TEXT_STARTED":
         return setEditMode("TEXT_AREA_SELECTING");
+
       case "TEXT_AREA_SELECTING":
         return setEditMode("TEXT_WRITING");
 
@@ -228,26 +231,56 @@ export const useEditModeStore = defineStore("editMode", () => {
       case "POLYGON_STARTED":
         return setEditMode("POLYGON_DRAWING");
 
+      case "POLYGON_DRAWING":
+        return setEditMode("POLYGON_STARTED");
+
       case "LINE_STARTED":
         return setEditMode("LINE_DRAWING");
 
+      case "LINE_DRAWING":
+        return setEditMode("LINE_SELECTED");
+
+      case "LINE_EDITING_LEFT":
+        return setEditMode("LINE_SELECTED");
+
+      case "LINE_EDITING_RIGHT":
+        return setEditMode("LINE_SELECTED");
+
       case "CURVE_STARTED":
         return setEditMode("CURVE_DRAWING");
-      case "CURVE_SELECTED":
-        return setEditMode("CURVE_DRAWING");
+      case "CURVE_DRAWING":
+        return setEditMode("CURVE_SELECTED");
+
+      case "CURVE_EDITING_LEFT":
+        return setEditMode("CURVE_SELECTED");
+
+      case "CURVE_EDITING_RIGHT":
+        return setEditMode("CURVE_SELECTED");
+
+      case "CURVE_EDITING_CONTROLֹ_POINT":
+        return setEditMode("CURVE_SELECTED");
 
       case "CIRCLE_STARTED":
         return setEditMode("CIRCLE_DRAWING");
-      case "CIRCLE_SELECTED":
-        return setEditMode("CIRCLE_DRAWING");
+
+      case "CIRCLE_DRAWING":
+        return setEditMode("CIRCLE_SELECTED");
+
+      case "CIRCLE_EDITING":
+        return setEditMode("CIRCLE_SELECTED");
 
       case "SQRT_STARTED":
         return setEditMode("SQRT_DRAWING");
-      case "SQRT_SELECTED":
-        return setEditMode("SQRT_EDITING");
+
+      case "SQRT_DRAWING":
+        return setEditMode("SQRT_SELECTED");
+
+      case "SQRT_EDITING":
+        return setEditMode("SQRT_SELECTED");
 
       case "AREA_SELECTING":
         return setEditMode("AREA_SELECTED");
+
       case "AREA_SELECTED":
         return setEditMode("AREA_MOVING");
 

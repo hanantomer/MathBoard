@@ -6,12 +6,14 @@ import {
 import { useEditModeStore } from "../store/pinia/editModeStore";
 import { useCellStore } from "../store/pinia/cellStore";
 import { useNotationStore } from "../store/pinia/notationStore";
+import useSelectionHelper from "./selectionHelper";
 
 const editModeStore = useEditModeStore();
 const cellStore = useCellStore();
 const notationStore = useNotationStore();
+const selectionHelper = useSelectionHelper();
 
-export default function useLineDrawingHelper() {
+export default function useShapeDrawingHelper() {
   let hiddenNotationUUID: string | null = null;
 
   function setLineInitialPosition(
@@ -87,11 +89,18 @@ export default function useLineDrawingHelper() {
     }
   }
 
-  function endDrawing(endDrawingCallback: () => void) {
-    if (notationStore.hasSelectedNotations()) {
-      showMatrixLine();
+  async function saveDrawing(saveDrawingCallback: () => Promise<string>) {
+    const uuid = await saveDrawingCallback();
+
+    if (!editModeStore.isPolygonDrawingMode()) {
+      notationStore.selectNotation(uuid);
+      if (uuid) {
+        setTimeout(() => {
+          hideMatrixLine(uuid); // dont show created line yet since we are in edit mode
+        }, 1);
+      }
     }
-    endDrawingCallback();
+    editModeStore.setNextEditMode();
   }
 
   function selectLine(
@@ -106,6 +115,11 @@ export default function useLineDrawingHelper() {
   function hideMatrixLine(uuid: string) {
     hiddenNotationUUID = uuid;
     (document.getElementById(uuid) as HTMLElement).style.display = "none";
+
+    if (document.getElementById(uuid + "_")) {
+      (document.getElementById(uuid + "_") as HTMLElement).style.display =
+        "none"; // for sqrt symbol, see matrixHelper.ts
+    }
   }
 
   function showMatrixLine() {
@@ -113,14 +127,25 @@ export default function useLineDrawingHelper() {
       (
         document.getElementById(hiddenNotationUUID) as HTMLElement
       ).style.display = "block";
+
+      if (document.getElementById(hiddenNotationUUID + "_")) {
+        (
+          document.getElementById(hiddenNotationUUID + "_") as HTMLElement
+        ).style.display = "block"; // for sqrt symbol see matrixHelper.ts
+      }
+
       hiddenNotationUUID = null;
     }
   }
 
-  function resetDrawing() {
+  function resetDrawing(e: MouseEvent | null) {
     showMatrixLine();
     notationStore.resetSelectedNotations();
-    //editModeStore.setDefaultEditMode();
+    if (e) {
+      selectionHelper.selectClickedPosition(e);
+      return;
+    }
+    editModeStore.setDefaultEditMode();
   }
 
   return {
@@ -131,6 +156,6 @@ export default function useLineDrawingHelper() {
     resetDrawing,
     modifyLine,
     moveLine,
-    endDrawing,
+    saveDrawing,
   };
 }

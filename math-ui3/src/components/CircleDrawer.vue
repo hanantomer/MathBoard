@@ -1,4 +1,38 @@
 <template>
+  <lineWatcher
+    :startEntry="{
+      editMode: ['CIRCLE_STARTED'],
+      func: initCircle,
+    }"
+    :drawEntry="{
+      editMode: ['CIRCLE_DRAWING'],
+      func: setRadius,
+    }"
+    :editEntryFirstHandle="{
+      editMode: ['CIRCLE_EDITING'],
+      func: setRadius,
+    }"
+    :editEntrySecondHandle="{
+      editMode: ['CIRCLE_EDITING'],
+      func: setRadius,
+    }"
+    :saveEntry="{
+      editMode: ['CIRCLE_DRAWING', 'CIRCLE_EDITING'],
+      func: endDrawCircle,
+    }"
+    :selectEntry="{
+      editMode: ['CIRCLE_SELECTED'],
+      func: selectCircle,
+      event: 'EV_CIRCLE_SELECTED',
+    }"
+    :moveByKeyEntry="{
+      editMode: ['CIRCLE_SELECTED'],
+      func: moveCircle,
+    }"
+    :endEntry="{
+      editMode: ['CIRCLE_SELECTED'],
+    }"
+  ></lineWatcher>
   <div v-show="show">
     <line-handle
       drawing-mode="CIRCLE_DRAWING"
@@ -40,24 +74,26 @@
 </template>
 <script setup lang="ts">
 import lineHandle from "./LineHandle.vue";
+import lineWatcher from "./LineWatcher.vue";
 import useNotationMutateHelper from "../helpers/notationMutateHelper";
 import useWatchHelper from "../helpers/watchHelper";
+import useSelectionHelper from "../helpers/selectionHelper";
 import { computed, ref, onMounted } from "vue";
 import { useNotationStore } from "../store/pinia/notationStore";
 import { useEditModeStore } from "../store/pinia/editModeStore";
 import { useCellStore } from "../store/pinia/cellStore";
 import {
+  DotCoordinates,
   CircleAttributes,
+  NotationAttributes,
   CircleNotationAttributes,
 } from "../../../math-common/build/baseTypes";
 import useEventBusHelper from "../helpers/eventBusHelper";
 
 const notationMutateHelper = useNotationMutateHelper();
-const watchHelper = useWatchHelper();
 const notationStore = useNotationStore();
 const editModeStore = useEditModeStore();
 const cellStore = useCellStore();
-const eventBusHelper = useEventBusHelper();
 
 const circleAttributes = ref<CircleAttributes>({
   cx: 0,
@@ -96,85 +132,27 @@ const show = computed(() => {
   );
 });
 
-watchHelper.watchMouseEvent(["CIRCLE_STARTED"], "EV_SVG_MOUSEDOWN", initCircle);
-
-watchHelper.watchMouseEvent(
-  ["CIRCLE_DRAWING", "CIRCLE_EDITING"],
-  "EV_SVG_MOUSEMOVE",
-  setRadius,
-);
-
-watchHelper.watchMouseEvent(
-  ["CIRCLE_DRAWING", "CIRCLE_EDITING"],
-  "EV_SVG_MOUSEUP",
-  endDrawCircle,
-);
-
-watchHelper.watchCustomEvent(
-  ["CIRCLE_SELECTED"],
-  "EV_CIRCLE_SELECTED",
-  selectCircle,
-);
-
-watchHelper.watchMouseEvent(
-  ["CIRCLE_SELECTED"],
-  "EV_SVG_MOUSEDOWN",
-  resetCircleSelection,
-);
-
-watchHelper.watchKeyEvent(
-  ["CIRCLE_SELECTED"],
-  "EV_KEYUP",
-  function moveCircle(e: KeyboardEvent) {
-    if (!notationStore.getSelectedNotations().length) return;
-
-    const step = 1;
-    switch (e.key) {
-      case "ArrowLeft":
-        circleAttributes.value.cx -= step;
-        break;
-      case "ArrowRight":
-        circleAttributes.value.cx += step;
-        break;
-      case "ArrowUp":
-        circleAttributes.value.cy -= step;
-        break;
-      case "ArrowDown":
-        circleAttributes.value.cy += step;
-        break;
-    }
-
-    setCircleElement();
-    saveCircle({
-      cx: circleAttributes.value.cx,
-      cy: circleAttributes.value.cy,
-      r: circleAttributes.value.r,
-    });
-  },
-);
-
-function initCircle(e: MouseEvent) {
-  editModeStore.setNextEditMode();
-  circleAttributes.value.cx = e.offsetX;
-  circleAttributes.value.cy = e.offsetY;
+function initCircle(p: DotCoordinates) {
+  circleAttributes.value.cx = p.x;
+  circleAttributes.value.cy = p.y;
   circleAttributes.value.r = 0;
-  setCircleElement;
+  setCircleElement();
 }
 
-function selectCircle(circle: CircleNotationAttributes) {
-  const c = circle;
+function selectCircle(circle: NotationAttributes) {
+  const c = circle as CircleNotationAttributes;
   circleAttributes.value.cx = c.cx;
   circleAttributes.value.cy = c.cy;
   circleAttributes.value.r = c.r;
   setCircleElement();
-  notationStore.selectNotation(c.uuid);
-  eventBusHelper.remove("EV_CIRCLE_SELECTED", "CIRCLE_SELECTED");
+  (document.getElementById(circle.uuid) as HTMLElement).style.display = "none";
+  notationStore.selectNotation(circle.uuid);
 }
 
-function setRadius(e: MouseEvent) {
+function setRadius(p: DotCoordinates) {
   circleAttributes.value.r = Math.sqrt(
-    Math.pow(e.offsetX - circleAttributes.value.cx, 2) +
-      Math.pow(e.offsetY - circleAttributes.value.cy, 2),
+    Math.pow(p.x - circleAttributes.value.cx, 2) +
+      Math.pow(p.y - circleAttributes.value.cy, 2),
   );
   setCircleElement();
 }
@@ -186,16 +164,16 @@ function setCircleElement() {
   circle.setAttribute("r", circleAttributes.value.r.toString());
 }
 
-function endDrawCircle() {
-  saveCircle({
+async function endDrawCircle() : Promise<string> {
+  const uuid = await saveCircle({
     cx: circleAttributes.value.cx,
     cy: circleAttributes.value.cy,
     r: Math.round(circleAttributes.value.r),
   });
-  editModeStore.setNextEditMode();
+  return uuid;
 }
 
-function saveCircle(circleAttributes: CircleAttributes) {
+async function saveCircle(circleAttributes: CircleAttributes): Promise<string> {
   if (notationStore.getSelectedNotations().length > 0) {
     let updatedCircle = {
       ...notationStore.getSelectedNotations().at(0)!,
@@ -205,18 +183,25 @@ function saveCircle(circleAttributes: CircleAttributes) {
     notationMutateHelper.updateCircleNotation(
       updatedCircle as CircleNotationAttributes,
     );
+    return updatedCircle.uuid;
   } else {
-    notationMutateHelper.addCircleNotation(circleAttributes);
+    return await notationMutateHelper.addCircleNotation(circleAttributes);
   }
 }
 
-function resetCircleSelection(e: MouseEvent) {
-  const el = e.target as Element;
-  if (el.tagName === "circle") {
-    return;
-  }
-  editModeStore.setDefaultEditMode();
+function moveCircle(moveX: number, moveY: number) {
+  if (!notationStore.getSelectedNotations().length) return;
+
+  circleAttributes.value.cx += moveX;
+  circleAttributes.value.cy += moveY;
+
+  setCircleElement();
+  saveCircle({
+    cx: circleAttributes.value.cx,
+    cy: circleAttributes.value.cy,
+    r: circleAttributes.value.r,
+  });
 }
+
 </script>
 
-<style></style>

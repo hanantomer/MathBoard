@@ -81,6 +81,9 @@ export default function () {
     });
   }
 
+  // Watch for the end of an edit mode transition
+  // This is useful for actions that should happen after the edit mode has changed
+  // and the new edit mode is not one of the excluded modes.
   function watchEndOfEditMode(
     oldEditModes: EditMode[],
     excludeNewEditModes: EditMode[],

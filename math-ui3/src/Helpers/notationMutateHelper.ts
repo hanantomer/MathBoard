@@ -578,11 +578,14 @@ export default function notationMutateHelper() {
       : notationStore.getSelectedNotations();
   }
 
-  async function updateSqrtNotation(sqrtNotation: SqrtNotationAttributes) {
+  async function updateSqrtNotation(
+    sqrtNotation: SqrtNotationAttributes,
+  ): Promise<string> {
     transposeSqrtCoordinatesIfNeeded(sqrtNotation);
     await apiHelper.updateSqrtNotationAttributes(sqrtNotation);
     notationStore.addNotation(sqrtNotation, true);
     userOutgoingOperations.syncOutgoingUpdateNotation(sqrtNotation);
+    return sqrtNotation.uuid;
   }
 
   async function updateLineNotation(lineNotation: LineNotationAttributes) {
@@ -604,8 +607,6 @@ export default function notationMutateHelper() {
   }
 
   function addCellNotation(notation: PointNotationCreationAttributes) {
-    notationStore.resetSelectedNotations();
-
     if (isCellInQuestionArea(notation)) {
       return;
     }
@@ -628,7 +629,7 @@ export default function notationMutateHelper() {
     addNotation(notation);
   }
 
-  function addLineNotation(lineAttributes: LineAttributes) {
+  function addLineNotation(lineAttributes: LineAttributes): Promise<string> {
     let lineNotation: LineNotationCreationAttributes = {
       ...lineAttributes,
       boardType: notationStore.getParent().type,
@@ -637,29 +638,7 @@ export default function notationMutateHelper() {
       user: userStore.getCurrentUser()!,
     };
 
-    notationStore.resetSelectedNotations();
-
-    addNotation(lineNotation);
-  }
-
-  ///TODO : check if real needed or just one upsert notation for all types
-  function upsertSqrtNotation(notation: SqrtNotationCreationAttributes) {
-    notationStore.resetSelectedNotations();
-
-    addNotation(notation);
-  }
-
-  function upsertRectNotation(newNotation: RectNotationCreationAttributes) {
-    notationStore.resetSelectedNotations();
-
-    let overlappedSameTypeNotation = findOverlapRectNotation(newNotation);
-
-    // update
-    if (overlappedSameTypeNotation) {
-      updateFromExistingNotation(overlappedSameTypeNotation, newNotation);
-    }
-
-    addNotation(newNotation);
+    return addNotation(lineNotation);
   }
 
   function updateFromExistingNotation(
@@ -683,6 +662,7 @@ export default function notationMutateHelper() {
   async function addNotation(
     notation: NotationCreationAttributes,
   ): Promise<string> {
+    //notationStore.resetSelectedNotations();
     try {
       const newNotation = await apiHelper.addNotation(notation);
       newNotation.notationType = notation.notationType;
@@ -893,7 +873,7 @@ export default function notationMutateHelper() {
       user: userStore.getCurrentUser()!,
     };
 
-    upsertRectNotation(notation);
+    addNotation(notation);
 
     cellStore.resetSelectedCell();
   }
@@ -911,7 +891,7 @@ export default function notationMutateHelper() {
       user: userStore.getCurrentUser()!,
     };
 
-    upsertRectNotation(notation);
+    addNotation(notation);
   }
 
   function addAnnotationNotation(value: string, point: DotCoordinates) {
@@ -940,7 +920,8 @@ export default function notationMutateHelper() {
     };
     addCellNotation(notation);
     if (!clickedCell) return;
-    selectionHelper.setSelectedCell(clickedCell, false);
+    //selectionHelper.setSelectedCell(clickedCell, false);
+    matrixCellHelper.setNextCell(1, 0);
   }
 
   function addSymbolNotation(value: string) {
@@ -989,8 +970,7 @@ export default function notationMutateHelper() {
 
   function addSqrtNotation(
     sqrtAttributes: MultiCellAttributes,
-    notationType: NotationType,
-  ) {
+  ): Promise<string> {
     transposeSqrtCoordinatesIfNeeded(sqrtAttributes);
 
     let sqrtNotation: SqrtNotationCreationAttributes = {
@@ -999,11 +979,11 @@ export default function notationMutateHelper() {
       row: sqrtAttributes.row,
       boardType: notationStore.getParent().type,
       parentUUId: notationStore.getParent().uuid,
-      notationType: notationType,
+      notationType: "SQRT",
       user: userStore.getCurrentUser()!,
     };
 
-    upsertSqrtNotation(sqrtNotation);
+    return addNotation(sqrtNotation);
   }
 
   async function addCurveNotation(
@@ -1021,11 +1001,12 @@ export default function notationMutateHelper() {
       notationType: "CURVE",
       user: userStore.getCurrentUser()!,
     };
-    notationStore.resetSelectedNotations();
     return await addNotation(curveNotation);
   }
 
-  function addCircleNotation(circleAttributes: CircleAttributes) {
+  async function addCircleNotation(
+    circleAttributes: CircleAttributes,
+  ): Promise<string> {
     let circleNotation: CircleNotationCreationAttributes = {
       cx: circleAttributes.cx,
       cy: circleAttributes.cy,
@@ -1035,8 +1016,7 @@ export default function notationMutateHelper() {
       notationType: "CIRCLE",
       user: userStore.getCurrentUser()!,
     };
-    notationStore.resetSelectedNotations();
-    addNotation(circleNotation);
+    return addNotation(circleNotation);
   }
 
   function cloneNotation(notation: Readonly<NotationAttributes>) {
@@ -1060,7 +1040,7 @@ export default function notationMutateHelper() {
         return addCellNotation(clonedNotation);
       case "IMAGE":
       case "TEXT":
-        return upsertRectNotation(clonedNotation);
+        return addNotation(clonedNotation);
     }
   }
 

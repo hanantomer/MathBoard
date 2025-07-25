@@ -36,9 +36,10 @@
       "math-server",
       "math-common",
       "math-ui3"
-    ]
+    ],
+    "codium.codeCompletion.enable": false
   },
-  
+
   "launch": {
     "version": "0.2.0",
     "configurations": [

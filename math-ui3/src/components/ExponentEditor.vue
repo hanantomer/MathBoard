@@ -49,9 +49,7 @@ let height = ref(0);
 const selectedNotation = computed(() =>
   notationStore.getSelectedNotations()?.length == 0
     ? null
-    : (notationStore
-        .getSelectedNotations()
-        .at(0) as PointNotationAttributes),
+    : (notationStore.getSelectedNotations().at(0) as PointNotationAttributes),
 );
 
 const show = computed(() => editModeStore.getEditMode() === "EXPONENT_WRITING");

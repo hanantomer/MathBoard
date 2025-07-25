@@ -16,13 +16,12 @@
       editMode: ['CURVE_EDITING_RIGHT'],
       func: setCurveRight,
     }"
-    :endEntry="{
+    :saveEntry="{
       editMode: [
         'CURVE_DRAWING',
         'CURVE_EDITING_RIGHT',
         'CURVE_EDITING_LEFT',
         'CURVE_EDITING_CONTROLֹ_POINT',
-        'CURVE_SELECTED',
       ],
       func: endDrawCurve,
     }"
@@ -35,7 +34,7 @@
       editMode: ['CURVE_SELECTED'],
       func: moveCurve,
     }"
-    :endSelectionEntry="{
+    :endEntry="{
       editMode: ['CURVE_SELECTED'],
     }"
   ></lineWatcher>
@@ -328,10 +327,10 @@ function setCurveElement() {
   document.getElementById("curve")!.setAttribute("d", curve);
 }
 
-function endDrawCurve() {
+async function endDrawCurve() : Promise<string> {
   // drawing not started
   if (curveAttributes.value.p1x === 0) {
-    return;
+    return "";
   }
 
   // drawing not finished
@@ -339,10 +338,10 @@ function endDrawCurve() {
     curveAttributes.value.p1x === curveAttributes.value.p2x &&
     curveAttributes.value.p1y === curveAttributes.value.p2y
   ) {
-    return;
+    return "";
   }
 
-  saveCurve({
+  const uuid = await saveCurve({
     p1x: curveAttributes.value.p1x,
     p2x: curveAttributes.value.p2x,
     p1y: curveAttributes.value.p1y,
@@ -350,10 +349,11 @@ function endDrawCurve() {
     cpx: curveAttributes.value.cpx,
     cpy: curveAttributes.value.cpy,
   });
-  editModeStore.setDefaultEditMode();
+
+  return uuid;
 }
 
-async function saveCurve(curevAttributes: CurveAttributes) {
+async function saveCurve(curevAttributes: CurveAttributes) : Promise<string> {
   if (notationStore.getSelectedNotations().length > 0) {
     let updatedCurve = {
       ...notationStore.getSelectedNotations().at(0)!,
@@ -363,11 +363,13 @@ async function saveCurve(curevAttributes: CurveAttributes) {
     notationMutateHelper.updateCurveNotation(
       updatedCurve as CurveNotationAttributes,
     );
+    return updatedCurve.uuid;
+
   } else {
-    const uuid =  await notationMutateHelper.addCurveNotation(
+    return await notationMutateHelper.addCurveNotation(
       curevAttributes
     );
-    selectionHelper.selectCurveNotation(uuid);
+
   }
 }
 
@@ -413,8 +415,6 @@ function getSlopes(points: Point[]): PointWithSlope[] {
     }
     prevPoint = { x: point.x, y: point.y };
   }
-
-  //setSlopesMovingAverage(slopes);
 
   return slopes;
 }

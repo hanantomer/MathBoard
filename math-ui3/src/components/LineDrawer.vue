@@ -17,13 +17,13 @@
         editMode: ['LINE_EDITING_RIGHT'],
         func: modifyLineRight,
       }"
-      :endEntry="{
+      :saveEntry="{
         editMode: [
+          'POLYGON_STARTED',
+          'POLYGON_DRAWING',
           'LINE_DRAWING',
           'LINE_EDITING_RIGHT',
           'LINE_EDITING_LEFT',
-          'LINE_SELECTED',
-          'POLYGON_DRAWING',
         ],
         func: endDrawing,
       }"
@@ -36,7 +36,7 @@
         editMode: ['LINE_SELECTED'],
         func: moveLine,
       }"
-      :endSelectionEntry="{
+      :endEntry="{
         editMode: ['LINE_SELECTED'],
       }"
     />
@@ -94,7 +94,9 @@ import lineWatcher from "./LineWatcher.vue";
 import lineHandle from "./LineHandle.vue";
 import useScreenHelper from "../helpers/screenHelper"; // Add this line
 import useNotationMutateHelper from "../helpers/notationMutateHelper"; // Add this line
+import useSelectionHelper from "../helpers/selectionHelper";
 
+const selectionHelper = useSelectionHelper();
 const watchHelper = useWatchHelper();
 const eventBus = useEventBus();
 const editModeStore = useEditModeStore();
@@ -143,6 +145,7 @@ watch(
 const show = computed(() => {
   return (
     editModeStore.isLineDrawingMode() ||
+    editModeStore.isPolygonDrawingMode() ||
     editModeStore.isLineSelectedMode() ||
     editModeStore.isLineEditingMode()
   );
@@ -164,32 +167,30 @@ let handleBottom = computed(() => {
   return linePosition.value.p2y + (cellStore.getSvgBoundingRect().top ?? 0);
 });
 
-watchHelper.watchMouseEvent(
-  ["POLYGON_DRAWING"],
-  "EV_SVG_MOUSEDOWN",
-  resetPolygonDrawing,
-);
+//watchHelper.watchMouseEvent(["POLYGON_DRAWING"], "EV_SVG_MOUSEUP", () => {
+//  editModeStore.setDefaultEditMode();
+//});
 
-function resetPolygonDrawing(e: MouseEvent) {
-  const position = {
-    x: e.pageX - cellStore.getSvgBoundingRect().x,
-    y: e.pageY - cellStore.getSvgBoundingRect().y,
-  };
+// function resetPolygonDrawing(e: MouseEvent) {
+//   const position = {
+//     x: e.pageX - cellStore.getSvgBoundingRect().x,
+//     y: e.pageY - cellStore.getSvgBoundingRect().y,
+//   };
 
-  // Check if p is close enough to either edge of linePosition
-  const distP1 = Math.sqrt(
-    Math.pow(position.x - linePosition.value.p1x, 2) +
-      Math.pow(position.y - linePosition.value.p1y, 2),
-  );
-  const distP2 = Math.sqrt(
-    Math.pow(position.x - linePosition.value.p2x, 2) +
-      Math.pow(position.y - linePosition.value.p2y, 2),
-  );
+//   // Check if p is close enough to either edge of linePosition
+//   const distP1 = Math.sqrt(
+//     Math.pow(position.x - linePosition.value.p1x, 2) +
+//       Math.pow(position.y - linePosition.value.p1y, 2),
+//   );
+//   const distP2 = Math.sqrt(
+//     Math.pow(position.x - linePosition.value.p2x, 2) +
+//       Math.pow(position.y - linePosition.value.p2y, 2),
+//   );
 
-  if (distP1 > 25 && distP2 > 25) {
-    editModeStore.setDefaultEditMode();
-  }
-}
+//   if (distP1 > 25 && distP2 > 25) {
+//     editModeStore.setDefaultEditMode();
+//   }
+// }
 
 function setInitialPosition(p: DotCoordinates) {
   linePosition.value.p1x = p.x;
@@ -273,8 +274,21 @@ function getMovementDirection(yPos: number): MovementDirection {
     : "UP";
 }
 
-function endDrawing() {
-  saveLine();
+function editNotStarted(): boolean {
+  return (
+    Math.abs(linePosition.value.p1x - linePosition.value.p2x) < 5 &&
+    Math.abs(linePosition.value.p1y - linePosition.value.p2y) < 5
+  );
+}
+
+async function endDrawing(): Promise<string> {
+  if(editNotStarted()) {
+    editModeStore.setDefaultEditMode();
+    return "";
+  }
+
+  const uuid = await saveLine();
+
   if (editModeStore.isPolygonDrawingMode()) {
     if (modifyRight.value) {
       linePosition.value.p1x = linePosition.value.p2x;
@@ -283,29 +297,13 @@ function endDrawing() {
       linePosition.value.p2x = linePosition.value.p1x;
       linePosition.value.p2y = linePosition.value.p1y;
     }
-    return;
+    return "";
   }
 
-  editModeStore.setDefaultEditMode();
+  return uuid;
 }
 
-function saveLine(fixEdge: boolean = true) {
-  if (
-    linePosition.value.p1x === 0 &&
-    linePosition.value.p1y === 0 &&
-    linePosition.value.p2x === 0 &&
-    linePosition.value.p2y === 0
-  ) {
-    return;
-  }
-
-  if (
-    linePosition.value.p1x == linePosition.value.p2x &&
-    linePosition.value.p2y == linePosition.value.p2y
-  ) {
-    return;
-  }
-
+async function saveLine(fixEdge: boolean = true): Promise<string> {
   if (fixEdge) {
     linePosition.value.p1x = getAdjustedEdge({
       x: linePosition.value.p1x,
@@ -337,8 +335,9 @@ function saveLine(fixEdge: boolean = true) {
     notationMutateHelper.updateLineNotation(
       updatedLine as LineNotationAttributes,
     );
+    return updatedLine.uuid;
   } else {
-    notationMutateHelper.addLineNotation(linePosition.value);
+    return notationMutateHelper.addLineNotation(linePosition.value);
   }
 }
 
