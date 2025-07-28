@@ -2,60 +2,38 @@
   <div v-show="show">
     <lineWatcher
       :startEntry="{
-        editMode: ['LINE_STARTED'],
+        editMode: ['POLYGON_STARTED'],
         func: setInitialPosition,
       }"
       :drawEntry="{
-        editMode: ['LINE_DRAWING'],
+        editMode: ['POLYGON_DRAWING'],
         func: drawLine,
       }"
       :editEntryFirstHandle="{
-        editMode: ['LINE_EDITING_LEFT'],
-        func: modifyLineLeft,
+        editMode: [],
+        func: () => {},
       }"
       :editEntrySecondHandle="{
-        editMode: ['LINE_EDITING_RIGHT'],
-        func: modifyLineRight,
+        editMode: [],
+        func: () => {},
       }"
       :saveEntry="{
-        editMode: [
-          'LINE_DRAWING',
-          'LINE_EDITING_RIGHT',
-          'LINE_EDITING_LEFT',
-        ],
+        editMode: ['POLYGON_DRAWING'],
         func: endDrawing,
       }"
       :selectEntry="{
-        editMode: ['LINE_SELECTED'],
-        func: selectLine,
+        editMode: [],
+        func: () => {},
         event: 'EV_LINE_SELECTED',
       }"
       :moveByKeyEntry="{
-        editMode: ['LINE_SELECTED'],
-        func: moveLine,
+        editMode: [],
+        func: () => {},
       }"
       :endEntry="{
-        editMode: ['LINE_SELECTED'],
+        editMode: [],
       }"
     />
-    <line-handle
-      v-show="editModeStore.isLineMode()"
-      drawing-mode="LINE_DRAWING"
-      editing-mode="LINE_EDITING_LEFT"
-      v-bind:style="{
-        left: handleLeft + 'px',
-        top: handleTop + 'px',
-      }"
-    ></line-handle>
-    <line-handle
-      v-show="editModeStore.isLineMode()"
-      drawing-mode="LINE_DRAWING"
-      editing-mode="LINE_EDITING_RIGHT"
-      v-bind:style="{
-        left: handleRight + 'px',
-        top: handleBottom + 'px',
-      }"
-    ></line-handle>
 
     <svg
       height="800"
@@ -78,6 +56,7 @@ import { computed, ref, watch } from "vue";
 import { useCellStore } from "../store/pinia/cellStore";
 import { useEditModeStore } from "../store/pinia/editModeStore";
 import { useNotationStore } from "../store/pinia/notationStore";
+import useWatchHelper from "../helpers/watchHelper";
 import {
   SlopeType,
   LineAttributes,
@@ -88,9 +67,9 @@ import {
 } from "../../../math-common/src/baseTypes";
 import useEventBus from "../helpers/eventBusHelper";
 import lineWatcher from "./LineWatcher.vue";
-import lineHandle from "./LineHandle.vue";
 import useScreenHelper from "../helpers/screenHelper"; // Add this line
 import useNotationMutateHelper from "../helpers/notationMutateHelper"; // Add this line
+const watchHelper = useWatchHelper();
 
 const eventBus = useEventBus();
 const editModeStore = useEditModeStore();
@@ -134,32 +113,26 @@ watch(
   { deep: true },
 );
 
+// next polygon line started
+// watchHelper.watchMouseEvent(
+//   ["POLYGON_LINE_ENDED"],
+//   "EV_SVG_MOUSEDOWN",
+//   (e: MouseEvent) => {
+//     const point: DotCoordinates = {
+//       x: e.offsetX,
+//       y: e.offsetY,
+//     }
+//     const nearLine = screenHelper.getNearestLineEdge(point);
+//     editModeStore.setEditMode("POLYGON_DRAWING");
+//     drawLine(point);
+//   },
+// );
+
 // computed
 
 const show = computed(() => {
-  return (
-    editModeStore.isLineDrawingMode() ||
-    editModeStore.isLineSelectedMode() ||
-    editModeStore.isLineEditingMode()
-  );
+  return editModeStore.isPolygonDrawingMode();
 });
-
-let handleLeft = computed(() => {
-  return linePosition.value.p1x + (cellStore.getSvgBoundingRect().left ?? 0);
-});
-
-let handleRight = computed(() => {
-  return linePosition.value.p2x + (cellStore.getSvgBoundingRect().left ?? 0);
-});
-
-let handleTop = computed(() => {
-  return linePosition.value.p1y + (cellStore.getSvgBoundingRect().top ?? 0);
-});
-
-let handleBottom = computed(() => {
-  return linePosition.value.p2y + (cellStore.getSvgBoundingRect().top ?? 0);
-});
-
 
 function setInitialPosition(p: DotCoordinates) {
   linePosition.value.p1x = p.x;
@@ -169,6 +142,10 @@ function setInitialPosition(p: DotCoordinates) {
   slopeType = "NONE";
   movementDirection = "NONE";
 }
+
+// function drawNextPolygonLine(e: MouseEvent) {
+//   dr
+// }
 
 function drawLine(p: DotCoordinates) {
   if (slopeType === "NONE") {
@@ -194,31 +171,6 @@ function drawLine(p: DotCoordinates) {
   }
 }
 
-function selectLine(notation: NotationAttributes) {
-  const n = notation as LineNotationAttributes;
-
-  slopeType = getSlopeTypeForExistingLine(n);
-
-  linePosition.value.p1x = n.p1x;
-  linePosition.value.p2x = n.p2x;
-  linePosition.value.p1y = n.p1y;
-  linePosition.value.p2y = n.p2y;
-}
-
-function modifyLineLeft(p: DotCoordinates) {
-  movementDirection = getMovementDirection(p.x);
-
-  linePosition.value.p1x = p.x;
-  linePosition.value.p1y = p.y;
-}
-
-function modifyLineRight(p: DotCoordinates) {
-  movementDirection = getMovementDirection(p.y);
-
-  linePosition.value.p2x = p.x;
-  linePosition.value.p2y = p.y;
-}
-
 function getSlopeTypeForNewLine(xPos: number, yPos: number): SlopeType {
   if (
     /*moving up and right*/
@@ -230,10 +182,6 @@ function getSlopeTypeForNewLine(xPos: number, yPos: number): SlopeType {
   }
 
   return "NEGATIVE";
-}
-
-function getSlopeTypeForExistingLine(line: LineAttributes): SlopeType {
-  return line.p2y < line.p1y ? "POSITIVE" : "NEGATIVE";
 }
 
 function getMovementDirection(yPos: number): MovementDirection {
@@ -256,7 +204,40 @@ async function endDrawing(): Promise<string> {
     return "";
   }
 
-   return await saveLine();
+  // check if polygon is closed
+  const nearLineAtEnd = screenHelper.getNearestLineEdge(
+    modifyRight.value
+      ? {
+          x: linePosition.value.p2x,
+          y: linePosition.value.p2y,
+        }
+      : {
+          x: linePosition.value.p1x,
+          y: linePosition.value.p1y,
+        },
+  );
+
+  const uuid = await saveLine();
+
+  if (nearLineAtEnd != null) {
+    setTimeout(() => {
+      // let the line be drawn before we set next edit mode
+      editModeStore.setDefaultEditMode();
+    }, 1);
+
+    return uuid;
+  }
+
+  // set next line start from end of current line
+  if (modifyRight.value) {
+    linePosition.value.p1x = linePosition.value.p2x;
+    linePosition.value.p1y = linePosition.value.p2y;
+  } else {
+    linePosition.value.p2x = linePosition.value.p1x;
+    linePosition.value.p2y = linePosition.value.p1y;
+  }
+
+  return uuid;
 }
 
 async function saveLine(fixEdge: boolean = true): Promise<string> {
@@ -298,14 +279,14 @@ async function saveLine(fixEdge: boolean = true): Promise<string> {
 }
 
 function getAdjustedEdge(point: DotCoordinates): DotCoordinates {
-  // line edge at point
-  const nearLineAtPoint = screenHelper.getNearestLineEdge(point);
+  // line edge at left
+  const nearLineAtLeft = screenHelper.getNearestLineEdge(point);
 
-  if (nearLineAtPoint != null) {
-    return { x: nearLineAtPoint.x, y: nearLineAtPoint.y };
+  if (nearLineAtLeft != null) {
+    return { x: nearLineAtLeft.x, y: nearLineAtLeft.y };
   }
 
-    // circle edge at left
+  // circle edge at left
   const nearCircleAtLeft = screenHelper.getNearestCircleEdge(point);
 
   if (nearCircleAtLeft != null) {
@@ -334,22 +315,5 @@ function getAdjustedEdge(point: DotCoordinates): DotCoordinates {
   }
 
   return point;
-}
-
-function applyMoveToLine(dx: number, dy: number) {
-  linePosition.value.p1y += dy;
-  linePosition.value.p2y += dy;
-  linePosition.value.p1x += dx;
-  linePosition.value.p2x += dx;
-}
-
-function moveLine(moveX: number, moveY: number) {
-  applyMoveToLine(moveX, moveY);
-  saveLine();
-}
-
-function moveLineByKey(moveX: number, moveY: number) {
-  applyMoveToLine(moveX, moveY);
-  saveLine(false);
 }
 </script>

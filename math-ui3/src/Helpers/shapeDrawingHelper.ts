@@ -89,18 +89,21 @@ export default function useShapeDrawingHelper() {
     }
   }
 
-  async function saveDrawing(saveDrawingCallback: () => Promise<string>) {
-    const uuid = await saveDrawingCallback();
+  async function saveDrawing(
+    e: MouseEvent,
+    saveDrawingCallback: (e: MouseEvent) => Promise<string>,
+  ) {
+    const uuid = await saveDrawingCallback(e);
 
     if (!editModeStore.isPolygonDrawingMode()) {
       notationStore.selectNotation(uuid);
       if (uuid) {
         setTimeout(() => {
-          hideMatrixLine(uuid); // dont show created line yet since we are in edit mode
+          hideMatrixLine(uuid); // dont show created line yet since we back to edit mode
         }, 1);
       }
+      editModeStore.setNextEditMode();
     }
-    editModeStore.setNextEditMode();
   }
 
   function selectLine(

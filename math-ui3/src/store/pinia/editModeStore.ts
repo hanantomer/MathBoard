@@ -64,6 +64,10 @@ export const useEditModeStore = defineStore("editMode", () => {
     return editMode.value === "POLYGON_DRAWING";
   }
 
+  //function isPolygonLineEndedMode() {
+  //  return editMode.value === "POLYGON_LINE_ENDED";
+  //}
+
   function isSqrtMode() {
     return (
       editMode.value === "SQRT_STARTED" ||
@@ -231,8 +235,8 @@ export const useEditModeStore = defineStore("editMode", () => {
       case "POLYGON_STARTED":
         return setEditMode("POLYGON_DRAWING");
 
-      case "POLYGON_DRAWING":
-        return setEditMode("POLYGON_STARTED");
+//      case "POLYGON_DRAWING":
+//        return setEditMode("POLYGON_LINE_ENDED");
 
       case "LINE_STARTED":
         return setEditMode("LINE_DRAWING");
@@ -335,6 +339,7 @@ export const useEditModeStore = defineStore("editMode", () => {
     isResizeMode,
     isSelectFromListMode,
     isPolygonDrawingMode,
+    //isPolygonLineEndedMode,
     isCurveEditingControlPointMode,
     setEditMode,
     setNextEditMode,

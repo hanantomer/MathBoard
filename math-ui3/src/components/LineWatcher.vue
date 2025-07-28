@@ -87,8 +87,8 @@ watchHelper.watchMouseEvent(
     shapeDrawingHelper.modifyLine(e, props.editEntrySecondHandle.func),
 );
 
-watchHelper.watchMouseEvent(props.saveEntry.editMode, "EV_SVG_MOUSEUP", () =>
-  shapeDrawingHelper.saveDrawing(props.saveEntry.func),
+watchHelper.watchMouseEvent(props.saveEntry.editMode, "EV_SVG_MOUSEUP", (e: MouseEvent) =>
+  shapeDrawingHelper.saveDrawing(e, props.saveEntry.func),
 );
 
 watchHelper.watchMouseEvent(props.endEntry.editMode, "EV_SVG_MOUSEUP", (e: MouseEvent) =>

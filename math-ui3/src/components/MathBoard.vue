@@ -17,6 +17,7 @@
       <leftToolbar></leftToolbar>
       <sqrtDrawer></sqrtDrawer>
       <lineDrawer></lineDrawer>
+      <polygonDrawer></polygonDrawer>
       <curveDrawer></curveDrawer>
       <circleDrawer></circleDrawer>
       <v-sheet>
@@ -45,6 +46,7 @@ import specialSymbolsToolbar from "./SpecialSymbolsToolbar.vue";
 import areaSelector from "./AreaSelector.vue";
 import sqrtDrawer from "./SqrtDrawer.vue";
 import lineDrawer from "./LineDrawer.vue";
+import polygonDrawer from "./PolygonDrawer.vue";
 import curveDrawer from "./CurveDrawer.vue";
 import circleDrawer from "./CircleDrawer.vue";
 import useWatchHelper from "../helpers/watchHelper";

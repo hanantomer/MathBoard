@@ -350,7 +350,7 @@ export default function screenHelper() {
     return nominator / deNominator;
   }
 
-  function getNearestNotationEdge(dot: DotCoordinates): DotCoordinates | null {
+  function getNearestCircleEdge(dot: DotCoordinates): DotCoordinates | null {
     const notationStore = useNotationStore();
     let nearPoint = null;
 
@@ -360,42 +360,47 @@ export default function screenHelper() {
     notationStore
       .getNotations()
       .filter((n) => n.uuid !== selectedNotationUUId)
-      .filter((n) => n.notationType === "LINE" || n.notationType === "CIRCLE")
+      .filter((n) => n.notationType === "CIRCLE")
       .forEach((n) => {
-        switch (n.notationType) {
-          case "LINE": {
-            const n1 = n as LineNotationAttributes;
-            let distance = getClickedPosDistanceFromLineEdge(
-              dot,
-              n1.p1x,
-              n1.p1y,
-            );
-            if (distance < maxNotationDistance) {
-              nearPoint = { x: n1.p1x, y: n1.p1y };
-              return;
-            }
-            distance = getClickedPosDistanceFromLineEdge(dot, n1.p2x, n1.p2y);
-            if (distance < maxNotationDistance) {
-              nearPoint = { x: n1.p2x, y: n1.p2y };
-              return;
-            }
-            break;
-          }
-          case "CIRCLE": {
-            const n1 = n as CircleNotationAttributes;
-            let circleCircumferencePoint = getNearestPointOnCircleCircumference(
-              dot,
-              n1.cx,
-              n1.cy,
-              n1.r,
-            );
-            let distance = getPointsDistance(circleCircumferencePoint, dot);
-            if (distance < maxNotationDistance) {
-              nearPoint = circleCircumferencePoint;
-              return;
-            }
-            break;
-          }
+        const n1 = n as CircleNotationAttributes;
+        let circleCircumferencePoint = getNearestPointOnCircleCircumference(
+          dot,
+          n1.cx,
+          n1.cy,
+          n1.r,
+        );
+        let distance = getPointsDistance(circleCircumferencePoint, dot);
+        if (distance < maxNotationDistance) {
+          nearPoint = circleCircumferencePoint;
+          return;
+        }
+      });
+
+    return nearPoint;
+  }
+
+  function getNearestLineEdge(dot: DotCoordinates): DotCoordinates | null {
+    const notationStore = useNotationStore();
+    let nearPoint = null;
+
+    const selectedNotationUUId = notationStore.getSelectedNotations()?.at(0)
+      ?.uuid;
+
+    notationStore
+      .getNotations()
+      .filter((n) => n.uuid !== selectedNotationUUId)
+      .filter((n) => n.notationType === "LINE")
+      .forEach((n) => {
+        const n1 = n as LineNotationAttributes;
+        let distance = getClickedPosDistanceFromLineEdge(dot, n1.p1x, n1.p1y);
+        if (distance < maxNotationDistance) {
+          nearPoint = { x: n1.p1x, y: n1.p1y };
+          return;
+        }
+        distance = getClickedPosDistanceFromLineEdge(dot, n1.p2x, n1.p2y);
+        if (distance < maxNotationDistance) {
+          nearPoint = { x: n1.p2x, y: n1.p2y };
+          return;
         }
       });
 
@@ -548,7 +553,8 @@ export default function screenHelper() {
     getCellTopLeftCoordinates,
     getRectAttributes,
     getMultiCellLineAttributes,
-    getNearestNotationEdge,
+    getNearestLineEdge,
+    getNearestCircleEdge,
     getNearestCellXBorder,
     getNearestCellYBorder,
     getPointsDistance,

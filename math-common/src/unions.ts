@@ -82,6 +82,7 @@ export type EditMode =
   | "CELL_SELECTED" // user clicked on a cell or navigated via keys
   | "POLYGON_STARTED" // polygon button pressed
   | "POLYGON_DRAWING" // polygon drawing started
+  //| "POLYGON_LINE_ENDED" // polygon single line ended
   | "LINE_STARTED" //  line button pressed
   | "LINE_DRAWING" // line drawing started
   | "LINE_SELECTED" // line selected
@@ -123,6 +124,7 @@ export const EditModeNotationType = new Map<
   ["CELL_SELECTED", "SYMBOL"],
   ["POLYGON_STARTED", "POLYGON"],
   ["POLYGON_DRAWING", "POLYGON"],
+  //["POLYGON_LINE_ENDED", "POLYGON"],
   ["LINE_STARTED", "LINE"],
   ["LINE_DRAWING", "LINE"],
   ["LINE_SELECTED", "LINE"],
