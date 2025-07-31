@@ -235,6 +235,6 @@ async function forgotPassword() {
 <style>
 .alerttext input {
   color: red !important;
-  font-size: 1.2em !important;
+  font-size: small;
 }
 </style>
