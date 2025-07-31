@@ -65,7 +65,7 @@
                 color="#F44336"
                 readonly
                 outlined
-                value="Your account is not approved yet, we will notify you when it is approved"
+                value="Your account is pending approval. We'll inform you once it's approved."
                 prepend-inner-icon="mdi-error"
               ></v-text-field>
             </v-col>
@@ -235,6 +235,6 @@ async function forgotPassword() {
 <style>
 .alerttext input {
   color: red !important;
-  font-size: small;
+  font-size: 1.2em !important;
 }
 </style>

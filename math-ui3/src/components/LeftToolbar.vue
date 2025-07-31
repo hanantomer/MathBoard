@@ -22,7 +22,10 @@
       title="Paste Image Instructions"
     >
       To paste an image, first copy it to your clipboard. Then, click on the
-      desired cell and press Ctrl+V.
+      desired cell and press Ctrl+V. Attention: google docs images are not
+      supported, so please use a tool like the Windows Snipping Tool, macOS
+      Screenshot (Shift+Command+4), or another screen capture tool to capture
+      the desired image and copy it to your clipboard (Ctrl+C or Command+C).
     </v-alert>
     <v-alert
       color="#C51162"
@@ -31,10 +34,10 @@
       v-model="showSelectionHelpMessage"
       closable
       title="Selection Instructions"
-      >To select an area, drag the mouse over the desired region.
-      Then, drag the rectangle to move the selected notations, or use Ctrl+drag to copy
-      them. To delete the selected notations, press Delete or Backspace.
-      Another option, is to click on a single notation to select it.
+      >To select an area, drag the mouse over the desired region. Then, drag the
+      rectangle to move the selected notations, or use Ctrl+drag to copy them.
+      To delete the selected notations, press Delete or Backspace. Another
+      option, is to click on a single notation to select it.
     </v-alert>
   </div>
 

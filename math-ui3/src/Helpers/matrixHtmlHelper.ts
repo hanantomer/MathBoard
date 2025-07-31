@@ -405,6 +405,8 @@ export default function useHtmlMatrixHelper() {
     const leftMargin =
       n1.value === "."
         ? "-10%"
+        : n1.value === "i" || n1.value === "j"
+        ? "35%"
         : n1.value.startsWith("&") || n1.value.length === 1
         ? "20%"
         : "0%";
