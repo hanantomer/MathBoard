@@ -39,7 +39,7 @@
         :items="lessons"
         v-model="selectedLesson"
       >
-      </v-autocomplete>
+    </v-autocomplete>
       <v-data-table
         v-model:items-per-page="itemsPerPage"
         :items="questions"

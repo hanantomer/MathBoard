@@ -111,7 +111,7 @@
       <v-row justify="center" no-gutters>
         <v-col cols="12" sm="auto" class="text-center">
           <p style="color: whitesmoke; margin-right: 10px">
-            © Copyright 2024 www.themathboard.com
+            © Copyright 2025 www.themathboard.com
           </p>
         </v-col>
         <v-col cols="12" sm="auto" class="text-center">
@@ -125,18 +125,18 @@
           >
             Privacy Policy
           </v-btn>
-          
-          <!-- <v-btn
+
+          <v-btn
             style="background-color: transparent; color: whitesmoke"
             class="ml-1"
             height="25"
             flat
-            href="/tutorials/tutorial.webm"
+            href="/tutorials/MathBoard tutorial.mp4"
             target="_blank"
           >
             Tutorial
-          </v-btn> -->
-          
+          </v-btn>
+
           <v-btn
             style="background-color: transparent; color: whitesmoke"
             class="ml-1"

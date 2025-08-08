@@ -395,6 +395,22 @@ export default function eventHelper() {
     eventBus.emit("EV_SVG_MOUSEDOWN", e);
   }
 
+  function emitSvgTouchStart(e: MouseEvent) {
+    eventBus.emit("EV_SVG_TOUCH_START", e);
+  }
+
+  // function registerSvgTouchStart() {
+  //   document
+  //     ?.getElementById(cellStore.getSvgId()!)
+  //     ?.addEventListener("touchstart", emitSvgMo);
+  // }
+
+  // function unregisterTouchStart() {
+  //   document
+  //     ?.getElementById(cellStore.getSvgId()!)
+  //     ?.removeEventListener("touchstart", emitSvgMouseDown);
+  // }
+
   function registerSvgMouseDown() {
     document
       ?.getElementById(cellStore.getSvgId()!)
@@ -420,7 +436,8 @@ export default function eventHelper() {
   }
 
   function emitSvgMouseMove(e: MouseEvent) {
-    eventBus.emit("EV_SVG_MOUSEMOVE", e);
+    if (e.buttons !== 1) return;
+    eventBus.emit("EV_SVG_MOUSE_OR_TOUCH_DRAG", e);
   }
 
   function emitSvgMouseUp(e: MouseEvent) {

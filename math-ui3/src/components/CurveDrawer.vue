@@ -187,7 +187,7 @@ const show = computed(() => {
 
 watchHelper.watchMouseEvent(
   ["CURVE_EDITING_CONTROLֹ_POINT"],
-  "EV_SVG_MOUSEMOVE",
+  "EV_SVG_MOUSE_OR_TOUCH_DRAG",
   setControlPoint,
 );
 
@@ -327,7 +327,7 @@ function setCurveElement() {
   document.getElementById("curve")!.setAttribute("d", curve);
 }
 
-async function endDrawCurve() : Promise<string> {
+async function endDrawCurve(): Promise<string> {
   // drawing not started
   if (curveAttributes.value.p1x === 0) {
     return "";
@@ -353,7 +353,7 @@ async function endDrawCurve() : Promise<string> {
   return uuid;
 }
 
-async function saveCurve(curevAttributes: CurveAttributes) : Promise<string> {
+async function saveCurve(curevAttributes: CurveAttributes): Promise<string> {
   if (notationStore.getSelectedNotations().length > 0) {
     let updatedCurve = {
       ...notationStore.getSelectedNotations().at(0)!,
@@ -364,12 +364,8 @@ async function saveCurve(curevAttributes: CurveAttributes) : Promise<string> {
       updatedCurve as CurveNotationAttributes,
     );
     return updatedCurve.uuid;
-
   } else {
-    return await notationMutateHelper.addCurveNotation(
-      curevAttributes
-    );
-
+    return await notationMutateHelper.addCurveNotation(curevAttributes);
   }
 }
 

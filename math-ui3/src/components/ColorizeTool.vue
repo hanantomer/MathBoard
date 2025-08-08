@@ -72,7 +72,22 @@ const backgroundColor = computed(() => {
 
 let selectedColor = ref<Color | null>(null);
 
-const colors: Color[] = ["ciyan", "blue", "green", "purple", "orange", "red", "yellow",  "gray", "lightgray", "darkgray", "lightblue", "lightgreen", "pink", "none"];
+const colors: Color[] = [
+  "ciyan",
+  "blue",
+  "green",
+  "purple",
+  "orange",
+  "red",
+  "yellow",
+  "gray",
+  "lightgray",
+  "darkgray",
+  "lightblue",
+  "lightgreen",
+  "pink",
+  "none",
+];
 
 watchHelper.watchMouseEvent(
   ["COLORIZING"],
@@ -82,18 +97,15 @@ watchHelper.watchMouseEvent(
 
 watchHelper.watchMouseEvent(
   ["COLORIZING"],
-  "EV_SVG_MOUSEMOVE",
+  "EV_SVG_MOUSE_OR_TOUCH_DRAG",
   colorizeNotationByMouseDrag,
 );
-
 
 // reset coorizing tool when colorizing by click or by drag ends
 watchHelper.watchMouseEvent(["COLORIZING"], "EV_SVG_MOUSEUP", resetColorizing);
 
-
 function colorizeNotationByMouseDrag(e: MouseEvent) {
-  if (e.buttons !== 1) return;
-  colorizeNotationAtMousePosition(e);
+    colorizeNotationAtMousePosition(e);
 }
 
 function colorizeNotationAtMousePosition(e: MouseEvent) {
@@ -123,7 +135,6 @@ function resetColorizing() {
   selectedColor.value = null;
   editModeStore.setDefaultEditMode();
 }
-
 </script>
 <style scoped>
 .v-list-item {

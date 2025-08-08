@@ -34,8 +34,8 @@
 </template>
 
 <script setup lang="ts">
-import StatusBar from "./StatusBar.vue";
 import freeTextEditor from "./FreeTextEditor.vue";
+import StatusBar from "./StatusBar.vue";
 import annotationEditor from "./AnnotationEditor.vue";
 import exponentEditor from "./ExponentEditor.vue";
 import useNotationLoadingHelper from "../helpers/notationLoadingHelper";
@@ -257,4 +257,6 @@ path:hover {
   font-weight: bold;
   font-size: 1.7em;
 }
+
+
 </style>

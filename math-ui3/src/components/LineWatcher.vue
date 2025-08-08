@@ -69,34 +69,40 @@ watchHelper.watchMouseEvent(
 
 watchHelper.watchMouseEvent(
   props.drawEntry.editMode,
-  "EV_SVG_MOUSEMOVE",
+  "EV_SVG_MOUSE_OR_TOUCH_DRAG",
   (e: MouseEvent) => shapeDrawingHelper.drawNewLine(e, props.drawEntry.func),
 );
 
 watchHelper.watchMouseEvent(
   props.editEntryFirstHandle.editMode,
-  "EV_SVG_MOUSEMOVE",
+  "EV_SVG_MOUSE_OR_TOUCH_DRAG",
   (e: MouseEvent) =>
     shapeDrawingHelper.modifyLine(e, props.editEntryFirstHandle.func),
 );
 
 watchHelper.watchMouseEvent(
   props.editEntrySecondHandle.editMode,
-  "EV_SVG_MOUSEMOVE",
+  "EV_SVG_MOUSE_OR_TOUCH_DRAG",
   (e: MouseEvent) =>
     shapeDrawingHelper.modifyLine(e, props.editEntrySecondHandle.func),
 );
 
-watchHelper.watchMouseEvent(props.saveEntry.editMode, "EV_SVG_MOUSEUP", (e: MouseEvent) =>
-  shapeDrawingHelper.saveDrawing(e, props.saveEntry.func),
+watchHelper.watchMouseEvent(
+  props.saveEntry.editMode,
+  "EV_SVG_MOUSEUP",
+  (e: MouseEvent) => shapeDrawingHelper.saveDrawing(e, props.saveEntry.func),
 );
 
-watchHelper.watchMouseEvent(props.endEntry.editMode, "EV_SVG_MOUSEUP", (e: MouseEvent) =>
-  shapeDrawingHelper.resetDrawing(e),
+watchHelper.watchMouseEvent(
+  props.endEntry.editMode,
+  "EV_SVG_MOUSEUP",
+  (e: MouseEvent) => shapeDrawingHelper.resetDrawing(e),
 );
 
-watchHelper.watchEndOfEditMode(["LINE_SELECTED"], ["LINE_EDITING_LEFT","LINE_EDITING_RIGHT"], () =>
-  shapeDrawingHelper.resetDrawing(null),
+watchHelper.watchEndOfEditMode(
+  ["LINE_SELECTED"],
+  ["LINE_EDITING_LEFT", "LINE_EDITING_RIGHT"],
+  () => shapeDrawingHelper.resetDrawing(null),
 );
 
 watchHelper.watchNotationSelection(

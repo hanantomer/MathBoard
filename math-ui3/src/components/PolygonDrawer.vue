@@ -113,21 +113,6 @@ watch(
   { deep: true },
 );
 
-// next polygon line started
-// watchHelper.watchMouseEvent(
-//   ["POLYGON_LINE_ENDED"],
-//   "EV_SVG_MOUSEDOWN",
-//   (e: MouseEvent) => {
-//     const point: DotCoordinates = {
-//       x: e.offsetX,
-//       y: e.offsetY,
-//     }
-//     const nearLine = screenHelper.getNearestLineEdge(point);
-//     editModeStore.setEditMode("POLYGON_DRAWING");
-//     drawLine(point);
-//   },
-// );
-
 // computed
 
 const show = computed(() => {
@@ -143,9 +128,6 @@ function setInitialPosition(p: DotCoordinates) {
   movementDirection = "NONE";
 }
 
-// function drawNextPolygonLine(e: MouseEvent) {
-//   dr
-// }
 
 function drawLine(p: DotCoordinates) {
   if (slopeType === "NONE") {

@@ -7,6 +7,9 @@
     v-on:mousedown="startMoving"
     v-on:mouseup="onSelectionMouseUp"
     v-on:mousemove="handleMouseDrag"
+    @touchstart="startMoving"
+    v-on:touchend="onSelectionMouseUp"
+    v-on:touchmove="handleMouseDrag"
     v-bind:style="{
       left: selectionRectLeft + 'px',
       top: selectionRectTop + 'px',
@@ -122,19 +125,19 @@ const selectionRectHeight = computed(() => {
 
 watchHelper.watchMouseEvent(
   ["CELL_SELECTED"],
-  "EV_SVG_MOUSEMOVE",
+  "EV_SVG_MOUSE_OR_TOUCH_DRAG",
   startAreaSelection,
 );
 
 watchHelper.watchMouseEvent(
   ["TEXT_STARTED"],
-  "EV_SVG_MOUSEMOVE",
+  "EV_SVG_MOUSE_OR_TOUCH_DRAG",
   startAreaSelection,
 );
 
 watchHelper.watchMouseEvent(
   ["AREA_SELECTING", "TEXT_AREA_SELECTING"],
-  "EV_SVG_MOUSEMOVE",
+  "EV_SVG_MOUSE_OR_TOUCH_DRAG",
   updateSelectionArea,
 );
 
@@ -162,7 +165,7 @@ watchHelper.watchMouseEvent(
 
 watchHelper.watchMouseEvent(
   ["AREA_MOVING"],
-  "EV_SVG_MOUSEMOVE",
+  "EV_SVG_MOUSE_OR_TOUCH_DRAG",
   handleMouseDrag,
 );
 
@@ -201,8 +204,6 @@ function cancelTextSelectionWhenUserClickedOutside() {
 }
 
 function startAreaSelection(e: MouseEvent) {
-  if (e.buttons !== 1) return;
-
   if (!authorizationHelper.canEdit()) return;
 
   horizontalDirection = "NONE";
@@ -228,7 +229,6 @@ function setStartPosition(e: MouseEvent) {
 }
 
 function startMoving(e: MouseEvent) {
-  if (e.buttons !== 1) return;
   editModeStore.setNextEditMode();
 }
 
@@ -273,7 +273,6 @@ async function handleKeyUp(e: KeyboardEvent) {
 
 // extend or shrink selection area
 function updateSelectionArea(e: MouseEvent) {
-  if (e.buttons !== 1) return;
 
   setSelectionDirection(e);
 
@@ -372,7 +371,6 @@ function endSelect() {
 }
 
 function handleMouseDrag(e: MouseEvent) {
-  if (e.buttons !== 1) return;
 
   if (
     editModeStore.getEditMode() === "AREA_SELECTING" ||
@@ -587,6 +585,6 @@ function setSelectionPositionForImage(selectedNotation: NotationAttributes) {
   cursor: -webkit-grab;
   position: absolute;
   z-index: 99;
-  /*border-bottom: 0;*/
+  touch-action: none; /* prevent scrolling on touch devices */
 }
 </style>

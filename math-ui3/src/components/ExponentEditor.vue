@@ -113,9 +113,7 @@ function startNewExponentAtSelectedCellPosition() {
 }
 
 function startNewExponentAtMousePosition(e: MouseEvent) {
-  if (e.buttons !== 1) return;
-
-  editModeStore.setNextEditMode();
+    editModeStore.setNextEditMode();
 
   clickedCell = screenHelper.getCell({
     x: e.pageX,
