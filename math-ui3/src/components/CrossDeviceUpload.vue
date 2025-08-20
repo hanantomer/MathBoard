@@ -36,17 +36,6 @@
           <qrcode :value="uploadImageUrl" :options="{ width: 200 }"></qrcode>
           <p>Waiting for photo upload...</p>
         </div>
-
-        <div v-if="imageUrl" class="mt-6">
-          <v-alert
-            type="success"
-            prominent
-            icon="mdi-check-circle"
-            class="mb-4"
-          >
-            Photo received successfully!
-          </v-alert>
-        </div>
       </v-card-text>
 
       <v-card-actions>
