@@ -51,7 +51,7 @@ const db = useDb();
 let app = express();
 app.use(auth);
 app.use(cors());
-app.use(express.urlencoded({ extended: true, limit: "2mb" })); // Increase limit
+app.use(express.urlencoded({ extended: true, limit: "3mb" })); 
 app.use(express.json({ limit: "1mb" }));
 const staticDir = path.join(__dirname, "uploads");
 app.use("/images",  express.static(staticDir)); // Serve static files from uploads directory
