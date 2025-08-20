@@ -334,7 +334,7 @@ export default function eventHelper() {
         const base64SizeBytes = Math.ceil(
           ((grayscaleBase64.length - "data:image/png;base64,".length) * 3) / 4,
         );
-        if (base64SizeBytes > 1024 * 1024) {
+        if (base64SizeBytes >= 2048 * 1024) {
           // 1 MB
           alert("Image is too large(max- 1 mb)");
           reject(new Error("Image is too large(max- 1 mb)"));
