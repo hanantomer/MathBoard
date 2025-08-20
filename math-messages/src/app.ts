@@ -10,12 +10,14 @@ import HeartbeatService from "./heartbeatService";
 import SelectedCellSyncService from "./selectedCellSyncService";
 import NotationSyncService from "./notationSyncService";
 import { LessonNotationAttributes } from "../../math-common/src/lessonTypes";
+import ImageLoadedService from "./imageLoadedService";
 
 
 type ServiceTypes = {
   authorization: AuthorizationService;
   authentication: AuthenticationService;
   heartbeat: HeartbeatService;
+  imageLoaded: ImageLoadedService;
   selectedCell: SelectedCellSyncService;
   notationSync: NotationSyncService;
 };
@@ -34,6 +36,7 @@ app.configure(
 app.use("authorization", new AuthorizationService(app));
 app.use("authentication", new AuthenticationService(app));
 app.use("heartbeat", new HeartbeatService(app));
+app.use("imageLoaded", new ImageLoadedService(app));
 app.use("selectedCell", new SelectedCellSyncService(app));
 app.use("notationSync", new NotationSyncService(app));
 
@@ -68,7 +71,11 @@ app
         ),
       ];
     }
-  );
+);
+  
+app.service("imageLoaded").publish("updated", (id: any, imageLoaded: any, ctx: any) => {
+  return app.channel(constants.LESSON_CHANNEL_PREFIX + imageLoaded.data.lessonUUId);
+});
 
 app.service("selectedCell").publish("updated", (id: any, selectedCell: any, ctx: any) => {
   return app.channel( constants.LESSON_CHANNEL_PREFIX + selectedCell.data.lessonUUId );

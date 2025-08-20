@@ -11,9 +11,8 @@ import Terminal from "vite-plugin-terminal";
 export default defineConfig(({ mode }) => {
   process.env = { ...process.env, ...loadEnv(mode, process.cwd()) };
   return {
-
     define: {
-        _global: ({})
+      _global: {},
     },
 
     build: {
@@ -50,11 +49,18 @@ export default defineConfig(({ mode }) => {
       cors: true,
       port: Number(process.env.VITE_WEB_PORT /*see .env*/),
       proxy: {
+        "/images": {
+          target: "http://localhost:" + process.env.VITE_API_PORT,
+          changeOrigin: true,
+          secure: false,
+        },
+
         "/api": {
           target: "http://localhost:" + process.env.VITE_API_PORT /*see .env*/,
           changeOrigin: true,
           secure: false,
         },
+
         "/socket.io": {
           target:
             "http://localhost:" + process.env.VITE_MESSAGING_PORT /*see .env*/,

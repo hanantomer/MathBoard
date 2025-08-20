@@ -75,6 +75,12 @@ const routes: Array<RouteRecordRaw> = [
     name: "reset-password",
     component: () => import("../components/ResetPassword.vue"),
   },
+  {
+    path: "/uploadPhoto/:lessonUUId/:userUUId",
+    name: "uploadPhoto",
+    props: true,
+    component: () => import("../components/UploadPhoto.vue"),
+  },
 ];
 
 const router = createRouter({

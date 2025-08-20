@@ -4,6 +4,11 @@
     @close="closeAccessLinkDialog"
   ></accessLinkDialog>
 
+  <CrossDeviceUpload
+    :show="showUploadDialog"
+    @close="closeUploadDialog"
+  ></CrossDeviceUpload>
+
   <div
     style="
       position: absolute;
@@ -74,6 +79,22 @@
         >
       </template>
     </v-tooltip>
+
+    <v-tooltip text="Load image via mobile camera" v-if="userStore.isTeacher()">
+      <template v-slot:activator="{ props }">
+        <v-btn
+          v-bind="props"
+          icon
+          @click.stop="doShowUploadDialog"
+          color="white"
+          x-small
+          fab
+          dark
+          ><v-icon>mdi-camera-plus-outline</v-icon></v-btn
+        >
+      </template>
+    </v-tooltip>
+
 
     <v-tooltip text="Select notations" v-if="userStore.isTeacher()">
       <template v-slot:activator="{ props }">
@@ -173,6 +194,8 @@
     </v-tooltip>
 
     <ColororizeTool></ColororizeTool>
+
+
   </v-toolbar>
 </template>
 
@@ -190,6 +213,7 @@ import ColororizeTool from "./ColorizeTool.vue";
 import useAuthorizationHelper from "../helpers/authorizationHelper";
 import useWatchHelper from "../helpers/watchHelper";
 import useNotationMutateHelper from "../helpers/notationMutateHelper";
+import CrossDeviceUpload from "./CrossDeviceUpload.vue";
 
 const watchHelper = useWatchHelper();
 const notationMutateHelper = useNotationMutateHelper();
@@ -215,6 +239,8 @@ watch(
 
 const showPasteImageHelpMessage = ref(false);
 const showSelectionHelpMessage = ref(false);
+
+const showUploadDialog = ref(false);
 
 const modeButtons: Array<{
   name: string;
@@ -400,6 +426,15 @@ function openPasteImageHelpMessage() {
   showPasteImageHelpMessage.value = true;
 }
 
+function doShowUploadDialog() {
+  showUploadDialog.value = true;
+}
+
+function closeUploadDialog() {
+  showUploadDialog.value = false;
+}
+
+
 function openSelectionHelpMessage() {
   showSelectionHelpMessage.value = true;
 }
@@ -407,6 +442,8 @@ function openSelectionHelpMessage() {
 function closeAccessLinkDialog() {
   showAccessLinkDialog.value = false;
 }
+
+
 
 const editEnabled = computed(() => {
   return authorizationHelper.canEdit();

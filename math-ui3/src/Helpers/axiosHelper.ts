@@ -1,6 +1,6 @@
 import axios from "axios";
 import { useCookies } from "vue3-cookies";
-import { baseURL } from "../../../math-common/src/globals";
+import { baseURL, imagesURL } from "../../../math-common/src/globals";
 const { cookies } = useCookies();
 
 
@@ -70,5 +70,5 @@ export default function axiosHelper() {
       return config;
     });
   }
-  return { baseURL, initAxiosInterceptors, handleError };
+  return { baseURL, imagesURL,  initAxiosInterceptors, handleError };
 }

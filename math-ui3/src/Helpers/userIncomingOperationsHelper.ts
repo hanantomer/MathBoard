@@ -62,21 +62,6 @@ export default function userIncomingOperations() {
         cellStore.setSelectedCell(selectedCell, true);
       });
 
-    // sync cell colorizing
-    // feathersClient
-    //   .service("colorizedCell")
-    //   .on("updated", (colorizedCell: ColorizedCell) => {
-    //     if (notationStore.getParent().type !== "LESSON") return;
-
-    //     if (colorizedCell.userUUId == userStore.getCurrentUser()!.uuid) return;
-
-    //     matrixCellHelper.colorizeCell(
-    //       svgId,
-    //       colorizedCell as CellAttributes,
-    //       colorizedCell.color,
-    //     );
-    //   });
-
     // accept write authorization as student in lesson
     if (!userStore.isTeacher()) {
       feathersClient

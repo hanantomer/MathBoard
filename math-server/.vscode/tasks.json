@@ -3,31 +3,43 @@
     
         "tasks": [
             {
-                "label": "clean",
-                "type": "process",
-                "command": "c:/dev/MathBoard/math-server/clean.bat",
-                "args": [
-                    "C:devMathBoardmath-db\build*.*",
-                    "/q",
-                    "/s"
-                ],
-                "echoCommand": true
-            },
-            {
                 "label": "build",
-                "type": "typescript",
+                "type": "shell",
+                "command": "tsc",
                 "dependsOn": [
-                    "clean"
+                    "build-db",
+                    "build-auth"
                 ],
-                "tsconfig": "tsconfig.json",
-                "problemMatcher": [
-                    "$tsc"
-                ],
+                "args": ["--project", "tsconfig.json"],
+                "problemMatcher": ["$tsc"],
                 "group": {
                     "kind": "build",
                     "isDefault": true
-                },
+                }
             },
+            {
+                "label": "build-db",
+                "type": "shell",
+                "command": "tsc",
+                "args": ["--project", "../math-db/tsconfig.json"],
+                "problemMatcher": ["$tsc"],
+                "group": {
+                    "kind": "build",
+                    "isDefault": true
+                }
+            },
+            {
+                "label": "build-auth",
+                "type": "shell",
+                "command": "tsc",
+                "args": ["--project", "../math-auth/tsconfig.json"],
+                "problemMatcher": ["$tsc"],
+                "group": {
+                    "kind": "build",
+                    "isDefault": true
+                }
+            },
+
             {
                 "type": "npm",
                 "script": "dev",

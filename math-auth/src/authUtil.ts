@@ -1,5 +1,5 @@
 import { verify, sign } from "jsonwebtoken";
-import { compare, hash, hashSync } from "bcryptjs";
+import { compare, hashSync } from "bcryptjs";
 import { OAuth2Client } from "google-auth-library";
 import clientSecretData   from "./client_secret.json";
 import User from "../../math-db/build/models/user.model";

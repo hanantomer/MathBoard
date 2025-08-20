@@ -5,6 +5,9 @@ import crypto from "crypto";
 import useAuthUtil from "../../math-auth/build/authUtil";
 import useDb from "../../math-db/build/dbUtil";
 import connection from "../../math-db/build/models/index";
+import multer from "multer";
+import fs from "fs";
+
 const { exec } = require("child_process");
 
 import {
@@ -50,6 +53,8 @@ app.use(auth);
 app.use(cors());
 app.use(express.urlencoded({ extended: true, limit: "2mb" })); // Increase limit
 app.use(express.json({ limit: "1mb" }));
+const staticDir = path.join(__dirname, "uploads");
+app.use("/images",  express.static(staticDir)); // Serve static files from uploads directory
 
 const serverLogger = winston.createLogger({
     level: "info",
@@ -102,6 +107,43 @@ const clientLogger = winston.createLogger({
 });
 
 
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => cb(null, path.join(__dirname, "uploads")),
+    filename: (req, file, cb) => cb(null, `${Date.now()}-${file.originalname}`),
+});
+const upload = multer({ storage });
+
+
+
+// Handle upload
+app.post(
+    "/api/uploadImage",
+    upload.single("photo"),
+    async (
+        req: any,
+        res: Response,
+        next: NextFunction
+    ) => {
+        
+        // Delete file after some time
+        setTimeout(() => {
+            try {
+                fs.unlinkSync(
+                    path.join(__dirname + "/uploads/", req.file.filename)
+                );
+            }
+            catch (err: any) {
+                serverLogger.error({
+                    message: "Error deleting file",
+                    error: err.message,
+                });
+            }
+        }, 60000); // Delete after 60 seconds
+
+        return res.status(200).send(req.file.filename);
+    }
+)
+
 
 app.post(
     "/api/log",
@@ -127,6 +169,11 @@ async function auth(req: Request, res: Response, next: NextFunction) {
         return next();      
     }
 
+    if (req.url.indexOf("/images") >= 0) { // omit image upload
+        return next();
+    }
+
+
     // omit authorization enforcement when signing in
     if (req.method === "POST" && req.url.indexOf("/api/auth") == 0) {
         next();
@@ -139,6 +186,11 @@ async function auth(req: Request, res: Response, next: NextFunction) {
 
     // omit authorization enforcement for contact us
     else if (req.method === "POST" && req.url.indexOf("/api/contactus") == 0) {
+        next();
+    }
+
+    else if (req.method === "POST" && req.url.indexOf("/api/uploadImage") == 0) {
+        // omit upload from mobile
         next();
     }
 

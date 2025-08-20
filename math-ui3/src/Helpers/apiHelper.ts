@@ -21,7 +21,7 @@ import {
 import { AnswerAttributes, AnswerCreationAttributes } from "common/answerTypes";
 import axios, { AxiosError } from "axios";
 import axiosHelper from "./axiosHelper";
-const { baseURL } = axiosHelper();
+const { baseURL,imagesURL } = axiosHelper();
 
 export default function useApiHelper() {
   async function log(message: string) {
@@ -175,6 +175,21 @@ export default function useApiHelper() {
     }
   }
 
+  async function uploadImage(formData: FormData): Promise<string> {
+    try {
+      const res = await axios.post<string>(baseURL + "/uploadImage", formData);
+      return res.data;
+    } catch (error) {
+      throw new Error(
+        `Failed to load image: {formData}, ${(error as AxiosError).message}`,
+      );
+    }
+  }
+
+  function getImageUrl(imageFileName: string): string {
+    return imagesURL + "/" + imageFileName;
+  }
+
   async function updateNotationValue(notation: NotationAttributes) {
     if ("value" in notation === false) return null;
     try {
@@ -207,7 +222,6 @@ export default function useApiHelper() {
     }
   }
 
-
   async function updateSqrtNotationAttributes(
     sqrtNotation: SqrtNotationAttributes,
   ) {
@@ -230,7 +244,6 @@ export default function useApiHelper() {
       );
     }
   }
-
 
   async function updateLineNotationAttributes(
     lineNotation: LineNotationAttributes,
@@ -467,6 +480,7 @@ export default function useApiHelper() {
   }
 
   return {
+    getImageUrl,
     getNotations,
     getAnswers,
     getQuestions,
@@ -491,6 +505,7 @@ export default function useApiHelper() {
     updateCircleNotationAttributes,
     updateNotationValue,
     updateNotation,
+    uploadImage,
     deleteNotation,
     log,
   };
