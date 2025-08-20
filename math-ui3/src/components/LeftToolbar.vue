@@ -18,7 +18,8 @@
       z-index: 1000;
     "
   >
-    <v-alert
+    <v-snackbar
+      close-delay="20000"
       color="#C51162"
       icon="mdi-image"
       theme="dark"
@@ -31,8 +32,9 @@
       supported, so please use a tool like the Windows Snipping Tool, macOS
       Screenshot (Shift+Command+4), or another screen capture tool to capture
       the desired image and copy it to your clipboard (Ctrl+C or Command+C).
-    </v-alert>
-    <v-alert
+    </v-snackbar>
+    <v-snackbar
+      close-delay="20000"
       color="#C51162"
       icon="mdi-image"
       theme="dark"
@@ -43,7 +45,7 @@
       rectangle to move the selected notations, or use Ctrl+drag to copy them.
       To delete the selected notations, press Delete or Backspace. Another
       option, is to click on a single notation to select it.
-    </v-alert>
+    </v-snackbar>
   </div>
 
   <v-toolbar color="primary" dark :class="toolbarClass" height="600">
@@ -94,7 +96,6 @@
         >
       </template>
     </v-tooltip>
-
 
     <v-tooltip text="Select notations" v-if="userStore.isTeacher()">
       <template v-slot:activator="{ props }">
@@ -194,8 +195,6 @@
     </v-tooltip>
 
     <ColororizeTool></ColororizeTool>
-
-
   </v-toolbar>
 </template>
 
@@ -434,7 +433,6 @@ function closeUploadDialog() {
   showUploadDialog.value = false;
 }
 
-
 function openSelectionHelpMessage() {
   showSelectionHelpMessage.value = true;
 }
@@ -442,8 +440,6 @@ function openSelectionHelpMessage() {
 function closeAccessLinkDialog() {
   showAccessLinkDialog.value = false;
 }
-
-
 
 const editEnabled = computed(() => {
   return authorizationHelper.canEdit();

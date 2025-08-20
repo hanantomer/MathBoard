@@ -123,6 +123,7 @@ const startLoadingImageSession = async () => {
     const feathersClient = FeathersHelper.getInstance();
 
     feathersClient.service("imageLoaded").on("updated", (data: any) => {
+      if (!isSessionActive.value) return;
       const uploadedImageUrl = apiHelper.getImageUrl(data.imageName);
       //imageUrl.value = uploadedImageUrl;
       isSessionActive.value = false;
@@ -142,7 +143,7 @@ const startLoadingImageSession = async () => {
           sellectedCell.row,
           sellectedCell.row +
             Math.round(
-              result.dimensions.width / cellStore.getCellVerticalHeight(),
+              result.dimensions.height / cellStore.getCellVerticalHeight(),
             ),
           result.base64,
         );
@@ -165,27 +166,39 @@ function processImage(
     img.crossOrigin = "Anonymous"; // Handle CORS if needed
 
     img.onload = () => {
-      // Get dimensions
-      const dimensions = {
-        width: img.width,
-        height: img.height,
-      };
-
       // Convert to base64
+      // Calculate new dimensions maintaining aspect ratio
+      let newWidth = img.width;
+      let newHeight = img.height;
+      const maxDimension = 600;
+
+      if (img.width > maxDimension || img.height > maxDimension) {
+        if (img.width > img.height) {
+          newWidth = maxDimension;
+          newHeight = Math.floor((img.height * maxDimension) / img.width);
+        } else {
+          newHeight = maxDimension;
+          newWidth = Math.floor((img.width * maxDimension) / img.height);
+        }
+      }
+
       const canvas = document.createElement("canvas");
-      canvas.width = img.width;
-      canvas.height = img.height;
+      canvas.width = newWidth;
+      canvas.height = newHeight;
       const ctx = canvas.getContext("2d");
       if (!ctx) {
         reject(new Error("Failed to get canvas context"));
         return;
       }
-      ctx.drawImage(img, 0, 0);
+      ctx.drawImage(img, 0, 0, newWidth, newHeight);
       const base64String = canvas.toDataURL("image/png");
 
       resolve({
         base64: base64String,
-        dimensions: dimensions,
+        dimensions: {
+          width: newWidth,
+          height: newHeight,
+        },
       });
     };
 

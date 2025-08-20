@@ -63,7 +63,7 @@ export const useCellStore = defineStore("cell", () => {
   }
 
   function resetSelectedCell() {
-    selectedCell.value = { col: -1, row: -1 };
+    selectedCell.value = { col: 1, row: 1 };
   }
 
   function getSvgBoundingRect() {

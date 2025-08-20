@@ -53,18 +53,13 @@ export default class ImageLoadedService {
   }
 
   // server sends image uploaded message to make client add it
-  // return hartbeat data
+  
   async update(
     id: number,
     data: any,
     params: any
   ) {
     return {
-      user: {
-        uuid: await this.getUserUUIdFromCookie(
-          params.headers.cookie
-        ),
-      },
       lessonUUId: data.lessonUUId,
       imageName: data.imageName,
     };

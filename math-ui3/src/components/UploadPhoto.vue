@@ -35,7 +35,6 @@ import { ref, onMounted } from "vue";
 import useApiHelper from "../helpers/apiHelper";
 import { FeathersHelper } from "../helpers/feathersHelper";
 
-
 const props = defineProps({
   userUUId: { type: String, required: true },
   lessonUUId: { type: String, required: true },
@@ -90,7 +89,10 @@ async function uploadPhoto() {
     .then((imageName: string) => {
       showSnackbar("Photo uploaded successfully!", "success");
       photoFile.value = null; // Clear the input
-      let feathersClient = FeathersHelper.getInstance();
+      let feathersClient = FeathersHelper.getInstance(
+        props.userUUId,
+        props.lessonUUId,
+      );
       feathersClient!.service("imageLoaded").update(
         null,
         {
@@ -107,7 +109,7 @@ async function uploadPhoto() {
 
 // Lifecycle hook to run on component mount
 onMounted(() => {
-//  feathersClient = FeathersHelper.getInstance(props.userUUId, props.lessonUUId);
+  //  feathersClient = FeathersHelper.getInstance(props.userUUId, props.lessonUUId);
 });
 </script>
 
