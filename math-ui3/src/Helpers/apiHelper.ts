@@ -175,16 +175,6 @@ export default function useApiHelper() {
     }
   }
 
-  async function uploadImage(formData: FormData): Promise<string> {
-    try {
-      const res = await axios.post<string>(baseURL + "/uploadImage", formData);
-      return res.data;
-    } catch (error) {
-      throw new Error(
-        `Failed to load image:, ${(error as AxiosError).message}`,
-      );
-    }
-  }
 
   function getImageUrl(imageFileName: string): string {
     return imagesURL + "/" + imageFileName;
@@ -505,7 +495,6 @@ export default function useApiHelper() {
     updateCircleNotationAttributes,
     updateNotationValue,
     updateNotation,
-    uploadImage,
     deleteNotation,
     log,
   };

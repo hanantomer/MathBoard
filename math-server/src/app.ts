@@ -115,37 +115,6 @@ const storage = multer.diskStorage({
 const upload = multer({ storage });
 
 
-
-// Handle upload
-app.post(
-    "/api/uploadImage",
-    upload.single("photo"),
-    async (
-        req: any,
-        res: Response,
-        next: NextFunction
-    ) => {
-        
-        // Delete file after some time
-        setTimeout(() => {
-            try {
-                fs.unlinkSync(
-                    path.join(__dirname + "/uploads/", req.file.filename)
-                );
-            }
-            catch (err: any) {
-                serverLogger.error({
-                    message: "Error deleting file",
-                    error: err.message,
-                });
-            }
-        }, 60000); // Delete after 60 seconds
-
-        return res.status(200).send(req.file.filename);
-    }
-)
-
-
 app.post(
     "/api/log",
     async (req: Request, res: Response, next: NextFunction) => {
@@ -187,11 +156,6 @@ async function auth(req: Request, res: Response, next: NextFunction) {
 
     // omit authorization enforcement for contact us
     else if (req.method === "POST" && req.url.indexOf("/api/contactus") == 0) {
-        next();
-    }
-
-    else if (req.method === "POST" && req.url.indexOf("/api/uploadImage") == 0) {
-        // omit upload from mobile
         next();
     }
 
