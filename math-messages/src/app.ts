@@ -10,14 +10,14 @@ import HeartbeatService from "./heartbeatService";
 import SelectedCellSyncService from "./selectedCellSyncService";
 import NotationSyncService from "./notationSyncService";
 import { LessonNotationAttributes } from "../../math-common/src/lessonTypes";
-import ImageLoadedService from "./imageLoadedService";
+import imageUploadService from "./imageUploadService";
 
 
 type ServiceTypes = {
   authorization: AuthorizationService;
   authentication: AuthenticationService;
   heartbeat: HeartbeatService;
-  imageLoaded: ImageLoadedService;
+  imageLoaded: imageUploadService;
   selectedCell: SelectedCellSyncService;
   notationSync: NotationSyncService;
 };
@@ -36,7 +36,7 @@ app.configure(
 app.use("authorization", new AuthorizationService(app));
 app.use("authentication", new AuthenticationService(app));
 app.use("heartbeat", new HeartbeatService(app));
-app.use("imageLoaded", new ImageLoadedService(app));
+app.use("imageLoaded", new imageUploadService(app));
 app.use("selectedCell", new SelectedCellSyncService(app));
 app.use("notationSync", new NotationSyncService(app));
 

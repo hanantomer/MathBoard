@@ -23,22 +23,10 @@ const logger = winston.createLogger({
 });
 
 
-export default class ImageLoadedService {
+export default class imageUploadService {
   app: any;
   constructor(app: Application) {
     this.app = app;
-  }
-
-  async getUserUUIdFromCookie(
-    cookie: string
-  ): Promise<string> {
-    let user = await util.getUserFromCookie(
-      cookie
-    );
-
-    if (!user) return "";
-
-    return user.uuid;
   }
 
   async create(lessonUUId: string, params: any) {
@@ -61,7 +49,9 @@ export default class ImageLoadedService {
   ) {
     return {
       lessonUUId: data.lessonUUId,
-      imageName: data.imageName,
+      base64: data.base64,
+      width: data.width,
+      height: data.height,
     };
   }
 }

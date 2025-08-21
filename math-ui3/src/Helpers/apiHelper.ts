@@ -181,7 +181,7 @@ export default function useApiHelper() {
       return res.data;
     } catch (error) {
       throw new Error(
-        `Failed to load image: {formData}, ${(error as AxiosError).message}`,
+        `Failed to load image:, ${(error as AxiosError).message}`,
       );
     }
   }

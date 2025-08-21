@@ -20,7 +20,7 @@ export default function userIncomingOperations() {
   }
 
   async function syncIncomingUserOperations(svgId: string) {
-    const feathersClient = FeathersHelper.getInstance();
+    const feathersClient = await FeathersHelper.getInstance();
 
     // send auth token to server and register to accept messsages.
     // see also AuthenticationService

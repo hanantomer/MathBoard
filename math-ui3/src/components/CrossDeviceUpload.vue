@@ -47,14 +47,17 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch, defineProps } from "vue";
+import { ref, watch, defineProps, onUnmounted } from "vue";
 import Qrcode from "qrcode.vue";
 import useNotationMutateHelper from "../helpers/notationMutateHelper";
 import useApiHelper from "../helpers/apiHelper";
+import useImageHelper from "../helpers/imageHelper";
 import { useCellStore } from "../store/pinia/cellStore";
 import { useLessonStore } from "../store/pinia/lessonStore";
 import { useUserStore } from "../store/pinia/userStore";
 import { FeathersHelper } from "../helpers/feathersHelper";
+
+const imageHelper = useImageHelper();
 
 const notationMutateHelper = useNotationMutateHelper();
 const apiHelper = useApiHelper();
@@ -72,9 +75,7 @@ const props = defineProps({
 
 const emit = defineEmits(["close"]);
 
-// Reactive state
 const dialog = ref(false);
-//const imageUrl = ref("");
 const uploadImageUrl = ref("");
 const isSessionActive = ref(false);
 
@@ -118,38 +119,33 @@ const startLoadingImageSession = async () => {
       ?.uuid}/${userStore.getCurrentUser()?.uuid}`;
 
     generateQRCode(uploadUrl);
+
     console.log("Upload URL:", uploadUrl);
 
-    const feathersClient = FeathersHelper.getInstance();
+    const feathersClient = await FeathersHelper.getInstance();
 
     feathersClient.service("imageLoaded").on("updated", (data: any) => {
       if (!isSessionActive.value) return;
-      const uploadedImageUrl = apiHelper.getImageUrl(data.imageName);
+      //const uploadedImageUrl = apiHelper.getImageUrl(data.imageName);
       //imageUrl.value = uploadedImageUrl;
       isSessionActive.value = false;
 
-      processImage(uploadedImageUrl).then((result) => {
-        const sellectedCell = cellStore.getSelectedCell() ?? {
-          col: 1,
-          row: 1,
-        };
+      const sellectedCell = cellStore.getSelectedCell() ?? {
+        col: 1,
+        row: 1,
+      };
 
-        notationMutateHelper.addImageNotation(
-          sellectedCell.col,
-          sellectedCell.col +
-            Math.round(
-              result.dimensions.width / cellStore.getCellHorizontalWidth(),
-            ),
-          sellectedCell.row,
-          sellectedCell.row +
-            Math.round(
-              result.dimensions.height / cellStore.getCellVerticalHeight(),
-            ),
-          result.base64,
-        );
-        isSessionActive.value = false;
-      });
+      notationMutateHelper.addImageNotation(
+        sellectedCell.col,
+        sellectedCell.col +
+          Math.round(data.width / cellStore.getCellHorizontalWidth()),
+        sellectedCell.row,
+        sellectedCell.row +
+          Math.round(data.height / cellStore.getCellVerticalHeight()),
+        data.base64,
+      );
       closeDialog();
+      isSessionActive.value = false;
     });
   } catch (error) {
     console.error("Failed to start session:", error);
@@ -158,59 +154,10 @@ const startLoadingImageSession = async () => {
   }
 };
 
-function processImage(
-  url: string,
-): Promise<{ base64: string; dimensions: { width: number; height: number } }> {
-  return new Promise((resolve, reject) => {
-    const img = new Image();
-    img.crossOrigin = "Anonymous"; // Handle CORS if needed
-
-    img.onload = () => {
-      // Convert to base64
-      // Calculate new dimensions maintaining aspect ratio
-      let newWidth = img.width;
-      let newHeight = img.height;
-      const maxDimension = 600;
-
-      if (img.width > maxDimension || img.height > maxDimension) {
-        if (img.width > img.height) {
-          newWidth = maxDimension;
-          newHeight = Math.floor((img.height * maxDimension) / img.width);
-        } else {
-          newHeight = maxDimension;
-          newWidth = Math.floor((img.width * maxDimension) / img.height);
-        }
-      }
-
-      const canvas = document.createElement("canvas");
-      canvas.width = newWidth;
-      canvas.height = newHeight;
-      const ctx = canvas.getContext("2d");
-      if (!ctx) {
-        reject(new Error("Failed to get canvas context"));
-        return;
-      }
-      ctx.drawImage(img, 0, 0, newWidth, newHeight);
-      const base64String = canvas.toDataURL("image/png");
-
-      resolve({
-        base64: base64String,
-        dimensions: {
-          width: newWidth,
-          height: newHeight,
-        },
-      });
-    };
-
-    img.onerror = () => {
-      reject(new Error("Failed to load image:"));
-    };
-
-    img.src = url;
-  });
-}
-
-// Disconnect the socket when the component is unmounted
+onUnmounted(() => {
+  isSessionActive.value = false;
+  uploadImageUrl.value = "";
+});
 </script>
 
 <style scoped>

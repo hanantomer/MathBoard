@@ -15,7 +15,7 @@ export default function userOutgoingOperations() {
     lessonUUId: string,
     userUUId: string,
   ) {
-    const feathersClient = FeathersHelper.getInstance();
+    const feathersClient = await FeathersHelper.getInstance();
     try {
       await feathersClient!
         .service("selectedCell")
@@ -30,7 +30,7 @@ export default function userOutgoingOperations() {
     lessonUUId: string,
     color: string,
   ) {
-    const feathersClient = FeathersHelper.getInstance();
+    const feathersClient = await FeathersHelper.getInstance();
     try {
       let t = await feathersClient!
         .service("colorizedCell")
@@ -42,34 +42,36 @@ export default function userOutgoingOperations() {
     }
   }
 
-  function syncOutgoingAddNotation(notation: NotationAttributes) {
-    FeathersHelper.getInstance().service("notationSync").create(notation, {});
+  async function syncOutgoingAddNotation(notation: NotationAttributes) {
+    (await FeathersHelper.getInstance())
+      .service("notationSync")
+      .create(notation, {});
   }
 
-  function syncOutgoingRemoveNotation(uuid: string, lessonUUId: string) {
+  async function syncOutgoingRemoveNotation(uuid: string, lessonUUId: string) {
     let params: Params = { query: { lessonUUId: lessonUUId } };
-    FeathersHelper.getInstance().service("notationSync").remove(uuid, params);
+    (await FeathersHelper.getInstance()).service("notationSync").remove(uuid, params);
   }
 
-  function syncOutgoingUpdateNotation(notation: NotationAttributes) {
-    FeathersHelper.getInstance()
+  async function syncOutgoingUpdateNotation(notation: NotationAttributes) {
+    (await FeathersHelper.getInstance())
       .service("notationSync")
       .update(null, notation, {});
   }
 
-  function syncOutgoingHeartBeat(usreId: String, lessonUUId: string) {
-    FeathersHelper.getInstance()
+  async function syncOutgoingHeartBeat(usreId: String, lessonUUId: string) {
+    (await FeathersHelper.getInstance())
       .service("heartbeat")
       .update(null, { userUUId: usreId, lessonUUId: lessonUUId }, {});
   }
   // set student to be edit eligible
-  function syncOutgoingAuthorizeUser(
+  async function syncOutgoingAuthorizeUser(
     authorizedStudentUUId: string | null,
     revokedStudentUUId: string | null,
     lessonUUId: string,
   ) {
     if (authorizedStudentUUId)
-      FeathersHelper.getInstance().service("authorization").update(
+      (await FeathersHelper.getInstance()).service("authorization").update(
         null,
         {
           lessonUUId: lessonUUId,
@@ -79,7 +81,7 @@ export default function userOutgoingOperations() {
         {},
       );
     if (revokedStudentUUId)
-      FeathersHelper.getInstance().service("authorization").update(
+      (await FeathersHelper.getInstance()).service("authorization").update(
         null,
         {
           lessonUUId: lessonUUId,
