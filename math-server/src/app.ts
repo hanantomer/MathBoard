@@ -16,6 +16,7 @@ import {
 } from "../../math-common/build/unions";
 import { createTransport } from "nodemailer";
 import path from "path";
+import { log } from "console";
 
 
 var transporter = createTransport({
@@ -211,6 +212,7 @@ async function validateHeaderAuthentication(
     next: NextFunction
 ): Promise<boolean> {
     if (!req.headers.authorization) {
+        serverLogger.error(`No authorization header found for request: ${req.url}`);
         res = res.status(401).json("unauthorized");
         return false;
     }
