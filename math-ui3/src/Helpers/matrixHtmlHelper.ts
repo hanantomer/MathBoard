@@ -96,7 +96,9 @@ export default function useHtmlMatrixHelper() {
         return pointNotationHeight(n as PointNotationAttributes);
       }
 
-      case "IMAGE":
+      case "IMAGE": {
+        return imageNotationHeight(n as RectNotationAttributes);
+      }
       case "TEXT": {
         return rectNotationHeight(n as RectNotationAttributes);
       }
@@ -277,7 +279,9 @@ export default function useHtmlMatrixHelper() {
         return (n1.toCol - n1.fromCol - 1) * cellStore.getCellHorizontalWidth();
       }
 
-      case "IMAGE":
+      case "IMAGE": {
+        return imageNotationWidth(n as RectNotationAttributes);
+      }
       case "TEXT": {
         return rectNotationWidth(n as RectNotationAttributes);
       }
@@ -289,6 +293,12 @@ export default function useHtmlMatrixHelper() {
     return (n.toCol - n.fromCol + 1) * cellStore.getCellHorizontalWidth();
   }
 
+  function imageNotationWidth(n: RectAttributes): number {
+    const baseWidth =
+      (n.toCol - n.fromCol + 1) * cellStore.getCellHorizontalWidth();
+    return baseWidth * 1.35;
+  }
+
   function pointNotationHeight(n: CellAttributes): number {
     return cellStore.getCellVerticalHeight();
   }
@@ -297,6 +307,12 @@ export default function useHtmlMatrixHelper() {
     return (
       (Math.abs(n.toRow - n.fromRow) + 1) * cellStore.getCellVerticalHeight()
     );
+  }
+
+  function imageNotationHeight(n: RectAttributes): number {
+    const baseHeight =
+      (Math.abs(n.toRow - n.fromRow) + 1) * cellStore.getCellVerticalHeight();
+    return baseHeight * 1.35;
   }
 
   function fontSize(n: PointNotationAttributes, el: HTMLElement) {

@@ -1,6 +1,7 @@
 import { useUserStore } from "../store/pinia/userStore";
 import { useNotationStore } from "../store/pinia/notationStore";
 import { useCellStore } from "../store/pinia/cellStore";
+import useImageHelper from "./imageHelper";
 
 import useNotationMutationHelper from "./notationMutateHelper";
 import useEventBus from "../helpers/eventBusHelper";
@@ -16,11 +17,13 @@ import {
 import useSelectionHelper from "../helpers/selectionHelper";
 const selectionHelper = useSelectionHelper();
 
+
 const userStore = useUserStore();
 const notationStore = useNotationStore();
 const cellStore = useCellStore();
 const notationMutationHelper = useNotationMutationHelper();
 const eventBus = useEventBus();
+const imageHelper = useImageHelper();
 
 export default function eventHelper() {
   async function copy() {
@@ -207,9 +210,9 @@ export default function eventHelper() {
             console.debug("Found image type:", imageType);
             const blob: Blob = await clipboardItem.getType(imageType);
             if (!blob) return;
-            const base64: string = await convertBlobToBase64(blob);
-            await processImage(base64);
-            return;
+            const base64 = await imageHelper.convertBlobToBase64GrayScale(blob);
+            notationMutationHelper.addImageNotation(base64);
+            return
           }
           const htmlType = clipboardItem.types.find((type: string) =>
             type.startsWith("text/html"),
@@ -226,8 +229,8 @@ export default function eventHelper() {
                 const src: string = match[1];
                 const base64: string = src.startsWith("data:image/")
                   ? src
-                  : await fetchImageAsBase64(src);
-                await processImage(base64);
+                  : await imageHelper.convertImageToBase64(src);
+                notationMutationHelper.addImageNotation(base64);
                 return;
               } else {
                 console.warn("No image found in HTML clipboard data");
@@ -250,8 +253,8 @@ export default function eventHelper() {
             console.debug("Found binary image in clipboard, type:", item.type);
             const blob: File | null = item.getAsFile();
             if (blob) {
-              const base64: string = await convertBlobToBase64(blob);
-              await processImage(base64);
+              const base64: string = await imageHelper.convertBlobToBase64GrayScale(blob);
+              notationMutationHelper.addImageNotation(base64);
               return;
             }
           }
@@ -270,8 +273,8 @@ export default function eventHelper() {
             const src: string = match[1];
             const base64: string = src.startsWith("data:image/")
               ? src
-              : await fetchImageAsBase64(src);
-            await processImage(base64);
+              : await imageHelper.convertImageToBase64(src);
+            notationMutationHelper.addImageNotation(base64);
             return;
           } else {
             console.warn("No image found in HTML clipboard data");

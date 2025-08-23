@@ -16,7 +16,7 @@ export class FeathersHelper {
   public static getInstance(
     userUUId?: string, ///TOD:verify user validity
     lessonUUId?: string,
-  ): Promise<Application> {
+  ): Application {
     if (!this.instance) {
       this.instance = feathers();
       const socket = io();
@@ -82,4 +82,5 @@ export class FeathersHelper {
     }
     return this.instance;
   }
+
 }

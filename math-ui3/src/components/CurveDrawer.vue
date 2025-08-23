@@ -155,12 +155,6 @@ onMounted(() => {
       });
     }
   });
-  // const controlPoint = document.getElementById("curveSvgId");
-  // if (controlPoint) {
-  //   controlPoint.addEventListener("mousemove", () => {
-  //     editModeStore.setEditMode("CURVE_EDITING_CONTROLֹ_POINT");
-  //   });
-  // }
 });
 
 const handleX1 = computed(() => {

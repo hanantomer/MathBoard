@@ -210,7 +210,7 @@ export const useEditModeStore = defineStore("editMode", () => {
     console.debug(
       `old edit mode: ${editMode.value}, new edit mode: ${newEditMode} `,
     );
-
+    console.trace();
     editMode.value = newEditMode;
   }
 
@@ -235,8 +235,8 @@ export const useEditModeStore = defineStore("editMode", () => {
       case "POLYGON_STARTED":
         return setEditMode("POLYGON_DRAWING");
 
-//      case "POLYGON_DRAWING":
-//        return setEditMode("POLYGON_LINE_ENDED");
+      //      case "POLYGON_DRAWING":
+      //        return setEditMode("POLYGON_LINE_ENDED");
 
       case "LINE_STARTED":
         return setEditMode("LINE_DRAWING");

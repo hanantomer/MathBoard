@@ -148,7 +148,6 @@ export default function useShapeDrawingHelper() {
       selectionHelper.selectClickedPosition(e);
       return;
     }
-    editModeStore.setDefaultEditMode();
   }
 
   return {

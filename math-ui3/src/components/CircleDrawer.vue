@@ -164,7 +164,7 @@ function setCircleElement() {
   circle.setAttribute("r", circleAttributes.value.r.toString());
 }
 
-async function endDrawCircle() : Promise<string> {
+async function endDrawCircle(): Promise<string> {
   const uuid = await saveCircle({
     cx: circleAttributes.value.cx,
     cy: circleAttributes.value.cy,
@@ -202,6 +202,4 @@ function moveCircle(moveX: number, moveY: number) {
     r: circleAttributes.value.r,
   });
 }
-
 </script>
-

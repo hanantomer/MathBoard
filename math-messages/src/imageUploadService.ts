@@ -39,8 +39,6 @@ export default class imageUploadService {
       `lesson ${lessonUUId} joined channel for image upload`
     );
   }
-
-  // server sends image uploaded message to make client add it
   
   async update(
     id: number,
@@ -50,8 +48,6 @@ export default class imageUploadService {
     return {
       lessonUUId: data.lessonUUId,
       base64: data.base64,
-      width: data.width,
-      height: data.height,
     };
   }
 }

@@ -57,11 +57,7 @@ import { useLessonStore } from "../store/pinia/lessonStore";
 import { useUserStore } from "../store/pinia/userStore";
 import { FeathersHelper } from "../helpers/feathersHelper";
 
-const imageHelper = useImageHelper();
-
 const notationMutateHelper = useNotationMutateHelper();
-const apiHelper = useApiHelper();
-const cellStore = useCellStore();
 const lessonStore = useLessonStore();
 const userStore = useUserStore();
 
@@ -122,30 +118,14 @@ const startLoadingImageSession = async () => {
 
     console.log("Upload URL:", uploadUrl);
 
-    const feathersClient = await FeathersHelper.getInstance();
+    const feathersClient = FeathersHelper.getInstance();
 
     feathersClient.service("imageLoaded").on("updated", (data: any) => {
       if (!isSessionActive.value) return;
-      //const uploadedImageUrl = apiHelper.getImageUrl(data.imageName);
-      //imageUrl.value = uploadedImageUrl;
       isSessionActive.value = false;
-
-      const sellectedCell = cellStore.getSelectedCell() ?? {
-        col: 1,
-        row: 1,
-      };
-
-      notationMutateHelper.addImageNotation(
-        sellectedCell.col,
-        sellectedCell.col +
-          Math.round(data.width / cellStore.getCellHorizontalWidth()),
-        sellectedCell.row,
-        sellectedCell.row +
-          Math.round(data.height / cellStore.getCellVerticalHeight()),
-        data.base64,
-      );
+      notationMutateHelper.addImageNotation(data.base64);
+      isSessionActive.value = false;
       closeDialog();
-      isSessionActive.value = false;
     });
   } catch (error) {
     console.error("Failed to start session:", error);

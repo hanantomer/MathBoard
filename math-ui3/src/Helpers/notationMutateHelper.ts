@@ -26,11 +26,10 @@ import {
 } from "common/baseTypes";
 
 import { clonedNotationUUIdPrefix } from "common/globals";
-
 import { LessonNotationAttributes } from "common/lessonTypes";
 import { matrixDimensions } from "common/globals";
 import { CellAttributes } from "common/baseTypes";
-import { NotationType, SelectionMoveDirection } from "common/unions";
+import { SelectionMoveDirection } from "common/unions";
 import { useUserStore } from "../store/pinia/userStore";
 import { useNotationStore } from "../store/pinia/notationStore";
 import { useCellStore } from "../store/pinia/cellStore";
@@ -42,18 +41,22 @@ import useScreenHelper from "../helpers/screenHelper";
 
 import { NotationAttributes, RectAttributes } from "common/baseTypes";
 
-import useSelectionHelper from "../helpers/selectionHelper";
+import useSelectionHelper from "./selectionHelper";
+import useImageHelper from "./imageHelper";
 const selectionHelper = useSelectionHelper();
 
 const matrixCellHelper = useMatrixCellHelper();
 const screenHelper = useScreenHelper();
 const userStore = useUserStore();
 const apiHelper = useApiHelper();
+const imageHelper = useImageHelper();
 const notationStore = useNotationStore();
 const cellStore = useCellStore();
 const editModeStore = useEditModeStore();
 const authorizationHelper = useAuthorizationHelper();
 const userOutgoingOperations = useUserOutgoingOperations();
+
+const MAX_IMAGE_WIDTH = 1000;
 
 let deleteKeyLock = false; // Add lock variable at the top with other variables
 
@@ -854,7 +857,7 @@ export default function notationMutateHelper() {
       });
   }
 
-  function addImageNotation(
+  function addImageNotationByColAndRow(
     fromCol: number,
     toCol: number,
     fromRow: number,
@@ -1132,6 +1135,30 @@ export default function notationMutateHelper() {
         updateNotation(notation);
       }
     }
+  }
+
+  async function addImageNotation(base64: string) {
+
+    const { width, height } = await imageHelper.getDimensionsFromBase64(base64);
+
+    if (!authorizationHelper.canEdit()) return;
+
+    if (!cellStore.getSelectedCell()) return;
+
+    const selectedCell: CellAttributes = cellStore.getSelectedCell();
+
+    const { col: fromCol, row: fromRow } = selectedCell;
+
+    // Limit image width to maximum 1000 pixels
+    const displayWidth = Math.min(width, MAX_IMAGE_WIDTH);
+    const displayHeight = height * (displayWidth / width);
+
+    const toCol: number =
+      Math.ceil(displayWidth / cellStore.getCellHorizontalWidth()) + fromCol;
+    const toRow: number =
+      Math.ceil(displayHeight / cellStore.getCellVerticalHeight()) + fromRow;
+
+    addImageNotationByColAndRow(fromCol, toCol, fromRow, toRow, base64);
   }
 
   return {

@@ -4,10 +4,9 @@
       <v-card-title class="headline">Take a Photo</v-card-title>
       <v-card-text>
         <v-file-input
-          label="Select a photo"
+          label="Take a photo"
           accept="image/*"
           prepend-icon="mdi-camera"
-          capture="camera"
           @change="fileSelected"
           :clearable="false"
         ></v-file-input>
@@ -31,16 +30,26 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from "vue";
-import useApiHelper from "../helpers/apiHelper";
+import { ref, onMounted, onUnmounted } from "vue";
 import { FeathersHelper } from "../helpers/feathersHelper";
+import useImageHelper from "../helpers/imageHelper";
+const imageHelper = useImageHelper();
 
 const props = defineProps({
   userUUId: { type: String, required: true },
   lessonUUId: { type: String, required: true },
 });
 
-const apiHelper = useApiHelper();
+let feathersClient: any = null;
+
+onMounted(() => {
+  feathersClient = FeathersHelper.getInstance(props.userUUId, props.lessonUUId);
+});
+
+onUnmounted(() => {
+  feathersClient.disconnect();
+  feathersClient = null;
+});
 
 // Reactive state
 const photoFile = ref(null);
@@ -62,16 +71,6 @@ function fileSelected(event: any) {
   const file = event.target.files[0];
   if (file) {
     photoFile.value = file;
-    //alert("File selected: " + file.name);
-    // Process the captured image file
-    // console.log("Captured file:", file);
-    // // Example: Display the image
-    // const reader = new FileReader();
-    // reader.onload = (e) => {
-    //   // You can store e.target.result in a data property to display the image
-    //   console.log("Image URL:", e.target.result);
-    // };
-    // reader.readAsDataURL(file);
   }
 }
 
@@ -84,14 +83,28 @@ async function uploadPhoto() {
   const formData = new FormData();
   formData.append("photo", photoFile.value);
 
+  imageHelper
+    .convertImageToBase64(URL.createObjectURL(photoFile.value))
+    .then((base64) => {
+      showSnackbar("Photo uploaded successfully!", "success");
+      photoFile.value = null;
+      feathersClient!.service("imageLoaded").update(
+        null,
+        {
+          lessonUUId: props.lessonUUId,
+          base64: base64,
+        },
+        {},
+      );
+    })
+    .catch((error) => {
+      showSnackbar("Upload failed: " + error.message, "error");
+    });
+
   processImage(URL.createObjectURL(photoFile.value))
     .then(({ base64, dimensions }) => {
       showSnackbar("Photo uploaded successfully!", "success");
       photoFile.value = null; // Clear the input
-      let feathersClient = FeathersHelper.getInstance(
-        props.userUUId,
-        props.lessonUUId,
-      );
       feathersClient!.service("imageLoaded").update(
         null,
         {
@@ -107,7 +120,6 @@ async function uploadPhoto() {
       showSnackbar("Upload failed: " + error.message, "error");
     });
 }
-
 
 function processImage(
   url: string,
@@ -160,7 +172,6 @@ function processImage(
     img.src = url;
   });
 }
-
 </script>
 
 <style scoped>

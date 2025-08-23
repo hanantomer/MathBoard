@@ -105,6 +105,13 @@ watchHelper.watchEndOfEditMode(
   () => shapeDrawingHelper.resetDrawing(null),
 );
 
+watchHelper.watchEndOfEditMode(
+  ["CIRCLE_SELECTED"],
+  ["CIRCLE_EDITING"],
+  () => shapeDrawingHelper.resetDrawing(null),
+);
+
+
 watchHelper.watchNotationSelection(
   props.selectEntry.editMode,
   props.selectEntry.event,
