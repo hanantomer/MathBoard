@@ -17,6 +17,16 @@ export default defineConfig(({ mode }) => {
 
     build: {
       sourcemap: true,
+      assetsInlineLimit: 4096,
+      cssCodeSplit: true,
+      rollupOptions: {
+        output: {
+          // Ensure hashed filenames for JS and CSS
+          entryFileNames: "assets/[name]-[hash].js",
+          chunkFileNames: "assets/[name]-[hash].js",
+          assetFileNames: "assets/[name]-[hash].[ext]",
+        },
+      },
     },
 
     plugins: [
