@@ -82,5 +82,4 @@ export class FeathersHelper {
     }
     return this.instance;
   }
-
 }

@@ -15,7 +15,6 @@
       </v-card-title>
 
       <v-card-text class="text-center">
-
         <div class="mt-6">
           <p class="text-subtitle-1">Scan this QR code with your phone:</p>
           <qrcode :value="uploadImageUrl" :options="{ width: 200 }"></qrcode>
@@ -63,9 +62,8 @@ watch(
   (newValue) => {
     dialog.value = newValue;
     // Reset state when the dialog is opened
-    if (newValue) {
+    if (newValue == true) {
       startLoadingImageSession();
-      resetSession();
     }
   },
 );
@@ -73,14 +71,7 @@ watch(
 // Method to close the dialog and emit the event
 function closeDialog() {
   emit("close");
-  resetSession();
 }
-
-// Method to reset the component's state
-const resetSession = () => {
-  isSessionActive.value = false;
-  //imageUrl.value = "";
-};
 
 // Method to generate a QR code
 function generateQRCode(url: string) {
@@ -102,6 +93,8 @@ const startLoadingImageSession = async () => {
     console.log("Upload URL:", uploadUrl);
 
     const feathersClient = FeathersHelper.getInstance();
+
+    isSessionActive.value = true;
 
     feathersClient.service("imageLoaded").on("updated", (data: any) => {
       if (!isSessionActive.value) return;

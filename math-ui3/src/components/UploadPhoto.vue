@@ -43,7 +43,7 @@ const props = defineProps({
 let feathersClient: any = null;
 
 onMounted(() => {
-  feathersClient = FeathersHelper.getInstance(props.userUUId, props.lessonUUId);
+    feathersClient = FeathersHelper.getInstance(props.userUUId, props.lessonUUId);
 });
 
 onUnmounted(() => {

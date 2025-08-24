@@ -29,14 +29,14 @@ export default class imageUploadService {
     this.app = app;
   }
 
-  async create(lessonUUId: string, params: any) {
+  async create(data: any, params: any) {
     this.app.channel(
         constants.LESSON_CHANNEL_PREFIX +
-        lessonUUId
+        data.lessonUUId
       )
       .join(params.connection);    
     logger.debug(
-      `lesson ${lessonUUId} joined channel for image upload`
+      `lesson ${data.lessonUUId} joined channel for image upload`
     );
   }
   
