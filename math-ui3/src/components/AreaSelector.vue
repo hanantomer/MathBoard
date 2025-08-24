@@ -32,6 +32,7 @@ import {
   DotCoordinates,
   RectNotationAttributes,
   isRect,
+  AnnotationNotationAttributes,
 } from "common/baseTypes";
 import useNotationMutateHelper from "../helpers/notationMutateHelper";
 import useSelectionHelper from "../helpers/selectionHelper";
@@ -181,6 +182,13 @@ watchHelper.watchNotationSelection(
   selectRectNotation,
 );
 
+watchHelper.watchNotationSelection(
+  ["ANNOTATION_SELECTED"],
+  "EV_ANNOTATION_SELECTED",
+  selectAnnotation,
+);
+
+
 function getSelectedRect() {
   if (
     notationStore.getSelectedNotations().length > 0 &&
@@ -190,6 +198,16 @@ function getSelectedRect() {
   }
   return null;
 }
+
+function getSelectedAnnotation() {
+  if (
+    notationStore.getSelectedNotations().length > 0 )
+   {
+    return notationStore.getSelectedNotations()[0] as AnnotationNotationAttributes;
+  }
+  return null;
+}
+
 
 function cancelSelectionWhenUserClickedOutside() {
   notationStore.resetSelectedNotations();
@@ -528,7 +546,7 @@ function signalSelection() {
 
 function selectRectNotation(): void {
   if (getSelectedRect()!.notationType === "IMAGE") {
-    setSelectionPositionForImage(getSelectedRect()!);
+    setSelectionPositionForImage();
   }
 
   if (getSelectedRect()!.notationType === "TEXT") {
@@ -537,6 +555,22 @@ function selectRectNotation(): void {
 
   editModeStore.setEditMode("AREA_SELECTED");
 }
+
+function selectAnnotation(): void {
+  setSelectionPositionForAnnotation(getSelectedAnnotation() as AnnotationNotationAttributes);
+  editModeStore.setEditMode("AREA_SELECTED");
+}
+
+function setSelectionPositionForAnnotation(selectedNotation: AnnotationNotationAttributes) {
+  selectionPosition.value.x1 =
+    cellStore.getSvgBoundingRect().left + selectedNotation.x -1;
+  selectionPosition.value.x2 = selectionPosition.value.x1 +  cellStore.getCellHorizontalWidth() + 5
+  selectionPosition.value.y1 =
+    cellStore.getSvgBoundingRect().top + selectedNotation.y + 5;
+  selectionPosition.value.y2 = selectionPosition.value.y1 + cellStore.getCellVerticalHeight() / 2;
+}
+
+
 
 function setSelectionPositionForText(selectedNotation: RectNotationAttributes) {
   selectionPosition.value.x1 =
@@ -553,7 +587,7 @@ function setSelectionPositionForText(selectedNotation: RectNotationAttributes) {
     selectedNotation.toRow * cellStore.getCellVerticalHeight();
 }
 
-function setSelectionPositionForImage(selectedNotation: NotationAttributes) {
+function setSelectionPositionForImage() {
   const rect = selectedRectBoundingRect.value!;
 
   selectionPosition.value.x1 = rect.x;

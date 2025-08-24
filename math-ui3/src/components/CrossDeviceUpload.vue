@@ -15,21 +15,6 @@
       </v-card-title>
 
       <v-card-text class="text-center">
-        <p v-if="!isSessionActive">
-          Click the button below to start a new photo upload session.
-        </p>
-
-        <v-btn
-          color="primary"
-          @click="startLoadingImageSession"
-          :disabled="isSessionActive"
-          block
-          class="my-4"
-        >
-          {{ isSessionActive ? "Session Active" : "Start Upload Session" }}
-        </v-btn>
-
-        <v-divider></v-divider>
 
         <div class="mt-6">
           <p class="text-subtitle-1">Scan this QR code with your phone:</p>
@@ -50,9 +35,6 @@
 import { ref, watch, defineProps, onUnmounted } from "vue";
 import Qrcode from "qrcode.vue";
 import useNotationMutateHelper from "../helpers/notationMutateHelper";
-import useApiHelper from "../helpers/apiHelper";
-import useImageHelper from "../helpers/imageHelper";
-import { useCellStore } from "../store/pinia/cellStore";
 import { useLessonStore } from "../store/pinia/lessonStore";
 import { useUserStore } from "../store/pinia/userStore";
 import { FeathersHelper } from "../helpers/feathersHelper";
@@ -82,6 +64,7 @@ watch(
     dialog.value = newValue;
     // Reset state when the dialog is opened
     if (newValue) {
+      startLoadingImageSession();
       resetSession();
     }
   },

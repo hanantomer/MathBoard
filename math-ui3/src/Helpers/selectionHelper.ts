@@ -116,6 +116,7 @@ export default function selectionHelper() {
 
     if (activeNotation.notationType === "ANNOTATION") {
       editModeStore.setEditMode("ANNOTATION_SELECTED");
+      eventBus.emit("EV_ANNOTATION_SELECTED", activeNotation);
     }
 
     if (activeNotation.notationType === "EXPONENT") {
