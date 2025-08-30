@@ -1,4 +1,5 @@
 <template>
+  <GlobalAlert></GlobalAlert>
   <annotationEditor></annotationEditor>
   <freeTextEditor></freeTextEditor>
   <exponentEditor></exponentEditor>
@@ -58,6 +59,7 @@ import { useAnswerStore } from "../store/pinia/answerStore";
 import { CursorType, EditModeCursorType } from "common/unions";
 import useSelectionHelper from "../helpers/selectionHelper";
 import useKeyHelper from "../helpers/keyHelper";
+import GlobalAlert from "./GlobalAlert.vue";
 const notationLoadingHelper = useNotationLoadingHelper();
 const notationStore = useNotationStore();
 const cellStore = useCellStore();

@@ -161,8 +161,6 @@ function editSelectedExponentNotation() {
   editModeStore.setEditMode("EXPONENT_WRITING");
 
   setSelectedExponentPosition();
-
-  notationMutateHelper.deleteSelectedNotations();
 }
 
 function setInitialExponentValue() {

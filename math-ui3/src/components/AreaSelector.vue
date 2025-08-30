@@ -256,7 +256,7 @@ async function handleKeyUp(e: KeyboardEvent) {
   switch (e.code) {
     case "Backspace":
     case "Delete":
-      notationMutationHelper.deleteSelectedNotations();
+      notationMutationHelper.aproveDeleteSelectedNotations();
       editModeStore.setDefaultEditMode();
     case "ArrowLeft":
       if (

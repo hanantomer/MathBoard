@@ -31,7 +31,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch, defineProps, onUnmounted } from "vue";
+import { ref, watch,  onUnmounted } from "vue";
 import Qrcode from "qrcode.vue";
 import useNotationMutateHelper from "../helpers/notationMutateHelper";
 import { useLessonStore } from "../store/pinia/lessonStore";

@@ -380,7 +380,7 @@ export default function useHtmlMatrixHelper() {
       const n1 = n as AnnotationNotationAttributes;
 
       return `<p id=${n1.uuid} style=
-            'background:lightyellow; z-index:100;color:${color};font-weight:${fontWeight};
+            'z-index:100;color:${color};font-weight:${fontWeight};
             position: absolute;top:50%;transform:
            translateY(-50%);font-size:0.6em'>${n1.value}</p>`;
     }

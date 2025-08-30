@@ -34,10 +34,12 @@ import { useUserStore } from "../store/pinia/userStore";
 import { useNotationStore } from "../store/pinia/notationStore";
 import { useCellStore } from "../store/pinia/cellStore";
 import { useEditModeStore } from "../store/pinia/editModeStore";
+import { useGlobalAlertStore } from "../store/pinia/globalAlertStore";
 import useAuthorizationHelper from "./authorizationHelper";
 import useUserOutgoingOperations from "./userOutgoingOperationsHelper";
 import useMatrixCellHelper from "../helpers/matrixCellHelper";
 import useScreenHelper from "../helpers/screenHelper";
+
 
 import { NotationAttributes, RectAttributes } from "common/baseTypes";
 
@@ -53,6 +55,7 @@ const imageHelper = useImageHelper();
 const notationStore = useNotationStore();
 const cellStore = useCellStore();
 const editModeStore = useEditModeStore();
+const globalAlertStore = useGlobalAlertStore();
 const authorizationHelper = useAuthorizationHelper();
 const userOutgoingOperations = useUserOutgoingOperations();
 
@@ -123,23 +126,23 @@ export default function notationMutateHelper() {
       .getNotations()
       .filter((n: NotationAttributes) =>
         n.notationType === "ANNOTATION" ||
-        n.notationType === "EXPONENT" ||
-        n.notationType === "SIGN" ||
-        n.notationType === "SYMBOL" ||
-        n.notationType === "SQRT" ||
-        n.notationType === "SQRTSYMBOL"
+          n.notationType === "EXPONENT" ||
+          n.notationType === "SIGN" ||
+          n.notationType === "SYMBOL" ||
+          n.notationType === "SQRT" ||
+          n.notationType === "SQRTSYMBOL"
           ? pointAtCellCoordinates(
-              n as PointNotationAttributes,
-              cellCoordinates,
-              userUUId,
-            )
+            n as PointNotationAttributes,
+            cellCoordinates,
+            userUUId,
+          )
           : n.notationType === "TEXT" || n.notationType === "IMAGE"
-          ? rectAtCellCoordinates(
+            ? rectAtCellCoordinates(
               n as RectNotationAttributes,
               cellCoordinates,
               userUUId,
             )
-          : false,
+            : false,
       );
   }
 
@@ -467,78 +470,78 @@ export default function notationMutateHelper() {
       // point
       "col" in notation
         ? {
-            col: (notation as any)["col"],
-            row: (notation as any)["row"],
-          }
+          col: (notation as any)["col"],
+          row: (notation as any)["row"],
+        }
         : // line
         "fromCol" in notation && "row" in notation
-        ? {
+          ? {
             fromCol: (notation as any)["fromCol"],
             toCol: (notation as any)["toCol"],
             row: (notation as any)["row"],
           }
-        : // rect
-        "fromRow" in notation && "fromCol" in notation
-        ? {
-            fromCol: (notation as any)["fromCol"],
-            toCol: (notation as any)["toCol"],
-            fromRow: (notation as any)["fromRow"],
-            toRow: (notation as any)["toRow"],
-          }
-        : // horizontal line
-        "p1x" in notation && "p2x" in notation && "py" in notation
-        ? {
-            p1x: (notation as any)["p1x"],
-            p2x: (notation as any)["p2x"],
-            py: (notation as any)["py"],
-          }
-        : // vertical line
-        "px" in notation && "p1y" in notation && "p2y" in notation
-        ? {
-            px: (notation as any)["px"],
-            p1y: (notation as any)["p1y"],
-            p2y: (notation as any)["p2y"],
-          }
-        : // sloped line
-        "p1x" in notation &&
-          "p2x" in notation &&
-          "p1y" in notation &&
-          "p2y" in notation
-        ? {
-            p1x: (notation as any)["p1x"],
-            p2x: (notation as any)["p2x"],
-            p1y: (notation as any)["p1y"],
-            p2y: (notation as any)["p2y"],
-          }
-        : // sloped line
-        "p1x" in notation &&
-          "p2x" in notation &&
-          "p1y" in notation &&
-          "p2y" in notation &&
-          "cpx" in notation &&
-          "cpy" in notation
-        ? {
-            p1x: (notation as any)["p1x"],
-            p2x: (notation as any)["p2x"],
-            p1y: (notation as any)["p1y"],
-            p2y: (notation as any)["p2y"],
-            cpx: (notation as any)["cpx"],
-            cpy: (notation as any)["cpy"],
-          }
-        : // circle
-        "cx" in notation && "cy" in notation && "r" in notation
-        ? {
-            cx: Math.round((notation as any)["cx"]),
-            cy: Math.round((notation as any)["cy"]),
-            r: Math.round((notation as any)["r"]),
-          }
-        : // annotation
-        "x" in notation && "y" in notation
-        ? {
-            x: Math.round((notation as any)["x"]),
-            y: Math.round((notation as any)["y"]),
-          }
-        : null;
+          : // rect
+          "fromRow" in notation && "fromCol" in notation
+            ? {
+              fromCol: (notation as any)["fromCol"],
+              toCol: (notation as any)["toCol"],
+              fromRow: (notation as any)["fromRow"],
+              toRow: (notation as any)["toRow"],
+            }
+            : // horizontal line
+            "p1x" in notation && "p2x" in notation && "py" in notation
+              ? {
+                p1x: (notation as any)["p1x"],
+                p2x: (notation as any)["p2x"],
+                py: (notation as any)["py"],
+              }
+              : // vertical line
+              "px" in notation && "p1y" in notation && "p2y" in notation
+                ? {
+                  px: (notation as any)["px"],
+                  p1y: (notation as any)["p1y"],
+                  p2y: (notation as any)["p2y"],
+                }
+                : // sloped line
+                "p1x" in notation &&
+                  "p2x" in notation &&
+                  "p1y" in notation &&
+                  "p2y" in notation
+                  ? {
+                    p1x: (notation as any)["p1x"],
+                    p2x: (notation as any)["p2x"],
+                    p1y: (notation as any)["p1y"],
+                    p2y: (notation as any)["p2y"],
+                  }
+                  : // sloped line
+                  "p1x" in notation &&
+                    "p2x" in notation &&
+                    "p1y" in notation &&
+                    "p2y" in notation &&
+                    "cpx" in notation &&
+                    "cpy" in notation
+                    ? {
+                      p1x: (notation as any)["p1x"],
+                      p2x: (notation as any)["p2x"],
+                      p1y: (notation as any)["p1y"],
+                      p2y: (notation as any)["p2y"],
+                      cpx: (notation as any)["cpx"],
+                      cpy: (notation as any)["cpy"],
+                    }
+                    : // circle
+                    "cx" in notation && "cy" in notation && "r" in notation
+                      ? {
+                        cx: Math.round((notation as any)["cx"]),
+                        cy: Math.round((notation as any)["cy"]),
+                        r: Math.round((notation as any)["r"]),
+                      }
+                      : // annotation
+                      "x" in notation && "y" in notation
+                        ? {
+                          x: Math.round((notation as any)["x"]),
+                          y: Math.round((notation as any)["y"]),
+                        }
+                        : null;
 
     return cooerdinates;
   }
@@ -552,33 +555,33 @@ export default function notationMutateHelper() {
   ) {
     return moveDirection === "LEFT"
       ? notationStore
-          .getSelectedNotations()
-          .sort(
-            (n1: any, n2: any) =>
-              (n1.col ?? n1.fromCol) - (n2.col ?? n2.fromCol),
-          )
+        .getSelectedNotations()
+        .sort(
+          (n1: any, n2: any) =>
+            (n1.col ?? n1.fromCol) - (n2.col ?? n2.fromCol),
+        )
       : moveDirection === "RIGHT"
-      ? notationStore
+        ? notationStore
           .getSelectedNotations()
           .sort(
             (n1: any, n2: any) =>
               (n2.col ?? n2.fromCol) - (n1.col ?? n1.fromCol),
           )
-      : moveDirection === "TOP"
-      ? notationStore
-          .getSelectedNotations()
-          .sort(
-            (n1: any, n2: any) =>
-              (n1.row ?? n1.fromRow) - (n2.row ?? n2.fromRow),
-          )
-      : moveDirection === "BOTTOM"
-      ? notationStore
-          .getSelectedNotations()
-          .sort(
-            (n1: any, n2: any) =>
-              (n2.row ?? n2.fromRow) - (n1.row ?? n1.fromRow),
-          )
-      : notationStore.getSelectedNotations();
+        : moveDirection === "TOP"
+          ? notationStore
+            .getSelectedNotations()
+            .sort(
+              (n1: any, n2: any) =>
+                (n1.row ?? n1.fromRow) - (n2.row ?? n2.fromRow),
+            )
+          : moveDirection === "BOTTOM"
+            ? notationStore
+              .getSelectedNotations()
+              .sort(
+                (n1: any, n2: any) =>
+                  (n2.row ?? n2.fromRow) - (n1.row ?? n1.fromRow),
+              )
+            : notationStore.getSelectedNotations();
   }
 
   async function updateSqrtNotation(
@@ -778,7 +781,7 @@ export default function notationMutateHelper() {
                   row: row,
                 })
                 ?.find((n: NotationAttributes) => n.boardType == "QUESTION") !=
-                null
+              null
             )
               return true;
           }
@@ -831,9 +834,7 @@ export default function notationMutateHelper() {
     }
   }
 
-  async function deleteSelectedNotations() {
-    if (!authorizationHelper.canEdit()) return;
-
+  function deleteSelectedNotations() {
     notationStore
       .getSelectedNotations()
       .forEach(async (n: NotationAttributes) => {
@@ -855,6 +856,18 @@ export default function notationMutateHelper() {
           );
         }
       });
+  }
+
+
+  function aproveDeleteSelectedNotations() {
+    if (!authorizationHelper.canEdit()) return;
+
+    globalAlertStore.open(
+      "Confirm Deletion",
+      "Are you sure you want to delete the selected notation(s)?",
+      "warning",
+      deleteSelectedNotations,
+    );
   }
 
   function addImageNotationByColAndRow(
@@ -1091,7 +1104,7 @@ export default function notationMutateHelper() {
       deleteKeyLock = true;
 
       if (notationStore.getSelectedNotations().length) {
-        await deleteSelectedNotations();
+        aproveDeleteSelectedNotations();
         return;
       }
 
@@ -1173,7 +1186,7 @@ export default function notationMutateHelper() {
     addSqrtNotation,
     addExponentNotation,
     cloneNotation,
-    deleteSelectedNotations,
+    aproveDeleteSelectedNotations,
     moveSelectedNotationsAtPixelScale,
     moveSelectedNotationsAtCellScale,
     handleDeleteKey,
