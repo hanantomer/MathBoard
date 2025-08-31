@@ -1104,7 +1104,7 @@ export default function notationMutateHelper() {
       deleteKeyLock = true;
 
       if (notationStore.getSelectedNotations().length) {
-        aproveDeleteSelectedNotations();
+        deleteSelectedNotations();
         return;
       }
 

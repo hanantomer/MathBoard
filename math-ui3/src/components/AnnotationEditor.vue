@@ -2,7 +2,7 @@
   <input
     v-show="show"
     class="annotation"
-    maxlength="3"
+    maxlength="6"
     v-bind:style="{
       top: annotationTop + 'px',
       left: annotationLeft + 'px',
@@ -21,7 +21,6 @@ import { useEditModeStore } from "../store/pinia/editModeStore";
 import { useNotationStore } from "../store/pinia/notationStore";
 import { AnnotationNotationAttributes } from "../../../math-common/src/baseTypes";
 import useNotationMutateHelper from "../helpers/notationMutateHelper";
-import usescreenHelper from "../helpers/screenHelper";
 import useWatchHelper from "../helpers/watchHelper";
 
 const notationMutateHelper = useNotationMutateHelper();
@@ -29,8 +28,6 @@ const watchHelper = useWatchHelper();
 const cellStore = useCellStore();
 const editModeStore = useEditModeStore();
 const notationStore = useNotationStore();
-
-const screenHelper = usescreenHelper();
 
 let annotaionValue = ref("");
 
@@ -82,6 +79,12 @@ watchHelper.watchMouseEvent(
   ["ANNOTATION_SELECTED"],
   "EV_SVG_MOUSEDOWN",
   editSelectedAnnotation,
+);
+
+watchHelper.watchCustomEvent(
+  ["ANNOTATION_WRITING"],
+  "EV_SPECIAL_SYMBOL_SELECTED",
+  addSpecialSymbol,
 );
 
 function startTextEditing(e: MouseEvent) {
@@ -151,6 +154,34 @@ function endEditingByEnterKey(e: KeyboardEvent) {
   if (code === "Enter") {
     editModeStore.setNextEditMode();
   }
+}
+
+function addSpecialSymbol(symbol: String): void {
+  const input = document.getElementById("annotationEl") as HTMLInputElement;
+
+  // Get cursor position
+  const start = input.selectionStart || 1;
+  const end = input.selectionEnd || 6;
+
+  // Create a temporary div to decode HTML entities
+  const decoder = document.createElement("div");
+  decoder.innerHTML = symbol.toString();
+  const decodedSymbol = decoder.textContent || decoder.innerText;
+
+  // Insert decoded symbol at cursor position
+  annotaionValue.value =
+    input.value.substring(0, start) +
+    decodedSymbol +
+    input.value.substring(end);
+
+  // Reset cursor position after symbol
+  setTimeout(() => {
+    input.focus();
+    input.setSelectionRange(
+      start + decodedSymbol.length,
+      start + decodedSymbol.length,
+    );
+  }, 0);
 }
 </script>
 <style>

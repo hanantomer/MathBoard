@@ -258,6 +258,7 @@ async function handleKeyUp(e: KeyboardEvent) {
     case "Delete":
       notationMutationHelper.aproveDeleteSelectedNotations();
       editModeStore.setDefaultEditMode();
+      break
     case "ArrowLeft":
       if (
         !notationMutationHelper.moveSelectedNotationsAtCellScale(-1, 0, false)

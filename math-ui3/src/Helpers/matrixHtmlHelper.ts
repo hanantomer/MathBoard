@@ -260,7 +260,7 @@ export default function useHtmlMatrixHelper() {
 
     switch (n.notationType) {
       case "ANNOTATION": {
-        return cellStore.getCellHorizontalWidth() + 2;
+        return cellStore.getCellHorizontalWidth() * 2 + 4; //+4 for border
       }
       case "SYMBOL": {
         return cellStore.getCellHorizontalWidth();
