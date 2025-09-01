@@ -22,6 +22,7 @@
                 :rules="[rules.validMail]"
                 label="E-mail"
                 required
+                aria-autocomplete="both"
               ></v-text-field>
             </v-col>
             <v-col cols="11">
@@ -34,6 +35,7 @@
                 label="Password"
                 hint="At least 8 characters"
                 @keydown.enter="validateLogin"
+                aria-autocomplete="both"
                 counter
               ></v-text-field>
               <v-btn
