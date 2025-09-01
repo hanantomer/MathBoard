@@ -210,7 +210,7 @@ export const useEditModeStore = defineStore("editMode", () => {
     console.debug(
       `old edit mode: ${editMode.value}, new edit mode: ${newEditMode} `,
     );
-//    console.trace();
+    console.trace();
     editMode.value = newEditMode;
   }
 

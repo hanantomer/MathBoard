@@ -122,8 +122,6 @@ function setInitialTextValue() {
 }
 
 function save() {
-  editModeStore.setNextEditMode();
-
   if (selectedNotation.value) {
     selectedNotation.value.value = annotaionValue.value;
     notationMutateHelper.updateNotation(selectedNotation.value);

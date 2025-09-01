@@ -143,12 +143,12 @@ function submitText(newEditMode: EditMode, oldEditMode: any) {
 
   const rectCoordinates = screenHelper.getRectAttributes({
     topLeft: {
-      x: left + window.scrollX - cellStore.getSvgBoundingRect().x,
-      y: top + window.scrollY - cellStore.getSvgBoundingRect().y,
+      x: left - cellStore.getSvgBoundingRect().x,
+      y: top - cellStore.getSvgBoundingRect().y,
     },
     bottomRight: {
-      x: left + width + window.scrollX - cellStore.getSvgBoundingRect().x,
-      y: top + height + window.scrollY - cellStore.getSvgBoundingRect().y,
+      x: left + width - cellStore.getSvgBoundingRect().x,
+      y: top + height - cellStore.getSvgBoundingRect().y,
     },
   });
 
@@ -158,7 +158,7 @@ function submitText(newEditMode: EditMode, oldEditMode: any) {
     Object.assign(updatedNotation, rectCoordinates);
 
     notationMutateHelper.updateNotation(updatedNotation);
-    restoreTextNotation(updatedNotation.uuid);
+    showTextElement(updatedNotation.uuid);
   } else {
     notationMutateHelper.addTextNotation(textValue.value, rectCoordinates);
   }
@@ -171,7 +171,7 @@ function hideTextNotation(uuid: string) {
 }
 
 // restore text notation which was hideen during editing
-function restoreTextNotation(uuid: string) {
+function showTextElement(uuid: string) {
   document!
     .querySelector<HTMLElement>(`foreignObject[uuid="${uuid}"]`)!
     .classList.remove("hidden");

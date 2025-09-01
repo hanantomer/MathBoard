@@ -218,7 +218,7 @@ html {
 }
 
 .line {
-  stroke: chocolate;
+  stroke: darkgreen;
   position: absolute;
   display: block;
   border-bottom: solid 1px;
