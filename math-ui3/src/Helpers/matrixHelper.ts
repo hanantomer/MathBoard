@@ -138,6 +138,21 @@ export default function useMatrixHelper() {
       notations = enrichNotations(notationStore.getNotations());
     } catch {} // can't check if observer has properties
 
+    circleHelper.mergeCircleNotations(
+      svgId,
+      notations.filter((n) => n.notationType === "CIRCLE"),
+    );
+
+    lineHelper.mergeLineNotations(
+      svgId,
+      notations.filter((n) => n.notationType === "LINE"),
+    );
+
+    curveHelper.mergeCurveNotations(
+      svgId,
+      notations.filter((n) => n.notationType === "CURVE"),
+    );
+
     htmlHelper.mergeHtmlNotations(
       svgId,
       notations.filter(
@@ -153,21 +168,6 @@ export default function useMatrixHelper() {
           n.notationType === "SYMBOL",
       ),
       svgElement!,
-    );
-
-    lineHelper.mergeLineNotations(
-      svgId,
-      notations.filter((n) => n.notationType === "LINE"),
-    );
-
-    circleHelper.mergeCircleNotations(
-      svgId,
-      notations.filter((n) => n.notationType === "CIRCLE"),
-    );
-
-    curveHelper.mergeCurveNotations(
-      svgId,
-      notations.filter((n) => n.notationType === "CURVE"),
     );
   }
 

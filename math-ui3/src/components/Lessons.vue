@@ -32,6 +32,9 @@
         @click:row="selectLesson"
         :hide-no-data="true"
         :hover="true"
+        height="400"
+        density="compact"
+        fixed-header
       ></v-data-table>
     </v-card>
   </v-container>
