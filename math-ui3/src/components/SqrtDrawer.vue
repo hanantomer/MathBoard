@@ -72,6 +72,7 @@
 <script setup lang="ts">
 import { computed, ref } from "vue";
 import useNotationMutateHelper from "../helpers/notationMutateHelper";
+import useScreenHelper from "../helpers/screenHelper";
 import { useNotationStore } from "../store/pinia/notationStore";
 import { useCellStore } from "../store/pinia/cellStore";
 import { useEditModeStore } from "../store/pinia/editModeStore";
@@ -85,10 +86,13 @@ import {
 import lineHandle from "./LineHandle.vue";
 import lineWatcher from "./LineWatcher.vue";
 
+import { sqrtDeltaY } from "common/globals";
+
 const notationStore = useNotationStore();
 const editModeStore = useEditModeStore();
 const cellStore = useCellStore();
 const notationMutateHelper = useNotationMutateHelper();
+const screenHelper = useScreenHelper();
 
 let linePosition = ref(<LineAttributes>{
   p1x: 0,
@@ -138,10 +142,21 @@ let handleY = computed(() => {
 });
 
 function setInitialPosition(p: DotCoordinates) {
-  linePosition.value.p1x = p.x;
-  linePosition.value.p2x = p.x;
-  linePosition.value.p1y = p.y;
-  linePosition.value.p2y = p.y;
+  // Adjust p to be relative to the SVG container
+  p = {
+    x: p.x,
+    y: p.y + cellStore.getSvgBoundingRect().y,
+  };
+
+  const nearestRowY =
+    screenHelper.getCell(p).row * cellStore.getCellVerticalHeight();
+
+  linePosition.value.p1x = p.x - 10;
+  linePosition.value.p2x = p.x + cellStore.getCellHorizontalWidth() * 4;
+
+  linePosition.value.p1y = nearestRowY + sqrtDeltaY;
+
+  linePosition.value.p2y = linePosition.value.p1y;
 }
 
 function drawLine(p: DotCoordinates) {

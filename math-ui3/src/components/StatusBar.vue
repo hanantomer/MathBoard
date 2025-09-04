@@ -32,7 +32,7 @@ const editModeStatusText = {
   SEMICHECKMARK_STARTED: "Click on a cell to create a semi checkmark",
   XMARK_STARTED: "Click on a cell to create an xmark",
   COLORIZING:
-    "Click on a cell to colorize it or drag slowly to colorize multiple cells",
+    "Click on a notation to colorize it or drag slowly to colorize multiple notations",
 };
 
 watchHelper.watchEveryEditModeChange(setStatusBarText);

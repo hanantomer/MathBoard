@@ -49,6 +49,4 @@ export function formatDate(
     : "";
 }
 
-export function callback() {
-  alert("Callback from global alert store");
-}
+export const sqrtDeltaY = 5;

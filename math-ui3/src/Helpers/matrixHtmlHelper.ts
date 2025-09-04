@@ -8,6 +8,8 @@ import {
   AnnotationNotationAttributes,
   MultiCellAttributes,
 } from "common/baseTypes";
+
+import { sqrtDeltaY } from "common/globals";
 import { useCellStore } from "../store/pinia/cellStore";
 import useUtils from "./matrixHelperUtils";
 import { useUserStore } from "../store/pinia/userStore";
@@ -247,10 +249,13 @@ export default function useHtmlMatrixHelper() {
 
     let rowIdx = row(n);
     if (!rowIdx) return null;
-    let deltaY =
-      n.notationType === "SQRT" || n.notationType === "SQRTSYMBOL" ? -5 : 0;
 
-    return utils.getNotationYposByRow(rowIdx) + deltaY;
+    let deltaY =
+      n.notationType === "SQRT" || n.notationType === "SQRTSYMBOL"
+        ? sqrtDeltaY
+        : 0;
+
+    return utils.getNotationYposByRow(rowIdx);
   }
 
   function width(n: NotationAttributes): number {
@@ -420,7 +425,7 @@ export default function useHtmlMatrixHelper() {
 
     const leftMargin =
       n1.value === "."
-        ? "-10%"
+        ? "-2px"
         : n1.value === "M" || n1.value === "m"
         ? "0%"
         : n1.value === "i" || n1.value === "j"
@@ -429,7 +434,9 @@ export default function useHtmlMatrixHelper() {
         ? "10%"
         : "0%";
     const fSize =
-      n1.value.indexOf("&") >= 0 || n1.value.length === 1
+      n1.value === "."
+        ? "1.5em"
+        : n1.value.indexOf("&") >= 0 || n1.value.length === 1
         ? "1.1em"
         : n1.value.indexOf("cos") >= 0 ||
           n1.value.indexOf("sin") >= 0 ||
@@ -441,7 +448,7 @@ export default function useHtmlMatrixHelper() {
 
     const topMargin =
       n1.value === "."
-        ? "5px"
+        ? "-5px"
         : n1.value.indexOf("cos") >= 0 ||
           n1.value.indexOf("sin") >= 0 ||
           n1.value.indexOf("tan") >= 0 ||

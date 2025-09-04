@@ -33,6 +33,21 @@
               </v-list-item-title>
             </v-list-item>
           </v-list>
+            <v-list-item class="justify-center mt-4">
+            <v-btn
+              color="primary"
+              class="ml-1"
+              prepend-icon="mdi-play-circle"
+              size="large"
+              href="/tutorials/MathBoard tutorial.mp4"
+              target="_blank"
+              elevation="2"
+              rounded
+            >
+              Watch Quick Tutorial
+              <v-icon end icon="mdi-open-in-new" size="small" class="ml-1"></v-icon>
+            </v-btn>
+          </v-list-item>
         </v-card>
       </v-col>
     </v-row>
