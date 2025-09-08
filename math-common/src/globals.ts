@@ -49,4 +49,4 @@ export function formatDate(
     : "";
 }
 
-export const sqrtDeltaY = 5;
+export const sqrtDeltaY = 3;
