@@ -40,7 +40,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from "vue";
+import { computed, onMounted, onUnmounted } from "vue";
 import { useStudentStore } from "../store/pinia/studentStore";
 import { useLessonStore } from "../store/pinia/lessonStore";
 import { UserAttributes } from "../../../math-common/src/userTypes";
@@ -50,6 +50,28 @@ const studentStore = useStudentStore();
 const lessonStore = useLessonStore();
 const userOutgoingOperations = UseUserOutgoingOperations();
 
+let heartbeatInterval: number;
+
+onMounted(() => {
+  // Check and reset heartbeats every minute
+  heartbeatInterval = window.setInterval(() => {
+    studentStore.getStudents().forEach((s) => {
+      if (
+        s.lastHeartbeatTime &&
+        Date.now() - s.lastHeartbeatTime.getTime() > 5000
+      )
+        s.lastHeartbeatTime = undefined;
+    });
+  }, 5000);
+});
+
+onUnmounted(() => {
+  // Clean up interval when component is destroyed
+  if (heartbeatInterval) {
+    clearInterval(heartbeatInterval);
+  }
+});
+
 function toggleEditingTooltip(studentUUId: string): string {
   return studentStore.getAuthorizedStudentUUId() == studentUUId
     ? "Click to disable editing for this student"
@@ -57,7 +79,7 @@ function toggleEditingTooltip(studentUUId: string): string {
 }
 
 const students = computed(() => {
-  return studentStore.getStudents();
+  return studentStore.getStudents().filter((s) => s.lastHeartbeatTime);
 });
 
 function getStudentDisplayName(student: UserAttributes) {

@@ -55,8 +55,8 @@ watchHelper.watchCustomEvent(
 );
 
 watchHelper.watchMouseEvent(
-  ["TEXT_SELECTED"],
-  "EV_SVG_MOUSEDOWN",
+  ["TEXT_WRITING"],
+  "EV_TEXT_SELECTED",
   editSelectedTextNotation,
 );
 
@@ -67,11 +67,6 @@ watchHelper.watchCustomEvent(
 );
 
 function editSelectedTextNotation(e: MouseEvent) {
-  const el = e.target as Element;
-  if (el.tagName !== "TEXTAREA") {
-    return;
-  }
-
   editModeStore.setEditMode("TEXT_WRITING");
 
   setInitialTextValue();
@@ -97,13 +92,13 @@ function setInitialTextDimensions() {
 
   textAreaEl.style.left =
     cellStore.getSvgBoundingRect().x +
-    window.scrollX +
+    //window.scrollX +
     selectedNotation.value.fromCol * cellStore.getCellHorizontalWidth() +
     "px";
 
   textAreaEl.style.top =
     cellStore.getSvgBoundingRect().y +
-    window.scrollY +
+    //window.scrollY +
     selectedNotation.value.fromRow * cellStore.getCellVerticalHeight() +
     "px";
 

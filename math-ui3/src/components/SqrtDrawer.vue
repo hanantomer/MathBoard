@@ -196,13 +196,6 @@ async function saveSqrt(sqrtAttributes: MultiCellAttributes): Promise<string> {
   } else return await notationMutateHelper.addSqrtNotation(sqrtAttributes);
 }
 
-function resetDrawing() {
-  linePosition.value.p1x =
-    linePosition.value.p2x =
-    linePosition.value.p1y =
-    linePosition.value.p2y =
-      0;
-}
 
 function selectSqrt(notation: NotationAttributes) {
   const n = notation as SqrtNotationAttributes;
@@ -211,7 +204,7 @@ function selectSqrt(notation: NotationAttributes) {
 
   linePosition.value.p2x = n.toCol * cellStore.getCellHorizontalWidth();
 
-  linePosition.value.p1y = n.row * cellStore.getCellVerticalHeight();
+  linePosition.value.p1y = n.row * cellStore.getCellVerticalHeight() + sqrtDeltaY;
 
   linePosition.value.p2y = n.row * cellStore.getCellVerticalHeight();
 }

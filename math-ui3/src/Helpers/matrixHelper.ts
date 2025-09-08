@@ -143,11 +143,6 @@ export default function useMatrixHelper() {
       notations.filter((n) => n.notationType === "CIRCLE"),
     );
 
-    lineHelper.mergeLineNotations(
-      svgId,
-      notations.filter((n) => n.notationType === "LINE"),
-    );
-
     curveHelper.mergeCurveNotations(
       svgId,
       notations.filter((n) => n.notationType === "CURVE"),
@@ -168,6 +163,11 @@ export default function useMatrixHelper() {
           n.notationType === "SYMBOL",
       ),
       svgElement!,
+    );
+
+    lineHelper.mergeLineNotations(
+      svgId,
+      notations.filter((n) => n.notationType === "LINE"),
     );
   }
 

@@ -10,9 +10,13 @@
 </template>
 
 <script setup lang="ts">
+
 import mathBoard from "./MathBoard.vue";
 import useUserOutgoingOperations from "../helpers/userOutgoingOperationsHelper";
 import useUserIncomingOperations from "../helpers/userIncomingOperationsHelper";
+import lessonStudents from "./LessonStudents.vue";
+import useSelectionHelper from "../helpers/selectionHelper";
+
 import { ref, onMounted } from "vue";
 import { useUserStore } from "../store/pinia/userStore";
 import { useLessonStore } from "../store/pinia/lessonStore";
@@ -20,19 +24,14 @@ import { useNotationStore } from "../store/pinia/notationStore";
 import { watch } from "vue";
 import { useRoute } from "vue-router";
 import { heartBeatInterval } from "../../../math-common/src/globals";
-import { useEditModeStore } from "../store/pinia/editModeStore";
 import { useTitleStore } from "../store/pinia/titleStore";
 import { useCellStore } from "../store/pinia/cellStore";
-import lessonStudents from "./LessonStudents.vue";
-import useSelectionHelper from "../helpers/selectionHelper";
+
 const selectionHelper = useSelectionHelper();
-
 const route = useRoute();
-
 const userStore = useUserStore();
 const lessonStore = useLessonStore();
 const notationStore = useNotationStore();
-const editModeStore = useEditModeStore();
 const titleStore = useTitleStore();
 const cellStore = useCellStore();
 const userOutgoingOperations = useUserOutgoingOperations();

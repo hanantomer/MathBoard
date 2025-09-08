@@ -299,9 +299,7 @@ export default function useHtmlMatrixHelper() {
   }
 
   function imageNotationWidth(n: RectAttributes): number {
-    const baseWidth =
-      (n.toCol - n.fromCol + 1) * cellStore.getCellHorizontalWidth();
-    return baseWidth * 1.35;
+    return (n.toCol - n.fromCol + 1) * cellStore.getCellHorizontalWidth();
   }
 
   function pointNotationHeight(n: CellAttributes): number {
@@ -315,9 +313,7 @@ export default function useHtmlMatrixHelper() {
   }
 
   function imageNotationHeight(n: RectAttributes): number {
-    const baseHeight =
-      (Math.abs(n.toRow - n.fromRow) + 1) * cellStore.getCellVerticalHeight();
-    return baseHeight * 1.35;
+    return  (Math.abs(n.toRow - n.fromRow) + 1) * cellStore.getCellVerticalHeight();
   }
 
   function fontSize(n: PointNotationAttributes, el: HTMLElement) {

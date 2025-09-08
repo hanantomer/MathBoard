@@ -105,7 +105,15 @@ export default function selectionHelper() {
       return;
 
     if (activeNotation.notationType === "TEXT") {
-      editModeStore.setEditMode("TEXT_SELECTED");
+
+      // toggle between TEXT_SELECTED and TEXT_WRITING
+      if (editModeStore.getEditMode() == "TEXT_SELECTED") {
+        editModeStore.setEditMode("TEXT_WRITING");
+      }
+      else {
+        editModeStore.setEditMode("TEXT_SELECTED");
+      }
+
       eventBus.emit("EV_TEXT_SELECTED", activeNotation);
     }
 

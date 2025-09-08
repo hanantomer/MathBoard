@@ -4,12 +4,8 @@
     variant="outlined"
     class="selection"
     id="selection"
-    v-on:mousedown="startMoving"
     v-on:mouseup="onSelectionMouseUp"
     v-on:mousemove="handleMouseDrag"
-    @touchstart="startMoving"
-    v-on:touchend="onSelectionMouseUp"
-    v-on:touchmove="handleMouseDrag"
     v-bind:style="{
       left: selectionRectLeft + 'px',
       top: selectionRectTop + 'px',
@@ -40,6 +36,7 @@ import useEventBusHelper from "../helpers/eventBusHelper";
 import useWatchHelper from "../helpers/watchHelper";
 import UseAuthorizationHelper from "../helpers/authorizationHelper";
 import useScreenHelper from "../helpers/screenHelper";
+import { set } from "cypress/types/lodash";
 
 const screenHelper = useScreenHelper();
 type HorizontalDirection = "RIGHT" | "LEFT" | "NONE";
@@ -85,15 +82,13 @@ const selectedRectBoundingRect = computed(() => {
 
 const show = computed(() => {
   return (
-    (editModeStore.isTextSelectionMode() ||
+    (editModeStore.isImageSelectedMode() ||
+      editModeStore.isTextSelectedMode() ||
+      editModeStore.isTextSelectionMode() ||
       editModeStore.isAreaSelectionOrMovingMode()) &&
     selectionPosition.value.x1 != selectionPosition.value.x2 &&
     selectionPosition.value.y1 != selectionPosition.value.y2
   );
-});
-
-const showResizeControl = computed(() => {
-  return editModeStore.isResizeMode();
 });
 
 const backgroundColor = computed(() => {
@@ -143,6 +138,12 @@ watchHelper.watchMouseEvent(
 );
 
 watchHelper.watchMouseEvent(
+  ["TEXT_SELECTED"],
+  "EV_TEXT_SELECTED",
+  selectRectNotation,
+);
+
+watchHelper.watchMouseEvent(
   ["AREA_SELECTING", "TEXT_AREA_SELECTING", "RESIZING"],
   "EV_SVG_MOUSEUP",
   endSelect,
@@ -177,8 +178,8 @@ watchHelper.watchMouseEvent(
 );
 
 watchHelper.watchNotationSelection(
-  ["TEXT_SELECTED", "IMAGE_SELECTED"],
-  "EV_IMAGE_SELECTED",
+  ["TEXT_SELECTED"],
+  "EV_TEXT_SELECTED",
   selectRectNotation,
 );
 
@@ -187,7 +188,6 @@ watchHelper.watchNotationSelection(
   "EV_ANNOTATION_SELECTED",
   selectAnnotation,
 );
-
 
 function getSelectedRect() {
   if (
@@ -200,14 +200,11 @@ function getSelectedRect() {
 }
 
 function getSelectedAnnotation() {
-  if (
-    notationStore.getSelectedNotations().length > 0 )
-   {
+  if (notationStore.getSelectedNotations().length > 0) {
     return notationStore.getSelectedNotations()[0] as AnnotationNotationAttributes;
   }
   return null;
 }
-
 
 function cancelSelectionWhenUserClickedOutside() {
   notationStore.resetSelectedNotations();
@@ -246,10 +243,6 @@ function setStartPosition(e: MouseEvent) {
   selectionPosition.value.y2 = selectionPosition.value.y1 = e.pageY;
 }
 
-function startMoving(e: MouseEvent) {
-  editModeStore.setNextEditMode();
-}
-
 async function handleKeyUp(e: KeyboardEvent) {
   if (selectionRectHeight.value === 0) return;
 
@@ -258,7 +251,7 @@ async function handleKeyUp(e: KeyboardEvent) {
     case "Delete":
       notationMutationHelper.aproveDeleteSelectedNotations();
       editModeStore.setDefaultEditMode();
-      break
+      break;
     case "ArrowLeft":
       if (
         !notationMutationHelper.moveSelectedNotationsAtCellScale(-1, 0, false)
@@ -292,7 +285,6 @@ async function handleKeyUp(e: KeyboardEvent) {
 
 // extend or shrink selection area
 function updateSelectionArea(e: MouseEvent) {
-
   setSelectionDirection(e);
 
   if (horizontalDirection === "NONE" || verticalDirection === "NONE") {
@@ -390,12 +382,18 @@ function endSelect() {
 }
 
 function handleMouseDrag(e: MouseEvent) {
-
+  if (!authorizationHelper.canEdit()) return;
+  if (!e.buttons) return;
   if (
     editModeStore.getEditMode() === "AREA_SELECTING" ||
     editModeStore.getEditMode() === "TEXT_AREA_SELECTING"
   ) {
     updateSelectionArea(e);
+    return;
+  }
+
+  if (editModeStore.getEditMode() === "AREA_SELECTED") {
+    editModeStore.setNextEditMode();
     return;
   }
 
@@ -500,8 +498,15 @@ async function onSelectionMouseUp(e: MouseEvent) {
     endSelect();
     return;
   }
+  if (editModeStore.getEditMode() === "AREA_MOVING") {
+    endMoveSelection(e);
+  }
 
-  endMoveSelection(e);
+  // signal free text editor
+  if (editModeStore.isAreaSelectedMode()) {
+    editModeStore.setEditMode("TEXT_WRITING");
+    eventBus.emit("EV_TEXT_SELECTED", notationStore.getSelectedNotations()[0]);
+  }
 }
 
 async function endMoveSelection(e: MouseEvent) {
@@ -558,20 +563,24 @@ function selectRectNotation(): void {
 }
 
 function selectAnnotation(): void {
-  setSelectionPositionForAnnotation(getSelectedAnnotation() as AnnotationNotationAttributes);
+  setSelectionPositionForAnnotation(
+    getSelectedAnnotation() as AnnotationNotationAttributes,
+  );
   editModeStore.setEditMode("AREA_SELECTED");
 }
 
-function setSelectionPositionForAnnotation(selectedNotation: AnnotationNotationAttributes) {
+function setSelectionPositionForAnnotation(
+  selectedNotation: AnnotationNotationAttributes,
+) {
   selectionPosition.value.x1 =
-    cellStore.getSvgBoundingRect().left + selectedNotation.x -1;
-  selectionPosition.value.x2 = selectionPosition.value.x1 +  cellStore.getCellHorizontalWidth() + 5
+    cellStore.getSvgBoundingRect().left + selectedNotation.x - 1;
+  selectionPosition.value.x2 =
+    selectionPosition.value.x1 + cellStore.getCellHorizontalWidth() + 5;
   selectionPosition.value.y1 =
     cellStore.getSvgBoundingRect().top + selectedNotation.y + 5;
-  selectionPosition.value.y2 = selectionPosition.value.y1 + cellStore.getCellVerticalHeight() / 2;
+  selectionPosition.value.y2 =
+    selectionPosition.value.y1 + cellStore.getCellVerticalHeight() / 2;
 }
-
-
 
 function setSelectionPositionForText(selectedNotation: RectNotationAttributes) {
   selectionPosition.value.x1 =
@@ -579,13 +588,13 @@ function setSelectionPositionForText(selectedNotation: RectNotationAttributes) {
     selectedNotation.fromCol * cellStore.getCellHorizontalWidth();
   selectionPosition.value.x2 =
     cellStore.getSvgBoundingRect().left +
-    selectedNotation.toCol * cellStore.getCellHorizontalWidth();
+    (selectedNotation.toCol + 1) * cellStore.getCellHorizontalWidth();
   selectionPosition.value.y1 =
     cellStore.getSvgBoundingRect().top +
     selectedNotation.fromRow * cellStore.getCellVerticalHeight();
   selectionPosition.value.y2 =
     cellStore.getSvgBoundingRect().top +
-    selectedNotation.toRow * cellStore.getCellVerticalHeight();
+    (selectedNotation.toRow + 1) * cellStore.getCellVerticalHeight();
 }
 
 function setSelectionPositionForImage() {

@@ -150,6 +150,11 @@ export const useEditModeStore = defineStore("editMode", () => {
     return editMode.value === "TEXT_SELECTED";
   }
 
+  function isImageSelectedMode() {
+    return editMode.value === "IMAGE_SELECTED";
+  }
+
+
   function isTextSelectionMode() {
     return editMode.value === "TEXT_AREA_SELECTING";
   }
@@ -210,7 +215,7 @@ export const useEditModeStore = defineStore("editMode", () => {
     console.debug(
       `old edit mode: ${editMode.value}, new edit mode: ${newEditMode} `,
     );
-    console.trace();
+    //console.trace();
     editMode.value = newEditMode;
   }
 
@@ -332,6 +337,7 @@ export const useEditModeStore = defineStore("editMode", () => {
     isTextStartedMode,
     isTextSelectedMode,
     isTextSelectionMode,
+    isImageSelectedMode,
     isAnnotationWritingMode,
     isAnnotationStartedMode,
     isAnnotationSelectedMode,
@@ -339,7 +345,6 @@ export const useEditModeStore = defineStore("editMode", () => {
     isResizeMode,
     isSelectFromListMode,
     isPolygonDrawingMode,
-    //isPolygonLineEndedMode,
     isCurveEditingControlPointMode,
     setEditMode,
     setNextEditMode,
