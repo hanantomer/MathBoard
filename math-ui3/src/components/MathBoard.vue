@@ -116,6 +116,22 @@ watchHelper.watchKeyEvent(
   keyHelper.keyUpHandler,
 );
 
+watchHelper.watchKeyEvent(
+  [
+    "CELL_SELECTED",
+    "LINE_SELECTED",
+    "CURVE_SELECTED",
+    "SQRT_SELECTED",
+    "ANNOTATION_SELECTED",
+    "TEXT_SELECTED",
+    "EXPONENT_SELECTED",
+    "CIRCLE_SELECTED",
+  ],
+  "EV_KEYDOWN",
+  keyHelper.keyDownHandler,
+);
+
+
 watchHelper.watchEveryEditModeChange(
   (newEditMode) => (cursor.value = EditModeCursorType.get(newEditMode)!),
 );

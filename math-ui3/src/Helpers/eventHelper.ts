@@ -386,6 +386,10 @@ export default function eventHelper() {
     eventBus.emit("EV_KEYUP", key);
   }
 
+  function emitKeyDown(key: KeyboardEvent) {
+    eventBus.emit("EV_KEYDOWN", key);
+  }
+
   function registerKeyUp() {
     window.addEventListener("keyup", emitKeyUp);
   }
@@ -393,6 +397,15 @@ export default function eventHelper() {
   function unregisterKeyUp() {
     window.removeEventListener("keyup", emitKeyUp);
   }
+
+  function registerKeyDown() {
+    window.addEventListener("keydown", emitKeyDown);
+  }
+
+  function unregisterKeyDown() {
+    window.removeEventListener("keydown", emitKeyDown);
+  }
+
 
   function emitCopy() {
     eventBus.emit("EV_COPY", null);
@@ -432,6 +445,8 @@ export default function eventHelper() {
     unregisterSvgMouseUp,
     registerKeyUp,
     unregisterKeyUp,
+    registerKeyDown,
+    unregisterKeyDown,
     registerPaste,
     unregisterPaste,
     registerCopy,

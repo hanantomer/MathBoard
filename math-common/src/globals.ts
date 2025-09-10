@@ -24,7 +24,7 @@ export const signList = [
 ];
 export const selectedCellStroke = "red";
 export const defaultdCellStroke = "lightgray";
-export const heartBeatInterval = 5000;
+export const heartBeatInterval = 3000;
 
 export function getDefaultFontSize(): number {
   var style = window!.getComputedStyle(

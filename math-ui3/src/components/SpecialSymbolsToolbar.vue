@@ -140,18 +140,6 @@ const specialSymbols = ref([
     isSeparator: true,
   },
 
-  // Trigonometric functions
-  // { name: "sin", value: "sin", tooltip: "Sine", tabIndex: 17 },
-  // { name: "cos", value: "cos", tooltip: "Cosine", tabIndex: 18 },
-  // { name: "tan", value: "tan", tooltip: "Tangent", tabIndex: 19 },
-  // { name: "cot", value: "cot", tooltip: "Cotangent", tabIndex: 20 },
-  // {
-  //   name: "separator",
-  //   value: "",
-  //   tooltip: "",
-  //   tabIndex: -1,
-  //   isSeparator: true,
-  // },
 
   // Geometric symbols
   { name: "angle", value: "&ang;", tooltip: "Angle", tabIndex: 21 },
@@ -165,6 +153,17 @@ const specialSymbols = ref([
     tabIndex: 23,
   },
   { name: "parallel", value: "&#8741", tooltip: "Parallel", tabIndex: 24 },
+  {
+    name: "separator",
+    value: "",
+    tooltip: "",
+    tabIndex: -1,
+    isSeparator: true,
+  },
+
+  { name: "f(x)", value: "f(x)", tooltip: "f(x)", tabIndex: 25 },
+  { name: "f`(x)", value: "f`(x)", tooltip: "f`(x)", tabIndex: 26 },
+  { name: "f``(x)", value: "f``(x)", tooltip: "f``(x)", tabIndex: 27 },
 ]).value.map((symbol) => ({
   ...symbol,
   action: () => (symbol.isSeparator ? null : addSpecialSymbol(symbol.value)),
@@ -192,7 +191,12 @@ function addSpecialSymbol(item: string) {
     ) {
       eventBus.emit("EV_SPECIAL_SYMBOL_SELECTED", selectedSymbol.value);
     } else {
-      notationMutateHelper.addSymbolNotation(selectedSymbol.value);
+      if (item.length > 1) {
+        const chars = item.match(/[a-zA-Z0-9]+|[^a-zA-Z0-9]+/g) || [];
+        chars.forEach(char => notationMutateHelper.addSymbolNotation(char));
+      } else {
+        notationMutateHelper.addSymbolNotation(item);
+      }
     }
   }, 0);
 }
@@ -206,8 +210,12 @@ function addSpecialSymbol(item: string) {
   height: max-content !important;
   padding: 4px !important;
 }
+.v-btn {
+  font-size: smaller !important;
+}
 
 .vertical-toolbar .v-toolbar__content {
   flex-flow: column wrap !important;
+
 }
 </style>

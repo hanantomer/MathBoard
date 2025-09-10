@@ -4,7 +4,7 @@ import useMatrixCellHelper from "../helpers/matrixCellHelper";
 import useAuthorizationHelper from "../helpers/authorizationHelper";
 import useNotationMutateHelper from "../helpers/notationMutateHelper";
 import useSelectionHelper from "../helpers/selectionHelper";
-type keyType = "SYMBOL" | "MOVEMENT" | "DELETION" | "MOVEANDDELETE";
+type keyType = "SYMBOL" | "MOVEMENT" | "DELETION" | "MOVEANDDELETE" | "PUSH";
 
 const editModeStore = useEditModeStore();
 const cellStore = useCellStore();
@@ -13,18 +13,47 @@ const authorizationHelper = useAuthorizationHelper();
 const notationMutateHelper = useNotationMutateHelper();
 const selectionHelper = useSelectionHelper();
 
+const KEY_STROKE_INTERVAL = 50; // ms
+let shiftReleaseTime = 0;
+let shiftReleased = false;
+const delayedShiftKeys = new Set<string>(["9", "0", "="]);
+
 export default function () {
+  function keyDownHandler(e: KeyboardEvent) {
+    const { key } = e;
+    if (delayedShiftKeys.has(key)  && shiftReleased) {
+      shiftReleased = false;
+    }
+  }
+
   function keyUpHandler(e: KeyboardEvent) {
     const { ctrlKey, altKey, code, key } = e;
     if (ctrlKey || altKey) return;
 
     if (!authorizationHelper.canEdit()) return;
 
+    if (code === "ShiftLeft" || code === "ShiftRight") {
+      shiftReleased = true;
+      shiftReleaseTime = Date.now();
+      return;
+    }
+
+    let usePreviousShift = false;
+    if (shiftReleased && Date.now() - shiftReleaseTime < KEY_STROKE_INTERVAL) {
+      usePreviousShift = true;
+      shiftReleased = false;
+    }
+
     if (editModeStore.getEditMode() === "TEXT_WRITING") return;
 
     if (editModeStore.getEditMode() === "ANNOTATION_WRITING") return;
 
     switch (classifyKeyCode(code)) {
+
+      case "PUSH": {
+        return handlePushKey();
+      }
+
       case "DELETION": {
         return handleDeletionKey();
       }
@@ -40,10 +69,31 @@ export default function () {
       }
 
       case "SYMBOL": {
+        if (usePreviousShift) {
+          if (key === "9") {
+            notationMutateHelper.addSymbolNotation("(");
+            return;
+          }
+          if (key === "0") {
+            notationMutateHelper.addSymbolNotation(")");
+            return;
+          }
+          if (key === "=") {
+            notationMutateHelper.addSymbolNotation("+");
+            return;
+          }
+        }
         return notationMutateHelper.addSymbolNotation(key);
       }
     }
   }
+
+    function handlePushKey() {
+      notationMutateHelper.handlePushKey();
+
+      matrixCellHelper.setNextCell(0, 0);
+    }
+
 
   function handleDeletionKey() {
     notationMutateHelper.handleDeleteKey();
@@ -52,9 +102,7 @@ export default function () {
   }
 
   function handleMovementKey(key: string) {
-    if (
-      editModeStore.getEditMode() !== "CELL_SELECTED"
-    ) {
+    if (editModeStore.getEditMode() !== "CELL_SELECTED") {
       return;
     }
 
@@ -91,11 +139,15 @@ export default function () {
 
   function classifyKeyCode(code: string): keyType | null {
     if (
+      code === "Space"
+    )
+      return "PUSH";
+
+    if (
       code === "ArrowLeft" ||
       code === "ArrowRight" ||
       code === "ArrowUp" ||
-      code === "ArrowDown" ||
-      code === "Space"
+      code === "ArrowDown"
     )
       return "MOVEMENT";
 
@@ -129,5 +181,6 @@ export default function () {
 
   return {
     keyUpHandler,
+    keyDownHandler,
   };
 }

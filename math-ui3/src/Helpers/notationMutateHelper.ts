@@ -40,7 +40,6 @@ import useUserOutgoingOperations from "./userOutgoingOperationsHelper";
 import useMatrixCellHelper from "../helpers/matrixCellHelper";
 import useScreenHelper from "../helpers/screenHelper";
 
-
 import { NotationAttributes, RectAttributes } from "common/baseTypes";
 
 import useSelectionHelper from "./selectionHelper";
@@ -62,6 +61,7 @@ const userOutgoingOperations = useUserOutgoingOperations();
 const MAX_IMAGE_WIDTH = 1000;
 
 let deleteKeyLock = false; // Add lock variable at the top with other variables
+let spaceKeyLock = false;
 
 export default function notationMutateHelper() {
   function pointAtCellCoordinates(
@@ -126,23 +126,23 @@ export default function notationMutateHelper() {
       .getNotations()
       .filter((n: NotationAttributes) =>
         n.notationType === "ANNOTATION" ||
-          n.notationType === "EXPONENT" ||
-          n.notationType === "SIGN" ||
-          n.notationType === "SYMBOL" ||
-          n.notationType === "SQRT" ||
-          n.notationType === "SQRTSYMBOL"
+        n.notationType === "EXPONENT" ||
+        n.notationType === "SIGN" ||
+        n.notationType === "SYMBOL" ||
+        n.notationType === "SQRT" ||
+        n.notationType === "SQRTSYMBOL"
           ? pointAtCellCoordinates(
-            n as PointNotationAttributes,
-            cellCoordinates,
-            userUUId,
-          )
+              n as PointNotationAttributes,
+              cellCoordinates,
+              userUUId,
+            )
           : n.notationType === "TEXT" || n.notationType === "IMAGE"
-            ? rectAtCellCoordinates(
+          ? rectAtCellCoordinates(
               n as RectNotationAttributes,
               cellCoordinates,
               userUUId,
             )
-            : false,
+          : false,
       );
   }
 
@@ -470,78 +470,78 @@ export default function notationMutateHelper() {
       // point
       "col" in notation
         ? {
-          col: (notation as any)["col"],
-          row: (notation as any)["row"],
-        }
+            col: (notation as any)["col"],
+            row: (notation as any)["row"],
+          }
         : // line
         "fromCol" in notation && "row" in notation
-          ? {
+        ? {
             fromCol: (notation as any)["fromCol"],
             toCol: (notation as any)["toCol"],
             row: (notation as any)["row"],
           }
-          : // rect
-          "fromRow" in notation && "fromCol" in notation
-            ? {
-              fromCol: (notation as any)["fromCol"],
-              toCol: (notation as any)["toCol"],
-              fromRow: (notation as any)["fromRow"],
-              toRow: (notation as any)["toRow"],
-            }
-            : // horizontal line
-            "p1x" in notation && "p2x" in notation && "py" in notation
-              ? {
-                p1x: (notation as any)["p1x"],
-                p2x: (notation as any)["p2x"],
-                py: (notation as any)["py"],
-              }
-              : // vertical line
-              "px" in notation && "p1y" in notation && "p2y" in notation
-                ? {
-                  px: (notation as any)["px"],
-                  p1y: (notation as any)["p1y"],
-                  p2y: (notation as any)["p2y"],
-                }
-                : // sloped line
-                "p1x" in notation &&
-                  "p2x" in notation &&
-                  "p1y" in notation &&
-                  "p2y" in notation
-                  ? {
-                    p1x: (notation as any)["p1x"],
-                    p2x: (notation as any)["p2x"],
-                    p1y: (notation as any)["p1y"],
-                    p2y: (notation as any)["p2y"],
-                  }
-                  : // sloped line
-                  "p1x" in notation &&
-                    "p2x" in notation &&
-                    "p1y" in notation &&
-                    "p2y" in notation &&
-                    "cpx" in notation &&
-                    "cpy" in notation
-                    ? {
-                      p1x: (notation as any)["p1x"],
-                      p2x: (notation as any)["p2x"],
-                      p1y: (notation as any)["p1y"],
-                      p2y: (notation as any)["p2y"],
-                      cpx: (notation as any)["cpx"],
-                      cpy: (notation as any)["cpy"],
-                    }
-                    : // circle
-                    "cx" in notation && "cy" in notation && "r" in notation
-                      ? {
-                        cx: Math.round((notation as any)["cx"]),
-                        cy: Math.round((notation as any)["cy"]),
-                        r: Math.round((notation as any)["r"]),
-                      }
-                      : // annotation
-                      "x" in notation && "y" in notation
-                        ? {
-                          x: Math.round((notation as any)["x"]),
-                          y: Math.round((notation as any)["y"]),
-                        }
-                        : null;
+        : // rect
+        "fromRow" in notation && "fromCol" in notation
+        ? {
+            fromCol: (notation as any)["fromCol"],
+            toCol: (notation as any)["toCol"],
+            fromRow: (notation as any)["fromRow"],
+            toRow: (notation as any)["toRow"],
+          }
+        : // horizontal line
+        "p1x" in notation && "p2x" in notation && "py" in notation
+        ? {
+            p1x: (notation as any)["p1x"],
+            p2x: (notation as any)["p2x"],
+            py: (notation as any)["py"],
+          }
+        : // vertical line
+        "px" in notation && "p1y" in notation && "p2y" in notation
+        ? {
+            px: (notation as any)["px"],
+            p1y: (notation as any)["p1y"],
+            p2y: (notation as any)["p2y"],
+          }
+        : // sloped line
+        "p1x" in notation &&
+          "p2x" in notation &&
+          "p1y" in notation &&
+          "p2y" in notation
+        ? {
+            p1x: (notation as any)["p1x"],
+            p2x: (notation as any)["p2x"],
+            p1y: (notation as any)["p1y"],
+            p2y: (notation as any)["p2y"],
+          }
+        : // sloped line
+        "p1x" in notation &&
+          "p2x" in notation &&
+          "p1y" in notation &&
+          "p2y" in notation &&
+          "cpx" in notation &&
+          "cpy" in notation
+        ? {
+            p1x: (notation as any)["p1x"],
+            p2x: (notation as any)["p2x"],
+            p1y: (notation as any)["p1y"],
+            p2y: (notation as any)["p2y"],
+            cpx: (notation as any)["cpx"],
+            cpy: (notation as any)["cpy"],
+          }
+        : // circle
+        "cx" in notation && "cy" in notation && "r" in notation
+        ? {
+            cx: Math.round((notation as any)["cx"]),
+            cy: Math.round((notation as any)["cy"]),
+            r: Math.round((notation as any)["r"]),
+          }
+        : // annotation
+        "x" in notation && "y" in notation
+        ? {
+            x: Math.round((notation as any)["x"]),
+            y: Math.round((notation as any)["y"]),
+          }
+        : null;
 
     return cooerdinates;
   }
@@ -555,33 +555,33 @@ export default function notationMutateHelper() {
   ) {
     return moveDirection === "LEFT"
       ? notationStore
-        .getSelectedNotations()
-        .sort(
-          (n1: any, n2: any) =>
-            (n1.col ?? n1.fromCol) - (n2.col ?? n2.fromCol),
-        )
+          .getSelectedNotations()
+          .sort(
+            (n1: any, n2: any) =>
+              (n1.col ?? n1.fromCol) - (n2.col ?? n2.fromCol),
+          )
       : moveDirection === "RIGHT"
-        ? notationStore
+      ? notationStore
           .getSelectedNotations()
           .sort(
             (n1: any, n2: any) =>
               (n2.col ?? n2.fromCol) - (n1.col ?? n1.fromCol),
           )
-        : moveDirection === "TOP"
-          ? notationStore
-            .getSelectedNotations()
-            .sort(
-              (n1: any, n2: any) =>
-                (n1.row ?? n1.fromRow) - (n2.row ?? n2.fromRow),
-            )
-          : moveDirection === "BOTTOM"
-            ? notationStore
-              .getSelectedNotations()
-              .sort(
-                (n1: any, n2: any) =>
-                  (n2.row ?? n2.fromRow) - (n1.row ?? n1.fromRow),
-              )
-            : notationStore.getSelectedNotations();
+      : moveDirection === "TOP"
+      ? notationStore
+          .getSelectedNotations()
+          .sort(
+            (n1: any, n2: any) =>
+              (n1.row ?? n1.fromRow) - (n2.row ?? n2.fromRow),
+          )
+      : moveDirection === "BOTTOM"
+      ? notationStore
+          .getSelectedNotations()
+          .sort(
+            (n1: any, n2: any) =>
+              (n2.row ?? n2.fromRow) - (n1.row ?? n1.fromRow),
+          )
+      : notationStore.getSelectedNotations();
   }
 
   async function updateSqrtNotation(
@@ -781,7 +781,7 @@ export default function notationMutateHelper() {
                   row: row,
                 })
                 ?.find((n: NotationAttributes) => n.boardType == "QUESTION") !=
-              null
+                null
             )
               return true;
           }
@@ -857,7 +857,6 @@ export default function notationMutateHelper() {
         }
       });
   }
-
 
   function aproveDeleteSelectedNotations() {
     if (!authorizationHelper.canEdit()) return;
@@ -1094,7 +1093,31 @@ export default function notationMutateHelper() {
     return cellStore.getCellVerticalHeight();
   }
 
+  async function handlePushKey() {
+    if (!authorizationHelper.canEdit()) return;
+
+    // Check if function is already running
+    if (spaceKeyLock) {
+      return;
+    }
+
+    if (editModeStore.getEditMode() === "AREA_SELECTED") {
+      return;
+    }
+
+    try {
+      spaceKeyLock = true;
+
+      pushNotationsFromSelectedCell();
+    } finally {
+      // Always release the lock
+      spaceKeyLock = false;
+    }
+  }
+
   async function handleDeleteKey() {
+    if (!authorizationHelper.canEdit()) return;
+
     // Check if function is already running
     if (deleteKeyLock) {
       return;
@@ -1150,8 +1173,88 @@ export default function notationMutateHelper() {
     }
   }
 
-  async function addImageNotation(base64: string) {
+  function pushNotationsFromSelectedCell() {
+    const cell = cellStore.getSelectedCell();
+    if (!cell) return;
 
+    if (cell.col === matrixDimensions.colsNum - 1) return;
+
+    // Find the rightmost cell that contains a notation
+    let rightCol = matrixDimensions.colsNum - 1;
+
+    // Scan from selected cell to end of row
+    for (let col = cell.col + 1; col < matrixDimensions.colsNum; col++) {
+      const notations = notationStore.getNotationsAtCell({
+        row: cell.row,
+        col: col,
+      });
+
+      if (notations.length === 1) {
+        const notation = notations[0];
+        if (
+          notation.notationType !== "SIGN" &&
+          notation.notationType !== "EXPONENT" &&
+          notation.notationType !== "LOGBASE" &&
+          notation.notationType !== "SYMBOL"
+        ) {
+          // Found first non-point notation
+          rightCol = col;
+          break;
+        }
+      }
+    }
+
+    // Find the last column with point notation that has a space to its right and is to the left of rightCol
+    let lastColWithSpace = cell.col;
+
+    for (let col = cell.col + 1; col < rightCol; col++) {
+      const notations = notationStore.getNotationsAtCell({
+        row: cell.row,
+        col: col,
+      });
+
+      const nextColNotations = notationStore.getNotationsAtCell({
+        row: cell.row,
+        col: col + 1,
+      });
+
+      if (notations.length === 1 && nextColNotations.length === 0) {
+        const notation = notations[0];
+        if (
+          notation.notationType === "SIGN" ||
+          notation.notationType === "EXPONENT" ||
+          notation.notationType === "LOGBASE" ||
+          notation.notationType === "SYMBOL"
+        ) {
+          lastColWithSpace = col;
+        }
+      }
+    }
+
+    if (lastColWithSpace === cell.col) {
+      // No space found to push into
+      return;
+    }
+
+    // Move notations from right to left
+    for (
+      let currentCol = lastColWithSpace;
+      currentCol > cell.col;
+      currentCol--
+    ) {
+      const notations = notationStore.getNotationsAtCell({
+        row: cell.row,
+        col: currentCol,
+      });
+      if (notations.length === 1) {
+        const notation = notations[0];
+        (notation as PointNotationAttributes).col++;
+        updateNotation(notation);
+      }
+    }
+  }
+
+  async function addImageNotation(base64: string) {
     const { width, height } = await imageHelper.getDimensionsFromBase64(base64);
 
     if (!authorizationHelper.canEdit()) return;
@@ -1190,6 +1293,7 @@ export default function notationMutateHelper() {
     moveSelectedNotationsAtPixelScale,
     moveSelectedNotationsAtCellScale,
     handleDeleteKey,
+    handlePushKey,
     isNotationInQuestionArea,
     isCellInQuestionArea,
     updateSqrtNotation,

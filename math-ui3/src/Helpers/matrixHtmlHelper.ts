@@ -313,7 +313,9 @@ export default function useHtmlMatrixHelper() {
   }
 
   function imageNotationHeight(n: RectAttributes): number {
-    return  (Math.abs(n.toRow - n.fromRow) + 1) * cellStore.getCellVerticalHeight();
+    return (
+      (Math.abs(n.toRow - n.fromRow) + 1) * cellStore.getCellVerticalHeight()
+    );
   }
 
   function fontSize(n: PointNotationAttributes, el: HTMLElement) {
@@ -420,7 +422,7 @@ export default function useHtmlMatrixHelper() {
     const top = n1.followsFraction ? "75%" : "50%";
 
     const leftMargin =
-      n1.value === "."
+      n1.value === "." || n1.value === "``("
         ? "-2px"
         : n1.value === "M" || n1.value === "m"
         ? "0%"
@@ -432,7 +434,8 @@ export default function useHtmlMatrixHelper() {
     const fSize =
       n1.value === "."
         ? "1.5em"
-        : n1.value.indexOf("&") >= 0 || n1.value.length === 1
+        : n1.value.indexOf("&") >= 0 ||
+          n1.value.replaceAll("`", "").length === 1
         ? "1.1em"
         : n1.value.indexOf("cos") >= 0 ||
           n1.value.indexOf("sin") >= 0 ||

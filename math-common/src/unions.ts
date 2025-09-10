@@ -13,6 +13,7 @@ export type BusEventType =
   | "EV_COPY"
   | "EV_PASTE"
   | "EV_KEYUP"
+  | "EV_KEYDOWN"
   | "EV_MOUSEUP"
   | "EV_SVG_MOUSEUP"
   | "EV_SVG_MOUSEDOWN"
