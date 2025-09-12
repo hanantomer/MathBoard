@@ -15,6 +15,7 @@
     ></v-progress-linear>
     <statusBar></statusBar>
     <div style="display: flex">
+      <!-- <floatingToolbar></floatingToolbar> -->
       <leftToolbar></leftToolbar>
       <sqrtDrawer></sqrtDrawer>
       <lineDrawer></lineDrawer>
@@ -60,6 +61,7 @@ import { CursorType, EditModeCursorType } from "common/unions";
 import useSelectionHelper from "../helpers/selectionHelper";
 import useKeyHelper from "../helpers/keyHelper";
 import GlobalAlert from "./GlobalAlert.vue";
+import floatingToolbar from "./FloatingToolbar.vue";
 const notationLoadingHelper = useNotationLoadingHelper();
 const notationStore = useNotationStore();
 const cellStore = useCellStore();
@@ -130,7 +132,6 @@ watchHelper.watchKeyEvent(
   "EV_KEYDOWN",
   keyHelper.keyDownHandler,
 );
-
 
 watchHelper.watchEveryEditModeChange(
   (newEditMode) => (cursor.value = EditModeCursorType.get(newEditMode)!),
@@ -275,6 +276,4 @@ path:hover {
   font-weight: bold;
   font-size: 1.7em;
 }
-
-
 </style>

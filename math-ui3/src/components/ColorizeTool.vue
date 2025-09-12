@@ -98,15 +98,12 @@ watchHelper.watchMouseEvent(
 watchHelper.watchMouseEvent(
   ["COLORIZING"],
   "EV_SVG_MOUSE_OR_TOUCH_DRAG",
-  colorizeNotationByMouseDrag,
+  colorizeNotationAtMousePosition,
 );
 
 // reset coorizing tool when colorizing by click or by drag ends
 watchHelper.watchMouseEvent(["COLORIZING"], "EV_SVG_MOUSEUP", resetColorizing);
 
-function colorizeNotationByMouseDrag(e: MouseEvent) {
-    colorizeNotationAtMousePosition(e);
-}
 
 function colorizeNotationAtMousePosition(e: MouseEvent) {
   const uuid = (e.target as any).id;

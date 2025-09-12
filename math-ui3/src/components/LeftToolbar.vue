@@ -193,8 +193,7 @@
         </v-btn>
       </template>
     </v-tooltip>
-
-    <ColororizeTool></ColororizeTool>
+    <ColorSelector></ColorSelector>
   </v-toolbar>
 </template>
 
@@ -208,7 +207,7 @@ import { computed } from "vue";
 import { useUserStore } from "../store/pinia/userStore";
 import { EditMode } from "common/unions";
 import { useToolbarNavigation } from "../helpers/ToolbarNavigationHelper";
-import ColororizeTool from "./ColorizeTool.vue";
+import ColorSelector from "./ColorSelector.vue";
 import useAuthorizationHelper from "../helpers/authorizationHelper";
 import useWatchHelper from "../helpers/watchHelper";
 import useNotationMutateHelper from "../helpers/notationMutateHelper";
@@ -470,4 +469,6 @@ function startEditMode(item: any) {
 .vertical-toolbar-column {
   flex-basis: content;
 }
+
+
 </style>
