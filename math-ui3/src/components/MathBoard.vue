@@ -98,6 +98,12 @@ watchHelper.watchMouseEvent(
 );
 
 watchHelper.watchMouseEvent(
+  ["TEXT_SELECTED"],
+  "EV_SVG_MOUSEUP",
+  selectionHelper.selectClickedPosition,
+);
+
+watchHelper.watchMouseEvent(
   ["XMARK_STARTED", "CHECKMARK_STARTED", "SEMICHECKMARK_STARTED"],
   "EV_SVG_MOUSEUP",
   notationMutateHelper.addMarkNotation,

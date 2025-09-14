@@ -56,7 +56,7 @@ watchHelper.watchCustomEvent(
 
 watchHelper.watchMouseEvent(
   ["TEXT_WRITING"],
-  "EV_TEXT_SELECTED",
+  "EV_TEXT_EDITING",
   editSelectedTextNotation,
 );
 
@@ -67,6 +67,11 @@ watchHelper.watchCustomEvent(
 );
 
 function editSelectedTextNotation(e: MouseEvent) {
+
+  if(selectedNotation.value?.notationType !== "TEXT") {
+    return;
+  }
+
   editModeStore.setEditMode("TEXT_WRITING");
 
   setInitialTextValue();

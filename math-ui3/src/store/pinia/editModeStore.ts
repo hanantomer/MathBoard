@@ -231,6 +231,9 @@ export const useEditModeStore = defineStore("editMode", () => {
       case "TEXT_AREA_SELECTING":
         return setEditMode("TEXT_WRITING");
 
+      case "TEXT_SELECTED":
+        return setEditMode("AREA_MOVING");
+
       case "ANNOTATION_STARTED":
         return setEditMode("ANNOTATION_WRITING");
 
@@ -239,9 +242,6 @@ export const useEditModeStore = defineStore("editMode", () => {
 
       case "POLYGON_STARTED":
         return setEditMode("POLYGON_DRAWING");
-
-      //      case "POLYGON_DRAWING":
-      //        return setEditMode("POLYGON_LINE_ENDED");
 
       case "LINE_STARTED":
         return setEditMode("LINE_DRAWING");

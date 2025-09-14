@@ -143,6 +143,12 @@ watchHelper.watchMouseEvent(
   selectRectNotation,
 );
 
+watchHelper.watchNotationSelection(
+  ["IMAGE_SELECTED"],
+  "EV_IMAGE_SELECTED",
+  selectRectNotation,
+);
+
 watchHelper.watchMouseEvent(
   ["AREA_SELECTING", "TEXT_AREA_SELECTING", "RESIZING"],
   "EV_SVG_MOUSEUP",
@@ -175,12 +181,6 @@ watchHelper.watchMouseEvent(
   ["TEXT_STARTED"],
   "EV_SVG_MOUSEUP",
   cancelTextSelectionWhenUserClickedOutside /*takes action when clicked outside of selection area*/,
-);
-
-watchHelper.watchNotationSelection(
-  ["TEXT_SELECTED"],
-  "EV_TEXT_SELECTED",
-  selectRectNotation,
 );
 
 watchHelper.watchNotationSelection(

@@ -109,12 +109,14 @@ export default function selectionHelper() {
       // toggle between TEXT_SELECTED and TEXT_WRITING
       if (editModeStore.getEditMode() == "TEXT_SELECTED") {
         editModeStore.setEditMode("TEXT_WRITING");
+        eventBus.emit("EV_TEXT_EDITING", activeNotation);
       }
       else {
         editModeStore.setEditMode("TEXT_SELECTED");
+        eventBus.emit("EV_TEXT_SELECTED", activeNotation);
       }
 
-      eventBus.emit("EV_TEXT_SELECTED", activeNotation);
+
     }
 
     if (activeNotation.notationType === "IMAGE") {
