@@ -140,12 +140,34 @@ const specialSymbols = ref([
     isSeparator: true,
   },
 
+  //  Trigonometric functions
+  { name: "sin", value: "sin", tooltip: "Sine", tabIndex: 17 },
+  { name: "cos", value: "cos", tooltip: "Cosine", tabIndex: 18 },
+  { name: "tan", value: "tan", tooltip: "Tangent", tabIndex: 19 },
+  { name: "cot", value: "cot", tooltip: "Cotangent", tabIndex: 20 },
+  {
+    name: "separator",
+    value: "",
+    tooltip: "",
+    tabIndex: -1,
+    isSeparator: true,
+  },
 
   // Geometric symbols
   { name: "angle", value: "&ang;", tooltip: "Angle", tabIndex: 21 },
   { name: "triangle", value: "&#x25B2", tooltip: "Triangle", tabIndex: 22 },
-  { name: "perimeter", value: "<math><mi>P</mi></math>", tooltip: "Perimeter", tabIndex: 22 },
-  { name: "area", value: "<math><mi>A</mi></math>", tooltip: "Area", tabIndex: 22 },
+  {
+    name: "perimeter",
+    value: "<math><mi>P</mi></math>",
+    tooltip: "Perimeter",
+    tabIndex: 22,
+  },
+  {
+    name: "area",
+    value: "<math><mi>A</mi></math>",
+    tooltip: "Area",
+    tabIndex: 22,
+  },
   {
     name: "perpendicular",
     value: "&#10178",
@@ -181,7 +203,6 @@ watchHelper.watchKeyEvent(["CELL_SELECTED"], "EV_KEYUP", (e: KeyboardEvent) =>
   toolbarNavigation.handleShortcuts(e, specialSymbols),
 );
 
-
 function addSpecialSymbol(item: string) {
   selectedSymbol.value = item;
   setTimeout(() => {
@@ -191,9 +212,13 @@ function addSpecialSymbol(item: string) {
     ) {
       eventBus.emit("EV_SPECIAL_SYMBOL_SELECTED", selectedSymbol.value);
     } else {
-      if (item.length > 1) {
-        const chars = item.match(/[a-zA-Z0-9]+|[^a-zA-Z0-9]+/g) || [];
-        chars.forEach(char => notationMutateHelper.addSymbolNotation(char));
+      if (
+        !item.startsWith("<math>") &&
+        !item.startsWith("&") &&
+        item.length > 1
+      ) {
+        const chars = item.split("") || [];
+        chars.forEach((char) => notationMutateHelper.addSymbolNotation(char));
       } else {
         notationMutateHelper.addSymbolNotation(item);
       }
@@ -208,14 +233,15 @@ function addSpecialSymbol(item: string) {
   flex-flow: column wrap !important;
   width: 70px !important;
   height: max-content !important;
-  padding: 4px !important;
+  padding: 2px !important;
 }
 .v-btn {
   font-size: smaller !important;
+  margin: 0 !important;
+  max-height: 25px !important;
 }
 
 .vertical-toolbar .v-toolbar__content {
   flex-flow: column wrap !important;
-
 }
 </style>

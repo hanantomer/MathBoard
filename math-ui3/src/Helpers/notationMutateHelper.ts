@@ -1156,20 +1156,19 @@ export default function notationMutateHelper() {
         row: cell.row,
         col: col,
       });
-      if (notations.length === 1) {
-        const notation = notations[0];
 
+      notations.forEach((notation) => {
         if (
           notation.notationType !== "SIGN" &&
           notation.notationType !== "EXPONENT" &&
+          notation.notationType !== "LOGBASE" &&
           notation.notationType !== "SYMBOL"
         ) {
-          break;
+          return;
         }
-
         (notation as PointNotationAttributes).col--;
         updateNotation(notation);
-      }
+      });
     }
   }
 
@@ -1189,7 +1188,7 @@ export default function notationMutateHelper() {
         col: col,
       });
 
-      if (notations.length === 1) {
+      if (notations.length > 0) {
         const notation = notations[0];
         if (
           notation.notationType !== "SIGN" &&
@@ -1218,7 +1217,7 @@ export default function notationMutateHelper() {
         col: col + 1,
       });
 
-      if (notations.length === 1 && nextColNotations.length === 0) {
+      if (notations.length > 0 && nextColNotations.length === 0) {
         const notation = notations[0];
         if (
           notation.notationType === "SIGN" ||
@@ -1246,11 +1245,10 @@ export default function notationMutateHelper() {
         row: cell.row,
         col: currentCol,
       });
-      if (notations.length === 1) {
-        const notation = notations[0];
+      notations.forEach((notation) => {
         (notation as PointNotationAttributes).col++;
         updateNotation(notation);
-      }
+      });
     }
   }
 
