@@ -298,6 +298,17 @@ const modeButtons: Array<{
     tabIndex: 4,
   },
   {
+    name: "DivisionLine",
+    show_condition: true,
+    editMode: "DIVISION_LINE_STARTED" as EditMode,
+    tooltip: "Division Line",
+    icon_class: "material-symbols-outlined",
+    icon: "horizontal_rule",
+    overlay_icon: "",
+    rotate: 180,
+    tabIndex: 5,
+  },
+  {
     name: "curve",
     show_condition: true,
     editMode: "CURVE_STARTED" as EditMode,
@@ -306,7 +317,7 @@ const modeButtons: Array<{
     icon: "line_curve",
     overlay_icon: "",
     rotate: 260,
-    tabIndex: 5,
+    tabIndex: 6,
   },
   {
     name: "circle",
@@ -317,7 +328,7 @@ const modeButtons: Array<{
     icon: "circle",
     overlay_icon: "",
     rotate: 0,
-    tabIndex: 6,
+    tabIndex: 7,
   },
   {
     name: "sqrt",
@@ -328,7 +339,7 @@ const modeButtons: Array<{
     icon: "mdi-square-root",
     overlay_icon: "",
     rotate: 0,
-    tabIndex: 7,
+    tabIndex: 8,
   },
   {
     name: "exponent",
@@ -339,7 +350,7 @@ const modeButtons: Array<{
     icon: "mdi-exponent",
     overlay_icon: "",
     rotate: 0,
-    tabIndex: 8,
+    tabIndex: 9,
     shortcut: "Alt+x",
   },
   {
@@ -351,7 +362,7 @@ const modeButtons: Array<{
     icon: "mdi-math-log",
     overlay_icon: "",
     rotate: 0,
-    tabIndex: 8,
+    tabIndex: 10,
     shortcut: "Alt+l",
   },
 ).map((symbol) => ({

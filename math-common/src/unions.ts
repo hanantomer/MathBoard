@@ -29,6 +29,7 @@ export type BusEventType =
   | "EV_SPECIAL_SYMBOL_SELECTED"
   | "EV_SQRT_SELECTED"
   | "EV_LINE_CHANGED"
+  | "EV_DIVISION_LINE_SELECTED"
   | "EV_LINE_SELECTED";
 
 export const NotationTypeValues = [
@@ -86,12 +87,16 @@ export type EditMode =
   | "CELL_SELECTED" // user clicked on a cell or navigated via keys
   | "POLYGON_STARTED" // polygon button pressed
   | "POLYGON_DRAWING" // polygon drawing started
-  //| "POLYGON_LINE_ENDED" // polygon single line ended
   | "LINE_STARTED" //  line button pressed
   | "LINE_DRAWING" // line drawing started
   | "LINE_SELECTED" // line selected
   | "LINE_EDITING_LEFT" // slope line handle clicked followin slope line selection
   | "LINE_EDITING_RIGHT" // slope line handle clicked followin slope line selection
+  | "DIVISION_LINE_STARTED" // division line button pressed
+  | "DIVISION_LINE_DRAWING" // division line drawing started
+  | "DIVISION_LINE_SELECTED" // division line selected
+  | "DIVISION_LINE_EDITING_LEFT" // division line left handle clicked following division line selection
+  | "DIVISION_LINE_EDITING_RIGHT" // division line right handle clicked following division line selection
   | "CURVE_STARTED" // curve button pressed
   | "CURVE_DRAWING" // curve drawing started
   | "CURVE_SELECTED" // curve selected
@@ -133,6 +138,11 @@ export const EditModeNotationType = new Map<
   ["LINE_SELECTED", "LINE"],
   ["LINE_EDITING_LEFT", "LINE"],
   ["LINE_EDITING_RIGHT", "LINE"],
+  ["DIVISION_LINE_STARTED", "LINE"],
+  ["DIVISION_LINE_DRAWING", "LINE"],
+  ["DIVISION_LINE_SELECTED", "LINE"],
+  ["DIVISION_LINE_EDITING_LEFT", "LINE"],
+  ["DIVISION_LINE_EDITING_RIGHT", "LINE"],
   ["CURVE_STARTED", "CURVE"],
   ["CURVE_DRAWING", "CURVE"],
   ["CURVE_SELECTED", "CURVE"],
@@ -185,6 +195,13 @@ export const EditModeCursorType = new Map<
   ["LINE_SELECTED", "auto"],
   ["LINE_EDITING_LEFT", "auto"],
   ["LINE_EDITING_RIGHT", "auto"],
+  ["DIVISION_LINE_STARTED", "auto"],
+  ["DIVISION_LINE_DRAWING", "auto"],
+  ["DIVISION_LINE_SELECTED", "auto"],
+  ["DIVISION_LINE_EDITING_LEFT", "auto"],
+  ["DIVISION_LINE_EDITING_RIGHT", "auto"],
+  ["CURVE_STARTED", "auto"],
+  ["CURVE_DRAWING", "auto"],
   ["SQRT_STARTED", "auto"],
   ["SQRT_DRAWING", "auto"],
   ["SQRT_SELECTED", "auto"],

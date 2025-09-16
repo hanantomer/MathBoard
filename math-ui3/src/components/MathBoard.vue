@@ -19,6 +19,7 @@
       <leftToolbar></leftToolbar>
       <sqrtDrawer></sqrtDrawer>
       <lineDrawer></lineDrawer>
+      <divisionLineDrawer></divisionLineDrawer>
       <polygonDrawer></polygonDrawer>
       <curveDrawer></curveDrawer>
       <circleDrawer></circleDrawer>
@@ -48,6 +49,7 @@ import specialSymbolsToolbar from "./SpecialSymbolsToolbar.vue";
 import areaSelector from "./AreaSelector.vue";
 import sqrtDrawer from "./SqrtDrawer.vue";
 import lineDrawer from "./LineDrawer.vue";
+import divisionLineDrawer from "./DivisionLineDrawer.vue";
 import polygonDrawer from "./PolygonDrawer.vue";
 import curveDrawer from "./CurveDrawer.vue";
 import circleDrawer from "./CircleDrawer.vue";

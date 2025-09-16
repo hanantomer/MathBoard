@@ -105,18 +105,14 @@ export default function selectionHelper() {
       return;
 
     if (activeNotation.notationType === "TEXT") {
-
       // toggle between TEXT_SELECTED and TEXT_WRITING
       if (editModeStore.getEditMode() == "TEXT_SELECTED") {
         editModeStore.setEditMode("TEXT_WRITING");
         eventBus.emit("EV_TEXT_EDITING", activeNotation);
-      }
-      else {
+      } else {
         editModeStore.setEditMode("TEXT_SELECTED");
         eventBus.emit("EV_TEXT_SELECTED", activeNotation);
       }
-
-
     }
 
     if (activeNotation.notationType === "IMAGE") {
@@ -157,6 +153,12 @@ export default function selectionHelper() {
     const notation = notationStore.getNotation(uuid)!;
     editModeStore.setEditMode("LINE_SELECTED");
     eventBus.emit("EV_LINE_SELECTED", notation);
+  }
+
+  function selectDivisionLineNotation(uuid: String) {
+    const notation = notationStore.getNotation(uuid)!;
+    editModeStore.setEditMode("DIVISION_LINE_SELECTED");
+    eventBus.emit("EV_DIVISION_LINE_SELECTED", notation);
   }
 
   async function setSelectedCell(cell: CellAttributes, setEditMode: boolean) {
@@ -230,5 +232,6 @@ export default function selectionHelper() {
     selectCurveNotation,
     selectCircleNotation,
     selectLineNotation,
+    selectDivisionLineNotation,
   };
 }

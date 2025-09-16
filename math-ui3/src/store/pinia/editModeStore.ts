@@ -39,6 +39,11 @@ export const useEditModeStore = defineStore("editMode", () => {
       editMode.value === "CIRCLE_SELECTED" ||
       editMode.value === "AREA_SELECTED" ||
       editMode.value === "LINE_SELECTED" ||
+      editMode.value === "DIVISION_LINE_SELECTED" ||
+      editMode.value === "CURVE_SELECTED" ||
+      editMode.value === "TEXT_SELECTED" ||
+      editMode.value === "IMAGE_SELECTED" ||
+      editMode.value === "ANNOTATION_SELECTED" ||
       editMode.value === "SQRT_SELECTED"
     );
   }
@@ -60,13 +65,18 @@ export const useEditModeStore = defineStore("editMode", () => {
     );
   }
 
+  function isDivisionLineMode() {
+    return (
+      editMode.value === "DIVISION_LINE_DRAWING" ||
+      editMode.value === "DIVISION_LINE_SELECTED" ||
+      editMode.value === "DIVISION_LINE_EDITING_LEFT" ||
+      editMode.value === "DIVISION_LINE_EDITING_RIGHT"
+    );
+  }
+
   function isPolygonDrawingMode() {
     return editMode.value === "POLYGON_DRAWING";
   }
-
-  //function isPolygonLineEndedMode() {
-  //  return editMode.value === "POLYGON_LINE_ENDED";
-  //}
 
   function isSqrtMode() {
     return (
@@ -96,6 +106,10 @@ export const useEditModeStore = defineStore("editMode", () => {
     return editMode.value === "LINE_STARTED";
   }
 
+  function isDivisionLineStartedMode() {
+    return editMode.value === "DIVISION_LINE_STARTED";
+  }
+
   function isCurveStartedMode() {
     return editMode.value === "CURVE_STARTED";
   }
@@ -108,10 +122,21 @@ export const useEditModeStore = defineStore("editMode", () => {
     return editMode.value === "LINE_DRAWING";
   }
 
+  function isDivisionLineDrawingMode() {
+    return this.editMode === "DIVISION_LINE_DRAWING";
+  }
+
   function isLineEditingMode() {
     return (
       editMode.value === "LINE_EDITING_LEFT" ||
       editMode.value === "LINE_EDITING_RIGHT"
+    );
+  }
+
+  function isDivisionLineEditingMode(): boolean {
+    return (
+      this.editMode === "DIVISION_LINE_EDITING_LEFT" ||
+      this.editMode === "DIVISION_LINE_EDITING_RIGHT"
     );
   }
 
@@ -134,6 +159,10 @@ export const useEditModeStore = defineStore("editMode", () => {
     return editMode.value === "LINE_SELECTED";
   }
 
+  function isDivisionLineSelectedMode() {
+    return editMode.value === "DIVISION_LINE_SELECTED";
+  }
+
   function isCurveSelectedMode() {
     return editMode.value === "CURVE_SELECTED";
   }
@@ -153,7 +182,6 @@ export const useEditModeStore = defineStore("editMode", () => {
   function isImageSelectedMode() {
     return editMode.value === "IMAGE_SELECTED";
   }
-
 
   function isTextSelectionMode() {
     return editMode.value === "TEXT_AREA_SELECTING";
@@ -255,8 +283,21 @@ export const useEditModeStore = defineStore("editMode", () => {
       case "LINE_EDITING_RIGHT":
         return setEditMode("LINE_SELECTED");
 
+      case "DIVISION_LINE_STARTED":
+        return setEditMode("DIVISION_LINE_DRAWING");
+
+      case "DIVISION_LINE_DRAWING":
+        return setEditMode("DIVISION_LINE_SELECTED");
+
+      case "DIVISION_LINE_EDITING_LEFT":
+        return setEditMode("DIVISION_LINE_SELECTED");
+
+      case "DIVISION_LINE_EDITING_RIGHT":
+        return setEditMode("DIVISION_LINE_SELECTED");
+
       case "CURVE_STARTED":
         return setEditMode("CURVE_DRAWING");
+
       case "CURVE_DRAWING":
         return setEditMode("CURVE_SELECTED");
 
@@ -316,14 +357,19 @@ export const useEditModeStore = defineStore("editMode", () => {
     isExponentWritingMode,
     isSelectionMode,
     isLineMode,
+    isDivisionLineMode,
     isSqrtStartedMode,
     isSqrtDrawingMode,
     isLineSelectedMode,
+    isDivisionLineSelectedMode,
     isCurveSelectedMode,
     isLineStartedMode,
+    isDivisionLineStartedMode,
     isCurveStartedMode,
     isLineDrawingMode,
+    isDivisionLineDrawingMode,
     isLineEditingMode,
+    isDivisionLineEditingMode,
     isCurveDrawingMode,
     isCircleDrawingMode,
     isCircleSelectedMode,
