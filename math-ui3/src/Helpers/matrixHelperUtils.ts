@@ -133,18 +133,7 @@ export default function useMatrixHelperUtils() {
       return false;
     }
 
-    // function getSqrtSymbol(notation: NotationAttributes): NotationAttributes {
-    //   let sqrtNotation = notation as SqrtNotationAttributes;
-    //   let sqrtSignNotation = {
-    //     ...sqrtNotation,
-    //     col: sqrtNotation.fromCol,
-    //     toCol: sqrtNotation.fromCol,
-    //   };
-    //   sqrtSignNotation.uuid = sqrtNotation.uuid + "_";
-    //   sqrtSignNotation.notationType = "SQRTSYMBOL";
-    //   return sqrtSignNotation;
-    // }
-
+    
 
   return {
     getColor,
