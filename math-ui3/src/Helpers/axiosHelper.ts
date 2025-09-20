@@ -1,12 +1,10 @@
 import axios from "axios";
 import { useCookies } from "vue3-cookies";
 import { baseURL, imagesURL } from "../../../math-common/src/globals";
+
 const { cookies } = useCookies();
 
-
 export default function axiosHelper() {
-  ///TODO: take from enviroment
-
 
   function handleError(error: any) {
     if (error.response) {
@@ -15,9 +13,6 @@ export default function axiosHelper() {
       console.error(error.response.data);
       console.error(error.response.status);
       console.error(error.response.headers);
-      //error.response.data?.errors.forEach((error: any) => {
-      //    console.log(error);
-      //});
     } else if (error.request) {
       // The request was made but no response was received
       // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
@@ -32,12 +27,22 @@ export default function axiosHelper() {
   }
 
   function initAxiosInterceptors() {
-    axios.interceptors.response.use(
-      (response) => response,
-      (error) => {
-        handleError(error);
-      },
-    );
+    // axios.interceptors.response.use(
+    //   (response) => response,
+    //   (error) => {
+    //     if (error.response?.status === 401) {
+    //       // Clear user data
+    //       //userStore..clearUser();
+    //       cookies.remove("access_token");
+
+    //       // Redirect to login
+    //       //router.push("/login");
+
+    //       return Promise.reject(error);
+    //     }
+    //     return handleError(error);
+    //   },
+    // );
 
     axios.interceptors.request.use(function (config: any) {
       // const isOAuth =
@@ -70,5 +75,5 @@ export default function axiosHelper() {
       return config;
     });
   }
-  return { baseURL, imagesURL,  initAxiosInterceptors, handleError };
+  return { baseURL, imagesURL, initAxiosInterceptors, handleError };
 }

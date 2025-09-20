@@ -101,31 +101,6 @@ export default function useMatrixHelper() {
     return enrichedNotations;
   }
 
-  function symbolFollowsFraction(notation: PointNotationAttributes): boolean {
-    const maxLineDistance = 1;
-
-    if (notationStore.isSymbolPartOfFraction(notation)) {
-      return false;
-    }
-
-    if (notationStore.isSymbolAdjecentToLine(notation, maxLineDistance)) {
-      return true;
-    }
-
-    return false;
-  }
-
-  function getSqrtSymbol(notation: NotationAttributes): NotationAttributes {
-    let sqrtNotation = notation as SqrtNotationAttributes;
-    let sqrtSignNotation = {
-      ...sqrtNotation,
-      col: sqrtNotation.fromCol,
-      toCol: sqrtNotation.fromCol,
-    };
-    sqrtSignNotation.uuid = sqrtNotation.uuid + "_";
-    sqrtSignNotation.notationType = "SQRTSYMBOL";
-    return sqrtSignNotation;
-  }
 
   function refreshScreen(svgId: string) {
     matrixCellHelper.resetAllCellColors();

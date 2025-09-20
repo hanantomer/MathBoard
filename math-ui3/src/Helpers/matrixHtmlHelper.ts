@@ -77,9 +77,6 @@ export default function useHtmlMatrixHelper() {
           return updateHtmlNotations(update);
         },
         (exit) => {
-          if (!exit.empty()) {
-            //matrixCellHelper.unColorizeNotationCells(exit.datum() as any);
-          }
           return utils.removeNotations(exit);
         },
       );
@@ -111,6 +108,7 @@ export default function useHtmlMatrixHelper() {
   function addHtmlNotations(enter: any, el: HTMLElement) {
     return enter
       .append("foreignObject")
+      .style("position", "relative")
       .attr("notationType", (n: NotationAttributes) => {
         return n.notationType;
       })
@@ -445,7 +443,7 @@ export default function useHtmlMatrixHelper() {
         ? "0.6em"
         : "0.75em";
 
-    const topMargin =
+    let topMargin =
       n1.value === "."
         ? "-5px"
         : n1.value.indexOf("cos") >= 0 ||
@@ -455,6 +453,13 @@ export default function useHtmlMatrixHelper() {
           n1.value.indexOf("log") >= 0
         ? "4px"
         : "0px";
+
+    if (
+      (n1.value === "(" || n1.value === ")") &&
+      utils.symbolAdjecentToFraction(n1)
+    ) {
+      topMargin = "8px";
+    }
 
     ///TODO: move static css props to a class
     return `<p id=${n1.uuid} style='z-index:100;color:${color};font-weight:${fontWeight}; position: absolute;top:${top};transform:

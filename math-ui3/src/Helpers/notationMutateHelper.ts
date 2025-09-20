@@ -146,21 +146,16 @@ export default function notationMutateHelper() {
       );
   }
 
-  function findOverlapCellNotation(
+  function findOverlapCellNotations(
     notation: PointNotationCreationAttributes,
-  ): PointNotationAttributes | undefined {
+  ): PointNotationAttributes[] | undefined {
     return notationStore
       .getPointNotations()
-      .find((n2: PointNotationAttributes) => {
-        return (
-          n2.value !== "." &&
-          n2.value !== "(" &&
-          n2.value !== ")" &&
-          pointAtCellCoordinates(
-            notation as PointNotationAttributes,
-            n2,
-            getUserUUId(),
-          )
+      .filter((n2: PointNotationAttributes) => {
+        return pointAtCellCoordinates(
+          notation as PointNotationAttributes,
+          n2,
+          getUserUUId(),
         );
       });
   }
@@ -617,11 +612,29 @@ export default function notationMutateHelper() {
       return;
     }
 
-    let overlappedSameTypeNotation = findOverlapCellNotation(notation);
+    let overlappedPointNotations = findOverlapCellNotations(notation);
+
+    const overlapsWithDot =
+      overlappedPointNotations &&
+      overlappedPointNotations.find((n) => n.value === ".");
+
+    const nonDotOvelappedNotation =
+      overlappedPointNotations &&
+      overlappedPointNotations.filter((n) => n.value !== ".");
+
+    const noationIsDot = notation.value === ".";
+
+    if (overlapsWithDot && noationIsDot) {
+      return;
+    }
 
     // update
-    if (overlappedSameTypeNotation) {
-      return updateFromExistingNotation(overlappedSameTypeNotation, notation);
+    if (
+      !noationIsDot &&
+      nonDotOvelappedNotation &&
+      nonDotOvelappedNotation.length > 0
+    ) {
+      return updateFromExistingNotation(nonDotOvelappedNotation[0], notation);
     }
 
     let overlappedAnyTypeNotation: NotationAttributes | undefined =

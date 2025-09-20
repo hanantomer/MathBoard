@@ -92,15 +92,15 @@ router.beforeEach(async (to, from) => {
   const authenticationHelper = useAuthenticationHelper();
   const userStore = useUserStore();
 
+  if (!to.matched.some((record) => record.meta.requiresAuth)) {
+    // auth not required
+    return;
+  }
+
   const user = await authenticationHelper.authLocalUserByToken();
   if (user) {
     // has valid token
     userStore.setCurrentUser(user);
-    return;
-  }
-
-  if (!to.matched.some((record) => record.meta.requiresAuth)) {
-    // auth not required
     return;
   }
 

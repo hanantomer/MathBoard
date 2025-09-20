@@ -21,7 +21,7 @@ import {
 import { AnswerAttributes, AnswerCreationAttributes } from "common/answerTypes";
 import axios, { AxiosError } from "axios";
 import axiosHelper from "./axiosHelper";
-const { baseURL,imagesURL } = axiosHelper();
+const { baseURL, imagesURL } = axiosHelper();
 
 export default function useApiHelper() {
   async function log(message: string) {
@@ -50,7 +50,7 @@ export default function useApiHelper() {
       const res = await axios.get<UserAttributes>(baseURL + "/auth");
       return res?.data;
     } catch (error) {
-      throw new Error(
+      console.log(
         `Failed to authenticate user by token: ${
           (error as AxiosError).message
         }`,
@@ -174,7 +174,6 @@ export default function useApiHelper() {
       );
     }
   }
-
 
   function getImageUrl(imageFileName: string): string {
     return imagesURL + "/" + imageFileName;

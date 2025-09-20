@@ -89,18 +89,6 @@ export default function useMatrixCellHelper() {
     if (rectElm?.style) rectElm.style.fill = color;
   }
 
-  // function unColorizeNotationCells(n: any) {
-  //   if (n.col && n.row) {
-  //     colorizeCell({ col: n.col, row: n.row }, "");
-  //   }
-
-  //   if (n.fromCol && n.toCol && n.row) {
-  //     for (let i = n.fromCol; i <= n.toCol; i++) {
-  //       colorizeCell({ col: i, row: n.row }, "");
-  //     }
-  //   }
-  // }
-
   // called by store watcher. see mathboard.vue
   function showSelectedCell(
     svgId: string,

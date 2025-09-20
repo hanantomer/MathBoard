@@ -351,7 +351,6 @@ export const useNotationStore = defineStore("notation", () => {
     return true;
   }
 
-
   function checkLineIntersection(
     line: LineNotationAttributes,
     rect: RectCoordinates,
@@ -462,6 +461,15 @@ export const useNotationStore = defineStore("notation", () => {
           false,
         );
         break;
+      case "LINE":
+        notationCellOccupationHelper.updateLineOccupationMatrix(
+          cellLineNotationOccupationMatrix,
+          notation as LineNotationAttributes,
+          notation.uuid,
+          false,
+        );
+        break;
+
       case "CIRCLE":
         notationCellOccupationHelper.updateCircleOccupationMatrix(
           cellRectNotationOccupationMatrix,
