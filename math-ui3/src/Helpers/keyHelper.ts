@@ -16,12 +16,24 @@ const selectionHelper = useSelectionHelper();
 const KEY_STROKE_INTERVAL = 50; // ms
 let shiftReleaseTime = 0;
 let shiftReleased = false;
-const delayedShiftKeys = new Set<string>(["9", "0", "="]);
+const delayedShiftKeys = new Set<string>([
+  "1",
+  "5",
+  "6",
+  "8",
+  "9",
+  "0",
+  "=",
+  "+",
+  "<",
+  ">",
+  "?",
+]);
 
 export default function () {
   function keyDownHandler(e: KeyboardEvent) {
     const { key } = e;
-    if (delayedShiftKeys.has(key)  && shiftReleased) {
+    if (delayedShiftKeys.has(key) && shiftReleased) {
       shiftReleased = false;
     }
   }
@@ -49,7 +61,6 @@ export default function () {
     if (editModeStore.getEditMode() === "ANNOTATION_WRITING") return;
 
     switch (classifyKeyCode(code)) {
-
       case "PUSH": {
         return handlePushKey();
       }
@@ -88,12 +99,11 @@ export default function () {
     }
   }
 
-    function handlePushKey() {
-      notationMutateHelper.handlePushKey();
+  function handlePushKey() {
+    notationMutateHelper.handlePushKey();
 
-      matrixCellHelper.setNextCell(0, 0);
-    }
-
+    matrixCellHelper.setNextCell(0, 0);
+  }
 
   function handleDeletionKey() {
     notationMutateHelper.handleDeleteKey();
@@ -138,10 +148,7 @@ export default function () {
   }
 
   function classifyKeyCode(code: string): keyType | null {
-    if (
-      code === "Space"
-    )
-      return "PUSH";
+    if (code === "Space") return "PUSH";
 
     if (
       code === "ArrowLeft" ||
