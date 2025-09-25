@@ -23,7 +23,7 @@
           'DIVISION_LINE_EDITING_RIGHT',
           'DIVISION_LINE_EDITING_LEFT',
         ],
-        func: endDrawing,
+        func: saveLine,
       }"
       :selectEntry="{
         editMode: ['DIVISION_LINE_SELECTED'],
@@ -202,41 +202,26 @@ function modifyLineRight(p: DotCoordinates) {
   linePosition.value.p2y = p.y;
 }
 
-function editNotStarted(): boolean {
-  return Math.abs(linePosition.value.p1x - linePosition.value.p2x) < 5;
-}
+async function saveLine(): Promise<string> {
+  linePosition.value.p1x = getAdjustedEdge({
+    x: linePosition.value.p1x,
+    y: linePosition.value.p1y,
+  }).x;
 
-async function endDrawing(): Promise<string> {
-  if (editNotStarted()) {
-    editModeStore.setDefaultEditMode();
-    return "";
-  }
+  linePosition.value.p1y = getAdjustedEdge({
+    x: linePosition.value.p1x,
+    y: linePosition.value.p1y,
+  }).y;
 
-  return await saveLine();
-}
+  linePosition.value.p2x = getAdjustedEdge({
+    x: linePosition.value.p2x,
+    y: linePosition.value.p2y,
+  }).x;
 
-async function saveLine(fixEdge: boolean = true): Promise<string> {
-  if (fixEdge) {
-    linePosition.value.p1x = getAdjustedEdge({
-      x: linePosition.value.p1x,
-      y: linePosition.value.p1y,
-    }).x;
-
-    linePosition.value.p1y = getAdjustedEdge({
-      x: linePosition.value.p1x,
-      y: linePosition.value.p1y,
-    }).y;
-
-    linePosition.value.p2x = getAdjustedEdge({
-      x: linePosition.value.p2x,
-      y: linePosition.value.p2y,
-    }).x;
-
-    linePosition.value.p2y = getAdjustedEdge({
-      x: linePosition.value.p2x,
-      y: linePosition.value.p2y,
-    }).y;
-  }
+  linePosition.value.p2y = getAdjustedEdge({
+    x: linePosition.value.p2x,
+    y: linePosition.value.p2y,
+  }).y;
 
   if (notationStore.getSelectedNotations().length > 0) {
     let updatedLine = {
@@ -255,12 +240,14 @@ async function saveLine(fixEdge: boolean = true): Promise<string> {
 
 function getAdjustedEdge(point: DotCoordinates): DotCoordinates {
   // Snap to cell borders
-  const cellY =
-    Math.floor(point.y / cellStore.getCellVerticalHeight()) *
-    cellStore.getCellVerticalHeight();
-  const cellX =
+  const cellY = Math.round(
+    Math.round(point.y / cellStore.getCellVerticalHeight()) *
+      cellStore.getCellVerticalHeight(),
+  );
+  const cellX = Math.round(
     Math.round(point.x / cellStore.getCellHorizontalWidth()) *
-    cellStore.getCellHorizontalWidth();
+      cellStore.getCellHorizontalWidth(),
+  );
 
   return {
     x: cellX,
@@ -290,7 +277,7 @@ function moveLine(moveX: number, moveY: number) {
 
 function moveLineByKey(moveX: number, moveY: number) {
   applyMoveToLine(moveX, moveY);
-  saveLine(false);
+  saveLine();
 }
 </script>
 <style scoped>

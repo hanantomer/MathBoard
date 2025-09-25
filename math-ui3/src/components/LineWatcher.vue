@@ -106,11 +106,14 @@ watchHelper.watchEndOfEditMode(
 );
 
 watchHelper.watchEndOfEditMode(
-  ["CIRCLE_SELECTED"],
-  ["CIRCLE_EDITING"],
+  ["DIVISION_LINE_SELECTED"],
+  ["DIVISION_LINE_EDITING_LEFT", "DIVISION_LINE_EDITING_RIGHT"],
   () => shapeDrawingHelper.resetDrawing(null),
 );
 
+watchHelper.watchEndOfEditMode(["CIRCLE_SELECTED"], ["CIRCLE_EDITING"], () =>
+  shapeDrawingHelper.resetDrawing(null),
+);
 
 watchHelper.watchNotationSelection(
   props.selectEntry.editMode,
