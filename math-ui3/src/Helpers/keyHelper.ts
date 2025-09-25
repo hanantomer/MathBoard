@@ -16,18 +16,35 @@ const selectionHelper = useSelectionHelper();
 const KEY_STROKE_INTERVAL = 50; // ms
 let shiftReleaseTime = 0;
 let shiftReleased = false;
-const delayedShiftKeys = new Set<string>([
-  "1",
-  "5",
-  "6",
-  "8",
-  "9",
-  "0",
-  "=",
-  "+",
-  "<",
-  ">",
-  "?",
+let altReleaseTime = 0;
+let altReleased = false;
+const delayedAltKeys = new Set<string>(["x", "l"]);
+const delayedShiftKeys = new Map<string, string>([
+  ["1", "!"],
+  ["5", "%"],
+  ["2", "@"],
+  ["3", "#"],
+  ["4", "$"],
+  ["7", "&"],
+  ["6", "^"],
+  ["8", "*"],
+  ["9", "("],
+  ["8", "*"],
+  ["9", "("],
+  ["0", ")"],
+  ["-", "_"],
+  ["0", ")"],
+  ["=", "+"],
+  ["[", "{"],
+  ["]", "}"],
+  [";", ":"],
+  ["'", '"'],
+  ["<", ","],
+  [">", "."],
+  ["/", "?"],
+  [",", "<"],
+  [".", ">"],
+  ["/", "?"],
 ]);
 
 export default function () {
@@ -50,10 +67,22 @@ export default function () {
       return;
     }
 
+    if (code === "AltLeft" || code === "AltRight") {
+      altReleased = true;
+      altReleaseTime = Date.now();
+      return;
+    }
+
     let usePreviousShift = false;
     if (shiftReleased && Date.now() - shiftReleaseTime < KEY_STROKE_INTERVAL) {
       usePreviousShift = true;
       shiftReleased = false;
+    }
+
+    let usePreviousAlt = false;
+    if (altReleased && Date.now() - altReleaseTime < KEY_STROKE_INTERVAL) {
+      usePreviousAlt = true;
+      altReleased = false;
     }
 
     if (editModeStore.getEditMode() === "TEXT_WRITING") return;
@@ -80,19 +109,18 @@ export default function () {
       }
 
       case "SYMBOL": {
-        if (usePreviousShift) {
-          if (key === "9") {
-            notationMutateHelper.addSymbolNotation("(");
-            return;
+        if (usePreviousAlt && delayedAltKeys.has(key)) {
+          if (key === "x") {
+            return editModeStore.setEditMode("EXPONENT_STARTED");
           }
-          if (key === "0") {
-            notationMutateHelper.addSymbolNotation(")");
-            return;
+          if (key === "l") {
+            return editModeStore.setEditMode("LOG_STARTED");
           }
-          if (key === "=") {
-            notationMutateHelper.addSymbolNotation("+");
-            return;
-          }
+        }
+        if (usePreviousShift && delayedShiftKeys.has(key)) {
+          return notationMutateHelper.addSymbolNotation(
+            delayedShiftKeys.get(key)!,
+          );
         }
         return notationMutateHelper.addSymbolNotation(key);
       }

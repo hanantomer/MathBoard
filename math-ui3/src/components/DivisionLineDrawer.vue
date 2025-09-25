@@ -79,9 +79,7 @@ import { useCellStore } from "../store/pinia/cellStore";
 import { useEditModeStore } from "../store/pinia/editModeStore";
 import { useNotationStore } from "../store/pinia/notationStore";
 import {
-  SlopeType,
   LineAttributes,
-  MovementDirection,
   DotCoordinates,
   LineNotationAttributes,
   NotationAttributes,
@@ -110,16 +108,21 @@ const linePosition = ref<LineAttributes>({
 
 // Modify the drawLine function to ensure horizontal lines
 function drawLine(p: DotCoordinates) {
-  // For division line, we only want horizontal movement
-  // Keep the y position constant, only change x position
+  // Ensure x positions snap to cell width increments
+  const snapToCell = (x: number) =>
+    Math.round(x / cellStore.getCellHorizontalWidth()) *
+    cellStore.getCellHorizontalWidth();
+
   if (modifyRight.value) {
-    linePosition.value.p2x = p.x;
-    // Keep y position the same as start point
-    linePosition.value.p2y = linePosition.value.p1y;
+    // Ensure minimum width of one cell
+    const minX = linePosition.value.p1x + cellStore.getCellHorizontalWidth();
+    linePosition.value.p2x = Math.max(minX, snapToCell(p.x));
+    linePosition.value.p2y = linePosition.value.p1y; // Keep y constant
   } else {
-    linePosition.value.p1x = p.x;
-    // Keep y position the same as end point
-    linePosition.value.p1y = linePosition.value.p2y;
+    // Ensure minimum width of one cell
+    const maxX = linePosition.value.p2x - cellStore.getCellHorizontalWidth();
+    linePosition.value.p1x = Math.min(maxX, snapToCell(p.x));
+    linePosition.value.p1y = linePosition.value.p2y; // Keep y constant
   }
 }
 
@@ -127,7 +130,6 @@ function drawLine(p: DotCoordinates) {
 const modifyRight = computed(() => {
   return linePosition.value.p2x > linePosition.value.p1x;
 });
-
 
 // Watch for any change in linePosition's properties
 watch(
@@ -148,9 +150,7 @@ watch(
 // computed
 
 const show = computed(() => {
-  return (
-    editModeStore.isDivisionLineMode()
-  );
+  return editModeStore.isDivisionLineMode();
 });
 
 let handleLeft = computed(() => {
@@ -169,12 +169,18 @@ let handleBottom = computed(() => {
   return linePosition.value.p2y + (cellStore.getSvgBoundingRect().top ?? 0);
 });
 
-
 function setInitialPosition(p: DotCoordinates) {
-  linePosition.value.p1x = p.x;
-  linePosition.value.p2x = p.x;
-  linePosition.value.p1y = p.y;
-  linePosition.value.p2y = p.y;
+  // Snap to cell borders
+  const cellY =
+    Math.round(p.y / cellStore.getCellVerticalHeight()) *
+    cellStore.getCellVerticalHeight();
+
+  linePosition.value = {
+    p1x: p.x,
+    p2x: p.x + cellStore.getCellHorizontalWidth(), // Minimum width of one cell
+    p1y: cellY,
+    p2y: cellY, // Keep y position constant for horizontal line
+  };
 }
 
 function selectLine(notation: NotationAttributes) {
@@ -187,17 +193,14 @@ function selectLine(notation: NotationAttributes) {
 }
 
 function modifyLineLeft(p: DotCoordinates) {
-
   linePosition.value.p1x = p.x;
   linePosition.value.p1y = p.y;
 }
 
 function modifyLineRight(p: DotCoordinates) {
-
   linePosition.value.p2x = p.x;
   linePosition.value.p2y = p.y;
 }
-
 
 function editNotStarted(): boolean {
   return Math.abs(linePosition.value.p1x - linePosition.value.p2x) < 5;
@@ -209,7 +212,7 @@ async function endDrawing(): Promise<string> {
     return "";
   }
 
-   return await saveLine();
+  return await saveLine();
 }
 
 async function saveLine(fixEdge: boolean = true): Promise<string> {
@@ -251,19 +254,26 @@ async function saveLine(fixEdge: boolean = true): Promise<string> {
 }
 
 function getAdjustedEdge(point: DotCoordinates): DotCoordinates {
-  // Only check for horizontal alignment points
-  const nearestPoint = screenHelper.getNearestNotationPoint(point);
-  if (nearestPoint != null) {
-    return { x: nearestPoint.x, y: linePosition.value.p1y };
-  }
+  // Snap to cell borders
+  const cellY =
+    Math.floor(point.y / cellStore.getCellVerticalHeight()) *
+    cellStore.getCellVerticalHeight();
+  const cellX =
+    Math.round(point.x / cellStore.getCellHorizontalWidth()) *
+    cellStore.getCellHorizontalWidth();
 
-  // Only consider X borders for snapping
-  const nearCellXBorder = screenHelper.getNearestCellXBorder(point);
-  if (nearCellXBorder != null) {
-    return { x: nearCellXBorder, y: linePosition.value.p1y };
-  }
+  return {
+    x: cellX,
+    y: cellY,
+  };
+}
 
-  return { x: point.x, y: linePosition.value.p1y };
+// Add validation for minimum width
+function isValidLine(): boolean {
+  return (
+    Math.abs(linePosition.value.p2x - linePosition.value.p1x) >=
+    cellStore.getCellHorizontalWidth()
+  );
 }
 
 function applyMoveToLine(dx: number, dy: number) {
