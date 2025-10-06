@@ -108,7 +108,7 @@ export default function useShapeDrawingHelper() {
 
   function selectLine(
     selectedNotation: NotationAttributes,
-    selectLineCallback: (notation: NotationAttributes) => void,
+      selectLineCallback: (notation: NotationAttributes) => void,
   ) {
     hideMatrixLine(selectedNotation.uuid);
     notationStore.selectNotation(selectedNotation.uuid);

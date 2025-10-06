@@ -90,6 +90,9 @@ export default function screenHelper() {
       p2x: x2,
       p1y: y,
       p2y: y,
+      dashed: false,
+      arrowLeft: false,
+      arrowRight: false,
     };
   }
 
@@ -543,6 +546,48 @@ export default function screenHelper() {
     };
   }
 
+  function getNotationTopLeft(notation: NotationAttributes): DotCoordinates {
+    switch (notation.notationType) {
+      case "IMAGE":
+      case "TEXT": {
+        const rect = notation as RectNotationAttributes;
+        return {
+          x:
+            rect.fromCol * cellStore.getCellHorizontalWidth() +
+            cellStore.getSvgBoundingRect().left,
+          y:
+            rect.fromRow * cellStore.getCellVerticalHeight() +
+            cellStore.getSvgBoundingRect().top,
+        };
+      }
+      case "CIRCLE": {
+        const circle = notation as CircleNotationAttributes;
+        return {
+          x: circle.cx - circle.r + cellStore.getSvgBoundingRect().left,
+          y: circle.cy - circle.r + cellStore.getSvgBoundingRect().top,
+        };
+      }
+      case "LINE": {
+        const line = notation as LineNotationAttributes;
+        return {
+          x: Math.min(line.p1x, line.p2x) + cellStore.getSvgBoundingRect().left,
+          y: Math.min(line.p1y, line.p2y) + cellStore.getSvgBoundingRect().top,
+        };
+      }
+      default: {
+        const point = notation as PointNotationAttributes;
+        return {
+          x:
+            point.col * cellStore.getCellHorizontalWidth() +
+            cellStore.getSvgBoundingRect().left,
+          y:
+            point.row * cellStore.getCellVerticalHeight() +
+            cellStore.getSvgBoundingRect().top,
+        };
+      }
+    }
+  }
+
   return {
     getClickedPosDistanceFromLine,
     getClickedPosDistanceFromExponent,
@@ -559,5 +604,6 @@ export default function screenHelper() {
     getNearestCellYBorder,
     getPointsDistance,
     getNearestNotationPoint,
+    getNotationTopLeft,
   };
 }

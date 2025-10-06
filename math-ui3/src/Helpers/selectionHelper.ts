@@ -153,6 +153,7 @@ export default function selectionHelper() {
     const notation = notationStore.getNotation(uuid)!;
     editModeStore.setEditMode("LINE_SELECTED");
     eventBus.emit("EV_LINE_SELECTED", notation);
+    //eventBus.emit("EV_NOTATION_SELECTED", notation);
   }
 
   function selectDivisionLineNotation(uuid: String) {
@@ -221,6 +222,7 @@ export default function selectionHelper() {
         break;
       }
     }
+    //eventBus.emit("EV_NOTATION_SELECTED", n);
   }
 
   return {

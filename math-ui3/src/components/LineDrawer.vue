@@ -18,11 +18,7 @@
         func: modifyLineRight,
       }"
       :saveEntry="{
-        editMode: [
-          'LINE_DRAWING',
-          'LINE_EDITING_RIGHT',
-          'LINE_EDITING_LEFT',
-        ],
+        editMode: ['LINE_DRAWING', 'LINE_EDITING_RIGHT', 'LINE_EDITING_LEFT'],
         func: endDrawing,
       }"
       :selectEntry="{
@@ -69,6 +65,11 @@
         :x2="linePosition.p2x"
         :y2="linePosition.p2y"
         class="line"
+        :class="{ dashed: linePosition.dashed }"
+        :marker-start="linePosition.arrowLeft ? 'url(#arrowleft)' : ''"
+        :marker-end="linePosition.arrowRight ? 'url(#arrowright)' : ''"
+        vector-effect="non-scaling-stroke"
+        stroke-linecap="square"
       />
     </svg>
   </div>
@@ -91,6 +92,7 @@ import lineWatcher from "./LineWatcher.vue";
 import lineHandle from "./LineHandle.vue";
 import useScreenHelper from "../helpers/screenHelper"; // Add this line
 import useNotationMutateHelper from "../helpers/notationMutateHelper"; // Add this line
+import { line } from "d3";
 
 const eventBus = useEventBus();
 const editModeStore = useEditModeStore();
@@ -110,6 +112,9 @@ const linePosition = ref<LineAttributes>({
   p2x: 0,
   p1y: 0,
   p2y: 0,
+  dashed: false,
+  arrowLeft: false,
+  arrowRight: false,
 });
 
 const modifyRight = computed(
@@ -160,7 +165,6 @@ let handleBottom = computed(() => {
   return linePosition.value.p2y + (cellStore.getSvgBoundingRect().top ?? 0);
 });
 
-
 function setInitialPosition(p: DotCoordinates) {
   linePosition.value.p1x = p.x;
   linePosition.value.p2x = p.x;
@@ -203,6 +207,9 @@ function selectLine(notation: NotationAttributes) {
   linePosition.value.p2x = n.p2x;
   linePosition.value.p1y = n.p1y;
   linePosition.value.p2y = n.p2y;
+  linePosition.value.dashed = n.dashed;
+  linePosition.value.arrowLeft = n.arrowLeft;
+  linePosition.value.arrowRight = n.arrowRight;
 }
 
 function modifyLineLeft(p: DotCoordinates) {
@@ -256,7 +263,7 @@ async function endDrawing(): Promise<string> {
     return "";
   }
 
-   return await saveLine();
+  return await saveLine();
 }
 
 async function saveLine(fixEdge: boolean = true): Promise<string> {
@@ -305,7 +312,7 @@ function getAdjustedEdge(point: DotCoordinates): DotCoordinates {
     return { x: nearLineAtPoint.x, y: nearLineAtPoint.y };
   }
 
-    // circle edge at left
+  // circle edge at left
   const nearCircleAtLeft = screenHelper.getNearestCircleEdge(point);
 
   if (nearCircleAtLeft != null) {
@@ -353,3 +360,20 @@ function moveLineByKey(moveX: number, moveY: number) {
   saveLine(false);
 }
 </script>
+
+<style scoped>
+.line {
+  stroke: black;
+  stroke-width: 2px;
+}
+
+.dashed {
+  stroke-dasharray: 5, 5;
+}
+
+/* Ensure markers scale properly with the line */
+:deep(marker) {
+  overflow: visible;
+  stroke-width: inherit;
+}
+</style>

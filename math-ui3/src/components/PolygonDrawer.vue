@@ -89,6 +89,9 @@ const linePosition = ref<LineAttributes>({
   p2x: 0,
   p1y: 0,
   p2y: 0,
+  dashed: false,
+  arrowLeft: false,
+  arrowRight: false,
 });
 
 const modifyRight = computed(
@@ -127,7 +130,6 @@ function setInitialPosition(p: DotCoordinates) {
   slopeType = "NONE";
   movementDirection = "NONE";
 }
-
 
 function drawLine(p: DotCoordinates) {
   if (slopeType === "NONE") {

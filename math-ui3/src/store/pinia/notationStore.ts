@@ -22,6 +22,7 @@ import { BoardType } from "common/unions";
 import { ref } from "vue";
 import { useCellStore } from "./cellStore";
 import useNotationCellOccupationHelper from "../../helpers/notationCellOccupationHelper";
+import useEventBusHelper from "../../helpers/eventBusHelper";
 
 export const useNotationStore = defineStore("notation", () => {
   // special occupation matrix for dot notation since it coexists in a cell
@@ -220,6 +221,11 @@ export const useNotationStore = defineStore("notation", () => {
     }
 
     notation.selected = true;
+
+    // setTimeout(() => {
+    //   const eventBus = useEventBusHelper();
+    //   eventBus.emit("EV_NOTATION_SELECTED", notation);
+    // }, 0);
   }
 
   function setParent(parentUUID: string, boardType: BoardType) {

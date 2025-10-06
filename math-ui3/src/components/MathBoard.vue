@@ -15,7 +15,6 @@
     ></v-progress-linear>
     <statusBar></statusBar>
     <div style="display: flex">
-      <!-- <floatingToolbar></floatingToolbar> -->
       <leftToolbar></leftToolbar>
       <sqrtDrawer></sqrtDrawer>
       <lineDrawer></lineDrawer>
@@ -23,13 +22,41 @@
       <polygonDrawer></polygonDrawer>
       <curveDrawer></curveDrawer>
       <circleDrawer></circleDrawer>
+      <floatingToolbar></floatingToolbar>
       <v-sheet>
         <svg
           v-bind:style="{ cursor: cursor, margin: '10px' }"
           v-bind:id="svgId"
           width="1520"
           height="820"
-        ></svg>
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <defs>
+            <marker
+              id="arrowleft"
+              viewBox="0 0 10 10"
+              refX="5"
+              refY="5"
+              markerWidth="6"
+              markerHeight="6"
+              orient="auto-start-reverse"
+            >
+              <polygon points="0,0 10,5 0,10 3,5" fill="black" />
+            </marker>
+            <marker
+              id="arrowright"
+              viewBox="0 0 10 10"
+              refX="5"
+              refY="5"
+              markerWidth="6"
+              markerHeight="6"
+              orient="auto-start-reverse"
+            >
+              <polygon points="0,0 10,5 0,10 3,5" fill="black" />
+            </marker>
+          </defs>
+
+        </svg>
       </v-sheet>
       <specialSymbolsToolbar></specialSymbolsToolbar>
     </div>
@@ -283,5 +310,12 @@ path:hover {
   z-index: 999;
   font-weight: bold;
   font-size: 1.7em;
+}
+
+.solid {
+  stroke: solid;
+}
+.dashed {
+  stroke-dasharray: 6, 6;
 }
 </style>

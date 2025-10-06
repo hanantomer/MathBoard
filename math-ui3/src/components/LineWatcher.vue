@@ -118,7 +118,11 @@ watchHelper.watchEndOfEditMode(["CIRCLE_SELECTED"], ["CIRCLE_EDITING"], () =>
 watchHelper.watchNotationSelection(
   props.selectEntry.editMode,
   props.selectEntry.event,
-  (n) => shapeDrawingHelper.selectLine(n, props.selectEntry.func),
+  (n) =>
+    shapeDrawingHelper.selectLine(
+      n,
+      props.selectEntry.func,
+    ),
 );
 
 watchHelper.watchKeyEvent(

@@ -62,4 +62,13 @@ export default class QuestionLine extends Model<
         foreignKey: { name: "colorId", field: "colorId", allowNull: true },
     })
     color!: Color;
+
+    @Column({ type: DataType.BOOLEAN, defaultValue: false })
+    dashed!: boolean;
+
+    @Column({ type: DataType.BOOLEAN, defaultValue: false })
+    arrowLeft!: boolean;
+
+    @Column({ type: DataType.BOOLEAN, defaultValue: false })
+    arrowRight!: boolean;
 }

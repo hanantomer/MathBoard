@@ -30,7 +30,8 @@ export type BusEventType =
   | "EV_SQRT_SELECTED"
   | "EV_LINE_CHANGED"
   | "EV_DIVISION_LINE_SELECTED"
-  | "EV_LINE_SELECTED";
+  | "EV_LINE_SELECTED"
+  | "EV_NOTATION_SELECTED";
 
 export const NotationTypeValues = [
   "SYMBOL",

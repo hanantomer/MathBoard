@@ -76,12 +76,14 @@ export type ColorizedCell = CellAttributes & {
   color: string;
 };
 
-
 export type LineAttributes = {
   p1x: number; // left
   p2x: number; // right
   p1y: number; // y which corresponds to x1, if the slope is positive this is the bottom(and higher) y and vice versa
   p2y: number; // y which corresponds to x2, if the slope is positive this is the top (and lower y) and vice versa
+  dashed: boolean;
+  arrowLeft: boolean;
+  arrowRight: boolean;
 };
 
 export type CurveAttributes = {
@@ -129,7 +131,6 @@ export type PointNotationAttributes =
     SingleValueAttributes &
     SymbolAttributes;
 
-
 export type LineNotationAttributes =
   EntityAttributes &
     NotationAttributes &
@@ -175,7 +176,6 @@ export type SqrtNotationCreationAttributes = Omit<
   SqrtNotationAttributes,
   "uuid"
 >;
-
 
 export type LineNotationCreationAttributes = Omit<
   NotationAttributes & LineAttributes,
@@ -225,10 +225,7 @@ export function isRect(n: NotationType): boolean {
 }
 
 export function isLine(n: NotationType): boolean {
-  return (
-    n === "SQRT" ||
-    n === "LINE"
-  );
+  return n === "SQRT" || n === "LINE";
 }
 
 export function isCurve(

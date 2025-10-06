@@ -1,0 +1,72 @@
+<template>
+  <div>
+    <!-- Your drawing canvas goes here -->
+
+    <!-- Floating Toolbar (Vuetify Menu) -->
+    <v-menu
+      v-model="toolbarVisible"
+      :activator="activatorRef"
+      location="top"
+      :close-on-content-click="false"
+      offset="10"
+    >
+      <v-card class="pa-3" width="200">
+        <v-color-picker
+          v-model="selectedLine.color"
+          flat
+          hide-canvas
+          hide-inputs
+          hide-mode-switch
+          show-swatches
+        />
+
+        <v-slider
+          v-model="selectedLine.thickness"
+          :min="1"
+          :max="10"
+          step="1"
+          label="Thickness"
+        />
+
+        <v-btn color="error" @click="deleteLine"
+          >Delete</v-btn
+        >
+      </v-card>
+    </v-menu>
+  </div>
+</template>
+
+<script setup>
+  import { ref, reactive, watch } from "vue";
+
+  const toolbarVisible = ref(false);
+  const activatorRef = ref(null); // reference to the DOM element for positioning
+
+  // Dummy selected line object
+  const selectedLine = reactive({
+    id: null,
+    color: "#000000",
+    thickness: 2,
+  });
+
+  // Simulate selecting a line (normally this would happen via canvas click)
+  function selectLine(line, event) {
+    selectedLine.id = line.id;
+    selectedLine.color = line.color;
+    selectedLine.thickness = line.thickness;
+
+    // Position the toolbar using event.target as the activator
+    activatorRef.value = event.currentTarget;
+    toolbarVisible.value = true;
+  }
+
+  function deleteLine() {
+    // Logic to remove the line from your drawing data
+    console.log("Deleting line", selectedLine.id);
+    toolbarVisible.value = false;
+  }
+</script>
+
+/* Optional: Add custom style for precise floating
+feel */ .v-menu__content { z-index: 1000; /* make
+sure it appears above canvas */ }

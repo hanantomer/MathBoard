@@ -1,5 +1,5 @@
 <template>
-  <v-tooltip text="colorize tool">
+  <v-tooltip text="colorize tool" style="margin-top: 5px;">
     <template v-slot:activator="{ props }">
       <v-btn v-show="show" v-bind="props" icon color="white" x-small fab dark
         ><v-icon>mdi-format-color-highlight</v-icon>
@@ -26,6 +26,7 @@
 <script setup lang="ts">
 import useNotationMutateHelper from "../helpers/notationMutateHelper";
 import { useNotationStore } from "../store/pinia/notationStore";
+import { useEditModeStore } from "../store/pinia/editModeStore";
 import { NotationAttributes } from "common/baseTypes";
 import { transparentColor } from "common/globals";
 import { Color } from "common/unions";
@@ -36,6 +37,7 @@ import useAuthorizationHelper from "../helpers/authorizationHelper";
 const notationMutateHelper = useNotationMutateHelper();
 const authorizationHelper = useAuthorizationHelper();
 const notationStore = useNotationStore();
+const editModeStore = useEditModeStore();
 
 const colors: Color[] = [
   "ciyan",
@@ -73,10 +75,11 @@ function colorizeSelectedNotations(color: Color) {
 function colorizeNotation(notation: NotationAttributes, color: Color) {
   notation.color = color === "none" ? null : { value: color, id: undefined };
   notationMutateHelper.updateNotation(notation);
+  editModeStore.setDefaultEditMode();
 }
 </script>
 <style scoped>
-.v-list-item {
+/* .v-list-item {
   min-height: 20px !important;
-}
+} */
 </style>

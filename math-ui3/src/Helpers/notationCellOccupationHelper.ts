@@ -1,7 +1,6 @@
 import {
   RectCoordinates,
   PointNotationAttributes,
-
   RectNotationAttributes,
   CurveNotationAttributes,
   LineAttributes,
@@ -67,7 +66,6 @@ export default function notationCellOccupationHelper() {
     (matrix[col][row] as Set<String>).add(uuid);
   }
 
-
   function updateAnnotationOccupationMatrix(
     matrix: any,
     notation: AnnotationNotationAttributes,
@@ -81,7 +79,6 @@ export default function notationCellOccupationHelper() {
       doRemove,
     );
   }
-
 
   /// populate occupation matrix to encompass the sloped line
   function updateLineOccupationMatrix(
@@ -157,6 +154,9 @@ export default function notationCellOccupationHelper() {
         p2x: notation.cpx,
         p1y: notation.p1y,
         p2y: notation.cpy,
+        arrowLeft: false,
+        arrowRight: false,
+        dashed: false,
       },
       notation.uuid,
       doRemove,
@@ -169,6 +169,9 @@ export default function notationCellOccupationHelper() {
         p2x: notation.cpx,
         p1y: notation.p2y,
         p2y: notation.cpy,
+        arrowLeft: false,
+        arrowRight: false,
+        dashed: false,
       },
       notation.uuid,
       doRemove,

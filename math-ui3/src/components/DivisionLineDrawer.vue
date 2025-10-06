@@ -104,6 +104,9 @@ const linePosition = ref<LineAttributes>({
   p2x: 0,
   p1y: 0,
   p2y: 0,
+  dashed: false,
+  arrowLeft: false,
+  arrowRight: false,
 });
 
 // Modify the drawLine function to ensure horizontal lines
@@ -180,6 +183,9 @@ function setInitialPosition(p: DotCoordinates) {
     p2x: p.x + cellStore.getCellHorizontalWidth(), // Minimum width of one cell
     p1y: cellY,
     p2y: cellY, // Keep y position constant for horizontal line
+    dashed: false,
+    arrowLeft: false,
+    arrowRight: false,
   };
 }
 

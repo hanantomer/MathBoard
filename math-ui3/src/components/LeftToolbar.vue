@@ -49,6 +49,7 @@
   </div>
 
   <v-toolbar color="primary" dark :class="toolbarClass" height="600">
+    <ColorSelector></ColorSelector>
     <v-tooltip
       text="Invite students via access link"
       v-if="userStore.isTeacher()"
@@ -193,7 +194,6 @@
         </v-btn>
       </template>
     </v-tooltip>
-    <ColorSelector></ColorSelector>
   </v-toolbar>
 </template>
 
@@ -212,6 +212,7 @@ import useAuthorizationHelper from "../helpers/authorizationHelper";
 import useWatchHelper from "../helpers/watchHelper";
 import useNotationMutateHelper from "../helpers/notationMutateHelper";
 import CrossDeviceUpload from "./CrossDeviceUpload.vue";
+import LinePropertiesSelector from "./LinePropertiesSelector.vue";
 
 const watchHelper = useWatchHelper();
 const notationMutateHelper = useNotationMutateHelper();
