@@ -188,7 +188,7 @@ export default function selectionHelper() {
       selectNotation(uuid);
     } else {
       const position = { x: e.pageX, y: e.pageY };
-      let clickedCell = screenHelper.getCell(position);
+      let clickedCell = screenHelper.getCellByDotCoordinates(position);
       if (!clickedCell) return;
       setSelectedCell(clickedCell, true);
       selectNotationAtPosition(position);
@@ -222,7 +222,6 @@ export default function selectionHelper() {
         break;
       }
     }
-    //eventBus.emit("EV_NOTATION_SELECTED", n);
   }
 
   return {

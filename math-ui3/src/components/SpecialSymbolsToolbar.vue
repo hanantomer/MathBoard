@@ -41,10 +41,13 @@ import { ref } from 'vue';
 import { ref, computed } from "vue";
 import { useToolbarNavigation } from "../helpers/ToolbarNavigationHelper";
 import { useEditModeStore } from "../store/pinia/editModeStore";
+import useScreenHelper from "../helpers/screenHelper";
 import useWatchHelper from "../helpers/watchHelper";
 import useNotationMutateHelper from "../helpers/notationMutateHelper";
 import useEventBusHelper from "../helpers/eventBusHelper";
 import useAuthorizationHelper from "../helpers/authorizationHelper";
+import { decodeSpecialSymbol } from "common/globals";
+import useSelectionHelper from "../helpers/selectionHelper";
 
 const editModeStore = useEditModeStore();
 const eventBus = useEventBusHelper();
@@ -52,6 +55,8 @@ const notationMutateHelper = useNotationMutateHelper();
 const toolbarNavigation = useToolbarNavigation();
 const watchHelper = useWatchHelper();
 const authorizationHelper = useAuthorizationHelper();
+const screenHelper = useScreenHelper();
+const selectionHelper = useSelectionHelper();
 
 const editEnabled = computed(() => {
   return authorizationHelper.canEdit();
@@ -78,6 +83,7 @@ const specialSymbols = ref([
   { name: "delta", value: "&delta;", tooltip: "Delta", tabIndex: 4 },
   { name: "Theta", value: "&Theta;", tooltip: "Theta", tabIndex: 5 },
   { name: "pi", value: "&pi;", tooltip: "Pi", tabIndex: 6 },
+  { name: "90", value: "&#8735", tooltip: "90 degrees", tabIndex: 6 },
   {
     name: "separator",
     value: "",
@@ -203,15 +209,29 @@ watchHelper.watchKeyEvent(["CELL_SELECTED"], "EV_KEYUP", (e: KeyboardEvent) =>
   toolbarNavigation.handleShortcuts(e, specialSymbols),
 );
 
-function addSpecialSymbol(item: string) {
+async function addSpecialSymbol(item: string) {
   selectedSymbol.value = item;
-  setTimeout(() => {
+  setTimeout(async () => {
     if (
       editModeStore.isTextWritingMode() ||
       editModeStore.isAnnotationWritingMode()
     ) {
       eventBus.emit("EV_SPECIAL_SYMBOL_SELECTED", selectedSymbol.value);
     } else {
+      if (item === "&#8735") {
+        // 90 degrees symbol
+        const selectedCellDotCoordinates =
+          screenHelper.getSelectedCellDotCoordinates();
+        if (!selectedCellDotCoordinates) return;
+
+        const ninetyDegreesNotationUUId =  await notationMutateHelper.addAnnotationNotation(
+          decodeSpecialSymbol(item),
+          selectedCellDotCoordinates!,
+        );
+
+        selectionHelper.selectNotation(ninetyDegreesNotationUUId);
+        return;
+      }
       if (
         !item.startsWith("<math>") &&
         !item.startsWith("&") &&

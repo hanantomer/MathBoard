@@ -36,7 +36,7 @@ import useEventBusHelper from "../helpers/eventBusHelper";
 import useWatchHelper from "../helpers/watchHelper";
 import UseAuthorizationHelper from "../helpers/authorizationHelper";
 import useScreenHelper from "../helpers/screenHelper";
-import { set } from "cypress/types/lodash";
+
 
 const screenHelper = useScreenHelper();
 type HorizontalDirection = "RIGHT" | "LEFT" | "NONE";
@@ -340,7 +340,7 @@ function endSelect() {
     Math.abs(selectionPosition.value.x1 - selectionPosition.value.x2) < 5 ||
     Math.abs(selectionPosition.value.y1 - selectionPosition.value.y2) < 5
   ) {
-    let clickedCell = screenHelper.getCell({
+    let clickedCell = screenHelper.getCellByDotCoordinates({
       x: selectionPosition.value.x1,
       y: selectionPosition.value.y1,
     });
@@ -579,7 +579,7 @@ function setSelectionPositionForAnnotation(
   selectionPosition.value.y1 =
     cellStore.getSvgBoundingRect().top + selectedNotation.y + 5;
   selectionPosition.value.y2 =
-    selectionPosition.value.y1 + cellStore.getCellVerticalHeight() / 2;
+    selectionPosition.value.y1 + cellStore.getCellVerticalHeight() -5;
 }
 
 function setSelectionPositionForText(selectedNotation: RectNotationAttributes) {

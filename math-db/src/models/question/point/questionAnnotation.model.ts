@@ -58,4 +58,7 @@ export default class QuestionAnnotation extends Model<
         foreignKey: { name: "colorId", field: "colorId", allowNull: true },
     })
     color!: Color;
+
+    @Column({ type: DataType.INTEGER, allowNull: true })
+    rotation?: number;
 }

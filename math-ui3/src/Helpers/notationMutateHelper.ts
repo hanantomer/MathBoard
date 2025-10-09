@@ -655,6 +655,7 @@ export default function notationMutateHelper() {
       parentUUId: notationStore.getParent().uuid,
       notationType: "LINE",
       user: userStore.getCurrentUser()!,
+      color: null,
     };
 
     return addNotation(lineNotation);
@@ -825,7 +826,7 @@ export default function notationMutateHelper() {
 
     const position = { x: e.pageX, y: e.pageY };
 
-    let clickedCell = screenHelper.getCell(position);
+    let clickedCell = screenHelper.getCellByDotCoordinates(position);
 
     if (!clickedCell) return;
 
@@ -922,7 +923,7 @@ export default function notationMutateHelper() {
     addNotation(notation);
   }
 
-  function addAnnotationNotation(value: string, point: DotCoordinates) {
+  async function addAnnotationNotation(value: string, point: DotCoordinates) {
     let notation: AnnotationNotationCreationAttributes = {
       x: point.x,
       y: point.y,
@@ -933,7 +934,7 @@ export default function notationMutateHelper() {
       user: userStore.getCurrentUser()!,
     };
 
-    addNotation(notation); /// TODO: check if need to check cell occupation
+    return addNotation(notation); /// TODO: check if need to check cell occupation
   }
 
   function addExponentNotation(exponent: string, clickedCell: CellAttributes) {

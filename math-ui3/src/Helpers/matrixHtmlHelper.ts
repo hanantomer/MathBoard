@@ -383,7 +383,7 @@ export default function useHtmlMatrixHelper() {
       return `<p id=${n1.uuid} style=
             'z-index:100;color:${color};font-weight:${fontWeight};
             position: absolute;top:50%;transform:
-           translateY(-50%);font-size:0.6em'>${n1.value}</p>`;
+           translateY(-50%) rotate(${n1.rotation}deg);font-size:0.6em'>${n1.value}</p>`;
     }
 
     if (n.notationType === "IMAGE") {
@@ -454,12 +454,12 @@ export default function useHtmlMatrixHelper() {
         ? "4px"
         : "0px";
 
-    if (
-      (n1.value === "(" || n1.value === ")") &&
-      utils.symbolAdjecentToFraction(n1)
-    ) {
-      topMargin = "8px";
-    }
+    // if (
+    //   (n1.value === "(" || n1.value === ")") &&
+    //   utils.symbolAdjecentToFraction(n1)
+    // ) {
+    //   topMargin = "8px";
+    // }
 
     ///TODO: move static css props to a class
     return `<p id=${n1.uuid} style='z-index:100;color:${color};font-weight:${fontWeight}; position: absolute;top:${top};transform:

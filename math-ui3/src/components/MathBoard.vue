@@ -1,4 +1,5 @@
 <template>
+  <floatingToolbar></floatingToolbar>
   <GlobalAlert></GlobalAlert>
   <annotationEditor></annotationEditor>
   <freeTextEditor></freeTextEditor>
@@ -22,7 +23,6 @@
       <polygonDrawer></polygonDrawer>
       <curveDrawer></curveDrawer>
       <circleDrawer></circleDrawer>
-      <floatingToolbar></floatingToolbar>
       <v-sheet>
         <svg
           v-bind:style="{ cursor: cursor, margin: '10px' }"
@@ -55,7 +55,6 @@
               <polygon points="0,0 10,5 0,10 3,5" fill="black" />
             </marker>
           </defs>
-
         </svg>
       </v-sheet>
       <specialSymbolsToolbar></specialSymbolsToolbar>
@@ -270,7 +269,7 @@ html {
 }
 
 .line {
-  stroke: darkgreen;
+
   position: absolute;
   display: block;
   border-bottom: solid 1px;

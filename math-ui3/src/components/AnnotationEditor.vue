@@ -20,6 +20,7 @@ import { useCellStore } from "../store/pinia/cellStore";
 import { useEditModeStore } from "../store/pinia/editModeStore";
 import { useNotationStore } from "../store/pinia/notationStore";
 import { AnnotationNotationAttributes } from "../../../math-common/src/baseTypes";
+import { decodeSpecialSymbol } from "../../../math-common/src/globals";
 import useNotationMutateHelper from "../helpers/notationMutateHelper";
 import useWatchHelper from "../helpers/watchHelper";
 
@@ -154,17 +155,14 @@ function endEditingByEnterKey(e: KeyboardEvent) {
   }
 }
 
-function addSpecialSymbol(symbol: String): void {
+function addSpecialSymbol(symbol: string): void {
   const input = document.getElementById("annotationEl") as HTMLInputElement;
 
   // Get cursor position
   const start = input.selectionStart || 1;
   const end = input.selectionEnd || 6;
 
-  // Create a temporary div to decode HTML entities
-  const decoder = document.createElement("div");
-  decoder.innerHTML = symbol.toString();
-  const decodedSymbol = decoder.textContent || decoder.innerText;
+  const decodedSymbol = decodeSpecialSymbol(symbol);
 
   // Insert decoded symbol at cursor position
   annotaionValue.value =

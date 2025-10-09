@@ -1,5 +1,5 @@
 import {
-  lineColor,
+  //lineColor,
   htmlColor,
   selectionColor,
   getDefaultFontSize,
@@ -111,9 +111,7 @@ export default function useMatrixHelperUtils() {
       case "SQRTSYMBOL":
         return n.selected
           ? selectionColor
-          : n.color?.value
-          ? n.color.value
-          : lineColor;
+          : n.color?.value??htmlColor;
     }
   }
 
@@ -133,7 +131,7 @@ export default function useMatrixHelperUtils() {
       return false;
     }
 
-    
+
 
   return {
     getColor,

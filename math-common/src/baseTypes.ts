@@ -50,6 +50,11 @@ export type DotCoordinates = {
   y: number;
 };
 
+export type AnnotationAttributes = {
+  rotation: number;
+};
+
+
 export type LineCoordinates = {
   top: DotCoordinates;
   bottom: DotCoordinates;
@@ -153,6 +158,7 @@ export type RectNotationAttributes =
     SingleValueAttributes;
 
 export type AnnotationNotationAttributes =
+  AnnotationAttributes &
   EntityAttributes &
     NotationAttributes &
     DotCoordinates &

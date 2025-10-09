@@ -92,7 +92,6 @@ watchHelper.watchKeyEvent(
   resumeEditByEscapeKey,
 );
 
-
 // user typed Enter -> end editing and move to next edit mode to submit
 watchHelper.watchKeyEvent(
   ["EXPONENT_WRITING"],
@@ -135,12 +134,12 @@ function startNewExponentAtSelectedCellPosition() {
 function startNewExponentAtMousePosition(e: MouseEvent) {
   editModeStore.setNextEditMode();
 
-  clickedCell = screenHelper.getCell({
+  clickedCell = screenHelper.getCellByDotCoordinates({
     x: e.pageX,
     y: e.pageY,
   });
 
-  screenHelper.getCell({
+  screenHelper.getCellByDotCoordinates({
     x: e.pageX,
     y: e.pageY,
   }),

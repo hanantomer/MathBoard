@@ -3,6 +3,7 @@ import {
   LineAttributes,
   CurveAttributes,
   CellAttributes,
+  AnnotationAttributes,
   RectAttributes,
   CircleAttributes,
   SingleValueAttributes,
@@ -65,6 +66,20 @@ export type AnswerPointAttributes =
 
 export type AnswerPointCreationAttributes = Omit<
   AnswerPointAttributes,
+  keyof EntityAttributes
+  >;
+
+// annotation
+export type AnswerAnnotationAttributes =
+  AnnotationAttributes & 
+    EntityAttributes &
+    NotationAttributes &
+    CellAttributes &
+    SingleValueAttributes &
+  AnswerNotationAttributes;
+    
+export type AnswerAnnotationCreationAttributes = Omit<
+  AnswerAnnotationAttributes,
   keyof EntityAttributes
 >;
 

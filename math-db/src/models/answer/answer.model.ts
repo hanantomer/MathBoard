@@ -14,18 +14,15 @@ import {
 } from "../../../../math-common/src/answerTypes";
 
 @BoardDecorator("answer")
-
 export default class Answer extends Model<
     AnswerAttributes,
     AnswerCreationAttributes
 > {
-   
     @BelongsTo(() => User, {
         foreignKey: { name: "userId", field: "userId", allowNull: false },
     })
     user!: User;
 
-   
     @BelongsTo(() => Question, {
         foreignKey: {
             name: "questionId",
@@ -41,4 +38,7 @@ export default class Answer extends Model<
         defaultValue: DataType.UUIDV4,
     })
     uuid!: string;
+
+    @Column({ type: DataType.INTEGER, allowNull: true })
+    rotation?: number;
 }

@@ -91,7 +91,7 @@ const linePosition = ref<LineAttributes>({
   p2y: 0,
   dashed: false,
   arrowLeft: false,
-  arrowRight: false,
+  arrowRight: false
 });
 
 const modifyRight = computed(

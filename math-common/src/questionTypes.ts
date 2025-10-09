@@ -3,6 +3,7 @@ import {
   LineAttributes,
   CurveAttributes,
   CellAttributes,
+  AnnotationAttributes,
   RectAttributes,
   SingleValueAttributes,
   BoardAttributes,
@@ -69,6 +70,21 @@ export type QuestionPointCreationAttributes =
     QuestionPointAttributes,
     keyof EntityAttributes
   >;
+
+// annotation
+
+export type QuestionAnnotationAttributes =
+  AnnotationAttributes &
+    EntityAttributes &
+    NotationAttributes &
+    CellAttributes &
+    SingleValueAttributes &
+  QuestionNotationAttributes;
+    
+export type QuestionAnnotationCreationAttributes = Omit<
+  QuestionAnnotationAttributes,
+  keyof EntityAttributes
+>;
 
 // rect
 

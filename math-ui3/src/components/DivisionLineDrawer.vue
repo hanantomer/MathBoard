@@ -64,10 +64,10 @@
       class="line-svg"
     >
       <line
-        :x1="linePosition.p1x"
-        :y1="linePosition.p1y"
-        :x2="linePosition.p2x"
-        :y2="linePosition.p1y"
+        :x1="lineAttributes.p1x"
+        :y1="lineAttributes.p1y"
+        :x2="lineAttributes.p2x"
+        :y2="lineAttributes.p1y"
         class="line"
       />
     </svg>
@@ -99,7 +99,7 @@ const notationMutateHelper = useNotationMutateHelper();
 
 // vars
 
-const linePosition = ref<LineAttributes>({
+const lineAttributes = ref<LineAttributes>({
   p1x: 0,
   p2x: 0,
   p1y: 0,
@@ -118,25 +118,25 @@ function drawLine(p: DotCoordinates) {
 
   if (modifyRight.value) {
     // Ensure minimum width of one cell
-    const minX = linePosition.value.p1x + cellStore.getCellHorizontalWidth();
-    linePosition.value.p2x = Math.max(minX, snapToCell(p.x));
-    linePosition.value.p2y = linePosition.value.p1y; // Keep y constant
+    const minX = lineAttributes.value.p1x + cellStore.getCellHorizontalWidth();
+    lineAttributes.value.p2x = Math.max(minX, snapToCell(p.x));
+    lineAttributes.value.p2y = lineAttributes.value.p1y; // Keep y constant
   } else {
     // Ensure minimum width of one cell
-    const maxX = linePosition.value.p2x - cellStore.getCellHorizontalWidth();
-    linePosition.value.p1x = Math.min(maxX, snapToCell(p.x));
-    linePosition.value.p1y = linePosition.value.p2y; // Keep y constant
+    const maxX = lineAttributes.value.p2x - cellStore.getCellHorizontalWidth();
+    lineAttributes.value.p1x = Math.min(maxX, snapToCell(p.x));
+    lineAttributes.value.p1y = lineAttributes.value.p2y; // Keep y constant
   }
 }
 
 // Remove or simplify slope-related code since division lines are always horizontal
 const modifyRight = computed(() => {
-  return linePosition.value.p2x > linePosition.value.p1x;
+  return lineAttributes.value.p2x > lineAttributes.value.p1x;
 });
 
-// Watch for any change in linePosition's properties
+// Watch for any change in lineAttributes's properties
 watch(
-  linePosition,
+  lineAttributes,
   (newVal) => {
     const height = Math.round(
       Math.abs(newVal.p2y - newVal.p1y) / cellStore.getCellHorizontalWidth(),
@@ -157,19 +157,19 @@ const show = computed(() => {
 });
 
 let handleLeft = computed(() => {
-  return linePosition.value.p1x + (cellStore.getSvgBoundingRect().left ?? 0);
+  return lineAttributes.value.p1x + (cellStore.getSvgBoundingRect().left ?? 0);
 });
 
 let handleRight = computed(() => {
-  return linePosition.value.p2x + (cellStore.getSvgBoundingRect().left ?? 0);
+  return lineAttributes.value.p2x + (cellStore.getSvgBoundingRect().left ?? 0);
 });
 
 let handleTop = computed(() => {
-  return linePosition.value.p1y + (cellStore.getSvgBoundingRect().top ?? 0);
+  return lineAttributes.value.p1y + (cellStore.getSvgBoundingRect().top ?? 0);
 });
 
 let handleBottom = computed(() => {
-  return linePosition.value.p2y + (cellStore.getSvgBoundingRect().top ?? 0);
+  return lineAttributes.value.p2y + (cellStore.getSvgBoundingRect().top ?? 0);
 });
 
 function setInitialPosition(p: DotCoordinates) {
@@ -178,61 +178,61 @@ function setInitialPosition(p: DotCoordinates) {
     Math.round(p.y / cellStore.getCellVerticalHeight()) *
     cellStore.getCellVerticalHeight();
 
-  linePosition.value = {
+  lineAttributes.value = {
     p1x: p.x,
     p2x: p.x + cellStore.getCellHorizontalWidth(), // Minimum width of one cell
     p1y: cellY,
     p2y: cellY, // Keep y position constant for horizontal line
     dashed: false,
     arrowLeft: false,
-    arrowRight: false,
+    arrowRight: false
   };
 }
 
 function selectLine(notation: NotationAttributes) {
   const n = notation as LineNotationAttributes;
 
-  linePosition.value.p1x = n.p1x;
-  linePosition.value.p2x = n.p2x;
-  linePosition.value.p1y = n.p1y;
-  linePosition.value.p2y = n.p2y;
+  lineAttributes.value.p1x = n.p1x;
+  lineAttributes.value.p2x = n.p2x;
+  lineAttributes.value.p1y = n.p1y;
+  lineAttributes.value.p2y = n.p2y;
 }
 
 function modifyLineLeft(p: DotCoordinates) {
-  linePosition.value.p1x = p.x;
-  linePosition.value.p1y = p.y;
+  lineAttributes.value.p1x = p.x;
+  lineAttributes.value.p1y = p.y;
 }
 
 function modifyLineRight(p: DotCoordinates) {
-  linePosition.value.p2x = p.x;
-  linePosition.value.p2y = p.y;
+  lineAttributes.value.p2x = p.x;
+  lineAttributes.value.p2y = p.y;
 }
 
 async function saveLine(): Promise<string> {
-  linePosition.value.p1x = getAdjustedEdge({
-    x: linePosition.value.p1x,
-    y: linePosition.value.p1y,
+  lineAttributes.value.p1x = getAdjustedEdge({
+    x: lineAttributes.value.p1x,
+    y: lineAttributes.value.p1y,
   }).x;
 
-  linePosition.value.p1y = getAdjustedEdge({
-    x: linePosition.value.p1x,
-    y: linePosition.value.p1y,
+  lineAttributes.value.p1y = getAdjustedEdge({
+    x: lineAttributes.value.p1x,
+    y: lineAttributes.value.p1y,
   }).y;
 
-  linePosition.value.p2x = getAdjustedEdge({
-    x: linePosition.value.p2x,
-    y: linePosition.value.p2y,
+  lineAttributes.value.p2x = getAdjustedEdge({
+    x: lineAttributes.value.p2x,
+    y: lineAttributes.value.p2y,
   }).x;
 
-  linePosition.value.p2y = getAdjustedEdge({
-    x: linePosition.value.p2x,
-    y: linePosition.value.p2y,
+  lineAttributes.value.p2y = getAdjustedEdge({
+    x: lineAttributes.value.p2x,
+    y: lineAttributes.value.p2y,
   }).y;
 
   if (notationStore.getSelectedNotations().length > 0) {
     let updatedLine = {
       ...notationStore.getSelectedNotations().at(0)!,
-      ...linePosition.value,
+      ...lineAttributes.value,
     };
 
     notationMutateHelper.updateLineNotation(
@@ -240,7 +240,7 @@ async function saveLine(): Promise<string> {
     );
     return updatedLine.uuid;
   } else {
-    return notationMutateHelper.addLineNotation(linePosition.value);
+    return notationMutateHelper.addLineNotation(lineAttributes.value);
   }
 }
 
@@ -264,16 +264,16 @@ function getAdjustedEdge(point: DotCoordinates): DotCoordinates {
 // Add validation for minimum width
 function isValidLine(): boolean {
   return (
-    Math.abs(linePosition.value.p2x - linePosition.value.p1x) >=
+    Math.abs(lineAttributes.value.p2x - lineAttributes.value.p1x) >=
     cellStore.getCellHorizontalWidth()
   );
 }
 
 function applyMoveToLine(dx: number, dy: number) {
-  linePosition.value.p1y += dy;
-  linePosition.value.p2y += dy;
-  linePosition.value.p1x += dx;
-  linePosition.value.p2x += dx;
+  lineAttributes.value.p1y += dy;
+  lineAttributes.value.p2y += dy;
+  lineAttributes.value.p1x += dx;
+  lineAttributes.value.p2x += dx;
 }
 
 function moveLine(moveX: number, moveY: number) {

@@ -149,7 +149,8 @@ function setInitialPosition(p: DotCoordinates) {
   };
 
   const nearestRowY =
-    screenHelper.getCell(p).row * cellStore.getCellVerticalHeight();
+    screenHelper.getCellByDotCoordinates(p).row *
+    cellStore.getCellVerticalHeight();
 
   linePosition.value.p1x = p.x - 10;
   linePosition.value.p2x = p.x + cellStore.getCellHorizontalWidth() * 4;
@@ -196,7 +197,6 @@ async function saveSqrt(sqrtAttributes: MultiCellAttributes): Promise<string> {
   } else return await notationMutateHelper.addSqrtNotation(sqrtAttributes);
 }
 
-
 function selectSqrt(notation: NotationAttributes) {
   const n = notation as SqrtNotationAttributes;
 
@@ -204,7 +204,8 @@ function selectSqrt(notation: NotationAttributes) {
 
   linePosition.value.p2x = n.toCol * cellStore.getCellHorizontalWidth();
 
-  linePosition.value.p1y = n.row * cellStore.getCellVerticalHeight() + sqrtDeltaY;
+  linePosition.value.p1y =
+    n.row * cellStore.getCellVerticalHeight() + sqrtDeltaY;
 
   linePosition.value.p2y = n.row * cellStore.getCellVerticalHeight();
 }

@@ -23,7 +23,9 @@ const maxCellDistance = 3;
 export default function screenHelper() {
   type NotationDistance = { notation: NotationAttributes; distance: number };
 
-  function getCell(dotCoordinates: DotCoordinates): CellAttributes {
+  function getCellByDotCoordinates(
+    dotCoordinates: DotCoordinates,
+  ): CellAttributes {
     const clickedCellCol = Math.floor(
       (dotCoordinates.x - cellStore.getSvgBoundingRect().left) /
         cellStore.getCellHorizontalWidth(),
@@ -132,7 +134,7 @@ export default function screenHelper() {
   ): NotationAttributes | null {
     const notationStore = useNotationStore();
 
-    const clickedCell = getCell(DotCoordinates);
+    const clickedCell = getCellByDotCoordinates(DotCoordinates);
 
     let notationsAtCell = notationStore.getNotationsAtCell(clickedCell);
 
@@ -443,7 +445,7 @@ export default function screenHelper() {
 
   function getNearestCellXBorder(dot: DotCoordinates): number | null {
     const cellWidth = cellStore.getCellHorizontalWidth();
-    const cell = getCell({
+    const cell = getCellByDotCoordinates({
       x: dot.x + cellStore.getSvgBoundingRect().left,
       y: dot.y + cellStore.getSvgBoundingRect().top,
     });
@@ -464,7 +466,7 @@ export default function screenHelper() {
 
   function getNearestCellYBorder(dot: DotCoordinates): number | null {
     const cellHeight = cellStore.getCellVerticalHeight();
-    const cell = getCell({
+    const cell = getCellByDotCoordinates({
       x: dot.x + cellStore.getSvgBoundingRect().left,
       y: dot.y + cellStore.getSvgBoundingRect().top,
     });
@@ -588,12 +590,22 @@ export default function screenHelper() {
     }
   }
 
+  function getSelectedCellDotCoordinates(): DotCoordinates | null {
+    const selectedCell = cellStore.getSelectedCell();
+    if (!selectedCell) return null;
+
+    return {
+      x: Math.round(selectedCell.col * cellStore.getCellHorizontalWidth()) + 2,
+      y: Math.round(selectedCell.row * cellStore.getCellVerticalHeight()) + 2,
+    };
+  }
+
   return {
     getClickedPosDistanceFromLine,
     getClickedPosDistanceFromExponent,
     getClickedPosDistanceFromSqrt,
     getNotationAtCoordinates,
-    getCell,
+    getCellByDotCoordinates,
     getRectCoordinatesOccupiedCells,
     getCellTopLeftCoordinates,
     getRectAttributes,
@@ -605,5 +617,6 @@ export default function screenHelper() {
     getPointsDistance,
     getNearestNotationPoint,
     getNotationTopLeft,
+    getSelectedCellDotCoordinates,
   };
 }

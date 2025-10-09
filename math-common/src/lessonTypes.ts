@@ -2,6 +2,7 @@ import {
   LineAttributes,
   CurveAttributes,
   CellAttributes,
+  AnnotationAttributes,
   RectAttributes,
   SingleValueAttributes,
   BoardAttributes,
@@ -56,7 +57,20 @@ export type LessonPointAttributes =
 export type LessonPointCreationAttributes = Omit<
   LessonPointAttributes,
   keyof EntityAttributes
->;
+  >;
+
+// annotation
+export type LessonAnnotationAttributes =
+  AnnotationAttributes &
+    EntityAttributes &
+    NotationAttributes &
+    CellAttributes &
+    SingleValueAttributes;
+
+export type LessonAnnotationCreationAttributes = Omit<
+  LessonAnnotationAttributes,
+  keyof EntityAttributes
+>;  
 
 // rect
 

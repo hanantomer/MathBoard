@@ -5,15 +5,15 @@ import User from "../../user.model";
 import Color from "../../color.model";
 import Lesson from "../../lesson/lesson.model";
 import {
-    LessonPointAttributes,
-    LessonPointCreationAttributes,
+    LessonAnnotationAttributes,
+    LessonAnnotationCreationAttributes,
 } from "../../../../../math-common/src/lessonTypes";
 
         
 @LessonDecorator("LessonAnnotation")
 export default class LessonAnnotation extends Model<
-    LessonPointAttributes,
-    LessonPointCreationAttributes
+    LessonAnnotationAttributes,
+    LessonAnnotationCreationAttributes
 > {
     notationType: NotationType = "ANNOTATION";
     boardType: BoardType = "LESSON";
@@ -58,4 +58,7 @@ export default class LessonAnnotation extends Model<
         foreignKey: { name: "colorId", field: "colorId", allowNull: true },
     })
     color!: Color;
+
+    @Column({ type: DataType.INTEGER, allowNull: true })
+    rotation?: number;
 }

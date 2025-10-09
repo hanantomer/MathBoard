@@ -7,7 +7,6 @@ export const matrixDimensions = {
 export const clonedNotationUUIdPrefix = "cloned_";
 export const transparentColor = "#4d6a96";
 export const selectionColor = "chocolate";
-export const lineColor = "darkgreen";
 export const htmlColor = "black";
 export const cellSpace = 1;
 export const signList = [
@@ -47,6 +46,14 @@ export function formatDate(
         day: "numeric",
       })
     : "";
+}
+
+export function decodeSpecialSymbol(
+  symbol: string
+) {
+  const decoder = document.createElement("div");
+  decoder.innerHTML = symbol.toString();
+  return decoder.textContent || decoder.innerText;
 }
 
 export const sqrtDeltaY = 3;

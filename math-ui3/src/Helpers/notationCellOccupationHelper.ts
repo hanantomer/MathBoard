@@ -156,7 +156,7 @@ export default function notationCellOccupationHelper() {
         p2y: notation.cpy,
         arrowLeft: false,
         arrowRight: false,
-        dashed: false,
+        dashed: false
       },
       notation.uuid,
       doRemove,
@@ -171,7 +171,7 @@ export default function notationCellOccupationHelper() {
         p2y: notation.cpy,
         arrowLeft: false,
         arrowRight: false,
-        dashed: false,
+        dashed: false
       },
       notation.uuid,
       doRemove,
