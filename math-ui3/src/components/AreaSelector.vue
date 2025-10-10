@@ -575,7 +575,7 @@ function setSelectionPositionForAnnotation(
   selectionPosition.value.x1 =
     cellStore.getSvgBoundingRect().left + selectedNotation.x - 1;
   selectionPosition.value.x2 =
-    selectionPosition.value.x1 + cellStore.getCellHorizontalWidth() + 5;
+    selectionPosition.value.x1 + cellStore.getCellHorizontalWidth() + 15;
   selectionPosition.value.y1 =
     cellStore.getSvgBoundingRect().top + selectedNotation.y + 5;
   selectionPosition.value.y2 =

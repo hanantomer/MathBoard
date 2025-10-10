@@ -47,6 +47,7 @@
         :x2="linePosition.p2x"
         :y2="linePosition.p2y"
         class="line"
+        :stroke="lineColor"
       />
     </svg>
   </div>
@@ -84,6 +85,8 @@ let movementDirection: MovementDirection = "NONE";
 
 let slopeType: SlopeType = "NONE";
 
+const lineColor = ref<string | undefined>("black");
+
 const linePosition = ref<LineAttributes>({
   p1x: 0,
   p2x: 0,
@@ -91,7 +94,7 @@ const linePosition = ref<LineAttributes>({
   p2y: 0,
   dashed: false,
   arrowLeft: false,
-  arrowRight: false
+  arrowRight: false,
 });
 
 const modifyRight = computed(

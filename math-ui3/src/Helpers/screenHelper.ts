@@ -17,8 +17,8 @@ import { useCellStore } from "../store/pinia/cellStore";
 
 const cellStore = useCellStore();
 
-const maxNotationDistance = 6;
-const maxCellDistance = 3;
+const maxNotationDistance = 8;
+const maxCellDistance = 4;
 
 export default function screenHelper() {
   type NotationDistance = { notation: NotationAttributes; distance: number };

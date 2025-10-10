@@ -43,18 +43,15 @@ const notationStore = useNotationStore();
 const editModeStore = useEditModeStore();
 
 const show = computed(() => {
-  return notationStore.getSelectedNotations().length === 1;
+  return (
+    notationStore.getSelectedNotations().length === 1 &&
+    (notationStore.getSelectedNotations()[0].notationType == "ANNOTATION" ||
+      notationStore.getSelectedNotations()[0].notationType == "LINE" ||
+      notationStore.getSelectedNotations()[0].notationType == "SYMBOL" ||
+      notationStore.getSelectedNotations()[0].notationType == "CIRCLE" ||
+      notationStore.getSelectedNotations()[0].notationType == "SIGN")
+  );
 });
-
-// watchHelper.watchCustomEvent(
-//   ["LINE_SELECTED"],
-//   "EV_NOTATION_SELECTED",
-//   (notation: NotationAttributes) => {
-//     const pos = screenHelper.getNotationTopLeft(notation);
-//     topPosition.value = pos.y - 150;
-//     leftPosition.value = pos.x + 20;
-//   },
-// );
 
 function close() {
   editModeStore.setDefaultEditMode();

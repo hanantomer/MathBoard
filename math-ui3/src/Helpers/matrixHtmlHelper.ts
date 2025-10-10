@@ -248,11 +248,6 @@ export default function useHtmlMatrixHelper() {
     let rowIdx = row(n);
     if (!rowIdx) return null;
 
-    let deltaY =
-      n.notationType === "SQRT" || n.notationType === "SQRTSYMBOL"
-        ? sqrtDeltaY
-        : 0;
-
     return utils.getNotationYposByRow(rowIdx);
   }
 
