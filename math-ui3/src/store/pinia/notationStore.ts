@@ -19,9 +19,10 @@ import {
   AnnotationNotationAttributes,
 } from "common/baseTypes";
 import { BoardType } from "common/unions";
-import { ref } from "vue";
+import { ref, computed } from "vue";
 import { useCellStore } from "./cellStore";
 import useNotationCellOccupationHelper from "../../helpers/notationCellOccupationHelper";
+import { cloneDeep } from "lodash";
 
 export const useNotationStore = defineStore("notation", () => {
   // special occupation matrix for dot notation since it coexists in a cell
@@ -46,6 +47,11 @@ export const useNotationStore = defineStore("notation", () => {
   let notations = ref(<Map<String, NotationAttributes>>new Map());
 
   let copiedNotations = ref(<Map<String, NotationAttributes>>new Map());
+
+  // Add undo/redo stacks
+  const undoStack = ref<Map<String, NotationAttributes>[]>([]);
+  const redoStack = ref<Map<String, NotationAttributes>[]>([]);
+  const maxStackSize = 50; // Limit stack size to prevent memory issues
 
   function getSelectedNotations(): NotationAttributes[] {
     return Array.from(notations.value.values()).filter(
@@ -117,10 +123,20 @@ export const useNotationStore = defineStore("notation", () => {
     return notations.value.get(uuid);
   }
 
+  // Helper to save current state to undo stack
+  function saveState() {
+    undoStack.value.push(cloneDeep(notations.value));
+    if (undoStack.value.length > maxStackSize) {
+      undoStack.value.shift(); // Remove oldest state
+    }
+    redoStack.value = []; // Clear redo stack when new action is performed
+  }
+
   function addNotation(
     notation: NotationAttributes,
     doUpdateOccupationMatrix: boolean,
   ) {
+    saveState();
     if (!notation.uuid) {
       console.error("addNotation: Notation uuid is undefined");
       return;
@@ -147,6 +163,7 @@ export const useNotationStore = defineStore("notation", () => {
   }
 
   function deleteNotation(uuid: string) {
+    saveState();
     const notation = notations.value.get(uuid)!;
     const notationCellOccupationHelper = useNotationCellOccupationHelper();
 
@@ -483,6 +500,58 @@ export const useNotationStore = defineStore("notation", () => {
     }
   }
 
+  // Add undo/redo functions
+  function undo() {
+    if (undoStack.value.length === 0) return;
+
+    // Save current state to redo stack
+    redoStack.value.push(cloneDeep(notations.value));
+
+    // Restore previous state
+    const previousState = undoStack.value.pop()!;
+    notations.value = cloneDeep(previousState);
+
+    // Rebuild occupation matrices
+    rebuildOccupationMatrices();
+  }
+
+  function redo() {
+    if (redoStack.value.length === 0) return;
+
+    // Save current state to undo stack
+    undoStack.value.push(cloneDeep(notations.value));
+
+    // Restore next state
+    const nextState = redoStack.value.pop()!;
+    notations.value = cloneDeep(nextState);
+
+    // Rebuild occupation matrices
+    rebuildOccupationMatrices();
+  }
+
+  function rebuildOccupationMatrices() {
+    // Clear matrices
+    dotNotationOccupationMatrix = createCellSingleNotationOccupationMatrix();
+    symbolNotationOccupationMatrix = createCellSingleNotationOccupationMatrix();
+    cellRectNotationOccupationMatrix =
+      createCellSingleNotationOccupationMatrix();
+    cellLineNotationOccupationMatrix =
+      createCellMultipleNotationOccupationMatrix();
+
+    // Rebuild matrices
+    const notationCellOccupationHelper = useNotationCellOccupationHelper();
+    Array.from(notations.value.values()).forEach((notation) => {
+      updateOccupationMatrix(
+        notation,
+        dotNotationOccupationMatrix,
+        symbolNotationOccupationMatrix,
+        cellLineNotationOccupationMatrix,
+        cellRectNotationOccupationMatrix,
+        notationCellOccupationHelper,
+      );
+    });
+  }
+
   return {
     addNotation,
     clearCopiedNotations,
@@ -507,5 +576,9 @@ export const useNotationStore = defineStore("notation", () => {
     setCopiedNotations,
     setNotations,
     setParent,
+    undo,
+    redo,
+    canUndo: computed(() => undoStack.value.length > 0),
+    canRedo: computed(() => redoStack.value.length > 0),
   };
 });

@@ -1,5 +1,6 @@
 import { useEditModeStore } from "../store/pinia/editModeStore";
 import { useCellStore } from "../store/pinia/cellStore";
+import { useNotationStore } from "../store/pinia/notationStore";
 import useMatrixCellHelper from "../helpers/matrixCellHelper";
 import useAuthorizationHelper from "../helpers/authorizationHelper";
 import useNotationMutateHelper from "../helpers/notationMutateHelper";
@@ -8,6 +9,7 @@ type keyType = "SYMBOL" | "MOVEMENT" | "DELETION" | "MOVEANDDELETE" | "PUSH";
 
 const editModeStore = useEditModeStore();
 const cellStore = useCellStore();
+const notationStore = useNotationStore();
 const matrixCellHelper = useMatrixCellHelper();
 const authorizationHelper = useAuthorizationHelper();
 const notationMutateHelper = useNotationMutateHelper();
@@ -53,9 +55,27 @@ export default function () {
     if (delayedShiftKeys.has(key) && shiftReleased) {
       shiftReleased = false;
     }
+
+    if (e.ctrlKey && e.key === "z" && !e.shiftKey) {
+      e.preventDefault();
+      notationStore.undo();
+    }
   }
 
   function keyUpHandler(e: KeyboardEvent) {
+    if (
+      (e.ctrlKey && e.key === "y") ||
+      (e.ctrlKey && e.shiftKey && e.key === "z")
+    ) {
+      e.preventDefault();
+      notationStore.redo();
+    }
+
+    if (e.ctrlKey && e.key === "z" && !e.shiftKey) {
+      e.preventDefault();
+      notationStore.undo();
+    }
+
     const { ctrlKey, altKey, code, key } = e;
     if (ctrlKey || altKey) return;
 
