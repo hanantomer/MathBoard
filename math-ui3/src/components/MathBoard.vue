@@ -125,11 +125,11 @@ watchHelper.watchMouseEvent(
   selectionHelper.selectClickedPosition,
 );
 
-watchHelper.watchMouseEvent(
-  ["TEXT_SELECTED"],
-  "EV_SVG_MOUSEUP",
-  selectionHelper.selectClickedPosition,
-);
+// watchHelper.watchMouseEvent(
+//   ["TEXT_SELECTED"],
+//   "EV_SVG_MOUSEUP",
+//   selectionHelper.selectClickedPosition,
+// );
 
 watchHelper.watchMouseEvent(
   ["XMARK_STARTED", "CHECKMARK_STARTED", "SEMICHECKMARK_STARTED"],
@@ -269,7 +269,6 @@ html {
 }
 
 .line {
-
   position: absolute;
   display: block;
   border-bottom: solid 1px;

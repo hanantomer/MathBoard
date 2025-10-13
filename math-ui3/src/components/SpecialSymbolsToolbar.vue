@@ -217,6 +217,9 @@ async function addSpecialSymbol(item: string) {
       editModeStore.isAnnotationWritingMode()
     ) {
       eventBus.emit("EV_SPECIAL_SYMBOL_SELECTED", selectedSymbol.value);
+      setTimeout(() => {
+        eventBus.emit("EV_SPECIAL_SYMBOL_SELECTED", "");
+      }, 0);
     } else {
       if (item === "&#8735") {
         // 90 degrees symbol
@@ -224,10 +227,11 @@ async function addSpecialSymbol(item: string) {
           screenHelper.getSelectedCellDotCoordinates();
         if (!selectedCellDotCoordinates) return;
 
-        const ninetyDegreesNotationUUId =  await notationMutateHelper.addAnnotationNotation(
-          decodeSpecialSymbol(item),
-          selectedCellDotCoordinates!,
-        );
+        const ninetyDegreesNotationUUId =
+          await notationMutateHelper.addAnnotationNotation(
+            decodeSpecialSymbol(item),
+            selectedCellDotCoordinates!,
+          );
 
         selectionHelper.selectNotation(ninetyDegreesNotationUUId);
         return;

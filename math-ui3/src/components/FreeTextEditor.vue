@@ -8,7 +8,10 @@ import { computed, ref } from "vue";
 import { useCellStore } from "../store/pinia/cellStore";
 import { useEditModeStore } from "../store/pinia/editModeStore";
 import { useNotationStore } from "../store/pinia/notationStore";
-import { RectNotationAttributes } from "../../../math-common/src/baseTypes";
+import {
+  RectCoordinates,
+  RectNotationAttributes,
+} from "../../../math-common/src/baseTypes";
 import { EditMode } from "../../../math-common/src/unions";
 
 import useNotationMutateHelper from "../helpers/notationMutateHelper";
@@ -20,7 +23,6 @@ const watchHelper = useWatchHelper();
 let textValue = ref("");
 const cellStore = useCellStore();
 const notationStore = useNotationStore();
-const emit = defineEmits(["hide"]);
 const editModeStore = useEditModeStore();
 const screenHelper = usescreenHelper();
 const show = computed(() => editModeStore.getEditMode() === "TEXT_WRITING");
@@ -35,16 +37,16 @@ watchHelper.watchEveryEditModeChange(submitText);
 
 // user clicked outside of text rect during edit
 watchHelper.watchMouseEvent(
-  ["TEXT_WRITING"],
+  ["TEXT_WRITING", "TEXT_SELECTED"],
   "EV_SVG_MOUSEDOWN",
-  resetTextEditingIfClickedOuside,
+  resetTextEditingIfClickedOusideTextArea,
 );
 
-// user clicked outside of text rect after text selection
+// user clicked inside text rect after text selection
 watchHelper.watchMouseEvent(
   ["TEXT_SELECTED"],
-  "EV_SVG_MOUSEDOWN",
-  resetTextSelection,
+  "EV_SVG_MOUSEUP",
+  editTextSelection,
 );
 
 // area selector signals the selected position
@@ -67,8 +69,7 @@ watchHelper.watchCustomEvent(
 );
 
 function editSelectedTextNotation(e: MouseEvent) {
-
-  if(selectedNotation.value?.notationType !== "TEXT") {
+  if (selectedNotation.value?.notationType !== "TEXT") {
     return;
   }
 
@@ -77,8 +78,6 @@ function editSelectedTextNotation(e: MouseEvent) {
   setInitialTextValue();
 
   setInitialTextDimensions();
-
-  hideTextNotation(selectedNotation.value!.uuid);
 
   const textEl = document.getElementById("textAreaEl")! as HTMLTextAreaElement;
 
@@ -136,19 +135,16 @@ function submitText(newEditMode: EditMode, oldEditMode: any) {
 
   editModeStore.setNextEditMode();
 
-  const left = parseInt(textAreaEl.style.left.replace("px", ""));
-  const top = parseInt(textAreaEl.style.top.replace("px", ""));
-  const width = parseInt(textAreaEl.style.width.replace("px", ""));
-  const height = parseInt(textAreaEl.style.height.replace("px", ""));
+  const rect = textAreaEl.getBoundingClientRect();
 
   const rectCoordinates = screenHelper.getRectAttributes({
     topLeft: {
-      x: left - cellStore.getSvgBoundingRect().x,
-      y: top - cellStore.getSvgBoundingRect().y,
+      x: rect.left - cellStore.getSvgBoundingRect().x,
+      y: rect.top - cellStore.getSvgBoundingRect().y,
     },
     bottomRight: {
-      x: left + width - cellStore.getSvgBoundingRect().x,
-      y: top + height - cellStore.getSvgBoundingRect().y,
+      x: rect.right - cellStore.getSvgBoundingRect().x,
+      y: rect.bottom - cellStore.getSvgBoundingRect().y,
     },
   });
 
@@ -158,7 +154,7 @@ function submitText(newEditMode: EditMode, oldEditMode: any) {
     Object.assign(updatedNotation, rectCoordinates);
 
     notationMutateHelper.updateNotation(updatedNotation);
-    showTextElement(updatedNotation.uuid);
+    showTextNotation(updatedNotation.uuid);
   } else {
     notationMutateHelper.addTextNotation(textValue.value, rectCoordinates);
   }
@@ -171,41 +167,63 @@ function hideTextNotation(uuid: string) {
 }
 
 // restore text notation which was hideen during editing
-function showTextElement(uuid: string) {
+function showTextNotation(uuid: string) {
   document!
     .querySelector<HTMLElement>(`foreignObject[uuid="${uuid}"]`)!
     .classList.remove("hidden");
 }
 
-function resetTextEditingIfClickedOuside(e: MouseEvent) {
+function resetTextEditingIfClickedOusideTextArea(e: MouseEvent) {
   // mouse clicked outside of text arae
-  if (e.target != document.getElementById("textAreaEl")) {
+  //  showTextNotation(selectedNotation.value!.uuid);
+  if ((e.target as HTMLAreaElement).tagName != "TEXTAREA") {
     editModeStore.setDefaultEditMode();
   }
 }
 
-function resetTextSelection(e: MouseEvent) {
-  const el = e.target as Element;
-  if (el.tagName === "TEXTAREA") {
+function editTextSelection(e: MouseEvent) {
+  const el = e.target as HTMLElement;
+  if (
+    el.id !== "selection" &&
+    (e.target as HTMLAreaElement).tagName != "TEXTAREA"
+  ) {
     return;
   }
-  editModeStore.setDefaultEditMode();
+  editModeStore.setEditMode("TEXT_WRITING");
+
+  const rect = el.getBoundingClientRect();
+
+  startTextEditing({
+    topLeft: {
+      x: rect.left,
+      y: rect.top,
+    },
+    bottomRight: {
+      x: rect.right,
+      y: rect.bottom,
+    },
+  });
+
+  hideTextNotation(selectedNotation.value!.uuid);
 }
 
-function startTextEditing(selectionPosition: any) {
+function startTextEditing(selectionCoordinates: RectCoordinates) {
   setInitialTextValue();
   const textAreaEl = document.getElementById(
     "textAreaEl",
   )! as HTMLTextAreaElement;
-  textAreaEl.style.left = selectionPosition.left + "px";
-  textAreaEl.style.top = selectionPosition.top + "px";
-  textAreaEl.style.height = selectionPosition.height + "px";
-  textAreaEl.style.width = selectionPosition.width + "px";
+  textAreaEl.style.left = selectionCoordinates.topLeft.x + "px";
+  textAreaEl.style.top = selectionCoordinates.topLeft.y + "px";
+  textAreaEl.style.height =
+    selectionCoordinates.bottomRight.y - selectionCoordinates.topLeft.y + "px";
+  textAreaEl.style.width =
+    selectionCoordinates.bottomRight.x - selectionCoordinates.topLeft.x + "px";
 
   setTimeout('document.getElementById("textAreaEl").focus()', 100);
 }
 
 function addSpecialSymbol(symbol: String): void {
+  if (!symbol) return;
   const textArea = document.getElementById("textAreaEl") as HTMLTextAreaElement;
 
   // Get cursor position

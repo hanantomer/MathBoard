@@ -48,7 +48,7 @@ const annotationTop = computed(() => annotationPoint.value.y);
 
 const annotationLeft = computed(() => annotationPoint.value.x);
 
-const annotationWidth = computed(() => cellStore.getCellHorizontalWidth());
+const annotationWidth = computed(() => cellStore.getCellHorizontalWidth()*2);
 
 const annotationHeight = computed(
   () => cellStore.getCellVerticalHeight() / 2 + 2,
@@ -156,6 +156,7 @@ function endEditingByEnterKey(e: KeyboardEvent) {
 }
 
 function addSpecialSymbol(symbol: string): void {
+  if (!symbol) return;
   const input = document.getElementById("annotationEl") as HTMLInputElement;
 
   // Get cursor position

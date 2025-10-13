@@ -17,7 +17,6 @@ import {
 import useSelectionHelper from "../helpers/selectionHelper";
 const selectionHelper = useSelectionHelper();
 
-
 const userStore = useUserStore();
 const notationStore = useNotationStore();
 const cellStore = useCellStore();
@@ -47,7 +46,7 @@ export default function eventHelper() {
       e.clipboardData?.items[0].kind === "string" &&
       e.clipboardData?.types[0].match("^text/plain")
     ) {
-      return pasteText(e);
+      //return pasteText(e);
     }
 
     // Support both Files and Google Docs images (which may come as text/html)
@@ -212,7 +211,7 @@ export default function eventHelper() {
             if (!blob) return;
             const base64 = await imageHelper.convertBlobToBase64GrayScale(blob);
             notationMutationHelper.addImageNotation(base64);
-            return
+            return;
           }
           const htmlType = clipboardItem.types.find((type: string) =>
             type.startsWith("text/html"),
@@ -253,7 +252,8 @@ export default function eventHelper() {
             console.debug("Found binary image in clipboard, type:", item.type);
             const blob: File | null = item.getAsFile();
             if (blob) {
-              const base64: string = await imageHelper.convertBlobToBase64GrayScale(blob);
+              const base64: string =
+                await imageHelper.convertBlobToBase64GrayScale(blob);
               notationMutationHelper.addImageNotation(base64);
               return;
             }
@@ -303,7 +303,6 @@ export default function eventHelper() {
       );
     }
   }
-
 
   function emitSvgMouseDown(e: MouseEvent) {
     eventBus.emit("EV_SVG_MOUSEDOWN", e);
@@ -406,7 +405,6 @@ export default function eventHelper() {
     window.removeEventListener("keydown", emitKeyDown);
   }
 
-
   function emitCopy() {
     eventBus.emit("EV_COPY", null);
   }
@@ -430,7 +428,6 @@ export default function eventHelper() {
   function unregisterPaste() {
     document.removeEventListener("paste", emitPaste);
   }
-
 
   return {
     copy,

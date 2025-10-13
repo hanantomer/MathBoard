@@ -1,11 +1,11 @@
 import axios from "axios";
 import { useCookies } from "vue3-cookies";
+import { useRouter } from "vue-router";
 import { baseURL, imagesURL } from "../../../math-common/src/globals";
 
 const { cookies } = useCookies();
 
 export default function axiosHelper() {
-
   function handleError(error: any) {
     if (error.response) {
       // The request was made and the server responded with a status code
@@ -27,53 +27,33 @@ export default function axiosHelper() {
   }
 
   function initAxiosInterceptors() {
-    // axios.interceptors.response.use(
-    //   (response) => response,
-    //   (error) => {
-    //     if (error.response?.status === 401) {
-    //       // Clear user data
-    //       //userStore..clearUser();
-    //       cookies.remove("access_token");
+    axios.interceptors.request.use(
+      function (config: any) {
+        const access_token =
+          cookies.get("access_token") != null &&
+          cookies.get("access_token") != "null" &&
+          cookies.get("access_token") != "undefined"
+            ? cookies.get("access_token")
+            : null;
 
-    //       // Redirect to login
-    //       //router.push("/login");
+        if (!access_token && window.location.pathname != "/login") {
+          cookies.remove("access_token");
 
-    //       return Promise.reject(error);
-    //     }
-    //     return handleError(error);
-    //   },
-    // );
+          const router = useRouter();
 
-    axios.interceptors.request.use(function (config: any) {
-      // const isOAuth =
-      //   gapi.auth2.getAuthInstance() != null &&
-      //   gapi.auth2.getAuthInstance().currentUser != null &&
-      //   gapi.auth2.getAuthInstance().currentUser.get().isSignedIn();
+          // Redirect to login
+          router.push("/login");
+          return Promise.reject(new Error("No access token"));
+        }
 
-      // const access_token = isOAuth
-      //   ? `Bearer ${
-      //       gapi.auth2.getAuthInstance().currentUser.get().getAuthResponse()
-      //         .id_token
-      //     }`
-      //   : window.$cookies.get("access_token") != null &&
-      //     window.$cookies.get("access_token") != "null" &&
-      //     window.$cookies.get("access_token") != "undefined"
-      //   ? window.$cookies.get("access_token")
-      //   : null;
-
-      const access_token =
-        cookies.get("access_token") != null &&
-        cookies.get("access_token") != "null" &&
-        cookies.get("access_token") != "undefined"
-          ? cookies.get("access_token")
-          : null;
-
-      if (access_token != null) {
         config.headers.authorization = access_token;
-      }
-
-      return config;
-    });
+        return config;
+      },
+      function (error) {
+        return Promise.reject(error);
+      },
+    );
   }
+
   return { baseURL, imagesURL, initAxiosInterceptors, handleError };
 }

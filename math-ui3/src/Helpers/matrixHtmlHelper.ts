@@ -242,7 +242,7 @@ export default function useHtmlMatrixHelper() {
 
   function y(n: NotationAttributes) {
     if (n.notationType === "ANNOTATION") {
-      return (n as AnnotationNotationAttributes).y - 7;
+      return (n as AnnotationNotationAttributes).y - 15;
     }
 
     let rowIdx = row(n);

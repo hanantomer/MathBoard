@@ -32,12 +32,11 @@
 <script setup lang="ts">
 import { formatDate } from "../../../math-common/src/globals";
 import { watch, ref, onMounted } from "vue";
-import { useRouter } from "vue-router";
+import { useRouter, useRoute } from "vue-router";
 import { computed } from "vue";
 import { useAnswerStore } from "../store/pinia/answerStore";
 import { useQuestionStore } from "../store/pinia/questionStore";
 import { useLessonStore } from "../store/pinia/lessonStore";
-import { useRoute } from "vue-router";
 import { useEditModeStore } from "../store/pinia/editModeStore";
 
 const router = useRouter();
