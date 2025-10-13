@@ -81,7 +81,8 @@ const selectedRectBoundingRect = computed(() => {
 
 const show = computed(() => {
   return (
-    (editModeStore.isImageSelectedMode() ||
+    (editModeStore.isAnnotationSelectedMode() ||
+      editModeStore.isImageSelectedMode() ||
       editModeStore.isTextSelectedMode() ||
       editModeStore.isTextSelectionMode() ||
       editModeStore.isAreaSelectionOrMovingMode()) &&
@@ -553,15 +554,12 @@ function selectRectNotation(): void {
   if (getSelectedRect()!.notationType === "TEXT") {
     setSelectionPositionForText(getSelectedRect() as RectNotationAttributes);
   }
-
-  //editModeStore.setEditMode("AREA_SELECTED");
 }
 
 function selectAnnotation(): void {
   setSelectionPositionForAnnotation(
     getSelectedAnnotation() as AnnotationNotationAttributes,
   );
-  //editModeStore.setEditMode("AREA_SELECTED");
 }
 
 function setSelectionPositionForAnnotation(
@@ -570,11 +568,11 @@ function setSelectionPositionForAnnotation(
   selectionPosition.value.x1 =
     cellStore.getSvgBoundingRect().left + selectedNotation.x - 1;
   selectionPosition.value.x2 =
-    selectionPosition.value.x1 + cellStore.getCellHorizontalWidth() + 15;
+    selectionPosition.value.x1 + cellStore.getCellHorizontalWidth() * 2 + 5;
   selectionPosition.value.y1 =
     cellStore.getSvgBoundingRect().top + selectedNotation.y + 5;
   selectionPosition.value.y2 =
-    selectionPosition.value.y1 + cellStore.getCellVerticalHeight() - 5;
+    selectionPosition.value.y1 + cellStore.getCellVerticalHeight() - 20;
 }
 
 function setSelectionPositionForText(selectedNotation: RectNotationAttributes) {
