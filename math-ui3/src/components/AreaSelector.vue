@@ -170,9 +170,7 @@ watchHelper.watchMouseEvent(
 watchHelper.watchMouseEvent(
   ["AREA_SELECTED", "RESIZE_STARTED", "RESIZING"],
   "EV_SVG_MOUSEDOWN",
-  () => {
-    cancelSelectionWhenUserClickedOutside();
-  },
+  cancelSelectionWhenUserClickedOutside,
 );
 
 watchHelper.watchKeyEvent(["AREA_SELECTED"], "EV_KEYUP", handleKeyUp);
@@ -190,7 +188,7 @@ watchHelper.watchMouseEvent(
 );
 
 watchHelper.watchMouseEvent(
-  ["TEXT_STARTED"],
+  ["TEXT_STARTED", "IMAGE_SELECTED"],
   "EV_SVG_MOUSEUP",
   cancelTextSelectionWhenUserClickedOutside /*takes action when clicked outside of selection area*/,
 );

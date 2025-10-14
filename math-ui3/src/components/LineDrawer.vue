@@ -358,10 +358,7 @@ function moveLine(moveX: number, moveY: number) {
   saveLine();
 }
 
-function moveLineByKey(moveX: number, moveY: number) {
-  applyMoveToLine(moveX, moveY);
-  saveLine(false);
-}
+
 </script>
 
 <style scoped>

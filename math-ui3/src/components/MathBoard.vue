@@ -147,6 +147,7 @@ watchHelper.watchKeyEvent(
     "TEXT_SELECTED",
     "EXPONENT_SELECTED",
     "CIRCLE_SELECTED",
+    "IMAGE_SELECTED",
   ],
   "EV_KEYUP",
   keyHelper.keyUpHandler,
