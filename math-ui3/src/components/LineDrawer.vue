@@ -172,8 +172,12 @@ function setInitialPosition(p: DotCoordinates) {
   lineAttributes.value.p2x = p.x;
   lineAttributes.value.p1y = p.y;
   lineAttributes.value.p2y = p.y;
+  lineAttributes.value.arrowLeft = false;
+  lineAttributes.value.arrowRight = false;
+  lineAttributes.value.dashed = false;
   slopeType = "NONE";
   movementDirection = "NONE";
+  lineColor.value = "black";
 }
 
 function drawLine(p: DotCoordinates) {
@@ -212,7 +216,7 @@ function selectLine(notation: NotationAttributes) {
   lineAttributes.value.dashed = n.dashed;
   lineAttributes.value.arrowLeft = n.arrowLeft;
   lineAttributes.value.arrowRight = n.arrowRight;
-  lineColor.value = n.color?.value??"black";
+  lineColor.value = n.color?.value ?? "black";
 }
 
 function modifyLineLeft(p: DotCoordinates) {
@@ -292,6 +296,16 @@ async function saveLine(fixEdge: boolean = true): Promise<string> {
     }).y;
   }
 
+  // flip p1x and p2x if p1x > p2x
+  if (lineAttributes.value.p1x > lineAttributes.value.p2x) {
+    const tempX = lineAttributes.value.p1x;
+    const tempY = lineAttributes.value.p1y;
+    lineAttributes.value.p1x = lineAttributes.value.p2x;
+    lineAttributes.value.p1y = lineAttributes.value.p2y;
+    lineAttributes.value.p2x = tempX;
+    lineAttributes.value.p2y = tempY;
+  }
+
   if (notationStore.getSelectedNotations().length > 0) {
     let updatedLine = {
       ...notationStore.getSelectedNotations().at(0)!,
@@ -357,8 +371,6 @@ function moveLine(moveX: number, moveY: number) {
   applyMoveToLine(moveX, moveY);
   saveLine();
 }
-
-
 </script>
 
 <style scoped>

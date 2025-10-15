@@ -71,6 +71,7 @@
         d="M0 0"
         stroke-linecap="round"
         fill="transparent"
+        stroke="black"
       ></path>
       <circle
         id="controlPoint"

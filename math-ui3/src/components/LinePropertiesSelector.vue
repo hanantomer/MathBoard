@@ -23,8 +23,8 @@
             </v-list-item>
             <v-list-item
               role="button"
-              aria-label="Toggle dashed line"
-              aria-keyshortcuts="D"
+              aria-label="Toggle right arrow"
+              aria-keyshortcuts="R"
               @click="toggleRightArrow()"
             >
               <v-list-item-title v-if="hasRightArrow"
@@ -39,8 +39,8 @@
             </v-list-item>
             <v-list-item
               role="button"
-              aria-label="Toggle dashed line"
-              aria-keyshortcuts="D"
+              aria-label="Toggle left arrow"
+              aria-keyshortcuts="L"
               @click="toggleLeftArrow()"
             >
               <v-list-item-title v-if="hasLeftArrow"

@@ -235,6 +235,9 @@ export default function useHtmlMatrixHelper() {
     let deltaX =
       n.notationType === "SQRTSYMBOL"
         ? Math.round(cellStore.getCellHorizontalWidth() / 3) * -1
+        : n.notationType === "SYMBOL" &&
+          (n as PointNotationAttributes).value === "."
+        ? -3
         : 0;
 
     return colIdx != null ? utils.getNotationXposByCol(colIdx) + deltaX : null;

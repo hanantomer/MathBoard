@@ -44,7 +44,7 @@ const editModeStore = useEditModeStore();
 
 const show = computed(() => {
   return (
-    notationStore.getSelectedNotations().length === 1 &&
+    notationStore.getSelectedNotations().length >= 1 &&
     (notationStore.getSelectedNotations()[0].notationType == "ANNOTATION" ||
       notationStore.getSelectedNotations()[0].notationType == "LINE" ||
       notationStore.getSelectedNotations()[0].notationType == "SYMBOL" ||

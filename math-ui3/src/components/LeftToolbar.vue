@@ -49,7 +49,6 @@
   </div>
 
   <v-toolbar color="primary" dark :class="toolbarClass" height="600">
-    <ColorSelector></ColorSelector>
     <v-tooltip
       text="Invite students via access link"
       v-if="userStore.isTeacher()"

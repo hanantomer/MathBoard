@@ -238,8 +238,8 @@ export const useNotationStore = defineStore("notation", () => {
 
     notation.selected = true;
 
-    const cellStore = useCellStore();
-    cellStore.setSelectedCell({ col: 1, row: 1 }, false);
+    //const cellStore = useCellStore();
+    //cellStore.setSelectedCell({ col: 1, row: 1 }, false);
   }
 
   function setParent(parentUUID: string, boardType: BoardType) {
