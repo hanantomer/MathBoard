@@ -299,17 +299,18 @@ export const useNotationStore = defineStore("notation", () => {
 
     // line
 
-    const lineNotationsUUIDs = cellLineNotationOccupationMatrix[cell.col][
-      cell.row
-    ] as Set<String>;
+    // const lineNotationsUUIDs = cellLineNotationOccupationMatrix[cell.col][
+    //   cell.row
+    // ] as Set<String>;
 
-    if (lineNotationsUUIDs) {
-      Array.from(lineNotationsUUIDs.values()).forEach((ln: any) => {
-        if (notations.value.get(ln)) {
-          notationsAtCell.push(notations.value.get(ln) as NotationAttributes);
-        }
-      });
-    }
+    // if (lineNotationsUUIDs) {
+    //   Array.from(lineNotationsUUIDs.values()).forEach((ln: any) => {
+    //     if (notations.value.get(ln)) {
+    //       notationsAtCell.push(notations.value.get(ln) as NotationAttributes);
+    //     }
+    //   });
+    // }
+
     return notationsAtCell;
   }
 
@@ -364,10 +365,10 @@ export const useNotationStore = defineStore("notation", () => {
     const y = sqrt.row * cellStore.getCellVerticalHeight();
 
     // Check if the sqrt notation intersects with the given rectangle
-    if (x1 > rect.bottomRight.x) return false; // sqrt right of rect
-    if (x2 < rect.topLeft.x) return false; // sqrt left of rect
-    if (y > rect.bottomRight.y) return false; // sqrt below rect
-    if (y < rect.topLeft.y) return false; // sqrt above rect
+    if (Math.max(x1, x2) < rect.topLeft.x) return false;
+    if (Math.min(x1, x2) > rect.bottomRight.x) return false;
+    if (y < rect.topLeft.y) return false;
+    if (y > rect.bottomRight.y) return false;
     return true;
   }
 
@@ -375,11 +376,94 @@ export const useNotationStore = defineStore("notation", () => {
     line: LineNotationAttributes,
     rect: RectCoordinates,
   ): boolean {
-    if (line.p2x < rect.topLeft.x) return false; // line left of rect
-    if (line.p1x > rect.bottomRight.x) return false; // line right of rect
-    if (Math.min(line.p1y, line.p2y) > rect.bottomRight.y) return false; // line below rect
-    if (Math.max(line.p1y, line.p2y) < rect.topLeft.y) return false; // line above rect
-    return true;
+    // First do quick rejection test using bounding box
+    if (Math.max(line.p1x, line.p2x) < rect.topLeft.x) return false;
+    if (Math.min(line.p1x, line.p2x) > rect.bottomRight.x) return false;
+    if (Math.max(line.p1y, line.p2y) < rect.topLeft.y) return false;
+    if (Math.min(line.p1y, line.p2y) > rect.bottomRight.y) return false;
+
+    // Check if either endpoint is inside rectangle
+    if (
+      isPointInRect(line.p1x, line.p1y, rect) ||
+      isPointInRect(line.p2x, line.p2y, rect)
+    ) {
+      return true;
+    }
+
+    // Check intersection with each edge of rectangle
+    return (
+      lineIntersectsLine(
+        line.p1x,
+        line.p1y,
+        line.p2x,
+        line.p2y,
+        rect.topLeft.x,
+        rect.topLeft.y,
+        rect.bottomRight.x,
+        rect.topLeft.y,
+      ) || // Top edge
+      lineIntersectsLine(
+        line.p1x,
+        line.p1y,
+        line.p2x,
+        line.p2y,
+        rect.bottomRight.x,
+        rect.topLeft.y,
+        rect.bottomRight.x,
+        rect.bottomRight.y,
+      ) || // Right edge
+      lineIntersectsLine(
+        line.p1x,
+        line.p1y,
+        line.p2x,
+        line.p2y,
+        rect.bottomRight.x,
+        rect.bottomRight.y,
+        rect.topLeft.x,
+        rect.bottomRight.y,
+      ) || // Bottom edge
+      lineIntersectsLine(
+        line.p1x,
+        line.p1y,
+        line.p2x,
+        line.p2y,
+        rect.topLeft.x,
+        rect.bottomRight.y,
+        rect.topLeft.x,
+        rect.topLeft.y,
+      ) // Left edge
+    );
+  }
+
+  function isPointInRect(x: number, y: number, rect: RectCoordinates): boolean {
+    return (
+      x >= rect.topLeft.x &&
+      x <= rect.bottomRight.x &&
+      y >= rect.topLeft.y &&
+      y <= rect.bottomRight.y
+    );
+  }
+
+  function lineIntersectsLine(
+    x1: number,
+    y1: number,
+    x2: number,
+    y2: number,
+    x3: number,
+    y3: number,
+    x4: number,
+    y4: number,
+  ): boolean {
+    // Calculate the denominator
+    const denom = (y4 - y3) * (x2 - x1) - (x4 - x3) * (y2 - y1);
+    if (denom === 0) return false; // Lines are parallel
+
+    // Calculate intersection parameters for both lines
+    const ua = ((x4 - x3) * (y1 - y3) - (y4 - y3) * (x1 - x3)) / denom;
+    const ub = ((x2 - x1) * (y1 - y3) - (y2 - y1) * (x1 - x3)) / denom;
+
+    // Check if intersection occurs within both line segments
+    return ua >= 0 && ua <= 1 && ub >= 0 && ub <= 1;
   }
 
   function createCellSingleNotationOccupationMatrix(): (String | null)[][] {
