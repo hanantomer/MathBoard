@@ -36,7 +36,6 @@ import useAuthorizationHelper from "../helpers/authorizationHelper";
 import { AnnotationNotationAttributes } from "common/baseTypes";
 
 const notationStore = useNotationStore();
-const editModeStore = useEditModeStore();
 const notationMutateHelper = useNotationMutateHelper();
 const authorizationHelper = useAuthorizationHelper();
 
@@ -60,11 +59,6 @@ function rotateSelection(degrees: number) {
   selectedNotation.rotation = (currentRotation + degrees + 360) % 360;
   notationMutateHelper.updateNotation(selectedNotation);
 
-//  editModeStore.setDefaultEditMode();
 }
 </script>
 
-<style scoped>
-
-
-</style>

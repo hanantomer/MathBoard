@@ -14,6 +14,7 @@ import {
   CircleNotationAttributes,
   isRect,
   isLine,
+  isCurve,
   isCellNotation,
   SqrtNotationAttributes,
   AnnotationNotationAttributes,
@@ -99,6 +100,12 @@ export const useNotationStore = defineStore("notation", () => {
   function getLinetNotations(): NotationAttributes[] {
     return Array.from(notations.value.values())
       .filter((n) => isLine(n.notationType))
+      .map((n) => n as RectNotationAttributes);
+  }
+
+  function getCurveNotations(): NotationAttributes[] {
+    return Array.from(notations.value.values())
+      .filter((n) => isCurve(n.notationType))
       .map((n) => n as RectNotationAttributes);
   }
 
@@ -332,26 +339,51 @@ export const useNotationStore = defineStore("notation", () => {
   }
 
   function selectNotationsOfRectCoordinates(rect: RectCoordinates) {
-    getLinetNotations().forEach((l) => {
-      let doIntersects = true;
-      switch (l.notationType) {
-        case "SQRT":
-          doIntersects = checkSqrtIntersection(
-            l as SqrtNotationAttributes,
-            rect,
-          );
-          break;
-        case "LINE":
-          doIntersects = checkLineIntersection(
-            l as LineNotationAttributes,
-            rect,
-          );
-          break;
-      }
-      if (doIntersects) {
-        selectNotation(l.uuid);
-      }
-    });
+    getLinetNotations()
+      .concat(getCurveNotations())
+      .forEach((l) => {
+        let doIntersects = true;
+        switch (l.notationType) {
+          case "SQRT":
+            doIntersects = checkSqrtIntersection(
+              l as SqrtNotationAttributes,
+              rect,
+            );
+            break;
+          case "LINE":
+            doIntersects = checkLineIntersection(
+              l as LineNotationAttributes,
+              rect,
+            );
+            break;
+          case "CURVE":
+            doIntersects = checkCurveIntersection(
+              l as CurveNotationAttributes,
+              rect,
+            );
+            break;
+        }
+        if (doIntersects) {
+          selectNotation(l.uuid);
+        }
+      });
+  }
+
+  function checkCurveIntersection(
+    curve: CurveNotationAttributes,
+    rect: RectCoordinates,
+  ): boolean {
+    const x1 = curve.p1x;
+    const x2 = curve.p2x;
+    const y1 = curve.p1y;
+    const y2 = curve.p2y;
+
+    // Check if the curve's bounding box intersects with the given rectangle
+    if (Math.max(x1, x2) < rect.topLeft.x) return false;
+    if (Math.min(x1, x2) > rect.bottomRight.x) return false;
+    if (Math.max(y1, y2) < rect.topLeft.y) return false;
+    if (Math.min(y1, y2) > rect.bottomRight.y) return false;
+    return true;
   }
 
   function checkSqrtIntersection(
@@ -649,6 +681,8 @@ export const useNotationStore = defineStore("notation", () => {
     getParent,
     getPointNotations,
     getRectNotations,
+    getLinetNotations,
+    getCurveNotations,
     getSelectedNotations,
     hasSelectedNotations,
     isSymbolAdjecentToLine,

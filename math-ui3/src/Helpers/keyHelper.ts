@@ -154,8 +154,7 @@ export default function () {
   }
 
   function handleDeletionKey() {
-    notationMutateHelper.handleDeleteKey();
-
+    notationMutateHelper.deleteSelectedNotations();
     matrixCellHelper.setNextCell(0, 0);
   }
 

@@ -848,31 +848,7 @@ export default function notationMutateHelper() {
     }
   }
 
-  function deleteSelectedNotations() {
-    notationStore
-      .getSelectedNotations()
-      .forEach(async (n: NotationAttributes) => {
-        // from db
-        await apiHelper.deleteNotation(n);
-      });
-
-    notationStore
-      .getSelectedNotations()
-      .forEach(async (n: NotationAttributes) => {
-        //from store
-        notationStore.deleteNotation(n.uuid);
-
-        // publish
-        if (notationStore.getParent().type === "LESSON") {
-          userOutgoingOperations.syncOutgoingRemoveNotation(
-            n.uuid,
-            (n as LessonNotationAttributes).lesson.uuid,
-          );
-        }
-      });
-  }
-
-  function aproveDeleteSelectedNotations() {
+  function approveDeleteSelectedNotations() {
     if (!authorizationHelper.canEdit()) return;
 
     globalAlertStore.open(
@@ -1129,7 +1105,7 @@ export default function notationMutateHelper() {
     }
   }
 
-  async function handleDeleteKey() {
+  async function deleteSelectedNotations() {
     if (!authorizationHelper.canEdit()) return;
 
     // Check if function is already running
@@ -1141,7 +1117,27 @@ export default function notationMutateHelper() {
       deleteKeyLock = true;
 
       if (notationStore.getSelectedNotations().length) {
-        deleteSelectedNotations();
+        notationStore
+          .getSelectedNotations()
+          .forEach(async (n: NotationAttributes) => {
+            // from db
+            await apiHelper.deleteNotation(n);
+          });
+
+        notationStore
+          .getSelectedNotations()
+          .forEach(async (n: NotationAttributes) => {
+            //from store
+            notationStore.deleteNotation(n.uuid);
+
+            // publish
+            if (notationStore.getParent().type === "LESSON") {
+              userOutgoingOperations.syncOutgoingRemoveNotation(
+                n.uuid,
+                (n as LessonNotationAttributes).lesson.uuid,
+              );
+            }
+          });
         return;
       }
 
@@ -1301,10 +1297,10 @@ export default function notationMutateHelper() {
     addSqrtNotation,
     addExponentNotation,
     cloneNotation,
-    aproveDeleteSelectedNotations,
+    approveDeleteSelectedNotations,
     moveSelectedNotationsAtPixelScale,
     moveSelectedNotationsAtCellScale,
-    handleDeleteKey,
+    deleteSelectedNotations,
     handlePushKey,
     isNotationInQuestionArea,
     isCellInQuestionArea,
