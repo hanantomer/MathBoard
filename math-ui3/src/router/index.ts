@@ -16,6 +16,7 @@ const routes: Array<RouteRecordRaw> = [
     name: "contactUs",
     meta: { requiresAuth: false },
   },
+  
   {
     path: "/login",
     component: () => import("@/components/Welcome.vue"),
