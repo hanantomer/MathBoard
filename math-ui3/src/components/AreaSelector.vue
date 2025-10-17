@@ -285,7 +285,7 @@ async function handleKeyUp(e: KeyboardEvent) {
       if (!notationMutationHelper.moveSelectedNotationsAtCellScale(0, 1, false))
         return;
       moveSelectionByKey(0, 1);
-      await notationMutationHelper.saveMovedNotations("BOTTOM");
+      notationMutationHelper.saveMovedNotations("BOTTOM");
       break;
     case "ArrowUp":
       if (

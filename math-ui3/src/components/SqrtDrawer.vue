@@ -56,6 +56,7 @@
         :x2="sqrtRight"
         :y2="sqrtY"
         class="line"
+        stroke="black"
       />
     </svg>
     <p

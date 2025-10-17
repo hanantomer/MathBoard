@@ -368,6 +368,19 @@ export default function notationMutateHelper() {
           (n as unknown as LineAttributes).p2y += deltaY;
           break;
 
+        case "CURVE":
+          (n as unknown as CurveAttributes).p1x += deltaX;
+          (n as unknown as CurveAttributes).p2x += deltaX;
+          (n as unknown as CurveAttributes).p1y += deltaY;
+          (n as unknown as CurveAttributes).p2y += deltaY;
+          (n as unknown as CurveAttributes).cpx += deltaX;
+          (n as unknown as CurveAttributes).cpy += deltaY;
+
+        case "CIRCLE":
+          (n as unknown as CircleAttributes).cx += deltaX;
+          (n as unknown as CircleAttributes).cy += deltaY;
+          break;
+
         case "ANNOTATION":
           (n as unknown as AnnotationNotationAttributes).x += deltaX;
           (n as unknown as AnnotationNotationAttributes).y += deltaY;

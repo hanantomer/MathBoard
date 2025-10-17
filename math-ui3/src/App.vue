@@ -120,7 +120,7 @@
             class="ml-1"
             height="25"
             flat
-            href="../privacyPolicy.html"
+            href="/privacyPolicy.html"
             target="_blank"
           >
             Privacy Policy
@@ -136,7 +136,6 @@
           >
             Tutorial
           </v-btn>
-          
 
           <v-btn
             style="background-color: transparent; color: whitesmoke"
