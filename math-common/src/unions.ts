@@ -121,7 +121,9 @@ export type EditMode =
   | "AREA_MOVING" // user grabbed the selection area after select button pressed
   | "CHECKMARK_STARTED" // checkmark button pressed
   | "SEMICHECKMARK_STARTED" // semicheck button pressed
-  | "XMARK_STARTED"; // xmark button pressed
+  | "XMARK_STARTED" // xmark button pressed
+  | "STUDENTS_MONITORING"; // teacher is monitoring students' boards
+
 
 export const EditModeNotationType = new Map<
   EditMode,

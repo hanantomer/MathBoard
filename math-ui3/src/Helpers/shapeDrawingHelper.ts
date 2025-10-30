@@ -3,6 +3,8 @@ import {
   DotCoordinates,
 } from "../../../math-common/src/baseTypes";
 
+import { sqrtSymbolSuffix } from "../../../math-common/src/globals";
+
 import { useEditModeStore } from "../store/pinia/editModeStore";
 import { useCellStore } from "../store/pinia/cellStore";
 import { useNotationStore } from "../store/pinia/notationStore";
@@ -108,20 +110,21 @@ export default function useShapeDrawingHelper() {
 
   function selectLine(
     selectedNotation: NotationAttributes,
-      selectLineCallback: (notation: NotationAttributes) => void,
+    selectLineCallback: (notation: NotationAttributes) => void,
   ) {
-    hideMatrixLine(selectedNotation.uuid);
     notationStore.selectNotation(selectedNotation.uuid);
     selectLineCallback(selectedNotation);
+    hideMatrixLine(selectedNotation.uuid);
   }
 
   function hideMatrixLine(uuid: string) {
     hiddenNotationUUID = uuid;
     (document.getElementById(uuid) as HTMLElement).style.display = "none";
 
-    if (document.getElementById(uuid + "_")) {
-      (document.getElementById(uuid + "_") as HTMLElement).style.display =
-        "none"; // for sqrt symbol, see matrixHelper.ts
+    if (document.getElementById(uuid + sqrtSymbolSuffix)) {
+      (
+        document.getElementById(uuid + sqrtSymbolSuffix) as HTMLElement
+      ).style.display = "none"; // for sqrt symbol, see matrixHelper.ts
     }
   }
 
@@ -131,9 +134,11 @@ export default function useShapeDrawingHelper() {
         document.getElementById(hiddenNotationUUID) as HTMLElement
       ).style.display = "block";
 
-      if (document.getElementById(hiddenNotationUUID + "_")) {
+      if (document.getElementById(hiddenNotationUUID + sqrtSymbolSuffix)) {
         (
-          document.getElementById(hiddenNotationUUID + "_") as HTMLElement
+          document.getElementById(
+            hiddenNotationUUID + sqrtSymbolSuffix,
+          ) as HTMLElement
         ).style.display = "block"; // for sqrt symbol see matrixHelper.ts
       }
 

@@ -219,6 +219,7 @@ export default function () {
       code === "Shifleft" ||
       code === "Semicolon" ||
       code === "Colon" ||
+      code === "Quote" ||
       code === "Backslash" ||
       code === "BracketLeft" ||
       code === "BracketRight" ||

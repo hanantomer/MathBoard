@@ -3,9 +3,6 @@
     <v-sheet>
       <mathBoard :svgId="svgId" :loaded="loaded"> </mathBoard>
     </v-sheet>
-    <v-sheet class="mt-10">
-      <lessonStudents></lessonStudents>
-    </v-sheet>
   </div>
 </template>
 
@@ -14,7 +11,6 @@
 import mathBoard from "./MathBoard.vue";
 import useUserOutgoingOperations from "../helpers/userOutgoingOperationsHelper";
 import useUserIncomingOperations from "../helpers/userIncomingOperationsHelper";
-import lessonStudents from "./LessonStudents.vue";
 import useSelectionHelper from "../helpers/selectionHelper";
 
 import { ref, onMounted } from "vue";
@@ -36,7 +32,6 @@ const titleStore = useTitleStore();
 const cellStore = useCellStore();
 const userOutgoingOperations = useUserOutgoingOperations();
 const userIncomingOperations = useUserIncomingOperations();
-
 
 let loaded = ref(false);
 const svgId = "lessonSvg";

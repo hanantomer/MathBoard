@@ -1,5 +1,7 @@
 import * as d3 from "d3";
-import { matrixDimensions, defaultdCellStroke } from "common/globals";
+import {
+  matrixDimensions, defaultdCellStroke, sqrtSymbolSuffix
+ } from "common/globals";
 import { SqrtNotationAttributes } from "common/baseTypes";
 import { useCellStore } from "../store/pinia/cellStore";
 import { useNotationStore } from "../store/pinia/notationStore";
@@ -105,7 +107,7 @@ export default function useMatrixHelper() {
       col: sqrtNotation.fromCol,
       toCol: sqrtNotation.fromCol,
     };
-    sqrtSignNotation.uuid = sqrtNotation.uuid + "_";
+    sqrtSignNotation.uuid = sqrtNotation.uuid + sqrtSymbolSuffix;
     sqrtSignNotation.notationType = "SQRTSYMBOL";
     return sqrtSignNotation;
   }

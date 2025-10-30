@@ -1,3 +1,4 @@
+import { LoginTicket } from "google-auth-library";
 import { NotationType } from "common/unions";
 import {
   NotationAttributes,
@@ -34,10 +35,12 @@ export default function useApiHelper() {
     }
   }
 
-  async function authGoogleUser(): Promise<UserAttributes> {
+  async function authGoogleUser(idToken: string): Promise<LoginTicket | null> {
     try {
-      const { data } = await axios.get<UserAttributes>(baseURL + "/users");
-      return data;
+      const { data } = await axios.post<string>(baseURL + "/gauth", {
+        idToken: idToken,
+      });
+      return data as unknown as LoginTicket;
     } catch (error) {
       throw new Error(
         `Failed to authenticate Google user: ${(error as AxiosError).message}`,
@@ -45,18 +48,19 @@ export default function useApiHelper() {
     }
   }
 
-  async function authLocalUserByToken(): Promise<UserAttributes | undefined> {
-    try {
-      const res = await axios.get<UserAttributes>(baseURL + "/auth");
-      return res?.data;
-    } catch (error) {
-      console.log(
-        `Failed to authenticate user by token: ${
-          (error as AxiosError).message
-        }`,
-      );
-    }
-  }
+  // both local and goole
+  // async function authUserByToken(): Promise<UserAttributes | undefined> {
+  //   try {
+  //     const res = await axios.get<UserAttributes>(baseURL + "/auth");
+  //     return res?.data;
+  //   } catch (error) {
+  //     console.log(
+  //       `Failed to authenticate user by token: ${
+  //         (error as AxiosError).message
+  //       }`,
+  //     );
+  //   }
+  // }
 
   async function authLocalUserByPassword(
     email: string,
@@ -69,11 +73,12 @@ export default function useApiHelper() {
       });
       return res?.data;
     } catch (error) {
-      throw new Error(
+      log(
         `Failed to authenticate user ${email}: ${
           (error as AxiosError).message
         }`,
       );
+      return null;
     }
   }
 
@@ -331,6 +336,28 @@ export default function useApiHelper() {
     }
   }
 
+  async function getUserByEmail(email: string): Promise<UserAttributes> {
+    try {
+      const { data } = await axios.get<UserAttributes>(
+        baseURL + "/users?email=" + email,
+      );
+      return data;
+    } catch (error) {
+      throw new Error(
+        `Failed to get user ${email}: ${(error as AxiosError).message}`,
+      );
+    }
+  }
+
+  async function getUserByAccessToken(): Promise<UserAttributes | null> {
+    try {
+      const { data } = await axios.get<UserAttributes>(baseURL + "/users");
+      return data;
+    } catch (error) {
+      return null;
+    }
+  }
+
   async function getQuestion(
     questionUUId: string,
   ): Promise<QuestionAttributes> {
@@ -476,11 +503,12 @@ export default function useApiHelper() {
     getStudentLessons,
     getTeacherLessons,
     getUser,
+    getUserByEmail,
+    getUserByAccessToken,
     getAnswer,
     getQuestion,
     getLesson,
     authGoogleUser,
-    authLocalUserByToken,
     authLocalUserByPassword,
     registerUser,
     addLesson,

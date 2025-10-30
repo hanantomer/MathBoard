@@ -31,7 +31,7 @@ export default {
     //     baseURL + "/auth"
     //   );
 
-    const user = await authUtil.authByLocalToken(
+    const user = await authUtil.getUserByToken(
      access_token
     );
 

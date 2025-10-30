@@ -139,8 +139,18 @@ export default function dbUtil() {
         });
     }
 
+    async function getUserById(id: number): Promise<User | null> {
+        return User.findOne({
+            where: {
+                id: id,
+            },
+        });
+    }
 
-    async function createUser(user: UserAttributes): Promise<User> {
+    async function createUser(user: UserAttributes): Promise<User | null> {
+        if(await User.findOne({where: {email: user.email}})) {
+            return null;
+        }
         return await User.create(user);
     }
 
@@ -770,6 +780,7 @@ export default function dbUtil() {
         getIdByUUId,
         getUser,
         createUser,
+        getUserById,
         getUserByEmail,
         getUserByEmailAndPassword,
         getUserAnswer,

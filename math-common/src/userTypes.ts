@@ -7,7 +7,7 @@ export type UserAttributes = EntityAttributes & {
   lastName: string;
   email: string;
   password: string;
-  access_token: string;
+  access_token: string|null;
   reset_pasword_token: string|null;
   imageUrl: string;
   userType: UserType;

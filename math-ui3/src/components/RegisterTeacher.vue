@@ -232,7 +232,8 @@
             </v-col>
           </v-row>
           <v-row>
-            <v-alert height="120"
+            <v-alert
+              height="120"
               text="This site is currently in Beta, so it’s free to use for the near future. Due to limited capacity, we can only enroll a select number of users. All sign-in requests will require approval, and we’ll send you a confirmation email once approved. If you encounter any outstanding issues, please reach out to us via contact us form."
               data-cy="register_alert"
               title="Attention"
@@ -328,13 +329,19 @@ function close() {
 async function register() {
   let formVlidated: any = await (registerForm.value as any).validate();
   if (formVlidated.valid) {
-    authHelper.registerUser(
+    const newUser = await authHelper.registerUser(
       firstName.value,
       lastName.value,
       email.value,
       password.value,
       userType.value as UserType,
     );
+
+    if (!newUser) {
+      alert("A user with this email already exists.");
+      return;
+    }
+
     contactUs.contactUs(
       `${firstName.value} ${lastName.value}`,
       email.value,

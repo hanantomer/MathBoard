@@ -1,7 +1,11 @@
 import axios from "axios";
 import { useCookies } from "vue3-cookies";
 import { useRouter } from "vue-router";
-import { baseURL, imagesURL } from "../../../math-common/src/globals";
+import {
+  baseURL,
+  imagesURL,
+  ACCESS_TOKEN_NAME,
+} from "../../../math-common/src/globals";
 
 const { cookies } = useCookies();
 
@@ -29,21 +33,22 @@ export default function axiosHelper() {
   function initAxiosInterceptors() {
     axios.interceptors.request.use(
       function (config: any) {
-        const access_token =
-          cookies.get("access_token") != null &&
-          cookies.get("access_token") != "null" &&
-          cookies.get("access_token") != "undefined"
-            ? cookies.get("access_token")
+        let access_token =
+          cookies.get(ACCESS_TOKEN_NAME) != null &&
+          cookies.get(ACCESS_TOKEN_NAME) != "null" &&
+          cookies.get(ACCESS_TOKEN_NAME) != "undefined"
+            ? cookies.get(ACCESS_TOKEN_NAME)
             : null;
 
         if (!access_token && window.location.pathname != "/login") {
-          cookies.remove("access_token");
+          //cookies.remove(ACCESS_TOKEN_NAME);
 
-          const router = useRouter();
+          //const router = useRouter();
 
           // Redirect to login
-          router.push("/login");
-          return Promise.reject(new Error("No access token"));
+          //router.push("/login");
+          //return Promise.reject(new Error("No access token"));
+          return config;
         }
 
         config.headers.authorization = access_token;

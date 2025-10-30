@@ -2,6 +2,9 @@
   <v-dialog v-model="show" max-width="600" persistent>
     <v-card>
       <v-card-text>
+        <GoogleLogin :callback="googleLoginCallback" />
+      </v-card-text>
+      <v-card-text>
         <v-form ref="loginForm" v-model="valid" lazy-validation>
           <v-row>
             <v-col cols="11"></v-col>
@@ -97,7 +100,6 @@
             </v-col>
           </v-row>
         </v-form>
-        <div class="g-signin2" id="google-signin-btn"></div>
       </v-card-text>
     </v-card>
   </v-dialog>
@@ -106,12 +108,16 @@
 <script setup lang="ts">
 import { ref, watch } from "vue";
 import { useCookies } from "vue3-cookies";
+import { decodeCredential } from "vue3-google-login";
 import { useRouter, useRoute, RouteLocationRaw } from "vue-router";
 import { useUserStore } from "../store/pinia/userStore";
 import useAuthHelper from "../helpers/authenticationHelper";
+import useApiHelper from "../helpers/apiHelper";
+import { ACCESS_TOKEN_NAME } from "../../../math-common/src/globals";
 
 const cookies = useCookies().cookies;
 const authHelper = useAuthHelper();
+const apiHelper = useApiHelper();
 const userStore = useUserStore();
 
 const router = useRouter();
@@ -157,6 +163,124 @@ function register() {
   emit("register", studentLink, redirectAfterLogin);
 }
 
+async function googleLoginCallback(response: any) {
+  try {
+    const ticket = await handleGoogleAuth(response.credential);
+    if (!ticket) return;
+
+    const userData = decodeCredential(response.credential) as GoogleUserData;
+
+    const storedUser = await handleGoogleUserRegistration(
+      userData,
+      ticket,
+      studentLink,
+    );
+    if (!storedUser) {
+      
+      return;
+    }
+
+    // check that user is approved
+    if (!(await handleUserValidation(storedUser))) return;
+
+    await completeLogin(storedUser);
+
+    handleRedirect();
+  } catch (error) {
+    console.error("Google login failed:", error);
+    loginFailed.value = true;
+  }
+}
+
+interface GoogleUserData {
+  sub: string;
+  name: string;
+  email: string;
+}
+
+async function handleGoogleAuth(accessToken: string) {
+  const ticket = await authHelper.authGoogleUser(accessToken);
+  if (!ticket) {
+    loginFailed.value = true;
+    return null;
+  }
+  return ticket;
+}
+
+async function handleGoogleUserRegistration(
+  userData: GoogleUserData,
+  ticket: any,
+  isStudentLink: boolean,
+) {
+  if (!validateCookiesEnabled()) return null;
+
+  // will be used later for subsequent api calls
+  cookies.set(ACCESS_TOKEN_NAME, ticket);
+
+  let storedUser = await authHelper.getUserByEmail(userData.email);
+  if (!storedUser) {
+    storedUser = await registerNewUser(userData, isStudentLink);
+  }
+
+  if (!storedUser) {
+    loginFailed.value = true;
+    return null;
+  }
+
+  return storedUser;
+}
+
+function validateCookiesEnabled(): boolean {
+  if (!window.navigator.cookieEnabled) {
+    alert("Cookies not enabled. You must enable cookies to continue");
+    return false;
+  }
+  return true;
+}
+
+async function registerNewUser(
+  userData: GoogleUserData,
+  isStudentLink: boolean,
+): Promise<any> {
+  try {
+    const newUser = await authHelper.registerUser(
+      userData.name,
+      "",
+      userData.email,
+      "",
+      isStudentLink ? "STUDENT" : "TEACHER",
+    );
+
+    return newUser;
+  } catch (error) {
+    console.error("User registration failed:", error);
+    return null;
+  }
+}
+
+async function handleUserValidation(user: any) {
+  // if (user.approved === false && user.userType === "TEACHER") {
+  //   userNotApproved.value = true;
+  //   return false;
+  // }
+
+  userNotApproved.value = false;
+  loginFailed.value = false;
+  return true;
+}
+
+async function completeLogin(user: any) {
+  userStore.setCurrentUser(user);
+  show.value = false;
+}
+
+function handleRedirect() {
+  if (route.query.from) {
+    const routeFrom: RouteLocationRaw = route.query.from as string;
+    router.replace(routeFrom);
+  }
+}
+
 async function validateLogin() {
   if (!email) return;
   if (!password) return;
@@ -182,6 +306,14 @@ async function validateLogin() {
     return;
   }
 
+  if (!authenticatedUser.access_token) {
+    apiHelper.log(
+      `No access token received during authentication for user: ${email} `,
+    );
+    loginFailed.value = true;
+    return;
+  }
+
   loginFailed.value = false;
 
   if (
@@ -198,7 +330,7 @@ async function validateLogin() {
   userStore.setCurrentUser(authenticatedUser);
 
   if (window.navigator.cookieEnabled) {
-    cookies.set("access_token", authenticatedUser.access_token);
+    cookies.set(ACCESS_TOKEN_NAME, authenticatedUser.access_token);
   } else {
     alert("cookies not enabled. you must enable cookies to continue");
   }

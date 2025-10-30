@@ -150,13 +150,20 @@ function close() {
 async function register() {
   let formVlidated: any = await (registerForm.value as any).validate();
   if (formVlidated.valid) {
-    authHelper.registerUser(
-      firstName.value,
-      lastName.value,
-      email.value,
-      password.value,
-      userType.value as UserType,
-    );
+
+    const newUser = await
+      authHelper.registerUser(
+        firstName.value,
+        lastName.value,
+        email.value,
+        password.value,
+        userType.value as UserType,
+      );
+
+    if (!newUser) {
+      alert("Registration failed: Email already in use.");
+      return;
+    } 
 
     registerForm.value = null;
     show.value = false;

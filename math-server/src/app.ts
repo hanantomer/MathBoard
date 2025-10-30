@@ -6,7 +6,6 @@ import useAuthUtil from "../../math-auth/build/authUtil";
 import useDb from "../../math-db/build/dbUtil";
 import connection from "../../math-db/build/models/index";
 import multer from "multer";
-import fs from "fs";
 
 const { exec } = require("child_process");
 
@@ -16,7 +15,7 @@ import {
 } from "../../math-common/build/unions";
 import { createTransport } from "nodemailer";
 import path from "path";
-import { log } from "console";
+
 
 
 var transporter = createTransport({
@@ -50,7 +49,7 @@ process.on('unhandledRejection', (reason: any, promise: Promise<any>) => {
 const authUtil = useAuthUtil();
 const db = useDb();
 let app = express();
-app.use(auth);
+app.use(validateAuth);
 app.use(cors());
 app.use(express.urlencoded({ extended: true, limit: "3mb" })); 
 app.use(express.json({ limit: "3mb" }));
@@ -133,7 +132,7 @@ app.post(
         }
 })
 
-async function auth(req: Request, res: Response, next: NextFunction) {
+async function validateAuth(req: Request, res: Response, next: NextFunction) {
 
     if (req.url.indexOf("/api/log") == 0) { // omit logging
         return next();      
@@ -146,28 +145,35 @@ async function auth(req: Request, res: Response, next: NextFunction) {
 
     // omit authorization enforcement when signing in
     if (req.method === "POST" && req.url.indexOf("/api/auth") == 0) {
-        next();
+        return next();
+    }
+
+    if (req.method === "POST" && req.url.indexOf("/api/gauth") == 0) {
+        return next();
     }
 
     // omit authorization enforcement when registering
     else if (req.method === "POST" && req.url.indexOf("/api/users") == 0) {
-        next();
+        return next();
     }
 
     // omit authorization enforcement for contact us
-    else if (req.method === "POST" && req.url.indexOf("/api/contactus") == 0) {
-        next();
+    else if (
+        req.method === "POST" &&
+        req.url.indexOf("/api/contactus") == 0
+    ) {
+        return next();
     }
 
     // verify authorization
     else if (!(await validateHeaderAuthentication(req, res, next))) {
         return;
     } else {
-        next();
+        return next();
     }
 }
 
-/*verifies that authenitication header exists and  denotes a valid user
+/*verifies that authenitication header exists and denotes a valid user
 if yes, set header userUUId
 */
 async function validateHeaderAuthentication(
@@ -180,18 +186,22 @@ async function validateHeaderAuthentication(
         res = res.status(401).json("unauthorized");
         return false;
     }
-    const user = await authUtil.authByLocalToken(
-        req.headers.authorization.toString()
-    );
 
-    if (!user) {
+    const access_token = req.headers.authorization;
+    const decodedToken = authUtil.validateToken(access_token);
+
+    if (!decodedToken) {
         serverLogger.error(
             "Invalid token:" + req.headers.authorization.toString()
         );
         res = res.status(401).json("invalid token");
         return false;
     }
-
+    
+    let user = await authUtil.getUserByToken(
+        decodedToken
+    );
+    
     if (req.url.indexOf("/api/auth") == 0) {
          res.status(200).json(user);
          return false; // Prevent further response
@@ -202,10 +212,10 @@ async function validateHeaderAuthentication(
     return true;
 }
 
-// verify that the user is the same as the one in the body
+// in mutation, verify that the user is the same as the one in the mutation body
 app.all("/*", async function (req: Request, res, next) {
 
-    if( req.method !== "PUT" && req.method !== "DELETE") {
+    if( req.method !== "PUT" && req.method !== "DELETE" && req.method !== "POST") {
         next();
         return;
     }
@@ -218,9 +228,8 @@ app.all("/*", async function (req: Request, res, next) {
 
     const userId = await db.getUserIdOfNotation(uuid, req.url);    
     
-    const userFromHeader = await authUtil.authByLocalToken(
-        req.headers.authorization!.toString()
-    );
+    const userFromHeader =
+        await db.getUserById(Number.parseInt(req.headers.userId as string))
 
     if (userFromHeader?.userType === 'TEACHER' ||  userId === userFromHeader?.id) {
         next();
@@ -248,6 +257,7 @@ app.post(
     }
 );
 
+// auth by email/password via login screen
 app.post(
     "/api/auth",
     async (
@@ -282,6 +292,33 @@ app.post(
     }
 );
 
+
+// get idToken from google ui and response with LoginTiket if valid
+app.post(
+    "/api/gauth",
+    async (
+        req: Request,
+        res: Response,
+        next: NextFunction
+    ): Promise<Response | undefined> => {
+                
+        const { idToken } = req.body;
+
+        try {
+            const ticket = await authUtil.authByGoogleIdToken(
+                idToken as string,
+            );
+            if (!ticket) {
+                return res.status(401).json("invalid idToken");
+            }
+            return res.status(200).json(ticket);
+        } catch (err) {
+            next(err);
+        }
+    }
+);
+
+
 app.post(
     "/api/users",
     async (
@@ -298,6 +335,29 @@ app.post(
     }
 );
 
+app.get(
+    "/api/users",
+    async (
+        req: Request,
+        res: Response,
+        next: NextFunction
+    ): Promise<Response | undefined> => {
+        try {
+            let { email } = req.query;
+            if (!email) {
+                return res
+                    .status(200)
+                    .json(await db.getUserById(Number.parseInt(req.headers.userId as string)));
+            }
+            return res.status(200).json(await db.getUserByEmail(email as string));
+                   
+        } catch (error) {
+            next(error);
+        }
+    }
+);
+
+// gets nothing but counts on "validateAuth" interceptor to validate token and return user
 app.get(
     "/api/auth",
     async (

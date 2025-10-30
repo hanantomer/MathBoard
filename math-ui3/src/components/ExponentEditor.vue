@@ -77,27 +77,28 @@ watchHelper.watchMouseEvent(
   editSelectedExponentNotation,
 );
 
+
 // edit mode changed from "EXPONENT_WRITING" either by cell clik or toolbar click
 watchHelper.watchEndOfEditMode(["EXPONENT_WRITING"], [], submitExponent);
 
 watchHelper.watchKeyEvent(
-  ["EXPONENT_WRITING"],
+  ["EXPONENT_STARTED"],
   "EV_KEYDOWN",
   startNewExponentAtSelectedCellPosition,
 );
 
 watchHelper.watchKeyEvent(
-  ["EXPONENT_WRITING"],
-  "EV_KEYDOWN",
-  resumeEditByEscapeKey,
+  ["EXPONENT_SELECTED"],
+  "EV_KEYUP",
+  resumeSelection,
 );
 
-// user typed Enter -> end editing and move to next edit mode to submit
 watchHelper.watchKeyEvent(
   ["EXPONENT_WRITING"],
   "EV_KEYUP",
-  endEditingByEnterKey,
+  endEditing,
 );
+
 
 watchHelper.watchEditModeTransition(
   ["CELL_SELECTED"],
@@ -105,19 +106,21 @@ watchHelper.watchEditModeTransition(
   startNewExponentAtSelectedCellPosition,
 );
 
-function endEditingByEnterKey(e: KeyboardEvent) {
+function endEditing(e: KeyboardEvent) {
   const { code } = e;
-  if (code === "Enter") {
+  if (code === "Enter" || code === "NumpadEnter" || code === "Tab" || code === "Escape") {
     editModeStore.setNextEditMode();
   }
 }
 
-function resumeEditByEscapeKey(e: KeyboardEvent) {
+function resumeSelection(e: KeyboardEvent) {
   const { code } = e;
-  if (code === "Escape") {
+  if (code === "ArrowDown" ||  code === "ArrowUp" || code === "ArrowLeft" || code === "ArrowRight") {
     editModeStore.setNextEditMode();
   }
 }
+
+
 
 function startNewExponentAtSelectedCellPosition() {
   clickedCell = cellStore.getSelectedCell();

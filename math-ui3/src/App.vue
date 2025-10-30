@@ -64,6 +64,21 @@
         </template>
       </v-tooltip>
 
+      <!-- students -->
+      <v-tooltip text="Online Students" location="bottom">
+        <template v-slot:activator="{ props }">
+          <v-btn
+            v-show="showOnlineStudents"
+            icon
+            v-on:click="showOnlineStudentsDialog"
+            v-bind="props"
+          >
+            <v-icon>mdi-account-school-outline</v-icon>
+          </v-btn>
+        </template>
+      </v-tooltip>
+
+
       <!-- sign in / register -->
       <v-tooltip text="Sign in" location="bottom">
         <template v-slot:activator="{ props }">
@@ -158,13 +173,16 @@ import { onMounted, computed } from "vue";
 import useAxiosHelper from "./helpers/axiosHelper";
 import { useUserStore } from "./store/pinia/userStore";
 import { useTitleStore } from "./store/pinia/titleStore";
+import { useEditModeStore } from "./store/pinia/editModeStore";
 import { useCookies } from "vue3-cookies";
-const cookies = useCookies().cookies;
+import { ACCESS_TOKEN_NAME } from "../../math-common/src/globals";
 
+const cookies = useCookies().cookies;
 const { initAxiosInterceptors } = useAxiosHelper();
 const router = useRouter();
 const userStore = useUserStore();
 const titleStore = useTitleStore();
+const editModeStrore = useEditModeStore();
 
 onMounted(() => {
   initAxiosInterceptors();
@@ -190,6 +208,10 @@ const showAnswers = computed(() => {
   return isTeacher.value;
 });
 
+const showOnlineStudents = computed(() => {
+  return isTeacher.value;
+});
+
 const isTeacher = computed(() => userStore.isTeacher());
 
 function showLoginDialog() {
@@ -199,8 +221,12 @@ function showLoginDialog() {
 
 function signOut() {
   userStore.setCurrentUser(null);
-  cookies.remove("access_token");
+  cookies.remove(ACCESS_TOKEN_NAME);
   router.push("/");
+}
+
+function showOnlineStudentsDialog() {
+  editModeStrore.setEditMode("STUDENTS_MONITORING");
 }
 
 function navToLessons() {

@@ -28,10 +28,7 @@ export const useUserStore = defineStore("user", () => {
     currentUser.value = user;
   }
 
-  async function registerUser(user: UserCreationAttributes) {
-    const db = apiHelper();
-    await db.registerUser(user); // todo: set to current
-  }
+
 
   return {
     getCurrentUser,
@@ -39,6 +36,5 @@ export const useUserStore = defineStore("user", () => {
     setAuthorized,
     isTeacher,
     setCurrentUser,
-    registerUser,
   };
 });

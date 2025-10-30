@@ -124,13 +124,13 @@ let sqrtY = computed(() => {
 
 let sqrtSymbolLeft = computed(() => {
   return (
-    linePosition.value.p1x + (cellStore.getSvgBoundingRect().left ?? 0) + 2
+    linePosition.value.p1x + (cellStore.getSvgBoundingRect().left ?? 0) + 7
   );
 });
 
 let sqrtSymbolY = computed(() => {
   return (
-    linePosition.value.p1y + (cellStore.getSvgBoundingRect().top ?? 0) - 10
+    linePosition.value.p1y + (cellStore.getSvgBoundingRect().top ?? 0) - 5
   );
 });
 

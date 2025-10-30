@@ -1,5 +1,5 @@
 import { createRouter, createWebHistory, RouteRecordRaw } from "vue-router";
-import useAuthenticationHelper from "../helpers/authenticationHelper";
+import useApiHelper from "../helpers/apiHelper";
 import { useUserStore } from "../store/pinia/userStore";
 
 const routes: Array<RouteRecordRaw> = [
@@ -16,7 +16,7 @@ const routes: Array<RouteRecordRaw> = [
     name: "contactUs",
     meta: { requiresAuth: false },
   },
-  
+
   {
     path: "/login",
     component: () => import("@/components/Welcome.vue"),
@@ -90,18 +90,21 @@ const router = createRouter({
 });
 
 router.beforeEach(async (to, from) => {
-  const authenticationHelper = useAuthenticationHelper();
   const userStore = useUserStore();
+  const apiHelper = useApiHelper();
 
-  if (!to.matched.some((record) => record.meta.requiresAuth)) {
-    // auth not required
+  if (userStore.getCurrentUser()) {
     return;
   }
 
-  const user = await authenticationHelper.authLocalUserByToken();
+  const user = await apiHelper.getUserByAccessToken();
   if (user) {
-    // has valid token
     userStore.setCurrentUser(user);
+    return;
+  }
+
+  if (!to.matched.some((record) => record.meta.requiresAuth)) {
+    // auth not required
     return;
   }
 

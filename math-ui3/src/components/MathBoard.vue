@@ -1,4 +1,5 @@
 <template>
+  <lessonStudents></lessonStudents>
   <floatingToolbar></floatingToolbar>
   <GlobalAlert></GlobalAlert>
   <annotationEditor></annotationEditor>
@@ -23,12 +24,15 @@
       <polygonDrawer></polygonDrawer>
       <curveDrawer></curveDrawer>
       <circleDrawer></circleDrawer>
-      <v-sheet>
+      <v-sheet style="width: 88vw; height: 88vh; padding: 0">
         <svg
-          v-bind:style="{ cursor: cursor, margin: '10px' }"
-          v-bind:id="svgId"
-          width="1520"
-          height="820"
+          :style="{
+            cursor: cursor,
+            margin: '5px',
+            width: '100%',
+            height: '100%',
+          }"
+          :id="svgId"
           xmlns="http://www.w3.org/2000/svg"
         >
           <defs>
@@ -90,6 +94,7 @@ import useSelectionHelper from "../helpers/selectionHelper";
 import useKeyHelper from "../helpers/keyHelper";
 import GlobalAlert from "./GlobalAlert.vue";
 import floatingToolbar from "./FloatingToolbar.vue";
+import lessonStudents from "./LessonStudents.vue";
 const notationLoadingHelper = useNotationLoadingHelper();
 const notationStore = useNotationStore();
 const cellStore = useCellStore();
@@ -307,8 +312,7 @@ path:hover {
   position: absolute;
   color: chocolate;
   z-index: 999;
-  font-weight: bold;
-  font-size: 1.7em;
+  font-size: 1.2em;
 }
 
 .solid {

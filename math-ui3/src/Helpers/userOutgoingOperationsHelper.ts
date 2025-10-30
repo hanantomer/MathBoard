@@ -3,19 +3,13 @@ import { FeathersHelper } from "./feathersHelper";
 import { Params } from "@feathersjs/feathers";
 
 export default function userOutgoingOperations() {
-  // function signedInWithGoogle() {
-  //   return (
-  //     gapi.auth2.getAuthInstance() &&
-  //     gapi.auth2.getAuthInstance().currentUser.get().isSignedIn()
-  //   );
-  // };
 
   async function syncOutgoingSelectedCell(
     selectedCell: CellAttributes,
     lessonUUId: string,
     userUUId: string,
   ) {
-    const feathersClient = await FeathersHelper.getInstance();
+    const feathersClient = FeathersHelper.getInstance();
     try {
       await feathersClient!
         .service("selectedCell")
@@ -30,7 +24,7 @@ export default function userOutgoingOperations() {
     lessonUUId: string,
     color: string,
   ) {
-    const feathersClient = await FeathersHelper.getInstance();
+    const feathersClient = FeathersHelper.getInstance();
     try {
       let t = await feathersClient!
         .service("colorizedCell")

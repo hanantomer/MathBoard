@@ -1,76 +1,89 @@
 <template>
-  <div>
-    <v-card class="ml-8">
-      <v-card-title>
-        <p style="font-size: 1vw">Online Students</p></v-card-title
-      >
-      <v-card-text>
-        <v-list v-if="students" active-class="activestudent" color="indigo">
-          <v-list-item
-            v-for="student in students"
-            :key="student.uuid"
-            v-on:click="toggleStudentAuthorization(student)"
-          >
-            <v-avatar>
-              <v-img :src="student.imageUrl"></v-img>
-            </v-avatar>
-            <v-tooltip bottom :text="toggleEditingTooltip(student.uuid)">
-              <template #activator="{ props }">
-                <v-list-item-title
-                  v-text="getStudentDisplayName(student)"
-                  v-bind="props"
-                ></v-list-item-title>
-                <v-btn
-                  class="[mx-2]"
-                  fab
-                  dark
-                  x-small
-                  :color="getStudentAuhorizationColor(student.uuid)"
+  <v-dialog v-model="show" transition="dialog-bottom-transition" persistent>
+    <v-container class="fill-height" fluid>
+      <v-row align="center" justify="center">
+        <v-col cols="12" sm="8" md="6" lg="4">
+          <v-card>
+            <v-card-title class="d-flex justify-space-between align-center">
+              <p style="font-size: 1vw">Online Students</p>
+              <v-btn
+                icon
+                size="small"
+                variant="text"
+                @click="closeDialog"
+                aria-label="Close"
+              >
+                <v-icon>mdi-close</v-icon>
+              </v-btn>
+            </v-card-title>
+            <v-card-text>
+              <div class="scrollable-list">
+                <v-list
+                  v-if="students.length"
+                  active-class="activestudent"
+                  color="indigo"
                 >
-                  <v-icon dark> mdi-pencil </v-icon>
-                </v-btn>
-              </template>
-            </v-tooltip>
-          </v-list-item>
-        </v-list>
-        <p v-else>No stuedents have yet shown up to this class</p>
-      </v-card-text>
-    </v-card>
-  </div>
+                  <v-list-item
+                    v-for="student in students"
+                    :key="student.uuid"
+                    @click="toggleStudentAuthorization(student)"
+                  >
+                    <v-tooltip
+                      bottom
+                      :text="toggleEditingTooltip(student.uuid)"
+                    >
+                      <template #activator="{ props }">
+                        <v-row align="center" no-gutters>
+                          <v-col cols="2" class="d-flex justify-center">
+                            <v-avatar>
+                              <v-img :src="student.imageUrl"></v-img>
+                            </v-avatar>
+                          </v-col>
+                          <v-col cols="6">
+                            <span>{{ getStudentDisplayName(student) }}</span>
+                          </v-col>
+                          <v-col cols="2" class="d-flex justify-center">
+                            <v-btn
+                              class="mx-2"
+                              fab
+                              dark
+                              x-small
+                              :color="getStudentAuhorizationColor(student.uuid)"
+                              v-bind="props"
+                            >
+                              <v-icon dark>mdi-pencil</v-icon>
+                            </v-btn>
+                          </v-col>
+                          <v-col cols="2" class="d-flex justify-center">
+                            <v-icon color="grey">mdi-account</v-icon>
+                          </v-col>
+                        </v-row>
+                      </template>
+                    </v-tooltip>
+                  </v-list-item>
+                </v-list>
+                <p v-else>No students have yet shown up to this class</p>
+              </div>
+            </v-card-text>
+          </v-card>
+        </v-col>
+      </v-row>
+    </v-container>
+  </v-dialog>
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, onUnmounted } from "vue";
+import { computed } from "vue";
 import { useStudentStore } from "../store/pinia/studentStore";
 import { useLessonStore } from "../store/pinia/lessonStore";
+import { useEditModeStore } from "../store/pinia/editModeStore";
 import { UserAttributes } from "../../../math-common/src/userTypes";
 import UseUserOutgoingOperations from "../helpers/userOutgoingOperationsHelper";
 
 const studentStore = useStudentStore();
 const lessonStore = useLessonStore();
 const userOutgoingOperations = UseUserOutgoingOperations();
-
-let heartbeatInterval: number;
-
-onMounted(() => {
-  // Check and reset heartbeats every minute
-  heartbeatInterval = window.setInterval(() => {
-    studentStore.getStudents().forEach((s) => {
-      if (
-        s.lastHeartbeatTime &&
-        Date.now() - s.lastHeartbeatTime.getTime() > 5000
-      )
-        s.lastHeartbeatTime = undefined;
-    });
-  }, 5000);
-});
-
-onUnmounted(() => {
-  // Clean up interval when component is destroyed
-  if (heartbeatInterval) {
-    clearInterval(heartbeatInterval);
-  }
-});
+const editModeStore = useEditModeStore();
 
 function toggleEditingTooltip(studentUUId: string): string {
   return studentStore.getAuthorizedStudentUUId() == studentUUId
@@ -78,8 +91,23 @@ function toggleEditingTooltip(studentUUId: string): string {
     : "Click to enable editing for this student";
 }
 
+const show = computed(() => {
+  return editModeStore.getEditMode() === "STUDENTS_MONITORING";
+});
+
 const students = computed(() => {
-  return studentStore.getStudents().filter((s) => s.lastHeartbeatTime);
+  const s = studentStore.getStudents().filter((s) => s.lastHeartbeatTime);
+  for (let i = 1; i < 20; i++) {
+    s.push({
+      uuid: `test-student-uuid-${i}`,
+      firstName: `Test${i}`,
+      lastName: `Student`,
+      imageUrl: `https://i.pravatar.cc/150?u=test-student-${i}`,
+      email: "",
+    } as UserAttributes);
+  }
+
+  return s;
 });
 
 function getStudentDisplayName(student: UserAttributes) {
@@ -110,9 +138,18 @@ function toggleStudentAuthorization(student: UserAttributes) {
     lessonStore.getCurrentLesson()!.uuid,
   );
 }
+
+// Add close dialog function
+function closeDialog() {
+  editModeStore.setDefaultEditMode();
+}
 </script>
 
 <style>
+.scrollable-list {
+  max-height: 650px;
+  overflow-y: auto;
+}
 .activestudent {
   border: 2px dashed rgb(143, 26, 179);
 }

@@ -1,5 +1,7 @@
-import { getCookie, removeCookie } from "typescript-cookie";
+import { LoginTicket } from "google-auth-library";
+import { removeCookie } from "typescript-cookie";
 import { UserType } from "common/unions";
+import { ACCESS_TOKEN_NAME } from "common/globals";
 import { UserAttributes, UserCreationAttributes } from "common/userTypes";
 import { useUserStore } from "../store/pinia/userStore";
 import axiosHelper from "./axiosHelper";
@@ -10,12 +12,11 @@ const apiHelper = useApiHelper();
 const { baseURL } = axiosHelper();
 
 export default function useAuthHelper() {
-  function registerUser(
+  async function registerUser(
     firstName: string,
     lastName: string,
     email: string,
     password: string,
-
     userType: UserType,
   ) {
     let user: UserCreationAttributes = {
@@ -25,21 +26,18 @@ export default function useAuthHelper() {
       email: email,
       password: password,
       imageUrl: "",
-      access_token: "",
+      access_token: null,
       approved: false,
       reset_pasword_token: null,
       lastHeartbeatTime: new Date(),
     };
-    const userStore = useUserStore();
-    userStore.registerUser(user);
+
+    return await apiHelper.registerUser(user);
   }
 
-  async function authGoogleUser() {
-    return await apiHelper.authGoogleUser();
-  }
-
-  async function authLocalUserByToken() {
-    return await apiHelper.authLocalUserByToken();
+  // this follows ui google with login
+  async function authGoogleUser(IdToken: string): Promise<LoginTicket | null> {
+    return await apiHelper.authGoogleUser(IdToken);
   }
 
   async function authLocalUserByUserAndPassword(
@@ -49,41 +47,18 @@ export default function useAuthHelper() {
     return await apiHelper.authLocalUserByPassword(email, password);
   }
 
-  function getToken() {
-    const access_token = `${
-      gapi.auth2.getAuthInstance().currentUser.get().isSignedIn()
-        ? gapi.auth2.getAuthInstance().currentUser.get().getAuthResponse()
-            .id_token
-        : getCookie("access_token")
-    }`;
-    return access_token;
-  }
-
-  function signedInWithGoogle() {
-    return false;
-    //return (
-    //  gapi.auth2.getAuthInstance() &&
-    //  gapi.auth2.getAuthInstance().currentUser.get().isSignedIn()
-    //);
-  }
-
-  function signedInLocally() {
-    return getCookie("access_token");
-  }
-
   async function signOut() {
     const userStore = useUserStore();
-    if (this.signedInWithGoogle()) {
-      gapi.auth2.getAuthInstance().signOut();
-    } else {
-      removeCookie("access_token");
-    }
+    removeCookie(ACCESS_TOKEN_NAME);
     userStore.setCurrentUser(null);
   }
 
   async function sendPasswordResetEmail(email: string): Promise<void> {
     try {
-      await axios.post(`${baseURL}/auth/send-reset-password-mail`, { email:email, origin:window.location.origin });
+      await axios.post(`${baseURL}/auth/send-reset-password-mail`, {
+        email: email,
+        origin: window.location.origin,
+      });
     } catch (error) {
       throw new Error(`Failed to send reset email: ${error}`);
     }
@@ -103,16 +78,24 @@ export default function useAuthHelper() {
     }
   }
 
+  async function getUserByEmail(email: string): Promise<UserAttributes | null> {
+    return await apiHelper.getUserByEmail(email);
+  }
+
+  async function getUserByAccessToken(
+    email: string,
+  ): Promise<UserAttributes | null> {
+    return await apiHelper.getUserByAccessToken();
+  }
+
   return {
-    registerUser,
-    authLocalUserByToken,
-    authLocalUserByUserAndPassword,
-    signOut,
-    signedInLocally,
-    signedInWithGoogle,
-    getToken,
     authGoogleUser,
+    authLocalUserByUserAndPassword,
+    registerUser,
+    signOut,
     sendPasswordResetEmail,
     resetPassword,
+    getUserByEmail,
+    getUserByAccessToken,
   };
 }

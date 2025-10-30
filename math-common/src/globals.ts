@@ -57,3 +57,8 @@ export function decodeSpecialSymbol(
 }
 
 export const sqrtDeltaY = 3;
+
+export const sqrtSymbolSuffix = "_sqs";
+
+export const ACCESS_TOKEN_NAME = "access_token";
+//"__Secure-access_token";
