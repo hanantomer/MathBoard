@@ -96,18 +96,7 @@ const show = computed(() => {
 });
 
 const students = computed(() => {
-  const s = studentStore.getStudents().filter((s) => s.lastHeartbeatTime);
-  for (let i = 1; i < 20; i++) {
-    s.push({
-      uuid: `test-student-uuid-${i}`,
-      firstName: `Test${i}`,
-      lastName: `Student`,
-      imageUrl: `https://i.pravatar.cc/150?u=test-student-${i}`,
-      email: "",
-    } as UserAttributes);
-  }
-
-  return s;
+  return studentStore.getStudents().filter((s) => s.lastHeartbeatTime);
 });
 
 function getStudentDisplayName(student: UserAttributes) {

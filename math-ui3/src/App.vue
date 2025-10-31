@@ -67,17 +67,27 @@
       <!-- students -->
       <v-tooltip text="Online Students" location="bottom">
         <template v-slot:activator="{ props }">
-          <v-btn
-            v-show="showOnlineStudents"
-            icon
-            v-on:click="showOnlineStudentsDialog"
-            v-bind="props"
+          <v-badge
+            :content="onlineStudentsCount"
+            :model-value="onlineStudentsCount > 0"
+            color="green"
+            overlap
           >
-            <v-icon>mdi-account-school-outline</v-icon>
-          </v-btn>
+            <v-tooltip text="Online Students" location="bottom">
+              <template v-slot:activator="{ props }">
+                <v-btn
+                  v-show="showOnlineStudents"
+                  icon
+                  v-on:click="showOnlineStudentsDialog"
+                  v-bind="props"
+                >
+                  <v-icon>mdi-account-school-outline</v-icon>
+                </v-btn>
+              </template>
+            </v-tooltip>
+          </v-badge>
         </template>
       </v-tooltip>
-
 
       <!-- sign in / register -->
       <v-tooltip text="Sign in" location="bottom">
@@ -174,6 +184,7 @@ import useAxiosHelper from "./helpers/axiosHelper";
 import { useUserStore } from "./store/pinia/userStore";
 import { useTitleStore } from "./store/pinia/titleStore";
 import { useEditModeStore } from "./store/pinia/editModeStore";
+import { useStudentStore } from "./store/pinia/studentStore";
 import { useCookies } from "vue3-cookies";
 import { ACCESS_TOKEN_NAME } from "../../math-common/src/globals";
 
@@ -183,10 +194,15 @@ const router = useRouter();
 const userStore = useUserStore();
 const titleStore = useTitleStore();
 const editModeStrore = useEditModeStore();
+const studentStore = useStudentStore();
 
 onMounted(() => {
   initAxiosInterceptors();
 });
+
+let onlineStudentsCount = computed(() => {
+  return studentStore.getStudents().length;
+})
 
 let title = computed(() => {
   return titleStore.getTitle();
