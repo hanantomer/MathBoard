@@ -24,9 +24,14 @@
             <v-row>
               <v-col cols="12">
                 <v-alert color="#C51162" theme="dark">
-                  When a student goes online, their name will appear in the
-                  online students list on the right, and clicking their name
-                  will toggle their ability to edit and add notations
+                  <v-html>
+                    Student Online Indicator and Management: When a student
+                    comes online: The counter above the Students button (at the
+                    top) increases by 1. To view the list: Click the Students
+                    button to explore all students. To enable editing: Click the
+                    button next to a student's name to let them edit and add
+                    notations.
+                  </v-html>
                 </v-alert>
               </v-col>
             </v-row>

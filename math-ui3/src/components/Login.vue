@@ -63,7 +63,7 @@
                 value="Invalid email or password"
                 prepend-inner-icon="mdi-error"
               ></v-text-field>
-              <v-text-field
+              <!-- <v-text-field
                 class="alerttext"
                 prepend-icon="mdi-account-alert"
                 v-if="userNotApproved"
@@ -72,7 +72,7 @@
                 outlined
                 value="Your account is pending approval. We'll inform you once it's approved."
                 prepend-inner-icon="mdi-error"
-              ></v-text-field>
+              ></v-text-field> -->
             </v-col>
 
             <v-col class="d-flex" cols="12" align-end>
@@ -125,7 +125,7 @@ const route = useRoute();
 
 let loginForm = ref();
 let loginFailed = ref(false);
-let userNotApproved = ref(false);
+//let userNotApproved = ref(false);
 let show = ref(false);
 let valid = ref<boolean>(false);
 
@@ -176,12 +176,12 @@ async function googleLoginCallback(response: any) {
       studentLink,
     );
     if (!storedUser) {
-      
+
       return;
     }
 
     // check that user is approved
-    if (!(await handleUserValidation(storedUser))) return;
+    //if (!(await handleUserValidation(storedUser))) return;
 
     await completeLogin(storedUser);
 
@@ -264,7 +264,7 @@ async function handleUserValidation(user: any) {
   //   return false;
   // }
 
-  userNotApproved.value = false;
+  //userNotApproved.value = false;
   loginFailed.value = false;
   return true;
 }
@@ -320,11 +320,11 @@ async function validateLogin() {
     authenticatedUser.approved === false &&
     authenticatedUser.userType === "TEACHER"
   ) {
-    userNotApproved.value = true;
+    //userNotApproved.value = true;
     return;
   }
 
-  userNotApproved.value = false;
+  //userNotApproved.value = false;
   loginFailed.value = false;
 
   userStore.setCurrentUser(authenticatedUser);
