@@ -2,7 +2,7 @@
   <v-row justify="center">
     <v-dialog
       v-model="dialog"
-      max-width="500px"
+      max-width="850px"
       persistent
       @keydown.esc="closeDialog"
     >
@@ -23,16 +23,24 @@
             </v-row>
             <v-row>
               <v-col cols="12">
-                <v-alert color="#C51162" theme="dark">
-                  <v-html>
-                    Student Online Indicator and Management: When a student
-                    comes online: The counter above the Students button (at the
-                    top) increases by 1. To view the list: Click the Students
-                    button to explore all students. To enable editing: Click the
-                    button next to a student's name to let them edit and add
-                    notations.
-                  </v-html>
-                </v-alert>
+                <div style="background-color: beige;"                >
+                <h3>Online Students Indicator and Management</h3>
+                <ul style="list-style-type: disc">
+                  <li>
+                    When a student comes online, The counter above the Students
+                    button (at the top) increases by 1.
+                  </li>
+
+                  <li>
+                    To view the list, Click the Students button to explore all
+                    students.
+                  </li>
+                  <li>
+                    To enable editing, Click the student's row
+                    to let them edit and add notations.
+                  </li>
+                </ul>
+                </div>
               </v-col>
             </v-row>
           </v-container>

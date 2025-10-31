@@ -26,13 +26,13 @@ export default {
     
     let access_token = this.getAccessTokenFromCookie(cookie);
     
-    // const user =
-    //   await axios.get<UserAttributes>(
-    //     baseURL + "/auth"
-    //   );
+    const decodedToken =
+      authUtil.validateToken(access_token);
+    
+    if (!decodedToken) return null;
 
     const user = await authUtil.getUserByToken(
-     access_token
+      decodedToken
     );
 
     if (!user) {

@@ -17,7 +17,11 @@ const logger = winston.createLogger({
   transports: [
     new winston.transports.Console(),
     new winston.transports.File({
-      filename: path.join(__dirname, "authentication.log"),
+      filename: path.join(
+        __dirname,
+        "logs",
+        "messagesauth.log"
+      ),
     }),
   ],
 });
