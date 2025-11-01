@@ -22,7 +22,7 @@ var transporter = createTransport({
     service: "gmail",
     auth: {
         user: "mathboard16@gmail.com", ///TODO: move to env
-        pass: "uhte keto xhzb fiuz",
+        pass: "pxyc xpqn eqdl yjuo",
     },
 });
 
