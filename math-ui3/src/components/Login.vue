@@ -316,13 +316,13 @@ async function validateLogin() {
 
   loginFailed.value = false;
 
-  if (
-    authenticatedUser.approved === false &&
-    authenticatedUser.userType === "TEACHER"
-  ) {
+  //if (
+  //  authenticatedUser.approved === false &&
+  //  authenticatedUser.userType === "TEACHER"
+  //) {
     //userNotApproved.value = true;
-    return;
-  }
+    //return;
+  //}
 
   //userNotApproved.value = false;
   loginFailed.value = false;
