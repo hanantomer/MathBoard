@@ -1,4 +1,3 @@
-import { ref } from 'vue';
 <template>
   <v-expansion-panels multiple class="special-symbols-expansion">
     <v-expansion-panel
@@ -76,7 +75,13 @@ const symbolGroups = [
       { name: "beta", value: "&beta;", tooltip: "Beta", tabIndex: 2 },
       { name: "gamma", value: "&gamma;", tooltip: "Gamma", tabIndex: 3 },
       { name: "delta", value: "&delta;", tooltip: "Delta", tabIndex: 4 },
-      { name: "Theta", value: "&Theta;", tooltip: "Theta", tabIndex: 5 },
+      { name: "theta", value: "&theta;", tooltip: "Theta", tabIndex: 5 },
+      { name: "epsilon", value: "&epsilon;", tooltip: "Epsilon", tabIndex: 5 },
+      { name: "zeta", value: "&zeta;", tooltip: "Zeta", tabIndex: 5 },
+      { name: "omega", value: "&omega;", tooltip: "Omega", tabIndex: 5 },
+      { name: "sigma", value: "&sigma;", tooltip: "Sigma", tabIndex: 5 },
+      { name: "phi", value: "&phi;", tooltip: "Phi", tabIndex: 5 },
+      { name: "pi", value: "&pi;", tooltip: "Pi", tabIndex: 5 },
     ],
   },
   {

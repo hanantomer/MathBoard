@@ -1,5 +1,5 @@
 <template>
-  <div class="d-flex">
+  <div class="d-flex" style="overflow: auto;">
     <v-sheet>
       <mathBoard :svgId="svgId" :loaded="loaded"> </mathBoard>
     </v-sheet>

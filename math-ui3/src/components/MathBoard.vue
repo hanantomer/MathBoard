@@ -6,7 +6,6 @@
   <freeTextEditor></freeTextEditor>
   <exponentEditor></exponentEditor>
   <areaSelector></areaSelector>
-  <v-row align="start" class="fill-height" no-gutters>
     <v-progress-linear
       data-cy="pBar"
       v-show="progressBar"
@@ -24,14 +23,17 @@
       <polygonDrawer></polygonDrawer>
       <curveDrawer></curveDrawer>
       <circleDrawer></circleDrawer>
-      <v-sheet style="width: 88vw; height: 88vh; padding: 0">
+
         <svg
-          :style="{
-            cursor: cursor,
-            margin: '5px',
-            width: '100%',
-            height: '100%',
-          }"
+          style="
+            width: 100%;
+            height: 100%;
+            min-width: 1600px;
+            min-height: 780px;
+            margin-left: 10px;
+            margin-top: 10px;
+            background-color: white;
+          "
           :id="svgId"
           xmlns="http://www.w3.org/2000/svg"
         >
@@ -60,10 +62,10 @@
             </marker>
           </defs>
         </svg>
-      </v-sheet>
+
       <specialSymbolsToolbar></specialSymbolsToolbar>
     </div>
-  </v-row>
+
 </template>
 
 <script setup lang="ts">

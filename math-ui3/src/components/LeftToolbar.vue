@@ -48,7 +48,7 @@
     </v-snackbar>
   </div>
 
-  <v-toolbar color="primary" dark :class="toolbarClass" height="600">
+  <v-toolbar color="primary" dark :class="toolbarClass" height="600"  >
     <v-tooltip
       text="Invite students via access link"
       v-if="userStore.isTeacher()"
@@ -224,7 +224,7 @@ const toolbarNavigation = useToolbarNavigation();
 const answerCheckMode = ref(false);
 
 const toolbarClass = computed(() => {
-  return "vertical-toolbar leftToolbar";
+  return "vertical-toolbar";
 });
 
 watch(
@@ -469,6 +469,7 @@ function startEditMode(item: any) {
   height: max-content !important;
   padding: 4px !important;
   margin-top: 30px;
+  margin-left: 30px;
 }
 
 .vertical-toolbar .v-toolbar__content {
@@ -480,6 +481,4 @@ function startEditMode(item: any) {
 .vertical-toolbar-column {
   flex-basis: content;
 }
-
-
 </style>
