@@ -54,7 +54,6 @@ export type AnnotationAttributes = {
   rotation: number;
 };
 
-
 export type LineCoordinates = {
   top: DotCoordinates;
   bottom: DotCoordinates;
@@ -159,7 +158,7 @@ export type RectNotationAttributes =
 
 export type AnnotationNotationAttributes =
   AnnotationAttributes &
-  EntityAttributes &
+    EntityAttributes &
     NotationAttributes &
     DotCoordinates &
     SingleValueAttributes;
@@ -240,7 +239,7 @@ export function isCurve(
   return n === "CURVE";
 }
 
-export function isCellNotation(
+export function isCellNotationType(
   n: NotationType
 ): boolean {
   return (
@@ -248,7 +247,8 @@ export function isCellNotation(
     n === "SIGN" ||
     n === "SQRTSYMBOL" ||
     n === "EXPONENT" ||
-    n === "SYMBOL"
+    n === "SYMBOL" ||
+    n === "LOGBASE" 
   );
 }
 

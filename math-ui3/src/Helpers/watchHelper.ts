@@ -17,7 +17,7 @@ const notationStore = useNotationStore();
 const eventBus = useEventBus();
 const matrixCellHelper = useMatrixCellHelper();
 
-type MouseEventHandler = (e: MouseEvent) => void;
+type MouseEventHandler = (e: MouseEvent, params?: any) => void;
 type KeyEventHandler = (e: KeyboardEvent) => void;
 type EditModeHandler = (newEditMode: EditMode, oldEditMode: any) => void;
 type NotationSelectionHandler = (notation: any) => void;
@@ -29,12 +29,13 @@ export default function () {
     editMode: EditMode[],
     eventType: BusEventType,
     handler: MouseEventHandler,
+    params: any = {},
   ) {
     editMode.forEach((em) =>
       watch(
         () => eventBus.get(em, eventType),
         (e: MouseEvent) => {
-          handler(e);
+          handler(e, params);
         },
       ),
     );

@@ -56,6 +56,26 @@ export function decodeSpecialSymbol(
   return decoder.textContent || decoder.innerText;
 }
 
+export function wrapVectorSymbol(
+  symbol: string,
+  color: string = "black"
+) {
+  const symbolWithoutPrefix = symbol.replace(
+    vectorSymbolPrefix,
+    ""
+  );
+
+  if (!symbolWithoutPrefix) return "";
+  
+  const firstChar = symbolWithoutPrefix.charAt(0);
+
+  return `<span style="color:${color};">${firstChar} </span>${vectorArrowSpan}`;
+}
+
+export const vectorSymbolPrefix = "vec_";
+
+const vectorArrowSpan = `<span style="position:absolute;margin-left:-12px;margin-top:-12px">&rarr;</span>`;
+
 export const sqrtDeltaY = 3;
 
 export const sqrtSymbolSuffix = "_sqs";

@@ -206,12 +206,11 @@ import { computed } from "vue";
 import { useUserStore } from "../store/pinia/userStore";
 import { EditMode } from "common/unions";
 import { useToolbarNavigation } from "../helpers/ToolbarNavigationHelper";
-import ColorSelector from "./ColorSelector.vue";
 import useAuthorizationHelper from "../helpers/authorizationHelper";
 import useWatchHelper from "../helpers/watchHelper";
 import useNotationMutateHelper from "../helpers/notationMutateHelper";
 import CrossDeviceUpload from "./CrossDeviceUpload.vue";
-import LinePropertiesSelector from "./LinePropertiesSelector.vue";
+
 
 const watchHelper = useWatchHelper();
 const notationMutateHelper = useNotationMutateHelper();

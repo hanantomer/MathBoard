@@ -9,7 +9,7 @@ import {
   MultiCellAttributes,
 } from "common/baseTypes";
 
-import { sqrtSymbolSuffix } from "common/globals";
+import { wrapVectorSymbol, vectorSymbolPrefix } from "common/globals";
 import { useCellStore } from "../store/pinia/cellStore";
 import useUtils from "./matrixHelperUtils";
 import { useUserStore } from "../store/pinia/userStore";
@@ -355,9 +355,7 @@ export default function useHtmlMatrixHelper() {
 
     if (n.notationType === "SQRTSYMBOL") {
       color = n.color?.value ? n.color?.value : color;
-      return `<p id='${
-        n.uuid
-      }' class='sqrtsymbol' style='margin-top:-5px;margin-left:11px;color:${color}'>&#x221A;</p>`;
+      return `<p id='${n.uuid}' class='sqrtsymbol' style='margin-top:-5px;margin-left:11px;color:${color}'>&#x221A;</p>`;
     }
 
     if (n.notationType === "TEXT") {
@@ -414,9 +412,14 @@ export default function useHtmlMatrixHelper() {
       return logbaseHtml;
     }
 
-    // Symbol
-
     let n1 = n as PointNotationAttributes;
+
+    // vector symbol
+    if (n1.value.startsWith(vectorSymbolPrefix)) {
+      return wrapVectorSymbol(n1.value.replace(vectorSymbolPrefix, ""), color);
+    }
+
+    // Symbol
     const top = n1.followsFraction ? "75%" : "50%";
 
     const leftMargin =
@@ -430,7 +433,9 @@ export default function useHtmlMatrixHelper() {
         ? "10%"
         : "0%";
     const fSize =
-      n1.value === "."
+      n1.value === "||"
+        ? "1.4em"
+        : n1.value === "."
         ? "1.5em"
         : n1.value.indexOf("&") >= 0 ||
           n1.value.replaceAll("`", "").length === 1
@@ -454,15 +459,10 @@ export default function useHtmlMatrixHelper() {
         ? "4px"
         : "0px";
 
-    // if (
-    //   (n1.value === "(" || n1.value === ")") &&
-    //   utils.symbolAdjecentToFraction(n1)
-    // ) {
-    //   topMargin = "8px";
-    // }
-
     ///TODO: move static css props to a class
-    return `<p id=${n1.uuid} style='z-index:100;color:${color};font-weight:${fontWeight}; position: absolute;top:${top};transform:
+    return n1.value.length > 5
+      ? n1.value
+      : `<p id=${n1.uuid} style='z-index:100;color:${color};font-weight:${fontWeight}; position: absolute;top:${top};transform:
     translateY(-0%);top:${topMargin};left:${leftMargin};font-size:${fSize}'>${n1.value}</p>`;
   }
 

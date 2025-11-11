@@ -6,66 +6,65 @@
   <freeTextEditor></freeTextEditor>
   <exponentEditor></exponentEditor>
   <areaSelector></areaSelector>
-    <v-progress-linear
-      data-cy="pBar"
-      v-show="progressBar"
-      color="deep-purple-accent-4"
-      indeterminate
-      rounded
-      height="8"
-    ></v-progress-linear>
-    <statusBar></statusBar>
-    <div style="display: flex">
-      <leftToolbar></leftToolbar>
-      <sqrtDrawer></sqrtDrawer>
-      <lineDrawer></lineDrawer>
-      <divisionLineDrawer></divisionLineDrawer>
-      <polygonDrawer></polygonDrawer>
-      <curveDrawer></curveDrawer>
-      <circleDrawer></circleDrawer>
+  <v-progress-linear
+    data-cy="pBar"
+    v-show="progressBar"
+    color="deep-purple-accent-4"
+    indeterminate
+    rounded
+    height="8"
+  ></v-progress-linear>
+  <statusBar></statusBar>
+  <div style="display: flex; ">
+    <leftToolbar></leftToolbar>
+    <sqrtDrawer></sqrtDrawer>
+    <lineDrawer></lineDrawer>
+    <divisionLineDrawer></divisionLineDrawer>
+    <polygonDrawer></polygonDrawer>
+    <curveDrawer></curveDrawer>
+    <circleDrawer></circleDrawer>
 
-        <svg
-          style="
-            width: 100%;
-            height: 100%;
-            min-width: 1600px;
-            min-height: 780px;
-            margin-left: 10px;
-            margin-top: 10px;
-            background-color: white;
-          "
-          :id="svgId"
-          xmlns="http://www.w3.org/2000/svg"
+    <svg
+      style="
+        width: 100%;
+        height: 100%;
+        min-width: 1500px;
+        min-height: 795px;
+        margin-left: 10px;
+        margin-top: 10px;
+        background-color: white;
+      "
+      :id="svgId"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <defs>
+        <marker
+          id="arrowleft"
+          viewBox="0 0 10 10"
+          refX="5"
+          refY="5"
+          markerWidth="6"
+          markerHeight="6"
+          orient="auto-start-reverse"
         >
-          <defs>
-            <marker
-              id="arrowleft"
-              viewBox="0 0 10 10"
-              refX="5"
-              refY="5"
-              markerWidth="6"
-              markerHeight="6"
-              orient="auto-start-reverse"
-            >
-              <polygon points="0,0 10,5 0,10 3,5" fill="black" />
-            </marker>
-            <marker
-              id="arrowright"
-              viewBox="0 0 10 10"
-              refX="5"
-              refY="5"
-              markerWidth="6"
-              markerHeight="6"
-              orient="auto-start-reverse"
-            >
-              <polygon points="0,0 10,5 0,10 3,5" fill="black" />
-            </marker>
-          </defs>
-        </svg>
+          <polygon points="0,0 10,5 0,10 3,5" fill="black" />
+        </marker>
+        <marker
+          id="arrowright"
+          viewBox="0 0 10 10"
+          refX="5"
+          refY="5"
+          markerWidth="6"
+          markerHeight="6"
+          orient="auto-start-reverse"
+        >
+          <polygon points="0,0 10,5 0,10 3,5" fill="black" />
+        </marker>
+      </defs>
+    </svg>
 
-      <specialSymbolsToolbar></specialSymbolsToolbar>
-    </div>
-
+    <specialSymbolsToolbar></specialSymbolsToolbar>
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -97,6 +96,7 @@ import useKeyHelper from "../helpers/keyHelper";
 import GlobalAlert from "./GlobalAlert.vue";
 import floatingToolbar from "./FloatingToolbar.vue";
 import lessonStudents from "./LessonStudents.vue";
+import { svg } from "d3";
 const notationLoadingHelper = useNotationLoadingHelper();
 const notationStore = useNotationStore();
 const cellStore = useCellStore();
@@ -130,13 +130,9 @@ watchHelper.watchMouseEvent(
   ["CELL_SELECTED", "SPECIAL_SYMBOL_SELECTED"],
   "EV_SVG_MOUSEUP",
   selectionHelper.selectClickedPosition,
+  props.svgId
 );
 
-// watchHelper.watchMouseEvent(
-//   ["TEXT_SELECTED"],
-//   "EV_SVG_MOUSEUP",
-//   selectionHelper.selectClickedPosition,
-// );
 
 watchHelper.watchMouseEvent(
   ["XMARK_STARTED", "CHECKMARK_STARTED", "SEMICHECKMARK_STARTED"],

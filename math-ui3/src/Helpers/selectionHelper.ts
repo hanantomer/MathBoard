@@ -178,12 +178,17 @@ export default function selectionHelper() {
   }
 
   function selectClickedPosition(e: MouseEvent) {
+    const svgDimensions = cellStore.getSvgBoundingRect();
+
     notationStore.resetSelectedNotations();
     const uuid = (e.target as any).id;
     if (uuid) {
       selectNotation(uuid);
     } else {
-      const position = { x: e.pageX, y: e.pageY };
+      const position = {
+        x: e.offsetX + svgDimensions.left,
+        y: e.offsetY + svgDimensions.top,
+      };
       let clickedCell = screenHelper.getCellByDotCoordinates(position);
       if (!clickedCell) return;
       setSelectedCell(clickedCell, true);

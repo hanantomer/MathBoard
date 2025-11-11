@@ -17,7 +17,7 @@ import {
   CircleNotationCreationAttributes,
   AnnotationNotationCreationAttributes,
   SqrtNotationCreationAttributes,
-  isCellNotation,
+  isCellNotationType,
   isRect,
   MultiCellAttributes,
   SqrtNotationAttributes,
@@ -178,7 +178,7 @@ export default function notationMutateHelper() {
     notation: NotationCreationAttributes,
   ): NotationAttributes | undefined {
     return notationStore.getNotations().find((n2: NotationAttributes) => {
-      if (isCellNotation(n2.notationType))
+      if (isCellNotationType(n2.notationType))
         return (
           ((n2 as PointNotationAttributes).value !== "." &&
             (n2 as PointNotationAttributes).value !== "(" &&
@@ -230,7 +230,7 @@ export default function notationMutateHelper() {
     notationStore.getSelectedNotations().forEach((n: NotationAttributes) => {
       if (isNotationInQuestionArea(n, deltaCol, deltaRow)) return false;
 
-      if (isCellNotation(n.notationType)) {
+      if (isCellNotationType(n.notationType)) {
         if (
           (n as PointNotationAttributes).col + deltaCol >
           matrixDimensions.colsNum
@@ -695,7 +695,6 @@ export default function notationMutateHelper() {
   async function addNotation(
     notation: NotationCreationAttributes,
   ): Promise<string> {
-    //notationStore.resetSelectedNotations();
     try {
       const newNotation = await apiHelper.addNotation(notation);
       newNotation.notationType = notation.notationType;

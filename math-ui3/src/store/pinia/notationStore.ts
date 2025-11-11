@@ -15,7 +15,7 @@ import {
   isRect,
   isLine,
   isCurve,
-  isCellNotation,
+  isCellNotationType,
   SqrtNotationAttributes,
   AnnotationNotationAttributes,
 } from "common/baseTypes";
@@ -73,7 +73,7 @@ export const useNotationStore = defineStore("notation", () => {
         },
       );
 
-      addNotation(newNotation, false);
+      addNotation(newNotation, false, false);
     });
   }
 
@@ -87,7 +87,7 @@ export const useNotationStore = defineStore("notation", () => {
 
   function getPointNotations(): PointNotationAttributes[] {
     return Array.from(notations.value.values())
-      .filter((n) => isCellNotation(n.notationType))
+      .filter((n) => isCellNotationType(n.notationType))
       .map((n) => n as PointNotationAttributes);
   }
 
@@ -142,12 +142,26 @@ export const useNotationStore = defineStore("notation", () => {
   function addNotation(
     notation: NotationAttributes,
     doUpdateOccupationMatrix: boolean,
+    preventOverwrite: boolean = true,
   ) {
-    saveState();
     if (!notation.uuid) {
       console.error("addNotation: Notation uuid is undefined");
       return;
     }
+
+    if (preventOverwrite && isCellNotationType(notation.notationType)) {
+      const n = notation as PointNotationAttributes;
+      const existingNotations = getNotationsAtCell({
+        col: n.col,
+        row: n.row,
+      }).filter((nt) => isCellNotationType(nt.notationType));
+      if (existingNotations.length > 0) {
+        console.warn("addNotation: Cell already has a point notation", n);
+        return;
+      }
+    }
+
+    saveState();
     notation.boardType = parent.value.type;
     notations.value.set(notation.uuid, notation);
 
