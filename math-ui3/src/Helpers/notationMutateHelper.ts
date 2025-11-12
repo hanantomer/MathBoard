@@ -23,7 +23,7 @@ import {
   SqrtNotationAttributes,
   DotCoordinates,
   AnnotationNotationAttributes,
-} from "common/baseTypes";
+} from "../../../math-common/src/baseTypes";
 
 import { clonedNotationUUIdPrefix } from "common/globals";
 import { LessonNotationAttributes } from "common/lessonTypes";

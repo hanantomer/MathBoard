@@ -9,7 +9,7 @@ import {
   MultiCellAttributes,
 } from "common/baseTypes";
 
-import { wrapVectorSymbol, vectorSymbolPrefix } from "common/globals";
+import { wrapVectorSymbol, vectorSymbolPrefix } from "../../../math-common/src/globals";
 import { useCellStore } from "../store/pinia/cellStore";
 import useUtils from "./matrixHelperUtils";
 import { useUserStore } from "../store/pinia/userStore";

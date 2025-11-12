@@ -18,7 +18,7 @@ import {
   isCellNotationType,
   SqrtNotationAttributes,
   AnnotationNotationAttributes,
-} from "common/baseTypes";
+} from "../../../../math-common/src/baseTypes";
 import { BoardType } from "common/unions";
 import { ref, computed } from "vue";
 import { useCellStore } from "./cellStore";

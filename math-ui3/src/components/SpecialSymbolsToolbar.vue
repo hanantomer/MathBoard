@@ -146,7 +146,8 @@ import {
   decodeSpecialSymbol,
   vectorSymbolPrefix,
   wrapVectorSymbol,
-} from "common/globals";
+} from "../../../math-common/src/globals";
+
 import useSelectionHelper from "../helpers/selectionHelper";
 
 const editModeStore = useEditModeStore();
