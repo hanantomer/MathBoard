@@ -318,21 +318,22 @@ export const useNotationStore = defineStore("notation", () => {
       );
     }
 
-    // line
-
-    // const lineNotationsUUIDs = cellLineNotationOccupationMatrix[cell.col][
-    //   cell.row
-    // ] as Set<String>;
-
-    // if (lineNotationsUUIDs) {
-    //   Array.from(lineNotationsUUIDs.values()).forEach((ln: any) => {
-    //     if (notations.value.get(ln)) {
-    //       notationsAtCell.push(notations.value.get(ln) as NotationAttributes);
-    //     }
-    //   });
-    // }
-
     return notationsAtCell;
+  }
+
+  function getSqrtNotationAtCell(
+    cell: CellAttributes,
+  ): SqrtNotationAttributes | null {
+    const sqrtNotationsUUIDs = cellLineNotationOccupationMatrix[cell.col][
+      cell.row
+    ] as Set<String>;
+    const firstNotation = Array.from(sqrtNotationsUUIDs)[0];
+
+    if (notations.value.get(firstNotation)?.notationType === "SQRT") {
+      return notations.value.get(firstNotation) as SqrtNotationAttributes;
+    }
+
+    return null;
   }
 
   function selectNotationsOfCells(areaCells: CellAttributes[]) {
@@ -611,6 +612,15 @@ export const useNotationStore = defineStore("notation", () => {
           false,
         );
         break;
+      case "SQRT":
+        notationCellOccupationHelper.updateSqrtOccupationMatrix(
+          cellLineNotationOccupationMatrix,
+          notation as SqrtNotationAttributes,
+          notation.uuid,
+          false,
+        );
+        break;
+
       case "LINE":
         notationCellOccupationHelper.updateLineOccupationMatrix(
           cellLineNotationOccupationMatrix,
@@ -692,6 +702,7 @@ export const useNotationStore = defineStore("notation", () => {
     getNotation,
     getNotations,
     getNotationsAtCell,
+    getSqrtNotationAtCell,
     getParent,
     getPointNotations,
     getRectNotations,

@@ -425,7 +425,7 @@ function onlyLinesAnnotationsOrCircleAraSelected() {
   return (
     notationStore
       .getSelectedNotations()
-      .filter((n) => !lineTypes.includes(n.notationType)).length == 0
+      .filter((n: any) => !lineTypes.includes(n.notationType)).length == 0
   );
 }
 

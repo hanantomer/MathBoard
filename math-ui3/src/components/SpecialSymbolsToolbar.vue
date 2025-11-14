@@ -16,14 +16,13 @@
               class="pa-0"
               :key="symbol.name"
             >
-              <v-row >
+              <v-row>
                 <v-col cols="5">
                   <v-combobox
                     v-if="symbol.name == 'vector'"
                     v-model="vectorSelectedLetter"
                     :items="letters"
                     class="vector-combo"
-
                   >
                   </v-combobox>
                   <v-combobox
@@ -48,7 +47,7 @@
                   >
                   </v-combobox>
                 </v-col>
-                <v-col cols="1" style="padding: 0;margin-right: 10px;">
+                <v-col cols="1" style="padding: 0; margin-right: 10px">
                   <v-tooltip>
                     {{ symbol.tooltip }}
                     {{ symbol.shortcut ? `(${symbol.shortcut})` : "" }}
@@ -62,7 +61,6 @@
                           position: relative;
                           top: 25px;
                           margin-right: 16px;
-
                         "
                         icon
                         :disabled="!editEnabled"
@@ -163,7 +161,6 @@ const editEnabled = computed(() => {
   return authorizationHelper.canEdit();
 });
 
-// Group symbols by their comment header
 const symbolGroups = [
   {
     title: "Greek letters",
@@ -173,138 +170,78 @@ const symbolGroups = [
       { name: "gamma", value: "&gamma;", tooltip: "Gamma", tabIndex: 3 },
       { name: "delta", value: "&delta;", tooltip: "Delta", tabIndex: 4 },
       { name: "theta", value: "&theta;", tooltip: "Theta", tabIndex: 5 },
-      { name: "epsilon", value: "&epsilon;", tooltip: "Epsilon", tabIndex: 5 },
-      { name: "zeta", value: "&zeta;", tooltip: "Zeta", tabIndex: 5 },
-      { name: "omega", value: "&omega;", tooltip: "Omega", tabIndex: 5 },
-      { name: "sigma", value: "&sigma;", tooltip: "Sigma", tabIndex: 5 },
-      { name: "phi", value: "&phi;", tooltip: "Phi", tabIndex: 5 },
-      { name: "pi", value: "&pi;", tooltip: "Pi", tabIndex: 5 },
+      { name: "epsilon", value: "&epsilon;", tooltip: "Epsilon", tabIndex: 6 },
+      { name: "zeta", value: "&zeta;", tooltip: "Zeta", tabIndex: 7 },
+      { name: "omega", value: "&omega;", tooltip: "Omega", tabIndex: 8 },
+      { name: "sigma", value: "&sigma;", tooltip: "Sigma", tabIndex: 9 },
+      { name: "phi", value: "&phi;", tooltip: "Phi", tabIndex: 10 },
+      { name: "pi", value: "&pi;", tooltip: "Pi", tabIndex: 11 },
     ],
   },
   {
     title: "Geometric symbols",
     symbols: [
-      { name: "pi", value: "&pi;", tooltip: "Pi", tabIndex: 6 },
-      { name: "90", value: "&#8735", tooltip: "90 degrees", tabIndex: 7 },
-      { name: "angle", value: "&ang;", tooltip: "Angle", tabIndex: 8 },
-      { name: "triangle", value: "&#x25B2", tooltip: "Triangle", tabIndex: 9 },
-      {
-        name: "perimeter",
-        value: "<math><mi>P</mi></math>",
-        tooltip: "Perimeter",
-        tabIndex: 10,
-      },
-      {
-        name: "area",
-        value: "<math><mi>A</mi></math>",
-        tooltip: "Area",
-        tabIndex: 11,
-      },
-      {
-        name: "perpendicular",
-        value: "&#10178",
-        tooltip: "Perpendicular",
-        tabIndex: 12,
-      },
-      { name: "parallel", value: "&#8741", tooltip: "Parallel", tabIndex: 13 },
+      { name: "rightAngle", value: "&#8735;", tooltip: "Right angle (90°)", tabIndex: 12 },
+      { name: "angle", value: "&ang;", tooltip: "Angle", tabIndex: 13 },
+      { name: "triangle", value: "&#9651;", tooltip: "Triangle", tabIndex: 14 },
+      { name: "perimeter", value: "P", tooltip: "Perimeter", tabIndex: 15 },
+      { name: "area", value: "A", tooltip: "Area", tabIndex: 16 },
+      { name: "perpendicular", value: "&perp;", tooltip: "Perpendicular", tabIndex: 17 },
+      { name: "parallel", value: "&parallel;", tooltip: "Parallel", tabIndex: 18 },
     ],
   },
   {
     title: "Comparison operators",
     symbols: [
-      { name: "ne", value: "&ne;", tooltip: "Not equal", tabIndex: 14 },
-      {
-        name: "ge",
-        value: "&ge;",
-        tooltip: "Greater than or equal",
-        tabIndex: 15,
-      },
-      {
-        name: "le",
-        value: "&le;",
-        tooltip: "Less than or equal",
-        shortcut: "Alt+Shift+2",
-        tabIndex: 16,
-      },
-      {
-        name: "plusmn",
-        value: "&plusmn;",
-        tooltip: "Plus or Minus",
-        shortcut: "Alt+8",
-        tabIndex: 17,
-      },
+      { name: "ne", value: "&ne;", tooltip: "Not equal", tabIndex: 19 },
+      { name: "ge", value: "&ge;", tooltip: "Greater than or equal", tabIndex: 20 },
+      { name: "le", value: "&le;", tooltip: "Less than or equal", shortcut: "Alt+Shift+2", tabIndex: 21 },
+      { name: "plusmn", value: "&plusmn;", tooltip: "Plus or minus", shortcut: "Alt+8", tabIndex: 22 },
     ],
   },
   {
     title: "Mathematical operators",
     symbols: [
-      { name: "sum", value: "&sum;", tooltip: "Sum", tabIndex: 18 },
-      { name: "int", value: "&int;", tooltip: "Integral", tabIndex: 19 },
-      { name: "infin", value: "&infin;", tooltip: "Infinity", tabIndex: 20 },
+      { name: "sum", value: "&sum;", tooltip: "Sum", tabIndex: 23 },
+      { name: "int", value: "&int;", tooltip: "Integral", tabIndex: 24 },
+      { name: "infin", value: "&infin;", tooltip: "Infinity", tabIndex: 25 },
     ],
   },
   {
     title: "Set operations",
     symbols: [
-      { name: "emptySet", value: "&#8709", tooltip: "Empty Set", tabIndex: 21 },
-      { name: "union", value: "&#8746", tooltip: "Union", tabIndex: 22 },
-      {
-        name: "intersection",
-        value: "&#8745",
-        tooltip: "Intersection",
-        tabIndex: 23,
-      },
+      { name: "emptySet", value: "&empty;", tooltip: "Empty set", tabIndex: 26 },
+      { name: "union", value: "&cup;", tooltip: "Union", tabIndex: 27 },
+      { name: "intersection", value: "&cap;", tooltip: "Intersection", tabIndex: 28 },
     ],
   },
   {
     title: "Trigonometric functions",
     symbols: [
-      { name: "sin", value: "sin", tooltip: "Sine", tabIndex: 24 },
-      { name: "cos", value: "cos", tooltip: "Cosine", tabIndex: 25 },
-      { name: "tan", value: "tan", tooltip: "Tangent", tabIndex: 26 },
-      { name: "cot", value: "cot", tooltip: "Cotangent", tabIndex: 27 },
+      { name: "sin", value: "sin", tooltip: "Sine", tabIndex: 29 },
+      { name: "cos", value: "cos", tooltip: "Cosine", tabIndex: 30 },
+      { name: "tan", value: "tan", tooltip: "Tangent", tabIndex: 31 },
+      { name: "cot", value: "cot", tooltip: "Cotangent", tabIndex: 32 },
     ],
   },
   {
-    title: "Deraivatives",
+    title: "Derivatives",
     symbols: [
-      { name: "f(x)", value: "f(x)", tooltip: "f(x)", tabIndex: 28 },
-      { name: "f`(x)", value: "f`(x)", tooltip: "f`(x)", tabIndex: 29 },
-      { name: "f``(x)", value: "f``(x)", tooltip: "f``(x)", tabIndex: 30 },
+      { name: "f(x)", value: "f(x)", tooltip: "Function f(x)", tabIndex: 33 },
+      { name: "f'(x)", value: "f'(x)", tooltip: "First derivative", tabIndex: 34 },
+      { name: "f''(x)", value: "f''(x)", tooltip: "Second derivative", tabIndex: 35 },
     ],
   },
   {
     title: "Vectors",
     symbols: [
-      {
-        name: "vector",
-        value: "vector",
-        tooltip: "vector symbol",
-        tabIndex: 28,
-      },
-      {
-        name: "magnitude",
-        value: "||a||",
-        tooltip: "magnitude",
-        tabIndex: 28,
-      },
-      {
-        name: "dot",
-        value: "a·b",
-        tooltip: "dot product",
-        tabIndex: 28,
-      },
-
-      {
-        name: "cross",
-        value: "a×b",
-        tooltip: "cross product",
-        tabIndex: 28,
-      },
+      { name: "vector", value: "v", tooltip: "Vector", tabIndex: 36 },
+      { name: "magnitude", value: "||a||", tooltip: "Magnitude", tabIndex: 37 },
+      { name: "dot", value: "a &middot; b", tooltip: "Dot product", tabIndex: 38 },
+      { name: "cross", value: "a &times; b", tooltip: "Cross product", tabIndex: 39 },
     ],
   },
 ];
-
 const letters = [
   "a",
   "b",

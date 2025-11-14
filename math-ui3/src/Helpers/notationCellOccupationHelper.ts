@@ -8,6 +8,7 @@ import {
   CircleNotationAttributes,
   RectAttributes,
   AnnotationNotationAttributes,
+  SqrtNotationAttributes,
 } from "common/baseTypes";
 
 import { matrixDimensions, clonedNotationUUIdPrefix } from "common/globals";
@@ -115,6 +116,45 @@ export default function notationCellOccupationHelper() {
       }
     }
   }
+
+
+  function updateSqrtOccupationMatrix(
+    matrix: any,
+    notation: SqrtNotationAttributes,
+    uuid: string,
+    doRemove: boolean,
+  ) {
+    clearNotationFromMatrix(uuid, matrix);
+
+    if (doRemove) return;
+
+
+    //let firstRowIndex = slope > 0 ? fromRow : toRow;
+    for (
+      let col = notation.fromCol - 1, i = 0;
+      col <= notation.toCol;
+      col++, i++
+    ) {
+
+      if (validateRowAndCol(col, notation.row)) {
+        updateLineOccupationMatrixCell(
+          col,
+          notation.row,
+          matrix,
+          uuid,
+          doRemove,
+        );
+        updateLineOccupationMatrixCell(
+          col - 1,
+          notation.row,
+          matrix,
+          uuid,
+          doRemove,
+        );
+      }
+    }
+  }
+
 
   // rect occupation matrix holds only one notation per cell
   function updateRectOccupationMatrix(
@@ -237,6 +277,7 @@ export default function notationCellOccupationHelper() {
     updateAnnotationOccupationMatrix,
     updateMultiCellOccupationMatrix,
     updateLineOccupationMatrix,
+    updateSqrtOccupationMatrix,
     updateCurveOccupationMatrix,
     updateCircleOccupationMatrix,
     updateRectOccupationMatrix,

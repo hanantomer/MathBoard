@@ -142,20 +142,20 @@ export default function screenHelper() {
     if (
       notationsAtCell?.length > 1 &&
       notationsAtCell.some(
-        (n) =>
+        (n: NotationAttributes) =>
           n.notationType === "IMAGE" ||
           n.notationType === "TEXT" ||
           n.notationType === "CIRCLE",
       ) &&
       notationsAtCell.some(
-        (n) =>
+        (n: NotationAttributes) =>
           n.notationType !== "IMAGE" &&
           n.notationType !== "TEXT" &&
           n.notationType !== "CIRCLE",
       )
     ) {
       notationsAtCell = notationsAtCell.filter(
-        (n) =>
+        (n: NotationAttributes) =>
           n.notationType !== "IMAGE" &&
           n.notationType !== "TEXT" &&
           n.notationType !== "CIRCLE",
@@ -364,9 +364,9 @@ export default function screenHelper() {
 
     notationStore
       .getNotations()
-      .filter((n) => n.uuid !== selectedNotationUUId)
-      .filter((n) => n.notationType === "CIRCLE")
-      .forEach((n) => {
+      .filter((n: NotationAttributes) => n.uuid !== selectedNotationUUId)
+      .filter((n: NotationAttributes) => n.notationType === "CIRCLE")
+      .forEach((n: NotationAttributes) => {
         const n1 = n as CircleNotationAttributes;
         let circleCircumferencePoint = getNearestPointOnCircleCircumference(
           dot,
@@ -393,9 +393,9 @@ export default function screenHelper() {
 
     notationStore
       .getNotations()
-      .filter((n) => n.uuid !== selectedNotationUUId)
-      .filter((n) => n.notationType === "LINE")
-      .forEach((n) => {
+      .filter((n: NotationAttributes) => n.uuid !== selectedNotationUUId)
+      .filter((n: NotationAttributes) => n.notationType === "LINE")
+      .forEach((n: NotationAttributes) => {
         const n1 = n as LineNotationAttributes;
         let distance = getClickedPosDistanceFromLineEdge(dot, n1.p1x, n1.p1y);
         if (distance < maxNotationDistance) {
@@ -504,9 +504,9 @@ export default function screenHelper() {
 
     notationStore
       .getNotations()
-      .filter((n) => n.uuid !== selectedNotationUUId)
-      .filter((n) => n.notationType === "LINE")
-      .forEach((n) => {
+      .filter((n: NotationAttributes) => n.uuid !== selectedNotationUUId)
+      .filter((n: NotationAttributes) => n.notationType === "LINE")
+      .forEach((n: NotationAttributes) => {
         let candidatePoint: DotCoordinates | null = null;
         let distance = Infinity;
         const n1 = n as LineNotationAttributes;

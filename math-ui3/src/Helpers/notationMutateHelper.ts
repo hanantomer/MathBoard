@@ -953,9 +953,7 @@ export default function notationMutateHelper() {
 
     const previousNotations = notationStore.getNotationsAtCell(previousCell);
     const isLogBase = previousNotations.some(
-      (n) =>
-        n.notationType === "SYMBOL" &&
-        (n as PointNotationAttributes).value === "log",
+      (n: any) => n.notationType === "SYMBOL" && n.value === "log",
     );
 
     let notation: PointNotationCreationAttributes = {
@@ -1158,6 +1156,7 @@ export default function notationMutateHelper() {
       }
 
       collapseNotationsToSelectedCell();
+
       notationStore.selectNotationsOfCells([cellStore.getSelectedCell()]);
     } finally {
       // Always release the lock
@@ -1169,6 +1168,8 @@ export default function notationMutateHelper() {
     const cell = cellStore.getSelectedCell();
     if (!cell) return;
 
+    let sqrtNotationUUId = "";
+
     for (
       let col = cellStore.getSelectedCell().col;
       col < matrixDimensions.colsNum;
@@ -1179,18 +1180,29 @@ export default function notationMutateHelper() {
         col: col,
       });
 
-      notations.forEach((notation) => {
+      notations.forEach((notation: NotationAttributes) => {
         if (
-          notation.notationType !== "SIGN" &&
-          notation.notationType !== "EXPONENT" &&
-          notation.notationType !== "LOGBASE" &&
-          notation.notationType !== "SYMBOL"
+          notation.notationType === "SIGN" ||
+          notation.notationType === "EXPONENT" ||
+          notation.notationType === "LOGBASE" ||
+          notation.notationType === "SYMBOL"
         ) {
-          return;
+          (notation as PointNotationAttributes).col--;
         }
-        (notation as PointNotationAttributes).col--;
         updateNotation(notation);
       });
+
+      const sqrtNotation = notationStore.getSqrtNotationAtCell({
+        row: cell.row,
+        col: col,
+      });
+
+      if (sqrtNotation && sqrtNotation.uuid !== sqrtNotationUUId) {
+        sqrtNotationUUId = sqrtNotation.uuid;
+        (sqrtNotation as SqrtNotationAttributes).fromCol--;
+        (sqrtNotation as SqrtNotationAttributes).toCol--;
+        updateNotation(sqrtNotation as SqrtNotationAttributes);
+      }
     }
   }
 
@@ -1248,7 +1260,23 @@ export default function notationMutateHelper() {
           notation.notationType === "SYMBOL"
         ) {
           lastColWithSpace = col;
+          continue;
         }
+      }
+
+      const sqrtNotation = notationStore.getSqrtNotationAtCell({
+        row: cell.row,
+        col: col,
+      });
+
+      const nextColSqrtNotation = notationStore.getSqrtNotationAtCell({
+        row: cell.row,
+        col: col + 1,
+      });
+
+      if (sqrtNotation && !nextColSqrtNotation) {
+        lastColWithSpace = col;
+        continue;
       }
     }
 
@@ -1257,18 +1285,34 @@ export default function notationMutateHelper() {
       return;
     }
 
-    // Move notations from right to left
+    // Move notations from left to right
+    let sqrtUUId = "";
+
     for (
       let currentCol = lastColWithSpace;
       currentCol > cell.col;
       currentCol--
     ) {
+      const sqrtNotation = notationStore.getSqrtNotationAtCell({
+        row: cell.row,
+        col: currentCol,
+      });
+
+      if (sqrtNotation && sqrtNotation.uuid !== sqrtUUId) {
+        sqrtUUId = sqrtNotation.uuid;
+        (sqrtNotation as SqrtNotationAttributes).fromCol++;
+        (sqrtNotation as SqrtNotationAttributes).toCol++;
+        updateNotation(sqrtNotation as SqrtNotationAttributes);
+      }
+
       const notations = notationStore.getNotationsAtCell({
         row: cell.row,
         col: currentCol,
       });
-      notations.forEach((notation) => {
-        (notation as PointNotationAttributes).col++;
+
+      notations.forEach((notation: any) => {
+        ///TODO: fix any distinguish between point and rect
+        notation.col++;
         updateNotation(notation);
       });
     }

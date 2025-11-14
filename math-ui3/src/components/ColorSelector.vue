@@ -66,7 +66,7 @@ function colorizeSelectedNotations(color: Color) {
   }
   const selectedNotations = notationStore.getSelectedNotations();
   if (selectedNotations) {
-    selectedNotations.forEach((notation) => {
+    selectedNotations.forEach((notation: any) => {
       colorizeNotation(notation, color);
     });
   }
