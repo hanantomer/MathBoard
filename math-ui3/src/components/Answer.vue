@@ -1,9 +1,7 @@
 <template>
-  <div class="d-flex">
-    <v-sheet>
+   <v-sheet>
       <mathBoard :svgId="svgId" :loaded="loaded"> </mathBoard>
     </v-sheet>
-  </div>
 </template>
 
 <script setup lang="ts">

@@ -1,4 +1,3 @@
-import BoardDecorator from "../boardDecorator";
 import User from "../user.model";
 import Lesson from "./lesson.model";
 import { Model, BelongsTo } from "sequelize-typescript";
@@ -11,7 +10,7 @@ import {
 import {
     StudentLessonAttributes,
     StudentLessonCreationAttributes,
-} from "../../../../math-common/src/userTypes";
+} from "../../../../math-common/build/userTypes";
 
 @Table({
     timestamps: true,

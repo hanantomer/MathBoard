@@ -1,9 +1,9 @@
 import { watch } from "vue";
-import { EditMode, BusEventType } from "../../../math-common/build/unions";
+import { EditMode, BusEventType } from "common/unions";
 import {
   CellAttributes,
   NotationAttributes,
-} from "../../../math-common/src/baseTypes";
+} from "common/baseTypes";
 import { useEditModeStore } from "../store/pinia/editModeStore";
 import { useCellStore } from "../store/pinia/cellStore";
 import { useNotationStore } from "../store/pinia/notationStore";
@@ -31,11 +31,13 @@ export default function () {
     handler: MouseEventHandler,
     params: any = {},
   ) {
-    editMode.forEach((em) =>
+    editMode.forEach((editMode) =>
       watch(
-        () => eventBus.get(em, eventType),
+        () => eventBus.get(editMode, eventType),
         (e: MouseEvent) => {
+          if (!e) return;
           handler(e, params);
+          eventBus.remove(eventType, editMode); // clear event from bus to allow reselction
         },
       ),
     );
@@ -46,11 +48,13 @@ export default function () {
     eventType: BusEventType,
     handler: KeyEventHandler,
   ) {
-    editMode.forEach((em) =>
+    editMode.forEach((editMode) =>
       watch(
-        () => eventBus.get(em, eventType),
+        () => eventBus.get(editMode, eventType),
         (e: KeyboardEvent) => {
+          if (!e) return;
           handler(e);
+          eventBus.remove(eventType, editMode); // clear event from bus to allow reselction
         },
       ),
     );
@@ -132,7 +136,9 @@ export default function () {
       watch(
         () => eventBus.get(editMode, eventType),
         (data: any) => {
+          if (!data) return;
           handler(data);
+          eventBus.remove(eventType, editMode); // clear event from bus to allow reselction
         },
       );
     });
@@ -186,3 +192,4 @@ export default function () {
     watchNotationsEvent,
   };
 }
+

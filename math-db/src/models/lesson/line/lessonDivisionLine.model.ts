@@ -1,0 +1,72 @@
+import {
+  Model,
+  Column,
+  BelongsTo,
+  ForeignKey,
+  DataType,
+  AllowNull,
+} from "sequelize-typescript";
+import User from "../../user.model";
+import Color from "../../color.model";
+import Lesson from "../../lesson/lesson.model";
+import LessonDecorator from "../../lesson/lessonDecorator";
+
+@LessonDecorator("LessonDivisionLine")
+export default class LessonDivisionLine extends Model<any, any> {
+  notationType = "DIVISIONLINE";
+  boardType = "LESSON";
+
+  @AllowNull(false)
+  @Column({ type: DataType.UUID, defaultValue: DataType.UUIDV4 })
+  uuid!: string;
+
+  @ForeignKey(() => User)
+  userId!: number;
+
+  @BelongsTo(() => User, {
+    foreignKey: {
+      allowNull: false,
+    },
+  })
+  user!: User;
+
+  @ForeignKey(() => Lesson)
+  lessonId!: number;
+
+  @BelongsTo(() => Lesson, {
+    foreignKey: {
+      allowNull: false,
+    },
+  })
+  lesson!: Lesson;
+
+  @AllowNull(false)
+  @Column({ type: DataType.INTEGER })
+  p1x!: number;
+
+  @AllowNull(false)
+  @Column({ type: DataType.INTEGER })
+  p2x!: number;
+
+  @AllowNull(false)
+  @Column({ type: DataType.INTEGER })
+  p1y!: number;
+
+  @AllowNull(false)
+  @Column({ type: DataType.INTEGER })
+  p2y!: number;
+
+  @BelongsTo(() => Color, {
+    foreignKey: { name: "colorId", field: "colorId", allowNull: true },
+  })
+  color!: Color;
+
+  @Column({ type: DataType.BOOLEAN, defaultValue: false })
+  dashed!: boolean;
+
+  @Column({ type: DataType.BOOLEAN, defaultValue: false })
+  arrowLeft!: boolean;
+
+  @Column({ type: DataType.BOOLEAN, defaultValue: false })
+  arrowRight!: boolean;
+}

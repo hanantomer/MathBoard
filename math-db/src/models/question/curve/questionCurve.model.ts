@@ -8,8 +8,8 @@ import QuestionDecorator from "../questionDecorator";
 import {
     QuestionCurveAttributes,
     QuestionCurveCreationAttributes,
-} from "../../../../../math-common/src/questionTypes";
-import { BoardType, NotationType } from "../../../../../math-common/src/unions";
+} from "../../../../../math-common/build/questionTypes";
+import { BoardType, NotationType } from "../../../../../math-common/build/unions";
 
 @QuestionDecorator("QuestionCurve")
 export default class QuestionCurve extends Model<

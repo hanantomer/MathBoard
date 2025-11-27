@@ -9,7 +9,7 @@ import {
   MultiCellAttributes,
 } from "common/baseTypes";
 
-import { wrapVectorSymbol, vectorSymbolPrefix } from "../../../math-common/src/globals";
+import { wrapVectorSymbol, vectorSymbolPrefix } from "common/globals";
 import { useCellStore } from "../store/pinia/cellStore";
 import useUtils from "./matrixHelperUtils";
 import { useUserStore } from "../store/pinia/userStore";
@@ -355,7 +355,7 @@ export default function useHtmlMatrixHelper() {
 
     if (n.notationType === "SQRTSYMBOL") {
       color = n.color?.value ? n.color?.value : color;
-      return `<p id='${n.uuid}' class='sqrtsymbol' style='margin-top:-5px;margin-left:11px;color:${color}'>&#x221A;</p>`;
+      return `<p id='${n.uuid}' class='sqrtsymbol' style='margin-top:-6px;margin-left:12px;color:${color}'>&#x221A;</p>`;
     }
 
     if (n.notationType === "TEXT") {
@@ -433,7 +433,7 @@ export default function useHtmlMatrixHelper() {
         ? "10%"
         : "0%";
     const fSize =
-      n1.value === "||"
+      n1.value === "||" ||  n1.value === "''"
         ? "1.4em"
         : n1.value === "."
         ? "1.5em"
@@ -470,3 +470,4 @@ export default function useHtmlMatrixHelper() {
     mergeHtmlNotations,
   };
 }
+

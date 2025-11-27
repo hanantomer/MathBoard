@@ -1,9 +1,9 @@
 import {
   NotationAttributes,
   DotCoordinates,
-} from "../../../math-common/src/baseTypes";
+} from "common/baseTypes";
 
-import { sqrtSymbolSuffix } from "../../../math-common/src/globals";
+import { sqrtSymbolSuffix } from "common/globals";
 
 import { useEditModeStore } from "../store/pinia/editModeStore";
 import { useCellStore } from "../store/pinia/cellStore";
@@ -166,3 +166,4 @@ export default function useShapeDrawingHelper() {
     saveDrawing,
   };
 }
+

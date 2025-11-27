@@ -26,7 +26,7 @@ import { useNotationStore } from "../store/pinia/notationStore";
 import {
   CellAttributes,
   PointNotationAttributes,
-} from "../../../math-common/src/baseTypes";
+} from "common/baseTypes";
 import useNotationMutateHelper from "../helpers/notationMutateHelper";
 import useScreenHelper from "../helpers/screenHelper";
 import useWatchHelper from "../helpers/watchHelper";
@@ -73,10 +73,9 @@ watchHelper.watchMouseEvent(
 
 watchHelper.watchMouseEvent(
   ["EXPONENT_SELECTED"],
-  "EV_SVG_MOUSEDOWN",
+  "EV_SVG_MOUSEUP",
   editSelectedExponentNotation,
 );
-
 
 // edit mode changed from "EXPONENT_WRITING" either by cell clik or toolbar click
 watchHelper.watchEndOfEditMode(["EXPONENT_WRITING"], [], submitExponent);
@@ -87,18 +86,9 @@ watchHelper.watchKeyEvent(
   startNewExponentAtSelectedCellPosition,
 );
 
-watchHelper.watchKeyEvent(
-  ["EXPONENT_SELECTED"],
-  "EV_KEYUP",
-  resumeSelection,
-);
+watchHelper.watchKeyEvent(["EXPONENT_SELECTED"], "EV_KEYUP", resumeSelection);
 
-watchHelper.watchKeyEvent(
-  ["EXPONENT_WRITING"],
-  "EV_KEYUP",
-  endEditing,
-);
-
+watchHelper.watchKeyEvent(["EXPONENT_WRITING"], "EV_KEYUP", endEditing);
 
 watchHelper.watchEditModeTransition(
   ["CELL_SELECTED"],
@@ -108,19 +98,27 @@ watchHelper.watchEditModeTransition(
 
 function endEditing(e: KeyboardEvent) {
   const { code } = e;
-  if (code === "Enter" || code === "NumpadEnter" || code === "Tab" || code === "Escape") {
+  if (
+    code === "Enter" ||
+    code === "NumpadEnter" ||
+    code === "Tab" ||
+    code === "Escape"
+  ) {
     editModeStore.setNextEditMode();
   }
 }
 
 function resumeSelection(e: KeyboardEvent) {
   const { code } = e;
-  if (code === "ArrowDown" ||  code === "ArrowUp" || code === "ArrowLeft" || code === "ArrowRight") {
+  if (
+    code === "ArrowDown" ||
+    code === "ArrowUp" ||
+    code === "ArrowLeft" ||
+    code === "ArrowRight"
+  ) {
     editModeStore.setNextEditMode();
   }
 }
-
-
 
 function startNewExponentAtSelectedCellPosition() {
   clickedCell = cellStore.getSelectedCell();
@@ -170,12 +168,10 @@ function setSelectedExponentPosition() {
 
   leftPosition.value =
     cellStore.getSvgBoundingRect().x +
-    window.scrollX +
     selectedNotation.value.col * cellStore.getCellHorizontalWidth();
 
   topPosition.value =
     cellStore.getSvgBoundingRect().y +
-    window.scrollY +
     selectedNotation.value.row * cellStore.getCellVerticalHeight();
 }
 
@@ -216,3 +212,4 @@ function submitExponent() {
   box-shadow: 0 0 0 1px hsla(0, 0%, 0%, 0.5);
 }
 </style>
+

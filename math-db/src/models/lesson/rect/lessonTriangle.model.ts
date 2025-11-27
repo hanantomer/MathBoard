@@ -6,7 +6,7 @@ import Lesson from "../../lesson/lesson.model";
 import {
     LessonRectAttributes,
     LessonRectCreationAttributes,
-} from "../../../../../math-common/src/lessonTypes";
+} from "../../../../../math-common/build/lessonTypes";
 
 @LessonDecorator("LessonGeo")
 export default class LessonTriangle extends Model<

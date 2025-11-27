@@ -83,7 +83,7 @@ import {
   NotationAttributes,
   MultiCellAttributes,
   LineAttributes,
-} from "../../../math-common/src/baseTypes";
+} from "common/baseTypes";
 import lineHandle from "./LineHandle.vue";
 import lineWatcher from "./LineWatcher.vue";
 
@@ -218,3 +218,4 @@ function moveSqrt(moveX: number, moveY: number) {
   linePosition.value.p2y += moveY;
 }
 </script>
+

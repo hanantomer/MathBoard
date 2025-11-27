@@ -1,4 +1,4 @@
-import { LessonNotationAttributes } from "../../math-common/src/lessonTypes";
+import { LessonNotationAttributes } from "../../math-common/build/lessonTypes";
 import util from "./util.js";
 import { Application } from "@feathersjs/feathers";
 

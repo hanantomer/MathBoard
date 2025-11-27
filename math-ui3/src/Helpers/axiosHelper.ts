@@ -5,7 +5,7 @@ import {
   baseURL,
   imagesURL,
   ACCESS_TOKEN_NAME,
-} from "../../../math-common/src/globals";
+} from "common/globals";
 
 const { cookies } = useCookies();
 
@@ -62,3 +62,4 @@ export default function axiosHelper() {
 
   return { baseURL, imagesURL, initAxiosInterceptors, handleError };
 }
+

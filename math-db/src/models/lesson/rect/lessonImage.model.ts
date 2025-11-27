@@ -1,6 +1,4 @@
 import { Model, Column, BelongsTo, ForeignKey, DataType, AllowNull } from "sequelize-typescript";
-import { NotationType, BoardType } from "../../../../../math-common/src/unions";
-import { UUID, UUIDV4 } from "sequelize/types/data-types";
 
 import LessonDecorator from "../../lesson/lessonDecorator";
 import User from "../../user.model";
@@ -9,7 +7,7 @@ import Lesson from "../../lesson/lesson.model";
 import {
     LessonRectAttributes,
     LessonRectCreationAttributes,
-} from "../../../../../math-common/src/lessonTypes";
+} from "../../../../../math-common/build/lessonTypes";
 
 @LessonDecorator("LessonImage")
 export default class LessonImage extends Model<

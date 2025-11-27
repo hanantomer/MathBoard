@@ -230,7 +230,11 @@ export function isRect(n: NotationType): boolean {
 }
 
 export function isLine(n: NotationType): boolean {
-  return n === "SQRT" || n === "LINE";
+  return (
+    n === "SQRT" ||
+    n === "LINE" ||
+    n === "DIVISIONLINE"
+  );
 }
 
 export function isCurve(
@@ -243,12 +247,12 @@ export function isCellNotationType(
   n: NotationType
 ): boolean {
   return (
-    n === "ANNOTATION" ||
+    //n === "ANNOTATION" ||
     n === "SIGN" ||
     n === "SQRTSYMBOL" ||
     n === "EXPONENT" ||
     n === "SYMBOL" ||
-    n === "LOGBASE" 
+    n === "LOGBASE"
   );
 }
 

@@ -104,34 +104,31 @@ export default function useMatrixHelperUtils() {
         return n.selected ? selectionColor : htmlColor;
       case "CURVE":
       case "LINE":
+      case "DIVISIONLINE":
       case "IMAGE":
       case "TEXT":
       case "CIRCLE":
       case "SQRT":
       case "SQRTSYMBOL":
-        return n.selected
-          ? selectionColor
-          : n.color?.value??htmlColor;
+        return n.selected ? selectionColor : n.color?.value ?? htmlColor;
     }
   }
 
   function symbolAdjecentToFraction(
-      notation: PointNotationAttributes,
-    ): boolean {
-      const maxLineDistance = 1;
+    notation: PointNotationAttributes,
+  ): boolean {
+    const maxLineDistance = 1;
 
-  //    if (notationStore.isSymbolPartOfFraction(notation)) {
-  //      return false;
-  //    }
+    //    if (notationStore.isSymbolPartOfFraction(notation)) {
+    //      return false;
+    //    }
 
-      if (notationStore.isSymbolAdjecentToLine(notation, maxLineDistance)) {
-        return true;
-      }
-
-      return false;
+    if (notationStore.isSymbolAdjecentToLine(notation, maxLineDistance)) {
+      return true;
     }
 
-
+    return false;
+  }
 
   return {
     getColor,

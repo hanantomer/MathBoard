@@ -3,7 +3,7 @@ import QuestionDecorator from "../../question/questionDecorator";
 import User from "../../user.model";
 import Color from "../../color.model";
 import Question from "../../question/question.model";
-import { QuestionPointAttributes, QuestionPointCreationAttributes } from "../../../../../math-common/src/questionTypes";
+import { QuestionPointAttributes, QuestionPointCreationAttributes } from "../../../../../math-common/build/questionTypes";
 
 @QuestionDecorator("QuestionLogBase")
 export default class QuestionLogBase extends Model<

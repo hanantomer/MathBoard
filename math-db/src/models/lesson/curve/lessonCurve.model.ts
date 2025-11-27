@@ -8,8 +8,11 @@ import LessonDecorator from "../lessonDecorator";
 import {
     LessonCurveAttributes,
     LessonCurveCreationAttributes,
-} from "../../../../../math-common/src/lessonTypes";
-import { BoardType, NotationType } from "../../../../../math-common/src/unions";
+} from "../../../../../math-common/build/lessonTypes";
+import {
+    BoardType,
+    NotationType,
+} from "../../../../../math-common/build/unions";
 
 @LessonDecorator("LessonCurve")
 export default class LessonCurve extends Model<

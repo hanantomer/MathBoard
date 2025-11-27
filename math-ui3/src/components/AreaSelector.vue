@@ -362,7 +362,6 @@ function endSelect() {
     });
     if (!clickedCell) return;
 
-    selectionHelper.setSelectedCell(clickedCell, true);
     editModeStore.setDefaultEditMode();
     return;
   }
@@ -442,13 +441,15 @@ function moveAtCellScale(e: MouseEvent) {
     // clone only at start of dragging
     const doClone = e.ctrlKey && !dragStarted;
     dragStarted = true;
-    notationMutationHelper.moveSelectedNotationsAtCellScale(
-      deltaCol,
-      deltaRow,
-      doClone,
-    );
-
-    moveSelectionBox(deltaCol, deltaRow);
+    if (
+      notationMutationHelper.moveSelectedNotationsAtCellScale(
+        deltaCol,
+        deltaRow,
+        doClone,
+      )
+    ) {
+      moveSelectionBox(deltaCol, deltaRow);
+    }
   }
 }
 

@@ -1,13 +1,12 @@
 <template>
   <div class="d-flex" style="overflow: auto;">
     <v-sheet>
-      <mathBoard :svgId="svgId" :loaded="loaded"> </mathBoard>
+  <mathBoard :svgId="svgId" :loaded="loaded"> </mathBoard>
     </v-sheet>
   </div>
 </template>
 
 <script setup lang="ts">
-
 import mathBoard from "./MathBoard.vue";
 import useUserOutgoingOperations from "../helpers/userOutgoingOperationsHelper";
 import useUserIncomingOperations from "../helpers/userIncomingOperationsHelper";
@@ -19,7 +18,7 @@ import { useLessonStore } from "../store/pinia/lessonStore";
 import { useNotationStore } from "../store/pinia/notationStore";
 import { watch } from "vue";
 import { useRoute } from "vue-router";
-import { heartBeatInterval } from "../../../math-common/src/globals";
+import { heartBeatInterval } from "common/globals";
 import { useTitleStore } from "../store/pinia/titleStore";
 import { useCellStore } from "../store/pinia/cellStore";
 

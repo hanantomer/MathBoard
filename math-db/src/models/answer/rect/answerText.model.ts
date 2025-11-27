@@ -1,5 +1,4 @@
 import { Model, Column, BelongsTo, ForeignKey, DataType, AllowNull } from "sequelize-typescript";
-import { NotationType, BoardType } from "../../../../../math-common/src/unions";
 import AnswerDecorator from "../../answer/answerDecorator";
 import User from "../../user.model";
 import Color from "../../color.model";
@@ -7,7 +6,7 @@ import Answer from "../../answer/answer.model";
 import {
     AnswerRectAttributes,
     AnswerRectCreationAttributes,
-} from "../../../../../math-common/src/answerTypes";
+} from "../../../../../math-common/build/answerTypes";
 
 
 

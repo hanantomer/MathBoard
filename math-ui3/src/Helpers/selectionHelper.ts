@@ -1,4 +1,5 @@
 import {
+  NotationAttributes,
   RectCoordinates,
   DotCoordinates,
   LineNotationAttributes,
@@ -6,7 +7,7 @@ import {
   CellAttributes,
 } from "common/baseTypes";
 
-import { NotationAttributes } from "common/baseTypes";
+import { getMousePositionInSVG } from "common/globals";
 import { useLessonStore } from "../store/pinia/lessonStore";
 import { useEditModeStore } from "../store/pinia/editModeStore";
 import { useNotationStore } from "../store/pinia/notationStore";
@@ -61,7 +62,7 @@ export default function selectionHelper() {
           return true;
         }
         break;
-
+      case "DIVISIONLINE":
       case "LINE": {
         const lineNotation = notation as LineNotationAttributes;
         const distanceFromLine = screenHelper.getClickedPosDistanceFromLine(
@@ -154,8 +155,8 @@ export default function selectionHelper() {
 
   function selectDivisionLineNotation(uuid: String) {
     const notation = notationStore.getNotation(uuid)!;
-    editModeStore.setEditMode("DIVISION_LINE_SELECTED");
-    eventBus.emit("EV_DIVISION_LINE_SELECTED", notation);
+    editModeStore.setEditMode("DIVISIONLINE_SELECTED");
+    eventBus.emit("EV_DIVISIONLINE_SELECTED", notation);
   }
 
   async function setSelectedCell(cell: CellAttributes, setEditMode: boolean) {
@@ -178,27 +179,36 @@ export default function selectionHelper() {
   }
 
   function selectClickedPosition(e: MouseEvent) {
-    const svgDimensions = cellStore.getSvgBoundingRect();
+
+    const svgEl = document.getElementById(
+      cellStore.getSvgId()!,
+    ) as SVGSVGElement | null;
+
+    if (!svgEl) return;
+
+    const position = getMousePositionInSVG(
+      svgEl,
+      e,
+      cellStore.getSvgBoundingRect(),
+    );
+
+    let clickedCell = screenHelper.getCellByDotCoordinates(position);
+    if (!clickedCell) return;
 
     notationStore.resetSelectedNotations();
     const uuid = (e.target as any).id;
     if (uuid) {
       selectNotation(uuid);
     } else {
-      const position = {
-        x: e.offsetX + svgDimensions.left,
-        y: e.offsetY + svgDimensions.top,
-      };
-      let clickedCell = screenHelper.getCellByDotCoordinates(position);
-      if (!clickedCell) return;
-      setSelectedCell(clickedCell, true);
       selectNotationAtPosition(position);
     }
+    setSelectedCell(clickedCell, false);
   }
 
   function selectNotation(uuid: string) {
     const n = notationStore.getNotation(uuid)!;
     switch (n.notationType) {
+      case "DIVISIONLINE":
       case "LINE":
         selectLineNotation(uuid);
         break;

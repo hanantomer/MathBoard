@@ -113,7 +113,7 @@ import { useRouter, useRoute, RouteLocationRaw } from "vue-router";
 import { useUserStore } from "../store/pinia/userStore";
 import useAuthHelper from "../helpers/authenticationHelper";
 import useApiHelper from "../helpers/apiHelper";
-import { ACCESS_TOKEN_NAME } from "../../../math-common/src/globals";
+import { ACCESS_TOKEN_NAME } from "common/globals";
 
 const cookies = useCookies().cookies;
 const authHelper = useAuthHelper();
@@ -372,3 +372,4 @@ async function forgotPassword() {
   font-size: small;
 }
 </style>
+

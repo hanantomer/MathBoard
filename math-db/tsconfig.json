@@ -1,6 +1,5 @@
 {
     "compilerOptions": {
-        
         "composite": true,
         "target": "ES6",
         "module": "CommonJS",
@@ -19,9 +18,8 @@
         "sourceMap": true,
         "resolveJsonModule": true
     },
-    "references": [
-        { "path": "../math-common" }
-    ],
+    "references": [{ "path": "../math-common" }],
+        
     "include": ["src/**/*"],
     "exclude": ["node_modules", "build/**/*"]
 }

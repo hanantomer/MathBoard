@@ -58,6 +58,7 @@ export default function notationLoadingHelper() {
           parentUUId,
         );
       case "SQRT":
+      case "DIVISIONLINE":
       case "LINE":
         return await apiHelper.getNotations<LineNotationAttributes>(
           notationType,

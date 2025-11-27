@@ -8,7 +8,7 @@ import {
     HasMany
 } from "sequelize-typescript";
 
-import { UserType } from "../../../math-common/src/unions";
+import { UserType } from "../../../math-common/build/unions";
 import {
     UserAttributes,
     UserCreationAttributes,

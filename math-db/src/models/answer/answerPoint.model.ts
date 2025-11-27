@@ -1,5 +1,5 @@
 import { Model, Column, BelongsTo, ForeignKey, DataType, AllowNull } from "sequelize-typescript";
-import { NotationType, BoardType } from "../../../../math-common/src/unions";
+import { NotationType, BoardType } from "../../../../math-common/build/unions";
 import { UUID, UUIDV4 } from "sequelize/types/data-types";
 import AnswerDecorator from "../answer/answerDecorator";
 import User from "../user.model";
@@ -7,7 +7,7 @@ import Answer from "../answer/answer.model";
 import {
     AnswerPointAttributes,
     AnswerPointCreationAttributes,
-} from "../../../../math-common/src/answerTypes";
+} from "../../../../math-common/build/answerTypes";
 
 
 

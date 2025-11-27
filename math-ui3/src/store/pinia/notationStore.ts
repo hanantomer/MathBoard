@@ -143,7 +143,8 @@ export const useNotationStore = defineStore("notation", () => {
     notation: NotationAttributes,
     doUpdateOccupationMatrix: boolean,
     preventOverwrite: boolean = true,
-  ) {
+  )
+   {
     if (!notation.uuid) {
       console.error("addNotation: Notation uuid is undefined");
       return;
@@ -157,7 +158,7 @@ export const useNotationStore = defineStore("notation", () => {
       }).filter((nt) => isCellNotationType(nt.notationType));
       if (existingNotations.length > 0) {
         console.warn("addNotation: Cell already has a point notation", n);
-        return;
+        return false;
       }
     }
 
@@ -176,6 +177,7 @@ export const useNotationStore = defineStore("notation", () => {
         notationCellOccupationHelper,
       );
     }
+    return true;
   }
 
   function addCopiedNotation(notation: NotationAttributes) {
@@ -258,9 +260,6 @@ export const useNotationStore = defineStore("notation", () => {
     }
 
     notation.selected = true;
-
-    //const cellStore = useCellStore();
-    //cellStore.setSelectedCell({ col: 1, row: 1 }, false);
   }
 
   function setParent(parentUUID: string, boardType: BoardType) {
@@ -274,11 +273,11 @@ export const useNotationStore = defineStore("notation", () => {
   function getNotationsAtCell(cell: CellAttributes): NotationAttributes[] {
     const notationsAtCell: NotationAttributes[] = [];
 
-    if (cell.col < 0) {
+    if (cell.col==null || cell.col < 0) {
       throw new Error("invalid col:" + cell.col);
     }
 
-    if (cell.row < 0) {
+    if (cell.row == null || cell.row < 0) {
       throw new Error("invalid col:" + cell.row);
     }
 
@@ -365,6 +364,7 @@ export const useNotationStore = defineStore("notation", () => {
               rect,
             );
             break;
+          case "DIVISIONLINE":
           case "LINE":
             doIntersects = checkLineIntersection(
               l as LineNotationAttributes,
@@ -620,7 +620,7 @@ export const useNotationStore = defineStore("notation", () => {
           false,
         );
         break;
-
+      case "DIVISIONLINE":
       case "LINE":
         notationCellOccupationHelper.updateLineOccupationMatrix(
           cellLineNotationOccupationMatrix,

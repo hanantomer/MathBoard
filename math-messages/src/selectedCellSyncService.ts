@@ -1,5 +1,5 @@
 import { Application } from "@feathersjs/feathers";
-import { SelectedCell } from "../../math-common/build/baseTypes";
+import { SelectedCell } from "../../math-common/src/baseTypes";
 
 class selectedCellSyncService {
   app: Application;

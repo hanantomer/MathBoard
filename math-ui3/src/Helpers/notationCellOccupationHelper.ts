@@ -117,7 +117,6 @@ export default function notationCellOccupationHelper() {
     }
   }
 
-
   function updateSqrtOccupationMatrix(
     matrix: any,
     notation: SqrtNotationAttributes,
@@ -154,7 +153,6 @@ export default function notationCellOccupationHelper() {
       }
     }
   }
-
 
   // rect occupation matrix holds only one notation per cell
   function updateRectOccupationMatrix(

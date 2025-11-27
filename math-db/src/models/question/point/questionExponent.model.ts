@@ -6,7 +6,7 @@ import Question from "../question.model";
 import {
     QuestionExponentAttributes,
     QuestionExponentCreationAttributes,
-} from "../../../../../math-common/src/questionTypes";
+} from "../../../../../math-common/build/questionTypes";
 
 @QuestionDecorator("QuestionExponent")
 export default class QuestionExponent extends Model<

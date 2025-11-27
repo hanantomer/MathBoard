@@ -8,8 +8,11 @@ import AnswerDecorator from "../answerDecorator";
 import {
     AnswerCircleAttributes,
     AnswerCircleCreationAttributes,
-} from "../../../../../math-common/src/answerTypes";
-import { BoardType, NotationType } from "../../../../../math-common/build/unions";
+} from "../../../../../math-common/build/answerTypes";
+import {
+    BoardType,
+    NotationType,
+} from "../../../../../math-common/build/unions";
 
 @AnswerDecorator("AnswerCircle")
 export default class AnswerCircle extends Model<

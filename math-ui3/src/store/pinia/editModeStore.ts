@@ -39,7 +39,7 @@ export const useEditModeStore = defineStore("editMode", () => {
       editMode.value === "CIRCLE_SELECTED" ||
       editMode.value === "AREA_SELECTED" ||
       editMode.value === "LINE_SELECTED" ||
-      editMode.value === "DIVISION_LINE_SELECTED" ||
+      editMode.value === "DIVISIONLINE_SELECTED" ||
       editMode.value === "CURVE_SELECTED" ||
       editMode.value === "TEXT_SELECTED" ||
       editMode.value === "IMAGE_SELECTED" ||
@@ -67,10 +67,10 @@ export const useEditModeStore = defineStore("editMode", () => {
 
   function isDivisionLineMode() {
     return (
-      editMode.value === "DIVISION_LINE_DRAWING" ||
-      editMode.value === "DIVISION_LINE_SELECTED" ||
-      editMode.value === "DIVISION_LINE_EDITING_LEFT" ||
-      editMode.value === "DIVISION_LINE_EDITING_RIGHT"
+      editMode.value === "DIVISIONLINE_DRAWING" ||
+      editMode.value === "DIVISIONLINE_SELECTED" ||
+      editMode.value === "DIVISIONLINE_EDITING_LEFT" ||
+      editMode.value === "DIVISIONLINE_EDITING_RIGHT"
     );
   }
 
@@ -107,7 +107,7 @@ export const useEditModeStore = defineStore("editMode", () => {
   }
 
   function isDivisionLineStartedMode() {
-    return editMode.value === "DIVISION_LINE_STARTED";
+    return editMode.value === "DIVISIONLINE_STARTED";
   }
 
   function isCurveStartedMode() {
@@ -123,7 +123,7 @@ export const useEditModeStore = defineStore("editMode", () => {
   }
 
   function isDivisionLineDrawingMode() {
-    return this.editMode === "DIVISION_LINE_DRAWING";
+    return this.editMode === "DIVISIONLINE_DRAWING";
   }
 
   function isLineEditingMode() {
@@ -135,8 +135,8 @@ export const useEditModeStore = defineStore("editMode", () => {
 
   function isDivisionLineEditingMode(): boolean {
     return (
-      this.editMode === "DIVISION_LINE_EDITING_LEFT" ||
-      this.editMode === "DIVISION_LINE_EDITING_RIGHT"
+      this.editMode === "DIVISIONLINE_EDITING_LEFT" ||
+      this.editMode === "DIVISIONLINE_EDITING_RIGHT"
     );
   }
 
@@ -160,7 +160,7 @@ export const useEditModeStore = defineStore("editMode", () => {
   }
 
   function isDivisionLineSelectedMode() {
-    return editMode.value === "DIVISION_LINE_SELECTED";
+    return editMode.value === "DIVISIONLINE_SELECTED";
   }
 
   function isCurveSelectedMode() {
@@ -283,17 +283,17 @@ export const useEditModeStore = defineStore("editMode", () => {
       case "LINE_EDITING_RIGHT":
         return setEditMode("LINE_SELECTED");
 
-      case "DIVISION_LINE_STARTED":
-        return setEditMode("DIVISION_LINE_DRAWING");
+      case "DIVISIONLINE_STARTED":
+        return setEditMode("DIVISIONLINE_DRAWING");
 
-      case "DIVISION_LINE_DRAWING":
-        return setEditMode("DIVISION_LINE_SELECTED");
+      case "DIVISIONLINE_DRAWING":
+        return setEditMode("DIVISIONLINE_SELECTED");
 
-      case "DIVISION_LINE_EDITING_LEFT":
-        return setEditMode("DIVISION_LINE_SELECTED");
+      case "DIVISIONLINE_EDITING_LEFT":
+        return setEditMode("DIVISIONLINE_SELECTED");
 
-      case "DIVISION_LINE_EDITING_RIGHT":
-        return setEditMode("DIVISION_LINE_SELECTED");
+      case "DIVISIONLINE_EDITING_RIGHT":
+        return setEditMode("DIVISIONLINE_SELECTED");
 
       case "CURVE_STARTED":
         return setEditMode("CURVE_DRAWING");

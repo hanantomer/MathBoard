@@ -6,7 +6,7 @@ import Question from "../../question/question.model";
 import {
     QuestionPointAttributes,
     QuestionPointCreationAttributes,
-} from "../../../../../math-common/src/questionTypes";
+} from "../../../../../math-common/build/questionTypes";
 
 
 @QuestionDecorator("QuestionSymbol")

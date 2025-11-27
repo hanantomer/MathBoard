@@ -2,46 +2,46 @@
   <div v-show="show">
     <lineWatcher
       :startEntry="{
-        editMode: ['DIVISION_LINE_STARTED'],
+        editMode: ['DIVISIONLINE_STARTED'],
         func: setInitialPosition,
       }"
       :drawEntry="{
-        editMode: ['DIVISION_LINE_DRAWING'],
+        editMode: ['DIVISIONLINE_DRAWING'],
         func: drawLine,
       }"
       :editEntryFirstHandle="{
-        editMode: ['DIVISION_LINE_EDITING_LEFT'],
+        editMode: ['DIVISIONLINE_EDITING_LEFT'],
         func: modifyLineLeft,
       }"
       :editEntrySecondHandle="{
-        editMode: ['DIVISION_LINE_EDITING_RIGHT'],
+        editMode: ['DIVISIONLINE_EDITING_RIGHT'],
         func: modifyLineRight,
       }"
       :saveEntry="{
         editMode: [
-          'DIVISION_LINE_DRAWING',
-          'DIVISION_LINE_EDITING_RIGHT',
-          'DIVISION_LINE_EDITING_LEFT',
+          'DIVISIONLINE_DRAWING',
+          'DIVISIONLINE_EDITING_RIGHT',
+          'DIVISIONLINE_EDITING_LEFT',
         ],
         func: saveLine,
       }"
       :selectEntry="{
-        editMode: ['DIVISION_LINE_SELECTED'],
+        editMode: ['DIVISIONLINE_SELECTED'],
         func: selectLine,
-        event: 'EV_DIVISION_LINE_SELECTED',
+        event: 'EV_DIVISIONLINE_SELECTED',
       }"
       :moveByKeyEntry="{
-        editMode: ['DIVISION_LINE_SELECTED'],
+        editMode: ['DIVISIONLINE_SELECTED'],
         func: moveLine,
       }"
       :endEntry="{
-        editMode: ['DIVISION_LINE_SELECTED'],
+        editMode: ['DIVISIONLINE_SELECTED'],
       }"
     />
     <line-handle
       v-show="editModeStore.isDivisionLineMode()"
-      drawing-mode="DIVISION_LINE_DRAWING"
-      editing-mode="DIVISION_LINE_EDITING_LEFT"
+      drawing-mode="DIVISIONLINE_DRAWING"
+      editing-mode="DIVISIONLINE_EDITING_LEFT"
       v-bind:style="{
         left: handleLeft + 'px',
         top: handleTop + 'px',
@@ -49,8 +49,8 @@
     ></line-handle>
     <line-handle
       v-show="editModeStore.isDivisionLineMode()"
-      drawing-mode="DIVISION_LINE_DRAWING"
-      editing-mode="DIVISION_LINE_EDITING_RIGHT"
+      drawing-mode="DIVISIONLINE_DRAWING"
+      editing-mode="DIVISIONLINE_EDITING_RIGHT"
       v-bind:style="{
         left: handleRight + 'px',
         top: handleBottom + 'px',
@@ -83,7 +83,7 @@ import {
   DotCoordinates,
   LineNotationAttributes,
   NotationAttributes,
-} from "../../../math-common/src/baseTypes";
+} from "common/baseTypes";
 import useEventBus from "../helpers/eventBusHelper";
 import lineWatcher from "./LineWatcher.vue";
 import lineHandle from "./LineHandle.vue";
@@ -185,7 +185,7 @@ function setInitialPosition(p: DotCoordinates) {
     p2y: cellY, // Keep y position constant for horizontal line
     dashed: false,
     arrowLeft: false,
-    arrowRight: false
+    arrowRight: false,
   };
 }
 
@@ -240,7 +240,10 @@ async function saveLine(): Promise<string> {
     );
     return updatedLine.uuid;
   } else {
-    return notationMutateHelper.addLineNotation(lineAttributes.value);
+    return notationMutateHelper.addLineNotation(
+      lineAttributes.value,
+      "DIVISIONLINE",
+    );
   }
 }
 
@@ -259,14 +262,6 @@ function getAdjustedEdge(point: DotCoordinates): DotCoordinates {
     x: cellX,
     y: cellY,
   };
-}
-
-// Add validation for minimum width
-function isValidLine(): boolean {
-  return (
-    Math.abs(lineAttributes.value.p2x - lineAttributes.value.p1x) >=
-    cellStore.getCellHorizontalWidth()
-  );
 }
 
 function applyMoveToLine(dx: number, dy: number) {

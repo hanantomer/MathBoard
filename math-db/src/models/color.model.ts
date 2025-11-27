@@ -1,12 +1,11 @@
 import {
     Table,
-    DefaultScope,
     Model,
     Column,
     DataType,
     AllowNull
 } from "sequelize-typescript";
-import { ColorAttributes, ColorCreationAttributes } from "../../../math-common/src/baseTypes";
+import { ColorAttributes, ColorCreationAttributes } from "../../../math-common/build/baseTypes";
 
 
 @Table({

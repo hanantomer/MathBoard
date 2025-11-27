@@ -3,7 +3,7 @@ import { Model, Column, BelongsTo, ForeignKey, DataType, AllowNull } from "seque
 import {
     LessonLineAttributes,
     LessonLineCreationAttributes,
-} from "../../../../../math-common/src/lessonTypes";
+} from "../../../../../math-common/build/lessonTypes";
 import User from "../../user.model";
 import Color from "../../color.model";
 import Lesson from "../../lesson/lesson.model";

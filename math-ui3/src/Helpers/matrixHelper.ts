@@ -1,7 +1,9 @@
 import * as d3 from "d3";
 import {
-  matrixDimensions, defaultdCellStroke, sqrtSymbolSuffix
- } from "common/globals";
+  matrixDimensions,
+  defaultdCellStroke,
+  sqrtSymbolSuffix,
+} from "common/globals";
 import { SqrtNotationAttributes } from "common/baseTypes";
 import { useCellStore } from "../store/pinia/cellStore";
 import { useNotationStore } from "../store/pinia/notationStore";
@@ -112,7 +114,6 @@ export default function useMatrixHelper() {
     return sqrtSignNotation;
   }
 
-
   function refreshScreen(svgId: string) {
     matrixCellHelper.resetAllCellColors();
 
@@ -153,7 +154,9 @@ export default function useMatrixHelper() {
 
     lineHelper.mergeLineNotations(
       svgId,
-      notations.filter((n) => n.notationType === "LINE"),
+      notations.filter(
+        (n) => n.notationType === "LINE" || n.notationType === "DIVISIONLINE",
+      ),
     );
   }
 

@@ -91,7 +91,7 @@ export default function eventHelper() {
           notationMutationHelper.cloneNotation(n1);
           break;
         }
-
+        case "DIVISIONLINE":
         case "LINE": {
           let n1 = { ...n } as LineNotationAttributes;
           const lineWidth = n1.p2x - n1.p1x;
@@ -324,6 +324,8 @@ export default function eventHelper() {
   //     ?.removeEventListener("touchstart", emitSvgMouseDown);
   // }
 
+  const lastPoint = { x: -1, y: -1 };
+
   function registerSvgMouseDown() {
     document
       ?.getElementById(cellStore.getSvgId()!)
@@ -350,10 +352,21 @@ export default function eventHelper() {
 
   function emitSvgMouseMove(e: MouseEvent) {
     if (e.buttons !== 1) return;
-    eventBus.emit("EV_SVG_MOUSE_OR_TOUCH_DRAG", e);
+    if (lastPoint.x > 0 && lastPoint.y > 0) {
+      //const deltaX = e.clientX - lastPoint.x;
+      //const deltaY = e.clientY - lastPoint.y;
+
+      //if (deltaX > 1 && deltaY > 1) {
+      eventBus.emit("EV_SVG_MOUSE_OR_TOUCH_DRAG", e);
+      //}
+    }
+    lastPoint.x = e.clientX;
+    lastPoint.y = e.clientY;
   }
 
   function emitSvgMouseUp(e: MouseEvent) {
+    lastPoint.x = -1;
+    lastPoint.y = -1;
     eventBus.emit("EV_SVG_MOUSEUP", e);
   }
 

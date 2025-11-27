@@ -3,7 +3,10 @@ import LessonDecorator from "../../lesson/lessonDecorator";
 import User from "../../user.model";
 import Color from "../../color.model";
 import Lesson from "../../lesson/lesson.model";
-import { LessonPointAttributes, LessonPointCreationAttributes } from "../../../../../math-common/src/lessonTypes";
+import {
+    LessonPointAttributes,
+    LessonPointCreationAttributes,
+} from "../../../../../math-common/build/lessonTypes";
 
 @LessonDecorator("LessonLogBase")
 export default class LessonLogBase extends Model<

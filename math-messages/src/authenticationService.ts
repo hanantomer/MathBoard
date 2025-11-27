@@ -1,6 +1,6 @@
 import constants from "./constants";
 import { Application } from "@feathersjs/feathers";
-import { UserAttributes } from "../../math-common/src/userTypes";
+import { UserAttributes } from "../../math-common/build/userTypes";
 import winston from "winston";
 import path from "path";
 

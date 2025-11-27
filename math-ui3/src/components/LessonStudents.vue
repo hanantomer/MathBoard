@@ -77,7 +77,7 @@ import { computed } from "vue";
 import { useStudentStore } from "../store/pinia/studentStore";
 import { useLessonStore } from "../store/pinia/lessonStore";
 import { useEditModeStore } from "../store/pinia/editModeStore";
-import { UserAttributes } from "../../../math-common/src/userTypes";
+import { UserAttributes } from "common/userTypes";
 import UseUserOutgoingOperations from "../helpers/userOutgoingOperationsHelper";
 
 const studentStore = useStudentStore();
@@ -143,3 +143,4 @@ function closeDialog() {
   border: 2px dashed rgb(143, 26, 179);
 }
 </style>
+

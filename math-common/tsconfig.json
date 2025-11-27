@@ -1,23 +1,23 @@
 {
-    "compilerOptions": {
-        "composite": true,
-        "target": "ESNext",
-        "module": "CommonJS",
-        "lib": ["ESNext","DOM"],
-        "outDir": "build",
-        "rootDir": "src",
-        "strict": true,
-        "noImplicitAny": true,
-        "esModuleInterop": true,
-        "baseUrl": ".",
-        "paths": {
-            "*": ["../node_modules/@types"]
-        },
-        "sourceMap": true,
-        "resolveJsonModule": true,
-
+  "compilerOptions": {
+    "composite": true,
+    "target": "ESNext",
+    "module": "CommonJS",
+    "lib": ["ESNext", "DOM"],
+    "outDir": "build",
+    "rootDir": "src",
+    "strict": true,
+    "noImplicitAny": true,
+    "esModuleInterop": true,
+    "baseUrl": ".",
+    "paths": {
+      "*": ["../node_modules/@types"],
     },
-    "compileOnSave": true,
-    "include": ["./src/**/*"],
-    "exclude": ["node_modules", "build/**/*"]
+    "sourceMap": true,
+    "resolveJsonModule": true
+  },
+  "compileOnSave": true,
+  "include": ["./src/**/*"],
+  "exclude": ["node_modules", "build/**/*"],
+  
 }

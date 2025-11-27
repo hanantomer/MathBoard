@@ -26,10 +26,8 @@
 
     <svg
       style="
-        width: 100%;
-        height: 100%;
-        min-width: 1500px;
-        min-height: 795px;
+        width: 1650px;
+        height: 795px;
         margin-left: 10px;
         margin-top: 10px;
         background-color: white;

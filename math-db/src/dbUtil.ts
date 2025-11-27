@@ -15,15 +15,29 @@ import {
     PointNotationAttributes,
     RectNotationAttributes,
     LineNotationAttributes,
-    SqrtNotationAttributes
-} from "../../math-common/src/baseTypes";
-import { UserAttributes, StudentLessonCreationAttributes} from "../../math-common/build/userTypes";
-import { LessonCreationAttributes } from "../../math-common/src/lessonTypes";
+    SqrtNotationAttributes,
+} from "../../math-common/build/baseTypes";
+import {
+    UserAttributes,
+    StudentLessonCreationAttributes,
+} from "../../math-common/build/userTypes";
+import { LessonCreationAttributes } from "../../math-common/build/lessonTypes";
 import { QuestionCreationAttributes } from "../../math-common/build/questionTypes";
-import { AnswerAttributes, AnswerCreationAttributes } from "../../math-common/build/answerTypes";
-import { capitalize } from "../../math-common/build/utils";
-import { BoardType, NotationType, BoardTypeValues, NotationTypeValues, } from "../../math-common/build/unions";
+import {
+    AnswerAttributes,
+    AnswerCreationAttributes,
+} from "../../math-common/build/answerTypes";
+import {
+    BoardType,
+    NotationType,
+    BoardTypeValues,
+    NotationTypeValues,
+} from "../../math-common/build/unions";
 import { Model, ModelCtor } from "sequelize";
+
+function capitalize(str: string): string {
+    return str ? str[0].toUpperCase() + str.slice(1).toLowerCase() : str;
+}
 
 
 
@@ -666,6 +680,7 @@ export default function dbUtil() {
                     validateSqrtNotation(m);
                     break;
                 }
+                case "DIVISIONLINE":
                 case "LINE": {
                     const m = model as LineNotationAttributes;
                     validateLineNotation(m);

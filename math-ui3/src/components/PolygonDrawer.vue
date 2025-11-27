@@ -63,14 +63,12 @@ import {
   LineAttributes,
   MovementDirection,
   DotCoordinates,
-  LineNotationAttributes,
-  NotationAttributes,
-} from "../../../math-common/src/baseTypes";
+  LineNotationAttributes
+} from "common/baseTypes";
 import useEventBus from "../helpers/eventBusHelper";
 import lineWatcher from "./LineWatcher.vue";
 import useScreenHelper from "../helpers/screenHelper"; // Add this line
 import useNotationMutateHelper from "../helpers/notationMutateHelper"; // Add this line
-const watchHelper = useWatchHelper();
 
 const eventBus = useEventBus();
 const editModeStore = useEditModeStore();
@@ -304,3 +302,4 @@ function getAdjustedEdge(point: DotCoordinates): DotCoordinates {
   return point;
 }
 </script>
+

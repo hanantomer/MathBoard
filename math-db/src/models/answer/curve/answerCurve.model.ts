@@ -8,8 +8,11 @@ import AnswerDecorator from "../answerDecorator";
 import {
     AnswerCurveAttributes,
     AnswerCurveCreationAttributes,
-} from "../../../../../math-common/src/answerTypes";
-import { BoardType, NotationType } from "../../../../../math-common/src/unions";
+} from "../../../../../math-common/build/answerTypes";
+import {
+    BoardType,
+    NotationType,
+} from "../../../../../math-common/build/unions";
 
 @AnswerDecorator("AnswerCurve")
 export default class AnswerCurve extends Model<

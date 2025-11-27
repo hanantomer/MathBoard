@@ -9,7 +9,7 @@ import AuthenticationService from "./authenticationService";
 import HeartbeatService from "./heartbeatService";
 import SelectedCellSyncService from "./selectedCellSyncService";
 import NotationSyncService from "./notationSyncService";
-import { LessonNotationAttributes } from "../../math-common/src/lessonTypes";
+import { LessonNotationAttributes } from "../../math-common/build/lessonTypes";
 import imageUploadService from "./imageUploadService";
 
 

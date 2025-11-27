@@ -19,8 +19,8 @@ import { computed, ref } from "vue";
 import { useCellStore } from "../store/pinia/cellStore";
 import { useEditModeStore } from "../store/pinia/editModeStore";
 import { useNotationStore } from "../store/pinia/notationStore";
-import { AnnotationNotationAttributes } from "../../../math-common/src/baseTypes";
-import { decodeSpecialSymbol } from "../../../math-common/src/globals";
+import { AnnotationNotationAttributes } from "common/baseTypes";
+import { decodeSpecialSymbol } from "common/globals";
 import useNotationMutateHelper from "../helpers/notationMutateHelper";
 import useWatchHelper from "../helpers/watchHelper";
 
@@ -195,3 +195,4 @@ function addSpecialSymbol(symbol: string): void {
   display: none;
 }
 </style>
+

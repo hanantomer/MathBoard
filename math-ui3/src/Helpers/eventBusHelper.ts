@@ -1,5 +1,5 @@
 import { ref } from "vue";
-import { BusEventType, EditMode } from "../../../math-common/src/unions";
+import { BusEventType, EditMode } from "common/unions";
 import { useEditModeStore } from "../store/pinia/editModeStore";
 
 const editModeStore = useEditModeStore();
@@ -35,3 +35,4 @@ export default function () {
     get,
   };
 }
+

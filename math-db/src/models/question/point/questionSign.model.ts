@@ -6,7 +6,7 @@ import Question from "../question.model";
 import {
     QuestionPointAttributes,
     QuestionPointCreationAttributes,
-} from "../../../../../math-common/src/questionTypes";
+} from "../../../../../math-common/build/questionTypes";
 
 @QuestionDecorator("QuestionSign")
 export default class QuestionSign extends Model<

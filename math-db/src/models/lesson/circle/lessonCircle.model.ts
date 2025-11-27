@@ -9,7 +9,10 @@ import {
     LessonCircleAttributes,
     LessonCircleCreationAttributes,
 } from "../../../../../math-common/build/lessonTypes";
-import { BoardType, NotationType } from "../../../../../math-common/build/unions";
+import {
+    BoardType,
+    NotationType,
+} from "../../../../../math-common/build/unions";
 
 @LessonDecorator("LessonCircle")
 export default class LessonCircle extends Model<

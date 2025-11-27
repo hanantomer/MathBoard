@@ -1,13 +1,13 @@
 import QuestionDecorator from "../../question/questionDecorator";
 import { Model, Column, BelongsTo, ForeignKey, DataType, AllowNull } from "sequelize-typescript";
-import { NotationType, BoardType } from "../../../../../math-common/src/unions";
+import { NotationType, BoardType } from "../../../../../math-common/build/unions";
 import User from "../../user.model";
 import Color from "../../color.model";
 import Question from "../../question/question.model";
 import {
     QuestionPointAttributes,
     QuestionPointCreationAttributes,
-} from "../../../../../math-common/src/questionTypes";
+} from "../../../../../math-common/build/questionTypes";
 
         
 @QuestionDecorator("QuestionAnnotation")

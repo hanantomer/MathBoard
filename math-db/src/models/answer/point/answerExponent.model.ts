@@ -3,7 +3,10 @@ import AnswerDecorator from "../../answer/answerDecorator";
 import User from "../../user.model";
 import Color from "../../color.model";
 import Answer from "../../answer/answer.model";
-import { AnswerPointAttributes, AnswerPointCreationAttributes } from "../../../../../math-common/src/answerTypes";
+import {
+    AnswerPointAttributes,
+    AnswerPointCreationAttributes,
+} from "../../../../../math-common/build/answerTypes";
 
 @AnswerDecorator("AnswerExponent")
 export default class AnswerExponent extends Model<

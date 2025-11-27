@@ -23,13 +23,13 @@ import {
   SqrtNotationAttributes,
   DotCoordinates,
   AnnotationNotationAttributes,
-} from "../../../math-common/src/baseTypes";
+} from "common/baseTypes";
 
 import { clonedNotationUUIdPrefix } from "common/globals";
 import { LessonNotationAttributes } from "common/lessonTypes";
 import { matrixDimensions } from "common/globals";
 import { CellAttributes } from "common/baseTypes";
-import { SelectionMoveDirection } from "common/unions";
+import { NotationType, SelectionMoveDirection } from "common/unions";
 import { useUserStore } from "../store/pinia/userStore";
 import { useNotationStore } from "../store/pinia/notationStore";
 import { useCellStore } from "../store/pinia/cellStore";
@@ -223,89 +223,61 @@ export default function notationMutateHelper() {
     notationStore.selectNotation(uuid);
   }
 
+  // ...existing code...
   function canMoveSelectedNotations(
     deltaCol: number,
     deltaRow: number,
   ): boolean {
-    notationStore.getSelectedNotations().forEach((n: NotationAttributes) => {
+    const selected = notationStore.getSelectedNotations();
+    for (const n of selected) {
       if (isNotationInQuestionArea(n, deltaCol, deltaRow)) return false;
 
       if (isCellNotationType(n.notationType)) {
-        if (
-          (n as PointNotationAttributes).col + deltaCol >
-          matrixDimensions.colsNum
-        ) {
-          return false;
-        }
-
-        if ((n as PointNotationAttributes).col + deltaCol < 1) return false;
-
-        if (
-          (n as PointNotationAttributes).row + deltaRow >
-          matrixDimensions.rowsNum
-        ) {
-          return false;
-        }
-
-        if ((n as PointNotationAttributes).row + deltaRow < 1) return false;
-
-        return true;
+        const p = n as PointNotationAttributes;
+        if (p.col + deltaCol > matrixDimensions.colsNum) return false;
+        if (p.col + deltaCol < 1) return false;
+        if (p.row + deltaRow > matrixDimensions.rowsNum) return false;
+        if (p.row + deltaRow < 1) return false;
+        continue;
       }
 
       switch (n.notationType) {
+        case "DIVISIONLINE":
         case "LINE": {
           const n1 = n as LineNotationAttributes;
-          if (n1.p2x + deltaCol * getColWidth() > getMostRightCoordinate()) {
+          if (n1.p2x + deltaCol * getColWidth() > getMostRightCoordinate())
             return false;
-          }
-
-          if (n1.p1x + deltaCol * getColWidth() < 1) {
+          if (n1.p1x + deltaCol * getColWidth() < 1) return false;
+          if (n1.p2x + deltaRow * getRowHeight() > matrixDimensions.rowsNum)
             return false;
-          }
-
-          if (n1.p2x + deltaRow * getRowHeight() > matrixDimensions.rowsNum) {
+          if (n1.p1y + deltaRow * getRowHeight() < 1) return false;
+          if (n1.p2y + deltaRow * getRowHeight() > getMostBottomCoordinate())
             return false;
-          }
-
-          if (n1.p1y + deltaRow * getRowHeight() < 1) {
-            return false;
-          }
-
-          if (n1.p2y + deltaRow * getRowHeight() > getMostBottomCoordinate()) {
-            return false;
-          }
+          break;
         }
 
         case "TEXT":
         case "IMAGE": {
-          if (
-            (n as RectNotationAttributes).toCol + deltaCol >
-            matrixDimensions.colsNum
-          )
-            return false;
-          if ((n as RectNotationAttributes).fromCol + deltaCol < 1)
-            return false;
-          if (
-            (n as RectNotationAttributes).toRow + deltaRow >
-            matrixDimensions.rowsNum
-          )
-            return false;
-          if ((n as RectNotationAttributes).fromRow + deltaRow < 1)
-            return false;
+          const r = n as RectNotationAttributes;
+          if (r.toCol + deltaCol > matrixDimensions.colsNum) return false;
+          if (r.fromCol + deltaCol < 1) return false;
+          if (r.toRow + deltaRow > matrixDimensions.rowsNum) return false;
+          if (r.fromRow + deltaRow < 1) return false;
           break;
         }
       }
-    });
+    }
 
     return true;
   }
-
+  // ...existing code...
   function moveSelectedNotationsAtPixelScale(
     deltaX: number,
     deltaY: number,
   ): boolean {
     notationStore.getSelectedNotations().forEach((n: NotationAttributes) => {
       switch (n.notationType) {
+        case "DIVISIONLINE":
         case "LINE": {
           (n as LineNotationAttributes).p1x += deltaX;
           (n as LineNotationAttributes).p2x += deltaX;
@@ -348,6 +320,13 @@ export default function notationMutateHelper() {
       notationStore.cloneSelectedNotations();
     }
 
+    // early-validate target cells
+    for (const n of notationStore.getSelectedNotations()) {
+      if (!canMoveNotationToTarget(n, deltaCol, deltaRow)) {
+        return false;
+      }
+    }
+
     notationStore.getSelectedNotations().forEach((n: NotationAttributes) => {
       const deltaX = deltaCol * cellStore.getCellHorizontalWidth();
       const deltaY = deltaRow * cellStore.getCellVerticalHeight();
@@ -362,6 +341,7 @@ export default function notationMutateHelper() {
           break;
         }
         case "LINE":
+        case "DIVISIONLINE":
           (n as unknown as LineAttributes).p1x += deltaX;
           (n as unknown as LineAttributes).p2x += deltaX;
           (n as unknown as LineAttributes).p1y += deltaY;
@@ -401,8 +381,71 @@ export default function notationMutateHelper() {
           break;
         }
       }
-      notationStore.addNotation(n, true);
     });
+    return true;
+  }
+
+  function canMoveNotationToTarget(
+    notation: NotationAttributes,
+    deltaCol: number,
+    deltaRow: number,
+  ): boolean {
+    const notationType = notation.notationType;
+
+    // Point notations (single cell)
+    if (isCellNotationType(notationType)) {
+      const p = notation as PointNotationAttributes;
+      const targetCol = p.col + deltaCol;
+      const targetRow = p.row + deltaRow;
+
+      // Check bounds
+      if (targetCol < 1 || targetCol > matrixDimensions.colsNum) return false;
+      if (targetRow < 1 || targetRow > matrixDimensions.rowsNum) return false;
+
+      // Check cell occupation
+      return (
+        notationStore.getNotationsAtCell({ col: targetCol, row: targetRow })
+          .length === 0
+      );
+    }
+
+    // Rect notations (TEXT, IMAGE)
+    if (notationType === "TEXT" || notationType === "IMAGE") {
+      const r = notation as RectNotationAttributes;
+      const fromCol = r.fromCol + deltaCol;
+      const toCol = r.toCol + deltaCol;
+      const fromRow = r.fromRow + deltaRow;
+      const toRow = r.toRow + deltaRow;
+
+      // Check bounds
+      if (fromCol < 1 || toCol > matrixDimensions.colsNum) return false;
+      if (fromRow < 1 || toRow > matrixDimensions.rowsNum) return false;
+
+      // Check all cells in rect are unoccupied
+      for (let col = fromCol; col <= toCol; col++) {
+        for (let row = fromRow; row <= toRow; row++) {
+          if (notationStore.getNotationsAtCell({ col, row }).length > 0) {
+            return false;
+          }
+        }
+      }
+      return true;
+    }
+
+    // SQRT notations
+    if (notationType === "SQRT") {
+      const sqrt = notation as SqrtNotationAttributes;
+      const fromCol = sqrt.fromCol + deltaCol;
+      const toCol = sqrt.toCol + deltaCol;
+      const row = sqrt.row + deltaRow;
+
+      if (fromCol < 1 || toCol > matrixDimensions.colsNum) return false;
+      if (row < 1 || row > matrixDimensions.rowsNum) return false;
+
+      return true;
+    }
+
+    // Lines, curves, circles, annotations (pixel-based) — no cell collision check needed
     return true;
   }
 
@@ -661,12 +704,15 @@ export default function notationMutateHelper() {
     addNotation(notation);
   }
 
-  function addLineNotation(lineAttributes: LineAttributes): Promise<string> {
+  function addLineNotation(
+    lineAttributes: LineAttributes,
+    notationType: NotationType = "LINE",
+  ): Promise<string> {
     let lineNotation: LineNotationCreationAttributes = {
       ...lineAttributes,
       boardType: notationStore.getParent().type,
       parentUUId: notationStore.getParent().uuid,
-      notationType: "LINE",
+      notationType: notationType,
       user: userStore.getCurrentUser()!,
       color: null,
     };
@@ -732,6 +778,7 @@ export default function notationMutateHelper() {
         ).value;
         break;
       }
+      case "DIVISIONLINE":
       case "LINE": {
         const n1 = existingNotation as LineNotationAttributes;
         const n = notation as LineNotationAttributes;
@@ -869,6 +916,7 @@ export default function notationMutateHelper() {
       "warning",
       deleteSelectedNotations,
     );
+    editModeStore.setDefaultEditMode();
   }
 
   function addImageNotationByColAndRow(
@@ -937,7 +985,6 @@ export default function notationMutateHelper() {
     };
     addCellNotation(notation);
     if (!clickedCell) return;
-    //selectionHelper.setSelectedCell(clickedCell, false);
     matrixCellHelper.setNextCell(1, 0);
   }
 
@@ -945,32 +992,40 @@ export default function notationMutateHelper() {
     const symbolCell = getSelectedCell();
     if (!symbolCell) return;
 
-    // Check previous cell for "log"
-    const previousCell = {
-      col: symbolCell.col - 1,
-      row: symbolCell.row,
-    };
+    const notationType = isLogBaseSymbol(symbolCell) ? "LOGBASE" : "SYMBOL";
 
-    const previousNotations = notationStore.getNotationsAtCell(previousCell);
-    const isLogBase = previousNotations.some(
-      (n: any) => n.notationType === "SYMBOL" && n.value === "log",
-    );
-
-    let notation: PointNotationCreationAttributes = {
+    const notation: PointNotationCreationAttributes = {
       col: symbolCell.col,
       row: symbolCell.row,
       value: value,
       boardType: notationStore.getParent().type,
       parentUUId: notationStore.getParent().uuid,
-      notationType: isLogBase ? "LOGBASE" : "SYMBOL",
+      notationType: notationType,
       user: userStore.getCurrentUser()!,
     };
 
     addCellNotation(notation);
 
-    if (notation.value != ".") {
+    if (notation.value !== ".") {
       matrixCellHelper.setNextCell(1, 0);
     }
+  }
+
+  function isLogBaseSymbol(symbolCell: CellAttributes): boolean {
+    // Guard: can't have previous cell if at leftmost column
+    if (symbolCell.col <= 1) {
+      return false;
+    }
+
+    const previousCell: CellAttributes = {
+      col: symbolCell.col - 1,
+      row: symbolCell.row,
+    };
+
+    const previousNotations = notationStore.getNotationsAtCell(previousCell);
+    return previousNotations.some(
+      (n: any) => n.notationType === "SYMBOL" && n.value === "log",
+    );
   }
 
   function getSelectedCell(): CellAttributes | null {
@@ -1042,6 +1097,7 @@ export default function notationMutateHelper() {
 
     switch (notation.notationType) {
       case "SQRT":
+      case "DIVISIONLINE":
       case "LINE":
         return addLineNotation(clonedNotation);
       case "CURVE":
@@ -1216,7 +1272,7 @@ export default function notationMutateHelper() {
     let rightCol = matrixDimensions.colsNum - 1;
 
     // Scan from selected cell to end of row
-    for (let col = cell.col + 1; col < matrixDimensions.colsNum; col++) {
+    for (let col = cell.col; col < matrixDimensions.colsNum; col++) {
       const notations = notationStore.getNotationsAtCell({
         row: cell.row,
         col: col,
@@ -1240,7 +1296,7 @@ export default function notationMutateHelper() {
     // Find the last column with point notation that has a space to its right and is to the left of rightCol
     let lastColWithSpace = cell.col;
 
-    for (let col = cell.col + 1; col < rightCol; col++) {
+    for (let col = cell.col; col < rightCol; col++) {
       const notations = notationStore.getNotationsAtCell({
         row: cell.row,
         col: col,
@@ -1290,7 +1346,7 @@ export default function notationMutateHelper() {
 
     for (
       let currentCol = lastColWithSpace;
-      currentCol > cell.col;
+      currentCol >= cell.col;
       currentCol--
     ) {
       const sqrtNotation = notationStore.getSqrtNotationAtCell({

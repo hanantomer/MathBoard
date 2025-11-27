@@ -10,7 +10,7 @@ import {
   RectAttributes,
   LineAttributes,
   MultiCellAttributes,
-} from "../../../math-common/src/baseTypes";
+} from "common/baseTypes";
 
 import { useNotationStore } from "../store/pinia/notationStore";
 import { useCellStore } from "../store/pinia/cellStore";
@@ -44,7 +44,6 @@ export default function screenHelper() {
   ): DotCoordinates {
     const cellWidth = cellStore.getCellHorizontalWidth();
     const cellHeight = cellStore.getCellVerticalHeight();
-
     return {
       x: Math.round(
         clickedCell.col * cellWidth + cellStore.getSvgBoundingRect().left,
@@ -103,24 +102,36 @@ export default function screenHelper() {
   ): CellAttributes[] {
     let cells: CellAttributes[] = [];
 
-    const areaFromCol = Math.floor(
-      rectCoordinates.topLeft.x / cellStore.getCellHorizontalWidth(),
-    );
+    const topLeftByXCells =
+      rectCoordinates.topLeft.x / cellStore.getCellHorizontalWidth();
 
-    const areaToCol = Math.floor(
-      rectCoordinates.bottomRight.x / cellStore.getCellHorizontalWidth(),
-    );
+    let areaFromCol = Math.ceil(topLeftByXCells);
 
-    const areaFromRow = Math.round(
-      rectCoordinates.topLeft.y / cellStore.getCellVerticalHeight(),
-    );
+    const bottomRightXByCells =
+      rectCoordinates.bottomRight.x / cellStore.getCellHorizontalWidth();
 
-    const areaToRow = Math.round(
-      rectCoordinates.bottomRight.y / cellStore.getCellVerticalHeight(),
-    );
+    const areaToCol = Math.floor(bottomRightXByCells) - 1;
+
+    const topLeftYByCells =
+      rectCoordinates.topLeft.y / cellStore.getCellVerticalHeight();
+
+    let areaFromRow = Math.ceil(topLeftYByCells);
+
+    const bottomRightYByCells =
+      rectCoordinates.bottomRight.y / cellStore.getCellVerticalHeight();
+
+    const areaToRow = Math.floor(bottomRightYByCells) -1;
+
+    if (areaToCol < areaFromCol) {
+      areaFromCol = areaToCol;
+    }
+
+    if (areaToRow < areaFromRow) {
+      areaFromRow = areaToRow;
+    }
 
     for (let i = areaFromCol; i <= areaToCol; i++) {
-      for (let j = areaFromRow; j < areaToRow; j++) {
+      for (let j = areaFromRow; j <= areaToRow; j++) {
         cells.push({ col: i, row: j });
       }
     }
@@ -569,6 +580,7 @@ export default function screenHelper() {
           y: circle.cy - circle.r + cellStore.getSvgBoundingRect().top,
         };
       }
+      case "DIVISIONLINE":
       case "LINE": {
         const line = notation as LineNotationAttributes;
         return {

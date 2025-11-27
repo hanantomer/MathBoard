@@ -1,4 +1,4 @@
-import { Table, DefaultScope, Validate } from "sequelize-typescript";
+import { Table, DefaultScope } from "sequelize-typescript";
 import BoardDecorator from "../boardDecorator";
 
 

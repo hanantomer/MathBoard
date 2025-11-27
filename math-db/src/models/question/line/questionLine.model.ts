@@ -8,7 +8,7 @@ import QuestionDecorator from "../../question/questionDecorator";
 import {
     QuestionLineAttributes,
     QuestionLineCreationAttributes,
-} from "../../../../../math-common/src/questionTypes";
+} from "../../../../../math-common/build/questionTypes";
 
 @QuestionDecorator("QuestionLine")
 export default class QuestionLine extends Model<

@@ -72,6 +72,26 @@ export function wrapVectorSymbol(
   return `<span style="color:${color};">${firstChar} </span>${vectorArrowSpan}`;
 }
 
+export function getMousePositionInSVG(
+  svgElement : SVGSVGElement,
+  mouseEvent: MouseEvent,
+  rect :DOMRect
+) {
+  // Create an SVGPoint
+  let pt = svgElement.createSVGPoint();
+
+  // Set the point's coordinates to the mouse event's clientX/clientY
+  pt.x = mouseEvent.clientX + rect.left;
+  pt.y = mouseEvent.clientY + rect.top;
+
+  // Transform the client coordinates to SVG coordinates
+  let svgCoords = pt.matrixTransform(
+    svgElement.getScreenCTM()!.inverse()
+  );
+
+  return svgCoords;
+}
+
 export const vectorSymbolPrefix = "vec_";
 
 const vectorArrowSpan = `<span style="position:absolute;margin-left:-12px;margin-top:-12px">&rarr;</span>`;

@@ -211,7 +211,6 @@ import useWatchHelper from "../helpers/watchHelper";
 import useNotationMutateHelper from "../helpers/notationMutateHelper";
 import CrossDeviceUpload from "./CrossDeviceUpload.vue";
 
-
 const watchHelper = useWatchHelper();
 const notationMutateHelper = useNotationMutateHelper();
 const authorizationHelper = useAuthorizationHelper();
@@ -299,7 +298,7 @@ const modeButtons: Array<{
   {
     name: "DivisionLine",
     show_condition: true,
-    editMode: "DIVISION_LINE_STARTED" as EditMode,
+    editMode: "DIVISIONLINE_STARTED" as EditMode,
     tooltip: "Division Line",
     icon_class: "material-symbols-outlined",
     icon: "horizontal_rule",
@@ -477,6 +476,7 @@ function startEditMode(item: any) {
   height: max-content !important;
   padding: 2px !important;
 }
+
 .vertical-toolbar-column {
   flex-basis: content;
 }

@@ -87,7 +87,7 @@ import {
   DotCoordinates,
   LineNotationAttributes,
   NotationAttributes,
-} from "../../../math-common/src/baseTypes";
+} from "common/baseTypes";
 import useEventBus from "../helpers/eventBusHelper";
 import lineWatcher from "./LineWatcher.vue";
 import lineHandle from "./LineHandle.vue";

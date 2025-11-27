@@ -11,8 +11,8 @@ import { useNotationStore } from "../store/pinia/notationStore";
 import {
   RectCoordinates,
   RectNotationAttributes,
-} from "../../../math-common/src/baseTypes";
-import { EditMode } from "../../../math-common/src/unions";
+} from "common/baseTypes";
+import { EditMode } from "common/unions";
 
 import useNotationMutateHelper from "../helpers/notationMutateHelper";
 import usescreenHelper from "../helpers/screenHelper";
@@ -266,3 +266,4 @@ textarea {
   display: none;
 }
 </style>
+

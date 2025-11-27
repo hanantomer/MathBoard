@@ -76,8 +76,7 @@ export default function () {
       notationStore.undo();
     }
 
-    const { ctrlKey, altKey, code, key } = e;
-    if (ctrlKey || altKey) return;
+    const {  altKey, code, key } = e;
 
     if (!authorizationHelper.canEdit()) return;
 
@@ -129,7 +128,7 @@ export default function () {
       }
 
       case "SYMBOL": {
-        if (usePreviousAlt && delayedAltKeys.has(key)) {
+        if (altKey || (usePreviousAlt && delayedAltKeys.has(key))) {
           if (key === "x") {
             return editModeStore.setEditMode("EXPONENT_STARTED");
           }

@@ -26,19 +26,14 @@ import LinePropertiesSelector from "./LinePropertiesSelector.vue";
 import RotationSelector from "./RotationSelector.vue";
 import DeleteTool from "./DeleteTool.vue";
 import { useNotationStore } from "../store/pinia/notationStore";
-import { useEditModeStore } from "../store/pinia/editModeStore";
 
 const notationStore = useNotationStore();
-const editModeStore = useEditModeStore();
 
 const show = computed(() => {
   return notationStore.getSelectedNotations().length > 0;
 });
 
-function close() {
-  editModeStore.setDefaultEditMode();
-  notationStore.resetSelectedNotations();
-}
+
 </script>
 
 <style scoped>

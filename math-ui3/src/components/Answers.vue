@@ -30,7 +30,7 @@
   </v-container>
 </template>
 <script setup lang="ts">
-import { formatDate } from "../../../math-common/src/globals";
+import { formatDate } from "common/globals";
 import { watch, ref, onMounted } from "vue";
 import { useRouter, useRoute } from "vue-router";
 import { computed } from "vue";
@@ -151,3 +151,4 @@ async function selectAnswer(e: any, row: any) {
   justify-content: left !important;
 }
 </style>
+

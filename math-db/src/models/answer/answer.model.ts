@@ -11,7 +11,7 @@ import Question from "../question/question.model";
 import {
     AnswerAttributes,
     AnswerCreationAttributes,
-} from "../../../../math-common/src/answerTypes";
+} from "../../../../math-common/build/answerTypes";
 
 @BoardDecorator("answer")
 export default class Answer extends Model<

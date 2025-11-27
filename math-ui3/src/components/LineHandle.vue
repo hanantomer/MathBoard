@@ -8,7 +8,7 @@
 <script setup lang="ts">
 import { PropType } from "vue";
 import { useEditModeStore } from "../store/pinia/editModeStore";
-import { EditMode } from "../../../math-common/src/unions";
+import { EditMode } from "common/unions";
 import useEventBus from "../helpers/eventBusHelper";
 
 const editModeStore = useEditModeStore();
@@ -42,3 +42,4 @@ function endEdit(e: MouseEvent) {
   z-index: 999;
 }
 </style>
+

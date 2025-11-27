@@ -11,7 +11,7 @@ import {
   lineSelectWatcherEntry,
   lineEndSelectionWatcherEntry,
   lineMoveWatcherEntry,
-} from "../../../math-common/src/baseTypes";
+} from "common/baseTypes";
 
 const shapeDrawingHelper = useShapeDrawingHelper();
 const watchHelper = useWatchHelper();
@@ -106,8 +106,8 @@ watchHelper.watchEndOfEditMode(
 );
 
 watchHelper.watchEndOfEditMode(
-  ["DIVISION_LINE_SELECTED"],
-  ["DIVISION_LINE_EDITING_LEFT", "DIVISION_LINE_EDITING_RIGHT"],
+  ["DIVISIONLINE_SELECTED"],
+  ["DIVISIONLINE_EDITING_LEFT", "DIVISIONLINE_EDITING_RIGHT"],
   () => shapeDrawingHelper.resetDrawing(null),
 );
 
@@ -118,11 +118,7 @@ watchHelper.watchEndOfEditMode(["CIRCLE_SELECTED"], ["CIRCLE_EDITING"], () =>
 watchHelper.watchNotationSelection(
   props.selectEntry.editMode,
   props.selectEntry.event,
-  (n) =>
-    shapeDrawingHelper.selectLine(
-      n,
-      props.selectEntry.func,
-    ),
+  (n) => shapeDrawingHelper.selectLine(n, props.selectEntry.func),
 );
 
 watchHelper.watchKeyEvent(

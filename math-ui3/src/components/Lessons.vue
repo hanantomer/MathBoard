@@ -41,8 +41,8 @@
 </template>
 <script setup lang="ts">
 import NewBoardItemDialog from "./NewBoardItemDialog.vue";
-import { formatDate } from "../../../math-common/src/globals";
-import { LessonAttributes } from "../../../math-common/src/lessonTypes";
+import { formatDate } from "common/globals";
+import { LessonAttributes } from "common/lessonTypes";
 import { useUserStore } from "../store/pinia/userStore";
 import { useLessonStore } from "../store/pinia/lessonStore";
 import { useEditModeStore } from "../store/pinia/editModeStore";
@@ -131,3 +131,4 @@ async function selectLesson(e: any, row: any) {
   justify-content: left !important;
 }
 </style>
+

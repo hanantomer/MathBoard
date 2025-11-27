@@ -97,7 +97,7 @@ import {
   NotationAttributes,
   CurveNotationAttributes,
   DotCoordinates,
-} from "../../../math-common/src/baseTypes";
+} from "common/baseTypes";
 
 import { useCellStore } from "../store/pinia/cellStore";
 import useSelectionHelper from "../helpers/selectionHelper";
@@ -261,8 +261,8 @@ function selectCurve(curve: NotationAttributes) {
 }
 
 function setControlPoint(e: MouseEvent) {
-  curveAttributes.value.cpx = e.offsetX;
-  curveAttributes.value.cpy = e.offsetY;
+  curveAttributes.value.cpx = e.pageX;
+  curveAttributes.value.cpy = e.pageY;
   setCurveElement();
   showControlPoint();
 }
@@ -552,3 +552,4 @@ function addVisiblePoint(xPos: number, yPos: number) {
   fill: yellow;
 }
 </style>
+

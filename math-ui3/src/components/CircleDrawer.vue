@@ -87,7 +87,7 @@ import {
   CircleAttributes,
   NotationAttributes,
   CircleNotationAttributes,
-} from "../../../math-common/build/baseTypes";
+} from "common/baseTypes";
 import useEventBusHelper from "../helpers/eventBusHelper";
 
 const notationMutateHelper = useNotationMutateHelper();
@@ -203,3 +203,4 @@ function moveCircle(moveX: number, moveY: number) {
   });
 }
 </script>
+

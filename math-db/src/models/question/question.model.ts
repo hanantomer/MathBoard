@@ -12,7 +12,7 @@ import Lesson from "../lesson/lesson.model";
 import {
     QuestionAttributes,
     QuestionCreationAttributes,
-} from "../../../../math-common/src/questionTypes";
+} from "../../../../math-common/build/questionTypes";
 
 @BoardDecorator("question")
 export default class Question extends Model<

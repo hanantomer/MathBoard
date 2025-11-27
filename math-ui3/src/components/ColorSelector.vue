@@ -1,5 +1,5 @@
 <template>
-  <v-tooltip text="colorize tool" style="margin-top: 5px;">
+  <v-tooltip text="colorize tool" style="margin-top: 5px">
     <template v-slot:activator="{ props }">
       <v-btn v-show="show" v-bind="props" icon color="white" x-small fab dark
         ><v-icon>mdi-format-color-highlight</v-icon>
@@ -57,7 +57,11 @@ const colors: Color[] = [
 ];
 
 const show = computed(() => {
-  return notationStore.getSelectedNotations().length > 0;
+  return (
+    notationStore.getSelectedNotations().length > 0 &&
+    notationStore.getSelectedNotations()[0].notationType !== "TEXT" &&
+    notationStore.getSelectedNotations()[0].notationType !== "IMAGE"
+  );
 });
 
 function colorizeSelectedNotations(color: Color) {
@@ -66,8 +70,10 @@ function colorizeSelectedNotations(color: Color) {
   }
   const selectedNotations = notationStore.getSelectedNotations();
   if (selectedNotations) {
-    selectedNotations.forEach((notation: any) => {
-      colorizeNotation(notation, color);
+    selectedNotations.forEach((notation: NotationAttributes) => {
+      if (notation.notationType !== "DIVISIONLINE") {
+        colorizeNotation(notation, color);
+      }
     });
   }
 }

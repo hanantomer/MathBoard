@@ -144,7 +144,7 @@ import {
   decodeSpecialSymbol,
   vectorSymbolPrefix,
   wrapVectorSymbol,
-} from "../../../math-common/src/globals";
+} from "common/globals";
 
 import useSelectionHelper from "../helpers/selectionHelper";
 
@@ -181,67 +181,127 @@ const symbolGroups = [
   {
     title: "Geometric symbols",
     symbols: [
-      { name: "rightAngle", value: "&#8735;", tooltip: "Right angle (90°)", tabIndex: 12 },
+      {
+        name: "rightAngle",
+        value: "&#8735;",
+        tooltip: "Right angle (90°)",
+        tabIndex: 12,
+      },
       { name: "angle", value: "&ang;", tooltip: "Angle", tabIndex: 13 },
       { name: "triangle", value: "&#9651;", tooltip: "Triangle", tabIndex: 14 },
       { name: "perimeter", value: "P", tooltip: "Perimeter", tabIndex: 15 },
       { name: "area", value: "A", tooltip: "Area", tabIndex: 16 },
-      { name: "perpendicular", value: "&perp;", tooltip: "Perpendicular", tabIndex: 17 },
-      { name: "parallel", value: "&parallel;", tooltip: "Parallel", tabIndex: 18 },
+      {
+        name: "perpendicular",
+        value: "&perp;",
+        tooltip: "Perpendicular",
+        tabIndex: 17,
+      },
+      {
+        name: "parallel",
+        value: "&parallel;",
+        tooltip: "Parallel",
+        tabIndex: 18,
+      },
     ],
   },
   {
     title: "Comparison operators",
     symbols: [
       { name: "ne", value: "&ne;", tooltip: "Not equal", tabIndex: 19 },
-      { name: "ge", value: "&ge;", tooltip: "Greater than or equal", tabIndex: 20 },
-      { name: "le", value: "&le;", tooltip: "Less than or equal", shortcut: "Alt+Shift+2", tabIndex: 21 },
-      { name: "plusmn", value: "&plusmn;", tooltip: "Plus or minus", shortcut: "Alt+8", tabIndex: 22 },
-    ],
-  },
-  {
-    title: "Mathematical operators",
-    symbols: [
-      { name: "sum", value: "&sum;", tooltip: "Sum", tabIndex: 23 },
-      { name: "int", value: "&int;", tooltip: "Integral", tabIndex: 24 },
-      { name: "infin", value: "&infin;", tooltip: "Infinity", tabIndex: 25 },
+      {
+        name: "ge",
+        value: "&ge;",
+        tooltip: "Greater than or equal",
+        tabIndex: 20,
+      },
+      {
+        name: "le",
+        value: "&le;",
+        tooltip: "Less than or equal",
+        shortcut: "Alt+Shift+2",
+        tabIndex: 21,
+      },
+      {
+        name: "plusmn",
+        value: "&plusmn;",
+        tooltip: "Plus or minus",
+        shortcut: "Alt+8",
+        tabIndex: 22,
+      },
     ],
   },
   {
     title: "Set operations",
     symbols: [
-      { name: "emptySet", value: "&empty;", tooltip: "Empty set", tabIndex: 26 },
-      { name: "union", value: "&cup;", tooltip: "Union", tabIndex: 27 },
-      { name: "intersection", value: "&cap;", tooltip: "Intersection", tabIndex: 28 },
+      {
+        name: "emptySet",
+        value: "&empty;",
+        tooltip: "Empty set",
+        tabIndex: 23,
+      },
+      { name: "union", value: "&cup;", tooltip: "Union", tabIndex: 24 },
+      {
+        name: "intersection",
+        value: "&cap;",
+        tooltip: "Intersection",
+        tabIndex: 25,
+      },
+      { name: "sum", value: "&sum;", tooltip: "Sum", tabIndex: 26 },
     ],
   },
   {
     title: "Trigonometric functions",
     symbols: [
-      { name: "sin", value: "sin", tooltip: "Sine", tabIndex: 29 },
-      { name: "cos", value: "cos", tooltip: "Cosine", tabIndex: 30 },
-      { name: "tan", value: "tan", tooltip: "Tangent", tabIndex: 31 },
-      { name: "cot", value: "cot", tooltip: "Cotangent", tabIndex: 32 },
+      { name: "sin", value: "sin", tooltip: "Sine", tabIndex: 27 },
+      { name: "cos", value: "cos", tooltip: "Cosine", tabIndex: 28 },
+      { name: "tan", value: "tan", tooltip: "Tangent", tabIndex: 29 },
+      { name: "cot", value: "cot", tooltip: "Cotangent", tabIndex: 30 },
     ],
   },
   {
-    title: "Derivatives",
+    title: "Derivatives & Integrals",
     symbols: [
-      { name: "f(x)", value: "f(x)", tooltip: "Function f(x)", tabIndex: 33 },
-      { name: "f'(x)", value: "f'(x)", tooltip: "First derivative", tabIndex: 34 },
-      { name: "f''(x)", value: "f''(x)", tooltip: "Second derivative", tabIndex: 35 },
+      { name: "f(x)", value: "f(x)", tooltip: "Function f(x)", tabIndex: 31 },
+      {
+        name: "f'(x)",
+        value: "f'(x)",
+        tooltip: "First derivative",
+        tabIndex: 32,
+      },
+      {
+        name: "f''(x)",
+        value: "f''(x)",
+        tooltip: "Second derivative",
+        tabIndex: 33,
+      },
+      { name: "u'", value: "u'", tooltip: "u'", tabIndex: 34 },
+      { name: "v'", value: "v'", tooltip: "v'", tabIndex: 35 },
+      { name: "infin", value: "&infin;", tooltip: "Infinity", tabIndex: 36 },
+      { name: "int", value: "&int;", tooltip: "Integral", tabIndex: 37 },
     ],
   },
   {
     title: "Vectors",
     symbols: [
-      { name: "vector", value: "v", tooltip: "Vector", tabIndex: 36 },
-      { name: "magnitude", value: "||a||", tooltip: "Magnitude", tabIndex: 37 },
-      { name: "dot", value: "a &middot; b", tooltip: "Dot product", tabIndex: 38 },
-      { name: "cross", value: "a &times; b", tooltip: "Cross product", tabIndex: 39 },
+      { name: "vector", value: "v", tooltip: "Vector", tabIndex: 38 },
+      { name: "magnitude", value: "||a||", tooltip: "Magnitude", tabIndex: 39 },
+      {
+        name: "dot",
+        value: "a &middot; b",
+        tooltip: "Dot product",
+        tabIndex: 40,
+      },
+      {
+        name: "cross",
+        value: "a &times; b",
+        tooltip: "Cross product",
+        tabIndex: 41,
+      },
     ],
   },
 ];
+
 const letters = [
   "a",
   "b",
@@ -354,7 +414,7 @@ async function addVectorCrossProduct(
 }
 
 async function addSpecialSymbol(symbolValue: string) {
-  selectedSymbol.value = symbolValue; ///TODO: verify this works in vector case
+  selectedSymbol.value = symbolValue;
 
   // Defer so UI focus/keyboard handlers settle (preserves original behavior)
   setTimeout(async () => {
@@ -384,19 +444,11 @@ function isTextOrAnnotationMode(): boolean {
   );
 }
 
-function isTextMode(): boolean {
-  return editModeStore.isTextWritingMode();
-}
-
 function emitSpecialSymbolToEditors() {
   eventBus.emit("EV_SPECIAL_SYMBOL_SELECTED", selectedSymbol.value);
   // clear quickly to allow repeated selections via same event
   setTimeout(() => eventBus.emit("EV_SPECIAL_SYMBOL_SELECTED", ""), 0);
 }
-
-// async function addVectorSymbol(item: string) {
-//   notationMutateHelper.addSymbolNotation(vectorSymbolPrefix + item);
-// }
 
 function isNinetyDegreesSymbol(item: string) {
   return item === "&#8735";
@@ -420,8 +472,23 @@ function isMultiCharLiteral(item: string) {
 }
 
 function addEachCharAsSymbol(item: string) {
-  const chars = item.split("");
-  chars.forEach((char) => notationMutateHelper.addSymbolNotation(char));
+  const chars = item.match(/[^(]|\([^)]*\)/g);
+  if (!chars) return;
+  let accumulatedSingleQuotes = "";
+  for (let i = 0; i < chars.length; i++) {
+    const char = chars[i];
+    if (char == "'" && i < chars.length - 1) {
+      accumulatedSingleQuotes += char;
+      continue;
+    }
+    if (char != "'" && accumulatedSingleQuotes) {
+      notationMutateHelper.addSymbolNotation(accumulatedSingleQuotes);
+      accumulatedSingleQuotes = "";
+    }
+    notationMutateHelper.addSymbolNotation(char);
+  }
+
+  //chars!.forEach((char) => notationMutateHelper.addSymbolNotation(char));
 }
 </script>
 
@@ -429,10 +496,11 @@ function addEachCharAsSymbol(item: string) {
 .special-symbols-expansion {
   margin-top: 10px;
   margin-left: 10px;
-  max-width: 300px;
+  max-width: 150px;
   background-color: #f5f5f5;
   max-height: 100px;
 }
+
 .symbol-group {
   display: flex;
   flex-wrap: wrap;

@@ -2,7 +2,7 @@ import { Model, Column, BelongsTo, ForeignKey, DataType, AllowNull } from "seque
 import {
     QuestionRectAttributes,
     QuestionRectCreationAttributes,
-} from "../../../../../math-common/src/questionTypes";
+} from "../../../../../math-common/build/questionTypes";
 import QuestionDecorator from "../questionDecorator";
 import User from "../../user.model";
 import Color from "../../color.model";
