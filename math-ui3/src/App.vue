@@ -1,5 +1,5 @@
 <template>
-  <v-app id="app" full-height>
+  <v-app id="app">
     <v-app-bar app color="primary" dark dense elevation="8">
       <v-img
         class="mx-2"
@@ -262,9 +262,11 @@ function navContactUs() {
 }
 </script>
 <style>
+
 .title {
   margin-left: 20px !important;
 }
+
 body {
   -webkit-touch-callout: none;
   -webkit-user-select: none;
@@ -281,7 +283,8 @@ text {
 }
 
 html {
-  overflow-x: hidden;
-  overflow-y: hidden;
+  overflow: auto;
 }
+
+
 </style>

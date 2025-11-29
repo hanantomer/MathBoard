@@ -40,7 +40,7 @@ export default function useMatrixHelper() {
     if (!clientWidth || !clientHeight) return;
 
     cellStore.setCellVerticalHeight(
-      Math.floor(clientHeight / matrixDimensions.rowsNum),
+      Math.floor(clientHeight / matrixDimensions.rowsNum) - 1,
     );
   }
 

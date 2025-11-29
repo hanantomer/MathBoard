@@ -87,14 +87,12 @@ import {
 import useEventBus from "../helpers/eventBusHelper";
 import lineWatcher from "./LineWatcher.vue";
 import lineHandle from "./LineHandle.vue";
-import useScreenHelper from "../helpers/screenHelper"; // Add this line
-import useNotationMutateHelper from "../helpers/notationMutateHelper"; // Add this line
+import useNotationMutateHelper from "../helpers/notationMutateHelper";
 
 const eventBus = useEventBus();
 const editModeStore = useEditModeStore();
 const notationStore = useNotationStore();
 const cellStore = useCellStore();
-const screenHelper = useScreenHelper();
 const notationMutateHelper = useNotationMutateHelper();
 
 // vars

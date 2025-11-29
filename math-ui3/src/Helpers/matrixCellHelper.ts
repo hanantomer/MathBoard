@@ -1,7 +1,5 @@
 import {
-  CellAttributes,
-  MultiCellAttributes,
-  NotationAttributes,
+  CellAttributes
 } from "common/baseTypes";
 import {
   matrixDimensions,

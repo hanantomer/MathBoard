@@ -17,31 +17,24 @@ import {
   isCurve,
   isCellNotationType,
   SqrtNotationAttributes,
-  AnnotationNotationAttributes,
 } from "../../../../math-common/src/baseTypes";
 import { BoardType } from "common/unions";
 import { ref, computed } from "vue";
 import { useCellStore } from "./cellStore";
-import useNotationCellOccupationHelper from "../../helpers/notationCellOccupationHelper";
 import { cloneDeep } from "lodash";
+import useNotationCellOccupationHelper from "../../helpers/notationCellOccupationHelper";
 
 export const useNotationStore = defineStore("notation", () => {
-  // special occupation matrix for dot notation since it coexists in a cell
-  // with other notations
+  const helper = useNotationCellOccupationHelper();
+
   let dotNotationOccupationMatrix: (String | null)[][] =
-    createCellSingleNotationOccupationMatrix();
-
-  // cell can occupy one point only
+    helper.createCellSingleNotationOccupationMatrix();
   let symbolNotationOccupationMatrix: (String | null)[][] =
-    createCellSingleNotationOccupationMatrix();
-
-  // cell can occupy one rect only
+    helper.createCellSingleNotationOccupationMatrix();
   let cellRectNotationOccupationMatrix: (String | null)[][] =
-    createCellSingleNotationOccupationMatrix();
-
-  // cell can occupy multiple lines
+    helper.createCellSingleNotationOccupationMatrix();
   let cellLineNotationOccupationMatrix: Set<String>[][] =
-    createCellMultipleNotationOccupationMatrix();
+    helper.createCellMultipleNotationOccupationMatrix();
 
   const parent = ref<Board>({ uuid: "", type: "LESSON" });
 
@@ -143,8 +136,7 @@ export const useNotationStore = defineStore("notation", () => {
     notation: NotationAttributes,
     doUpdateOccupationMatrix: boolean,
     preventOverwrite: boolean = true,
-  )
-   {
+  ) {
     if (!notation.uuid) {
       console.error("addNotation: Notation uuid is undefined");
       return;
@@ -164,17 +156,16 @@ export const useNotationStore = defineStore("notation", () => {
 
     saveState();
     notation.boardType = parent.value.type;
+    notations.value.delete(notation.uuid);
     notations.value.set(notation.uuid, notation);
-
     if (doUpdateOccupationMatrix) {
-      const notationCellOccupationHelper = useNotationCellOccupationHelper();
-      updateOccupationMatrix(
+      helper.updateOccupationMatrix(
         notation,
         dotNotationOccupationMatrix,
         symbolNotationOccupationMatrix,
         cellLineNotationOccupationMatrix,
         cellRectNotationOccupationMatrix,
-        notationCellOccupationHelper,
+        false,
       );
     }
     return true;
@@ -188,7 +179,6 @@ export const useNotationStore = defineStore("notation", () => {
   function deleteNotation(uuid: string) {
     saveState();
     const notation = notations.value.get(uuid)!;
-    const notationCellOccupationHelper = useNotationCellOccupationHelper();
 
     switch (notation.notationType) {
       case "EXPONENT":
@@ -197,13 +187,13 @@ export const useNotationStore = defineStore("notation", () => {
       case "SQRTSYMBOL":
       case "SYMBOL":
         if ((notation as PointNotationAttributes).value === ".") {
-          notationCellOccupationHelper.updatePointOccupationMatrix(
+          helper.updatePointOccupationMatrix(
             dotNotationOccupationMatrix,
             notations.value.get(uuid)! as PointNotationAttributes,
             true,
           );
         } else {
-          notationCellOccupationHelper.updatePointOccupationMatrix(
+          helper.updatePointOccupationMatrix(
             symbolNotationOccupationMatrix,
             notations.value.get(uuid)! as PointNotationAttributes,
             true,
@@ -211,14 +201,14 @@ export const useNotationStore = defineStore("notation", () => {
         }
         break;
       case "CURVE":
-        notationCellOccupationHelper.updateCurveOccupationMatrix(
+        helper.updateCurveOccupationMatrix(
           cellLineNotationOccupationMatrix,
           notations.value.get(uuid)! as CurveNotationAttributes,
           true,
         );
         break;
       case "CIRCLE":
-        notationCellOccupationHelper.updateCircleOccupationMatrix(
+        helper.updateCircleOccupationMatrix(
           cellRectNotationOccupationMatrix,
           notations.value.get(uuid)! as CircleNotationAttributes,
           true,
@@ -226,7 +216,7 @@ export const useNotationStore = defineStore("notation", () => {
 
       case "IMAGE":
       case "TEXT":
-        notationCellOccupationHelper.updateRectOccupationMatrix(
+        helper.updateRectOccupationMatrix(
           cellRectNotationOccupationMatrix,
           notations.value.get(uuid)! as RectNotationAttributes,
           true,
@@ -239,12 +229,14 @@ export const useNotationStore = defineStore("notation", () => {
 
   function clearNotations() {
     notations.value.clear();
-    dotNotationOccupationMatrix = createCellSingleNotationOccupationMatrix();
-    symbolNotationOccupationMatrix = createCellSingleNotationOccupationMatrix();
+    dotNotationOccupationMatrix =
+      helper.createCellSingleNotationOccupationMatrix();
+    symbolNotationOccupationMatrix =
+      helper.createCellSingleNotationOccupationMatrix();
     cellRectNotationOccupationMatrix =
-      createCellSingleNotationOccupationMatrix();
+      helper.createCellSingleNotationOccupationMatrix();
     cellLineNotationOccupationMatrix =
-      createCellMultipleNotationOccupationMatrix();
+      helper.createCellMultipleNotationOccupationMatrix();
   }
 
   function clearCopiedNotations() {
@@ -271,68 +263,46 @@ export const useNotationStore = defineStore("notation", () => {
   }
 
   function getNotationsAtCell(cell: CellAttributes): NotationAttributes[] {
-    const notationsAtCell: NotationAttributes[] = [];
-
-    if (cell.col==null || cell.col < 0) {
+    if (cell.col == null || cell.col < 0) {
       throw new Error("invalid col:" + cell.col);
     }
-
     if (cell.row == null || cell.row < 0) {
       throw new Error("invalid col:" + cell.row);
     }
 
-    // point
+    const notationsAtCell: NotationAttributes[] = [];
 
-    const dotNotationUUId = dotNotationOccupationMatrix[cell.col][
-      cell.row
-    ] as String;
+    // Helper to add notation if it exists
+    const addIfExists = (uuid: String | null) => {
+      if (uuid && notations.value.get(uuid)) {
+        notationsAtCell.push(notations.value.get(uuid)!);
+      }
+    };
 
-    if (dotNotationUUId && notations.value.get(dotNotationUUId)) {
-      notationsAtCell.push(
-        notations.value.get(dotNotationUUId) as NotationAttributes,
-      );
-    }
-
-    // symbol
-
-    const symbolNotationUUId = symbolNotationOccupationMatrix[cell.col][
-      cell.row
-    ] as String;
-
-    if (symbolNotationUUId && notations.value.get(symbolNotationUUId)) {
-      notationsAtCell.push(
-        notations.value.get(symbolNotationUUId) as NotationAttributes,
-      );
-    }
-
-    // rect
-
-    const rectNotationUUId = cellRectNotationOccupationMatrix[cell.col][
-      cell.row
-    ] as String;
-
-    if (rectNotationUUId && notations.value.get(rectNotationUUId)) {
-      notationsAtCell.push(
-        notations.value.get(rectNotationUUId) as NotationAttributes,
-      );
-    }
+    // Get from each matrix
+    addIfExists(
+      helper.getDotNotationAtCell(
+        dotNotationOccupationMatrix,
+        cell.col,
+        cell.row,
+      ),
+    );
+    addIfExists(
+      helper.getSymbolNotationAtCell(
+        symbolNotationOccupationMatrix,
+        cell.col,
+        cell.row,
+      ),
+    );
+    addIfExists(
+      helper.getRectNotationAtCell(
+        cellRectNotationOccupationMatrix,
+        cell.col,
+        cell.row,
+      ),
+    );
 
     return notationsAtCell;
-  }
-
-  function getSqrtNotationAtCell(
-    cell: CellAttributes,
-  ): SqrtNotationAttributes | null {
-    const sqrtNotationsUUIDs = cellLineNotationOccupationMatrix[cell.col][
-      cell.row
-    ] as Set<String>;
-    const firstNotation = Array.from(sqrtNotationsUUIDs)[0];
-
-    if (notations.value.get(firstNotation)?.notationType === "SQRT") {
-      return notations.value.get(firstNotation) as SqrtNotationAttributes;
-    }
-
-    return null;
   }
 
   function selectNotationsOfCells(areaCells: CellAttributes[]) {
@@ -513,28 +483,6 @@ export const useNotationStore = defineStore("notation", () => {
     return ua >= 0 && ua <= 1 && ub >= 0 && ub <= 1;
   }
 
-  function createCellSingleNotationOccupationMatrix(): (String | null)[][] {
-    let matrix: (String | null)[][] = new Array();
-    for (let i = 0; i < matrixDimensions.colsNum; i++) {
-      matrix.push([]);
-      for (let j = 0; j < matrixDimensions.rowsNum; j++) {
-        matrix[i][j] = null;
-      }
-    }
-    return matrix;
-  }
-
-  function createCellMultipleNotationOccupationMatrix(): Set<String>[][] {
-    let matrix: Set<String>[][] = new Array();
-    for (let i = 0; i < matrixDimensions.colsNum; i++) {
-      matrix.push([]);
-      for (let j = 0; j < matrixDimensions.rowsNum; j++) {
-        (matrix[i][j] as Set<String>) = new Set<String>();
-      }
-    }
-    return matrix;
-  }
-
   function hasSelectedNotations(): boolean {
     return getSelectedNotations().length > 0;
   }
@@ -556,88 +504,6 @@ export const useNotationStore = defineStore("notation", () => {
 
   function isSymbolPartOfFraction(cell: CellAttributes): boolean {
     return cellLineNotationOccupationMatrix[cell.col][cell.row + 1].size > 0;
-  }
-
-  function updateOccupationMatrix(
-    notation: NotationAttributes,
-    dotNotationOccupationMatrix: (String | null)[][],
-    symbolNotationOccupationMatrix: (String | null)[][],
-    cellLineNotationOccupationMatrix: Set<String>[][],
-    cellRectNotationOccupationMatrix: (String | null)[][],
-    notationCellOccupationHelper: ReturnType<
-      typeof useNotationCellOccupationHelper
-    >,
-  ) {
-    switch (notation.notationType) {
-      case "EXPONENT":
-      case "LOGBASE":
-      case "SIGN":
-      case "SQRTSYMBOL":
-      case "SYMBOL":
-        if ((notation as PointNotationAttributes).value === ".") {
-          notationCellOccupationHelper.updatePointOccupationMatrix(
-            dotNotationOccupationMatrix,
-            notation as PointNotationAttributes,
-            false,
-          );
-        } else {
-          notationCellOccupationHelper.updatePointOccupationMatrix(
-            symbolNotationOccupationMatrix,
-            notation as PointNotationAttributes,
-            false,
-          );
-        }
-        break;
-
-      case "ANNOTATION":
-        notationCellOccupationHelper.updateAnnotationOccupationMatrix(
-          symbolNotationOccupationMatrix,
-          notation as AnnotationNotationAttributes,
-          false,
-        );
-
-      case "TEXT":
-      case "IMAGE":
-        notationCellOccupationHelper.updateRectOccupationMatrix(
-          cellRectNotationOccupationMatrix,
-          notation as RectNotationAttributes,
-          false,
-        );
-        break;
-
-      case "CURVE":
-        notationCellOccupationHelper.updateCurveOccupationMatrix(
-          cellLineNotationOccupationMatrix,
-          notation as CurveNotationAttributes,
-          false,
-        );
-        break;
-      case "SQRT":
-        notationCellOccupationHelper.updateSqrtOccupationMatrix(
-          cellLineNotationOccupationMatrix,
-          notation as SqrtNotationAttributes,
-          notation.uuid,
-          false,
-        );
-        break;
-      case "DIVISIONLINE":
-      case "LINE":
-        notationCellOccupationHelper.updateLineOccupationMatrix(
-          cellLineNotationOccupationMatrix,
-          notation as LineNotationAttributes,
-          notation.uuid,
-          false,
-        );
-        break;
-
-      case "CIRCLE":
-        notationCellOccupationHelper.updateCircleOccupationMatrix(
-          cellRectNotationOccupationMatrix,
-          notation as CircleNotationAttributes,
-          false,
-        );
-        break;
-    }
   }
 
   // Add undo/redo functions
@@ -670,24 +536,23 @@ export const useNotationStore = defineStore("notation", () => {
   }
 
   function rebuildOccupationMatrices() {
-    // Clear matrices
-    dotNotationOccupationMatrix = createCellSingleNotationOccupationMatrix();
-    symbolNotationOccupationMatrix = createCellSingleNotationOccupationMatrix();
+    dotNotationOccupationMatrix =
+      helper.createCellSingleNotationOccupationMatrix();
+    symbolNotationOccupationMatrix =
+      helper.createCellSingleNotationOccupationMatrix();
     cellRectNotationOccupationMatrix =
-      createCellSingleNotationOccupationMatrix();
+      helper.createCellSingleNotationOccupationMatrix();
     cellLineNotationOccupationMatrix =
-      createCellMultipleNotationOccupationMatrix();
+      helper.createCellMultipleNotationOccupationMatrix();
 
-    // Rebuild matrices
-    const notationCellOccupationHelper = useNotationCellOccupationHelper();
     Array.from(notations.value.values()).forEach((notation) => {
-      updateOccupationMatrix(
+      helper.updateOccupationMatrix(
         notation,
         dotNotationOccupationMatrix,
         symbolNotationOccupationMatrix,
         cellLineNotationOccupationMatrix,
         cellRectNotationOccupationMatrix,
-        notationCellOccupationHelper,
+        false,
       );
     });
   }
@@ -702,7 +567,6 @@ export const useNotationStore = defineStore("notation", () => {
     getNotation,
     getNotations,
     getNotationsAtCell,
-    getSqrtNotationAtCell,
     getParent,
     getPointNotations,
     getRectNotations,

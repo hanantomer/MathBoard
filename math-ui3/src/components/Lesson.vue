@@ -1,7 +1,7 @@
 <template>
-  <div class="d-flex" style="overflow: auto;">
+  <div class="d-flex">
     <v-sheet>
-  <mathBoard :svgId="svgId" :loaded="loaded"> </mathBoard>
+      <mathBoard :svgId="svgId" :loaded="loaded"> </mathBoard>
     </v-sheet>
   </div>
 </template>

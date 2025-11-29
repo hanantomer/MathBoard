@@ -616,6 +616,38 @@ app.post(
 // notations
 BoardTypeValues.forEach((boardType) => {
     NotationTypeValues.forEach((notationType) => {
+
+        app.get(
+            `/api/${boardType.toLowerCase()}${notationType.toLowerCase()}/:uuid`,
+            async (
+                req: Request,
+                res: Response,
+                next: NextFunction
+            ): Promise<Response | undefined> => {
+                try {
+                    const uuid  = req.params.uuid;
+
+                    if (!uuid) {
+                        next("invlid uuid:" + uuid);
+                        return;
+                    }
+
+                    let notations: any = "";
+
+                    notations = await db.getNotation(
+                        boardType,
+                        notationType,
+                        uuid as string
+                    );
+
+                    return res.status(200).json(notations);
+                } catch (err) {
+                    next(err);
+                    return;
+                }
+            }
+        );
+
         app.get(
             `/api/${boardType.toLowerCase()}${notationType.toLowerCase()}s`,
             async (

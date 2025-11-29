@@ -270,7 +270,7 @@ export default function notationMutateHelper() {
 
     return true;
   }
-  // ...existing code...
+
   function moveSelectedNotationsAtPixelScale(
     deltaX: number,
     deltaY: number,
@@ -318,13 +318,6 @@ export default function notationMutateHelper() {
   ): boolean {
     if (keepOriginal) {
       notationStore.cloneSelectedNotations();
-    }
-
-    // early-validate target cells
-    for (const n of notationStore.getSelectedNotations()) {
-      if (!canMoveNotationToTarget(n, deltaCol, deltaRow)) {
-        return false;
-      }
     }
 
     notationStore.getSelectedNotations().forEach((n: NotationAttributes) => {
@@ -386,45 +379,66 @@ export default function notationMutateHelper() {
   }
 
   function canMoveNotationToTarget(
-    notation: NotationAttributes,
-    deltaCol: number,
-    deltaRow: number,
+    sourceNotation: NotationAttributes,
   ): boolean {
-    const notationType = notation.notationType;
-
     // Point notations (single cell)
-    if (isCellNotationType(notationType)) {
-      const p = notation as PointNotationAttributes;
-      const targetCol = p.col + deltaCol;
-      const targetRow = p.row + deltaRow;
-
-      // Check bounds
-      if (targetCol < 1 || targetCol > matrixDimensions.colsNum) return false;
-      if (targetRow < 1 || targetRow > matrixDimensions.rowsNum) return false;
+    if (isCellNotationType(sourceNotation.notationType)) {
+      const sourceCellNotation = sourceNotation as PointNotationAttributes;
+      if (
+        sourceCellNotation.col < 0 ||
+        sourceCellNotation.col > matrixDimensions.colsNum
+      )
+        return false;
+      if (
+        sourceCellNotation.row < 0 ||
+        sourceCellNotation.row > matrixDimensions.rowsNum
+      )
+        return false;
 
       // Check cell occupation
       return (
-        notationStore.getNotationsAtCell({ col: targetCol, row: targetRow })
-          .length === 0
+        notationStore.getNotationsAtCell({
+          col: sourceCellNotation.col,
+          row: sourceCellNotation.row,
+        }).length === 0
       );
     }
 
     // Rect notations (TEXT, IMAGE)
-    if (notationType === "TEXT" || notationType === "IMAGE") {
-      const r = notation as RectNotationAttributes;
-      const fromCol = r.fromCol + deltaCol;
-      const toCol = r.toCol + deltaCol;
-      const fromRow = r.fromRow + deltaRow;
-      const toRow = r.toRow + deltaRow;
+    if (
+      sourceNotation.notationType === "TEXT" ||
+      sourceNotation.notationType === "IMAGE"
+    ) {
+      const sourceRectNotation = sourceNotation as RectNotationAttributes;
 
       // Check bounds
-      if (fromCol < 1 || toCol > matrixDimensions.colsNum) return false;
-      if (fromRow < 1 || toRow > matrixDimensions.rowsNum) return false;
+      if (
+        sourceRectNotation.fromCol < 0 ||
+        sourceRectNotation.toCol > matrixDimensions.colsNum
+      )
+        return false;
+      if (
+        sourceRectNotation.fromRow < 0 ||
+        sourceRectNotation.toRow > matrixDimensions.rowsNum
+      )
+        return false;
 
       // Check all cells in rect are unoccupied
-      for (let col = fromCol; col <= toCol; col++) {
-        for (let row = fromRow; row <= toRow; row++) {
-          if (notationStore.getNotationsAtCell({ col, row }).length > 0) {
+      for (
+        let col = sourceRectNotation.fromCol;
+        col <= sourceRectNotation.toCol;
+        col++
+      ) {
+        for (
+          let row = sourceRectNotation.fromRow;
+          row <= sourceRectNotation.toRow;
+          row++
+        ) {
+          const cellNotations = notationStore.getNotationsAtCell({ col, row });
+          if (
+            cellNotations.length > 0 &&
+            cellNotations[0].uuid != sourceRectNotation.uuid
+          ) {
             return false;
           }
         }
@@ -433,14 +447,14 @@ export default function notationMutateHelper() {
     }
 
     // SQRT notations
-    if (notationType === "SQRT") {
-      const sqrt = notation as SqrtNotationAttributes;
-      const fromCol = sqrt.fromCol + deltaCol;
-      const toCol = sqrt.toCol + deltaCol;
-      const row = sqrt.row + deltaRow;
+    if (sourceNotation.notationType === "SQRT") {
+      const sourceSqrtNotation = sourceNotation as SqrtNotationAttributes;
+      const fromCol = sourceSqrtNotation.fromCol;
+      const toCol = sourceSqrtNotation.toCol;
+      const row = sourceSqrtNotation.row;
 
-      if (fromCol < 1 || toCol > matrixDimensions.colsNum) return false;
-      if (row < 1 || row > matrixDimensions.rowsNum) return false;
+      if (fromCol < 0 || toCol > matrixDimensions.colsNum) return false;
+      if (row < 0 || row > matrixDimensions.rowsNum) return false;
 
       return true;
     }
@@ -451,6 +465,16 @@ export default function notationMutateHelper() {
 
   function saveMovedNotations(moveDirection: SelectionMoveDirection) {
     const notations = getSelectedNotationsSortedByDirection(moveDirection);
+
+    ///TODO handle also move by key
+    for (let i in notations) {
+      const n = notations[i];
+
+      if (!canMoveNotationToTarget(n)) {
+        undoMoveNotatios();
+        return false;
+      }
+    }
 
     if (!notations || notations.length === 0) return;
 
@@ -465,18 +489,23 @@ export default function notationMutateHelper() {
     }
   }
 
-  async function saveMovedNotationsDelayed(notations: NotationAttributes[]) {
-    if (!notations || notations.length === 0) return;
+  async function undoMoveNotatios() {
+    notationStore.getSelectedNotations().forEach(async (n) => {
 
-    // Check if these are cloned notations that need to be inserted
-    const isClonedNotation =
-      notations[0].uuid.indexOf(clonedNotationUUIdPrefix) === 0;
+      const isClonedNotation = n.uuid.indexOf(clonedNotationUUIdPrefix) === 0;
 
-    if (isClonedNotation) {
-      await insertMovedNotations(notations);
-    } else {
-      await updateMovedNotations(notations);
-    }
+      if (isClonedNotation) {
+        notationStore.deleteNotation(n.uuid);
+      }
+      else {
+        const reloadedNotation = await apiHelper.getNotation(
+          n.notationType,
+          n.boardType,
+          n.uuid,
+        );
+        notationStore.addNotation(reloadedNotation, false, false);
+      }
+    });
   }
 
   async function insertMovedNotations(notations: NotationAttributes[]) {
@@ -1248,10 +1277,11 @@ export default function notationMutateHelper() {
         updateNotation(notation);
       });
 
-      const sqrtNotation = notationStore.getSqrtNotationAtCell({
-        row: cell.row,
-        col: col,
-      });
+      const sqrtNotation = notationStore
+        .getNotationsAtCell(cell)
+        .find((n) => n.notationType === "SQRT") as
+        | SqrtNotationAttributes
+        | undefined;
 
       if (sqrtNotation && sqrtNotation.uuid !== sqrtNotationUUId) {
         sqrtNotationUUId = sqrtNotation.uuid;
@@ -1320,15 +1350,17 @@ export default function notationMutateHelper() {
         }
       }
 
-      const sqrtNotation = notationStore.getSqrtNotationAtCell({
-        row: cell.row,
-        col: col,
-      });
+      const sqrtNotation = notationStore
+        .getNotationsAtCell(cell)
+        .find((n) => n.notationType === "SQRT") as
+        | SqrtNotationAttributes
+        | undefined;
 
-      const nextColSqrtNotation = notationStore.getSqrtNotationAtCell({
-        row: cell.row,
-        col: col + 1,
-      });
+      const nextColSqrtNotation = notationStore
+        .getNotationsAtCell({ row: cell.row, col: cell.col + 1 })
+        .find((n) => n.notationType === "SQRT") as
+        | SqrtNotationAttributes
+        | undefined;
 
       if (sqrtNotation && !nextColSqrtNotation) {
         lastColWithSpace = col;
@@ -1349,10 +1381,11 @@ export default function notationMutateHelper() {
       currentCol >= cell.col;
       currentCol--
     ) {
-      const sqrtNotation = notationStore.getSqrtNotationAtCell({
-        row: cell.row,
-        col: currentCol,
-      });
+      const sqrtNotation = notationStore
+        .getNotationsAtCell(cell)
+        .find((n) => n.notationType === "SQRT") as
+        | SqrtNotationAttributes
+        | undefined;
 
       if (sqrtNotation && sqrtNotation.uuid !== sqrtUUId) {
         sqrtUUId = sqrtNotation.uuid;

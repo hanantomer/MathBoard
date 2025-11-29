@@ -463,6 +463,64 @@ export default function dbUtil() {
         return res?.get("value") as string;
     }
 
+        async function getNotation(
+            boardType: String,
+            notationType: String,
+            uuid: string
+        ) {
+            try {
+                logger.info(
+                    `Getting notation for ${boardType} ${notationType} with UUID: ${uuid}`
+                );
+
+                const boardName = boardType.toString().toLowerCase();
+                const boardModelName = capitalize(boardName);
+                const notationTypeName = notationType.toString().toLowerCase();
+                const notationTypeNameCapitalized =
+                    capitalize(notationTypeName);
+                const modelName = boardModelName + notationTypeNameCapitalized;
+
+                if (!uuid) {
+                    logger.warn(
+                        `uuid is null for ${boardType} ${notationType}`
+                    );
+                    return null;
+                }
+
+                if (!findModel(modelName)) {
+                    logger.error(`Model ${modelName} not found`);
+                    return null;
+                }
+
+                if (!db.sequelize.models[boardModelName]) {
+                    logger.error(`Board model ${boardModelName} not found`);
+                    return null;
+                }
+                
+                try {
+                    const results = await findModel(modelName).findOne({
+                        where: {
+                            ["uuid"]: uuid,
+                        },
+                        include: [
+                            Color,
+                            User,
+                            db.sequelize.models[boardModelName],
+                        ],
+                    });
+                    return results;
+                } catch (error) {
+                    logger.error(`Failed to fetch notation: ${error}`);
+                    throw error;
+                }
+            } catch (error) {
+                logger.error(`Error in getNotation: ${error}`);
+                throw error;
+            }
+        }
+
+
+
 
     async function getNotations(
         boardType: String,
@@ -808,6 +866,7 @@ export default function dbUtil() {
         getAnswer,
         getAnswers,
         createAnswer,
+        getNotation,
         getNotations,
         createNotation,
         getStudentLesson,

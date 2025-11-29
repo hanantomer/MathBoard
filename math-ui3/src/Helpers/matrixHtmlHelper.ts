@@ -80,6 +80,11 @@ export default function useHtmlMatrixHelper() {
           return utils.removeNotations(exit);
         },
       );
+
+    if (notations.length > 0) {
+      const el = document.getElementById(notations[notations.length - 1].uuid)?.parentElement;
+      el?.scrollIntoView();
+    }
   }
 
   function height(n: NotationAttributes): number | null {
@@ -433,7 +438,7 @@ export default function useHtmlMatrixHelper() {
         ? "10%"
         : "0%";
     const fSize =
-      n1.value === "||" ||  n1.value === "''"
+      n1.value === "||" || n1.value === "''"
         ? "1.4em"
         : n1.value === "."
         ? "1.5em"
@@ -470,4 +475,3 @@ export default function useHtmlMatrixHelper() {
     mergeHtmlNotations,
   };
 }
-

@@ -76,7 +76,7 @@ export default function () {
       notationStore.undo();
     }
 
-    const {  altKey, code, key } = e;
+    const {ctrlKey,  altKey, shiftKey,  code, key } = e;
 
     if (!authorizationHelper.canEdit()) return;
 
@@ -107,6 +107,10 @@ export default function () {
     if (editModeStore.getEditMode() === "TEXT_WRITING") return;
 
     if (editModeStore.getEditMode() === "ANNOTATION_WRITING") return;
+
+    if (ctrlKey || altKey ) {
+      return;
+    }
 
     switch (classifyKeyCode(code)) {
       case "PUSH": {

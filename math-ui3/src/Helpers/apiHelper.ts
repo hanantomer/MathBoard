@@ -1,5 +1,5 @@
 import { LoginTicket } from "google-auth-library";
-import { NotationType } from "common/unions";
+import { BoardType, NotationType } from "common/unions";
 import {
   NotationAttributes,
   NotationCreationAttributes,
@@ -473,6 +473,30 @@ export default function useApiHelper() {
     }
   }
 
+  async function getNotation<T extends NotationAttributes>(
+    notationType: NotationType,
+    boardType: BoardType,
+    uuid: string,
+  ): Promise<T> {
+    try {
+      const uri =
+        baseURL +
+        `/${boardType.toString().toLowerCase()}${notationType
+          .toString()
+          .toLowerCase()}/${uuid}`;
+      const { data } = await axios.get<T>(uri);
+      data.boardType = boardType;
+      data.notationType = notationType;
+      return data;
+    } catch (error) {
+      throw new Error(
+        `Failed to get notation for ${uuid} ${boardType} ${notationType}: ${
+          (error as AxiosError).message
+        }`,
+      );
+    }
+  }
+
   async function getNotations<T extends NotationAttributes>(
     notationType: NotationType,
     boardType: string,
@@ -497,6 +521,7 @@ export default function useApiHelper() {
 
   return {
     getImageUrl,
+    getNotation,
     getNotations,
     getAnswers,
     getQuestions,

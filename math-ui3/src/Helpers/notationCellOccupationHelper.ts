@@ -3,32 +3,76 @@ import {
   PointNotationAttributes,
   RectNotationAttributes,
   CurveNotationAttributes,
-  LineAttributes,
+  LineNotationAttributes,
+  NotationAttributes,
   MultiCellAttributes,
   CircleNotationAttributes,
-  RectAttributes,
   AnnotationNotationAttributes,
   SqrtNotationAttributes,
 } from "common/baseTypes";
 
+// ...existing code...
 import { matrixDimensions, clonedNotationUUIdPrefix } from "common/globals";
 import { useCellStore } from "../store/pinia/cellStore";
-import useScreenHelper from "./screenHelper";
-
-const cellStore = useCellStore();
-const screenHelper = useScreenHelper();
 
 export default function notationCellOccupationHelper() {
-  // point occupation matrix holds only one notation per cell
+  const cellStore = useCellStore();
+
+  function createCellSingleNotationOccupationMatrix(): (String | null)[][] {
+    const cols = matrixDimensions.colsNum;
+    const rows = matrixDimensions.rowsNum;
+    const matrix: (String | null)[][] = new Array(cols);
+    for (let c = 0; c < cols; c++) {
+      matrix[c] = new Array(rows);
+      for (let r = 0; r < rows; r++) matrix[c][r] = null;
+    }
+    return matrix;
+  }
+
+  function createCellMultipleNotationOccupationMatrix(): Set<String>[][] {
+    const cols = matrixDimensions.colsNum;
+    const rows = matrixDimensions.rowsNum;
+    const matrix: Set<String>[][] = new Array(cols);
+    for (let c = 0; c < cols; c++) {
+      matrix[c] = new Array(rows);
+      for (let r = 0; r < rows; r++) matrix[c][r] = new Set<String>();
+    }
+    return matrix;
+  }
+
+  function validateRowAndCol(col: number, row: number) {
+    return (
+      col != null &&
+      row != null &&
+      col >= 0 &&
+      row >= 0 &&
+      col < matrixDimensions.colsNum &&
+      row < matrixDimensions.rowsNum
+    );
+  }
+
+  function clearNotationFromMatrix(uuid: string, matrix: any) {
+    if (!uuid) return;
+    for (let c = 0; c < matrixDimensions.colsNum; c++) {
+      for (let r = 0; r < matrixDimensions.rowsNum; r++) {
+        const cell = matrix[c][r];
+        if (cell == null) continue;
+        if (cell instanceof Set) {
+          if (cell.has(uuid)) cell.delete(uuid);
+        } else if (cell === uuid) {
+          matrix[c][r] = null;
+        }
+      }
+    }
+  }
+
   function updatePointOccupationMatrix(
     matrix: any,
     notation: PointNotationAttributes,
     doRemove: boolean,
   ) {
-    if (notation.uuid.startsWith(clonedNotationUUIdPrefix)) {
+    if (!notation || notation.uuid?.startsWith(clonedNotationUUIdPrefix))
       return;
-    }
-
     if (!validateRowAndCol(notation.col, notation.row)) return;
     clearNotationFromMatrix(notation.uuid, matrix);
     matrix[notation.col][notation.row] = doRemove ? null : notation.uuid;
@@ -40,31 +84,54 @@ export default function notationCellOccupationHelper() {
     uuid: string,
     doRemove: boolean,
   ) {
+    if (!notation || !validateRowAndCol(notation.fromCol, notation.row)) return;
     clearNotationFromMatrix(uuid, matrix);
-    for (let i = notation.fromCol; i <= notation.toCol; i++) {
-      if (!validateRowAndCol(i, notation.row)) return;
-      matrix[i][notation.row] = doRemove ? null : uuid;
+    for (let c = notation.fromCol; c <= notation.toCol; c++) {
+      if (!validateRowAndCol(c, notation.row)) continue;
+      matrix[c][notation.row] = doRemove ? null : uuid;
     }
   }
 
-  // update single cell
-  function updateLineOccupationMatrixCell(
-    col: number,
-    row: number,
+  function updateLineOccupationMatrix(
     matrix: any,
+    notation: LineNotationAttributes,
     uuid: string,
     doRemove: boolean,
   ) {
-    if (!validateRowAndCol(col, row)) return;
+    if (!notation || !uuid) return;
+    clearNotationFromMatrix(uuid, matrix);
 
-    if (doRemove) return;
+    const colWidth = cellStore.getCellHorizontalWidth();
+    const rowHeight = cellStore.getCellVerticalHeight();
 
-    if (matrix[col][row] === null) {
-      matrix[col][row] = new Set();
+    const minCol = Math.max(
+      0,
+      Math.floor(Math.min(notation.p1x, notation.p2x) / colWidth),
+    );
+    const maxCol = Math.min(
+      matrixDimensions.colsNum - 1,
+      Math.floor(Math.max(notation.p1x, notation.p2x) / colWidth),
+    );
+    const minRow = Math.max(
+      0,
+      Math.floor(Math.min(notation.p1y, notation.p2y) / rowHeight),
+    );
+    const maxRow = Math.min(
+      matrixDimensions.rowsNum - 1,
+      Math.floor(Math.max(notation.p1y, notation.p2y) / rowHeight),
+    );
+
+    for (let c = minCol; c <= maxCol; c++) {
+      for (let r = minRow; r <= maxRow; r++) {
+        if (!validateRowAndCol(c, r)) continue;
+        if (doRemove) {
+          (matrix[c][r] as Set<String>)?.delete(uuid);
+        } else {
+          if (matrix[c][r] == null) matrix[c][r] = new Set<String>();
+          (matrix[c][r] as Set<String>).add(uuid);
+        }
+      }
     }
-
-    // line occuption mtarix can attribute multiple notations to single cell
-    (matrix[col][row] as Set<String>).add(uuid);
   }
 
   function updateAnnotationOccupationMatrix(
@@ -72,47 +139,65 @@ export default function notationCellOccupationHelper() {
     notation: AnnotationNotationAttributes,
     doRemove: boolean,
   ) {
+    if (!notation) return;
     const col = Math.round(notation.x / cellStore.getCellHorizontalWidth());
     const row = Math.round(notation.y / cellStore.getCellVerticalHeight());
-    updatePointOccupationMatrix(
-      matrix,
-      { ...notation, col: col, row: row, followsFraction: false },
-      doRemove,
-    );
+    if (!validateRowAndCol(col, row)) return;
+    clearNotationFromMatrix(notation.uuid, matrix);
+    matrix[col][row] = doRemove ? null : notation.uuid;
   }
 
-  /// populate occupation matrix to encompass the sloped line
-  function updateLineOccupationMatrix(
+  function updateRectOccupationMatrix(
     matrix: any,
-    notation: LineAttributes,
-    uuid: string,
+    notation: RectNotationAttributes,
     doRemove: boolean,
   ) {
-    clearNotationFromMatrix(uuid, matrix);
+    if (!notation) return;
+    clearNotationFromMatrix(notation.uuid, matrix);
+    for (let c = notation.fromCol; c <= notation.toCol; c++) {
+      for (let r = notation.fromRow; r <= notation.toRow; r++) {
+        if (!validateRowAndCol(c, r)) continue;
+        matrix[c][r] = doRemove ? null : notation.uuid;
+      }
+    }
+  }
 
-    if (doRemove) return;
+  function updateCurveOccupationMatrix(
+    matrix: any,
+    notation: CurveNotationAttributes,
+    doRemove: boolean,
+  ) {
+    // approximate bounding box covering cells touched by the curve
+    const colWidth = cellStore.getCellHorizontalWidth();
+    const rowHeight = cellStore.getCellVerticalHeight();
 
-    const fromCol = Math.round(
-      Math.min(notation.p1x, notation.p2x) / cellStore.getCellHorizontalWidth(),
+    const minX = Math.min(notation.p1x, notation.p2x, notation.cpx);
+    const maxX = Math.max(notation.p1x, notation.p2x, notation.cpx);
+    const minY = Math.min(notation.p1y, notation.p2y, notation.cpy);
+    const maxY = Math.max(notation.p1y, notation.p2y, notation.cpy);
+
+    const minCol = Math.max(0, Math.floor(minX / colWidth));
+    const maxCol = Math.min(
+      matrixDimensions.colsNum - 1,
+      Math.floor(maxX / colWidth),
     );
-    const toCol = Math.round(
-      Math.max(notation.p1x, notation.p2x) / cellStore.getCellHorizontalWidth(),
+    const minRow = Math.max(0, Math.floor(minY / rowHeight));
+    const maxRow = Math.min(
+      matrixDimensions.rowsNum - 1,
+      Math.floor(maxY / rowHeight),
     );
-    const fromRow = Math.round(
-      notation.p1y / cellStore.getCellVerticalHeight(),
-    );
-    const toRow = Math.round(notation.p2y / cellStore.getCellVerticalHeight());
 
-    // slope is positive if fromRow > toRow
-    const slope = (fromRow - toRow) / (toCol - fromCol);
+    clearNotationFromMatrix(notation.uuid, matrix);
 
-    //let firstRowIndex = slope > 0 ? fromRow : toRow;
-    for (let col = fromCol - 1, i = 0; col <= toCol; col++, i++) {
-      let row = Math.ceil(fromRow + i * slope * -1);
-
-      if (validateRowAndCol(col, row)) {
-        updateLineOccupationMatrixCell(col, row, matrix, uuid, doRemove);
-        updateLineOccupationMatrixCell(col - 1, row, matrix, uuid, doRemove);
+    for (let c = minCol; c <= maxCol; c++) {
+      for (let r = minRow; r <= maxRow; r++) {
+        if (!validateRowAndCol(c, r)) continue;
+        if (doRemove) {
+          (matrix[c][r] as Set<String>)?.delete(notation.uuid);
+        } else {
+          if (matrix[c][r] == null) matrix[c][r] = new Set<String>();
+          (matrix[c][r] as Set<String>).add(notation.uuid);
+        }
       }
     }
   }
@@ -123,97 +208,19 @@ export default function notationCellOccupationHelper() {
     uuid: string,
     doRemove: boolean,
   ) {
+    // similar to multi-cell, but across fromCol..toCol at a single row
+    if (!notation) return;
     clearNotationFromMatrix(uuid, matrix);
-
-    if (doRemove) return;
-
-
-    //let firstRowIndex = slope > 0 ? fromRow : toRow;
-    for (
-      let col = notation.fromCol - 1, i = 0;
-      col <= notation.toCol;
-      col++, i++
-    ) {
-
-      if (validateRowAndCol(col, notation.row)) {
-        updateLineOccupationMatrixCell(
-          col,
-          notation.row,
-          matrix,
-          uuid,
-          doRemove,
-        );
-        updateLineOccupationMatrixCell(
-          col - 1,
-          notation.row,
-          matrix,
-          uuid,
-          doRemove,
-        );
+    for (let c = notation.fromCol; c <= notation.toCol; c++) {
+      if (!validateRowAndCol(c, notation.row)) continue;
+      if (doRemove) {
+        (matrix[c][notation.row] as Set<String>)?.delete(uuid);
+      } else {
+        if (matrix[c][notation.row] == null)
+          matrix[c][notation.row] = new Set<String>();
+        (matrix[c][notation.row] as Set<String>).add(uuid);
       }
     }
-  }
-
-  // rect occupation matrix holds only one notation per cell
-  function updateRectOccupationMatrix(
-    matrix: any,
-    notation: RectNotationAttributes,
-    doRemove: boolean,
-  ) {
-    clearNotationFromMatrix(notation.uuid, matrix);
-    for (let col = notation.fromCol; col <= notation.toCol; col++) {
-      for (
-        let row = Math.min(notation.fromRow, notation.toRow);
-        row <= Math.max(notation.fromRow, notation.toRow);
-        row++
-      ) {
-        if (validateRowAndCol(col, row)) {
-          matrix[col][row] = doRemove ? null : notation.uuid;
-        }
-      }
-    }
-  }
-
-  function updateCurveOccupationMatrix(
-    matrix: any,
-    notation: CurveNotationAttributes,
-    doRemove: boolean,
-  ) {
-    if (!cellStore.getSvgId) return;
-    clearNotationFromMatrix(notation.uuid, matrix);
-
-    // get curve-enclosing-triangle and mark all cells intersecting
-    // with the edges which emerge from the control point
-
-    updateLineOccupationMatrix(
-      matrix,
-      {
-        p1x: notation.p1x,
-        p2x: notation.cpx,
-        p1y: notation.p1y,
-        p2y: notation.cpy,
-        arrowLeft: false,
-        arrowRight: false,
-        dashed: false
-      },
-      notation.uuid,
-      doRemove,
-    );
-
-    updateLineOccupationMatrix(
-      matrix,
-      {
-        p1x: notation.p2x,
-        p2x: notation.cpx,
-        p1y: notation.p2y,
-        p2y: notation.cpy,
-        arrowLeft: false,
-        arrowRight: false,
-        dashed: false
-      },
-      notation.uuid,
-      doRemove,
-    );
   }
 
   function updateCircleOccupationMatrix(
@@ -221,63 +228,165 @@ export default function notationCellOccupationHelper() {
     notation: CircleNotationAttributes,
     doRemove: boolean,
   ) {
-    if (!cellStore.getSvgId) return;
+    const colWidth = cellStore.getCellHorizontalWidth();
+    const rowHeight = cellStore.getCellVerticalHeight();
+
+    const minCol = Math.max(
+      0,
+      Math.floor((notation.cx - notation.r) / colWidth),
+    );
+    const maxCol = Math.min(
+      matrixDimensions.colsNum - 1,
+      Math.floor((notation.cx + notation.r) / colWidth),
+    );
+    const minRow = Math.max(
+      0,
+      Math.floor((notation.cy - notation.r) / rowHeight),
+    );
+    const maxRow = Math.min(
+      matrixDimensions.rowsNum - 1,
+      Math.floor((notation.cy + notation.r) / rowHeight),
+    );
+
     clearNotationFromMatrix(notation.uuid, matrix);
 
-    const rectCoordinates: RectCoordinates = {
-      topLeft: {
-        x: notation.cx - notation.r,
-        y: notation.cy - notation.r,
-      },
-      bottomRight: {
-        x: notation.cx + notation.r,
-        y: notation.cy + notation.r,
-      },
-    };
-
-    const rectAttributes: RectAttributes =
-      screenHelper.getRectAttributes(rectCoordinates);
-
-    for (let col = rectAttributes.fromCol; col <= rectAttributes.toCol; col++) {
-      for (
-        let row = rectAttributes.fromRow;
-        row <= rectAttributes.toRow;
-        row++
-      ) {
-        if (validateRowAndCol(col, row)) {
-          matrix[col][row] = doRemove ? null : notation.uuid;
-        }
+    for (let c = minCol; c <= maxCol; c++) {
+      for (let r = minRow; r <= maxRow; r++) {
+        if (!validateRowAndCol(c, r)) continue;
+        matrix[c][r] = doRemove ? null : notation.uuid;
       }
     }
   }
 
-  function validateRowAndCol(col: number, row: number): boolean {
-    return (
-      col < matrixDimensions.colsNum &&
-      row < matrixDimensions.rowsNum &&
-      col >= 0 &&
-      row >= 0
-    );
+  function updateOccupationMatrix(
+    notation: NotationAttributes,
+    dotMatrix: (String | null)[][],
+    symbolMatrix: (String | null)[][],
+    lineMatrix: Set<String>[][],
+    rectMatrix: (String | null)[][],
+    doRemove: boolean = false,
+  ) {
+    switch (notation.notationType) {
+      case "EXPONENT":
+      case "LOGBASE":
+      case "SIGN":
+      case "SQRTSYMBOL":
+      case "SYMBOL":
+        if ((notation as PointNotationAttributes).value === ".") {
+          updatePointOccupationMatrix(
+            dotMatrix,
+            notation as PointNotationAttributes,
+            doRemove,
+          );
+        } else {
+          updatePointOccupationMatrix(
+            symbolMatrix,
+            notation as PointNotationAttributes,
+            doRemove,
+          );
+        }
+        break;
+      case "ANNOTATION":
+        updateAnnotationOccupationMatrix(
+          symbolMatrix,
+          notation as AnnotationNotationAttributes,
+          doRemove,
+        );
+        break;
+      case "TEXT":
+      case "IMAGE":
+        updateRectOccupationMatrix(
+          rectMatrix,
+          notation as RectNotationAttributes,
+          doRemove,
+        );
+        break;
+      case "CURVE":
+        updateCurveOccupationMatrix(
+          lineMatrix,
+          notation as CurveNotationAttributes,
+          doRemove,
+        );
+        break;
+      case "SQRT":
+        updateSqrtOccupationMatrix(
+          lineMatrix,
+          notation as SqrtNotationAttributes,
+          notation.uuid,
+          doRemove,
+        );
+        break;
+      case "DIVISIONLINE":
+      case "LINE":
+        updateLineOccupationMatrix(
+          lineMatrix,
+          notation as LineNotationAttributes,
+          notation.uuid,
+          doRemove,
+        );
+        break;
+      case "CIRCLE":
+        updateCircleOccupationMatrix(
+          rectMatrix,
+          notation as CircleNotationAttributes,
+          doRemove,
+        );
+        break;
+    }
   }
 
-  function clearNotationFromMatrix(uuid: string, matrix: any) {
-    for (let col = 0; col < matrixDimensions.colsNum; col++) {
-      for (let row = 0; row < matrixDimensions.rowsNum; row++) {
-        if (matrix[col][row] === uuid) {
-          matrix[col][row] = null;
-        }
-      }
-    }
+  function getDotNotationAtCell(
+    matrix: (String | null)[][],
+    col: number,
+    row: number,
+  ): String | null {
+    if (!validateRowAndCol(col, row)) return null;
+    return matrix[col][row];
+  }
+
+  function getSymbolNotationAtCell(
+    matrix: (String | null)[][],
+    col: number,
+    row: number,
+  ): String | null {
+    if (!validateRowAndCol(col, row)) return null;
+    return matrix[col][row];
+  }
+
+  function getRectNotationAtCell(
+    matrix: (String | null)[][],
+    col: number,
+    row: number,
+  ): String | null {
+    if (!validateRowAndCol(col, row)) return null;
+    return matrix[col][row];
+  }
+
+  function getLineNotationsAtCell(
+    matrix: Set<String>[][],
+    col: number,
+    row: number,
+  ): Set<String> {
+    if (!validateRowAndCol(col, row)) return new Set();
+    return matrix[col][row];
   }
 
   return {
+    getDotNotationAtCell,
+    getSymbolNotationAtCell,
+    getRectNotationAtCell,
+    getLineNotationsAtCell,
+    createCellSingleNotationOccupationMatrix,
+    createCellMultipleNotationOccupationMatrix,
     updatePointOccupationMatrix,
-    updateAnnotationOccupationMatrix,
     updateMultiCellOccupationMatrix,
     updateLineOccupationMatrix,
-    updateSqrtOccupationMatrix,
-    updateCurveOccupationMatrix,
-    updateCircleOccupationMatrix,
+    updateAnnotationOccupationMatrix,
     updateRectOccupationMatrix,
+    updateCurveOccupationMatrix,
+    updateSqrtOccupationMatrix,
+    updateCircleOccupationMatrix,
+    updateOccupationMatrix,
+    clearNotationFromMatrix,
   };
 }

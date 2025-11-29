@@ -35,11 +35,11 @@ export const useCellStore = defineStore("cell", () => {
   }
 
   function getCellHorizontalWidth(): number {
-    return (cellVerticalHight.value - 1) / 2 + cellSpace;
+    return Math.floor((cellVerticalHight.value - 1) / 2) + cellSpace;
   }
 
   function getCellHorizontalWidthNet(): number {
-    return (cellVerticalHight.value - 1) / 2;
+    return Math.floor((cellVerticalHight.value - 1) / 2);
   }
 
   function setCellVerticalHeight(size: number) {

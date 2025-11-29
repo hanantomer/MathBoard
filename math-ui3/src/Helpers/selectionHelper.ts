@@ -5,6 +5,7 @@ import {
   LineNotationAttributes,
   MultiCellAttributes,
   CellAttributes,
+  isCellNotationType,
 } from "common/baseTypes";
 
 import { getMousePositionInSVG } from "common/globals";
@@ -87,7 +88,6 @@ export default function selectionHelper() {
       case "SIGN":
       case "SYMBOL":
       case "SQRTSYMBOL": {
-        selectPointOrRectNotation(notation);
         return true;
       }
     }
@@ -150,7 +150,6 @@ export default function selectionHelper() {
     const notation = notationStore.getNotation(uuid)!;
     editModeStore.setEditMode("LINE_SELECTED");
     eventBus.emit("EV_LINE_SELECTED", notation);
-    //eventBus.emit("EV_NOTATION_SELECTED", notation);
   }
 
   function selectDivisionLineNotation(uuid: String) {
@@ -179,7 +178,6 @@ export default function selectionHelper() {
   }
 
   function selectClickedPosition(e: MouseEvent) {
-
     const svgEl = document.getElementById(
       cellStore.getSvgId()!,
     ) as SVGSVGElement | null;
@@ -197,12 +195,30 @@ export default function selectionHelper() {
 
     notationStore.resetSelectedNotations();
     const uuid = (e.target as any).id;
+    let notationFoundAtCell = false;
     if (uuid) {
+      // select clicked element
       selectNotation(uuid);
     } else {
-      selectNotationAtPosition(position);
+      // select element in clicked cell
+      notationFoundAtCell = selectNotationAtPosition(position);
     }
-    setSelectedCell(clickedCell, false);
+
+    const notationSelected = uuid || notationFoundAtCell;
+
+    const pointNotationSelected =
+      notationSelected &&
+      isCellNotationType(notationStore.getNotation(uuid)!.notationType);
+
+    if (pointNotationSelected) {
+      setSelectedCell(clickedCell, false);
+      return;
+    }
+
+    if (!notationSelected) {
+      setSelectedCell(clickedCell, true);
+      return;
+    }
   }
 
   function selectNotation(uuid: string) {
