@@ -30,7 +30,6 @@
 <script setup lang="ts">
 import { computed } from "vue";
 import { useNotationStore } from "../store/pinia/notationStore";
-import { useEditModeStore } from "../store/pinia/editModeStore";
 import useNotationMutateHelper from "../helpers/notationMutateHelper";
 import useAuthorizationHelper from "../helpers/authorizationHelper";
 import { AnnotationNotationAttributes } from "common/baseTypes";
@@ -60,5 +59,6 @@ function rotateSelection(degrees: number) {
   notationMutateHelper.updateNotation(selectedNotation);
 
 }
+
 </script>
 

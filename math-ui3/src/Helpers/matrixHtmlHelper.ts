@@ -82,7 +82,8 @@ export default function useHtmlMatrixHelper() {
       );
 
     if (notations.length > 0) {
-      const el = document.getElementById(notations[notations.length - 1].uuid)?.parentElement;
+      const el = document.getElementById(notations[notations.length - 1].uuid)
+        ?.parentElement;
       el?.scrollIntoView();
     }
   }
@@ -385,9 +386,14 @@ export default function useHtmlMatrixHelper() {
 
       return `<p id=${n1.uuid} style=
             'z-index:100;color:${color};font-weight:${fontWeight};
-            position: absolute;top:50%;transform:
-           translateY(-50%) rotate(${n1.rotation}deg);font-size:0.6em'>${n1.value}</p>`;
+            position: absolute;top:50%;
+            transform: rotate(${n1.rotation}deg);
+            transformOrigin: "center center";
+           font-size:0.6em'>${n1.value}</p>`;
     }
+
+    //          transform: `rotate(${rotation}deg)`,
+    //      transformOrigin: 'center center',
 
     if (n.notationType === "IMAGE") {
       let n1 = n as RectNotationAttributes;

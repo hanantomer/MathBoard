@@ -76,7 +76,7 @@ export default function () {
       notationStore.undo();
     }
 
-    const {ctrlKey,  altKey, shiftKey,  code, key } = e;
+    const { ctrlKey, altKey, shiftKey, code, key } = e;
 
     if (!authorizationHelper.canEdit()) return;
 
@@ -108,9 +108,13 @@ export default function () {
 
     if (editModeStore.getEditMode() === "ANNOTATION_WRITING") return;
 
-    if (ctrlKey || altKey ) {
+    if (ctrlKey || altKey) {
       return;
     }
+
+    const singleSymbolSelected =
+      notationStore.getSelectedNotations().length === 1 &&
+      notationStore.getSelectedNotations().at(0)?.notationType === "SYMBOL";
 
     switch (classifyKeyCode(code)) {
       case "PUSH": {
@@ -118,7 +122,13 @@ export default function () {
       }
 
       case "DELETION": {
-        return handleDeletionKey();
+        notationMutateHelper.deleteSelectedNotations();
+        if (singleSymbolSelected) {
+          notationMutateHelper.collapseNotationsToSelectedCell();
+          matrixCellHelper.setNextCell(0, 0);
+          //  return handleMovementKey(code);
+        }
+        break;
       }
 
       case "MOVEMENT": {
@@ -127,7 +137,7 @@ export default function () {
 
       case "MOVEANDDELETE": {
         handleMovementKey(code);
-        handleDeletionKey();
+        notationMutateHelper.deleteSelectedNotations();
         return;
       }
 
@@ -153,11 +163,6 @@ export default function () {
   function handlePushKey() {
     notationMutateHelper.handlePushKey();
 
-    matrixCellHelper.setNextCell(0, 0);
-  }
-
-  function handleDeletionKey() {
-    notationMutateHelper.deleteSelectedNotations();
     matrixCellHelper.setNextCell(0, 0);
   }
 

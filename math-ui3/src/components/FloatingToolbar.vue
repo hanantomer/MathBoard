@@ -57,5 +57,5 @@ const show = computed(() => {
   overflow: hidden;
 }
 
-/* Existing transition styles... */
+
 </style>

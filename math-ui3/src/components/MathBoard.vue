@@ -141,6 +141,7 @@ watchHelper.watchKeyEvent(
   [
     "CELL_SELECTED",
     "LINE_SELECTED",
+    "DIVISIONLINE_SELECTED",
     "CURVE_SELECTED",
     "SQRT_SELECTED",
     "ANNOTATION_SELECTED",

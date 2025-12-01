@@ -1,7 +1,4 @@
-import {
-  NotationAttributes,
-  DotCoordinates,
-} from "common/baseTypes";
+import { NotationAttributes, DotCoordinates } from "common/baseTypes";
 
 import { sqrtSymbolSuffix } from "common/globals";
 
@@ -148,8 +145,8 @@ export default function useShapeDrawingHelper() {
 
   function resetDrawing(e: MouseEvent | null) {
     showMatrixLine();
-    notationStore.resetSelectedNotations();
     if (e) {
+      notationStore.resetSelectedNotations();
       selectionHelper.selectClickedPosition(e);
       return;
     }
@@ -166,4 +163,3 @@ export default function useShapeDrawingHelper() {
     saveDrawing,
   };
 }
-

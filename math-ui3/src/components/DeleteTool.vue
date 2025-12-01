@@ -30,7 +30,8 @@ const show = computed(() => {
   return selectedNotations.length > 0;
 });
 
-function deleteSelectedNotations(degrees: number) {
+function deleteSelectedNotations() {
   notationMutateHelper.approveDeleteSelectedNotations();
 }
+
 </script>

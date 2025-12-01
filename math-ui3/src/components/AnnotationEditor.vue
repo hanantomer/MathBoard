@@ -8,6 +8,8 @@
       left: annotationLeft + 'px',
       width: annotationWidth + 'px',
       height: annotationHeight + 'px',
+      transform: `rotate(${rotation}deg)`,
+      transformOrigin: 'center center',
     }"
     id="annotationEl"
     v-model="annotaionValue"
@@ -40,6 +42,8 @@ const selectedNotation = computed(() =>
         .at(0) as AnnotationNotationAttributes),
 );
 
+const rotation = computed(() => selectedNotation.value?.rotation ?? 0);
+
 const show = computed(
   () => editModeStore.getEditMode() === "ANNOTATION_WRITING",
 );
@@ -48,7 +52,7 @@ const annotationTop = computed(() => annotationPoint.value.y);
 
 const annotationLeft = computed(() => annotationPoint.value.x);
 
-const annotationWidth = computed(() => cellStore.getCellHorizontalWidth()*2);
+const annotationWidth = computed(() => cellStore.getCellHorizontalWidth() * 2);
 
 const annotationHeight = computed(
   () => cellStore.getCellVerticalHeight() / 2 + 2,
@@ -104,7 +108,7 @@ function editSelectedAnnotation() {
 
   setInitialTextValue();
 
-  hideTextNotation(selectedNotation.value!.uuid);
+  //hideTextNotation(selectedNotation.value!.uuid);
 
   const textEl = document.getElementById(
     "annotationEl",
@@ -128,10 +132,14 @@ function save() {
     notationMutateHelper.updateNotation(selectedNotation.value);
     restoreTextNotation(selectedNotation.value.uuid);
   } else {
-    notationMutateHelper.addAnnotationNotation(annotaionValue.value, {
-      x: annotationPoint.value.x - cellStore.getSvgBoundingRect().x,
-      y: annotationPoint.value.y - cellStore.getSvgBoundingRect().y,
-    });
+    notationMutateHelper
+      .addAnnotationNotation(annotaionValue.value, {
+        x: annotationPoint.value.x - cellStore.getSvgBoundingRect().x,
+        y: annotationPoint.value.y - cellStore.getSvgBoundingRect().y,
+      })
+      .then((uuid) => {
+        selectCreatedAnnotation(uuid);
+      });
   }
 }
 
@@ -180,6 +188,12 @@ function addSpecialSymbol(symbol: string): void {
     );
   }, 0);
 }
+
+function selectCreatedAnnotation(uuid: string | undefined | null) {
+  if (!uuid) return;
+  notationStore.selectNotation(uuid);
+  editModeStore.setEditMode("ANNOTATION_SELECTED");
+}
 </script>
 <style>
 .annotation {
@@ -195,4 +209,3 @@ function addSpecialSymbol(symbol: string): void {
   display: none;
 }
 </style>
-

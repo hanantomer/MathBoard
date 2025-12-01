@@ -491,13 +491,11 @@ export default function notationMutateHelper() {
 
   async function undoMoveNotatios() {
     notationStore.getSelectedNotations().forEach(async (n) => {
-
       const isClonedNotation = n.uuid.indexOf(clonedNotationUUIdPrefix) === 0;
 
       if (isClonedNotation) {
         notationStore.deleteNotation(n.uuid);
-      }
-      else {
+      } else {
         const reloadedNotation = await apiHelper.getNotation(
           n.notationType,
           n.boardType,
@@ -945,7 +943,6 @@ export default function notationMutateHelper() {
       "warning",
       deleteSelectedNotations,
     );
-    editModeStore.setDefaultEditMode();
   }
 
   function addImageNotationByColAndRow(
@@ -1235,17 +1232,9 @@ export default function notationMutateHelper() {
           });
         return;
       }
-
-      if (editModeStore.getEditMode() === "AREA_SELECTED") {
-        return;
-      }
-
-      collapseNotationsToSelectedCell();
-
-      notationStore.selectNotationsOfCells([cellStore.getSelectedCell()]);
     } finally {
-      // Always release the lock
       deleteKeyLock = false;
+      editModeStore.setDefaultEditMode();
     }
   }
 
@@ -1446,6 +1435,7 @@ export default function notationMutateHelper() {
     moveSelectedNotationsAtPixelScale,
     moveSelectedNotationsAtCellScale,
     deleteSelectedNotations,
+    collapseNotationsToSelectedCell,
     handlePushKey,
     isNotationInQuestionArea,
     isCellInQuestionArea,

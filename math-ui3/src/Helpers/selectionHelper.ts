@@ -19,6 +19,7 @@ import useNotationMutateHelper from "./notationMutateHelper";
 import useUserOutgoingOperationsHelper from "./userOutgoingOperationsHelper";
 import useEventBus from "./eventBusHelper";
 import useAuthorizationHelper from "./authorizationHelper";
+import { NotationType } from "common/unions";
 
 const eventBus = useEventBus();
 const cellStore = useCellStore();
@@ -49,47 +50,113 @@ export default function selectionHelper() {
     notationStore.resetSelectedNotations();
 
     const notation = screenHelper.getNotationAtCoordinates(dotCoordinates);
-
     if (!notation) return false;
 
-    switch (notation!.notationType) {
-      case "SQRT":
-        const sqrt = notation as unknown as MultiCellAttributes;
-        if (
-          screenHelper.getClickedPosDistanceFromSqrt(dotCoordinates, sqrt) <
-          maxDistanceToSelect
-        ) {
-          selectSqrtNotation(notation);
-          return true;
-        }
-        break;
-      case "DIVISIONLINE":
-      case "LINE": {
-        const lineNotation = notation as LineNotationAttributes;
-        const distanceFromLine = screenHelper.getClickedPosDistanceFromLine(
-          dotCoordinates,
-          lineNotation,
-        );
-        if (distanceFromLine < maxDistanceToSelect) {
-          selectLineNotation(notation.uuid);
-          return true;
-        }
-        return false;
-      }
-      case "CURVE": {
+    return handleNotationSelection(
+      notation,
+      dotCoordinates,
+      maxDistanceToSelect,
+    );
+  }
+
+  function handleNotationSelection(
+    notation: NotationAttributes,
+    dotCoordinates: DotCoordinates,
+    maxDistance: number,
+  ): boolean {
+    const handlers: Record<NotationType, () => boolean> = {
+      POLYGON: () => {
+        return true;
+      },
+      SQRT: () => handleSqrtSelection(notation, dotCoordinates, maxDistance),
+      DIVISIONLINE: () =>
+        handleLineSelection(notation, dotCoordinates, maxDistance, true),
+      LINE: () =>
+        handleLineSelection(notation, dotCoordinates, maxDistance, false),
+      CURVE: () => {
         selectCurveNotation(notation.uuid);
         return true;
-      }
-      case "EXPONENT":
-      case "LOGBASE":
-      case "IMAGE":
-      case "TEXT":
-      case "ANNOTATION":
-      case "SIGN":
-      case "SYMBOL":
-      case "SQRTSYMBOL": {
+      },
+      CIRCLE: () => {
+        selectCircleNotation(notation.uuid);
         return true;
+      },
+      EXPONENT: () => {
+        selectNotation(notation.uuid);
+        return true;
+      },
+      LOGBASE: () => {
+        selectNotation(notation.uuid);
+        return true;
+      },
+      IMAGE: () => {
+        selectNotation(notation.uuid);
+        return true;
+      },
+      TEXT: () => {
+        selectNotation(notation.uuid);
+        return true;
+      },
+      ANNOTATION: () => {
+        selectNotation(notation.uuid);
+        return true;
+      },
+      SIGN: () => {
+        selectNotation(notation.uuid);
+        return true;
+      },
+      SYMBOL: () => {
+        selectNotation(notation.uuid);
+        return true;
+      },
+      SQRTSYMBOL: () => {
+        selectNotation(notation.uuid);
+        return true;
+      },
+    };
+
+    const handler = handlers[notation.notationType];
+    return handler ? handler() : false;
+  }
+
+  function handleSqrtSelection(
+    notation: NotationAttributes,
+    dotCoordinates: DotCoordinates,
+    maxDistance: number,
+  ): boolean {
+    const sqrt = notation as unknown as MultiCellAttributes;
+    const distance = screenHelper.getClickedPosDistanceFromSqrt(
+      dotCoordinates,
+      sqrt,
+    );
+
+    if (distance < maxDistance) {
+      selectSqrtNotation(notation);
+      return true;
+    }
+
+    return false;
+  }
+
+  function handleLineSelection(
+    notation: NotationAttributes,
+    dotCoordinates: DotCoordinates,
+    maxDistance: number,
+    isDivisionLine: boolean,
+  ): boolean {
+    const lineNotation = notation as LineNotationAttributes;
+    const distance = screenHelper.getClickedPosDistanceFromLine(
+      dotCoordinates,
+      lineNotation,
+    );
+
+    if (distance < maxDistance) {
+      if (isDivisionLine) {
+        selectDivisionLineNotation(notation.uuid);
+      } else {
+        selectLineNotation(notation.uuid);
       }
+      return true;
     }
 
     return false;
@@ -225,6 +292,8 @@ export default function selectionHelper() {
     const n = notationStore.getNotation(uuid)!;
     switch (n.notationType) {
       case "DIVISIONLINE":
+        selectDivisionLineNotation(uuid);
+        break;
       case "LINE":
         selectLineNotation(uuid);
         break;

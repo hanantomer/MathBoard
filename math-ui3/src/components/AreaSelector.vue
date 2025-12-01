@@ -12,6 +12,8 @@
       width: selectionRectWidth + 'px',
       height: selectionRectHeight + 'px',
       background: backgroundColor,
+      transform: `rotate(${selectionRotation}deg)`,
+      transformOrigin: 'center center',
     }"
   >
   </v-card>
@@ -40,6 +42,8 @@ import useScreenHelper from "../helpers/screenHelper";
 const screenHelper = useScreenHelper();
 type HorizontalDirection = "RIGHT" | "LEFT" | "NONE";
 type VerticalDirection = "UP" | "BOTTOM" | "NONE";
+
+const selectionRotation = ref(0);
 
 let horizontalDirection: HorizontalDirection = "NONE";
 let verticalDirection: VerticalDirection = "NONE";
@@ -168,6 +172,12 @@ watchHelper.watchMouseEvent(
 );
 
 watchHelper.watchMouseEvent(
+  ["AREA_SELECTING", "TEXT_AREA_SELECTING", "RESIZING"],
+  "EV_MOUSEUP",
+  endSelect,
+);
+
+watchHelper.watchMouseEvent(
   ["AREA_SELECTED", "RESIZE_STARTED", "RESIZING"],
   "EV_SVG_MOUSEDOWN",
   cancelSelectionWhenUserClickedOutside,
@@ -181,6 +191,8 @@ watchHelper.watchMouseEvent(
   endMoveSelection,
 );
 
+watchHelper.watchMouseEvent(["AREA_MOVING"], "EV_MOUSEUP", endMoveSelection);
+
 watchHelper.watchMouseEvent(
   ["AREA_MOVING"],
   "EV_SVG_MOUSE_OR_TOUCH_DRAG",
@@ -190,6 +202,12 @@ watchHelper.watchMouseEvent(
 watchHelper.watchMouseEvent(
   ["TEXT_STARTED", "IMAGE_SELECTED"],
   "EV_SVG_MOUSEUP",
+  cancelTextSelectionWhenUserClickedOutside /*takes action when clicked outside of selection area*/,
+);
+
+watchHelper.watchMouseEvent(
+  ["TEXT_STARTED", "IMAGE_SELECTED"],
+  "EV_MOUSEUP",
   cancelTextSelectionWhenUserClickedOutside /*takes action when clicked outside of selection area*/,
 );
 
@@ -227,7 +245,8 @@ function cancelSelectionWhenUserClickedOutside() {
   editModeStore.setDefaultEditMode();
 }
 
-function cancelTextSelectionWhenUserClickedOutside() {
+function cancelTextSelectionWhenUserClickedOutside(e: MouseEvent) {
+  e.stopPropagation();
   notationStore.resetSelectedNotations();
   resetSelectionPosition();
   editModeStore.setDefaultEditMode();
@@ -350,7 +369,8 @@ function setSelectionDirection(e: MouseEvent) {
   }
 }
 
-function endSelect() {
+function endSelect(e: MouseEvent) {
+  e.stopPropagation();
   // select cell if seelection is too small
   if (
     Math.abs(selectionPosition.value.x1 - selectionPosition.value.x2) < 5 ||
@@ -369,18 +389,20 @@ function endSelect() {
   if (editModeStore.getEditMode() === "AREA_SELECTING") {
     selectionHelper.selectNotationsOfArea({
       topLeft: {
-        x: selectionRectLeft.value - cellStore.getSvgBoundingRect().left -5,
-        y: selectionRectTop.value - cellStore.getSvgBoundingRect().top -5,
+        x: selectionRectLeft.value - cellStore.getSvgBoundingRect().left - 5,
+        y: selectionRectTop.value - cellStore.getSvgBoundingRect().top - 5,
       },
       bottomRight: {
         x:
           selectionRectLeft.value +
           selectionRectWidth.value -
-          cellStore.getSvgBoundingRect().left + 5,
+          cellStore.getSvgBoundingRect().left +
+          5,
         y:
           selectionRectTop.value +
           selectionRectHeight.value -
-          cellStore.getSvgBoundingRect().top + 5,
+          cellStore.getSvgBoundingRect().top +
+          5,
       },
     });
   }
@@ -499,6 +521,7 @@ async function moveSelectionByKey(
 }
 
 async function endMoveSelection(e: MouseEvent) {
+  e.stopPropagation();
   const moveDirection: SelectionMoveDirection =
     e.movementX > 0 && e.movementY > 0
       ? "RIGHTBOTTOM"
@@ -527,6 +550,8 @@ function resetSelectionPosition() {
     selectionPosition.value.y1 =
     selectionPosition.value.y2 =
       0;
+
+  selectionRotation.value = 0;
 }
 
 // signal free text editor
@@ -572,6 +597,8 @@ function setSelectionPositionForAnnotation(
     cellStore.getSvgBoundingRect().top + selectedNotation.y + 5;
   selectionPosition.value.y2 =
     selectionPosition.value.y1 + cellStore.getCellVerticalHeight() - 20;
+
+  selectionRotation.value = (selectedNotation as any).rotation || 0;
 }
 
 function setSelectionPositionForText(selectedNotation: RectNotationAttributes) {

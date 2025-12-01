@@ -35,7 +35,7 @@ export type BusEventType =
 
 export const NotationTypeValues = [
   "SYMBOL",
-  "SIGN",
+  "SIGN",   ///TODO: consider romoval
   "LOGBASE",
   "EXPONENT",
   "POLYGON",
