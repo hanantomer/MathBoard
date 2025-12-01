@@ -466,10 +466,14 @@ export default function notationMutateHelper() {
   function saveMovedNotations(moveDirection: SelectionMoveDirection) {
     const notations = getSelectedNotationsSortedByDirection(moveDirection);
 
+    for (let i in notations) {
+      const n = notations[i];
+      notationStore.clearNotationFromMatrices(n.uuid);
+    }
+
     ///TODO handle also move by key
     for (let i in notations) {
       const n = notations[i];
-
       if (!canMoveNotationToTarget(n)) {
         undoMoveNotatios();
         return false;
@@ -501,7 +505,7 @@ export default function notationMutateHelper() {
           n.boardType,
           n.uuid,
         );
-        notationStore.addNotation(reloadedNotation, false, false);
+        notationStore.addNotation(reloadedNotation, true, false);
       }
     });
   }

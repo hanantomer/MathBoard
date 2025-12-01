@@ -1,5 +1,4 @@
 import {
-  RectCoordinates,
   PointNotationAttributes,
   RectNotationAttributes,
   CurveNotationAttributes,
@@ -58,7 +57,9 @@ export default function notationCellOccupationHelper() {
         const cell = matrix[c][r];
         if (cell == null) continue;
         if (cell instanceof Set) {
-          if (cell.has(uuid)) cell.delete(uuid);
+          if (cell.has(uuid)) {
+            cell.delete(uuid);
+          }
         } else if (cell === uuid) {
           matrix[c][r] = null;
         }

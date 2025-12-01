@@ -25,16 +25,25 @@ import { cloneDeep } from "lodash";
 import useNotationCellOccupationHelper from "../../helpers/notationCellOccupationHelper";
 
 export const useNotationStore = defineStore("notation", () => {
-  const helper = useNotationCellOccupationHelper();
+  const cellOccupationHelper = useNotationCellOccupationHelper();
 
   let dotNotationOccupationMatrix: (String | null)[][] =
-    helper.createCellSingleNotationOccupationMatrix();
+    cellOccupationHelper.createCellSingleNotationOccupationMatrix();
   let symbolNotationOccupationMatrix: (String | null)[][] =
-    helper.createCellSingleNotationOccupationMatrix();
+    cellOccupationHelper.createCellSingleNotationOccupationMatrix();
   let cellRectNotationOccupationMatrix: (String | null)[][] =
-    helper.createCellSingleNotationOccupationMatrix();
+    cellOccupationHelper.createCellSingleNotationOccupationMatrix();
   let cellLineNotationOccupationMatrix: Set<String>[][] =
-    helper.createCellMultipleNotationOccupationMatrix();
+    cellOccupationHelper.createCellMultipleNotationOccupationMatrix();
+
+  const matrices = () =>  {
+    return [
+      //dotNotationOccupationMatrix,
+      symbolNotationOccupationMatrix,
+      //cellRectNotationOccupationMatrix,
+      //cellLineNotationOccupationMatrix,
+    ];
+  }
 
   const parent = ref<Board>({ uuid: "", type: "LESSON" });
 
@@ -68,6 +77,12 @@ export const useNotationStore = defineStore("notation", () => {
 
       addNotation(newNotation, false, false);
     });
+  }
+
+  function clearNotationFromMatrices(uuid: string) {
+    for (let i in matrices() ) {
+      cellOccupationHelper.clearNotationFromMatrix(uuid, matrices()[i]);
+    }
   }
 
   function getParent() {
@@ -159,7 +174,7 @@ export const useNotationStore = defineStore("notation", () => {
     notations.value.delete(notation.uuid);
     notations.value.set(notation.uuid, notation);
     if (doUpdateOccupationMatrix) {
-      helper.updateOccupationMatrix(
+      cellOccupationHelper.updateOccupationMatrix(
         notation,
         dotNotationOccupationMatrix,
         symbolNotationOccupationMatrix,
@@ -187,13 +202,13 @@ export const useNotationStore = defineStore("notation", () => {
       case "SQRTSYMBOL":
       case "SYMBOL":
         if ((notation as PointNotationAttributes).value === ".") {
-          helper.updatePointOccupationMatrix(
+          cellOccupationHelper.updatePointOccupationMatrix(
             dotNotationOccupationMatrix,
             notations.value.get(uuid)! as PointNotationAttributes,
             true,
           );
         } else {
-          helper.updatePointOccupationMatrix(
+          cellOccupationHelper.updatePointOccupationMatrix(
             symbolNotationOccupationMatrix,
             notations.value.get(uuid)! as PointNotationAttributes,
             true,
@@ -201,14 +216,14 @@ export const useNotationStore = defineStore("notation", () => {
         }
         break;
       case "CURVE":
-        helper.updateCurveOccupationMatrix(
+        cellOccupationHelper.updateCurveOccupationMatrix(
           cellLineNotationOccupationMatrix,
           notations.value.get(uuid)! as CurveNotationAttributes,
           true,
         );
         break;
       case "CIRCLE":
-        helper.updateCircleOccupationMatrix(
+        cellOccupationHelper.updateCircleOccupationMatrix(
           cellRectNotationOccupationMatrix,
           notations.value.get(uuid)! as CircleNotationAttributes,
           true,
@@ -216,7 +231,7 @@ export const useNotationStore = defineStore("notation", () => {
 
       case "IMAGE":
       case "TEXT":
-        helper.updateRectOccupationMatrix(
+        cellOccupationHelper.updateRectOccupationMatrix(
           cellRectNotationOccupationMatrix,
           notations.value.get(uuid)! as RectNotationAttributes,
           true,
@@ -230,13 +245,13 @@ export const useNotationStore = defineStore("notation", () => {
   function clearNotations() {
     notations.value.clear();
     dotNotationOccupationMatrix =
-      helper.createCellSingleNotationOccupationMatrix();
+      cellOccupationHelper.createCellSingleNotationOccupationMatrix();
     symbolNotationOccupationMatrix =
-      helper.createCellSingleNotationOccupationMatrix();
+      cellOccupationHelper.createCellSingleNotationOccupationMatrix();
     cellRectNotationOccupationMatrix =
-      helper.createCellSingleNotationOccupationMatrix();
+      cellOccupationHelper.createCellSingleNotationOccupationMatrix();
     cellLineNotationOccupationMatrix =
-      helper.createCellMultipleNotationOccupationMatrix();
+      cellOccupationHelper.createCellMultipleNotationOccupationMatrix();
   }
 
   function clearCopiedNotations() {
@@ -281,21 +296,21 @@ export const useNotationStore = defineStore("notation", () => {
 
     // Get from each matrix
     addIfExists(
-      helper.getDotNotationAtCell(
+      cellOccupationHelper.getDotNotationAtCell(
         dotNotationOccupationMatrix,
         cell.col,
         cell.row,
       ),
     );
     addIfExists(
-      helper.getSymbolNotationAtCell(
+      cellOccupationHelper.getSymbolNotationAtCell(
         symbolNotationOccupationMatrix,
         cell.col,
         cell.row,
       ),
     );
     addIfExists(
-      helper.getRectNotationAtCell(
+      cellOccupationHelper.getRectNotationAtCell(
         cellRectNotationOccupationMatrix,
         cell.col,
         cell.row,
@@ -537,16 +552,16 @@ export const useNotationStore = defineStore("notation", () => {
 
   function rebuildOccupationMatrices() {
     dotNotationOccupationMatrix =
-      helper.createCellSingleNotationOccupationMatrix();
+      cellOccupationHelper.createCellSingleNotationOccupationMatrix();
     symbolNotationOccupationMatrix =
-      helper.createCellSingleNotationOccupationMatrix();
+      cellOccupationHelper.createCellSingleNotationOccupationMatrix();
     cellRectNotationOccupationMatrix =
-      helper.createCellSingleNotationOccupationMatrix();
+      cellOccupationHelper.createCellSingleNotationOccupationMatrix();
     cellLineNotationOccupationMatrix =
-      helper.createCellMultipleNotationOccupationMatrix();
+      cellOccupationHelper.createCellMultipleNotationOccupationMatrix();
 
     Array.from(notations.value.values()).forEach((notation) => {
-      helper.updateOccupationMatrix(
+      cellOccupationHelper.updateOccupationMatrix(
         notation,
         dotNotationOccupationMatrix,
         symbolNotationOccupationMatrix,
@@ -562,6 +577,7 @@ export const useNotationStore = defineStore("notation", () => {
     clearCopiedNotations,
     clearNotations,
     cloneSelectedNotations,
+    clearNotationFromMatrices,
     deleteNotation,
     getCopiedNotations,
     getNotation,
