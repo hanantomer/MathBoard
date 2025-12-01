@@ -36,14 +36,14 @@ export const useNotationStore = defineStore("notation", () => {
   let cellLineNotationOccupationMatrix: Set<String>[][] =
     cellOccupationHelper.createCellMultipleNotationOccupationMatrix();
 
-  const matrices = () =>  {
+  const matrices = () => {
     return [
-      //dotNotationOccupationMatrix,
+      dotNotationOccupationMatrix,
       symbolNotationOccupationMatrix,
-      //cellRectNotationOccupationMatrix,
-      //cellLineNotationOccupationMatrix,
+      cellRectNotationOccupationMatrix,
+      cellLineNotationOccupationMatrix,
     ];
-  }
+  };
 
   const parent = ref<Board>({ uuid: "", type: "LESSON" });
 
@@ -80,7 +80,7 @@ export const useNotationStore = defineStore("notation", () => {
   }
 
   function clearNotationFromMatrices(uuid: string) {
-    for (let i in matrices() ) {
+    for (let i in matrices()) {
       cellOccupationHelper.clearNotationFromMatrix(uuid, matrices()[i]);
     }
   }
