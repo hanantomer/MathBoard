@@ -105,22 +105,22 @@ export default function screenHelper() {
     const topLeftByXCells =
       rectCoordinates.topLeft.x / cellStore.getCellHorizontalWidth();
 
-    let areaFromCol = Math.ceil(topLeftByXCells);
+    let areaFromCol = Math.round(topLeftByXCells);
 
     const bottomRightXByCells =
       rectCoordinates.bottomRight.x / cellStore.getCellHorizontalWidth();
 
-    const areaToCol = Math.floor(bottomRightXByCells) - 1;
+    const areaToCol = Math.round(bottomRightXByCells) - 1;
 
     const topLeftYByCells =
       rectCoordinates.topLeft.y / cellStore.getCellVerticalHeight();
 
-    let areaFromRow = Math.ceil(topLeftYByCells);
+    let areaFromRow = Math.round(topLeftYByCells);
 
     const bottomRightYByCells =
       rectCoordinates.bottomRight.y / cellStore.getCellVerticalHeight();
 
-    const areaToRow = Math.floor(bottomRightYByCells) -1;
+    const areaToRow = Math.round(bottomRightYByCells) - 1;
 
     if (areaToCol < areaFromCol) {
       areaFromCol = areaToCol;

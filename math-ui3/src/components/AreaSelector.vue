@@ -389,20 +389,18 @@ function endSelect(e: MouseEvent) {
   if (editModeStore.getEditMode() === "AREA_SELECTING") {
     selectionHelper.selectNotationsOfArea({
       topLeft: {
-        x: selectionRectLeft.value - cellStore.getSvgBoundingRect().left - 5,
-        y: selectionRectTop.value - cellStore.getSvgBoundingRect().top - 5,
+        x: selectionRectLeft.value - cellStore.getSvgBoundingRect().left,
+        y: selectionRectTop.value - cellStore.getSvgBoundingRect().top,
       },
       bottomRight: {
         x:
           selectionRectLeft.value +
           selectionRectWidth.value -
-          cellStore.getSvgBoundingRect().left +
-          5,
+          cellStore.getSvgBoundingRect().left,
         y:
           selectionRectTop.value +
           selectionRectHeight.value -
-          cellStore.getSvgBoundingRect().top +
-          5,
+          cellStore.getSvgBoundingRect().top,
       },
     });
   }
@@ -592,11 +590,11 @@ function setSelectionPositionForAnnotation(
   selectionPosition.value.x1 =
     cellStore.getSvgBoundingRect().left + selectedNotation.x - 1;
   selectionPosition.value.x2 =
-    selectionPosition.value.x1 + cellStore.getCellHorizontalWidth() * 2 + 5;
+    selectionPosition.value.x1 + cellStore.getCellHorizontalWidth() * 2;
   selectionPosition.value.y1 =
-    cellStore.getSvgBoundingRect().top + selectedNotation.y + 5;
+    cellStore.getSvgBoundingRect().top + selectedNotation.y;
   selectionPosition.value.y2 =
-    selectionPosition.value.y1 + cellStore.getCellVerticalHeight() - 20;
+    selectionPosition.value.y1 + cellStore.getCellVerticalHeight();
 
   selectionRotation.value = (selectedNotation as any).rotation || 0;
 }
