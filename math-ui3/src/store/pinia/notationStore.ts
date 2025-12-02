@@ -163,7 +163,13 @@ export const useNotationStore = defineStore("notation", () => {
         col: n.col,
         row: n.row,
       }).filter((nt) => isCellNotationType(nt.notationType));
-      if (existingNotations.length > 0) {
+
+      const symbolOverDot =
+        n.value !== "." &&
+        existingNotations.length === 1 &&
+        (existingNotations[0] as PointNotationAttributes).value === ".";
+
+      if (existingNotations.length > 0 && !symbolOverDot) {
         console.warn("addNotation: Cell already has a point notation", n);
         return false;
       }
@@ -200,7 +206,7 @@ export const useNotationStore = defineStore("notation", () => {
       case "LOGBASE":
       case "SIGN":
       case "SQRTSYMBOL":
-      case "SYMBOL":
+      case "SYMBOL": ///TODO: generalize for all punctuation symbols
         if ((notation as PointNotationAttributes).value === ".") {
           cellOccupationHelper.updatePointOccupationMatrix(
             dotNotationOccupationMatrix,

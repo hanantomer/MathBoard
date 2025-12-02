@@ -114,7 +114,6 @@ export default function useHtmlMatrixHelper() {
   function addHtmlNotations(enter: any, el: HTMLElement) {
     return enter
       .append("foreignObject")
-      .style("position", "relative")
       .attr("notationType", (n: NotationAttributes) => {
         return n.notationType;
       })
@@ -251,7 +250,7 @@ export default function useHtmlMatrixHelper() {
 
   function y(n: NotationAttributes) {
     if (n.notationType === "ANNOTATION") {
-      return (n as AnnotationNotationAttributes).y - 15;
+      return (n as AnnotationNotationAttributes).y;
     }
 
     let rowIdx = row(n);
@@ -345,94 +344,85 @@ export default function useHtmlMatrixHelper() {
    * @param n - The notation attribute object describing the mathematical notation to render.
    * @returns An HTML string representing the notation, styled and structured according to its type.
    */
+
+
   function html(n: NotationAttributes) {
     utils.colorizeNotationCells(n);
-
     let fontWeight =
       userStore.getCurrentUser()?.uuid == n.user.uuid ? "bold" : "normal";
-
     let color = utils.getColor(n);
-    //   : notationStore.getParent().type === "ANSWER" &&
-    //     userStore.getCurrentUser()?.uuid != n.user.uuid
+    // : notationStore.getParent().type === "ANSWER" &&
+    // userStore.getCurrentUser()?.uuid != n.user.uuid
+
+    // Helper function to wrap the returned HTML string with the specified div
+    const wrapWithDiv = (innerHtml: string): string => {
+      return `<div xmlns="http://www.w3.org/1999/xhtml"> ${innerHtml} </div>`;
+    };
 
     if (n.notationType === "SQRT") {
-      return `<span id='${n.uuid}' class=sqrt style='margin-top:2px; position:relative;color:${color}'></span>`;
+      return wrapWithDiv(
+        `<span id='${n.uuid}' class=sqrt style='margin-top:2px; color:${color}'></span>`,
+      );
     }
-
     if (n.notationType === "SQRTSYMBOL") {
       color = n.color?.value ? n.color?.value : color;
-      return `<p id='${n.uuid}' class='sqrtsymbol' style='margin-top:-6px;margin-left:12px;color:${color}'>&#x221A;</p>`;
+      return wrapWithDiv(
+        `<p id='${n.uuid}' class='sqrtsymbol' style='margin-top:-6px;margin-left:12px;color:${color}'>&#x221A;</p>`,
+      );
     }
-
     if (n.notationType === "TEXT") {
       const n1 = n as RectNotationAttributes;
-
       const bColor = rectBorderColor(n ?? false);
-
       const height = rectNotationHeight(n as RectNotationAttributes);
       const width = rectNotationWidth(n as RectNotationAttributes);
-
-      return `<textarea id=${
-        n1.uuid
-      } style='resize:none; overflow:hidden;width:${width}px;
-              height:${height}px;background-color:${textBackgroundColor()};
-              border:groove 2px;border-color:${bColor};' dir='${
-                /[\u0590-\u05FF\u0600-\u06FF]/.test(n1.value) ? "rtl" : "ltr"
-              }'>${n1.value}</textarea>`;
+      return wrapWithDiv(
+        `<textarea id=${
+          n1.uuid
+        } style='resize:none; overflow:hidden;width:${width}px; height:${height}px;background-color:${textBackgroundColor()}; border:groove 2px;border-color:${bColor};' dir='${
+          /[\u0590-\u05FF\u0600-\u06FF]/.test(n1.value) ? "rtl" : "ltr"
+        }'>${n1.value}</textarea>`,
+      );
     }
-
     if (n.notationType === "ANNOTATION") {
       const n1 = n as AnnotationNotationAttributes;
-
-      return `<p id=${n1.uuid} style=
-            'z-index:100;color:${color};font-weight:${fontWeight};
-            position: absolute;top:50%;
-            transform: rotate(${n1.rotation}deg);
-            transformOrigin: "center center";
-           font-size:0.6em'>${n1.value}</p>`;
+      return wrapWithDiv(
+        `<p id=${n1.uuid} style= 'z-index:100;color:${color};font-weight:${fontWeight}; transform: rotate(${n1.rotation}deg); transformOrigin: "center center"; font-size:0.6em'>${n1.value}</p>`,
+      );
     }
-
-    //          transform: `rotate(${rotation}deg)`,
-    //      transformOrigin: 'center center',
-
     if (n.notationType === "IMAGE") {
       let n1 = n as RectNotationAttributes;
       const bColor = rectBorderColor(n ?? false);
-      return `<img draggable="false"  id=${n1.uuid}  style='z-index:1;width:100%;height:100%;border:groove 2px;border-color:${bColor}' src='${n1.value}'>`;
+      return wrapWithDiv(
+        `<img draggable="false" id=${n1.uuid} style='z-index:1;width:100%;height:100%;border:groove 2px;border-color:${bColor}' src='${n1.value}'>`,
+      );
     }
-
     if (n.notationType === "EXPONENT") {
       const n1 = n as PointNotationAttributes;
-
       const exponentHtml = `<p id=${
         n1.uuid
-      } style='position:absolute;left:0px;top:2px;color:${color};font-weight:${fontWeight};
-      font-size:${exponentFontSize()}'>${n1.value}</p>`;
-
-      return exponentHtml;
+      } style='color:${color};font-weight:${fontWeight}; font-size:${exponentFontSize()}'>${
+        n1.value
+      }</p>`;
+      return wrapWithDiv(exponentHtml);
     }
-
     if (n.notationType === "LOGBASE") {
       const n1 = n as PointNotationAttributes;
-
       const logbaseHtml = `<p id=${
         n1.uuid
-      } style='position:absolute;left:0px;top:18px;color:${color};font-weight:${fontWeight};
-      font-size:${logbaseFontSize()}'>${n1.value}</p>`;
-
-      return logbaseHtml;
+      } style='color:${color};font-weight:${fontWeight}; margin-top:55%; margin-left:15%; font-size:${logbaseFontSize()}'>${
+        n1.value
+      }</p>`;
+      return wrapWithDiv(logbaseHtml);
     }
-
     let n1 = n as PointNotationAttributes;
-
     // vector symbol
     if (n1.value.startsWith(vectorSymbolPrefix)) {
-      return wrapVectorSymbol(n1.value.replace(vectorSymbolPrefix, ""), color);
+      return wrapWithDiv(
+        wrapVectorSymbol(n1.value.replace(vectorSymbolPrefix, ""), color),
+      );
     }
-
     // Symbol
     const top = n1.followsFraction ? "75%" : "50%";
-
     const leftMargin =
       n1.value === "." || n1.value === "``("
         ? "-2px"
@@ -458,7 +448,6 @@ export default function useHtmlMatrixHelper() {
           n1.value.indexOf("log") >= 0
         ? "0.6em"
         : "0.75em";
-
     let topMargin =
       n1.value === "."
         ? "-5px"
@@ -469,13 +458,14 @@ export default function useHtmlMatrixHelper() {
           n1.value.indexOf("log") >= 0
         ? "4px"
         : "0px";
-
     ///TODO: move static css props to a class
-    return n1.value.length > 5
-      ? n1.value
-      : `<p id=${n1.uuid} style='z-index:100;color:${color};font-weight:${fontWeight}; position: absolute;top:${top};transform:
-    translateY(-0%);top:${topMargin};left:${leftMargin};font-size:${fSize}'>${n1.value}</p>`;
+    return wrapWithDiv(
+      n1.value.length > 5
+        ? n1.value
+        : `<p id=${n1.uuid} style='z-index:100;color:${color};font-weight:${fontWeight}; transform: translateY(-0%);margin-top:${topMargin};margin-left:${leftMargin};font-size:${fSize}'>${n1.value}</p>`,
+    );
   }
+
 
   return {
     mergeHtmlNotations,

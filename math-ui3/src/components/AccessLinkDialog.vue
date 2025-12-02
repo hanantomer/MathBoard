@@ -32,7 +32,7 @@
                   </li>
 
                   <li>
-                    To view the list, Click the Students button to explore all
+                    Click the Students button to explore all
                     students.
                   </li>
                   <li>

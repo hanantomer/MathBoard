@@ -142,13 +142,7 @@ watchHelper.watchMouseEvent(
 );
 
 watchHelper.watchMouseEvent(
-  ["AREA_SELECTED"],
-  "EV_SVG_MOUSE_OR_TOUCH_DRAG",
-  () => editModeStore.setNextEditMode(),
-);
-
-watchHelper.watchMouseEvent(
-  ["IMAGE_SELECTED", "TEXT_SELECTED", "ANNOTATION_SELECTED"],
+  ["AREA_SELECTED", "IMAGE_SELECTED", "TEXT_SELECTED", "ANNOTATION_SELECTED"],
   "EV_SVG_MOUSE_OR_TOUCH_DRAG",
   moveSelectedNotation,
 );

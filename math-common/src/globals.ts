@@ -1,8 +1,8 @@
 export const baseURL = "/api";
 export const imagesURL = "/images";
 export const matrixDimensions = {
-  rowsNum: 23,
-  colsNum: 95,
+  rowsNum: 27,
+  colsNum: 115,
 };
 export const clonedNotationUUIdPrefix = "cloned_";
 export const transparentColor = "#4d6a96";
