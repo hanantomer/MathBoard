@@ -395,7 +395,12 @@ export default function eventHelper() {
   }
 
   function emitKeyUp(key: KeyboardEvent) {
-    eventBus.emit("EV_KEYUP", key);
+    if (key.altKey) {
+      eventBus.emit("EV_SHORTCUT_KEYUP", key);
+    }
+    else {
+      eventBus.emit("EV_KEYUP", key);
+    }
   }
 
   function emitKeyDown(key: KeyboardEvent) {

@@ -48,7 +48,7 @@
     </v-snackbar>
   </div>
 
-  <v-toolbar color="primary" dark :class="toolbarClass" height="600"  >
+  <v-toolbar color="primary" dark :class="toolbarClass" height="600">
     <v-tooltip
       text="Invite students via access link"
       v-if="userStore.isTeacher()"
@@ -413,12 +413,11 @@ const answerChekButtons: Array<{
   action: () => editModeStore.setEditMode(symbol.editMode as EditMode),
 }));
 
-watchHelper.watchKeyEvent(["CELL_SELECTED"], "EV_KEYUP", (e: KeyboardEvent) =>
-  toolbarNavigation.handleKeyboardNavigation(e, toolbarClass.value),
-);
 
-watchHelper.watchKeyEvent(["CELL_SELECTED"], "EV_KEYUP", (e: KeyboardEvent) =>
-  toolbarNavigation.handleShortcuts(e, modeButtons),
+watchHelper.watchKeyEvent(
+  ["CELL_SELECTED"],
+  "EV_SHORTCUT_KEYUP",
+  (e: KeyboardEvent) => toolbarNavigation.handleShortcuts(e, modeButtons),
 );
 
 watchHelper.watchEditModeTransition(["CELL_SELECTED"], "LOG_STARTED", () =>

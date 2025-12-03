@@ -54,7 +54,7 @@ export default function () {
         (e: KeyboardEvent) => {
           if (!e) return;
           handler(e);
-          eventBus.remove(eventType, editMode); // clear event from bus to allow reselction
+          eventBus.remove(eventType, editMode);
         },
       ),
     );

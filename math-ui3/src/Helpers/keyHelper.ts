@@ -76,7 +76,7 @@ export default function () {
       notationStore.undo();
     }
 
-    const { ctrlKey, altKey, shiftKey, code, key } = e;
+    const { ctrlKey, altKey, code, key } = e;
 
     if (!authorizationHelper.canEdit()) return;
 
@@ -126,7 +126,6 @@ export default function () {
         if (singleSymbolSelected) {
           notationMutateHelper.collapseNotationsToSelectedCell();
           matrixCellHelper.setNextCell(0, 0);
-          //  return handleMovementKey(code);
         }
         break;
       }

@@ -343,26 +343,24 @@ const dotProductSecondSelectedLetter = ref("b");
 const crossProductFirstSelectedLetter = ref("a");
 const crossProductSecondSelectedLetter = ref("b");
 
-watchHelper.watchKeyEvent(["CELL_SELECTED"], "EV_KEYUP", (e: KeyboardEvent) =>
-  toolbarNavigation.handleKeyboardNavigation(e, "special-symbols-expansion"),
-);
+// watchHelper.watchKeyEvent(["CELL_SELECTED"], "EV_SHORTCUT_KEYUP", (e: KeyboardEvent) =>
+//  toolbarNavigation.handleKeyboardNavigation(e, "special-symbols-expansion"),
+// );
 
-watchHelper.watchKeyEvent(["CELL_SELECTED"], "EV_KEYUP", (e: KeyboardEvent) =>
-  toolbarNavigation.handleShortcuts(
-    e,
-    symbolGroups.flatMap((g) =>
-      g.symbols.map((s) => ({
-        ...s,
-        action: () => addSpecialSymbol(s.value),
-      })),
-    ),
-  ),
-);
+// watchHelper.watchKeyEvent(["CELL_SELECTED"], "EV_KEYUP", (e: KeyboardEvent) =>
+//   toolbarNavigation.handleShortcuts(
+//     e,
+//     symbolGroups.flatMap((g) =>
+//       g.symbols.map((s) => ({
+//         ...s,
+//         action: () => addSpecialSymbol(s.value),
+//       })),
+//     ),
+//   ),
+// );
 
 async function addVectorSymbol(symbolName: string, symbolValue: string) {
   selectedSymbol.value = symbolValue;
-
-  //if (selectedFirstLetter.value === "") return;
 
   setTimeout(async () => {
     switch (symbolName) {
@@ -487,9 +485,8 @@ function addEachCharAsSymbol(item: string) {
     }
     notationMutateHelper.addSymbolNotation(char);
   }
-
-  //chars!.forEach((char) => notationMutateHelper.addSymbolNotation(char));
 }
+
 </script>
 
 <style scoped>
