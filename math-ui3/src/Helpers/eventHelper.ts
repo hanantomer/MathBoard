@@ -46,7 +46,7 @@ export default function eventHelper() {
       e.clipboardData?.items[0].kind === "string" &&
       e.clipboardData?.types[0].match("^text/plain")
     ) {
-      //return pasteText(e);
+      return pasteText(e);
     }
 
     // Support both Files and Google Docs images (which may come as text/html)
@@ -159,7 +159,7 @@ export default function eventHelper() {
     let text = await navigator.clipboard.readText();
     if (!text) return;
 
-    const maxtotalNotationsToPaet = 30;
+    const maxtotalNotationsToPaet = 20;
     let totalNotationsPasted = 0;
     text.split("").forEach((c) => {
       if (c === "\n") {
@@ -397,8 +397,7 @@ export default function eventHelper() {
   function emitKeyUp(key: KeyboardEvent) {
     if (key.altKey) {
       eventBus.emit("EV_SHORTCUT_KEYUP", key);
-    }
-    else {
+    } else {
       eventBus.emit("EV_KEYUP", key);
     }
   }
