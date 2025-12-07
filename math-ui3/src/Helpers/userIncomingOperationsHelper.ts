@@ -1,10 +1,9 @@
-import {SelectedCell, NotationAttributes } from "common/baseTypes";
+import { SelectedCell, NotationAttributes } from "common/baseTypes";
 import { useUserStore } from "../store/pinia/userStore";
 import { useStudentStore } from "../store/pinia/studentStore";
 import { useNotationStore } from "../store/pinia/notationStore";
 import { useCellStore } from "../store/pinia/cellStore";
 import { FeathersHelper } from "./feathersHelper";
-
 
 const notationStore = useNotationStore();
 const cellStore = useCellStore();
@@ -34,7 +33,7 @@ export default function userIncomingOperations() {
       .service("notationSync")
       .on("created", (notation: NotationAttributes) => {
         if (!isRelevant(notation)) return;
-        notationStore.addNotation(notation, true);
+        notationStore.addNotation(notation, true, false);
       });
 
     // sync updated notations
@@ -42,7 +41,7 @@ export default function userIncomingOperations() {
       .service("notationSync")
       .on("updated", (notation: NotationAttributes) => {
         if (!isRelevant(notation)) return;
-        notationStore.addNotation(notation, true);
+        notationStore.addNotation(notation, false, false);
       });
 
     // sync removed notations

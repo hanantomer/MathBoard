@@ -306,7 +306,7 @@ export default function notationMutateHelper() {
           break;
         }
       }
-      notationStore.addNotation(n, true);
+      notationStore.addNotation(n, true, true);
     });
     return true;
   }
@@ -671,26 +671,26 @@ export default function notationMutateHelper() {
   ): Promise<string> {
     transposeSqrtCoordinatesIfNeeded(sqrtNotation);
     await apiHelper.updateSqrtNotationAttributes(sqrtNotation);
-    notationStore.addNotation(sqrtNotation, true);
+    notationStore.addNotation(sqrtNotation, true, true);
     userOutgoingOperations.syncOutgoingUpdateNotation(sqrtNotation);
     return sqrtNotation.uuid;
   }
 
   async function updateLineNotation(lineNotation: LineNotationAttributes) {
     await apiHelper.updateLineNotationAttributes(lineNotation);
-    notationStore.addNotation(lineNotation, true);
+    notationStore.addNotation(lineNotation, true, true);
     userOutgoingOperations.syncOutgoingUpdateNotation(lineNotation);
   }
 
   async function updateCurveNotation(curveNotation: CurveNotationAttributes) {
     await apiHelper.updateCurveNotationAttributes(curveNotation);
-    notationStore.addNotation(curveNotation, true);
+    notationStore.addNotation(curveNotation, true, true);
     userOutgoingOperations.syncOutgoingUpdateNotation(curveNotation);
   }
 
   async function updateCircleNotation(circle: CircleNotationAttributes) {
     await apiHelper.updateCircleNotationAttributes(circle);
-    notationStore.addNotation(circle, true);
+    notationStore.addNotation(circle, true, true);
     userOutgoingOperations.syncOutgoingUpdateNotation(circle);
   }
 
@@ -764,7 +764,7 @@ export default function notationMutateHelper() {
 
     apiHelper.updateNotationValue(existingNotation);
 
-    notationStore.addNotation(existingNotation, true);
+    notationStore.addNotation(existingNotation, true, true);
 
     userOutgoingOperations.syncOutgoingUpdateNotation(existingNotation);
   }
@@ -775,7 +775,7 @@ export default function notationMutateHelper() {
     try {
       const newNotation = await apiHelper.addNotation(notation);
       newNotation.notationType = notation.notationType;
-      notationStore.addNotation(newNotation, true);
+      notationStore.addNotation(newNotation, true, true);
 
       // sync to other participants
       if (notationStore.getParent().type === "LESSON") {
@@ -1158,7 +1158,7 @@ export default function notationMutateHelper() {
   }
 
   async function updateNotation(notation: NotationAttributes) {
-    notationStore.addNotation(notation, true);
+    notationStore.addNotation(notation, true, true);
     await apiHelper.updateNotation(notation);
     userOutgoingOperations.syncOutgoingUpdateNotation(notation);
   }

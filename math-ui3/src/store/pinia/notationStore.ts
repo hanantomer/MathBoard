@@ -123,7 +123,7 @@ export const useNotationStore = defineStore("notation", () => {
 
   function setNotations(newNotations: NotationAttributes[]) {
     newNotations.forEach((n) => {
-      addNotation(n, true);
+      addNotation(n, true, true);
     });
   }
 
@@ -150,7 +150,7 @@ export const useNotationStore = defineStore("notation", () => {
   function addNotation(
     notation: NotationAttributes,
     doUpdateOccupationMatrix: boolean,
-    preventOverwrite: boolean = true,
+    preventOverwrite: boolean,
   ) {
     if (!notation.uuid) {
       console.error("addNotation: Notation uuid is undefined");
