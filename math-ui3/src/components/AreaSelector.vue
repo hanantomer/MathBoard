@@ -199,11 +199,11 @@ watchHelper.watchMouseEvent(
   cancelTextSelectionWhenUserClickedOutside /*takes action when clicked outside of selection area*/,
 );
 
-watchHelper.watchMouseEvent(
-  ["TEXT_STARTED", "IMAGE_SELECTED"],
-  "EV_MOUSEUP",
-  cancelTextSelectionWhenUserClickedOutside /*takes action when clicked outside of selection area*/,
-);
+// watchHelper.watchMouseEvent(
+//   ["TEXT_STARTED", "IMAGE_SELECTED"],
+//   "EV_MOUSEUP",
+//   cancelTextSelectionWhenUserClickedOutside /*takes action when clicked outside of selection area*/,
+// );
 
 watchHelper.watchNotationSelection(
   ["ANNOTATION_SELECTED"],
