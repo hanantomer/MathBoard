@@ -211,7 +211,8 @@ export default function notationMutateHelper() {
     });
   }
 
-  async function selectNotationByCoordinates(CellAttributes: CellAttributes) {
+  async function selectNotationByCell(CellAttributes: CellAttributes) {
+    notationStore.resetSelectedNotations();
     findNotationsByCellCoordinates(CellAttributes).forEach(
       (n: NotationAttributes) => {
         notationStore.selectNotation(n.uuid);
@@ -1039,6 +1040,8 @@ export default function notationMutateHelper() {
     if (notation.value !== ".") {
       matrixCellHelper.setNextCell(1, 0);
     }
+
+    selectNotationByCell(cellStore.getSelectedCell()!);
   }
 
   function isLogBaseSymbol(symbolCell: CellAttributes): boolean {
@@ -1449,7 +1452,7 @@ export default function notationMutateHelper() {
     updateCircleNotation,
     updateNotation,
     selectNotation,
-    selectNotationByCoordinates,
+    selectNotationByCell,
     saveMovedNotations,
   };
 }

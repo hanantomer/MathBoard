@@ -112,6 +112,9 @@ export default function () {
       return;
     }
 
+    const noNotationsSelected =
+      notationStore.getSelectedNotations().length === 0;
+
     const singleSymbolSelected =
       notationStore.getSelectedNotations().length === 1 &&
       notationStore.getSelectedNotations().at(0)?.notationType === "SYMBOL";
@@ -123,9 +126,10 @@ export default function () {
 
       case "DELETION": {
         notationMutateHelper.deleteSelectedNotations();
-        if (singleSymbolSelected) {
+        if (singleSymbolSelected || noNotationsSelected) {
           notationMutateHelper.collapseNotationsToSelectedCell();
           matrixCellHelper.setNextCell(0, 0);
+          selectSelectedCellNotation();
         }
         break;
       }
@@ -190,7 +194,11 @@ export default function () {
       matrixCellHelper.setNextCell(0, -1);
     }
 
-    // select a notation occupied by selected cell
+    selectSelectedCellNotation();
+  }
+
+  // select a notation occupied by selected cell
+  function selectSelectedCellNotation() {
     selectionHelper.selectNotationAtPosition({
       x:
         cellStore.getSvgBoundingRect().left +
