@@ -21,7 +21,7 @@ export const useGlobalAlertStore = defineStore("globalAlert", () => {
   function open(
     titleText: string,
     messageText: string,
-    alertType: "info" | "warning" | "error" | "success" = "warning",
+    alertType: "info" | "warning" | "error"  = "warning",
     cb: () => void
   ): void {
     title.value = titleText;

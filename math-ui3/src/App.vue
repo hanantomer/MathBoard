@@ -129,6 +129,7 @@
     </v-app-bar>
 
     <v-main>
+      <GlobalAlert></GlobalAlert>
       <router-view></router-view>
     </v-main>
 
@@ -187,6 +188,7 @@ import { useEditModeStore } from "./store/pinia/editModeStore";
 import { useStudentStore } from "./store/pinia/studentStore";
 import { useCookies } from "vue3-cookies";
 import { ACCESS_TOKEN_NAME } from "../../math-common/src/globals";
+import GlobalAlert from "./components/GlobalAlert.vue";
 
 const cookies = useCookies().cookies;
 const { initAxiosInterceptors } = useAxiosHelper();

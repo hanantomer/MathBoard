@@ -40,7 +40,6 @@
         v-model="selectedLesson"
         item-title="title"
         item-value="value"
-        ref="lessonSelect"
         @update:modelValue="onSelectedLesson"
       >
       </v-autocomplete>
@@ -66,6 +65,7 @@ import { useLessonStore } from "../store/pinia/lessonStore";
 import { useAnswerStore } from "../store/pinia/answerStore";
 import { useUserStore } from "../store/pinia/userStore";
 import { useEditModeStore } from "../store/pinia/editModeStore";
+import { useGlobalAlertStore } from "../store/pinia/globalAlertStore";
 import { useRouter } from "vue-router";
 import { useRoute } from "vue-router";
 import useEventBus from "../helpers/eventBusHelper";
@@ -75,13 +75,12 @@ const lessonStore = useLessonStore();
 const answerStore = useAnswerStore();
 const userStore = useUserStore();
 const editModeStore = useEditModeStore();
+const globalAlertStore = useGlobalAlertStore();
 
 const router = useRouter();
 const route = useRoute();
 const eventBus = useEventBus();
 
-// Ref for the autocomplete and handler to ensure menu closes after select
-const lessonSelect = ref<InstanceType<any> | null>(null);
 
 function onSelectedLesson(newVal: string) {
   selectedLesson.value = newVal;
@@ -99,10 +98,25 @@ let selectedLesson = ref();
 
 onMounted(async () => {
   await lessonStore.loadLessons();
-  const lessons = Array.from(lessonStore.getLessons().values());
-  if (lessons.length > 0) {
-    selectedLesson.value = lessons.at(0)?.uuid;
+  const currentLesson = lessonStore.getCurrentLesson();
+  if (currentLesson) {
+    selectedLesson.value = currentLesson.uuid;
+    return;
   }
+
+  if (lessonStore.getLessons().size > 0) {
+    const currentLesson = Array.from(lessonStore.getLessons().values())[0];
+    lessonStore.setCurrentLesson(currentLesson.uuid);
+    selectedLesson.value = currentLesson.uuid;
+    return;
+  }
+
+   globalAlertStore.open(
+      "Attention",
+      "Please create a lesson first to be able to add questions. ",
+      "info",
+     () => { },
+    );
 });
 
 watch(

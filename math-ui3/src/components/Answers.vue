@@ -10,7 +10,6 @@
         v-model="selectedLesson"
         item-title="title"
         item-value="value"
-        ref="lessonSelect"
         @update:modelValue="onSelectedLesson"
       >
       </v-autocomplete>
@@ -20,7 +19,6 @@
         v-model="selectedQuestion"
         item-title="title"
         item-value="value"
-        ref="questionSelect"
         @update:modelValue="onSelectedQuestion"
       >
       </v-autocomplete>
@@ -55,8 +53,8 @@ const questionStore = useQuestionStore();
 const lessonStore = useLessonStore();
 
 // Refs and handlers to ensure the v-autocomplete menu closes on single selection
-const lessonSelect = ref<InstanceType<any> | null>(null);
-const questionSelect = ref<InstanceType<any> | null>(null);
+//const lessonSelect = ref<InstanceType<any> | null>(null);
+//const questionSelect = ref<InstanceType<any> | null>(null);
 
 function onSelectedLesson(newVal: string) {
   selectedLesson.value = newVal;
@@ -132,17 +130,21 @@ const answers = computed(() => {
 
 watch(
   () => selectedLesson.value,
-  (lessonUUId: string) => {
+  (lessonUUId: string | null) => {
+    if (!lessonUUId) return;
     lessonStore.setCurrentLesson(lessonUUId);
     questionStore.loadQuestions();
+    if(selectedQuestion.value) {
+      selectedQuestion.value = null;
+    }
   },
 );
 
 watch(
   () => selectedQuestion.value,
-  (questionUUId: string) => {
+  (questionUUId: string | null) => {
+    if (!questionUUId) return;
     questionStore.setCurrentQuestion(questionUUId);
-    //loadAnswers();
     answerStore.loadAnswers();
   },
 );
