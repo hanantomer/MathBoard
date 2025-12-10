@@ -8,12 +8,20 @@
         label="Select Lesson"
         :items="lessons"
         v-model="selectedLesson"
+        item-title="title"
+        item-value="value"
+        ref="lessonSelect"
+        @update:modelValue="onSelectedLesson"
       >
       </v-autocomplete>
       <v-autocomplete
         label="Select Question"
         :items="questions"
         v-model="selectedQuestion"
+        item-title="title"
+        item-value="value"
+        ref="questionSelect"
+        @update:modelValue="onSelectedQuestion"
       >
       </v-autocomplete>
       <v-data-table
@@ -46,6 +54,24 @@ const answerStore = useAnswerStore();
 const questionStore = useQuestionStore();
 const lessonStore = useLessonStore();
 
+// Refs and handlers to ensure the v-autocomplete menu closes on single selection
+const lessonSelect = ref<InstanceType<any> | null>(null);
+const questionSelect = ref<InstanceType<any> | null>(null);
+
+function onSelectedLesson(newVal: string) {
+  selectedLesson.value = newVal;
+  setTimeout(() => {
+    (document.activeElement as HTMLElement | null)?.blur();
+  }, 0);
+}
+
+function onSelectedQuestion(newVal: string) {
+  selectedQuestion.value = newVal;
+  setTimeout(() => {
+    (document.activeElement as HTMLElement | null)?.blur();
+  }, 0);
+}
+
 onMounted(() => {
   lessonStore.loadLessons();
 });
@@ -57,7 +83,6 @@ watch(
   },
   { immediate: true },
 );
-
 
 let headers = computed(() => [
   {
@@ -95,12 +120,12 @@ const questions = computed(() => {
 
 const answers = computed(() => {
   return Array.from(answerStore.getAnswers().values())
-    .filter((answer) => answer.question.uuid === selectedQuestion.value )
+    .filter((answer) => answer.question.uuid === selectedQuestion.value)
     .map((answer) => {
       return {
         uuid: answer.uuid,
         student: answer.user.firstName + " " + answer.user.lastName,
-        createdAt:formatDate(answer.createdAt) ,
+        createdAt: formatDate(answer.createdAt),
       };
     });
 });
@@ -151,4 +176,3 @@ async function selectAnswer(e: any, row: any) {
   justify-content: left !important;
 }
 </style>
-

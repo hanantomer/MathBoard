@@ -188,6 +188,7 @@ const symbolGroups = [
         tabIndex: 12,
       },
       { name: "angle", value: "&ang;", tooltip: "Angle", tabIndex: 13 },
+      { name: "degrees", value: "&deg;", tooltip: "Degrees", tabIndex: 13 },
       { name: "triangle", value: "&#9651;", tooltip: "Triangle", tabIndex: 14 },
       { name: "perimeter", value: "P", tooltip: "Perimeter", tabIndex: 15 },
       { name: "area", value: "A", tooltip: "Area", tabIndex: 16 },
@@ -343,22 +344,6 @@ const dotProductSecondSelectedLetter = ref("b");
 const crossProductFirstSelectedLetter = ref("a");
 const crossProductSecondSelectedLetter = ref("b");
 
-// watchHelper.watchKeyEvent(["CELL_SELECTED"], "EV_SHORTCUT_KEYUP", (e: KeyboardEvent) =>
-//  toolbarNavigation.handleKeyboardNavigation(e, "special-symbols-expansion"),
-// );
-
-// watchHelper.watchKeyEvent(["CELL_SELECTED"], "EV_KEYUP", (e: KeyboardEvent) =>
-//   toolbarNavigation.handleShortcuts(
-//     e,
-//     symbolGroups.flatMap((g) =>
-//       g.symbols.map((s) => ({
-//         ...s,
-//         action: () => addSpecialSymbol(s.value),
-//       })),
-//     ),
-//   ),
-// );
-
 async function addVectorSymbol(symbolName: string, symbolValue: string) {
   selectedSymbol.value = symbolValue;
 
@@ -486,7 +471,6 @@ function addEachCharAsSymbol(item: string) {
     notationMutateHelper.addSymbolNotation(char);
   }
 }
-
 </script>
 
 <style scoped>

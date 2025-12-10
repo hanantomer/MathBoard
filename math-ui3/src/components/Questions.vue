@@ -38,8 +38,12 @@
         label="Select Lesson"
         :items="lessons"
         v-model="selectedLesson"
+        item-title="title"
+        item-value="value"
+        ref="lessonSelect"
+        @update:modelValue="onSelectedLesson"
       >
-    </v-autocomplete>
+      </v-autocomplete>
       <v-data-table
         v-model:items-per-page="itemsPerPage"
         :items="questions"
@@ -75,6 +79,17 @@ const editModeStore = useEditModeStore();
 const router = useRouter();
 const route = useRoute();
 const eventBus = useEventBus();
+
+// Ref for the autocomplete and handler to ensure menu closes after select
+const lessonSelect = ref<InstanceType<any> | null>(null);
+
+function onSelectedLesson(newVal: string) {
+  selectedLesson.value = newVal;
+  // Blur the active element to force the menu to close (works across Vuetify versions)
+  setTimeout(() => {
+    (document.activeElement as HTMLElement | null)?.blur();
+  }, 0);
+}
 
 const noLessonDialog = ref(false);
 const questionDialog = ref(false);
