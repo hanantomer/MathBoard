@@ -38,7 +38,4 @@ export default class Answer extends Model<
         defaultValue: DataType.UUIDV4,
     })
     uuid!: string;
-
-    @Column({ type: DataType.INTEGER, allowNull: true })
-    rotation?: number;
 }
