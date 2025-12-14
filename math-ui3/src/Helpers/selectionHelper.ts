@@ -271,21 +271,13 @@ export default function selectionHelper() {
       notationFoundAtCell = selectNotationAtPosition(position);
     }
 
-    const notationSelected = uuid || notationFoundAtCell;
-
     const pointNotationSelected =
-      notationSelected &&
-      isCellNotationType(notationStore.getNotation(uuid)!.notationType);
+      (notationFoundAtCell &&
+        isCellNotationType(notationStore.getNotations()[0].notationType)) ||
+      (uuid &&
+        isCellNotationType(notationStore.getNotation(uuid)!.notationType));
 
-    if (pointNotationSelected) {
-      setSelectedCell(clickedCell, false);
-      return;
-    }
-
-    if (!notationSelected) {
-      setSelectedCell(clickedCell, true);
-      return;
-    }
+    setSelectedCell(clickedCell, !pointNotationSelected);
   }
 
   function selectNotation(uuid: string) {
