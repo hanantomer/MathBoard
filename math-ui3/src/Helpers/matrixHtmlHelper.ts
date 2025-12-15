@@ -345,7 +345,6 @@ export default function useHtmlMatrixHelper() {
    * @returns An HTML string representing the notation, styled and structured according to its type.
    */
 
-
   function html(n: NotationAttributes) {
     utils.colorizeNotationCells(n);
     let fontWeight =
@@ -361,13 +360,15 @@ export default function useHtmlMatrixHelper() {
 
     if (n.notationType === "SQRT") {
       return wrapWithDiv(
-        `<span id='${n.uuid}' class=sqrt style='margin-top:2px; color:${color}'></span>`,
+        `<span id='${n.uuid}' class=sqrt style='width:${width(
+          n,
+        )}px;margin-top:2px; color:${color}'></span>`,
       );
     }
     if (n.notationType === "SQRTSYMBOL") {
       color = n.color?.value ? n.color?.value : color;
       return wrapWithDiv(
-        `<p id='${n.uuid}' class='sqrtsymbol' style='margin-top:-6px;margin-left:12px;color:${color}'>&#x221A;</p>`,
+        `<p id='${n.uuid}' class='sqrtsymbol' style='margin-top:-2px;margin-left:10px;color:${color}'>&#x221A;</p>`,
       );
     }
     if (n.notationType === "TEXT") {
@@ -386,7 +387,7 @@ export default function useHtmlMatrixHelper() {
     if (n.notationType === "ANNOTATION") {
       const n1 = n as AnnotationNotationAttributes;
       return wrapWithDiv(
-        `<p id=${n1.uuid} style= 'z-index:100;color:${color};font-weight:${fontWeight}; transform: rotate(${n1.rotation}deg); transformOrigin: "center center"; font-size:0.6em'>${n1.value}</p>`,
+        `<p id=${n1.uuid} style= 'z-index:100;color:${color};font-weight:${fontWeight}; transform: rotate(${n1.rotation}deg); transformOrigin: "center center"; font-size:0.62em'>${n1.value}</p>`,
       );
     }
     if (n.notationType === "IMAGE") {
@@ -422,7 +423,7 @@ export default function useHtmlMatrixHelper() {
       );
     }
     // Symbol
-    const top = n1.followsFraction ? "75%" : "50%";
+
     const leftMargin =
       n1.value === "." || n1.value === "``("
         ? "-2px"
@@ -448,16 +449,17 @@ export default function useHtmlMatrixHelper() {
           n1.value.indexOf("log") >= 0
         ? "0.6em"
         : "0.75em";
-    let topMargin =
-      n1.value === "."
-        ? "-5px"
-        : n1.value.indexOf("cos") >= 0 ||
-          n1.value.indexOf("sin") >= 0 ||
-          n1.value.indexOf("tan") >= 0 ||
-          n1.value.indexOf("cot") >= 0 ||
-          n1.value.indexOf("log") >= 0
-        ? "4px"
-        : "0px";
+    let topMargin = n1.followsFraction
+      ? "10px"
+      : n1.value === "."
+      ? "-5px"
+      : n1.value.indexOf("cos") >= 0 ||
+        n1.value.indexOf("sin") >= 0 ||
+        n1.value.indexOf("tan") >= 0 ||
+        n1.value.indexOf("cot") >= 0 ||
+        n1.value.indexOf("log") >= 0
+      ? "4px"
+      : "0px";
     ///TODO: move static css props to a class
     return wrapWithDiv(
       n1.value.length > 5
@@ -465,7 +467,6 @@ export default function useHtmlMatrixHelper() {
         : `<p id=${n1.uuid} style='z-index:100;color:${color};font-weight:${fontWeight}; transform: translateY(-0%);margin-top:${topMargin};margin-left:${leftMargin};font-size:${fSize}'>${n1.value}</p>`,
     );
   }
-
 
   return {
     mergeHtmlNotations,

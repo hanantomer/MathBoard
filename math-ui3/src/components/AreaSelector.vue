@@ -199,12 +199,6 @@ watchHelper.watchMouseEvent(
   cancelTextSelectionWhenUserClickedOutside /*takes action when clicked outside of selection area*/,
 );
 
-// watchHelper.watchMouseEvent(
-//   ["TEXT_STARTED", "IMAGE_SELECTED"],
-//   "EV_MOUSEUP",
-//   cancelTextSelectionWhenUserClickedOutside /*takes action when clicked outside of selection area*/,
-// );
-
 watchHelper.watchNotationSelection(
   ["ANNOTATION_SELECTED"],
   "EV_ANNOTATION_SELECTED",
@@ -584,11 +578,11 @@ function setSelectionPositionForAnnotation(
   selectionPosition.value.x1 =
     cellStore.getSvgBoundingRect().left + selectedNotation.x - 1;
   selectionPosition.value.x2 =
-    selectionPosition.value.x1 + cellStore.getCellHorizontalWidth() * 2;
+    selectionPosition.value.x1 + selectedNotation.value.length * 5 + 3;
   selectionPosition.value.y1 =
     cellStore.getSvgBoundingRect().top + selectedNotation.y;
   selectionPosition.value.y2 =
-    selectionPosition.value.y1 + cellStore.getCellVerticalHeight();
+    selectionPosition.value.y1 + 15;
 
   selectionRotation.value = (selectedNotation as any).rotation || 0;
 }
