@@ -33,7 +33,7 @@ export const useNotationStore = defineStore("notation", () => {
     cellOccupationHelper.createCellSingleNotationOccupationMatrix();
   let cellRectNotationOccupationMatrix: (String | null)[][] =
     cellOccupationHelper.createCellSingleNotationOccupationMatrix();
-  let cellLineNotationOccupationMatrix: Set<String>[][] =
+  let cellLineNotationOccupationMatrix: Set<String | null>[][] =
     cellOccupationHelper.createCellMultipleNotationOccupationMatrix();
 
   const matrices = () => {
@@ -135,6 +135,7 @@ export const useNotationStore = defineStore("notation", () => {
   }
 
   function getNotation(uuid: String) {
+    uuid = uuid.replace(/_.*/, ""); // Remove any suffix after hyphen
     return notations.value.get(uuid);
   }
 
@@ -322,6 +323,14 @@ export const useNotationStore = defineStore("notation", () => {
         cell.row,
       ),
     );
+
+    const lineNotationsUUIDs = cellOccupationHelper.getLineNotationsAtCell(
+      cellLineNotationOccupationMatrix,
+      cell.col,
+      cell.row,
+    );
+
+    lineNotationsUUIDs.forEach((uuid) => addIfExists(uuid));
 
     return notationsAtCell;
   }

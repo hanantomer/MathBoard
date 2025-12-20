@@ -52,6 +52,13 @@ const delayedShiftKeys = new Map<string, string>([
 export default function () {
   function keyDownHandler(e: KeyboardEvent) {
     const { key } = e;
+    console.log("KeyDown:", {
+      key,
+      ctrlKey: e.ctrlKey,
+      altKey: e.altKey,
+      shiftKey: e.shiftKey,
+      code: e.code,
+    });
     if (delayedShiftKeys.has(key) && shiftReleased) {
       shiftReleased = false;
     }
@@ -63,6 +70,13 @@ export default function () {
   }
 
   function keyUpHandler(e: KeyboardEvent) {
+    console.log("KeyUp:", {
+      key: e.key,
+      ctrlKey: e.ctrlKey,
+      altKey: e.altKey,
+      shiftKey: e.shiftKey,
+      code: e.code,
+    });
     if (
       (e.ctrlKey && e.key === "y") ||
       (e.ctrlKey && e.shiftKey && e.key === "z")
@@ -230,8 +244,8 @@ export default function () {
       code === "Slash" ||
       code === "Comma" ||
       code === "Backquote" ||
-      code === "Shiftright" ||
-      code === "Shifleft" ||
+      code === "ShiftRight" ||
+      code === "ShiftLeft" ||
       code === "Semicolon" ||
       code === "Colon" ||
       code === "Quote" ||

@@ -84,7 +84,7 @@ export default function useHtmlMatrixHelper() {
     if (notations.length > 0) {
       const el = document.getElementById(notations[notations.length - 1].uuid)
         ?.parentElement;
-      el?.scrollIntoView();
+      el?.scrollIntoView({ block: "nearest", behavior: "smooth" });
     }
   }
 

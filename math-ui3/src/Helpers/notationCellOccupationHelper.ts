@@ -263,7 +263,7 @@ export default function notationCellOccupationHelper() {
     notation: NotationAttributes,
     dotMatrix: (String | null)[][],
     symbolMatrix: (String | null)[][],
-    lineMatrix: Set<String>[][],
+    lineMatrix: Set<String | null>[][],
     rectMatrix: (String | null)[][],
     doRemove: boolean = false,
   ) {
@@ -364,10 +364,10 @@ export default function notationCellOccupationHelper() {
   }
 
   function getLineNotationsAtCell(
-    matrix: Set<String>[][],
+    matrix: Set<String | null>[][],
     col: number,
     row: number,
-  ): Set<String> {
+  ): Set<String | null> {
     if (!validateRowAndCol(col, row)) return new Set();
     return matrix[col][row];
   }
