@@ -51,6 +51,9 @@ export default function selectionHelper() {
 
     const notation = screenHelper.getNotationAtCoordinates(dotCoordinates);
     if (!notation) return false;
+    if (notation.notationType === "SQRT") {
+      return false;
+    }
 
     return handleNotationSelection(
       notation,

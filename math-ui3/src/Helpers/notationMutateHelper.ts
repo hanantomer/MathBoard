@@ -1248,8 +1248,7 @@ export default function notationMutateHelper() {
   function collapseNotationsToSelectedCell() {
     const cell = cellStore.getSelectedCell();
     if (!cell) return;
-
-    let sqrtNotationUUId = "";
+    let sqrtNotationFound = false;
 
     for (
       let col = cellStore.getSelectedCell().col;
@@ -1261,6 +1260,17 @@ export default function notationMutateHelper() {
         col: col,
       });
 
+      if (sqrtNotationFound) {
+        const sqrtNotation = notations.find(
+          (n) => n.notationType === "SQRT",
+        ) as SqrtNotationAttributes | undefined;
+
+        if (!sqrtNotation) {
+          // do not continue collapsing after the sqrt notation ends
+          break;
+        }
+      }
+
       notations.forEach((notation: NotationAttributes) => {
         if (
           notation.notationType === "SIGN" ||
@@ -1270,21 +1280,18 @@ export default function notationMutateHelper() {
         ) {
           (notation as PointNotationAttributes).col--;
         }
-        updateNotation(notation);
+
+        if (notation.notationType === "SQRT") {
+          if ((notation as SqrtNotationAttributes).fromCol === col) {
+            (notation as SqrtNotationAttributes).fromCol--;
+            (notation as SqrtNotationAttributes).toCol--;
+            updateNotation(notation as SqrtNotationAttributes);
+          }
+
+          updateNotation(notation);
+          sqrtNotationFound = true;
+        }
       });
-
-      const sqrtNotation = notationStore
-        .getNotationsAtCell(cell)
-        .find((n) => n.notationType === "SQRT") as
-        | SqrtNotationAttributes
-        | undefined;
-
-      if (sqrtNotation && sqrtNotation.uuid !== sqrtNotationUUId) {
-        sqrtNotationUUId = sqrtNotation.uuid;
-        (sqrtNotation as SqrtNotationAttributes).fromCol--;
-        (sqrtNotation as SqrtNotationAttributes).toCol--;
-        updateNotation(sqrtNotation as SqrtNotationAttributes);
-      }
     }
   }
 
@@ -1294,7 +1301,7 @@ export default function notationMutateHelper() {
 
     if (cell.col === matrixDimensions.colsNum - 1) return;
 
-    const pointNotationTypes = [
+    const notationTypesToPush = [
       "SIGN",
       "EXPONENT",
       "LOGBASE",
@@ -1313,7 +1320,7 @@ export default function notationMutateHelper() {
 
         if (notations.length > 0) {
           const notation = notations[0];
-          if (!pointNotationTypes.includes(notation.notationType)) {
+          if (!notationTypesToPush.includes(notation.notationType)) {
             return col;
           }
         }
@@ -1341,7 +1348,7 @@ export default function notationMutateHelper() {
 
         if (notations.length > 0 && nextColNotations.length === 0) {
           const notation = notations[0];
-          if (pointNotationTypes.includes(notation.notationType)) {
+          if (notationTypesToPush.includes(notation.notationType)) {
             lastColWithSpace = col;
           }
         }
@@ -1361,19 +1368,18 @@ export default function notationMutateHelper() {
 
         if (sqrtNotation && !nextColSqrtNotation) {
           lastColWithSpace = col;
+          return lastColWithSpace;
         }
       }
 
       return lastColWithSpace;
     }
 
-    // Helper: Move notations from left to right
+    // Move notations from left to right
     function moveNotationsRight(
       cell: CellAttributes,
       lastColWithSpace: number,
     ) {
-      let sqrtUUId = "";
-
       for (
         let currentCol = lastColWithSpace;
         currentCol >= cell.col;
@@ -1385,8 +1391,7 @@ export default function notationMutateHelper() {
           | SqrtNotationAttributes
           | undefined;
 
-        if (sqrtNotation && sqrtNotation.uuid !== sqrtUUId) {
-          sqrtUUId = sqrtNotation.uuid;
+        if (sqrtNotation && sqrtNotation.fromCol === currentCol) {
           (sqrtNotation as SqrtNotationAttributes).fromCol++;
           (sqrtNotation as SqrtNotationAttributes).toCol++;
           updateNotation(sqrtNotation as SqrtNotationAttributes);
@@ -1405,15 +1410,11 @@ export default function notationMutateHelper() {
     }
 
     const rightCol = findRightmostNotationCol(cell);
-    const PointNotationAndHasSpaceToTheRight =
+    const lastPointNotationAndHasSpaceToTheRight =
       findLastColWithPointNotationAndHasSpaceToTheRight(cell, rightCol);
 
-    //if (lastColWithSpace === cell.col) {
-    // No space found to push into
-    //  return;
-    //}
+    moveNotationsRight(cell, lastPointNotationAndHasSpaceToTheRight);
 
-    moveNotationsRight(cell, PointNotationAndHasSpaceToTheRight);
     notationStore.resetSelectedNotations();
   }
 
