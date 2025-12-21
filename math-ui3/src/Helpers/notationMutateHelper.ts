@@ -1279,16 +1279,13 @@ export default function notationMutateHelper() {
           notation.notationType === "SYMBOL"
         ) {
           (notation as PointNotationAttributes).col--;
-        }
-
-        if (notation.notationType === "SQRT") {
+          updateNotation(notation);
+        } else if (notation.notationType === "SQRT") {
           if ((notation as SqrtNotationAttributes).fromCol === col) {
             (notation as SqrtNotationAttributes).fromCol--;
             (notation as SqrtNotationAttributes).toCol--;
             updateNotation(notation as SqrtNotationAttributes);
           }
-
-          updateNotation(notation);
           sqrtNotationFound = true;
         }
       });
