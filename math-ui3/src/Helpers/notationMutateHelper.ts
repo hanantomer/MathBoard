@@ -1279,6 +1279,7 @@ export default function notationMutateHelper() {
           notation.notationType === "SYMBOL"
         ) {
           (notation as PointNotationAttributes).col--;
+
           updateNotation(notation);
         } else if (notation.notationType === "SQRT") {
           if ((notation as SqrtNotationAttributes).fromCol === col) {
