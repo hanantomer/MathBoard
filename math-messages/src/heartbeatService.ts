@@ -10,20 +10,12 @@ export default class HeartbeatService {
   // student sends heartbeat messgae
   // return hartbeat data 
   async update(id: number, data: any, params: any) {
-    let access_token = await util.getAccessTokenFromCookie(
-      params.headers.cookie
-    );
 
-    //let user = await this.app
-   //   .service("authentication")
-    //  .get(access_token);
-
-    //if (!!user) {
-      return {
-        lessonUUId: data.lessonUUId,
-        userUUId: data.userUUId,
-      };
-    //}
+    return {
+      lessonUUId: data.lessonUUId,
+      userUUId: data.userUUId,
+      authorized: data.authorized
+    };
   }
 }
 

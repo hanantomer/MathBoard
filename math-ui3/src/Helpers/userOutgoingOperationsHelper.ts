@@ -1,6 +1,7 @@
 import { NotationAttributes, CellAttributes } from "common/baseTypes";
 import { FeathersHelper } from "./feathersHelper";
 import { Params } from "@feathersjs/feathers";
+import { useUserStore } from "../store/pinia/userStore";
 
 export default function userOutgoingOperations() {
   async function syncOutgoingSelectedCell(
@@ -55,9 +56,18 @@ export default function userOutgoingOperations() {
   }
 
   function syncOutgoingHeartBeat(usreId: String, lessonUUId: string) {
+    const userStore = useUserStore();
     FeathersHelper.getInstance()
       .service("heartbeat")
-      .update(null, { userUUId: usreId, lessonUUId: lessonUUId }, {});
+      .update(
+        null,
+        {
+          userUUId: usreId,
+          lessonUUId: lessonUUId,
+          authorized: userStore.getAuthorized(),
+        },
+        {},
+      );
   }
   // set student to be edit eligible
   function syncOutgoingAuthorizeUser(

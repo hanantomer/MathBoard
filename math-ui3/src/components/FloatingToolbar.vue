@@ -30,7 +30,7 @@ import { useNotationStore } from "../store/pinia/notationStore";
 const notationStore = useNotationStore();
 
 const show = computed(() => {
-  return notationStore.getSelectedNotations().length > 0;
+    return notationStore.getSelectedNotations().length > 0;
 });
 
 

@@ -300,9 +300,12 @@ path:hover {
 
 .sqrtsymbol {
   position: absolute;
-  color: chocolate;
   z-index: 999;
   font-size: 1.2em;
+}
+
+.sqrtsymbol:hover {
+  font-size: 1.25em;
 }
 
 .solid {

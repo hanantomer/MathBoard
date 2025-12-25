@@ -4,6 +4,7 @@ import { useStudentStore } from "../store/pinia/studentStore";
 import { useNotationStore } from "../store/pinia/notationStore";
 import { useCellStore } from "../store/pinia/cellStore";
 import { FeathersHelper } from "./feathersHelper";
+import userOutgoingOperations from "./userOutgoingOperationsHelper";
 
 const notationStore = useNotationStore();
 const cellStore = useCellStore();
@@ -68,8 +69,6 @@ export default function userIncomingOperations() {
         .on("updated", (authorization: any) => {
           if (authorization.userUUId === userStore.getCurrentUser()!.uuid) {
             userStore.setAuthorized(authorization.authorized ? true : false);
-          } else {
-            const q = 1;
           }
         });
     }
@@ -82,6 +81,17 @@ export default function userIncomingOperations() {
           notationStore.getParent().type === "LESSON"
         ) {
           studentStore.setStudentHeartbeat(heartbeat.userUUId);
+          if (
+            !heartbeat.authorized &&
+            studentStore.getAuthorizedStudentUUId() === heartbeat.userUUId
+          ) {
+            const helper = userOutgoingOperations();
+            helper.syncOutgoingAuthorizeUser(
+              heartbeat.userUUId,
+              null,
+              notationStore.getParent().uuid,
+            );
+          }
         }
       });
     }

@@ -360,7 +360,7 @@ export default function useHtmlMatrixHelper() {
 
     if (n.notationType === "SQRT") {
       return wrapWithDiv(
-        `<span id='${n.uuid}' class=sqrt style='width:${width(
+        `<span id='${n.uuid}' class='sqrt line' style='width:${width(
           n,
         )}px;margin-top:2px; color:${color}'></span>`,
       );

@@ -67,7 +67,7 @@ app
           constants.LESSON_CHANNEL_PREFIX +
             heartbeat.data.lessonUUId +
             constants.USER_CHANNEL_PREFIX +
-            heartbeat.data.userUUId
+          heartbeat.data.userUUId 
         ),
       ];
     }
