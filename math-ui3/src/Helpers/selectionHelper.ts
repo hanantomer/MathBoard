@@ -231,6 +231,11 @@ export default function selectionHelper() {
   async function setSelectedCell(cell: CellAttributes, setEditMode: boolean) {
     const notationStore = useNotationStore();
 
+    if(cellStore.getSelectedCell()?.row === cell.row &&
+       cellStore.getSelectedCell()?.col === cell.col) {
+      return;
+    }
+
     if (!authorizationHelper.canEdit()) return;
 
     cellStore.setSelectedCell(cell!, setEditMode);

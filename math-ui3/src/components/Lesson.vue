@@ -77,7 +77,7 @@ async function loadLesson(lessonUUId: string) {
       lessonStore.getCurrentLesson()!.uuid,
     );
   }
-  userIncomingOperations.syncIncomingUserOperations(svgId);
+  userIncomingOperations.syncIncomingUserOperations();
 
   if (!userStore.isTeacher()) {
     lessonStore.addLessonToSharedLessons();

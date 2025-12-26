@@ -18,7 +18,7 @@ const eventBus = useEventBus();
 const matrixCellHelper = useMatrixCellHelper();
 
 type MouseEventHandler = (e: MouseEvent, params?: any) => void;
-type KeyEventHandler = (e: KeyboardEvent) => void;
+type KeyEventHandler =  (e: KeyboardEvent) => void;
 type EditModeHandler = (newEditMode: EditMode, oldEditMode: any) => void;
 type NotationSelectionHandler = (notation: any) => void;
 type CustomEventHandler = (data: any) => void;

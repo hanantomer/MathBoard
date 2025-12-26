@@ -158,6 +158,7 @@ export default function useMatrixHelper() {
         (n) => n.notationType === "LINE" || n.notationType === "DIVISIONLINE",
       ),
     );
+    
   }
 
   return {

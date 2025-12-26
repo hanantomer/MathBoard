@@ -149,7 +149,9 @@ watchHelper.watchKeyEvent(
     "IMAGE_SELECTED",
   ],
   "EV_KEYUP",
-  keyHelper.keyUpHandler,
+  async (e: KeyboardEvent) => {
+    await keyHelper.keyUpHandler(e);
+  },
 );
 
 watchHelper.watchKeyEvent(

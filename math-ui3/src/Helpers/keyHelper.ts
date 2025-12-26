@@ -69,7 +69,7 @@ export default function () {
     }
   }
 
-  function keyUpHandler(e: KeyboardEvent) {
+  async function keyUpHandler(e: KeyboardEvent) {
     console.log("KeyUp:", {
       key: e.key,
       ctrlKey: e.ctrlKey,
@@ -139,11 +139,11 @@ export default function () {
       }
 
       case "DELETION": {
-        notationMutateHelper.deleteSelectedNotations();
+        await notationMutateHelper.deleteSelectedNotations();
         if (singleSymbolSelected || noNotationsSelected) {
-          notationMutateHelper.collapseNotationsToSelectedCell();
+          await notationMutateHelper.collapseNotationsToSelectedCell();
           matrixCellHelper.setNextCell(0, 0);
-          selectSelectedCellNotation();
+          selectCurrentCellNotation();
         }
         break;
       }
@@ -208,11 +208,11 @@ export default function () {
       matrixCellHelper.setNextCell(0, -1);
     }
 
-    selectSelectedCellNotation();
+    selectCurrentCellNotation();
   }
 
   // select a notation occupied by selected cell
-  function selectSelectedCellNotation() {
+  function selectCurrentCellNotation() {
     selectionHelper.selectNotationAtPosition({
       x:
         cellStore.getSvgBoundingRect().left +

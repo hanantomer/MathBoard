@@ -40,43 +40,45 @@ export default function userOutgoingOperations() {
     }
   }
 
-  function syncOutgoingAddNotation(notation: NotationAttributes) {
-    FeathersHelper.getInstance().service("notationSync").create(notation, {});
+  async function syncOutgoingAddNotation(notation: NotationAttributes) {
+    await FeathersHelper.getInstance()
+      .service("notationSync")
+      .create(notation, {});
   }
 
-  function syncOutgoingRemoveNotation(uuid: string, lessonUUId: string) {
+  async function syncOutgoingRemoveNotation(uuid: string, lessonUUId: string) {
     let params: Params = { query: { lessonUUId: lessonUUId } };
-    FeathersHelper.getInstance().service("notationSync").remove(uuid, params);
+    await FeathersHelper.getInstance()
+      .service("notationSync")
+      .remove(uuid, params);
   }
 
-  function syncOutgoingUpdateNotation(notation: NotationAttributes) {
-    FeathersHelper.getInstance()
+  async function syncOutgoingUpdateNotation(notation: NotationAttributes) {
+    await FeathersHelper.getInstance()
       .service("notationSync")
       .update(null, notation, {});
   }
 
-  function syncOutgoingHeartBeat(usreId: String, lessonUUId: string) {
+  async function syncOutgoingHeartBeat(usreId: String, lessonUUId: string) {
     const userStore = useUserStore();
-    FeathersHelper.getInstance()
-      .service("heartbeat")
-      .update(
-        null,
-        {
-          userUUId: usreId,
-          lessonUUId: lessonUUId,
-          authorized: userStore.getAuthorized(),
-        },
-        {},
-      );
+    await FeathersHelper.getInstance().service("heartbeat").update(
+      null,
+      {
+        userUUId: usreId,
+        lessonUUId: lessonUUId,
+        authorized: userStore.getAuthorized(),
+      },
+      {},
+    );
   }
   // set student to be edit eligible
-  function syncOutgoingAuthorizeUser(
+  async function syncOutgoingAuthorizeUser(
     authorizedStudentUUId: string | null,
     revokedStudentUUId: string | null,
     lessonUUId: string,
   ) {
     if (authorizedStudentUUId)
-      FeathersHelper.getInstance().service("authorization").update(
+      await FeathersHelper.getInstance().service("authorization").update(
         null,
         {
           lessonUUId: lessonUUId,
@@ -86,7 +88,7 @@ export default function userOutgoingOperations() {
         {},
       );
     if (revokedStudentUUId)
-      FeathersHelper.getInstance().service("authorization").update(
+      await FeathersHelper.getInstance().service("authorization").update(
         null,
         {
           lessonUUId: lessonUUId,

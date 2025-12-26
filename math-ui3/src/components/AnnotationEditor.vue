@@ -126,10 +126,10 @@ function setInitialTextValue() {
   }
 }
 
-function save() {
+async function save() {
   if (selectedNotation.value) {
     selectedNotation.value.value = annotaionValue.value;
-    notationMutateHelper.updateNotation(selectedNotation.value);
+    await notationMutateHelper.updateNotation(selectedNotation.value);
     restoreTextNotation(selectedNotation.value.uuid);
   } else {
     notationMutateHelper

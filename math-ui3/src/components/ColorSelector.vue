@@ -78,9 +78,9 @@ function colorizeSelectedNotations(color: Color) {
   }
 }
 
-function colorizeNotation(notation: NotationAttributes, color: Color) {
+async function colorizeNotation(notation: NotationAttributes, color: Color) {
   notation.color = color === "none" ? null : { value: color, id: undefined };
-  notationMutateHelper.updateNotation(notation);
+ await notationMutateHelper.updateNotation(notation);
   editModeStore.setDefaultEditMode();
 }
 </script>

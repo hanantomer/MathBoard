@@ -185,7 +185,7 @@ function setInitialExponentValue() {
   exponent.value = "";
 }
 
-function submitExponent() {
+async function submitExponent() {
   editModeStore.setNextEditMode();
 
   if (!exponent.value) return;
@@ -193,9 +193,9 @@ function submitExponent() {
   if (selectedNotation.value) {
     selectedNotation.value!.value = exponent.value;
 
-    notationMutateHelper.updateNotation(selectedNotation.value);
+    await notationMutateHelper.updateNotation(selectedNotation.value);
   } else {
-    notationMutateHelper.addExponentNotation(exponent.value, clickedCell!);
+    await notationMutateHelper.addExponentNotation(exponent.value, clickedCell!);
   }
 }
 </script>

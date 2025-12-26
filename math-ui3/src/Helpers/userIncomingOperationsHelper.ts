@@ -6,6 +6,7 @@ import { useCellStore } from "../store/pinia/cellStore";
 import { FeathersHelper } from "./feathersHelper";
 import userOutgoingOperations from "./userOutgoingOperationsHelper";
 
+
 const notationStore = useNotationStore();
 const cellStore = useCellStore();
 const userStore = useUserStore();
@@ -19,7 +20,7 @@ export default function userIncomingOperations() {
     return true;
   }
 
-  async function syncIncomingUserOperations(svgId: string) {
+  async function syncIncomingUserOperations() {
     const feathersClient = FeathersHelper.getInstance();
 
     // send auth token to server and register to accept messsages.
@@ -33,15 +34,15 @@ export default function userIncomingOperations() {
     feathersClient
       .service("notationSync")
       .on("created", (notation: NotationAttributes) => {
-        if (!isRelevant(notation)) return;
-        notationStore.addNotation(notation, true, false);
+        if (!isRelevant(notation) || notationStore.getNotation(notation.uuid)) return;
+        notationStore.addNotation(notation, true, true);
       });
 
     // sync updated notations
     feathersClient
       .service("notationSync")
       .on("updated", (notation: NotationAttributes) => {
-        if (!isRelevant(notation)) return;
+        if (!isRelevant(notation) || !notationStore.getNotation(notation.uuid)) return;
         notationStore.addNotation(notation, false, false);
       });
 
@@ -49,7 +50,8 @@ export default function userIncomingOperations() {
     feathersClient
       .service("notationSync")
       .on("removed", (notation: NotationAttributes) => {
-        if (!isRelevant(notation)) return;
+        if (!isRelevant(notation) || !notationStore.getNotation(notation.uuid))
+          return;
         notationStore.deleteNotation(notation.uuid);
       });
 

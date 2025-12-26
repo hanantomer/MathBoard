@@ -14,7 +14,7 @@ const notationStore = useNotationStore();
 const cellStore = useCellStore();
 const notationMutateHelper = useNotationMutateHelper();
 
-function collapseNotationsToSelectedCell() {
+async function collapseNotationsToSelectedCell() {
   const cell = cellStore.getSelectedCell();
   if (!cell) return;
   let sqrtNotationFound = false;
@@ -44,7 +44,7 @@ function collapseNotationsToSelectedCell() {
       }
     }
 
-    notations.forEach((notation: NotationAttributes) => {
+    notations.forEach(async (notation: NotationAttributes) => {
       if (
         notation.notationType === "SIGN" ||
         notation.notationType === "EXPONENT" ||
@@ -54,12 +54,12 @@ function collapseNotationsToSelectedCell() {
         notationFound = true;
         (notation as PointNotationAttributes).col--;
 
-        notationMutateHelper.updateNotation(notation);
+        await notationMutateHelper.updateNotation(notation);
       } else if (notation.notationType === "SQRT") {
         if ((notation as SqrtNotationAttributes).fromCol === col) {
           (notation as SqrtNotationAttributes).fromCol--;
           (notation as SqrtNotationAttributes).toCol--;
-          notationMutateHelper.updateNotation(
+          await notationMutateHelper.updateNotation(
             notation as SqrtNotationAttributes,
           );
         }

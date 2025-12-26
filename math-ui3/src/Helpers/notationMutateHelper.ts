@@ -228,54 +228,7 @@ export default function notationMutateHelper() {
     notationStore.selectNotation(uuid);
   }
 
-  // ...existing code...
-  function canMoveSelectedNotations(
-    deltaCol: number,
-    deltaRow: number,
-  ): boolean {
-    const selected = notationStore.getSelectedNotations();
-    for (const n of selected) {
-      if (isNotationInQuestionArea(n, deltaCol, deltaRow)) return false;
-
-      if (isCellNotationType(n.notationType)) {
-        const p = n as PointNotationAttributes;
-        if (p.col + deltaCol > matrixDimensions.colsNum) return false;
-        if (p.col + deltaCol < 1) return false;
-        if (p.row + deltaRow > matrixDimensions.rowsNum) return false;
-        if (p.row + deltaRow < 1) return false;
-        continue;
-      }
-
-      switch (n.notationType) {
-        case "DIVISIONLINE":
-        case "LINE": {
-          const n1 = n as LineNotationAttributes;
-          if (n1.p2x + deltaCol * getColWidth() > getMostRightCoordinate())
-            return false;
-          if (n1.p1x + deltaCol * getColWidth() < 1) return false;
-          if (n1.p2x + deltaRow * getRowHeight() > matrixDimensions.rowsNum)
-            return false;
-          if (n1.p1y + deltaRow * getRowHeight() < 1) return false;
-          if (n1.p2y + deltaRow * getRowHeight() > getMostBottomCoordinate())
-            return false;
-          break;
-        }
-
-        case "TEXT":
-        case "IMAGE": {
-          const r = n as RectNotationAttributes;
-          if (r.toCol + deltaCol > matrixDimensions.colsNum) return false;
-          if (r.fromCol + deltaCol < 1) return false;
-          if (r.toRow + deltaRow > matrixDimensions.rowsNum) return false;
-          if (r.fromRow + deltaRow < 1) return false;
-          break;
-        }
-      }
-    }
-
-    return true;
-  }
-
+  
   function moveSelectedNotationsAtPixelScale(
     deltaX: number,
     deltaY: number,
@@ -1165,15 +1118,13 @@ export default function notationMutateHelper() {
   }
 
   async function updateNotation(notation: NotationAttributes) {
+    if(!notationStore.getNotation(notation.uuid)) return;
+
     notationStore.addNotation(notation, true, true);
-    apiHelper
-      .updateNotation(notation)
-      .then(() => {
-        userOutgoingOperations.syncOutgoingUpdateNotation(notation);
-      })
-      .catch((error) => {
-        console.error("Error updating notation:", error);
-      });
+    await apiHelper.updateNotation(notation)
+    await userOutgoingOperations.syncOutgoingUpdateNotation(notation);
+    
+    
   }
 
   function getMostRightCoordinate() {
@@ -1279,6 +1230,7 @@ export default function notationMutateHelper() {
   }
 
   return {
+    addNotation,
     addCircleNotation,
     addCurveNotation,
     addImageNotation,
