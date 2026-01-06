@@ -226,7 +226,7 @@ const toolbarClass = computed(() => {
 });
 
 watch(
-  () => notationStore.getParent().type,
+  () => notationStore.getParent()?.type,
   (type) => {
     answerCheckMode.value = type == "ANSWER" && userStore.isTeacher();
   },
@@ -412,7 +412,6 @@ const answerChekButtons: Array<{
   ...symbol,
   action: () => editModeStore.setEditMode(symbol.editMode as EditMode),
 }));
-
 
 watchHelper.watchKeyEvent(
   ["CELL_SELECTED"],

@@ -7,6 +7,7 @@ import connection from "../../math-db/build/models/index";
 import AuthorizationService from "./authorizationService";
 import AuthenticationService from "./authenticationService";
 import HeartbeatService from "./heartbeatService";
+import TextBoxSyncService from "./textBoxSyncService";
 import SelectedCellSyncService from "./selectedCellSyncService";
 import NotationSyncService from "./notationSyncService";
 import { LessonNotationAttributes } from "../../math-common/build/lessonTypes";
@@ -17,6 +18,7 @@ type ServiceTypes = {
   authorization: AuthorizationService;
   authentication: AuthenticationService;
   heartbeat: HeartbeatService;
+  textBoxSyncService: TextBoxSyncService;
   imageLoaded: imageUploadService;
   selectedCell: SelectedCellSyncService;
   notationSync: NotationSyncService;
@@ -36,6 +38,7 @@ app.configure(
 app.use("authorization", new AuthorizationService(app));
 app.use("authentication", new AuthenticationService(app));
 app.use("heartbeat", new HeartbeatService(app));
+app.use("textBoxSync", new TextBoxSyncService(app));
 app.use("imageLoaded", new imageUploadService(app));
 app.use("selectedCell", new SelectedCellSyncService(app));
 app.use("notationSync", new NotationSyncService(app));
@@ -72,6 +75,23 @@ app
       ];
     }
 );
+
+app.service("textBoxSync").publish("updated", (id: any, textBoxSync: any, ctx: any) => {
+  return app.channel(constants.LESSON_CHANNEL_PREFIX + textBoxSync.data.lessonUUId);
+});
+
+app
+  .service("textBoxSync")
+  .publish(
+    "removed",
+    (id: any, textBoxSync: any, ctx: any) => {
+      return app.channel(
+        constants.LESSON_CHANNEL_PREFIX +
+          textBoxSync.result.lessonUUId
+      );
+    }
+  );
+
   
 app.service("imageLoaded").publish("updated", (id: any, imageLoaded: any, ctx: any) => {
   return app.channel(constants.LESSON_CHANNEL_PREFIX + imageLoaded.data.lessonUUId);

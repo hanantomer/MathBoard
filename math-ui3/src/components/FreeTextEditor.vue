@@ -1,30 +1,42 @@
 <template>
-  <textarea v-show="show" class="freeText" id="textAreaEl" v-model="textValue">
+  <textarea
+    v-show="show"
+    class="freeText"
+    id="textAreaEl"
+    v-model="textValue"
+    @input="throttledSyncOutgoingChanges"
+  >
   </textarea>
 </template>
 
 <script setup lang="ts">
 import { computed, ref } from "vue";
+import { throttle } from "lodash";
 import { useCellStore } from "../store/pinia/cellStore";
 import { useEditModeStore } from "../store/pinia/editModeStore";
 import { useNotationStore } from "../store/pinia/notationStore";
-import {
-  RectCoordinates,
-  RectNotationAttributes,
-} from "common/baseTypes";
+import { useUserStore } from "../store/pinia/userStore";
+import { useLessonStore } from "../store/pinia/lessonStore";
+import { RectCoordinates, RectNotationAttributes } from "common/baseTypes";
 import { EditMode } from "common/unions";
-
 import useNotationMutateHelper from "../helpers/notationMutateHelper";
 import usescreenHelper from "../helpers/screenHelper";
 import useWatchHelper from "../helpers/watchHelper";
+import useAuthorizationHelper from "../helpers/authorizationHelper";
+import useUserOutgoingOperationsHelper from "../helpers/userOutgoingOperationsHelper";
 const notationMutateHelper = useNotationMutateHelper();
 const watchHelper = useWatchHelper();
+const authorizationHelper = useAuthorizationHelper();
 
 let textValue = ref("");
 const cellStore = useCellStore();
 const notationStore = useNotationStore();
 const editModeStore = useEditModeStore();
+const userStore = useUserStore();
+const lessonStore = useLessonStore();
 const screenHelper = usescreenHelper();
+const userOutgoingOperations = useUserOutgoingOperationsHelper();
+
 const show = computed(() => editModeStore.getEditMode() === "TEXT_WRITING");
 
 const selectedNotation = computed(() =>
@@ -96,13 +108,11 @@ function setInitialTextDimensions() {
 
   textAreaEl.style.left =
     cellStore.getSvgBoundingRect().x +
-    //window.scrollX +
     selectedNotation.value.fromCol * cellStore.getCellHorizontalWidth() +
     "px";
 
   textAreaEl.style.top =
     cellStore.getSvgBoundingRect().y +
-    //window.scrollY +
     selectedNotation.value.fromRow * cellStore.getCellVerticalHeight() +
     "px";
 
@@ -124,10 +134,20 @@ function setInitialTextValue() {
   }
 }
 
+function SyncEndTextEdit() {
+  userOutgoingOperations.syncStopOutgoingTextSync(
+    selectedNotation?.value?.uuid ?? null,
+    userStore.getCurrentUser()!.uuid,
+    lessonStore.getCurrentLesson()!.uuid,
+  );
+}
+
 function submitText(newEditMode: EditMode, oldEditMode: any) {
   if (newEditMode === "TEXT_WRITING" || oldEditMode !== "TEXT_WRITING") {
     return;
   }
+
+  SyncEndTextEdit();
 
   const textAreaEl = document.getElementById(
     "textAreaEl",
@@ -222,6 +242,25 @@ function startTextEditing(selectionCoordinates: RectCoordinates) {
   setTimeout('document.getElementById("textAreaEl").focus()', 100);
 }
 
+function syncOutgoingChanges() {
+  if (!authorizationHelper.canEdit()) return;
+  const textAreaEl = document.getElementById(
+    "textAreaEl",
+  )! as HTMLTextAreaElement;
+  userOutgoingOperations.syncOutgoingTextSync(
+    selectedNotation?.value?.uuid ?? null,
+    userStore.getCurrentUser()!.uuid,
+    lessonStore.getCurrentLesson()!.uuid,
+    textValue.value,
+    parseInt(textAreaEl.style.left),
+    parseInt(textAreaEl.style.top),
+    parseInt(textAreaEl.style.width),
+    parseInt(textAreaEl.style.height),
+  );
+}
+
+const throttledSyncOutgoingChanges = throttle(syncOutgoingChanges, 2000);
+
 function addSpecialSymbol(symbol: String): void {
   if (!symbol) return;
   const textArea = document.getElementById("textAreaEl") as HTMLTextAreaElement;
@@ -266,4 +305,3 @@ textarea {
   display: none;
 }
 </style>
-

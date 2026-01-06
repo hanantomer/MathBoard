@@ -1,24 +1,24 @@
 import { watch } from "vue";
 import { EditMode, BusEventType } from "common/unions";
-import {
-  CellAttributes,
-  NotationAttributes,
-} from "common/baseTypes";
+import { TextSyncUpdateData } from "common/globals";
+import { CellAttributes, NotationAttributes } from "common/baseTypes";
 import { useEditModeStore } from "../store/pinia/editModeStore";
 import { useCellStore } from "../store/pinia/cellStore";
 import { useNotationStore } from "../store/pinia/notationStore";
+import { useTextSyncStore } from "../store/pinia/textSyncStore";
 import useEventBus from "../helpers/eventBusHelper";
 import useMatrixCellHelper from "../helpers/matrixCellHelper";
 
 const editModeStore = useEditModeStore();
 const cellStore = useCellStore();
 const notationStore = useNotationStore();
+const textSyncStore = useTextSyncStore();
 
 const eventBus = useEventBus();
 const matrixCellHelper = useMatrixCellHelper();
 
 type MouseEventHandler = (e: MouseEvent, params?: any) => void;
-type KeyEventHandler =  (e: KeyboardEvent) => void;
+type KeyEventHandler = (e: KeyboardEvent) => void;
 type EditModeHandler = (newEditMode: EditMode, oldEditMode: any) => void;
 type NotationSelectionHandler = (notation: any) => void;
 type CustomEventHandler = (data: any) => void;
@@ -127,6 +127,28 @@ export default function () {
     });
   }
 
+  function watchTextSync(handler: CustomEventHandler) {
+    watch(
+      () => textSyncStore.getTextSyncUpdateData(),
+      (data: any) => {
+        if (!data) return;
+        handler(data);
+      },
+      { deep: true },
+    );
+  }
+
+  function watchTextSyncEndData(handler: CustomEventHandler) {
+    watch(
+      () => textSyncStore.getTextSyncEndData(),
+      (data: any) => {
+        if (!data) return;
+        handler(data);
+      },
+      { deep: true },
+    );
+  }
+
   function watchCustomEvent(
     editModes: EditMode[],
     eventType: BusEventType,
@@ -190,6 +212,7 @@ export default function () {
     watchCustomEvent,
     watchLoadedEvent,
     watchNotationsEvent,
+    watchTextSync,
+    watchTextSyncEndData,
   };
 }
-

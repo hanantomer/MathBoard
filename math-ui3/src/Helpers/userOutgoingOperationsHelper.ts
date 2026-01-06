@@ -71,6 +71,49 @@ export default function userOutgoingOperations() {
       {},
     );
   }
+
+  async function syncOutgoingTextSync(
+    notationUUId: string | null,
+    userUUId: String,
+    lessonUUId: string,
+    text: String,
+    x: number,
+    y: number,
+    width: number,
+    height: number,
+  ) {
+    await FeathersHelper.getInstance().service("textBoxSync").update(
+      null,
+      {
+        notationUUId: notationUUId,
+        userUUId: userUUId,
+        lessonUUId: lessonUUId,
+        text: text,
+        x: x,
+        y: y,
+        width: width,
+        height: height,
+      },
+      {},
+    );
+  }
+
+  function syncStopOutgoingTextSync(
+    notationUUId: string | null,
+    userUUId: String,
+    lessonUUId: string,
+  ) {
+   FeathersHelper.getInstance()
+     .service("textBoxSync")
+     .remove(null, {
+       query: {
+         notationUUId: notationUUId,
+         userUUId: userUUId,
+         lessonUUId: lessonUUId,
+       },
+     });
+  }
+
   // set student to be edit eligible
   async function syncOutgoingAuthorizeUser(
     authorizedStudentUUId: string | null,
@@ -107,5 +150,7 @@ export default function userOutgoingOperations() {
     syncOutgoingHeartBeat,
     syncOutgoingRemoveNotation,
     syncOutgoingAddNotation,
+    syncOutgoingTextSync,
+    syncStopOutgoingTextSync,
   };
 }

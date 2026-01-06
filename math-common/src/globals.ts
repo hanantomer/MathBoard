@@ -66,16 +66,16 @@ export function wrapVectorSymbol(
   );
 
   if (!symbolWithoutPrefix) return "";
-  
+
   const firstChar = symbolWithoutPrefix.charAt(0);
 
   return `<span style="color:${color};">${firstChar} </span>${vectorArrowSpan}`;
 }
 
 export function getMousePositionInSVG(
-  svgElement : SVGSVGElement,
+  svgElement: SVGSVGElement,
   mouseEvent: MouseEvent,
-  rect :DOMRect
+  rect: DOMRect
 ) {
   // Create an SVGPoint
   let pt = svgElement.createSVGPoint();
@@ -101,4 +101,20 @@ export const sqrtDeltaY = 3;
 export const sqrtSymbolSuffix = "_sqs";
 
 export const ACCESS_TOKEN_NAME = "access_token";
-//"__Secure-access_token";
+
+export type TextSyncUpdateData = {
+  text: string;
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+  userUUId: string;
+  lessonUUId: string;
+  notationUUId: string;
+};
+
+export type TextSyncEndData = {
+  userUUId: string;
+  lessonUUId: string;
+  notationUUId: string;
+};

@@ -26,14 +26,17 @@ import LinePropertiesSelector from "./LinePropertiesSelector.vue";
 import RotationSelector from "./RotationSelector.vue";
 import DeleteTool from "./DeleteTool.vue";
 import { useNotationStore } from "../store/pinia/notationStore";
+import UseAuthorizationHelper from "../helpers/authorizationHelper";
 
 const notationStore = useNotationStore();
+const authorizationHelper = UseAuthorizationHelper();
 
 const show = computed(() => {
-    return notationStore.getSelectedNotations().length > 0;
+  return (
+    notationStore.getSelectedNotations().length > 0 &&
+    authorizationHelper.canEdit()
+  );
 });
-
-
 </script>
 
 <style scoped>
@@ -56,6 +59,4 @@ const show = computed(() => {
   border-radius: 8px; /* Reduced border radius */
   overflow: hidden;
 }
-
-
 </style>

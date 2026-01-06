@@ -154,7 +154,7 @@ export default function () {
 
       case "MOVEANDDELETE": {
         handleMovementKey(code);
-        notationMutateHelper.deleteSelectedNotations();
+        await notationMutateHelper.deleteSelectedNotations();
         return;
       }
 

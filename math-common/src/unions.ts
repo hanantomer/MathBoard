@@ -32,11 +32,12 @@ export type BusEventType =
   | "EV_LINE_CHANGED"
   | "EV_DIVISIONLINE_SELECTED"
   | "EV_LINE_SELECTED"
-  | "EV_NOTATION_SELECTED";
+  | "EV_NOTATION_SELECTED"
+  | "EV_TEXT_SYNC";
 
 export const NotationTypeValues = [
   "SYMBOL",
-  "SIGN",   ///TODO: consider romoval
+  "SIGN", ///TODO: consider romoval
   "LOGBASE",
   "EXPONENT",
   "POLYGON",
@@ -257,3 +258,12 @@ export type LineHandleType =
   | "bottom"
   | "right"
   | "left";
+
+type TextSyncUpdateData = {
+  text: string;
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+  uuid: string;
+};

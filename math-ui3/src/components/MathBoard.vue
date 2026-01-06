@@ -3,6 +3,7 @@
   <floatingToolbar></floatingToolbar>
   <annotationEditor></annotationEditor>
   <freeTextEditor></freeTextEditor>
+  <textAreaSync></textAreaSync>
   <exponentEditor></exponentEditor>
   <areaSelector></areaSelector>
   <v-progress-linear
@@ -66,6 +67,7 @@
 
 <script setup lang="ts">
 import freeTextEditor from "./FreeTextEditor.vue";
+import textAreaSync from "./TextAreaSync.vue";
 import StatusBar from "./StatusBar.vue";
 import annotationEditor from "./AnnotationEditor.vue";
 import exponentEditor from "./ExponentEditor.vue";

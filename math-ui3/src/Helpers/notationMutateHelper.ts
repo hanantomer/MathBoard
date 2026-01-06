@@ -228,7 +228,7 @@ export default function notationMutateHelper() {
     notationStore.selectNotation(uuid);
   }
 
-  
+
   function moveSelectedNotationsAtPixelScale(
     deltaX: number,
     deltaY: number,
@@ -897,8 +897,6 @@ export default function notationMutateHelper() {
   }
 
   function approveDeleteSelectedNotations() {
-    if (!authorizationHelper.canEdit()) return;
-
     globalAlertStore.open(
       "Confirm Deletion",
       "Are you sure you want to delete the selected notation(s)?",
@@ -1123,25 +1121,10 @@ export default function notationMutateHelper() {
     notationStore.addNotation(notation, true, true);
     await apiHelper.updateNotation(notation)
     await userOutgoingOperations.syncOutgoingUpdateNotation(notation);
-    
-    
+
+
   }
 
-  function getMostRightCoordinate() {
-    return matrixDimensions.colsNum * cellStore.getCellHorizontalWidth();
-  }
-
-  function getMostBottomCoordinate() {
-    return matrixDimensions.rowsNum * cellStore.getCellVerticalHeight();
-  }
-
-  function getColWidth(): number {
-    return cellStore.getCellHorizontalWidth();
-  }
-
-  function getRowHeight(): number {
-    return cellStore.getCellVerticalHeight();
-  }
 
   async function handlePushKey() {
     if (!authorizationHelper.canEdit()) return;
@@ -1243,9 +1226,9 @@ export default function notationMutateHelper() {
     addExponentNotation,
     cloneNotation,
     approveDeleteSelectedNotations,
+    deleteSelectedNotations,
     moveSelectedNotationsAtPixelScale,
     moveSelectedNotationsAtCellScale,
-    deleteSelectedNotations,
     collapseNotationsToSelectedCell,
     handlePushKey,
     isNotationInQuestionArea,

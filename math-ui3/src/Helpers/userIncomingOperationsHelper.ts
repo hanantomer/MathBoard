@@ -1,16 +1,17 @@
 import { SelectedCell, NotationAttributes } from "common/baseTypes";
+import { TextSyncUpdateData, TextSyncEndData } from "common/globals";
 import { useUserStore } from "../store/pinia/userStore";
 import { useStudentStore } from "../store/pinia/studentStore";
 import { useNotationStore } from "../store/pinia/notationStore";
 import { useCellStore } from "../store/pinia/cellStore";
+import { useTextSyncStore } from "../store/pinia/textSyncStore";
 import { FeathersHelper } from "./feathersHelper";
 import userOutgoingOperations from "./userOutgoingOperationsHelper";
-
-
 const notationStore = useNotationStore();
 const cellStore = useCellStore();
 const userStore = useUserStore();
 const studentStore = useStudentStore();
+const textSyncStore = useTextSyncStore();
 
 export default function userIncomingOperations() {
   // check if in Lesson and not initiated by me
@@ -34,7 +35,8 @@ export default function userIncomingOperations() {
     feathersClient
       .service("notationSync")
       .on("created", (notation: NotationAttributes) => {
-        if (!isRelevant(notation) || notationStore.getNotation(notation.uuid)) return;
+        if (!isRelevant(notation) || notationStore.getNotation(notation.uuid))
+          return;
         notationStore.addNotation(notation, true, true);
       });
 
@@ -42,7 +44,8 @@ export default function userIncomingOperations() {
     feathersClient
       .service("notationSync")
       .on("updated", (notation: NotationAttributes) => {
-        if (!isRelevant(notation) || !notationStore.getNotation(notation.uuid)) return;
+        if (!isRelevant(notation) || !notationStore.getNotation(notation.uuid))
+          return;
         notationStore.addNotation(notation, false, false);
       });
 
@@ -83,6 +86,7 @@ export default function userIncomingOperations() {
           notationStore.getParent().type === "LESSON"
         ) {
           studentStore.setStudentHeartbeat(heartbeat.userUUId);
+          // auto-authorize student if teacher has authorized him previously
           if (
             !heartbeat.authorized &&
             studentStore.getAuthorizedStudentUUId() === heartbeat.userUUId
@@ -97,6 +101,24 @@ export default function userIncomingOperations() {
         }
       });
     }
+
+    feathersClient
+      .service("textBoxSync")
+      .on("updated", (textSyncUpdateData: TextSyncUpdateData) => {
+        if (textSyncUpdateData.userUUId === userStore.getCurrentUser()!.uuid)
+          return;
+        if (notationStore.getParent().type !== "LESSON") return;
+        textSyncStore.setTextSyncUpdateData(textSyncUpdateData);
+      });
+
+    feathersClient
+      .service("textBoxSync")
+      .on("removed", (textSyncEndData: TextSyncEndData) => {
+        if (textSyncEndData.userUUId === userStore.getCurrentUser()!.uuid)
+          return;
+        if (notationStore.getParent().type !== "LESSON") return;
+        textSyncStore.setTextSyncEndData(textSyncEndData);
+      });
   }
 
   return { syncIncomingUserOperations };

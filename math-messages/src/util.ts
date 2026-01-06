@@ -1,8 +1,7 @@
 import useAuthUtil from "../../math-auth/build/authUtil";
-import { UserAttributes } from "../../math-common/src/userTypes";
+import { UserAttributes } from "../../math-common/build/userTypes";
 const authUtil = useAuthUtil();
-import axios from "axios";
-import { baseURL } from "../../math-common/src/globals";
+
 
 export default {
   getAccessTokenFromCookie: function (
