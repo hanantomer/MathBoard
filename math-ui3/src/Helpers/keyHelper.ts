@@ -77,6 +77,9 @@ export default function () {
       shiftKey: e.shiftKey,
       code: e.code,
     });
+
+    if (e.target && (e.target as HTMLElement).tagName === "INPUT") return; // skip if focused on input box
+
     if (
       (e.ctrlKey && e.key === "y") ||
       (e.ctrlKey && e.shiftKey && e.key === "z")

@@ -101,10 +101,83 @@
           </v-list>
         </div>
 
+        <div class="symbol-group" v-else-if="group.title == 'Integrals'">
+          <v-list>
+            <v-list-item
+              v-for="symbol in group.symbols"
+              class="pa-0"
+              :key="symbol.name"
+            >
+              <v-row>
+                <v-col cols="5">
+                  <v-text-field
+                    type="input"
+                    density="compact"
+                    variant="outlined"                    "
+                    v-model="integralStart"
+                    maxlength="1"
+                    hide-details
+                    class="integral-text"
+                  >
+                  </v-text-field>
+                </v-col>
+                <v-col cols="1" style="padding: 0; margin-right: 10px">
+                  <v-tooltip>
+                    {{ symbol.tooltip }}
+                    {{ symbol.shortcut ? `(${symbol.shortcut})` : "" }}
+                    <template v-slot:activator="{ props }">
+                      <v-btn
+                        v-bind="props"
+                        class="special-symbol"
+                        style="
+                          max-width: 35px;
+                          position: relative;
+                          top: 15px;
+                          margin-right: 6px;
+                          left: -8px;
+                        "
+                        icon
+                        :disabled="!editEnabled"
+                        :tabindex="symbol.tabIndex"
+                        :aria-label="symbol.tooltip"
+                        :aria-keyshortcuts="symbol.shortcut"
+                        role="button"
+                        :id="`special-symbol-${symbol.name}`"
+                        @click="
+                          () => addIntegral(integralStart, integralEnd)
+                        "
+                      >
+                        <p
+                          v-if="symbol.name == 'vector'"
+                          v-html="wrapVectorSymbol(symbol.value)"
+                        ></p>
+                        <p v-else v-html="symbol.value"></p>
+                      </v-btn>
+                    </template>
+                  </v-tooltip>
+                </v-col>
+                <v-col cols="5">
+                  <v-text-field
+                    type="input"
+                    density="compact"
+                    variant="outlined"                    "
+                    v-model="integralEnd"
+                    maxlength="1"
+                    hide-details
+                    class="integral-text"
+                  >
+                  </v-text-field>
+                </v-col>
+              </v-row>
+            </v-list-item>
+          </v-list>
+        </div>
+
         <div class="symbol-group" v-else>
           <v-tooltip v-for="symbol in group.symbols" :key="symbol.name">
             {{ symbol.tooltip }}
             {{ symbol.shortcut ? `(${symbol.shortcut})` : "" }}
+
             <template v-slot:activator="{ props }">
               <v-btn
                 class="special-symbol"
@@ -133,10 +206,8 @@
 
 <script setup lang="ts">
 import { ref, computed } from "vue";
-import { useToolbarNavigation } from "../helpers/ToolbarNavigationHelper";
 import { useEditModeStore } from "../store/pinia/editModeStore";
 import useScreenHelper from "../helpers/screenHelper";
-import useWatchHelper from "../helpers/watchHelper";
 import useNotationMutateHelper from "../helpers/notationMutateHelper";
 import useEventBusHelper from "../helpers/eventBusHelper";
 import useAuthorizationHelper from "../helpers/authorizationHelper";
@@ -151,8 +222,6 @@ import useSelectionHelper from "../helpers/selectionHelper";
 const editModeStore = useEditModeStore();
 const eventBus = useEventBusHelper();
 const notationMutateHelper = useNotationMutateHelper();
-const toolbarNavigation = useToolbarNavigation();
-const watchHelper = useWatchHelper();
 const authorizationHelper = useAuthorizationHelper();
 const screenHelper = useScreenHelper();
 const selectionHelper = useSelectionHelper();
@@ -261,7 +330,7 @@ const symbolGroups = [
     ],
   },
   {
-    title: "Derivatives & Integrals",
+    title: "Derivatives",
     symbols: [
       { name: "f(x)", value: "f(x)", tooltip: "Function f(x)", tabIndex: 31 },
       {
@@ -279,8 +348,12 @@ const symbolGroups = [
       { name: "u'", value: "u'", tooltip: "u'", tabIndex: 34 },
       { name: "v'", value: "v'", tooltip: "v'", tabIndex: 35 },
       { name: "infin", value: "&infin;", tooltip: "Infinity", tabIndex: 36 },
-      { name: "int", value: "&int;", tooltip: "Integral", tabIndex: 37 },
+      { name: "int", value: "∫", tooltip: "Integral", tabIndex: 37 },
     ],
+  },
+  {
+    title: "Integrals",
+    symbols: [{ name: "int", value: "∫", tooltip: "Integral", tabIndex: 37 }],
   },
   {
     title: "Vectors",
@@ -343,6 +416,13 @@ const dotProductFirstSelectedLetter = ref("a");
 const dotProductSecondSelectedLetter = ref("b");
 const crossProductFirstSelectedLetter = ref("a");
 const crossProductSecondSelectedLetter = ref("b");
+const integralStart = ref("");
+const integralEnd = ref("");
+
+async function addIntegral(start: string, end: string) {
+  const value = start + " ∫ " + end;
+  notationMutateHelper.addSymbolNotation(value);
+}
 
 async function addVectorSymbol(symbolName: string, symbolValue: string) {
   selectedSymbol.value = symbolValue;
@@ -477,7 +557,7 @@ function addEachCharAsSymbol(item: string) {
 .special-symbols-expansion {
   margin-top: 10px;
   margin-left: 10px;
-  max-width: 150px;
+  max-width: 210px;
   background-color: #f5f5f5;
   max-height: 100px;
 }
@@ -507,4 +587,16 @@ function addEachCharAsSymbol(item: string) {
 div.v-combobox__selection {
   margin-inline-end: 9px !important;
 }
+
+.integral-text {
+  background-color: rgb(221, 228, 228);
+  --v-field-padding-bottom: 2px !important;
+  --v-field-padding-top: 2px !important;
+  --v-field-padding-start: 2px !important;
+  --v-field-padding-end: 2px !important;
+  --v-input-control-height: 28px !important;
+  padding-inline-start: 2px !important;
+  padding-inline-end: 2px !important;
+}
+
 </style>

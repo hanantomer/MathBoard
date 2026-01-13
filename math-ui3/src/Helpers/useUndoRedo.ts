@@ -1,11 +1,14 @@
 import { ref, computed, type Ref } from "vue";
 import { cloneDeep } from "lodash";
 import { NotationAttributes } from "common/baseTypes";
+import useUserOutgoingOperations from "./userOutgoingOperationsHelper";
 
 export function useUndoRedo(apiHelper: any) {
   const undoStack = ref<Map<String, NotationAttributes>[]>([]);
   const redoStack = ref<Map<String, NotationAttributes>[]>([]);
   const maxStackSize = 20; // Limit stack size to prevent memory issues
+
+  const userOutgoingOperations = useUserOutgoingOperations();
 
   async function syncToDB(
     currentNotations: Map<String, NotationAttributes>,
@@ -34,21 +37,34 @@ export function useUndoRedo(apiHelper: any) {
           : n.boardType === "ANSWER"
           ? (n as any)["answer"].uuid
           : null;
+
+      await apiHelper.addNotation(n); // Use addNotation
+      if (n.boardType === "LESSON") {
+        await userOutgoingOperations.syncOutgoingAddNotation(n);
+      }
+
       delete (n as any)["lesson"];
       delete (n as any)["question"];
       delete (n as any)["answer"];
-
-      await apiHelper.addNotation(n); // Use addNotation
     }
 
     // Sync removed notations
     for (const n of removed) {
       await apiHelper.deleteNotation(n);
+      if (n.boardType === "LESSON") {
+        await userOutgoingOperations.syncOutgoingRemoveNotation(
+          n.uuid,
+          (n as any).lesson.uuid,
+        );
+      }
     }
 
     // Sync updated notations
     for (const n of updated) {
       await apiHelper.updateNotation(n);
+      if (n.boardType === "LESSON") {
+        await userOutgoingOperations.syncOutgoingUpdateNotation(n);
+      }
     }
   }
 

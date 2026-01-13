@@ -94,7 +94,7 @@ export default function useMatrixHelperUtils() {
       }
     }
   }
-  function getColor(n: NotationAttributes) {
+  function getColor(n: NotationAttributes) : string {
     switch (n.notationType) {
       case "ANNOTATION":
       case "EXPONENT":
@@ -111,6 +111,8 @@ export default function useMatrixHelperUtils() {
       case "SQRT":
       case "SQRTSYMBOL":
         return n.selected ? selectionColor : n.color?.value ?? htmlColor;
+      default:
+        return htmlColor;
     }
   }
 
@@ -130,6 +132,10 @@ export default function useMatrixHelperUtils() {
     return false;
   }
 
+  function wrapWithDiv(innerHtml: string): string {
+    return `<div xmlns="http://www.w3.org/1999/xhtml"> ${innerHtml} </div>`;
+  }
+
   return {
     getColor,
     getRow,
@@ -141,5 +147,6 @@ export default function useMatrixHelperUtils() {
     removeNotations,
     colorizeNotationCells,
     symbolAdjecentToFraction,
+    wrapWithDiv,
   };
 }

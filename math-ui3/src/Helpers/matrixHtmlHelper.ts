@@ -303,7 +303,9 @@ export default function useHtmlMatrixHelper() {
     return (n.toCol - n.fromCol + 1) * cellStore.getCellHorizontalWidth();
   }
 
-  function pointNotationHeight(n: CellAttributes): number {
+  function pointNotationHeight(n: PointNotationAttributes): number {
+    if (n.value.indexOf("∫") !== -1)
+      return 2 * cellStore.getCellVerticalHeight();
     return cellStore.getCellVerticalHeight();
   }
 
@@ -347,125 +349,172 @@ export default function useHtmlMatrixHelper() {
 
   function html(n: NotationAttributes) {
     utils.colorizeNotationCells(n);
-    let fontWeight =
-      userStore.getCurrentUser()?.uuid == n.user.uuid ? "bold" : "normal";
+    const fontWeight =
+      userStore.getCurrentUser()?.uuid === n.user.uuid ? "bold" : "normal";
     let color = utils.getColor(n);
-    // : notationStore.getParent().type === "ANSWER" &&
-    // userStore.getCurrentUser()?.uuid != n.user.uuid
 
-    // Helper function to wrap the returned HTML string with the specified div
-    const wrapWithDiv = (innerHtml: string): string => {
-      return `<div xmlns="http://www.w3.org/1999/xhtml"> ${innerHtml} </div>`;
-    };
+    const notationHandlers: Record<string, (n: NotationAttributes) => string> =
+      {
+        SQRT: generateSqrtHtml,
+        SQRTSYMBOL: generateSqrtSymbolHtml,
+        TEXT: generateTextHtml,
+        ANNOTATION: generateAnnotationHtml,
+        IMAGE: generateImageHtml,
+        EXPONENT: generateExponentHtml,
+        LOGBASE: generateLogbaseHtml,
+      };
 
-    if (n.notationType === "SQRT") {
-      return wrapWithDiv(
+    const handler = notationHandlers[n.notationType];
+    if (handler) {
+      return handler(n);
+    }
+
+    // Check for special cases like integrals
+    if ((n as PointNotationAttributes).value?.indexOf("∫") !== -1) {
+      return generateIntegralHtml(n as PointNotationAttributes, color);
+    }
+
+    // Default handler for symbols and other notations
+    return generateDefaultHtml(n as PointNotationAttributes, color, fontWeight);
+
+    function generateSqrtHtml(n: NotationAttributes): string {
+      return utils.wrapWithDiv(
         `<span id='${n.uuid}' class='sqrt line' style='width:${width(
           n,
         )}px;margin-top:2px; color:${color}'></span>`,
       );
     }
-    if (n.notationType === "SQRTSYMBOL") {
-      color = n.color?.value ? n.color?.value : color;
-      return wrapWithDiv(
-        `<p id='${n.uuid}' class='sqrtsymbol' style='margin-top:-2px;margin-left:10px;color:${color}'>&#x221A;</p>`,
+
+    function generateSqrtSymbolHtml(n: NotationAttributes): string {
+      const symbolColor = n.color?.value ? n.color.value : color;
+      return utils.wrapWithDiv(
+        `<p id='${n.uuid}' class='sqrtsymbol' style='margin-top:-2px;margin-left:10px;color:${symbolColor}'>&#x221A;</p>`,
       );
     }
-    if (n.notationType === "TEXT") {
+
+    function generateTextHtml(n: NotationAttributes): string {
       const n1 = n as RectNotationAttributes;
       const bColor = rectBorderColor(n ?? false);
-      const height = rectNotationHeight(n as RectNotationAttributes);
-      const width = rectNotationWidth(n as RectNotationAttributes);
-      return wrapWithDiv(
+      const height = rectNotationHeight(n1);
+      const width = rectNotationWidth(n1);
+      const dir = /[\u0590-\u05FF\u0600-\u06FF]/.test(n1.value) ? "rtl" : "ltr";
+      return utils.wrapWithDiv(
         `<textarea id=${
           n1.uuid
-        } style='resize:none; overflow:hidden;width:${width}px; height:${height}px;background-color:${textBackgroundColor()}; border:groove 2px;border-color:${bColor};' dir='${
-          /[\u0590-\u05FF\u0600-\u06FF]/.test(n1.value) ? "rtl" : "ltr"
-        }'>${n1.value}</textarea>`,
+        } style='resize:none; overflow:hidden;width:${width}px; height:${height}px;background-color:${textBackgroundColor()}; border:groove 2px;border-color:${bColor};' dir='${dir}'>${
+          n1.value
+        }</textarea>`,
       );
     }
-    if (n.notationType === "ANNOTATION") {
+
+    function generateAnnotationHtml(n: NotationAttributes): string {
       const n1 = n as AnnotationNotationAttributes;
-      return wrapWithDiv(
-        `<p id=${n1.uuid} style= 'z-index:100;color:${color};font-weight:${fontWeight}; transform: rotate(${n1.rotation}deg); transformOrigin: "center center"; font-size:0.62em'>${n1.value}</p>`,
+      return utils.wrapWithDiv(
+        `<p id=${n1.uuid} style='z-index:100;color:${color};font-weight:${fontWeight}; transform: rotate(${n1.rotation}deg); transformOrigin: "center center"; font-size:0.62em'>${n1.value}</p>`,
       );
     }
-    if (n.notationType === "IMAGE") {
-      let n1 = n as RectNotationAttributes;
+
+    function generateImageHtml(n: NotationAttributes): string {
+      const n1 = n as RectNotationAttributes;
       const bColor = rectBorderColor(n ?? false);
-      return wrapWithDiv(
+      return utils.wrapWithDiv(
         `<img draggable="false" id=${n1.uuid} style='z-index:1;width:100%;height:100%;border:groove 2px;border-color:${bColor}' src='${n1.value}'>`,
       );
     }
-    if (n.notationType === "EXPONENT") {
+
+    function generateExponentHtml(n: NotationAttributes): string {
       const n1 = n as PointNotationAttributes;
       const exponentHtml = `<p id=${
         n1.uuid
       } style='color:${color};font-weight:${fontWeight}; font-size:${exponentFontSize()}'>${
         n1.value
       }</p>`;
-      return wrapWithDiv(exponentHtml);
+      return utils.wrapWithDiv(exponentHtml);
     }
-    if (n.notationType === "LOGBASE") {
+
+    function generateLogbaseHtml(n: NotationAttributes): string {
       const n1 = n as PointNotationAttributes;
       const logbaseHtml = `<p id=${
         n1.uuid
       } style='color:${color};font-weight:${fontWeight}; margin-top:55%; margin-left:15%; font-size:${logbaseFontSize()}'>${
         n1.value
       }</p>`;
-      return wrapWithDiv(logbaseHtml);
+      return utils.wrapWithDiv(logbaseHtml);
     }
-    let n1 = n as PointNotationAttributes;
-    // vector symbol
-    if (n1.value.startsWith(vectorSymbolPrefix)) {
-      return wrapWithDiv(
-        wrapVectorSymbol(n1.value.replace(vectorSymbolPrefix, ""), color),
+
+    function generateIntegralHtml(
+      n1: PointNotationAttributes,
+      color: string,
+    ): string {
+      const integralParts = n1.value
+        .split(/\s+/)
+        .filter((part) => part.length > 0);
+      const htmlContent =
+        integralParts.length === 1
+          ? `<p style='color:${color};font-size:36px'>${integralParts[0]}</p>`
+          : integralParts.length === 2
+          ? `<p style='color:${color};font-size:12px;position:absolute;top:-2px'>${integralParts[0]}</p><p style='font-size:36px'>${integralParts[1]}</p><p style='color:${color};position:absolute;top:43px;font-size:12px'>${integralParts[0]}</p>`
+          : `<p style='color:${color};font-size:12px;position:absolute;top:-2px'>${integralParts[0]}</p><p style='font-size:36px'>${integralParts[1]}</p><p style='color:${color};position:absolute;top:43px;font-size:12px'>${integralParts[2]}</p>`;
+      return utils.wrapWithDiv(htmlContent);
+    }
+
+    function generateDefaultHtml(
+      n1: PointNotationAttributes,
+      color: string,
+      fontWeight: string,
+    ): string {
+      // Vector symbol
+      if (n1.value.startsWith(vectorSymbolPrefix)) {
+        return utils.wrapWithDiv(
+          wrapVectorSymbol(n1.value.replace(vectorSymbolPrefix, ""), color),
+        );
+      }
+
+      // Calculate margins and font size
+      const leftMargin = getLeftMargin(n1.value);
+      const fSize = getFontSize(n1.value);
+      const topMargin = getTopMargin(n1.value, n1.followsFraction);
+
+      return utils.wrapWithDiv(
+        n1.value.length > 5
+          ? n1.value
+          : `<p id=${n1.uuid} style='z-index:100;color:${color};font-weight:${fontWeight}; transform: translateY(-0%);margin-top:${topMargin};margin-left:${leftMargin};font-size:${fSize}'>${n1.value}</p>`,
       );
     }
-    // Symbol
 
-    const leftMargin =
-      n1.value === "." || n1.value === "``("
-        ? "-2px"
-        : n1.value === "M" || n1.value === "m"
-        ? "0%"
-        : n1.value === "i" || n1.value === "j"
-        ? "35%"
-        : n1.value.startsWith("&") || n1.value.length === 1
-        ? "10%"
-        : "0%";
-    const fSize =
-      n1.value === "||" || n1.value === "''"
-        ? "1.4em"
-        : n1.value === "."
-        ? "1.5em"
-        : n1.value.indexOf("&") >= 0 ||
-          n1.value.replaceAll("`", "").length === 1
-        ? "1.1em"
-        : n1.value.indexOf("cos") >= 0 ||
-          n1.value.indexOf("sin") >= 0 ||
-          n1.value.indexOf("tan") >= 0 ||
-          n1.value.indexOf("cot") >= 0 ||
-          n1.value.indexOf("log") >= 0
-        ? "0.6em"
-        : "0.75em";
-    let topMargin = n1.followsFraction
-      ? "10px"
-      : n1.value === "."
-      ? "-5px"
-      : n1.value.indexOf("cos") >= 0 ||
-        n1.value.indexOf("sin") >= 0 ||
-        n1.value.indexOf("tan") >= 0 ||
-        n1.value.indexOf("cot") >= 0 ||
-        n1.value.indexOf("log") >= 0
-      ? "4px"
-      : "0px";
-    ///TODO: move static css props to a class
-    return wrapWithDiv(
-      n1.value.length > 5
-        ? n1.value
-        : `<p id=${n1.uuid} style='z-index:100;color:${color};font-weight:${fontWeight}; transform: translateY(-0%);margin-top:${topMargin};margin-left:${leftMargin};font-size:${fSize}'>${n1.value}</p>`,
-    );
+    function getLeftMargin(value: string): string {
+      if (value === "." || value === "``(") return "-2px";
+      if (value === "M" || value === "m") return "0%";
+      if (value === "i" || value === "j") return "35%";
+      if (value.startsWith("&") || value.length === 1) return "10%";
+      return "0%";
+    }
+
+    function getFontSize(value: string): string {
+      if (value === "||" || value === "''") return "1.4em";
+      if (value === ".") return "1.5em";
+      if (value.indexOf("&") >= 0 || value.replaceAll("`", "").length === 1)
+        return "1.1em";
+      if (
+        ["cos", "sin", "tan", "cot", "log"].some(
+          (trig) => value.indexOf(trig) >= 0,
+        )
+      )
+        return "0.6em";
+      return "0.75em";
+    }
+
+    function getTopMargin(value: string, followsFraction: boolean): string {
+      if (followsFraction) return "10px";
+      if (value === ".") return "-5px";
+      if (
+        ["cos", "sin", "tan", "cot", "log"].some(
+          (trig) => value.indexOf(trig) >= 0,
+        )
+      )
+        return "4px";
+      return "0px";
+    }
   }
 
   return {

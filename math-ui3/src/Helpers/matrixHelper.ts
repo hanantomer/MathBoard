@@ -4,13 +4,17 @@ import {
   defaultdCellStroke,
   sqrtSymbolSuffix,
 } from "common/globals";
-import { SqrtNotationAttributes } from "common/baseTypes";
+import {
+  PointNotationAttributes,
+  SqrtNotationAttributes,
+} from "common/baseTypes";
 import { useCellStore } from "../store/pinia/cellStore";
 import { useNotationStore } from "../store/pinia/notationStore";
 import { cellSpace } from "common/globals";
 import { NotationAttributes } from "common/baseTypes";
 import useLineHelper from "./matrixLineHelper";
 import useCurveHelper from "./matrixCurveHelper";
+import useIntegralHelper from "./matrixIntegralHelper";
 import useCircleHelper from "./matrixCircleHelper";
 import useMatrixCellHelper from "./matrixCellHelper";
 
@@ -19,6 +23,7 @@ import useHtmlHelper from "./matrixHtmlHelper";
 const matrixCellHelper = useMatrixCellHelper();
 const lineHelper = useLineHelper();
 const curveHelper = useCurveHelper();
+const integralHelper = useIntegralHelper();
 const circleHelper = useCircleHelper();
 const cellStore = useCellStore();
 const notationStore = useNotationStore();
@@ -135,19 +140,32 @@ export default function useMatrixHelper() {
       notations.filter((n) => n.notationType === "CURVE"),
     );
 
+    // integralHelper.mergeIntegralNotations(
+    //   svgId,
+    //   notations.filter(
+    //     (n) =>
+    //       n.notationType === "SYMBOL" &&
+    //       (n as PointNotationAttributes).value.indexOf("∫") !== -1,
+    //   ),
+    // );
+
     htmlHelper.mergeHtmlNotations(
       svgId,
       notations.filter(
         (n) =>
-          n.notationType === "ANNOTATION" ||
-          n.notationType === "EXPONENT" ||
-          n.notationType === "LOGBASE" ||
-          n.notationType === "SIGN" ||
-          n.notationType === "SQRT" ||
-          n.notationType === "TEXT" ||
-          n.notationType === "IMAGE" ||
-          n.notationType === "SQRTSYMBOL" ||
-          n.notationType === "SYMBOL",
+          // !(
+          //   n.notationType === "SYMBOL" &&
+          //   (n as PointNotationAttributes).value.indexOf("∫") !== -1
+          // ) &&
+          (n.notationType === "ANNOTATION" ||
+            n.notationType === "EXPONENT" ||
+            n.notationType === "LOGBASE" ||
+            n.notationType === "SIGN" ||
+            n.notationType === "SQRT" ||
+            n.notationType === "TEXT" ||
+            n.notationType === "IMAGE" ||
+            n.notationType === "SQRTSYMBOL" ||
+            n.notationType === "SYMBOL"),
       ),
       svgElement!,
     );
@@ -158,7 +176,6 @@ export default function useMatrixHelper() {
         (n) => n.notationType === "LINE" || n.notationType === "DIVISIONLINE",
       ),
     );
-    
   }
 
   return {
