@@ -91,7 +91,6 @@ export default function useHtmlMatrixHelper() {
   function height(n: NotationAttributes): number | null {
     switch (n.notationType) {
       case "ANNOTATION":
-        return pointNotationHeight(n as PointNotationAttributes) + 2;
       case "SIGN":
       case "EXPONENT":
       case "LOGBASE":
@@ -304,7 +303,7 @@ export default function useHtmlMatrixHelper() {
   }
 
   function pointNotationHeight(n: PointNotationAttributes): number {
-    if (n.value.indexOf("∫") !== -1)
+    if (n.value && n.value.indexOf("∫") !== -1)
       return 2 * cellStore.getCellVerticalHeight();
     return cellStore.getCellVerticalHeight();
   }

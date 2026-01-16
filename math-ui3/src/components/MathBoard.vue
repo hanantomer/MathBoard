@@ -289,6 +289,12 @@ path:hover {
   stroke-width: 5.5;
 }
 
+.solid {
+  stroke: solid;
+}
+.dashed {
+  stroke-dasharray: 6, 6;
+}
 .sqrt {
   border-bottom: solid 1px;
   border-top: solid 1px;
@@ -312,10 +318,5 @@ path:hover {
   font-size: 1.25em;
 }
 
-.solid {
-  stroke: solid;
-}
-.dashed {
-  stroke-dasharray: 6, 6;
-}
+
 </style>

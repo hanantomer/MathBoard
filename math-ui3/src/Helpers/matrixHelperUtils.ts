@@ -9,6 +9,7 @@ import {
 import { useCellStore } from "../store/pinia/cellStore";
 import { useNotationStore } from "../store/pinia/notationStore";
 import {
+  AnnotationNotationAttributes,
   MultiCellAttributes,
   NotationAttributes,
   PointNotationAttributes,
@@ -25,9 +26,12 @@ const matrixCellHelper = useMatrixCellHelper();
 export default function useMatrixHelperUtils() {
   function getCol(n: NotationAttributes): number {
     switch (n.notationType) {
+      case "ANNOTATION": {
+        const annotation = n as AnnotationNotationAttributes;
+        return Math.floor(annotation.x / cellStore.getCellHorizontalWidth());
+      }
       case "EXPONENT":
       case "LOGBASE":
-      case "ANNOTATION":
       case "SIGN":
       case "SYMBOL":
       case "SQRTSYMBOL": {
@@ -48,7 +52,10 @@ export default function useMatrixHelperUtils() {
 
   function getRow(n: NotationAttributes): number {
     switch (n.notationType) {
-      case "ANNOTATION":
+      case "ANNOTATION": {
+        const annotation = n as AnnotationNotationAttributes;
+        return Math.floor(annotation.y / cellStore.getCellVerticalHeight());
+      }
       case "SIGN":
       case "SYMBOL":
       case "SQRTSYMBOL": {
@@ -79,7 +86,18 @@ export default function useMatrixHelperUtils() {
     return exit.remove();
   }
 
+  function findRowColByNotationType(notation: NotationAttributes): {
+    row: number;
+    col: number;
+  } {
+    return {
+      row: getRow(notation),
+      col: getCol(notation),
+    };
+  }
+
   function colorizeNotationCells(n: NotationAttributes) {
+
     switch (n.notationType) {
       case "ANNOTATION":
       case "LOGBASE":
@@ -87,14 +105,18 @@ export default function useMatrixHelperUtils() {
       case "SIGN":
       case "SYMBOL": {
         const n1 = n as PointNotationAttributes;
-        if (n1.row == undefined || n1.col == undefined) return;
-        const cell = { col: n1.col, row: n1.row };
+        let cell;
+        if (n1.row == undefined || n1.col == undefined) {
+          cell = findRowColByNotationType(n);
+        } else {
+          cell = { col: n1.col, row: n1.row };
+        }
         matrixCellHelper.colorizeCell(cell, n.color?.value);
         break;
       }
     }
   }
-  function getColor(n: NotationAttributes) : string {
+  function getColor(n: NotationAttributes): string {
     switch (n.notationType) {
       case "ANNOTATION":
       case "EXPONENT":

@@ -1,8 +1,8 @@
 <template>
   <lineWatcher
     :startEntry="{
-      editMode: ['SQRT_STARTED'],
-      func: setInitialPosition,
+      editMode: [],
+      func: () => {},
     }"
     :drawEntry="{
       editMode: ['SQRT_DRAWING'],
@@ -55,14 +55,14 @@
         :y1="sqrtY"
         :x2="sqrtRight"
         :y2="sqrtY"
-        class="line"
+        class="sqrt"
         stroke="black"
       />
     </svg>
     <p
       class="sqrtsymbol"
       v-bind:style="{
-        left: sqrtSymbolLeft + 'px',
+        left: sqrtSymbolX + 'px',
         top: sqrtSymbolY + 'px',
       }"
     >
@@ -84,16 +84,22 @@ import {
   MultiCellAttributes,
   LineAttributes,
 } from "common/baseTypes";
+
+import { EditMode } from "common/unions";
+
 import lineHandle from "./LineHandle.vue";
 import lineWatcher from "./LineWatcher.vue";
+import useWatchHelper from "../helpers/watchHelper";
 
 import { sqrtDeltaY } from "common/globals";
+import selectionHelper from "src/helpers/selectionHelper";
 
 const notationStore = useNotationStore();
 const editModeStore = useEditModeStore();
 const cellStore = useCellStore();
 const notationMutateHelper = useNotationMutateHelper();
 const screenHelper = useScreenHelper();
+const watchHelper = useWatchHelper();
 
 let linePosition = ref(<LineAttributes>{
   p1x: 0,
@@ -104,6 +110,7 @@ let linePosition = ref(<LineAttributes>{
 
 const show = computed(() => {
   return (
+    editModeStore.isSqrtStartedMode() ||
     editModeStore.isSqrtDrawingMode() ||
     editModeStore.isSqrtEditMode() ||
     editModeStore.isSqrtSelectedMode()
@@ -111,21 +118,19 @@ const show = computed(() => {
 });
 
 let sqrtRight = computed(() => {
-  return linePosition.value.p2x;
+  return linePosition.value.p2x - cellStore.getSvgBoundingRect().left;
 });
 
 let sqrtLeft = computed(() => {
-  return linePosition.value.p1x + cellStore.getCellHorizontalWidth();
+  return linePosition.value.p1x - cellStore.getSvgBoundingRect().left + 8;
 });
 
 let sqrtY = computed(() => {
   return linePosition.value.p1y;
 });
 
-let sqrtSymbolLeft = computed(() => {
-  return (
-    linePosition.value.p1x + (cellStore.getSvgBoundingRect().left ?? 0) + 4
-  );
+let sqrtSymbolX = computed(() => {
+  return linePosition.value.p1x - 2;
 });
 
 let sqrtSymbolY = computed(() => {
@@ -133,19 +138,27 @@ let sqrtSymbolY = computed(() => {
 });
 
 let handleX = computed(() => {
-  return sqrtRight.value + (cellStore.getSvgBoundingRect().left ?? 0);
+  return linePosition.value.p2x;
 });
 
 let handleY = computed(() => {
   return sqrtY.value + (cellStore.getSvgBoundingRect().top ?? 0) - 5;
 });
 
-function setInitialPosition(p: DotCoordinates) {
-  // Adjust p to be relative to the SVG container
-  p = {
-    x: p.x,
-    y: p.y + cellStore.getSvgBoundingRect().y,
-  };
+watchHelper.watchEveryEditModeChange(setInitialPosition);
+
+function setInitialPosition(editMode: EditMode) {
+  if (editMode !== "SQRT_STARTED") {
+    return;
+  }
+
+  if (cellStore.getSelectedCell() == null) {
+    return;
+  }
+
+  const selectedCell = cellStore.getSelectedCell();
+
+  const p = screenHelper.getCellTopLeftCoordinates(selectedCell);
 
   const nearestRowY =
     screenHelper.getCellByDotCoordinates(p).row *
@@ -157,6 +170,10 @@ function setInitialPosition(p: DotCoordinates) {
   linePosition.value.p1y = nearestRowY + sqrtDeltaY;
 
   linePosition.value.p2y = linePosition.value.p1y;
+
+  endDrawing();
+
+
 }
 
 function drawLine(p: DotCoordinates) {
@@ -165,11 +182,13 @@ function drawLine(p: DotCoordinates) {
 
 async function endDrawing(): Promise<string> {
   const fromCol = Math.round(
-    linePosition.value.p1x / cellStore.getCellHorizontalWidth(),
+    (linePosition.value.p1x - cellStore.getSvgBoundingRect().left) /
+      cellStore.getCellHorizontalWidth(),
   );
 
   let toCol = Math.round(
-    linePosition.value.p2x / cellStore.getCellHorizontalWidth(),
+    (linePosition.value.p2x - cellStore.getSvgBoundingRect().left) /
+      cellStore.getCellHorizontalWidth(),
   );
 
   let row = Math.round(
@@ -177,6 +196,8 @@ async function endDrawing(): Promise<string> {
   );
 
   const uuid = await saveSqrt({ fromCol: fromCol, toCol: toCol, row: row });
+
+  editModeStore.setDefaultEditMode();
 
   return uuid;
 }
@@ -199,9 +220,13 @@ async function saveSqrt(sqrtAttributes: MultiCellAttributes): Promise<string> {
 function selectSqrt(notation: NotationAttributes) {
   const n = notation as SqrtNotationAttributes;
 
-  linePosition.value.p1x = n.fromCol * cellStore.getCellHorizontalWidth();
+  linePosition.value.p1x =
+    n.fromCol * cellStore.getCellHorizontalWidth() +
+    cellStore.getSvgBoundingRect().left;
 
-  linePosition.value.p2x = n.toCol * cellStore.getCellHorizontalWidth();
+  linePosition.value.p2x =
+    n.toCol * cellStore.getCellHorizontalWidth() +
+    cellStore.getSvgBoundingRect().left;
 
   linePosition.value.p1y =
     n.row * cellStore.getCellVerticalHeight() + sqrtDeltaY;

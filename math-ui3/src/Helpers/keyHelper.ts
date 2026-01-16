@@ -70,13 +70,13 @@ export default function () {
   }
 
   async function keyUpHandler(e: KeyboardEvent) {
-    console.log("KeyUp:", {
-      key: e.key,
-      ctrlKey: e.ctrlKey,
-      altKey: e.altKey,
-      shiftKey: e.shiftKey,
-      code: e.code,
-    });
+    // console.log("KeyUp:", {
+    //   key: e.key,
+    //   ctrlKey: e.ctrlKey,
+    //   altKey: e.altKey,
+    //   shiftKey: e.shiftKey,
+    //   code: e.code,
+    // });
 
     if (e.target && (e.target as HTMLElement).tagName === "INPUT") return; // skip if focused on input box
 

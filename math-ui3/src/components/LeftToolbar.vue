@@ -331,8 +331,9 @@ const modeButtons: Array<{
   {
     name: "sqrt",
     show_condition: true,
-    editMode: "SQRT_STARTED" as EditMode,
-    tooltip: "Sqrt",
+     editMode: "SQRT_STARTED" as EditMode,
+    tooltip: "Sqrt Alt+s",
+    shortcut: "Alt+s",
     icon_class: "",
     icon: "mdi-square-root",
     overlay_icon: "",

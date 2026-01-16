@@ -97,9 +97,7 @@ export default function useShapeDrawingHelper() {
     if (!editModeStore.isPolygonDrawingMode()) {
       notationStore.selectNotation(uuid);
       if (uuid) {
-        setTimeout(() => {
-          hideMatrixLine(uuid); // dont show created line yet since we back to edit mode
-        }, 1);
+        hideMatrixLine(uuid); // dont show created line yet since we back to edit mode
       }
       editModeStore.setNextEditMode();
     }
@@ -115,14 +113,16 @@ export default function useShapeDrawingHelper() {
   }
 
   function hideMatrixLine(uuid: string) {
-    hiddenNotationUUID = uuid;
-    (document.getElementById(uuid) as HTMLElement).style.display = "none";
+    setTimeout(() => {
+      hiddenNotationUUID = uuid;
+      (document.getElementById(uuid) as HTMLElement).style.display = "none";
 
-    if (document.getElementById(uuid + sqrtSymbolSuffix)) {
-      (
-        document.getElementById(uuid + sqrtSymbolSuffix) as HTMLElement
-      ).style.display = "none"; // for sqrt symbol, see matrixHelper.ts
-    }
+      if (document.getElementById(uuid + sqrtSymbolSuffix)) {
+        (
+          document.getElementById(uuid + sqrtSymbolSuffix) as HTMLElement
+        ).style.display = "none"; // for sqrt symbol, see matrixHelper.ts
+      }
+    }, 0);
   }
 
   function showMatrixLine() {
