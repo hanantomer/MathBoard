@@ -348,8 +348,10 @@ export default function useHtmlMatrixHelper() {
 
   function html(n: NotationAttributes) {
     utils.colorizeNotationCells(n);
+
     const fontWeight =
       userStore.getCurrentUser()?.uuid === n.user.uuid ? "bold" : "normal";
+
     let color = utils.getColor(n);
 
     const notationHandlers: Record<string, (n: NotationAttributes) => string> =

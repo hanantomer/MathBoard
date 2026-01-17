@@ -97,9 +97,7 @@ export default function useMatrixHelperUtils() {
   }
 
   function colorizeNotationCells(n: NotationAttributes) {
-
     switch (n.notationType) {
-      case "ANNOTATION":
       case "LOGBASE":
       case "EXPONENT":
       case "SIGN":
@@ -118,12 +116,12 @@ export default function useMatrixHelperUtils() {
   }
   function getColor(n: NotationAttributes): string {
     switch (n.notationType) {
-      case "ANNOTATION":
       case "EXPONENT":
       case "LOGBASE":
       case "SIGN":
       case "SYMBOL": // color is applied to the cell
         return n.selected ? selectionColor : htmlColor;
+      case "ANNOTATION":
       case "CURVE":
       case "LINE":
       case "DIVISIONLINE":
