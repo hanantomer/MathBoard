@@ -114,6 +114,7 @@ export default function useMatrixHelperUtils() {
       }
     }
   }
+  
   function getColor(n: NotationAttributes): string {
     switch (n.notationType) {
       case "EXPONENT":

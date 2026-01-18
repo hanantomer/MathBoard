@@ -113,11 +113,11 @@
                   <v-text-field
                     type="input"
                     density="compact"
-                    variant="outlined"                    "
+                    variant="outlined"
                     v-model="integralStart"
                     maxlength="1"
                     hide-details
-                    class="integral-text"
+                    class="integraltext"
                   >
                   </v-text-field>
                 </v-col>
@@ -160,11 +160,11 @@
                   <v-text-field
                     type="input"
                     density="compact"
-                    variant="outlined"                    "
+                    variant="outlined"
                     v-model="integralEnd"
                     maxlength="1"
                     hide-details
-                    class="integral-text"
+                    class="integraltext"
                   >
                   </v-text-field>
                 </v-col>
@@ -348,7 +348,6 @@ const symbolGroups = [
       { name: "u'", value: "u'", tooltip: "u'", tabIndex: 34 },
       { name: "v'", value: "v'", tooltip: "v'", tabIndex: 35 },
       { name: "infin", value: "&infin;", tooltip: "Infinity", tabIndex: 36 },
-      { name: "int", value: "∫", tooltip: "Integral", tabIndex: 37 },
     ],
   },
   {
@@ -588,7 +587,7 @@ div.v-combobox__selection {
   margin-inline-end: 9px !important;
 }
 
-.integral-text {
+.integraltext {
   background-color: rgb(221, 228, 228);
   --v-field-padding-bottom: 2px !important;
   --v-field-padding-top: 2px !important;

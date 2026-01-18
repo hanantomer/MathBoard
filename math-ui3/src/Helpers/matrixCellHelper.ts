@@ -73,12 +73,20 @@ export default function useMatrixCellHelper() {
     }
   }
 
+  function getCellElement(svgId: string, cell: CellAttributes): HTMLElement | null {
+    return document
+      ?.querySelector<HTMLElement>(
+        `svg[id="${svgId}"] g[row="${cell.row}"]`,
+      )
+      ?.querySelector<HTMLElement>(`rect[col="${cell.col}"]`) ?? null;
+  }
+
   function colorizeCell(
     cell: CellAttributes,
     color: string | null | undefined,
   ) {
     if (!color) color = "";
-    let rectElm = document
+    const rectElm = document
       ?.querySelector<HTMLElement>(
         `svg[id="${cellStore.getSvgId()}"] g[row="${cell.row}"]`,
       )
@@ -92,27 +100,16 @@ export default function useMatrixCellHelper() {
     svgId: string,
     newSelectedCell: CellAttributes | null | undefined,
     oldSelectedCell: CellAttributes | null | undefined,
-  ) {
+  ): void {
     if (oldSelectedCell?.col != null) {
-      let prevRectElm = document
-        ?.querySelector<HTMLElement>(
-          `svg[id="${svgId}"] g[row="${oldSelectedCell.row}"]`,
-        )
-        ?.querySelector<HTMLElement>(`rect[col="${oldSelectedCell.col}"]`);
-
+      const prevRectElm = getCellElement(svgId, oldSelectedCell);
       if (prevRectElm?.style) {
         prevRectElm.style.stroke = defaultdCellStroke;
-        //prevRectElm.style.strokeWidth = "0";
       }
     }
 
     if (newSelectedCell?.col != null) {
-      let rectElm = document
-        ?.querySelector<HTMLElement>(
-          `svg[id="${svgId}"] g[row="${newSelectedCell.row}"]`,
-        )
-        ?.querySelector<HTMLElement>(`rect[col="${newSelectedCell.col}"]`);
-
+      const rectElm = getCellElement(svgId, newSelectedCell);
       if (rectElm?.style) {
         rectElm.style.stroke = selectedCellStroke;
       }

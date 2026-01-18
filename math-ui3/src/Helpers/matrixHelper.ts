@@ -5,7 +5,6 @@ import {
   sqrtSymbolSuffix,
 } from "common/globals";
 import {
-  PointNotationAttributes,
   SqrtNotationAttributes,
 } from "common/baseTypes";
 import { useCellStore } from "../store/pinia/cellStore";
@@ -23,7 +22,6 @@ import useHtmlHelper from "./matrixHtmlHelper";
 const matrixCellHelper = useMatrixCellHelper();
 const lineHelper = useLineHelper();
 const curveHelper = useCurveHelper();
-const integralHelper = useIntegralHelper();
 const circleHelper = useCircleHelper();
 const cellStore = useCellStore();
 const notationStore = useNotationStore();
