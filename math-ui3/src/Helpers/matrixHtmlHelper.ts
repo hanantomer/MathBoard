@@ -475,11 +475,12 @@ export default function useHtmlMatrixHelper() {
       const leftMargin = getLeftMargin(n1.value);
       const fSize = getFontSize(n1.value);
       const topMargin = getTopMargin(n1.value, n1.followsFraction);
+      const translateY = n1.value === "..." ? "90%" : "0%";
 
       return utils.wrapWithDiv(
         n1.value.length > 5
           ? n1.value
-          : `<p id=${n1.uuid} style='z-index:100;color:${color};font-weight:${fontWeight}; transform: translateY(-0%);margin-top:${topMargin};margin-left:${leftMargin};font-size:${fSize}'>${n1.value}</p>`,
+          : `<p id=${n1.uuid} style='z-index:100;color:${color};font-weight:${fontWeight}; transform: translateY(${translateY});margin-top:${topMargin};margin-left:${leftMargin};font-size:${fSize}'>${n1.value}</p>`,
       );
     }
 

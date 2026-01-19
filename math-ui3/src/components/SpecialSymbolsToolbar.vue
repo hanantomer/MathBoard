@@ -143,9 +143,7 @@
                         :aria-keyshortcuts="symbol.shortcut"
                         role="button"
                         :id="`special-symbol-${symbol.name}`"
-                        @click="
-                          () => addIntegral(integralStart, integralEnd)
-                        "
+                        @click="() => addIntegral(integralStart, integralEnd)"
                       >
                         <p
                           v-if="symbol.name == 'vector'"
@@ -318,58 +316,59 @@ const symbolGroups = [
         tabIndex: 25,
       },
       { name: "sum", value: "&sum;", tooltip: "Sum", tabIndex: 26 },
+      { name: "ellipsis", value: "...", tooltip: "Ellipsis", tabIndex: 27 },
     ],
   },
   {
     title: "Trigonometric functions",
     symbols: [
-      { name: "sin", value: "sin", tooltip: "Sine", tabIndex: 27 },
-      { name: "cos", value: "cos", tooltip: "Cosine", tabIndex: 28 },
-      { name: "tan", value: "tan", tooltip: "Tangent", tabIndex: 29 },
-      { name: "cot", value: "cot", tooltip: "Cotangent", tabIndex: 30 },
+      { name: "sin", value: "sin", tooltip: "Sine", tabIndex: 28 },
+      { name: "cos", value: "cos", tooltip: "Cosine", tabIndex: 29 },
+      { name: "tan", value: "tan", tooltip: "Tangent", tabIndex: 30 },
+      { name: "cot", value: "cot", tooltip: "Cotangent", tabIndex: 31 },
     ],
   },
   {
     title: "Derivatives",
     symbols: [
-      { name: "f(x)", value: "f(x)", tooltip: "Function f(x)", tabIndex: 31 },
+      { name: "f(x)", value: "f(x)", tooltip: "Function f(x)", tabIndex: 32 },
       {
         name: "f'(x)",
         value: "f'(x)",
         tooltip: "First derivative",
-        tabIndex: 32,
+        tabIndex: 33,
       },
       {
         name: "f''(x)",
         value: "f''(x)",
         tooltip: "Second derivative",
-        tabIndex: 33,
+        tabIndex: 34,
       },
-      { name: "u'", value: "u'", tooltip: "u'", tabIndex: 34 },
-      { name: "v'", value: "v'", tooltip: "v'", tabIndex: 35 },
-      { name: "infin", value: "&infin;", tooltip: "Infinity", tabIndex: 36 },
+      { name: "u'", value: "u'", tooltip: "u'", tabIndex: 35 },
+      { name: "v'", value: "v'", tooltip: "v'", tabIndex: 36 },
+      { name: "infin", value: "&infin;", tooltip: "Infinity", tabIndex: 37 },
     ],
   },
   {
     title: "Integrals",
-    symbols: [{ name: "int", value: "∫", tooltip: "Integral", tabIndex: 37 }],
+    symbols: [{ name: "int", value: "∫", tooltip: "Integral", tabIndex: 38 }],
   },
   {
     title: "Vectors",
     symbols: [
-      { name: "vector", value: "v", tooltip: "Vector", tabIndex: 38 },
-      { name: "magnitude", value: "||a||", tooltip: "Magnitude", tabIndex: 39 },
+      { name: "vector", value: "v", tooltip: "Vector", tabIndex: 39 },
+      { name: "magnitude", value: "||a||", tooltip: "Magnitude", tabIndex: 40 },
       {
         name: "dot",
         value: "a &middot; b",
         tooltip: "Dot product",
-        tabIndex: 40,
+        tabIndex: 41,
       },
       {
         name: "cross",
         value: "a &times; b",
         tooltip: "Cross product",
-        tabIndex: 41,
+        tabIndex: 42,
       },
     ],
   },
@@ -530,7 +529,12 @@ async function addNinetyDegreesAnnotation(item: string) {
 }
 
 function isMultiCharLiteral(item: string) {
-  return !item.startsWith("<math>") && !item.startsWith("&") && item.length > 1;
+  return (
+    !item.startsWith("<math>") &&
+    !item.startsWith("&") &&
+    item.indexOf("...") !== 0 &&
+    item.length > 1
+  );
 }
 
 function addEachCharAsSymbol(item: string) {
@@ -557,8 +561,18 @@ function addEachCharAsSymbol(item: string) {
   margin-top: 10px;
   margin-left: 10px;
   max-width: 210px;
-  background-color: #f5f5f5;
+  background-color: #453737;
   max-height: 100px;
+}
+
+:deep(.v-expansion-panel-text__wrapper) {
+  padding-left: 12px !important;
+  padding-right: 12px !important;
+}
+
+:deep(.v-field__input) {
+  padding-left: 3px !important;
+  padding-right: 3px !important;
 }
 
 .symbol-group {
@@ -583,10 +597,6 @@ function addEachCharAsSymbol(item: string) {
   position: absolute !important;
 }
 
-div.v-combobox__selection {
-  margin-inline-end: 9px !important;
-}
-
 .integraltext {
   background-color: rgb(221, 228, 228);
   --v-field-padding-bottom: 2px !important;
@@ -597,5 +607,4 @@ div.v-combobox__selection {
   padding-inline-start: 2px !important;
   padding-inline-end: 2px !important;
 }
-
 </style>
