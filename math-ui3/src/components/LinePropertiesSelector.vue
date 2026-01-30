@@ -27,11 +27,11 @@
               aria-keyshortcuts="R"
               @click="toggleRightArrow()"
             >
-              <v-list-item-title v-if="hasRightArrow"
-                >Remove right arrow</v-list-item-title
+              <v-list-item-title v-if="hasRightOrDownArrow"
+                >Remove {{RightOrDownArrowLabel}} arrow</v-list-item-title
               >
-              <v-list-item-title v-if="!hasRightArrow"
-                >Add right arrow</v-list-item-title
+              <v-list-item-title v-if="!hasRightOrDownArrow"
+                >Add {{RightOrDownArrowLabel}} arrow</v-list-item-title
               >
               <template v-slot:prepend>
                 <v-icon>mdi-arrow-right</v-icon>
@@ -43,11 +43,11 @@
               aria-keyshortcuts="L"
               @click="toggleLeftArrow()"
             >
-              <v-list-item-title v-if="hasLeftArrow"
-                >Remove left arrow</v-list-item-title
+              <v-list-item-title v-if="hasLeftOrUpArrow"
+                >Remove {{LeftOrUpArrowLabel}} arrow</v-list-item-title
               >
-              <v-list-item-title v-if="!hasLeftArrow"
-                >Add left arrow</v-list-item-title
+              <v-list-item-title v-if="!hasLeftOrUpArrow"
+                >Add {{LeftOrUpArrowLabel}} arrow</v-list-item-title
               >
               <template v-slot:prepend>
                 <v-icon>mdi-arrow-left</v-icon>
@@ -65,7 +65,7 @@ import useNotationMutateHelper from "../helpers/notationMutateHelper";
 import { useNotationStore } from "../store/pinia/notationStore";
 import { useEditModeStore } from "../store/pinia/editModeStore";
 import { LineNotationAttributes } from "common/baseTypes";
-import { computed } from "vue";
+import { computed, ref } from "vue";
 
 import useAuthorizationHelper from "../helpers/authorizationHelper";
 
@@ -86,17 +86,32 @@ const isDashed = computed(() => {
   return notation && (notation as LineNotationAttributes).dashed;
 });
 
-const hasRightArrow = computed(() => {
+const hasRightOrDownArrow = computed(() => {
   const notation = notationStore.getSelectedNotations()[0];
   return notation && (notation as LineNotationAttributes).arrowRight;
 });
 
-const hasLeftArrow = computed(() => {
+const hasLeftOrUpArrow = computed(() => {
   const notation = notationStore.getSelectedNotations()[0];
   return notation && (notation as LineNotationAttributes).arrowLeft;
 });
 
 type LineProperty = "arrowRight" | "arrowLeft" | "dashed";
+
+const LeftOrUpArrowLabel = computed(() => {
+  const notation =
+    notationStore.getSelectedNotations()[0] as LineNotationAttributes;
+  if (!notation) return "Left";
+  return notation.p1x === notation.p2x ? "Up" : "Left";
+});
+
+const RightOrDownArrowLabel = computed(() => {
+  const notation =
+    notationStore.getSelectedNotations()[0] as LineNotationAttributes;
+  if (!notation) return "Right";
+  return notation.p1x === notation.p2x ? "Down" : "Right";
+});
+
 
 function toggleLineProperty(property: LineProperty) {
   if (!authorizationHelper.canEdit()) {
@@ -124,8 +139,3 @@ function toggleDashedLine() {
   toggleLineProperty("dashed");
 }
 </script>
-<style scoped>
-/* .v-list-item {
-  min-height: 20px !important;
-} */
-</style>
