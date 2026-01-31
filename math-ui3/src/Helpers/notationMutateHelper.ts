@@ -131,7 +131,6 @@ export default function notationMutateHelper() {
       .filter((n: NotationAttributes) =>
         n.notationType === "ANNOTATION" ||
         n.notationType === "EXPONENT" ||
-        n.notationType === "SIGN" ||
         n.notationType === "SYMBOL" ||
         n.notationType === "SQRT" ||
         n.notationType === "SQRTSYMBOL"
@@ -228,7 +227,6 @@ export default function notationMutateHelper() {
     notationStore.selectNotation(uuid);
   }
 
-
   function moveSelectedNotationsAtPixelScale(
     deltaX: number,
     deltaY: number,
@@ -284,7 +282,6 @@ export default function notationMutateHelper() {
       switch (n.notationType) {
         case "EXPONENT":
         case "LOGBASE":
-        case "SIGN":
         case "SQRTSYMBOL":
         case "SYMBOL": {
           (n as PointNotationAttributes).col += deltaCol;
@@ -753,7 +750,6 @@ export default function notationMutateHelper() {
     switch (existingNotation.notationType) {
       case "ANNOTATION":
       case "EXPONENT":
-      case "SIGN":
       case "SQRTSYMBOL":
       case "SYMBOL": {
         (existingNotation as PointNotationAttributes).col = (
@@ -805,7 +801,6 @@ export default function notationMutateHelper() {
     switch (notation.notationType) {
       case "EXPONENT":
       case "ANNOTATION":
-      case "SIGN":
       case "SQRTSYMBOL":
       case "SYMBOL": {
         let pointNotation = notation as PointNotationAttributes;
@@ -1093,7 +1088,6 @@ export default function notationMutateHelper() {
       case "CIRCLE":
         return addCircleNotation(clonedNotation);
       case "ANNOTATION":
-      case "SIGN":
       case "SQRTSYMBOL":
       case "SYMBOL":
         return addCellNotation(clonedNotation);
@@ -1116,15 +1110,12 @@ export default function notationMutateHelper() {
   }
 
   async function updateNotation(notation: NotationAttributes) {
-    if(!notationStore.getNotation(notation.uuid)) return;
+    if (!notationStore.getNotation(notation.uuid)) return;
 
     notationStore.addNotation(notation, true, true);
-    await apiHelper.updateNotation(notation)
+    await apiHelper.updateNotation(notation);
     await userOutgoingOperations.syncOutgoingUpdateNotation(notation);
-
-
   }
-
 
   async function handlePushKey() {
     if (!authorizationHelper.canEdit()) return;
@@ -1212,6 +1203,49 @@ export default function notationMutateHelper() {
     addImageNotationByColAndRow(fromCol, toCol, fromRow, toRow, base64);
   }
 
+  function addCartesianSystemAtClickedPoint(e: MouseEvent) {
+    if (!authorizationHelper.canEdit()) return;
+    const position = { x: e.pageX, y: e.pageY };
+
+    let clickedCell = screenHelper.getCellByDotCoordinates(position);
+    if (!clickedCell) return;
+    selectionHelper.setSelectedCell(clickedCell, false);
+
+    const horizontalLinecellCoordinates = {
+      x: Math.round(clickedCell.col * cellStore.getCellHorizontalWidth()),
+      y: Math.round(clickedCell.row * cellStore.getCellVerticalHeight()),
+    };
+
+    addLineNotation(
+      {
+        p1x: horizontalLinecellCoordinates.x - 100,
+        p1y: horizontalLinecellCoordinates.y,
+        p2x: horizontalLinecellCoordinates.x + 100,
+        p2y: horizontalLinecellCoordinates.y,
+        dashed: false,
+        arrowLeft: false,
+        arrowRight: true,
+      },
+      "LINE",
+    );
+
+    addLineNotation(
+      {
+        p1x: horizontalLinecellCoordinates.x,
+        p1y: horizontalLinecellCoordinates.y -100,
+        p2x: horizontalLinecellCoordinates.x,
+        p2y: horizontalLinecellCoordinates.y + 100,
+        dashed: false,
+        arrowLeft: true,
+        arrowRight: false,
+      },
+      "LINE",
+    );
+
+    cellStore.resetSelectedCell();
+    editModeStore.setDefaultEditMode();
+  }
+
   return {
     addNotation,
     addCircleNotation,
@@ -1224,6 +1258,7 @@ export default function notationMutateHelper() {
     addAnnotationNotation,
     addSqrtNotation,
     addExponentNotation,
+    addCartesianSystemAtClickedPoint,
     cloneNotation,
     approveDeleteSelectedNotations,
     deleteSelectedNotations,

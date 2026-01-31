@@ -158,7 +158,6 @@ export default function useMatrixHelper() {
           (n.notationType === "ANNOTATION" ||
             n.notationType === "EXPONENT" ||
             n.notationType === "LOGBASE" ||
-            n.notationType === "SIGN" ||
             n.notationType === "SQRT" ||
             n.notationType === "TEXT" ||
             n.notationType === "IMAGE" ||

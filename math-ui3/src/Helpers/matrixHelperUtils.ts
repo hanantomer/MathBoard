@@ -32,7 +32,6 @@ export default function useMatrixHelperUtils() {
       }
       case "EXPONENT":
       case "LOGBASE":
-      case "SIGN":
       case "SYMBOL":
       case "SQRTSYMBOL": {
         return (n as PointNotationAttributes).col;
@@ -56,7 +55,6 @@ export default function useMatrixHelperUtils() {
         const annotation = n as AnnotationNotationAttributes;
         return Math.floor(annotation.y / cellStore.getCellVerticalHeight());
       }
-      case "SIGN":
       case "SYMBOL":
       case "SQRTSYMBOL": {
         return (n as PointNotationAttributes).row;
@@ -100,7 +98,6 @@ export default function useMatrixHelperUtils() {
     switch (n.notationType) {
       case "LOGBASE":
       case "EXPONENT":
-      case "SIGN":
       case "SYMBOL": {
         const n1 = n as PointNotationAttributes;
         let cell;
@@ -114,12 +111,11 @@ export default function useMatrixHelperUtils() {
       }
     }
   }
-  
+
   function getColor(n: NotationAttributes): string {
     switch (n.notationType) {
       case "EXPONENT":
       case "LOGBASE":
-      case "SIGN":
       case "SYMBOL": // color is applied to the cell
         return n.selected ? selectionColor : htmlColor;
       case "ANNOTATION":

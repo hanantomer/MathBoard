@@ -331,7 +331,7 @@ const modeButtons: Array<{
   {
     name: "sqrt",
     show_condition: true,
-     editMode: "SQRT_STARTED" as EditMode,
+    editMode: "SQRT_STARTED" as EditMode,
     tooltip: "Sqrt Alt+s",
     shortcut: "Alt+s",
     icon_class: "",
@@ -363,6 +363,17 @@ const modeButtons: Array<{
     rotate: 0,
     tabIndex: 10,
     shortcut: "Alt+l",
+  },
+  {
+    name: "cartesian system",
+    show_condition: true,
+    editMode: "CARTESIAN_SYSTEM_STARTED" as EditMode,
+    tooltip: "cartesian system",
+    icon_class: "",
+    icon: "mdi-chart-line",
+    overlay_icon: "",
+    rotate: 0,
+    tabIndex: 10,
   },
 ).map((symbol) => ({
   ...symbol,

@@ -194,7 +194,7 @@ export default function screenHelper() {
         case "ANNOTATION":
         case "SYMBOL":
         case "SQRTSYMBOL":
-        case "SIGN": {
+ {
           let n1 = n as PointNotationAttributes;
 
           notationDistanceList.push({

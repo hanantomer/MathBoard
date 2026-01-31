@@ -68,7 +68,6 @@ export default function eventHelper() {
     notationStore.getCopiedNotations().forEach((n: NotationAttributes) => {
       switch (n.notationType) {
         case "SYMBOL":
-        case "SIGN":
         case "SQRTSYMBOL":
         case "EXPONENT":
         case "ANNOTATION": {

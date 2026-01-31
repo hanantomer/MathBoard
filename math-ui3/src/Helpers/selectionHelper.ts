@@ -104,10 +104,6 @@ export default function selectionHelper() {
         selectNotation(notation.uuid);
         return true;
       },
-      SIGN: () => {
-        selectNotation(notation.uuid);
-        return true;
-      },
       SYMBOL: () => {
         selectNotation(notation.uuid);
         return true;
@@ -318,7 +314,6 @@ export default function selectionHelper() {
       case "IMAGE":
       case "TEXT":
       case "ANNOTATION":
-      case "SIGN":
       case "SYMBOL":
       case "SQRTSYMBOL": {
         selectPointOrRectNotation(n);

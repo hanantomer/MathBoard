@@ -50,7 +50,6 @@ export default function notationLoadingHelper() {
       case "EXPONENT":
       case "LOGBASE":
       case "ANNOTATION":
-      case "SIGN":
       case "SYMBOL":
         return await apiHelper.getNotations<PointNotationAttributes>(
           notationType,

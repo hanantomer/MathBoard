@@ -248,7 +248,7 @@ export function isCellNotationType(
 ): boolean {
   return (
     //n === "ANNOTATION" ||
-    n === "SIGN" ||
+    //n === "SIGN" ||
     n === "SQRTSYMBOL" ||
     n === "EXPONENT" ||
     n === "SYMBOL" ||

@@ -15,6 +15,7 @@
     height="8"
   ></v-progress-linear>
   <statusBar></statusBar>
+  <cartesianSystemDrawer></cartesianSystemDrawer>
   <div style="display: flex">
     <leftToolbar></leftToolbar>
     <sqrtDrawer></sqrtDrawer>
@@ -84,6 +85,7 @@ import polygonDrawer from "./PolygonDrawer.vue";
 import curveDrawer from "./CurveDrawer.vue";
 import circleDrawer from "./CircleDrawer.vue";
 import useWatchHelper from "../helpers/watchHelper";
+import cartesianSystemDrawer from "./CartesianSystemDrawer.vue";
 import useNotationMutationHelper from "../helpers/notationMutateHelper";
 import { onUnmounted, ref } from "vue";
 import { useNotationStore } from "../store/pinia/notationStore";

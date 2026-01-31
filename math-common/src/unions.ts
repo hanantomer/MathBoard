@@ -37,7 +37,6 @@ export type BusEventType =
 
 export const NotationTypeValues = [
   "SYMBOL",
-  "SIGN", ///TODO: consider romoval
   "LOGBASE",
   "EXPONENT",
   "POLYGON",
@@ -125,7 +124,8 @@ export type EditMode =
   | "CHECKMARK_STARTED" // checkmark button pressed
   | "SEMICHECKMARK_STARTED" // semicheck button pressed
   | "XMARK_STARTED" // xmark button pressed
-  | "STUDENTS_MONITORING"; // teacher is monitoring students' boards
+  | "STUDENTS_MONITORING" // teacher is monitoring students' boards
+  | "CARTESIAN_SYSTEM_STARTED"// cartesian system button pressed;
 
 export const EditModeNotationType = new Map<
   EditMode,

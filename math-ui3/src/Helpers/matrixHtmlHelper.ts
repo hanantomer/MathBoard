@@ -91,7 +91,6 @@ export default function useHtmlMatrixHelper() {
   function height(n: NotationAttributes): number | null {
     switch (n.notationType) {
       case "ANNOTATION":
-      case "SIGN":
       case "EXPONENT":
       case "LOGBASE":
       case "SYMBOL":
@@ -190,7 +189,6 @@ export default function useHtmlMatrixHelper() {
     switch (n.notationType) {
       case "EXPONENT":
       case "LOGBASE":
-      case "SIGN":
       case "SQRTSYMBOL":
       case "SYMBOL": {
         return (n as PointNotationAttributes).col;
@@ -214,7 +212,6 @@ export default function useHtmlMatrixHelper() {
       case "EXPONENT":
       case "LOGBASE":
       case "SQRTSYMBOL":
-      case "SIGN":
       case "SYMBOL":
         return (n as PointNotationAttributes).row;
 
@@ -323,8 +320,6 @@ export default function useHtmlMatrixHelper() {
   function fontSize(n: PointNotationAttributes, el: HTMLElement) {
     return n.notationType === "TEXT"
       ? textFontSize(el)
-      : n.notationType === "SIGN"
-      ? signFontSize()
       : regularFontSize(n.value);
   }
 

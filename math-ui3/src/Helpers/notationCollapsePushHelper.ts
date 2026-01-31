@@ -46,7 +46,6 @@ async function collapseNotationsToSelectedCell() {
 
     notations.forEach(async (notation: NotationAttributes) => {
       if (
-        notation.notationType === "SIGN" ||
         notation.notationType === "EXPONENT" ||
         notation.notationType === "LOGBASE" ||
         notation.notationType === "SYMBOL"
@@ -76,7 +75,6 @@ function pushNotationsFromSelectedCell() {
   if (cell.col === matrixDimensions.colsNum - 1) return;
 
   const notationTypesToPush: NotationType[] = [
-    "SIGN",
     "EXPONENT",
     "LOGBASE",
     "SQRT",

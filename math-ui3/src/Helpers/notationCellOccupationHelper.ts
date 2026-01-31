@@ -270,7 +270,6 @@ export default function notationCellOccupationHelper() {
     switch (notation.notationType) {
       case "EXPONENT":
       case "LOGBASE":
-      case "SIGN":
       case "SQRTSYMBOL":
       case "SYMBOL":
         if ((notation as PointNotationAttributes).value === ".") {

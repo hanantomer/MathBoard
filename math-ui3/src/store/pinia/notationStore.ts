@@ -197,7 +197,6 @@ export const useNotationStore = defineStore("notation", () => {
     switch (notation.notationType) {
       case "EXPONENT":
       case "LOGBASE":
-      case "SIGN":
       case "SQRTSYMBOL":
       case "SYMBOL": ///TODO: generalize for all punctuation symbols
         if ((notation as PointNotationAttributes).value === ".") {
