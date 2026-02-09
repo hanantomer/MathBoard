@@ -4,6 +4,7 @@
     variant="outlined"
     class="selection"
     id="selection"
+    data-cy="area-selection"
     v-on:mouseup="onSelectionMouseUp"
     v-on:mousemove="onSelectionMouseDrag"
     v-bind:style="{
@@ -391,6 +392,10 @@ function endSelect(e: MouseEvent) {
           cellStore.getSvgBoundingRect().top,
       },
     });
+    if (notationStore.getSelectedNotations().length === 0) {
+      editModeStore.setDefaultEditMode();
+      return;
+    }
   }
 
   if (editModeStore.getEditMode() === "TEXT_AREA_SELECTING") {
@@ -581,8 +586,7 @@ function setSelectionPositionForAnnotation(
     selectionPosition.value.x1 + selectedNotation.value.length * 5 + 3;
   selectionPosition.value.y1 =
     cellStore.getSvgBoundingRect().top + selectedNotation.y;
-  selectionPosition.value.y2 =
-    selectionPosition.value.y1 + 15;
+  selectionPosition.value.y2 = selectionPosition.value.y1 + 15;
 
   selectionRotation.value = (selectedNotation as any).rotation || 0;
 }

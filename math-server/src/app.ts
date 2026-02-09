@@ -111,7 +111,6 @@ const storage = multer.diskStorage({
     destination: (req, file, cb) => cb(null, path.join(__dirname, "uploads")),
     filename: (req, file, cb) => cb(null, `${Date.now()}-${file.originalname}`),
 });
-const upload = multer({ storage });
 
 
 app.post(
@@ -152,8 +151,8 @@ async function validateAuth(req: Request, res: Response, next: NextFunction) {
         return next();
     }
 
-    // omit authorization enforcement when registering
-    else if (req.method === "POST" && req.url.indexOf("/api/users") == 0) {
+    // omit authorization enforcement when registering or validating user
+    else if (req.url.indexOf("/api/users") == 0) {
         return next();
     }
 
@@ -327,6 +326,9 @@ app.post(
         next: NextFunction
     ): Promise<Response | undefined> => {
         try {
+            req.body.nonprod =
+                process.env.NODE_ENV === "development" ||
+                process.env.NODE_ENV === "test";
             req.body.password = authUtil.encryptPasssword(req.body.password);
             return res.status(200).json(await db.createUser(req.body));
         } catch (error) {
@@ -800,7 +802,7 @@ const errorHandler = (
 app.use(errorHandler);
 
 let forceDbCreate =
-    process.env.NODE_ENV === "development";
+    process.env.NODE_ENV === "development" || process.env.NODE_ENV === "test";
 
 console.log("re create db =" + forceDbCreate);
 
@@ -811,7 +813,7 @@ connection.sequelize.sync({ force: forceDbCreate }).then(() => {
     }).on("error", (e) => {
         console.log("Error: ", e.message);
     });
-    if (forceDbCreate) {
+    if (process.env.NODE_ENV === "development") {
         exec(
             "C:/dev/MathBoard/math-db/seeders/seed.bat",
             (err: any, stdout: any, stderr: any) => {

@@ -338,15 +338,17 @@ async function register() {
     );
 
     if (!newUser) {
-      alert("A user with this email already exists.");
+      alert("A user with this email already exists!");
       return;
     }
 
-    contactUs.contactUs(
-      `${firstName.value} ${lastName.value}`,
-      email.value,
-      "approve me",
-    );
+    if (!newUser.nonprod) {
+      contactUs.contactUs(
+        `${firstName.value} ${lastName.value}`,
+        email.value,
+        "approve me",
+      );
+    }
 
     show.value = false;
     registerForm.value = null;

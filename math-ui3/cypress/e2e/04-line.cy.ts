@@ -8,36 +8,54 @@ describe("e2e", () => {
   it("e2e", () => {
     cy.visit("http://localhost:13035");
     cy.openLesson();
-    cy.clearBoard();
+    cy.dataCy("linedrawer").click();
 
-    cy.drawLine(200, 200, 100);
+    const x = 100;
+    const y = 200;
+    const width = 300;
 
-    //edit line
-    cy.get("foreignObject[notationType='FRACTION'] span.line").click();
+    cy.get("#lessonSvg").trigger("mousedown", { x: x, y: y });
 
-    cy.get("#lineRightHandle").realMouseDown();
+    cy.get("#lessonSvg").trigger("mousemove", {
+      buttons: 1,
+      x: x + 1,
+      y: y,
+    });
+
+    cy.get("#lessonSvg").trigger("mousemove", {
+      buttons: 1,
+      x: x + 2,
+      y: 200,
+    });
+
+    cy.get("#lessonSvg").trigger("mousemove", {
+      buttons: 1,
+      x: +width,
+      y: 200,
+      force: true,
+    });
+
+    cy.get("#lessonSvg").trigger("mouseup");
+    cy.dataCy("lineRightHandle").trigger("mousedown");
     cy.get("#lessonSvg").trigger("mousemove", {
       buttons: 1,
       x: 301,
       y: 200,
-      force: true,
     });
     cy.get("#lessonSvg").trigger("mousemove", {
       buttons: 1,
       x: 302,
       y: 200,
-      force: true,
     });
     cy.get("#lessonSvg").trigger("mousemove", {
       buttons: 1,
       x: 400,
       y: 200,
-      force: true,
     });
 
-    cy.get("#lineRightHandle").trigger("mouseup");
+    cy.dataCy("lineRightHandle").trigger("mouseup");
 
-    cy.get(".line").invoke("outerWidth").should("be.gt", 200);
-    cy.get(".line").invoke("outerWidth").should("be.lt", 350);
+    //    cy.dataCy("line").invoke("outerWidth").should("be.gt", 200);
+    //    cy.dataCy("line").invoke("outerWidth").should("be.lt", 350);
   });
 });

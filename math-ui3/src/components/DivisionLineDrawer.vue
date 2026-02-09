@@ -69,6 +69,7 @@
         :x2="lineAttributes.p2x"
         :y2="lineAttributes.p1y"
         class="line"
+        data-cy="division"
       />
     </svg>
   </div>

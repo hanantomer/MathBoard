@@ -1,4 +1,3 @@
-import util from "./util";
 import { Application } from "@feathersjs/feathers";
 import winston from "winston";
 import path from "path";

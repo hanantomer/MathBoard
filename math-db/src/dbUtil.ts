@@ -727,7 +727,6 @@ export default function dbUtil() {
                     validateExponentNotation(m);
                     break;
                 }
-                case "SIGN":
                 case "SYMBOL": {
                     const m = model as PointNotationAttributes;
                     validatePointNotation(m);

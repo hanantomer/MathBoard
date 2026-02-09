@@ -13,6 +13,7 @@ export type UserAttributes = EntityAttributes & {
   userType: UserType;
   lastHeartbeatTime?: Date;
   approved: boolean;
+  nonprod?: boolean;
 };
 
 export type UserCreationAttributes = Omit<UserAttributes, keyof EntityAttributes> 

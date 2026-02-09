@@ -7,7 +7,7 @@ describe("e2e", () => {
   it("e2e", () => {
     cy.visit("http://localhost:13035");
     cy.openLesson();
-    cy.clearBoard();
+//    cy.clearBoard();
 
     cy.dataCy("sqrt").click();
 

@@ -147,6 +147,7 @@ export default function () {
           await notationMutateHelper.collapseNotationsToSelectedCell();
           matrixCellHelper.setNextCell(0, 0);
           selectCurrentCellNotation();
+          editModeStore.setDefaultEditMode();
         }
         break;
       }

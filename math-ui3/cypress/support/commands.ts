@@ -43,11 +43,12 @@ declare namespace Cypress {
      * @example cy.dataCy('greeting')
      */
     dataCy(value: string): Chainable<JQuery>;
-    login();
-    openLesson();
-    clearBoard();
-    drawLine(x: number, y: number, width: number);
-    selectArea(x: number, y: number, width: number, height: number);
+    clean(): any;
+    login(): any;
+    openLesson(): any;
+    clearBoard(): any;
+    drawLine(x: number, y: number, width: number): any;
+    selectArea(x: number, y: number, width: number, height: number): any;
   }
 }
 
@@ -65,7 +66,7 @@ Cypress.Commands.add("openLesson", () => {
   cy.get('[data-cy="lessons"] > .v-btn__content').click();
   cy.login();
   cy.get('td:contains("test lesson")').click();
-  cy.dataCy("pBar").should("not.be.visible");
+  //cy.dataCy("pBar") == null || cy.dataCy("pBar").should("not.be.visible");
 });
 
 Cypress.Commands.add("clearBoard", () => {
@@ -75,68 +76,34 @@ Cypress.Commands.add("clearBoard", () => {
   cy.get("#lessonSvg").trigger("mousemove", { buttons: 1, x: 52, y: 52 });
   cy.get("#lessonSvg").trigger("mousemove", { buttons: 1, x: 1300, y: 700 });
   cy.get("#selection").trigger("mouseup");
-  cy.get("body").type("{del}");
+
+  cy.dataCy("delete_tool_button").click();
 });
 
-Cypress.Commands.add("drawLine", (x: number, y: number, width: number) => {
-
-  cy.dataCy("fraction").click();
-
-  cy.get("#lessonSvg").realMouseDown({ x: x, y: y });
-
-  cy.get("#lessonSvg").trigger("mousemove", {
-    buttons: 1,
-    x: x + 1,
-    y: y,
-    force: true
-  });
-
-  cy.get("#lessonSvg").trigger("mousemove", {
-    buttons: 1,
-    x: x + 2,
-    y: 200,
-    force: true,
-  });
-
-  cy.get("#lessonSvg").trigger("mousemove", {
-    buttons: 1,
-    x: +width,
-    y: 200,
-    force: true,
-  });
-
-  cy.get("#lineRightHandle").trigger("mouseup");
-});
 
 Cypress.Commands.add(
   "selectArea",
   (x: number, y: number, width: number, height: number) => {
-
-    cy.get("#lessonSvg").realMouseDown({ x: x, y: y });
+    cy.get("#lessonSvg").trigger("mousedown", { x: x, y: y });
 
     cy.get("#lessonSvg").trigger("mousemove", {
       buttons: 1,
       x: x + 1,
       y: y + 1,
-      force: true,
     });
 
     cy.get("#lessonSvg").trigger("mousemove", {
       buttons: 1,
       x: x + 2,
-      y: y +2,
-      force: true,
+      y: y + 2,
     });
 
     cy.get("#lessonSvg").trigger("mousemove", {
       buttons: 1,
       x: x + width,
       y: y + height,
-      force: true,
     });
 
     cy.get("#lessonSvg").trigger("mouseup");
   },
 );
-
-

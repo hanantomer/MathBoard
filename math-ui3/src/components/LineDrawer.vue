@@ -35,6 +35,7 @@
       }"
     />
     <line-handle
+      data-cy="lineLeftHandle"
       v-show="editModeStore.isLineMode()"
       drawing-mode="LINE_DRAWING"
       editing-mode="LINE_EDITING_LEFT"
@@ -44,6 +45,7 @@
       }"
     ></line-handle>
     <line-handle
+      data-cy="lineRightHandle"`
       v-show="editModeStore.isLineMode()"
       drawing-mode="LINE_DRAWING"
       editing-mode="LINE_EDITING_RIGHT"
@@ -71,7 +73,7 @@
         vector-effect="non-scaling-stroke"
         stroke-linecap="square"
         :stroke="lineColor"
-      />
+        data-cy="linedrawer"/>
     </svg>
   </div>
 </template>

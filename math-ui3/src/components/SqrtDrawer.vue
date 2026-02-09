@@ -57,6 +57,7 @@
         :y2="sqrtY"
         class="sqrt"
         stroke="black"
+        data-cy="sqrt"
       />
     </svg>
     <p
