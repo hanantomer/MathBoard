@@ -4,6 +4,11 @@ export const matrixDimensions = {
   rowsNum: 27,
   colsNum: 115,
 };
+export const matrixSize = {
+  width: '1650px',
+  height: '795px'
+}
+
 export const clonedNotationUUIdPrefix = "cloned_";
 export const transparentColor = "#4d6a96";
 export const selectionColor = "chocolate";

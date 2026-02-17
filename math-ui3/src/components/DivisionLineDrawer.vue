@@ -39,6 +39,7 @@
       }"
     />
     <line-handle
+      data-cy="divisionLineLeftHandle"
       v-show="editModeStore.isDivisionLineMode()"
       drawing-mode="DIVISIONLINE_DRAWING"
       editing-mode="DIVISIONLINE_EDITING_LEFT"
@@ -48,6 +49,7 @@
       }"
     ></line-handle>
     <line-handle
+      data-cy="divisionLineRightHandle"
       v-show="editModeStore.isDivisionLineMode()"
       drawing-mode="DIVISIONLINE_DRAWING"
       editing-mode="DIVISIONLINE_EDITING_RIGHT"
@@ -58,8 +60,10 @@
     ></line-handle>
 
     <svg
-      height="800"
-      width="1500"
+      :style="{
+        width: matrixSize.width,
+        height: matrixSize.height,
+      }"
       xmlns="http://www.w3.org/2000/svg"
       class="line-svg"
     >
@@ -89,6 +93,7 @@ import useEventBus from "../helpers/eventBusHelper";
 import lineWatcher from "./LineWatcher.vue";
 import lineHandle from "./LineHandle.vue";
 import useNotationMutateHelper from "../helpers/notationMutateHelper";
+import { matrixSize } from "common/globals";
 
 const eventBus = useEventBus();
 const editModeStore = useEditModeStore();

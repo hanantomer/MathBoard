@@ -35,6 +35,7 @@
   />
   <div v-if="show">
     <line-handle
+      data-cy="sqrtRightHandle"
       drawing-mode="SQRT_DRAWING"
       editing-mode="SQRT_EDITING"
       v-bind:style="{
@@ -57,7 +58,7 @@
         :y2="sqrtY"
         class="sqrt"
         stroke="black"
-        data-cy="sqrt"
+        data-cy="sqrtDrawer"
       />
     </svg>
     <p
@@ -173,8 +174,6 @@ function setInitialPosition(editMode: EditMode) {
   linePosition.value.p2y = linePosition.value.p1y;
 
   endDrawing();
-
-
 }
 
 function drawLine(p: DotCoordinates) {

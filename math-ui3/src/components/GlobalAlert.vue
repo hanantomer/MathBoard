@@ -17,7 +17,10 @@
       ></v-card-text>
       <v-card-actions class="pt-3">
         <v-spacer></v-spacer>
-        <v-btn @click="agree" v-show="globalAlertStore.type == 'warning'"
+        <v-btn
+          data-cy="confirmDelete"
+          @click="agree"
+          v-show="globalAlertStore.type == 'warning'"
           >Confirm</v-btn
         >
         <v-btn @click="cancel" v-show="globalAlertStore.type == 'warning'"

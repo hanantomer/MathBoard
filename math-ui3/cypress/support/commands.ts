@@ -47,10 +47,66 @@ declare namespace Cypress {
     login(): any;
     openLesson(): any;
     clearBoard(): any;
-    drawLine(x: number, y: number, width: number): any;
+    drawLine(
+      buttonDataCy: string,
+      handleDataCy: string,
+      x1: number,
+      y1: number,
+      x2: number,
+      y2: number,
+    ): any;
     selectArea(x: number, y: number, width: number, height: number): any;
   }
 }
+
+Cypress.Commands.add(
+  "drawLine",
+  (
+    buttonDataCy: string,
+    handleDataCy: string,
+    x1: number,
+    y1: number,
+    x2: number,
+    y2: number,
+  ) => {
+    cy.dataCy(buttonDataCy).click();
+
+    cy.get("#lessonSvg").trigger("mousedown", { x: x1, y: y1 });
+
+    cy.get("#lessonSvg").trigger("mousemove", {
+      buttons: 1,
+      x: x1,
+      y: y1,
+      force: true,
+    });
+
+    cy.get("#lessonSvg").trigger("mousemove", {
+      buttons: 1,
+      x: x2,
+      y: y2,
+    });
+
+    cy.get("#lessonSvg").trigger("mouseup");
+
+    cy.dataCy(handleDataCy).trigger("mousedown");
+    cy.get("#lessonSvg").trigger("mousemove", {
+      buttons: 1,
+      x: 301,
+      y: 200,
+    });
+    cy.get("#lessonSvg").trigger("mousemove", {
+      buttons: 1,
+      x: 302,
+      y: 200,
+    });
+    cy.get("#lessonSvg").trigger("mousemove", {
+      buttons: 1,
+      x: 400,
+      y: 200,
+    });
+    cy.get("#lessonSvg").trigger("mouseup");
+  },
+);
 
 Cypress.Commands.add("dataCy", (value: string) =>
   cy.get(`[data-cy="${value}"]`),
@@ -66,10 +122,12 @@ Cypress.Commands.add("openLesson", () => {
   cy.get('[data-cy="lessons"] > .v-btn__content').click();
   cy.login();
   cy.get('td:contains("test lesson")').click();
-  //cy.dataCy("pBar") == null || cy.dataCy("pBar").should("not.be.visible");
+  !cy.dataCy("pBar") || cy.dataCy("pBar").should("not.be.visible");
 });
 
 Cypress.Commands.add("clearBoard", () => {
+  cy.get('[row="0"] > [col="0"]').click({ force: true });
+  cy.get("body").type("0", { force: true });
   cy.get("#lessonSvg").trigger("mousedown", { buttons: 1, x: 0, y: 0 });
   cy.get("#lessonSvg").trigger("mousemove", { buttons: 1, x: 2, y: 2 });
   cy.get("#lessonSvg").trigger("mousemove", { buttons: 1, x: 3, y: 3 });
@@ -77,33 +135,34 @@ Cypress.Commands.add("clearBoard", () => {
   cy.get("#lessonSvg").trigger("mousemove", { buttons: 1, x: 1300, y: 700 });
   cy.get("#selection").trigger("mouseup");
 
-  cy.dataCy("delete_tool_button").click();
+  cy.dataCy("deleteToolButton").click();
+  cy.dataCy("confirmDelete").click();
 });
-
 
 Cypress.Commands.add(
   "selectArea",
   (x: number, y: number, width: number, height: number) => {
-    cy.get("#lessonSvg").trigger("mousedown", { x: x, y: y });
-
+    cy.get("#lessonSvg").trigger("mousedown", { buttons: 1, x: x, y: y });
     cy.get("#lessonSvg").trigger("mousemove", {
       buttons: 1,
       x: x + 1,
       y: y + 1,
     });
-
     cy.get("#lessonSvg").trigger("mousemove", {
       buttons: 1,
       x: x + 2,
       y: y + 2,
     });
-
+    cy.get("#lessonSvg").trigger("mousemove", {
+      buttons: 1,
+      x: x + width - 1,
+      y: y + height - 1,
+    });
     cy.get("#lessonSvg").trigger("mousemove", {
       buttons: 1,
       x: x + width,
       y: y + height,
     });
-
-    cy.get("#lessonSvg").trigger("mouseup");
+    cy.get("#selection").trigger("mouseup");
   },
 );

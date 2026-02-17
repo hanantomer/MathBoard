@@ -9,14 +9,14 @@ FOR /F "tokens=5 delims= " %%P IN ('netstat -a -n -o ^| findstr :13035') DO Task
 call tsc -b c:\dev\MathBoard\math-server\tsconfig.json
 call tsc -b c:\dev\MathBoard\math-messages\tsconfig.json
 
+start "server" node C:\dev\MathBoard\math-server\build\app.js
+
 cd C:\dev\MathBoard\math-ui3
 call npm run build
-
-start node C:\dev\MathBoard\math-messages\build\app.js
-start node C:\dev\MathBoard\math-server\build\app.js
-REM vite takes port from .env.test
-
 start npx vite -d -m test
+
+start "messgaes" node C:\dev\MathBoard\math-messages\build\app.js
+
 
 
 

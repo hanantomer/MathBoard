@@ -6,11 +6,19 @@
                 "label": "build",
                 "type": "shell",
                 "command": "tsc",
-                "dependsOn": [
-                    "build-db",
-                    "build-auth"
-                ],
+                "dependsOn": ["build-common", "build-db", "build-auth"],
                 "args": ["--project", "tsconfig.json"],
+                "problemMatcher": ["$tsc"],
+                "group": {
+                    "kind": "build",
+                    "isDefault": true
+                }
+            },
+            {
+                "label": "build-common",
+                "type": "shell",
+                "command": "tsc",
+                "args": ["--project", "../math-common/tsconfig.json"],
                 "problemMatcher": ["$tsc"],
                 "group": {
                     "kind": "build",

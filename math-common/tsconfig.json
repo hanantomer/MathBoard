@@ -1,6 +1,8 @@
 {
   "compilerOptions": {
     "composite": true,
+    "declaration": true,
+    "declarationMap": true,
     "target": "ESNext",
     "module": "CommonJS",
     "lib": ["ESNext", "DOM"],
@@ -11,7 +13,7 @@
     "esModuleInterop": true,
     "baseUrl": ".",
     "paths": {
-      "*": ["../node_modules/@types"],
+      "*": ["../node_modules/@types"]
     },
     "sourceMap": true,
     "resolveJsonModule": true

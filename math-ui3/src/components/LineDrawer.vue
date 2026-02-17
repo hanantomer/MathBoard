@@ -45,7 +45,8 @@
       }"
     ></line-handle>
     <line-handle
-      data-cy="lineRightHandle"`
+      data-cy="lineRightHandle"
+      `
       v-show="editModeStore.isLineMode()"
       drawing-mode="LINE_DRAWING"
       editing-mode="LINE_EDITING_RIGHT"
@@ -56,8 +57,10 @@
     ></line-handle>
 
     <svg
-      height="800"
-      width="1500"
+      :style="{
+        width: matrixSize.width,
+        height: matrixSize.height,
+      }"
       xmlns="http://www.w3.org/2000/svg"
       class="line-svg"
     >
@@ -73,7 +76,8 @@
         vector-effect="non-scaling-stroke"
         stroke-linecap="square"
         :stroke="lineColor"
-        data-cy="linedrawer"/>
+        data-cy="lineDrawer"
+      />
     </svg>
   </div>
 </template>
@@ -95,6 +99,7 @@ import lineWatcher from "./LineWatcher.vue";
 import lineHandle from "./LineHandle.vue";
 import useScreenHelper from "../helpers/screenHelper"; // Add this line
 import useNotationMutateHelper from "../helpers/notationMutateHelper"; // Add this line
+import { matrixSize } from "common/globals";
 
 const eventBus = useEventBus();
 const editModeStore = useEditModeStore();

@@ -116,7 +116,7 @@
       {{ item.tooltip }}
       <template v-slot:activator="{ props }">
         <v-btn
-          :data-cy="item.name.toLowerCase()"
+          :data-cy="item.name.toLowerCase()+'Button'"
           v-bind="props"
           icon
           x-small

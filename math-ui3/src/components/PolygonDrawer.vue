@@ -36,8 +36,10 @@
     />
 
     <svg
-      height="800"
-      width="1500"
+      :style="{
+        width: matrixSize.width,
+        height: matrixSize.height,
+      }"
       xmlns="http://www.w3.org/2000/svg"
       class="line-svg"
     >
@@ -57,18 +59,19 @@ import { computed, ref, watch } from "vue";
 import { useCellStore } from "../store/pinia/cellStore";
 import { useEditModeStore } from "../store/pinia/editModeStore";
 import { useNotationStore } from "../store/pinia/notationStore";
-import useWatchHelper from "../helpers/watchHelper";
+
 import {
   SlopeType,
   LineAttributes,
   MovementDirection,
   DotCoordinates,
-  LineNotationAttributes
+  LineNotationAttributes,
 } from "common/baseTypes";
 import useEventBus from "../helpers/eventBusHelper";
 import lineWatcher from "./LineWatcher.vue";
 import useScreenHelper from "../helpers/screenHelper"; // Add this line
 import useNotationMutateHelper from "../helpers/notationMutateHelper"; // Add this line
+import { matrixSize } from "common/globals";
 
 const eventBus = useEventBus();
 const editModeStore = useEditModeStore();
@@ -302,4 +305,3 @@ function getAdjustedEdge(point: DotCoordinates): DotCoordinates {
   return point;
 }
 </script>
-

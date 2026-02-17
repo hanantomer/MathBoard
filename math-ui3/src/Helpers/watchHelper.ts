@@ -1,6 +1,5 @@
 import { watch } from "vue";
 import { EditMode, BusEventType } from "common/unions";
-import { TextSyncUpdateData } from "common/globals";
 import { CellAttributes, NotationAttributes } from "common/baseTypes";
 import { useEditModeStore } from "../store/pinia/editModeStore";
 import { useCellStore } from "../store/pinia/cellStore";

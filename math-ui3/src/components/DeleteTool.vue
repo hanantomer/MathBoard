@@ -2,7 +2,7 @@
   <v-tooltip text="Delete" location="bottom">
     <template v-slot:activator="{ props }">
       <v-btn
-        cy-data="delete_tool_button"
+        data-cy="deleteToolButton"
         v-show="show"
         v-bind="props"
         icon

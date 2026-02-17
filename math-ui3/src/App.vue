@@ -187,7 +187,7 @@ import { useTitleStore } from "./store/pinia/titleStore";
 import { useEditModeStore } from "./store/pinia/editModeStore";
 import { useStudentStore } from "./store/pinia/studentStore";
 import { useCookies } from "vue3-cookies";
-import { ACCESS_TOKEN_NAME } from "../../math-common/src/globals";
+import { ACCESS_TOKEN_NAME } from "common/globals";
 import GlobalAlert from "./components/GlobalAlert.vue";
 
 const cookies = useCookies().cookies;
@@ -204,7 +204,7 @@ onMounted(() => {
 
 let onlineStudentsCount = computed(() => {
   return studentStore.getStudents().length;
-})
+});
 
 let title = computed(() => {
   return titleStore.getTitle();
@@ -264,7 +264,6 @@ function navContactUs() {
 }
 </script>
 <style>
-
 .title {
   margin-left: 20px !important;
 }
@@ -287,6 +286,4 @@ text {
 html {
   overflow: auto;
 }
-
-
 </style>

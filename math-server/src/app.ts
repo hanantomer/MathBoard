@@ -152,7 +152,7 @@ async function validateAuth(req: Request, res: Response, next: NextFunction) {
     }
 
     // omit authorization enforcement when registering or validating user
-    else if (req.url.indexOf("/api/users") == 0) {
+    else if (req.method === "POST" && req.url.indexOf("/api/users") == 0) {
         return next();
     }
 

@@ -145,7 +145,7 @@ watchHelper.watchMouseEvent(
 watchHelper.watchMouseEvent(
   ["AREA_SELECTED", "IMAGE_SELECTED", "TEXT_SELECTED", "ANNOTATION_SELECTED"],
   "EV_SVG_MOUSE_OR_TOUCH_DRAG",
-  moveSelectedNotation,
+  moveSelectedSingleNotation,
 );
 
 watchHelper.watchMouseEvent(
@@ -206,7 +206,7 @@ watchHelper.watchNotationSelection(
   selectAnnotation,
 );
 
-function moveSelectedNotation(e: MouseEvent) {
+function moveSelectedSingleNotation(e: MouseEvent) {
   if (!e.buttons) return;
   editModeStore.setEditMode("AREA_MOVING");
 }
@@ -392,6 +392,7 @@ function endSelect(e: MouseEvent) {
           cellStore.getSvgBoundingRect().top,
       },
     });
+
     if (notationStore.getSelectedNotations().length === 0) {
       editModeStore.setDefaultEditMode();
       return;
@@ -400,13 +401,15 @@ function endSelect(e: MouseEvent) {
 
   if (editModeStore.getEditMode() === "TEXT_AREA_SELECTING") {
     signalSelection();
+    editModeStore.setEditMode("TEXT_WRITING");
+    return;
   }
 
   console.debug(
     `selecting # ${notationStore.getSelectedNotations().length}  notations`,
   );
 
-  editModeStore.setNextEditMode();
+  editModeStore.setEditMode("AREA_SELECTED");
 }
 
 function onSelectionMouseDrag(e: MouseEvent) {
@@ -418,6 +421,8 @@ async function onSelectionMouseUp(e: MouseEvent) {
 }
 
 function moveSelectedNotations(e: MouseEvent) {
+  //editModeStore.setEditMode("AREA_MOVING");
+
   if (!e.buttons) return;
   // initial drag position
   if (!dragPosition.value.x) {

@@ -27,6 +27,9 @@ export default function useLineMatrixHelper() {
   function addLineNotations(enter: any) {
     return enter
       .append("line")
+      .attr("data-cy", () => {
+        return "line";
+      })
       .attr("id", (n: LineNotationAttributes) => {
         return n.uuid;
       })

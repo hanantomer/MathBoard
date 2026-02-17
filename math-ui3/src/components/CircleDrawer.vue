@@ -52,9 +52,11 @@
     ></line-handle>
 
     <svg
+      :style="{
+        width: matrixSize.width,
+        height: matrixSize.height,
+      }"
       id="curveSvgId"
-      height="800"
-      width="1500"
       class="line-svg"
       xmlns="http://www.w3.org/2000/svg"
       style="position: absolute; pointer-events: none"
@@ -76,8 +78,6 @@
 import lineHandle from "./LineHandle.vue";
 import lineWatcher from "./LineWatcher.vue";
 import useNotationMutateHelper from "../helpers/notationMutateHelper";
-import useWatchHelper from "../helpers/watchHelper";
-import useSelectionHelper from "../helpers/selectionHelper";
 import { computed, ref, onMounted } from "vue";
 import { useNotationStore } from "../store/pinia/notationStore";
 import { useEditModeStore } from "../store/pinia/editModeStore";
@@ -88,7 +88,7 @@ import {
   NotationAttributes,
   CircleNotationAttributes,
 } from "common/baseTypes";
-import useEventBusHelper from "../helpers/eventBusHelper";
+import { matrixSize } from "common/globals";
 
 const notationMutateHelper = useNotationMutateHelper();
 const notationStore = useNotationStore();
@@ -203,4 +203,3 @@ function moveCircle(moveX: number, moveY: number) {
   });
 }
 </script>
-

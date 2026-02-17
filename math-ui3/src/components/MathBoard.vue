@@ -26,13 +26,11 @@
     <circleDrawer></circleDrawer>
 
     <svg
-      style="
-        width: 1650px;
-        height: 795px;
-        margin-left: 10px;
-        margin-top: 10px;
-        background-color: white;
-      "
+      style="margin-left: 10px; margin-top: 10px; background-color: white"
+      :style="{
+        width: matrixSize.width,
+        height: matrixSize.height,
+      }"
       :id="svgId"
       xmlns="http://www.w3.org/2000/svg"
     >
@@ -94,9 +92,9 @@ import { useAnswerStore } from "../store/pinia/answerStore";
 import { CursorType, EditModeCursorType } from "common/unions";
 import useSelectionHelper from "../helpers/selectionHelper";
 import useKeyHelper from "../helpers/keyHelper";
-
 import floatingToolbar from "./FloatingToolbar.vue";
 import lessonStudents from "./LessonStudents.vue";
+import { matrixSize } from "common/globals";
 const notationLoadingHelper = useNotationLoadingHelper();
 const notationStore = useNotationStore();
 const cellStore = useCellStore();
@@ -319,6 +317,4 @@ path:hover {
 .sqrtsymbol:hover {
   font-size: 1.25em;
 }
-
-
 </style>

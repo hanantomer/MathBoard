@@ -58,9 +58,11 @@
     ></line-handle>
 
     <svg
+      :style="{
+        width: matrixSize.width,
+        height: matrixSize.height,
+      }"
       id="curveSvgId"
-      height="800"
-      width="1500"
       class="line-svg"
       xmlns="http://www.w3.org/2000/svg"
       style="position: absolute; pointer-events: none"
@@ -100,7 +102,8 @@ import {
 } from "common/baseTypes";
 
 import { useCellStore } from "../store/pinia/cellStore";
-import useSelectionHelper from "../helpers/selectionHelper";
+import { matrixSize } from "common/globals";
+
 const cellStore = useCellStore();
 
 const MIN_NUMBER_OF_POINTS = 6;
@@ -112,7 +115,7 @@ const eventBus = useEventBus();
 const notationStore = useNotationStore();
 const editModeStore = useEditModeStore();
 const visitedPointPrefix = "visitedPoint";
-const selectionHelper = useSelectionHelper();
+
 
 type Point = {
   x: number;

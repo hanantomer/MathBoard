@@ -1,6 +1,8 @@
 {
     "compilerOptions": {
         "composite": true,
+        "declaration": true,
+        "declarationMap": true,
         "target": "ES6",
         "module": "CommonJS",
         "lib": ["ES2021", "ESNext"],
