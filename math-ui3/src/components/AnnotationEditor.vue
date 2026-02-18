@@ -1,5 +1,6 @@
 <template>
   <input
+    data-cy="annotationEditor"
     v-show="show"
     class="annotation"
     maxlength="6"

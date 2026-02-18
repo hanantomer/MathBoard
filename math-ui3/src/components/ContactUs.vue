@@ -18,7 +18,7 @@
                 label="Name"
                 required
                 maxlength="25"
-                autocomplete
+                autocomplete="name"
               ></v-text-field>
               <v-text-field
                 v-model="email"
@@ -26,7 +26,7 @@
                 label="E-mail"
                 maxlength="50"
                 required
-                autocomplete
+                autocomplete="email"
               ></v-text-field>
               <v-textarea
                 v-model="message"
@@ -36,7 +36,6 @@
               ></v-textarea>
               <v-btn @click="submit">submit</v-btn>
               <v-btn @click="close">close</v-btn>
-              
             </form>
           </v-card-text>
         </v-card>

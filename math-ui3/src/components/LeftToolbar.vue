@@ -274,12 +274,12 @@ const modeButtons: Array<{
   },
 
   {
-    name: "polygon",
+    name: "polyline",
     show_condition: true,
     editMode: "POLYGON_STARTED" as EditMode,
-    tooltip: "Polygon",
+    tooltip: "Polyline",
     icon_class: "material-symbols-outlined",
-    icon: "polyline",
+    icon: "vector-polyline",
     overlay_icon: "",
     rotate: 0,
     tabIndex: 3,
