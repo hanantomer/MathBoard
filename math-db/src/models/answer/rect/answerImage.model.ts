@@ -1,0 +1,65 @@
+import { Model, Column, BelongsTo, ForeignKey, DataType, AllowNull } from "sequelize-typescript";
+import Color from "../../color.model";
+import AnswerDecorator from "../../answer/answerDecorator";
+import User from "../../user.model";
+import Answer from "../../answer/answer.model";
+import {
+    AnswerRectAttributes,
+    AnswerRectCreationAttributes,
+} from "../../../../../math-common/build/answerTypes";
+
+
+
+@AnswerDecorator("AnswerImage")
+export default class AnswerImage extends Model<
+    AnswerRectAttributes,
+    AnswerRectCreationAttributes
+> {
+    notationType = "IMAGE";
+    boardType = "ANSWER";
+
+    @AllowNull(false)
+    @Column({ type: DataType.UUID, defaultValue: DataType.UUIDV4 })
+    uuid!: string;
+
+    @ForeignKey(() => User)
+    userId!: number;
+
+    @BelongsTo(() => User, {
+        foreignKey: {
+            allowNull: false,
+        },
+    })
+    user!: User;
+
+    @ForeignKey(() => Answer)
+    answerId!: number;
+
+    @BelongsTo(() => Answer, {
+        foreignKey: {
+            allowNull: false,
+        },
+    })
+    answer!: Answer;
+
+    @AllowNull(false)
+    @Column({ type: DataType.INTEGER })
+    toCol!: number;
+
+    @AllowNull(false)
+    @Column({ type: DataType.INTEGER })
+    fromRow!: number;
+
+    @AllowNull(false)
+    @Column({ type: DataType.INTEGER })
+    toRow!: number;
+
+    @AllowNull(false)
+    @Column({ type: DataType.TEXT })
+    value!: string;
+
+    @BelongsTo(() => Color, {
+        foreignKey: { name: "colorId", field: "colorId", allowNull: true },
+    })
+    color!: Color;
+}

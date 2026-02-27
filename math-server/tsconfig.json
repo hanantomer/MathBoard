@@ -1,0 +1,35 @@
+{
+    "compilerOptions": {
+        "composite": true, 
+        "target": "ES6",
+        "module": "CommonJS",
+        "lib": ["ES2021", "ESNext"],
+        "outDir": "./build",
+        "rootDir": "src",
+        "strict": true,
+        "noImplicitAny": true,
+        "esModuleInterop": true,
+        "experimentalDecorators": true,
+        "emitDecoratorMetadata": true,
+        "baseUrl": ".",
+        "paths": {
+            "*": ["../node_modules/@types"],
+            "auth/*": ["../math-auth/src/*"]
+        },
+        "skipLibCheck": true,
+        "sourceMap": true,
+        "resolveJsonModule": true,
+    },
+    "ts-node": {
+        // Tell ts-node CLI to install the --loader automatically
+        "esm": true
+    },
+    "files": ["./src/app.ts"],
+    "references": [
+        { "path": "../math-db" },
+        { "path": "../math-auth" },
+        { "path": "../math-common" }
+    ],
+
+    "exclude": ["node_modules", "build/**/*"]
+}

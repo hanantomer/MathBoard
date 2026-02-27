@@ -1,0 +1,19 @@
+{
+  "compilerOptions": {
+    "preserveConstEnums": true,
+    "composite": true,
+    "sourceMap": true,
+    "outDir": "./build",
+    "target": "esnext",
+    "useDefineForClassFields": true,
+    "module": "esnext",
+    "moduleResolution": "Node",
+    "strict": true,
+    "resolveJsonModule": true,
+    "esModuleInterop": true,
+    "lib": ["ESNext"],
+    "skipLibCheck": true,
+    "noImplicitThis": false,
+  },
+  "exclude": ["node_modules"]
+}
