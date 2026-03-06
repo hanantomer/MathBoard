@@ -193,18 +193,21 @@ export default function useShapeDrawingHelper() {
   }
 
   function resetDrawing(e: MouseEvent | null) {
-    showMatrixLine();
-    if (e) {
-      notationStore.resetSelectedNotations();
-      selectionHelper.selectClickedPosition(e);
-      return;
-    }
+    setTimeout(() => {
+      showMatrixLine();
+      if (e) {
+        notationStore.resetSelectedNotations();
+        selectionHelper.selectClickedPosition(e);
+        return;
+      }
+    }, 10);
   }
 
   return {
     setLineInitialPosition,
     drawNewLine,
     selectLine,
+    hideMatrixLine,
     showMatrixLine,
     resetDrawing,
     modifyLine,

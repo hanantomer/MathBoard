@@ -11,7 +11,7 @@ describe("e2e", () => {
 
     cy.get("#lessonSvg").trigger("mousedown", {
       buttons: 0,
-      x: 380,
+      x: 350,
       y: 500,
       force: true,
     });
@@ -22,31 +22,31 @@ describe("e2e", () => {
 
     cy.get(".sqrt").should("exist");
 
-    cy.get(".sqrt").trigger("mousedown").trigger("mouseup");
+    cy.get(".sqrt").click({ force: true, multiple: true });
 
-    cy.dataCy("sqrtRightHandle").trigger("mousedown");
-
-    cy.dataCy("sqrtRightHandle").trigger("mousemove", {
+    cy.dataCy("sqrtRightHandle").trigger("mousedown", {
       buttons: 1,
-      x: 551,
-      y: 500,
       force: true,
     });
-    cy.dataCy("sqrtRightHandle").trigger("mousemove", {
-      buttons: 1,
-      x: 552,
-      y: 500,
-      force: true,
-    });
-    cy.dataCy("sqrtRightHandle")
+
+    cy.get("#lessonSvg")
       .trigger("mousemove", {
         buttons: 1,
-        x: 600,
-        y: 500,
         force: true,
+        x: 861,
+        y: 500,
+      })
+      .trigger("mousemove", {
+        buttons: 1,
+        force: true,
+        x: 992,
+        y: 500,
       })
       .trigger("mouseup");
 
-    cy.get(".sqrt").invoke("outerWidth").should("be.gt", 50);
+    cy.get('[row="1"] > [col="1"]').click();
+    cy.get('[row="1"] > [col="1"]').click();
+
+    cy.get(".sqrt").invoke("outerWidth").should("be.gt", 90);
   });
 });

@@ -77,51 +77,58 @@ describe("e2e", () => {
         force: true,
       });
 
-
     cy.screenshot("fraction-moved");
 
     // small pause to let the UI settle after drag
-     cy.get('[row="1"] > [col="1"]').click({ force: true });
+    cy.get('[row="1"] > [col="1"]').click({ force: true });
 
     // verify nominator
-    cy.get('foreignObject[row="13"][col="23"] > div > p').should("exist").and("include.text", "6");
-    cy.get('foreignObject[row="13"][col="24"] > div > p').should("exist").and("include.text", "1");
-    cy.get('foreignObject[row="13"][col="25"] > div > p').should("exist").and("include.text", "+");
-    cy.get('foreignObject[row="13"][col="26"] > div > p').should("exist").and("include.text", "1");
-    cy.get('foreignObject[row="13"][col="27"] > div > p').should("exist").and("include.text", "1");
-    cy.get('foreignObject[row="13"][col="28"] > div > p').should("exist").and("include.text", "y");
-  });
+    cy.get('foreignObject[row="13"][col="23"] > div > p')
+      .should("exist")
+      .and("include.text", "3");
+    cy.get('foreignObject[row="13"][col="24"] > div > p')
+      .should("exist")
+      .and("include.text", "1");
+    cy.get('foreignObject[row="13"][col="25"] > div > p')
+      .should("exist")
+      .and("include.text", "+");
+    cy.get('foreignObject[row="13"][col="26"] > div > p')
+      .should("exist")
+      .and("include.text", "1");
+    cy.get('foreignObject[row="13"][col="27"] > div > p')
+      .should("exist")
+      .and("include.text", "1");
+    cy.get('foreignObject[row="13"][col="28"] > div > p')
+      .should("exist")
+      .and("include.text", "x");
 
-    // // cy.get('foreignObject[row="13"][col="24"] > div > p').should(
-    // //   "include.text",
-    // //   "1",
-    // // );
-    // // cy.get('foreignObject[row="13"][col="25"] > div > p').should(
-    // //   "include.text",
-    // //   "+",
-    // // );
-    // // cy.get('foreignObject[row="13"][col="26"] > div > p').should(
-    // //   "include.text",
-    // //   "1",
-    // // );
-    // // cy.get('foreignObject[row="13"][col="27"] > div > p').should(
-    // //   "include.text",
-    // //   "1",
-    // // );
-    // // cy.get('foreignObject[row="13"][col="28"] > div > p').should(
-    // //   "include.text",
-    // //   "x",
-    // // );
-
-    // // verify fraction line
-    // cy.dataCy("division").should("exist");
+    // verify fraction line
+    cy.dataCy("division").should("exist");
 
     // // verify denominator
-    // //cy.get('foreignObject[row="14"][col="23"] > div> p').should("include.text", "6");
-    // //cy.get('foreignObject[row="14"][col="24"] > div > p').should("include.text", "1");
-    // //cy.get('foreignObject[row="14"][col="25"] > div > p').should("include.text", "+");
-    // //cy.get('foreignObject[row="14"][col="26"] > div > p').should("include.text", "1");
-    // //cy.get('foreignObject[row="14"][col="27"] > div > p').should("include.text", "1");
-    // //cy.get('foreignObject[row="14"][col="28"] > div > p').should("include.text", "y");
-//  });
+    cy.get('foreignObject[row="14"][col="23"] > div> p').should(
+      "include.text",
+      "6",
+    );
+    cy.get('foreignObject[row="14"][col="24"] > div > p').should(
+      "include.text",
+      "1",
+    );
+    cy.get('foreignObject[row="14"][col="25"] > div > p').should(
+      "include.text",
+      "+",
+    );
+    cy.get('foreignObject[row="14"][col="26"] > div > p').should(
+      "include.text",
+      "1",
+    );
+    cy.get('foreignObject[row="14"][col="27"] > div > p').should(
+      "include.text",
+      "1",
+    );
+    cy.get('foreignObject[row="14"][col="28"] > div > p').should(
+      "include.text",
+      "y",
+    );
+  });
 });

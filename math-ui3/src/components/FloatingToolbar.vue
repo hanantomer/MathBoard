@@ -1,6 +1,6 @@
 <template>
   <v-menu
-    v-model="show"
+    v-model="isOpen"
     class="floatingToolbar"
     :close-on-content-click="false"
     transition="scale-transition"
@@ -20,7 +20,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from "vue";
+import { computed, ref, watch } from "vue";
 import ColorSelector from "./ColorSelector.vue";
 import LinePropertiesSelector from "./LinePropertiesSelector.vue";
 import RotationSelector from "./RotationSelector.vue";
@@ -31,11 +31,19 @@ import UseAuthorizationHelper from "../helpers/authorizationHelper";
 const notationStore = useNotationStore();
 const authorizationHelper = UseAuthorizationHelper();
 
-const show = computed(() => {
+const shouldShow = computed(() => {
   return (
     notationStore.getSelectedNotations().length > 0 &&
     authorizationHelper.canEdit()
   );
+});
+
+// `isOpen` is a writable ref bound to v-menu. We watch the computed
+// `shouldShow` to open/close the menu when selection/permissions change,
+// while still allowing the user to close the menu manually.
+const isOpen = ref(false);
+watch(shouldShow, (val) => {
+  isOpen.value = val;
 });
 </script>
 

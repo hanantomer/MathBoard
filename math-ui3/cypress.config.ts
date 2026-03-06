@@ -2,6 +2,8 @@ import { defineConfig } from "cypress";
 
 export default defineConfig({
   e2e: {
+    defaultCommandTimeout: 10000,
+    experimentalRunAllSpecs: true,
     video: false,
     numTestsKeptInMemory: 0,
     watchForFileChanges: false,

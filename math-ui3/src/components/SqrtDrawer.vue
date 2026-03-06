@@ -76,6 +76,8 @@
 import { computed, ref } from "vue";
 import useNotationMutateHelper from "../helpers/notationMutateHelper";
 import useScreenHelper from "../helpers/screenHelper";
+import useSelectionHelper from "../helpers/selectionHelper";
+import useShapeDrawingHelperr from "../helpers/shapeDrawingHelper";
 import { useNotationStore } from "../store/pinia/notationStore";
 import { useCellStore } from "../store/pinia/cellStore";
 import { useEditModeStore } from "../store/pinia/editModeStore";
@@ -94,7 +96,6 @@ import lineWatcher from "./LineWatcher.vue";
 import useWatchHelper from "../helpers/watchHelper";
 
 import { sqrtDeltaY } from "common/globals";
-import selectionHelper from "src/helpers/selectionHelper";
 
 const notationStore = useNotationStore();
 const editModeStore = useEditModeStore();
@@ -102,6 +103,8 @@ const cellStore = useCellStore();
 const notationMutateHelper = useNotationMutateHelper();
 const screenHelper = useScreenHelper();
 const watchHelper = useWatchHelper();
+const selectionHelper = useSelectionHelper();
+const shapeDrawingHelper = useShapeDrawingHelperr();
 
 let linePosition = ref(<LineAttributes>{
   p1x: 0,
@@ -149,7 +152,7 @@ let handleY = computed(() => {
 
 watchHelper.watchEveryEditModeChange(setInitialPosition);
 
-function setInitialPosition(editMode: EditMode) {
+async function setInitialPosition(editMode: EditMode) {
   if (editMode !== "SQRT_STARTED") {
     return;
   }
@@ -168,12 +171,12 @@ function setInitialPosition(editMode: EditMode) {
 
   linePosition.value.p1x = p.x - 10;
   linePosition.value.p2x = p.x + cellStore.getCellHorizontalWidth() * 4;
-
   linePosition.value.p1y = nearestRowY + sqrtDeltaY;
-
   linePosition.value.p2y = linePosition.value.p1y;
 
-  endDrawing();
+  var sqrtNotation = await endDrawing();
+  selectionHelper.selectNotation(sqrtNotation);
+  shapeDrawingHelper.hideMatrixLine(sqrtNotation);
 }
 
 function drawLine(p: DotCoordinates) {
@@ -194,16 +197,12 @@ async function endDrawing(): Promise<string> {
   let row = Math.round(
     linePosition.value.p1y / cellStore.getCellVerticalHeight(),
   );
-
   const uuid = await saveSqrt({ fromCol: fromCol, toCol: toCol, row: row });
-
-  editModeStore.setDefaultEditMode();
-
   return uuid;
 }
 
 function modify(p: DotCoordinates) {
-  linePosition.value.p2x = p.x;
+  linePosition.value.p2x = p.x + cellStore.getSvgBoundingRect().left;
 }
 
 async function saveSqrt(sqrtAttributes: MultiCellAttributes): Promise<string> {
@@ -214,7 +213,9 @@ async function saveSqrt(sqrtAttributes: MultiCellAttributes): Promise<string> {
     };
 
     return await notationMutateHelper.updateSqrtNotation(updatedSqrt);
-  } else return await notationMutateHelper.addSqrtNotation(sqrtAttributes);
+  } else {
+    return await notationMutateHelper.addSqrtNotation(sqrtAttributes);
+  }
 }
 
 function selectSqrt(notation: NotationAttributes) {

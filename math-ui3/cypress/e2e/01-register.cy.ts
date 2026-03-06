@@ -7,7 +7,7 @@ describe("e2e", () => {
     cy.visit("http://localhost:13035");
     cy.get(".mdi-account").click({ multiple: true });
     // register
-    cy.get('[data-cy="register"] > .v-btn__content').click();
+    cy.get('[data-cy="register"] > .v-btn__content').click({ force: true });
     cy.get('[data-cy="register_fname"]').type("hanan");
     cy.get('[data-cy="register_lname"]').type("tomer");
     cy.get('[data-cy="register_email"]').type("hanantomer@gmail.com");

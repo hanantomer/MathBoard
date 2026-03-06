@@ -21231,3 +21231,24 @@ math-ui3/node_modules_/yocto-queue/index.d.ts
 math-ui3/node_modules_/yocto-queue/index.js
 math-ui3/node_modules_/yocto-queue/license
 math-ui3/node_modules_/yocto-queue/package.json
+math-ui3/cypress/screenshots/All E2E Specs/fraction-created (1).png
+math-ui3/cypress/screenshots/All E2E Specs/fraction-created (2).png
+math-ui3/cypress/screenshots/All E2E Specs/fraction-created.png
+math-ui3/cypress/screenshots/All E2E Specs/fraction-moved (1).png
+math-ui3/cypress/screenshots/All E2E Specs/fraction-moved (2).png
+math-ui3/cypress/screenshots/All E2E Specs/fraction-moved.png
+math-ui3/cypress/screenshots/All E2E Specs/fraction-selected (1).png
+math-ui3/cypress/screenshots/All E2E Specs/fraction-selected (2).png
+math-ui3/cypress/screenshots/All E2E Specs/fraction-selected.png
+math-ui3/cypress/screenshots/All E2E Specs/fraction-created (3).png
+math-ui3/cypress/screenshots/All E2E Specs/fraction-created (4).png
+math-ui3/cypress/screenshots/All E2E Specs/fraction-created (5).png
+math-ui3/cypress/screenshots/All E2E Specs/fraction-moved (3).png
+math-ui3/cypress/screenshots/All E2E Specs/fraction-moved (4).png
+math-ui3/cypress/screenshots/All E2E Specs/fraction-moved (5).png
+math-ui3/cypress/screenshots/All E2E Specs/fraction-selected (3).png
+math-ui3/cypress/screenshots/All E2E Specs/fraction-selected (4).png
+math-ui3/cypress/screenshots/All E2E Specs/fraction-selected (5).png
+math-ui3/cypress/screenshots/All E2E Specs/fraction-created (6).png
+math-ui3/cypress/screenshots/All E2E Specs/fraction-moved (6).png
+math-ui3/cypress/screenshots/All E2E Specs/fraction-selected (6).png
