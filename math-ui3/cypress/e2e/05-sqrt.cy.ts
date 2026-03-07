@@ -22,7 +22,9 @@ describe("e2e", () => {
 
     cy.get(".sqrt").should("exist");
 
-    cy.get(".sqrt").click({ force: true, multiple: true });
+    cy.wait(1000);
+
+    cy.get(".sqrt").click();
 
     cy.dataCy("sqrtRightHandle").trigger("mousedown", {
       buttons: 1,
@@ -47,6 +49,6 @@ describe("e2e", () => {
     cy.get('[row="1"] > [col="1"]').click();
     cy.get('[row="1"] > [col="1"]').click();
 
-    cy.get(".sqrt").invoke("outerWidth").should("be.gt", 90);
+    cy.get(".sqrt").invoke("outerWidth").should("be.gt", 150);
   });
 });

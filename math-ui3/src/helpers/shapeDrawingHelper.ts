@@ -22,6 +22,9 @@ export default function useShapeDrawingHelper() {
     // advance from a "*_STARTED" state to corresponding drawing state
     const current = editModeStore.getEditMode();
     switch (current) {
+      case "POLYGON_STARTED":
+        editModeStore.setEditMode("POLYGON_DRAWING");
+        break;
       case "LINE_STARTED":
         editModeStore.setEditMode("LINE_DRAWING");
         break;
@@ -192,14 +195,13 @@ export default function useShapeDrawingHelper() {
     }
   }
 
-  function resetDrawing(e: MouseEvent | null) {
+  function resetDrawing() {
     setTimeout(() => {
+      //showMatrixLine();
+      // notationStore.resetSelectedNotations();
+      // selectionHelper.selectClickedPosition(e);
       showMatrixLine();
-      if (e) {
-        notationStore.resetSelectedNotations();
-        selectionHelper.selectClickedPosition(e);
-        return;
-      }
+      editModeStore.setDefaultEditMode();
     }, 10);
   }
 
