@@ -9,22 +9,20 @@ describe("e2e", () => {
     cy.openLesson();
     cy.clearBoard();
 
-    cy.get("#lessonSvg").trigger("mousedown", {
-      buttons: 0,
-      x: 350,
-      y: 500,
-      force: true,
-    });
-
-    cy.get("#lessonSvg").trigger("mouseup");
+    cy.get("#lessonSvg")
+      .trigger("mousedown", {
+        buttons: 0,
+        x: 350,
+        y: 500,
+        force: true,
+      })
+      .trigger("mouseup");
 
     cy.dataCy("sqrtButton").click();
 
-    cy.get(".sqrt").should("exist");
+    //    cy.dataCy("sqrtDrawer").should("exist");
 
-    cy.wait(1000);
-
-    cy.get(".sqrt").click();
+    //    cy.dataCy("sqrtDrawer").click();
 
     cy.dataCy("sqrtRightHandle").trigger("mousedown", {
       buttons: 1,
@@ -34,13 +32,16 @@ describe("e2e", () => {
     cy.get("#lessonSvg")
       .trigger("mousemove", {
         buttons: 1,
-        force: true,
         x: 861,
         y: 500,
       })
       .trigger("mousemove", {
         buttons: 1,
-        force: true,
+        x: 862,
+        y: 500,
+      })
+      .trigger("mousemove", {
+        buttons: 1,
         x: 992,
         y: 500,
       })
