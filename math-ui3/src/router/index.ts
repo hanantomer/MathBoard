@@ -10,12 +10,6 @@ const routes: Array<RouteRecordRaw> = [
     meta: { requiresAuth: false },
     props: true,
   },
-  {
-    path: "/contactUs",
-    component: () => import("@/components/ContactUs.vue"),
-    name: "contactUs",
-    meta: { requiresAuth: false },
-  },
 
   {
     path: "/login",

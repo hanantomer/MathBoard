@@ -89,6 +89,19 @@
         </template>
       </v-tooltip>
 
+      <v-tooltip text="Send Feedback" location="bottom">
+        <template v-slot:activator="{ props }">
+          <v-btn
+            v-bind="props"
+            color="secondary"
+            icon
+            v-on:click="showFeedbackDialog = true"
+          >
+            <v-icon>mdi-message-outline</v-icon>
+          </v-btn>
+        </template>
+      </v-tooltip>
+
       <!-- sign in / register -->
       <v-tooltip text="Sign in" location="bottom">
         <template v-slot:activator="{ props }">
@@ -131,6 +144,10 @@
     <v-main>
       <GlobalAlert></GlobalAlert>
       <router-view></router-view>
+
+      <!-- Contact dialogs -->
+      <ContactUs v-model="showFeedbackDialog" title="Send Feedback"></ContactUs>
+      <ContactUs v-model="showContactUsDialog" title="Contact Us"></ContactUs>
     </v-main>
 
     <v-footer color="primary" padless dense app>
@@ -168,7 +185,7 @@
             class="ml-1"
             height="25"
             flat
-            v-on:click="navContactUs"
+            v-on:click="showContactUsDialog = true"
           >
             Contact Us
           </v-btn>
@@ -180,6 +197,7 @@
 
 <script setup lang="ts">
 import { useRouter } from "vue-router";
+import { ref } from "vue";
 import { onMounted, computed } from "vue";
 import useAxiosHelper from "./helpers/axiosHelper";
 import { useUserStore } from "./store/pinia/userStore";
@@ -189,6 +207,7 @@ import { useStudentStore } from "./store/pinia/studentStore";
 import { useCookies } from "vue3-cookies";
 import { ACCESS_TOKEN_NAME } from "common/globals";
 import GlobalAlert from "./components/GlobalAlert.vue";
+import ContactUs from "./components/ContactUs.vue";
 
 const cookies = useCookies().cookies;
 const { initAxiosInterceptors } = useAxiosHelper();
@@ -232,6 +251,9 @@ const showOnlineStudents = computed(() => {
 
 const isTeacher = computed(() => userStore.isTeacher());
 
+const showFeedbackDialog = ref(false);
+const showContactUsDialog = ref(false);
+
 function showLoginDialog() {
   router.push("/login");
   //router.go(0);
@@ -259,9 +281,6 @@ function navToAnswers() {
   router.push("/answers");
 }
 
-function navContactUs() {
-  router.push("/contactUs");
-}
 </script>
 <style>
 .title {

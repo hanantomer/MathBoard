@@ -1,15 +1,16 @@
 <template>
   <v-row justify="center">
     <v-dialog
-      v-model="show"
+      :model-value="modelValue"
+      @update:model-value="(val) => emit('update:modelValue', val)"
       max-width="400px"
       persistent
-      @keydown.esc="show = false"
+      @keydown.esc="close"
     >
       <v-form ref="contactForm">
         <v-card>
           <v-card-title>
-            <span class="headline">Contact Us</span>
+            <span class="headline">{{ title || "Contact Us" }}</span>
           </v-card-title>
           <v-card-text>
             <form>
@@ -48,12 +49,21 @@
 import { ref } from "vue";
 import useContactUs from "../helpers/contactUsHelper";
 import { useRouter } from "vue-router";
+
+const props = defineProps<{
+  modelValue: boolean;
+  title?: string;
+}>();
+
+const emit = defineEmits<{
+  "update:modelValue": [value: boolean];
+}>();
+
 const router = useRouter();
 
 const contactUs = useContactUs();
 
 let contactForm = ref(null);
-let show = ref(true);
 let name = ref("");
 let email = ref("");
 let message = ref("");
@@ -67,13 +77,13 @@ async function submit() {
   let formVlidated: any = await (contactForm.value as any).validate();
   if (formVlidated) {
     contactUs.contactUs(name.value, email.value, message.value);
-    show.value = false;
+    emit("update:modelValue", false);
     router.push("/");
   }
 }
 
 function close() {
-  show.value = false;
+  emit("update:modelValue", false);
   router.push("/");
 }
 </script>
