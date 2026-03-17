@@ -136,7 +136,7 @@ Cypress.Commands.add("clearBoard", () => {
   cy.get("#selection").trigger("mouseup");
 
   cy.dataCy("deleteToolButton").click();
-  cy.dataCy("confirmDelete").click();
+  
 });
 
 Cypress.Commands.add(

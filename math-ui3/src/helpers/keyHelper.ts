@@ -121,6 +121,14 @@ export default function () {
       altReleased = false;
     }
 
+    if (code === "Escape") {
+      if (editModeStore.getGlobalEditMode() === "FREE_SKETCH") {
+        editModeStore.setGlobalEditMode("TEXT");
+        editModeStore.setDefaultEditMode();
+        return;
+      }
+    }
+
     if (editModeStore.getEditMode() === "TEXT_WRITING") return;
 
     if (editModeStore.getEditMode() === "ANNOTATION_WRITING") return;

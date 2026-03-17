@@ -116,15 +116,14 @@
       {{ item.tooltip }}
       <template v-slot:activator="{ props }">
         <v-btn
-          :data-cy="item.name.toLowerCase()+'Button'"
+          :data-cy="item.name.toLowerCase() + 'Button'"
           v-bind="props"
           icon
           x-small
           fab
           dark
-          :color="
-            item.editMode === editModeStore.getEditMode() ? 'green' : 'white'
-          "
+          :color="getButtonColor(item)"
+          :class="getButtonClass(item)"
           v-on:click="startEditMode(item)"
           :disabled="!editEnabled"
           :aria-label="item.tooltip"
@@ -204,7 +203,7 @@ import { useNotationStore } from "../store/pinia/notationStore";
 import { useEditModeStore } from "../store/pinia/editModeStore";
 import { computed } from "vue";
 import { useUserStore } from "../store/pinia/userStore";
-import { EditMode } from "common/unions";
+import { EditMode, GlobalEditMode } from "common/unions";
 import { useToolbarNavigation } from "../helpers/ToolbarNavigationHelper";
 import useAuthorizationHelper from "../helpers/authorizationHelper";
 import useWatchHelper from "../helpers/watchHelper";
@@ -241,7 +240,7 @@ const showUploadDialog = ref(false);
 const modeButtons: Array<{
   name: string;
   show_condition: any;
-  editMode: EditMode;
+  editMode: EditMode | GlobalEditMode;
   tooltip: string;
   icon_class: string;
   icon: string;
@@ -272,7 +271,17 @@ const modeButtons: Array<{
     rotate: 0,
     tabIndex: 2,
   },
-
+  {
+    name: "freeSketch",
+    show_condition: true,
+    editMode: "FREE_SKETCH" as GlobalEditMode,
+    tooltip: "toggle free sketch mode",
+    icon_class: "",
+    icon: "mdi-pencil",
+    overlay_icon: "",
+    rotate: 0,
+    tabIndex: 3,
+  },
   {
     name: "polyline",
     show_condition: true,
@@ -282,7 +291,7 @@ const modeButtons: Array<{
     icon: "polyline",
     overlay_icon: "",
     rotate: 0,
-    tabIndex: 3,
+    tabIndex: 4,
   },
   {
     name: "Line",
@@ -293,7 +302,7 @@ const modeButtons: Array<{
     icon: "horizontal_rule",
     overlay_icon: "",
     rotate: 120,
-    tabIndex: 4,
+    tabIndex: 5,
   },
   {
     name: "DivisionLine",
@@ -465,29 +474,76 @@ const editEnabled = computed(() => {
 
 function startEditMode(item: any) {
   notationStore.resetSelectedNotations();
+
+  // Toggle free sketch mode: clicking again while already in the free sketch edit mode
+  // will return to the default mode.
+  if (item.editMode === "FREE_SKETCH") {
+    if (editModeStore.getGlobalEditMode() === "FREE_SKETCH") {
+      editModeStore.setGlobalEditMode("TEXT");
+    } else {
+      editModeStore.setGlobalEditMode("FREE_SKETCH");
+    }
+    editModeStore.setDefaultEditMode();
+    return;
+  }
+
   editModeStore.setEditMode(item.editMode); // watcher sets activeState to 0
+}
+
+function isModeActive(item: any) {
+  if (item.editMode === "FREE_SKETCH") {
+    return editModeStore.getGlobalEditMode() === "FREE_SKETCH";
+  }
+  return item.editMode === editModeStore.getEditMode();
+}
+
+function getButtonColor(item: any) {
+  // if (item.editMode === "FREE_SKETCH") {
+  //   return isModeActive(item)
+  //     ? "deep-purple accent-4"
+  //     : "deep-purple lighten-2";
+  // }
+  return isModeActive(item) ? "green" : "white";
+}
+
+function getButtonClass(item: any) {
+  if (item.editMode !== "FREE_SKETCH") return "";
+  return isModeActive(item)
+    ? "free-sketch-button active"
+    : "free-sketch-button";
 }
 </script>
 
 <style>
 .vertical-toolbar {
+  position: fixed;
+  top: 90px;
+  left: 0;
   flex-basis: content;
   flex-flow: column wrap !important;
   width: 70px !important;
   height: max-content !important;
   padding: 4px !important;
-  margin-top: 30px;
-  margin-left: 30px;
+  z-index: 1000;
 }
 
 .vertical-toolbar .v-toolbar__content {
   flex-flow: column wrap !important;
-  width: 45px !important;
+  width: 53px !important;
   height: max-content !important;
   padding: 2px !important;
 }
 
 .vertical-toolbar-column {
   flex-basis: content;
+}
+
+.free-sketch-button {
+  box-shadow: 0 0 0 2px rgba(244, 243, 243, 0.25);
+  border-radius: 50% !important;
+}
+
+.free-sketch-button.active {
+  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.75);
 }
 </style>

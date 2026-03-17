@@ -16,13 +16,13 @@ describe("e2e", () => {
       "divisionLineRightHandle",
       170,
       260,
-      255,
+      265,
       260,
     );
 
     // nominator
 
-    cy.get('[row="8"] > [col="12"]').click();
+    cy.get('[row="7"] > [col="11"]').click();
     cy.get("body").type("3");
     cy.get("body").type("1");
     cy.get("body").type("+");
@@ -31,7 +31,7 @@ describe("e2e", () => {
     cy.get("body").type("x");
 
     // denominator
-    cy.get('[row="9"] > [col="12"]').click();
+    cy.get('[row="8"] > [col="11"]').click();
     cy.get("body").type("6");
     cy.get("body").type("1");
     cy.get("body").type("+");
@@ -39,12 +39,8 @@ describe("e2e", () => {
     cy.get("body").type("1");
     cy.get("body").type("y");
 
-    cy.screenshot("fraction-created");
-
-    // select fraction
+    // // select fraction
     cy.selectArea(100, 200, 190, 100);
-
-    cy.screenshot("fraction-selected");
 
     cy.wait(500);
 
@@ -77,56 +73,54 @@ describe("e2e", () => {
         force: true,
       });
 
-    cy.screenshot("fraction-moved");
-
     // small pause to let the UI settle after drag
     cy.get('[row="1"] > [col="1"]').click({ force: true });
 
-    // verify nominator
-    cy.get('foreignObject[row="13"][col="23"] > div > p')
+    // // verify nominator
+    cy.get('foreignObject[row="12"][col="20"] > div > p')
       .should("exist")
       .and("include.text", "3");
-    cy.get('foreignObject[row="13"][col="24"] > div > p')
+    cy.get('foreignObject[row="12"][col="21"] > div > p')
       .should("exist")
       .and("include.text", "1");
-    cy.get('foreignObject[row="13"][col="25"] > div > p')
+    cy.get('foreignObject[row="12"][col="22"] > div > p')
       .should("exist")
       .and("include.text", "+");
-    cy.get('foreignObject[row="13"][col="26"] > div > p')
+    cy.get('foreignObject[row="12"][col="23"] > div > p')
       .should("exist")
       .and("include.text", "1");
-    cy.get('foreignObject[row="13"][col="27"] > div > p')
+    cy.get('foreignObject[row="12"][col="24"] > div > p')
       .should("exist")
       .and("include.text", "1");
-    cy.get('foreignObject[row="13"][col="28"] > div > p')
+    cy.get('foreignObject[row="12"][col="25"] > div > p')
       .should("exist")
       .and("include.text", "x");
 
     // verify fraction line
     cy.dataCy("division").should("exist");
 
-    // // verify denominator
-    cy.get('foreignObject[row="14"][col="23"] > div> p').should(
-      "include.text",
-      "6",
-    );
-    cy.get('foreignObject[row="14"][col="24"] > div > p').should(
+    // // // verify denominator
+     cy.get('foreignObject[row="13"][col="20"] > div> p').should(
+       "include.text",
+       "6",
+     );
+    cy.get('foreignObject[row="13"][col="21"] > div > p').should(
       "include.text",
       "1",
     );
-    cy.get('foreignObject[row="14"][col="25"] > div > p').should(
+    cy.get('foreignObject[row="13"][col="22"] > div > p').should(
       "include.text",
       "+",
     );
-    cy.get('foreignObject[row="14"][col="26"] > div > p').should(
+    cy.get('foreignObject[row="13"][col="23"] > div > p').should(
       "include.text",
       "1",
     );
-    cy.get('foreignObject[row="14"][col="27"] > div > p').should(
+    cy.get('foreignObject[row="13"][col="24"] > div > p').should(
       "include.text",
       "1",
     );
-    cy.get('foreignObject[row="14"][col="28"] > div > p').should(
+    cy.get('foreignObject[row="13"][col="25"] > div > p').should(
       "include.text",
       "y",
     );

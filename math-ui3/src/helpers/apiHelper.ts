@@ -7,6 +7,7 @@ import {
   CurveNotationAttributes,
   SqrtNotationAttributes,
   CircleNotationAttributes,
+  FreeSketchNotationAttributes,
 } from "common/baseTypes";
 import {
   UserAttributes,
@@ -310,6 +311,27 @@ export default function useApiHelper() {
     }
   }
 
+  async function updateFreeSketchNotationAttributes(
+    freeSketch: FreeSketchNotationAttributes,
+  ) {
+    try {
+      return axios.put(
+        baseURL +
+          `/${freeSketch.boardType.toLowerCase()}${freeSketch.notationType.toLowerCase()}s`,
+        {
+          uuid: freeSketch.uuid,
+          points: freeSketch.points,
+        },
+      );
+    } catch (error) {
+      throw new Error(
+        `Failed to update free sketch notation attributes: ${
+          (error as AxiosError).message
+        }`,
+      );
+    }
+  }
+
   async function getLesson(lessonUUId: string): Promise<LessonAttributes> {
     try {
       const { data } = await axios.get<LessonAttributes>(
@@ -545,6 +567,7 @@ export default function useApiHelper() {
     updateLineNotationAttributes,
     updateCurveNotationAttributes,
     updateCircleNotationAttributes,
+    updateFreeSketchNotationAttributes,
     updateNotationValue,
     updateNotation,
     deleteNotation,

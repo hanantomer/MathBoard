@@ -11,6 +11,7 @@ import {
   RectNotationAttributes,
   LineNotationAttributes,
   CurveNotationAttributes,
+  FreeSketchNotationAttributes,
   CircleNotationAttributes,
   isRect,
   isLine,
@@ -111,6 +112,12 @@ export const useNotationStore = defineStore("notation", () => {
     return Array.from(notations.value.values())
       .filter((n) => isCurve(n.notationType))
       .map((n) => n as RectNotationAttributes);
+  }
+
+  function getFreeSketchNotations(): FreeSketchNotationAttributes[] {
+    return Array.from(notations.value.values())
+      .filter((n) => n.notationType === "FREESKETCH")
+      .map((n) => n as FreeSketchNotationAttributes);
   }
 
   function getCopiedNotations(): NotationAttributes[] {
@@ -345,7 +352,7 @@ export const useNotationStore = defineStore("notation", () => {
 
   function selectNotationsOfRectCoordinates(rect: RectCoordinates) {
     getLinetNotations()
-      .concat(getCurveNotations())
+      .concat(getCurveNotations(), getFreeSketchNotations())
       .forEach((l) => {
         let doIntersects = true;
         switch (l.notationType) {
@@ -365,6 +372,12 @@ export const useNotationStore = defineStore("notation", () => {
           case "CURVE":
             doIntersects = checkCurveIntersection(
               l as CurveNotationAttributes,
+              rect,
+            );
+            break;
+          case "FREESKETCH":
+            doIntersects = checkFreeSketchIntersection(
+              l as FreeSketchNotationAttributes,
               rect,
             );
             break;
@@ -390,6 +403,95 @@ export const useNotationStore = defineStore("notation", () => {
     if (Math.max(y1, y2) < rect.topLeft.y) return false;
     if (Math.min(y1, y2) > rect.bottomRight.y) return false;
     return true;
+  }
+
+  function checkFreeSketchIntersection(
+    freeSketch: FreeSketchNotationAttributes,
+    rect: RectCoordinates,
+  ): boolean {
+    const points = freeSketch.points ?? [];
+    if (points.length === 0) return false;
+
+    // Quick bounding box rejection
+    let minX = Infinity;
+    let maxX = -Infinity;
+    let minY = Infinity;
+    let maxY = -Infinity;
+
+    for (const p of points) {
+      minX = Math.min(minX, p.x);
+      maxX = Math.max(maxX, p.x);
+      minY = Math.min(minY, p.y);
+      maxY = Math.max(maxY, p.y);
+    }
+
+    if (maxX < rect.topLeft.x) return false;
+    if (minX > rect.bottomRight.x) return false;
+    if (maxY < rect.topLeft.y) return false;
+    if (minY > rect.bottomRight.y) return false;
+
+    // If any point is inside the selection rectangle, we have an intersection.
+    if (points.some((p) => isPointInRect(p.x, p.y, rect))) return true;
+
+    // Check if any segment of the sketch intersects with any edge of the rectangle.
+    for (let i = 0; i < points.length - 1; i++) {
+      const p1 = points[i];
+      const p2 = points[i + 1];
+
+      if (
+        lineIntersectsLine(
+          p1.x,
+          p1.y,
+          p2.x,
+          p2.y,
+          rect.topLeft.x,
+          rect.topLeft.y,
+          rect.bottomRight.x,
+          rect.topLeft.y,
+        ) ||
+        lineIntersectsLine(
+          p1.x,
+          p1.y,
+          p2.x,
+          p2.y,
+          rect.bottomRight.x,
+          rect.topLeft.y,
+          rect.bottomRight.x,
+          rect.bottomRight.y,
+        ) ||
+        lineIntersectsLine(
+          p1.x,
+          p1.y,
+          p2.x,
+          p2.y,
+          rect.bottomRight.x,
+          rect.bottomRight.y,
+          rect.topLeft.x,
+          rect.bottomRight.y,
+        ) ||
+        lineIntersectsLine(
+          p1.x,
+          p1.y,
+          p2.x,
+          p2.y,
+          rect.topLeft.x,
+          rect.bottomRight.y,
+          rect.topLeft.x,
+          rect.topLeft.y,
+        )
+      ) {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
+  function checkFreeSkectIntersection(
+    freeSketch: FreeSketchNotationAttributes,
+    rect: RectCoordinates,
+  ): boolean {
+    return checkFreeSketchIntersection(freeSketch, rect);
   }
 
   function checkSqrtIntersection(
@@ -574,6 +676,7 @@ export const useNotationStore = defineStore("notation", () => {
     getRectNotations,
     getLinetNotations,
     getCurveNotations,
+    getFreeSketchNotations,
     getSelectedNotations,
     hasSelectedNotations,
     isSymbolAdjecentToLine,

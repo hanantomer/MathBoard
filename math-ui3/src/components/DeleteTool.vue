@@ -32,7 +32,7 @@ const show = computed(() => {
 });
 
 function deleteSelectedNotations() {
-  notationMutateHelper.approveDeleteSelectedNotations();
+  notationMutateHelper.deleteSelectedNotations();
 }
 
 </script>

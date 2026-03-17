@@ -99,6 +99,10 @@ export type CurveAttributes = {
   cpy: number; // control point y
 };
 
+export type FreeSketchAttributes = {
+  points: DotCoordinates[];
+};
+
 export type CircleAttributes = {
   cx: number; // center x
   cy: number; // center y
@@ -149,6 +153,11 @@ export type CircleNotationAttributes =
   EntityAttributes &
     NotationAttributes &
     CircleAttributes;
+
+export type FreeSketchNotationAttributes =
+  EntityAttributes &
+    NotationAttributes &
+    FreeSketchAttributes;
 
 export type RectNotationAttributes =
   EntityAttributes &
@@ -204,6 +213,12 @@ export type CircleNotationCreationAttributes =
     "uuid"
   >;
 
+export type FreeSketchNotationCreationAttributes =
+  Omit<
+    NotationAttributes & FreeSketchAttributes,
+    "uuid"
+  >;
+
 export type ExponentNotationCreationAttributes =
   Omit<
     EntityAttributes &
@@ -238,13 +253,13 @@ export function isLine(n: NotationType): boolean {
 }
 
 export function isCurve(
-  n: NotationType
+  n: NotationType,
 ): boolean {
   return n === "CURVE";
 }
 
 export function isCellNotationType(
-  n: NotationType
+  n: NotationType,
 ): boolean {
   return (
     n === "SQRTSYMBOL" ||
@@ -255,7 +270,7 @@ export function isCellNotationType(
 }
 
 export function isMultiCell(
-  n: NotationType
+  n: NotationType,
 ): boolean {
   return (
     n ===

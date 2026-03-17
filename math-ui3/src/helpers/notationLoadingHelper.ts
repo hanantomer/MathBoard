@@ -5,6 +5,7 @@ import {
   CurveNotationAttributes,
   CircleNotationAttributes,
   LineNotationAttributes,
+  FreeSketchNotationAttributes,
 } from "common/baseTypes";
 
 import useApiHelper from "./apiHelper";
@@ -83,6 +84,13 @@ export default function notationLoadingHelper() {
           boardType,
           parentUUId,
         );
+      case "FREESKETCH":
+        return await apiHelper.getNotations<FreeSketchNotationAttributes>(
+          notationType,
+          boardType,
+          parentUUId,
+        );
+
       case "POLYGON":
       case "SQRTSYMBOL":
         return [];

@@ -1,5 +1,4 @@
 import {
-  //lineColor,
   htmlColor,
   selectionColor,
   getDefaultFontSize,
@@ -14,7 +13,6 @@ import {
   NotationAttributes,
   PointNotationAttributes,
   RectNotationAttributes,
-  SqrtNotationAttributes,
 } from "common/baseTypes";
 
 import useMatrixCellHelper from "./matrixCellHelper";
@@ -127,7 +125,8 @@ export default function useMatrixHelperUtils() {
       case "CIRCLE":
       case "SQRT":
       case "SQRTSYMBOL":
-        return n.selected ? selectionColor : n.color?.value ?? htmlColor;
+      case "FREESKETCH":
+        return n.selected ? selectionColor : (n.color?.value ?? htmlColor);
       default:
         return htmlColor;
     }
@@ -137,10 +136,6 @@ export default function useMatrixHelperUtils() {
     notation: PointNotationAttributes,
   ): boolean {
     const maxLineDistance = 1;
-
-    //    if (notationStore.isSymbolPartOfFraction(notation)) {
-    //      return false;
-    //    }
 
     if (notationStore.isSymbolAdjecentToLine(notation, maxLineDistance)) {
       return true;

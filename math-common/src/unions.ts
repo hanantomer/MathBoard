@@ -33,7 +33,8 @@ export type BusEventType =
   | "EV_DIVISIONLINE_SELECTED"
   | "EV_LINE_SELECTED"
   | "EV_NOTATION_SELECTED"
-  | "EV_TEXT_SYNC";
+  | "EV_TEXT_SYNC"
+  | "EV_FREE_SKETCH_SELECTED";
 
 export const NotationTypeValues = [
   "SYMBOL",
@@ -49,6 +50,7 @@ export const NotationTypeValues = [
   "TEXT",
   "ANNOTATION",
   "IMAGE",
+  "FREESKETCH",
 ] as const;
 
 export type NotationType =
@@ -67,6 +69,10 @@ export type CursorType =
   | "progress"
   | "text"
   | "wait";
+
+export type GlobalEditMode =
+  | "TEXT"
+  | "FREE_SKETCH";
 
 export type EditMode =
   | "LESSONS_SELECTION" //  after click on lessons icon
@@ -114,6 +120,9 @@ export type EditMode =
   | "SQRT_DRAWING" // sqrt drawing started
   | "SQRT_EDITING" // sqrt line handle clicked
   | "SQRT_SELECTED" // sqrt selected
+  | "FREE_SKETCH_STARTED" // free sketch button pressed
+  | "FREE_SKETCH_DRAWING" // free sketch drawing started
+  | "FREE_SKETCH_SELECTED" // free sketch selected
   | "COLORIZING" // color selected
   | "DELETING" // mouse clicked following delete button pressed
   | "AREA_SELECTING" // user started selecting area
@@ -125,7 +134,7 @@ export type EditMode =
   | "SEMICHECKMARK_STARTED" // semicheck button pressed
   | "XMARK_STARTED" // xmark button pressed
   | "STUDENTS_MONITORING" // teacher is monitoring students' boards
-  | "CARTESIAN_SYSTEM_STARTED"// cartesian system button pressed;
+  | "CARTESIAN_SYSTEM_STARTED"; // cartesian system button pressed;
 
 export const EditModeNotationType = new Map<
   EditMode,
@@ -171,6 +180,9 @@ export const EditModeNotationType = new Map<
   ["SQRT_DRAWING", "SQRT"],
   ["SQRT_SELECTED", "SQRT"],
   ["SQRT_EDITING", "SQRT"],
+  ["FREE_SKETCH_STARTED", "FREESKETCH"],
+  ["FREE_SKETCH_DRAWING", "FREESKETCH"],
+  ["FREE_SKETCH_SELECTED", "FREESKETCH"],
   ["COLORIZING", "SYMBOL"],
   ["DELETING", "SYMBOL"],
   ["AREA_SELECTING", "SYMBOL"],
@@ -211,6 +223,9 @@ export const EditModeCursorType = new Map<
   ["SQRT_DRAWING", "auto"],
   ["SQRT_SELECTED", "auto"],
   ["SQRT_EDITING", "auto"],
+  ["FREE_SKETCH_STARTED", "auto"],
+  ["FREE_SKETCH_DRAWING", "auto"],
+  ["FREE_SKETCH_SELECTED", "auto"],
   ["COLORIZING", "auto"],
   ["DELETING", "auto"],
   ["AREA_SELECTING", "auto"],

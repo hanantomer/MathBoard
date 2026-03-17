@@ -288,6 +288,8 @@ function navToAnswers() {
 }
 
 body {
+  font-size: 16px; ;
+  font-family: 'Kalam', cursive !important;
   -webkit-touch-callout: none;
   -webkit-user-select: none;
   -khtml-user-select: none;
@@ -303,6 +305,6 @@ text {
 }
 
 html {
-  overflow: auto;
+  overflow-y: auto;
 }
 </style>

@@ -4,17 +4,15 @@ import {
   defaultdCellStroke,
   sqrtSymbolSuffix,
 } from "common/globals";
-import {
-  SqrtNotationAttributes,
-} from "common/baseTypes";
+import { SqrtNotationAttributes } from "common/baseTypes";
 import { useCellStore } from "../store/pinia/cellStore";
 import { useNotationStore } from "../store/pinia/notationStore";
 import { cellSpace } from "common/globals";
 import { NotationAttributes } from "common/baseTypes";
 import useLineHelper from "./matrixLineHelper";
 import useCurveHelper from "./matrixCurveHelper";
-import useIntegralHelper from "./matrixIntegralHelper";
 import useCircleHelper from "./matrixCircleHelper";
+import useFreeSketchHelper from "./matrixFreeSketchHelper";
 import useMatrixCellHelper from "./matrixCellHelper";
 
 import useHtmlHelper from "./matrixHtmlHelper";
@@ -23,6 +21,7 @@ const matrixCellHelper = useMatrixCellHelper();
 const lineHelper = useLineHelper();
 const curveHelper = useCurveHelper();
 const circleHelper = useCircleHelper();
+const freeSketchHelper = useFreeSketchHelper();
 const cellStore = useCellStore();
 const notationStore = useNotationStore();
 const htmlHelper = useHtmlHelper();
@@ -133,36 +132,28 @@ export default function useMatrixHelper() {
       notations.filter((n) => n.notationType === "CIRCLE"),
     );
 
+    freeSketchHelper.mergeFreeSketchNotations(
+      svgId,
+      notations.filter((n) => n.notationType === "FREESKETCH"),
+    );
+
     curveHelper.mergeCurveNotations(
       svgId,
       notations.filter((n) => n.notationType === "CURVE"),
     );
 
-    // integralHelper.mergeIntegralNotations(
-    //   svgId,
-    //   notations.filter(
-    //     (n) =>
-    //       n.notationType === "SYMBOL" &&
-    //       (n as PointNotationAttributes).value.indexOf("∫") !== -1,
-    //   ),
-    // );
-
     htmlHelper.mergeHtmlNotations(
       svgId,
       notations.filter(
         (n) =>
-          // !(
-          //   n.notationType === "SYMBOL" &&
-          //   (n as PointNotationAttributes).value.indexOf("∫") !== -1
-          // ) &&
-          (n.notationType === "ANNOTATION" ||
-            n.notationType === "EXPONENT" ||
-            n.notationType === "LOGBASE" ||
-            n.notationType === "SQRT" ||
-            n.notationType === "TEXT" ||
-            n.notationType === "IMAGE" ||
-            n.notationType === "SQRTSYMBOL" ||
-            n.notationType === "SYMBOL"),
+          n.notationType === "ANNOTATION" ||
+          n.notationType === "EXPONENT" ||
+          n.notationType === "LOGBASE" ||
+          n.notationType === "SQRT" ||
+          n.notationType === "TEXT" ||
+          n.notationType === "IMAGE" ||
+          n.notationType === "SQRTSYMBOL" ||
+          n.notationType === "SYMBOL",
       ),
       svgElement!,
     );

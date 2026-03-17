@@ -557,12 +557,15 @@ function addEachCharAsSymbol(item: string) {
 </script>
 
 <style scoped>
+
 .special-symbols-expansion {
   margin-top: 10px;
   margin-left: 10px;
   max-width: 210px;
   background-color: #453737;
   max-height: 100px;
+  position: fixed;
+  right: 0px;
 }
 
 :deep(.v-expansion-panel-text__wrapper) {

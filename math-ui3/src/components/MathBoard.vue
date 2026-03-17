@@ -3,6 +3,7 @@
   <floatingToolbar></floatingToolbar>
   <annotationEditor></annotationEditor>
   <freeTextEditor></freeTextEditor>
+  <freeSketchDrawer></freeSketchDrawer>
   <textAreaSync></textAreaSync>
   <exponentEditor></exponentEditor>
   <areaSelector></areaSelector>
@@ -16,7 +17,7 @@
   ></v-progress-linear>
   <statusBar></statusBar>
   <cartesianSystemDrawer></cartesianSystemDrawer>
-  <div style="display: flex">
+  <div style="display: flex;margin-left: 100px;margin-right: 100px;">
     <leftToolbar></leftToolbar>
     <sqrtDrawer></sqrtDrawer>
     <lineDrawer></lineDrawer>
@@ -66,6 +67,7 @@
 
 <script setup lang="ts">
 import freeTextEditor from "./FreeTextEditor.vue";
+import freeSketchDrawer from "./FreeSketchDrawer.vue";
 import textAreaSync from "./TextAreaSync.vue";
 import StatusBar from "./StatusBar.vue";
 import annotationEditor from "./AnnotationEditor.vue";
@@ -285,6 +287,7 @@ async function load() {
 
 line:hover,
 circle:hover,
+polygon:hover,
 path:hover {
   stroke-width: 5.5;
 }
@@ -317,4 +320,10 @@ path:hover {
 .sqrtsymbol:hover {
   font-size: 1.25em;
 }
+
+.free-sketch {
+  max-width: 50px;
+  max-height: 50px;
+}
+
 </style>

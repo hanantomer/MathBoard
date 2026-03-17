@@ -58,7 +58,7 @@ const authorizationHelper = UseAuthorizationHelper();
 const notationStore = useNotationStore();
 const selectionHelper = useSelectionHelper();
 
-let lineTypes: Array<NotationType> = ["CURVE", "CIRCLE", "LINE", "ANNOTATION"];
+let lineTypes: Array<NotationType> = ["CURVE", "CIRCLE", "LINE", "ANNOTATION", "FREESKETCH"];
 
 let selectionPosition = ref({
   x1: 0, //left
@@ -244,6 +244,10 @@ function cancelTextSelectionWhenUserClickedOutside(e: MouseEvent) {
 function startAreaSelection(e: MouseEvent) {
   if (!authorizationHelper.canEdit()) return;
 
+  if(editModeStore.getGlobalEditMode() === "FREE_SKETCH"){
+    return;
+  }
+
   horizontalDirection = "NONE";
   verticalDirection = "NONE";
 
@@ -272,7 +276,7 @@ async function handleKeyUp(e: KeyboardEvent) {
   switch (e.code) {
     case "Backspace":
     case "Delete":
-      notationMutationHelper.approveDeleteSelectedNotations();
+      notationMutationHelper.deleteSelectedNotations();
       editModeStore.setDefaultEditMode();
       break;
     case "ArrowLeft":

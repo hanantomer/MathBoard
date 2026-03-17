@@ -23,6 +23,9 @@ import {
   SqrtNotationAttributes,
   DotCoordinates,
   AnnotationNotationAttributes,
+  FreeSketchAttributes,
+  FreeSketchNotationAttributes,
+  FreeSketchNotationCreationAttributes,
 } from "common/baseTypes";
 
 import { clonedNotationUUIdPrefix } from "common/globals";
@@ -253,6 +256,16 @@ export default function notationMutateHelper() {
         case "CIRCLE": {
           (n as CircleNotationAttributes).cx += deltaX;
           (n as CircleNotationAttributes).cy += deltaY;
+          break;
+        }
+
+        case "FREESKETCH": {
+          (n as FreeSketchNotationAttributes).points = (
+            n as FreeSketchNotationAttributes
+          ).points.map((p) => ({
+            x: p.x + deltaX,
+            y: p.y + deltaY,
+          }));
           break;
         }
 
@@ -572,13 +585,19 @@ export default function notationMutateHelper() {
                           cy: Math.round((notation as any)["cy"]),
                           r: Math.round((notation as any)["r"]),
                         }
-                      : // annotation
-                        "x" in notation && "y" in notation
+                      : // free sketch
+                        "points" in notation &&
+                          Array.isArray((notation as any)["points"])
                         ? {
-                            x: Math.round((notation as any)["x"]),
-                            y: Math.round((notation as any)["y"]),
+                            points: (notation as any)["points"],
                           }
-                        : null;
+                        : // annotation
+                          "x" in notation && "y" in notation
+                          ? {
+                              x: Math.round((notation as any)["x"]),
+                              y: Math.round((notation as any)["y"]),
+                            }
+                          : null;
 
     return cooerdinates;
   }
@@ -647,6 +666,14 @@ export default function notationMutateHelper() {
     await apiHelper.updateCircleNotationAttributes(circle);
     notationStore.addNotation(circle, true, true);
     userOutgoingOperations.syncOutgoingUpdateNotation(circle);
+  }
+
+  async function updateFreeSketchNotation(
+    freeSketch: FreeSketchNotationAttributes,
+  ) {
+    await apiHelper.updateFreeSketchNotationAttributes(freeSketch);
+    notationStore.addNotation(freeSketch, true, true);
+    userOutgoingOperations.syncOutgoingUpdateNotation(freeSketch);
   }
 
   function addCellNotation(notation: PointNotationCreationAttributes) {
@@ -891,14 +918,14 @@ export default function notationMutateHelper() {
     }
   }
 
-  function approveDeleteSelectedNotations() {
-    globalAlertStore.open(
-      "Confirm Deletion",
-      "Are you sure you want to delete the selected notation(s)?",
-      "warning",
-      deleteSelectedNotations,
-    );
-  }
+  // function approveDeleteSelectedNotations() {
+  //   globalAlertStore.open(
+  //     "Confirm Deletion",
+  //     "Are you sure you want to delete the selected notation(s)?",
+  //     "warning",
+  //     deleteSelectedNotations,
+  //   );
+  // }
 
   function addImageNotationByColAndRow(
     fromCol: number,
@@ -1072,6 +1099,19 @@ export default function notationMutateHelper() {
     return addNotation(circleNotation);
   }
 
+  async function addFreeSketchNotation(
+    freeSketchAttributes: FreeSketchAttributes,
+  ): Promise<string> {
+    let freeSketchNotation: FreeSketchNotationCreationAttributes = {
+      points: freeSketchAttributes.points,
+      boardType: notationStore.getParent().type,
+      parentUUId: notationStore.getParent().uuid,
+      notationType: "FREESKETCH",
+      user: userStore.getCurrentUser()!,
+    };
+    return await addNotation(freeSketchNotation);
+  }
+
   function cloneNotation(notation: Readonly<NotationAttributes>) {
     let clonedNotation = { ...notation } as any;
     clonedNotation.id = undefined;
@@ -1087,6 +1127,8 @@ export default function notationMutateHelper() {
         return addCurveNotation(clonedNotation);
       case "CIRCLE":
         return addCircleNotation(clonedNotation);
+      case "FREESKETCH":
+        return addFreeSketchNotation(clonedNotation);
       case "ANNOTATION":
       case "SQRTSYMBOL":
       case "SYMBOL":
@@ -1250,6 +1292,7 @@ export default function notationMutateHelper() {
     addNotation,
     addCircleNotation,
     addCurveNotation,
+    addFreeSketchNotation,
     addImageNotation,
     addMarkNotation,
     addLineNotation,
@@ -1260,7 +1303,7 @@ export default function notationMutateHelper() {
     addExponentNotation,
     addCartesianSystemAtClickedPoint,
     cloneNotation,
-    approveDeleteSelectedNotations,
+    //approveDeleteSelectedNotations,
     deleteSelectedNotations,
     moveSelectedNotationsAtPixelScale,
     moveSelectedNotationsAtCellScale,
@@ -1272,6 +1315,7 @@ export default function notationMutateHelper() {
     updateLineNotation,
     updateCurveNotation,
     updateCircleNotation,
+    updateFreeSketchNotation,
     updateNotation,
     selectNotation,
     selectNotationByCell,

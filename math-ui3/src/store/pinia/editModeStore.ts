@@ -1,11 +1,25 @@
 import { defineStore } from "pinia";
-import { EditMode, EditModeNotationType, NotationType } from "common/unions";
+import {
+  GlobalEditMode,
+  EditMode,
+  EditModeNotationType,
+  NotationType,
+} from "common/unions";
 import { ref } from "vue";
 
 export const useEditModeStore = defineStore("editMode", () => {
   let editMode = ref<EditMode>("CELL_SELECTED");
+  let globalEditMode = ref<GlobalEditMode>("TEXT");
 
   const defaultEditMode: EditMode = "CELL_SELECTED";
+
+  function setGlobalEditMode(mode: GlobalEditMode) {
+    globalEditMode.value = mode;
+  }
+
+  function getGlobalEditMode() {
+    return globalEditMode.value;
+  }
 
   function isAreaSelectionOrMovingMode() {
     return (
@@ -16,8 +30,16 @@ export const useEditModeStore = defineStore("editMode", () => {
     );
   }
 
-  function isCurveEditingControlPointMode() {
-    return editMode.value === "CURVE_EDITING_CONTROLֹ_POINT";
+  function isFreeSketchDrawingMode() {
+    return editMode.value === "FREE_SKETCH_DRAWING";
+  }
+
+  function isFreeSketchSelectedMode() {
+    return editMode.value === "FREE_SKETCH_SELECTED";
+  }
+
+  function isFreeSketchStartedMode() {
+    return editMode.value === "FREE_SKETCH_STARTED";
   }
 
   function isResizeMode() {
@@ -26,6 +48,10 @@ export const useEditModeStore = defineStore("editMode", () => {
 
   function isAreaSelectedMode() {
     return editMode.value === "AREA_SELECTED";
+  }
+
+  function isCurveEditingControlPointMode() {
+    return editMode.value === "CURVE_EDITING_CONTROLֹ_POINT";
   }
 
   function isSelectionMode() {
@@ -257,6 +283,7 @@ export const useEditModeStore = defineStore("editMode", () => {
 
   return {
     getEditMode,
+    getGlobalEditMode,
     getDefaultEditMode,
     getNotationTypeByEditMode,
     isAreaSelectedMode,
@@ -301,7 +328,11 @@ export const useEditModeStore = defineStore("editMode", () => {
     isSelectFromListMode,
     isPolygonDrawingMode,
     isCurveEditingControlPointMode,
+    isFreeSketchDrawingMode,
+    isFreeSketchSelectedMode,
+    isFreeSketchStartedMode,
     setEditMode,
+    setGlobalEditMode,
     setDefaultEditMode,
   };
 });

@@ -5,12 +5,10 @@ import { sqrtSymbolSuffix } from "common/globals";
 import { useEditModeStore } from "../store/pinia/editModeStore";
 import { useCellStore } from "../store/pinia/cellStore";
 import { useNotationStore } from "../store/pinia/notationStore";
-import useSelectionHelper from "./selectionHelper";
 
 const editModeStore = useEditModeStore();
 const cellStore = useCellStore();
 const notationStore = useNotationStore();
-const selectionHelper = useSelectionHelper();
 
 export default function useShapeDrawingHelper() {
   let hiddenNotationUUID: string | null = null;
@@ -117,41 +115,45 @@ export default function useShapeDrawingHelper() {
   ) {
     const uuid = await saveDrawingCallback(e);
 
-    if (!editModeStore.isPolygonDrawingMode()) {
-      notationStore.selectNotation(uuid);
-      if (uuid) {
-        hideMatrixLine(uuid); // dont show created line yet since we back to edit mode
-      }
-      // determine next mode based on current state
-      const current = editModeStore.getEditMode();
-      switch (current) {
-        case "LINE_DRAWING":
-        case "LINE_EDITING_LEFT":
-        case "LINE_EDITING_RIGHT":
-          editModeStore.setEditMode("LINE_SELECTED");
-          break;
-        case "DIVISIONLINE_DRAWING":
-        case "DIVISIONLINE_EDITING_LEFT":
-        case "DIVISIONLINE_EDITING_RIGHT":
-          editModeStore.setEditMode("DIVISIONLINE_SELECTED");
-          break;
-        case "CURVE_DRAWING":
-        case "CURVE_EDITING_LEFT":
-        case "CURVE_EDITING_RIGHT":
-        case "CURVE_EDITING_CONTROLֹ_POINT":
-          editModeStore.setEditMode("CURVE_SELECTED");
-          break;
-        case "CIRCLE_DRAWING":
-        case "CIRCLE_EDITING":
-          editModeStore.setEditMode("CIRCLE_SELECTED");
-          break;
-        case "SQRT_DRAWING":
-        case "SQRT_EDITING":
-          editModeStore.setEditMode("SQRT_SELECTED");
-          break;
-        default:
-          editModeStore.setDefaultEditMode();
-      }
+    if (editModeStore.isPolygonDrawingMode()) return;
+
+    if (editModeStore.isFreeSketchDrawingMode()) {
+      editModeStore.setDefaultEditMode();
+      return;
+    }
+    notationStore.selectNotation(uuid);
+    if (uuid) {
+      hideMatrixLine(uuid); // dont show created line yet since we back to edit mode
+    }
+    // determine next mode based on current state
+    const current = editModeStore.getEditMode();
+    switch (current) {
+      case "LINE_DRAWING":
+      case "LINE_EDITING_LEFT":
+      case "LINE_EDITING_RIGHT":
+        editModeStore.setEditMode("LINE_SELECTED");
+        break;
+      case "DIVISIONLINE_DRAWING":
+      case "DIVISIONLINE_EDITING_LEFT":
+      case "DIVISIONLINE_EDITING_RIGHT":
+        editModeStore.setEditMode("DIVISIONLINE_SELECTED");
+        break;
+      case "CURVE_DRAWING":
+      case "CURVE_EDITING_LEFT":
+      case "CURVE_EDITING_RIGHT":
+      case "CURVE_EDITING_CONTROLֹ_POINT":
+        editModeStore.setEditMode("CURVE_SELECTED");
+        break;
+      case "CIRCLE_DRAWING":
+      case "CIRCLE_EDITING":
+        editModeStore.setEditMode("CIRCLE_SELECTED");
+        break;
+      case "SQRT_DRAWING":
+      case "SQRT_EDITING":
+        editModeStore.setEditMode("SQRT_SELECTED");
+        break;
+      default:
+        editModeStore.setDefaultEditMode();
     }
   }
 

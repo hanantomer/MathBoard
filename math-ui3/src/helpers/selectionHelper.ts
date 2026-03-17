@@ -84,6 +84,10 @@ export default function selectionHelper() {
         selectCircleNotation(notation.uuid);
         return true;
       },
+      FREESKETCH: () => {
+        selectFreeSketchNotation(notation.uuid);
+        return true;
+      },
       EXPONENT: () => {
         selectNotation(notation.uuid);
         return true;
@@ -206,6 +210,10 @@ export default function selectionHelper() {
     eventBus.emit("EV_CURVE_SELECTED", notation);
   }
 
+  function selectFreeSketchNotation(uuid: string) {
+    notationStore.selectNotation(uuid);
+  }
+
   function selectCircleNotation(uuid: String) {
     const notation = notationStore.getNotation(uuid)!;
     editModeStore.setEditMode("CIRCLE_SELECTED");
@@ -227,8 +235,10 @@ export default function selectionHelper() {
   async function setSelectedCell(cell: CellAttributes, setEditMode: boolean) {
     const notationStore = useNotationStore();
 
-    if(cellStore.getSelectedCell()?.row === cell.row &&
-       cellStore.getSelectedCell()?.col === cell.col) {
+    if (
+      cellStore.getSelectedCell()?.row === cell.row &&
+      cellStore.getSelectedCell()?.col === cell.col
+    ) {
       return;
     }
 
@@ -305,6 +315,9 @@ export default function selectionHelper() {
         break;
       case "CURVE":
         selectCurveNotation(uuid);
+        break;
+      case "FREESKETCH":
+        selectFreeSketchNotation(uuid);
         break;
       case "CIRCLE":
         selectCircleNotation(uuid);

@@ -10,6 +10,7 @@ import {
   BoardAttributes,
   EntityAttributes,
   NotationAttributes,
+  FreeSketchAttributes,
 } from "./baseTypes";
 
 // answer
@@ -31,7 +32,6 @@ type AnswerNotationAttributes = {
 };
 
 // line
-
 
 export type AnswerLineAttributes =
   EntityAttributes &
@@ -67,21 +67,22 @@ export type AnswerPointAttributes =
 export type AnswerPointCreationAttributes = Omit<
   AnswerPointAttributes,
   keyof EntityAttributes
-  >;
+>;
 
 // annotation
 export type AnswerAnnotationAttributes =
-  AnnotationAttributes & 
+  AnnotationAttributes &
     EntityAttributes &
     NotationAttributes &
     CellAttributes &
     SingleValueAttributes &
-  AnswerNotationAttributes;
-    
-export type AnswerAnnotationCreationAttributes = Omit<
-  AnswerAnnotationAttributes,
-  keyof EntityAttributes
->;
+    AnswerNotationAttributes;
+
+export type AnswerAnnotationCreationAttributes =
+  Omit<
+    AnswerAnnotationAttributes,
+    keyof EntityAttributes
+  >;
 
 // rect
 
@@ -108,3 +109,17 @@ export type AnswerCircleCreationAttributes = Omit<
   AnswerCircleAttributes,
   keyof EntityAttributes
 >;
+
+// free sketch
+
+export type AnswerFreeSketchAttributes =
+  EntityAttributes &
+    NotationAttributes &
+    FreeSketchAttributes &
+    AnswerNotationAttributes;
+
+export type AnswerFreeSketchCreationAttributes =
+  Omit<
+    AnswerFreeSketchAttributes,
+    keyof EntityAttributes
+  >;

@@ -46,7 +46,6 @@
     ></line-handle>
     <line-handle
       data-cy="lineRightHandle"
-      `
       v-show="editModeStore.isLineMode()"
       drawing-mode="LINE_DRAWING"
       editing-mode="LINE_EDITING_RIGHT"

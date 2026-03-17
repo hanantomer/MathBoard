@@ -6,7 +6,7 @@ const matrixHelperUtils = useMatrixHelperUtils();
 export default function useCurveMatrixHelper() {
   function mergeCurveNotations(svgId: string, notations: NotationAttributes[]) {
     d3.select("#" + svgId)
-      .selectAll("path")
+      .selectAll("path.curve")
       .data(notations, (u: any) => {
         return (u as NotationAttributes).uuid;
       })
@@ -26,6 +26,7 @@ export default function useCurveMatrixHelper() {
   function addNotations(enter: any) {
     return enter
       .append("path")
+      .attr("class", () => "curve")
       .attr("id", (n: CurveNotationAttributes) => {
         return n.uuid;
       })

@@ -10,6 +10,7 @@ import {
   NotationAttributes,
   CircleAttributes,
   PointNotationAttributes,
+  FreeSketchAttributes,
 } from "./baseTypes";
 
 // lesson
@@ -23,7 +24,6 @@ export type LessonCreationAttributes = Omit<
 >;
 
 // line
-
 
 export type LessonLineAttributes =
   EntityAttributes &
@@ -57,7 +57,7 @@ export type LessonPointAttributes =
 export type LessonPointCreationAttributes = Omit<
   LessonPointAttributes,
   keyof EntityAttributes
-  >;
+>;
 
 // annotation
 export type LessonAnnotationAttributes =
@@ -67,10 +67,11 @@ export type LessonAnnotationAttributes =
     CellAttributes &
     SingleValueAttributes;
 
-export type LessonAnnotationCreationAttributes = Omit<
-  LessonAnnotationAttributes,
-  keyof EntityAttributes
->;  
+export type LessonAnnotationCreationAttributes =
+  Omit<
+    LessonAnnotationAttributes,
+    keyof EntityAttributes
+  >;
 
 // rect
 
@@ -114,3 +115,17 @@ export type LessonCircleCreationAttributes = Omit<
   LessonCircleAttributes,
   keyof EntityAttributes
 >;
+
+// free sketch
+
+export type LessonFreeSketchAttributes =
+  EntityAttributes &
+    NotationAttributes &
+    FreeSketchAttributes &
+    LessonNotationAttributes;
+
+export type LessonFreeSketchCreationAttributes =
+  Omit<
+    LessonFreeSketchAttributes,
+    keyof EntityAttributes
+  >;

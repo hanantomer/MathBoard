@@ -10,6 +10,7 @@ import {
   EntityAttributes,
   NotationAttributes,
   CircleAttributes,
+  FreeSketchAttributes,
 } from "./baseTypes";
 
 // question
@@ -79,12 +80,13 @@ export type QuestionAnnotationAttributes =
     NotationAttributes &
     CellAttributes &
     SingleValueAttributes &
-  QuestionNotationAttributes;
-    
-export type QuestionAnnotationCreationAttributes = Omit<
-  QuestionAnnotationAttributes,
-  keyof EntityAttributes
->;
+    QuestionNotationAttributes;
+
+export type QuestionAnnotationCreationAttributes =
+  Omit<
+    QuestionAnnotationAttributes,
+    keyof EntityAttributes
+  >;
 
 // rect
 
@@ -125,5 +127,19 @@ export type QuestionCircleAttributes =
 export type QuestionCircleCreationAttributes =
   Omit<
     QuestionCircleAttributes,
+    keyof EntityAttributes
+  >;
+
+// free sketch
+
+export type QuestionFreeSketchAttributes =
+  EntityAttributes &
+    NotationAttributes &
+    FreeSketchAttributes &
+    QuestionNotationAttributes;
+
+export type QuestionFreeSketchCreationAttributes =
+  Omit<
+    QuestionFreeSketchAttributes,
     keyof EntityAttributes
   >;
