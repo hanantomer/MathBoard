@@ -433,7 +433,6 @@ async function onSelectionMouseUp(e: MouseEvent) {
 }
 
 function moveSelectedNotations(e: MouseEvent) {
-  //editModeStore.setEditMode("AREA_MOVING");
 
   if (!e.buttons) return;
   // initial drag position
@@ -502,7 +501,9 @@ function moveAtPixelScale(e: MouseEvent) {
   const deltaY = e.pageY - dragPosition.value.y;
 
   if (deltaX != 0 || deltaY != 0) {
-    notationMutationHelper.moveSelectedNotationsAtPixelScale(deltaX, deltaY);
+    const doClone = e.ctrlKey && !dragStarted;
+    dragStarted = true;
+    notationMutationHelper.moveSelectedNotationsAtPixelScale(deltaX, deltaY, doClone);
 
     selectionPosition.value.x1 += deltaX;
     selectionPosition.value.y1 += deltaY;

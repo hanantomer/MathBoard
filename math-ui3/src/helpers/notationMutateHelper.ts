@@ -233,7 +233,13 @@ export default function notationMutateHelper() {
   function moveSelectedNotationsAtPixelScale(
     deltaX: number,
     deltaY: number,
+    keepOriginal: boolean,
   ): boolean {
+
+    if (keepOriginal) {
+      notationStore.cloneSelectedNotations();
+    }
+
     notationStore.getSelectedNotations().forEach((n: NotationAttributes) => {
       switch (n.notationType) {
         case "DIVISIONLINE":
