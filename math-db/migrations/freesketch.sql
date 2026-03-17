@@ -1,3 +1,55 @@
+
+CREATE SEQUENCE IF NOT EXISTS public."AnswerFreeSketch_id_seq"
+    INCREMENT 1
+    START 1
+    MINVALUE 1
+    MAXVALUE 2147483647
+    CACHE 1;
+
+ALTER SEQUENCE public."AnswerFreeSketch_id_seq"
+    OWNED BY public."AnswerFreeSketch".id;
+
+ALTER SEQUENCE public."AnswerFreeSketch_id_seq"
+    OWNER TO postgres;
+
+
+-- SEQUENCE: public.LessonFreeSketch_id_seq
+
+-- DROP SEQUENCE IF EXISTS public."LessonFreeSketch_id_seq";
+
+CREATE SEQUENCE IF NOT EXISTS public."LessonFreeSketch_id_seq"
+    INCREMENT 1
+    START 1
+    MINVALUE 1
+    MAXVALUE 2147483647
+    CACHE 1;
+
+ALTER SEQUENCE public."LessonFreeSketch_id_seq"
+    OWNED BY public."LessonFreeSketch".id;
+
+ALTER SEQUENCE public."LessonFreeSketch_id_seq"
+    OWNER TO postgres;
+
+
+-- SEQUENCE: public.QuestionFreeSketch_id_seq
+
+-- DROP SEQUENCE IF EXISTS public."QuestionFreeSketch_id_seq";
+
+CREATE SEQUENCE IF NOT EXISTS public."QuestionFreeSketch_id_seq"
+    INCREMENT 1
+    START 1
+    MINVALUE 1
+    MAXVALUE 2147483647
+    CACHE 1;
+
+ALTER SEQUENCE public."QuestionFreeSketch_id_seq"
+    OWNED BY public."QuestionFreeSketch".id;
+
+ALTER SEQUENCE public."QuestionFreeSketch_id_seq"
+    OWNER TO postgres;        
+
+
+
 -- Table: public.AnswerFreeSketch
 
 -- DROP TABLE IF EXISTS public."AnswerFreeSketch";
