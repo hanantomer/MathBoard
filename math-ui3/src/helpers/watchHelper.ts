@@ -1,5 +1,5 @@
 import { watch } from "vue";
-import { EditMode, BusEventType } from "common/unions";
+import {GlobalEditMode, EditMode, BusEventType } from "common/unions";
 import { CellAttributes, NotationAttributes } from "common/baseTypes";
 import { useEditModeStore } from "../store/pinia/editModeStore";
 import { useCellStore } from "../store/pinia/cellStore";
@@ -19,6 +19,7 @@ const matrixCellHelper = useMatrixCellHelper();
 type MouseEventHandler = (e: MouseEvent, params?: any) => void;
 type KeyEventHandler = (e: KeyboardEvent) => void;
 type EditModeHandler = (newEditMode: EditMode, oldEditMode: any) => void;
+type GlobalEditModeHandler = (newEditMode: GlobalEditMode, oldEditMode: any) => void;
 type NotationSelectionHandler = (notation: any) => void;
 type CustomEventHandler = (data: any) => void;
 type PropEventHandler = (prop: any) => void;
@@ -67,6 +68,16 @@ export default function () {
       },
     );
   }
+
+  function watchGlobalEditModeChange(handler: GlobalEditModeHandler) {
+    watch(
+      () => editModeStore.getGlobalEditMode() as GlobalEditMode,
+      (newEditMode: GlobalEditMode, oldEditMode: GlobalEditMode) => {
+        handler(newEditMode, oldEditMode);
+      },
+    );
+  }
+
 
   function watchEditModeTransition(
     oldEditModes: EditMode[],
@@ -207,6 +218,7 @@ export default function () {
     watchEditModeTransition,
     watchEndOfEditMode,
     watchSelectedCellAndDisplayNewSelected,
+    watchGlobalEditModeChange,
     watchNotationSelection,
     watchCustomEvent,
     watchLoadedEvent,
