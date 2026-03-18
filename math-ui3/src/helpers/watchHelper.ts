@@ -177,7 +177,7 @@ export default function () {
       () => {
         handler(svgId);
       },
-      { deep: true, immediate: true },
+      { deep: true },
     );
   }
 

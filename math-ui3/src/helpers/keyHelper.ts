@@ -52,6 +52,7 @@ const delayedShiftKeys = new Map<string, string>([
 export default function () {
   function keyDownHandler(e: KeyboardEvent) {
     const { key } = e;
+
     console.log("KeyDown:", {
       key,
       ctrlKey: e.ctrlKey,

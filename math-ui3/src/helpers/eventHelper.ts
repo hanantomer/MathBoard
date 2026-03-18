@@ -401,8 +401,19 @@ export default function eventHelper() {
     }
   }
 
-  function emitKeyDown(key: KeyboardEvent) {
-    eventBus.emit("EV_KEYDOWN", key);
+  function emitKeyDown(e: KeyboardEvent) {
+    // Use e.key for modern browsers, fallback to e.keyCode for older ones
+    if (e.key === " " || e.code === "Space") {
+      // Check if the event target is NOT an input, textarea, or a type-able element
+      if (
+        e.target &&
+        (e.target as HTMLElement).tagName !== "INPUT" &&
+        (e.target as HTMLElement).tagName !== "TEXTAREA"
+      ) {
+        e.preventDefault(); // Prevent the default action (scrolling)
+      }
+    }
+    //eventBus.emit("EV_KEYDOWN", e);
   }
 
   function registerKeyUp() {

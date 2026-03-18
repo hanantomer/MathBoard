@@ -204,6 +204,7 @@ async function load() {
   eventHelper.registerSvgMouseUp();
   eventHelper.registerMouseUp();
   eventHelper.registerKeyUp();
+  eventHelper.registerKeyDown();
   eventHelper.registerPaste();
   eventHelper.registerCopy();
 

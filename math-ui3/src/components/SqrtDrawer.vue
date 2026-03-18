@@ -127,7 +127,7 @@ let sqrtRight = computed(() => {
 });
 
 let sqrtLeft = computed(() => {
-  return linePosition.value.p1x - cellStore.getSvgBoundingRect().left + 8;
+  return linePosition.value.p1x - cellStore.getSvgBoundingRect().left + 15;
 });
 
 let sqrtY = computed(() => {
@@ -135,11 +135,11 @@ let sqrtY = computed(() => {
 });
 
 let sqrtSymbolX = computed(() => {
-  return linePosition.value.p1x - 2;
+  return sqrtLeft.value + cellStore.getSvgBoundingRect().left - 9;
 });
 
 let sqrtSymbolY = computed(() => {
-  return linePosition.value.p1y + (cellStore.getSvgBoundingRect().top ?? 0) - 5;
+  return linePosition.value.p1y + (cellStore.getSvgBoundingRect().top ?? 0) - 6;
 });
 
 let handleX = computed(() => {

@@ -82,8 +82,9 @@ export default function useHtmlMatrixHelper() {
       );
 
     if (notations.length > 0) {
-      const el = document.getElementById(notations[notations.length - 1].uuid)
-        ?.parentElement;
+      const el = document.getElementById(
+        notations[notations.length - 1].uuid,
+      )?.parentElement;
       el?.scrollIntoView({ block: "nearest", behavior: "smooth" });
     }
   }
@@ -235,11 +236,11 @@ export default function useHtmlMatrixHelper() {
     let colIdx = col(n);
     let deltaX =
       n.notationType === "SQRTSYMBOL"
-        ? Math.round(cellStore.getCellHorizontalWidth() / 3) * -1
+        ? -7
         : n.notationType === "SYMBOL" &&
-          (n as PointNotationAttributes).value === "."
-        ? -3
-        : 0;
+            (n as PointNotationAttributes).value === "."
+          ? -3
+          : 0;
 
     return colIdx != null ? utils.getNotationXposByCol(colIdx) + deltaX : null;
   }
@@ -252,7 +253,13 @@ export default function useHtmlMatrixHelper() {
     let rowIdx = row(n);
     if (!rowIdx) return null;
 
-    return utils.getNotationYposByRow(rowIdx);
+    let y = utils.getNotationYposByRow(rowIdx);
+
+    if (n.notationType === "SQRTSYMBOL") {
+      y -= 3; // Adjust vertical position for sqrt symbol
+    }
+
+    return y;
   }
 
   function width(n: NotationAttributes): number {
@@ -449,8 +456,8 @@ export default function useHtmlMatrixHelper() {
         integralParts.length === 1
           ? `<p style='color:${color};font-size:36px'>${integralParts[0]}</p>`
           : integralParts.length === 2
-          ? `<p style='color:${color};font-size:12px;position:absolute;top:-2px'>${integralParts[0]}</p><p style='font-size:36px'>${integralParts[1]}</p><p style='color:${color};position:absolute;top:43px;font-size:12px'>${integralParts[0]}</p>`
-          : `<p style='color:${color};font-size:12px;position:absolute;top:-2px'>${integralParts[0]}</p><p style='font-size:36px'>${integralParts[1]}</p><p style='color:${color};position:absolute;top:43px;font-size:12px'>${integralParts[2]}</p>`;
+            ? `<p style='color:${color};font-size:12px;position:absolute;top:-2px'>${integralParts[0]}</p><p style='font-size:36px'>${integralParts[1]}</p><p style='color:${color};position:absolute;top:43px;font-size:12px'>${integralParts[0]}</p>`
+            : `<p style='color:${color};font-size:12px;position:absolute;top:-2px'>${integralParts[0]}</p><p style='font-size:36px'>${integralParts[1]}</p><p style='color:${color};position:absolute;top:43px;font-size:12px'>${integralParts[2]}</p>`;
       return utils.wrapWithDiv(htmlContent);
     }
 
