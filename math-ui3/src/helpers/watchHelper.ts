@@ -1,5 +1,5 @@
 import { watch } from "vue";
-import {GlobalEditMode, EditMode, BusEventType } from "common/unions";
+import { GlobalEditMode, EditMode, BusEventType } from "common/unions";
 import { CellAttributes, NotationAttributes } from "common/baseTypes";
 import { useEditModeStore } from "../store/pinia/editModeStore";
 import { useCellStore } from "../store/pinia/cellStore";
@@ -7,6 +7,7 @@ import { useNotationStore } from "../store/pinia/notationStore";
 import { useTextSyncStore } from "../store/pinia/textSyncStore";
 import useEventBus from "../helpers/eventBusHelper";
 import useMatrixCellHelper from "../helpers/matrixCellHelper";
+import { useDebounceFn } from "@vueuse/core";
 
 const editModeStore = useEditModeStore();
 const cellStore = useCellStore();
@@ -19,7 +20,10 @@ const matrixCellHelper = useMatrixCellHelper();
 type MouseEventHandler = (e: MouseEvent, params?: any) => void;
 type KeyEventHandler = (e: KeyboardEvent) => void;
 type EditModeHandler = (newEditMode: EditMode, oldEditMode: any) => void;
-type GlobalEditModeHandler = (newEditMode: GlobalEditMode, oldEditMode: any) => void;
+type GlobalEditModeHandler = (
+  newEditMode: GlobalEditMode,
+  oldEditMode: any,
+) => void;
 type NotationSelectionHandler = (notation: any) => void;
 type CustomEventHandler = (data: any) => void;
 type PropEventHandler = (prop: any) => void;
@@ -77,7 +81,6 @@ export default function () {
       },
     );
   }
-
 
   function watchEditModeTransition(
     oldEditModes: EditMode[],
@@ -183,13 +186,11 @@ export default function () {
   }
 
   function watchNotationsEvent(svgId: string, handler: CustomEventHandler) {
-    watch(
-      () => notationStore.getNotations(),
-      () => {
-        handler(svgId);
-      },
-      { deep: true },
-    );
+    const debouncedWatcher = useDebounceFn(() => {
+      handler(svgId);
+    }, 100);
+
+    watch(() => notationStore.getNotations(), debouncedWatcher);
   }
 
   function watchSelectedCellAndDisplayNewSelected(svgId: string) {

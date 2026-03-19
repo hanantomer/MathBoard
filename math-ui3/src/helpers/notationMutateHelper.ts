@@ -1309,7 +1309,6 @@ export default function notationMutateHelper() {
     addExponentNotation,
     addCartesianSystemAtClickedPoint,
     cloneNotation,
-    //approveDeleteSelectedNotations,
     deleteSelectedNotations,
     moveSelectedNotationsAtPixelScale,
     moveSelectedNotationsAtCellScale,

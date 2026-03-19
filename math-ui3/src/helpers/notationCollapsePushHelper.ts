@@ -74,14 +74,6 @@ function pushNotationsFromSelectedCell() {
 
   if (cell.col === matrixDimensions.colsNum - 1) return;
 
-  const notationTypesToPush: NotationType[] = [
-    "EXPONENT",
-    "LOGBASE",
-    "SQRT",
-    "SQRTSYMBOL",
-    "SYMBOL",
-  ];
-
   const symbolBlock = findNextSymbolBlock(cell.col, cell.row);
 
   moveNotationsRight(cell.row, symbolBlock);
