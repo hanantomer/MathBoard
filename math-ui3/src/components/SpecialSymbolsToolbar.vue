@@ -558,6 +558,15 @@ function addEachCharAsSymbol(item: string) {
 
 <style scoped>
 
+@media (max-width: 1023px) {
+  .special-symbols-expansion {
+    position: static;
+    width: 100%;
+    height: auto;
+  }
+  main { margin: 0 !important; }
+}
+
 .special-symbols-expansion {
   margin-top: 10px;
   margin-left: 10px;
