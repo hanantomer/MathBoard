@@ -49,7 +49,7 @@ watch(shouldShow, (val) => {
 
 <style scoped>
 .floatingToolbar {
-  position: absolute;
+  position: fixed;
   z-index: 1000;
   left: 40%;
   margin-top: -90px; /* Adjust vertical position */
