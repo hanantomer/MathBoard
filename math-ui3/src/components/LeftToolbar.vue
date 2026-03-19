@@ -518,11 +518,8 @@ function getButtonClass(item: any) {
 @media (max-width: 1023px) {
   .vertical-toolbar {
     position: static;
-    width: 100%;
-    height: auto;
-  }
-  main {
-    margin: 0 !important;
+    width: 0px !important;
+    height: 0px !important;
   }
 }
 
