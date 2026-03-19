@@ -64,7 +64,7 @@ const annotationPoint = ref({ x: -1, y: -1 });
 watchHelper.watchEndOfEditMode(["ANNOTATION_WRITING"], [], save);
 
 watchHelper.watchMouseEvent(
-  ["ANNOTATION_STARTED"],
+  ["ANNOTATION_STARTED", "ANNOTATION_SELECTED"],
   "EV_SVG_MOUSEDOWN",
   startTextEditing,
 );
@@ -94,6 +94,11 @@ watchHelper.watchCustomEvent(
 );
 
 function startTextEditing(e: MouseEvent) {
+  const el = e.target as HTMLElement;
+  if (el.tagName !== "rect" /*&& el.getAttribute("data-cy") !== "annotation"*/) {
+    return;
+  }
+
   annotationPoint.value = {
     x: e.pageX,
     y: e.pageY - 7,

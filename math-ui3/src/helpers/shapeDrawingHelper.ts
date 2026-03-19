@@ -122,9 +122,9 @@ export default function useShapeDrawingHelper() {
       return;
     }
     notationStore.selectNotation(uuid);
-    if (uuid) {
-      hideMatrixLine(uuid); // dont show created line yet since we back to edit mode
-    }
+    //if (uuid) {
+    //  hideMatrixLine(uuid); // dont show created line yet since we back to edit mode
+    //}
     // determine next mode based on current state
     const current = editModeStore.getEditMode();
     switch (current) {
@@ -176,7 +176,7 @@ export default function useShapeDrawingHelper() {
           document.getElementById(uuid + sqrtSymbolSuffix) as HTMLElement
         ).style.display = "none"; // for sqrt symbol, see matrixHelper.ts
       }
-    }, 0);
+    }, 100);
   }
 
   function showMatrixLine() {
@@ -199,9 +199,6 @@ export default function useShapeDrawingHelper() {
 
   function resetDrawing() {
     setTimeout(() => {
-      //showMatrixLine();
-      // notationStore.resetSelectedNotations();
-      // selectionHelper.selectClickedPosition(e);
       showMatrixLine();
       editModeStore.setDefaultEditMode();
     }, 10);

@@ -42,10 +42,6 @@ export default function useHtmlMatrixHelper() {
     return getComputedStyle(document.body).getPropertyValue("font-size");
   }
 
-  function signFontSize() {
-    return `${cellStore.getCellVerticalHeight() / 24}em`;
-  }
-
   function exponentFontSize() {
     return `0.5em`;
   }
@@ -247,7 +243,7 @@ export default function useHtmlMatrixHelper() {
 
   function y(n: NotationAttributes) {
     if (n.notationType === "ANNOTATION") {
-      return (n as AnnotationNotationAttributes).y;
+      return (n as AnnotationNotationAttributes).y - 15; // TODO parametrize and use in html function as well
     }
 
     let rowIdx = row(n);
@@ -413,7 +409,7 @@ export default function useHtmlMatrixHelper() {
     function generateAnnotationHtml(n: NotationAttributes): string {
       const n1 = n as AnnotationNotationAttributes;
       return utils.wrapWithDiv(
-        `<p data-cy ='annotation' id=${n1.uuid} style='z-index:100;color:${color};font-weight:${fontWeight}; transform: rotate(${n1.rotation}deg); transformOrigin: "center center"; font-size:0.62em'>${n1.value}</p>`,
+        `<p data-cy ='annotation' id=${n1.uuid} style='margin-block:15px; z-index:100;color:${color};font-weight:${fontWeight}; transform: rotate(${n1.rotation}deg); transformOrigin: "center center"; font-size:0.62em'>${n1.value}</p>`,
       );
     }
 

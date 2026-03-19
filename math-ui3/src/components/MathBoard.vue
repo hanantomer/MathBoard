@@ -17,7 +17,7 @@
   ></v-progress-linear>
   <statusBar></statusBar>
   <cartesianSystemDrawer></cartesianSystemDrawer>
-  <div style="display: flex;margin-left: 100px;margin-right: 100px;">
+  <div style="display: flex; margin-left: 100px; margin-right: 100px">
     <leftToolbar></leftToolbar>
     <sqrtDrawer></sqrtDrawer>
     <lineDrawer></lineDrawer>
@@ -127,7 +127,19 @@ const props = defineProps({
 });
 
 watchHelper.watchMouseEvent(
-  ["CELL_SELECTED", "SPECIAL_SYMBOL_SELECTED"],
+  [
+    "CELL_SELECTED",
+    "SPECIAL_SYMBOL_SELECTED",
+    "LINE_SELECTED",
+    "DIVISIONLINE_SELECTED",
+    "CURVE_SELECTED",
+    "SQRT_SELECTED",
+    "ANNOTATION_SELECTED",
+    "TEXT_SELECTED",
+    "EXPONENT_SELECTED",
+    "CIRCLE_SELECTED",
+    "IMAGE_SELECTED",
+  ],
   "EV_SVG_MOUSEUP",
   selectionHelper.selectClickedPosition,
   props.svgId,
@@ -326,5 +338,4 @@ path:hover {
   max-width: 50px;
   max-height: 50px;
 }
-
 </style>

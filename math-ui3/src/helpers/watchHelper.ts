@@ -188,9 +188,12 @@ export default function () {
   function watchNotationsEvent(svgId: string, handler: CustomEventHandler) {
     const debouncedWatcher = useDebounceFn(() => {
       handler(svgId);
-    }, 100);
+    }, 25);
 
-    watch(() => notationStore.getNotations(), debouncedWatcher);
+    watch(() => notationStore.getNotations(), debouncedWatcher, {
+      immediate: true,
+      deep: true,
+    });
   }
 
   function watchSelectedCellAndDisplayNewSelected(svgId: string) {

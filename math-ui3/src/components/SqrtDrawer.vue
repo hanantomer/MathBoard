@@ -135,7 +135,7 @@ let sqrtY = computed(() => {
 });
 
 let sqrtSymbolX = computed(() => {
-  return sqrtLeft.value + cellStore.getSvgBoundingRect().left - 9;
+  return sqrtLeft.value + cellStore.getSvgBoundingRect().left - 11;
 });
 
 let sqrtSymbolY = computed(() => {
@@ -176,7 +176,7 @@ async function setInitialPosition(editMode: EditMode) {
 
   var sqrtNotation = await endDrawing();
   selectionHelper.selectNotation(sqrtNotation);
-  shapeDrawingHelper.hideMatrixLine(sqrtNotation);
+  //shapeDrawingHelper.hideMatrixLine(sqrtNotation);
 }
 
 function drawLine(p: DotCoordinates) {

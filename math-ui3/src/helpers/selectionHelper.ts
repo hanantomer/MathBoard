@@ -298,11 +298,14 @@ export default function selectionHelper() {
       (uuid &&
         isCellNotationType(notationStore.getNotation(uuid)!.notationType));
 
-    setSelectedCell(clickedCell, pointNotationSelected);
+    if (pointNotationSelected) {
+      setSelectedCell(clickedCell, pointNotationSelected);
+    }
   }
 
   function selectNotation(uuid: string) {
     const n = notationStore.getNotation(uuid)!;
+    if (!n) return;
     switch (n.notationType) {
       case "DIVISIONLINE":
         selectDivisionLineNotation(uuid);
