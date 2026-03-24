@@ -179,6 +179,7 @@ function submitText(newEditMode: EditMode, oldEditMode: any) {
   } else {
     notationMutateHelper.addTextNotation(textValue.value, rectCoordinates);
   }
+  editModeStore.setDefaultEditMode();
 }
 
 function hideTextNotation(uuid: string) {

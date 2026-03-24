@@ -7,7 +7,7 @@ import useDb from "../../math-db/build/dbUtil";
 import connection from "../../math-db/build/models/index";
 import multer from "multer";
 
-const { exec } = require("child_process");
+import { exec } from "child_process";
 
 import {
     BoardTypeValues,

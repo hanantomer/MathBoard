@@ -275,6 +275,7 @@ export default function selectionHelper() {
     if (!clickedCell) return;
 
     notationStore.resetSelectedNotations();
+
     const uuid = (e.target as any).id;
     let notationFoundAtCell = false;
     if (uuid) {
