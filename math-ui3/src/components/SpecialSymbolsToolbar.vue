@@ -315,8 +315,39 @@ const symbolGroups = [
         tooltip: "Intersection",
         tabIndex: 25,
       },
-      { name: "sum", value: "&sum;", tooltip: "Sum", tabIndex: 26 },
-      { name: "ellipsis", value: "...", tooltip: "Ellipsis", tabIndex: 27 },
+      { name: "subset", value: "&sube;", tooltip: "Subset", tabIndex: 26 },
+      { name: "superset", value: "&supe;", tooltip: "Superset", tabIndex: 27 },
+      {
+        name: "difference",
+        value: "\u2216",
+        tooltip: "Set difference",
+        tabIndex: 28,
+      },
+      {
+        name: "complementA",
+        value: "A\u0304",
+        tooltip: "Complement of A",
+        tabIndex: 29,
+      },
+      {
+        name: "complementB",
+        value: "B\u0304",
+        tooltip: "Complement of B",
+        tabIndex: 30,
+      },
+      {
+        name: "complementP",
+        value: "P\u0304",
+        tooltip: "Complement of P",
+        tabIndex: 31,
+      },
+      { name: "element", value: "&isin;", tooltip: "Element of", tabIndex: 32 },
+      {
+        name: "notElement",
+        value: "&notin;",
+        tooltip: "Not an element of",
+        tabIndex: 33,
+      },
     ],
   },
   {
@@ -530,6 +561,9 @@ async function addNinetyDegreesAnnotation(item: string) {
 
 function isMultiCharLiteral(item: string) {
   return (
+    !(item.indexOf("Ā") == 0) &&
+    !(item.indexOf("B̄") == 0) &&
+    !(item.indexOf("P̄") == 0) &&
     !item.startsWith("<math>") &&
     !item.startsWith("&") &&
     item.indexOf("...") !== 0 &&
@@ -557,7 +591,6 @@ function addEachCharAsSymbol(item: string) {
 </script>
 
 <style scoped>
-
 @media (max-width: 1023px) {
   .special-symbols-expansion {
     position: static;

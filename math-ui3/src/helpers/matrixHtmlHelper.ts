@@ -501,6 +501,13 @@ export default function useHtmlMatrixHelper() {
         )
       )
         return "0.6em";
+            if (
+              ["P̄", "B̄", "Ā"].some(
+                (complement) => value.indexOf(complement) >= 0,
+              )
+            )
+              return "1.1em";
+
       return "0.75em";
     }
 
