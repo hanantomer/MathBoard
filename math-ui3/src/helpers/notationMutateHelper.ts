@@ -1161,9 +1161,21 @@ export default function notationMutateHelper() {
     if (!notationStore.getNotation(notation.uuid)) return;
 
     notationStore.addNotation(notation, true, true);
-    await apiHelper.updateNotation(notation);
-    await userOutgoingOperations.syncOutgoingUpdateNotation(notation);
+    apiHelper.updateNotation(notation);
+    userOutgoingOperations.syncOutgoingUpdateNotation(notation);
   }
+
+    async function updateNotations(notations: NotationAttributes[]) {
+
+      //await apiHelper.updateNotations(notations);
+
+      for (const notation of notations) {
+        if (!notationStore.getNotation(notation.uuid)) return;
+        notationStore.addNotation(notation, true, true);
+        await userOutgoingOperations.syncOutgoingUpdateNotation(notation);
+      }
+    }
+
 
   async function handlePushKey() {
     if (!authorizationHelper.canEdit()) return;

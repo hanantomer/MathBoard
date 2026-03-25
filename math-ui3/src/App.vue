@@ -306,5 +306,6 @@ text {
 
 html {
   overflow-y: auto;
+  overflow-x: auto;
 }
 </style>

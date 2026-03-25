@@ -74,9 +74,9 @@ function pushNotationsFromSelectedCell() {
 
   if (cell.col === matrixDimensions.colsNum - 1) return;
 
-  const symbolBlock = findNextSymbolBlock(cell.col, cell.row);
+  const nextSymbolBlock = findNextSymbolBlock(cell.col, cell.row);
 
-  moveNotationsRight(cell.row, symbolBlock);
+  moveNotationsRight(cell.row, nextSymbolBlock);
 
   notationStore.resetSelectedNotations();
 }
