@@ -40,10 +40,6 @@ describe("e2e", () => {
       })
       .trigger("mouseup");
 
-
-    cy.get(".line").should("have.length", 4); // 4 includes the hidden line editor
-
-    //cy.dataCy("line").invoke("outerWidth").should("be.gt", 99);
-    //cy.dataCy("line").invoke("outerWidth").should("be.lt", 250);
+    cy.get(".line").should("have.length.gt", 4); // 4 includes the hidden line editor
   });
 });

@@ -46,53 +46,36 @@ describe("e2e", () => {
 
     // move selection
 
-    cy.dataCy("area-selection")
-      .trigger("mousedown")
-      .trigger("mousemove", {
-        buttons: 1,
-        x: 250,
-        y: 240,
-        force: true,
-      })
-      .trigger("mousemove", {
-        buttons: 1,
-        x: 251,
-        y: 241,
-        force: true,
-      })
-      .trigger("mousemove", {
-        buttons: 1,
-        x: 252,
-        y: 242,
-        force: true,
-      })
-      .trigger("mousemove", {
-        buttons: 1,
-        x: 400,
-        y: 400,
-        force: true,
-      });
+    cy.dataCy("area-selection").realMouseDown();
 
-    // small pause to let the UI settle after drag
-    cy.get('[row="1"] > [col="1"]').click({ force: true });
+    cy.get("#lessonSvg")
+      .realMouseMove(250, 240)
+      .realMouseMove(251, 241)
+      .realMouseMove(252, 242)
+      .realMouseMove(400, 400);
+
+    cy.get("#lessonSvg").realMouseUp();
+
+    cy.wait(500);
 
     // // verify nominator
-    cy.get('foreignObject[row="12"][col="20"] > div > p')
+
+    cy.get('foreignObject[row="7"][col="11"] > div > p')
       .should("exist")
       .and("include.text", "3");
-    cy.get('foreignObject[row="12"][col="21"] > div > p')
+    cy.get('foreignObject[row="7"][col="12"] > div > p')
       .should("exist")
       .and("include.text", "1");
-    cy.get('foreignObject[row="12"][col="22"] > div > p')
+    cy.get('foreignObject[row="7"][col="13"] > div > p')
       .should("exist")
       .and("include.text", "+");
-    cy.get('foreignObject[row="12"][col="23"] > div > p')
+    cy.get('foreignObject[row="7"][col="14"] > div > p')
       .should("exist")
       .and("include.text", "1");
-    cy.get('foreignObject[row="12"][col="24"] > div > p')
+    cy.get('foreignObject[row="7"][col="15"] > div > p')
       .should("exist")
       .and("include.text", "1");
-    cy.get('foreignObject[row="12"][col="25"] > div > p')
+    cy.get('foreignObject[row="7"][col="16"] > div > p')
       .should("exist")
       .and("include.text", "x");
 
@@ -100,27 +83,27 @@ describe("e2e", () => {
     cy.dataCy("division").should("exist");
 
     // // // verify denominator
-     cy.get('foreignObject[row="13"][col="20"] > div> p').should(
+     cy.get('foreignObject[row="8"][col="11"] > div> p').should(
        "include.text",
        "6",
      );
-    cy.get('foreignObject[row="13"][col="21"] > div > p').should(
+    cy.get('foreignObject[row="8"][col="12"] > div > p').should(
       "include.text",
       "1",
     );
-    cy.get('foreignObject[row="13"][col="22"] > div > p').should(
+    cy.get('foreignObject[row="8"][col="13"] > div > p').should(
       "include.text",
       "+",
     );
-    cy.get('foreignObject[row="13"][col="23"] > div > p').should(
+    cy.get('foreignObject[row="8"][col="14"] > div > p').should(
       "include.text",
       "1",
     );
-    cy.get('foreignObject[row="13"][col="24"] > div > p').should(
+    cy.get('foreignObject[row="8"][col="15"] > div > p').should(
       "include.text",
       "1",
     );
-    cy.get('foreignObject[row="13"][col="25"] > div > p').should(
+    cy.get('foreignObject[row="8"][col="16"] > div > p').should(
       "include.text",
       "y",
     );

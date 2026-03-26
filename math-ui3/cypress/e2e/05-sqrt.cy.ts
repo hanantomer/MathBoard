@@ -20,13 +20,9 @@ describe("e2e", () => {
 
     cy.dataCy("sqrtButton").click();
 
-    //    cy.dataCy("sqrtDrawer").should("exist");
-
-    //    cy.dataCy("sqrtDrawer").click();
 
     cy.dataCy("sqrtRightHandle").trigger("mousedown", {
-      buttons: 1,
-      force: true,
+      buttons: 1
     });
 
     cy.get("#lessonSvg")

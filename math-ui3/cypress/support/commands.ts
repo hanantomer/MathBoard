@@ -131,7 +131,7 @@ Cypress.Commands.add("clearBoard", () => {
   cy.get("#lessonSvg").trigger("mousemove", { buttons: 1, x: 2, y: 2 });
   cy.get("#lessonSvg").trigger("mousemove", { buttons: 1, x: 3, y: 3 });
   cy.get("#lessonSvg").trigger("mousemove", { buttons: 1, x: 52, y: 52 });
-  cy.get("#lessonSvg").trigger("mousemove", { buttons: 1, x: 1300, y: 1000 });
+  cy.get("#lessonSvg").trigger("mousemove", { buttons: 1, x: 1500, y: 1100 });
   cy.get("#selection").trigger("mouseup");
 
   cy.dataCy("deleteToolButton").click();
