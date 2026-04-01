@@ -239,7 +239,7 @@ export const EditModeCursorType = new Map<
   ["XMARK_STARTED", "auto"],
 ]);
 
-export type UserType = "TEACHER" | "STUDENT";
+export type UserType = "TEACHER" | "STUDENT" | "BOTH";
 
 export type SelectionMoveDirection =
   | "LEFT"

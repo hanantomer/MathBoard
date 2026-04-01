@@ -37,7 +37,7 @@
                 name="input-10-1"
                 label="Password"
                 hint="At least 8 characters"
-                @keydown.enter="validateLogin"
+                @keydown.enter="onLogin"
                 aria-autocomplete="both"
                 counter
               ></v-text-field>
@@ -82,7 +82,7 @@
                 color="indigo-darken-3"
                 size="x-large"
                 variant="flat"
-                @click="validateLogin"
+                @click="onLogin"
               >
                 Log In
               </v-btn>
@@ -114,6 +114,8 @@ import { useUserStore } from "../store/pinia/userStore";
 import useAuthHelper from "../helpers/authenticationHelper";
 import useApiHelper from "../helpers/apiHelper";
 import { ACCESS_TOKEN_NAME } from "common/globals";
+import { UserType } from "common/unions";
+import { UserCreationAttributes } from "common/userTypes";
 
 const cookies = useCookies().cookies;
 const authHelper = useAuthHelper();
@@ -135,7 +137,7 @@ let email = ref<string>();
 let redirectAfterLogin: string = "";
 let resetEmailSent = ref(false);
 
-let studentLink = false;
+let studentLogin = false;
 
 let rules = {
   required: (value: string) => !!value || "Required.",
@@ -151,7 +153,17 @@ watch(
     show.value = false;
     if (params.name === "login") {
       show.value = true;
-      studentLink = params.query?.from?.toString().indexOf("/lesson/sl_") === 0;
+      // Check userType query parameter first
+      const userType: UserType = params.query?.userType?.toString() as UserType;
+      if (userType === "STUDENT") {
+        studentLogin = true;
+      } else if (userType === "TEACHER") {
+        studentLogin = false;
+      } else {
+        // Fallback to existing logic for link based detection
+        studentLogin =
+          params.query?.from?.toString().indexOf("/lesson/sl_") === 0;
+      }
       redirectAfterLogin = params.query?.from?.toString() || "";
     }
   },
@@ -160,7 +172,7 @@ watch(
 
 function register() {
   show.value = false;
-  emit("register", studentLink, redirectAfterLogin);
+  emit("register", studentLogin, redirectAfterLogin);
 }
 
 async function googleLoginCallback(response: any) {
@@ -173,10 +185,9 @@ async function googleLoginCallback(response: any) {
     const storedUser = await handleGoogleUserRegistration(
       userData,
       ticket,
-      studentLink,
+      studentLogin,
     );
     if (!storedUser) {
-
       return;
     }
 
@@ -210,7 +221,7 @@ async function handleGoogleAuth(accessToken: string) {
 async function handleGoogleUserRegistration(
   userData: GoogleUserData,
   ticket: any,
-  isStudentLink: boolean,
+  studentLogin: boolean,
 ) {
   if (!validateCookiesEnabled()) return null;
 
@@ -219,7 +230,7 @@ async function handleGoogleUserRegistration(
 
   let storedUser = await authHelper.getUserByEmail(userData.email);
   if (!storedUser) {
-    storedUser = await registerNewUser(userData, isStudentLink);
+    storedUser = await registerNewUser(userData, studentLogin);
   }
 
   if (!storedUser) {
@@ -240,7 +251,7 @@ function validateCookiesEnabled(): boolean {
 
 async function registerNewUser(
   userData: GoogleUserData,
-  isStudentLink: boolean,
+  isStudent: boolean,
 ): Promise<any> {
   try {
     const newUser = await authHelper.registerUser(
@@ -248,7 +259,7 @@ async function registerNewUser(
       "",
       userData.email,
       "",
-      isStudentLink ? "STUDENT" : "TEACHER",
+      isStudent ? "STUDENT" : "TEACHER",
     );
 
     return newUser;
@@ -281,7 +292,7 @@ function handleRedirect() {
   }
 }
 
-async function validateLogin() {
+async function onLogin() {
   if (!email) return;
   if (!password) return;
 
@@ -306,6 +317,52 @@ async function validateLogin() {
     return;
   }
 
+  // Handle user type logic
+  if (studentLogin) {
+    if (authenticatedUser.userType === "TEACHER") {
+      // Register as student to merge userType to BOTH
+      const userToRegister: UserCreationAttributes = {
+        firstName: authenticatedUser.firstName,
+        lastName: authenticatedUser.lastName,
+        email: authenticatedUser.email,
+        password: password.value!,
+        userType: "STUDENT",
+        imageUrl: authenticatedUser.imageUrl,
+        approved: authenticatedUser.approved,
+        access_token: null,
+        reset_pasword_token: null,
+      };
+      try {
+        await apiHelper.registerUser(userToRegister);
+        // Re-authenticate to get updated user
+        authenticatedUser = await authHelper.authLocalUserByUserAndPassword(
+          email.value!,
+          password.value!,
+        );
+        if (!authenticatedUser) {
+          loginFailed.value = true;
+          return;
+        }
+      } catch (error) {
+        loginFailed.value = true;
+        return;
+      }
+    }
+  } else {
+    // Not student login
+    if (
+      authenticatedUser.userType !== "TEACHER" &&
+      authenticatedUser.userType !== "BOTH"
+    ) {
+      loginFailed.value = true;
+      return;
+    }
+  }
+
+  userStore.setLoginAsStudent(
+    authenticatedUser.userType === "STUDENT" || studentLogin,
+  );
+
   if (!authenticatedUser.access_token) {
     apiHelper.log(
       `No access token received during authentication for user: ${email} `,
@@ -320,11 +377,11 @@ async function validateLogin() {
   //  authenticatedUser.approved === false &&
   //  authenticatedUser.userType === "TEACHER"
   //) {
-    //userNotApproved.value = true;
-    //return;
+  //userNotApproved.value = true;
+  //return;
   //}
-
   //userNotApproved.value = false;
+
   loginFailed.value = false;
 
   userStore.setCurrentUser(authenticatedUser);
@@ -372,4 +429,3 @@ async function forgotPassword() {
   font-size: small;
 }
 </style>
-

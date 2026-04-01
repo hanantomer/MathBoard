@@ -20,12 +20,22 @@
                   variant="text"
                   color="primary"
                   class="px-1 text-decoration-underline"
-                  @click="login('')"
+                  @click="login('TEACHER', '')"
                 >
-                  Sign in
+                  Sign in as Teacher
                 </v-btn>
                 or
                 <v-btn
+                  variant="text"
+                  color="primary"
+                  class="px-1 text-decoration-underline"
+                  @click="login('STUDENT', '')"
+                >
+                  Student
+                </v-btn>
+                or
+                <v-btn
+                  size="x-large"
                   variant="text"
                   color="primary"
                   class="px-1 text-decoration-underline"
@@ -53,7 +63,7 @@
                 elevation="2"
                 rounded
                 class="px-8"
-                v-on:click="login"
+                v-on:click="register(false, '')"
               >
                 Get Started
                 <v-icon end class="ml-2">mdi-arrow-right</v-icon>
@@ -123,12 +133,13 @@ import RegisterStudentDialog from "./RegisterStudent.vue";
 import RegisterTeacherDialog from "./RegisterTeacher.vue";
 import { useRouter } from "vue-router";
 import { useUserStore } from "../store/pinia/userStore";
+import { UserType } from "common/unions";
 
 const router = useRouter();
 const userStore = useUserStore();
 
-function register(studentLink: boolean, redirectAfterLogin: string) {
-  if (studentLink) {
+function register(isStudent: boolean, redirectAfterLogin: string) {
+  if (isStudent) {
     router.push({
       name: "registerStudent",
       query: { from: redirectAfterLogin },
@@ -140,10 +151,10 @@ function register(studentLink: boolean, redirectAfterLogin: string) {
   }
 }
 
-function login(redirectAfterLogin: string) {
+function login(userType: UserType, redirectAfterLogin: string) {
   router.push({
     name: "login",
-    query: { from: redirectAfterLogin },
+    query: { userType: userType, from: redirectAfterLogin },
   });
 }
 

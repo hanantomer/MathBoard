@@ -90,9 +90,10 @@
 <script setup lang="ts">
 import useAuthHelper from "../helpers/authenticationHelper";
 import { ref, computed, watch } from "vue";
-import { useRoute } from "vue-router";
+import { useRoute, useRouter } from "vue-router";
 import { UserType } from "common/unions";
 const route = useRoute();
+const router = useRouter();
 
 const authHelper = useAuthHelper();
 let registerForm = ref(null);
@@ -145,25 +146,24 @@ function close() {
   email.value = "";
   password.value = "";
   verify.value = "";
+  router.push("/");
 }
 
 async function register() {
   let formVlidated: any = await (registerForm.value as any).validate();
   if (formVlidated.valid) {
-
-    const newUser = await
-      authHelper.registerUser(
-        firstName.value,
-        lastName.value,
-        email.value,
-        password.value,
-        userType.value as UserType,
-      );
+    const newUser = await authHelper.registerUser(
+      firstName.value,
+      lastName.value,
+      email.value,
+      password.value,
+      userType.value as UserType,
+    );
 
     if (!newUser) {
       alert("Registration failed: Email already in use.");
       return;
-    } 
+    }
 
     registerForm.value = null;
     show.value = false;

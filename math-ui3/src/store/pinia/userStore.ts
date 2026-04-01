@@ -1,19 +1,22 @@
 import { ref } from "vue";
 import { defineStore } from "pinia";
-import { UserAttributes, UserCreationAttributes } from "common/userTypes";
-
-import apiHelper from "../../helpers/apiHelper";
+import { UserAttributes } from "common/userTypes";
 
 export const useUserStore = defineStore("user", () => {
   let currentUser = ref<UserAttributes | null>();
   let authorized = ref(false);
+  let loginAsStudent = ref(false);
 
   function getCurrentUser(): UserAttributes | undefined | null {
     return currentUser.value;
   }
 
   function isTeacher(): boolean {
-    return currentUser.value?.userType === "TEACHER";
+    return (
+      (currentUser.value?.userType === "TEACHER" ||
+        currentUser.value?.userType === "BOTH") &&
+      !loginAsStudent.value
+    );
   }
 
   function getAuthorized(): boolean {
@@ -28,7 +31,9 @@ export const useUserStore = defineStore("user", () => {
     currentUser.value = user;
   }
 
-
+  function setLoginAsStudent(value: boolean) {
+    loginAsStudent.value = value;
+  }
 
   return {
     getCurrentUser,
@@ -36,5 +41,6 @@ export const useUserStore = defineStore("user", () => {
     setAuthorized,
     isTeacher,
     setCurrentUser,
+    setLoginAsStudent,
   };
 });

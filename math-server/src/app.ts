@@ -330,7 +330,7 @@ app.post(
                 process.env.NODE_ENV === "development" ||
                 process.env.NODE_ENV === "test";
             req.body.password = authUtil.encryptPasssword(req.body.password);
-            return res.status(200).json(await db.createUser(req.body));
+            return res.status(200).json(await db.saveUser(req.body));
         } catch (error) {
             next(error);
         }

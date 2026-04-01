@@ -103,15 +103,28 @@
       </v-tooltip>
 
       <!-- sign in / register -->
-      <v-tooltip text="Sign in" location="bottom">
+      <v-tooltip text="Sign in as Teacher" location="bottom">
         <template v-slot:activator="{ props }">
           <v-btn
             v-bind="props"
             v-show="!user"
             icon
-            v-on:click="showLoginDialog"
+            v-on:click="showLoginDialog('TEACHER')"
           >
-            <v-icon>mdi-account</v-icon>
+            <v-icon>mdi-account-tie</v-icon>
+          </v-btn>
+        </template>
+      </v-tooltip>
+
+      <v-tooltip text="Sign in as Student" location="bottom">
+        <template v-slot:activator="{ props }">
+          <v-btn
+            v-bind="props"
+            v-show="!user"
+            icon
+            v-on:click="showLoginDialog('STUDENT')"
+          >
+            <v-icon>mdi-account-school-outline</v-icon>
           </v-btn>
         </template>
       </v-tooltip>
@@ -254,9 +267,12 @@ const isTeacher = computed(() => userStore.isTeacher());
 const showFeedbackDialog = ref(false);
 const showContactUsDialog = ref(false);
 
-function showLoginDialog() {
-  router.push("/login");
-  //router.go(0);
+function showLoginDialog(userType?: string) {
+  if (userType) {
+    router.push({ name: "login", query: { userType } });
+  } else {
+    router.push("/login");
+  }
 }
 
 function signOut() {
@@ -280,7 +296,6 @@ function navToQuestions() {
 function navToAnswers() {
   router.push("/answers");
 }
-
 </script>
 <style>
 .title {
@@ -288,8 +303,8 @@ function navToAnswers() {
 }
 
 body {
-  font-size: 16px; ;
-  font-family: 'Kalam', cursive !important;
+  font-size: 16px;
+  font-family: "Kalam", cursive !important;
   -webkit-touch-callout: none;
   -webkit-user-select: none;
   -khtml-user-select: none;

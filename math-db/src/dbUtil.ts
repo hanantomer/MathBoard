@@ -161,10 +161,25 @@ export default function dbUtil() {
         });
     }
 
-    async function createUser(user: UserAttributes): Promise<User | null> {
-        if(await User.findOne({where: {email: user.email}})) {
+    async function saveUser(user: UserAttributes): Promise<User | null> {
+        const existing = await User.findOne({ where: { email: user.email } });
+
+        if (existing) {
+            const existingType = existing.userType;
+            const requestedType = user.userType;
+
+            if (
+                (existingType === "STUDENT" && requestedType === "TEACHER") ||
+                (existingType === "TEACHER" && requestedType === "STUDENT")
+            ) {
+                existing.userType = "BOTH";
+                await existing.save();
+                return existing;
+            }
+
             return null;
         }
+
         return await User.create(user);
     }
 
@@ -851,7 +866,7 @@ export default function dbUtil() {
     return {
         getIdByUUId,
         getUser,
-        createUser,
+        saveUser,
         getUserById,
         getUserByEmail,
         getUserByEmailAndPassword,

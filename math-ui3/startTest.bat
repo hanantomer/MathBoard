@@ -17,7 +17,7 @@ start npx vite -d -m test
 
 start "messgaes" node C:\dev\MathBoard\math-messages\build\app.js
 
-
+start "cypress" npx cypress run --browser chrome 
 
 
 

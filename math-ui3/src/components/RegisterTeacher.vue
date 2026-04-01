@@ -73,7 +73,7 @@
             <v-col cols="12">
               <v-card>
                 <v-card-title> Terms and Conditions </v-card-title>
-                <v-card-text style="height: 80px; overflow-y: auto">
+                <v-card-text style="height: 210px; overflow-y: auto">
                   <h4>Introduction</h4>
                   <p>
                     These Website Standard Terms and Conditions written on this
@@ -231,16 +231,6 @@
               </v-checkbox>
             </v-col>
           </v-row>
-          <v-row>
-            <v-alert
-              height="120"
-              text="This site is currently in Beta, so it’s free to use for the near future. Due to limited capacity, we can only enroll a select number of users. All sign-in requests will require approval, and we’ll send you a confirmation email once approved. If you encounter any outstanding issues, please reach out to us via contact us form."
-              data-cy="register_alert"
-              title="Attention"
-              type="success"
-            >
-            </v-alert>
-          </v-row>
 
           <v-row>
             <v-col class="d-flex" cols="12" align-end>
@@ -263,12 +253,13 @@
 <script setup lang="ts">
 import useAuthHelper from "../helpers/authenticationHelper";
 import { ref, computed, watch } from "vue";
-import { useRoute } from "vue-router";
+import { useRoute, useRouter } from "vue-router";
 import { UserType } from "common/unions";
 import useContactUs from "../helpers/contactUsHelper";
 
 const contactUs = useContactUs();
 const route = useRoute();
+const router = useRouter();
 
 const authHelper = useAuthHelper();
 let registerForm = ref(null);
@@ -324,6 +315,7 @@ function close() {
   email.value = "";
   password.value = "";
   verify.value = "";
+  router.push("/");
 }
 
 async function register() {

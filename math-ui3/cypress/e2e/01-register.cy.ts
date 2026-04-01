@@ -5,7 +5,7 @@ describe("e2e", () => {
   it("e2e", () => {
     cy.clearCookies();
     cy.visit("http://localhost:13035");
-    cy.get(".mdi-account").click({ multiple: true });
+    cy.get(".mdi-account-tie").click({ multiple: true });
     // register
     cy.get('[data-cy="register"] > .v-btn__content').click({ force: true });
     cy.get('[data-cy="register_fname"]').type("hanan");
@@ -20,7 +20,8 @@ describe("e2e", () => {
 
     // verify token validity
     cy.get('[data-cy="lessons"] > .v-btn__content').click();
-    cy.get( // verify lessons title exists
+    cy.get(
+      // verify lessons title exists
       ".v-card > .v-toolbar > .v-toolbar__content > .v-toolbar-title > .v-toolbar-title__placeholder",
     ).should("exist");
   });
