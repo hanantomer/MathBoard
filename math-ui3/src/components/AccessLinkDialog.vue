@@ -2,53 +2,45 @@
   <v-row justify="center">
     <v-dialog
       v-model="dialog"
-      max-width="850px"
+      max-width="600px"
       persistent
       @keydown.esc="closeDialog"
     >
       <v-card>
-        <v-card-title>
-          <span class="headline">Lesson Access Link</span>
+        <v-card-title class="text-h6 primary white--text">
+          <v-icon left>mdi-link</v-icon>
+          Lesson Access Link
         </v-card-title>
-        <v-card-text>
-          <v-container>
-            <v-row>
-              <v-col cols="12">
-                <v-text-field
-                  v-model="link"
-                  label="Access Link"
-                  readonly
-                ></v-text-field>
-              </v-col>
-            </v-row>
-            <v-row>
-              <v-col cols="12">
-                <div style="background-color: beige;"                >
-                <h3>Online Students Indicator and Management</h3>
-                <ul style="list-style-type: disc">
-                  <li>
-                    When a student comes online, The counter above the Students
-                    button (at the top) increases by 1.
-                  </li>
-
-                  <li>
-                    Click the Students button to explore all
-                    students.
-                  </li>
-                  <li>
-                    To enable editing, Click the student's row
-                    to let them edit and add notations.
-                  </li>
-                </ul>
-                </div>
-              </v-col>
-            </v-row>
-          </v-container>
+        <v-card-text class="pa-6">
+          <v-text-field
+            v-model="link"
+            label="Access Link"
+            readonly
+            outlined
+            prepend-inner-icon="mdi-link-variant"
+            class="mb-4"
+          ></v-text-field>
+          <v-alert type="info" outlined class="mb-4">
+            <h4 class="mb-2">Online Students Indicator and Management</h4>
+            <ul class="mb-0">
+              <li>
+                When a student comes online, the counter above the Students
+                button (at the top) increases by 1.
+              </li>
+              <li>Click the Students button to explore all students.</li>
+              <li>
+                To enable editing, click the student's row to let them edit and
+                add notations.
+              </li>
+            </ul>
+          </v-alert>
         </v-card-text>
-        <v-card-actions>
+        <v-card-actions class="pa-6 pt-0">
           <v-spacer></v-spacer>
-          <v-btn color="blue darken-1" @click="closeDialog"> Close </v-btn>
-          <v-btn color="blue darken-1" @click="copy"> Copy To Clipboard </v-btn>
+          <v-btn @click="closeDialog" text>Close</v-btn>
+          <v-btn color="primary" @click="copy" prepend-icon="mdi-content-copy">
+            Copy to Clipboard
+          </v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
@@ -81,8 +73,9 @@ watch(
 
 const link = computed(() => {
   if (lessonStore.getCurrentLesson()) {
-    return `${window.location.origin}/lesson/sl_${lessonStore.getCurrentLesson()
-      ?.uuid}`;
+    return `${window.location.origin}/lesson/sl_${
+      lessonStore.getCurrentLesson()?.uuid
+    }`;
   }
   return `${
     window.location.origin
