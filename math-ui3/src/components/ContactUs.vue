@@ -16,6 +16,7 @@
             <form>
               <v-text-field
                 v-model="name"
+                :rules="nameRules"
                 label="Name"
                 required
                 maxlength="25"
@@ -31,12 +32,15 @@
               ></v-text-field>
               <v-textarea
                 v-model="message"
+                :rules="messageRules"
                 label="Message"
                 maxlength="250"
                 required
               ></v-textarea>
-              <v-btn @click="submit">submit</v-btn>
-              <v-btn @click="close">close</v-btn>
+              <v-btn :disabled="isSubmitDisabled" type="button" @click="submit"
+                >Submit</v-btn
+              >
+              <v-btn type="button" @click="close">Close</v-btn>
             </form>
           </v-card-text>
         </v-card>
@@ -46,7 +50,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue";
+import { computed, ref } from "vue";
 import useContactUs from "../helpers/contactUsHelper";
 import { useRouter } from "vue-router";
 
@@ -68,18 +72,32 @@ let name = ref("");
 let email = ref("");
 let message = ref("");
 
+const nameRules = [(v: string) => !!v || "Required"];
 const emailRules = [
   (v: string) => !!v || "Required",
   (v: string) => /.+@.+\..+/.test(v) || "E-mail must be valid",
 ];
+const messageRules = [(v: string) => !!v || "Required"];
+
+const isSubmitDisabled = computed(() => {
+  const emailValid = /.+@.+\..+/.test(email.value);
+  return !name.value || !email.value || !message.value || !emailValid;
+});
 
 async function submit() {
-  let formVlidated: any = await (contactForm.value as any).validate();
-  if (formVlidated) {
-    contactUs.contactUs(name.value, email.value, message.value);
-    emit("update:modelValue", false);
-    router.push("/");
+  const formValidated: any = await (contactForm.value as any)?.validate();
+  if (!formValidated) {
+    return;
   }
+
+  // additional safety guard
+  if (isSubmitDisabled.value) {
+    return;
+  }
+
+  contactUs.contactUs(name.value, email.value, message.value);
+  emit("update:modelValue", false);
+  router.push("/");
 }
 
 function close() {
