@@ -30,6 +30,17 @@ export const selectedCellStroke = "red";
 export const defaultdCellStroke = "lightgray";
 export const heartBeatInterval = 3000;
 
+export function validateCookiesEnabled(): boolean {
+  if (!window.navigator.cookieEnabled) {
+    alert(
+      "Cookies not enabled. You must enable cookies to continue",
+    );
+    return false;
+  }
+  return true;
+}
+
+
 export function getDefaultFontSize(): number {
   var style = window!.getComputedStyle(
     document!.body
@@ -123,3 +134,10 @@ export type TextSyncEndData = {
   lessonUUId: string;
   notationUUId: string;
 };
+
+export interface GoogleUserData {
+  sub: string;
+  name: string;
+  email: string;
+}
+

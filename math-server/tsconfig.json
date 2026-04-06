@@ -11,14 +11,12 @@
         "esModuleInterop": true,
         "experimentalDecorators": true,
         "emitDecoratorMetadata": true,
-        "baseUrl": ".",
         "paths": {
             "*": ["../node_modules/@types"],
             "auth/*": ["../math-auth/src/*"]
         },
         "skipLibCheck": true,
         "sourceMap": true,
-        "moduleResolution": "node",
         "resolveJsonModule": true
     },
     "ts-node": {

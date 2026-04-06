@@ -1,13 +1,20 @@
 import { LoginTicket } from "google-auth-library";
 import { removeCookie } from "typescript-cookie";
 import { UserType } from "common/unions";
-import { ACCESS_TOKEN_NAME } from "common/globals";
+import {
+  ACCESS_TOKEN_NAME,
+  GoogleUserData,
+  validateCookiesEnabled,
+} from "common/globals";
 import { UserAttributes, UserCreationAttributes } from "common/userTypes";
 import { useUserStore } from "../store/pinia/userStore";
 import axiosHelper from "./axiosHelper";
 import useApiHelper from "./apiHelper";
 import axios from "axios";
+import { decodeCredential } from "vue3-google-login";
+import { useCookies } from "vue3-cookies";
 
+const cookies = useCookies().cookies;
 const apiHelper = useApiHelper();
 const { baseURL } = axiosHelper();
 
@@ -32,7 +39,9 @@ export default function useAuthHelper() {
       lastHeartbeatTime: new Date(),
     };
 
-    return await apiHelper.registerUser(user);
+    const createdUser = await apiHelper.registerUser(user);
+    cookies.set(ACCESS_TOKEN_NAME, createdUser.access_token!, "7d");
+    return createdUser;
   }
 
   // this follows ui google with login
@@ -88,7 +97,42 @@ export default function useAuthHelper() {
     return await apiHelper.getUserByAccessToken();
   }
 
+  async function handleGoogleUserRegistration(
+    response: any,
+    userType: UserType,
+  ): Promise<UserAttributes | null> {
+    if (!validateCookiesEnabled()) return null;
+
+    const ticket = await authGoogleUser(response.credential);
+
+    if (!ticket) return null;
+
+    const userData = decodeCredential(response.credential) as GoogleUserData;
+
+    // will be used later for subsequent api calls
+    cookies.set(ACCESS_TOKEN_NAME, ticket as any, "7d");
+
+    let storedUser = await getUserByEmail(userData.email);
+    if (!storedUser || storedUser.userType !== userType) {
+      storedUser = await registerUser(
+        userData.name.split(" ")[0],
+        userData.name.split(" ")[1] || "",
+        userData.email,
+        "", // password is not relevant for google users
+        userType,
+      );
+    }
+
+    if (!storedUser) {
+      alert("Registration failed: Email already in use.");
+      return null;
+    }
+
+    return storedUser!;
+  }
+
   return {
+    handleGoogleUserRegistration,
     authGoogleUser,
     authLocalUserByUserAndPassword,
     registerUser,

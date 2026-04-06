@@ -174,10 +174,9 @@ export default function dbUtil() {
             ) {
                 existing.userType = "BOTH";
                 await existing.save();
-                return existing;
             }
 
-            return null;
+            return existing;
         }
 
         return await User.create(user);

@@ -62,7 +62,7 @@
                 data-cy="register_verify"
                 block
                 v-model="verify"
-                :rules="[rules.required, passwordMatch]"
+                :rules="[rules.required, passwordMatchRule]"
                 :type="'password'"
                 label="Confirm Password"
                 counter
@@ -88,43 +88,36 @@
 </template>
 
 <script setup lang="ts">
-import useAuthHelper from "../helpers/authenticationHelper";
-import { ref, computed, watch } from "vue";
+import { ref, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { UserType } from "common/unions";
+import useRegistration from "../composables/registration";
+
 const route = useRoute();
 const router = useRouter();
 
-const authHelper = useAuthHelper();
-let registerForm = ref(null);
-let show = ref(false);
-let valid = ref<boolean>(false);
-let firstName = ref("");
-let lastName = ref("");
-let email = ref("");
-let password = ref("");
-let verify = ref("");
-const emailRules = [
-  (v: string) => !!v || "Required",
-  (v: string) => /.+@.+\..+/.test(v) || "E-mail must be valid",
-];
-let show1 = ref(false);
-let rules = {
-  required: (value: string) => !!value || "Required.",
-  min: (v: string) => (v && v.length >= 8) || "Min 8 characters",
-};
+const {
+  registerForm,
+  valid,
+  firstName,
+  lastName,
+  email,
+  password,
+  verify,
+  show1,
+  emailRules,
+  rules,
+  passwordMatchRule,
+  registrationTitle,
+  resetForm,
+  register: performRegister,
+} = useRegistration("STUDENT");
 
-const passwordMatch = computed(() => {
-  return () => password.value === verify.value || "Password must match";
-});
+let show = ref(false);
 
 const emit = defineEmits(["registered"]);
 
-let userType = ref<UserType>("STUDENT");
-
 let redirectAfterLogin: string = "";
-
-let registrationTitle = computed(() => "Student Registration");
 
 watch(
   route,
@@ -140,32 +133,13 @@ watch(
 
 function close() {
   show.value = false;
-  registerForm.value = null;
-  firstName.value = "";
-  lastName.value = "";
-  email.value = "";
-  password.value = "";
-  verify.value = "";
+  resetForm();
   router.push("/");
 }
 
 async function register() {
-  let formVlidated: any = await (registerForm.value as any).validate();
-  if (formVlidated.valid) {
-    const newUser = await authHelper.registerUser(
-      firstName.value,
-      lastName.value,
-      email.value,
-      password.value,
-      userType.value as UserType,
-    );
-
-    if (!newUser) {
-      alert("Registration failed: Email already in use.");
-      return;
-    }
-
-    registerForm.value = null;
+  const success = await performRegister();
+  if (success) {
     show.value = false;
     emit("registered", redirectAfterLogin);
   }

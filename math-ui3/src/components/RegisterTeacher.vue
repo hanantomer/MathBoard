@@ -1,5 +1,5 @@
 <template>
-  <v-dialog v-model="show" width="1000" height="700" persistent>
+  <v-dialog v-model="show" width="1000" height="800" persistent>
     <v-card style="overflow-y: hidden">
       <v-btn
         style="position: absolute; right: 10px; top: 10px"
@@ -61,7 +61,7 @@
                 data-cy="register_verify"
                 block
                 v-model="verify"
-                :rules="[rules.required, passwordMatch]"
+                :rules="[rules.required, passwordMatchRule]"
                 :type="'password'"
                 label="Confirm Password"
                 counter
@@ -73,7 +73,7 @@
             <v-col cols="12">
               <v-card>
                 <v-card-title> Terms and Conditions </v-card-title>
-                <v-card-text style="height: 210px; overflow-y: auto">
+                <v-card-text style="height: 180px; overflow-y: auto">
                   <h4>Introduction</h4>
                   <p>
                     These Website Standard Terms and Conditions written on this
@@ -244,6 +244,12 @@
               >
             </v-col>
           </v-row>
+          <v-divider class="my-6">
+            <span class="text-caption text-medium-emphasis">OR</span>
+          </v-divider>
+          <v-card-text>
+            <GoogleLogin :callback="handleGoogleUserRegistration" />
+          </v-card-text>
         </v-form>
       </v-card-text>
     </v-card>
@@ -251,49 +257,44 @@
 </template>
 
 <script setup lang="ts">
-import useAuthHelper from "../helpers/authenticationHelper";
-import { ref, computed, watch } from "vue";
+import { ref, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { UserType } from "common/unions";
+import useRegistration from "../composables/registration";
+import useGoogleLogin from "../composables/googleLogin";
 import useContactUs from "../helpers/contactUsHelper";
+import { useUserStore } from "../store/pinia/userStore";
 
+const userStore = useUserStore();
 const contactUs = useContactUs();
 const route = useRoute();
 const router = useRouter();
 
-const authHelper = useAuthHelper();
-let registerForm = ref(null);
+const {
+  registerForm,
+  valid,
+  firstName,
+  lastName,
+  email,
+  password,
+  verify,
+  show1,
+  emailRules,
+  rules,
+  passwordMatchRule,
+  registrationTitle,
+  resetForm,
+  register: performRegister,
+} = useRegistration("TEACHER");
+
+const { registerOrGetUser } = useGoogleLogin();
+
 let acceptedTerms = ref<boolean>(false);
 let show = ref(false);
-let valid = ref<boolean>(false);
-let firstName = ref("");
-let lastName = ref("");
-let email = ref("");
-let password = ref("");
-let verify = ref("");
-const emailRules = [
-  (v: string) => !!v || "Required",
-  (v: string) => /.+@.+\..+/.test(v) || "E-mail must be valid",
-];
-let show1 = ref(false);
-let rules = {
-  required: (value: string) => !!value || "Required.",
-  min: (v: string) => (v && v.length >= 8) || "Min 8 characters",
-};
-
-const passwordMatch = computed(() => {
-  return () => password.value === verify.value || "Password must match";
-});
 
 const emit = defineEmits(["registered"]);
 
-let userType = ref<UserType>("TEACHER");
-
 let redirectAfterLogin: string = "";
-
-let registrationTitle = computed(() =>
-  userType.value == "TEACHER" ? "Teacher Registration" : "Student Registration",
-);
 
 watch(
   route,
@@ -309,47 +310,32 @@ watch(
 
 function close() {
   show.value = false;
-  registerForm.value = null;
-  firstName.value = "";
-  lastName.value = "";
-  email.value = "";
-  password.value = "";
-  verify.value = "";
+  resetForm();
   router.push("/");
 }
 
 async function register() {
-  let formVlidated: any = await (registerForm.value as any).validate();
-  if (formVlidated.valid) {
-    const newUser = await authHelper.registerUser(
-      firstName.value,
-      lastName.value,
-      email.value,
-      password.value,
-      userType.value as UserType,
-    );
-
-    if (!newUser) {
-      alert("A user with this email already exists!");
-      return;
-    }
-
-    if (!newUser.nonprod) {
+  const success = await performRegister();
+  if (success) {
+    if (!firstName.value.includes("nonprod")) {
+      // Assuming nonprod check
       contactUs.contactUs(
         `${firstName.value} ${lastName.value}`,
         email.value,
         "approve me",
       );
     }
-
     show.value = false;
-    registerForm.value = null;
-    firstName.value = "";
-    lastName.value = "";
-    email.value = "";
-    password.value = "";
-    verify.value = "";
     emit("registered", redirectAfterLogin);
+  }
+}
+
+async function handleGoogleUserRegistration(response: any) {
+  const user = await registerOrGetUser(response, "TEACHER");
+  if (user) {
+    userStore.setCurrentUser(user);
+    show.value = false;
+    router.push({ name: "lessons" });
   }
 }
 </script>

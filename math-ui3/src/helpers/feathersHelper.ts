@@ -54,7 +54,7 @@ export class FeathersHelper {
         );
       });
 
-      socket.on("connect_error", (error: string) => {
+      socket.on("connect_error", (error: Error) => {
         console.error("Connection error:", error);
       });
 
@@ -62,7 +62,7 @@ export class FeathersHelper {
         console.error("Connection tsctimeout:", timeout);
       });
 
-      socket.on("reconnect_error", (error: string) => {
+      socket.on("reconnect_error", (error: Error) => {
         console.error("Reconnection error:", error);
       });
 

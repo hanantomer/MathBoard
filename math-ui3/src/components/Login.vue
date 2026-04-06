@@ -2,9 +2,6 @@
   <v-dialog v-model="show" max-width="600" persistent>
     <v-card>
       <v-card-text>
-        <GoogleLogin :callback="googleLoginCallback" />
-      </v-card-text>
-      <v-card-text>
         <v-form ref="loginForm" v-model="valid" lazy-validation>
           <v-row>
             <v-col cols="11"></v-col>
@@ -99,6 +96,12 @@
               >
             </v-col>
           </v-row>
+          <v-divider class="my-6">
+            <span class="text-caption text-medium-emphasis">OR</span>
+          </v-divider>
+          <v-card-text>
+            <GoogleLogin :callback="googleLoginCallback" />
+          </v-card-text>
         </v-form>
       </v-card-text>
     </v-card>
@@ -108,18 +111,22 @@
 <script setup lang="ts">
 import { ref, watch } from "vue";
 import { useCookies } from "vue3-cookies";
-import { decodeCredential } from "vue3-google-login";
 import { useRouter, useRoute, RouteLocationRaw } from "vue-router";
 import { useUserStore } from "../store/pinia/userStore";
 import useAuthHelper from "../helpers/authenticationHelper";
 import useApiHelper from "../helpers/apiHelper";
+import useValidationRules from "../composables/validationRules";
+import useGoogleLogin from "../composables/googleLogin";
 import { ACCESS_TOKEN_NAME } from "common/globals";
 import { UserType } from "common/unions";
-import { UserCreationAttributes } from "common/userTypes";
+import { UserAttributes, UserCreationAttributes } from "common/userTypes";
 
 const cookies = useCookies().cookies;
 const authHelper = useAuthHelper();
 const apiHelper = useApiHelper();
+const { rules } = useValidationRules();
+const { handleGoogleAuth, decodeGoogleCredential, registerOrGetUser } =
+  useGoogleLogin();
 const userStore = useUserStore();
 
 const router = useRouter();
@@ -127,7 +134,6 @@ const route = useRoute();
 
 let loginForm = ref();
 let loginFailed = ref(false);
-//let userNotApproved = ref(false);
 let show = ref(false);
 let valid = ref<boolean>(false);
 
@@ -139,13 +145,9 @@ let resetEmailSent = ref(false);
 
 let studentLogin = false;
 
-let rules = {
-  required: (value: string) => !!value || "Required.",
-  min: (v: string) => (v && v.length >= 8) || "Min 8 characters",
-  validMail: (v: string) => /.+@.+\..+/.test(v) || "E-mail must be valid",
-};
-
 const emit = defineEmits(["register"]);
+
+let userType: UserType | null = null;
 
 watch(
   route,
@@ -154,7 +156,7 @@ watch(
     if (params.name === "login") {
       show.value = true;
       // Check userType query parameter first
-      const userType: UserType = params.query?.userType?.toString() as UserType;
+      userType = params.query?.userType?.toString() as UserType;
       if (userType === "STUDENT") {
         studentLogin = true;
       } else if (userType === "TEACHER") {
@@ -180,21 +182,9 @@ async function googleLoginCallback(response: any) {
     const ticket = await handleGoogleAuth(response.credential);
     if (!ticket) return;
 
-    const userData = decodeCredential(response.credential) as GoogleUserData;
+    let storedUser = await registerOrGetUser(response, userType!);
 
-    const storedUser = await handleGoogleUserRegistration(
-      userData,
-      ticket,
-      studentLogin,
-    );
-    if (!storedUser) {
-      return;
-    }
-
-    // check that user is approved
-    //if (!(await handleUserValidation(storedUser))) return;
-
-    await completeLogin(storedUser);
+    await completeLogin(storedUser!);
 
     handleRedirect();
   } catch (error) {
@@ -203,85 +193,12 @@ async function googleLoginCallback(response: any) {
   }
 }
 
-interface GoogleUserData {
-  sub: string;
-  name: string;
-  email: string;
-}
-
-async function handleGoogleAuth(accessToken: string) {
-  const ticket = await authHelper.authGoogleUser(accessToken);
-  if (!ticket) {
-    loginFailed.value = true;
-    return null;
-  }
-  return ticket;
-}
-
-async function handleGoogleUserRegistration(
-  userData: GoogleUserData,
-  ticket: any,
-  studentLogin: boolean,
-) {
-  if (!validateCookiesEnabled()) return null;
-
-  // will be used later for subsequent api calls
-  cookies.set(ACCESS_TOKEN_NAME, ticket);
-
-  let storedUser = await authHelper.getUserByEmail(userData.email);
-  if (!storedUser) {
-    storedUser = await registerNewUser(userData, studentLogin);
-  }
-
-  if (!storedUser) {
-    loginFailed.value = true;
-    return null;
-  }
-
-  return storedUser;
-}
-
-function validateCookiesEnabled(): boolean {
-  if (!window.navigator.cookieEnabled) {
-    alert("Cookies not enabled. You must enable cookies to continue");
-    return false;
-  }
-  return true;
-}
-
-async function registerNewUser(
-  userData: GoogleUserData,
-  isStudent: boolean,
-): Promise<any> {
-  try {
-    const newUser = await authHelper.registerUser(
-      userData.name,
-      "",
-      userData.email,
-      "",
-      isStudent ? "STUDENT" : "TEACHER",
-    );
-
-    return newUser;
-  } catch (error) {
-    console.error("User registration failed:", error);
-    return null;
-  }
-}
-
-async function handleUserValidation(user: any) {
-  // if (user.approved === false && user.userType === "TEACHER") {
-  //   userNotApproved.value = true;
-  //   return false;
-  // }
-
-  //userNotApproved.value = false;
-  loginFailed.value = false;
-  return true;
-}
-
-async function completeLogin(user: any) {
+async function completeLogin(user: UserAttributes) {
   userStore.setCurrentUser(user);
+  userStore.setLoginAsStudent(
+    user.userType === "STUDENT" || studentLogin,
+  );
+
   show.value = false;
 }
 
@@ -289,6 +206,8 @@ function handleRedirect() {
   if (route.query.from) {
     const routeFrom: RouteLocationRaw = route.query.from as string;
     router.replace(routeFrom);
+  } else {
+    router.push("/lessons");
   }
 }
 
@@ -359,9 +278,6 @@ async function onLogin() {
     }
   }
 
-  userStore.setLoginAsStudent(
-    authenticatedUser.userType === "STUDENT" || studentLogin,
-  );
 
   if (!authenticatedUser.access_token) {
     apiHelper.log(
@@ -382,9 +298,7 @@ async function onLogin() {
   //}
   //userNotApproved.value = false;
 
-  loginFailed.value = false;
 
-  userStore.setCurrentUser(authenticatedUser);
 
   if (window.navigator.cookieEnabled) {
     cookies.set(ACCESS_TOKEN_NAME, authenticatedUser.access_token);
@@ -399,7 +313,8 @@ async function onLogin() {
     return;
   }
 
-  show.value = false;
+  completeLogin(authenticatedUser);
+
 }
 
 function close() {
