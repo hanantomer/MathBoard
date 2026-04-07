@@ -17,7 +17,7 @@
         contain
       ></v-img>
       <v-toolbar-title>
-        ONLINE <strong style="color: darkorange">MATHBOARD </strong>
+        ONLINE <strong style="color: darkorange">MATH WHITEBOARD </strong>
         <span class="title">{{ title }}</span>
       </v-toolbar-title>
 

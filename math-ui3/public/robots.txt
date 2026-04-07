@@ -1,0 +1,44 @@
+# MathBoard robots.txt
+# This file tells search engines which pages they can crawl
+
+User-agent: *
+Allow: /
+Disallow: /admin
+Disallow: /private
+Disallow: /api/
+Disallow: *.js
+Disallow: *.css
+Disallow: /dist/
+Disallow: /build/
+Disallow: /tmp/
+Disallow: /logs/
+Disallow: /uploads/
+
+# Allow search engines to crawl specific important paths
+Allow: /
+Allow: /lessons
+Allow: /questions
+Allow: /answers
+
+# Specific rules for Google
+User-agent: Googlebot
+Allow: /
+
+# Specific rules for Bing
+User-agent: Bingbot
+Allow: /
+
+# Block bad bots
+User-agent: MJ12bot
+Disallow: /
+
+User-agent: AhrefsBot
+Crawl-delay: 10
+
+# Sitemap location
+Sitemap: https://mathboard.com/sitemap.xml
+Sitemap: https://mathboard.com/sitemap-lessons.xml
+Sitemap: https://mathboard.com/sitemap-questions.xml
+
+# Crawl delay (in seconds)
+Crawl-delay: 1

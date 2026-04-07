@@ -50,10 +50,10 @@
           <!-- Main hero card -->
           <v-card class="main-card mb-6" elevation="3" rounded="lg">
             <v-card-title primary-title class="justify-center py-6">
-              <h1 class="text-h3 font-weight-bold primary--text">
+              <h2 class="text-h4 font-weight-bold primary--text">
                 Teach MATH online with
-                <span class="text-orange">Mathboard</span>
-              </h1>
+                <span class="text-orange">Math Whiteboard</span>
+              </h2>
             </v-card-title>
             <v-card-actions class="justify-center pb-6">
               <v-btn
