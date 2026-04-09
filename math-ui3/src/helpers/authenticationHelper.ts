@@ -40,7 +40,7 @@ export default function useAuthHelper() {
     };
 
     const createdUser = await apiHelper.registerUser(user);
-    cookies.set(ACCESS_TOKEN_NAME, createdUser.access_token!, "7d");
+    cookies.set(ACCESS_TOKEN_NAME, createdUser.access_token!);
     return createdUser;
   }
 
@@ -110,7 +110,7 @@ export default function useAuthHelper() {
     const userData = decodeCredential(response.credential) as GoogleUserData;
 
     // will be used later for subsequent api calls
-    cookies.set(ACCESS_TOKEN_NAME, ticket as any, "7d");
+    cookies.set(ACCESS_TOKEN_NAME, ticket as any);
 
     let storedUser = await getUserByEmail(userData.email);
     if (!storedUser || storedUser.userType !== userType) {
