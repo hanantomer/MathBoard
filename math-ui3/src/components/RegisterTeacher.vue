@@ -284,7 +284,7 @@ const {
   passwordMatchRule,
   registrationTitle,
   resetForm,
-  register: performRegister,
+  performRegister,
 } = useRegistration("TEACHER");
 
 const { registerOrGetUser } = useGoogleLogin();

@@ -110,7 +110,7 @@ const {
   passwordMatchRule,
   registrationTitle,
   resetForm,
-  register: performRegister,
+  performRegister,
 } = useRegistration("STUDENT");
 
 let show = ref(false);

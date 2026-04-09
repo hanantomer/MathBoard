@@ -31,7 +31,7 @@ export default function useRegistration(userType: UserType) {
     verify.value = "";
   };
 
-  const register = async () => {
+  const performRegister = async () => {
     const formValidated: any = await (registerForm.value as any).validate();
     if (formValidated.valid) {
       const newUser = await authHelper.registerUser(
@@ -67,6 +67,6 @@ export default function useRegistration(userType: UserType) {
     passwordMatchRule,
     registrationTitle,
     resetForm,
-    register,
+    performRegister,
   };
 }
