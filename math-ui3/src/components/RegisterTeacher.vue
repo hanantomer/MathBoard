@@ -326,7 +326,7 @@ async function register() {
       );
     }
     show.value = false;
-    emit("registered", redirectAfterLogin);
+    emit("registered", "TEACHER", redirectAfterLogin);
   }
 }
 

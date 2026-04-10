@@ -2,8 +2,12 @@ import { ref, computed } from "vue";
 import { UserType } from "common/unions";
 import useAuthHelper from "../helpers/authenticationHelper";
 import useValidationRules from "./validationRules";
+import { useCookies } from "vue3-cookies";
+
+const ACCESS_TOKEN_NAME = "access_token";
 
 export default function useRegistration(userType: UserType) {
+  const { cookies } = useCookies();
   const authHelper = useAuthHelper();
   const { emailRules, rules, passwordMatch } = useValidationRules();
 
@@ -46,6 +50,8 @@ export default function useRegistration(userType: UserType) {
         alert("Registration failed: Email already in use.");
         return false;
       }
+
+      cookies.set(ACCESS_TOKEN_NAME, newUser.access_token!);
 
       resetForm();
       return true;

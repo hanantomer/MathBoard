@@ -165,6 +165,7 @@ watch(
         // Fallback to existing logic for link based detection
         studentLogin =
           params.query?.from?.toString().indexOf("/lesson/sl_") === 0;
+        userType = studentLogin ? "STUDENT" : null;
       }
       redirectAfterLogin = params.query?.from?.toString() || "";
     }
@@ -195,9 +196,7 @@ async function googleLoginCallback(response: any) {
 
 async function completeLogin(user: UserAttributes) {
   userStore.setCurrentUser(user);
-  userStore.setLoginAsStudent(
-    user.userType === "STUDENT" || studentLogin,
-  );
+  userStore.setLoginAsStudent(user.userType === "STUDENT" || studentLogin);
 
   show.value = false;
 }
@@ -262,6 +261,7 @@ async function onLogin() {
           loginFailed.value = true;
           return;
         }
+        cookies.set(ACCESS_TOKEN_NAME, authenticatedUser.access_token!);
       } catch (error) {
         loginFailed.value = true;
         return;
@@ -277,7 +277,6 @@ async function onLogin() {
       return;
     }
   }
-
 
   if (!authenticatedUser.access_token) {
     apiHelper.log(
@@ -298,8 +297,6 @@ async function onLogin() {
   //}
   //userNotApproved.value = false;
 
-
-
   if (window.navigator.cookieEnabled) {
     cookies.set(ACCESS_TOKEN_NAME, authenticatedUser.access_token);
   } else {
@@ -314,7 +311,6 @@ async function onLogin() {
   }
 
   completeLogin(authenticatedUser);
-
 }
 
 function close() {

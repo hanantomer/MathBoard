@@ -40,7 +40,6 @@ export default function useAuthHelper() {
     };
 
     const createdUser = await apiHelper.registerUser(user);
-    cookies.set(ACCESS_TOKEN_NAME, createdUser.access_token!);
     return createdUser;
   }
 

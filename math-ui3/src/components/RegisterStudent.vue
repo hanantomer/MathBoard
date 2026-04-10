@@ -90,7 +90,6 @@
 <script setup lang="ts">
 import { ref, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
-import { UserType } from "common/unions";
 import useRegistration from "../composables/registration";
 
 const route = useRoute();
@@ -141,7 +140,7 @@ async function register() {
   const success = await performRegister();
   if (success) {
     show.value = false;
-    emit("registered", redirectAfterLogin);
+    emit("registered", "STUDENT", redirectAfterLogin);
   }
 }
 </script>
