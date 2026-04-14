@@ -5,15 +5,14 @@ describe("e2e", () => {
   it("e2e", () => {
     cy.clearCookies();
     cy.visit("http://localhost:13035");
-    cy.get(".mdi-account-tie").click({ multiple: true });
-    // register
-    cy.get('[data-cy="register"] > .v-btn__content').click();
+    cy.get('[data-cy="signup_btn"] > .v-btn__content').click();
     cy.get('[data-cy="register_fname"]').type("hanan");
     cy.get('[data-cy="register_lname"]').type("tomer");
     cy.get('[data-cy="register_email"]').type("hanantomer@gmail.com");
     cy.get('[data-cy="register_password"]').type("12345678");
     cy.get('[data-cy="register_verify"]').type("12345678");
     cy.get('input[type="checkbox"]').click();
+    cy.get('[data-cy="register_signup"] > .v-btn__content').should("be.enabled");
     cy.get('[data-cy="register_signup"] > .v-btn__content').click();
     // login
     cy.login();

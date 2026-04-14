@@ -18,19 +18,9 @@ export default function useGoogleLogin() {
     return decodeCredential(credential) as GoogleUserData;
   };
 
-  const registerOrGetUser = async (
-    response: any,
-    userType: UserType,
-  ) => {
-    return await authHelper.handleGoogleUserRegistration(
-      response,
-      userType,
-    );
-  };
 
   return {
     handleGoogleAuth,
     decodeGoogleCredential,
-    registerOrGetUser,
   };
 }
