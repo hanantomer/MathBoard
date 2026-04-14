@@ -125,7 +125,7 @@ const cookies = useCookies().cookies;
 const authHelper = useAuthHelper();
 const apiHelper = useApiHelper();
 const { rules } = useValidationRules();
-const { handleGoogleAuth, decodeGoogleCredential, registerOrGetUser } =
+const { handleGoogleAuth, decodeGoogleCredential } =
   useGoogleLogin();
 const userStore = useUserStore();
 
@@ -183,7 +183,7 @@ async function googleLoginCallback(response: any) {
     const ticket = await handleGoogleAuth(response.credential);
     if (!ticket) return;
 
-    let storedUser = await registerOrGetUser(response, userType!);
+    let storedUser = await authHelper.handleGoogleUserRegistration(response, userType!);
 
     await completeLogin(storedUser!);
 
