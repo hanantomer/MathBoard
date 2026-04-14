@@ -259,11 +259,13 @@
 <script setup lang="ts">
 import { ref, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
-import { UserType } from "common/unions";
 import useRegistration from "../composables/registration";
-import useGoogleLogin from "../composables/googleLogin";
 import useContactUs from "../helpers/contactUsHelper";
 import { useUserStore } from "../store/pinia/userStore";
+import useAuthenticationHelper from "../helpers/authenticationHelper";
+
+const authenticationHelper = useAuthenticationHelper();
+
 
 const userStore = useUserStore();
 const contactUs = useContactUs();
@@ -271,7 +273,6 @@ const route = useRoute();
 const router = useRouter();
 
 const {
-  registerForm,
   valid,
   firstName,
   lastName,
@@ -287,7 +288,6 @@ const {
   performRegister,
 } = useRegistration("TEACHER");
 
-const { registerOrGetUser } = useGoogleLogin();
 
 let acceptedTerms = ref<boolean>(false);
 let show = ref(false);
@@ -331,7 +331,7 @@ async function register() {
 }
 
 async function handleGoogleUserRegistration(response: any) {
-  const user = await registerOrGetUser(response, "TEACHER");
+  const user = await authenticationHelper.handleGoogleUserRegistration(response, "TEACHER");
   if (user) {
     userStore.setCurrentUser(user);
     show.value = false;

@@ -94,8 +94,12 @@ watchHelper.watchCustomEvent(
 );
 
 function startTextEditing(e: MouseEvent) {
+  
   const el = e.target as HTMLElement;
-  if (el.tagName !== "rect" /*&& el.getAttribute("data-cy") !== "annotation"*/) {
+  if (
+    el.tagName !== "rect" &&
+    el.tagName != "IMG" /*&& el.getAttribute("data-cy") !== "annotation"*/
+  ) {
     return;
   }
 

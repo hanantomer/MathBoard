@@ -35,6 +35,7 @@
                 </v-btn>
                 or
                 <v-btn
+                  data-cy="signup_btn"
                   size="x-large"
                   variant="text"
                   color="primary"
