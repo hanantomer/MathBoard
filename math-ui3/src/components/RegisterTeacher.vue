@@ -284,6 +284,7 @@ const {
   rules,
   passwordMatchRule,
   registrationTitle,
+  registerForm,
   resetForm,
   performRegister,
 } = useRegistration("TEACHER");

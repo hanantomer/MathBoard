@@ -12,8 +12,8 @@ describe("e2e", () => {
     cy.get('[data-cy="register_password"]').type("12345678");
     cy.get('[data-cy="register_verify"]').type("12345678");
     cy.get('input[type="checkbox"]').click();
-    cy.get('[data-cy="register_signup"] > .v-btn__content').should("be.enabled");
-    cy.get('[data-cy="register_signup"] > .v-btn__content').click();
+    cy.get('[data-cy="register_signup"]').should("be.enabled");
+    cy.get('[data-cy="register_signup"] > span.v-btn__content').click();
     // login
     cy.login();
 

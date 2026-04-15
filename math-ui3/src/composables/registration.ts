@@ -11,7 +11,7 @@ export default function useRegistration(userType: UserType) {
   const authHelper = useAuthHelper();
   const { emailRules, rules, passwordMatch } = useValidationRules();
 
-  const registerForm = ref(null);
+  const registerForm = ref();
   const valid = ref<boolean>(false);
   const firstName = ref("");
   const lastName = ref("");
@@ -27,7 +27,7 @@ export default function useRegistration(userType: UserType) {
   );
 
   const resetForm = () => {
-    registerForm.value = null;
+    registerForm.value = {};
     firstName.value = "";
     lastName.value = "";
     email.value = "";
