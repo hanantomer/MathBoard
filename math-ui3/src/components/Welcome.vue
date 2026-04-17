@@ -86,41 +86,32 @@
 
           <!-- Features card -->
           <v-card class="features-card" elevation="2" rounded="lg">
-            <v-card-title class="text-h4 font-weight-medium text-center py-4">
+            <v-card-title class="text-h5 font-weight-medium text-center py-4">
               Key Features
             </v-card-title>
-            <v-list class="justify-center pa-4">
-              <v-list-item v-for="b in bullets" :key="b" class="mb-2">
-                <v-list-item-title class="d-flex align-center">
-                  <v-icon color="success" class="mr-4" size="large">
-                    mdi-check-circle
-                  </v-icon>
-                  <span class="text-h6">{{ b }}</span>
-                </v-list-item-title>
-              </v-list-item>
-            </v-list>
+            <v-row>
+              <v-col cols="6">
+                <v-list class="justify-center pa-4">
+                  <v-list-item v-for="b in bullets" :key="b" class="mb-2">
+                    <v-list-item-title class="d-flex align-center">
+                      <v-icon color="success" class="mr-4" size="large">
+                        mdi-check-circle
+                      </v-icon>
+                      <span class="text-h7">{{ b }}</span>
+                    </v-list-item-title>
+                  </v-list-item>
+                </v-list>
+              </v-col>
 
-            <!-- Tutorial button -->
-            <v-card-actions class="justify-center pa-6">
-              <v-btn
-                color="primary"
-                size="x-large"
-                prepend-icon="mdi-play-circle"
-                href="/tutorials/MathBoard tutorial.mp4"
-                target="_blank"
-                elevation="2"
-                rounded
-                class="tutorial-btn"
-              >
-                Watch Quick Tutorial
-                <v-icon
-                  end
-                  icon="mdi-open-in-new"
-                  size="small"
-                  class="ml-2"
-                ></v-icon>
-              </v-btn>
-            </v-card-actions>
+              <v-col cols="6" class="d-flex align-center">
+                <v-container>
+                  <VideoPlayer
+                    video-src="/tutorials/tutorial.m3u8"
+                    title="Walkthrough Tutorial"
+                  />
+                </v-container>
+              </v-col>
+            </v-row>
           </v-card>
         </v-col>
       </v-row>
@@ -129,15 +120,19 @@
 </template>
 
 <script setup lang="ts">
+import { ref } from "vue";
 import LoginDialog from "./Login.vue";
 import RegisterStudentDialog from "./RegisterStudent.vue";
 import RegisterTeacherDialog from "./RegisterTeacher.vue";
 import { useRouter } from "vue-router";
 import { useUserStore } from "../store/pinia/userStore";
 import { UserType } from "common/unions";
+import VideoPlayer from "./VideoPlayer.vue";
+import { v } from "vue-router/dist/router-CWoNjPRp.mjs";
 
 const router = useRouter();
 const userStore = useUserStore();
+const videoUrl = ref("./tutorials/tutorial.m3u8");
 
 function register(isStudent: boolean, redirectAfterLogin: string) {
   if (isStudent) {
@@ -188,7 +183,7 @@ const bullets = [
 .features-card {
   background: white;
   border: 1px solid rgba(0, 0, 0, 0.1);
-  max-width: 800px;
+  max-width: 1000px;
   margin: 0 auto;
 }
 

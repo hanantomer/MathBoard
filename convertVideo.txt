@@ -1,0 +1,8 @@
+
+c:/ffmpeg/bin/ffmpeg.exe -i tutorial.mp4 ^
+  -c copy ^
+  -hls_time 6 ^
+  -hls_playlist_type vod ^
+  -hls_flags independent_segments ^
+  -hls_segment_filename segments\segment_%03d.ts ^	
+  playlist.m3u8
