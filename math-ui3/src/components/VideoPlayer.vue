@@ -45,56 +45,66 @@ const hasStarted = ref(false);
 const { mobile } = useDisplay(); // optional
 
 const startPlayback = async () => {
-  const video = videoRef.value;
-  if (!video) return;
+  const video = videoRef.value
+  if (!video) return
 
-  hasStarted.value = true;
+  hasStarted.value = true
+  await nextTick()
 
-  // Small delay so the video element becomes visible in DOM
-  await nextTick();
+  const hlsConfig: Partial<Hls.Config> = {
+    // === Key settings for low bandwidth ===
+    maxBufferLength: 60,           // seconds - larger buffer absorbs slow downloads
+    maxMaxBufferLength: 120,       // allow even more buffer when network is bad
+    maxBufferSize: 60 * 1024 * 1024, // ~60MB max buffer (prevents memory issues)
 
-  try {
-    // 1. Native HLS support (Safari, iOS)
-    const canNativeHls =
-      video.canPlayType("application/vnd.apple.mpegurl") === "probably" ||
-      video.canPlayType("application/x-mpegURL") === "probably";
+    // ABR (Adaptive Bitrate) improvements
+    abrEwmaDefaultEstimate: 500000, // start assuming ~500 kbps (low)
+    abrBandWidthFactor: 0.8,        // be more conservative when switching up
+    abrBandWidthUpFactor: 0.7,
 
-    if (canNativeHls) {
-      video.src = props.videoSrc;
-      await video.play();
-      return;
-    }
+    // Retry logic for flaky connections
+    fragLoadingMaxRetry: 6,
+    fragLoadingRetryDelay: 1000,      // 1 second between retries
+    fragLoadingMaxRetryTimeout: 15000, // up to 15s total retry time
 
-    // 2. hls.js fallback
-    if (Hls.isSupported()) {
-      hlsInstance.value = new Hls({
-        maxBufferLength: 30,
-        maxMaxBufferLength: 60,
-        enableWorker: true,
-        lowLatencyMode: false,
-      });
+    enableWorker: true,
+    lowLatencyMode: false,            // keep false for VOD (better stability)
+    testBandwidth: true,              // important for ABR
 
-      hlsInstance.value.attachMedia(video);
-      hlsInstance.value.loadSource(props.videoSrc);
-
-      hlsInstance.value.on(Hls.Events.ERROR, (event, data) => {
-        console.error("HLS error:", event, data);
-      });
-
-      video.addEventListener("loadedmetadata", async () => {
-        try {
-          await video.play();
-        } catch (err) {
-          console.warn("Autoplay prevented:", err);
-        }
-      });
-    } else {
-      console.error("HLS is not supported in this browser");
-    }
-  } catch (err) {
-    console.error("Failed to start video playback:", err);
+    // Optional: start with lower quality
+    startLevel: -1,                   // -1 = let ABR choose (recommended)
   }
-};
+
+  // Native HLS first (Safari/iOS)
+  if (video.canPlayType('application/vnd.apple.mpegurl')) {
+    video.src = props.videoSrc
+    video.load()
+    try { await video.play() } catch (e) {}
+    return
+  }
+
+  // hls.js with low-bandwidth config
+  if (Hls.isSupported()) {
+    hlsInstance.value = new Hls(hlsConfig)
+
+    hlsInstance.value.loadSource(props.videoSrc)
+    hlsInstance.value.attachMedia(video)
+
+    // Auto-play after metadata
+    video.addEventListener('loadedmetadata', async () => {
+      try {
+        await video.play()
+      } catch (err) {
+        console.error('Play failed:', err)
+      }
+    })
+
+    // Log ABR changes for debugging
+    hlsInstance.value.on(Hls.Events.LEVEL_SWITCHED, (event, data) => {
+      console.log(`Switched to quality level ${data.level}`)
+    })
+  }
+}
 
 // Cleanup on component destroy
 onBeforeUnmount(() => {
