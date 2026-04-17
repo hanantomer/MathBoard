@@ -53,26 +53,28 @@ const startPlayback = async () => {
 
   const hlsConfig: Partial<HlsConfig> = {
     // === Key settings for low bandwidth ===
-    maxBufferLength: 60, // seconds - larger buffer absorbs slow downloads
-    maxMaxBufferLength: 120, // allow even more buffer when network is bad
-    maxBufferSize: 60 * 1024 * 1024, // ~60MB max buffer (prevents memory issues)
-
-    // ABR (Adaptive Bitrate) improvements
-    abrEwmaDefaultEstimate: 500000, // start assuming ~500 kbps (low)
-    abrBandWidthFactor: 0.8, // be more conservative when switching up
-    abrBandWidthUpFactor: 0.7,
+    maxBufferLength: 30, // smaller buffer reduces initial wait time on slow networks
+    maxMaxBufferLength: 60,
+    maxBufferSize: 20 * 1024 * 1024, // lower memory footprint and less initial buffering
+    maxLoadingDelay: 4,
+    minAutoBitrate: 150000,
+    abrEwmaDefaultEstimate: 200000, // assume ~200 kbps to start lower
+    abrBandWidthFactor: 0.7,
+    abrBandWidthUpFactor: 0.6,
+    capLevelToPlayerSize: true,
 
     // Retry logic for flaky connections
-    fragLoadingMaxRetry: 6,
-    fragLoadingRetryDelay: 1000, // 1 second between retries
-    fragLoadingMaxRetryTimeout: 15000, // up to 15s total retry time
+    fragLoadingMaxRetry: 8,
+    fragLoadingRetryDelay: 1000,
+    fragLoadingMaxRetryTimeout: 20000,
+    levelLoadingMaxRetry: 6,
 
     enableWorker: true,
-    lowLatencyMode: false, // keep false for VOD (better stability)
-    testBandwidth: true, // important for ABR
+    lowLatencyMode: false,
+    testBandwidth: true,
 
-    // Optional: start with lower quality
-    startLevel: -1, // -1 = let ABR choose (recommended)
+    // Start at lowest quality available on weak networks
+    startLevel: 0,
   };
 
   // Native HLS first (Safari/iOS)
@@ -89,11 +91,9 @@ const startPlayback = async () => {
   if (Hls.isSupported()) {
     hlsInstance.value = new Hls(hlsConfig);
 
-    hlsInstance.value.loadSource(props.videoSrc);
     hlsInstance.value.attachMedia(video);
 
-    // Auto-play after metadata
-    video.addEventListener("loadedmetadata", async () => {
+    hlsInstance.value.on(Hls.Events.MANIFEST_PARSED, async () => {
       try {
         await video.play();
       } catch (err) {
@@ -101,10 +101,32 @@ const startPlayback = async () => {
       }
     });
 
+    hlsInstance.value.on(Hls.Events.ERROR, (event, data) => {
+      console.error("HLS error:", event, data);
+      if (data?.fatal) {
+        switch (data.type) {
+          case Hls.ErrorTypes.NETWORK_ERROR:
+            console.warn("HLS network error, trying to recover...");
+            hlsInstance.value?.startLoad();
+            break;
+          case Hls.ErrorTypes.MEDIA_ERROR:
+            console.warn("HLS media error, recovering media...");
+            hlsInstance.value?.recoverMediaError();
+            break;
+          default:
+            console.error("HLS fatal error, destroying instance.");
+            hlsInstance.value?.destroy();
+            break;
+        }
+      }
+    });
+
     // Log ABR changes for debugging
     hlsInstance.value.on(Hls.Events.LEVEL_SWITCHED, (event, data) => {
       console.log(`Switched to quality level ${data.level}`);
     });
+
+    hlsInstance.value.loadSource(props.videoSrc);
   }
 };
 
