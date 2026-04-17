@@ -30,7 +30,7 @@
 
 <script setup lang="ts">
 import { ref, nextTick, onBeforeUnmount } from "vue";
-import Hls from "hls.js";
+import Hls, { HlsConfig } from "hls.js";
 import { useDisplay } from "vuetify"; // optional: for responsive tweaks
 
 const props = defineProps<{
@@ -45,66 +45,68 @@ const hasStarted = ref(false);
 const { mobile } = useDisplay(); // optional
 
 const startPlayback = async () => {
-  const video = videoRef.value
-  if (!video) return
+  const video = videoRef.value;
+  if (!video) return;
 
-  hasStarted.value = true
-  await nextTick()
+  hasStarted.value = true;
+  await nextTick();
 
-  const hlsConfig: Partial<Hls.Config> = {
+  const hlsConfig: Partial<HlsConfig> = {
     // === Key settings for low bandwidth ===
-    maxBufferLength: 60,           // seconds - larger buffer absorbs slow downloads
-    maxMaxBufferLength: 120,       // allow even more buffer when network is bad
+    maxBufferLength: 60, // seconds - larger buffer absorbs slow downloads
+    maxMaxBufferLength: 120, // allow even more buffer when network is bad
     maxBufferSize: 60 * 1024 * 1024, // ~60MB max buffer (prevents memory issues)
 
     // ABR (Adaptive Bitrate) improvements
     abrEwmaDefaultEstimate: 500000, // start assuming ~500 kbps (low)
-    abrBandWidthFactor: 0.8,        // be more conservative when switching up
+    abrBandWidthFactor: 0.8, // be more conservative when switching up
     abrBandWidthUpFactor: 0.7,
 
     // Retry logic for flaky connections
     fragLoadingMaxRetry: 6,
-    fragLoadingRetryDelay: 1000,      // 1 second between retries
+    fragLoadingRetryDelay: 1000, // 1 second between retries
     fragLoadingMaxRetryTimeout: 15000, // up to 15s total retry time
 
     enableWorker: true,
-    lowLatencyMode: false,            // keep false for VOD (better stability)
-    testBandwidth: true,              // important for ABR
+    lowLatencyMode: false, // keep false for VOD (better stability)
+    testBandwidth: true, // important for ABR
 
     // Optional: start with lower quality
-    startLevel: -1,                   // -1 = let ABR choose (recommended)
-  }
+    startLevel: -1, // -1 = let ABR choose (recommended)
+  };
 
   // Native HLS first (Safari/iOS)
-  if (video.canPlayType('application/vnd.apple.mpegurl')) {
-    video.src = props.videoSrc
-    video.load()
-    try { await video.play() } catch (e) {}
-    return
+  if (video.canPlayType("application/vnd.apple.mpegurl")) {
+    video.src = props.videoSrc;
+    video.load();
+    try {
+      await video.play();
+    } catch (e) {}
+    return;
   }
 
   // hls.js with low-bandwidth config
   if (Hls.isSupported()) {
-    hlsInstance.value = new Hls(hlsConfig)
+    hlsInstance.value = new Hls(hlsConfig);
 
-    hlsInstance.value.loadSource(props.videoSrc)
-    hlsInstance.value.attachMedia(video)
+    hlsInstance.value.loadSource(props.videoSrc);
+    hlsInstance.value.attachMedia(video);
 
     // Auto-play after metadata
-    video.addEventListener('loadedmetadata', async () => {
+    video.addEventListener("loadedmetadata", async () => {
       try {
-        await video.play()
+        await video.play();
       } catch (err) {
-        console.error('Play failed:', err)
+        console.error("Play failed:", err);
       }
-    })
+    });
 
     // Log ABR changes for debugging
     hlsInstance.value.on(Hls.Events.LEVEL_SWITCHED, (event, data) => {
-      console.log(`Switched to quality level ${data.level}`)
-    })
+      console.log(`Switched to quality level ${data.level}`);
+    });
   }
-}
+};
 
 // Cleanup on component destroy
 onBeforeUnmount(() => {
@@ -116,7 +118,6 @@ onBeforeUnmount(() => {
 </script>
 
 <style scoped>
-
 .video-wrapper {
   position: relative;
   width: 100%;
