@@ -86,9 +86,7 @@
 
           <!-- Features card -->
           <v-card class="features-card" elevation="2" rounded="lg">
-            <v-card-title class="text-left">
-              Key Features:
-            </v-card-title>
+            <v-card-title class="text-left"> Key Features: </v-card-title>
             <v-row>
               <v-col cols="6">
                 <v-list class="justify-center pa-4">
@@ -103,12 +101,20 @@
                 </v-list>
               </v-col>
 
-              <v-col cols="6" class="d-flex align-center">
-                <v-container>
-                  <VideoPlayer
-                    video-src="/tutorials/tutorial.m3u8"
-                    title="Walkthrough Tutorial"
-                  />
+              <v-col cols="6" class="d-flex align-center justify-center">
+                <v-container class="text-center">
+                  <v-btn
+                    href="https://www.youtube.com/watch?v=8bXmQ2KoIrI"
+                    target="_blank"
+                    color="orange"
+                    size="x-large"
+                    elevation="4"
+                    rounded
+                    class="tutorial-btn"
+                  >
+                    <v-icon start class="mr-2">mdi-youtube</v-icon>
+                    Watch Tutorial Video
+                  </v-btn>
                 </v-container>
               </v-col>
             </v-row>
@@ -120,19 +126,15 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue";
 import LoginDialog from "./Login.vue";
 import RegisterStudentDialog from "./RegisterStudent.vue";
 import RegisterTeacherDialog from "./RegisterTeacher.vue";
 import { useRouter } from "vue-router";
 import { useUserStore } from "../store/pinia/userStore";
 import { UserType } from "common/unions";
-import VideoPlayer from "./VideoPlayer.vue";
-
 
 const router = useRouter();
 const userStore = useUserStore();
-const videoUrl = ref("./tutorials/tutorial.m3u8");
 
 function register(isStudent: boolean, redirectAfterLogin: string) {
   if (isStudent) {
