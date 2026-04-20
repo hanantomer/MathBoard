@@ -58,7 +58,13 @@ const authorizationHelper = UseAuthorizationHelper();
 const notationStore = useNotationStore();
 const selectionHelper = useSelectionHelper();
 
-let lineTypes: Array<NotationType> = ["CURVE", "CIRCLE", "LINE", "ANNOTATION", "FREESKETCH"];
+let lineTypes: Array<NotationType> = [
+  "CURVE",
+  "CIRCLE",
+  "LINE",
+  "ANNOTATION",
+  "FREESKETCH",
+];
 
 let selectionPosition = ref({
   x1: 0, //left
@@ -244,7 +250,7 @@ function cancelTextSelectionWhenUserClickedOutside(e: MouseEvent) {
 function startAreaSelection(e: MouseEvent) {
   if (!authorizationHelper.canEdit()) return;
 
-  if(editModeStore.getGlobalEditMode() === "FREE_SKETCH"){
+  if (editModeStore.getGlobalEditMode() === "FREE_SKETCH") {
     return;
   }
 
@@ -285,27 +291,27 @@ async function handleKeyUp(e: KeyboardEvent) {
       )
         return;
       await moveSelectionByKey(-1, 0);
-      notationMutationHelper.saveMovedNotations("LEFT");
+      await notationMutationHelper.saveMovedNotations("LEFT");
       break;
     case "ArrowRight":
       if (!notationMutationHelper.moveSelectedNotationsAtCellScale(1, 0, false))
         return;
-      moveSelectionByKey(1, 0);
-      notationMutationHelper.saveMovedNotations("RIGHT");
+      await moveSelectionByKey(1, 0);
+      await notationMutationHelper.saveMovedNotations("RIGHT");
       break;
     case "ArrowDown":
       if (!notationMutationHelper.moveSelectedNotationsAtCellScale(0, 1, false))
         return;
-      moveSelectionByKey(0, 1);
-      notationMutationHelper.saveMovedNotations("BOTTOM");
+      await moveSelectionByKey(0, 1);
+      await notationMutationHelper.saveMovedNotations("BOTTOM");
       break;
     case "ArrowUp":
       if (
         !notationMutationHelper.moveSelectedNotationsAtCellScale(0, -1, false)
       )
         return;
-      moveSelectionByKey(0, -1);
-      notationMutationHelper.saveMovedNotations("TOP");
+      await moveSelectionByKey(0, -1);
+      await notationMutationHelper.saveMovedNotations("TOP");
       break;
   }
 }
@@ -433,7 +439,6 @@ async function onSelectionMouseUp(e: MouseEvent) {
 }
 
 function moveSelectedNotations(e: MouseEvent) {
-
   if (!e.buttons) return;
   // initial drag position
   if (!dragPosition.value.x) {
@@ -503,7 +508,11 @@ function moveAtPixelScale(e: MouseEvent) {
   if (deltaX != 0 || deltaY != 0) {
     const doClone = e.ctrlKey && !dragStarted;
     dragStarted = true;
-    notationMutationHelper.moveSelectedNotationsAtPixelScale(deltaX, deltaY, doClone);
+    notationMutationHelper.moveSelectedNotationsAtPixelScale(
+      deltaX,
+      deltaY,
+      doClone,
+    );
 
     selectionPosition.value.x1 += deltaX;
     selectionPosition.value.y1 += deltaY;

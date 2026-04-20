@@ -235,7 +235,6 @@ export default function notationMutateHelper() {
     deltaY: number,
     keepOriginal: boolean,
   ): boolean {
-
     if (keepOriginal) {
       notationStore.cloneSelectedNotations();
     }
@@ -437,37 +436,43 @@ export default function notationMutateHelper() {
     return true;
   }
 
-  function saveMovedNotations(moveDirection: SelectionMoveDirection) {
+  async function saveMovedNotations(moveDirection: SelectionMoveDirection) {
     const notations = getSelectedNotationsSortedByDirection(moveDirection);
 
-    for (let i in notations) {
-      const n = notations[i];
-      notationStore.clearNotationFromMatrices(n.uuid);
-    }
-
-    ///TODO handle also move by key
-    for (let i in notations) {
-      const n = notations[i];
-      if (!canMoveNotationToTarget(n)) {
-        undoMoveNotatios();
-        return false;
+    notationStore.beginUndoGroup();
+    try {
+      for (let i in notations) {
+        const n = notations[i];
+        notationStore.clearNotationFromMatrices(n.uuid);
       }
-    }
 
-    if (!notations || notations.length === 0) return;
+      ///TODO handle also move by key
+      for (let i in notations) {
+        const n = notations[i];
+        if (!canMoveNotationToTarget(n)) {
+          await revertMoveNotatios();
+          return false;
+        }
+      }
 
-    // Check if these are cloned notations that need to be inserted
-    const isClonedNotation =
-      notations[0].uuid.indexOf(clonedNotationUUIdPrefix) === 0;
+      if (!notations || notations.length === 0) return false;
 
-    if (isClonedNotation) {
-      insertMovedNotations(notations);
-    } else {
-      updateMovedNotations(notations);
+      // Check if these are cloned notations that need to be inserted
+      const isClonedNotation =
+        notations[0].uuid.indexOf(clonedNotationUUIdPrefix) === 0;
+
+      if (isClonedNotation) {
+        await insertMovedNotations(notations);
+      } else {
+        await updateMovedNotations(notations);
+      }
+      return true;
+    } finally {
+      notationStore.endUndoGroup();
     }
   }
 
-  async function undoMoveNotatios() {
+  async function revertMoveNotatios() {
     notationStore.getSelectedNotations().forEach(async (n) => {
       const isClonedNotation = n.uuid.indexOf(clonedNotationUUIdPrefix) === 0;
 
@@ -1165,17 +1170,15 @@ export default function notationMutateHelper() {
     userOutgoingOperations.syncOutgoingUpdateNotation(notation);
   }
 
-    async function updateNotations(notations: NotationAttributes[]) {
+  async function updateNotations(notations: NotationAttributes[]) {
+    //await apiHelper.updateNotations(notations);
 
-      //await apiHelper.updateNotations(notations);
-
-      for (const notation of notations) {
-        if (!notationStore.getNotation(notation.uuid)) return;
-        notationStore.addNotation(notation, true, true);
-        await userOutgoingOperations.syncOutgoingUpdateNotation(notation);
-      }
+    for (const notation of notations) {
+      if (!notationStore.getNotation(notation.uuid)) return;
+      notationStore.addNotation(notation, true, true);
+      await userOutgoingOperations.syncOutgoingUpdateNotation(notation);
     }
-
+  }
 
   async function handlePushKey() {
     if (!authorizationHelper.canEdit()) return;
@@ -1192,7 +1195,7 @@ export default function notationMutateHelper() {
     try {
       spaceKeyLock = true;
 
-      pushNotationsFromSelectedCell();
+      await pushNotationsFromSelectedCell();
     } finally {
       // Always release the lock
       spaceKeyLock = false;
@@ -1207,36 +1210,41 @@ export default function notationMutateHelper() {
       return;
     }
 
+    notationStore.beginUndoGroup();
     try {
-      deleteKeyLock = true;
+      try {
+        deleteKeyLock = true;
 
-      if (notationStore.getSelectedNotations().length) {
-        notationStore
-          .getSelectedNotations()
-          .forEach(async (n: NotationAttributes) => {
-            // from db
-            await apiHelper.deleteNotation(n);
-          });
+        if (notationStore.getSelectedNotations().length) {
+          notationStore
+            .getSelectedNotations()
+            .forEach(async (n: NotationAttributes) => {
+              // from db
+              await apiHelper.deleteNotation(n);
+            });
 
-        notationStore
-          .getSelectedNotations()
-          .forEach(async (n: NotationAttributes) => {
-            //from store
-            notationStore.deleteNotation(n.uuid);
+          notationStore
+            .getSelectedNotations()
+            .forEach(async (n: NotationAttributes) => {
+              //from store
+              notationStore.deleteNotation(n.uuid);
 
-            // publish
-            if (notationStore.getParent().type === "LESSON") {
-              userOutgoingOperations.syncOutgoingRemoveNotation(
-                n.uuid,
-                (n as LessonNotationAttributes).lesson.uuid,
-              );
-            }
-          });
-        return;
+              // publish
+              if (notationStore.getParent().type === "LESSON") {
+                userOutgoingOperations.syncOutgoingRemoveNotation(
+                  n.uuid,
+                  (n as LessonNotationAttributes).lesson.uuid,
+                );
+              }
+            });
+          return;
+        }
+      } finally {
+        deleteKeyLock = false;
+        editModeStore.setDefaultEditMode();
       }
     } finally {
-      deleteKeyLock = false;
-      editModeStore.setDefaultEditMode();
+      notationStore.endUndoGroup();
     }
   }
 
@@ -1306,6 +1314,96 @@ export default function notationMutateHelper() {
     editModeStore.setDefaultEditMode();
   }
 
+  async function pasteNotations() {
+    const selectedCell = cellStore.getSelectedCell();
+    if (!selectedCell) return;
+
+    notationStore.beginUndoGroup();
+    try {
+      let firstRow: number | null = null;
+      let firstCol: number | null = null;
+
+      notationStore.getCopiedNotations().forEach((n: NotationAttributes) => {
+        switch (n.notationType) {
+          case "SYMBOL":
+          case "SQRTSYMBOL":
+          case "EXPONENT":
+          case "ANNOTATION": {
+            const n1 = n as PointNotationAttributes;
+            if (!firstRow) firstRow = n1.row;
+            if (!firstCol) firstCol = n1.col;
+
+            n1.col = selectedCell.col + n1.col - firstCol;
+            n1.row = selectedCell.row + n1.row - firstRow;
+            cloneNotation(n1);
+            break;
+          }
+
+          case "SQRT": {
+            let n1 = { ...n } as SqrtNotationAttributes;
+            const numCols = n1.toCol - n1.fromCol;
+            n1.fromCol = selectedCell.col;
+            n1.toCol = n1.fromCol + numCols;
+            n1.row = selectedCell.row;
+            cloneNotation(n1);
+            break;
+          }
+          case "DIVISIONLINE":
+          case "LINE": {
+            let n1 = { ...n } as LineNotationAttributes;
+            const lineWidth = n1.p2x - n1.p1x;
+            const lineHeight = n1.p2y - n1.p1y;
+            n1.p1x = selectedCell.col * cellStore.getCellHorizontalWidth();
+            n1.p2x = n1.p1x + lineWidth;
+            n1.p1y = selectedCell.row * cellStore.getCellVerticalHeight();
+            n1.p2y = n1.p1y + lineHeight;
+            cloneNotation(n1);
+            break;
+          }
+
+          case "IMAGE":
+          case "TEXT": {
+            let n1 = { ...n } as RectNotationAttributes;
+            const rectWidth = n1.toCol - n1.fromCol;
+            const rectHeight = n1.toRow - n1.fromRow;
+            if (!firstRow) firstRow = n1.fromRow;
+            if (!firstCol) firstCol = n1.fromCol;
+
+            n1.fromCol = selectedCell.col + n1.fromCol - firstCol;
+            n1.toCol = n1.fromCol + rectWidth;
+            n1.fromRow = selectedCell.row + n1.fromRow - firstRow;
+            n1.toRow = n1.fromRow + rectHeight;
+            cloneNotation(n1);
+
+            break;
+          }
+
+          case "CURVE": {
+            let n1 = { ...n } as CurveNotationAttributes;
+
+            const deltaX =
+              selectedCell.col * cellStore.getCellHorizontalWidth() - n1.p1x;
+
+            const deltaY =
+              selectedCell.row * cellStore.getCellVerticalHeight() - n1.p1y;
+
+            n1.p1x += deltaX;
+            n1.p2x += deltaX;
+            n1.p1y += deltaY;
+            n1.p2y += deltaY;
+
+            cloneNotation(n1);
+            break;
+          }
+        }
+      });
+
+      notationStore.clearCopiedNotations();
+    } finally {
+      notationStore.endUndoGroup();
+    }
+  }
+
   return {
     addNotation,
     addCircleNotation,
@@ -1321,11 +1419,10 @@ export default function notationMutateHelper() {
     addExponentNotation,
     addCartesianSystemAtClickedPoint,
     cloneNotation,
-    deleteSelectedNotations,
+
     moveSelectedNotationsAtPixelScale,
     moveSelectedNotationsAtCellScale,
-    collapseNotationsToSelectedCell,
-    handlePushKey,
+
     isNotationInQuestionArea,
     isCellInQuestionArea,
     updateSqrtNotation,
@@ -1336,6 +1433,11 @@ export default function notationMutateHelper() {
     updateNotation,
     selectNotation,
     selectNotationByCell,
+
+    pushNotationsFromSelectedCell,
+    deleteSelectedNotations,
+    pasteNotations,
     saveMovedNotations,
+    collapseNotationsToSelectedCell,
   };
 }

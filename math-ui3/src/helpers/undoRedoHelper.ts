@@ -3,10 +3,12 @@ import { cloneDeep } from "lodash";
 import { NotationAttributes } from "common/baseTypes";
 import useUserOutgoingOperations from "./userOutgoingOperationsHelper";
 
-export function useUndoRedo(apiHelper: any) {
+export default function undoRedoHelper(apiHelper: any) {
   const undoStack = ref<Map<String, NotationAttributes>[]>([]);
   const redoStack = ref<Map<String, NotationAttributes>[]>([]);
   const maxStackSize = 20; // Limit stack size to prevent memory issues
+  let groupDepth = 0;
+  let groupSnapshot: Map<String, NotationAttributes> | null = null;
 
   const userOutgoingOperations = useUserOutgoingOperations();
 
@@ -28,19 +30,18 @@ export function useUndoRedo(apiHelper: any) {
     // Sync added notations
     for (const n of added) {
       delete n["id"];
-      //delete (n as any)["uuid"];
       (n as any)["parentUUId"] =
         n.boardType === "LESSON"
           ? (n as any)["lesson"].uuid
           : n.boardType === "QUESTION"
-          ? (n as any)["v"].uuid
-          : n.boardType === "ANSWER"
-          ? (n as any)["answer"].uuid
-          : null;
+            ? (n as any)["v"].uuid
+            : n.boardType === "ANSWER"
+              ? (n as any)["answer"].uuid
+              : null;
 
       await apiHelper.addNotation(n); // Use addNotation
       if (n.boardType === "LESSON") {
-        await userOutgoingOperations.syncOutgoingAddNotation(n);
+         await userOutgoingOperations.syncOutgoingAddNotation(n);
       }
 
       delete (n as any)["lesson"];
@@ -68,12 +69,56 @@ export function useUndoRedo(apiHelper: any) {
     }
   }
 
+  function areMapsEqual(
+    a: Map<String, NotationAttributes>,
+    b: Map<String, NotationAttributes>,
+  ) {
+    if (a.size !== b.size) return false;
+    for (const [key, value] of a) {
+      const other = b.get(key);
+      if (!other) return false;
+      if (JSON.stringify(value) !== JSON.stringify(other)) return false;
+    }
+    return true;
+  }
+
   function saveState(currentNotations: Map<String, NotationAttributes>) {
+    if (groupDepth > 0) {
+      return;
+    }
+
     undoStack.value.push(cloneDeep(currentNotations));
     if (undoStack.value.length > maxStackSize) {
       undoStack.value.shift(); // Remove oldest state
     }
     redoStack.value = []; // Clear redo stack when new action is performed
+  }
+
+  function beginBulkSave(currentNotations: Map<String, NotationAttributes>) {
+    if (groupDepth === 0) {
+      groupSnapshot = cloneDeep(currentNotations);
+    }
+    groupDepth += 1;
+  }
+
+  function endBulkSave(currentNotations: Map<String, NotationAttributes>) {
+    if (groupDepth === 0) {
+      return;
+    }
+
+    groupDepth -= 1;
+    if (groupDepth > 0) {
+      return;
+    }
+
+    if (groupSnapshot && !areMapsEqual(groupSnapshot, currentNotations)) {
+      undoStack.value.push(groupSnapshot);
+      if (undoStack.value.length > maxStackSize) {
+        undoStack.value.shift();
+      }
+      redoStack.value = [];
+    }
+    groupSnapshot = null;
   }
 
   async function undo(
@@ -110,6 +155,8 @@ export function useUndoRedo(apiHelper: any) {
 
   return {
     saveState,
+    beginBulkSave,
+    endBulkSave,
     undo,
     redo,
     canUndo: computed(() => undoStack.value.length > 0),

@@ -3,7 +3,6 @@
 import { defineStore } from "pinia";
 import { matrixDimensions, clonedNotationUUIdPrefix } from "common/globals";
 import {
-  Board,
   NotationAttributes,
   CellAttributes,
   RectCoordinates,
@@ -23,13 +22,13 @@ import { BoardType } from "common/unions";
 import { ref } from "vue";
 import { useCellStore } from "./cellStore";
 import useNotationCellOccupationHelper from "../../helpers/notationCellOccupationHelper";
-import { useUndoRedo } from "../../helpers/useUndoRedo";
+import useUndoRedoHelper from "../../helpers/undoRedoHelper";
 import useApiHelper from "../../helpers/apiHelper";
 
 export const useNotationStore = defineStore("notation", () => {
   const cellOccupationHelper = useNotationCellOccupationHelper();
   const apiHelper = useApiHelper();
-  const undoRedo = useUndoRedo(apiHelper);
+  const undoRedo = useUndoRedoHelper(apiHelper);
 
   let dotNotationOccupationMatrix: (String | null)[][] =
     cellOccupationHelper.createCellSingleNotationOccupationMatrix();
@@ -50,6 +49,7 @@ export const useNotationStore = defineStore("notation", () => {
   };
 
   let notations = ref(<Map<String, NotationAttributes>>new Map());
+  let saveStateHalted = false;
 
   let copiedNotations = ref(<Map<String, NotationAttributes>>new Map());
 
@@ -144,7 +144,18 @@ export const useNotationStore = defineStore("notation", () => {
 
   // Helper to save current state to undo stack
   function saveState() {
+    if (saveStateHalted) {
+      return;
+    }
     undoRedo.saveState(notations.value);
+  }
+
+  function haltSaveState() {
+    saveStateHalted = true;
+  }
+
+  function activateSaveState() {
+    saveStateHalted = false;
   }
 
   function addNotation(
@@ -660,6 +671,14 @@ export const useNotationStore = defineStore("notation", () => {
     await undoRedo.redo(notations, rebuildOccupationMatrices);
   }
 
+  function beginUndoGroup() {
+    undoRedo.beginBulkSave(notations.value);
+  }
+
+  function endUndoGroup() {
+    undoRedo.endBulkSave(notations.value);
+  }
+
   return {
     addNotation,
     clearCopiedNotations,
@@ -688,6 +707,10 @@ export const useNotationStore = defineStore("notation", () => {
     setCopiedNotations,
     setNotations,
     setParent,
+    haltSaveState,
+    activateSaveState,
+    beginUndoGroup,
+    endUndoGroup,
     undo,
     redo,
     canUndo: undoRedo.canUndo,

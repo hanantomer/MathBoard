@@ -38,7 +38,7 @@ export default function eventHelper() {
 
   async function paste(e: ClipboardEvent) {
     if (notationStore.getCopiedNotations().length) {
-      return pasteNotations();
+      return notationMutationHelper.pasteNotations();
     }
 
     if (
@@ -56,91 +56,6 @@ export default function eventHelper() {
     ) {
       return pasteImage(e);
     }
-  }
-
-  async function pasteNotations() {
-    const selectedCell = cellStore.getSelectedCell();
-    if (!selectedCell) return;
-
-    let firstRow: number | null = null;
-    let firstCol: number | null = null;
-
-    notationStore.getCopiedNotations().forEach((n: NotationAttributes) => {
-      switch (n.notationType) {
-        case "SYMBOL":
-        case "SQRTSYMBOL":
-        case "EXPONENT":
-        case "ANNOTATION": {
-          const n1 = n as PointNotationAttributes;
-          if (!firstRow) firstRow = n1.row;
-          if (!firstCol) firstCol = n1.col;
-
-          n1.col = selectedCell.col + n1.col - firstCol;
-          n1.row = selectedCell.row + n1.row - firstRow;
-          notationMutationHelper.cloneNotation(n1);
-          break;
-        }
-
-        case "SQRT": {
-          let n1 = { ...n } as SqrtNotationAttributes;
-          const numCols = n1.toCol - n1.fromCol;
-          n1.fromCol = selectedCell.col;
-          n1.toCol = n1.fromCol + numCols;
-          n1.row = selectedCell.row;
-          notationMutationHelper.cloneNotation(n1);
-          break;
-        }
-        case "DIVISIONLINE":
-        case "LINE": {
-          let n1 = { ...n } as LineNotationAttributes;
-          const lineWidth = n1.p2x - n1.p1x;
-          const lineHeight = n1.p2y - n1.p1y;
-          n1.p1x = selectedCell.col * cellStore.getCellHorizontalWidth();
-          n1.p2x = n1.p1x + lineWidth;
-          n1.p1y = selectedCell.row * cellStore.getCellVerticalHeight();
-          n1.p2y = n1.p1y + lineHeight;
-          notationMutationHelper.cloneNotation(n1);
-          break;
-        }
-
-        case "IMAGE":
-        case "TEXT": {
-          let n1 = { ...n } as RectNotationAttributes;
-          const rectWidth = n1.toCol - n1.fromCol;
-          const rectHeight = n1.toRow - n1.fromRow;
-          if (!firstRow) firstRow = n1.fromRow;
-          if (!firstCol) firstCol = n1.fromCol;
-
-          n1.fromCol = selectedCell.col + n1.fromCol - firstCol;
-          n1.toCol = n1.fromCol + rectWidth;
-          n1.fromRow = selectedCell.row + n1.fromRow - firstRow;
-          n1.toRow = n1.fromRow + rectHeight;
-          notationMutationHelper.cloneNotation(n1);
-
-          break;
-        }
-
-        case "CURVE": {
-          let n1 = { ...n } as CurveNotationAttributes;
-
-          const deltaX =
-            selectedCell.col * cellStore.getCellHorizontalWidth() - n1.p1x;
-
-          const deltaY =
-            selectedCell.row * cellStore.getCellVerticalHeight() - n1.p1y;
-
-          n1.p1x += deltaX;
-          n1.p2x += deltaX;
-          n1.p1y += deltaY;
-          n1.p2y += deltaY;
-
-          notationMutationHelper.cloneNotation(n1);
-          break;
-        }
-      }
-    });
-
-    notationStore.clearCopiedNotations();
   }
 
   async function pasteText(e: ClipboardEvent) {

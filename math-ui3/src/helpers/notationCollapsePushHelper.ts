@@ -17,68 +17,79 @@ const notationMutateHelper = useNotationMutateHelper();
 async function collapseNotationsToSelectedCell() {
   const cell = cellStore.getSelectedCell();
   if (!cell) return;
-  let sqrtNotationFound = false;
-  let notationFound = false;
-  for (
-    let col = cellStore.getSelectedCell().col;
-    col < matrixDimensions.colsNum;
-    col++
-  ) {
-    const notations = notationStore.getNotationsAtCell({
-      row: cell.row,
-      col: col,
-    });
 
-    if (notations.length === 0 && notationFound) {
-      return;
-    }
+  notationStore.beginUndoGroup();
+  try {
+    let sqrtNotationFound = false;
+    let notationFound = false;
+    for (
+      let col = cellStore.getSelectedCell().col;
+      col < matrixDimensions.colsNum;
+      col++
+    ) {
+      const notations = notationStore.getNotationsAtCell({
+        row: cell.row,
+        col: col,
+      });
 
-    if (sqrtNotationFound) {
-      const sqrtNotation = notations.find((n) => n.notationType === "SQRT") as
-        | SqrtNotationAttributes
-        | undefined;
-
-      if (!sqrtNotation) {
-        // do not continue collapsing after the sqrt notation ends
-        break;
+      if (notations.length === 0 && notationFound) {
+        return;
       }
-    }
 
-    notations.forEach(async (notation: NotationAttributes) => {
-      if (
-        notation.notationType === "EXPONENT" ||
-        notation.notationType === "LOGBASE" ||
-        notation.notationType === "SYMBOL"
-      ) {
-        notationFound = true;
-        (notation as PointNotationAttributes).col--;
+      if (sqrtNotationFound) {
+        const sqrtNotation = notations.find(
+          (n) => n.notationType === "SQRT",
+        ) as SqrtNotationAttributes | undefined;
 
-        await notationMutateHelper.updateNotation(notation);
-      } else if (notation.notationType === "SQRT") {
-        if ((notation as SqrtNotationAttributes).fromCol === col) {
-          (notation as SqrtNotationAttributes).fromCol--;
-          (notation as SqrtNotationAttributes).toCol--;
-          await notationMutateHelper.updateNotation(
-            notation as SqrtNotationAttributes,
-          );
+        if (!sqrtNotation) {
+          // do not continue collapsing after the sqrt notation ends
+          break;
         }
-        sqrtNotationFound = true;
       }
-    });
+
+      notations.forEach(async (notation: NotationAttributes) => {
+        if (
+          notation.notationType === "EXPONENT" ||
+          notation.notationType === "LOGBASE" ||
+          notation.notationType === "SYMBOL"
+        ) {
+          notationFound = true;
+          (notation as PointNotationAttributes).col--;
+
+          await notationMutateHelper.updateNotation(notation);
+        } else if (notation.notationType === "SQRT") {
+          if ((notation as SqrtNotationAttributes).fromCol === col) {
+            (notation as SqrtNotationAttributes).fromCol--;
+            (notation as SqrtNotationAttributes).toCol--;
+            await notationMutateHelper.updateNotation(
+              notation as SqrtNotationAttributes,
+            );
+          }
+          sqrtNotationFound = true;
+        }
+      });
+    }
+  } finally {
+    notationStore.endUndoGroup();
   }
 }
 
-function pushNotationsFromSelectedCell() {
+async function pushNotationsFromSelectedCell() {
   const cell = cellStore.getSelectedCell();
   if (!cell) return;
 
-  if (cell.col === matrixDimensions.colsNum - 1) return;
+  notationStore.beginUndoGroup();
+  try {
+    if (cell.col === matrixDimensions.colsNum - 1) return;
 
-  const nextSymbolBlock = findNextSymbolBlock(cell.col, cell.row);
+    const nextSymbolBlock = findNextSymbolBlock(cell.col, cell.row);
 
-  moveNotationsRight(cell.row, nextSymbolBlock);
+    await moveNotationsRight(cell.row, nextSymbolBlock);
 
-  notationStore.resetSelectedNotations();
+    notationStore.resetSelectedNotations();
+  } finally {
+    notationStore.endUndoGroup();
+  }
 }
 
 function findNextSymbolBlock(

@@ -708,9 +708,12 @@ export default function dbUtil() {
     ) {
         const modelName = getModelName(boardType, notationType); // e.g. LessonSymbol
         const id = (await getIdByUUId(modelName, uuid)) as number;
+        if (!id) return;
+
         return await findModel(modelName).destroy({
             where: { id: id },
         });
+      
     }
 
     function getModelName(boardType: String, notationType: String) {

@@ -187,17 +187,6 @@
             class="ml-1"
             height="25"
             flat
-            href="/tutorials/MathBoard tutorial.mp4"
-            target="_blank"
-          >
-            Tutorial
-          </v-btn>
-
-          <v-btn
-            style="background-color: transparent; color: whitesmoke"
-            class="ml-1"
-            height="25"
-            flat
             v-on:click="showContactUsDialog = true"
           >
             Contact Us

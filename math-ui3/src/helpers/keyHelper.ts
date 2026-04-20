@@ -20,6 +20,7 @@ let shiftReleaseTime = 0;
 let shiftReleased = false;
 let altReleaseTime = 0;
 let altReleased = false;
+let isKeyUpHandlerRunning = false; // Prevent concurrent execution
 const delayedAltKeys = new Set<string>(["x", "l"]);
 const delayedShiftKeys = new Map<string, string>([
   ["1", "!"],
@@ -63,135 +64,137 @@ export default function () {
     if (delayedShiftKeys.has(key) && shiftReleased) {
       shiftReleased = false;
     }
-
-    if (e.ctrlKey && e.key === "z" && !e.shiftKey) {
-      e.preventDefault();
-      notationStore.undo();
-    }
   }
 
   async function keyUpHandler(e: KeyboardEvent) {
-    // console.log("KeyUp:", {
-    //   key: e.key,
-    //   ctrlKey: e.ctrlKey,
-    //   altKey: e.altKey,
-    //   shiftKey: e.shiftKey,
-    //   code: e.code,
-    // });
+    // Prevent concurrent execution
+    if (isKeyUpHandlerRunning) return;
+    isKeyUpHandlerRunning = true;
 
-    if (e.target && (e.target as HTMLElement).tagName === "INPUT") return; // skip if focused on input box
+    try {
+      if (e.target && (e.target as HTMLElement).tagName === "INPUT") return; // skip if focused on input box
 
-    if (
-      (e.ctrlKey && e.key === "y") ||
-      (e.ctrlKey && e.shiftKey && e.key === "z")
-    ) {
-      e.preventDefault();
-      notationStore.redo();
-    }
+      if (
+        (e.ctrlKey && e.key === "y") ||
+        (e.ctrlKey && e.shiftKey && e.key === "Z")
+      ) {
+        e.preventDefault();
+        notationStore.redo();
+      }
 
-    if (e.ctrlKey && e.key === "z" && !e.shiftKey) {
-      e.preventDefault();
-      notationStore.undo();
-    }
+      if (
+        (e.ctrlKey || e.metaKey) &&
+        (e.code === "keyZ" || e.key === "z") &&
+        !e.shiftKey
+      ) {
+        e.preventDefault();
+        notationStore.undo();
+      }
 
-    const { ctrlKey, altKey, code, key } = e;
+      const { ctrlKey, altKey, code, key } = e;
 
-    if (!authorizationHelper.canEdit()) return;
+      if (!authorizationHelper.canEdit()) return;
 
-    if (code === "ShiftLeft" || code === "ShiftRight") {
-      shiftReleased = true;
-      shiftReleaseTime = Date.now();
-      return;
-    }
-
-    if (code === "AltLeft" || code === "AltRight") {
-      altReleased = true;
-      altReleaseTime = Date.now();
-      return;
-    }
-
-    let usePreviousShift = false;
-    if (shiftReleased && Date.now() - shiftReleaseTime < KEY_STROKE_INTERVAL) {
-      usePreviousShift = true;
-      shiftReleased = false;
-    }
-
-    let usePreviousAlt = false;
-    if (altReleased && Date.now() - altReleaseTime < KEY_STROKE_INTERVAL) {
-      usePreviousAlt = true;
-      altReleased = false;
-    }
-
-    if (code === "Escape") {
-      if (editModeStore.getGlobalEditMode() === "FREE_SKETCH") {
-        editModeStore.setGlobalEditMode("TEXT");
-        editModeStore.setDefaultEditMode();
+      if (code === "ShiftLeft" || code === "ShiftRight") {
+        shiftReleased = true;
+        shiftReleaseTime = Date.now();
         return;
       }
-    }
 
-    if (editModeStore.getEditMode() === "TEXT_WRITING") return;
-
-    if (editModeStore.getEditMode() === "ANNOTATION_WRITING") return;
-
-    if (ctrlKey || altKey) {
-      return;
-    }
-
-    const noNotationsSelected =
-      notationStore.getSelectedNotations().length === 0;
-
-    const singleSymbolSelected =
-      notationStore.getSelectedNotations().length === 1 &&
-      notationStore.getSelectedNotations().at(0)?.notationType === "SYMBOL";
-
-    switch (classifyKeyCode(code)) {
-      case "PUSH": {
-        return handlePushKey();
+      if (code === "AltLeft" || code === "AltRight") {
+        altReleased = true;
+        altReleaseTime = Date.now();
+        return;
       }
 
-      case "DELETION": {
-        await notationMutateHelper.deleteSelectedNotations();
-        if (singleSymbolSelected || noNotationsSelected) {
-          await notationMutateHelper.collapseNotationsToSelectedCell();
-          matrixCellHelper.setNextCell(0, 0);
-          selectCurrentCellNotation();
+      let usePreviousShift = false;
+      if (
+        shiftReleased &&
+        Date.now() - shiftReleaseTime < KEY_STROKE_INTERVAL
+      ) {
+        usePreviousShift = true;
+        shiftReleased = false;
+      }
+
+      let usePreviousAlt = false;
+      if (altReleased && Date.now() - altReleaseTime < KEY_STROKE_INTERVAL) {
+        usePreviousAlt = true;
+        altReleased = false;
+      }
+
+      if (code === "Escape") {
+        if (editModeStore.getGlobalEditMode() === "FREE_SKETCH") {
+          editModeStore.setGlobalEditMode("TEXT");
           editModeStore.setDefaultEditMode();
+          return;
         }
-        break;
       }
 
-      case "MOVEMENT": {
-        return handleMovementKey(code);
-      }
+      if (editModeStore.getEditMode() === "TEXT_WRITING") return;
 
-      case "MOVEANDDELETE": {
-        handleMovementKey(code);
-        await notationMutateHelper.deleteSelectedNotations();
+      if (editModeStore.getEditMode() === "ANNOTATION_WRITING") return;
+
+      if (ctrlKey || altKey) {
         return;
       }
 
-      case "SYMBOL": {
-        if (altKey || (usePreviousAlt && delayedAltKeys.has(key))) {
-          if (key === "x") {
-            return editModeStore.setEditMode("EXPONENT_STARTED");
-          }
-          if (key === "l") {
-            return editModeStore.setEditMode("LOG_STARTED");
-          }
+      const noNotationsSelected =
+        notationStore.getSelectedNotations().length === 0;
+
+      const singleSymbolSelected =
+        notationStore.getSelectedNotations().length === 1 &&
+        notationStore.getSelectedNotations().at(0)?.notationType === "SYMBOL";
+
+      switch (classifyKeyCode(code)) {
+        case "PUSH": {
+          return handlePushKey();
         }
-        if (usePreviousShift && delayedShiftKeys.has(key)) {
-          return notationMutateHelper.addSymbolNotation(
-            delayedShiftKeys.get(key)!,
-          );
+
+        case "DELETION": {
+          await notationMutateHelper.deleteSelectedNotations();
+          if (singleSymbolSelected || noNotationsSelected) {
+            await notationMutateHelper.collapseNotationsToSelectedCell();
+            matrixCellHelper.setNextCell(0, 0);
+            selectCurrentCellNotation();
+            editModeStore.setDefaultEditMode();
+          }
+          break;
         }
-        return notationMutateHelper.addSymbolNotation(key);
+
+        case "MOVEMENT": {
+          return handleMovementKey(code);
+        }
+
+        case "MOVEANDDELETE": {
+          handleMovementKey(code);
+          await notationMutateHelper.deleteSelectedNotations();
+          return;
+        }
+
+        case "SYMBOL": {
+          if (altKey || (usePreviousAlt && delayedAltKeys.has(key))) {
+            if (key === "x") {
+              return editModeStore.setEditMode("EXPONENT_STARTED");
+            }
+            if (key === "l") {
+              return editModeStore.setEditMode("LOG_STARTED");
+            }
+          }
+          if (usePreviousShift && delayedShiftKeys.has(key)) {
+            return notationMutateHelper.addSymbolNotation(
+              delayedShiftKeys.get(key)!,
+            );
+          }
+          return notationMutateHelper.addSymbolNotation(key);
+        }
       }
+    } finally {
+      isKeyUpHandlerRunning = false;
     }
   }
 
-  function handlePushKey() {
-    notationMutateHelper.handlePushKey();
+  async function handlePushKey() {
+    await notationMutateHelper.pushNotationsFromSelectedCell();
 
     matrixCellHelper.setNextCell(0, 0);
   }

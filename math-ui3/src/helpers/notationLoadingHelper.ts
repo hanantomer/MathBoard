@@ -11,7 +11,6 @@ import {
 import useApiHelper from "./apiHelper";
 import { useNotationStore } from "../store/pinia/notationStore";
 import { BoardType, NotationType, NotationTypeValues } from "common/unions";
-
 const notationStore = useNotationStore();
 const apiHelper = useApiHelper();
 
@@ -20,23 +19,29 @@ export default function notationLoadingHelper() {
   async function loadNotations(boardType: BoardType, parentUUId: string) {
     let notations: NotationAttributes[] = [];
 
-    for (let i = 0; i < NotationTypeValues.length; i++) {
-      const notationType = NotationTypeValues[i];
-      let notationsFromDb = await loadNotationsByType(
-        boardType,
-        notationType as NotationType,
-        parentUUId,
-      );
-      if (!notationsFromDb) continue;
-      notationsFromDb.forEach((n) => {
-        notations.push({
-          ...n,
-          notationType: notationType as NotationType,
-        });
-      });
-    }
+    try {
+      notationStore.haltSaveState(); // Prevent saving state during loading
 
-    notationStore.setNotations(notations);
+      for (let i = 0; i < NotationTypeValues.length; i++) {
+        const notationType = NotationTypeValues[i];
+        let notationsFromDb = await loadNotationsByType(
+          boardType,
+          notationType as NotationType,
+          parentUUId,
+        );
+        if (!notationsFromDb) continue;
+        notationsFromDb.forEach((n) => {
+          notations.push({
+            ...n,
+            notationType: notationType as NotationType,
+          });
+        });
+      }
+
+      notationStore.setNotations(notations);
+    } finally {
+      notationStore.activateSaveState(); // Re-enable saving state after loading
+    }
   }
 
   // e.g. load lesson symbols

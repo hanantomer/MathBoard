@@ -7,11 +7,14 @@ import { useCellStore } from "../store/pinia/cellStore";
 import { useTextSyncStore } from "../store/pinia/textSyncStore";
 import { FeathersHelper } from "./feathersHelper";
 import userOutgoingOperations from "./userOutgoingOperationsHelper";
+import useApIHelper from "./apiHelper";
+
 const notationStore = useNotationStore();
 const cellStore = useCellStore();
 const userStore = useUserStore();
 const studentStore = useStudentStore();
 const textSyncStore = useTextSyncStore();
+const apiHelper = useApIHelper();
 
 export default function userIncomingOperations() {
   // check if in Lesson and not initiated by me
@@ -37,7 +40,12 @@ export default function userIncomingOperations() {
       .on("created", (notation: NotationAttributes) => {
         if (!isRelevant(notation) || notationStore.getNotation(notation.uuid))
           return;
-        notationStore.addNotation(notation, true, true);
+        try {
+          notationStore.haltSaveState(); // Prevent saving state during sync
+          notationStore.addNotation(notation, true, true);
+        } finally {
+          notationStore.activateSaveState(); // Re-enable saving state after sync
+        }
       });
 
     // sync updated notations
@@ -46,7 +54,12 @@ export default function userIncomingOperations() {
       .on("updated", (notation: NotationAttributes) => {
         if (!isRelevant(notation) || !notationStore.getNotation(notation.uuid))
           return;
-        notationStore.addNotation(notation, false, false);
+        try {
+          notationStore.haltSaveState(); // Prevent saving state during sync
+          notationStore.addNotation(notation, false, false);
+        } finally {
+          notationStore.activateSaveState(); // Re-enable saving state after sync
+        }
       });
 
     // sync removed notations
@@ -55,7 +68,12 @@ export default function userIncomingOperations() {
       .on("removed", (notation: NotationAttributes) => {
         if (!isRelevant(notation) || !notationStore.getNotation(notation.uuid))
           return;
-        notationStore.deleteNotation(notation.uuid);
+        try {
+          notationStore.haltSaveState(); // Prevent saving state during sync
+          notationStore.deleteNotation(notation.uuid);
+        } finally {
+          notationStore.activateSaveState(); // Re-enable saving state after sync
+        }
       });
 
     // sync active cell with teacher or write-authorized student

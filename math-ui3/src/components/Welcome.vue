@@ -86,8 +86,8 @@
 
           <!-- Features card -->
           <v-card class="features-card" elevation="2" rounded="lg">
-            <v-card-title class="text-h5 font-weight-medium text-center py-4">
-              Key Features
+            <v-card-title class="text-left">
+              Key Features:
             </v-card-title>
             <v-row>
               <v-col cols="6">
@@ -128,7 +128,7 @@ import { useRouter } from "vue-router";
 import { useUserStore } from "../store/pinia/userStore";
 import { UserType } from "common/unions";
 import VideoPlayer from "./VideoPlayer.vue";
-import { v } from "vue-router/dist/router-CWoNjPRp.mjs";
+
 
 const router = useRouter();
 const userStore = useUserStore();
