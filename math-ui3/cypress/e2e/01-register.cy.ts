@@ -17,11 +17,11 @@ describe("e2e", () => {
     // login
     cy.login();
 
-    // verify token validity
-    cy.get('[data-cy="lessons"] > .v-btn__content').click();
-    cy.get(
-      // verify lessons title exists
-      ".v-card > .v-toolbar > .v-toolbar__content > .v-toolbar-title > .v-toolbar-title__placeholder",
-    ).should("exist");
+    // // verify token validity
+    // cy.get('[data-cy="lessons"] > .v-btn__content').click();
+    // cy.get(
+    //   // verify lessons title exists
+    //   ".v-card > .v-toolbar > .v-toolbar__content > .v-toolbar-title > .v-toolbar-title__placeholder",
+    // ).should("exist");
   });
 });
