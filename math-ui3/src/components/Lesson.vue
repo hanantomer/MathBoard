@@ -21,6 +21,7 @@ import { useRoute } from "vue-router";
 import { heartBeatInterval } from "common/globals";
 import { useTitleStore } from "../store/pinia/titleStore";
 import { useCellStore } from "../store/pinia/cellStore";
+import { useEditModeStore } from "../store/pinia/editModeStore";
 
 const selectionHelper = useSelectionHelper();
 const route = useRoute();
@@ -29,6 +30,7 @@ const lessonStore = useLessonStore();
 const notationStore = useNotationStore();
 const titleStore = useTitleStore();
 const cellStore = useCellStore();
+const editModeStore = useEditModeStore();
 const userOutgoingOperations = useUserOutgoingOperations();
 const userIncomingOperations = useUserIncomingOperations();
 
@@ -48,6 +50,7 @@ watch(
 );
 
 async function loadLesson(lessonUUId: string) {
+  editModeStore.setDefaultEditMode();
   // for student link remove the prefix "sl_"
   if (lessonUUId.indexOf("sl_") == 0) {
     lessonUUId = lessonUUId.substring(3);
