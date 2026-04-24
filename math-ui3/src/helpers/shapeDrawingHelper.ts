@@ -117,14 +117,24 @@ export default function useShapeDrawingHelper() {
 
     if (editModeStore.isPolygonDrawingMode()) return;
 
-    if (editModeStore.isFreeSketchDrawingMode()) {
-      editModeStore.setDefaultEditMode();
-      return;
-    }
-    notationStore.selectNotation(uuid);
+    // if (editModeStore.isFreeSketchDrawingMode()) {
+    //   editModeStore.setDefaultEditMode();
+    //   return;
+    // }
+
+    //notationStore.selectNotation(uuid);
     //if (uuid) {
     //  hideMatrixLine(uuid); // dont show created line yet since we back to edit mode
     //}
+
+    if (editModeStore.getGlobalEditMode() === "FREE_SKETCH") {
+      editModeStore.setEditMode("FREE_SKETCH_STARTED");
+      return;
+    } else if (editModeStore.getGlobalEditMode() === "LINE") {
+      editModeStore.setEditMode("LINE_STARTED");
+      return;
+    }
+
     // determine next mode based on current state
     const current = editModeStore.getEditMode();
     switch (current) {

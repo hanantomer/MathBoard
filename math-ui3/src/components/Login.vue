@@ -15,6 +15,15 @@
             </v-col>
           </v-row>
           <v-row>
+            <v-col cols="12" class="text-center">
+              <p class="text-h6 mb-2">Sign in with Google</p>
+              <GoogleLogin :callback="googleLoginCallback" />
+            </v-col>
+          </v-row>
+          <v-divider class="my-6">
+            <span class="text-caption text-medium-emphasis">OR</span>
+          </v-divider>
+          <v-row>
             <v-col cols="11">
               <v-text-field
                 data-cy="login_email"
@@ -96,12 +105,6 @@
               >
             </v-col>
           </v-row>
-          <v-divider class="my-6">
-            <span class="text-caption text-medium-emphasis">OR</span>
-          </v-divider>
-          <v-card-text>
-            <GoogleLogin :callback="googleLoginCallback" />
-          </v-card-text>
         </v-form>
       </v-card-text>
     </v-card>
@@ -125,8 +128,7 @@ const cookies = useCookies().cookies;
 const authHelper = useAuthHelper();
 const apiHelper = useApiHelper();
 const { rules } = useValidationRules();
-const { handleGoogleAuth, decodeGoogleCredential } =
-  useGoogleLogin();
+const { handleGoogleAuth, decodeGoogleCredential } = useGoogleLogin();
 const userStore = useUserStore();
 
 const router = useRouter();
@@ -183,7 +185,10 @@ async function googleLoginCallback(response: any) {
     const ticket = await handleGoogleAuth(response.credential);
     if (!ticket) return;
 
-    let storedUser = await authHelper.handleGoogleUserRegistration(response, userType!);
+    let storedUser = await authHelper.handleGoogleUserRegistration(
+      response,
+      userType!,
+    );
 
     await completeLogin(storedUser!);
 

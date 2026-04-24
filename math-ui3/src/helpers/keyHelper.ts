@@ -123,7 +123,7 @@ export default function () {
       }
 
       if (code === "Escape") {
-        if (editModeStore.getGlobalEditMode() === "FREE_SKETCH") {
+        if (editModeStore.getGlobalEditMode() !== "TEXT") {
           editModeStore.setGlobalEditMode("TEXT");
           editModeStore.setDefaultEditMode();
           return;

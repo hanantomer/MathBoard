@@ -11,6 +11,15 @@
         {{ registrationTitle }}
       </v-card-title>
       <v-card-text>
+        <v-row>
+          <v-col cols="12" class="text-center">
+            <p class="text-h6 mb-2">Sign up with Google</p>
+            <GoogleLogin :callback="handleGoogleUserRegistration" />
+          </v-col>
+        </v-row>
+        <v-divider class="my-6">
+          <span class="text-caption text-medium-emphasis">OR</span>
+        </v-divider>
         <v-form ref="registerForm" v-model="valid" lazy-validation>
           <v-row>
             <v-col cols="4">
@@ -244,12 +253,6 @@
               >
             </v-col>
           </v-row>
-          <v-divider class="my-6">
-            <span class="text-caption text-medium-emphasis">OR</span>
-          </v-divider>
-          <v-card-text>
-            <GoogleLogin :callback="handleGoogleUserRegistration" />
-          </v-card-text>
         </v-form>
       </v-card-text>
     </v-card>
@@ -265,7 +268,6 @@ import { useUserStore } from "../store/pinia/userStore";
 import useAuthenticationHelper from "../helpers/authenticationHelper";
 
 const authenticationHelper = useAuthenticationHelper();
-
 
 const userStore = useUserStore();
 const contactUs = useContactUs();
@@ -288,7 +290,6 @@ const {
   resetForm,
   performRegister,
 } = useRegistration("TEACHER");
-
 
 let acceptedTerms = ref<boolean>(false);
 let show = ref(false);
@@ -332,7 +333,10 @@ async function register() {
 }
 
 async function handleGoogleUserRegistration(response: any) {
-  const user = await authenticationHelper.handleGoogleUserRegistration(response, "TEACHER");
+  const user = await authenticationHelper.handleGoogleUserRegistration(
+    response,
+    "TEACHER",
+  );
   if (user) {
     userStore.setCurrentUser(user);
     show.value = false;

@@ -240,7 +240,8 @@ const showUploadDialog = ref(false);
 const modeButtons: Array<{
   name: string;
   show_condition: any;
-  editMode: EditMode | GlobalEditMode;
+  editMode: EditMode;
+  globalEditMode: GlobalEditMode;
   tooltip: string;
   icon_class: string;
   icon: string;
@@ -253,6 +254,7 @@ const modeButtons: Array<{
     name: "FreeText",
     show_condition: true,
     editMode: "TEXT_STARTED" as EditMode,
+    globalEditMode: "TEXT" as GlobalEditMode,
     tooltip: "free text",
     icon_class: "",
     icon: "mdi-text",
@@ -264,7 +266,8 @@ const modeButtons: Array<{
     name: "annotation",
     show_condition: true,
     editMode: "ANNOTATION_STARTED" as EditMode,
-    tooltip: "annotation",
+    globalEditMode: "ANNOTATION" as GlobalEditMode,
+    tooltip: "toggle annotation mode",
     icon_class: "",
     icon: "mdi-text-short",
     overlay_icon: "",
@@ -274,7 +277,8 @@ const modeButtons: Array<{
   {
     name: "freeSketch",
     show_condition: true,
-    editMode: "FREE_SKETCH" as GlobalEditMode,
+    editMode: "FREE_SKETCH_STARTED" as EditMode,
+    globalEditMode: "FREE_SKETCH" as GlobalEditMode,
     tooltip: "toggle free sketch mode",
     icon_class: "",
     icon: "mdi-pencil",
@@ -283,9 +287,22 @@ const modeButtons: Array<{
     tabIndex: 3,
   },
   {
+    name: "Line",
+    show_condition: true,
+    editMode: "LINE_STARTED" as EditMode,
+    globalEditMode: "LINE" as GlobalEditMode,
+    tooltip: "toggle line mode",
+    icon_class: "material-symbols-outlined",
+    icon: "horizontal_rule",
+    overlay_icon: "",
+    rotate: 120,
+    tabIndex: 3,
+  },
+  {
     name: "polyline",
     show_condition: true,
     editMode: "POLYGON_STARTED" as EditMode,
+    globalEditMode: "TEXT" as GlobalEditMode,
     tooltip: "Polyline",
     icon_class: "material-symbols-outlined",
     icon: "polyline",
@@ -294,20 +311,10 @@ const modeButtons: Array<{
     tabIndex: 4,
   },
   {
-    name: "Line",
-    show_condition: true,
-    editMode: "LINE_STARTED" as EditMode,
-    tooltip: "Line",
-    icon_class: "material-symbols-outlined",
-    icon: "horizontal_rule",
-    overlay_icon: "",
-    rotate: 120,
-    tabIndex: 5,
-  },
-  {
     name: "DivisionLine",
     show_condition: true,
     editMode: "DIVISIONLINE_STARTED" as EditMode,
+    globalEditMode: "TEXT" as GlobalEditMode,
     tooltip: "Division Line",
     icon_class: "material-symbols-outlined",
     icon: "horizontal_rule",
@@ -319,6 +326,7 @@ const modeButtons: Array<{
     name: "curve",
     show_condition: true,
     editMode: "CURVE_STARTED" as EditMode,
+    globalEditMode: "TEXT" as GlobalEditMode,
     tooltip: "curve",
     icon_class: "material-symbols-outlined",
     icon: "line_curve",
@@ -330,6 +338,7 @@ const modeButtons: Array<{
     name: "circle",
     show_condition: true,
     editMode: "CIRCLE_STARTED" as EditMode,
+    globalEditMode: "TEXT" as GlobalEditMode,
     tooltip: "circle",
     icon_class: "material-symbols-outlined",
     icon: "circle",
@@ -341,6 +350,7 @@ const modeButtons: Array<{
     name: "sqrt",
     show_condition: true,
     editMode: "SQRT_STARTED" as EditMode,
+    globalEditMode: "TEXT" as GlobalEditMode,
     tooltip: "Sqrt Alt+s",
     shortcut: "Alt+s",
     icon_class: "",
@@ -353,6 +363,7 @@ const modeButtons: Array<{
     name: "exponent",
     show_condition: true,
     editMode: "EXPONENT_STARTED" as EditMode,
+    globalEditMode: "TEXT" as GlobalEditMode,
     tooltip: "exponent Alt+x",
     icon_class: "",
     icon: "mdi-exponent",
@@ -365,6 +376,7 @@ const modeButtons: Array<{
     name: "log",
     show_condition: true,
     editMode: "LOG_STARTED" as EditMode,
+    globalEditMode: "TEXT" as GlobalEditMode,
     tooltip: "log Alt+l",
     icon_class: "",
     icon: "mdi-math-log",
@@ -377,6 +389,7 @@ const modeButtons: Array<{
     name: "cartesian system",
     show_condition: true,
     editMode: "CARTESIAN_SYSTEM_STARTED" as EditMode,
+    globalEditMode: "TEXT" as GlobalEditMode,
     tooltip: "cartesian system",
     icon_class: "",
     icon: "mdi-chart-line",
@@ -474,25 +487,15 @@ const editEnabled = computed(() => {
 
 function startEditMode(item: any) {
   notationStore.resetSelectedNotations();
-
-  // Toggle free sketch mode: clicking again while already in the free sketch edit mode
-  // will return to the default mode.
-  if (item.editMode === "FREE_SKETCH") {
-    if (editModeStore.getGlobalEditMode() === "FREE_SKETCH") {
-      editModeStore.setGlobalEditMode("TEXT");
-    } else {
-      editModeStore.setGlobalEditMode("FREE_SKETCH");
-    }
-    editModeStore.setDefaultEditMode();
-    return;
-  }
-
-  editModeStore.setEditMode(item.editMode); // watcher sets activeState to 0
+  editModeStore.setGlobalEditMode(item.globalEditMode);
+  editModeStore.setEditMode(item.editMode);
 }
 
 function isModeActive(item: any) {
-  if (item.editMode === "FREE_SKETCH") {
-    return editModeStore.getGlobalEditMode() === "FREE_SKETCH";
+  const globalModes = ["FREE_SKETCH", "LINE", "ANNOTATION"];
+
+  if (globalModes.includes(item.globalEditMode)) {
+    return editModeStore.getGlobalEditMode() === item.globalEditMode;
   }
   return item.editMode === editModeStore.getEditMode();
 }
@@ -507,10 +510,11 @@ function getButtonColor(item: any) {
 }
 
 function getButtonClass(item: any) {
-  if (item.editMode !== "FREE_SKETCH") return "";
+  const globalModes = ["FREE_SKETCH", "LINE", "ANNOTATION"];
+  if (!globalModes.includes(item.globalEditMode)) return "";
   return isModeActive(item)
-    ? "free-sketch-button active"
-    : "free-sketch-button";
+    ? "global-mode-button active"
+    : "global-mode-button";
 }
 </script>
 
@@ -546,6 +550,16 @@ function getButtonClass(item: any) {
   flex-basis: content;
 }
 
+.global-mode-button {
+  box-shadow: 0 0 0 2px rgba(244, 243, 243, 0.25);
+  border-radius: 50% !important;
+}
+
+.global-mode-button.active {
+  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.75);
+}
+
+/* Legacy styles for backward compatibility */
 .free-sketch-button {
   box-shadow: 0 0 0 2px rgba(244, 243, 243, 0.25);
   border-radius: 50% !important;

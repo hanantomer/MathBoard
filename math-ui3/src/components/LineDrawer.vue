@@ -272,10 +272,8 @@ function editNotStarted(): boolean {
 
 async function endDrawing(): Promise<string> {
   if (editNotStarted()) {
-    editModeStore.setDefaultEditMode();
     return "";
   }
-
   return await saveLine();
 }
 

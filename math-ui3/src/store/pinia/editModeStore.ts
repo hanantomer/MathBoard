@@ -14,6 +14,10 @@ export const useEditModeStore = defineStore("editMode", () => {
   const defaultEditMode: EditMode = "CELL_SELECTED";
 
   function setGlobalEditMode(mode: GlobalEditMode) {
+    console.debug(
+      `old global edit mode: ${globalEditMode.value}, new global edit mode: ${mode} `,
+    );
+
     globalEditMode.value = mode;
   }
 
@@ -269,7 +273,7 @@ export const useEditModeStore = defineStore("editMode", () => {
     console.debug(
       `old edit mode: ${editMode.value}, new edit mode: ${newEditMode} `,
     );
-    //console.trace();
+    console.trace();
     editMode.value = newEditMode;
   }
 
@@ -279,6 +283,22 @@ export const useEditModeStore = defineStore("editMode", () => {
 
   function getNotationTypeByEditMode(): NotationType {
     return EditModeNotationType.get(getEditMode())!;
+  }
+
+  function isLineGlobalMode() {
+    return globalEditMode.value === "LINE";
+  }
+
+  function isAnnotationGlobalMode() {
+    return globalEditMode.value === "ANNOTATION";
+  }
+
+  function isFreeSketchGlobalMode() {
+    return globalEditMode.value === "FREE_SKETCH";
+  }
+
+  function isInGlobalDrawingMode() {
+    return globalEditMode.value !== "TEXT";
   }
 
   return {
@@ -331,6 +351,10 @@ export const useEditModeStore = defineStore("editMode", () => {
     isFreeSketchDrawingMode,
     isFreeSketchSelectedMode,
     isFreeSketchStartedMode,
+    isLineGlobalMode,
+    isAnnotationGlobalMode,
+    isFreeSketchGlobalMode,
+    isInGlobalDrawingMode,
     setEditMode,
     setGlobalEditMode,
     setDefaultEditMode,

@@ -1,7 +1,7 @@
 <template>
   <lineWatcher
     :startEntry="{
-      editMode: ['CELL_SELECTED'],
+      editMode: ['FREE_SKETCH_STARTED'],
       func: startFreeSketchDrawing,
     }"
     :drawEntry="{
@@ -47,6 +47,7 @@
       <path
         class="line"
         id="freeSketchPath"
+        data-cy="freeSketchEditor"
         d="M0 0"
         stroke-linecap="round"
         fill="transparent"
@@ -59,16 +60,14 @@
 <script setup lang="ts">
 import lineWatcher from "./LineWatcher.vue";
 import useNotationMutateHelper from "../helpers/notationMutateHelper";
+
 import { computed } from "vue";
 import { useNotationStore } from "../store/pinia/notationStore";
 import { useEditModeStore } from "../store/pinia/editModeStore";
 import { useCellStore } from "../store/pinia/cellStore";
 import { getStroke } from "perfect-freehand";
-import {
-  DotCoordinates,
-  NotationAttributes,
-  FreeSketchNotationAttributes,
-} from "common/baseTypes";
+import useWatchHelper from "../helpers/watchHelper";
+import { DotCoordinates, FreeSketchNotationAttributes } from "common/baseTypes";
 
 import { matrixSize } from "common/globals";
 
@@ -76,6 +75,7 @@ const notationMutateHelper = useNotationMutateHelper();
 const notationStore = useNotationStore();
 const editModeStore = useEditModeStore();
 const cellStore = useCellStore();
+const watchHelper = useWatchHelper();
 
 type Point = {
   x: number;
@@ -85,14 +85,22 @@ type Point = {
 let sketchPoints: Point[] = [];
 
 const show = computed(() => {
-  return editModeStore.isFreeSketchDrawingMode();
+  return (
+    editModeStore.isFreeSketchDrawingMode() ||
+    editModeStore.isFreeSketchGlobalMode()
+  );
 });
 
-function startFreeSketchDrawing(p: DotCoordinates) {
-  if (editModeStore.getGlobalEditMode() !== "FREE_SKETCH") {
-    return;
+// Reset sketch points when switching away from FREE_SKETCH global mode
+watchHelper.watchGlobalEditModeChange((newMode, oldMode) => {
+  if (oldMode === "FREE_SKETCH" && newMode !== "FREE_SKETCH") {
+    // Reset sketch points when leaving FREE_SKETCH mode
+    sketchPoints = [];
+    updateSketchPath();
   }
+});
 
+function startFreeSketchDrawing(p: DotCoordinates): boolean {
   sketchPoints = [];
   sketchPoints.push({
     x: p.x,
@@ -100,6 +108,7 @@ function startFreeSketchDrawing(p: DotCoordinates) {
   });
   updateSketchPath();
   editModeStore.setEditMode("FREE_SKETCH_DRAWING");
+  return true;
 }
 
 function drawFreeSketch(p: DotCoordinates) {
@@ -189,6 +198,11 @@ async function endFreeSketchDrawing(): Promise<string> {
   }
 
   const uuid = await saveFreeSketch(sketchPoints);
+  // if (editModeStore.getGlobalEditMode() === "FREE_SKETCH") {
+  //   editModeStore.setEditMode("FREE_SKETCH_STARTED");
+  // } else {
+  //   editModeStore.setDefaultEditMode();
+  // }
   return uuid;
 }
 

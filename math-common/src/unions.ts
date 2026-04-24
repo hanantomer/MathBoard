@@ -72,7 +72,9 @@ export type CursorType =
 
 export type GlobalEditMode =
   | "TEXT"
-  | "FREE_SKETCH";
+  | "FREE_SKETCH"
+  | "LINE"
+  | "ANNOTATION";
 
 export type EditMode =
   | "LESSONS_SELECTION" //  after click on lessons icon
@@ -239,7 +241,10 @@ export const EditModeCursorType = new Map<
   ["XMARK_STARTED", "auto"],
 ]);
 
-export type UserType = "TEACHER" | "STUDENT" | "BOTH";
+export type UserType =
+  | "TEACHER"
+  | "STUDENT"
+  | "BOTH";
 
 export type SelectionMoveDirection =
   | "LEFT"

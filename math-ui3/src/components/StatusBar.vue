@@ -18,7 +18,7 @@ const text = ref("");
 const timeout = ref(30000);
 
 const editModeStatusText = {
-  FREE_SKETCH:
+  FREE_SKETCH_STARTED:
     "Draw freely on the screen with your mouse or stylus click ESC to exit free sketch mode",
   TEXT_STARTED:
     "Draw a rectangle on screen to create a text box, click once to edit and twice to resize",
@@ -28,12 +28,12 @@ const editModeStatusText = {
   EXPONENT_STARTED: "Click on a cell to create an exponent",
   EXPONENT_WRITING: "Type exponent and then click outside or press enter",
   CIRCLE_STARTED: "Draw a circle on screen",
-  ANNOTATION_STARTED: "Click on a cell to add annotation",
+  ANNOTATION_STARTED: "Click on a everywhere to add annotation text, press ESC to exit annotation mode",
   ANNOTATION_WRITING:
     "Type annotation text and then click outside or press enter",
   POLYGON_STARTED:
     "To draw a polygon, click and hold to start a line at a point, drag to draw, and release to set the first vertex. Repeat for each segment: click and hold from the last vertex, drag, and release to set the next vertex. Connect the final vertex to the starting point to complete the polygon",
-  LINE_STARTED: "Draw a line on screen",
+  LINE_STARTED: "Draw a line on screen press ESC to exit line drawing mode",
   CHECKMARK_STARTED: "Click on a cell to create a checkmark",
   SEMICHECKMARK_STARTED: "Click on a cell to create a semi checkmark",
   XMARK_STARTED: "Click on a cell to create an xmark",

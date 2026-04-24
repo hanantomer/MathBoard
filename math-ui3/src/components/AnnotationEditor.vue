@@ -93,8 +93,16 @@ watchHelper.watchCustomEvent(
   addSpecialSymbol,
 );
 
-function startTextEditing(e: MouseEvent) {
+// Reset sketch points when switching away from FREE_SKETCH global mode
+watchHelper.watchGlobalEditModeChange((newMode, oldMode) => {
+  if (oldMode === "ANNOTATION" && newMode !== "ANNOTATION") {
+    // Reset sketch points when leaving FREE_SKETCH mode
+    save();
+    annotaionValue.value = "";
+  }
+});
 
+function startTextEditing(e: MouseEvent) {
   const el = e.target as HTMLElement;
   if (
     el.tagName !== "rect" &&
@@ -118,8 +126,6 @@ function editSelectedAnnotation() {
 
   setInitialTextValue();
 
-  //hideTextNotation(selectedNotation.value!.uuid);
-
   const textEl = document.getElementById(
     "annotationEl",
   )! as HTMLTextAreaElement;
@@ -137,20 +143,27 @@ function setInitialTextValue() {
 }
 
 async function save() {
+  if (editModeStore.getGlobalEditMode() === "ANNOTATION") {
+    editModeStore.setEditMode("ANNOTATION_STARTED");
+  }
+  //else {
+  //  editModeStore.setDefaultEditMode();
+  //}
+
   if (selectedNotation.value) {
     selectedNotation.value.value = annotaionValue.value;
     await notationMutateHelper.updateNotation(selectedNotation.value);
     restoreTextNotation(selectedNotation.value.uuid);
   } else {
-    notationMutateHelper
-      .addAnnotationNotation(annotaionValue.value, {
-        x: annotationPoint.value.x - cellStore.getSvgBoundingRect().x,
-        y: annotationPoint.value.y - cellStore.getSvgBoundingRect().y,
-      })
-      .then((uuid) => {
-        selectCreatedAnnotation(uuid);
-      });
+    notationMutateHelper.addAnnotationNotation(annotaionValue.value, {
+      x: annotationPoint.value.x - cellStore.getSvgBoundingRect().x,
+      y: annotationPoint.value.y - cellStore.getSvgBoundingRect().y,
+    });
+    //.then((uuid) => {
+    //  selectCreatedAnnotation(uuid);
+    //});
   }
+  annotaionValue.value = "";
 }
 
 function hideTextNotation(uuid: string) {
@@ -199,11 +212,11 @@ function addSpecialSymbol(symbol: string): void {
   }, 0);
 }
 
-function selectCreatedAnnotation(uuid: string | undefined | null) {
-  if (!uuid) return;
-  notationStore.selectNotation(uuid);
-  editModeStore.setEditMode("ANNOTATION_SELECTED");
-}
+// function selectCreatedAnnotation(uuid: string | undefined | null) {
+//   if (!uuid) return;
+//   notationStore.selectNotation(uuid);
+//   editModeStore.setEditMode("ANNOTATION_SELECTED");
+// }
 </script>
 <style>
 .annotation {

@@ -131,6 +131,7 @@ watchHelper.watchMouseEvent(
     "CELL_SELECTED",
     "SPECIAL_SYMBOL_SELECTED",
     "LINE_SELECTED",
+    "LINE_STARTED",
     "DIVISIONLINE_SELECTED",
     "CURVE_SELECTED",
     "SQRT_SELECTED",
@@ -163,6 +164,9 @@ watchHelper.watchKeyEvent(
     "EXPONENT_SELECTED",
     "CIRCLE_SELECTED",
     "IMAGE_SELECTED",
+    "ANNOTATION_STARTED",
+    "LINE_STARTED",
+    "FREE_SKETCH_STARTED",
   ],
   "EV_KEYUP",
   async (e: KeyboardEvent) => {

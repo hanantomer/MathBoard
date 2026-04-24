@@ -188,6 +188,7 @@ export default function selectionHelper() {
     }
 
     if (activeNotation.notationType === "ANNOTATION") {
+      editModeStore.setGlobalEditMode("ANNOTATION");
       editModeStore.setEditMode("ANNOTATION_SELECTED");
       eventBus.emit("EV_ANNOTATION_SELECTED", activeNotation);
     }

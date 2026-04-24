@@ -49,7 +49,7 @@ declare namespace Cypress {
     clearBoard(): any;
     drawLine(
       buttonDataCy: string,
-      handleDataCy: string,
+      handleDataCy: string | null,
       x1: number,
       y1: number,
       x2: number,
@@ -63,7 +63,7 @@ Cypress.Commands.add(
   "drawLine",
   (
     buttonDataCy: string,
-    handleDataCy: string,
+    handleDataCy: string | null,
     x1: number,
     y1: number,
     x2: number,
@@ -87,23 +87,27 @@ Cypress.Commands.add(
 
     cy.get("#lessonSvg").trigger("mouseup");
 
-    cy.dataCy(handleDataCy).trigger("mousedown");
-    cy.get("#lessonSvg").trigger("mousemove", {
-      buttons: 1,
-      x: 301,
-      y: 200,
-    });
-    cy.get("#lessonSvg").trigger("mousemove", {
-      buttons: 1,
-      x: 302,
-      y: 200,
-    });
-    cy.get("#lessonSvg").trigger("mousemove", {
-      buttons: 1,
-      x: 400,
-      y: 200,
-    });
-    cy.get("#lessonSvg").trigger("mouseup");
+    if (handleDataCy) {
+      cy.dataCy(handleDataCy).should("exist");
+
+      cy.dataCy(handleDataCy).trigger("mousedown");
+      cy.get("#lessonSvg").trigger("mousemove", {
+        buttons: 1,
+        x: 301,
+        y: 200,
+      });
+      cy.get("#lessonSvg").trigger("mousemove", {
+        buttons: 1,
+        x: 302,
+        y: 200,
+      });
+      cy.get("#lessonSvg").trigger("mousemove", {
+        buttons: 1,
+        x: 400,
+        y: 200,
+      });
+      cy.get("#lessonSvg").trigger("mouseup");
+    }
   },
 );
 
