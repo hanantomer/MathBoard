@@ -60,9 +60,10 @@
               <v-btn
                 v-if="!userStore.getCurrentUser()"
                 color="orange"
-                size="x-large"
+                size="large"
                 elevation="2"
                 rounded
+                block
                 class="px-8"
                 v-on:click="register(false, '')"
               >
@@ -72,9 +73,10 @@
               <v-btn
                 v-if="userStore.isTeacher()"
                 color="orange"
-                size="x-large"
+                size="large"
                 elevation="2"
                 rounded
+                block
                 class="px-8"
                 v-on:click="navToLessons"
               >
@@ -88,8 +90,8 @@
           <v-card class="features-card" elevation="2" rounded="lg">
             <v-card-title class="text-left"> Key Features: </v-card-title>
             <v-row>
-              <v-col cols="6">
-                <v-list class="justify-center pa-4">
+              <v-col cols="12" md="6">
+                <v-list class="feature-list justify-center pa-4">
                   <v-list-item v-for="b in bullets" :key="b" class="mb-2">
                     <v-list-item-title class="d-flex align-center">
                       <v-icon color="success" class="mr-4" size="large">
@@ -101,15 +103,20 @@
                 </v-list>
               </v-col>
 
-              <v-col cols="6" class="d-flex align-center justify-center">
+              <v-col
+                cols="12"
+                md="6"
+                class="d-flex align-center justify-center"
+              >
                 <v-container class="text-center">
                   <v-btn
                     href="https://www.youtube.com/watch?v=8bXmQ2KoIrI"
                     target="_blank"
                     color="orange"
-                    size="x-large"
+                    size="large"
                     elevation="4"
                     rounded
+                    block
                     class="tutorial-btn"
                   >
                     <v-icon start class="mr-2">mdi-youtube</v-icon>
@@ -126,12 +133,18 @@
 </template>
 
 <script setup lang="ts">
-import LoginDialog from "./Login.vue";
-import RegisterStudentDialog from "./RegisterStudent.vue";
-import RegisterTeacherDialog from "./RegisterTeacher.vue";
+import { defineAsyncComponent } from "vue";
 import { useRouter } from "vue-router";
 import { useUserStore } from "../store/pinia/userStore";
 import { UserType } from "common/unions";
+
+const LoginDialog = defineAsyncComponent(() => import("./Login.vue"));
+const RegisterStudentDialog = defineAsyncComponent(
+  () => import("./RegisterStudent.vue"),
+);
+const RegisterTeacherDialog = defineAsyncComponent(
+  () => import("./RegisterTeacher.vue"),
+);
 
 const router = useRouter();
 const userStore = useUserStore();
@@ -180,6 +193,7 @@ const bullets = [
   border: 1px solid rgba(0, 0, 0, 0.1);
   max-width: 900px;
   margin: 0 auto;
+  width: min(100%, 900px);
 }
 
 .features-card {
@@ -187,16 +201,78 @@ const bullets = [
   border: 1px solid rgba(0, 0, 0, 0.1);
   max-width: 1000px;
   margin: 0 auto;
+  width: min(100%, 1000px);
 }
 
 .auth-card {
   background: transparent;
   max-width: 600px;
   margin: 0 auto;
+  width: min(100%, 600px);
 }
 
 .tutorial-btn {
   transition: transform 0.2s;
+}
+
+.feature-list .v-list-item-title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #2c3e50;
+}
+
+.main-card h2 {
+  white-space: normal;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+  font-size: 2.25rem;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  color: #1f2937;
+}
+
+.main-card .v-card-text,
+.auth-card .v-card-text,
+.features-card .v-card-title {
+  color: #334155;
+}
+
+@media (max-width: 760px) {
+  .main-card {
+    margin: 0 0.75rem 1rem;
+  }
+
+  .main-card h2 {
+    font-size: 1.95rem;
+    line-height: 1.15;
+  }
+}
+
+@media (max-width: 760px) {
+  .welcome-page {
+    padding: 1rem 0;
+  }
+
+  .main-card,
+  .features-card,
+  .auth-card {
+    margin: 0 0.75rem 1rem;
+    width: auto;
+  }
+
+  .main-card .v-card-title h2 {
+    font-size: 1.8rem;
+    line-height: 1.2;
+  }
+
+  .tutorial-btn,
+  .auth-card .v-btn {
+    width: 100%;
+  }
+
+  .feature-list .v-list-item-title {
+    font-size: 0.92rem;
+  }
 }
 
 .tutorial-btn:hover {
