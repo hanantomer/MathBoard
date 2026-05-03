@@ -132,19 +132,38 @@ const selectionRectHeight = computed(() => {
 
 watchHelper.watchMouseEvent(
   ["CELL_SELECTED"],
-  "EV_SVG_MOUSE_OR_TOUCH_DRAG",
+  "EV_SVG_MOUSE_DRAG",
   startAreaSelection,
 );
+
+watchHelper.watchTouchEvent(
+  ["AREA_SELECTION_STARTED"],
+  "EV_SVG_TOUCHSTART",
+  startAreaSelection,
+);
+
 
 watchHelper.watchMouseEvent(
   ["TEXT_STARTED"],
-  "EV_SVG_MOUSE_OR_TOUCH_DRAG",
+  "EV_SVG_MOUSE_DRAG",
+  startAreaSelection,
+);
+
+watchHelper.watchTouchEvent(
+  ["TEXT_STARTED"],
+  "EV_SVG_TOUCHSTART",
   startAreaSelection,
 );
 
 watchHelper.watchMouseEvent(
-  ["AREA_SELECTING", "TEXT_AREA_SELECTING"],
-  "EV_SVG_MOUSE_OR_TOUCH_DRAG",
+  ["AREA_SELECTION_STARTED", "TEXT_AREA_SELECTING"],
+  "EV_SVG_MOUSE_DRAG",
+  updateSelectionArea,
+);
+
+watchHelper.watchTouchEvent(
+  ["AREA_SELECTION_STARTED", "TEXT_AREA_SELECTING"],
+  "EV_SVG_TOUCHMOVE",
   updateSelectionArea,
 );
 
@@ -161,13 +180,19 @@ watchHelper.watchNotationSelection(
 );
 
 watchHelper.watchMouseEvent(
-  ["AREA_SELECTING", "TEXT_AREA_SELECTING", "RESIZING"],
+  ["AREA_SELECTION_STARTED", "TEXT_AREA_SELECTING", "RESIZING"],
   "EV_SVG_MOUSEUP",
   endSelect,
 );
 
+watchHelper.watchTouchEvent(
+  ["AREA_SELECTION_STARTED", "TEXT_AREA_SELECTING", "RESIZING"],
+  "EV_SVG_TOUCHEND",
+  endSelect,
+);
+
 watchHelper.watchMouseEvent(
-  ["AREA_SELECTING", "TEXT_AREA_SELECTING", "RESIZING"],
+  ["AREA_SELECTION_STARTED", "TEXT_AREA_SELECTING", "RESIZING"],
   "EV_MOUSEUP",
   endSelect,
 );
@@ -182,13 +207,13 @@ watchHelper.watchKeyEvent(["AREA_SELECTED"], "EV_KEYUP", handleKeyUp);
 
 watchHelper.watchMouseEvent(
   ["AREA_SELECTED", "IMAGE_SELECTED", "TEXT_SELECTED", "ANNOTATION_SELECTED"],
-  "EV_SVG_MOUSE_OR_TOUCH_DRAG",
+  "EV_SVG_MOUSE_DRAG",
   startMmoveSelectedNotations,
 );
 
 watchHelper.watchMouseEvent(
   ["AREA_MOVING"],
-  "EV_SVG_MOUSE_OR_TOUCH_DRAG",
+  "EV_SVG_MOUSE_DRAG",
   moveSelectedNotations,
 );
 
@@ -247,7 +272,7 @@ function cancelTextSelectionWhenUserClickedOutside(e: MouseEvent) {
   editModeStore.setDefaultEditMode();
 }
 
-function startAreaSelection(e: MouseEvent) {
+function startAreaSelection(e: MouseEvent | TouchEvent) {
   if (!authorizationHelper.canEdit()) return;
 
   if (editModeStore.getGlobalEditMode() === "FREE_SKETCH") {
@@ -266,14 +291,15 @@ function startAreaSelection(e: MouseEvent) {
   editModeStore.setEditMode(
     editModeStore.getEditMode() === "TEXT_STARTED"
       ? "TEXT_AREA_SELECTING"
-      : "AREA_SELECTING",
+      : "AREA_SELECTION_STARTED",
   );
 }
 
-function setStartPosition(e: MouseEvent) {
-  selectionPosition.value.x2 = selectionPosition.value.x1 = e.pageX;
-
-  selectionPosition.value.y2 = selectionPosition.value.y1 = e.pageY;
+function setStartPosition(e: MouseEvent | TouchEvent) {
+  const pageX = "touches" in e ? e.touches[0].pageX : e.pageX;
+  const pageY = "touches" in e ? e.touches[0].pageY : e.pageY;
+  selectionPosition.value.x2 = selectionPosition.value.x1 = pageX;
+  selectionPosition.value.y2 = selectionPosition.value.y1 = pageY;
 }
 
 async function handleKeyUp(e: KeyboardEvent) {
@@ -317,58 +343,73 @@ async function handleKeyUp(e: KeyboardEvent) {
 }
 
 // extend or shrink selection area
-function updateSelectionArea(e: MouseEvent) {
+function updateSelectionArea(e: MouseEvent | TouchEvent) {
   if (!authorizationHelper.canEdit()) return;
   setSelectionDirection(e);
+
+  const pageX = "touches" in e ? e.touches[0].pageX : e.pageX;
+  const pageY = "touches" in e ? e.touches[0].pageY : e.pageY;
 
   if (horizontalDirection === "NONE" || verticalDirection === "NONE") {
     return;
   }
 
   if (horizontalDirection === "LEFT") {
-    selectionPosition.value.x1 = e.pageX;
+    selectionPosition.value.x1 = pageX;
   }
 
   if (horizontalDirection === "RIGHT") {
-    selectionPosition.value.x2 = e.pageX;
+    selectionPosition.value.x2 = pageX;
   }
 
   if (verticalDirection === "UP") {
-    selectionPosition.value.y1 = e.pageY;
+    selectionPosition.value.y1 = pageY;
   }
 
   if (verticalDirection === "BOTTOM") {
-    selectionPosition.value.y2 = e.pageY;
+    selectionPosition.value.y2 = pageY;
   }
 }
 
-function setSelectionDirection(e: MouseEvent) {
+function setSelectionDirection(e: MouseEvent | TouchEvent) {
   if (horizontalDirection === "NONE") {
-    if (e.pageX > selectionPosition.value.x1) {
+    if (
+      ("touches" in e ? e.touches[0].pageX : e.pageX) >
+      selectionPosition.value.x1
+    ) {
       horizontalDirection = "RIGHT";
       return;
     }
 
-    if (e.pageX < selectionPosition.value.x1) {
+    if (
+      ("touches" in e ? e.touches[0].pageX : e.pageX) <
+      selectionPosition.value.x1
+    ) {
       horizontalDirection = "LEFT";
       return;
     }
   }
 
   if (verticalDirection === "NONE") {
-    if (e.pageY > selectionPosition.value.y1) {
+    if (
+      ("touches" in e ? e.touches[0].pageY : e.pageY) >
+      selectionPosition.value.y1
+    ) {
       verticalDirection = "BOTTOM";
       return;
     }
 
-    if (e.pageY < selectionPosition.value.y1) {
+    if (
+      ("touches" in e ? e.touches[0].pageY : e.pageY) <
+      selectionPosition.value.y1
+    ) {
       verticalDirection = "UP";
       return;
     }
   }
 }
 
-function endSelect(e: MouseEvent) {
+function endSelect(e: MouseEvent | TouchEvent) {
   console.debug(
     `end select edit mode is: ${editModeStore.getEditMode()} horizontalDirection: ${horizontalDirection} verticalDirection: ${verticalDirection}`,
   );
@@ -393,7 +434,7 @@ function endSelect(e: MouseEvent) {
     return;
   }
 
-  if (editModeStore.getEditMode() === "AREA_SELECTING") {
+  if (editModeStore.getEditMode() === "AREA_SELECTION_STARTED") {
     selectionHelper.selectNotationsOfArea({
       topLeft: {
         x: selectionRectLeft.value - cellStore.getSvgBoundingRect().left,
@@ -431,7 +472,7 @@ function endSelect(e: MouseEvent) {
 }
 
 function onSelectionMouseDrag(e: MouseEvent) {
-  eventBus.emit("EV_SVG_MOUSE_OR_TOUCH_DRAG", e);
+  eventBus.emit("EV_SVG_MOUSE_DRAG", e);
 }
 
 async function onSelectionMouseUp(e: MouseEvent) {

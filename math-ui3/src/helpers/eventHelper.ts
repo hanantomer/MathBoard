@@ -1,30 +1,34 @@
 import { useUserStore } from "../store/pinia/userStore";
 import { useNotationStore } from "../store/pinia/notationStore";
 import { useCellStore } from "../store/pinia/cellStore";
+import { useEditModeStore } from "../store/pinia/editModeStore";
 import useImageHelper from "./imageHelper";
 
 import useNotationMutationHelper from "./notationMutateHelper";
 import useEventBus from "../helpers/eventBusHelper";
-import {
-  NotationAttributes,
-  PointNotationAttributes,
-  RectNotationAttributes,
-  LineNotationAttributes,
-  CurveNotationAttributes,
-  SqrtNotationAttributes,
-} from "common/baseTypes";
 
 import useSelectionHelper from "../helpers/selectionHelper";
 const selectionHelper = useSelectionHelper();
 
+export const isMobile = () => {
+  return (
+    /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+      navigator.userAgent,
+    ) || window.innerWidth <= 768
+  );
+};
+
 const userStore = useUserStore();
 const notationStore = useNotationStore();
 const cellStore = useCellStore();
+const editModeStore = useEditModeStore();
 const notationMutationHelper = useNotationMutationHelper();
 const eventBus = useEventBus();
 const imageHelper = useImageHelper();
 
 export default function eventHelper() {
+  const lastPoint = { x: -1, y: -1 };
+
   async function copy() {
     notationStore.setCopiedNotations(
       notationStore.getSelectedNotations().sort((n1: any, n2: any) => {
@@ -218,28 +222,6 @@ export default function eventHelper() {
     }
   }
 
-  function emitSvgMouseDown(e: MouseEvent) {
-    eventBus.emit("EV_SVG_MOUSEDOWN", e);
-  }
-
-  function emitSvgTouchStart(e: MouseEvent) {
-    eventBus.emit("EV_SVG_TOUCH_START", e);
-  }
-
-  // function registerSvgTouchStart() {
-  //   document
-  //     ?.getElementById(cellStore.getSvgId()!)
-  //     ?.addEventListener("touchstart", emitSvgMo);
-  // }
-
-  // function unregisterTouchStart() {
-  //   document
-  //     ?.getElementById(cellStore.getSvgId()!)
-  //     ?.removeEventListener("touchstart", emitSvgMouseDown);
-  // }
-
-  const lastPoint = { x: -1, y: -1 };
-
   function registerSvgMouseDown() {
     document
       ?.getElementById(cellStore.getSvgId()!)
@@ -250,6 +232,26 @@ export default function eventHelper() {
     document
       ?.getElementById(cellStore.getSvgId()!)
       ?.removeEventListener("mousedown", emitSvgMouseDown);
+  }
+
+  function emitSvgMouseDown(e: MouseEvent) {
+    eventBus.emit("EV_SVG_MOUSEDOWN", e);
+  }
+
+  function registerSvgTouchStart() {
+    document
+      ?.getElementById(cellStore.getSvgId()!)
+      ?.addEventListener("touchstart", emitSvgTouchStart, { passive: false });
+  }
+
+  function unregisterTouchStart() {
+    document
+      ?.getElementById(cellStore.getSvgId()!)
+      ?.removeEventListener("touchstart", emitSvgTouchStart);
+  }
+
+  function emitSvgTouchStart(e: TouchEvent) {
+    eventBus.emit("EV_SVG_TOUCHSTART", e);
   }
 
   function registerSvgMouseMove() {
@@ -267,12 +269,7 @@ export default function eventHelper() {
   function emitSvgMouseMove(e: MouseEvent) {
     if (e.buttons !== 1) return;
     if (lastPoint.x > 0 && lastPoint.y > 0) {
-      //const deltaX = e.clientX - lastPoint.x;
-      //const deltaY = e.clientY - lastPoint.y;
-
-      //if (deltaX > 1 && deltaY > 1) {
-      eventBus.emit("EV_SVG_MOUSE_OR_TOUCH_DRAG", e);
-      //}
+      eventBus.emit("EV_SVG_MOUSE_DRAG", e);
     }
     lastPoint.x = e.clientX;
     lastPoint.y = e.clientY;
@@ -306,6 +303,59 @@ export default function eventHelper() {
 
   function unregisterMouseUp() {
     document.removeEventListener("mouseup", emitMouseUp);
+  }
+
+  function registerSvgTouchMove() {
+    document
+      ?.getElementById(cellStore.getSvgId()!)
+      ?.addEventListener("touchmove", emitSvgTouchMove, { passive: false });
+  }
+
+  function unregisterSvgTouchMove() {
+    document
+      ?.getElementById(cellStore.getSvgId()!)
+      ?.removeEventListener("touchmove", emitSvgTouchMove);
+  }
+
+  function emitSvgTouchMove(e: TouchEvent) {
+    if (editModeStore.isTouchDrawingMode()) {
+      e.preventDefault(); // prevent scrolling when drawing with touch
+    }
+    if (lastPoint.x > 0 && lastPoint.y > 0) {
+      eventBus.emit("EV_SVG_TOUCHMOVE", e);
+    }
+    lastPoint.x = e.touches[0].clientX;
+    lastPoint.y = e.touches[0].clientY;
+  }
+
+  function emitSvgTouchEnd(e: TouchEvent) {
+    lastPoint.x = -1;
+    lastPoint.y = -1;
+    eventBus.emit("EV_SVG_TOUCHEND", e);
+  }
+
+  function emitTouchEnd(e: TouchEvent) {
+    eventBus.emit("EV_TOUCHEEND", e);
+  }
+
+  function registerSvgTouchEnd() {
+    document
+      ?.getElementById(cellStore.getSvgId()!)
+      ?.addEventListener("touchend", emitSvgTouchEnd);
+  }
+
+  function unregisterSvgTouchEnd() {
+    document
+      ?.getElementById(cellStore.getSvgId()!)
+      ?.removeEventListener("touchend", emitSvgTouchEnd);
+  }
+
+  function registerTouchEnd() {
+    document.addEventListener("touchend", emitTouchEnd);
+  }
+
+  function unregisterTouchEnd() {
+    document.removeEventListener("touchend", emitTouchEnd);
   }
 
   function emitKeyUp(key: KeyboardEvent) {
@@ -371,6 +421,29 @@ export default function eventHelper() {
     document.removeEventListener("paste", emitPaste);
   }
 
+  // Mobile support
+  let lastTapTime = 0;
+  function emitMobileEscape(e: TouchEvent) {
+    if (!isMobile()) return;
+    const currentTime = Date.now();
+    const tapDelay = currentTime - lastTapTime;
+    if (tapDelay < 300 && tapDelay > 0) {
+      // Double tap within 300ms
+      eventBus.emit("EV_MOBILE_ESCAPE", null);
+    }
+    lastTapTime = currentTime;
+  }
+
+  function registerMobileEscape() {
+    if (isMobile()) {
+      document.addEventListener("touchstart", emitMobileEscape);
+    }
+  }
+
+  function unregisterMobileEscape() {
+    document.removeEventListener("touchstart", emitMobileEscape);
+  }
+
   return {
     copy,
     paste,
@@ -382,6 +455,16 @@ export default function eventHelper() {
     unregisterMouseUp,
     registerSvgMouseUp,
     unregisterSvgMouseUp,
+
+    registerSvgTouchStart,
+    unregisterTouchStart,
+    registerSvgTouchMove,
+    unregisterSvgTouchMove,
+    registerSvgTouchEnd,
+    unregisterSvgTouchEnd,
+    registerTouchEnd,
+    unregisterTouchEnd,
+
     registerKeyUp,
     unregisterKeyUp,
     registerKeyDown,
@@ -390,5 +473,9 @@ export default function eventHelper() {
     unregisterPaste,
     registerCopy,
     unregisterCopy,
+    registerMobileEscape,
+    unregisterMobileEscape,
+
+    isMobile,
   };
 }

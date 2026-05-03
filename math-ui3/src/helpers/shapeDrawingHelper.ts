@@ -14,9 +14,11 @@ export default function useShapeDrawingHelper() {
   let hiddenNotationUUID: string | null = null;
 
   function setLineInitialPosition(
-    e: MouseEvent,
+    e: MouseEvent | TouchEvent,
     setLinePositionCallback: (p: DotCoordinates) => void,
   ) {
+    const pageX = "touches" in e ? e.touches[0].pageX : e.pageX;
+    const pageY = "touches" in e ? e.touches[0].pageY : e.pageY;
     // advance from a "*_STARTED" state to corresponding drawing state
     const current = editModeStore.getEditMode();
     switch (current) {
@@ -43,24 +45,37 @@ export default function useShapeDrawingHelper() {
     }
 
     const position = {
-      x: e.pageX - cellStore.getSvgBoundingRect().x,
-      y: e.pageY - cellStore.getSvgBoundingRect().y,
+      x: pageX - cellStore.getSvgBoundingRect().x,
+      y: pageY - cellStore.getSvgBoundingRect().y,
     };
 
     setLinePositionCallback(position);
   }
 
   function drawNewLine(
-    e: MouseEvent,
+    e: MouseEvent | TouchEvent,
     drawLineCallback: (p: DotCoordinates) => void,
   ) {
-    if (e.buttons !== 1) {
-      return;
+    let pageX: number;
+    let pageY: number;
+
+    if ("touches" in e) {
+      if (e.touches.length !== 1) {
+        return;
+      }
+      pageX = e.touches[0].pageX;
+      pageY = e.touches[0].pageY;
+    } else {
+      if (e.buttons !== 1) {
+        return;
+      }
+      pageX = e.pageX;
+      pageY = e.pageY;
     }
 
     const position = {
-      x: e.pageX - cellStore.getSvgBoundingRect().x,
-      y: e.pageY - cellStore.getSvgBoundingRect().y,
+      x: pageX - cellStore.getSvgBoundingRect().x,
+      y: pageY - cellStore.getSvgBoundingRect().y,
     };
 
     drawLineCallback(position);
@@ -110,22 +125,11 @@ export default function useShapeDrawingHelper() {
   }
 
   async function saveDrawing(
-    e: MouseEvent,
-    saveDrawingCallback: (e: MouseEvent) => Promise<string>,
+    saveDrawingCallback: () => Promise<string>,
   ) {
-    const uuid = await saveDrawingCallback(e);
+    await saveDrawingCallback();
 
     if (editModeStore.isPolygonDrawingMode()) return;
-
-    // if (editModeStore.isFreeSketchDrawingMode()) {
-    //   editModeStore.setDefaultEditMode();
-    //   return;
-    // }
-
-    //notationStore.selectNotation(uuid);
-    //if (uuid) {
-    //  hideMatrixLine(uuid); // dont show created line yet since we back to edit mode
-    //}
 
     if (editModeStore.getGlobalEditMode() === "FREE_SKETCH") {
       editModeStore.setEditMode("FREE_SKETCH_STARTED");

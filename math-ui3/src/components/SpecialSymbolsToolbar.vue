@@ -1,4 +1,161 @@
 <template>
+  <!-- Mobile Modal Dialog -->
+  <v-dialog
+    v-model="showModal"
+    max-width="95vw"
+    max-height="90vh"
+    class="special-symbols-modal"
+  >
+    <v-card class="special-symbols-modal-card">
+      <v-card-title class="d-flex justify-space-between align-center">
+        Special Symbols
+        <v-btn icon @click="closeModal">
+          <v-icon>mdi-close</v-icon>
+        </v-btn>
+      </v-card-title>
+      <v-card-text class="pa-2" style="max-height: 70vh; overflow-y: auto">
+        <v-expansion-panels multiple>
+          <v-expansion-panel
+            v-for="(group, groupIdx) in symbolGroups"
+            :key="`modal-${groupIdx}`"
+            :value="groupIdx"
+          >
+            <v-expansion-panel-title>
+              {{ group.title }}
+            </v-expansion-panel-title>
+            <v-expansion-panel-text>
+              <div class="symbol-group" v-if="group.title == 'Vectors'">
+                <v-list>
+                  <v-list-item
+                    v-for="symbol in group.symbols"
+                    class="pa-0"
+                    :key="`modal-vector-${symbol.name}`"
+                  >
+                    <v-row>
+                      <v-col cols="5">
+                        <v-combobox
+                          v-if="symbol.name == 'vector'"
+                          v-model="vectorSelectedLetter"
+                          :items="letters"
+                          class="vector-combo"
+                        >
+                        </v-combobox>
+                        <v-combobox
+                          v-if="symbol.name == 'magnitude'"
+                          v-model="vectorSelectedLetter"
+                          :items="letters"
+                          class="vector-combo"
+                        >
+                        </v-combobox>
+                        <v-combobox
+                          v-if="symbol.name == 'dot'"
+                          v-model="dotProductFirstSelectedLetter"
+                          :items="letters"
+                          class="vector-combo"
+                        >
+                        </v-combobox>
+                        <v-combobox
+                          v-if="symbol.name == 'cross'"
+                          v-model="crossProductFirstSelectedLetter"
+                          :items="letters"
+                          class="vector-combo"
+                        >
+                        </v-combobox>
+                      </v-col>
+                      <v-col cols="1" style="padding: 0; margin-right: 10px">
+                        <v-tooltip>
+                          {{ symbol.tooltip }}
+                          {{ symbol.shortcut ? `(${symbol.shortcut})` : "" }}
+                          <template v-slot:activator="{ props }">
+                            <v-btn
+                              v-bind="props"
+                              class="special-symbol"
+                              style="
+                                max-height: 35px;
+                                max-width: 35px;
+                                position: relative;
+                                top: 25px;
+                                margin-right: 16px;
+                              "
+                              icon
+                              :disabled="!editEnabled"
+                              :tabindex="symbol.tabIndex"
+                              :aria-label="symbol.tooltip"
+                              :aria-keyshortcuts="symbol.shortcut"
+                              role="button"
+                              :id="`modal-special-symbol-${symbol.name}`"
+                              @click="
+                                () => {
+                                  addVectorSymbol(symbol.name, symbol.value);
+                                  closeModal();
+                                }
+                              "
+                            >
+                              <p
+                                v-if="symbol.name == 'vector'"
+                                v-html="wrapVectorSymbol(symbol.value)"
+                              ></p>
+                              <p v-else v-html="symbol.value"></p>
+                            </v-btn>
+                          </template>
+                        </v-tooltip>
+                      </v-col>
+                      <v-col cols="5">
+                        <v-combobox
+                          v-if="symbol.name == 'dot'"
+                          v-model="dotProductSecondSelectedLetter"
+                          :items="letters"
+                          class="vector-combo"
+                        ></v-combobox>
+                        <v-combobox
+                          v-if="symbol.name == 'cross'"
+                          v-model="crossProductSecondSelectedLetter"
+                          :items="letters"
+                          class="vector-combo"
+                        ></v-combobox>
+                      </v-col>
+                    </v-row>
+                  </v-list-item>
+                </v-list>
+              </div>
+              <div class="symbol-group" v-else>
+                <v-tooltip
+                  v-for="symbol in group.symbols"
+                  :key="`modal-tooltip-${symbol.name}`"
+                >
+                  {{ symbol.tooltip }}
+                  {{ symbol.shortcut ? `(${symbol.shortcut})` : "" }}
+                  <template v-slot:activator="{ props }">
+                    <v-btn
+                      v-bind="props"
+                      class="special-symbol"
+                      icon
+                      :disabled="!editEnabled"
+                      :tabindex="symbol.tabIndex"
+                      :aria-label="symbol.tooltip"
+                      :aria-keyshortcuts="symbol.shortcut"
+                      role="button"
+                      :id="`modal-special-symbol-${symbol.name}`"
+                      @click="
+                        () => {
+                          addSpecialSymbol(symbol.value);
+                          closeModal();
+                        }
+                      "
+                    >
+                      <p v-html="symbol.value"></p>
+                    </v-btn>
+                  </template>
+                </v-tooltip>
+              </div>
+            </v-expansion-panel-text>
+          </v-expansion-panel>
+        </v-expansion-panels>
+      </v-card-text>
+    </v-card>
+  </v-dialog>
+
+  <!-- Desktop Expansion Panels -->
   <v-expansion-panels multiple class="special-symbols-expansion">
     <v-expansion-panel
       v-for="(group, groupIdx) in symbolGroups"
@@ -203,7 +360,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from "vue";
+import { ref, computed, watch } from "vue";
 import { useEditModeStore } from "../store/pinia/editModeStore";
 import useScreenHelper from "../helpers/screenHelper";
 import useNotationMutateHelper from "../helpers/notationMutateHelper";
@@ -223,6 +380,28 @@ const notationMutateHelper = useNotationMutateHelper();
 const authorizationHelper = useAuthorizationHelper();
 const screenHelper = useScreenHelper();
 const selectionHelper = useSelectionHelper();
+
+// Props for modal control
+const props = defineProps({
+  showSymbolsModal: { type: Boolean, default: false },
+});
+
+const emit = defineEmits(["symbol-selected","close-modal"]);
+
+// Local modal state
+const showModal = ref(false);
+
+watch(
+  () => props.showSymbolsModal,
+  (newVal) => {
+    showModal.value = newVal;
+  },
+);
+
+function closeModal() {
+  showModal.value = false;
+  emit("close-modal");
+}
 
 const editEnabled = computed(() => {
   return authorizationHelper.canEdit();
@@ -436,7 +615,7 @@ const letters = [
 
 // model for the vector letter selector
 
-const emit = defineEmits(["symbol-selected"]);
+
 let selectedSymbol = ref("");
 
 const vectorSelectedLetter = ref("v");
@@ -593,9 +772,16 @@ function addEachCharAsSymbol(item: string) {
 <style scoped>
 @media (max-width: 1023px) {
   .special-symbols-expansion {
-    position: static;
-    width: 0%;
+    display: none;
   }
+}
+
+.special-symbols-modal {
+  z-index: 2050;
+}
+
+.special-symbols-modal-card {
+  background-color: #453737;
 }
 
 .special-symbols-expansion {

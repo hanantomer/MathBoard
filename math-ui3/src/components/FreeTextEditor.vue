@@ -55,10 +55,22 @@ watchHelper.watchMouseEvent(
   resetTextEditingIfClickedOusideTextArea,
 );
 
+watchHelper.watchTouchEvent(
+  ["TEXT_WRITING", "TEXT_SELECTED"],
+  "EV_SVG_TOUCHSTART",
+  resetTextEditingIfClickedOusideTextArea,
+);
+
 // user clicked inside text rect after text selection
 watchHelper.watchMouseEvent(
   ["TEXT_SELECTED"],
   "EV_SVG_MOUSEUP",
+  editTextSelection,
+);
+
+watchHelper.watchTouchEvent(
+  ["TEXT_SELECTED"],
+  "EV_SVG_TOUCHEND",
   editTextSelection,
 );
 
@@ -75,13 +87,19 @@ watchHelper.watchMouseEvent(
   editSelectedTextNotation,
 );
 
+watchHelper.watchTouchEvent(
+  ["TEXT_WRITING"],
+  "EV_TEXT_EDITING",
+  editSelectedTextNotation,
+);
+
 watchHelper.watchCustomEvent(
   ["TEXT_WRITING"],
   "EV_SPECIAL_SYMBOL_SELECTED",
   addSpecialSymbol,
 );
 
-function editSelectedTextNotation(e: MouseEvent) {
+function editSelectedTextNotation(e: MouseEvent | TouchEvent) {
   if (selectedNotation.value?.notationType !== "TEXT") {
     return;
   }
@@ -195,16 +213,18 @@ function showTextNotation(uuid: string) {
     .classList.remove("hidden");
 }
 
-function resetTextEditingIfClickedOusideTextArea(e: MouseEvent) {
+function resetTextEditingIfClickedOusideTextArea(e: MouseEvent | TouchEvent) {
   // mouse clicked outside of text arae
-  //  showTextNotation(selectedNotation.value!.uuid);
+  const target =
+    "touches" in e ? e.touches[0].target : (e.target as HTMLElement);
+
   if ((e.target as HTMLAreaElement).tagName != "TEXTAREA") {
     editModeStore.setDefaultEditMode();
   }
 }
 
-function editTextSelection(e: MouseEvent) {
-  const el = e.target as HTMLElement;
+function editTextSelection(e: MouseEvent | TouchEvent) {
+  const el = ("touches" in e ? e.touches[0].target : e.target) as HTMLElement;
   if (
     el.id !== "selection" &&
     (e.target as HTMLAreaElement).tagName != "TEXTAREA"

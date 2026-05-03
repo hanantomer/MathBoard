@@ -17,7 +17,7 @@
   ></v-progress-linear>
   <statusBar></statusBar>
   <cartesianSystemDrawer></cartesianSystemDrawer>
-  <div style="display: flex; margin-left: 100px; margin-right: 100px">
+  <div :style="wrapperStyle">
     <leftToolbar></leftToolbar>
     <sqrtDrawer></sqrtDrawer>
     <lineDrawer></lineDrawer>
@@ -66,37 +66,58 @@
 </template>
 
 <script setup lang="ts">
-import freeTextEditor from "./FreeTextEditor.vue";
-import freeSketchDrawer from "./FreeSketchDrawer.vue";
-import textAreaSync from "./TextAreaSync.vue";
-import StatusBar from "./StatusBar.vue";
-import annotationEditor from "./AnnotationEditor.vue";
-import exponentEditor from "./ExponentEditor.vue";
+import { computed, defineAsyncComponent, onUnmounted, ref } from "vue";
 import useNotationLoadingHelper from "../helpers/notationLoadingHelper";
+import { isMobile } from "../helpers/eventHelper";
 import useMatrixHelper from "../helpers/matrixHelper";
 import useEventHelper from "../helpers/eventHelper";
-import leftToolbar from "./LeftToolbar.vue";
-import specialSymbolsToolbar from "./SpecialSymbolsToolbar.vue";
-import areaSelector from "./AreaSelector.vue";
-import sqrtDrawer from "./SqrtDrawer.vue";
-import lineDrawer from "./LineDrawer.vue";
-import divisionLineDrawer from "./DivisionLineDrawer.vue";
-import polygonDrawer from "./PolygonDrawer.vue";
-import curveDrawer from "./CurveDrawer.vue";
-import circleDrawer from "./CircleDrawer.vue";
 import useWatchHelper from "../helpers/watchHelper";
-import cartesianSystemDrawer from "./CartesianSystemDrawer.vue";
 import useNotationMutationHelper from "../helpers/notationMutateHelper";
-import { onUnmounted, ref } from "vue";
 import { useNotationStore } from "../store/pinia/notationStore";
 import { useCellStore } from "../store/pinia/cellStore";
 import { useAnswerStore } from "../store/pinia/answerStore";
 import { CursorType, EditModeCursorType } from "common/unions";
 import useSelectionHelper from "../helpers/selectionHelper";
 import useKeyHelper from "../helpers/keyHelper";
-import floatingToolbar from "./FloatingToolbar.vue";
-import lessonStudents from "./LessonStudents.vue";
+import leftToolbar from "./LeftToolbar.vue";
 import { matrixSize } from "common/globals";
+
+const freeTextEditor = defineAsyncComponent(
+  () => import("./FreeTextEditor.vue"),
+);
+const freeSketchDrawer = defineAsyncComponent(
+  () => import("./FreeSketchDrawer.vue"),
+);
+const textAreaSync = defineAsyncComponent(() => import("./TextAreaSync.vue"));
+const StatusBar = defineAsyncComponent(() => import("./StatusBar.vue"));
+const annotationEditor = defineAsyncComponent(
+  () => import("./AnnotationEditor.vue"),
+);
+const exponentEditor = defineAsyncComponent(
+  () => import("./ExponentEditor.vue"),
+);
+const specialSymbolsToolbar = defineAsyncComponent(
+  () => import("./SpecialSymbolsToolbar.vue"),
+);
+const areaSelector = defineAsyncComponent(() => import("./AreaSelector.vue"));
+const sqrtDrawer = defineAsyncComponent(() => import("./SqrtDrawer.vue"));
+const lineDrawer = defineAsyncComponent(() => import("./LineDrawer.vue"));
+const divisionLineDrawer = defineAsyncComponent(
+  () => import("./DivisionLineDrawer.vue"),
+);
+const polygonDrawer = defineAsyncComponent(() => import("./PolygonDrawer.vue"));
+const curveDrawer = defineAsyncComponent(() => import("./CurveDrawer.vue"));
+const circleDrawer = defineAsyncComponent(() => import("./CircleDrawer.vue"));
+const cartesianSystemDrawer = defineAsyncComponent(
+  () => import("./CartesianSystemDrawer.vue"),
+);
+const floatingToolbar = defineAsyncComponent(
+  () => import("./FloatingToolbar.vue"),
+);
+const lessonStudents = defineAsyncComponent(
+  () => import("./LessonStudents.vue"),
+);
+
 const notationLoadingHelper = useNotationLoadingHelper();
 const notationStore = useNotationStore();
 const cellStore = useCellStore();
@@ -108,6 +129,11 @@ const watchHelper = useWatchHelper();
 const notationMutateHelper = useNotationMutationHelper();
 const answerStore = useAnswerStore();
 const progressBar = ref(false);
+const wrapperStyle = computed(() => ({
+  display: "flex",
+  marginLeft: isMobile() ? "0px" : "100px",
+  marginRight: isMobile() ? "0px" : "100px",
+}));
 
 let cursor = ref<CursorType>("auto");
 
@@ -116,9 +142,11 @@ onUnmounted(() => {
   eventHelper.unregisterSvgMouseMove();
   eventHelper.unregisterSvgMouseUp();
   eventHelper.unregisterMouseUp();
+  (eventHelper.unregisterTouchStart(), eventHelper.unregisterSvgTouchEnd());
   eventHelper.unregisterKeyUp();
   eventHelper.unregisterPaste();
   eventHelper.unregisterCopy();
+  eventHelper.unregisterMobileEscape();
 });
 
 const props = defineProps({
@@ -136,7 +164,6 @@ watchHelper.watchMouseEvent(
     "CURVE_SELECTED",
     "SQRT_SELECTED",
     "ANNOTATION_SELECTED",
-    //"TEXT_SELECTED",
     "EXPONENT_SELECTED",
     "CIRCLE_SELECTED",
     "IMAGE_SELECTED",
@@ -219,10 +246,14 @@ async function load() {
   eventHelper.registerSvgMouseMove();
   eventHelper.registerSvgMouseUp();
   eventHelper.registerMouseUp();
+  eventHelper.registerSvgTouchStart(),
+  eventHelper.registerSvgTouchMove(),
+  eventHelper.registerSvgTouchEnd();
   eventHelper.registerKeyUp();
   eventHelper.registerKeyDown();
   eventHelper.registerPaste();
   eventHelper.registerCopy();
+  eventHelper.registerMobileEscape();
 
   progressBar.value = true;
 

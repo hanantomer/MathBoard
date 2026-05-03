@@ -18,6 +18,7 @@ const eventBus = useEventBus();
 const matrixCellHelper = useMatrixCellHelper();
 
 type MouseEventHandler = (e: MouseEvent, params?: any) => void;
+type TouchEventHandler = (e: TouchEvent, params?: any) => void;
 type KeyEventHandler = (e: KeyboardEvent) => void;
 type EditModeHandler = (newEditMode: EditMode, oldEditMode: any) => void;
 type GlobalEditModeHandler = (
@@ -39,6 +40,24 @@ export default function () {
       watch(
         () => eventBus.get(editMode, eventType),
         (e: MouseEvent) => {
+          if (!e) return;
+          handler(e, params);
+          eventBus.remove(eventType, editMode); // clear event from bus to allow reselction
+        },
+      ),
+    );
+  }
+
+  function watchTouchEvent(
+    editModes: EditMode[],
+    eventType: BusEventType,
+    handler: TouchEventHandler,
+    params: any = {},
+  ) {
+    editModes.forEach((editMode) =>
+      watch(
+        () => eventBus.get(editMode, eventType),
+        (e: TouchEvent) => {
           if (!e) return;
           handler(e, params);
           eventBus.remove(eventType, editMode); // clear event from bus to allow reselction
@@ -217,6 +236,7 @@ export default function () {
 
   return {
     watchMouseEvent,
+    watchTouchEvent,
     watchKeyEvent,
     watchEveryEditModeChange,
     watchEditModeTransition,

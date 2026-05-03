@@ -69,20 +69,20 @@ watchHelper.watchMouseEvent(
 
 watchHelper.watchMouseEvent(
   props.drawEntry.editMode,
-  "EV_SVG_MOUSE_OR_TOUCH_DRAG",
+  "EV_SVG_MOUSE_DRAG",
   (e: MouseEvent) => shapeDrawingHelper.drawNewLine(e, props.drawEntry.func),
 );
 
 watchHelper.watchMouseEvent(
   props.editEntryFirstHandle.editMode,
-  "EV_SVG_MOUSE_OR_TOUCH_DRAG",
+  "EV_SVG_MOUSE_DRAG",
   (e: MouseEvent) =>
     shapeDrawingHelper.modifyLine(e, props.editEntryFirstHandle.func),
 );
 
 watchHelper.watchMouseEvent(
   props.editEntrySecondHandle.editMode,
-  "EV_SVG_MOUSE_OR_TOUCH_DRAG",
+  "EV_SVG_MOUSE_DRAG",
   (e: MouseEvent) =>
     shapeDrawingHelper.modifyLine(e, props.editEntrySecondHandle.func),
 );
@@ -90,30 +90,57 @@ watchHelper.watchMouseEvent(
 watchHelper.watchMouseEvent(
   props.saveEntry.editMode,
   "EV_SVG_MOUSEUP",
-  (e: MouseEvent) => shapeDrawingHelper.saveDrawing(e, props.saveEntry.func),
+  () => shapeDrawingHelper.saveDrawing(props.saveEntry.func),
 );
 
- watchHelper.watchMouseEvent(
-   props.endEntry.editMode,
-   "EV_SVG_MOUSEUP",
-   (e: MouseEvent) => shapeDrawingHelper.resetDrawing(),
- );
+watchHelper.watchMouseEvent(
+  props.endEntry.editMode,
+  "EV_SVG_MOUSEUP",
+  () => shapeDrawingHelper.resetDrawing(),
+);
 
- watchHelper.watchEndOfEditMode(
-   ["LINE_SELECTED"],
-   ["LINE_EDITING_LEFT", "LINE_EDITING_RIGHT"],
-   () => shapeDrawingHelper.showMatrixLine(),
- );
 
- watchHelper.watchEndOfEditMode(
-   ["DIVISIONLINE_SELECTED"],
-   ["DIVISIONLINE_EDITING_LEFT", "DIVISIONLINE_EDITING_RIGHT"],
-   () => shapeDrawingHelper.showMatrixLine(),
- );
+watchHelper.watchTouchEvent(
+  props.startEntry.editMode,
+  "EV_SVG_TOUCHSTART",
+  (e: TouchEvent) => {
+    shapeDrawingHelper.setLineInitialPosition(e, props.startEntry.func);
+  },
+);
 
- watchHelper.watchEndOfEditMode(["CIRCLE_SELECTED"], ["CIRCLE_EDITING"], () =>
-   shapeDrawingHelper.showMatrixLine(),
- );
+watchHelper.watchTouchEvent(
+  props.drawEntry.editMode,
+  "EV_SVG_TOUCHMOVE",
+  (e: TouchEvent) => shapeDrawingHelper.drawNewLine(e, props.drawEntry.func),
+);
+
+watchHelper.watchTouchEvent(
+  props.saveEntry.editMode,
+  "EV_SVG_TOUCHEND",
+   (e: TouchEvent) => shapeDrawingHelper.saveDrawing(props.saveEntry.func) ,
+);
+
+watchHelper.watchTouchEvent(
+  props.endEntry.editMode,
+  "EV_SVG_MOUSEUP",
+  (e: TouchEvent) => shapeDrawingHelper.resetDrawing(),
+);
+
+watchHelper.watchEndOfEditMode(
+  ["LINE_SELECTED"],
+  ["LINE_EDITING_LEFT", "LINE_EDITING_RIGHT"],
+  () => shapeDrawingHelper.showMatrixLine(),
+);
+
+watchHelper.watchEndOfEditMode(
+  ["DIVISIONLINE_SELECTED"],
+  ["DIVISIONLINE_EDITING_LEFT", "DIVISIONLINE_EDITING_RIGHT"],
+  () => shapeDrawingHelper.showMatrixLine(),
+);
+
+watchHelper.watchEndOfEditMode(["CIRCLE_SELECTED"], ["CIRCLE_EDITING"], () =>
+  shapeDrawingHelper.showMatrixLine(),
+);
 
 watchHelper.watchNotationSelection(
   props.selectEntry.editMode,

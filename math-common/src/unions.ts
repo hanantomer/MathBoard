@@ -16,10 +16,14 @@ export type BusEventType =
   | "EV_KEYUP"
   | "EV_KEYDOWN"
   | "EV_MOUSEUP"
+  | "EV_TOUCHEEND"
   | "EV_SVG_MOUSEUP"
   | "EV_SVG_MOUSEDOWN"
-  | "EV_SVG_TOUCH_START"
-  | "EV_SVG_MOUSE_OR_TOUCH_DRAG"
+  | "EV_SVG_MOUSE_DRAG"
+  | "EV_SVG_TOUCHSTART"
+  | "EV_SVG_TOUCHMOVE"
+  | "EV_SVG_TOUCHEND"
+  | "EV_AREA_SELECTED"
   | "EV_AREA_SELECTION_DONE"
   | "EV_CURVE_SELECTED"
   | "EV_CIRCLE_SELECTED"
@@ -34,7 +38,8 @@ export type BusEventType =
   | "EV_LINE_SELECTED"
   | "EV_NOTATION_SELECTED"
   | "EV_TEXT_SYNC"
-  | "EV_FREE_SKETCH_SELECTED";
+  | "EV_FREE_SKETCH_SELECTED"
+  | "EV_MOBILE_ESCAPE";
 
 export const NotationTypeValues = [
   "SYMBOL",
@@ -85,6 +90,7 @@ export type EditMode =
   | "EXPONENT_STARTED" // exponent button pressed
   | "EXPONENT_WRITING" // user clicked a cell following exponent button pressed
   | "EXPONENT_SELECTED" // user clicked on existing exponent
+  | "AREA_SELECTION_STARTED" // user started selecting arrea in mobile
   | "TEXT_STARTED" // text button pressed
   | "TEXT_SELECTED" // user clicked on existing text rectangle
   | "TEXT_AREA_SELECTING" // user started selecting area following text button pressed
@@ -127,7 +133,6 @@ export type EditMode =
   | "FREE_SKETCH_SELECTED" // free sketch selected
   | "COLORIZING" // color selected
   | "DELETING" // mouse clicked following delete button pressed
-  | "AREA_SELECTING" // user started selecting area
   | "AREA_SELECTED" // user finished selecting area
   | "TEXT_AREA_SELECTING" // user started selecting area after click on free text icon
   | "TEXT_AREA_SELECTED" // user finished selecting text area

@@ -5,6 +5,7 @@ import useMatrixCellHelper from "../helpers/matrixCellHelper";
 import useAuthorizationHelper from "../helpers/authorizationHelper";
 import useNotationMutateHelper from "../helpers/notationMutateHelper";
 import useSelectionHelper from "../helpers/selectionHelper";
+import useEventBus from "../helpers/eventBusHelper";
 type keyType = "SYMBOL" | "MOVEMENT" | "DELETION" | "MOVEANDDELETE" | "PUSH";
 
 const editModeStore = useEditModeStore();
@@ -14,6 +15,7 @@ const matrixCellHelper = useMatrixCellHelper();
 const authorizationHelper = useAuthorizationHelper();
 const notationMutateHelper = useNotationMutateHelper();
 const selectionHelper = useSelectionHelper();
+const eventBus = useEventBus();
 
 const KEY_STROKE_INTERVAL = 50; // ms
 let shiftReleaseTime = 0;
@@ -21,6 +23,7 @@ let shiftReleased = false;
 let altReleaseTime = 0;
 let altReleased = false;
 let isKeyUpHandlerRunning = false; // Prevent concurrent execution
+let mobileEscapeTriggered = false;
 const delayedAltKeys = new Set<string>(["x", "l"]);
 const delayedShiftKeys = new Map<string, string>([
   ["1", "!"],
@@ -51,6 +54,21 @@ const delayedShiftKeys = new Map<string, string>([
 ]);
 
 export default function () {
+  // Listen for mobile escape event
+  eventBus.on("EV_MOBILE_ESCAPE", () => {
+    mobileEscapeTriggered = true;
+    // Trigger the escape logic
+    handleEscapeAction();
+    mobileEscapeTriggered = false;
+  });
+
+  function handleEscapeAction() {
+    if (editModeStore.getGlobalEditMode() !== "TEXT") {
+      editModeStore.setGlobalEditMode("TEXT");
+      editModeStore.setDefaultEditMode();
+    }
+  }
+
   function keyDownHandler(e: KeyboardEvent) {
     const { key } = e;
 
@@ -123,11 +141,8 @@ export default function () {
       }
 
       if (code === "Escape") {
-        if (editModeStore.getGlobalEditMode() !== "TEXT") {
-          editModeStore.setGlobalEditMode("TEXT");
-          editModeStore.setDefaultEditMode();
-          return;
-        }
+        handleEscapeAction();
+        return;
       }
 
       if (editModeStore.getEditMode() === "TEXT_WRITING") return;

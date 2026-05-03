@@ -116,7 +116,6 @@ const notationStore = useNotationStore();
 const editModeStore = useEditModeStore();
 const visitedPointPrefix = "visitedPoint";
 
-
 type Point = {
   x: number;
   y: number;
@@ -185,7 +184,7 @@ const show = computed(() => {
 
 watchHelper.watchMouseEvent(
   ["CURVE_EDITING_CONTROLֹ_POINT"],
-  "EV_SVG_MOUSE_OR_TOUCH_DRAG",
+  "EV_SVG_MOUSE_DRAG",
   setControlPoint,
 );
 
@@ -555,4 +554,3 @@ function addVisiblePoint(xPos: number, yPos: number) {
   fill: yellow;
 }
 </style>
-

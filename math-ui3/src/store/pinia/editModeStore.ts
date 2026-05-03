@@ -27,7 +27,7 @@ export const useEditModeStore = defineStore("editMode", () => {
 
   function isAreaSelectionOrMovingMode() {
     return (
-      editMode.value === "AREA_SELECTING" ||
+      editMode.value === "AREA_SELECTION_STARTED" ||
       editMode.value === "AREA_SELECTED" ||
       editMode.value === "TEXT_AREA_SELECTING" ||
       editMode.value === "AREA_MOVING"
@@ -60,7 +60,8 @@ export const useEditModeStore = defineStore("editMode", () => {
 
   function isSelectionMode() {
     return (
-      editMode.value === "AREA_SELECTING" || editMode.value === "AREA_MOVING"
+      editMode.value === "AREA_SELECTION_STARTED" ||
+      editMode.value === "AREA_MOVING"
     );
   }
 
@@ -108,6 +109,10 @@ export const useEditModeStore = defineStore("editMode", () => {
     return editMode.value === "POLYGON_DRAWING";
   }
 
+  function isAreaSelectingMode() {
+    return editMode.value === "AREA_SELECTION_STARTED";
+  }
+
   function isSqrtMode() {
     return (
       editMode.value === "SQRT_STARTED" ||
@@ -153,7 +158,7 @@ export const useEditModeStore = defineStore("editMode", () => {
   }
 
   function isDivisionLineDrawingMode() {
-    return this.editMode === "DIVISIONLINE_DRAWING";
+    return editMode.value === "DIVISIONLINE_DRAWING";
   }
 
   function isLineEditingMode() {
@@ -165,8 +170,8 @@ export const useEditModeStore = defineStore("editMode", () => {
 
   function isDivisionLineEditingMode(): boolean {
     return (
-      this.editMode === "DIVISIONLINE_EDITING_LEFT" ||
-      this.editMode === "DIVISIONLINE_EDITING_RIGHT"
+      editMode.value === "DIVISIONLINE_EDITING_LEFT" ||
+      editMode.value === "DIVISIONLINE_EDITING_RIGHT"
     );
   }
 
@@ -273,7 +278,7 @@ export const useEditModeStore = defineStore("editMode", () => {
     console.debug(
       `old edit mode: ${editMode.value}, new edit mode: ${newEditMode} `,
     );
-    console.trace();
+    //console.trace();
     editMode.value = newEditMode;
   }
 
@@ -299,6 +304,20 @@ export const useEditModeStore = defineStore("editMode", () => {
 
   function isInGlobalDrawingMode() {
     return globalEditMode.value !== "TEXT";
+  }
+
+  function isTouchDrawingMode() {
+    return (
+      isLineDrawingMode() ||
+      isDivisionLineDrawingMode() ||
+      isFreeSketchDrawingMode() ||
+      isPolygonDrawingMode() ||
+      isCircleDrawingMode() ||
+      isSqrtDrawingMode() ||
+      isCurveDrawingMode() ||
+      isTextStartedMode() ||
+      isAreaSelectingMode()
+    );
   }
 
   return {
@@ -355,6 +374,7 @@ export const useEditModeStore = defineStore("editMode", () => {
     isAnnotationGlobalMode,
     isFreeSketchGlobalMode,
     isInGlobalDrawingMode,
+    isTouchDrawingMode,
     setEditMode,
     setGlobalEditMode,
     setDefaultEditMode,
