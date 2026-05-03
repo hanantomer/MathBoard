@@ -251,6 +251,9 @@ export default function eventHelper() {
   }
 
   function emitSvgTouchStart(e: TouchEvent) {
+    if (editModeStore.isTouchDrawingMode()) {
+      e.preventDefault(); 
+    }
     eventBus.emit("EV_SVG_TOUCHSTART", e);
   }
 

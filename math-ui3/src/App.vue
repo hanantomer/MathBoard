@@ -293,7 +293,9 @@ function navToAnswers() {
 
 body {
   font-size: 16px;
-  font-family: "Kalam", cursive !important;
+  font-family: Roboto, "Helvetica Neue", Arial, sans-serif;
+  font-weight: 400;
+  color: #111;
   -webkit-touch-callout: none;
   -webkit-user-select: none;
   -khtml-user-select: none;
