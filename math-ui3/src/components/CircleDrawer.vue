@@ -102,6 +102,13 @@ const circleAttributes = ref<CircleAttributes>({
   r: 0,
 });
 
+function roundPoint(point: DotCoordinates): DotCoordinates {
+  return {
+    x: Math.round(point.x),
+    y: Math.round(point.y),
+  };
+}
+
 const handleX1 = computed(() => {
   return (
     circleAttributes.value.cx -
@@ -134,8 +141,9 @@ const show = computed(() => {
 });
 
 function initCircle(p: DotCoordinates) {
-  circleAttributes.value.cx = p.x;
-  circleAttributes.value.cy = p.y;
+  const point = roundPoint(p);
+  circleAttributes.value.cx = point.x;
+  circleAttributes.value.cy = point.y;
   circleAttributes.value.r = 0;
   setCircleElement();
 }
@@ -151,9 +159,10 @@ function selectCircle(circle: NotationAttributes) {
 }
 
 function setRadius(p: DotCoordinates) {
+  const point = roundPoint(p);
   circleAttributes.value.r = Math.sqrt(
-    Math.pow(p.x - circleAttributes.value.cx, 2) +
-      Math.pow(p.y - circleAttributes.value.cy, 2),
+    Math.pow(point.x - circleAttributes.value.cx, 2) +
+      Math.pow(point.y - circleAttributes.value.cy, 2),
   );
   setCircleElement();
 }
@@ -166,10 +175,14 @@ function setCircleElement() {
 }
 
 async function endDrawCircle(): Promise<string> {
+  circleAttributes.value.cx = Math.round(circleAttributes.value.cx);
+  circleAttributes.value.cy = Math.round(circleAttributes.value.cy);
+  circleAttributes.value.r = Math.round(circleAttributes.value.r);
+
   const uuid = await saveCircle({
     cx: circleAttributes.value.cx,
     cy: circleAttributes.value.cy,
-    r: Math.round(circleAttributes.value.r),
+    r: circleAttributes.value.r,
   });
   return uuid;
 }
@@ -195,6 +208,9 @@ function moveCircle(moveX: number, moveY: number) {
 
   circleAttributes.value.cx += moveX;
   circleAttributes.value.cy += moveY;
+
+  circleAttributes.value.cx = Math.round(circleAttributes.value.cx);
+  circleAttributes.value.cy = Math.round(circleAttributes.value.cy);
 
   setCircleElement();
   saveCircle({

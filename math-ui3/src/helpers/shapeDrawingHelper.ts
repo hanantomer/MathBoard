@@ -124,10 +124,9 @@ export default function useShapeDrawingHelper() {
     }
   }
 
-  async function saveDrawing(
-    saveDrawingCallback: () => Promise<string>,
-  ) {
-    await saveDrawingCallback();
+  async function saveDrawing(saveDrawingCallback: () => Promise<string>) {
+
+     await saveDrawingCallback();
 
     if (editModeStore.isPolygonDrawingMode()) return;
 

@@ -177,19 +177,28 @@ let handleBottom = computed(() => {
 });
 
 function setInitialPosition(p: DotCoordinates) {
+  const point = roundPoint(p);
+
   // Snap to cell borders
   const cellY =
-    Math.round(p.y / cellStore.getCellVerticalHeight()) *
+    Math.round(point.y / cellStore.getCellVerticalHeight()) *
     cellStore.getCellVerticalHeight();
 
   lineAttributes.value = {
-    p1x: p.x,
-    p2x: p.x + cellStore.getCellHorizontalWidth(), // Minimum width of one cell
+    p1x: point.x,
+    p2x: point.x + cellStore.getCellHorizontalWidth(), // Minimum width of one cell
     p1y: cellY,
     p2y: cellY, // Keep y position constant for horizontal line
     dashed: false,
     arrowLeft: false,
     arrowRight: false,
+  };
+}
+
+function roundPoint(point: DotCoordinates): DotCoordinates {
+  return {
+    x: Math.round(point.x),
+    y: Math.round(point.y),
   };
 }
 
@@ -203,13 +212,15 @@ function selectLine(notation: NotationAttributes) {
 }
 
 function modifyLineLeft(p: DotCoordinates) {
-  lineAttributes.value.p1x = p.x;
-  lineAttributes.value.p1y = p.y;
+  const point = roundPoint(p);
+  lineAttributes.value.p1x = point.x;
+  lineAttributes.value.p1y = point.y;
 }
 
 function modifyLineRight(p: DotCoordinates) {
-  lineAttributes.value.p2x = p.x;
-  lineAttributes.value.p2y = p.y;
+  const point = roundPoint(p);
+  lineAttributes.value.p2x = point.x;
+  lineAttributes.value.p2y = point.y;
 }
 
 async function saveLine(): Promise<string> {
@@ -232,6 +243,11 @@ async function saveLine(): Promise<string> {
     x: lineAttributes.value.p2x,
     y: lineAttributes.value.p2y,
   }).y;
+
+  lineAttributes.value.p1x = Math.round(lineAttributes.value.p1x);
+  lineAttributes.value.p1y = Math.round(lineAttributes.value.p1y);
+  lineAttributes.value.p2x = Math.round(lineAttributes.value.p2x);
+  lineAttributes.value.p2y = Math.round(lineAttributes.value.p2y);
 
   if (notationStore.getSelectedNotations().length > 0) {
     let updatedLine = {

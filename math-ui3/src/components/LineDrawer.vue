@@ -174,10 +174,11 @@ let handleBottom = computed(() => {
 });
 
 function setInitialPosition(p: DotCoordinates) {
-  lineAttributes.value.p1x = p.x;
-  lineAttributes.value.p2x = p.x;
-  lineAttributes.value.p1y = p.y;
-  lineAttributes.value.p2y = p.y;
+  const point = roundPoint(p);
+  lineAttributes.value.p1x = point.x;
+  lineAttributes.value.p2x = point.x;
+  lineAttributes.value.p1y = point.y;
+  lineAttributes.value.p2y = point.y;
   lineAttributes.value.arrowLeft = false;
   lineAttributes.value.arrowRight = false;
   lineAttributes.value.dashed = false;
@@ -187,12 +188,14 @@ function setInitialPosition(p: DotCoordinates) {
 }
 
 function drawLine(p: DotCoordinates) {
+  const point = roundPoint(p);
+
   if (slopeType === "NONE") {
-    slopeType = getSlopeTypeForNewLine(p.x, p.y);
+    slopeType = getSlopeTypeForNewLine(point.x, point.y);
   }
 
   if (movementDirection === "NONE") {
-    movementDirection = getMovementDirection(p.y);
+    movementDirection = getMovementDirection(point.y);
   }
 
   // 4 options for drawing sloped line:
@@ -202,11 +205,11 @@ function drawLine(p: DotCoordinates) {
   // 4. lower left to upper right. direction is UP and slopeType is POSITIVE
 
   if (modifyRight.value) {
-    lineAttributes.value.p2x = p.x;
-    lineAttributes.value.p2y = p.y;
+    lineAttributes.value.p2x = point.x;
+    lineAttributes.value.p2y = point.y;
   } else {
-    lineAttributes.value.p1x = p.x;
-    lineAttributes.value.p1y = p.y;
+    lineAttributes.value.p1x = point.x;
+    lineAttributes.value.p1y = point.y;
   }
 }
 
@@ -226,17 +229,26 @@ function selectLine(notation: NotationAttributes) {
 }
 
 function modifyLineLeft(p: DotCoordinates) {
-  movementDirection = getMovementDirection(p.x);
+  const point = roundPoint(p);
+  movementDirection = getMovementDirection(point.x);
 
-  lineAttributes.value.p1x = p.x;
-  lineAttributes.value.p1y = p.y;
+  lineAttributes.value.p1x = point.x;
+  lineAttributes.value.p1y = point.y;
 }
 
 function modifyLineRight(p: DotCoordinates) {
-  movementDirection = getMovementDirection(p.y);
+  const point = roundPoint(p);
+  movementDirection = getMovementDirection(point.y);
 
-  lineAttributes.value.p2x = p.x;
-  lineAttributes.value.p2y = p.y;
+  lineAttributes.value.p2x = point.x;
+  lineAttributes.value.p2y = point.y;
+}
+
+function roundPoint(point: DotCoordinates): DotCoordinates {
+  return {
+    x: Math.round(point.x),
+    y: Math.round(point.y),
+  };
 }
 
 function getSlopeTypeForNewLine(xPos: number, yPos: number): SlopeType {
@@ -298,6 +310,11 @@ async function saveLine(fixEdge: boolean = true): Promise<string> {
       x: lineAttributes.value.p2x,
       y: lineAttributes.value.p2y,
     }).y;
+
+    lineAttributes.value.p1x = Math.round(lineAttributes.value.p1x);
+    lineAttributes.value.p1y = Math.round(lineAttributes.value.p1y);
+    lineAttributes.value.p2x = Math.round(lineAttributes.value.p2x);
+    lineAttributes.value.p2y = Math.round(lineAttributes.value.p2y);
   }
 
   // flip p1x and p2x if p1x > p2x

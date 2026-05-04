@@ -98,6 +98,13 @@ const linePosition = ref<LineAttributes>({
   arrowRight: false,
 });
 
+function roundPoint(point: DotCoordinates): DotCoordinates {
+  return {
+    x: Math.round(point.x),
+    y: Math.round(point.y),
+  };
+}
+
 const modifyRight = computed(
   () =>
     (slopeType === "POSITIVE" && movementDirection === "UP") ||
@@ -127,10 +134,11 @@ const show = computed(() => {
 });
 
 function setInitialPosition(p: DotCoordinates) {
-  linePosition.value.p1x = p.x;
-  linePosition.value.p2x = p.x;
-  linePosition.value.p1y = p.y;
-  linePosition.value.p2y = p.y;
+  const point = roundPoint(p);
+  linePosition.value.p1x = point.x;
+  linePosition.value.p2x = point.x;
+  linePosition.value.p1y = point.y;
+  linePosition.value.p2y = point.y;
   slopeType = "NONE";
   movementDirection = "NONE";
 }
@@ -150,12 +158,13 @@ function drawLine(p: DotCoordinates) {
   // 3. upper right to lower left. direction is DOWN and slopeType is POSITIVE
   // 4. lower left to upper right. direction is UP and slopeType is POSITIVE
 
+  const point = roundPoint(p);
   if (modifyRight.value) {
-    linePosition.value.p2x = p.x;
-    linePosition.value.p2y = p.y;
+    linePosition.value.p2x = point.x;
+    linePosition.value.p2y = point.y;
   } else {
-    linePosition.value.p1x = p.x;
-    linePosition.value.p1y = p.y;
+    linePosition.value.p1x = point.x;
+    linePosition.value.p1y = point.y;
   }
 }
 
@@ -250,6 +259,11 @@ async function saveLine(fixEdge: boolean = true): Promise<string> {
       y: linePosition.value.p2y,
     }).y;
   }
+
+  linePosition.value.p1x = Math.round(linePosition.value.p1x);
+  linePosition.value.p1y = Math.round(linePosition.value.p1y);
+  linePosition.value.p2x = Math.round(linePosition.value.p2x);
+  linePosition.value.p2y = Math.round(linePosition.value.p2y);
 
   if (notationStore.getSelectedNotations().length > 0) {
     let updatedLine = {

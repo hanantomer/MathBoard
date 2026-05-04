@@ -218,19 +218,29 @@ function initCurve() {
   };
 }
 
+function roundPoint(point: DotCoordinates): DotCoordinates {
+  return {
+    x: Math.round(point.x),
+    y: Math.round(point.y),
+  };
+}
+
 function setCurveLeft(p: DotCoordinates) {
-  curveAttributes.value.p1x = p.x;
-  curveAttributes.value.p1y = p.y;
+  const point = roundPoint(p);
+  curveAttributes.value.p1x = point.x;
+  curveAttributes.value.p1y = point.y;
   setCurveElement();
 }
 
 function setCurveRight(p: DotCoordinates) {
-  curveAttributes.value.p2x = p.x;
-  curveAttributes.value.p2y = p.y;
+  const point = roundPoint(p);
+  curveAttributes.value.p2x = point.x;
+  curveAttributes.value.p2y = point.y;
   setCurveElement();
 }
 
 function startCurveDrawing(p: DotCoordinates) {
+  const point = roundPoint(p);
   removeVisiblePoints();
 
   initCurve();
@@ -241,11 +251,11 @@ function startCurveDrawing(p: DotCoordinates) {
     curveAttributes.value.p1x =
       curveAttributes.value.p2x =
       curveAttributes.value.cpx =
-        p.x;
+        point.x;
     curveAttributes.value.p1y =
       curveAttributes.value.p2y =
       curveAttributes.value.cpy =
-        p.y;
+        point.y;
   }
 }
 
@@ -263,8 +273,8 @@ function selectCurve(curve: NotationAttributes) {
 }
 
 function setControlPoint(e: MouseEvent) {
-  curveAttributes.value.cpx = e.pageX;
-  curveAttributes.value.cpy = e.pageY;
+  curveAttributes.value.cpx = Math.round(e.pageX);
+  curveAttributes.value.cpy = Math.round(e.pageY);
   setCurveElement();
   showControlPoint();
 }
@@ -274,7 +284,8 @@ function setCurve(p: DotCoordinates) {
     curveType = getCurveType();
   }
 
-  updateCurve(curveType, p.x, p.y);
+  const point = roundPoint(p);
+  updateCurve(curveType, point.x, point.y);
 
   if (!curveAttributes) return;
 
@@ -337,6 +348,13 @@ async function endDrawCurve(): Promise<string> {
   ) {
     return "";
   }
+
+  curveAttributes.value.p1x = Math.round(curveAttributes.value.p1x);
+  curveAttributes.value.p1y = Math.round(curveAttributes.value.p1y);
+  curveAttributes.value.p2x = Math.round(curveAttributes.value.p2x);
+  curveAttributes.value.p2y = Math.round(curveAttributes.value.p2y);
+  curveAttributes.value.cpx = Math.round(curveAttributes.value.cpx);
+  curveAttributes.value.cpy = Math.round(curveAttributes.value.cpy);
 
   const uuid = await saveCurve({
     p1x: curveAttributes.value.p1x,

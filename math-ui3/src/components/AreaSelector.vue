@@ -225,6 +225,8 @@ watchHelper.watchMouseEvent(
 
 watchHelper.watchMouseEvent(["AREA_MOVING"], "EV_MOUSEUP", endMoveSelection);
 
+watchHelper.watchMouseEvent(["AREA_MOVING"], "EV_TOUCHEEND", endMoveSelection);
+
 watchHelper.watchMouseEvent(
   ["TEXT_STARTED", "IMAGE_SELECTED"],
   "EV_SVG_MOUSEUP",
