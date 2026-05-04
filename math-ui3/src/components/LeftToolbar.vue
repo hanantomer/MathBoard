@@ -93,7 +93,7 @@
           icon
           @click.stop="openAccessLinkDialog"
           color="white"
-          x-small
+          :size="buttonSize"
           fab
           dark
           ><v-icon>mdi-account-plus</v-icon></v-btn
@@ -108,7 +108,7 @@
           icon
           @click.stop="openPasteImageHelpMessage"
           color="white"
-          x-small
+          :size="buttonSize"
           fab
           dark
           ><v-icon>mdi-image</v-icon></v-btn
@@ -123,7 +123,7 @@
           icon
           @click.stop="doShowUploadDialog"
           color="white"
-          x-small
+          :size="buttonSize"
           fab
           dark
           ><v-icon>mdi-camera-plus-outline</v-icon></v-btn
@@ -138,7 +138,7 @@
           icon
           @click.stop="startSelection"
           color="white"
-          x-small
+          :size="buttonSize"
           fab
           dark
           ><v-icon>mdi-selection</v-icon></v-btn
@@ -153,7 +153,7 @@
           :data-cy="item.name.toLowerCase() + 'Button'"
           v-bind="props"
           icon
-          x-small
+          :size="buttonSize"
           fab
           dark
           :color="getButtonColor(item)"
@@ -196,7 +196,7 @@
           :data-cy="item.name"
           v-bind="props"
           icon
-          x-small
+          :size="buttonSize"
           fab
           dark
           :color="
@@ -233,7 +233,7 @@
           icon
           @click.stop="openSpecialSymbolsModal"
           color="white"
-          x-small
+          :size="buttonSize"
           fab
           dark
           ><v-icon>mdi-alpha-x</v-icon></v-btn
@@ -292,6 +292,10 @@ onMounted(() => {
 
 const toolbarClass = computed(() => {
   return mobileMode.value ? "mobile-toolbar" : "vertical-toolbar";
+});
+
+const buttonSize = computed(() => {
+  return mobileMode.value ? "large" : "small";
 });
 
 function toggleMobileToolbar() {
