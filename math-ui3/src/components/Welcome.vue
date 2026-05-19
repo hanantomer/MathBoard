@@ -2,14 +2,14 @@
   <LoginDialog @register="register"></LoginDialog>
   <RegisterTeacherDialog @registered="login"></RegisterTeacherDialog>
   <RegisterStudentDialog @registered="login"></RegisterStudentDialog>
-  <v-main class="welcome-page">
-    <v-container>
-      <v-row>
+  <div class="welcome-page">
+    <v-container class="welcome-container">
+      <v-row no-gutters>
         <v-col class="text-center" cols="12">
           <!-- Sign in/up card -->
           <v-card
             v-if="!userStore.getCurrentUser()"
-            class="mb-6 auth-card"
+            class="auth-card"
             elevation="0"
             rounded="lg"
           >
@@ -17,6 +17,7 @@
               <span class="text-h6">
                 Already have an account?
                 <v-btn
+                  data-cy="signin_teacher_btn"
                   variant="text"
                   color="primary"
                   class="px-1 text-decoration-underline"
@@ -49,14 +50,14 @@
           </v-card>
 
           <!-- Main hero card -->
-          <v-card class="main-card mb-6" elevation="3" rounded="lg">
-            <v-card-title primary-title class="justify-center py-6">
+          <v-card class="main-card" elevation="3" rounded="lg">
+            <v-card-title primary-title class="justify-center py-3">
               <h2 class="text-h4 font-weight-bold primary--text">
                 Teach MATH online with
                 <span class="text-orange">Math Whiteboard</span>
               </h2>
             </v-card-title>
-            <v-card-actions class="justify-center pb-6">
+            <v-card-actions class="justify-center pb-3">
               <v-btn
                 v-if="!userStore.getCurrentUser()"
                 color="orange"
@@ -89,10 +90,10 @@
           <!-- Features card -->
           <v-card class="features-card" elevation="2" rounded="lg">
             <v-card-title class="text-left"> Key Features: </v-card-title>
-            <v-row>
+            <v-row no-gutters>
               <v-col cols="12" md="6">
-                <v-list class="feature-list justify-center pa-4">
-                  <v-list-item v-for="b in bullets" :key="b" class="mb-2">
+                <v-list class="feature-list justify-center pa-2">
+                  <v-list-item v-for="b in bullets" :key="b" class="mb-1">
                     <v-list-item-title class="d-flex align-center">
                       <v-icon color="success" class="mr-4" size="large">
                         mdi-check-circle
@@ -129,7 +130,7 @@
         </v-col>
       </v-row>
     </v-container>
-  </v-main>
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -175,6 +176,7 @@ function navToLessons() {
 
 const bullets = [
   "Editable notations",
+  "Freehand sketching with mouse or stylus",
   "Board sharing with students",
   "Virtually call a student to the board",
   "Dispatch exercises and submit feedback",
@@ -183,32 +185,58 @@ const bullets = [
 
 <style scoped>
 .welcome-page {
+  --app-bar-height: 64px;
+  --footer-height: 56px;
+
   background: linear-gradient(135deg, #f5f7fa 0%, #e4e9f2 100%);
-  min-height: 100vh;
-  padding: 2rem 0;
+  height: 100%;
+  margin-top: 50px;
+  margin-bottom: auto;
+  max-width: 100vw;
+  padding-top: var(--app-bar-height);
+  box-sizing: border-box;
+  overflow-x: hidden;
+  overflow-y: hidden;
+}
+
+.welcome-container {
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
 }
 
 .main-card {
   background: white;
   border: 1px solid rgba(0, 0, 0, 0.1);
   max-width: 900px;
-  margin: 0 auto;
-  width: min(100%, 900px);
+  margin: 0 auto 1.5rem;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .features-card {
   background: white;
   border: 1px solid rgba(0, 0, 0, 0.1);
   max-width: 1000px;
-  margin: 0 auto;
-  width: min(100%, 1000px);
+  margin: 0 auto 1.5rem;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .auth-card {
   background: transparent;
   max-width: 600px;
-  margin: 0 auto;
-  width: min(100%, 600px);
+  margin: 0 auto 1rem;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.auth-card .text-h6 {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 0.25rem;
 }
 
 .tutorial-btn {
@@ -219,6 +247,8 @@ const bullets = [
   font-size: 1rem;
   font-weight: 600;
   color: #2c3e50;
+  min-width: 0;
+  white-space: normal;
 }
 
 .main-card h2 {
@@ -238,29 +268,22 @@ const bullets = [
 }
 
 @media (max-width: 760px) {
-  .main-card {
-    margin: 0 0.75rem 1rem;
-  }
-
-  .main-card h2 {
-    font-size: 1.95rem;
-    line-height: 1.15;
-  }
-}
-
-@media (max-width: 760px) {
   .welcome-page {
-    padding: 1rem 0;
+    height: 100dvh;
+    padding: 0.5rem;
+    padding-top: calc(var(--app-bar-height) + 0.5rem);
+    padding-bottom: 0.5rem;
+    overflow-y: auto;
   }
 
   .main-card,
   .features-card,
   .auth-card {
-    margin: 0 0.75rem 1rem;
-    width: auto;
+    margin: 0 0 1rem;
+    width: 100%;
   }
 
-  .main-card .v-card-title h2 {
+  .main-card h2 {
     font-size: 1.8rem;
     line-height: 1.2;
   }
@@ -283,6 +306,13 @@ const bullets = [
   justify-content: center !important;
   text-align: left !important;
   display: grid !important;
+}
+
+/* Override v-container default max-width */
+:deep(.v-container) {
+  max-width: 100% !important;
+  padding-left: 1rem !important;
+  padding-right: 1rem !important;
 }
 
 /* Add subtle hover effect to buttons */

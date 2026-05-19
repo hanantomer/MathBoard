@@ -350,9 +350,15 @@ export const useNotationStore = defineStore("notation", () => {
     for (let i = 0; i < areaCells.length; i++) {
       const notationsAtCell = getNotationsAtCell(areaCells[i]);
       for (let j = 0; j < notationsAtCell.length; j++) {
-        if (notationsAtCell[j]) {
-          notationsUUIDsToSelect.add(notationsAtCell[j].uuid);
+        const notation = notationsAtCell[j];
+        if (!notation) continue;
+         if (
+          notation.notationType === "LINE" ||
+          notation.notationType === "DIVISIONLINE"
+        ) {
+          continue;
         }
+        notationsUUIDsToSelect.add(notationsAtCell[j].uuid);
       }
     }
 

@@ -48,21 +48,14 @@
     </v-snackbar>
   </div>
 
-  <v-toolbar color="primary" dark :class="toolbarClass" height="600">
+  <aside class="vertical-toolbar">
     <v-tooltip
       text="Invite students via access link"
       v-if="userStore.isTeacher()"
     >
       <template v-slot:activator="{ props }">
-        <v-btn
-          v-bind="props"
-          icon
-          @click.stop="openAccessLinkDialog"
-          color="white"
-          x-small
-          fab
-          dark
-          ><v-icon>mdi-account-plus</v-icon></v-btn
+        <v-btn v-bind="props" icon @click.stop="openAccessLinkDialog" x-small
+          ><v-icon color="white">mdi-account-plus</v-icon></v-btn
         >
       </template>
     </v-tooltip>
@@ -73,11 +66,9 @@
           v-bind="props"
           icon
           @click.stop="openPasteImageHelpMessage"
-          color="white"
           x-small
-          fab
-          dark
-          ><v-icon>mdi-image</v-icon></v-btn
+          style="background-color: transparent"
+          ><v-icon color="white">mdi-image</v-icon></v-btn
         >
       </template>
     </v-tooltip>
@@ -88,11 +79,10 @@
           v-bind="props"
           icon
           @click.stop="doShowUploadDialog"
-          color="white"
           x-small
           fab
           dark
-          ><v-icon>mdi-camera-plus-outline</v-icon></v-btn
+          ><v-icon color="white">mdi-camera-plus-outline</v-icon></v-btn
         >
       </template>
     </v-tooltip>
@@ -102,12 +92,14 @@
         <v-btn
           v-bind="props"
           icon
-          @click.stop="openSelectionHelpMessage"
-          color="white"
+          @click.stop="startSelection"
           x-small
           fab
           dark
-          ><v-icon>mdi-selection</v-icon></v-btn
+          color="white"
+          class="toolbar-mode-btn"
+          :class="{ 'toolbar-mode-btn--active': isAreaSelectionActive }"
+          ><v-icon color="white">mdi-selection</v-icon></v-btn
         >
       </template>
     </v-tooltip>
@@ -122,19 +114,22 @@
           x-small
           fab
           dark
-          :color="getButtonColor(item)"
-          :class="getButtonClass(item)"
+          color="white"
+          :class="getModeButtonClass(item)"
           v-on:click="startEditMode(item)"
           :disabled="!editEnabled"
           :aria-label="item.tooltip"
           role="button"
+          class="toolbar-mode-btn"
         >
           <v-icon
+            color="white"
             v-if="item.icon_class"
             :style="{ transform: 'rotate(' + item.rotate + 'deg)' }"
             ><span :class="item.icon_class">{{ item.icon }}</span></v-icon
           >
           <v-icon
+            color="white"
             v-if="item.overlay_icon"
             :icon="item.overlay_icon"
             style="position: absolute; left: 12px; top: 12px"
@@ -142,6 +137,7 @@
           </v-icon>
 
           <v-icon
+            color="white"
             v-if="!item.icon_class"
             :style="{ transform: 'rotate(' + item.rotate + 'deg)' }"
             :icon="item.icon"
@@ -165,19 +161,21 @@
           x-small
           fab
           dark
-          :color="
-            item.editMode === editModeStore.getEditMode() ? 'green' : 'white'
-          "
+          color="white"
+          :class="getAnswerCheckButtonClass(item)"
           v-on:click="startEditMode(item)"
           :disabled="!editEnabled"
+          class="toolbar-mode-btn"
         >
           <v-icon
             v-if="item.icon_class"
+            color="white"
             :style="{ transform: 'rotate(' + item.rotate + 'deg)' }"
             ><span :class="item.icon_class">{{ item.icon }}</span></v-icon
           >
           <v-icon
             v-if="item.overlay_icon"
+            color="white"
             :icon="item.overlay_icon"
             style="position: absolute; left: 12px; top: 12px"
           >
@@ -185,6 +183,7 @@
 
           <v-icon
             v-if="!item.icon_class"
+            color="white"
             :style="{ transform: 'rotate(' + item.rotate + 'deg)' }"
             :icon="item.icon"
           >
@@ -192,7 +191,7 @@
         </v-btn>
       </template>
     </v-tooltip>
-  </v-toolbar>
+  </aside>
 </template>
 
 <script setup lang="ts">
@@ -219,10 +218,6 @@ const editModeStore = useEditModeStore();
 let showAccessLinkDialog = ref(false);
 const toolbarNavigation = useToolbarNavigation();
 const answerCheckMode = ref(false);
-
-const toolbarClass = computed(() => {
-  return "vertical-toolbar";
-});
 
 watch(
   () => notationStore.getParent()?.type,
@@ -473,6 +468,14 @@ function closeUploadDialog() {
   showUploadDialog.value = false;
 }
 
+function startSelection() {
+  if (editModeStore.getGlobalEditMode() !== "TEXT") {
+    return;
+  }
+  editModeStore.setEditMode("AREA_SELECTION_STARTED");
+  openSelectionHelpMessage();
+}
+
 function openSelectionHelpMessage() {
   showSelectionHelpMessage.value = true;
 }
@@ -484,6 +487,10 @@ function closeAccessLinkDialog() {
 const editEnabled = computed(() => {
   return authorizationHelper.canEdit();
 });
+
+const isAreaSelectionActive = computed(
+  () => editModeStore.getEditMode() === "AREA_SELECTION_STARTED",
+);
 
 function startEditMode(item: any) {
   notationStore.resetSelectedNotations();
@@ -500,54 +507,101 @@ function isModeActive(item: any) {
   return item.editMode === editModeStore.getEditMode();
 }
 
-function getButtonColor(item: any) {
-  // if (item.editMode === "FREE_SKETCH") {
-  //   return isModeActive(item)
-  //     ? "deep-purple accent-4"
-  //     : "deep-purple lighten-2";
-  // }
-  return isModeActive(item) ? "green" : "white";
+function getModeButtonClass(item: any) {
+  const globalModes = ["FREE_SKETCH", "LINE", "ANNOTATION"];
+  const parts: string[] = [];
+  if (globalModes.includes(item.globalEditMode)) {
+    parts.push("global-mode-button");
+    if (isModeActive(item)) {
+      parts.push("active");
+    }
+  }
+  if (isModeActive(item)) {
+    parts.push("toolbar-mode-btn--active");
+  }
+  return parts.join(" ");
 }
 
-function getButtonClass(item: any) {
-  const globalModes = ["FREE_SKETCH", "LINE", "ANNOTATION"];
-  if (!globalModes.includes(item.globalEditMode)) return "";
-  return isModeActive(item)
-    ? "global-mode-button active"
-    : "global-mode-button";
+function getAnswerCheckButtonClass(item: { editMode: EditMode }) {
+  return item.editMode === editModeStore.getEditMode()
+    ? "toolbar-mode-btn--active"
+    : "";
 }
 </script>
 
-<style>
-@media (max-width: 1023px) {
+<style scoped>
+/*@media (max-width: 1023px) {
   .vertical-toolbar {
     position: static;
     width: 0px !important;
     height: 0px !important;
   }
-}
+}*/
 
 .vertical-toolbar {
+  --app-bar-height: 64px;
+  --toolbar-gap: 10px;
+  --toolbar-top: calc(var(--app-bar-height) + var(--toolbar-gap));
+
   position: fixed;
-  top: 90px;
+  top: var(--toolbar-top);
   left: 0;
-  flex-basis: content;
-  flex-flow: column wrap !important;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   width: 70px !important;
-  height: max-content !important;
-  padding: 4px !important;
+  max-width: 140px !important;
+  max-height: calc(100dvh - 84px) !important;
+  height: fit-content !important;
+  padding: 8px 6px !important;
+  background: #202750;
+  border-right: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 2px 0 14px rgba(0, 0, 0, 0.18);
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
   z-index: 1000;
 }
 
-.vertical-toolbar .v-toolbar__content {
+/* Mobile styles */
+@media (max-width: 1023px) {
+  .vertical-toolbar {
+    width: 56px !important;
+    max-width: 56px !important;
+    height: calc(
+      100svh - var(--toolbar-top) - max(10px, env(safe-area-inset-bottom))
+    ) !important;
+    max-height: calc(
+      100svh - var(--toolbar-top) - max(10px, env(safe-area-inset-bottom))
+    ) !important;
+    padding: 6px 4px !important;
+    overflow-x: hidden;
+    overflow-y: auto;
+  }
+}
+
+/* Landscape mobile: keep the same left column + vertical scroll as portrait
+   (do not switch to a horizontal strip). */
+
+/* .vertical-toolbar .v-toolbar__content {
   flex-flow: column wrap !important;
-  width: 53px !important;
-  height: max-content !important;
-  padding: 2px !important;
+  width: 58px !important;
+  padding: 4px !important;
+  align-items: center;
 }
 
 .vertical-toolbar-column {
   flex-basis: content;
+}
+
+.vertical-toolbar .v-btn {
+  width: 44px;
+  height: 44px;
+} */
+
+.vertical-toolbar :deep(button.v-btn) {
+  background-color: transparent !important;
 }
 
 .global-mode-button {
@@ -555,7 +609,7 @@ function getButtonClass(item: any) {
   border-radius: 50% !important;
 }
 
-.global-mode-button.active {
+.global-mode-button.active:not(.toolbar-mode-btn--active) {
   box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.75);
 }
 
@@ -567,5 +621,21 @@ function getButtonClass(item: any) {
 
 .free-sketch-button.active {
   box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.75);
+}
+
+.vertical-toolbar :deep(button.v-btn.toolbar-mode-btn--active) {
+  background-color: rgba(66, 165, 245, 0.28) !important;
+  box-shadow:
+    0 0 0 2px #42a5f5,
+    0 0 14px rgba(66, 165, 245, 0.35) !important;
+  border-radius: 50% !important;
+}
+
+span.v-btn__overlay {
+  background-color: transparent !important;
+}
+
+.vertical-toolbar :deep(.toolbar-mode-btn--active .v-icon) {
+  color: #e3f2fd !important;
 }
 </style>

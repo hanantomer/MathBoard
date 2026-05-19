@@ -6,7 +6,6 @@
   <freeSketchDrawer></freeSketchDrawer>
   <textAreaSync></textAreaSync>
   <exponentEditor></exponentEditor>
-  <areaSelector></areaSelector>
   <v-progress-linear
     data-cy="pBar"
     v-show="progressBar"
@@ -17,21 +16,19 @@
   ></v-progress-linear>
   <statusBar></statusBar>
   <cartesianSystemDrawer></cartesianSystemDrawer>
-  <div :style="wrapperStyle">
-    <leftToolbar></leftToolbar>
-    <sqrtDrawer></sqrtDrawer>
-    <lineDrawer></lineDrawer>
-    <divisionLineDrawer></divisionLineDrawer>
-    <polygonDrawer></polygonDrawer>
-    <curveDrawer></curveDrawer>
-    <circleDrawer></circleDrawer>
+  <sqrtDrawer></sqrtDrawer>
+  <lineDrawer></lineDrawer>
+  <divisionLineDrawer></divisionLineDrawer>
+  <polygonDrawer></polygonDrawer>
+  <curveDrawer></curveDrawer>
+  <circleDrawer></circleDrawer>
+  <areaSelector></areaSelector>
 
+  <leftToolbar></leftToolbar>
+
+  <div ref="boardScrollRef" class="mathboard-scroll">
     <svg
-      style="margin-left: 10px; margin-top: 10px; background-color: white"
-      :style="{
-        width: matrixSize.width,
-        height: matrixSize.height,
-      }"
+      class="mathboard"
       :id="svgId"
       xmlns="http://www.w3.org/2000/svg"
     >
@@ -60,27 +57,28 @@
         </marker>
       </defs>
     </svg>
-
-    <specialSymbolsToolbar></specialSymbolsToolbar>
   </div>
+
+  <specialSymbolsToolbar></specialSymbolsToolbar>
 </template>
 
 <script setup lang="ts">
-import { computed, defineAsyncComponent, onUnmounted, ref } from "vue";
+import { defineAsyncComponent, nextTick, onUnmounted, ref } from "vue";
+import { useEventListener, useThrottleFn } from "@vueuse/core";
 import useNotationLoadingHelper from "../helpers/notationLoadingHelper";
-import { isMobile } from "../helpers/eventHelper";
 import useMatrixHelper from "../helpers/matrixHelper";
 import useEventHelper from "../helpers/eventHelper";
 import useWatchHelper from "../helpers/watchHelper";
 import useNotationMutationHelper from "../helpers/notationMutateHelper";
 import { useNotationStore } from "../store/pinia/notationStore";
 import { useCellStore } from "../store/pinia/cellStore";
+import { useEditModeStore } from "../store/pinia/editModeStore";
 import { useAnswerStore } from "../store/pinia/answerStore";
 import { CursorType, EditModeCursorType } from "common/unions";
 import useSelectionHelper from "../helpers/selectionHelper";
 import useKeyHelper from "../helpers/keyHelper";
 import leftToolbar from "./LeftToolbar.vue";
-import { matrixSize } from "common/globals";
+
 
 const freeTextEditor = defineAsyncComponent(
   () => import("./FreeTextEditor.vue"),
@@ -121,6 +119,7 @@ const lessonStudents = defineAsyncComponent(
 const notationLoadingHelper = useNotationLoadingHelper();
 const notationStore = useNotationStore();
 const cellStore = useCellStore();
+const editModeStore = useEditModeStore();
 const matrixHelper = useMatrixHelper();
 const selectionHelper = useSelectionHelper();
 const keyHelper = useKeyHelper();
@@ -129,21 +128,17 @@ const watchHelper = useWatchHelper();
 const notationMutateHelper = useNotationMutationHelper();
 const answerStore = useAnswerStore();
 const progressBar = ref(false);
-const wrapperStyle = computed(() => ({
-  display: "flex",
-  marginLeft: isMobile() ? "0px" : "100px",
-  marginRight: isMobile() ? "0px" : "100px",
-}));
+const mobileToolbarOpen = ref(false);
+const boardScrollRef = ref<HTMLElement | null>(null);
 
 let cursor = ref<CursorType>("auto");
 
 onUnmounted(() => {
-  eventHelper.unregisterSvgMouseDown();
-  eventHelper.unregisterSvgMouseMove();
-  eventHelper.unregisterSvgMouseUp();
-  eventHelper.unregisterMouseUp();
-  (eventHelper.unregisterTouchStart(), eventHelper.unregisterSvgTouchEnd());
-  eventHelper.unregisterKeyUp();
+  eventHelper.unregisterSvgPointerUp();
+  eventHelper.unregisterPointerUp();
+  eventHelper.unregisterSvgPointerDown();
+  eventHelper.unregisterSvgPointerMove();
+  eventHelper.unregisterSvgPointerUp();
   eventHelper.unregisterPaste();
   eventHelper.unregisterCopy();
   eventHelper.unregisterMobileEscape();
@@ -154,28 +149,59 @@ const props = defineProps({
   loaded: { type: Boolean, default: false },
 });
 
-watchHelper.watchMouseEvent(
+function refreshSvgBoundingRect() {
+  if (props.svgId) {
+    cellStore.setSvgBoundingRect(props.svgId);
+  } else {
+    cellStore.refreshSvgBoundingRect();
+  }
+}
+
+const refreshSvgBoundingRectThrottled = useThrottleFn(
+  refreshSvgBoundingRect,
+  50,
+);
+
+useEventListener(window, "resize", refreshSvgBoundingRect);
+useEventListener(window, "scroll", refreshSvgBoundingRectThrottled, {
+  capture: true,
+});
+// Board scroll must update immediately — throttling left selection ~1 viewport off.
+useEventListener(boardScrollRef, "scroll", refreshSvgBoundingRect, {
+  passive: true,
+});
+
+watchHelper.watchPointerEvent(
   [
     "CELL_SELECTED",
     "SPECIAL_SYMBOL_SELECTED",
     "LINE_SELECTED",
     "LINE_STARTED",
     "DIVISIONLINE_SELECTED",
+    "DIVISIONLINE_STARTED",
     "CURVE_SELECTED",
+    "CURVE_STARTED",
     "SQRT_SELECTED",
+    "SQRT_STARTED",
     "ANNOTATION_SELECTED",
+    "ANNOTATION_STARTED",
     "EXPONENT_SELECTED",
     "CIRCLE_SELECTED",
+    "CIRCLE_STARTED",
     "IMAGE_SELECTED",
+    "POLYGON_STARTED",
+    "FREE_SKETCH_STARTED",
+    "FREE_SKETCH_SELECTED",
+    "TEXT_STARTED",
   ],
-  "EV_SVG_MOUSEUP",
+  ["EV_SVG_POINTERUP", "EV_SVG_POINTERCANCEL"],
   selectionHelper.selectClickedPosition,
   props.svgId,
 );
 
-watchHelper.watchMouseEvent(
+watchHelper.watchPointerEvent(
   ["XMARK_STARTED", "CHECKMARK_STARTED", "SEMICHECKMARK_STARTED"],
-  "EV_SVG_MOUSEUP",
+  ["EV_SVG_POINTERUP"],
   notationMutateHelper.addMarkNotation,
 );
 
@@ -191,8 +217,12 @@ watchHelper.watchKeyEvent(
     "EXPONENT_SELECTED",
     "CIRCLE_SELECTED",
     "IMAGE_SELECTED",
+    "FREE_SKETCH_SELECTED",
     "ANNOTATION_STARTED",
     "LINE_STARTED",
+    "DIVISIONLINE_STARTED",
+    "CURVE_STARTED",
+    "CIRCLE_STARTED",
     "FREE_SKETCH_STARTED",
   ],
   "EV_KEYUP",
@@ -216,9 +246,14 @@ watchHelper.watchKeyEvent(
   keyHelper.keyDownHandler,
 );
 
-watchHelper.watchEveryEditModeChange(
-  (newEditMode) => (cursor.value = EditModeCursorType.get(newEditMode)!),
-);
+watchHelper.watchEveryEditModeChange((newEditMode) => {
+  cursor.value = EditModeCursorType.get(newEditMode)!;
+  if (editModeStore.isDefaultEditMode()) {
+    document.getElementById(props.svgId)?.classList.remove("touch-drawing");
+  } else {
+    document.getElementById(props.svgId)?.classList.add("touch-drawing");
+  }
+});
 
 watchHelper.watchSelectedCellAndDisplayNewSelected(props.svgId);
 
@@ -241,14 +276,11 @@ watchHelper.watchNotationsEvent(props.svgId, matrixHelper.refreshScreen);
 
 async function load() {
   cellStore.setSvgBoundingRect(props.svgId);
+  eventHelper.registerPointerUp();
+  eventHelper.registerSvgPointerDown();
+  eventHelper.registerSvgPointerMove();
+  eventHelper.registerSvgPointerUp();
 
-  eventHelper.registerSvgMouseDown();
-  eventHelper.registerSvgMouseMove();
-  eventHelper.registerSvgMouseUp();
-  eventHelper.registerMouseUp();
-  eventHelper.registerSvgTouchStart(),
-  eventHelper.registerSvgTouchMove(),
-  eventHelper.registerSvgTouchEnd();
   eventHelper.registerKeyUp();
   eventHelper.registerKeyDown();
   eventHelper.registerPaste();
@@ -283,11 +315,63 @@ async function load() {
     );
   } finally {
     progressBar.value = false;
+    await nextTick();
+    refreshSvgBoundingRect();
   }
 }
 </script>
 
 <style>
+/* Fixed side toolbars; scroll viewport fits the window, full matrix height inside. */
+.mathboard-scroll {
+  --board-inset-left: 80px;
+  --board-inset-right: 210px;
+  --board-inset-top: 110px;
+  --board-inset-bottom: 56px;
+  --board-matrix-height: 1650px;
+  box-sizing: border-box;
+  margin-top: var(--board-inset-top);
+  margin-left: var(--board-inset-left);
+  margin-right: var(--board-inset-right);
+  margin-bottom: var(--board-inset-bottom);
+  width: min(
+    1650px,
+    calc(100vw - var(--board-inset-left) - var(--board-inset-right))
+  );
+  max-width: calc(100vw - var(--board-inset-left) - var(--board-inset-right));
+  max-height: calc(
+    100vh - var(--board-inset-top) - var(--board-inset-bottom)
+  );
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+.mathboard {
+  box-sizing: border-box;
+  display: block;
+  width: 100%;
+  min-width: 100%;
+  height: var(--board-matrix-height);
+}
+
+/* Mobile styles */
+@media (max-width: 1023px) {
+  .mathboard-scroll {
+    --board-inset-left: 56px;
+    --board-inset-right: 0px;
+    --board-inset-top: 64px;
+    --board-inset-bottom: 16px;
+    margin-left: var(--board-inset-left);
+    margin-right: 0;
+    width: calc(100vw - var(--board-inset-left));
+    max-width: calc(100vw - var(--board-inset-left));
+    max-height: calc(
+      100vh - var(--board-inset-top) - var(--board-inset-bottom)
+    );
+  }
+}
+
 .activestudent {
   border: 2px dashed rgb(143, 26, 179);
 }
@@ -329,8 +413,6 @@ async function load() {
 .line-svg {
   position: absolute;
   pointer-events: none;
-  margin-left: 10px;
-  margin-top: 10px;
 }
 
 line:hover,
@@ -372,5 +454,9 @@ path:hover {
 .free-sketch {
   max-width: 50px;
   max-height: 50px;
+}
+
+.touch-drawing {
+  touch-action: none;
 }
 </style>

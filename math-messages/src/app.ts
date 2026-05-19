@@ -32,6 +32,8 @@ app.configure(
     cors: {
       origin: app.get("origins"),
     },
+    // Phone photos as base64 can exceed the default 1 MB socket limit.
+    maxHttpBufferSize: 8e6,
   })
 );
 
@@ -93,8 +95,14 @@ app
   );
 
   
-app.service("imageLoaded").publish("updated", (id: any, imageLoaded: any, ctx: any) => {
-  return app.channel(constants.LESSON_CHANNEL_PREFIX + imageLoaded.data.lessonUUId);
+app.service("imageLoaded").publish("updated", (...args: any[]) => {
+  const hook = args.length > 1 ? args[1] : args[0];
+  const lessonUUId = hook?.result?.lessonUUId ?? hook?.data?.lessonUUId;
+  if (!lessonUUId) {
+    console.warn("imageLoaded.publish: missing lessonUUId", hook);
+    return [];
+  }
+  return app.channel(constants.LESSON_CHANNEL_PREFIX + lessonUUId);
 });
 
 app.service("selectedCell").publish("updated", (id: any, selectedCell: any, ctx: any) => {

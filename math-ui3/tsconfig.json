@@ -5,13 +5,12 @@
   },
   "compilerOptions": {
     "outDir": "./build",
-    //"baseUrl": ".",
     "rootDir": "src",
     "skipLibCheck": true,
     "lib": ["ESNext", "DOM"],
     "paths": {
       "common/*": ["../math-common/src/*"]
-    }
+    },
   },
   "compileOnSave": true,
   "include": [

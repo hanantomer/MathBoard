@@ -7,6 +7,7 @@
 // Styles
 import "@mdi/font/css/materialdesignicons.css";
 
+// @ts-ignore: Vuetify styles module types are not found in this environment
 import "vuetify/styles";
 
 // Composables

@@ -6,10 +6,11 @@ describe("e2e", () => {
   before(function () {});
   it("e2e", () => {
     cy.visit("http://localhost:13035");
+    cy.login();
     cy.openLesson();
     cy.clearBoard();
 
-    cy.get('[row="2"] > [col="2"]').click();
+    cy.get('[row="2"] > [col="2"]').click({ force: true });
     // type some text
     cy.get("body").type("3");
     cy.get('foreignObject[row="2"][col="2"] > div > p').should(
@@ -31,7 +32,7 @@ describe("e2e", () => {
       "8.8px",
     );
 
-    cy.get('[row="2"] > [col="4"]').click();
+    cy.get('[row="2"] > [col="4"]').click({ force: true });
     cy.dataCy("logButton").click();
     cy.get('foreignObject[row="2"][col="4"] > div > p').should(
       "include.text",

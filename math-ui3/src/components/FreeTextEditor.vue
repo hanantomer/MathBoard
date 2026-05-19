@@ -49,28 +49,28 @@ const selectedNotation = computed(() =>
 watchHelper.watchEveryEditModeChange(submitText);
 
 // user clicked outside of text rect during edit
-watchHelper.watchMouseEvent(
+watchHelper.watchPointerEvent(
   ["TEXT_WRITING", "TEXT_SELECTED"],
-  "EV_SVG_MOUSEDOWN",
+  ["EV_SVG_POINTERDOWN"],
   resetTextEditingIfClickedOusideTextArea,
 );
 
-watchHelper.watchTouchEvent(
+watchHelper.watchPointerEvent(
   ["TEXT_WRITING", "TEXT_SELECTED"],
-  "EV_SVG_TOUCHSTART",
+  ["EV_SVG_POINTERDOWN"],
   resetTextEditingIfClickedOusideTextArea,
 );
 
 // user clicked inside text rect after text selection
-watchHelper.watchMouseEvent(
+watchHelper.watchPointerEvent(
   ["TEXT_SELECTED"],
-  "EV_SVG_MOUSEUP",
+  ["EV_SVG_POINTERUP"],
   editTextSelection,
 );
 
-watchHelper.watchTouchEvent(
+watchHelper.watchPointerEvent(
   ["TEXT_SELECTED"],
-  "EV_SVG_TOUCHEND",
+  ["EV_SVG_POINTERUP"],
   editTextSelection,
 );
 
@@ -81,15 +81,9 @@ watchHelper.watchCustomEvent(
   startTextEditing,
 );
 
-watchHelper.watchMouseEvent(
+watchHelper.watchPointerEvent(
   ["TEXT_WRITING"],
-  "EV_TEXT_EDITING",
-  editSelectedTextNotation,
-);
-
-watchHelper.watchTouchEvent(
-  ["TEXT_WRITING"],
-  "EV_TEXT_EDITING",
+  ["EV_TEXT_EDITING"],
   editSelectedTextNotation,
 );
 
@@ -99,7 +93,7 @@ watchHelper.watchCustomEvent(
   addSpecialSymbol,
 );
 
-function editSelectedTextNotation(e: MouseEvent | TouchEvent) {
+function editSelectedTextNotation(e: PointerEvent | TouchEvent) {
   if (selectedNotation.value?.notationType !== "TEXT") {
     return;
   }
@@ -213,7 +207,7 @@ function showTextNotation(uuid: string) {
     .classList.remove("hidden");
 }
 
-function resetTextEditingIfClickedOusideTextArea(e: MouseEvent | TouchEvent) {
+function resetTextEditingIfClickedOusideTextArea(e: PointerEvent | TouchEvent) {
   // mouse clicked outside of text arae
   const target =
     "touches" in e ? e.touches[0].target : (e.target as HTMLElement);
@@ -223,7 +217,7 @@ function resetTextEditingIfClickedOusideTextArea(e: MouseEvent | TouchEvent) {
   }
 }
 
-function editTextSelection(e: MouseEvent | TouchEvent) {
+function editTextSelection(e: PointerEvent | TouchEvent) {
   const el = ("touches" in e ? e.touches[0].target : e.target) as HTMLElement;
   if (
     el.id !== "selection" &&
@@ -318,7 +312,7 @@ textarea {
 }
 .freeText {
   background-color: rgb(232, 232, 215);
-  position: absolute;
+  position: fixed;
   padding: 5px;
   box-sizing: border-box;
   resize: both;

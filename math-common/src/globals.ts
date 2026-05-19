@@ -40,10 +40,9 @@ export function validateCookiesEnabled(): boolean {
   return true;
 }
 
-
 export function getDefaultFontSize(): number {
   var style = window!.getComputedStyle(
-    document!.body
+    document!.body,
   )!;
 
   var fs = style.getPropertyValue("font-size")!;
@@ -52,7 +51,7 @@ export function getDefaultFontSize(): number {
 }
 
 export function formatDate(
-  date: Date | null | undefined
+  date: Date | null | undefined,
 ) {
   return date
     ? new Date(date).toLocaleDateString("en-us", {
@@ -65,7 +64,7 @@ export function formatDate(
 }
 
 export function decodeSpecialSymbol(
-  symbol: string
+  symbol: string,
 ) {
   const decoder = document.createElement("div");
   decoder.innerHTML = symbol.toString();
@@ -74,11 +73,11 @@ export function decodeSpecialSymbol(
 
 export function wrapVectorSymbol(
   symbol: string,
-  color: string = "black"
+  color: string = "black",
 ) {
   const symbolWithoutPrefix = symbol.replace(
     vectorSymbolPrefix,
-    ""
+    "",
   );
 
   if (!symbolWithoutPrefix) return "";
@@ -90,29 +89,39 @@ export function wrapVectorSymbol(
 
 export function getMousePositionInSVG(
   svgElement: SVGSVGElement,
-  mouseEvent: MouseEvent,
-  rect: DOMRect
+  mouseEvent: PointerEvent,
+  rect: DOMRect,
 ) {
   // Create an SVGPoint
   let pt = svgElement.createSVGPoint();
 
-  // Set the point's coordinates to the mouse event's clientX/clientY
-  pt.x = mouseEvent.clientX + rect.left;
-  pt.y = mouseEvent.clientY + rect.top;
+  pt.x = mouseEvent.clientX;
+  pt.y = mouseEvent.clientY;
 
-  // Transform the client coordinates to SVG coordinates
-  let svgCoords = pt.matrixTransform(
-    svgElement.getScreenCTM()!.inverse()
+  const ctm = svgElement.getScreenCTM();
+  if (!ctm) {
+    return {
+      x: mouseEvent.clientX - rect.left,
+      y: mouseEvent.clientY - rect.top,
+    };
+  }
+
+  return pt.matrixTransform(ctm.inverse());
+}
+
+export function isMobile() {
+  return (
+    /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+      navigator.userAgent,
+    ) || window.innerWidth <= 768
   );
-
-  return svgCoords;
 }
 
 export const vectorSymbolPrefix = "vec_";
 
 const vectorArrowSpan = `<span style="position:absolute;margin-left:-12px;margin-top:-12px">&rarr;</span>`;
 
-export const sqrtDeltaY = 3;
+export const sqrtDeltaY = 10;
 
 export const sqrtSymbolSuffix = "_sqs";
 
@@ -140,4 +149,3 @@ export interface GoogleUserData {
   name: string;
   email: string;
 }
-

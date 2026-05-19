@@ -150,6 +150,13 @@ let studentLogin = false;
 const emit = defineEmits(["register"]);
 
 let userType: UserType | null = null;
+let isLoggingIn = ref(false);
+
+const AUTH_ROUTE_NAMES = new Set([
+  "login",
+  "registerTeacher",
+  "registerStudent",
+]);
 
 watch(
   route,
@@ -181,6 +188,9 @@ function register() {
 }
 
 async function googleLoginCallback(response: any) {
+  if (isLoggingIn.value) return;
+  const loginRouteFullPath = route.fullPath;
+  isLoggingIn.value = true;
   try {
     const ticket = await handleGoogleAuth(response.credential);
     if (!ticket) return;
@@ -192,10 +202,12 @@ async function googleLoginCallback(response: any) {
 
     await completeLogin(storedUser!);
 
-    handleRedirect();
+    handleRedirect(loginRouteFullPath);
   } catch (error) {
     console.error("Google login failed:", error);
     loginFailed.value = true;
+  } finally {
+    isLoggingIn.value = false;
   }
 }
 
@@ -206,18 +218,25 @@ async function completeLogin(user: UserAttributes) {
   show.value = false;
 }
 
-function handleRedirect() {
+function handleRedirect(loginRouteFullPath: string) {
+  if (route.fullPath !== loginRouteFullPath) {
+    return;
+  }
+  if (!AUTH_ROUTE_NAMES.has(route.name as string)) {
+    return;
+  }
   if (route.query.from) {
     const routeFrom: RouteLocationRaw = route.query.from as string;
     router.replace(routeFrom);
   } else {
-    router.push("/lessons");
+    router.replace("/lessons");
   }
 }
 
 async function onLogin() {
   if (!email) return;
   if (!password) return;
+  if (isLoggingIn.value) return;
 
   let formVlidated: any = (loginForm.value as any).validate();
   if (!formVlidated) {
@@ -225,97 +244,89 @@ async function onLogin() {
   }
 
   let authenticatedUser = null;
+  const loginRouteFullPath = route.fullPath;
+  isLoggingIn.value = true;
 
   try {
-    authenticatedUser = await authHelper.authLocalUserByUserAndPassword(
-      email.value!,
-      password.value!,
-    );
-  } catch (error) {
-    throw new Error(`Error during login validation: ${error}`);
-  }
+    try {
+      authenticatedUser = await authHelper.authLocalUserByUserAndPassword(
+        email.value!,
+        password.value!,
+      );
+    } catch (error) {
+      throw new Error(`Error during login validation: ${error}`);
+    }
 
-  if (!authenticatedUser) {
-    loginFailed.value = true;
-    return;
-  }
+    if (!authenticatedUser) {
+      loginFailed.value = true;
+      return;
+    }
 
-  // Handle user type logic
-  if (studentLogin) {
-    if (authenticatedUser.userType === "TEACHER") {
-      // Register as student to merge userType to BOTH
-      const userToRegister: UserCreationAttributes = {
-        firstName: authenticatedUser.firstName,
-        lastName: authenticatedUser.lastName,
-        email: authenticatedUser.email,
-        password: password.value!,
-        userType: "STUDENT",
-        imageUrl: authenticatedUser.imageUrl,
-        approved: authenticatedUser.approved,
-        access_token: null,
-        reset_pasword_token: null,
-      };
-      try {
-        await apiHelper.registerUser(userToRegister);
-        // Re-authenticate to get updated user
-        authenticatedUser = await authHelper.authLocalUserByUserAndPassword(
-          email.value!,
-          password.value!,
-        );
-        if (!authenticatedUser) {
+    // Handle user type logic
+    if (studentLogin) {
+      if (authenticatedUser.userType === "TEACHER") {
+        // Register as student to merge userType to BOTH
+        const userToRegister: UserCreationAttributes = {
+          firstName: authenticatedUser.firstName,
+          lastName: authenticatedUser.lastName,
+          email: authenticatedUser.email,
+          password: password.value!,
+          userType: "STUDENT",
+          imageUrl: authenticatedUser.imageUrl,
+          approved: authenticatedUser.approved,
+          access_token: null,
+          reset_pasword_token: null,
+        };
+        try {
+          await apiHelper.registerUser(userToRegister);
+          // Re-authenticate to get updated user
+          authenticatedUser = await authHelper.authLocalUserByUserAndPassword(
+            email.value!,
+            password.value!,
+          );
+          if (!authenticatedUser) {
+            loginFailed.value = true;
+            return;
+          }
+          cookies.set(ACCESS_TOKEN_NAME, authenticatedUser.access_token!);
+        } catch (error) {
           loginFailed.value = true;
           return;
         }
-        cookies.set(ACCESS_TOKEN_NAME, authenticatedUser.access_token!);
-      } catch (error) {
+      }
+    } else {
+      // Not student login
+      if (
+        authenticatedUser.userType !== "TEACHER" &&
+        authenticatedUser.userType !== "BOTH"
+      ) {
         loginFailed.value = true;
         return;
       }
     }
-  } else {
-    // Not student login
-    if (
-      authenticatedUser.userType !== "TEACHER" &&
-      authenticatedUser.userType !== "BOTH"
-    ) {
+
+    if (!authenticatedUser.access_token) {
+      apiHelper.log(
+        `No access token received during authentication for user: ${email} `,
+      );
       loginFailed.value = true;
       return;
     }
+
+    loginFailed.value = false;
+
+    if (window.navigator.cookieEnabled) {
+      cookies.set(ACCESS_TOKEN_NAME, authenticatedUser.access_token);
+    } else {
+      alert("cookies not enabled. you must enable cookies to continue");
+    }
+    loginForm.value = null;
+
+    await completeLogin(authenticatedUser);
+    handleRedirect(loginRouteFullPath);
+  } finally {
+    isLoggingIn.value = false;
   }
-
-  if (!authenticatedUser.access_token) {
-    apiHelper.log(
-      `No access token received during authentication for user: ${email} `,
-    );
-    loginFailed.value = true;
-    return;
-  }
-
-  loginFailed.value = false;
-
-  //if (
-  //  authenticatedUser.approved === false &&
-  //  authenticatedUser.userType === "TEACHER"
-  //) {
-  //userNotApproved.value = true;
-  //return;
-  //}
-  //userNotApproved.value = false;
-
-  if (window.navigator.cookieEnabled) {
-    cookies.set(ACCESS_TOKEN_NAME, authenticatedUser.access_token);
-  } else {
-    alert("cookies not enabled. you must enable cookies to continue");
-  }
-  loginForm.value = null;
-
-  if (route.query.from) {
-    let routeFrom: RouteLocationRaw = route.query.from as string;
-    router.replace(routeFrom);
-    return;
-  }
-
-  completeLogin(authenticatedUser);
 }
 
 function close() {

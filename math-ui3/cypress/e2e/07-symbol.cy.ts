@@ -6,10 +6,11 @@ describe("e2e", () => {
   before(function () {});
   it("e2e", () => {
     cy.visit("http://localhost:13035");
+    cy.login();
     cy.openLesson();
     cy.clearBoard();
 
-    cy.get('[row="0"] > [col="0"]').click();
+    cy.get('[row="0"] > [col="0"]').click({ force: true });
 
     // type some text
     cy.get("body").type("3");

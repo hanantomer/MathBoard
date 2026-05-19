@@ -9,77 +9,102 @@ const lessonStore = useLessonStore();
 const userStore = useUserStore();
 
 export class FeathersHelper {
-  private constructor() {}
-
   private static instance: Application;
+  private static socket: ReturnType<typeof io>;
+  /** When set, connect/reconnect joins the lesson channel for mobile upload. */
+  private static mobileLessonUUId?: string;
+
+  private static joinLessonChannels(): void {
+    if (!this.instance || !this.socket?.connected) return;
+
+    if (this.mobileLessonUUId) {
+      this.instance.service("imageLoaded").create({
+        lessonUUId: this.mobileLessonUUId,
+      });
+      return;
+    }
+
+    const user = userStore.getCurrentUser();
+    const lesson = lessonStore.getCurrentLesson();
+    if (!user || !lesson?.uuid) return;
+
+    this.instance.service("authentication").create({
+      ...user,
+      lessonUUId: lesson.uuid,
+    });
+  }
 
   public static getInstance(
-    userUUId?: string, ///TOD:verify user validity
+    _userUUId?: string,
     lessonUUId?: string,
   ): Application {
+    if (lessonUUId) {
+      this.mobileLessonUUId = lessonUUId;
+    }
+
     if (!this.instance) {
       this.instance = feathers();
-      const socket = io();
+      this.socket = io();
 
-      socket.on("connect", () => {
-        console.log("Connected to server");
-        if (userUUId && lessonUUId) {
-          this.instance.service("imageLoaded").create({
-            lessonUUId: lessonUUId,
-          });
-        } else {
-          this.instance.service("authentication").create({
-            ...userStore.getCurrentUser(),
-            lessonUUId: lessonStore.getCurrentLesson()!.uuid,
-          });
-        }
+      const onSocketReady = () => {
+        console.log("[Feathers] Connected to messaging server");
+        this.joinLessonChannels();
+      };
+
+      this.socket.on("connect", onSocketReady);
+      this.socket.on("reconnect", onSocketReady);
+
+      this.socket.on("disconnect", () => {
+        console.warn("[Feathers] Disconnected from messaging server");
       });
 
-      socket.on("disconnect", () => {
-        console.log("Disconnected from server");
+      this.socket.on("connect_error", (error: Error) => {
+        console.error("[Feathers] Connection error:", error.message);
       });
 
-      socket.on("error", (error: any) => {
-        console.error("Socket error:", error);
-      });
-
-      socket.on("reconnect", (attemptNumber: number) => {
-        console.log("Reconnected to server after", attemptNumber, "attempts");
-      });
-
-      socket.on("reconnect_attempt", (attemptNumber: number) => {
-        console.log(
-          "Attempting to reconnect to server, attempt number:",
-          attemptNumber,
-        );
-      });
-
-      socket.on("connect_error", (error: Error) => {
-        console.error("Connection error:", error);
-      });
-
-      socket.on("connect_timeout", (timeout: number) => {
-        console.error("Connection tsctimeout:", timeout);
-      });
-
-      socket.on("reconnect_error", (error: Error) => {
-        console.error("Reconnection error:", error);
-      });
-
-      socket.on("reconnect_failed", () => {
-        console.error("Failed to reconnect to server");
-      });
-
-      socket.on("ping", () => {
-        console.log("Ping received from server");
-      });
-
-      socket.on("pong", (latency: number) => {
-        console.log("Pong received from server, latency:", latency);
-      });
-
-      this.instance.configure(socketio(socket));
+      this.instance.configure(socketio(this.socket));
     }
+
     return this.instance;
+  }
+
+  public static isConnected(): boolean {
+    return !!this.socket?.connected;
+  }
+
+  public static waitUntilConnected(timeoutMs = 15000): Promise<void> {
+    this.getInstance();
+
+    if (this.socket.connected) {
+      return Promise.resolve();
+    }
+
+    return new Promise((resolve, reject) => {
+      const timer = window.setTimeout(() => {
+        this.socket.off("connect", onConnect);
+        reject(new Error("Messaging server connection timed out"));
+      }, timeoutMs);
+
+      const onConnect = () => {
+        window.clearTimeout(timer);
+        this.socket.off("connect", onConnect);
+        resolve();
+      };
+
+      this.socket.once("connect", onConnect);
+    });
+  }
+
+  /** Ensures this client is subscribed to the lesson channel for image upload events. */
+  public static async ensureLessonChannel(lessonUUId: string): Promise<void> {
+    await this.waitUntilConnected();
+    await this.getInstance().service("imageLoaded").create({ lessonUUId });
+  }
+
+  public static disconnect(): void {
+    if (this.socket) {
+      this.socket.disconnect();
+    }
+    this.mobileLessonUUId = undefined;
   }
 }

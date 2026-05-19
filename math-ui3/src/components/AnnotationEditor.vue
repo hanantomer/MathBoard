@@ -63,9 +63,9 @@ const annotationPoint = ref({ x: -1, y: -1 });
 
 watchHelper.watchEndOfEditMode(["ANNOTATION_WRITING"], [], save);
 
-watchHelper.watchMouseEvent(
+watchHelper.watchPointerEvent(
   ["ANNOTATION_STARTED", "ANNOTATION_SELECTED"],
-  "EV_SVG_MOUSEDOWN",
+["EV_SVG_POINTERDOWN"],
   startTextEditing,
 );
 
@@ -75,15 +75,15 @@ watchHelper.watchKeyEvent(
   endEditingByEnterKey,
 );
 
-watchHelper.watchMouseEvent(
+watchHelper.watchPointerEvent(
   ["ANNOTATION_WRITING"],
-  "EV_SVG_MOUSEDOWN",
+  ["EV_SVG_POINTERDOWN"],
   editModeStore.setDefaultEditMode,
 );
 
-watchHelper.watchMouseEvent(
+watchHelper.watchPointerEvent(
   ["ANNOTATION_SELECTED"],
-  "EV_SVG_MOUSEDOWN",
+  ["EV_SVG_POINTERDOWN"],
   editSelectedAnnotation,
 );
 
@@ -102,23 +102,31 @@ watchHelper.watchGlobalEditModeChange((newMode, oldMode) => {
   }
 });
 
-function startTextEditing(e: MouseEvent) {
-  const el = e.target as HTMLElement;
-  if (
-    el.tagName !== "rect" &&
-    el.tagName != "IMG" /*&& el.getAttribute("data-cy") !== "annotation"*/
-  ) {
+function startTextEditing(e: PointerEvent) {
+  // ANNOTATION_SELECTED uses a separate handler on the same event.
+  if (editModeStore.getEditMode() === "ANNOTATION_SELECTED") {
     return;
   }
 
+  const svgId = cellStore.getSvgId();
+  const boardSvg = svgId ? document.getElementById(svgId) : null;
+  if (!boardSvg?.contains(e.target as Node)) {
+    return;
+  }
+
+  // Matrix cells use pointer-events: none, so the target is usually <svg>, <g>,
+  // or notation markup — not <rect>. Accept any click inside the board SVG.
+
   annotationPoint.value = {
-    x: e.pageX,
-    y: e.pageY - 7,
+    x: e.clientX,
+    y: e.clientY - 7,
   };
 
   editModeStore.setEditMode("ANNOTATION_WRITING");
   setInitialTextValue();
-  setTimeout('document.getElementById("annotationEl").focus()', 100);
+  setTimeout(() => {
+    document.getElementById("annotationEl")?.focus();
+  }, 100);
 }
 
 function editSelectedAnnotation() {
@@ -155,9 +163,10 @@ async function save() {
     await notationMutateHelper.updateNotation(selectedNotation.value);
     restoreTextNotation(selectedNotation.value.uuid);
   } else {
+    const r = cellStore.getSvgBoundingRect();
     notationMutateHelper.addAnnotationNotation(annotaionValue.value, {
-      x: annotationPoint.value.x - cellStore.getSvgBoundingRect().x,
-      y: annotationPoint.value.y - cellStore.getSvgBoundingRect().y,
+      x: annotationPoint.value.x - r.left,
+      y: annotationPoint.value.y - r.top + 7,
     });
     //.then((uuid) => {
     //  selectCreatedAnnotation(uuid);
@@ -223,7 +232,7 @@ function addSpecialSymbol(symbol: string): void {
   border: none;
   outline: none;
   background-color: rgb(216, 216, 79);
-  position: absolute;
+  position: fixed;
   padding: 0px;
   font-size: 0.5em;
 }

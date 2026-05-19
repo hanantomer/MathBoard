@@ -59,71 +59,64 @@ const props = defineProps({
   },
 });
 
-watchHelper.watchMouseEvent(
+watchHelper.watchPointerEvent(
   props.startEntry.editMode,
-  "EV_SVG_MOUSEDOWN",
-  (e: MouseEvent) => {
+  ["EV_SVG_POINTERDOWN"],
+  (e: PointerEvent) => {
     shapeDrawingHelper.setLineInitialPosition(e, props.startEntry.func);
   },
 );
 
-watchHelper.watchMouseEvent(
+watchHelper.watchPointerEvent(
   props.drawEntry.editMode,
-  "EV_SVG_MOUSE_DRAG",
-  (e: MouseEvent) => shapeDrawingHelper.drawNewLine(e, props.drawEntry.func),
+  ["EV_SVG_POINTERMOVE"],
+  (e: PointerEvent) => shapeDrawingHelper.drawNewLine(e, props.drawEntry.func),
 );
 
-watchHelper.watchMouseEvent(
+watchHelper.watchPointerEvent(
   props.editEntryFirstHandle.editMode,
-  "EV_SVG_MOUSE_DRAG",
-  (e: MouseEvent) =>
+  ["EV_SVG_POINTERMOVE"],
+  (e: PointerEvent) =>
     shapeDrawingHelper.modifyLine(e, props.editEntryFirstHandle.func),
 );
 
-watchHelper.watchMouseEvent(
+watchHelper.watchPointerEvent(
   props.editEntrySecondHandle.editMode,
-  "EV_SVG_MOUSE_DRAG",
-  (e: MouseEvent) =>
+  ["EV_SVG_POINTERMOVE"],
+  (e: PointerEvent) =>
     shapeDrawingHelper.modifyLine(e, props.editEntrySecondHandle.func),
 );
 
-watchHelper.watchMouseEvent(
+watchHelper.watchPointerEvent(
   props.saveEntry.editMode,
-  "EV_SVG_MOUSEUP",
+  ["EV_SVG_POINTERUP"],
   () => shapeDrawingHelper.saveDrawing(props.saveEntry.func),
 );
 
-watchHelper.watchMouseEvent(
+watchHelper.watchPointerEvent(
   props.endEntry.editMode,
-  "EV_SVG_MOUSEUP",
+  ["EV_SVG_POINTERUP"],
   () => shapeDrawingHelper.resetDrawing(),
 );
 
-
-watchHelper.watchTouchEvent(
+watchHelper.watchPointerEvent(
   props.startEntry.editMode,
-  "EV_SVG_TOUCHSTART",
-  (e: TouchEvent) => {
+  ["EV_SVG_POINTERDOWN"],
+  (e: PointerEvent) => {
     shapeDrawingHelper.setLineInitialPosition(e, props.startEntry.func);
   },
 );
 
-watchHelper.watchTouchEvent(
+watchHelper.watchPointerEvent(
   props.drawEntry.editMode,
-  "EV_SVG_TOUCHMOVE",
-  (e: TouchEvent) => shapeDrawingHelper.drawNewLine(e, props.drawEntry.func),
+  ["EV_SVG_POINTERMOVE"],
+  (e: PointerEvent) => shapeDrawingHelper.drawNewLine(e, props.drawEntry.func),
 );
 
-watchHelper.watchTouchEvent(
+watchHelper.watchPointerEvent(
   props.saveEntry.editMode,
-  "EV_SVG_TOUCHEND",
-   (e: TouchEvent) => shapeDrawingHelper.saveDrawing(props.saveEntry.func) ,
-);
-
-watchHelper.watchTouchEvent(
-  props.endEntry.editMode,
-  "EV_SVG_MOUSEUP",
-  (e: TouchEvent) => shapeDrawingHelper.resetDrawing(),
+  ["EV_SVG_POINTERUP"],
+  (e: PointerEvent) => shapeDrawingHelper.saveDrawing(props.saveEntry.func),
 );
 
 watchHelper.watchEndOfEditMode(

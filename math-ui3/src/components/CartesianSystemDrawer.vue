@@ -7,13 +7,13 @@ import useNotationMutateHelper from "../helpers/notationMutateHelper";
 const notationMutateHelper = useNotationMutateHelper();
 const watchHelper = useWatchHelper();
 
-watchHelper.watchMouseEvent(
+watchHelper.watchPointerEvent(
   ["CARTESIAN_SYSTEM_STARTED"],
-  "EV_SVG_MOUSEDOWN",
+  ["EV_SVG_POINTERDOWN"],
   drawCartesianSystem,
 );
 
-function drawCartesianSystem(e: MouseEvent) {
+function drawCartesianSystem(e: PointerEvent) {
   notationMutateHelper.addCartesianSystemAtClickedPoint(e);
 }
 </script>

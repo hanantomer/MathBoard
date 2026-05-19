@@ -1,7 +1,7 @@
 // notations of current board(lesson, question or answers)
 //  questions of current lesson
 import { defineStore } from "pinia";
-import { ref } from "vue";
+import { ref, shallowRef } from "vue";
 
 import { CellAttributes } from "common/baseTypes";
 import { useEditModeStore } from "./editModeStore";
@@ -10,17 +10,10 @@ import { cellSpace } from "common/globals";
 export const useCellStore = defineStore("cell", () => {
   let svgId: string | undefined = undefined;
 
-  let svgDimensions: DOMRect = {
-    x: 0,
-    y: 0,
-    width: 0,
-    height: 0,
-    bottom: 0,
-    left: 0,
-    right: 0,
-    top: 0,
-    toJSON: () => null,
-  };
+  /** Viewport rect of the board SVG; reactive so overlays can track layout/scroll. */
+  const svgBoundingRect = shallowRef<DOMRect>(
+    new DOMRect(0, 0, 0, 0),
+  );
 
   let cellVerticalHight = ref<number>(0);
 
@@ -67,7 +60,25 @@ export const useCellStore = defineStore("cell", () => {
   }
 
   function getSvgBoundingRect() {
-    return svgDimensions!;
+    return svgBoundingRect.value;
+  }
+
+  function refreshSvgBoundingRect() {
+    if (!svgId) return;
+    const el = document.getElementById(svgId);
+    if (!el) return;
+
+    const next = el.getBoundingClientRect();
+    const prev = svgBoundingRect.value;
+    if (
+      prev.top === next.top &&
+      prev.left === next.left &&
+      prev.width === next.width &&
+      prev.height === next.height
+    ) {
+      return;
+    }
+    svgBoundingRect.value = next;
   }
 
   function getSvgId() {
@@ -76,13 +87,12 @@ export const useCellStore = defineStore("cell", () => {
 
   function setSvgBoundingRect(id: string) {
     svgId = id;
-    if (document.getElementById(svgId) !== null) {
-      svgDimensions = document.getElementById(svgId)?.getBoundingClientRect()!;
-    }
+    refreshSvgBoundingRect();
   }
 
   return {
     getSvgBoundingRect,
+    refreshSvgBoundingRect,
     setSvgBoundingRect,
     getSvgId,
     getSelectedCell,

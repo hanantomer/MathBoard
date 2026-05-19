@@ -21,7 +21,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from "vue";
+import { computed, ref, watch } from "vue";
 import { useEditModeStore } from "../store/pinia/editModeStore";
 import { useCellStore } from "../store/pinia/cellStore";
 import { useNotationStore } from "../store/pinia/notationStore";
@@ -32,6 +32,9 @@ import {
   RectNotationAttributes,
   isRect,
   AnnotationNotationAttributes,
+  NotationAttributes,
+  LineNotationAttributes,
+  PointNotationAttributes,
 } from "common/baseTypes";
 import useNotationMutateHelper from "../helpers/notationMutateHelper";
 import useSelectionHelper from "../helpers/selectionHelper";
@@ -129,107 +132,85 @@ const selectionRectHeight = computed(() => {
 });
 
 // area selection watchers
+watchHelper.watchPointerEvent(
+  ["AREA_SELECTION_STARTED", "TEXT_STARTED"],
+  ["EV_SVG_POINTERDOWN", "EV_SVG_POINTERCANCEL"],
+  startAreaSelection,
+);
 
-watchHelper.watchMouseEvent(
+watchHelper.watchPointerEvent(
   ["CELL_SELECTED"],
-  "EV_SVG_MOUSE_DRAG",
-  startAreaSelection,
-);
-
-watchHelper.watchTouchEvent(
-  ["AREA_SELECTION_STARTED"],
-  "EV_SVG_TOUCHSTART",
+  ["EV_SVG_POINTERMOVE"],
   startAreaSelection,
 );
 
 
-watchHelper.watchMouseEvent(
-  ["TEXT_STARTED"],
-  "EV_SVG_MOUSE_DRAG",
-  startAreaSelection,
-);
 
-watchHelper.watchTouchEvent(
-  ["TEXT_STARTED"],
-  "EV_SVG_TOUCHSTART",
-  startAreaSelection,
-);
-
-watchHelper.watchMouseEvent(
+watchHelper.watchPointerEvent(
   ["AREA_SELECTION_STARTED", "TEXT_AREA_SELECTING"],
-  "EV_SVG_MOUSE_DRAG",
+  ["EV_SVG_POINTERMOVE"],
   updateSelectionArea,
 );
 
-watchHelper.watchTouchEvent(
-  ["AREA_SELECTION_STARTED", "TEXT_AREA_SELECTING"],
-  "EV_SVG_TOUCHMOVE",
-  updateSelectionArea,
-);
-
-watchHelper.watchMouseEvent(
+watchHelper.watchPointerEvent(
   ["TEXT_SELECTED"],
-  "EV_TEXT_SELECTED",
+  ["EV_TEXT_SELECTED"],
   selectRectNotation,
 );
 
-watchHelper.watchNotationSelection(
+watchHelper.watchPointerEvent(
   ["IMAGE_SELECTED"],
-  "EV_IMAGE_SELECTED",
+  ["EV_IMAGE_SELECTED"],
   selectRectNotation,
 );
 
-watchHelper.watchMouseEvent(
+watchHelper.watchPointerEvent(
   ["AREA_SELECTION_STARTED", "TEXT_AREA_SELECTING", "RESIZING"],
-  "EV_SVG_MOUSEUP",
+  ["EV_SVG_POINTERUP"],
   endSelect,
 );
 
-watchHelper.watchTouchEvent(
-  ["AREA_SELECTION_STARTED", "TEXT_AREA_SELECTING", "RESIZING"],
-  "EV_SVG_TOUCHEND",
-  endSelect,
-);
-
-watchHelper.watchMouseEvent(
-  ["AREA_SELECTION_STARTED", "TEXT_AREA_SELECTING", "RESIZING"],
-  "EV_MOUSEUP",
-  endSelect,
-);
-
-watchHelper.watchMouseEvent(
+watchHelper.watchPointerEvent(
   ["AREA_SELECTED", "RESIZE_STARTED", "RESIZING"],
-  "EV_SVG_MOUSEDOWN",
+  ["EV_SVG_POINTERDOWN"],
   cancelSelectionWhenUserClickedOutside,
 );
 
 watchHelper.watchKeyEvent(["AREA_SELECTED"], "EV_KEYUP", handleKeyUp);
 
-watchHelper.watchMouseEvent(
+watchHelper.watchPointerEvent(
   ["AREA_SELECTED", "IMAGE_SELECTED", "TEXT_SELECTED", "ANNOTATION_SELECTED"],
-  "EV_SVG_MOUSE_DRAG",
+  ["EV_SVG_POINTERMOVE"],
   startMmoveSelectedNotations,
 );
 
-watchHelper.watchMouseEvent(
+watchHelper.watchPointerEvent(
   ["AREA_MOVING"],
-  "EV_SVG_MOUSE_DRAG",
+  ["EV_SVG_POINTERMOVE"],
   moveSelectedNotations,
 );
 
-watchHelper.watchMouseEvent(
+watchHelper.watchPointerEvent(
   ["AREA_MOVING"],
-  "EV_SVG_MOUSEUP",
+  ["EV_SVG_POINTERUP"],
   endMoveSelection,
 );
 
-watchHelper.watchMouseEvent(["AREA_MOVING"], "EV_MOUSEUP", endMoveSelection);
+watchHelper.watchPointerEvent(
+  ["AREA_MOVING"],
+  ["EV_SVG_POINTERUP"],
+  endMoveSelection,
+);
 
-watchHelper.watchMouseEvent(["AREA_MOVING"], "EV_TOUCHEEND", endMoveSelection);
+watchHelper.watchPointerEvent(
+  ["AREA_MOVING"],
+  ["EV_POINTERUP"],
+  endMoveSelection,
+);
 
-watchHelper.watchMouseEvent(
+watchHelper.watchPointerEvent(
   ["TEXT_STARTED", "IMAGE_SELECTED"],
-  "EV_SVG_MOUSEUP",
+  ["EV_SVG_POINTERUP"],
   cancelTextSelectionWhenUserClickedOutside /*takes action when clicked outside of selection area*/,
 );
 
@@ -239,7 +220,7 @@ watchHelper.watchNotationSelection(
   selectAnnotation,
 );
 
-function startMmoveSelectedNotations(e: MouseEvent) {
+function startMmoveSelectedNotations(e: PointerEvent) {
   if (!e.buttons) return;
   editModeStore.setEditMode("AREA_MOVING");
 }
@@ -267,19 +248,20 @@ function cancelSelectionWhenUserClickedOutside() {
   editModeStore.setDefaultEditMode();
 }
 
-function cancelTextSelectionWhenUserClickedOutside(e: MouseEvent) {
+function cancelTextSelectionWhenUserClickedOutside(e: PointerEvent) {
   e.stopPropagation();
   notationStore.resetSelectedNotations();
   resetSelectionPosition();
   editModeStore.setDefaultEditMode();
 }
 
-function startAreaSelection(e: MouseEvent | TouchEvent) {
-  if (!authorizationHelper.canEdit()) return;
+function isTextGlobalMode(): boolean {
+  return editModeStore.getGlobalEditMode() === "TEXT";
+}
 
-  if (editModeStore.getGlobalEditMode() === "FREE_SKETCH") {
-    return;
-  }
+function startAreaSelection(e: PointerEvent) {
+  if (!authorizationHelper.canEdit()) return;
+  if (!isTextGlobalMode()) return;
 
   horizontalDirection = "NONE";
   verticalDirection = "NONE";
@@ -290,18 +272,16 @@ function startAreaSelection(e: MouseEvent | TouchEvent) {
 
   setStartPosition(e);
 
-  editModeStore.setEditMode(
-    editModeStore.getEditMode() === "TEXT_STARTED"
-      ? "TEXT_AREA_SELECTING"
-      : "AREA_SELECTION_STARTED",
-  );
+  if (editModeStore.getEditMode() === "TEXT_STARTED") {
+    editModeStore.setEditMode("TEXT_AREA_SELECTING");
+  } else {
+    editModeStore.setEditMode("AREA_SELECTION_STARTED");
+  }
 }
 
-function setStartPosition(e: MouseEvent | TouchEvent) {
-  const pageX = "touches" in e ? e.touches[0].pageX : e.pageX;
-  const pageY = "touches" in e ? e.touches[0].pageY : e.pageY;
-  selectionPosition.value.x2 = selectionPosition.value.x1 = pageX;
-  selectionPosition.value.y2 = selectionPosition.value.y1 = pageY;
+function setStartPosition(e: PointerEvent) {
+  selectionPosition.value.x2 = selectionPosition.value.x1 = e.clientX;
+  selectionPosition.value.y2 = selectionPosition.value.y1 = e.clientY;
 }
 
 async function handleKeyUp(e: KeyboardEvent) {
@@ -345,77 +325,51 @@ async function handleKeyUp(e: KeyboardEvent) {
 }
 
 // extend or shrink selection area
-function updateSelectionArea(e: MouseEvent | TouchEvent) {
+function updateSelectionArea(e: PointerEvent) {
   if (!authorizationHelper.canEdit()) return;
+  if (!isTextGlobalMode()) return;
   setSelectionDirection(e);
-
-  const pageX = "touches" in e ? e.touches[0].pageX : e.pageX;
-  const pageY = "touches" in e ? e.touches[0].pageY : e.pageY;
 
   if (horizontalDirection === "NONE" || verticalDirection === "NONE") {
     return;
   }
 
   if (horizontalDirection === "LEFT") {
-    selectionPosition.value.x1 = pageX;
+    selectionPosition.value.x1 = e.clientX;
   }
 
   if (horizontalDirection === "RIGHT") {
-    selectionPosition.value.x2 = pageX;
+    selectionPosition.value.x2 = e.clientX;
   }
 
   if (verticalDirection === "UP") {
-    selectionPosition.value.y1 = pageY;
+    selectionPosition.value.y1 = e.clientY;
   }
 
   if (verticalDirection === "BOTTOM") {
-    selectionPosition.value.y2 = pageY;
+    selectionPosition.value.y2 = e.clientY;
   }
 }
 
-function setSelectionDirection(e: MouseEvent | TouchEvent) {
+function setSelectionDirection(e: PointerEvent) {
   if (horizontalDirection === "NONE") {
-    if (
-      ("touches" in e ? e.touches[0].pageX : e.pageX) >
-      selectionPosition.value.x1
-    ) {
+    if (e.clientX > selectionPosition.value.x1) {
       horizontalDirection = "RIGHT";
-      return;
-    }
-
-    if (
-      ("touches" in e ? e.touches[0].pageX : e.pageX) <
-      selectionPosition.value.x1
-    ) {
+    } else if (e.clientX < selectionPosition.value.x1) {
       horizontalDirection = "LEFT";
-      return;
     }
   }
 
   if (verticalDirection === "NONE") {
-    if (
-      ("touches" in e ? e.touches[0].pageY : e.pageY) >
-      selectionPosition.value.y1
-    ) {
+    if (e.clientY > selectionPosition.value.y1) {
       verticalDirection = "BOTTOM";
-      return;
-    }
-
-    if (
-      ("touches" in e ? e.touches[0].pageY : e.pageY) <
-      selectionPosition.value.y1
-    ) {
+    } else if (e.clientY < selectionPosition.value.y1) {
       verticalDirection = "UP";
-      return;
     }
   }
 }
 
-function endSelect(e: MouseEvent | TouchEvent) {
-  console.debug(
-    `end select edit mode is: ${editModeStore.getEditMode()} horizontalDirection: ${horizontalDirection} verticalDirection: ${verticalDirection}`,
-  );
-
+function endSelect(e: PointerEvent) {
   if (editModeStore.getEditMode() === "TEXT_WRITING") {
     return;
   }
@@ -437,20 +391,27 @@ function endSelect(e: MouseEvent | TouchEvent) {
   }
 
   if (editModeStore.getEditMode() === "AREA_SELECTION_STARTED") {
+    if (!isTextGlobalMode()) {
+      resetSelectionPosition();
+      editModeStore.setDefaultEditMode();
+      return;
+    }
+    const top = selectionRectTop.value - cellStore.getSvgBoundingRect().top;
+
+    const bottom = top + selectionRectHeight.value;
+
+    const left = selectionRectLeft.value - cellStore.getSvgBoundingRect().left;
+
+    const right = left + selectionRectWidth.value;
+
     selectionHelper.selectNotationsOfArea({
       topLeft: {
-        x: selectionRectLeft.value - cellStore.getSvgBoundingRect().left,
-        y: selectionRectTop.value - cellStore.getSvgBoundingRect().top,
+        x: left,
+        y: top,
       },
       bottomRight: {
-        x:
-          selectionRectLeft.value +
-          selectionRectWidth.value -
-          cellStore.getSvgBoundingRect().left,
-        y:
-          selectionRectTop.value +
-          selectionRectHeight.value -
-          cellStore.getSvgBoundingRect().top,
+        x: right,
+        y: bottom,
       },
     });
 
@@ -471,22 +432,185 @@ function endSelect(e: MouseEvent | TouchEvent) {
   );
 
   editModeStore.setEditMode("AREA_SELECTED");
+  syncSelectionOverlayPosition();
 }
 
-function onSelectionMouseDrag(e: MouseEvent) {
-  eventBus.emit("EV_SVG_MOUSE_DRAG", e);
+function shouldSyncSelectionOverlay(): boolean {
+  const mode = editModeStore.getEditMode();
+  if (mode === "AREA_SELECTION_STARTED" || mode === "TEXT_AREA_SELECTING") {
+    return false;
+  }
+  return (
+    editModeStore.isAnnotationSelectedMode() ||
+    editModeStore.isImageSelectedMode() ||
+    editModeStore.isTextSelectedMode() ||
+    editModeStore.isAreaSelectionOrMovingMode() ||
+    editModeStore.isTextSelectionMode()
+  );
 }
 
-async function onSelectionMouseUp(e: MouseEvent) {
-  eventBus.emit("EV_SVG_MOUSEUP", e);
+function applyViewportBounds(
+  left: number,
+  top: number,
+  right: number,
+  bottom: number,
+) {
+  selectionPosition.value.x1 = left;
+  selectionPosition.value.y1 = top;
+  selectionPosition.value.x2 = right;
+  selectionPosition.value.y2 = bottom;
 }
 
-function moveSelectedNotations(e: MouseEvent) {
+function extendBoundsFromNotation(
+  notation: NotationAttributes,
+  bounds: { x1: number; y1: number; x2: number; y2: number },
+) {
+  const svg = cellStore.getSvgBoundingRect();
+  const el = document.getElementById(notation.uuid);
+  if (el) {
+    const r = el.getBoundingClientRect();
+    bounds.x1 = Math.min(bounds.x1, r.left);
+    bounds.y1 = Math.min(bounds.y1, r.top);
+    bounds.x2 = Math.max(bounds.x2, r.right);
+    bounds.y2 = Math.max(bounds.y2, r.bottom);
+    return;
+  }
+
+  switch (notation.notationType) {
+    case "LINE":
+    case "DIVISIONLINE": {
+      const line = notation as LineNotationAttributes;
+      bounds.x1 = Math.min(bounds.x1, svg.left + Math.min(line.p1x, line.p2x));
+      bounds.y1 = Math.min(bounds.y1, svg.top + Math.min(line.p1y, line.p2y));
+      bounds.x2 = Math.max(bounds.x2, svg.left + Math.max(line.p1x, line.p2x));
+      bounds.y2 = Math.max(bounds.y2, svg.top + Math.max(line.p1y, line.p2y));
+      break;
+    }
+    case "TEXT":
+    case "IMAGE": {
+      const rect = notation as RectNotationAttributes;
+      bounds.x1 = Math.min(
+        bounds.x1,
+        svg.left + rect.fromCol * cellStore.getCellHorizontalWidth(),
+      );
+      bounds.y1 = Math.min(
+        bounds.y1,
+        svg.top + rect.fromRow * cellStore.getCellVerticalHeight(),
+      );
+      bounds.x2 = Math.max(
+        bounds.x2,
+        svg.left + (rect.toCol + 1) * cellStore.getCellHorizontalWidth(),
+      );
+      bounds.y2 = Math.max(
+        bounds.y2,
+        svg.top + (rect.toRow + 1) * cellStore.getCellVerticalHeight(),
+      );
+      break;
+    }
+    case "ANNOTATION": {
+      const ann = notation as AnnotationNotationAttributes;
+      const left = svg.left + ann.x - 1;
+      const top = svg.top + ann.y;
+      bounds.x1 = Math.min(bounds.x1, left);
+      bounds.y1 = Math.min(bounds.y1, top);
+      bounds.x2 = Math.max(bounds.x2, left + ann.value.length * 5 + 3);
+      bounds.y2 = Math.max(bounds.y2, top + 15);
+      break;
+    }
+    default: {
+      const cell = notation as PointNotationAttributes;
+      if (cell.col == null || cell.row == null) break;
+      const cellLeft =
+        svg.left + cell.col * cellStore.getCellHorizontalWidth();
+      const cellTop = svg.top + cell.row * cellStore.getCellVerticalHeight();
+      bounds.x1 = Math.min(bounds.x1, cellLeft);
+      bounds.y1 = Math.min(bounds.y1, cellTop);
+      bounds.x2 = Math.max(
+        bounds.x2,
+        cellLeft + cellStore.getCellHorizontalWidth(),
+      );
+      bounds.y2 = Math.max(
+        bounds.y2,
+        cellTop + cellStore.getCellVerticalHeight(),
+      );
+    }
+  }
+}
+
+function setSelectionPositionFromNotations(notations: NotationAttributes[]) {
+  const bounds = {
+    x1: Number.POSITIVE_INFINITY,
+    y1: Number.POSITIVE_INFINITY,
+    x2: Number.NEGATIVE_INFINITY,
+    y2: Number.NEGATIVE_INFINITY,
+  };
+
+  for (const notation of notations) {
+    extendBoundsFromNotation(notation, bounds);
+  }
+
+  if (!Number.isFinite(bounds.x1)) return;
+
+  applyViewportBounds(bounds.x1, bounds.y1, bounds.x2, bounds.y2);
+  selectionRotation.value = 0;
+}
+
+function syncSelectionOverlayPosition() {
+  if (!shouldSyncSelectionOverlay()) return;
+
+  const selected = notationStore.getSelectedNotations();
+  if (selected.length === 0) return;
+
+  if (editModeStore.isImageSelectedMode() && getSelectedRect()) {
+    setSelectionPositionForImage();
+    return;
+  }
+
+  if (editModeStore.isTextSelectedMode() && getSelectedRect()) {
+    setSelectionPositionForText(getSelectedRect() as RectNotationAttributes);
+    selectionRotation.value = 0;
+    return;
+  }
+
+  if (editModeStore.isAnnotationSelectedMode()) {
+    setSelectionPositionForAnnotation(
+      getSelectedAnnotation() as AnnotationNotationAttributes,
+    );
+    return;
+  }
+
+  if (
+    editModeStore.isAreaSelectedMode() ||
+    editModeStore.getEditMode() === "AREA_MOVING"
+  ) {
+    setSelectionPositionFromNotations(selected);
+  }
+}
+
+watch(
+  () => {
+    const r = cellStore.getSvgBoundingRect();
+    return [r.top, r.left, r.width, r.height].join(",");
+  },
+  () => {
+    syncSelectionOverlayPosition();
+  },
+);
+
+function onSelectionMouseDrag(e: PointerEvent) {
+  eventBus.emit("EV_SVG_POINTERMOVE", e);
+}
+
+async function onSelectionMouseUp(e: PointerEvent) {
+  eventBus.emit("EV_SVG_POINTERUP", e);
+}
+
+function moveSelectedNotations(e: PointerEvent) {
   if (!e.buttons) return;
   // initial drag position
   if (!dragPosition.value.x) {
-    dragPosition.value.x = e.pageX;
-    dragPosition.value.y = e.pageY;
+    dragPosition.value.x = e.clientX;
+    dragPosition.value.y = e.clientY;
     return;
   }
 
@@ -505,13 +629,13 @@ function onlyLinesAnnotationsOrCircleAraSelected() {
   );
 }
 
-function moveAtCellScale(e: MouseEvent) {
+function moveAtCellScale(e: PointerEvent) {
   const deltaCol = Math.round(
-    (e.pageX - dragPosition.value.x) / cellStore.getCellHorizontalWidth(),
+    (e.clientX - dragPosition.value.x) / cellStore.getCellHorizontalWidth(),
   );
 
   const deltaRow = Math.round(
-    (e.pageY - dragPosition.value.y) / cellStore.getCellVerticalHeight(),
+    (e.clientY - dragPosition.value.y) / cellStore.getCellVerticalHeight(),
   );
 
   if (Math.abs(deltaCol) > 0 || Math.abs(deltaRow) > 0) {
@@ -544,9 +668,9 @@ function moveSelectionBox(deltaCol: number, deltaRow: number) {
   dragPosition.value.y += yMove;
 }
 
-function moveAtPixelScale(e: MouseEvent) {
-  const deltaX = e.pageX - dragPosition.value.x;
-  const deltaY = e.pageY - dragPosition.value.y;
+function moveAtPixelScale(e: PointerEvent) {
+  const deltaX = e.clientX - dragPosition.value.x;
+  const deltaY = e.clientY - dragPosition.value.y;
 
   if (deltaX != 0 || deltaY != 0) {
     const doClone = e.ctrlKey && !dragStarted;
@@ -581,7 +705,7 @@ async function moveSelectionByKey(
     moveVertical * cellStore.getCellVerticalHeight();
 }
 
-async function endMoveSelection(e: MouseEvent) {
+async function endMoveSelection(e: PointerEvent) {
   e.stopPropagation();
   const moveDirection: SelectionMoveDirection =
     e.movementX > 0 && e.movementY > 0
@@ -706,8 +830,8 @@ function setSelectionPositionForImage() {
   cursor: grab;
   cursor: -moz-grab;
   cursor: -webkit-grab;
-  position: absolute;
+  position: fixed;
   z-index: 99;
-  touch-action: none; /* prevent scrolling on touch devices */
+  touch-action: none;
 }
 </style>

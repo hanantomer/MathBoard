@@ -53,14 +53,10 @@
     ></line-handle>
 
     <svg
-      :style="{
-        width: matrixSize.width,
-        height: matrixSize.height,
-      }"
-      id="curveSvgId"
+      id="circleDrawerSvg"
+      :style="lineSvgScreenStyle"
       class="line-svg"
       xmlns="http://www.w3.org/2000/svg"
-      style="position: absolute; pointer-events: none"
     >
       <circle
         id="circle"
@@ -79,7 +75,7 @@
 import lineHandle from "./LineHandle.vue";
 import lineWatcher from "./LineWatcher.vue";
 import useNotationMutateHelper from "../helpers/notationMutateHelper";
-import { computed, ref, onMounted } from "vue";
+import { computed, nextTick, ref, watch } from "vue";
 import { useNotationStore } from "../store/pinia/notationStore";
 import { useEditModeStore } from "../store/pinia/editModeStore";
 import { useCellStore } from "../store/pinia/cellStore";
@@ -109,35 +105,71 @@ function roundPoint(point: DotCoordinates): DotCoordinates {
   };
 }
 
+const HANDLE_SIZE = 8;
+const HANDLE_HALF = HANDLE_SIZE / 2;
+
 const handleX1 = computed(() => {
   return (
     circleAttributes.value.cx -
     circleAttributes.value.r +
     cellStore.getSvgBoundingRect().left -
-    5
+    HANDLE_HALF
   );
 });
 
 const handleY1 = computed(() => {
-  return circleAttributes.value.cy + cellStore.getSvgBoundingRect().left;
+  return (
+    circleAttributes.value.cy +
+    (cellStore.getSvgBoundingRect().top ?? 0) -
+    HANDLE_HALF
+  );
 });
 
 const handleX2 = computed(() => {
   return (
     circleAttributes.value.cx +
     circleAttributes.value.r +
-    cellStore.getSvgBoundingRect().left
+    cellStore.getSvgBoundingRect().left -
+    HANDLE_HALF
   );
 });
 
 const handleY2 = computed(() => {
-  return circleAttributes.value.cy + cellStore.getSvgBoundingRect().left;
+  return (
+    circleAttributes.value.cy +
+    (cellStore.getSvgBoundingRect().top ?? 0) -
+    HANDLE_HALF
+  );
 });
 
 const show = computed(() => {
   return (
     editModeStore.isCircleDrawingMode() || editModeStore.isCircleSelectedMode()
   );
+});
+
+watch(show, async (visible) => {
+  if (visible) {
+    await nextTick();
+    const id = cellStore.getSvgId();
+    if (id) {
+      cellStore.setSvgBoundingRect(id);
+    }
+  }
+});
+
+/** Same viewport origin as pointer math and handles; avoids margin/layout drift from `.mathboard` on an `absolute` overlay. */
+const lineSvgScreenStyle = computed(() => {
+  const r = cellStore.getSvgBoundingRect();
+  return {
+    position: "fixed" as const,
+    top: `${r.top}px`,
+    left: `${r.left}px`,
+    width: matrixSize.width,
+    height: matrixSize.height,
+    margin: "0",
+    pointerEvents: "none" as const,
+  };
 });
 
 function initCircle(p: DotCoordinates) {

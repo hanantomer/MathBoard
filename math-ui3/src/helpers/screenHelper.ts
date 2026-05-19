@@ -23,6 +23,7 @@ const maxCellDistance = 4;
 export default function screenHelper() {
   type NotationDistance = { notation: NotationAttributes; distance: number };
 
+  /** `dotCoordinates` must be viewport coords (`clientX`/`clientY`), not `pageX`/`pageY`. */
   function getCellByDotCoordinates(
     dotCoordinates: DotCoordinates,
   ): CellAttributes {

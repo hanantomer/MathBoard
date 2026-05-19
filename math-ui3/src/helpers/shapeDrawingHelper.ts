@@ -5,20 +5,42 @@ import { sqrtSymbolSuffix } from "common/globals";
 import { useEditModeStore } from "../store/pinia/editModeStore";
 import { useCellStore } from "../store/pinia/cellStore";
 import { useNotationStore } from "../store/pinia/notationStore";
+import useSelectionHelper from "./selectionHelper";
 
 const editModeStore = useEditModeStore();
 const cellStore = useCellStore();
 const notationStore = useNotationStore();
 
+/**
+ * Touch pointer-moves usually have `buttons === 0` while dragging (unlike mouse).
+ * Pen can report pressure without the left-button bit on some devices.
+ */
+function isPointerDragActive(e: PointerEvent): boolean {
+  if (e.pointerType === "touch") {
+    return e.isPrimary;
+  }
+  if (e.pointerType === "pen") {
+    return (e.buttons & 1) !== 0 || e.pressure > 0;
+  }
+  return (e.buttons & 1) !== 0;
+}
+
 export default function useShapeDrawingHelper() {
   let hiddenNotationUUID: string | null = null;
 
   function setLineInitialPosition(
-    e: MouseEvent | TouchEvent,
+    e: PointerEvent | TouchEvent,
     setLinePositionCallback: (p: DotCoordinates) => void,
   ) {
-    const pageX = "touches" in e ? e.touches[0].pageX : e.pageX;
-    const pageY = "touches" in e ? e.touches[0].pageY : e.pageY;
+    // if (!("touches" in e)) {
+    //   const selectionHelper = useSelectionHelper();
+    //   if (selectionHelper.trySelectNotationAtPointer(e)) {
+    //     return;
+    //   }
+    // }
+
+    const clientX = "touches" in e ? e.touches[0].clientX : e.clientX;
+    const clientY = "touches" in e ? e.touches[0].clientY : e.clientY;
     // advance from a "*_STARTED" state to corresponding drawing state
     const current = editModeStore.getEditMode();
     switch (current) {
@@ -40,58 +62,64 @@ export default function useShapeDrawingHelper() {
       case "SQRT_STARTED":
         editModeStore.setEditMode("SQRT_DRAWING");
         break;
+      case "FREE_SKETCH_STARTED":
+        editModeStore.setEditMode("FREE_SKETCH_DRAWING");
+        break;
       default:
         editModeStore.setDefaultEditMode();
     }
 
+    const rect = cellStore.getSvgBoundingRect();
     const position = {
-      x: pageX - cellStore.getSvgBoundingRect().x,
-      y: pageY - cellStore.getSvgBoundingRect().y,
+      x: clientX - rect.left,
+      y: clientY - rect.top,
     };
 
     setLinePositionCallback(position);
   }
 
   function drawNewLine(
-    e: MouseEvent | TouchEvent,
+    e: PointerEvent | TouchEvent,
     drawLineCallback: (p: DotCoordinates) => void,
   ) {
-    let pageX: number;
-    let pageY: number;
+    let clientX: number;
+    let clientY: number;
 
     if ("touches" in e) {
       if (e.touches.length !== 1) {
         return;
       }
-      pageX = e.touches[0].pageX;
-      pageY = e.touches[0].pageY;
+      clientX = e.touches[0].clientX;
+      clientY = e.touches[0].clientY;
     } else {
-      if (e.buttons !== 1) {
+      if (!isPointerDragActive(e)) {
         return;
       }
-      pageX = e.pageX;
-      pageY = e.pageY;
+      clientX = e.clientX;
+      clientY = e.clientY;
     }
 
+    const rect = cellStore.getSvgBoundingRect();
     const position = {
-      x: pageX - cellStore.getSvgBoundingRect().x,
-      y: pageY - cellStore.getSvgBoundingRect().y,
+      x: clientX - rect.left,
+      y: clientY - rect.top,
     };
 
     drawLineCallback(position);
   }
 
   function modifyLine(
-    e: MouseEvent,
+    e: PointerEvent,
     modifyLineCallback: (p: DotCoordinates) => void,
   ) {
-    if (e.buttons !== 1) {
+    if (!isPointerDragActive(e)) {
       return;
     }
 
+    const rect = cellStore.getSvgBoundingRect();
     const position = {
-      x: e.pageX - cellStore.getSvgBoundingRect().x,
-      y: e.pageY - cellStore.getSvgBoundingRect().y,
+      x: e.clientX - rect.left,
+      y: e.clientY - rect.top,
     };
 
     modifyLineCallback(position);
@@ -125,28 +153,22 @@ export default function useShapeDrawingHelper() {
   }
 
   async function saveDrawing(saveDrawingCallback: () => Promise<string>) {
-
-     await saveDrawingCallback();
+    await saveDrawingCallback();
 
     if (editModeStore.isPolygonDrawingMode()) return;
 
-    if (editModeStore.getGlobalEditMode() === "FREE_SKETCH") {
-      editModeStore.setEditMode("FREE_SKETCH_STARTED");
-      return;
-    } else if (editModeStore.getGlobalEditMode() === "LINE") {
-      editModeStore.setEditMode("LINE_STARTED");
-      return;
-    }
-
-    // determine next mode based on current state
     const current = editModeStore.getEditMode();
     switch (current) {
       case "LINE_DRAWING":
+        editModeStore.setEditMode("LINE_STARTED");
+        break;
       case "LINE_EDITING_LEFT":
       case "LINE_EDITING_RIGHT":
         editModeStore.setEditMode("LINE_SELECTED");
         break;
       case "DIVISIONLINE_DRAWING":
+        editModeStore.setEditMode("DIVISIONLINE_SELECTED");
+        break;
       case "DIVISIONLINE_EDITING_LEFT":
       case "DIVISIONLINE_EDITING_RIGHT":
         editModeStore.setEditMode("DIVISIONLINE_SELECTED");
@@ -164,6 +186,9 @@ export default function useShapeDrawingHelper() {
       case "SQRT_DRAWING":
       case "SQRT_EDITING":
         editModeStore.setEditMode("SQRT_SELECTED");
+        break;
+      case "FREE_SKETCH_DRAWING":
+        editModeStore.setEditMode("FREE_SKETCH_STARTED");
         break;
       default:
         editModeStore.setDefaultEditMode();

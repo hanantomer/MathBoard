@@ -1,6 +1,33 @@
+function loadImage(url: string): Promise<HTMLImageElement> {
+  return new Promise((resolve, reject) => {
+    const image = new Image();
+    image.onload = () => resolve(image);
+    image.onerror = () => reject(new Error("Failed to load image"));
+    image.src = url;
+  });
+}
 
-export default function imageHelper() {
-  // Helper function to process the image
+function scaleDimensions(
+  width: number,
+  height: number,
+  maxDimension: number,
+): { width: number; height: number } {
+  if (width <= maxDimension && height <= maxDimension) {
+    return { width, height };
+  }
+  if (width >= height) {
+    return {
+      width: maxDimension,
+      height: Math.floor((height * maxDimension) / width),
+    };
+  }
+  return {
+    width: Math.floor((width * maxDimension) / height),
+    height: maxDimension,
+  };
+}
+
+export default function imageHelper() {  // Helper function to process the image
   async function convertBase64ToGrayScale(base64: string): Promise<string> {
     const image: HTMLImageElement = new Image();
     return new Promise<string>((resolve, reject) => {
@@ -66,6 +93,35 @@ export default function imageHelper() {
     return await convertBase64ToGrayScale(base64);
   }
 
+  /** Resize and grayscale before upload — keeps socket payloads small and fast on mobile. */
+  async function prepareImageFileForUpload(
+    file: File,
+    maxDimension = 1200,
+    jpegQuality = 0.82,
+  ): Promise<string> {
+    const url = URL.createObjectURL(file);
+    try {
+      const image = await loadImage(url);
+      const { width, height } = scaleDimensions(
+        image.width,
+        image.height,
+        maxDimension,
+      );
+      const canvas = document.createElement("canvas");
+      canvas.width = width;
+      canvas.height = height;
+      const ctx = canvas.getContext("2d");
+      if (!ctx) {
+        throw new Error("Failed to get canvas context");
+      }
+      ctx.filter = "grayscale(100%)";
+      ctx.drawImage(image, 0, 0, width, height);
+      return canvas.toDataURL("image/jpeg", jpegQuality);
+    } finally {
+      URL.revokeObjectURL(url);
+    }
+  }
+
   async function getDimensionsFromBase64(
     base64: string,
   ): Promise<{ width: number; height: number }> {
@@ -85,5 +141,6 @@ export default function imageHelper() {
     getDimensionsFromBase64,
     convertBlobToBase64GrayScale,
     convertImageToBase64,
+    prepareImageFileForUpload,
   };
 }

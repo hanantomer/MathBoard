@@ -15,14 +15,11 @@ export type BusEventType =
   | "EV_SHORTCUT_KEYUP"
   | "EV_KEYUP"
   | "EV_KEYDOWN"
-  | "EV_MOUSEUP"
-  | "EV_TOUCHEEND"
-  | "EV_SVG_MOUSEUP"
-  | "EV_SVG_MOUSEDOWN"
-  | "EV_SVG_MOUSE_DRAG"
-  | "EV_SVG_TOUCHSTART"
-  | "EV_SVG_TOUCHMOVE"
-  | "EV_SVG_TOUCHEND"
+  | "EV_POINTERUP"
+  | "EV_SVG_POINTERUP"
+  | "EV_SVG_POINTERCANCEL"
+  | "EV_SVG_POINTERDOWN"
+  | "EV_SVG_POINTERMOVE"
   | "EV_AREA_SELECTED"
   | "EV_AREA_SELECTION_DONE"
   | "EV_CURVE_SELECTED"
@@ -241,6 +238,9 @@ export const EditModeCursorType = new Map<
   ["AREA_MOVING", "auto"],
   ["TEXT_AREA_SELECTING", "auto"],
   ["TEXT_AREA_SELECTED", "auto"],
+  ["TEXT_SELECTED", "grab"],
+  ["IMAGE_SELECTED", "grab"],
+  ["ANNOTATION_SELECTED", "grab"],
   ["CHECKMARK_STARTED", "auto"],
   ["SEMICHECKMARK_STARTED", "auto"],
   ["XMARK_STARTED", "auto"],

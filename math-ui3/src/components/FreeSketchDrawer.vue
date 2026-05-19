@@ -13,8 +13,8 @@
       func: endFreeSketchDrawing,
     }"
     :selectEntry="{
-      editMode: [],
-      func: () => {},
+      editMode: ['FREE_SKETCH_SELECTED'],
+      func: selectFreeSketch,
       event: 'EV_FREE_SKETCH_SELECTED',
     }"
     :moveByKeyEntry="{
@@ -36,11 +36,7 @@
 
   <div v-show="show">
     <svg
-      :style="{
-        width: matrixSize.width,
-        height: matrixSize.height,
-      }"
-      id="freeSketchSvgId"
+      :style="lineSvgScreenStyle"
       class="line-svg"
       xmlns="http://www.w3.org/2000/svg"
     >
@@ -61,13 +57,17 @@
 import lineWatcher from "./LineWatcher.vue";
 import useNotationMutateHelper from "../helpers/notationMutateHelper";
 
-import { computed } from "vue";
+import { computed, nextTick, watch } from "vue";
 import { useNotationStore } from "../store/pinia/notationStore";
 import { useEditModeStore } from "../store/pinia/editModeStore";
 import { useCellStore } from "../store/pinia/cellStore";
 import { getStroke } from "perfect-freehand";
 import useWatchHelper from "../helpers/watchHelper";
-import { DotCoordinates, FreeSketchNotationAttributes } from "common/baseTypes";
+import {
+  DotCoordinates,
+  FreeSketchNotationAttributes,
+  NotationAttributes,
+} from "common/baseTypes";
 
 import { matrixSize } from "common/globals";
 
@@ -87,8 +87,31 @@ let sketchPoints: Point[] = [];
 const show = computed(() => {
   return (
     editModeStore.isFreeSketchDrawingMode() ||
-    editModeStore.isFreeSketchGlobalMode()
+    (editModeStore.isFreeSketchSelectedMode() && sketchPoints.length > 0)
   );
+});
+
+watch(show, async (visible) => {
+  if (visible) {
+    await nextTick();
+    const id = cellStore.getSvgId();
+    if (id) {
+      cellStore.setSvgBoundingRect(id);
+    }
+  }
+});
+
+/** Same viewport origin as pointer math; avoids margin/layout drift from `.mathboard` on an `absolute` overlay. */
+const lineSvgScreenStyle = computed(() => {
+  const r = cellStore.getSvgBoundingRect();
+  return {
+    position: "fixed" as const,
+    top: `${r.top}px`,
+    left: `${r.left}px`,
+    width: matrixSize.width,
+    height: matrixSize.height,
+    margin: "0",
+  };
 });
 
 // Reset sketch points when switching away from FREE_SKETCH global mode
@@ -99,6 +122,12 @@ watchHelper.watchGlobalEditModeChange((newMode, oldMode) => {
     updateSketchPath();
   }
 });
+
+function selectFreeSketch(n: NotationAttributes) {
+  const sketch = n as FreeSketchNotationAttributes;
+  sketchPoints = (sketch.points ?? []).map((p) => ({ x: p.x, y: p.y }));
+  updateSketchPath();
+}
 
 function startFreeSketchDrawing(p: DotCoordinates): boolean {
   sketchPoints = [];
@@ -145,13 +174,11 @@ function updateSketchPath() {
     return;
   }
 
-  const offsetX = cellStore.getSvgBoundingRect().left - 10;
-
   // Generate a simulated pressure (0..1) based on stroke speed.
   // Slower strokes create thicker lines (higher "pressure"), while fast strokes thin out.
   let lastPoint: Point | null = null;
   const strokePoints = sketchPoints.map((p) => {
-    const scaledX = p.x + offsetX;
+    const scaledX = p.x;
     const scaledY = p.y;
 
     let pressure = 0.55;
@@ -198,11 +225,8 @@ async function endFreeSketchDrawing(): Promise<string> {
   }
 
   const uuid = await saveFreeSketch(sketchPoints);
-  // if (editModeStore.getGlobalEditMode() === "FREE_SKETCH") {
-  //   editModeStore.setEditMode("FREE_SKETCH_STARTED");
-  // } else {
-  //   editModeStore.setDefaultEditMode();
-  // }
+  sketchPoints = [];
+  updateSketchPath();
   return uuid;
 }
 

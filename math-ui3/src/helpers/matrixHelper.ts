@@ -74,6 +74,9 @@ export default function useMatrixHelper() {
       .data((r) => r)
       .enter()
       .append("rect")
+      .attr("style", () => {
+        return "pointer-events: none";
+      })
       .attr("fill", () => {
         return "white";
       })

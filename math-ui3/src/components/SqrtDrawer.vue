@@ -46,16 +46,15 @@
     </line-handle>
 
     <svg
-      height="800"
-      width="1500"
+      :style="lineSvgScreenStyle"
       xmlns="http://www.w3.org/2000/svg"
       class="line-svg"
     >
       <line
-        :x1="sqrtLeft"
-        :y1="sqrtY"
-        :x2="sqrtRight"
-        :y2="sqrtY"
+        :x1="sqrtLine.x1"
+        :y1="sqrtLine.y"
+        :x2="sqrtLine.x2"
+        :y2="sqrtLine.y"
         class="sqrt"
         stroke="black"
         data-cy="sqrtDrawer"
@@ -64,8 +63,8 @@
     <p
       class="sqrtsymbol"
       v-bind:style="{
-        left: sqrtSymbolX + 'px',
-        top: sqrtSymbolY + 'px',
+        left: sqrtSymbolScreen.left + 'px',
+        top: sqrtSymbolScreen.top + 'px',
       }"
     >
       &#x221A;
@@ -73,11 +72,10 @@
   </div>
 </template>
 <script setup lang="ts">
-import { computed, ref } from "vue";
+import { computed, nextTick, ref, watch } from "vue";
 import useNotationMutateHelper from "../helpers/notationMutateHelper";
 import useScreenHelper from "../helpers/screenHelper";
 import useSelectionHelper from "../helpers/selectionHelper";
-import useShapeDrawingHelperr from "../helpers/shapeDrawingHelper";
 import { useNotationStore } from "../store/pinia/notationStore";
 import { useCellStore } from "../store/pinia/cellStore";
 import { useEditModeStore } from "../store/pinia/editModeStore";
@@ -95,7 +93,29 @@ import lineHandle from "./LineHandle.vue";
 import lineWatcher from "./LineWatcher.vue";
 import useWatchHelper from "../helpers/watchHelper";
 
-import { sqrtDeltaY } from "common/globals";
+import { matrixSize } from "common/globals";
+
+/**
+ * Must stay in sync with matrixHtmlHelper.ts:
+ * - x(): SQRTSYMBOL deltaX -7
+ * - y(): SQRTSYMBOL y += 2 (row * cellHeight)
+ * - col(): SQRT uses fromCol + 1 for line FO
+ * - width(): SQRT line width
+ * - generateSqrtHtml: margin-top 2px
+ * - generateSqrtSymbolHtml: margin-top -2px, margin-left 10px
+ */
+const SQRT_SYMBOL_FO_DELTA_X = -7;
+const SQRT_SYMBOL_FO_DELTA_Y = 2;
+const SQRT_LINE_HTML_MARGIN_TOP = 2;
+const SQRT_SYMBOL_HTML_MARGIN_LEFT = 10;
+const SQRT_SYMBOL_HTML_MARGIN_TOP = -2;
+/** Overlay-only tweak if a browser still misaligns vs matrix foreignObject. */
+const SQRT_SYMBOL_EDITOR_Y_NUDGE = 0;
+/** Vertical center of the 1px border band on the matrix .sqrt span (margin-top + ~1px). */
+const SQRT_LINE_VINCULUM_CENTER_OFFSET = SQRT_LINE_HTML_MARGIN_TOP + 1;
+
+const HANDLE_SIZE = 8;
+const HANDLE_HALF = HANDLE_SIZE / 2;
 
 const notationStore = useNotationStore();
 const editModeStore = useEditModeStore();
@@ -104,7 +124,6 @@ const notationMutateHelper = useNotationMutateHelper();
 const screenHelper = useScreenHelper();
 const watchHelper = useWatchHelper();
 const selectionHelper = useSelectionHelper();
-const shapeDrawingHelper = useShapeDrawingHelperr();
 
 let linePosition = ref(<LineAttributes>{
   p1x: 0,
@@ -122,32 +141,76 @@ const show = computed(() => {
   );
 });
 
-let sqrtRight = computed(() => {
-  return linePosition.value.p2x - cellStore.getSvgBoundingRect().left;
+watch(show, async (visible) => {
+  if (visible) {
+    await nextTick();
+    const id = cellStore.getSvgId();
+    if (id) {
+      cellStore.setSvgBoundingRect(id);
+    }
+  }
 });
 
-let sqrtLeft = computed(() => {
-  return linePosition.value.p1x - cellStore.getSvgBoundingRect().left + 15;
+const lineSvgScreenStyle = computed(() => {
+  const r = cellStore.getSvgBoundingRect();
+  return {
+    position: "fixed" as const,
+    top: `${r.top}px`,
+    left: `${r.left}px`,
+    width: matrixSize.width,
+    height: matrixSize.height,
+    margin: "0",
+    pointerEvents: "none" as const,
+  };
 });
 
-let sqrtY = computed(() => {
-  return linePosition.value.p1y;
+/** Grid indices derived from linePosition (viewport x / board y). */
+const sqrtGrid = computed(() => {
+  const r = cellStore.getSvgBoundingRect();
+  const w = cellStore.getCellHorizontalWidth();
+  const h = cellStore.getCellVerticalHeight();
+  const fromCol = Math.round((linePosition.value.p1x - r.left) / w);
+  const toCol = Math.round((linePosition.value.p2x - r.left) / w);
+  const row = Math.round(linePosition.value.p1y / h);
+  return { fromCol, toCol, row };
 });
 
-let sqrtSymbolX = computed(() => {
-  return sqrtLeft.value + cellStore.getSvgBoundingRect().left - 11;
+/** SVG user-space coords (same origin as matrix foreignObjects). */
+const sqrtLine = computed(() => {
+  const g = sqrtGrid.value;
+  const w = cellStore.getCellHorizontalWidth();
+  const h = cellStore.getCellVerticalHeight();
+  const x1 = (g.fromCol + 1) * w;
+  const x2 = g.toCol * w;
+  const y = g.row * h + SQRT_LINE_VINCULUM_CENTER_OFFSET;
+  return { x1, x2, y };
 });
 
-let sqrtSymbolY = computed(() => {
-  return linePosition.value.p1y + (cellStore.getSvgBoundingRect().top ?? 0) - 6;
+/** Viewport px for the √ paragraph (matrix: foreignObject + inner margins). */
+const sqrtSymbolScreen = computed(() => {
+  const r = cellStore.getSvgBoundingRect();
+  const g = sqrtGrid.value;
+  const w = cellStore.getCellHorizontalWidth();
+  const h = cellStore.getCellVerticalHeight();
+  const foX = g.fromCol * w + SQRT_SYMBOL_FO_DELTA_X;
+  const foY = g.row * h + SQRT_SYMBOL_FO_DELTA_Y;
+  return {
+    left: r.left + foX + SQRT_SYMBOL_HTML_MARGIN_LEFT,
+    top:
+      r.top +
+      foY +
+      SQRT_SYMBOL_HTML_MARGIN_TOP +
+      SQRT_SYMBOL_EDITOR_Y_NUDGE,
+  };
 });
 
 let handleX = computed(() => {
-  return linePosition.value.p2x;
+  return linePosition.value.p2x - HANDLE_HALF;
 });
 
 let handleY = computed(() => {
-  return sqrtY.value + (cellStore.getSvgBoundingRect().top ?? 0) - 5;
+  const r = cellStore.getSvgBoundingRect();
+  return r.top + sqrtLine.value.y - HANDLE_HALF;
 });
 
 watchHelper.watchEveryEditModeChange(setInitialPosition);
@@ -171,16 +234,15 @@ async function setInitialPosition(editMode: EditMode) {
 
   linePosition.value.p1x = p.x - 10;
   linePosition.value.p2x = p.x + cellStore.getCellHorizontalWidth() * 4;
-  linePosition.value.p1y = nearestRowY + sqrtDeltaY;
+  linePosition.value.p1y = nearestRowY;
   linePosition.value.p2y = linePosition.value.p1y;
 
   var sqrtNotation = await endDrawing();
   selectionHelper.selectNotation(sqrtNotation);
-  //shapeDrawingHelper.hideMatrixLine(sqrtNotation);
 }
 
 function drawLine(p: DotCoordinates) {
-  linePosition.value.p2x = p.x;
+  linePosition.value.p2x = p.x + cellStore.getSvgBoundingRect().left;
 }
 
 async function endDrawing(): Promise<string> {
@@ -230,9 +292,9 @@ function selectSqrt(notation: NotationAttributes) {
     cellStore.getSvgBoundingRect().left;
 
   linePosition.value.p1y =
-    n.row * cellStore.getCellVerticalHeight() + sqrtDeltaY;
+    n.row * cellStore.getCellVerticalHeight();
 
-  linePosition.value.p2y = n.row * cellStore.getCellVerticalHeight();
+  linePosition.value.p2y = linePosition.value.p1y;
 }
 
 function moveSqrt(moveX: number, moveY: number) {

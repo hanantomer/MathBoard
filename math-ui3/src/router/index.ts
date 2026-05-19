@@ -1,6 +1,5 @@
 import { createRouter, createWebHistory, RouteRecordRaw } from "vue-router";
-import useApiHelper from "../helpers/apiHelper";
-import { useUserStore } from "../store/pinia/userStore";
+import { restoreSessionFromCookie } from "../composables/restoreSession";
 import useSeo from "../composables/useSeo";
 
 /**
@@ -163,7 +162,7 @@ const routes: Array<RouteRecordRaw> = [
     props: true,
     component: () => import("../components/UploadPhoto.vue"),
     meta: {
-      requiresAuth: true,
+      requiresAuth: false,
       title: "Upload Photo - MathBoard",
       description: "Upload a photo for your mathematics work.",
       keywords: "upload, photo, math work",
@@ -176,17 +175,9 @@ const router = createRouter({
   routes,
 });
 
-router.beforeEach(async (to, from) => {
-  const userStore = useUserStore();
-  const apiHelper = useApiHelper();
-
-  if (userStore.getCurrentUser()) {
-    return;
-  }
-
-  const user = await apiHelper.getUserByAccessToken();
+router.beforeEach(async (to) => {
+  const user = await restoreSessionFromCookie();
   if (user) {
-    userStore.setCurrentUser(user);
     return;
   }
 

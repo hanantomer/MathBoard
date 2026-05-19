@@ -6,6 +6,7 @@ describe("e2e", () => {
   before(function () {});
   it("e2e - free sketch annotation draw", () => {
     cy.visit("http://localhost:13035");
+    cy.login();
     cy.openLesson();
     cy.clearBoard();
 
@@ -17,6 +18,6 @@ describe("e2e", () => {
     // verify free sketch editor exists
     //cy.dataCy("freeSketchEditor").should("exist");
 
-    cy.drawLine("freesketchButton", null, 300, 300, 200, 400);
+    cy.drawLine("freesketchButton", 300, 300, 200, 400);
   });
 });

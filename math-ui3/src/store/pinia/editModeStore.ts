@@ -75,7 +75,8 @@ export const useEditModeStore = defineStore("editMode", () => {
       editMode.value === "TEXT_SELECTED" ||
       editMode.value === "IMAGE_SELECTED" ||
       editMode.value === "ANNOTATION_SELECTED" ||
-      editMode.value === "SQRT_SELECTED"
+      editMode.value === "SQRT_SELECTED" ||
+      editMode.value === "FREE_SKETCH_SELECTED"
     );
   }
 
@@ -278,7 +279,7 @@ export const useEditModeStore = defineStore("editMode", () => {
     console.debug(
       `old edit mode: ${editMode.value}, new edit mode: ${newEditMode} `,
     );
-    //console.trace();
+    console.trace();
     editMode.value = newEditMode;
   }
 
@@ -306,15 +307,23 @@ export const useEditModeStore = defineStore("editMode", () => {
     return globalEditMode.value !== "TEXT";
   }
 
-  function isTouchDrawingMode() {
+  function isDrawingOrSelectingMode() {
     return (
+      isLineStartedMode ||
+      isLineEditingMode() ||
       isLineDrawingMode() ||
-      isDivisionLineDrawingMode() ||
-      isFreeSketchDrawingMode() ||
-      isPolygonDrawingMode() ||
-      isCircleDrawingMode() ||
-      isSqrtDrawingMode() ||
+      isCurveStartedMode() ||
       isCurveDrawingMode() ||
+      isSqrtStartedMode() ||
+      isSqrtDrawingMode() ||
+      isDivisionLineStartedMode() ||
+      isDivisionLineDrawingMode() ||
+      isDivisionLineEditingMode() ||
+      isFreeSketchStartedMode() ||
+      isPolygonDrawingMode() ||
+      isCurveEditingControlPointMode() ||
+      isCircleDrawingMode() ||
+      isCircleSelectedMode() ||
       isTextStartedMode() ||
       isAreaSelectingMode()
     );
@@ -326,6 +335,7 @@ export const useEditModeStore = defineStore("editMode", () => {
     getDefaultEditMode,
     getNotationTypeByEditMode,
     isAreaSelectedMode,
+    isAreaSelectingMode,
     isAreaSelectionOrMovingMode,
     isExponentMode,
     isExponentStartedMode,
@@ -374,7 +384,7 @@ export const useEditModeStore = defineStore("editMode", () => {
     isAnnotationGlobalMode,
     isFreeSketchGlobalMode,
     isInGlobalDrawingMode,
-    isTouchDrawingMode,
+    isDrawingOrSelectingMode,
     setEditMode,
     setGlobalEditMode,
     setDefaultEditMode,

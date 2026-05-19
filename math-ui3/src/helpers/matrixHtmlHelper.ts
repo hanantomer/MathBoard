@@ -252,7 +252,8 @@ export default function useHtmlMatrixHelper() {
     let y = utils.getNotationYposByRow(rowIdx);
 
     if (n.notationType === "SQRTSYMBOL") {
-      y -= 3; // Adjust vertical position for sqrt symbol
+      // Nudge √ down so it lines up with the radical line (kept in sync with SqrtDrawer.vue).
+      y += 2;
     }
 
     return y;
@@ -417,7 +418,7 @@ export default function useHtmlMatrixHelper() {
       const n1 = n as RectNotationAttributes;
       const bColor = rectBorderColor(n ?? false);
       return utils.wrapWithDiv(
-        `<img draggable="false" id=${n1.uuid} style='z-index:1;width:100%;height:100%;border:groove 2px;border-color:${bColor}' src='${n1.value}'>`,
+        `<img draggable="false" id=${n1.uuid} class="board-image" style='z-index:1;width:100%;height:100%;border:groove 2px;border-color:${bColor};cursor:grab' src='${n1.value}'>`,
       );
     }
 

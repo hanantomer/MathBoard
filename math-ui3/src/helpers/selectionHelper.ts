@@ -8,7 +8,6 @@ import {
   isCellNotationType,
 } from "common/baseTypes";
 
-import { getMousePositionInSVG } from "common/globals";
 import { useLessonStore } from "../store/pinia/lessonStore";
 import { useEditModeStore } from "../store/pinia/editModeStore";
 import { useNotationStore } from "../store/pinia/notationStore";
@@ -20,6 +19,7 @@ import useUserOutgoingOperationsHelper from "./userOutgoingOperationsHelper";
 import useEventBus from "./eventBusHelper";
 import useAuthorizationHelper from "./authorizationHelper";
 import { NotationType } from "common/unions";
+import { viewportPointerPosition } from "./pointerCoordinateHelper";
 
 const eventBus = useEventBus();
 const cellStore = useCellStore();
@@ -188,7 +188,6 @@ export default function selectionHelper() {
     }
 
     if (activeNotation.notationType === "ANNOTATION") {
-      editModeStore.setGlobalEditMode("ANNOTATION");
       editModeStore.setEditMode("ANNOTATION_SELECTED");
       eventBus.emit("EV_ANNOTATION_SELECTED", activeNotation);
     }
@@ -212,7 +211,10 @@ export default function selectionHelper() {
   }
 
   function selectFreeSketchNotation(uuid: string) {
+    const notation = notationStore.getNotation(uuid)!;
     notationStore.selectNotation(uuid);
+    editModeStore.setEditMode("FREE_SKETCH_SELECTED");
+    eventBus.emit("EV_FREE_SKETCH_SELECTED", notation);
   }
 
   function selectCircleNotation(uuid: String) {
@@ -259,18 +261,32 @@ export default function selectionHelper() {
     }
   }
 
-  function selectClickedPosition(e: MouseEvent) {
-    const svgEl = document.getElementById(
-      cellStore.getSvgId()!,
-    ) as SVGSVGElement | null;
+  /** Select an existing notation under the pointer (used while a draw tool is active). */
+  function trySelectNotationAtPointer(e: PointerEvent): boolean {
+    if (!cellStore.getSvgId()) return false;
 
-    if (!svgEl) return;
+    const position = viewportPointerPosition(e);
 
-    const position = getMousePositionInSVG(
-      svgEl,
-      e,
-      cellStore.getSvgBoundingRect(),
-    );
+    const target = e.target as HTMLElement | null;
+    const uuid = target?.id;
+    const notationClicked =
+      !!uuid &&
+      target?.tagName !== "svg" &&
+      target?.tagName !== "g" &&
+      !!notationStore.getNotation(uuid);
+
+    if (notationClicked) {
+      selectNotation(uuid);
+      return true;
+    }
+
+    return selectNotationAtPosition(position);
+  }
+
+  function selectClickedPosition(e: PointerEvent) {
+    if (!cellStore.getSvgId()) return;
+
+    const position = viewportPointerPosition(e);
 
     let clickedCell = screenHelper.getCellByDotCoordinates(position);
     if (!clickedCell) return;
@@ -279,7 +295,8 @@ export default function selectionHelper() {
 
     const uuid = (e.target as any).id;
     let notationFoundAtCell = false;
-    if (uuid) {
+    const notationClicked = uuid && (e.target as any).tagName !== "svg"
+    if (notationClicked) {
       // select clicked element
       selectNotation(uuid);
     } else {
@@ -287,7 +304,7 @@ export default function selectionHelper() {
       notationFoundAtCell = selectNotationAtPosition(position);
     }
 
-    if (!uuid && !notationFoundAtCell) {
+    if (!notationClicked && !notationFoundAtCell) {
       // if no notation found, reset selected notations
       notationStore.resetSelectedNotations();
       setSelectedCell(clickedCell, true);
@@ -297,7 +314,7 @@ export default function selectionHelper() {
     const pointNotationSelected =
       (notationFoundAtCell &&
         isCellNotationType(notationStore.getNotations()[0].notationType)) ||
-      (uuid &&
+      (notationClicked &&
         isCellNotationType(notationStore.getNotation(uuid)!.notationType));
 
     if (pointNotationSelected) {
@@ -342,6 +359,7 @@ export default function selectionHelper() {
 
   return {
     selectClickedPosition,
+    trySelectNotationAtPointer,
     selectNotation,
     selectNotationAtPosition,
     selectNotationsOfArea,

@@ -6,11 +6,12 @@ describe("e2e", () => {
   before(function () {});
   it("e2e", () => {
     cy.visit("http://localhost:13035");
+    cy.login();
     cy.openLesson();
     cy.clearBoard();
 
     cy.get('[row="0"] > [col="0"]')
-      .click()
+      .click({ force: true })
       .should("have.css", "stroke")
       .and("include", "rgb(255, 0, 0)"); // selected cell has red stroke
     cy.get('[row="0"] > [col="1"]')

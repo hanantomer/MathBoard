@@ -1,6 +1,6 @@
 <template>
-  <div class="d-flex">
-    <v-sheet>
+  <div class="lesson-page d-flex">
+    <v-sheet class="lesson-sheet">
       <mathBoard :svgId="svgId" :loaded="loaded"> </mathBoard>
     </v-sheet>
   </div>
@@ -36,6 +36,7 @@ const userIncomingOperations = useUserIncomingOperations();
 
 let loaded = ref(false);
 const svgId = "lessonSvg";
+const pendingCreatedLessonKey = "pendingCreatedLessonUUId";
 
 onMounted(() => {
   cellStore.setSvgBoundingRect(svgId);
@@ -87,6 +88,22 @@ async function loadLesson(lessonUUId: string) {
   }
 
   titleStore.setTitle(lessonStore.getCurrentLesson()!.name);
+  sessionStorage.removeItem(pendingCreatedLessonKey);
   loaded.value = true;
 }
 </script>
+
+<style scoped>
+.lesson-page {
+  width: 100%;
+  max-width: 100vw;
+  overflow-x: hidden;
+}
+
+.lesson-sheet {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: hidden;
+  background: transparent;
+}
+</style>

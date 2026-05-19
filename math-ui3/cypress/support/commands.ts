@@ -49,21 +49,105 @@ declare namespace Cypress {
     clearBoard(): any;
     drawLine(
       buttonDataCy: string,
-      handleDataCy: string | null,
       x1: number,
       y1: number,
       x2: number,
       y2: number,
-    ): any;
+    ): Chainable<void>;
+    dragLineRightHandle(
+      handleDataCy: string,
+      x: number,
+      y: number,
+    ): Chainable<void>;
+    clickSvg(x: number, y: number): Chainable<void>;
+    drawPolyline(points: Array<[number, number]>): Chainable<void>;
     selectArea(x: number, y: number, width: number, height: number): any;
   }
+}
+
+/**
+ * MathBoard wires the lesson SVG with native pointer listeners (eventHelper.ts),
+ * which emit EV_SVG_POINTERDOWN / MOVE / UP. AreaSelector.vue listens on the bus
+ * — not on mouse events. Cypress must dispatch pointer* so emitSvgPointer* runs.
+ * emitSvgPointerMove also requires (e.buttons & 1) !== 0 for mouse (non-touch).
+ * From CELL_SELECTED, marquee starts on EV_SVG_POINTERMOVE (AreaSelector L138–141).
+ */
+const SVG_POINTER_ID = 1;
+
+function pointerInSvg(
+  win: Window,
+  svg: { getBoundingClientRect(): { left: number; top: number } },
+  x: number,
+  y: number,
+): { clientX: number; clientY: number; pageX: number; pageY: number } {
+  const br = svg.getBoundingClientRect();
+  const clientX = br.left + x;
+  const clientY = br.top + y;
+  return {
+    clientX,
+    clientY,
+    pageX: win.scrollX + clientX,
+    pageY: win.scrollY + clientY,
+  };
+}
+
+function svgPointerOpts(
+  win: Window,
+  svg: { getBoundingClientRect(): { left: number; top: number } },
+  x: number,
+  y: number,
+  pressed: boolean,
+) {
+  const { clientX, clientY, pageX, pageY } = pointerInSvg(win, svg, x, y);
+  const buttons = pressed ? 1 : 0;
+  return {
+    force: true,
+    pointerId: SVG_POINTER_ID,
+    pointerType: "mouse" as const,
+    isPrimary: true,
+    clientX,
+    clientY,
+    pageX,
+    pageY,
+    button: 0,
+    buttons,
+  };
+}
+
+function dispatchSvgPointer(
+  win: Window,
+  target: any,
+  svg: { getBoundingClientRect(): { left: number; top: number } },
+  type: "pointerdown" | "pointermove" | "pointerup",
+  x: number,
+  y: number,
+  pressed: boolean,
+) {
+  const opts = svgPointerOpts(win, svg, x, y, pressed);
+  const event = new win.PointerEvent(type, {
+    bubbles: true,
+    cancelable: true,
+    composed: true,
+    pointerId: opts.pointerId,
+    pointerType: opts.pointerType,
+    isPrimary: opts.isPrimary,
+    clientX: opts.clientX,
+    clientY: opts.clientY,
+    button: opts.button,
+    buttons: opts.buttons,
+  });
+
+  // Keep page* consistent with client* for any legacy listeners.
+  Object.defineProperty(event, "pageX", { value: opts.pageX });
+  Object.defineProperty(event, "pageY", { value: opts.pageY });
+
+  target.dispatchEvent(event);
 }
 
 Cypress.Commands.add(
   "drawLine",
   (
     buttonDataCy: string,
-    handleDataCy: string | null,
     x1: number,
     y1: number,
     x2: number,
@@ -71,43 +155,68 @@ Cypress.Commands.add(
   ) => {
     cy.dataCy(buttonDataCy).click();
 
-    cy.get("#lessonSvg").trigger("mousedown", { x: x1, y: y1 });
-
-    cy.get("#lessonSvg").trigger("mousemove", {
-      buttons: 1,
-      x: x1,
-      y: y1,
+    cy.get("#lessonSvg").then(($svg) => {
+      const el = $svg[0];
+      cy.window().then((win) => {
+        dispatchSvgPointer(win, el, el, "pointerdown", x1, y1, true);
+      });
     });
 
-    cy.get("#lessonSvg").trigger("mousemove", {
-      buttons: 1,
-      x: x2,
-      y: y2,
+    cy.wait(0);
+
+    cy.get("#lessonSvg").then(($svg) => {
+      const el = $svg[0];
+      cy.window().then((win) => {
+        dispatchSvgPointer(win, el, el, "pointermove", x2, y2, true);
+      });
     });
 
-    cy.get("#lessonSvg").trigger("mouseup");
+    cy.wait(0);
 
-    if (handleDataCy) {
-      cy.dataCy(handleDataCy).should("exist");
+    cy.get("#lessonSvg").then(($svg) => {
+      const el = $svg[0];
+      cy.window().then((win) => {
+        dispatchSvgPointer(win, el, el, "pointerup", x2, y2, false);
+      });
+    });
 
-      cy.dataCy(handleDataCy).trigger("mousedown");
-      cy.get("#lessonSvg").trigger("mousemove", {
-        buttons: 1,
-        x: 301,
-        y: 200,
+    cy.dataCy("lineRightHandle").should("exist");
+  },
+);
+
+/** Drag the right handle so the line/circle/division end lands at SVG (x, y). */
+Cypress.Commands.add(
+  "dragLineRightHandle",
+  (handleDataCy: string, x: number, y: number) => {
+    cy.dataCy(handleDataCy).should("exist");
+    cy.dataCy(handleDataCy).then(($handle) => {
+      const hEl = $handle[0];
+      cy.window().then((win) => {
+        dispatchSvgPointer(win, hEl, hEl, "pointerdown", 4, 4, true);
       });
-      cy.get("#lessonSvg").trigger("mousemove", {
-        buttons: 1,
-        x: 302,
-        y: 200,
+    });
+
+    cy.wait(0);
+
+    cy.get("#lessonSvg").then(($svg) => {
+      const el = $svg[0];
+      cy.window().then((win) => {
+        const waypoints: [number, number][] =
+          x >= 2 ? [[x - 2, y], [x - 1, y], [x, y]] : [[x, y]];
+        for (const [mx, my] of waypoints) {
+          dispatchSvgPointer(win, el, el, "pointermove", mx, my, true);
+        }
       });
-      cy.get("#lessonSvg").trigger("mousemove", {
-        buttons: 1,
-        x: 400,
-        y: 200,
+    });
+
+    cy.wait(0);
+
+    cy.get("#lessonSvg").then(($svg) => {
+      const el = $svg[0];
+      cy.window().then((win) => {
+        dispatchSvgPointer(win, el, el, "pointerup", x, y, false);
       });
-      cy.get("#lessonSvg").trigger("mouseup");
-    }
+    });
   },
 );
 
@@ -115,7 +224,77 @@ Cypress.Commands.add("dataCy", (value: string) =>
   cy.get(`[data-cy="${value}"]`),
 );
 
+Cypress.Commands.add("clickSvg", (x: number, y: number) => {
+  cy.get("#lessonSvg").then(($svg) => {
+    const el = $svg[0];
+    cy.window().then((win) => {
+      dispatchSvgPointer(win, el, el, "pointerdown", x, y, true);
+    });
+  });
+
+  cy.wait(0);
+
+  cy.get("#lessonSvg").then(($svg) => {
+    const el = $svg[0];
+    cy.window().then((win) => {
+      dispatchSvgPointer(win, el, el, "pointerup", x, y, false);
+    });
+  });
+});
+
+Cypress.Commands.add("drawPolyline", (points: Array<[number, number]>) => {
+  if (points.length < 2) {
+    throw new Error("drawPolyline requires at least two points");
+  }
+
+  cy.get("#lessonSvg").then(($svg) => {
+    const el = $svg[0];
+    cy.window().then((win) => {
+      dispatchSvgPointer(win, el, el, "pointerdown", points[0][0], points[0][1], true);
+    });
+  });
+
+  cy.wait(0);
+
+  cy.get("#lessonSvg").then(($svg) => {
+    const el = $svg[0];
+    cy.window().then((win) => {
+      dispatchSvgPointer(win, el, el, "pointermove", points[1][0], points[1][1], true);
+    });
+  });
+
+  cy.wait(0);
+
+  cy.get("#lessonSvg").then(($svg) => {
+    const el = $svg[0];
+    cy.window().then((win) => {
+      dispatchSvgPointer(win, el, el, "pointerup", points[1][0], points[1][1], false);
+    });
+  });
+
+  for (let i = 2; i < points.length; i++) {
+    cy.wait(0);
+
+    cy.get("#lessonSvg").then(($svg) => {
+      const el = $svg[0];
+      cy.window().then((win) => {
+        dispatchSvgPointer(win, el, el, "pointermove", points[i][0], points[i][1], true);
+      });
+    });
+
+    cy.wait(0);
+
+    cy.get("#lessonSvg").then(($svg) => {
+      const el = $svg[0];
+      cy.window().then((win) => {
+        dispatchSvgPointer(win, el, el, "pointerup", points[i][0], points[i][1], false);
+      });
+    });
+  }
+});
+
 Cypress.Commands.add("login", () => {
+  cy.dataCy("signin_teacher_btn").click();
   cy.dataCy("login_email").type("hanantomer@gmail.com");
   cy.dataCy("login_password").type("12345678");
   cy.get('[data-cy="login"] > .v-btn__content').click();
@@ -123,48 +302,86 @@ Cypress.Commands.add("login", () => {
 
 Cypress.Commands.add("openLesson", () => {
   cy.get('[data-cy="lessons"] > .v-btn__content').click();
-  cy.login();
   cy.get('td:contains("test lesson")').click();
   !cy.dataCy("pBar") || cy.dataCy("pBar").should("not.be.visible");
 });
 
 Cypress.Commands.add("clearBoard", () => {
+  cy.window().then((win) => {
+    win.scrollTo(0, 0);
+  });
   cy.get('[row="0"] > [col="0"]').click({ force: true });
   cy.get("body").type("0", { force: true });
-  cy.get("#lessonSvg").trigger("mousedown", { buttons: 1, x: 0, y: 0 });
-  cy.get("#lessonSvg").trigger("mousemove", { buttons: 1, x: 2, y: 2 });
-  cy.get("#lessonSvg").trigger("mousemove", { buttons: 1, x: 3, y: 3 });
-  cy.get("#lessonSvg").trigger("mousemove", { buttons: 1, x: 52, y: 52 });
-  cy.get("#lessonSvg").trigger("mousemove", { buttons: 1, x: 1500, y: 1100 });
-  cy.get("#selection").trigger("mouseup");
 
+  cy.get("#lessonSvg").then(($svg) => {
+    const el = $svg[0];
+    cy.window().then((win) => {
+      dispatchSvgPointer(win, el, el, "pointerdown", 0, 0, true);
+      dispatchSvgPointer(win, el, el, "pointermove", 2, 2, true);
+    });
+  });
+
+  cy.wait(0);
+
+  cy.get("#lessonSvg").then(($svg) => {
+    const el = $svg[0];
+    cy.window().then((win) => {
+      for (const [sx, sy] of [
+        [3, 3],
+        [52, 52],
+        [1500, 1100],
+      ] as const) {
+        dispatchSvgPointer(win, el, el, "pointermove", sx, sy, true);
+      }
+    });
+  });
+
+  cy.wait(0);
+
+  cy.get("#lessonSvg").then(($svg) => {
+    const el = $svg[0];
+    cy.window().then((win) => {
+      dispatchSvgPointer(win, el, el, "pointerup", 1500, 1100, false);
+    });
+  });
+
+  cy.dataCy("area-selection").should("exist");
   cy.dataCy("deleteToolButton").click();
 });
 
 Cypress.Commands.add(
   "selectArea",
   (x: number, y: number, width: number, height: number) => {
-    cy.get("#lessonSvg").trigger("mousedown", { buttons: 1, x: x, y: y });
-    cy.get("#lessonSvg").trigger("mousemove", {
-      buttons: 1,
-      x: x + 1,
-      y: y + 1,
+    const pts: [number, number][] = [
+      [x, y],
+      [x + 1, y + 1],
+      [x + 2, y + 2],
+      [x + width - 1, y + height - 1],
+      [x + width, y + height],
+    ];
+
+    cy.get("#lessonSvg").then(($svg) => {
+      const el = $svg[0];
+      cy.window().then((win) => {
+        dispatchSvgPointer(win, el, el, "pointerdown", pts[0][0], pts[0][1], true);
+        dispatchSvgPointer(win, el, el, "pointermove", pts[1][0], pts[1][1], true);
+      });
     });
-    cy.get("#lessonSvg").trigger("mousemove", {
-      buttons: 1,
-      x: x + 2,
-      y: y + 2,
+    cy.wait(0);
+    cy.get("#lessonSvg").then(($svg) => {
+      const el = $svg[0];
+      cy.window().then((win) => {
+        for (let i = 2; i < pts.length; i++) {
+          dispatchSvgPointer(win, el, el, "pointermove", pts[i][0], pts[i][1], true);
+        }
+      });
     });
-    cy.get("#lessonSvg").trigger("mousemove", {
-      buttons: 1,
-      x: x + width - 1,
-      y: y + height - 1,
+    cy.wait(0);
+    cy.get("#lessonSvg").then(($svg) => {
+      const el = $svg[0];
+      cy.window().then((win) => {
+        dispatchSvgPointer(win, el, el, "pointerup", x + width, y + height, false);
+      });
     });
-    cy.get("#lessonSvg").trigger("mousemove", {
-      buttons: 1,
-      x: x + width,
-      y: y + height,
-    });
-    cy.get("#selection").trigger("mouseup");
   },
 );

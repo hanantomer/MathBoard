@@ -36,10 +36,7 @@
     />
 
     <svg
-      :style="{
-        width: matrixSize.width,
-        height: matrixSize.height,
-      }"
+      :style="lineSvgScreenStyle"
       xmlns="http://www.w3.org/2000/svg"
       class="line-svg"
     >
@@ -55,7 +52,7 @@
   </div>
 </template>
 <script setup lang="ts">
-import { computed, ref, watch } from "vue";
+import { computed, nextTick, ref, watch } from "vue";
 import { useCellStore } from "../store/pinia/cellStore";
 import { useEditModeStore } from "../store/pinia/editModeStore";
 import { useNotationStore } from "../store/pinia/notationStore";
@@ -131,6 +128,29 @@ watch(
 
 const show = computed(() => {
   return editModeStore.isPolygonDrawingMode();
+});
+
+watch(show, async (visible) => {
+  if (visible) {
+    await nextTick();
+    const id = cellStore.getSvgId();
+    if (id) {
+      cellStore.setSvgBoundingRect(id);
+    }
+  }
+});
+
+/** Same viewport origin as pointer math; avoids margin/layout drift from `.mathboard` on an `absolute` overlay. */
+const lineSvgScreenStyle = computed(() => {
+  const r = cellStore.getSvgBoundingRect();
+  return {
+    position: "fixed" as const,
+    top: `${r.top}px`,
+    left: `${r.left}px`,
+    width: matrixSize.width,
+    height: matrixSize.height,
+    margin: "0",
+  };
 });
 
 function setInitialPosition(p: DotCoordinates) {

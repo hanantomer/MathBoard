@@ -43,9 +43,14 @@ import useUserOutgoingOperations from "./userOutgoingOperationsHelper";
 import useMatrixCellHelper from "../helpers/matrixCellHelper";
 import useScreenHelper from "../helpers/screenHelper";
 
-import { NotationAttributes, RectAttributes } from "common/baseTypes";
+import {
+  NotationAttributes,
+  RectAttributes,
+  RectCoordinates,
+} from "common/baseTypes";
 
 import useSelectionHelper from "./selectionHelper";
+import { viewportPointerPosition } from "./pointerCoordinateHelper";
 import useImageHelper from "./imageHelper";
 import {
   collapseNotationsToSelectedCell,
@@ -69,6 +74,150 @@ const MAX_IMAGE_WIDTH = 1000;
 
 let deleteKeyLock = false; // Add lock variable at the top with other variables
 let spaceKeyLock = false;
+
+function cellRectCoordinates(cell: CellAttributes): RectCoordinates {
+  const cellStore = useCellStore();
+  const left = cell.col * cellStore.getCellHorizontalWidth();
+  const top = cell.row * cellStore.getCellVerticalHeight();
+  return {
+    topLeft: { x: left, y: top },
+    bottomRight: {
+      x: left + cellStore.getCellHorizontalWidth(),
+      y: top + cellStore.getCellVerticalHeight(),
+    },
+  };
+}
+
+function isPointInRect(x: number, y: number, rect: RectCoordinates): boolean {
+  return (
+    x >= rect.topLeft.x &&
+    x <= rect.bottomRight.x &&
+    y >= rect.topLeft.y &&
+    y <= rect.bottomRight.y
+  );
+}
+
+function lineSegmentsIntersect(
+  x1: number,
+  y1: number,
+  x2: number,
+  y2: number,
+  x3: number,
+  y3: number,
+  x4: number,
+  y4: number,
+): boolean {
+  const denom = (y4 - y3) * (x2 - x1) - (x4 - x3) * (y2 - y1);
+  if (denom === 0) return false;
+  const ua = ((x4 - x3) * (y1 - y3) - (y4 - y3) * (x1 - x3)) / denom;
+  const ub = ((x2 - x1) * (y1 - y3) - (y2 - y1) * (x1 - x3)) / denom;
+  return ua >= 0 && ua <= 1 && ub >= 0 && ub <= 1;
+}
+
+function lineNotationIntersectsCellRect(
+  line: LineNotationAttributes,
+  rect: RectCoordinates,
+): boolean {
+  if (Math.max(line.p1x, line.p2x) < rect.topLeft.x) return false;
+  if (Math.min(line.p1x, line.p2x) > rect.bottomRight.x) return false;
+  if (Math.max(line.p1y, line.p2y) < rect.topLeft.y) return false;
+  if (Math.min(line.p1y, line.p2y) > rect.bottomRight.y) return false;
+
+  if (
+    isPointInRect(line.p1x, line.p1y, rect) ||
+    isPointInRect(line.p2x, line.p2y, rect)
+  ) {
+    return true;
+  }
+
+  const { topLeft: tl, bottomRight: br } = rect;
+  return (
+    lineSegmentsIntersect(
+      line.p1x,
+      line.p1y,
+      line.p2x,
+      line.p2y,
+      tl.x,
+      tl.y,
+      br.x,
+      tl.y,
+    ) ||
+    lineSegmentsIntersect(
+      line.p1x,
+      line.p1y,
+      line.p2x,
+      line.p2y,
+      br.x,
+      tl.y,
+      br.x,
+      br.y,
+    ) ||
+    lineSegmentsIntersect(
+      line.p1x,
+      line.p1y,
+      line.p2x,
+      line.p2y,
+      br.x,
+      br.y,
+      tl.x,
+      br.y,
+    ) ||
+    lineSegmentsIntersect(
+      line.p1x,
+      line.p1y,
+      line.p2x,
+      line.p2y,
+      tl.x,
+      br.y,
+      tl.x,
+      tl.y,
+    )
+  );
+}
+
+function isSameMovingNotation(
+  notationUuid: String,
+  movingUuid: string,
+): boolean {
+  const a = String(notationUuid);
+  const b = String(movingUuid);
+  return (
+    a === b ||
+    a === clonedNotationUUIdPrefix + b ||
+    b === clonedNotationUUIdPrefix + a
+  );
+}
+
+function notationBlocksCellForMove(
+  notation: NotationAttributes,
+  cell: CellAttributes,
+  movingUuid: string,
+): boolean {
+  if (isSameMovingNotation(notation.uuid, movingUuid)) {
+    return false;
+  }
+
+  if (
+    notation.notationType === "LINE" ||
+    notation.notationType === "DIVISIONLINE"
+  ) {
+    return lineNotationIntersectsCellRect(
+      notation as LineNotationAttributes,
+      cellRectCoordinates(cell),
+    );
+  }
+
+  return true;
+}
+
+function isCellOccupiedForMove(
+  cell: CellAttributes,
+  movingUuid: string,
+): boolean {
+  return notationStore
+    .getNotationsAtCell(cell)
+    .some((n) => notationBlocksCellForMove(n, cell, movingUuid));
+}
 
 export default function notationMutateHelper() {
   function pointAtCellCoordinates(
@@ -368,12 +517,9 @@ export default function notationMutateHelper() {
       )
         return false;
 
-      // Check cell occupation
-      return (
-        notationStore.getNotationsAtCell({
-          col: sourceCellNotation.col,
-          row: sourceCellNotation.row,
-        }).length === 0
+      return !isCellOccupiedForMove(
+        { col: sourceCellNotation.col, row: sourceCellNotation.row },
+        String(sourceNotation.uuid),
       );
     }
 
@@ -396,7 +542,7 @@ export default function notationMutateHelper() {
       )
         return false;
 
-      // Check all cells in rect are unoccupied
+      const movingUuid = String(sourceRectNotation.uuid);
       for (
         let col = sourceRectNotation.fromCol;
         col <= sourceRectNotation.toCol;
@@ -407,11 +553,7 @@ export default function notationMutateHelper() {
           row <= sourceRectNotation.toRow;
           row++
         ) {
-          const cellNotations = notationStore.getNotationsAtCell({ col, row });
-          if (
-            cellNotations.length > 0 &&
-            cellNotations[0].uuid != sourceRectNotation.uuid
-          ) {
+          if (isCellOccupiedForMove({ col, row }, movingUuid)) {
             return false;
           }
         }
@@ -902,12 +1044,12 @@ export default function notationMutateHelper() {
     );
   }
 
-  function addMarkNotation(e: MouseEvent) {
+  function addMarkNotation(e: PointerEvent) {
     if (!authorizationHelper.canEdit()) return;
 
-    const position = { x: e.pageX, y: e.pageY };
-
-    let clickedCell = screenHelper.getCellByDotCoordinates(position);
+    let clickedCell = screenHelper.getCellByDotCoordinates(
+      viewportPointerPosition(e),
+    );
 
     if (!clickedCell) return;
 
@@ -1271,11 +1413,11 @@ export default function notationMutateHelper() {
     addImageNotationByColAndRow(fromCol, toCol, fromRow, toRow, base64);
   }
 
-  function addCartesianSystemAtClickedPoint(e: MouseEvent) {
+  function addCartesianSystemAtClickedPoint(e: PointerEvent) {
     if (!authorizationHelper.canEdit()) return;
-    const position = { x: e.pageX, y: e.pageY };
-
-    let clickedCell = screenHelper.getCellByDotCoordinates(position);
+    let clickedCell = screenHelper.getCellByDotCoordinates(
+      viewportPointerPosition(e),
+    );
     if (!clickedCell) return;
     selectionHelper.setSelectedCell(clickedCell, false);
 

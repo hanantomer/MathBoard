@@ -58,14 +58,10 @@
     ></line-handle>
 
     <svg
-      :style="{
-        width: matrixSize.width,
-        height: matrixSize.height,
-      }"
       id="curveSvgId"
+      :style="lineSvgScreenStyle"
       class="line-svg"
       xmlns="http://www.w3.org/2000/svg"
-      style="position: absolute; pointer-events: none"
     >
       <path
         class="line"
@@ -90,8 +86,9 @@ import lineHandle from "./LineHandle.vue";
 import lineWatcher from "./LineWatcher.vue";
 import useNotationMutateHelper from "../helpers/notationMutateHelper";
 import useWatchHelper from "../helpers/watchHelper";
+import { svgPointerPosition } from "../helpers/pointerCoordinateHelper";
 import useEventBus from "../helpers/eventBusHelper";
-import { computed, ref, onMounted } from "vue";
+import { computed, nextTick, onMounted, ref, watch } from "vue";
 import { useNotationStore } from "../store/pinia/notationStore";
 import { useEditModeStore } from "../store/pinia/editModeStore";
 import {
@@ -148,14 +145,27 @@ onMounted(() => {
   setTimeout(() => {
     const controlPoint = document.getElementById("controlPoint");
     if (controlPoint) {
-      controlPoint.addEventListener("mousedown", () => {
+      const startControl = (e: PointerEvent) => {
+        e.preventDefault();
         if (!editModeStore.isCurveEditingControlPointMode()) {
           editModeStore.setEditMode("CURVE_EDITING_CONTROLֹ_POINT");
         }
-      });
-      controlPoint.addEventListener("mouseup", (e) => {
-        eventBus.emit("EV_SVG_MOUSEUP", e);
-      });
+        const id = cellStore.getSvgId();
+        const svg = id ? document.getElementById(id) : null;
+        if (svg && e.pointerId != null) {
+          try {
+            svg.setPointerCapture(e.pointerId);
+          } catch {
+            /* ignore */
+          }
+        }
+      };
+      const endControl = (e: PointerEvent) => {
+        eventBus.emit("EV_SVG_POINTERUP", e);
+      };
+      controlPoint.addEventListener("pointerdown", startControl);
+      controlPoint.addEventListener("pointerup", endControl);
+      controlPoint.addEventListener("pointercancel", endControl);
     }
   });
 });
@@ -182,9 +192,33 @@ const show = computed(() => {
   );
 });
 
-watchHelper.watchMouseEvent(
+watch(show, async (visible) => {
+  if (visible) {
+    await nextTick();
+    const id = cellStore.getSvgId();
+    if (id) {
+      cellStore.setSvgBoundingRect(id);
+    }
+  }
+});
+
+/** Same viewport origin as pointer math and handles; avoids margin/layout drift from `.mathboard` on an `absolute` overlay. */
+const lineSvgScreenStyle = computed(() => {
+  const r = cellStore.getSvgBoundingRect();
+  return {
+    position: "fixed" as const,
+    top: `${r.top}px`,
+    left: `${r.left}px`,
+    width: matrixSize.width,
+    height: matrixSize.height,
+    margin: "0",
+    pointerEvents: "none" as const,
+  };
+});
+
+watchHelper.watchPointerEvent(
   ["CURVE_EDITING_CONTROLֹ_POINT"],
-  "EV_SVG_MOUSE_DRAG",
+  ["EV_SVG_POINTERMOVE"],
   setControlPoint,
 );
 
@@ -272,9 +306,10 @@ function selectCurve(curve: NotationAttributes) {
   showControlPoint();
 }
 
-function setControlPoint(e: MouseEvent) {
-  curveAttributes.value.cpx = Math.round(e.pageX);
-  curveAttributes.value.cpy = Math.round(e.pageY);
+function setControlPoint(e: PointerEvent) {
+  const p = svgPointerPosition(e);
+  curveAttributes.value.cpx = Math.round(p.x);
+  curveAttributes.value.cpy = Math.round(p.y);
   setCurveElement();
   showControlPoint();
 }

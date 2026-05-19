@@ -7,7 +7,7 @@
       top: topPosition + 'px',
       width: width + 'px',
       height: height + 'px',
-      position: 'absolute',
+      position: 'fixed',
     }"
     id="exponent"
     autofocus="true"
@@ -27,6 +27,7 @@ import { CellAttributes, PointNotationAttributes } from "common/baseTypes";
 import useNotationMutateHelper from "../helpers/notationMutateHelper";
 import useScreenHelper from "../helpers/screenHelper";
 import useWatchHelper from "../helpers/watchHelper";
+import { viewportPointerPosition } from "../helpers/pointerCoordinateHelper";
 
 const notationMutateHelper = useNotationMutateHelper();
 const emit = defineEmits(["hide"]);
@@ -55,20 +56,22 @@ let clickedCell: CellAttributes | undefined = undefined;
 
 // user clicked on exponent icon and then clicked on a cell
 
-watchHelper.watchMouseEvent(
+watchHelper.watchPointerEvent(
   ["EXPONENT_STARTED"],
-  "EV_SVG_MOUSEDOWN",
+  ["EV_SVG_POINTERDOWN"],
   startNewExponentAtMousePosition,
 );
 
 // user clicked outside of exponent editor
-watchHelper.watchMouseEvent(["EXPONENT_WRITING"], "EV_SVG_MOUSEDOWN", () =>
-  editModeStore.setEditMode("CELL_SELECTED"),
+watchHelper.watchPointerEvent(
+  ["EXPONENT_WRITING"],
+  ["EV_SVG_POINTERDOWN"],
+  () => editModeStore.setEditMode("CELL_SELECTED"),
 );
 
-watchHelper.watchMouseEvent(
+watchHelper.watchPointerEvent(
   ["EXPONENT_SELECTED"],
-  "EV_SVG_MOUSEUP",
+  ["EV_SVG_POINTERUP"],
   editSelectedExponentNotation,
 );
 
@@ -127,20 +130,15 @@ function startNewExponentAtSelectedCellPosition() {
   setTimeout(`document.getElementById("exponent")?.focus();`, 0);
 }
 
-function startNewExponentAtMousePosition(e: MouseEvent) {
+function startNewExponentAtMousePosition(e: PointerEvent) {
   // transition from EXPONENT_STARTED -> EXPONENT_WRITING
   editModeStore.setEditMode("EXPONENT_WRITING");
 
-  clickedCell = screenHelper.getCellByDotCoordinates({
-    x: e.pageX,
-    y: e.pageY,
-  });
+  clickedCell = screenHelper.getCellByDotCoordinates(
+    viewportPointerPosition(e),
+  );
 
-  (screenHelper.getCellByDotCoordinates({
-    x: e.pageX,
-    y: e.pageY,
-  }),
-    setInitialExponentValue());
+  setInitialExponentValue();
 
   setExponentPosition();
 

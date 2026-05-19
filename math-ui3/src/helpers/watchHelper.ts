@@ -17,7 +17,7 @@ const textSyncStore = useTextSyncStore();
 const eventBus = useEventBus();
 const matrixCellHelper = useMatrixCellHelper();
 
-type MouseEventHandler = (e: MouseEvent, params?: any) => void;
+type MouseEventHandler = (e: PointerEvent, params?: any) => void;
 type TouchEventHandler = (e: TouchEvent, params?: any) => void;
 type KeyEventHandler = (e: KeyboardEvent) => void;
 type EditModeHandler = (newEditMode: EditMode, oldEditMode: any) => void;
@@ -30,20 +30,22 @@ type CustomEventHandler = (data: any) => void;
 type PropEventHandler = (prop: any) => void;
 
 export default function () {
-  function watchMouseEvent(
+  function watchPointerEvent(
     editModes: EditMode[],
-    eventType: BusEventType,
+    eventTypes: BusEventType[],
     handler: MouseEventHandler,
     params: any = {},
   ) {
     editModes.forEach((editMode) =>
-      watch(
-        () => eventBus.get(editMode, eventType),
-        (e: MouseEvent) => {
-          if (!e) return;
-          handler(e, params);
-          eventBus.remove(eventType, editMode); // clear event from bus to allow reselction
-        },
+      eventTypes.forEach((eventType) =>
+        watch(
+          () => eventBus.get(editMode, eventType),
+          (e: PointerEvent) => {
+            if (!e) return;
+            handler(e, params);
+            eventBus.remove(eventType, editMode); // clear event from bus to allow reselction
+          },
+        ),
       ),
     );
   }
@@ -235,8 +237,7 @@ export default function () {
   }
 
   return {
-    watchMouseEvent,
-    watchTouchEvent,
+    watchPointerEvent,
     watchKeyEvent,
     watchEveryEditModeChange,
     watchEditModeTransition,

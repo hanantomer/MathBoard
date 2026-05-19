@@ -1,5 +1,5 @@
 <template>
-  <v-container>
+  <v-container class="lessons-page">
     <NewBoardItemDialog
       :dialog="lessonDialog"
       :title="lessonDialogTitle"
@@ -13,6 +13,7 @@
         <v-tooltip text="Create a new lesson" location="bottom">
           <template v-slot:activator="{ props }">
             <v-btn
+              data-cy="add-lesson"
               icon
               v-on:click="openLessonDialog"
               v-show="userStore.isTeacher()"
@@ -46,7 +47,7 @@ import { LessonAttributes } from "common/lessonTypes";
 import { useUserStore } from "../store/pinia/userStore";
 import { useLessonStore } from "../store/pinia/lessonStore";
 import { useEditModeStore } from "../store/pinia/editModeStore";
-import { watch, ref, computed, onMounted } from "vue";
+import { watch, ref, computed, onMounted, onUnmounted } from "vue";
 import { useRouter } from "vue-router";
 import { useRoute } from "vue-router";
 const router = useRouter();
@@ -62,14 +63,34 @@ let lessonDialogTitle =
   "<span>Please specify <strong>lesson</strong> title</span";
 const menu = [{ icon: "plus", title: "Add" }];
 let itemsPerPage = 10;
+let isMounted = true;
+const pendingCreatedLessonKey = "pendingCreatedLessonUUId";
 
 onMounted(async () => {
   await lessonStore.loadLessons();
 
-  if (lessonStore.getLessons().size === 0 && userStore.isTeacher()) {
-    openLessonDialog();
+  if (!isMounted || route.name !== "lessons") {
     return;
   }
+
+  const pendingCreatedLessonUUId = sessionStorage.getItem(
+    pendingCreatedLessonKey,
+  );
+  if (pendingCreatedLessonUUId) {
+    await router.replace({
+      name: "lesson",
+      params: { lessonUUId: pendingCreatedLessonUUId },
+    });
+    return;
+  }
+
+  if (lessonStore.getLessons().size === 0 && userStore.isTeacher()) {
+    openLessonDialog();
+  }
+});
+
+onUnmounted(() => {
+  isMounted = false;
 });
 
 watch(
@@ -111,10 +132,17 @@ function openLessonDialog() {
 }
 
 async function addLesson(lessonName: string) {
+  const name = lessonName?.trim();
+  if (!name) {
+    return;
+  }
+
   lessonDialog.value = false;
-  let savedLesson = await lessonStore.addLesson(lessonName);
-  router.push({
-    path: "/lesson/" + savedLesson.uuid,
+  const savedLesson = await lessonStore.addLesson(name);
+  sessionStorage.setItem(pendingCreatedLessonKey, savedLesson.uuid);
+  await router.replace({
+    name: "lesson",
+    params: { lessonUUId: savedLesson.uuid },
   });
 }
 
@@ -126,7 +154,11 @@ async function selectLesson(e: any, row: any) {
 }
 </script>
 
-<style>
+<style scoped>
+.lessons-page {
+  padding-top: 80px;
+}
+
 .lesson_title {
   justify-content: left !important;
 }

@@ -11,7 +11,7 @@
 import { ref, computed } from "vue";
 import { GlobalEditMode, EditMode } from "common/unions";
 import useWatchHelper from "../helpers/watchHelper";
-import { isMobile } from "../helpers/eventHelper";
+import { isMobile } from "common/globals";
 
 const watchHelper = useWatchHelper();
 const snackbar = ref(false);

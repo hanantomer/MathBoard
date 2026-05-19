@@ -1,52 +1,50 @@
 <template>
-  <v-row justify="center">
-    <v-dialog
-      :model-value="modelValue"
-      @update:model-value="(val) => emit('update:modelValue', val)"
-      max-width="400px"
-      persistent
-      @keydown.esc="close"
-    >
-      <v-form ref="contactForm">
-        <v-card>
-          <v-card-title>
-            <span class="headline">{{ title || "Contact Us" }}</span>
-          </v-card-title>
-          <v-card-text>
-            <form>
-              <v-text-field
-                v-model="name"
-                :rules="nameRules"
-                label="Name"
-                required
-                maxlength="25"
-                autocomplete="name"
-              ></v-text-field>
-              <v-text-field
-                v-model="email"
-                :rules="emailRules"
-                label="E-mail"
-                maxlength="50"
-                required
-                autocomplete="email"
-              ></v-text-field>
-              <v-textarea
-                v-model="message"
-                :rules="messageRules"
-                label="Message"
-                maxlength="250"
-                required
-              ></v-textarea>
-              <v-btn :disabled="isSubmitDisabled" type="button" @click="submit"
-                >Submit</v-btn
-              >
-              <v-btn type="button" @click="close">Close</v-btn>
-            </form>
-          </v-card-text>
-        </v-card>
-      </v-form>
-    </v-dialog>
-  </v-row>
+  <v-dialog
+    :model-value="modelValue"
+    @update:model-value="(val) => emit('update:modelValue', val)"
+    max-width="400px"
+    persistent
+    @keydown.esc="close"
+  >
+    <v-form ref="contactForm">
+      <v-card>
+        <v-card-title>
+          <span class="headline">{{ title || "Contact Us" }}</span>
+        </v-card-title>
+        <v-card-text>
+          <form>
+            <v-text-field
+              v-model="name"
+              :rules="nameRules"
+              label="Name"
+              required
+              maxlength="25"
+              autocomplete="name"
+            ></v-text-field>
+            <v-text-field
+              v-model="email"
+              :rules="emailRules"
+              label="E-mail"
+              maxlength="50"
+              required
+              autocomplete="email"
+            ></v-text-field>
+            <v-textarea
+              v-model="message"
+              :rules="messageRules"
+              label="Message"
+              maxlength="250"
+              required
+            ></v-textarea>
+            <v-btn :disabled="isSubmitDisabled" type="button" @click="submit"
+              >Submit</v-btn
+            >
+            <v-btn type="button" @click="close">Close</v-btn>
+          </form>
+        </v-card-text>
+      </v-card>
+    </v-form>
+  </v-dialog>
 </template>
 
 <script setup lang="ts">

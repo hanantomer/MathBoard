@@ -6,6 +6,7 @@ describe("e2e", () => {
   before(function () {});
   it("e2e - text draw and type", () => {
     cy.visit("http://localhost:13035");
+    cy.login();
     cy.openLesson();
     cy.clearBoard();
     cy.dataCy("freetextButton").click();
