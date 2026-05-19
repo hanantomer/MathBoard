@@ -2,7 +2,7 @@
   <v-app-bar app color="primary" dark dense elevation="8" class="app-bar" >
     <v-img
       class="mx-2"
-      src="./assets/beta.png"
+      :src="betaImg"
       max-height="35"
       max-width="35"
       contain
@@ -10,7 +10,7 @@
     ></v-img>
     <v-img
       class="mx-2"
-      src="./assets/logo.png"
+      :src="logoImg"
       max-height="65"
       max-width="85"
       contain
@@ -155,6 +155,8 @@
 </template>
 
 <script setup lang="ts">
+import betaImg from "@/assets/beta.png";
+import logoImg from "@/assets/logo.png";
 import { useRouter } from "vue-router";
 import { computed } from "vue";
 import { useUserStore } from "../store/pinia/userStore";
