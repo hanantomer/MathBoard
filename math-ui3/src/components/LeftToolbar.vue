@@ -11,13 +11,11 @@
 
   <div
     style="
-      position: fixed;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
+      position: absolute;
+      top: 20%;
+      left: 20%;
       max-width: 575px;
-      z-index: 2000;
-      pointer-events: none;
+      z-index: 1000;
     "
   >
     <v-snackbar
@@ -28,7 +26,6 @@
       v-model="showPasteImageHelpMessage"
       closable
       title="Paste Image Instructions"
-      style="pointer-events: auto"
     >
       To paste an image, first copy it to your clipboard. Then, click on the
       desired cell and press Ctrl+V. Attention: google docs images are not
@@ -44,7 +41,6 @@
       v-model="showSelectionHelpMessage"
       closable
       title="Selection Instructions"
-      style="pointer-events: auto"
       >To select an area, drag the mouse over the desired region. Then, drag the
       rectangle to move the selected notations, or use Ctrl+drag to copy them.
       To delete the selected notations, press Delete or Backspace. Another
@@ -52,37 +48,7 @@
     </v-snackbar>
   </div>
 
-  <v-btn
-    v-if="mobileMode && !mobileToolbarOpen"
-    class="mobile-toolbar-toggle"
-    color="primary"
-    dark
-    fab
-    small
-    @click="toggleMobileToolbar"
-  >
-    <v-icon>mdi-menu</v-icon>
-  </v-btn>
-
-  <v-toolbar
-    v-if="!mobileMode || mobileToolbarOpen"
-    color="primary"
-    dark
-    :class="toolbarClass"
-    :height="mobileMode ? 'auto' : 600"
-  >
-    <template v-if="mobileMode">
-      <v-spacer></v-spacer>
-      <v-btn
-        icon
-        dark
-        small
-        @click="toggleMobileToolbar"
-        class="mobile-toolbar-close"
-      >
-        <v-icon>mdi-close</v-icon>
-      </v-btn>
-    </template>
+  <v-toolbar color="primary" dark :class="toolbarClass" height="600">
     <v-tooltip
       text="Invite students via access link"
       v-if="userStore.isTeacher()"
@@ -93,7 +59,7 @@
           icon
           @click.stop="openAccessLinkDialog"
           color="white"
-          :size="buttonSize"
+          x-small
           fab
           dark
           ><v-icon>mdi-account-plus</v-icon></v-btn
@@ -108,7 +74,7 @@
           icon
           @click.stop="openPasteImageHelpMessage"
           color="white"
-          :size="buttonSize"
+          x-small
           fab
           dark
           ><v-icon>mdi-image</v-icon></v-btn
@@ -123,7 +89,7 @@
           icon
           @click.stop="doShowUploadDialog"
           color="white"
-          :size="buttonSize"
+          x-small
           fab
           dark
           ><v-icon>mdi-camera-plus-outline</v-icon></v-btn
@@ -136,9 +102,9 @@
         <v-btn
           v-bind="props"
           icon
-          @click.stop="startSelection"
+          @click.stop="openSelectionHelpMessage"
           color="white"
-          :size="buttonSize"
+          x-small
           fab
           dark
           ><v-icon>mdi-selection</v-icon></v-btn
@@ -153,7 +119,7 @@
           :data-cy="item.name.toLowerCase() + 'Button'"
           v-bind="props"
           icon
-          :size="buttonSize"
+          x-small
           fab
           dark
           :color="getButtonColor(item)"
@@ -196,7 +162,7 @@
           :data-cy="item.name"
           v-bind="props"
           icon
-          :size="buttonSize"
+          x-small
           fab
           dark
           :color="
@@ -226,33 +192,12 @@
         </v-btn>
       </template>
     </v-tooltip>
-    <v-tooltip text="Special symbols" v-if="mobileMode">
-      <template v-slot:activator="{ props }">
-        <v-btn
-          v-bind="props"
-          icon
-          @click.stop="openSpecialSymbolsModal"
-          color="white"
-          :size="buttonSize"
-          fab
-          dark
-          ><v-icon>mdi-alpha-x</v-icon></v-btn
-        >
-      </template>
-    </v-tooltip>
   </v-toolbar>
-
-  <specialSymbolsToolbar
-    v-if="mobileMode"
-    :showSymbolsModal="showSpecialSymbolsModal"
-    @close-modal="closeSpecialSymbolsModal"
-  ></specialSymbolsToolbar>
 </template>
 
 <script setup lang="ts">
-import { watch, ref, onMounted, onUnmounted } from "vue";
+import { watch, ref } from "vue";
 import accessLinkDialog from "./AccessLinkDialog.vue";
-import specialSymbolsToolbar from "./SpecialSymbolsToolbar.vue";
 
 import { useNotationStore } from "../store/pinia/notationStore";
 import { useEditModeStore } from "../store/pinia/editModeStore";
@@ -264,7 +209,6 @@ import useAuthorizationHelper from "../helpers/authorizationHelper";
 import useWatchHelper from "../helpers/watchHelper";
 import useNotationMutateHelper from "../helpers/notationMutateHelper";
 import CrossDeviceUpload from "./CrossDeviceUpload.vue";
-import { isMobile } from "../helpers/eventHelper";
 
 const watchHelper = useWatchHelper();
 const notationMutateHelper = useNotationMutateHelper();
@@ -275,32 +219,10 @@ const editModeStore = useEditModeStore();
 let showAccessLinkDialog = ref(false);
 const toolbarNavigation = useToolbarNavigation();
 const answerCheckMode = ref(false);
-const mobileMode = ref(isMobile());
-const mobileToolbarOpen = ref(false);
-const showSpecialSymbolsModal = ref(false);
-
-// Handle window resize to update mobile mode
-onMounted(() => {
-  const handleResize = () => {
-    mobileMode.value = isMobile();
-  };
-  window.addEventListener("resize", handleResize);
-  onUnmounted(() => {
-    window.removeEventListener("resize", handleResize);
-  });
-});
 
 const toolbarClass = computed(() => {
-  return mobileMode.value ? "mobile-toolbar" : "vertical-toolbar";
+  return "vertical-toolbar";
 });
-
-const buttonSize = computed(() => {
-  return mobileMode.value ? "large" : "small";
-});
-
-function toggleMobileToolbar() {
-  mobileToolbarOpen.value = !mobileToolbarOpen.value;
-}
 
 watch(
   () => notationStore.getParent()?.type,
@@ -551,25 +473,12 @@ function closeUploadDialog() {
   showUploadDialog.value = false;
 }
 
-function startSelection() {
-  editModeStore.setEditMode("AREA_SELECTION_STARTED");
-  openSelectionHelpMessage();
-}
-
 function openSelectionHelpMessage() {
   showSelectionHelpMessage.value = true;
 }
 
 function closeAccessLinkDialog() {
   showAccessLinkDialog.value = false;
-}
-
-function openSpecialSymbolsModal() {
-  showSpecialSymbolsModal.value = true;
-}
-
-function closeSpecialSymbolsModal() {
-  showSpecialSymbolsModal.value = false;
 }
 
 const editEnabled = computed(() => {
@@ -628,45 +537,6 @@ function getButtonClass(item: any) {
   height: max-content !important;
   padding: 4px !important;
   z-index: 1000;
-}
-
-.mobile-toolbar {
-  position: fixed;
-  top: env(safe-area-inset-top, 0px);
-  left: 0;
-  right: 0;
-  width: 100%;
-  max-height: calc(100vh - 56px);
-  padding: 4px !important;
-  z-index: 2000;
-  overflow-y: auto;
-  background: rgba(33, 33, 33, 0.95);
-  backdrop-filter: blur(8px);
-}
-
-.mobile-toolbar .v-toolbar__content {
-  flex-flow: row wrap !important;
-  width: 100% !important;
-  padding: 2px !important;
-  justify-content: flex-start;
-  max-height: calc(100vh - 120px);
-  overflow-y: auto;
-}
-
-.mobile-toolbar .v-btn {
-  min-width: 48px;
-  min-height: 48px;
-}
-
-.mobile-toolbar-toggle {
-  position: fixed;
-  bottom: 16px;
-  right: 16px;
-  z-index: 2100;
-}
-
-.mobile-toolbar-close {
-  margin-right: 4px;
 }
 
 .vertical-toolbar .v-toolbar__content {
