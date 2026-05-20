@@ -6,6 +6,7 @@
   <freeSketchDrawer></freeSketchDrawer>
   <textAreaSync></textAreaSync>
   <exponentEditor></exponentEditor>
+  <cellSymbolInput></cellSymbolInput>
   <v-progress-linear
     data-cy="pBar"
     v-show="progressBar"
@@ -93,6 +94,9 @@ const annotationEditor = defineAsyncComponent(
 );
 const exponentEditor = defineAsyncComponent(
   () => import("./ExponentEditor.vue"),
+);
+const cellSymbolInput = defineAsyncComponent(
+  () => import("./CellSymbolInput.vue"),
 );
 const specialSymbolsToolbar = defineAsyncComponent(
   () => import("./SpecialSymbolsToolbar.vue"),
@@ -334,10 +338,7 @@ async function load() {
   margin-left: var(--board-inset-left);
   margin-right: var(--board-inset-right);
   margin-bottom: var(--board-inset-bottom);
-  width: min(
-    1650px,
-    calc(100vw - var(--board-inset-left) - var(--board-inset-right))
-  );
+  width: calc(100vw - var(--board-inset-left) - var(--board-inset-right));
   max-width: calc(100vw - var(--board-inset-left) - var(--board-inset-right));
   max-height: calc(
     100vh - var(--board-inset-top) - var(--board-inset-bottom)
@@ -345,19 +346,23 @@ async function load() {
   overflow-x: hidden;
   overflow-y: auto;
   overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
 }
 
+/* Desktop: SVG fills the viewport; cell layout is driven by SVG client size. */
 .mathboard {
   box-sizing: border-box;
   display: block;
   width: 100%;
-  min-width: 100%;
+  min-width: 0;
+  max-width: 100%;
   height: var(--board-matrix-height);
 }
 
-/* Mobile styles */
+/* Mobile: full matrix width for horizontal pan (matches matrixSize in globals). */
 @media (max-width: 1023px) {
   .mathboard-scroll {
+    --board-matrix-width: 1650px;
     --board-inset-left: 56px;
     --board-inset-right: 0px;
     --board-inset-top: 64px;
@@ -369,6 +374,14 @@ async function load() {
     max-height: calc(
       100vh - var(--board-inset-top) - var(--board-inset-bottom)
     );
+    overflow-x: auto;
+    overflow-y: auto;
+  }
+
+  .mathboard {
+    width: var(--board-matrix-width);
+    min-width: var(--board-matrix-width);
+    max-width: none;
   }
 }
 

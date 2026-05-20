@@ -30,9 +30,11 @@
         :items="lessons"
         item-value="name"
         class="elevation-1"
+        :class="{ 'lessons-table--locked': isLessonListBusy }"
         @click:row="selectLesson"
         :hide-no-data="true"
-        :hover="true"
+        :hover="!isLessonListBusy"
+        :loading="isLessonListBusy"
         height="400"
         density="compact"
         fixed-header
@@ -64,7 +66,11 @@ let lessonDialogTitle =
 const menu = [{ icon: "plus", title: "Add" }];
 let itemsPerPage = 10;
 let isMounted = true;
-const pendingCreatedLessonKey = "pendingCreatedLessonUUId";
+const creatingLesson = ref(false);
+
+const isLessonListBusy = computed(
+  () => creatingLesson.value || lessonStore.isLessonListNavigationLocked(),
+);
 
 onMounted(async () => {
   await lessonStore.loadLessons();
@@ -73,9 +79,7 @@ onMounted(async () => {
     return;
   }
 
-  const pendingCreatedLessonUUId = sessionStorage.getItem(
-    pendingCreatedLessonKey,
-  );
+  const pendingCreatedLessonUUId = lessonStore.getPendingOpenLessonUUId();
   if (pendingCreatedLessonUUId) {
     await router.replace({
       name: "lesson",
@@ -138,16 +142,32 @@ async function addLesson(lessonName: string) {
   }
 
   lessonDialog.value = false;
-  const savedLesson = await lessonStore.addLesson(name);
-  sessionStorage.setItem(pendingCreatedLessonKey, savedLesson.uuid);
-  await router.replace({
-    name: "lesson",
-    params: { lessonUUId: savedLesson.uuid },
-  });
+  creatingLesson.value = true;
+  try {
+    const savedLesson = await lessonStore.addLesson(name);
+    lessonStore.beginOpeningLesson(savedLesson.uuid);
+    await router.replace({
+      name: "lesson",
+      params: { lessonUUId: savedLesson.uuid },
+    });
+  } finally {
+    creatingLesson.value = false;
+  }
 }
 
 async function selectLesson(e: any, row: any) {
   e.stopPropagation();
+  if (isLessonListBusy.value) {
+    const pending = lessonStore.getPendingOpenLessonUUId();
+    if (pending && pending === row.item.uuid) {
+      await router.replace({
+        name: "lesson",
+        params: { lessonUUId: pending },
+      });
+    }
+    return;
+  }
+
   router.push({
     path: "/lesson/" + row.item.uuid,
   });
@@ -161,6 +181,11 @@ async function selectLesson(e: any, row: any) {
 
 .lesson_title {
   justify-content: left !important;
+}
+
+.lessons-table--locked {
+  pointer-events: none;
+  opacity: 0.72;
 }
 </style>
 

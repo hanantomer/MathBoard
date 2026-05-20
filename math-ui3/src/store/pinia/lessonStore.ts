@@ -9,9 +9,16 @@ import {
   StudentLessonCreationAttributes,
 } from "common/userTypes";
 
+export const PENDING_CREATED_LESSON_KEY = "pendingCreatedLessonUUId";
+
 export const useLessonStore = defineStore("lesson", () => {
   let lessons = ref<Map<String, LessonAttributes>>(new Map());
   let currentLesson = ref<LessonAttributes>();
+
+  /** Lesson UUID we are navigating to after create; blocks list clicks until open completes. */
+  const pendingOpenLessonUUId = ref<string | null>(
+    sessionStorage.getItem(PENDING_CREATED_LESSON_KEY),
+  );
 
   function getCurrentLesson() {
     return currentLesson.value;
@@ -91,6 +98,27 @@ export const useLessonStore = defineStore("lesson", () => {
     lessons.value.clear();
   }
 
+  function beginOpeningLesson(lessonUUId: string) {
+    pendingOpenLessonUUId.value = lessonUUId;
+    sessionStorage.setItem(PENDING_CREATED_LESSON_KEY, lessonUUId);
+  }
+
+  function finishOpeningLesson() {
+    pendingOpenLessonUUId.value = null;
+    sessionStorage.removeItem(PENDING_CREATED_LESSON_KEY);
+  }
+
+  function getPendingOpenLessonUUId(): string | null {
+    return (
+      pendingOpenLessonUUId.value ??
+      sessionStorage.getItem(PENDING_CREATED_LESSON_KEY)
+    );
+  }
+
+  function isLessonListNavigationLocked(): boolean {
+    return !!getPendingOpenLessonUUId();
+  }
+
   return {
     getLessons,
     getCurrentLesson,
@@ -101,5 +129,9 @@ export const useLessonStore = defineStore("lesson", () => {
     addLessonToSharedLessons,
     removeLesson,
     clearLessons,
+    beginOpeningLesson,
+    finishOpeningLesson,
+    getPendingOpenLessonUUId,
+    isLessonListNavigationLocked,
   };
 });

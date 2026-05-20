@@ -22,6 +22,7 @@
 
 <script setup lang="ts">
 import { computed, ref, watch } from "vue";
+import { useMediaQuery } from "@vueuse/core";
 import { useEditModeStore } from "../store/pinia/editModeStore";
 import { useCellStore } from "../store/pinia/cellStore";
 import { useNotationStore } from "../store/pinia/notationStore";
@@ -60,6 +61,9 @@ const notationMutationHelper = useNotationMutateHelper();
 const authorizationHelper = UseAuthorizationHelper();
 const notationStore = useNotationStore();
 const selectionHelper = useSelectionHelper();
+
+/** Match board layout breakpoint (see SpecialSymbolsToolbar, CellSymbolInput). */
+const isMobileBoard = useMediaQuery("(max-width: 1023px)");
 
 let lineTypes: Array<NotationType> = [
   "CURVE",
@@ -138,10 +142,14 @@ watchHelper.watchPointerEvent(
   startAreaSelection,
 );
 
+// Desktop: drag from a selected cell starts a marquee. On mobile that steals taps.
 watchHelper.watchPointerEvent(
   ["CELL_SELECTED"],
   ["EV_SVG_POINTERMOVE"],
-  startAreaSelection,
+  (e: PointerEvent) => {
+    if (isMobileBoard.value) return;
+    startAreaSelection(e);
+  },
 );
 
 

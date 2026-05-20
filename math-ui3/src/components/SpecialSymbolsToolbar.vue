@@ -1,5 +1,6 @@
 <template>
   <v-btn
+    v-if="isMobileBoard"
     class="special-symbols-fab"
     icon
     color="primary"
@@ -10,7 +11,11 @@
     <v-icon>mdi-sigma</v-icon>
   </v-btn>
 
-  <v-bottom-sheet v-model="mobileSheetOpen" class="special-symbols-sheet">
+  <v-bottom-sheet
+    v-if="isMobileBoard"
+    v-model="mobileSheetOpen"
+    class="special-symbols-sheet"
+  >
     <v-card class="special-symbols-sheet-card rounded-t-xl">
       <v-card-title class="d-flex justify-space-between align-center py-2">
         Special Symbols
@@ -32,19 +37,23 @@
     </v-card>
   </v-bottom-sheet>
 
-  <SpecialSymbolPanels class="special-symbols-expansion" />
+  <SpecialSymbolPanels
+    v-if="!isMobileBoard"
+    class="special-symbols-expansion"
+  />
 </template>
 
 <script setup lang="ts">
 import { ref } from "vue";
+import { useMediaQuery } from "@vueuse/core";
 import SpecialSymbolPanels from "./SpecialSymbolPanels.vue";
 
+const isMobileBoard = useMediaQuery("(max-width: 1023px)");
 const mobileSheetOpen = ref(false);
 </script>
 
 <style scoped>
 .special-symbols-fab {
-  display: none;
   position: fixed;
   right: 16px;
   bottom: 16px;
@@ -62,16 +71,6 @@ const mobileSheetOpen = ref(false);
 .special-symbols-sheet-body {
   max-height: min(70vh, 520px);
   overflow-y: auto;
-}
-
-@media (max-width: 1023px) {
-  .special-symbols-fab {
-    display: inline-flex;
-  }
-
-  :deep(.special-symbols-expansion) {
-    display: none !important;
-  }
 }
 
 .special-symbols-expansion {

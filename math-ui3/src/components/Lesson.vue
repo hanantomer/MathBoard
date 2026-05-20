@@ -1,6 +1,15 @@
 <template>
   <div class="lesson-page d-flex">
     <v-sheet class="lesson-sheet">
+      <v-overlay
+        :model-value="!loaded"
+        contained
+        persistent
+        class="lesson-loading-overlay"
+      >
+        <v-progress-circular indeterminate color="primary" size="48" />
+        <div class="text-body-2 mt-3">Loading lesson…</div>
+      </v-overlay>
       <mathBoard :svgId="svgId" :loaded="loaded"> </mathBoard>
     </v-sheet>
   </div>
@@ -36,7 +45,7 @@ const userIncomingOperations = useUserIncomingOperations();
 
 let loaded = ref(false);
 const svgId = "lessonSvg";
-const pendingCreatedLessonKey = "pendingCreatedLessonUUId";
+let loadSeq = 0;
 
 onMounted(() => {
   cellStore.setSvgBoundingRect(svgId);
@@ -50,29 +59,51 @@ watch(
   { immediate: true },
 );
 
-async function loadLesson(lessonUUId: string) {
-  editModeStore.setDefaultEditMode();
-  // for student link remove the prefix "sl_"
-  if (lessonUUId.indexOf("sl_") == 0) {
-    lessonUUId = lessonUUId.substring(3);
+function normalizeLessonUUId(lessonUUId: string): string {
+  if (lessonUUId.indexOf("sl_") === 0) {
+    return lessonUUId.substring(3);
   }
+  return lessonUUId;
+}
 
+function isStaleLoad(seq: number, lessonUUId: string): boolean {
+  if (seq !== loadSeq) {
+    return true;
+  }
+  const routeId = route.params.lessonUUId as string | undefined;
+  if (!routeId) {
+    return true;
+  }
+  return normalizeLessonUUId(routeId) !== lessonUUId;
+}
+
+async function loadLesson(rawLessonUUId: string) {
+  const lessonUUId = normalizeLessonUUId(rawLessonUUId);
+  const seq = ++loadSeq;
+  loaded.value = false;
+
+  editModeStore.setDefaultEditMode();
   selectionHelper.setSelectedCell({ col: 1, row: 1 }, true);
 
-  // store might not be loaded yet
   if (!lessonStore.getLessons().get(lessonUUId)) {
     await lessonStore.loadLesson(lessonUUId);
   }
+  if (isStaleLoad(seq, lessonUUId)) {
+    return;
+  }
 
   if (!lessonStore.getLessons().get(lessonUUId)) {
+    lessonStore.finishOpeningLesson();
     throw Error("invalid lesson:" + lessonUUId);
   }
 
   await lessonStore.setCurrentLesson(lessonUUId);
+  if (isStaleLoad(seq, lessonUUId)) {
+    return;
+  }
 
   notationStore.setParent(lessonUUId, "LESSON");
 
-  // if student, send heartbeat to teacher
   if (!userStore.isTeacher()) {
     setInterval(
       userOutgoingOperations.syncOutgoingHeartBeat,
@@ -84,11 +115,14 @@ async function loadLesson(lessonUUId: string) {
   userIncomingOperations.syncIncomingUserOperations();
 
   if (!userStore.isTeacher()) {
-    lessonStore.addLessonToSharedLessons();
+    await lessonStore.addLessonToSharedLessons();
+  }
+  if (isStaleLoad(seq, lessonUUId)) {
+    return;
   }
 
   titleStore.setTitle(lessonStore.getCurrentLesson()!.name);
-  sessionStorage.removeItem(pendingCreatedLessonKey);
+  lessonStore.finishOpeningLesson();
   loaded.value = true;
 }
 </script>
@@ -101,9 +135,16 @@ async function loadLesson(lessonUUId: string) {
 }
 
 .lesson-sheet {
+  position: relative;
   width: 100%;
   max-width: 100%;
   overflow-x: hidden;
   background: transparent;
+}
+
+.lesson-loading-overlay {
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
 }
 </style>
