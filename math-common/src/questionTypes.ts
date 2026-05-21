@@ -5,6 +5,7 @@ import {
   CellAttributes,
   AnnotationAttributes,
   RectAttributes,
+  ImageAttributes,
   SingleValueAttributes,
   BoardAttributes,
   EntityAttributes,
@@ -98,6 +99,13 @@ export type QuestionRectAttributes =
 
 export type QuestionRectCreationAttributes = Omit<
   QuestionRectAttributes,
+  keyof EntityAttributes
+>;
+
+export type QuestionImageAttributes = QuestionRectAttributes & ImageAttributes;
+
+export type QuestionImageCreationAttributes = Omit<
+  QuestionImageAttributes,
   keyof EntityAttributes
 >;
 

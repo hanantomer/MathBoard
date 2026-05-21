@@ -5,6 +5,7 @@ import {
   CellAttributes,
   AnnotationAttributes,
   RectAttributes,
+  ImageAttributes,
   CircleAttributes,
   SingleValueAttributes,
   BoardAttributes,
@@ -94,6 +95,13 @@ export type AnswerRectAttributes =
 
 export type AnswerRectCreationAttributes = Omit<
   AnswerRectAttributes,
+  keyof EntityAttributes
+>;
+
+export type AnswerImageAttributes = AnswerRectAttributes & ImageAttributes;
+
+export type AnswerImageCreationAttributes = Omit<
+  AnswerImageAttributes,
   keyof EntityAttributes
 >;
 

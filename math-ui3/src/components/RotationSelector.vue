@@ -40,10 +40,9 @@ const authorizationHelper = useAuthorizationHelper();
 
 const show = computed(() => {
   const selectedNotations = notationStore.getSelectedNotations();
-  return (
-    selectedNotations.length == 1 &&
-    selectedNotations[0].notationType === "ANNOTATION"
-  );
+  if (selectedNotations.length !== 1) return false;
+  const type = selectedNotations[0].notationType;
+  return type === "ANNOTATION" || type === "IMAGE";
 });
 
 function rotateSelection(degrees: number) {
@@ -51,13 +50,18 @@ function rotateSelection(degrees: number) {
 
   if (notationStore.getSelectedNotations().length != 1) return;
 
-  const selectedNotation =
-    notationStore.getSelectedNotations()[0] as AnnotationNotationAttributes;
+  const selectedNotation = notationStore.getSelectedNotations()[0];
 
-  const currentRotation = selectedNotation.rotation || 0;
-  selectedNotation.rotation = (currentRotation + degrees + 360) % 360;
-  notationMutateHelper.updateNotation(selectedNotation);
+  if (selectedNotation.notationType === "IMAGE") {
+    notationMutateHelper.rotateImageNotation(degrees);
+    return;
+  }
 
+  const annotation =
+    selectedNotation as AnnotationNotationAttributes;
+  const currentRotation = annotation.rotation || 0;
+  annotation.rotation = (currentRotation + degrees + 360) % 360;
+  notationMutateHelper.updateNotation(annotation);
 }
 
 </script>

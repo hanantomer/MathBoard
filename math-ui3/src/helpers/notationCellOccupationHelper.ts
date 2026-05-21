@@ -1,6 +1,7 @@
 import {
   PointNotationAttributes,
   RectNotationAttributes,
+  ImageNotationAttributes,
   CurveNotationAttributes,
   LineNotationAttributes,
   NotationAttributes,
@@ -163,6 +164,97 @@ export default function notationCellOccupationHelper() {
     }
   }
 
+  function getImageRotatedPixelBounds(notation: ImageNotationAttributes) {
+    const colW = cellStore.getCellHorizontalWidth();
+    const rowH = cellStore.getCellVerticalHeight();
+    const left = notation.fromCol * colW;
+    const top = notation.fromRow * rowH;
+    const right = (notation.toCol + 1) * colW;
+    const bottom = (notation.toRow + 1) * rowH;
+    const innerWidth = right - left;
+    const innerHeight = bottom - top;
+    const cx = (left + right) / 2;
+    const cy = (top + bottom) / 2;
+    const rotation = notation.rotation ?? 0;
+
+    const corners = [
+      { x: left, y: top },
+      { x: right, y: top },
+      { x: right, y: bottom },
+      { x: left, y: bottom },
+    ];
+
+    let minX = Infinity;
+    let minY = Infinity;
+    let maxX = -Infinity;
+    let maxY = -Infinity;
+
+    for (const corner of corners) {
+      let x = corner.x;
+      let y = corner.y;
+      if (rotation !== 0) {
+        const rad = (rotation * Math.PI) / 180;
+        const cos = Math.cos(rad);
+        const sin = Math.sin(rad);
+        const dx = corner.x - cx;
+        const dy = corner.y - cy;
+        x = cx + dx * cos - dy * sin;
+        y = cy + dx * sin + dy * cos;
+      }
+      minX = Math.min(minX, x);
+      minY = Math.min(minY, y);
+      maxX = Math.max(maxX, x);
+      maxY = Math.max(maxY, y);
+    }
+
+    return {
+      x: minX,
+      y: minY,
+      width: maxX - minX,
+      height: maxY - minY,
+      innerWidth,
+      innerHeight,
+      innerOffsetX: left - minX,
+      innerOffsetY: top - minY,
+    };
+  }
+
+  function getImageOccupiedCellRange(notation: ImageNotationAttributes) {
+    const colW = cellStore.getCellHorizontalWidth();
+    const rowH = cellStore.getCellVerticalHeight();
+    const { x, y, width, height } = getImageRotatedPixelBounds(notation);
+
+    return {
+      minCol: Math.max(0, Math.floor(x / colW)),
+      maxCol: Math.min(
+        matrixDimensions.colsNum - 1,
+        Math.floor((x + width) / colW),
+      ),
+      minRow: Math.max(0, Math.floor(y / rowH)),
+      maxRow: Math.min(
+        matrixDimensions.rowsNum - 1,
+        Math.floor((y + height) / rowH),
+      ),
+    };
+  }
+
+  function updateImageOccupationMatrix(
+    matrix: any,
+    notation: ImageNotationAttributes,
+    doRemove: boolean,
+  ) {
+    if (!notation) return;
+    clearNotationFromMatrix(notation.uuid, matrix);
+    const { minCol, maxCol, minRow, maxRow } =
+      getImageOccupiedCellRange(notation);
+    for (let c = minCol; c <= maxCol; c++) {
+      for (let r = minRow; r <= maxRow; r++) {
+        if (!validateRowAndCol(c, r)) continue;
+        matrix[c][r] = doRemove ? null : notation.uuid;
+      }
+    }
+  }
+
   function updateCurveOccupationMatrix(
     matrix: any,
     notation: CurveNotationAttributes,
@@ -294,10 +386,16 @@ export default function notationCellOccupationHelper() {
         );
         break;
       case "TEXT":
-      case "IMAGE":
         updateRectOccupationMatrix(
           rectMatrix,
           notation as RectNotationAttributes,
+          doRemove,
+        );
+        break;
+      case "IMAGE":
+        updateImageOccupationMatrix(
+          rectMatrix,
+          notation as ImageNotationAttributes,
           doRemove,
         );
         break;
@@ -383,6 +481,9 @@ export default function notationCellOccupationHelper() {
     updateLineOccupationMatrix,
     updateAnnotationOccupationMatrix,
     updateRectOccupationMatrix,
+    updateImageOccupationMatrix,
+    getImageRotatedPixelBounds,
+    getImageOccupiedCellRange,
     updateCurveOccupationMatrix,
     updateSqrtOccupationMatrix,
     updateCircleOccupationMatrix,

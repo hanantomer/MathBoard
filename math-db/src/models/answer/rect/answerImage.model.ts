@@ -4,16 +4,16 @@ import AnswerDecorator from "../../answer/answerDecorator";
 import User from "../../user.model";
 import Answer from "../../answer/answer.model";
 import {
-    AnswerRectAttributes,
-    AnswerRectCreationAttributes,
+    AnswerImageAttributes,
+    AnswerImageCreationAttributes,
 } from "../../../../../math-common/build/answerTypes";
 
 
 
 @AnswerDecorator("AnswerImage")
 export default class AnswerImage extends Model<
-    AnswerRectAttributes,
-    AnswerRectCreationAttributes
+    AnswerImageAttributes,
+    AnswerImageCreationAttributes
 > {
     notationType = "IMAGE";
     boardType = "ANSWER";
@@ -62,4 +62,7 @@ export default class AnswerImage extends Model<
         foreignKey: { name: "colorId", field: "colorId", allowNull: true },
     })
     color!: Color;
+
+    @Column({ type: DataType.INTEGER, allowNull: true, defaultValue: 0 })
+    rotation?: number;
 }

@@ -2,6 +2,7 @@ import {
   NotationAttributes,
   PointNotationAttributes,
   RectNotationAttributes,
+  ImageNotationAttributes,
   CurveNotationAttributes,
   CircleNotationAttributes,
   LineNotationAttributes,
@@ -71,6 +72,11 @@ export default function notationLoadingHelper() {
           parentUUId,
         );
       case "IMAGE":
+        return await apiHelper.getNotations<ImageNotationAttributes>(
+          notationType,
+          boardType,
+          parentUUId,
+        );
       case "TEXT":
         return await apiHelper.getNotations<RectNotationAttributes>(
           notationType,

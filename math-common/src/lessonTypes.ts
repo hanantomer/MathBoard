@@ -4,6 +4,7 @@ import {
   CellAttributes,
   AnnotationAttributes,
   RectAttributes,
+  ImageAttributes,
   SingleValueAttributes,
   BoardAttributes,
   EntityAttributes,
@@ -82,6 +83,13 @@ export type LessonRectAttributes =
 
 export type LessonRectCreationAttributes = Omit<
   LessonRectAttributes,
+  keyof EntityAttributes
+>;
+
+export type LessonImageAttributes = LessonRectAttributes & ImageAttributes;
+
+export type LessonImageCreationAttributes = Omit<
+  LessonImageAttributes,
   keyof EntityAttributes
 >;
 

@@ -31,6 +31,7 @@ import {
   RectCoordinates,
   DotCoordinates,
   RectNotationAttributes,
+  ImageNotationAttributes,
   isRect,
   AnnotationNotationAttributes,
   NotationAttributes,
@@ -43,8 +44,10 @@ import useEventBusHelper from "../helpers/eventBusHelper";
 import useWatchHelper from "../helpers/watchHelper";
 import UseAuthorizationHelper from "../helpers/authorizationHelper";
 import useScreenHelper from "../helpers/screenHelper";
+import useNotationCellOccupationHelper from "../helpers/notationCellOccupationHelper";
 
 const screenHelper = useScreenHelper();
+const cellOccupationHelper = useNotationCellOccupationHelper();
 type HorizontalDirection = "RIGHT" | "LEFT" | "NONE";
 type VerticalDirection = "UP" | "BOTTOM" | "NONE";
 
@@ -88,14 +91,6 @@ let dragPosition = ref<DotCoordinates>({
 let dragStarted = false;
 
 // computed
-
-const selectedRectElement = computed(() => {
-  return document.getElementById(getSelectedRect()!.uuid);
-});
-
-const selectedRectBoundingRect = computed(() => {
-  return selectedRectElement.value?.getBoundingClientRect();
-});
 
 const show = computed(() => {
   return (
@@ -494,8 +489,7 @@ function extendBoundsFromNotation(
       bounds.y2 = Math.max(bounds.y2, svg.top + Math.max(line.p1y, line.p2y));
       break;
     }
-    case "TEXT":
-    case "IMAGE": {
+    case "TEXT": {
       const rect = notation as RectNotationAttributes;
       bounds.x1 = Math.min(
         bounds.x1,
@@ -512,6 +506,22 @@ function extendBoundsFromNotation(
       bounds.y2 = Math.max(
         bounds.y2,
         svg.top + (rect.toRow + 1) * cellStore.getCellVerticalHeight(),
+      );
+      break;
+    }
+    case "IMAGE": {
+      const image = notation as ImageNotationAttributes;
+      const pixelBounds =
+        cellOccupationHelper.getImageRotatedPixelBounds(image);
+      bounds.x1 = Math.min(bounds.x1, svg.left + pixelBounds.x);
+      bounds.y1 = Math.min(bounds.y1, svg.top + pixelBounds.y);
+      bounds.x2 = Math.max(
+        bounds.x2,
+        svg.left + pixelBounds.x + pixelBounds.width,
+      );
+      bounds.y2 = Math.max(
+        bounds.y2,
+        svg.top + pixelBounds.y + pixelBounds.height,
       );
       break;
     }
@@ -809,13 +819,36 @@ function setSelectionPositionForText(selectedNotation: RectNotationAttributes) {
 }
 
 function setSelectionPositionForImage() {
-  const rect = selectedRectBoundingRect.value!;
+  const imageNotation = getSelectedRect() as ImageNotationAttributes;
+  const svg = cellStore.getSvgBoundingRect();
+  const colW = cellStore.getCellHorizontalWidth();
+  const rowH = cellStore.getCellVerticalHeight();
 
-  selectionPosition.value.x1 = rect.x;
-  selectionPosition.value.x2 = rect.x + rect.width;
-  selectionPosition.value.y1 = rect.y;
-  selectionPosition.value.y2 = rect.y + rect.height;
+  selectionPosition.value.x1 = svg.left + imageNotation.fromCol * colW;
+  selectionPosition.value.x2 =
+    svg.left + (imageNotation.toCol + 1) * colW;
+  selectionPosition.value.y1 = svg.top + imageNotation.fromRow * rowH;
+  selectionPosition.value.y2 =
+    svg.top + (imageNotation.toRow + 1) * rowH;
+  selectionRotation.value = imageNotation.rotation ?? 0;
 }
+
+watch(
+  () => {
+    if (!editModeStore.isImageSelectedMode()) return "";
+    const selected = notationStore.getSelectedNotations();
+    if (selected.length !== 1 || selected[0].notationType !== "IMAGE") {
+      return "";
+    }
+    const image = selected[0] as ImageNotationAttributes;
+    return `${image.uuid}:${image.rotation ?? 0}`;
+  },
+  () => {
+    if (editModeStore.isImageSelectedMode() && getSelectedRect()) {
+      setSelectionPositionForImage();
+    }
+  },
+);
 </script>
 
 <style>

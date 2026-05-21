@@ -8,6 +8,7 @@ import {
   RectCoordinates,
   PointNotationAttributes,
   RectNotationAttributes,
+  ImageNotationAttributes,
   LineNotationAttributes,
   CurveNotationAttributes,
   FreeSketchNotationAttributes,
@@ -245,11 +246,17 @@ export const useNotationStore = defineStore("notation", () => {
           true,
         );
 
-      case "IMAGE":
       case "TEXT":
         cellOccupationHelper.updateRectOccupationMatrix(
           cellRectNotationOccupationMatrix,
           notations.value.get(uuid)! as RectNotationAttributes,
+          true,
+        );
+        break;
+      case "IMAGE":
+        cellOccupationHelper.updateImageOccupationMatrix(
+          cellRectNotationOccupationMatrix,
+          notations.value.get(uuid)! as ImageNotationAttributes,
           true,
         );
         break;

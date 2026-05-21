@@ -3,6 +3,8 @@ import useApiHelper from "../helpers/apiHelper";
 import {
   PointNotationAttributes,
   RectNotationAttributes,
+  ImageNotationAttributes,
+  ImageNotationCreationAttributes,
   PointNotationCreationAttributes,
   RectNotationCreationAttributes,
   NotationCreationAttributes,
@@ -42,6 +44,7 @@ import useAuthorizationHelper from "./authorizationHelper";
 import useUserOutgoingOperations from "./userOutgoingOperationsHelper";
 import useMatrixCellHelper from "../helpers/matrixCellHelper";
 import useScreenHelper from "../helpers/screenHelper";
+import useNotationCellOccupationHelper from "../helpers/notationCellOccupationHelper";
 
 import {
   NotationAttributes,
@@ -60,6 +63,7 @@ const selectionHelper = useSelectionHelper();
 
 const matrixCellHelper = useMatrixCellHelper();
 const screenHelper = useScreenHelper();
+const cellOccupationHelper = useNotationCellOccupationHelper();
 const userStore = useUserStore();
 const apiHelper = useApiHelper();
 const imageHelper = useImageHelper();
@@ -523,14 +527,9 @@ export default function notationMutateHelper() {
       );
     }
 
-    // Rect notations (TEXT, IMAGE)
-    if (
-      sourceNotation.notationType === "TEXT" ||
-      sourceNotation.notationType === "IMAGE"
-    ) {
+    if (sourceNotation.notationType === "TEXT") {
       const sourceRectNotation = sourceNotation as RectNotationAttributes;
 
-      // Check bounds
       if (
         sourceRectNotation.fromCol < 0 ||
         sourceRectNotation.toCol > matrixDimensions.colsNum
@@ -553,6 +552,33 @@ export default function notationMutateHelper() {
           row <= sourceRectNotation.toRow;
           row++
         ) {
+          if (isCellOccupiedForMove({ col, row }, movingUuid)) {
+            return false;
+          }
+        }
+      }
+      return true;
+    }
+
+    if (sourceNotation.notationType === "IMAGE") {
+      const sourceImageNotation = sourceNotation as ImageNotationAttributes;
+
+      if (
+        sourceImageNotation.fromCol < 0 ||
+        sourceImageNotation.toCol > matrixDimensions.colsNum
+      )
+        return false;
+      if (
+        sourceImageNotation.fromRow < 0 ||
+        sourceImageNotation.toRow > matrixDimensions.rowsNum
+      )
+        return false;
+
+      const movingUuid = String(sourceImageNotation.uuid);
+      const { minCol, maxCol, minRow, maxRow } =
+        cellOccupationHelper.getImageOccupiedCellRange(sourceImageNotation);
+      for (let col = minCol; col <= maxCol; col++) {
+        for (let row = minRow; row <= maxRow; row++) {
           if (isCellOccupiedForMove({ col, row }, movingUuid)) {
             return false;
           }
@@ -1087,12 +1113,13 @@ export default function notationMutateHelper() {
     toRow: number,
     base64Value: string,
   ) {
-    let notation: RectNotationCreationAttributes = {
+    let notation: ImageNotationCreationAttributes = {
       fromCol: fromCol,
       toCol: toCol,
       fromRow: fromRow,
       toRow: toRow,
       value: base64Value,
+      rotation: 0,
       boardType: notationStore.getParent().type,
       parentUUId: notationStore.getParent().uuid,
       notationType: "IMAGE",
@@ -1310,6 +1337,19 @@ export default function notationMutateHelper() {
     notationStore.addNotation(notation, true, true);
     apiHelper.updateNotation(notation);
     userOutgoingOperations.syncOutgoingUpdateNotation(notation);
+  }
+
+  function rotateImageNotation(degrees: number) {
+    if (!authorizationHelper.canEdit()) return;
+    if (notationStore.getSelectedNotations().length !== 1) return;
+
+    const selected = notationStore.getSelectedNotations()[0];
+    if (selected.notationType !== "IMAGE") return;
+
+    const imageNotation = selected as ImageNotationAttributes;
+    const currentRotation = imageNotation.rotation ?? 0;
+    imageNotation.rotation = (currentRotation + degrees + 360) % 360;
+    updateNotation(imageNotation);
   }
 
   async function updateNotations(notations: NotationAttributes[]) {
@@ -1573,6 +1613,7 @@ export default function notationMutateHelper() {
     updateCircleNotation,
     updateFreeSketchNotation,
     updateNotation,
+    rotateImageNotation,
     selectNotation,
     selectNotationByCell,
 

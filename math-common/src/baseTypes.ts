@@ -54,6 +54,10 @@ export type AnnotationAttributes = {
   rotation: number;
 };
 
+export type ImageAttributes = {
+  rotation?: number;
+};
+
 export type LineCoordinates = {
   top: DotCoordinates;
   bottom: DotCoordinates;
@@ -165,6 +169,9 @@ export type RectNotationAttributes =
     RectAttributes &
     SingleValueAttributes;
 
+export type ImageNotationAttributes = RectNotationAttributes &
+  ImageAttributes;
+
 export type AnnotationNotationAttributes =
   AnnotationAttributes &
     EntityAttributes &
@@ -199,6 +206,11 @@ export type RectNotationCreationAttributes = Omit<
   NotationAttributes &
     RectAttributes &
     SingleValueAttributes,
+  "uuid"
+>;
+
+export type ImageNotationCreationAttributes = Omit<
+  ImageNotationAttributes,
   "uuid"
 >;
 export type CurveNotationCreationAttributes =

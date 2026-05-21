@@ -5,14 +5,14 @@ import User from "../../user.model";
 import Color from "../../color.model";
 import Lesson from "../../lesson/lesson.model";
 import {
-    LessonRectAttributes,
-    LessonRectCreationAttributes,
+    LessonImageAttributes,
+    LessonImageCreationAttributes,
 } from "../../../../../math-common/build/lessonTypes";
 
 @LessonDecorator("LessonImage")
 export default class LessonImage extends Model<
-    LessonRectAttributes,
-    LessonRectCreationAttributes
+    LessonImageAttributes,
+    LessonImageCreationAttributes
 > {
     notationType = "IMAGE";
     boardType = "LESSON";
@@ -65,4 +65,7 @@ export default class LessonImage extends Model<
         foreignKey: { name: "colorId", field: "colorId", allowNull: true },
     })
     color!: Color;
+
+    @Column({ type: DataType.INTEGER, allowNull: true, defaultValue: 0 })
+    rotation?: number;
 }

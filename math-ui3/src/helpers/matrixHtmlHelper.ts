@@ -3,6 +3,7 @@ import {
   NotationAttributes,
   PointNotationAttributes,
   RectNotationAttributes,
+  ImageNotationAttributes,
   CellAttributes,
   RectAttributes,
   AnnotationNotationAttributes,
@@ -12,11 +13,13 @@ import {
 import { wrapVectorSymbol, vectorSymbolPrefix } from "common/globals";
 import { useCellStore } from "../store/pinia/cellStore";
 import useUtils from "./matrixHelperUtils";
+import useNotationCellOccupationHelper from "./notationCellOccupationHelper";
 import { useUserStore } from "../store/pinia/userStore";
 
 const userStore = useUserStore();
 const utils = useUtils();
 const cellStore = useCellStore();
+const cellOccupationHelper = useNotationCellOccupationHelper();
 
 export default function useHtmlMatrixHelper() {
   function rectBorderColor(notation: NotationAttributes): string {
@@ -97,7 +100,9 @@ export default function useHtmlMatrixHelper() {
       }
 
       case "IMAGE": {
-        return imageNotationHeight(n as RectNotationAttributes);
+        return cellOccupationHelper.getImageRotatedPixelBounds(
+          n as ImageNotationAttributes,
+        ).height;
       }
       case "TEXT": {
         return rectNotationHeight(n as RectNotationAttributes);
@@ -148,6 +153,9 @@ export default function useHtmlMatrixHelper() {
       .attr("height", (n: NotationAttributes) => {
         return height(n);
       })
+      .style("overflow", (n: NotationAttributes) =>
+        n.notationType === "IMAGE" ? "visible" : null,
+      )
       .style("font-size", (n: NotationAttributes) => {
         return fontSize(n as PointNotationAttributes, el);
       })
@@ -176,7 +184,9 @@ export default function useHtmlMatrixHelper() {
       .attr("height", (n: NotationAttributes) => {
         return height(n);
       })
-
+      .style("overflow", (n: NotationAttributes) =>
+        n.notationType === "IMAGE" ? "visible" : null,
+      )
       .html((n: NotationAttributes) => {
         return html(n);
       });
@@ -229,6 +239,12 @@ export default function useHtmlMatrixHelper() {
       return (n as AnnotationNotationAttributes).x;
     }
 
+    if (n.notationType === "IMAGE") {
+      return cellOccupationHelper.getImageRotatedPixelBounds(
+        n as ImageNotationAttributes,
+      ).x;
+    }
+
     let colIdx = col(n);
     let deltaX =
       n.notationType === "SQRTSYMBOL"
@@ -244,6 +260,12 @@ export default function useHtmlMatrixHelper() {
   function y(n: NotationAttributes) {
     if (n.notationType === "ANNOTATION") {
       return (n as AnnotationNotationAttributes).y - 15; // TODO parametrize and use in html function as well
+    }
+
+    if (n.notationType === "IMAGE") {
+      return cellOccupationHelper.getImageRotatedPixelBounds(
+        n as ImageNotationAttributes,
+      ).y;
     }
 
     let rowIdx = row(n);
@@ -286,7 +308,9 @@ export default function useHtmlMatrixHelper() {
       }
 
       case "IMAGE": {
-        return imageNotationWidth(n as RectNotationAttributes);
+        return cellOccupationHelper.getImageRotatedPixelBounds(
+          n as ImageNotationAttributes,
+        ).width;
       }
       case "TEXT": {
         return rectNotationWidth(n as RectNotationAttributes);
@@ -415,10 +439,15 @@ export default function useHtmlMatrixHelper() {
     }
 
     function generateImageHtml(n: NotationAttributes): string {
-      const n1 = n as RectNotationAttributes;
+      const n1 = n as ImageNotationAttributes;
       const bColor = rectBorderColor(n ?? false);
+      const rotation = n1.rotation ?? 0;
+      const bounds = cellOccupationHelper.getImageRotatedPixelBounds(n1);
       return utils.wrapWithDiv(
-        `<img draggable="false" id=${n1.uuid} class="board-image" style='z-index:1;width:100%;height:100%;border:groove 2px;border-color:${bColor};cursor:grab' src='${n1.value}'>`,
+        `<div style="position:relative;width:${bounds.width}px;height:${bounds.height}px;overflow:visible">` +
+          `<div style="position:absolute;left:${bounds.innerOffsetX}px;top:${bounds.innerOffsetY}px;width:${bounds.innerWidth}px;height:${bounds.innerHeight}px">` +
+          `<img draggable="false" id=${n1.uuid} class="board-image" style='z-index:1;width:100%;height:100%;border:groove 2px;border-color:${bColor};cursor:grab;transform:rotate(${rotation}deg);transform-origin:center center' src='${n1.value}'>` +
+          `</div></div>`,
       );
     }
 
