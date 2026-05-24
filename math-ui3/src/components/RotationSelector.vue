@@ -32,13 +32,16 @@ import { computed } from "vue";
 import { useNotationStore } from "../store/pinia/notationStore";
 import useNotationMutateHelper from "../helpers/notationMutateHelper";
 import useAuthorizationHelper from "../helpers/authorizationHelper";
+import { useEditModeStore } from "../store/pinia/editModeStore";
 import { AnnotationNotationAttributes } from "common/baseTypes";
 
 const notationStore = useNotationStore();
 const notationMutateHelper = useNotationMutateHelper();
 const authorizationHelper = useAuthorizationHelper();
+const editModeStore = useEditModeStore();
 
 const show = computed(() => {
+  if (editModeStore.isImageCroppingMode()) return false;
   const selectedNotations = notationStore.getSelectedNotations();
   if (selectedNotations.length !== 1) return false;
   const type = selectedNotations[0].notationType;

@@ -1352,6 +1352,74 @@ export default function notationMutateHelper() {
     updateNotation(imageNotation);
   }
 
+  async function computeImageCellBounds(
+    fromCol: number,
+    fromRow: number,
+    base64: string,
+  ): Promise<{ toCol: number; toRow: number }> {
+    const { width, height } = await imageHelper.getDimensionsFromBase64(base64);
+    const displayWidth = Math.min(width, MAX_IMAGE_WIDTH);
+    const displayHeight = height * (displayWidth / width);
+    return {
+      toCol:
+        Math.ceil(displayWidth / cellStore.getCellHorizontalWidth()) + fromCol,
+      toRow:
+        Math.ceil(displayHeight / cellStore.getCellVerticalHeight()) + fromRow,
+    };
+  }
+
+  function cancelImageCrop() {
+    editModeStore.setEditMode("IMAGE_SELECTED");
+  }
+
+  async function applyImageCrop(
+    imageNotation: ImageNotationAttributes,
+    displayCrop: { x: number; y: number; width: number; height: number },
+  ) {
+    if (!authorizationHelper.canEdit()) return;
+
+    const colW = cellStore.getCellHorizontalWidth();
+    const rowH = cellStore.getCellVerticalHeight();
+    const innerWidth = (imageNotation.toCol - imageNotation.fromCol + 1) * colW;
+    const innerHeight =
+      (imageNotation.toRow - imageNotation.fromRow + 1) * rowH;
+
+    if (displayCrop.width <= 0 || displayCrop.height <= 0) return;
+
+    const { width: srcW, height: srcH } =
+      await imageHelper.getDimensionsFromBase64(imageNotation.value);
+    const scaleX = srcW / innerWidth;
+    const scaleY = srcH / innerHeight;
+
+    notationStore.beginUndoGroup();
+    try {
+      const newBase64 = await imageHelper.cropBase64(imageNotation.value, {
+        x: displayCrop.x * scaleX,
+        y: displayCrop.y * scaleY,
+        width: displayCrop.width * scaleX,
+        height: displayCrop.height * scaleY,
+      });
+
+      const { toCol, toRow } = await computeImageCellBounds(
+        imageNotation.fromCol,
+        imageNotation.fromRow,
+        newBase64,
+      );
+
+      const updated: ImageNotationAttributes = {
+        ...imageNotation,
+        value: newBase64,
+        toCol,
+        toRow,
+        rotation: imageNotation.rotation ?? 0,
+      };
+      await updateNotation(updated);
+      editModeStore.setEditMode("IMAGE_SELECTED");
+    } finally {
+      notationStore.endUndoGroup();
+    }
+  }
+
   async function updateNotations(notations: NotationAttributes[]) {
     //await apiHelper.updateNotations(notations);
 
@@ -1614,6 +1682,8 @@ export default function notationMutateHelper() {
     updateFreeSketchNotation,
     updateNotation,
     rotateImageNotation,
+    cancelImageCrop,
+    applyImageCrop,
     selectNotation,
     selectNotationByCell,
 

@@ -12,6 +12,7 @@
           <ColorSelector></ColorSelector>
           <LinePropertiesSelector></LinePropertiesSelector>
           <RotationSelector></RotationSelector>
+          <CropSelector></CropSelector>
           <DeleteTool></DeleteTool>
         </div>
       </v-card-text>
@@ -24,17 +25,21 @@ import { computed, ref, watch } from "vue";
 import ColorSelector from "./ColorSelector.vue";
 import LinePropertiesSelector from "./LinePropertiesSelector.vue";
 import RotationSelector from "./RotationSelector.vue";
+import CropSelector from "./CropSelector.vue";
 import DeleteTool from "./DeleteTool.vue";
 import { useNotationStore } from "../store/pinia/notationStore";
+import { useEditModeStore } from "../store/pinia/editModeStore";
 import UseAuthorizationHelper from "../helpers/authorizationHelper";
 
 const notationStore = useNotationStore();
+const editModeStore = useEditModeStore();
 const authorizationHelper = UseAuthorizationHelper();
 
 const shouldShow = computed(() => {
   return (
     notationStore.getSelectedNotations().length > 0 &&
-    authorizationHelper.canEdit()
+    authorizationHelper.canEdit() &&
+    !editModeStore.isImageCroppingMode()
   );
 });
 

@@ -1,6 +1,7 @@
 <template>
   <lessonStudents></lessonStudents>
   <floatingToolbar></floatingToolbar>
+  <imageCropEditor></imageCropEditor>
   <annotationEditor></annotationEditor>
   <freeTextEditor></freeTextEditor>
   <freeSketchDrawer></freeSketchDrawer>
@@ -115,6 +116,9 @@ const cartesianSystemDrawer = defineAsyncComponent(
 );
 const floatingToolbar = defineAsyncComponent(
   () => import("./FloatingToolbar.vue"),
+);
+const imageCropEditor = defineAsyncComponent(
+  () => import("./ImageCropEditor.vue"),
 );
 const lessonStudents = defineAsyncComponent(
   () => import("./LessonStudents.vue"),

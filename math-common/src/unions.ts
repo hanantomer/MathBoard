@@ -60,6 +60,7 @@ export type NotationType =
 
 export type CursorType =
   | "auto"
+  | "crosshair"
   | "default"
   | "grab"
   | "grabbing"
@@ -93,6 +94,7 @@ export type EditMode =
   | "TEXT_AREA_SELECTING" // user started selecting area following text button pressed
   | "TEXT_WRITING" // user clicked a cell following text button pressed
   | "IMAGE_SELECTED" // user clicked on existing image
+  | "IMAGE_CROPPING" // user is cropping a selected image
   | "RESIZE_STARTED" // user clicked on existing rect and clicked on resize handle
   | "RESIZING" // user clicked on existing rect  and is resizing
   | "ANNOTATION_STARTED" // annotation button pressed
@@ -175,6 +177,7 @@ export const EditModeNotationType = new Map<
   ["TEXT_WRITING", "TEXT"],
   ["TEXT_SELECTED", "TEXT"],
   ["IMAGE_SELECTED", "IMAGE"],
+  ["IMAGE_CROPPING", "IMAGE"],
   ["ANNOTATION_STARTED", "ANNOTATION"],
   ["ANNOTATION_SELECTED", "ANNOTATION"],
   ["ANNOTATION_WRITING", "ANNOTATION"],
@@ -240,10 +243,13 @@ export const EditModeCursorType = new Map<
   ["TEXT_AREA_SELECTED", "auto"],
   ["TEXT_SELECTED", "grab"],
   ["IMAGE_SELECTED", "grab"],
+  ["IMAGE_CROPPING", "crosshair"],
   ["ANNOTATION_SELECTED", "grab"],
   ["CHECKMARK_STARTED", "auto"],
   ["SEMICHECKMARK_STARTED", "auto"],
   ["XMARK_STARTED", "auto"],
+  ["CARTESIAN_SYSTEM_STARTED", "auto"],
+  
 ]);
 
 export type UserType =

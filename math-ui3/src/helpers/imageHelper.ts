@@ -27,7 +27,14 @@ function scaleDimensions(
   };
 }
 
-export default function imageHelper() {  // Helper function to process the image
+export type ImageCropRect = {
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+};
+
+export default function imageHelper() {
   async function convertBase64ToGrayScale(base64: string): Promise<string> {
     const image: HTMLImageElement = new Image();
     return new Promise<string>((resolve, reject) => {
@@ -137,10 +144,41 @@ export default function imageHelper() {  // Helper function to process the image
     });
   }
 
+  /** Axis-aligned crop in source-image pixel coordinates. */
+  async function cropBase64(
+    base64: string,
+    rect: ImageCropRect,
+    jpegQuality = 0.92,
+  ): Promise<string> {
+    const image = await loadImage(base64);
+    const x = Math.round(Math.max(0, rect.x));
+    const y = Math.round(Math.max(0, rect.y));
+    const width = Math.round(
+      Math.min(rect.width, image.width - x),
+    );
+    const height = Math.round(
+      Math.min(rect.height, image.height - y),
+    );
+    if (width <= 0 || height <= 0) {
+      throw new Error("Invalid crop rectangle");
+    }
+
+    const canvas = document.createElement("canvas");
+    canvas.width = width;
+    canvas.height = height;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) {
+      throw new Error("Failed to get canvas context");
+    }
+    ctx.drawImage(image, x, y, width, height, 0, 0, width, height);
+    return canvas.toDataURL("image/jpeg", jpegQuality);
+  }
+
   return {
     getDimensionsFromBase64,
     convertBlobToBase64GrayScale,
     convertImageToBase64,
     prepareImageFileForUpload,
+    cropBase64,
   };
 }

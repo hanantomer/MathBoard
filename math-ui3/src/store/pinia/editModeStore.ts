@@ -219,6 +219,10 @@ export const useEditModeStore = defineStore("editMode", () => {
     return editMode.value === "IMAGE_SELECTED";
   }
 
+  function isImageCroppingMode() {
+    return editMode.value === "IMAGE_CROPPING";
+  }
+
   function isTextSelectionMode() {
     return editMode.value === "TEXT_AREA_SELECTING";
   }
@@ -369,6 +373,7 @@ export const useEditModeStore = defineStore("editMode", () => {
     isTextSelectedMode,
     isTextSelectionMode,
     isImageSelectedMode,
+    isImageCroppingMode,
     isAnnotationWritingMode,
     isAnnotationStartedMode,
     isAnnotationSelectedMode,

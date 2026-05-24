@@ -99,6 +99,7 @@ const show = computed(() => {
       editModeStore.isTextSelectedMode() ||
       editModeStore.isTextSelectionMode() ||
       editModeStore.isAreaSelectionOrMovingMode()) &&
+    !editModeStore.isImageCroppingMode() &&
     selectionPosition.value.x1 != selectionPosition.value.x2 &&
     selectionPosition.value.y1 != selectionPosition.value.y2
   );
@@ -440,6 +441,9 @@ function endSelect(e: PointerEvent) {
 
 function shouldSyncSelectionOverlay(): boolean {
   const mode = editModeStore.getEditMode();
+  if (mode === "IMAGE_CROPPING") {
+    return false;
+  }
   if (mode === "AREA_SELECTION_STARTED" || mode === "TEXT_AREA_SELECTING") {
     return false;
   }
