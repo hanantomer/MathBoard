@@ -5,8 +5,6 @@ import io from "socket.io-client";
 import { useUserStore } from "../store/pinia/userStore";
 import { useLessonStore } from "../store/pinia/lessonStore";
 
-const lessonStore = useLessonStore();
-const userStore = useUserStore();
 
 export class FeathersHelper {
   private static instance: Application;
@@ -23,7 +21,8 @@ export class FeathersHelper {
       });
       return;
     }
-
+    const lessonStore = useLessonStore();
+    const userStore = useUserStore();
     const user = userStore.getCurrentUser();
     const lesson = lessonStore.getCurrentLesson();
     if (!user || !lesson?.uuid) return;
