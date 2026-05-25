@@ -90,6 +90,7 @@
     <v-tooltip text="Select notations" v-if="userStore.isTeacher()">
       <template v-slot:activator="{ props }">
         <v-btn
+          data-cy="selectionButton"
           v-bind="props"
           icon
           @click.stop="startSelection"

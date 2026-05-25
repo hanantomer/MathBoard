@@ -6,7 +6,13 @@
     transition="scale-transition"
     :offset="3"
   >
-    <v-card class="toolbar-card" elevation="4" rounded="lg" width="auto">
+    <v-card
+      class="toolbar-card"
+      data-cy="floatingToolbar"
+      elevation="4"
+      rounded="lg"
+      width="auto"
+    >
       <v-card-text class="pa-2">
         <div class="d-flex align-center mb-2">
           <ColorSelector></ColorSelector>

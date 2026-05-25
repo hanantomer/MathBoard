@@ -144,6 +144,22 @@ function dispatchSvgPointer(
   target.dispatchEvent(event);
 }
 
+/** One synthetic pointer step on #lessonSvg; separate cy ticks so the event bus can run. */
+function svgPointerStep(
+  type: "pointerdown" | "pointermove" | "pointerup",
+  x: number,
+  y: number,
+  pressed: boolean,
+) {
+  cy.get("#lessonSvg").then(($svg) => {
+    const el = $svg[0];
+    cy.window().then((win) => {
+      dispatchSvgPointer(win, el, el, type, x, y, pressed);
+    });
+  });
+  cy.wait(50);
+}
+
 Cypress.Commands.add(
   "drawLine",
   (
@@ -310,43 +326,23 @@ Cypress.Commands.add("clearBoard", () => {
   cy.window().then((win) => {
     win.scrollTo(0, 0);
   });
+
   cy.get('[row="0"] > [col="0"]').click({ force: true });
   cy.get("body").type("0", { force: true });
+  cy.get("#lessonSvg foreignObject", { timeout: 10000 }).should("exist");
 
-  cy.get("#lessonSvg").then(($svg) => {
-    const el = $svg[0];
-    cy.window().then((win) => {
-      dispatchSvgPointer(win, el, el, "pointerdown", 0, 0, true);
-      dispatchSvgPointer(win, el, el, "pointermove", 2, 2, true);
-    });
-  });
+  cy.dataCy("selectionButton").click({ force: true });
+  cy.selectArea(0, 0, 1200, 800);
 
-  cy.wait(0);
+  // Wait until marquee finishes (AREA_SELECTED) — not only AREA_SELECTION_STARTED.
+  cy.wait(200);
+  cy.get('[data-cy="area-selection"]', { timeout: 10000 }).should("exist");
+  cy.get('[data-cy="floatingToolbar"]', { timeout: 10000 }).should("exist");
 
-  cy.get("#lessonSvg").then(($svg) => {
-    const el = $svg[0];
-    cy.window().then((win) => {
-      for (const [sx, sy] of [
-        [3, 3],
-        [52, 52],
-        [1500, 1100],
-      ] as const) {
-        dispatchSvgPointer(win, el, el, "pointermove", sx, sy, true);
-      }
-    });
-  });
+  cy.realPress("Delete");
 
-  cy.wait(0);
-
-  cy.get("#lessonSvg").then(($svg) => {
-    const el = $svg[0];
-    cy.window().then((win) => {
-      dispatchSvgPointer(win, el, el, "pointerup", 1500, 1100, false);
-    });
-  });
-
-  cy.dataCy("area-selection").should("exist");
-  cy.dataCy("deleteToolButton").click();
+  cy.get('[data-cy="area-selection"]').should("not.exist");
+  cy.get("#lessonSvg foreignObject", { timeout: 10000 }).should("not.exist");
 });
 
 Cypress.Commands.add(
@@ -360,28 +356,11 @@ Cypress.Commands.add(
       [x + width, y + height],
     ];
 
-    cy.get("#lessonSvg").then(($svg) => {
-      const el = $svg[0];
-      cy.window().then((win) => {
-        dispatchSvgPointer(win, el, el, "pointerdown", pts[0][0], pts[0][1], true);
-        dispatchSvgPointer(win, el, el, "pointermove", pts[1][0], pts[1][1], true);
-      });
-    });
-    cy.wait(0);
-    cy.get("#lessonSvg").then(($svg) => {
-      const el = $svg[0];
-      cy.window().then((win) => {
-        for (let i = 2; i < pts.length; i++) {
-          dispatchSvgPointer(win, el, el, "pointermove", pts[i][0], pts[i][1], true);
-        }
-      });
-    });
-    cy.wait(0);
-    cy.get("#lessonSvg").then(($svg) => {
-      const el = $svg[0];
-      cy.window().then((win) => {
-        dispatchSvgPointer(win, el, el, "pointerup", x + width, y + height, false);
-      });
-    });
+    svgPointerStep("pointerdown", pts[0][0], pts[0][1], true);
+    svgPointerStep("pointermove", pts[1][0], pts[1][1], true);
+    for (let i = 2; i < pts.length; i++) {
+      svgPointerStep("pointermove", pts[i][0], pts[i][1], true);
+    }
+    svgPointerStep("pointerup", pts[pts.length - 1][0], pts[pts.length - 1][1], false);
   },
 );
