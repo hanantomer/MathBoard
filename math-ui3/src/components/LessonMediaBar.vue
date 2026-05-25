@@ -45,6 +45,26 @@
         </template>
       </v-tooltip>
 
+      <v-tooltip
+        :text="videoDockVisible ? 'Hide video panel' : 'Show video panel'"
+        location="bottom"
+      >
+        <template #activator="{ props }">
+          <v-btn
+            icon
+            size="small"
+            variant="text"
+            v-bind="props"
+            aria-label="Toggle video panel visibility"
+            @click="onToggleVideoPanel"
+          >
+            <v-icon color="white">{{
+              videoDockVisible ? "mdi-eye-off-outline" : "mdi-dock-window"
+            }}</v-icon>
+          </v-btn>
+        </template>
+      </v-tooltip>
+
       <v-tooltip text="Leave audio/video" location="bottom">
         <template #activator="{ props }">
           <v-btn
@@ -124,6 +144,8 @@ const {
   errorMessage,
   muteAllActive,
   policy,
+  videoDockVisible,
+  videoDockOpen,
 } = storeToRefs(lessonMediaStore);
 
 const currentUser = computed(() => userStore.getCurrentUser());
@@ -164,6 +186,15 @@ async function onToggleMic() {
 
 async function onToggleCam() {
   await toggleLocalCam(!localCamEnabled.value);
+}
+
+function onToggleVideoPanel() {
+  if (videoDockVisible.value) {
+    videoDockVisible.value = false;
+    return;
+  }
+  videoDockVisible.value = true;
+  videoDockOpen.value = true;
 }
 
 async function onLeaveMedia() {

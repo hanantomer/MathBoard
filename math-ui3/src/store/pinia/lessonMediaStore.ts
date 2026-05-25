@@ -5,6 +5,13 @@ import {
   isStudentMicBlocked,
 } from "common/lessonMediaTypes";
 
+export type LessonRemoteParticipant = {
+  userUUId: string;
+  stream: MediaStream;
+  hasVideo: boolean;
+  hasAudio: boolean;
+};
+
 function defaultPolicy(lessonUUId: string): LessonMediaPolicy {
   return {
     lessonUUId,
@@ -21,6 +28,10 @@ export const useLessonMediaStore = defineStore("lessonMedia", () => {
   const localCamEnabled = ref(false);
   const mediaAvailable = ref(true);
   const errorMessage = ref<string | null>(null);
+  const videoDockVisible = ref(false);
+  const videoDockOpen = ref(false);
+  const localMediaStream = ref<MediaStream | null>(null);
+  const remoteParticipants = ref<LessonRemoteParticipant[]>([]);
 
   const muteAllActive = computed(() => policy.value?.muteAllActive ?? false);
 
@@ -31,6 +42,10 @@ export const useLessonMediaStore = defineStore("lessonMedia", () => {
     };
   }
 
+  function setRemoteParticipants(next: LessonRemoteParticipant[]) {
+    remoteParticipants.value = next;
+  }
+
   function reset(lessonUUId?: string) {
     policy.value = lessonUUId ? defaultPolicy(lessonUUId) : null;
     connected.value = false;
@@ -38,6 +53,10 @@ export const useLessonMediaStore = defineStore("lessonMedia", () => {
     localMicEnabled.value = false;
     localCamEnabled.value = false;
     errorMessage.value = null;
+    videoDockVisible.value = false;
+    videoDockOpen.value = false;
+    localMediaStream.value = null;
+    remoteParticipants.value = [];
   }
 
   function isMicBlockedForStudent(studentUUId: string): boolean {
@@ -59,8 +78,13 @@ export const useLessonMediaStore = defineStore("lessonMedia", () => {
     localCamEnabled,
     mediaAvailable,
     errorMessage,
+    videoDockVisible,
+    videoDockOpen,
+    localMediaStream,
+    remoteParticipants,
     muteAllActive,
     setPolicy,
+    setRemoteParticipants,
     reset,
     isMicBlockedForStudent,
     isStudentUnmutedException,

@@ -5,7 +5,10 @@ import {
   shouldInitiateWebRtcOffer,
 } from "common/lessonMediaTypes";
 import { FeathersHelper } from "./feathersHelper";
-import { useLessonMediaStore } from "../store/pinia/lessonMediaStore";
+import {
+  useLessonMediaStore,
+  type LessonRemoteParticipant,
+} from "../store/pinia/lessonMediaStore";
 
 const RTC_CONFIG: RTCConfiguration = {
   iceServers: [{ urls: "stun:stun.l.google.com:19302" }],
@@ -14,6 +17,7 @@ const RTC_CONFIG: RTCConfiguration = {
 type PeerState = {
   pc: RTCPeerConnection;
   audioElement: HTMLAudioElement;
+  remoteStream: MediaStream | null;
 };
 
 type MediaSession = {
@@ -28,6 +32,46 @@ const peers = new Map<string, PeerState>();
 const pendingCandidates = new Map<string, RTCIceCandidateInit[]>();
 let remoteMediaRoot: HTMLElement | null = null;
 let signalingListenerRegistered = false;
+
+function streamHasLiveVideo(stream: MediaStream | null): boolean {
+  if (!stream) {
+    return false;
+  }
+  return stream
+    .getVideoTracks()
+    .some((track) => track.enabled && track.readyState === "live");
+}
+
+function streamHasAudio(stream: MediaStream | null): boolean {
+  if (!stream) {
+    return false;
+  }
+  return stream.getAudioTracks().some((track) => track.enabled);
+}
+
+function syncPeersToStore() {
+  const mediaStore = useLessonMediaStore();
+  const list: LessonRemoteParticipant[] = [];
+
+  for (const [userUUId, peer] of peers.entries()) {
+    if (!peer.remoteStream) {
+      continue;
+    }
+    list.push({
+      userUUId,
+      stream: peer.remoteStream,
+      hasVideo: streamHasLiveVideo(peer.remoteStream),
+      hasAudio: streamHasAudio(peer.remoteStream),
+    });
+  }
+
+  mediaStore.setRemoteParticipants(list);
+}
+
+function syncLocalStreamToStore() {
+  const mediaStore = useLessonMediaStore();
+  mediaStore.localMediaStream = localStream;
+}
 
 function ensureRemoteMediaRoot(): HTMLElement {
   if (!remoteMediaRoot) {
@@ -61,14 +105,47 @@ function removePeer(peerUUId: string) {
   peer.audioElement.remove();
   peers.delete(peerUUId);
   pendingCandidates.delete(peerUUId);
+  syncPeersToStore();
 }
 
 function attachRemoteAudio(peerUUId: string, stream: MediaStream) {
-  let peer = peers.get(peerUUId);
+  const peer = peers.get(peerUUId);
   if (!peer) {
     return;
   }
   peer.audioElement.srcObject = stream;
+}
+
+function watchTrack(peerUUId: string, track: MediaStreamTrack) {
+  const refresh = () => syncPeersToStore();
+  track.addEventListener("ended", refresh);
+  track.addEventListener("mute", refresh);
+  track.addEventListener("unmute", refresh);
+}
+
+function attachRemoteTrack(peerUUId: string, track: MediaStreamTrack) {
+  let peer = peers.get(peerUUId);
+  if (!peer) {
+    return;
+  }
+
+  if (!peer.remoteStream) {
+    peer.remoteStream = new MediaStream();
+  }
+
+  const existing = peer.remoteStream
+    .getTracks()
+    .find((t) => t.id === track.id);
+  if (!existing) {
+    peer.remoteStream.addTrack(track);
+    watchTrack(peerUUId, track);
+  }
+
+  if (track.kind === "audio") {
+    attachRemoteAudio(peerUUId, peer.remoteStream);
+  }
+
+  syncPeersToStore();
 }
 
 function createPeerConnection(peerUUId: string): RTCPeerConnection {
@@ -82,7 +159,7 @@ function createPeerConnection(peerUUId: string): RTCPeerConnection {
   audioElement.autoplay = true;
   ensureRemoteMediaRoot().appendChild(audioElement);
 
-  peers.set(peerUUId, { pc, audioElement });
+  peers.set(peerUUId, { pc, audioElement, remoteStream: null });
 
   if (localStream) {
     for (const track of localStream.getTracks()) {
@@ -105,8 +182,12 @@ function createPeerConnection(peerUUId: string): RTCPeerConnection {
   pc.ontrack = (event) => {
     const stream = event.streams[0];
     if (stream) {
-      attachRemoteAudio(peerUUId, stream);
+      for (const track of stream.getTracks()) {
+        attachRemoteTrack(peerUUId, track);
+      }
+      return;
     }
+    attachRemoteTrack(peerUUId, event.track);
   };
 
   pc.onconnectionstatechange = () => {
@@ -321,6 +402,9 @@ export async function requestLessonMedia(
     mediaStore.localMicEnabled = localStream.getAudioTracks()[0]?.enabled ?? false;
     mediaStore.localCamEnabled = localStream.getVideoTracks()[0]?.enabled ?? false;
     mediaStore.connected = true;
+    syncLocalStreamToStore();
+    mediaStore.videoDockVisible = true;
+    mediaStore.videoDockOpen = true;
 
     await applyMicPolicy(policy, userUUId, isTeacher);
     await sendSignal({ type: "join", lessonUUId: session.lessonUUId });
@@ -365,6 +449,10 @@ export async function stopLocalMedia() {
   mediaStore.connected = false;
   mediaStore.localMicEnabled = false;
   mediaStore.localCamEnabled = false;
+  mediaStore.localMediaStream = null;
+  mediaStore.videoDockVisible = false;
+  mediaStore.videoDockOpen = false;
+  mediaStore.setRemoteParticipants([]);
 }
 
 export async function leaveLessonMedia() {
@@ -414,6 +502,7 @@ export async function toggleLocalCam(enabled: boolean): Promise<boolean> {
 
   videoTrack.enabled = enabled;
   mediaStore.localCamEnabled = enabled;
+  syncLocalStreamToStore();
   return true;
 }
 
