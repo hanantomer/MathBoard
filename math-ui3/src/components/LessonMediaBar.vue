@@ -97,11 +97,11 @@
 
 <script setup lang="ts">
 import { computed } from "vue";
+import { useRoute } from "vue-router";
 import { storeToRefs } from "pinia";
 import { useLessonMediaStore } from "../store/pinia/lessonMediaStore";
 import { useUserStore } from "../store/pinia/userStore";
 import { useLessonStore } from "../store/pinia/lessonStore";
-import { useNotationStore } from "../store/pinia/notationStore";
 import useUserOutgoingOperations from "../helpers/userOutgoingOperationsHelper";
 import {
   requestLessonMedia,
@@ -110,10 +110,10 @@ import {
   stopLocalMedia,
 } from "../helpers/lessonWebRtcHelper";
 
+const route = useRoute();
 const lessonMediaStore = useLessonMediaStore();
 const userStore = useUserStore();
 const lessonStore = useLessonStore();
-const notationStore = useNotationStore();
 const userOutgoingOperations = useUserOutgoingOperations();
 
 const {
@@ -126,9 +126,13 @@ const {
   policy,
 } = storeToRefs(lessonMediaStore);
 
-const isTeacher = computed(() => userStore.isTeacher());
+const currentUser = computed(() => userStore.getCurrentUser());
 
-const visible = computed(() => notationStore.getParent().type === "LESSON");
+const visible = computed(() => route.name === "lesson");
+
+const isTeacher = computed(
+  () => !!currentUser.value && userStore.isTeacher(),
+);
 
 const micToggleDisabled = computed(() => {
   if (isTeacher.value) {
