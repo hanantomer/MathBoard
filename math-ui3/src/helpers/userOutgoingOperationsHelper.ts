@@ -142,11 +142,28 @@ export default function userOutgoingOperations() {
       );
   }
 
+  async function syncOutgoingLessonMediaAction(
+    lessonUUId: string,
+    action: "muteAll" | "unmuteAll" | "unmuteStudent" | "muteStudent",
+    targetUserUUId?: string,
+  ) {
+    await FeathersHelper.getInstance().service("lessonMediaSync").update(
+      null,
+      {
+        lessonUUId,
+        action,
+        targetUserUUId,
+      },
+      {},
+    );
+  }
+
   return {
     syncOutgoingUpdateNotation,
     syncOutgoingSelectedCell,
     syncOutgoingColorizedCell,
     syncOutgoingAuthorizeUser,
+    syncOutgoingLessonMediaAction,
     syncOutgoingHeartBeat,
     syncOutgoingRemoveNotation,
     syncOutgoingAddNotation,

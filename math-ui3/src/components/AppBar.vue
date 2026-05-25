@@ -20,6 +20,8 @@
       <span class="title">{{ title }}</span>
     </v-toolbar-title>
 
+    <lessonMediaBar></lessonMediaBar>
+
     <!-- lessons -->
     <v-tooltip text="Lessons" location="bottom">
       <template v-slot:activator="{ props }">
@@ -165,6 +167,7 @@ import { useEditModeStore } from "../store/pinia/editModeStore";
 import { useStudentStore } from "../store/pinia/studentStore";
 import { useCookies } from "vue3-cookies";
 import { ACCESS_TOKEN_NAME } from "common/globals";
+import LessonMediaBar from "./LessonMediaBar.vue";
 
 const emit = defineEmits<{
   "show-feedback": [];

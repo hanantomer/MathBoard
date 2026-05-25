@@ -12,6 +12,8 @@ import SelectedCellSyncService from "./selectedCellSyncService";
 import NotationSyncService from "./notationSyncService";
 import { LessonNotationAttributes } from "../../math-common/build/lessonTypes";
 import imageUploadService from "./imageUploadService";
+import LessonMediaSyncService from "./lessonMediaSyncService";
+import WebRtcSignalingService from "./webrtcSignalingService";
 
 
 type ServiceTypes = {
@@ -22,6 +24,8 @@ type ServiceTypes = {
   imageLoaded: imageUploadService;
   selectedCell: SelectedCellSyncService;
   notationSync: NotationSyncService;
+  lessonMediaSync: LessonMediaSyncService;
+  webrtcSignaling: WebRtcSignalingService;
 };
 
 
@@ -44,6 +48,8 @@ app.use("textBoxSync", new TextBoxSyncService(app));
 app.use("imageLoaded", new imageUploadService(app));
 app.use("selectedCell", new SelectedCellSyncService(app));
 app.use("notationSync", new NotationSyncService(app));
+app.use("lessonMediaSync", new LessonMediaSyncService(app));
+app.use("webrtcSignaling", new WebRtcSignalingService(app));
 
 
 app
@@ -145,6 +151,22 @@ app
       );
     }
   );
+
+app.service("lessonMediaSync").publish("updated", (id: any, payload: any) => {
+  const lessonUUId = payload?.lessonUUId ?? payload?.data?.lessonUUId;
+  if (!lessonUUId) {
+    return [];
+  }
+  return app.channel(constants.LESSON_CHANNEL_PREFIX + lessonUUId);
+});
+
+app.service("webrtcSignaling").publish("created", (signal: any) => {
+  const lessonUUId = signal?.lessonUUId ?? signal?.data?.lessonUUId;
+  if (!lessonUUId) {
+    return [];
+  }
+  return app.channel(constants.LESSON_CHANNEL_PREFIX + lessonUUId);
+});
  
 const PORT: number =
   Number(process.env.MESSAGING_PORT) || 18030;

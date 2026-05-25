@@ -21,16 +21,22 @@ import useUserOutgoingOperations from "../helpers/userOutgoingOperationsHelper";
 import useUserIncomingOperations from "../helpers/userIncomingOperationsHelper";
 import useSelectionHelper from "../helpers/selectionHelper";
 
-import { ref, onMounted } from "vue";
+import { ref, onMounted, onUnmounted, watch } from "vue";
 import { useUserStore } from "../store/pinia/userStore";
 import { useLessonStore } from "../store/pinia/lessonStore";
 import { useNotationStore } from "../store/pinia/notationStore";
-import { watch } from "vue";
 import { useRoute } from "vue-router";
 import { heartBeatInterval } from "common/globals";
 import { useTitleStore } from "../store/pinia/titleStore";
 import { useCellStore } from "../store/pinia/cellStore";
 import { useEditModeStore } from "../store/pinia/editModeStore";
+import { useLessonMediaStore } from "../store/pinia/lessonMediaStore";
+import { FeathersHelper } from "../helpers/feathersHelper";
+import { LessonMediaPolicy } from "common/lessonMediaTypes";
+import {
+  initLessonMediaSession,
+  leaveLessonMedia,
+} from "../helpers/lessonWebRtcHelper";
 
 const selectionHelper = useSelectionHelper();
 const route = useRoute();
@@ -40,6 +46,7 @@ const notationStore = useNotationStore();
 const titleStore = useTitleStore();
 const cellStore = useCellStore();
 const editModeStore = useEditModeStore();
+const lessonMediaStore = useLessonMediaStore();
 const userOutgoingOperations = useUserOutgoingOperations();
 const userIncomingOperations = useUserIncomingOperations();
 
@@ -50,6 +57,38 @@ let loadSeq = 0;
 onMounted(() => {
   cellStore.setSvgBoundingRect(svgId);
 });
+
+onUnmounted(async () => {
+  await leaveLessonMedia();
+  lessonMediaStore.reset();
+});
+
+async function fetchInitialMediaPolicy(
+  lessonUUId: string,
+): Promise<LessonMediaPolicy> {
+  const feathersClient = FeathersHelper.getInstance();
+  const policy = await feathersClient
+    .service("lessonMediaSync")
+    .find({ query: { lessonUUId } });
+  return policy as LessonMediaPolicy;
+}
+
+async function prepareLessonMedia(lessonUUId: string) {
+  const user = userStore.getCurrentUser();
+  if (!user) {
+    return;
+  }
+
+  lessonMediaStore.reset(lessonUUId);
+
+  try {
+    const policy = await fetchInitialMediaPolicy(lessonUUId);
+    lessonMediaStore.setPolicy(policy);
+    await initLessonMediaSession(lessonUUId, user.uuid, userStore.isTeacher());
+  } catch (error) {
+    console.error("[LessonMedia] Failed to prepare:", error);
+  }
+}
 
 watch(
   route,
@@ -82,6 +121,9 @@ async function loadLesson(rawLessonUUId: string) {
   const seq = ++loadSeq;
   loaded.value = false;
 
+  await leaveLessonMedia();
+  lessonMediaStore.reset();
+
   editModeStore.setDefaultEditMode();
   selectionHelper.setSelectedCell({ col: 1, row: 1 }, true);
 
@@ -113,6 +155,11 @@ async function loadLesson(rawLessonUUId: string) {
     );
   }
   userIncomingOperations.syncIncomingUserOperations();
+
+  await prepareLessonMedia(lessonUUId);
+  if (isStaleLoad(seq, lessonUUId)) {
+    return;
+  }
 
   if (!userStore.isTeacher()) {
     await lessonStore.addLessonToSharedLessons();

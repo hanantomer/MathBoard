@@ -39,7 +39,7 @@
                               <v-img :src="student.imageUrl"></v-img>
                             </v-avatar>
                           </v-col>
-                          <v-col cols="6">
+                          <v-col cols="5">
                             <span>{{ getStudentDisplayName(student) }}</span>
                           </v-col>
                           <v-col cols="2" class="d-flex justify-center">
@@ -50,12 +50,33 @@
                               x-small
                               :color="getStudentAuhorizationColor(student.uuid)"
                               v-bind="props"
+                              @click.stop
                             >
                               <v-icon dark>mdi-pencil</v-icon>
                             </v-btn>
                           </v-col>
-                          <v-col cols="2" class="d-flex justify-center">
-                            <v-icon color="grey">mdi-account</v-icon>
+                          <v-col cols="3" class="d-flex justify-center">
+                            <v-btn
+                              v-if="muteAllActive"
+                              icon
+                              size="small"
+                              variant="text"
+                              :color="
+                                isStudentUnmuted(student.uuid)
+                                  ? 'success'
+                                  : 'warning'
+                              "
+                              @click.stop="toggleStudentMic(student.uuid)"
+                            >
+                              <v-icon>
+                                {{
+                                  isStudentUnmuted(student.uuid)
+                                    ? "mdi-microphone"
+                                    : "mdi-microphone-off"
+                                }}
+                              </v-icon>
+                            </v-btn>
+                            <v-icon v-else color="grey">mdi-account</v-icon>
                           </v-col>
                         </v-row>
                       </template>
@@ -74,9 +95,11 @@
 
 <script setup lang="ts">
 import { computed } from "vue";
+import { storeToRefs } from "pinia";
 import { useStudentStore } from "../store/pinia/studentStore";
 import { useLessonStore } from "../store/pinia/lessonStore";
 import { useEditModeStore } from "../store/pinia/editModeStore";
+import { useLessonMediaStore } from "../store/pinia/lessonMediaStore";
 import { UserAttributes } from "common/userTypes";
 import UseUserOutgoingOperations from "../helpers/userOutgoingOperationsHelper";
 
@@ -84,6 +107,8 @@ const studentStore = useStudentStore();
 const lessonStore = useLessonStore();
 const userOutgoingOperations = UseUserOutgoingOperations();
 const editModeStore = useEditModeStore();
+const lessonMediaStore = useLessonMediaStore();
+const { muteAllActive } = storeToRefs(lessonMediaStore);
 
 function toggleEditingTooltip(studentUUId: string): string {
   return studentStore.getAuthorizedStudentUUId() == studentUUId
@@ -107,6 +132,24 @@ function getStudentAuhorizationColor(studentUUId: string) {
   return studentStore.getAuthorizedStudentUUId() === studentUUId
     ? "blue"
     : "grey";
+}
+
+function isStudentUnmuted(studentUUId: string): boolean {
+  return lessonMediaStore.isStudentUnmutedException(studentUUId);
+}
+
+function toggleStudentMic(studentUUId: string) {
+  const lessonUUId = lessonStore.getCurrentLesson()?.uuid;
+  if (!lessonUUId) {
+    return;
+  }
+
+  const action = isStudentUnmuted(studentUUId) ? "muteStudent" : "unmuteStudent";
+  userOutgoingOperations.syncOutgoingLessonMediaAction(
+    lessonUUId,
+    action,
+    studentUUId,
+  );
 }
 
 function toggleStudentAuthorization(student: UserAttributes) {

@@ -1,19 +1,23 @@
 import { SelectedCell, NotationAttributes } from "common/baseTypes";
 import { TextSyncUpdateData, TextSyncEndData } from "common/globals";
+import { LessonMediaPolicy } from "common/lessonMediaTypes";
 import { useUserStore } from "../store/pinia/userStore";
 import { useStudentStore } from "../store/pinia/studentStore";
 import { useNotationStore } from "../store/pinia/notationStore";
 import { useCellStore } from "../store/pinia/cellStore";
 import { useTextSyncStore } from "../store/pinia/textSyncStore";
+import { useLessonMediaStore } from "../store/pinia/lessonMediaStore";
 import { FeathersHelper } from "./feathersHelper";
 import userOutgoingOperations from "./userOutgoingOperationsHelper";
 import useApIHelper from "./apiHelper";
+import { syncLessonMediaPolicy } from "./lessonWebRtcHelper";
 
 const notationStore = useNotationStore();
 const cellStore = useCellStore();
 const userStore = useUserStore();
 const studentStore = useStudentStore();
 const textSyncStore = useTextSyncStore();
+const lessonMediaStore = useLessonMediaStore();
 const apiHelper = useApIHelper();
 
 export default function userIncomingOperations() {
@@ -136,6 +140,20 @@ export default function userIncomingOperations() {
           return;
         if (notationStore.getParent().type !== "LESSON") return;
         textSyncStore.setTextSyncEndData(textSyncEndData);
+      });
+
+    feathersClient
+      .service("lessonMediaSync")
+      .on("updated", async (payload: LessonMediaPolicy) => {
+        if (notationStore.getParent().type !== "LESSON") return;
+        if (payload.lessonUUId !== notationStore.getParent().uuid) return;
+
+        lessonMediaStore.setPolicy(payload);
+        await syncLessonMediaPolicy(
+          payload,
+          userStore.getCurrentUser()!.uuid,
+          userStore.isTeacher(),
+        );
       });
   }
 
