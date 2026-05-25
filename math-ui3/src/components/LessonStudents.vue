@@ -1,95 +1,148 @@
 <template>
-  <v-dialog v-model="show" transition="dialog-bottom-transition" persistent>
-    <v-container class="fill-height" fluid>
-      <v-row align="center" justify="center">
-        <v-col cols="12" sm="8" md="6" lg="4">
-          <v-card>
-            <v-card-title class="d-flex justify-space-between align-center">
-              <p style="font-size: 1vw">Online Students</p>
-              <v-btn
-                icon
-                size="small"
-                variant="text"
-                @click="closeDialog"
-                aria-label="Close"
-              >
-                <v-icon>mdi-close</v-icon>
-              </v-btn>
-            </v-card-title>
-            <v-card-text>
-              <div class="scrollable-list">
-                <v-list
-                  v-if="students.length"
-                  active-class="activestudent"
-                  color="indigo"
-                >
-                  <v-list-item
-                    v-for="student in students"
-                    :key="student.uuid"
-                    @click="toggleStudentAuthorization(student)"
+  <v-dialog
+    v-model="show"
+    max-width="480"
+    scrollable
+    transition="dialog-bottom-transition"
+    persistent
+  >
+    <v-card class="lesson-students-card">
+      <v-card-title class="d-flex align-center ga-2 pa-4">
+        <v-icon color="primary">mdi-account-school-outline</v-icon>
+        <span class="text-h6 flex-grow-1">Online Students</span>
+        <v-chip
+          v-if="students.length"
+          size="small"
+          color="primary"
+          variant="tonal"
+        >
+          {{ students.length }}
+        </v-chip>
+        <v-btn
+          icon
+          variant="text"
+          size="small"
+          aria-label="Close"
+          @click="closeDialog"
+        >
+          <v-icon>mdi-close</v-icon>
+        </v-btn>
+      </v-card-title>
+
+      <v-divider />
+
+      <v-card-text class="pa-0">
+        <div class="student-list">
+          <v-list v-if="students.length" class="py-2">
+            <v-list-item
+              v-for="student in students"
+              :key="student.uuid"
+              :active="isStudentAuthorized(student.uuid)"
+              active-color="primary"
+              rounded="lg"
+              class="student-list-item mx-2"
+            >
+              <template #prepend>
+                <v-avatar size="40" color="grey-lighten-3">
+                  <v-img
+                    v-if="student.imageUrl"
+                    :src="student.imageUrl"
+                    cover
+                    alt=""
+                  />
+                  <v-icon v-else color="grey-darken-1">mdi-account</v-icon>
+                </v-avatar>
+              </template>
+
+              <v-list-item-title class="font-weight-medium">
+                {{ getStudentDisplayName(student) }}
+              </v-list-item-title>
+              <v-list-item-subtitle>
+                {{
+                  isStudentAuthorized(student.uuid)
+                    ? "Can edit the board"
+                    : "View only"
+                }}
+              </v-list-item-subtitle>
+
+              <template #append>
+                <div class="student-actions">
+                  <v-tooltip
+                    location="bottom"
+                    :text="toggleEditingTooltip(student.uuid)"
                   >
-                    <v-tooltip
-                      bottom
-                      :text="toggleEditingTooltip(student.uuid)"
-                    >
-                      <template #activator="{ props }">
-                        <v-row align="center" no-gutters>
-                          <v-col cols="2" class="d-flex justify-center">
-                            <v-avatar>
-                              <v-img :src="student.imageUrl"></v-img>
-                            </v-avatar>
-                          </v-col>
-                          <v-col cols="5">
-                            <span>{{ getStudentDisplayName(student) }}</span>
-                          </v-col>
-                          <v-col cols="2" class="d-flex justify-center">
-                            <v-btn
-                              class="mx-2"
-                              fab
-                              dark
-                              x-small
-                              :color="getStudentAuhorizationColor(student.uuid)"
-                              v-bind="props"
-                              @click.stop
-                            >
-                              <v-icon dark>mdi-pencil</v-icon>
-                            </v-btn>
-                          </v-col>
-                          <v-col cols="3" class="d-flex justify-center">
-                            <v-btn
-                              v-if="muteAllActive"
-                              icon
-                              size="small"
-                              variant="text"
-                              :color="
-                                isStudentUnmuted(student.uuid)
-                                  ? 'success'
-                                  : 'warning'
-                              "
-                              @click.stop="toggleStudentMic(student.uuid)"
-                            >
-                              <v-icon>
-                                {{
-                                  isStudentUnmuted(student.uuid)
-                                    ? "mdi-microphone"
-                                    : "mdi-microphone-off"
-                                }}
-                              </v-icon>
-                            </v-btn>
-                            <v-icon v-else color="grey">mdi-account</v-icon>
-                          </v-col>
-                        </v-row>
-                      </template>
-                    </v-tooltip>
-                  </v-list-item>
-                </v-list>
-                <p v-else>No students have yet shown up to this class</p>
-              </div>
-            </v-card-text>
-          </v-card>
-        </v-col>
-      </v-row>
-    </v-container>
+                    <template #activator="{ props: tooltipProps }">
+                      <v-btn
+                        v-bind="tooltipProps"
+                        icon
+                        size="small"
+                        :variant="
+                          isStudentAuthorized(student.uuid) ? 'flat' : 'tonal'
+                        "
+                        :color="getStudentAuthorizationColor(student.uuid)"
+                        aria-label="Toggle editing permission"
+                        @click="toggleStudentAuthorization(student)"
+                      >
+                        <v-icon>mdi-pencil</v-icon>
+                      </v-btn>
+                    </template>
+                  </v-tooltip>
+
+                  <v-tooltip
+                    v-if="muteAllActive"
+                    location="bottom"
+                    :text="micTooltip(student.uuid)"
+                  >
+                    <template #activator="{ props: tooltipProps }">
+                      <v-btn
+                        v-bind="tooltipProps"
+                        icon
+                        size="small"
+                        variant="text"
+                        :color="
+                          isStudentUnmuted(student.uuid) ? 'success' : 'warning'
+                        "
+                        :aria-label="
+                          isStudentUnmuted(student.uuid)
+                            ? 'Mute student microphone'
+                            : 'Unmute student microphone'
+                        "
+                        @click="toggleStudentMic(student.uuid)"
+                      >
+                        <v-icon>
+                          {{
+                            isStudentUnmuted(student.uuid)
+                              ? "mdi-microphone"
+                              : "mdi-microphone-off"
+                          }}
+                        </v-icon>
+                      </v-btn>
+                    </template>
+                  </v-tooltip>
+                  <v-icon
+                    v-else
+                    color="grey-lighten-1"
+                    size="small"
+                    class="mx-1"
+                  >
+                    mdi-account-voice
+                  </v-icon>
+                </div>
+              </template>
+            </v-list-item>
+          </v-list>
+
+          <div v-else class="empty-state text-center pa-8">
+            <v-icon size="56" color="grey-lighten-1">
+              mdi-account-off-outline
+            </v-icon>
+            <p class="text-body-1 mt-4 text-medium-emphasis">
+              No students have joined this lesson yet.
+            </p>
+          </div>
+        </div>
+      </v-card-text>
+    </v-card>
   </v-dialog>
 </template>
 
@@ -111,9 +164,15 @@ const lessonMediaStore = useLessonMediaStore();
 const { muteAllActive } = storeToRefs(lessonMediaStore);
 
 function toggleEditingTooltip(studentUUId: string): string {
-  return studentStore.getAuthorizedStudentUUId() == studentUUId
-    ? "Click to disable editing for this student"
-    : "Click to enable editing for this student";
+  return isStudentAuthorized(studentUUId)
+    ? "Disable editing for this student"
+    : "Allow this student to edit";
+}
+
+function micTooltip(studentUUId: string): string {
+  return isStudentUnmuted(studentUUId)
+    ? "Mute this student"
+    : "Unmute this student";
 }
 
 const show = computed(() => {
@@ -125,13 +184,15 @@ const students = computed(() => {
 });
 
 function getStudentDisplayName(student: UserAttributes) {
-  return student.firstName + " " + student.lastName;
+  return `${student.firstName} ${student.lastName}`.trim();
 }
 
-function getStudentAuhorizationColor(studentUUId: string) {
-  return studentStore.getAuthorizedStudentUUId() === studentUUId
-    ? "blue"
-    : "grey";
+function isStudentAuthorized(studentUUId: string): boolean {
+  return studentStore.getAuthorizedStudentUUId() === studentUUId;
+}
+
+function getStudentAuthorizationColor(studentUUId: string) {
+  return isStudentAuthorized(studentUUId) ? "primary" : "grey";
 }
 
 function isStudentUnmuted(studentUUId: string): boolean {
@@ -157,7 +218,6 @@ function toggleStudentAuthorization(student: UserAttributes) {
   const previouslyAuthorizedStudentUUId: string | null =
     studentStore.getAuthorizedStudentUUId();
 
-  // clicked on authorized student
   if (previouslyAuthorizedStudentUUId === student.uuid) {
     studentUUId = null;
   }
@@ -171,19 +231,37 @@ function toggleStudentAuthorization(student: UserAttributes) {
   );
 }
 
-// Add close dialog function
 function closeDialog() {
   editModeStore.setDefaultEditMode();
 }
 </script>
 
-<style>
-.scrollable-list {
-  max-height: 650px;
+<style scoped>
+.student-list {
+  max-height: min(65vh, 520px);
   overflow-y: auto;
 }
-.activestudent {
-  border: 2px dashed rgb(143, 26, 179);
+
+.student-list-item {
+  margin-bottom: 4px;
+}
+
+.student-actions {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-shrink: 0;
+}
+
+.student-actions :deep(.v-btn) {
+  pointer-events: auto;
+}
+
+.empty-state {
+  min-height: 200px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
 }
 </style>
-

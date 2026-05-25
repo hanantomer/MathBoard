@@ -105,23 +105,24 @@
     </v-tooltip>
 
     <v-tooltip v-for="item in modeButtons" :key="item.name">
-      {{ item.tooltip }}
-      <template v-slot:activator="{ props }">
-        <v-btn
-          :data-cy="item.name.toLowerCase() + 'Button'"
-          v-bind="props"
-          icon
-          x-small
-          fab
-          dark
-          color="white"
-          :class="getModeButtonClass(item)"
-          v-on:click="startEditMode(item)"
-          :disabled="!editEnabled"
-          :aria-label="item.tooltip"
-          role="button"
-          class="toolbar-mode-btn"
-        >
+      {{ getModeTooltip(item) }}
+      <template v-slot:activator="{ props: tooltipProps }">
+        <span v-bind="tooltipProps" class="toolbar-btn-wrap">
+          <v-btn
+            :data-cy="item.name.toLowerCase() + 'Button'"
+            icon
+            x-small
+            fab
+            dark
+            color="white"
+            :class="getModeButtonClass(item)"
+            v-on:click="startEditMode(item)"
+            :disabled="!editEnabled"
+            :aria-label="getModeTooltip(item)"
+            :aria-disabled="!editEnabled"
+            role="button"
+            class="toolbar-mode-btn"
+          >
           <v-icon
             color="white"
             v-if="item.icon_class"
@@ -143,7 +144,8 @@
             :icon="item.icon"
           >
           </v-icon>
-        </v-btn>
+          </v-btn>
+        </span>
       </template>
     </v-tooltip>
 
@@ -152,21 +154,23 @@
       :key="item.name"
       v-if="answerCheckMode"
     >
-      {{ item.tooltip }}
-      <template v-slot:activator="{ props }">
-        <v-btn
-          :data-cy="item.name"
-          v-bind="props"
-          icon
-          x-small
-          fab
-          dark
-          color="white"
-          :class="getAnswerCheckButtonClass(item)"
-          v-on:click="startEditMode(item)"
-          :disabled="!editEnabled"
-          class="toolbar-mode-btn"
-        >
+      {{ getModeTooltip(item) }}
+      <template v-slot:activator="{ props: tooltipProps }">
+        <span v-bind="tooltipProps" class="toolbar-btn-wrap">
+          <v-btn
+            :data-cy="item.name"
+            icon
+            x-small
+            fab
+            dark
+            color="white"
+            :class="getAnswerCheckButtonClass(item)"
+            v-on:click="startEditMode(item)"
+            :disabled="!editEnabled"
+            :aria-label="getModeTooltip(item)"
+            :aria-disabled="!editEnabled"
+            class="toolbar-mode-btn"
+          >
           <v-icon
             v-if="item.icon_class"
             color="white"
@@ -188,7 +192,8 @@
             :icon="item.icon"
           >
           </v-icon>
-        </v-btn>
+          </v-btn>
+        </span>
       </template>
     </v-tooltip>
   </aside>
@@ -488,6 +493,23 @@ const editEnabled = computed(() => {
   return authorizationHelper.canEdit();
 });
 
+const editingDisabledReason = computed(() => {
+  if (editEnabled.value) {
+    return "";
+  }
+  if (notationStore.getParent()?.type === "LESSON") {
+    return "View only — your teacher must allow you to edit";
+  }
+  return "Editing is not available on this board";
+});
+
+function getModeTooltip(item: { tooltip: string }): string {
+  if (editEnabled.value) {
+    return item.tooltip;
+  }
+  return `${item.tooltip} (${editingDisabledReason.value})`;
+}
+
 const isAreaSelectionActive = computed(
   () => editModeStore.getEditMode() === "AREA_SELECTION_STARTED",
 );
@@ -510,22 +532,30 @@ function isModeActive(item: any) {
 function getModeButtonClass(item: any) {
   const globalModes = ["FREE_SKETCH", "LINE", "ANNOTATION"];
   const parts: string[] = [];
+  if (!editEnabled.value) {
+    parts.push("toolbar-mode-btn--disabled");
+  }
   if (globalModes.includes(item.globalEditMode)) {
     parts.push("global-mode-button");
-    if (isModeActive(item)) {
+    if (isModeActive(item) && editEnabled.value) {
       parts.push("active");
     }
   }
-  if (isModeActive(item)) {
+  if (isModeActive(item) && editEnabled.value) {
     parts.push("toolbar-mode-btn--active");
   }
   return parts.join(" ");
 }
 
 function getAnswerCheckButtonClass(item: { editMode: EditMode }) {
-  return item.editMode === editModeStore.getEditMode()
-    ? "toolbar-mode-btn--active"
-    : "";
+  const parts: string[] = [];
+  if (!editEnabled.value) {
+    parts.push("toolbar-mode-btn--disabled");
+  }
+  if (item.editMode === editModeStore.getEditMode() && editEnabled.value) {
+    parts.push("toolbar-mode-btn--active");
+  }
+  return parts.join(" ");
 }
 </script>
 
@@ -600,8 +630,29 @@ function getAnswerCheckButtonClass(item: { editMode: EditMode }) {
   height: 44px;
 } */
 
+.toolbar-btn-wrap {
+  display: inline-flex;
+}
+
 .vertical-toolbar :deep(button.v-btn) {
   background-color: transparent !important;
+}
+
+.vertical-toolbar :deep(button.v-btn.toolbar-mode-btn--disabled),
+.vertical-toolbar :deep(button.v-btn:disabled) {
+  opacity: 0.38 !important;
+  cursor: not-allowed !important;
+  box-shadow: none !important;
+}
+
+.vertical-toolbar :deep(button.v-btn.toolbar-mode-btn--disabled .v-icon),
+.vertical-toolbar :deep(button.v-btn:disabled .v-icon) {
+  color: rgba(255, 255, 255, 0.45) !important;
+}
+
+.vertical-toolbar :deep(button.v-btn.toolbar-mode-btn--disabled .material-symbols-outlined),
+.vertical-toolbar :deep(button.v-btn:disabled .material-symbols-outlined) {
+  color: rgba(255, 255, 255, 0.45) !important;
 }
 
 .global-mode-button {
