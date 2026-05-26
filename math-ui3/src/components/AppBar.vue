@@ -15,9 +15,11 @@
       max-width="85"
       contain
     ></v-img>
-    <v-toolbar-title>
-      ONLINE <strong style="color: darkorange">MATH WHITEBOARD </strong>
-      <span class="title">{{ title }}</span>
+    <v-toolbar-title class="app-bar__title">
+      <span class="app-bar__brand d-none d-md-inline"
+        >ONLINE <strong style="color: darkorange">MATH WHITEBOARD</strong></span
+      >
+      <span class="title app-bar__lesson-title">{{ title }}</span>
     </v-toolbar-title>
 
     <lessonMediaBar></lessonMediaBar>
@@ -242,14 +244,46 @@ function navToAnswers() {
 </script>
 
 <style scoped>
-.title {
+.app-bar__title {
+  overflow: hidden;
+  min-width: 0;
+}
+
+.app-bar__lesson-title {
   margin-left: 20px !important;
 }
+
+.app-bar__brand {
+  white-space: nowrap;
+}
+
 .app-bar {
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
   z-index: 10;
+  padding-top: env(safe-area-inset-top);
+}
+
+@media (max-width: 1023px) {
+  .app-bar__lesson-title {
+    margin-left: 0 !important;
+    display: block;
+    font-size: 0.9rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: min(42vw, 220px);
+  }
+
+  .app-bar :deep(.v-toolbar__content) {
+    padding-inline: 4px;
+  }
+
+  .app-bar :deep(.v-btn--icon) {
+    min-width: 44px;
+    min-height: 44px;
+  }
 }
 </style>

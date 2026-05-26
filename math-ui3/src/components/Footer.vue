@@ -1,5 +1,5 @@
 <template>
-  <v-footer v-if="!isMobile" color="primary" padless dense app width="100%">
+  <v-footer v-if="!isMobile()" color="primary" padless dense app width="100%">
     <v-row justify="center" no-gutters>
       <v-col cols="12" sm="auto" class="text-center">
         <p style="color: whitesmoke; margin-right: 10px">
@@ -33,17 +33,9 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from "vue";
+import { isMobile } from "common/globals";
 
 const emit = defineEmits<{
   "show-contact-us": [];
 }>();
-
-const isMobile = computed(() => {
-  return (
-    /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
-      navigator.userAgent,
-    ) || window.innerWidth <= 768
-  );
-});
 </script>

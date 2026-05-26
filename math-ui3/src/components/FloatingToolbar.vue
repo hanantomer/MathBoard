@@ -63,19 +63,45 @@ watch(shouldShow, (val) => {
   position: fixed;
   z-index: 1000;
   left: 40%;
-  margin-top: -90px; /* Adjust vertical position */
-  transform: scale(0.8); /* Add overall scaling */
+  margin-top: -90px;
+  transform: scale(0.8);
 }
 
 .toolbar-card {
   background: rgba(255, 255, 255, 0.98);
   backdrop-filter: blur(10px);
   border: 1px solid rgba(0, 0, 0, 0.1);
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1); /* Reduced shadow */
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
 }
 
 :deep(.v-menu__content) {
-  border-radius: 8px; /* Reduced border radius */
+  border-radius: 8px;
   overflow: hidden;
+}
+
+@media (max-width: 1023px) {
+  .floatingToolbar {
+    left: 50%;
+    right: auto;
+    top: auto;
+    bottom: max(12px, env(safe-area-inset-bottom));
+    margin-top: 0;
+    transform: translateX(-50%);
+    width: min(calc(100vw - 56px), 420px);
+    max-width: calc(100vw - 56px);
+  }
+
+  .toolbar-card {
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+  }
+
+  :deep(.v-menu__content) {
+    max-width: 100%;
+  }
+
+  :deep(.toolbar-card .v-btn) {
+    min-width: 44px !important;
+    min-height: 44px !important;
+  }
 }
 </style>

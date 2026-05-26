@@ -46,9 +46,10 @@
 <script setup lang="ts">
 import { ref } from "vue";
 import { useMediaQuery } from "@vueuse/core";
+import { MOBILE_BOARD_MEDIA_QUERY } from "../composables/useBoardLayout";
 import SpecialSymbolPanels from "./SpecialSymbolPanels.vue";
 
-const isMobileBoard = useMediaQuery("(max-width: 1023px)");
+const isMobileBoard = useMediaQuery(MOBILE_BOARD_MEDIA_QUERY);
 const mobileSheetOpen = ref(false);
 </script>
 
@@ -58,6 +59,15 @@ const mobileSheetOpen = ref(false);
   right: 16px;
   bottom: 16px;
   z-index: 2040;
+  min-width: 48px;
+  min-height: 48px;
+}
+
+@media (max-width: 1023px) {
+  .special-symbols-fab {
+    right: max(12px, env(safe-area-inset-right));
+    bottom: max(72px, calc(12px + env(safe-area-inset-bottom)));
+  }
 }
 
 .special-symbols-sheet {

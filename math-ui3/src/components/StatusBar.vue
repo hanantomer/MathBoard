@@ -1,9 +1,13 @@
 <template>
-  <div
-    class="text-center"
-    style="position: absolute !important; bottom: 300; width: 100%"
-  >
-    <v-snackbar v-model="snackbar" :timeout="timeout">{{ text }} </v-snackbar>
+  <div class="status-bar-host text-center">
+    <v-snackbar
+      v-model="snackbar"
+      :timeout="timeout"
+      location="bottom"
+      class="status-bar-snackbar"
+    >
+      {{ text }}
+    </v-snackbar>
   </div>
 </template>
 
@@ -79,3 +83,25 @@ function setStatusBarText(editMode: EditMode | GlobalEditMode) {
   snackbar.value = true;
 }
 </script>
+
+<style scoped>
+.status-bar-host {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 2000;
+  pointer-events: none;
+}
+
+.status-bar-host :deep(.v-snackbar) {
+  pointer-events: auto;
+}
+
+@media (max-width: 1023px) {
+  .status-bar-host :deep(.v-snackbar__wrapper) {
+    margin-bottom: max(8px, env(safe-area-inset-bottom));
+    max-width: calc(100vw - 24px);
+  }
+}
+</style>

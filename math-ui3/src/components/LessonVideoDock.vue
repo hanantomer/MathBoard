@@ -256,10 +256,10 @@ const remoteTiles = computed((): RemoteTile[] => {
 /* Narrow viewports: stay on the right; scroll inside the panel, not over the matrix. */
 @media (max-width: 1023px) {
   .lesson-video-dock {
-    top: calc(64px + 4px);
-    right: 4px;
+    top: calc(64px + max(4px, env(safe-area-inset-top)));
+    right: max(4px, env(safe-area-inset-right));
     width: min(168px, calc(100vw - 60px));
-    max-height: calc(100vh - 64px - 16px);
+    max-height: calc(100dvh - 64px - max(16px, env(safe-area-inset-bottom)));
   }
 
   .lesson-video-dock__body {

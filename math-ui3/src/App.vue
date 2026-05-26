@@ -74,4 +74,16 @@ html {
   overflow-y: auto;
   overflow-x: auto;
 }
+
+@media (max-width: 1023px) {
+  html,
+  body {
+    touch-action: manipulation;
+    overscroll-behavior: none;
+  }
+
+  #app {
+    min-height: 100dvh;
+  }
+}
 </style>

@@ -45,6 +45,7 @@ import useWatchHelper from "../helpers/watchHelper";
 import UseAuthorizationHelper from "../helpers/authorizationHelper";
 import useScreenHelper from "../helpers/screenHelper";
 import useNotationCellOccupationHelper from "../helpers/notationCellOccupationHelper";
+import { MOBILE_BOARD_MEDIA_QUERY } from "../composables/useBoardLayout";
 
 const screenHelper = useScreenHelper();
 const cellOccupationHelper = useNotationCellOccupationHelper();
@@ -65,8 +66,7 @@ const authorizationHelper = UseAuthorizationHelper();
 const notationStore = useNotationStore();
 const selectionHelper = useSelectionHelper();
 
-/** Match board layout breakpoint (see SpecialSymbolsToolbar, CellSymbolInput). */
-const isMobileBoard = useMediaQuery("(max-width: 1023px)");
+const isMobileBoard = useMediaQuery(MOBILE_BOARD_MEDIA_QUERY);
 
 let lineTypes: Array<NotationType> = [
   "CURVE",

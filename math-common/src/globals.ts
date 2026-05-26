@@ -113,7 +113,7 @@ export function isMobile() {
   return (
     /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
       navigator.userAgent,
-    ) || window.innerWidth <= 768
+    ) || window.innerWidth <= 1023
   );
 }
 

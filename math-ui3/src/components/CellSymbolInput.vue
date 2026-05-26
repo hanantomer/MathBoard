@@ -31,9 +31,9 @@ import useMatrixCellHelper from "../helpers/matrixCellHelper";
 import useWatchHelper from "../helpers/watchHelper";
 import useAuthorizationHelper from "../helpers/authorizationHelper";
 
-const MOBILE_BOARD_QUERY = "(max-width: 1023px)";
+import { MOBILE_BOARD_MEDIA_QUERY } from "../composables/useBoardLayout";
 
-const isMobileBoard = useMediaQuery(MOBILE_BOARD_QUERY);
+const isMobileBoard = useMediaQuery(MOBILE_BOARD_MEDIA_QUERY);
 const cellStore = useCellStore();
 const editModeStore = useEditModeStore();
 const notationStore = useNotationStore();

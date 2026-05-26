@@ -41,10 +41,7 @@
       v-model="showSelectionHelpMessage"
       closable
       title="Selection Instructions"
-      >To select an area, drag the mouse over the desired region. Then, drag the
-      rectangle to move the selected notations, or use Ctrl+drag to copy them.
-      To delete the selected notations, press Delete or Backspace. Another
-      option, is to click on a single notation to select it.
+      >{{ selectionHelpText }}
     </v-snackbar>
   </div>
 
@@ -201,12 +198,13 @@
 </template>
 
 <script setup lang="ts">
-import { watch, ref } from "vue";
+import { watch, ref, computed } from "vue";
+import { useMediaQuery } from "@vueuse/core";
 import accessLinkDialog from "./AccessLinkDialog.vue";
+import { MOBILE_BOARD_MEDIA_QUERY } from "../composables/useBoardLayout";
 
 import { useNotationStore } from "../store/pinia/notationStore";
 import { useEditModeStore } from "../store/pinia/editModeStore";
-import { computed } from "vue";
 import { useUserStore } from "../store/pinia/userStore";
 import { EditMode, GlobalEditMode } from "common/unions";
 import { useToolbarNavigation } from "../helpers/ToolbarNavigationHelper";
@@ -214,6 +212,8 @@ import useAuthorizationHelper from "../helpers/authorizationHelper";
 import useWatchHelper from "../helpers/watchHelper";
 import useNotationMutateHelper from "../helpers/notationMutateHelper";
 import CrossDeviceUpload from "./CrossDeviceUpload.vue";
+
+const isMobileBoard = useMediaQuery(MOBILE_BOARD_MEDIA_QUERY);
 
 const watchHelper = useWatchHelper();
 const notationMutateHelper = useNotationMutateHelper();
@@ -235,6 +235,12 @@ watch(
 
 const showPasteImageHelpMessage = ref(false);
 const showSelectionHelpMessage = ref(false);
+
+const selectionHelpText = computed(() =>
+  isMobileBoard.value
+    ? "Tap the selection tool, then drag on the board to select. Double-tap to exit selection mode."
+    : "To select an area, drag the mouse over the desired region. Then, drag the rectangle to move the selected notations, or use Ctrl+drag to copy them. To delete the selected notations, press Delete or Backspace. Another option is to click on a single notation to select it.",
+);
 
 const showUploadDialog = ref(false);
 
@@ -609,6 +615,13 @@ function getAnswerCheckButtonClass(item: { editMode: EditMode }) {
     padding: 6px 4px !important;
     overflow-x: hidden;
     overflow-y: auto;
+    box-shadow: 4px 0 16px rgba(0, 0, 0, 0.28);
+  }
+
+  .vertical-toolbar :deep(button.v-btn.toolbar-mode-btn),
+  .vertical-toolbar :deep(button.v-btn) {
+    min-width: 44px !important;
+    min-height: 44px !important;
   }
 }
 

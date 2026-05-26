@@ -138,7 +138,6 @@ const watchHelper = useWatchHelper();
 const notationMutateHelper = useNotationMutationHelper();
 const answerStore = useAnswerStore();
 const progressBar = ref(false);
-const mobileToolbarOpen = ref(false);
 const boardScrollRef = ref<HTMLElement | null>(null);
 
 let cursor = ref<CursorType>("auto");
@@ -372,16 +371,17 @@ async function load() {
     --board-inset-left: 56px;
     --board-inset-right: 0px;
     --board-inset-top: 64px;
-    --board-inset-bottom: 16px;
+    --board-inset-bottom: max(16px, env(safe-area-inset-bottom));
     margin-left: var(--board-inset-left);
     margin-right: 0;
     width: calc(100vw - var(--board-inset-left));
     max-width: calc(100vw - var(--board-inset-left));
     max-height: calc(
-      100vh - var(--board-inset-top) - var(--board-inset-bottom)
+      100dvh - var(--board-inset-top) - var(--board-inset-bottom)
     );
     overflow-x: auto;
     overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
   }
 
   .mathboard {
