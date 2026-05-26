@@ -25,9 +25,9 @@ const routes: Array<RouteRecordRaw> = [
       title:
         "Math Whiteboard - Online Collaborative Mathematics Learning Platform",
       description:
-        "Welcome to Math Whiteboard, an interactive online platform that enables teachers to create custom mathematics lessons and questions, while facilitating real-time collaboration between students and educators.",
+        "Welcome to Math Whiteboard, an interactive online platform that enables teachers to create custom mathematics lessons and questions, with audio and video chat built into the lesson board, while facilitating real-time collaboration between students and educators.",
       keywords:
-        "mathematics, online learning, math platform, collaborative learning, interactive math, teacher tools, create lessons",
+        "mathematics, online learning, math platform, collaborative learning, interactive math, teacher tools, create lessons, video chat, audio chat, lesson board",
     },
     props: true,
   },
