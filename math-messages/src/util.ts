@@ -1,7 +1,30 @@
 import useAuthUtil from "../../math-auth/build/authUtil";
+import useDbUtil from "../../math-db/build/dbUtil";
 import { UserAttributes } from "../../math-common/build/userTypes";
 const authUtil = useAuthUtil();
+const dbUtil = useDbUtil();
 
+async function isLessonOwner(
+  user: UserAttributes,
+  lessonUUId: string,
+): Promise<boolean> {
+  if (!user?.uuid || !lessonUUId) {
+    return false;
+  }
+
+  const lesson = await dbUtil.getLesson(lessonUUId);
+  if (!lesson) {
+    return false;
+  }
+
+  const userId =
+    user.id ?? (await dbUtil.getIdByUUId("User", user.uuid));
+  return lesson.userId === userId;
+}
+
+function canTeach(user: UserAttributes | null | undefined): boolean {
+  return user?.userType === "TEACHER" || user?.userType === "BOTH";
+}
 
 export default {
   getAccessTokenFromCookie: function (
@@ -43,4 +66,7 @@ export default {
 
     return user;
   },
+
+  isLessonOwner,
+  canTeach,
 };

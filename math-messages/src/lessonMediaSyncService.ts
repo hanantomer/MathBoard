@@ -46,13 +46,18 @@ export default class LessonMediaSyncService {
 
   async update(_id: null, data: LessonMediaSyncPayload, params: any) {
     const teacher = await util.getUserFromCookie(params.headers?.cookie);
-    if (!teacher || teacher.userType !== "TEACHER") {
+    if (!teacher || !util.canTeach(teacher)) {
       throw new Error("Only teachers can update lesson media policy");
     }
 
     const lessonUUId = data.lessonUUId;
     if (!lessonUUId) {
       throw new Error("lessonUUId is required");
+    }
+
+    const isOwner = await util.isLessonOwner(teacher, lessonUUId);
+    if (!isOwner) {
+      throw new Error("Only the lesson owner can update lesson media policy");
     }
 
     const policy = getPolicy(lessonUUId);

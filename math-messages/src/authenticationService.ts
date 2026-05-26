@@ -1,6 +1,7 @@
 import constants from "./constants";
 import { Application } from "@feathersjs/feathers";
 import { UserAttributes } from "../../math-common/build/userTypes";
+import util from "./util";
 import winston from "winston";
 import path from "path";
 
@@ -50,7 +51,13 @@ export default class AuthenticationService {
       `User ${userLesson.email} attempting to join lesson ${userLesson.lessonUUId}`
     );
 
-    if (userLesson.userType === "TEACHER") {
+    const isOwner = await util.isLessonOwner(
+      userLesson,
+      userLesson.lessonUUId,
+    );
+    const joinAsTeacher = isOwner && util.canTeach(userLesson);
+
+    if (joinAsTeacher) {
       logger.info(
         `Processing teacher join request for ${userLesson.email}`
       );

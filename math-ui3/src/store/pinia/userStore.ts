@@ -6,6 +6,7 @@ export const useUserStore = defineStore("user", () => {
   let currentUser = ref<UserAttributes | null>();
   let authorized = ref(false);
   let loginAsStudent = ref(false);
+  let lessonLoginAsStudent = ref(false);
 
   function getCurrentUser(): UserAttributes | undefined | null {
     return currentUser.value;
@@ -15,7 +16,8 @@ export const useUserStore = defineStore("user", () => {
     return (
       (currentUser.value?.userType === "TEACHER" ||
         currentUser.value?.userType === "BOTH") &&
-      !loginAsStudent.value
+      !loginAsStudent.value &&
+      !lessonLoginAsStudent.value
     );
   }
 
@@ -35,6 +37,13 @@ export const useUserStore = defineStore("user", () => {
     loginAsStudent.value = value;
   }
 
+  function setLessonLoginAsStudent(value: boolean) {
+    lessonLoginAsStudent.value = value;
+    if (value) {
+      authorized.value = false;
+    }
+  }
+
   return {
     getCurrentUser,
     getAuthorized,
@@ -42,5 +51,6 @@ export const useUserStore = defineStore("user", () => {
     isTeacher,
     setCurrentUser,
     setLoginAsStudent,
+    setLessonLoginAsStudent,
   };
 });

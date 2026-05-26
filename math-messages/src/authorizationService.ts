@@ -27,7 +27,10 @@ export default class AuhorizationService {
     
     let teacher = await util.getUserFromCookie(params.headers.cookie);
     if (!teacher?.id) return;
-    if (teacher.userType !== "TEACHER") return;
+    if (!util.canTeach(teacher)) return;
+
+    const isOwner = await util.isLessonOwner(teacher, data.lessonUUId);
+    if (!isOwner) return;
 
     let lessonId = await dbUtil.getIdByUUId(
       "Lesson",

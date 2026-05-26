@@ -29,8 +29,13 @@ export class FeathersHelper {
 
     this.instance.service("authentication").create({
       ...user,
+      userType: userStore.isTeacher() ? user.userType : "STUDENT",
       lessonUUId: lesson.uuid,
     });
+  }
+
+  public static rejoinLessonChannel(): void {
+    this.joinLessonChannels();
   }
 
   public static getInstance(

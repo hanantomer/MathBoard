@@ -188,7 +188,9 @@ export default function dbUtil() {
         let lessonId = await getIdByUUId("Lesson", lessonUUId);
         if (!lessonId) return null;
 
-        return await Lesson.findByPk(lessonId);
+        return await Lesson.findByPk(lessonId, {
+            include: [{ model: User }],
+        });
     }
 
     async function getLessons(userUUId: string): Promise<Lesson[] | null> {
