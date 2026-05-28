@@ -22,7 +22,8 @@
       <span class="title app-bar__lesson-title">{{ title }}</span>
     </v-toolbar-title>
 
-    <lessonMediaBar></lessonMediaBar>
+    <!-- Media bar temporarily disabled (TURN not configured). -->
+    <!-- <lessonMediaBar></lessonMediaBar> -->
 
     <!-- lessons -->
     <v-tooltip text="Lessons" location="bottom">
@@ -169,7 +170,7 @@ import { useEditModeStore } from "../store/pinia/editModeStore";
 import { useStudentStore } from "../store/pinia/studentStore";
 import { useCookies } from "vue3-cookies";
 import { ACCESS_TOKEN_NAME } from "common/globals";
-import LessonMediaBar from "./LessonMediaBar.vue";
+// import LessonMediaBar from "./LessonMediaBar.vue";
 
 const emit = defineEmits<{
   "show-feedback": [];

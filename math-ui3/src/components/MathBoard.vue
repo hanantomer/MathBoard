@@ -27,7 +27,8 @@
   <areaSelector></areaSelector>
 
   <leftToolbar></leftToolbar>
-  <lessonVideoDock></lessonVideoDock>
+  <!-- Video dock temporarily disabled (TURN not configured). -->
+  <!-- <lessonVideoDock></lessonVideoDock> -->
 
   <div ref="boardScrollRef" class="mathboard-scroll">
     <svg
@@ -81,7 +82,7 @@ import { CursorType, EditModeCursorType } from "common/unions";
 import useSelectionHelper from "../helpers/selectionHelper";
 import useKeyHelper from "../helpers/keyHelper";
 import leftToolbar from "./LeftToolbar.vue";
-import lessonVideoDock from "./LessonVideoDock.vue";
+// import lessonVideoDock from "./LessonVideoDock.vue";
 
 
 const freeTextEditor = defineAsyncComponent(

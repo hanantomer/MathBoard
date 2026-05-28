@@ -180,7 +180,6 @@ const bullets = [
   "Board sharing with students",
   "Virtually call a student to the board",
   "Dispatch exercises and submit feedback",
-  "Audio and video chat in the lesson board",
 ];
 </script>
 
