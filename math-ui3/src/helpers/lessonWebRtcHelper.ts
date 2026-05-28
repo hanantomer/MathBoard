@@ -10,9 +10,35 @@ import {
   type LessonRemoteParticipant,
 } from "../store/pinia/lessonMediaStore";
 
-const RTC_CONFIG: RTCConfiguration = {
-  iceServers: [{ urls: "stun:stun.l.google.com:19302" }],
-};
+const WEBRTC_DEBUG = import.meta.env.DEV;
+
+function logWebRtc(...args: unknown[]) {
+  if (WEBRTC_DEBUG) {
+    console.log("[WebRTC]", ...args);
+  }
+}
+
+function buildRtcConfiguration(): RTCConfiguration {
+  const iceServers: RTCIceServer[] = [
+    { urls: "stun:stun.l.google.com:19302" },
+  ];
+
+  const turnUrl = import.meta.env.VITE_TURN_URL;
+  if (turnUrl) {
+    iceServers.push({
+      urls: turnUrl,
+      username: import.meta.env.VITE_TURN_USERNAME || undefined,
+      credential: import.meta.env.VITE_TURN_CREDENTIAL || undefined,
+    });
+    logWebRtc("TURN server configured");
+  } else if (!WEBRTC_DEBUG) {
+    console.warn(
+      "[WebRTC] VITE_TURN_URL is not set; cross-network audio/video may fail without TURN.",
+    );
+  }
+
+  return { iceServers };
+}
 
 type PeerState = {
   pc: RTCPeerConnection;
@@ -30,6 +56,8 @@ let session: MediaSession | null = null;
 let localStream: MediaStream | null = null;
 const peers = new Map<string, PeerState>();
 const pendingCandidates = new Map<string, RTCIceCandidateInit[]>();
+const pendingSignals: WebRtcSignalPayload[] = [];
+const mediaPeerUUIds = new Set<string>();
 let remoteMediaRoot: HTMLElement | null = null;
 let signalingListenerRegistered = false;
 
@@ -87,10 +115,42 @@ function isActiveSignal(signal: WebRtcSignalPayload): boolean {
   return !!session && signal.lessonUUId === session.lessonUUId;
 }
 
+function shouldProcessSignal(signal: WebRtcSignalPayload): boolean {
+  if (!isActiveSignal(signal) || !session) {
+    return false;
+  }
+  if (signal.fromUserUUId === session.userUUId) {
+    return false;
+  }
+  if (signal.toUserUUId && signal.toUserUUId !== session.userUUId) {
+    return false;
+  }
+  return true;
+}
+
+function trackMediaPeer(userUUId: string | undefined) {
+  if (userUUId) {
+    mediaPeerUUIds.add(userUUId);
+  }
+}
+
+function queueSignal(signal: WebRtcSignalPayload) {
+  pendingSignals.push(signal);
+  logWebRtc(
+    "Queued signal",
+    signal.type,
+    "from",
+    signal.fromUserUUId,
+    "queue size",
+    pendingSignals.length,
+  );
+}
+
 async function sendSignal(payload: Omit<WebRtcSignalPayload, "fromUserUUId">) {
   if (!session) {
     return;
   }
+  logWebRtc("Sending signal", payload.type, "to", payload.toUserUUId ?? "all");
   await FeathersHelper.getInstance()
     .service("webrtcSignaling")
     .create({ ...payload, lessonUUId: session.lessonUUId }, {});
@@ -114,6 +174,9 @@ function attachRemoteAudio(peerUUId: string, stream: MediaStream) {
     return;
   }
   peer.audioElement.srcObject = stream;
+  void peer.audioElement.play().catch((error) => {
+    logWebRtc("Remote audio autoplay blocked for", peerUUId, error);
+  });
 }
 
 function watchTrack(peerUUId: string, track: MediaStreamTrack) {
@@ -154,7 +217,7 @@ function createPeerConnection(peerUUId: string): RTCPeerConnection {
     return existing.pc;
   }
 
-  const pc = new RTCPeerConnection(RTC_CONFIG);
+  const pc = new RTCPeerConnection(buildRtcConfiguration());
   const audioElement = document.createElement("audio");
   audioElement.autoplay = true;
   ensureRemoteMediaRoot().appendChild(audioElement);
@@ -171,6 +234,7 @@ function createPeerConnection(peerUUId: string): RTCPeerConnection {
     if (!event.candidate || !session) {
       return;
     }
+    logWebRtc("ICE candidate for", peerUUId, event.candidate.type);
     void sendSignal({
       type: "ice-candidate",
       lessonUUId: session.lessonUUId,
@@ -180,6 +244,7 @@ function createPeerConnection(peerUUId: string): RTCPeerConnection {
   };
 
   pc.ontrack = (event) => {
+    logWebRtc("Remote track received from", peerUUId, event.track.kind);
     const stream = event.streams[0];
     if (stream) {
       for (const track of stream.getTracks()) {
@@ -191,9 +256,30 @@ function createPeerConnection(peerUUId: string): RTCPeerConnection {
   };
 
   pc.onconnectionstatechange = () => {
+    logWebRtc(
+      "Peer",
+      peerUUId,
+      "connectionState:",
+      pc.connectionState,
+      "ice:",
+      pc.iceConnectionState,
+    );
     if (pc.connectionState === "failed") {
       removePeer(peerUUId);
+      if (
+        session &&
+        localStream &&
+        shouldInitiateWebRtcOffer(session.userUUId, peerUUId)
+      ) {
+        void createOffer(peerUUId).catch((error) => {
+          console.error("[WebRTC] Offer retry failed:", peerUUId, error);
+        });
+      }
     }
+  };
+
+  pc.oniceconnectionstatechange = () => {
+    logWebRtc("Peer", peerUUId, "iceConnectionState:", pc.iceConnectionState);
   };
 
   return pc;
@@ -277,9 +363,86 @@ async function handleJoin(fromUUId: string) {
     return;
   }
 
+  trackMediaPeer(fromUUId);
+
+  if (!localStream) {
+    logWebRtc("Join from", fromUUId, "queued until local media is ready");
+    return;
+  }
+
   if (shouldInitiateWebRtcOffer(session.userUUId, fromUUId)) {
     await createOffer(fromUUId);
   }
+}
+
+async function connectToKnownPeers() {
+  if (!session || !localStream) {
+    return;
+  }
+
+  for (const peerUUId of [...mediaPeerUUIds]) {
+    if (peerUUId === session.userUUId) {
+      continue;
+    }
+    await handleJoin(peerUUId);
+  }
+}
+
+async function processSignal(signal: WebRtcSignalPayload) {
+  switch (signal.type) {
+    case "join":
+      await handleJoin(signal.fromUserUUId!);
+      break;
+    case "offer":
+      if (signal.sdp) {
+        await handleOffer(signal.fromUserUUId!, signal.sdp);
+      }
+      break;
+    case "answer":
+      if (signal.sdp) {
+        await handleAnswer(signal.fromUserUUId!, signal.sdp);
+      }
+      break;
+    case "ice-candidate":
+      if (signal.candidate) {
+        await addIceCandidate(signal.fromUserUUId!, signal.candidate);
+      }
+      break;
+    case "leave":
+      mediaPeerUUIds.delete(signal.fromUserUUId!);
+      removePeer(signal.fromUserUUId!);
+      break;
+  }
+}
+
+async function flushPendingSignals() {
+  if (!localStream || pendingSignals.length === 0) {
+    return;
+  }
+
+  const batch = pendingSignals.splice(0, pendingSignals.length);
+  logWebRtc("Flushing", batch.length, "queued signals");
+
+  for (const signal of batch) {
+    if (!shouldProcessSignal(signal)) {
+      continue;
+    }
+    trackMediaPeer(signal.fromUserUUId);
+    try {
+      await processSignal(signal);
+    } catch (error) {
+      console.error("[WebRTC] Queued signal handling failed:", signal.type, error);
+    }
+  }
+}
+
+async function announceMediaJoin() {
+  if (!session) {
+    return;
+  }
+
+  trackMediaPeer(session.userUUId);
+  await sendSignal({ type: "join", lessonUUId: session.lessonUUId });
 }
 
 async function applyMicPolicy(
@@ -324,40 +487,27 @@ export function registerWebRtcSignalingListener() {
 }
 
 export async function handleIncomingWebRtcSignal(signal: WebRtcSignalPayload) {
-  if (!isActiveSignal(signal) || !localStream) {
+  if (!isActiveSignal(signal)) {
     return;
   }
-  if (!session || signal.fromUserUUId === session.userUUId) {
+
+  if (signal.type === "join") {
+    trackMediaPeer(signal.fromUserUUId);
+  }
+
+  if (!localStream) {
+    if (shouldProcessSignal(signal) || signal.type === "join") {
+      queueSignal(signal);
+    }
     return;
   }
-  if (signal.toUserUUId && signal.toUserUUId !== session.userUUId) {
+
+  if (!shouldProcessSignal(signal)) {
     return;
   }
 
   try {
-    switch (signal.type) {
-      case "join":
-        await handleJoin(signal.fromUserUUId!);
-        break;
-      case "offer":
-        if (signal.sdp) {
-          await handleOffer(signal.fromUserUUId!, signal.sdp);
-        }
-        break;
-      case "answer":
-        if (signal.sdp) {
-          await handleAnswer(signal.fromUserUUId!, signal.sdp);
-        }
-        break;
-      case "ice-candidate":
-        if (signal.candidate) {
-          await addIceCandidate(signal.fromUserUUId!, signal.candidate);
-        }
-        break;
-      case "leave":
-        removePeer(signal.fromUserUUId!);
-        break;
-    }
+    await processSignal(signal);
   } catch (error) {
     console.error("[WebRTC] Signal handling failed:", signal.type, error);
   }
@@ -394,20 +544,27 @@ export async function requestLessonMedia(
   mediaStore.errorMessage = null;
 
   try {
+    await FeathersHelper.waitUntilConnected();
+    FeathersHelper.rejoinLessonChannel();
+
     localStream = await navigator.mediaDevices.getUserMedia({
       audio: true,
       video: true,
     });
 
-    mediaStore.localMicEnabled = localStream.getAudioTracks()[0]?.enabled ?? false;
-    mediaStore.localCamEnabled = localStream.getVideoTracks()[0]?.enabled ?? false;
+    mediaStore.localMicEnabled =
+      localStream.getAudioTracks()[0]?.enabled ?? false;
+    mediaStore.localCamEnabled =
+      localStream.getVideoTracks()[0]?.enabled ?? false;
     mediaStore.connected = true;
     syncLocalStreamToStore();
     mediaStore.videoDockVisible = true;
     mediaStore.videoDockOpen = true;
 
     await applyMicPolicy(policy, userUUId, isTeacher);
-    await sendSignal({ type: "join", lessonUUId: session.lessonUUId });
+    await flushPendingSignals();
+    await announceMediaJoin();
+    await connectToKnownPeers();
     return true;
   } catch (error) {
     console.error("[WebRTC] Failed to start lesson media:", error);
@@ -441,6 +598,9 @@ export async function stopLocalMedia() {
     }
     localStream = null;
   }
+
+  pendingSignals.length = 0;
+  mediaPeerUUIds.clear();
 
   if (remoteMediaRoot) {
     remoteMediaRoot.innerHTML = "";
