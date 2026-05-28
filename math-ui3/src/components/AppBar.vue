@@ -96,12 +96,16 @@
     <v-tooltip text="Send Feedback" location="bottom">
       <template v-slot:activator="{ props }">
         <v-btn
+          data-cy="send_feedback"
           v-bind="props"
-          color="secondary"
-          icon
+          class="feedback-btn"
+          color="orange"
+          variant="flat"
+          size="small"
           @click="emit('show-feedback')"
         >
-          <v-icon>mdi-message-outline</v-icon>
+          <v-icon start>mdi-message-outline</v-icon>
+          <span class="d-none d-md-inline">Feedback</span>
         </v-btn>
       </template>
     </v-tooltip>
@@ -265,6 +269,12 @@ function navToAnswers() {
   right: 0;
   z-index: 10;
   padding-top: env(safe-area-inset-top);
+}
+
+.feedback-btn {
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  text-transform: none;
 }
 
 @media (max-width: 1023px) {
