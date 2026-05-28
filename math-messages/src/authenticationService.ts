@@ -4,6 +4,14 @@ import { UserAttributes } from "../../math-common/build/userTypes";
 import util from "./util";
 import winston from "winston";
 import path from "path";
+import fs from "fs";
+
+const logsDir = path.join(__dirname, "logs");
+try {
+  fs.mkdirSync(logsDir, { recursive: true });
+} catch {
+  // ignore; logger will surface failures if the directory is unusable
+}
 
 const logger = winston.createLogger({
   level: "info",
@@ -23,6 +31,19 @@ const logger = winston.createLogger({
         "logs",
         "messagesauth.log"
       ),
+    }),
+  ],
+});
+
+const lessonStudentJoinLogger = winston.createLogger({
+  level: "info",
+  format: winston.format.combine(
+    winston.format.timestamp(),
+    winston.format.json(),
+  ),
+  transports: [
+    new winston.transports.File({
+      filename: path.join(logsDir, "lesson-student-joins.log"),
     }),
   ],
 });
@@ -71,6 +92,16 @@ export default class AuthenticationService {
       logger.info(
         `Processing student join request for ${userLesson.email}`
       );
+      // Dedicated monitoring log: any user joining a lesson as a student,
+      // including a TEACHER/BOTH user joining someone else's lesson.
+      lessonStudentJoinLogger.info({
+        event: "lesson_join_as_student",
+        lessonUUId: userLesson.lessonUUId,
+        userUUId: userLesson.uuid,
+        email: userLesson.email,
+        userType: userLesson.userType,
+        joinedAs: util.canTeach(userLesson) ? "TEACHER_AS_STUDENT" : "STUDENT",
+      });
       this.joinStudent(
         params.connection,
         userLesson.uuid,

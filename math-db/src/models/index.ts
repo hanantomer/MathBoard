@@ -12,10 +12,7 @@ const sequelize = new Sequelize(url, {
     // Avoid logging every SQL query in production.
     logging: env === "development" ? console.log : false,
 });
-    //config.url
-    //? new Sequelize(config.url, config)
-    //: new Sequelize(config.database, config.username, config.password, config);
-
+    
 sequelize.addModels([__dirname.replace("/\\/g", "/") + "/**/*.model.js"]);    
 
 if (env === "development") {
