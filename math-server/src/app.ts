@@ -15,6 +15,7 @@ import {
 } from "../../math-common/build/unions";
 import { createTransport } from "nodemailer";
 import path from "path";
+import fs from "fs";
 
 
 
@@ -90,6 +91,78 @@ const serverLogger = winston.createLogger({
         }),
     ],
 });
+
+const apiLogsDir = path.join(__dirname, "logs");
+try {
+    fs.mkdirSync(apiLogsDir, { recursive: true });
+} catch {
+    // ignore
+}
+
+const boardClearLogger = winston.createLogger({
+    level: "info",
+    format: winston.format.combine(
+        winston.format.timestamp(),
+        winston.format.json(),
+    ),
+    transports: [
+        new winston.transports.File({
+            filename: path.join(apiLogsDir, "board-clear.log"),
+        }),
+    ],
+});
+
+type BoardClearWindow = {
+    firstAt: number;
+    lastAt: number;
+    count: number;
+    sampleUuid?: string;
+};
+
+// Heuristic: many deletes in a short window likely means "clear board".
+const clearWindows = new Map<string, BoardClearWindow>();
+const CLEAR_WINDOW_MS = 10_000;
+const CLEAR_DELETE_THRESHOLD = 25;
+
+function recordNotationDeleteForClearHeuristic(
+    userId: string | undefined,
+    lessonUUId: string | null,
+    uuid: string | undefined,
+    url: string,
+) {
+    if (!userId || !lessonUUId || !uuid) {
+        return;
+    }
+    // Only lessons; avoid noise from questions/answers.
+    if (url.toLowerCase().indexOf("/api/lesson") !== 0) {
+        return;
+    }
+
+    const key = `${lessonUUId}:${userId}`;
+    const now = Date.now();
+    const existing = clearWindows.get(key);
+
+    if (!existing || now - existing.firstAt > CLEAR_WINDOW_MS) {
+        clearWindows.set(key, { firstAt: now, lastAt: now, count: 1, sampleUuid: uuid });
+        return;
+    }
+
+    existing.lastAt = now;
+    existing.count += 1;
+    existing.sampleUuid = existing.sampleUuid ?? uuid;
+
+    if (existing.count >= CLEAR_DELETE_THRESHOLD) {
+        boardClearLogger.info({
+            event: "lesson_board_clear_suspected",
+            lessonUUId,
+            userId,
+            deletesInWindow: existing.count,
+            windowMs: now - existing.firstAt,
+            sampleUuid: existing.sampleUuid,
+        });
+        clearWindows.delete(key);
+    }
+}
 
 const clientLogger = winston.createLogger({
     level: "info",
@@ -735,10 +808,25 @@ BoardTypeValues.forEach((boardType) => {
                 next: NextFunction
             ): Promise<Response | undefined> => {
                 try {
+                    const uuid = req.body?.uuid as string | undefined;
+                    const lessonUUId = uuid
+                        ? await db.getLessonUUIdOfNotation(uuid, req.url)
+                        : null;
+                    recordNotationDeleteForClearHeuristic(
+                        req.headers.userId as string | undefined,
+                        lessonUUId,
+                        uuid,
+                        req.url,
+                    );
+
+                    if (!uuid) {
+                        return res.status(400).json("invalid uuid");
+                    }
+
                     await db.deleteNotation(
                         boardType,
                         notationType,
-                        req.body.uuid
+                        uuid
                     );
                     return res.status(200).send();
                 } catch (err) {

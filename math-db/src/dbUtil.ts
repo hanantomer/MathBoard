@@ -867,6 +867,29 @@ export default function dbUtil() {
         return res.userId as number;
     }
 
+    async function getLessonUUIdOfNotation(uuid: string, url: string): Promise<string | null> {
+        const model = getModelNameByUrl(url);
+
+        const res = await model.findOne({
+            include: [
+                {
+                    model: Lesson,
+                    attributes: ["uuid"],
+                },
+            ],
+            where: {
+                uuid: uuid,
+            },
+        }) as any;
+
+        if (!res) {
+            logger.error(`No notation found for UUID: ${uuid} and URL: ${url}`);
+            return null;
+        }
+
+        return res.lesson?.uuid ?? null;
+    }
+
     return {
         getIdByUUId,
         getUser,
@@ -896,6 +919,7 @@ export default function dbUtil() {
         getResetToken,
         updatePassword,
         getUserIdOfNotation,
+        getLessonUUIdOfNotation,
     };
 }
 
