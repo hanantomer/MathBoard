@@ -10,7 +10,7 @@
 import { watch, computed, ref } from "vue";
 import mathBoard from "./MathBoard.vue";
 import { useQuestionStore } from "../store/pinia/questionStore";
-import { useTitleStore } from "../store/pinia/titleStore";
+import { useBoardContextStore } from "../store/pinia/boardContextStore";
 import { useNotationStore } from "../store/pinia/notationStore";
 import { useEditModeStore } from "../store/pinia/editModeStore";
 import { useRoute } from "vue-router";
@@ -19,7 +19,7 @@ import { useLessonStore } from "../store/pinia/lessonStore";
 const questionStore = useQuestionStore();
 const notationStore = useNotationStore();
 const editModeStore = useEditModeStore();
-const titleStore = useTitleStore();
+const boardContext = useBoardContextStore();
 const lessonStore = useLessonStore();
 
 const route = useRoute();
@@ -36,22 +36,25 @@ watch(
 
 async function loadQuestion(questionUUId: string) {
   editModeStore.setDefaultEditMode();
-  const question = await questionStore.loadQuestion(questionUUId);
+  const loadedQuestion = await questionStore.loadQuestion(questionUUId);
 
-  if (!question) {
+  if (!loadedQuestion) {
     throw Error(`questionUUId: ${questionUUId} does not exist`);
   }
 
-  questionStore.setCurrentQuestion(question.uuid);
+  questionStore.setCurrentQuestion(loadedQuestion.uuid);
 
   lessonStore.setCurrentLesson(questionStore.getCurrentQuestion()!.lesson.uuid);
 
   notationStore.setParent(questionStore.getCurrentQuestion()!.uuid, "QUESTION");
 
-  const title = `${questionStore.getCurrentQuestion()!.lesson.name} -
-  ${questionStore.getCurrentQuestion()!.name}`;
-
-  titleStore.setTitle(title);
+  const current = questionStore.getCurrentQuestion()!;
+  boardContext.setQuestion(
+    current.lesson.name,
+    current.lesson.uuid,
+    current.name,
+    current.uuid,
+  );
 
   loaded.value = true; // signal child
 }

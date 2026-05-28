@@ -27,7 +27,7 @@ import { useLessonStore } from "../store/pinia/lessonStore";
 import { useNotationStore } from "../store/pinia/notationStore";
 import { useRoute } from "vue-router";
 import { heartBeatInterval } from "common/globals";
-import { useTitleStore } from "../store/pinia/titleStore";
+import { useBoardContextStore } from "../store/pinia/boardContextStore";
 import { useCellStore } from "../store/pinia/cellStore";
 import { useEditModeStore } from "../store/pinia/editModeStore";
 import { useLessonMediaStore } from "../store/pinia/lessonMediaStore";
@@ -44,7 +44,7 @@ const route = useRoute();
 const userStore = useUserStore();
 const lessonStore = useLessonStore();
 const notationStore = useNotationStore();
-const titleStore = useTitleStore();
+const boardContext = useBoardContextStore();
 const cellStore = useCellStore();
 const editModeStore = useEditModeStore();
 const lessonMediaStore = useLessonMediaStore();
@@ -190,7 +190,8 @@ async function loadLesson(rawLessonUUId: string) {
     return;
   }
 
-  titleStore.setTitle(lessonStore.getCurrentLesson()!.name);
+  const lesson = lessonStore.getCurrentLesson()!;
+  boardContext.setLesson(lesson.name, lesson.uuid);
   lessonStore.finishOpeningLesson();
   loaded.value = true;
 }

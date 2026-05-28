@@ -20,7 +20,7 @@ import { onMounted } from "vue";
 import useAxiosHelper from "./helpers/axiosHelper";
 import { restoreSessionFromCookie } from "./composables/restoreSession";
 import { useUserStore } from "./store/pinia/userStore";
-import { useTitleStore } from "./store/pinia/titleStore";
+import { useBoardDocumentTitle } from "./composables/useBoardDocumentTitle";
 import { useEditModeStore } from "./store/pinia/editModeStore";
 import { useStudentStore } from "./store/pinia/studentStore";
 import { useCookies } from "vue3-cookies";
@@ -38,7 +38,7 @@ const cookies = useCookies().cookies;
 const { initAxiosInterceptors } = useAxiosHelper();
 const router = useRouter();
 const userStore = useUserStore();
-const titleStore = useTitleStore();
+useBoardDocumentTitle();
 const editModeStrore = useEditModeStore();
 const studentStore = useStudentStore();
 

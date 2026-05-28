@@ -65,6 +65,7 @@ import { useLessonStore } from "../store/pinia/lessonStore";
 import { useAnswerStore } from "../store/pinia/answerStore";
 import { useUserStore } from "../store/pinia/userStore";
 import { useEditModeStore } from "../store/pinia/editModeStore";
+import { useBoardContextStore } from "../store/pinia/boardContextStore";
 import { useGlobalAlertStore } from "../store/pinia/globalAlertStore";
 import { useRouter } from "vue-router";
 import { useRoute } from "vue-router";
@@ -75,6 +76,7 @@ const lessonStore = useLessonStore();
 const answerStore = useAnswerStore();
 const userStore = useUserStore();
 const editModeStore = useEditModeStore();
+const boardContext = useBoardContextStore();
 const globalAlertStore = useGlobalAlertStore();
 
 const router = useRouter();
@@ -123,6 +125,7 @@ watch(
   route,
   async () => {
     editModeStore.setEditMode("QUESTIONS_SELECTION");
+    boardContext.setQuestionsList();
   },
   { immediate: true },
 );

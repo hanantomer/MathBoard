@@ -49,6 +49,7 @@ import { LessonAttributes } from "common/lessonTypes";
 import { useUserStore } from "../store/pinia/userStore";
 import { useLessonStore } from "../store/pinia/lessonStore";
 import { useEditModeStore } from "../store/pinia/editModeStore";
+import { useBoardContextStore } from "../store/pinia/boardContextStore";
 import { watch, ref, computed, onMounted, onUnmounted } from "vue";
 import { useRouter } from "vue-router";
 import { useRoute } from "vue-router";
@@ -57,6 +58,7 @@ const route = useRoute();
 const userStore = useUserStore();
 const lessonStore = useLessonStore();
 const editModeStore = useEditModeStore();
+const boardContext = useBoardContextStore();
 const title = computed(() => {
   return userStore.isTeacher() ? "Lessons" : "Lessons Shared with me";
 });
@@ -101,6 +103,7 @@ watch(
   route,
   async () => {
     editModeStore.setEditMode("LESSONS_SELECTION");
+    boardContext.setLessonsList();
   },
   { immediate: true },
 );

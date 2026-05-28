@@ -16,10 +16,44 @@
       contain
     ></v-img>
     <v-toolbar-title class="app-bar__title">
-      <span class="app-bar__brand d-none d-md-inline"
+      <span class="app-bar__brand d-none d-lg-inline"
         >ONLINE <strong style="color: darkorange">MATH WHITEBOARD</strong></span
       >
-      <span class="title app-bar__lesson-title">{{ title }}</span>
+      <div
+        v-if="boardContext.level !== 'none'"
+        class="app-bar__context"
+      >
+        <v-chip
+          size="x-small"
+          :color="boardContext.chipColor"
+          variant="flat"
+          class="app-bar__chip"
+        >
+          {{ boardContext.chipLabel }}
+        </v-chip>
+        <span class="app-bar__breadcrumb">
+          <template
+            v-for="(crumb, index) in boardContext.breadcrumbs"
+            :key="`${crumb.text}-${index}`"
+          >
+            <router-link
+              v-if="crumb.to"
+              :to="crumb.to"
+              class="app-bar__crumb-link"
+            >
+              {{ crumb.text }}
+            </router-link>
+            <span v-else class="app-bar__crumb-text">{{ crumb.text }}</span>
+            <span
+              v-if="index < boardContext.breadcrumbs.length - 1"
+              class="app-bar__sep"
+              aria-hidden="true"
+            >
+              ›
+            </span>
+          </template>
+        </span>
+      </div>
     </v-toolbar-title>
 
     <!-- Media bar temporarily disabled (TURN not configured). -->
@@ -169,7 +203,7 @@ import logoImg from "@/assets/logo.png";
 import { useRouter } from "vue-router";
 import { computed } from "vue";
 import { useUserStore } from "../store/pinia/userStore";
-import { useTitleStore } from "../store/pinia/titleStore";
+import { useBoardContextStore } from "../store/pinia/boardContextStore";
 import { useEditModeStore } from "../store/pinia/editModeStore";
 import { useStudentStore } from "../store/pinia/studentStore";
 import { useCookies } from "vue3-cookies";
@@ -183,16 +217,12 @@ const emit = defineEmits<{
 const cookies = useCookies().cookies;
 const router = useRouter();
 const userStore = useUserStore();
-const titleStore = useTitleStore();
+const boardContext = useBoardContextStore();
 const editModeStrore = useEditModeStore();
 const studentStore = useStudentStore();
 
 const onlineStudentsCount = computed(() => {
   return studentStore.getStudents().length;
-});
-
-const title = computed(() => {
-  return titleStore.getTitle();
 });
 
 const user = computed(() => {
@@ -254,12 +284,48 @@ function navToAnswers() {
   min-width: 0;
 }
 
-.app-bar__lesson-title {
-  margin-left: 20px !important;
-}
-
 .app-bar__brand {
   white-space: nowrap;
+  margin-right: 12px;
+}
+
+.app-bar__context {
+  display: flex;
+  align-items: center;
+  min-width: 0;
+  gap: 8px;
+  margin-left: 8px;
+}
+
+.app-bar__chip {
+  flex-shrink: 0;
+  font-weight: 700;
+}
+
+.app-bar__breadcrumb {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 0.95rem;
+}
+
+.app-bar__crumb-link {
+  color: rgba(255, 255, 255, 0.95);
+  text-decoration: none;
+}
+
+.app-bar__crumb-link:hover {
+  text-decoration: underline;
+}
+
+.app-bar__crumb-text {
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.app-bar__sep {
+  margin: 0 4px;
+  opacity: 0.75;
 }
 
 .app-bar {
@@ -278,14 +344,13 @@ function navToAnswers() {
 }
 
 @media (max-width: 1023px) {
-  .app-bar__lesson-title {
-    margin-left: 0 !important;
-    display: block;
-    font-size: 0.9rem;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    max-width: min(42vw, 220px);
+  .app-bar__context {
+    margin-left: 0;
+    max-width: min(52vw, 260px);
+  }
+
+  .app-bar__breadcrumb {
+    font-size: 0.85rem;
   }
 
   .app-bar :deep(.v-toolbar__content) {

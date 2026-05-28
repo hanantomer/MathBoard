@@ -13,13 +13,13 @@ import { watch } from "vue";
 import { useRoute } from "vue-router";
 import { useNotationStore } from "../store/pinia/notationStore";
 import { useEditModeStore } from "../store/pinia/editModeStore";
-import { useTitleStore } from "../store/pinia/titleStore";
+import { useBoardContextStore } from "../store/pinia/boardContextStore";
 
 const route = useRoute();
 const userStore = useUserStore();
 const answerStore = useAnswerStore();
 const editModeStore = useEditModeStore();
-const titleStore = useTitleStore();
+const boardContext = useBoardContextStore();
 const notationStore = useNotationStore();
 
 let loaded = ref(false);
@@ -46,14 +46,31 @@ async function loadAnswer(answerUUId: string) {
 
   answerStore.setCurrentAnswer(answerUUId);
 
-  const answerTitle = userStore.isTeacher()
-    ? `Lesson: ${answerStore.getCurrentAnswer()?.question.lesson
-        .name}, Question:  ${answerStore.getCurrentAnswer()?.question
-        .name}, Student: ${answerStore.getCurrentAnswer()?.user
-        ?.firstName} ${answerStore.getCurrentAnswer()?.user?.lastName}`
-    : answerStore.getCurrentAnswer()?.question.name;
+  const answer = answerStore.getCurrentAnswer()!;
+  const lesson = answer.question.lesson;
+  const question = answer.question;
 
-  titleStore.setTitle(answerTitle!);
+  if (userStore.isTeacher()) {
+    const studentName =
+      `${answer.user?.firstName ?? ""} ${answer.user?.lastName ?? ""}`.trim() ||
+      "Student";
+    boardContext.setAnswerForTeacher(
+      lesson.name,
+      lesson.uuid,
+      question.name,
+      question.uuid,
+      studentName,
+      answer.uuid,
+    );
+  } else {
+    boardContext.setAnswerForStudent(
+      lesson.name,
+      lesson.uuid,
+      question.name,
+      question.uuid,
+      answer.uuid,
+    );
+  }
 
   notationStore.setParent(answerUUId, "ANSWER");
 
