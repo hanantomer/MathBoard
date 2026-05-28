@@ -1,6 +1,6 @@
 <template>
-  <v-container>
-    <v-card class="mx-auto" max-width="800" min-height="600">
+  <v-container class="answers-page">
+    <v-card class="mx-auto mt-4" max-width="800" min-height="600">
       <v-toolbar color="primary" dark>
         <v-toolbar-title>Answers</v-toolbar-title>
       </v-toolbar>
@@ -173,7 +173,11 @@ async function selectAnswer(e: any, row: any) {
 }
 </script>
 
-<style>
+<style scoped>
+.answers-page {
+  padding-top: 80px;
+}
+
 .answer_title {
   justify-content: left !important;
 }

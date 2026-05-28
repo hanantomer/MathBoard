@@ -1,5 +1,5 @@
 <template>
-  <v-container>
+  <v-container class="questions-page">
     <v-dialog v-model="noLessonDialog" max-width="290">
       <v-card>
         <v-card-title class="text-h5">Attention </v-card-title>
@@ -20,7 +20,7 @@
       :dialog="questionDialog"
       @close="questionDialog = false"
     ></NewQuestionDialog>
-    <v-card class="mx-auto" max-width="800" min-height="600">
+    <v-card class="mx-auto mt-4" max-width="800" min-height="600">
       <v-toolbar color="primary" dark>
         <v-toolbar-title>Questions</v-toolbar-title>
 
@@ -250,7 +250,11 @@ async function selectQuestion(e: any, row: any) {
 }
 </script>
 
-<style>
+<style scoped>
+.questions-page {
+  padding-top: 80px;
+}
+
 .question_title {
   justify-content: left !important;
 }
