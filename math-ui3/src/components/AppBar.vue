@@ -103,26 +103,32 @@
     </v-tooltip>
 
     <!-- students -->
-    <v-tooltip text="Online Students" location="bottom">
-      <template v-slot:activator="{ props }">
+    <v-tooltip
+      text="Online Students — who joined and board editing"
+      location="bottom"
+    >
+      <template v-slot:activator="{ props: tooltipProps }">
         <v-badge
           :content="onlineStudentsCount"
           :model-value="onlineStudentsCount > 0"
           color="green"
           overlap
         >
-          <v-tooltip text="Online Students" location="bottom">
-            <template v-slot:activator="{ props }">
-              <v-btn
-                v-show="showOnlineStudents"
-                icon
-                v-on:click="showOnlineStudentsDialog"
-                v-bind="props"
-              >
-                <v-icon>mdi-account-school-outline</v-icon>
-              </v-btn>
-            </template>
-          </v-tooltip>
+          <v-btn
+            id="online-students-btn"
+            data-cy="online_students_btn"
+            v-show="showOnlineStudents"
+            icon
+            class="app-bar__students-btn"
+            :class="{
+              'app-bar__students-btn--highlight': highlightOnlineStudents,
+            }"
+            aria-label="Online students"
+            v-on:click="showOnlineStudentsDialog"
+            v-bind="tooltipProps"
+          >
+            <v-icon>mdi-account-school-outline</v-icon>
+          </v-btn>
         </v-badge>
       </template>
     </v-tooltip>
@@ -204,6 +210,8 @@ import { useRouter } from "vue-router";
 import { computed } from "vue";
 import { useUserStore } from "../store/pinia/userStore";
 import { useBoardContextStore } from "../store/pinia/boardContextStore";
+import { useUiHintStore } from "../store/pinia/uiHintStore";
+import { storeToRefs } from "pinia";
 import { useEditModeStore } from "../store/pinia/editModeStore";
 import { useStudentStore } from "../store/pinia/studentStore";
 import { useCookies } from "vue3-cookies";
@@ -218,6 +226,9 @@ const cookies = useCookies().cookies;
 const router = useRouter();
 const userStore = useUserStore();
 const boardContext = useBoardContextStore();
+const uiHintStore = useUiHintStore();
+const { highlightOnlineStudentsBtn: highlightOnlineStudents } =
+  storeToRefs(uiHintStore);
 const editModeStrore = useEditModeStore();
 const studentStore = useStudentStore();
 
@@ -341,6 +352,22 @@ function navToAnswers() {
   font-weight: 700;
   letter-spacing: 0.02em;
   text-transform: none;
+}
+
+.app-bar__students-btn--highlight {
+  animation: students-btn-pulse 1.1s ease-in-out 3;
+  box-shadow: 0 0 0 3px rgba(255, 193, 7, 0.95);
+  border-radius: 50%;
+}
+
+@keyframes students-btn-pulse {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.12);
+  }
 }
 
 @media (max-width: 1023px) {

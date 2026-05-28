@@ -2,6 +2,8 @@
   <accessLinkDialog
     :show="showAccessLinkDialog"
     @close="closeAccessLinkDialog"
+    @open-students="openOnlineStudentsFromAccessLink"
+    @highlight-students="highlightOnlineStudentsFromAccessLink"
   ></accessLinkDialog>
 
   <CrossDeviceUpload
@@ -212,6 +214,7 @@ import useAuthorizationHelper from "../helpers/authorizationHelper";
 import useWatchHelper from "../helpers/watchHelper";
 import useNotationMutateHelper from "../helpers/notationMutateHelper";
 import CrossDeviceUpload from "./CrossDeviceUpload.vue";
+import { useUiHintStore } from "../store/pinia/uiHintStore";
 
 const isMobileBoard = useMediaQuery(MOBILE_BOARD_MEDIA_QUERY);
 
@@ -221,6 +224,7 @@ const authorizationHelper = useAuthorizationHelper();
 const notationStore = useNotationStore();
 const userStore = useUserStore();
 const editModeStore = useEditModeStore();
+const uiHintStore = useUiHintStore();
 let showAccessLinkDialog = ref(false);
 const toolbarNavigation = useToolbarNavigation();
 const answerCheckMode = ref(false);
@@ -494,6 +498,16 @@ function openSelectionHelpMessage() {
 
 function closeAccessLinkDialog() {
   showAccessLinkDialog.value = false;
+}
+
+function openOnlineStudentsFromAccessLink() {
+  showAccessLinkDialog.value = false;
+  editModeStore.setEditMode("STUDENTS_MONITORING");
+}
+
+function highlightOnlineStudentsFromAccessLink() {
+  showAccessLinkDialog.value = false;
+  uiHintStore.flashOnlineStudentsButton();
 }
 
 const editEnabled = computed(() => {
