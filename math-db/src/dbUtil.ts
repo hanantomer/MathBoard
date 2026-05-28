@@ -681,7 +681,7 @@ export default function dbUtil() {
 
         return await findModel(modelName).update(notationFiltered, {
             where: { id: id },
-            logging: true,
+            logging: process.env.NODE_ENV === "development",
         });
     }
 
