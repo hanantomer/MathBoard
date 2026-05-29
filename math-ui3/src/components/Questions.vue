@@ -21,6 +21,9 @@
       @close="questionDialog = false"
     ></NewQuestionDialog>
     <v-card class="mx-auto mt-4" max-width="800" min-height="600">
+      <v-card-text class="text-body-2 text-medium-emphasis pb-0">
+        {{ LIST_INTROS.questions }}
+      </v-card-text>
       <v-toolbar color="primary" dark>
         <v-toolbar-title>Questions</v-toolbar-title>
 
@@ -49,10 +52,16 @@
         :headers="headers"
         item-value="name"
         class="elevation-1"
-        :hide-no-data="true"
+        :hide-no-data="false"
         :hover="true"
         @click:row="selectQuestion"
-      ></v-data-table>
+      >
+        <template #no-data>
+          <div class="text-center pa-8 text-medium-emphasis">
+            {{ questionsEmptyText }}
+          </div>
+        </template>
+      </v-data-table>
     </v-card>
   </v-container>
 </template>
@@ -70,6 +79,7 @@ import { useGlobalAlertStore } from "../store/pinia/globalAlertStore";
 import { useRouter } from "vue-router";
 import { useRoute } from "vue-router";
 import useEventBus from "../helpers/eventBusHelper";
+import { LIST_INTROS } from "../constants/helpCopy";
 
 const questionStore = useQuestionStore();
 const lessonStore = useLessonStore();
@@ -95,6 +105,13 @@ function onSelectedLesson(newVal: string) {
 const noLessonDialog = ref(false);
 const questionDialog = ref(false);
 let itemsPerPage = 10;
+
+const questionsEmptyText = computed(() => {
+  if (!selectedLesson.value) {
+    return "Select a lesson above to see its questions.";
+  }
+  return LIST_INTROS.questionsEmpty;
+});
 
 let selectedLesson = ref();
 

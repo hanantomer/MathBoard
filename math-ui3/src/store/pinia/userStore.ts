@@ -44,6 +44,10 @@ export const useUserStore = defineStore("user", () => {
     }
   }
 
+  function isPreviewingLessonAsStudent(): boolean {
+    return lessonLoginAsStudent.value;
+  }
+
   return {
     getCurrentUser,
     getAuthorized,
@@ -52,5 +56,6 @@ export const useUserStore = defineStore("user", () => {
     setCurrentUser,
     setLoginAsStudent,
     setLessonLoginAsStudent,
+    isPreviewingLessonAsStudent,
   };
 });

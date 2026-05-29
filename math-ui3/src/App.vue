@@ -10,6 +10,18 @@
     <ContactUs v-model="showContactUsDialog" title="Contact Us"></ContactUs>
 
     <Footer @show-contact-us="showContactUsDialog = true"></Footer>
+
+    <v-snackbar
+      v-model="studentJoinSnackbar"
+      :timeout="6000"
+      color="success"
+      location="top"
+    >
+      {{ studentJoinSnackbarText }}
+      <template #actions>
+        <v-btn variant="text" @click="studentJoinSnackbar = false">Dismiss</v-btn>
+      </template>
+    </v-snackbar>
   </v-app>
 </template>
 
@@ -22,7 +34,7 @@ import { restoreSessionFromCookie } from "./composables/restoreSession";
 import { useUserStore } from "./store/pinia/userStore";
 import { useBoardDocumentTitle } from "./composables/useBoardDocumentTitle";
 import { useEditModeStore } from "./store/pinia/editModeStore";
-import { useStudentStore } from "./store/pinia/studentStore";
+import { useStudentJoinNotifications } from "./composables/useStudentJoinNotifications";
 import { useCookies } from "vue3-cookies";
 import GlobalAlert from "./components/GlobalAlert.vue";
 import ContactUs from "./components/ContactUs.vue";
@@ -40,7 +52,8 @@ const router = useRouter();
 const userStore = useUserStore();
 useBoardDocumentTitle();
 const editModeStrore = useEditModeStore();
-const studentStore = useStudentStore();
+const { snackbar: studentJoinSnackbar, snackbarText: studentJoinSnackbarText } =
+  useStudentJoinNotifications();
 
 onMounted(async () => {
   initAxiosInterceptors();

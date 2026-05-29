@@ -3,6 +3,7 @@ import { ref } from "vue";
 
 export const useUiHintStore = defineStore("uiHint", () => {
   const highlightOnlineStudentsBtn = ref(false);
+  const accessLinkDialogRequest = ref(0);
   let timer: ReturnType<typeof setTimeout> | undefined;
 
   function flashOnlineStudentsButton(durationMs = 4500) {
@@ -15,8 +16,14 @@ export const useUiHintStore = defineStore("uiHint", () => {
     }, durationMs);
   }
 
+  function requestAccessLinkDialog() {
+    accessLinkDialogRequest.value += 1;
+  }
+
   return {
     highlightOnlineStudentsBtn,
+    accessLinkDialogRequest,
     flashOnlineStudentsButton,
+    requestAccessLinkDialog,
   };
 });

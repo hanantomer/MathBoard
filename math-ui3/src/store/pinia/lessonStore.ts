@@ -67,11 +67,15 @@ export const useLessonStore = defineStore("lesson", () => {
   async function addLesson(lessonName: string): Promise<LessonAttributes> {
     const userStore = useUserStore();
     const db = apiHelper();
+    const owner = userStore.getCurrentUser()!;
     const lesson: LessonCreationAttributes = {
       name: lessonName,
-      user: userStore.getCurrentUser()!,
+      user: owner,
     };
     let createdLesson = await db.addLesson(lesson);
+    if (!createdLesson.user?.uuid) {
+      createdLesson = { ...createdLesson, user: owner };
+    }
     lessons.value.set(createdLesson.uuid, createdLesson);
     currentLesson.value = createdLesson;
     return createdLesson;

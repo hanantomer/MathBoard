@@ -27,6 +27,9 @@
   <areaSelector></areaSelector>
 
   <leftToolbar></leftToolbar>
+  <boardRoleBanner />
+  <boardEmptyLessonOverlay :loaded="loaded" />
+  <activeToolBar />
   <!-- Video dock temporarily disabled (TURN not configured). -->
   <!-- <lessonVideoDock></lessonVideoDock> -->
 
@@ -82,6 +85,9 @@ import { CursorType, EditModeCursorType } from "common/unions";
 import useSelectionHelper from "../helpers/selectionHelper";
 import useKeyHelper from "../helpers/keyHelper";
 import leftToolbar from "./LeftToolbar.vue";
+import boardRoleBanner from "./BoardRoleBanner.vue";
+import boardEmptyLessonOverlay from "./BoardEmptyLessonOverlay.vue";
+import activeToolBar from "./ActiveToolBar.vue";
 // import lessonVideoDock from "./LessonVideoDock.vue";
 
 

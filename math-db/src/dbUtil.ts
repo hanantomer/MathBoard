@@ -220,7 +220,10 @@ export default function dbUtil() {
             try {
                 const newLesson = await Lesson.create(lesson);
                 logger.info(`Created new lesson with ID: ${newLesson.id}`);
-                return newLesson;
+                const withOwner = await Lesson.findByPk(newLesson.id, {
+                    include: [{ model: User }],
+                });
+                return withOwner ?? newLesson;
             } catch (error) {
                 logger.error(`Failed to create lesson: ${error}`);
                 throw error;

@@ -1,6 +1,9 @@
 <template>
   <v-container class="answers-page">
     <v-card class="mx-auto mt-4" max-width="800" min-height="600">
+      <v-card-text class="text-body-2 text-medium-emphasis pb-0">
+        {{ LIST_INTROS.answers }}
+      </v-card-text>
       <v-toolbar color="primary" dark>
         <v-toolbar-title>Answers</v-toolbar-title>
       </v-toolbar>
@@ -45,6 +48,7 @@ import { useQuestionStore } from "../store/pinia/questionStore";
 import { useLessonStore } from "../store/pinia/lessonStore";
 import { useEditModeStore } from "../store/pinia/editModeStore";
 import { useBoardContextStore } from "../store/pinia/boardContextStore";
+import { LIST_INTROS } from "../constants/helpCopy";
 
 const router = useRouter();
 const route = useRoute();

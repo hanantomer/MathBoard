@@ -33,6 +33,7 @@ import { useEditModeStore } from "../store/pinia/editModeStore";
 import { useLessonMediaStore } from "../store/pinia/lessonMediaStore";
 import { FeathersHelper } from "../helpers/feathersHelper";
 import { UserType } from "common/unions";
+import { LessonAttributes } from "common/lessonTypes";
 import { LessonMediaPolicy } from "common/lessonMediaTypes";
 import {
   initLessonMediaSession,
@@ -111,14 +112,28 @@ function canTeach(userType: UserType | undefined): boolean {
   return userType === "TEACHER" || userType === "BOTH";
 }
 
-function applyLessonRole(lesson: { user?: { uuid: string } }) {
+function isLessonOwner(lesson: LessonAttributes): boolean {
+  const user = userStore.getCurrentUser();
+  if (!user) {
+    return false;
+  }
+  if (lesson.user?.uuid === user.uuid) {
+    return true;
+  }
+  const lessonUserId = (lesson as LessonAttributes & { userId?: number }).userId;
+  if (lessonUserId != null && user.id != null) {
+    return lessonUserId === user.id;
+  }
+  return false;
+}
+
+function applyLessonRole(lesson: LessonAttributes) {
   const user = userStore.getCurrentUser();
   if (!user) {
     return;
   }
 
-  const isOwner = lesson.user?.uuid === user.uuid;
-  userStore.setLessonLoginAsStudent(canTeach(user.userType) && !isOwner);
+  userStore.setLessonLoginAsStudent(canTeach(user.userType) && !isLessonOwner(lesson));
 
   if (FeathersHelper.isConnected()) {
     FeathersHelper.rejoinLessonChannel();
@@ -149,6 +164,11 @@ async function loadLesson(rawLessonUUId: string) {
 
   if (!lessonStore.getLessons().get(lessonUUId)) {
     await lessonStore.loadLesson(lessonUUId);
+  } else {
+    const cached = lessonStore.getLessons().get(lessonUUId)!;
+    if (!cached.user?.uuid) {
+      await lessonStore.loadLesson(lessonUUId);
+    }
   }
   if (isStaleLoad(seq, lessonUUId)) {
     return;

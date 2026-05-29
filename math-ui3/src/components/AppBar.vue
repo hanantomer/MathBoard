@@ -102,7 +102,33 @@
       </template>
     </v-tooltip>
 
+    <v-tooltip
+      v-if="showLessonInvite"
+      :text="inviteTooltip"
+      location="bottom"
+    >
+      <template v-slot:activator="{ props: inviteProps }">
+        <v-btn
+          v-bind="inviteProps"
+          class="app-bar__invite-btn d-none d-sm-flex"
+          color="orange"
+          variant="flat"
+          size="small"
+          prepend-icon="mdi-link-variant"
+          @click="openInviteDialog"
+        >
+          <span class="d-none d-md-inline">Invite</span>
+        </v-btn>
+      </template>
+    </v-tooltip>
+
     <!-- students -->
+    <span
+      v-if="showOnlineStudents"
+      class="app-bar__students-label d-none d-lg-inline"
+    >
+      Students
+    </span>
     <v-tooltip
       text="Online Students — who joined and board editing"
       location="bottom"
@@ -206,7 +232,8 @@
 <script setup lang="ts">
 import betaImg from "@/assets/beta.png";
 import logoImg from "@/assets/logo.png";
-import { useRouter } from "vue-router";
+import { useRouter, useRoute } from "vue-router";
+import { COLLABORATION } from "../constants/helpCopy";
 import { computed } from "vue";
 import { useUserStore } from "../store/pinia/userStore";
 import { useBoardContextStore } from "../store/pinia/boardContextStore";
@@ -224,7 +251,9 @@ const emit = defineEmits<{
 
 const cookies = useCookies().cookies;
 const router = useRouter();
+const route = useRoute();
 const userStore = useUserStore();
+const inviteTooltip = COLLABORATION.inviteTooltip;
 const boardContext = useBoardContextStore();
 const uiHintStore = useUiHintStore();
 const { highlightOnlineStudentsBtn: highlightOnlineStudents } =
@@ -257,6 +286,14 @@ const showOnlineStudents = computed(() => {
 });
 
 const isTeacher = computed(() => userStore.isTeacher());
+
+const showLessonInvite = computed(
+  () => route.name === "lesson" && isTeacher.value,
+);
+
+function openInviteDialog() {
+  uiHintStore.requestAccessLinkDialog();
+}
 
 function showLoginDialog(userType?: string) {
   if (userType) {
@@ -352,6 +389,19 @@ function navToAnswers() {
   font-weight: 700;
   letter-spacing: 0.02em;
   text-transform: none;
+}
+
+.app-bar__students-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  opacity: 0.85;
+  margin-right: 2px;
+}
+
+.app-bar__invite-btn {
+  margin-right: 4px;
 }
 
 .app-bar__students-btn--highlight {

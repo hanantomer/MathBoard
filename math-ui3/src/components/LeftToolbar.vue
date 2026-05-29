@@ -25,21 +25,6 @@
       color="#C51162"
       icon="mdi-image"
       theme="dark"
-      v-model="showPasteImageHelpMessage"
-      closable
-      title="Paste Image Instructions"
-    >
-      To paste an image, first copy it to your clipboard. Then, click on the
-      desired cell and press Ctrl+V. Attention: google docs images are not
-      supported, so please use a tool like the Windows Snipping Tool, macOS
-      Screenshot (Shift+Command+4), or another screen capture tool to capture
-      the desired image and copy it to your clipboard (Ctrl+C or Command+C).
-    </v-snackbar>
-    <v-snackbar
-      close-delay="20000"
-      color="#C51162"
-      icon="mdi-image"
-      theme="dark"
       v-model="showSelectionHelpMessage"
       closable
       title="Selection Instructions"
@@ -48,31 +33,13 @@
   </div>
 
   <aside class="vertical-toolbar">
+    <span v-if="userStore.isTeacher()" class="toolbar-section-label">{{
+      TOOLBAR_SECTIONS.import
+    }}</span>
     <v-tooltip
-      text="Invite students via access link"
+      text="Upload from phone. To paste from clipboard, select a cell and press Ctrl+V."
       v-if="userStore.isTeacher()"
     >
-      <template v-slot:activator="{ props }">
-        <v-btn v-bind="props" icon @click.stop="openAccessLinkDialog" x-small
-          ><v-icon color="white">mdi-account-plus</v-icon></v-btn
-        >
-      </template>
-    </v-tooltip>
-
-    <v-tooltip text="Paste image" v-if="userStore.isTeacher()">
-      <template v-slot:activator="{ props }">
-        <v-btn
-          v-bind="props"
-          icon
-          @click.stop="openPasteImageHelpMessage"
-          x-small
-          style="background-color: transparent"
-          ><v-icon color="white">mdi-image</v-icon></v-btn
-        >
-      </template>
-    </v-tooltip>
-
-    <v-tooltip text="Load image via mobile camera" v-if="userStore.isTeacher()">
       <template v-slot:activator="{ props }">
         <v-btn
           v-bind="props"
@@ -86,25 +53,46 @@
       </template>
     </v-tooltip>
 
-    <v-tooltip text="Select notations" v-if="userStore.isTeacher()">
-      <template v-slot:activator="{ props }">
-        <v-btn
-          data-cy="selectionButton"
-          v-bind="props"
-          icon
-          @click.stop="startSelection"
-          x-small
-          fab
-          dark
-          color="white"
-          class="toolbar-mode-btn"
-          :class="{ 'toolbar-mode-btn--active': isAreaSelectionActive }"
-          ><v-icon color="white">mdi-selection</v-icon></v-btn
-        >
-      </template>
-    </v-tooltip>
+    <span v-if="userStore.isTeacher()" class="toolbar-section-label">{{
+      TOOLBAR_SECTIONS.select
+    }}</span>
+    <div v-if="userStore.isTeacher()" class="toolbar-select-row">
+      <v-tooltip text="Select notations">
+        <template v-slot:activator="{ props }">
+          <v-btn
+            data-cy="selectionButton"
+            v-bind="props"
+            icon
+            @click.stop="startSelection"
+            x-small
+            fab
+            dark
+            color="white"
+            class="toolbar-mode-btn"
+            :class="{ 'toolbar-mode-btn--active': isAreaSelectionActive }"
+            ><v-icon color="white">mdi-selection</v-icon></v-btn
+          >
+        </template>
+      </v-tooltip>
+      <v-tooltip text="Selection help">
+        <template v-slot:activator="{ props }">
+          <v-btn
+            v-bind="props"
+            icon
+            x-small
+            variant="text"
+            class="toolbar-help-btn"
+            @click.stop="openSelectionHelpMessage"
+            aria-label="Selection help"
+          >
+            <v-icon color="white" size="small">mdi-help-circle-outline</v-icon>
+          </v-btn>
+        </template>
+      </v-tooltip>
+    </div>
 
-    <v-tooltip v-for="item in modeButtons" :key="item.name">
+    <span class="toolbar-section-label">{{ TOOLBAR_SECTIONS.draw }}</span>
+    <v-tooltip v-for="item in drawModeButtons" :key="item.name">
       {{ getModeTooltip(item) }}
       <template v-slot:activator="{ props: tooltipProps }">
         <span v-bind="tooltipProps" class="toolbar-btn-wrap">
@@ -149,6 +137,55 @@
       </template>
     </v-tooltip>
 
+    <span class="toolbar-section-label">{{ TOOLBAR_SECTIONS.text }}</span>
+    <v-tooltip v-for="item in textModeButtons" :key="item.name">
+      {{ getModeTooltip(item) }}
+      <template v-slot:activator="{ props: tooltipProps }">
+        <span v-bind="tooltipProps" class="toolbar-btn-wrap">
+          <v-btn
+            :data-cy="item.name.toLowerCase() + 'Button'"
+            icon
+            x-small
+            fab
+            dark
+            color="white"
+            :class="getModeButtonClass(item)"
+            v-on:click="startEditMode(item)"
+            :disabled="!editEnabled"
+            :aria-label="getModeTooltip(item)"
+            :aria-disabled="!editEnabled"
+            role="button"
+            class="toolbar-mode-btn"
+          >
+          <v-icon
+            color="white"
+            v-if="item.icon_class"
+            :style="{ transform: 'rotate(' + item.rotate + 'deg)' }"
+            ><span :class="item.icon_class">{{ item.icon }}</span></v-icon
+          >
+          <v-icon
+            color="white"
+            v-if="item.overlay_icon"
+            :icon="item.overlay_icon"
+            style="position: absolute; left: 12px; top: 12px"
+          >
+          </v-icon>
+
+          <v-icon
+            color="white"
+            v-if="!item.icon_class"
+            :style="{ transform: 'rotate(' + item.rotate + 'deg)' }"
+            :icon="item.icon"
+          >
+          </v-icon>
+          </v-btn>
+        </span>
+      </template>
+    </v-tooltip>
+
+    <span v-if="answerCheckMode" class="toolbar-section-label">{{
+      TOOLBAR_SECTIONS.marks
+    }}</span>
     <v-tooltip
       v-for="item in answerChekButtons"
       :key="item.name"
@@ -201,9 +238,7 @@
 
 <script setup lang="ts">
 import { watch, ref, computed } from "vue";
-import { useMediaQuery } from "@vueuse/core";
 import accessLinkDialog from "./AccessLinkDialog.vue";
-import { MOBILE_BOARD_MEDIA_QUERY } from "../composables/useBoardLayout";
 
 import { useNotationStore } from "../store/pinia/notationStore";
 import { useEditModeStore } from "../store/pinia/editModeStore";
@@ -215,8 +250,13 @@ import useWatchHelper from "../helpers/watchHelper";
 import useNotationMutateHelper from "../helpers/notationMutateHelper";
 import CrossDeviceUpload from "./CrossDeviceUpload.vue";
 import { useUiHintStore } from "../store/pinia/uiHintStore";
-
-const isMobileBoard = useMediaQuery(MOBILE_BOARD_MEDIA_QUERY);
+import {
+  DRAW_TOOL_NAMES,
+  TEXT_TOOL_NAMES,
+  TOOLBAR_SECTIONS,
+  getSelectionHelpText,
+  getToolTooltip,
+} from "../constants/helpCopy";
 
 const watchHelper = useWatchHelper();
 const notationMutateHelper = useNotationMutateHelper();
@@ -237,13 +277,15 @@ watch(
   { immediate: true, deep: true },
 );
 
-const showPasteImageHelpMessage = ref(false);
 const showSelectionHelpMessage = ref(false);
 
-const selectionHelpText = computed(() =>
-  isMobileBoard.value
-    ? "Tap the selection tool, then drag on the board to select. Double-tap to exit selection mode."
-    : "To select an area, drag the mouse over the desired region. Then, drag the rectangle to move the selected notations, or use Ctrl+drag to copy them. To delete the selected notations, press Delete or Backspace. Another option is to click on a single notation to select it.",
+const selectionHelpText = computed(() => getSelectionHelpText());
+
+watch(
+  () => uiHintStore.accessLinkDialogRequest,
+  () => {
+    showAccessLinkDialog.value = true;
+  },
 );
 
 const showUploadDialog = ref(false);
@@ -358,6 +400,18 @@ const modeButtons: Array<{
     tabIndex: 7,
   },
   {
+    name: "cartesian system",
+    show_condition: true,
+    editMode: "CARTESIAN_SYSTEM_STARTED" as EditMode,
+    globalEditMode: "TEXT" as GlobalEditMode,
+    tooltip: "cartesian system",
+    icon_class: "",
+    icon: "mdi-chart-line",
+    overlay_icon: "",
+    rotate: 0,
+    tabIndex: 8,
+  },
+  {
     name: "sqrt",
     show_condition: true,
     editMode: "SQRT_STARTED" as EditMode,
@@ -396,20 +450,9 @@ const modeButtons: Array<{
     tabIndex: 10,
     shortcut: "Alt+l",
   },
-  {
-    name: "cartesian system",
-    show_condition: true,
-    editMode: "CARTESIAN_SYSTEM_STARTED" as EditMode,
-    globalEditMode: "TEXT" as GlobalEditMode,
-    tooltip: "cartesian system",
-    icon_class: "",
-    icon: "mdi-chart-line",
-    overlay_icon: "",
-    rotate: 0,
-    tabIndex: 10,
-  },
 ).map((symbol) => ({
   ...symbol,
+  tooltip: getToolTooltip(symbol.name),
   action: () => editModeStore.setEditMode(symbol.editMode as EditMode),
 }));
 
@@ -455,8 +498,16 @@ const answerChekButtons: Array<{
   },
 ).map((symbol) => ({
   ...symbol,
+  tooltip: getToolTooltip(symbol.name),
   action: () => editModeStore.setEditMode(symbol.editMode as EditMode),
 }));
+
+const drawModeButtons = computed(() =>
+  modeButtons.filter((b) => DRAW_TOOL_NAMES.has(b.name)),
+);
+const textModeButtons = computed(() =>
+  modeButtons.filter((b) => TEXT_TOOL_NAMES.has(b.name)),
+);
 
 watchHelper.watchKeyEvent(
   ["CELL_SELECTED"],
@@ -467,14 +518,6 @@ watchHelper.watchKeyEvent(
 watchHelper.watchEditModeTransition(["CELL_SELECTED"], "LOG_STARTED", () =>
   notationMutateHelper.addSymbolNotation("log"),
 );
-
-function openAccessLinkDialog() {
-  showAccessLinkDialog.value = true;
-}
-
-function openPasteImageHelpMessage() {
-  showPasteImageHelpMessage.value = true;
-}
 
 function doShowUploadDialog() {
   showUploadDialog.value = true;
@@ -716,5 +759,35 @@ span.v-btn__overlay {
 
 .vertical-toolbar :deep(.toolbar-mode-btn--active .v-icon) {
   color: #e3f2fd !important;
+}
+
+.toolbar-section-label {
+  display: block;
+  width: 100%;
+  margin: 10px 0 4px;
+  font-size: 0.625rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  text-align: center;
+  color: rgba(255, 255, 255, 0.45);
+  line-height: 1.2;
+}
+
+.toolbar-section-label:first-child {
+  margin-top: 0;
+}
+
+.toolbar-select-row {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+
+.toolbar-help-btn {
+  min-width: 32px !important;
+  min-height: 28px !important;
+  opacity: 0.85;
 }
 </style>

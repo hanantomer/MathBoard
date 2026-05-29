@@ -7,6 +7,9 @@
       @save="addLesson"
     ></NewBoardItemDialog>
     <v-card class="mx-auto mt-4" max-width="800" min-height="600">
+      <v-card-text class="text-body-2 text-medium-emphasis pb-0">
+        {{ listIntro }}
+      </v-card-text>
       <v-toolbar color="primary" dark>
         <v-toolbar-title>{{ title }}</v-toolbar-title>
         <v-spacer></v-spacer>
@@ -53,6 +56,7 @@ import { useBoardContextStore } from "../store/pinia/boardContextStore";
 import { watch, ref, computed, onMounted, onUnmounted } from "vue";
 import { useRouter } from "vue-router";
 import { useRoute } from "vue-router";
+import { LIST_INTROS } from "../constants/helpCopy";
 const router = useRouter();
 const route = useRoute();
 const userStore = useUserStore();
@@ -62,6 +66,12 @@ const boardContext = useBoardContextStore();
 const title = computed(() => {
   return userStore.isTeacher() ? "Lessons" : "Lessons Shared with me";
 });
+
+const listIntro = computed(() =>
+  userStore.isTeacher()
+    ? LIST_INTROS.lessonsTeacher
+    : LIST_INTROS.lessonsStudent,
+);
 let lessonDialog = ref(false);
 let lessonDialogTitle =
   "<span>Please specify <strong>lesson</strong> title</span";
