@@ -893,6 +893,78 @@ export default function dbUtil() {
         return res.lesson?.uuid ?? null;
     }
 
+    async function isStudentAuthorizedToEditLesson(
+        userId: number,
+        lessonUUId: string,
+    ): Promise<boolean> {
+        const lessonId = await getIdByUUId("Lesson", lessonUUId);
+        if (!lessonId) {
+            return false;
+        }
+
+        const studentLesson = await StudentLesson.findOne({
+            where: {
+                lessonId,
+                userId,
+                authorizedToEdit: true,
+            } as any,
+        });
+
+        return studentLesson != null;
+    }
+
+    async function setStudentLessonEditAuthorized(
+        lessonUUId: string,
+        userUUId: string,
+        authorized: boolean,
+    ): Promise<void> {
+        const lessonId = await getIdByUUId("Lesson", lessonUUId);
+        const userId = await getIdByUUId("User", userUUId);
+        if (!lessonId || !userId) {
+            return;
+        }
+
+        if (authorized) {
+            await StudentLesson.update(
+                { authorizedToEdit: false },
+                { where: { lessonId } as any },
+            );
+            await StudentLesson.update(
+                { authorizedToEdit: true },
+                { where: { lessonId, userId } as any },
+            );
+            return;
+        }
+
+        await StudentLesson.update(
+            { authorizedToEdit: false },
+            { where: { lessonId, userId } as any },
+        );
+    }
+
+    async function canUserEditLessonBoard(
+        user: UserAttributes,
+        lessonUUId: string,
+    ): Promise<boolean> {
+        if (!user?.id || !lessonUUId) {
+            return false;
+        }
+
+        const lesson = await getLesson(lessonUUId);
+        if (!lesson) {
+            return false;
+        }
+
+        if (
+            lesson.userId === user.id &&
+            (user.userType === "TEACHER" || user.userType === "BOTH")
+        ) {
+            return true;
+        }
+
+        return isStudentAuthorizedToEditLesson(user.id, lessonUUId);
+    }
+
     return {
         getIdByUUId,
         getUser,
@@ -923,6 +995,9 @@ export default function dbUtil() {
         updatePassword,
         getUserIdOfNotation,
         getLessonUUIdOfNotation,
+        isStudentAuthorizedToEditLesson,
+        setStudentLessonEditAuthorized,
+        canUserEditLessonBoard,
     };
 }
 

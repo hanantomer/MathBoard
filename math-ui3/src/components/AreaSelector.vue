@@ -225,6 +225,7 @@ watchHelper.watchNotationSelection(
 );
 
 function startMmoveSelectedNotations(e: PointerEvent) {
+  if (!authorizationHelper.canEdit()) return;
   if (!e.buttons) return;
   editModeStore.setEditMode("AREA_MOVING");
 }
@@ -289,6 +290,7 @@ function setStartPosition(e: PointerEvent) {
 }
 
 async function handleKeyUp(e: KeyboardEvent) {
+  if (!authorizationHelper.canEdit()) return;
   if (selectionRectHeight.value === 0) return;
 
   switch (e.code) {
@@ -628,6 +630,7 @@ async function onSelectionMouseUp(e: PointerEvent) {
 }
 
 function moveSelectedNotations(e: PointerEvent) {
+  if (!authorizationHelper.canEdit()) return;
   if (!e.buttons) return;
   // initial drag position
   if (!dragPosition.value.x) {

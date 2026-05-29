@@ -94,6 +94,8 @@ watchHelper.watchCustomEvent(
 );
 
 function editSelectedTextNotation(e: PointerEvent | TouchEvent) {
+  if (!authorizationHelper.canEdit()) return;
+
   if (selectedNotation.value?.notationType !== "TEXT") {
     return;
   }
@@ -160,6 +162,11 @@ function submitText(newEditMode: EditMode, oldEditMode: any) {
     return;
   }
 
+  if (!authorizationHelper.canEdit()) {
+    editModeStore.setDefaultEditMode();
+    return;
+  }
+
   SyncEndTextEdit();
 
   const textAreaEl = document.getElementById(
@@ -218,6 +225,8 @@ function resetTextEditingIfClickedOusideTextArea(e: PointerEvent | TouchEvent) {
 }
 
 function editTextSelection(e: PointerEvent | TouchEvent) {
+  if (!authorizationHelper.canEdit()) return;
+
   const el = ("touches" in e ? e.touches[0].target : e.target) as HTMLElement;
   if (
     el.id !== "selection" &&
@@ -244,6 +253,8 @@ function editTextSelection(e: PointerEvent | TouchEvent) {
 }
 
 function startTextEditing(selectionCoordinates: RectCoordinates) {
+  if (!authorizationHelper.canEdit()) return;
+
   setInitialTextValue();
   const textAreaEl = document.getElementById(
     "textAreaEl",

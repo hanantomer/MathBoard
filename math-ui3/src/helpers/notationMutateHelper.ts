@@ -388,6 +388,8 @@ export default function notationMutateHelper() {
     deltaY: number,
     keepOriginal: boolean,
   ): boolean {
+    if (!authorizationHelper.canEdit()) return false;
+
     if (keepOriginal) {
       notationStore.cloneSelectedNotations();
     }
@@ -443,6 +445,8 @@ export default function notationMutateHelper() {
     deltaRow: number,
     keepOriginal: boolean,
   ): boolean {
+    if (!authorizationHelper.canEdit()) return false;
+
     if (keepOriginal) {
       notationStore.cloneSelectedNotations();
     }
@@ -605,6 +609,8 @@ export default function notationMutateHelper() {
   }
 
   async function saveMovedNotations(moveDirection: SelectionMoveDirection) {
+    if (!authorizationHelper.canEdit()) return false;
+
     const notations = getSelectedNotationsSortedByDirection(moveDirection);
 
     notationStore.beginUndoGroup();
@@ -822,6 +828,7 @@ export default function notationMutateHelper() {
   async function updateSqrtNotation(
     sqrtNotation: SqrtNotationAttributes,
   ): Promise<string> {
+    if (!authorizationHelper.canEdit()) return sqrtNotation.uuid;
     transposeSqrtCoordinatesIfNeeded(sqrtNotation);
     await apiHelper.updateSqrtNotationAttributes(sqrtNotation);
     notationStore.addNotation(sqrtNotation, true, true);
@@ -830,18 +837,21 @@ export default function notationMutateHelper() {
   }
 
   async function updateLineNotation(lineNotation: LineNotationAttributes) {
+    if (!authorizationHelper.canEdit()) return;
     await apiHelper.updateLineNotationAttributes(lineNotation);
     notationStore.addNotation(lineNotation, true, true);
     userOutgoingOperations.syncOutgoingUpdateNotation(lineNotation);
   }
 
   async function updateCurveNotation(curveNotation: CurveNotationAttributes) {
+    if (!authorizationHelper.canEdit()) return;
     await apiHelper.updateCurveNotationAttributes(curveNotation);
     notationStore.addNotation(curveNotation, true, true);
     userOutgoingOperations.syncOutgoingUpdateNotation(curveNotation);
   }
 
   async function updateCircleNotation(circle: CircleNotationAttributes) {
+    if (!authorizationHelper.canEdit()) return;
     await apiHelper.updateCircleNotationAttributes(circle);
     notationStore.addNotation(circle, true, true);
     userOutgoingOperations.syncOutgoingUpdateNotation(circle);
@@ -850,12 +860,15 @@ export default function notationMutateHelper() {
   async function updateFreeSketchNotation(
     freeSketch: FreeSketchNotationAttributes,
   ) {
+    if (!authorizationHelper.canEdit()) return;
     await apiHelper.updateFreeSketchNotationAttributes(freeSketch);
     notationStore.addNotation(freeSketch, true, true);
     userOutgoingOperations.syncOutgoingUpdateNotation(freeSketch);
   }
 
   function addCellNotation(notation: PointNotationCreationAttributes) {
+    if (!authorizationHelper.canEdit()) return;
+
     if (isCellInQuestionArea(notation)) {
       return;
     }
@@ -900,6 +913,10 @@ export default function notationMutateHelper() {
     lineAttributes: LineAttributes,
     notationType: NotationType = "LINE",
   ): Promise<string> {
+    if (!authorizationHelper.canEdit()) {
+      return Promise.resolve("");
+    }
+
     let lineNotation: LineNotationCreationAttributes = {
       ...lineAttributes,
       boardType: notationStore.getParent().type,
@@ -916,6 +933,8 @@ export default function notationMutateHelper() {
     existingNotation: NotationAttributes,
     notation: NotationCreationAttributes,
   ) {
+    if (!authorizationHelper.canEdit()) return;
+
     // dont update a question notation from within answer and vice versa
     if (existingNotation.boardType !== notation.boardType) {
       return;
@@ -933,6 +952,10 @@ export default function notationMutateHelper() {
   async function addNotation(
     notation: NotationCreationAttributes,
   ): Promise<string> {
+    if (notation.boardType === "LESSON" && !authorizationHelper.canEdit()) {
+      return "";
+    }
+
     try {
       const newNotation = await apiHelper.addNotation(notation);
       newNotation.notationType = notation.notationType;
@@ -1332,6 +1355,7 @@ export default function notationMutateHelper() {
   }
 
   async function updateNotation(notation: NotationAttributes) {
+    if (!authorizationHelper.canEdit()) return;
     if (!notationStore.getNotation(notation.uuid)) return;
 
     notationStore.addNotation(notation, true, true);
@@ -1421,6 +1445,8 @@ export default function notationMutateHelper() {
   }
 
   async function updateNotations(notations: NotationAttributes[]) {
+    if (!authorizationHelper.canEdit()) return;
+
     //await apiHelper.updateNotations(notations);
 
     for (const notation of notations) {

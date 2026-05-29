@@ -2,8 +2,20 @@ import { NotationAttributes, CellAttributes } from "common/baseTypes";
 import { FeathersHelper } from "./feathersHelper";
 import { Params } from "@feathersjs/feathers";
 import { useUserStore } from "../store/pinia/userStore";
+import { useNotationStore } from "../store/pinia/notationStore";
+import useAuthorizationHelper from "./authorizationHelper";
 
 export default function userOutgoingOperations() {
+  const authorizationHelper = useAuthorizationHelper();
+
+  function canSyncLessonNotation(): boolean {
+    const notationStore = useNotationStore();
+    if (notationStore.getParent().type !== "LESSON") {
+      return true;
+    }
+    return authorizationHelper.canEdit();
+  }
+
   async function syncOutgoingSelectedCell(
     selectedCell: CellAttributes,
     lessonUUId: string,
@@ -41,12 +53,14 @@ export default function userOutgoingOperations() {
   }
 
   async function syncOutgoingAddNotation(notation: NotationAttributes) {
+    if (!canSyncLessonNotation()) return;
     await FeathersHelper.getInstance()
       .service("notationSync")
       .create(notation, {});
   }
 
   async function syncOutgoingRemoveNotation(uuid: string, lessonUUId: string) {
+    if (!canSyncLessonNotation()) return;
     let params: Params = { query: { lessonUUId: lessonUUId } };
     await FeathersHelper.getInstance()
       .service("notationSync")
@@ -54,6 +68,7 @@ export default function userOutgoingOperations() {
   }
 
   async function syncOutgoingUpdateNotation(notation: NotationAttributes) {
+    if (!canSyncLessonNotation()) return;
     await FeathersHelper.getInstance()
       .service("notationSync")
       .update(null, notation, {});
@@ -82,6 +97,7 @@ export default function userOutgoingOperations() {
     width: number,
     height: number,
   ) {
+    if (!canSyncLessonNotation()) return;
     await FeathersHelper.getInstance().service("textBoxSync").update(
       null,
       {
@@ -103,6 +119,7 @@ export default function userOutgoingOperations() {
     userUUId: String,
     lessonUUId: string,
   ) {
+    if (!canSyncLessonNotation()) return;
    FeathersHelper.getInstance()
      .service("textBoxSync")
      .remove(null, {

@@ -1,32 +1,59 @@
-import util from "./util";
 import { Application } from "@feathersjs/feathers";
-import { TextSyncUpdateData, TextSyncEndData } from "../../math-common/build/globals";
+import {
+  TextSyncUpdateData,
+  TextSyncEndData,
+} from "../../math-common/build/globals";
+import util from "./util";
+import AuthorizationService from "./authorizationService";
 
 export default class TextBoxSyncService {
   app: Application;
+
   constructor(app: Application) {
-        this.app = app;
+    this.app = app;
   }
 
-  // sync active text box content
-  async update(
-    id: number,
-    TextSyncUpdateData: TextSyncUpdateData
+  private async assertCanEditLesson(
+    cookie: string | undefined,
+    lessonUUId: string | undefined,
   ) {
-    return TextSyncUpdateData;
+    if (!lessonUUId) {
+      throw new Error("lessonUUId is required");
+    }
+
+    const user = await util.getUserFromCookie(cookie);
+    if (!user) {
+      throw new Error("Unauthorized");
+    }
+
+    const authorizationService = this.app.service(
+      "authorization",
+    ) as unknown as AuthorizationService;
+
+    if (!(await authorizationService.canEditLessonBoard(user, lessonUUId))) {
+      throw new Error("Not authorized to edit lesson");
+    }
   }
 
-  // signal end of text box editing
-  async remove(
-    id: string | null,
-    params: any
-  ) {
-    const TextSyncEndData: TextSyncEndData = {
+  async update(id: number, textSyncUpdateData: TextSyncUpdateData, params: any) {
+    await this.assertCanEditLesson(
+      params.headers?.cookie,
+      textSyncUpdateData.lessonUUId,
+    );
+    return textSyncUpdateData;
+  }
+
+  async remove(id: string | null, params: any) {
+    await this.assertCanEditLesson(
+      params.headers?.cookie,
+      params.query?.lessonUUId,
+    );
+
+    const textSyncEndData: TextSyncEndData = {
       notationUUId: params.query.notationUUId,
       userUUId: params.query.userUUId,
-      lessonUUId: params.query.lessonUUId
+      lessonUUId: params.query.lessonUUId,
     };
-    return TextSyncEndData;
+    return textSyncEndData;
   }
 }
-

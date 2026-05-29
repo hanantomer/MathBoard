@@ -1,0 +1,2 @@
+ALTER TABLE "studentLesson"
+ADD COLUMN IF NOT EXISTS "authorizedToEdit" BOOLEAN NOT NULL DEFAULT false;

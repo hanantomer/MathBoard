@@ -5,11 +5,18 @@ import { sqrtSymbolSuffix } from "common/globals";
 import { useEditModeStore } from "../store/pinia/editModeStore";
 import { useCellStore } from "../store/pinia/cellStore";
 import { useNotationStore } from "../store/pinia/notationStore";
-import useSelectionHelper from "./selectionHelper";
+import useAuthorizationHelper from "./authorizationHelper";
 
 const editModeStore = useEditModeStore();
 const cellStore = useCellStore();
 const notationStore = useNotationStore();
+
+function canEditShapes(): boolean {
+  if (notationStore.getParent().type !== "LESSON") {
+    return true;
+  }
+  return useAuthorizationHelper().canEdit();
+}
 
 /**
  * Touch pointer-moves usually have `buttons === 0` while dragging (unlike mouse).
@@ -32,6 +39,8 @@ export default function useShapeDrawingHelper() {
     e: PointerEvent | TouchEvent,
     setLinePositionCallback: (p: DotCoordinates) => void,
   ) {
+    if (!canEditShapes()) return;
+
     // if (!("touches" in e)) {
     //   const selectionHelper = useSelectionHelper();
     //   if (selectionHelper.trySelectNotationAtPointer(e)) {
@@ -82,6 +91,8 @@ export default function useShapeDrawingHelper() {
     e: PointerEvent | TouchEvent,
     drawLineCallback: (p: DotCoordinates) => void,
   ) {
+    if (!canEditShapes()) return;
+
     let clientX: number;
     let clientY: number;
 
@@ -112,6 +123,8 @@ export default function useShapeDrawingHelper() {
     e: PointerEvent,
     modifyLineCallback: (p: DotCoordinates) => void,
   ) {
+    if (!canEditShapes()) return;
+
     if (!isPointerDragActive(e)) {
       return;
     }
@@ -129,6 +142,8 @@ export default function useShapeDrawingHelper() {
     e: KeyboardEvent,
     moveLineCallback: (moveX: number, moveY: number) => void,
   ) {
+    if (!canEditShapes()) return;
+
     let moveX = 0;
     let moveY = 0;
     switch (e.key) {
@@ -153,6 +168,8 @@ export default function useShapeDrawingHelper() {
   }
 
   async function saveDrawing(saveDrawingCallback: () => Promise<string>) {
+    if (!canEditShapes()) return;
+
     await saveDrawingCallback();
 
     if (editModeStore.isPolygonDrawingMode()) return;
@@ -199,6 +216,8 @@ export default function useShapeDrawingHelper() {
     selectedNotation: NotationAttributes,
     selectLineCallback: (notation: NotationAttributes) => void,
   ) {
+    if (!canEditShapes()) return;
+
     notationStore.selectNotation(selectedNotation.uuid);
     selectLineCallback(selectedNotation);
     hideMatrixLine(selectedNotation.uuid);

@@ -1,9 +1,12 @@
 import User from "../user.model";
 import Lesson from "./lesson.model";
-import { Model, BelongsTo } from "sequelize-typescript";
 import {
+    Model,
+    BelongsTo,
     Table,
     DefaultScope,
+    Column,
+    DataType,
 } from "sequelize-typescript";
 
 
@@ -37,4 +40,10 @@ export default class StudentLesson extends Model<
 
     @BelongsTo(() => Lesson, "lessonId")
     lesson!: Lesson;
+
+    @Column({
+        type: DataType.BOOLEAN,
+        defaultValue: false,
+    })
+    authorizedToEdit!: boolean;
 }

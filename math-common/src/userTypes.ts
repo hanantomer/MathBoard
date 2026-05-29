@@ -21,6 +21,7 @@ export type UserCreationAttributes = Omit<UserAttributes, keyof EntityAttributes
 export type StudentLessonAttributes = EntityAttributes & {
   user: UserAttributes;
   lesson: LessonAttributes;
+  authorizedToEdit?: boolean;
 }
 
 export type StudentLessonCreationAttributes = Omit<StudentLessonAttributes, keyof EntityAttributes> 

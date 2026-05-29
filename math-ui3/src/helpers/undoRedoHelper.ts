@@ -2,6 +2,8 @@ import { ref, computed, type Ref } from "vue";
 import { cloneDeep } from "lodash";
 import { NotationAttributes } from "common/baseTypes";
 import useUserOutgoingOperations from "./userOutgoingOperationsHelper";
+import useAuthorizationHelper from "./authorizationHelper";
+import { useNotationStore } from "../store/pinia/notationStore";
 
 export default function undoRedoHelper(apiHelper: any) {
   const undoStack = ref<Map<String, NotationAttributes>[]>([]);
@@ -11,11 +13,20 @@ export default function undoRedoHelper(apiHelper: any) {
   let groupSnapshot: Map<String, NotationAttributes> | null = null;
 
   const userOutgoingOperations = useUserOutgoingOperations();
+  const authorizationHelper = useAuthorizationHelper();
+  const notationStore = useNotationStore();
 
   async function syncToDB(
     currentNotations: Map<String, NotationAttributes>,
     previousNotations: Map<String, NotationAttributes>,
   ) {
+    if (
+      notationStore.getParent().type === "LESSON" &&
+      !authorizationHelper.canEdit()
+    ) {
+      return;
+    }
+
     const added = Array.from(currentNotations.values()).filter(
       (n) => !previousNotations.has(n.uuid),
     );

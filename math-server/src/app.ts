@@ -284,28 +284,79 @@ async function validateHeaderAuthentication(
     return true;
 }
 
-// in mutation, verify that the user is the same as the one in the mutation body
-app.all("/*", async function (req: Request, res, next) {
+function isLessonNotationUrl(url: string): boolean {
+    return /\/api\/lesson[a-z]+s(\/|$|\?)/.test(url);
+}
 
-    if( req.method !== "PUT" && req.method !== "DELETE" && req.method !== "POST") {
+async function validateLessonNotationMutation(
+    req: Request,
+    res: Response,
+    next: NextFunction,
+): Promise<void> {
+    const userId = Number.parseInt(req.headers.userId as string);
+    const user = await db.getUserById(userId);
+    if (!user) {
+        res.status(401).json("unauthorized");
+        return;
+    }
+
+    let lessonUUId: string | null = null;
+    if (req.method === "POST") {
+        lessonUUId = (req.body?.parentUUId as string | undefined) ?? null;
+    } else {
+        const uuid = req.body?.uuid as string | undefined;
+        if (uuid) {
+            lessonUUId = await db.getLessonUUIdOfNotation(uuid, req.url);
+        }
+    }
+
+    if (!lessonUUId) {
+        res.status(400).json("missing lesson");
+        return;
+    }
+
+    if (await db.canUserEditLessonBoard(user, lessonUUId)) {
         next();
         return;
     }
 
-    const { uuid } = req.body; 
+    res.status(403).json("not authorized to edit lesson");
+}
+
+// Verify notation mutations: lesson boards require edit authorization;
+// other boards allow the notation owner or any teacher.
+app.all("/*", async function (req: Request, res, next) {
+    if (req.method !== "PUT" && req.method !== "DELETE" && req.method !== "POST") {
+        next();
+        return;
+    }
+
+    if (isLessonNotationUrl(req.url)) {
+        await validateLessonNotationMutation(req, res, next);
+        return;
+    }
+
+    const { uuid } = req.body;
     if (!uuid) {
         next();
         return;
     }
 
-    const userId = await db.getUserIdOfNotation(uuid, req.url);    
-    
-    const userFromHeader =
-        await db.getUserById(Number.parseInt(req.headers.userId as string))
+    const notationOwnerId = await db.getUserIdOfNotation(uuid, req.url);
+    const userFromHeader = await db.getUserById(
+        Number.parseInt(req.headers.userId as string),
+    );
 
-    if (userFromHeader?.userType === 'TEACHER' ||  userId === userFromHeader?.id) {
+    if (
+        userFromHeader?.userType === "TEACHER" ||
+        userFromHeader?.userType === "BOTH" ||
+        notationOwnerId === userFromHeader?.id
+    ) {
         next();
+        return;
     }
+
+    res.status(403).json("not authorized to edit notation");
 });
 
 app.post(

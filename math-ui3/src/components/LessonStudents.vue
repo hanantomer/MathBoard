@@ -234,7 +234,7 @@ function toggleStudentAuthorization(student: UserAttributes) {
   studentStore.setAuthorizedStudentUUId(studentUUId);
 
   userOutgoingOperations.syncOutgoingAuthorizeUser(
-    student.uuid,
+    studentUUId,
     previouslyAuthorizedStudentUUId,
     lessonStore.getCurrentLesson()!.uuid,
   );

@@ -186,6 +186,20 @@ async function loadLesson(rawLessonUUId: string) {
 
   applyLessonRole(lessonStore.getCurrentLesson()!);
 
+  if (!userStore.isTeacher()) {
+    userStore.setAuthorized(false);
+    try {
+      const auth = await FeathersHelper.getInstance()
+        .service("authorization")
+        .get(0, { query: { lessonUUId } });
+      if (auth?.authorized) {
+        userStore.setAuthorized(true);
+      }
+    } catch (error) {
+      console.warn("[Lesson] Failed to load edit authorization:", error);
+    }
+  }
+
   notationStore.setParent(lessonUUId, "LESSON");
 
   if (!userStore.isTeacher()) {

@@ -45,8 +45,14 @@ export default function selectionHelper() {
   }
 
   function selectNotationAtPosition(dotCoordinates: DotCoordinates): boolean {
+    if (
+      notationStore.getParent().type === "LESSON" &&
+      !authorizationHelper.canEdit()
+    ) {
+      return false;
+    }
+
     const maxDistanceToSelect = 5;
-    const notationStore = useNotationStore();
     notationStore.resetSelectedNotations();
 
     const notation = screenHelper.getNotationAtCoordinates(dotCoordinates);
@@ -263,6 +269,13 @@ export default function selectionHelper() {
 
   /** Select an existing notation under the pointer (used while a draw tool is active). */
   function trySelectNotationAtPointer(e: PointerEvent): boolean {
+    if (
+      notationStore.getParent().type === "LESSON" &&
+      !authorizationHelper.canEdit()
+    ) {
+      return false;
+    }
+
     if (!cellStore.getSvgId()) return false;
 
     const position = viewportPointerPosition(e);
@@ -284,6 +297,13 @@ export default function selectionHelper() {
   }
 
   function selectClickedPosition(e: PointerEvent) {
+    if (
+      notationStore.getParent().type === "LESSON" &&
+      !authorizationHelper.canEdit()
+    ) {
+      return;
+    }
+
     if (!cellStore.getSvgId()) return;
 
     const position = viewportPointerPosition(e);
