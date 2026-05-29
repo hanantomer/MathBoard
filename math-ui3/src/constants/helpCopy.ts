@@ -173,14 +173,175 @@ export function getEditModeStatusText(
     ANNOTATION_WRITING:
       "Type annotation text and then click outside or press enter",
     POLYGON_STARTED:
-      "To draw a polygon, click and hold to start a line at a point, drag to draw, and release to set the first vertex. Repeat for each segment: click and hold from the last vertex, drag, and release to set the next vertex. Connect the final vertex to the starting point to complete the polygon",
+      "Click and drag for each segment. Connect the last vertex to the first to close the shape.",
     LINE_STARTED: `Draw a line on screen, ${exitText} line drawing mode`,
+    DIVISIONLINE_STARTED: "Draw a horizontal division line on the board",
     CHECKMARK_STARTED: "Click on a cell to create a checkmark",
     SEMICHECKMARK_STARTED: "Click on a cell to create a semi checkmark",
     XMARK_STARTED: "Click on a cell to create an xmark",
     COLORIZING:
       "Click on a notation to colorize it or drag slowly to colorize multiple notations",
+    CARTESIAN_SYSTEM_STARTED: "Click on the board to place x and y axes",
+    AREA_SELECTION_STARTED: getSelectionHelpText(),
   };
 
   return longForm[editMode];
+}
+
+export const EDITING_BASICS = {
+  idle: "Pick a tool on the left, then use the grid. Press Esc to stop the current tool.",
+  exitHint: isMobile() ? "Double-tap to exit a tool." : "Press Esc to exit a tool.",
+} as const;
+
+export const COLLAB_HELP = {
+  teacherTitle: "Collaborate with students",
+  teacherSteps: [
+    "Use Invite in the app bar to copy the lesson access link.",
+    "Students open the link and join your board.",
+    "Open Online Students to see who joined and allow one student to edit at a time.",
+  ],
+  studentTitle: "Working with your teacher",
+  studentSteps: [
+    "You are viewing the teacher's lesson board.",
+    "When the teacher enables editing, you can add math on the board.",
+    "Your changes sync in real time for everyone in the lesson.",
+  ],
+  accessLinkIntro:
+    "Students sign in (or register), then land on this lesson board.",
+  accessLinkStudentsLocator:
+    "Top bar on the right — school icon with a green badge when students are online.",
+  lessonStudentsTip:
+    "Tap a student row to allow or revoke board editing. Only one student can edit at a time.",
+} as const;
+
+export const TOOLS_HELP = {
+  title: "Drawing tools",
+  intro: "Tools stay active until you press Esc or pick another tool.",
+  groups: [
+    {
+      name: "Draw",
+      tools: ["Free sketch", "Line", "Polyline", "Curve", "Circle", "Cartesian axes"],
+    },
+    {
+      name: "Text",
+      tools: ["Text box", "Annotation", "Square root", "Exponent", "Log"],
+    },
+    {
+      name: "Select",
+      tools: ["Selection — drag to select, move, copy (Ctrl+drag), or delete"],
+    },
+  ],
+} as const;
+
+export type CoachMarkDef = {
+  id: string;
+  targetSelector: string;
+  title: string;
+  body: string;
+};
+
+export const COACH_MARKS: CoachMarkDef[] = [
+  {
+    id: "invite-app-bar",
+    targetSelector: "#invite-btn",
+    title: "Invite students",
+    body: "Copy the lesson link here and share it with your class.",
+  },
+  {
+    id: "online-students",
+    targetSelector: "#online-students-btn",
+    title: "Online Students",
+    body: "See who joined and tap a name to allow board editing.",
+  },
+  {
+    id: "tool-selection",
+    targetSelector: '[data-cy="selectionButton"]',
+    title: "Selection",
+    body: "Drag to select notations, then move or copy them.",
+  },
+  {
+    id: "tool-line",
+    targetSelector: '[data-cy="lineButton"]',
+    title: "Line tool",
+    body: "Draw straight lines on the grid. Press Esc when finished.",
+  },
+  {
+    id: "tool-text",
+    targetSelector: '[data-cy="freetextButton"]',
+    title: "Text box",
+    body: "Drag a rectangle on the board, then type your math.",
+  },
+];
+
+export const TOOL_COACH_MARK_IDS: Record<string, string> = {
+  Line: "tool-line",
+  FreeText: "tool-text",
+  selection: "tool-selection",
+};
+
+export const CHECKLIST = {
+  title: "Your first live lesson",
+  subtitle: "Three steps to collaborate with students:",
+  steps: [
+    { id: "create", label: "Create or open a lesson" },
+    { id: "invite", label: "Invite — copy the access link from the app bar" },
+    { id: "students", label: "Open Online Students when someone joins" },
+  ],
+  gotIt: "Got it",
+  dontShowAgain: "Don't show again",
+  showTour: "Show me around",
+} as const;
+
+export type HelpPageKey =
+  | "lesson"
+  | "question"
+  | "answer"
+  | "lessons-list"
+  | "questions-list"
+  | "answers-list"
+  | "home"
+  | "default";
+
+export function getPageHelp(key: HelpPageKey): { title: string; lines: string[] } {
+  switch (key) {
+    case "lesson":
+      return {
+        title: "Lesson board",
+        lines: [
+          "This is your shared whiteboard for the lesson.",
+          "Use the left toolbar to draw and write.",
+          LIST_INTROS.lessonsTeacher,
+        ],
+      };
+    case "question":
+      return {
+        title: "Question board",
+        lines: [BOARD_ROLE_BANNERS.questionTeacher, LIST_INTROS.questions],
+      };
+    case "answer":
+      return {
+        title: "Answer board",
+        lines: [LIST_INTROS.answers, BOARD_ROLE_BANNERS.answerTeacher],
+      };
+    case "lessons-list":
+      return { title: "Lessons", lines: [LIST_INTROS.lessonsTeacher] };
+    case "questions-list":
+      return { title: "Questions", lines: [LIST_INTROS.questions] };
+    case "answers-list":
+      return { title: "Answers", lines: [LIST_INTROS.answers] };
+    default:
+      return {
+        title: "Math Whiteboard",
+        lines: [
+          "Create lessons, share links with students, and review their work.",
+        ],
+      };
+  }
+}
+
+export function boardContextToHelpKey(
+  level: string,
+): HelpPageKey {
+  if (level === "none") return "default";
+  return level as HelpPageKey;
 }

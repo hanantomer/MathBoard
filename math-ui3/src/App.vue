@@ -11,6 +11,10 @@
 
     <Footer @show-contact-us="showContactUsDialog = true"></Footer>
 
+    <HelpDrawer />
+    <CoachMarkOverlay />
+    <TeacherChecklistDialog />
+
     <v-snackbar
       v-model="studentJoinSnackbar"
       :timeout="6000"
@@ -40,6 +44,9 @@ import GlobalAlert from "./components/GlobalAlert.vue";
 import ContactUs from "./components/ContactUs.vue";
 import AppBar from "./components/AppBar.vue";
 import Footer from "./components/Footer.vue";
+import HelpDrawer from "./components/HelpDrawer.vue";
+import CoachMarkOverlay from "./components/CoachMarkOverlay.vue";
+import TeacherChecklistDialog from "./components/TeacherChecklistDialog.vue";
 
 import { defineAsyncComponent } from "vue";
 const leftToolbar = defineAsyncComponent(

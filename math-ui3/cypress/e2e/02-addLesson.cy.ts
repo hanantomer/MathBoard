@@ -27,6 +27,6 @@ describe("e2e", () => {
 
     cy.dataCy("button-save").click();
     cy.wait("@addLesson");
-    //cy.url().should("include", "/lesson/");
+    cy.dismissUiOverlays();
   });
 });

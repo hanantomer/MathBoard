@@ -32,6 +32,14 @@
       <v-divider />
 
       <v-card-text class="pa-0">
+        <v-alert
+          type="info"
+          variant="tonal"
+          density="compact"
+          class="ma-3 mb-0"
+        >
+          {{ COLLAB_HELP.lessonStudentsTip }}
+        </v-alert>
         <div class="student-list">
           <v-list v-if="students.length" class="py-2">
             <v-list-item
@@ -155,6 +163,7 @@ import { useEditModeStore } from "../store/pinia/editModeStore";
 import { useLessonMediaStore } from "../store/pinia/lessonMediaStore";
 import { UserAttributes } from "common/userTypes";
 import UseUserOutgoingOperations from "../helpers/userOutgoingOperationsHelper";
+import { COLLAB_HELP } from "../constants/helpCopy";
 
 const studentStore = useStudentStore();
 const lessonStore = useLessonStore();

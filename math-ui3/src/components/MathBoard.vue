@@ -16,7 +16,7 @@
     rounded
     height="8"
   ></v-progress-linear>
-  <statusBar></statusBar>
+  <instructionBar></instructionBar>
   <cartesianSystemDrawer></cartesianSystemDrawer>
   <sqrtDrawer></sqrtDrawer>
   <lineDrawer></lineDrawer>
@@ -29,7 +29,6 @@
   <leftToolbar></leftToolbar>
   <boardRoleBanner />
   <boardEmptyLessonOverlay :loaded="loaded" />
-  <activeToolBar />
   <!-- Video dock temporarily disabled (TURN not configured). -->
   <!-- <lessonVideoDock></lessonVideoDock> -->
 
@@ -87,7 +86,6 @@ import useKeyHelper from "../helpers/keyHelper";
 import leftToolbar from "./LeftToolbar.vue";
 import boardRoleBanner from "./BoardRoleBanner.vue";
 import boardEmptyLessonOverlay from "./BoardEmptyLessonOverlay.vue";
-import activeToolBar from "./ActiveToolBar.vue";
 // import lessonVideoDock from "./LessonVideoDock.vue";
 
 
@@ -98,7 +96,9 @@ const freeSketchDrawer = defineAsyncComponent(
   () => import("./FreeSketchDrawer.vue"),
 );
 const textAreaSync = defineAsyncComponent(() => import("./TextAreaSync.vue"));
-const StatusBar = defineAsyncComponent(() => import("./StatusBar.vue"));
+const InstructionBar = defineAsyncComponent(
+  () => import("./InstructionBar.vue"),
+);
 const annotationEditor = defineAsyncComponent(
   () => import("./AnnotationEditor.vue"),
 );

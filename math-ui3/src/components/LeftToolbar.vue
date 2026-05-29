@@ -250,6 +250,7 @@ import useWatchHelper from "../helpers/watchHelper";
 import useNotationMutateHelper from "../helpers/notationMutateHelper";
 import CrossDeviceUpload from "./CrossDeviceUpload.vue";
 import { useUiHintStore } from "../store/pinia/uiHintStore";
+import { useOnboardingStore } from "../store/pinia/onboardingStore";
 import {
   DRAW_TOOL_NAMES,
   TEXT_TOOL_NAMES,
@@ -265,6 +266,7 @@ const notationStore = useNotationStore();
 const userStore = useUserStore();
 const editModeStore = useEditModeStore();
 const uiHintStore = useUiHintStore();
+const onboardingStore = useOnboardingStore();
 let showAccessLinkDialog = ref(false);
 const toolbarNavigation = useToolbarNavigation();
 const answerCheckMode = ref(false);
@@ -532,7 +534,7 @@ function startSelection() {
     return;
   }
   editModeStore.setEditMode("AREA_SELECTION_STARTED");
-  openSelectionHelpMessage();
+  onboardingStore.tryShowToolCoachMark("selection");
 }
 
 function openSelectionHelpMessage() {
@@ -578,10 +580,17 @@ const isAreaSelectionActive = computed(
   () => editModeStore.getEditMode() === "AREA_SELECTION_STARTED",
 );
 
-function startEditMode(item: any) {
+function startEditMode(item: {
+  name: string;
+  globalEditMode?: GlobalEditMode;
+  editMode: EditMode;
+}) {
   notationStore.resetSelectedNotations();
-  editModeStore.setGlobalEditMode(item.globalEditMode);
+  editModeStore.setGlobalEditMode(item.globalEditMode ?? "TEXT");
   editModeStore.setEditMode(item.editMode);
+  if (item.name === "Line" || item.name === "FreeText") {
+    onboardingStore.tryShowToolCoachMark(item.name);
+  }
 }
 
 function isModeActive(item: any) {

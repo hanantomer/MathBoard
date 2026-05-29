@@ -109,6 +109,7 @@
     >
       <template v-slot:activator="{ props: inviteProps }">
         <v-btn
+          id="invite-btn"
           v-bind="inviteProps"
           class="app-bar__invite-btn d-none d-sm-flex"
           color="orange"
@@ -156,6 +157,21 @@
             <v-icon>mdi-account-school-outline</v-icon>
           </v-btn>
         </v-badge>
+      </template>
+    </v-tooltip>
+
+    <v-tooltip text="Help" location="bottom">
+      <template v-slot:activator="{ props }">
+        <v-btn
+          v-show="user"
+          id="help-btn"
+          icon
+          v-bind="props"
+          aria-label="Help"
+          @click="openHelp"
+        >
+          <v-icon>mdi-help-circle-outline</v-icon>
+        </v-btn>
       </template>
     </v-tooltip>
 
@@ -242,6 +258,7 @@ import { storeToRefs } from "pinia";
 import { useEditModeStore } from "../store/pinia/editModeStore";
 import { useStudentStore } from "../store/pinia/studentStore";
 import { useCookies } from "vue3-cookies";
+import { useOnboardingStore } from "../store/pinia/onboardingStore";
 import { ACCESS_TOKEN_NAME } from "common/globals";
 // import LessonMediaBar from "./LessonMediaBar.vue";
 
@@ -260,6 +277,7 @@ const { highlightOnlineStudentsBtn: highlightOnlineStudents } =
   storeToRefs(uiHintStore);
 const editModeStrore = useEditModeStore();
 const studentStore = useStudentStore();
+const onboardingStore = useOnboardingStore();
 
 const onlineStudentsCount = computed(() => {
   return studentStore.getStudents().length;
@@ -293,6 +311,10 @@ const showLessonInvite = computed(
 
 function openInviteDialog() {
   uiHintStore.requestAccessLinkDialog();
+}
+
+function openHelp() {
+  onboardingStore.openHelpDrawer();
 }
 
 function showLoginDialog(userType?: string) {

@@ -16,7 +16,12 @@
         <v-icon start>mdi-link-variant</v-icon>
         {{ COLLABORATION.copyLink }}
       </v-btn>
-      <v-btn class="ml-2" variant="outlined" @click="dismiss">
+      <v-btn
+        class="ml-2"
+        variant="outlined"
+        data-cy="empty-lesson-dismiss"
+        @click="dismiss"
+      >
         Start drawing
       </v-btn>
     </v-card>
@@ -29,6 +34,7 @@ import { useRoute } from "vue-router";
 import { useUserStore } from "../store/pinia/userStore";
 import { useNotationStore } from "../store/pinia/notationStore";
 import { useUiHintStore } from "../store/pinia/uiHintStore";
+import { useOnboardingStore } from "../store/pinia/onboardingStore";
 import { COLLABORATION } from "../constants/helpCopy";
 
 const props = defineProps<{
@@ -39,13 +45,15 @@ const route = useRoute();
 const userStore = useUserStore();
 const notationStore = useNotationStore();
 const uiHintStore = useUiHintStore();
-const dismissed = ref(false);
+const onboardingStore = useOnboardingStore();
+
+const dismissedLocally = ref(false);
 
 watch(
   () => notationStore.getNotations().length,
   (len) => {
     if (len > 0) {
-      dismissed.value = true;
+      dismissedLocally.value = true;
     }
   },
 );
@@ -53,7 +61,8 @@ watch(
 const visible = computed(
   () =>
     props.loaded &&
-    !dismissed.value &&
+    !dismissedLocally.value &&
+    !onboardingStore.emptyLessonOverlayDismissed &&
     route.name === "lesson" &&
     userStore.isTeacher() &&
     notationStore.getNotations().length === 0,
@@ -64,7 +73,8 @@ function openInvite() {
 }
 
 function dismiss() {
-  dismissed.value = true;
+  dismissedLocally.value = true;
+  onboardingStore.dismissEmptyLessonOverlay();
 }
 </script>
 

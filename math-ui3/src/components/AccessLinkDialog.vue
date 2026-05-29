@@ -30,7 +30,7 @@
 
       <v-card-text class="pa-4">
         <p class="text-body-2 text-medium-emphasis mb-3">
-          Students sign in (or register), then land on this lesson board.
+          {{ COLLAB_HELP.accessLinkIntro }}
         </p>
 
         <v-text-field
@@ -72,9 +72,7 @@
             Where to see online students
           </p>
           <p class="text-caption text-medium-emphasis mb-3">
-            Top bar on the right — look for the
-            <v-icon size="small" class="mx-1">mdi-account-school-outline</v-icon>
-            school icon (green badge shows how many joined).
+            {{ COLLAB_HELP.accessLinkStudentsLocator }}
           </p>
 
           <div class="access-link-locator__mock" aria-hidden="true">
@@ -154,6 +152,7 @@
 import { computed, ref, watch } from "vue";
 import { useLessonStore } from "../store/pinia/lessonStore";
 import { useQuestionStore } from "../store/pinia/questionStore";
+import { COLLAB_HELP } from "../constants/helpCopy";
 
 const lessonStore = useLessonStore();
 const questionStore = useQuestionStore();

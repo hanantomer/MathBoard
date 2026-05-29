@@ -45,8 +45,9 @@ declare namespace Cypress {
     dataCy(value: string): Chainable<JQuery>;
     clean(): any;
     login(): any;
-    openLesson(): any;
-    clearBoard(): any;
+    openLesson(): Chainable<void>;
+    clearBoard(): Chainable<void>;
+    dismissUiOverlays(): Chainable<void>;
     drawLine(
       buttonDataCy: string,
       x1: number,
@@ -170,6 +171,7 @@ Cypress.Commands.add(
     y2: number,
   ) => {
     cy.dataCy(buttonDataCy).click();
+    cy.dismissUiOverlays();
 
     cy.get("#lessonSvg").then(($svg) => {
       const el = $svg[0];
@@ -316,10 +318,38 @@ Cypress.Commands.add("login", () => {
   cy.get('[data-cy="login"] > .v-btn__content').click();
 });
 
+Cypress.Commands.add("dismissUiOverlays", () => {
+  cy.get("body").then(($body) => {
+    if ($body.find('[data-cy="teacher-checklist-dont-show"]').length) {
+      cy.dataCy("teacher-checklist-dont-show").click({ force: true });
+    }
+  });
+
+  cy.get("body").then(($body) => {
+    if ($body.find('[data-cy="empty-lesson-dismiss"]').length) {
+      cy.dataCy("empty-lesson-dismiss").click({ force: true });
+    }
+  });
+
+  cy.get("body").then(($body) => {
+    if ($body.find('[data-cy="coach-mark-skip"]').length) {
+      cy.dataCy("coach-mark-skip").click({ force: true });
+    }
+  });
+
+  cy.get("body").then(($body) => {
+    if ($body.find('[data-cy="help-drawer-close"]').length) {
+      cy.dataCy("help-drawer-close").click({ force: true });
+    }
+  });
+});
+
 Cypress.Commands.add("openLesson", () => {
   cy.get('[data-cy="lessons"] > .v-btn__content').click();
   cy.get('td:contains("test lesson")').click();
-  !cy.dataCy("pBar") || cy.dataCy("pBar").should("not.be.visible");
+  cy.get("#lessonSvg", { timeout: 20000 }).should("exist");
+  cy.dataCy("pBar").should("not.be.visible");
+  cy.dismissUiOverlays();
 });
 
 Cypress.Commands.add("clearBoard", () => {
@@ -332,6 +362,7 @@ Cypress.Commands.add("clearBoard", () => {
   cy.get("#lessonSvg foreignObject", { timeout: 10000 }).should("exist");
 
   cy.dataCy("selectionButton").click({ force: true });
+  cy.dismissUiOverlays();
   cy.selectArea(0, 0, 1200, 800);
 
   // Wait until marquee finishes (AREA_SELECTED) — not only AREA_SELECTION_STARTED.

@@ -15,5 +15,10 @@
 
 // Import commands.js using ES2015 syntax:
 import "./commands";
+import { seedOnboardingStorage } from "./onboarding";
 
 import "cypress-real-events";
+
+Cypress.on("window:before:load", (win) => {
+  seedOnboardingStorage(win);
+});
