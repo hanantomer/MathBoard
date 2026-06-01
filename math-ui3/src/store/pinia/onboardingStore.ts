@@ -2,6 +2,7 @@ import { defineStore } from "pinia";
 import { ref, computed } from "vue";
 import {
   COACH_MARKS,
+  QUICK_TIPS_COACH_MARK_IDS,
   type CoachMarkDef,
 } from "../../constants/helpCopy";
 
@@ -144,6 +145,27 @@ export const useOnboardingStore = defineStore("onboarding", () => {
     queueCoachMarks(["invite-app-bar", "online-students"]);
   }
 
+  function isQuickTipsComplete(): boolean {
+    return QUICK_TIPS_COACH_MARK_IDS.every((id) => isHintDismissed(id));
+  }
+
+  function tryStartQuickTipsTour() {
+    if (isQuickTipsComplete()) return;
+    if (activeCoachMark.value) return;
+    queueCoachMarks([...QUICK_TIPS_COACH_MARK_IDS]);
+  }
+
+  function quickTipsProgress(
+    markId: string | undefined,
+  ): { current: number; total: number } | null {
+    if (!markId) return null;
+    const index = QUICK_TIPS_COACH_MARK_IDS.indexOf(
+      markId as (typeof QUICK_TIPS_COACH_MARK_IDS)[number],
+    );
+    if (index === -1) return null;
+    return { current: index + 1, total: QUICK_TIPS_COACH_MARK_IDS.length };
+  }
+
   const shouldShowTeacherChecklist = computed(
     () => !teacherChecklistDismissed.value,
   );
@@ -166,5 +188,8 @@ export const useOnboardingStore = defineStore("onboarding", () => {
     dismissActiveCoachMark,
     tryShowToolCoachMark,
     startLessonTour,
+    tryStartQuickTipsTour,
+    isQuickTipsComplete,
+    quickTipsProgress,
   };
 });

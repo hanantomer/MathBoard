@@ -73,11 +73,13 @@ function closeDialog() {
 function dontShowAgain() {
   onboarding.dismissTeacherChecklist();
   closeDialog();
+  setTimeout(() => onboarding.tryStartQuickTipsTour(), 500);
 }
 
 function gotItOnly() {
   onboarding.dismissTeacherChecklist();
   closeDialog();
+  setTimeout(() => onboarding.tryStartQuickTipsTour(), 500);
 }
 
 function gotItAndTour() {

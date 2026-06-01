@@ -31,7 +31,7 @@ export const COLLABORATION = {
   inviteTooltip: "Invite students — copy the lesson access link",
   emptyLessonTitle: "Your lesson board is empty",
   emptyLessonBody:
-    "Draw on the board or paste an image (Ctrl+V). When ready, use Invite in the app bar to share with students.",
+    "Click a cell and type your math with the keyboard — that is the fastest way to write. Use Selection to move or copy work, lines/text tools for diagrams, and free sketch only when you need informal marks. Paste images with Ctrl+V. When ready, use Invite in the app bar to share with students.",
   studentJoinedToast: (name: string) =>
     `${name} joined the lesson. Open Online Students to manage editing.`,
   studentJoinedToastGeneric: "A student joined the lesson. Open Online Students to manage editing.",
@@ -54,7 +54,7 @@ export const BOARD_ROLE_BANNERS = {
 export const TOOL_TOOLTIPS: Record<string, string> = {
   FreeText: "Text box — drag a rectangle on the board",
   annotation: "Annotation — click to place short labels",
-  freeSketch: "Free sketch — draw with mouse or stylus",
+  freeSketch: "Free sketch — informal marks only; type math in grid cells with the keyboard",
   Line: "Line — draw a segment",
   polyline: "Polyline — click vertices, close on the start point",
   DivisionLine: "Division line",
@@ -101,9 +101,44 @@ export function getToolTooltip(name: string): string {
 
 export function getSelectionHelpText(): string {
   return isMobile()
-    ? "Tap the selection tool, then drag on the board to select. Double-tap to exit selection mode."
-    : "Drag to select an area, then move or Ctrl+drag to copy. Delete removes the selection. Click one notation to select it alone.";
+    ? "Tap Selection, drag a rectangle to select, then drag to move. Double-tap to exit selection mode."
+    : "Drag a rectangle to select notations, then drag to move. Hold Ctrl (Cmd on Mac) while dragging to duplicate. Delete or Backspace removes the selection. Click one notation to select it alone.";
 }
+
+export const KEYBOARD_INPUT = {
+  title: "Keyboard (recommended)",
+  intro:
+    "Most math is typed directly into grid cells — faster and clearer than free sketch.",
+  tips: isMobile()
+    ? [
+        "Tap a cell, then type letters, numbers, and operators.",
+        "Use toolbar Text tools for exponents, logs, and text boxes.",
+        "Free sketch is optional for rough diagrams only.",
+      ]
+    : [
+        "Click a cell, then type letters, numbers, and operators.",
+        "Space pushes symbols in the current cell to the right.",
+        "Backspace or Delete removes the symbol in the selected cell.",
+        "Alt+X exponent, Alt+L log — or use the Text tools on the left.",
+        "Free sketch is optional for informal marks, not for main work.",
+      ],
+} as const;
+
+export const EDITING_TECHNIQUES = {
+  title: "Select, move, and copy",
+  items: isMobile()
+    ? [
+        "Selection tool: drag a rectangle, then drag the selection to move it.",
+        "Tap a cell and type; use toolbar tools for structured math.",
+      ]
+    : [
+        "Selection tool: drag a rectangle to select, then drag to move.",
+        "Hold Ctrl (Cmd on Mac) while dragging to duplicate the selection.",
+        "Delete or Backspace removes selected notations.",
+        "With a cell selected: Space pushes content right; Backspace/Delete clears the cell.",
+        "Arrow keys move the selected cell; type to replace or add symbols.",
+      ],
+} as const;
 
 export const EDIT_MODE_STATUS: Partial<
   Record<EditMode | GlobalEditMode, string>
@@ -130,7 +165,8 @@ export const EDIT_MODE_STATUS: Partial<
 };
 
 const EDIT_MODE_HINTS: Partial<Record<EditMode | GlobalEditMode, string>> = {
-  FREE_SKETCH_STARTED: "Draw on the board. Press Esc to exit.",
+  FREE_SKETCH_STARTED:
+    "Informal drawing only — for typed math, click a cell and use the keyboard. Press Esc to exit.",
   TEXT_STARTED: "Drag a rectangle, then type. Double-click to resize.",
   LINE_STARTED: "Drag to draw a line. Press Esc to exit.",
   ANNOTATION_STARTED: "Click to place text. Press Esc when done.",
@@ -160,7 +196,7 @@ export function getEditModeStatusText(
   const escText = mobile ? "double-tap" : "press ESC";
 
   const longForm: Partial<Record<EditMode | GlobalEditMode, string>> = {
-    FREE_SKETCH_STARTED: `Draw freely on the screen with your mouse or stylus, ${exitText} free sketch mode`,
+    FREE_SKETCH_STARTED: `Optional informal sketching — for equations, click a cell and type. ${exitText} free sketch mode`,
     TEXT_STARTED:
       "Draw a rectangle on screen to create a text box, click once to edit and twice to resize",
     SQRT_STARTED: "Draw a line on screen to create a square root",
@@ -189,7 +225,9 @@ export function getEditModeStatusText(
 }
 
 export const EDITING_BASICS = {
-  idle: "Pick a tool on the left, then use the grid. Press Esc to stop the current tool.",
+  idle: isMobile()
+    ? "Tap a cell and type. Selection moves work; free sketch is optional."
+    : "Click a cell and type (keyboard). Selection: drag to select, move, or Ctrl+drag to copy. Space/Delete edit the current cell. Esc exits a tool.",
   exitHint: isMobile() ? "Double-tap to exit a tool." : "Press Esc to exit a tool.",
 } as const;
 
@@ -203,7 +241,8 @@ export const COLLAB_HELP = {
   studentTitle: "Working with your teacher",
   studentSteps: [
     "You are viewing the teacher's lesson board.",
-    "When the teacher enables editing, you can add math on the board.",
+    "When the teacher enables editing, click a cell and type with the keyboard.",
+    "Use Selection to move work; Ctrl+drag copies. Space and Delete edit the current cell.",
     "Your changes sync in real time for everyone in the lesson.",
   ],
   accessLinkIntro:
@@ -215,20 +254,40 @@ export const COLLAB_HELP = {
 } as const;
 
 export const TOOLS_HELP = {
-  title: "Drawing tools",
+  title: "Board tools",
   intro: "Tools stay active until you press Esc or pick another tool.",
   groups: [
     {
+      name: "Keyboard",
+      tools: [
+        "Click a cell and type — primary way to write math",
+        "Space — push cell content right",
+        "Backspace / Delete — clear cell or remove selection",
+      ],
+    },
+    {
+      name: "Select",
+      tools: [
+        "Drag a rectangle to select",
+        "Drag selection to move",
+        "Ctrl+drag (Cmd on Mac) to duplicate",
+        "Delete / Backspace — remove selection",
+      ],
+    },
+    {
       name: "Draw",
-      tools: ["Free sketch", "Line", "Polyline", "Curve", "Circle", "Cartesian axes"],
+      tools: [
+        "Free sketch — informal marks only",
+        "Line",
+        "Polyline",
+        "Curve",
+        "Circle",
+        "Cartesian axes",
+      ],
     },
     {
       name: "Text",
       tools: ["Text box", "Annotation", "Square root", "Exponent", "Log"],
-    },
-    {
-      name: "Select",
-      tools: ["Selection — drag to select, move, copy (Ctrl+drag), or delete"],
     },
   ],
 } as const;
@@ -240,7 +299,32 @@ export type CoachMarkDef = {
   body: string;
 };
 
+/** Short first-visit tour on the lesson board (keyboard → selection → shortcuts). */
+export const QUICK_TIPS_COACH_MARK_IDS = [
+  "quick-tip-keyboard",
+  "quick-tip-selection",
+  "quick-tip-shortcuts",
+] as const;
+
 export const COACH_MARKS: CoachMarkDef[] = [
+  {
+    id: "quick-tip-keyboard",
+    targetSelector: '[data-cy="mathboard"]',
+    title: "Type on the grid",
+    body: "Click a cell and type with your keyboard — the fastest way to write math. Free sketch is only for informal marks.",
+  },
+  {
+    id: "quick-tip-selection",
+    targetSelector: '[data-cy="selectionButton"]',
+    title: "Move and copy",
+    body: "Use Selection: drag a rectangle to select, drag to move, and hold Ctrl (Cmd on Mac) while dragging to duplicate.",
+  },
+  {
+    id: "quick-tip-shortcuts",
+    targetSelector: '[data-cy="instruction-bar"]',
+    title: "Cell shortcuts",
+    body: "Space pushes symbols right in the selected cell. Backspace or Delete clears it. Delete also removes a selection.",
+  },
   {
     id: "invite-app-bar",
     targetSelector: "#invite-btn",
@@ -257,7 +341,7 @@ export const COACH_MARKS: CoachMarkDef[] = [
     id: "tool-selection",
     targetSelector: '[data-cy="selectionButton"]',
     title: "Selection",
-    body: "Drag to select notations, then move or copy them.",
+    body: "Drag to select, then move. Hold Ctrl (Cmd on Mac) while dragging to duplicate. Delete removes the selection.",
   },
   {
     id: "tool-line",
@@ -309,7 +393,9 @@ export function getPageHelp(key: HelpPageKey): { title: string; lines: string[] 
         title: "Lesson board",
         lines: [
           "This is your shared whiteboard for the lesson.",
-          "Use the left toolbar to draw and write.",
+          "Click a cell and type with the keyboard — that is the main way to write math.",
+          "Use Selection to move notations or Ctrl+drag to copy them.",
+          "Space and Delete edit symbols in the selected cell.",
           LIST_INTROS.lessonsTeacher,
         ],
       };

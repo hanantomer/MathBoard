@@ -36,6 +36,7 @@
     <svg
       class="mathboard"
       :id="svgId"
+      data-cy="mathboard"
       xmlns="http://www.w3.org/2000/svg"
     >
       <defs>
@@ -69,7 +70,7 @@
 </template>
 
 <script setup lang="ts">
-import { defineAsyncComponent, nextTick, onUnmounted, ref } from "vue";
+import { defineAsyncComponent, nextTick, onUnmounted, ref, watch } from "vue";
 import { useEventListener, useThrottleFn } from "@vueuse/core";
 import useNotationLoadingHelper from "../helpers/notationLoadingHelper";
 import useMatrixHelper from "../helpers/matrixHelper";
@@ -80,6 +81,8 @@ import { useNotationStore } from "../store/pinia/notationStore";
 import { useCellStore } from "../store/pinia/cellStore";
 import { useEditModeStore } from "../store/pinia/editModeStore";
 import { useAnswerStore } from "../store/pinia/answerStore";
+import { useOnboardingStore } from "../store/pinia/onboardingStore";
+import { useUserStore } from "../store/pinia/userStore";
 import { CursorType, EditModeCursorType } from "common/unions";
 import useSelectionHelper from "../helpers/selectionHelper";
 import useKeyHelper from "../helpers/keyHelper";
@@ -144,12 +147,42 @@ const eventHelper = useEventHelper();
 const watchHelper = useWatchHelper();
 const notationMutateHelper = useNotationMutationHelper();
 const answerStore = useAnswerStore();
+const onboardingStore = useOnboardingStore();
+const userStore = useUserStore();
 const progressBar = ref(false);
 const boardScrollRef = ref<HTMLElement | null>(null);
 
+const props = defineProps({
+  svgId: { type: String, default: "" },
+  loaded: { type: Boolean, default: false },
+});
+
 let cursor = ref<CursorType>("auto");
+let quickTipsTimer: ReturnType<typeof setTimeout> | undefined;
+
+function scheduleQuickTipsTour() {
+  if (notationStore.getParent().type !== "LESSON") return;
+  if (onboardingStore.isQuickTipsComplete()) return;
+  if (userStore.isTeacher() && onboardingStore.shouldShowTeacherChecklist) {
+    return;
+  }
+  clearTimeout(quickTipsTimer);
+  quickTipsTimer = setTimeout(() => {
+    onboardingStore.tryStartQuickTipsTour();
+  }, 1200);
+}
+
+watch(
+  () => props.loaded,
+  (loaded) => {
+    if (loaded) {
+      scheduleQuickTipsTour();
+    }
+  },
+);
 
 onUnmounted(() => {
+  clearTimeout(quickTipsTimer);
   eventHelper.unregisterSvgPointerUp();
   eventHelper.unregisterPointerUp();
   eventHelper.unregisterSvgPointerDown();
@@ -158,11 +191,6 @@ onUnmounted(() => {
   eventHelper.unregisterPaste();
   eventHelper.unregisterCopy();
   eventHelper.unregisterMobileEscape();
-});
-
-const props = defineProps({
-  svgId: { type: String, default: "" },
-  loaded: { type: Boolean, default: false },
 });
 
 function refreshSvgBoundingRect() {

@@ -199,11 +199,11 @@ function navToLessons() {
 }
 
 const bullets = [
-  "Editable notations",
-  "Freehand sketching with mouse or stylus",
+  "Type math on the grid with your keyboard",
+  "Select, move, and Ctrl+drag to duplicate work",
+  "Lines, text boxes, and optional free sketch",
   "Board sharing with students",
-  "Virtually call a student to the board",
-  "Dispatch exercises and submit feedback",
+  "Submit questions and review answers",
 ];
 </script>
 

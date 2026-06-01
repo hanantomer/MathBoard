@@ -57,7 +57,7 @@
       TOOLBAR_SECTIONS.select
     }}</span>
     <div v-if="userStore.isTeacher()" class="toolbar-select-row">
-      <v-tooltip text="Select notations">
+      <v-tooltip :text="selectionHelpText">
         <template v-slot:activator="{ props }">
           <v-btn
             data-cy="selectionButton"

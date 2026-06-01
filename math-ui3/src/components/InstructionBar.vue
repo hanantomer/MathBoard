@@ -3,6 +3,7 @@
     <div
       v-if="persistentText"
       class="instruction-bar"
+      data-cy="instruction-bar"
       role="status"
       aria-live="polite"
     >

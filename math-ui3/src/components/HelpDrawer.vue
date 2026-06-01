@@ -56,6 +56,28 @@
         <p class="text-body-2 text-medium-emphasis mb-3">
           {{ TOOLS_HELP.intro }}
         </p>
+        <div class="mb-4">
+          <div class="text-caption font-weight-bold text-uppercase mb-1">
+            {{ KEYBOARD_INPUT.title }}
+          </div>
+          <p class="text-body-2 mb-2">{{ KEYBOARD_INPUT.intro }}</p>
+          <ul class="help-drawer__list text-body-2 pl-4 mb-0">
+            <li v-for="tip in KEYBOARD_INPUT.tips" :key="tip">{{ tip }}</li>
+          </ul>
+        </div>
+        <div class="mb-4">
+          <div class="text-caption font-weight-bold text-uppercase mb-1">
+            {{ EDITING_TECHNIQUES.title }}
+          </div>
+          <ul class="help-drawer__list text-body-2 pl-4 mb-0">
+            <li
+              v-for="item in EDITING_TECHNIQUES.items"
+              :key="item"
+            >
+              {{ item }}
+            </li>
+          </ul>
+        </div>
         <div v-for="group in TOOLS_HELP.groups" :key="group.name" class="mb-3">
           <div class="text-caption font-weight-bold text-uppercase mb-1">
             {{ group.name }}
@@ -105,6 +127,8 @@ import {
   COLLAB_HELP,
   TOOLS_HELP,
   EDITING_BASICS,
+  KEYBOARD_INPUT,
+  EDITING_TECHNIQUES,
   boardContextToHelpKey,
   getPageHelp,
   BOARD_ROLE_BANNERS,

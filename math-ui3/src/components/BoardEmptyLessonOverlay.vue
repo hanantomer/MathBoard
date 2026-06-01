@@ -7,7 +7,7 @@
     scrim="rgba(0,0,0,0.35)"
   >
     <v-card class="board-empty-overlay__card pa-6 text-center" max-width="420" rounded="lg">
-      <v-icon size="48" color="primary" class="mb-3">mdi-draw</v-icon>
+      <v-icon size="48" color="primary" class="mb-3">mdi-keyboard-outline</v-icon>
       <div class="text-h6 mb-2">{{ COLLABORATION.emptyLessonTitle }}</div>
       <p class="text-body-2 text-medium-emphasis mb-4">
         {{ COLLABORATION.emptyLessonBody }}
@@ -22,7 +22,7 @@
         data-cy="empty-lesson-dismiss"
         @click="dismiss"
       >
-        Start drawing
+        Got it
       </v-btn>
     </v-card>
   </v-overlay>

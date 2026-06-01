@@ -21,6 +21,12 @@
         rounded="lg"
         max-width="320"
       >
+        <div
+          v-if="tipProgress"
+          class="text-caption text-primary font-weight-medium mb-1"
+        >
+          Quick tip {{ tipProgress.current }} of {{ tipProgress.total }}
+        </div>
         <div class="text-subtitle-1 font-weight-bold mb-1">{{ mark.title }}</div>
         <p class="text-body-2 text-medium-emphasis mb-3">{{ mark.body }}</p>
         <div class="d-flex justify-end ga-2">
@@ -50,6 +56,10 @@ const targetRect = ref<DOMRect | null>(null);
 let rafId = 0;
 
 const mark = computed(() => onboarding.activeCoachMark);
+
+const tipProgress = computed(() =>
+  onboarding.quickTipsProgress(mark.value?.id),
+);
 
 function measureTarget() {
   if (!mark.value) {
