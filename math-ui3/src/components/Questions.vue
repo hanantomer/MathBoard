@@ -20,6 +20,13 @@
       :dialog="questionDialog"
       @close="questionDialog = false"
     ></NewQuestionDialog>
+    <NewBoardItemDialog
+      :dialog="renameDialog"
+      :title="renameDialogTitle"
+      :initial-name="renameInitialName"
+      @close="renameDialog = false"
+      @save="saveQuestionRename"
+    ></NewBoardItemDialog>
     <v-card class="mx-auto mt-4" max-width="800" min-height="600">
       <v-card-text class="text-body-2 text-medium-emphasis pb-0">
         {{ LIST_INTROS.questions }}
@@ -50,7 +57,7 @@
         v-model:items-per-page="itemsPerPage"
         :items="questions"
         :headers="headers"
-        item-value="name"
+        item-value="uuid"
         class="elevation-1"
         :hide-no-data="false"
         :hover="true"
@@ -61,6 +68,26 @@
             {{ questionsEmptyText }}
           </div>
         </template>
+        <template v-if="userStore.isTeacher()" #item.actions="{ item }">
+          <v-btn
+            icon
+            variant="text"
+            size="small"
+            aria-label="Rename question"
+            @click.stop="openRenameDialog(rowItem(item))"
+          >
+            <v-icon>mdi-pencil</v-icon>
+          </v-btn>
+          <v-btn
+            icon
+            variant="text"
+            size="small"
+            aria-label="Delete question"
+            @click.stop="confirmDeleteQuestion(rowItem(item))"
+          >
+            <v-icon>mdi-delete</v-icon>
+          </v-btn>
+        </template>
       </v-data-table>
     </v-card>
   </v-container>
@@ -68,6 +95,7 @@
 
 <script setup lang="ts">
 import NewQuestionDialog from "./NewQuestionDialog.vue";
+import NewBoardItemDialog from "./NewBoardItemDialog.vue";
 import { watch, computed, ref, onMounted } from "vue";
 import { useQuestionStore } from "../store/pinia/questionStore";
 import { useLessonStore } from "../store/pinia/lessonStore";
@@ -104,6 +132,11 @@ function onSelectedLesson(newVal: string) {
 
 const noLessonDialog = ref(false);
 const questionDialog = ref(false);
+const renameDialog = ref(false);
+const renameDialogTitle =
+  "<span>Rename <strong>question</strong></span>";
+const renameInitialName = ref("");
+const renameQuestionUUId = ref("");
 let itemsPerPage = 10;
 
 const questionsEmptyText = computed(() => {
@@ -163,23 +196,34 @@ watch(
   },
 );
 
-const headers = computed(() => [
-  {
-    title: "Lesson Name",
-    key: "lessonName",
-    sortable: false,
-  },
-  {
-    title: "Question Name",
-    key: "name",
-    sortable: false,
-  },
-  {
-    title: "Created on",
-    key: "createdAt",
-    sortable: false,
-  },
-]);
+const headers = computed(() => {
+  const cols = [
+    {
+      title: "Lesson Name",
+      key: "lessonName",
+      sortable: false,
+    },
+    {
+      title: "Question Name",
+      key: "name",
+      sortable: false,
+    },
+    {
+      title: "Created on",
+      key: "createdAt",
+      sortable: false,
+    },
+  ];
+  if (userStore.isTeacher()) {
+    cols.push({
+      title: "Actions",
+      key: "actions",
+      sortable: false,
+      width: 96,
+    } as (typeof cols)[number]);
+  }
+  return cols;
+});
 
 const lessons = computed(() => {
   return Array.from(lessonStore.getLessons().values()).map((lesson) => {
@@ -243,6 +287,81 @@ async function addQuestion(name: string) {
   router.push({
     path: "/question/" + questionStore.getCurrentQuestion()!.uuid,
   });
+}
+
+type ListRow = { uuid: string; name: string };
+
+function rowItem(item: unknown): ListRow {
+  const row = item as ListRow & { raw?: ListRow };
+  return row.raw ?? row;
+}
+
+function openRenameDialog(item: ListRow) {
+  renameQuestionUUId.value = item.uuid;
+  renameInitialName.value = item.name;
+  renameDialog.value = true;
+}
+
+async function saveQuestionRename(questionName: string) {
+  const name = questionName?.trim();
+  if (!name || !renameQuestionUUId.value) {
+    return;
+  }
+  renameDialog.value = false;
+  try {
+    const updated = await questionStore.updateQuestion(
+      renameQuestionUUId.value,
+      name,
+    );
+    await questionStore.reloadQuestions();
+    if (
+      route.name === "question" &&
+      route.params.questionUUId === renameQuestionUUId.value
+    ) {
+      boardContext.setQuestion(
+        updated.lesson.name,
+        updated.lesson.uuid,
+        updated.name,
+        updated.uuid,
+      );
+    }
+  } catch (error) {
+    globalAlertStore.open(
+      "Rename failed",
+      (error as Error).message,
+      "error",
+      () => {},
+    );
+  }
+}
+
+function confirmDeleteQuestion(item: ListRow) {
+  globalAlertStore.open(
+    "Delete question?",
+    `Delete "<strong>${item.name}</strong>" and all student answers? This cannot be undone.`,
+    "warning",
+    async () => {
+      try {
+        await questionStore.deleteQuestion(item.uuid);
+        answerStore.removeAnswersForQuestion(item.uuid);
+        await questionStore.reloadQuestions();
+        const onDeletedQuestion =
+          (route.name === "question" &&
+            route.params.questionUUId === item.uuid) ||
+          answerStore.getCurrentAnswer()?.question?.uuid === item.uuid;
+        if (onDeletedQuestion) {
+          await router.replace({ name: "questions" });
+        }
+      } catch (error) {
+        globalAlertStore.open(
+          "Delete failed",
+          (error as Error).message,
+          "error",
+          () => {},
+        );
+      }
+    },
+  );
 }
 
 async function selectQuestion(e: any, row: any) {

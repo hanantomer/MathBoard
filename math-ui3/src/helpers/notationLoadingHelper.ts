@@ -25,18 +25,25 @@ export default function notationLoadingHelper() {
 
       for (let i = 0; i < NotationTypeValues.length; i++) {
         const notationType = NotationTypeValues[i];
-        let notationsFromDb = await loadNotationsByType(
-          boardType,
-          notationType as NotationType,
-          parentUUId,
-        );
-        if (!notationsFromDb) continue;
-        notationsFromDb.forEach((n) => {
-          notations.push({
-            ...n,
-            notationType: notationType as NotationType,
+        try {
+          const notationsFromDb = await loadNotationsByType(
+            boardType,
+            notationType as NotationType,
+            parentUUId,
+          );
+          if (!notationsFromDb) continue;
+          notationsFromDb.forEach((n) => {
+            notations.push({
+              ...n,
+              notationType: notationType as NotationType,
+            });
           });
-        });
+        } catch (error) {
+          console.warn(
+            `Skipping ${boardType} ${notationType} notations for ${parentUUId}:`,
+            error,
+          );
+        }
       }
 
       notationStore.setNotations(notations);

@@ -61,12 +61,19 @@ const props = defineProps({
   title: {
     type: String,
   },
+  initialName: {
+    type: String,
+    default: "",
+  },
 });
 
 watch(
   () => props.dialog,
   (val: boolean) => {
     show.value = val;
+    if (val) {
+      name.value = props.initialName ?? "";
+    }
   },
 );
 

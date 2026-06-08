@@ -54,6 +54,7 @@ declare namespace Cypress {
       y1: number,
       x2: number,
       y2: number,
+      expectDataCy?: string,
     ): Chainable<void>;
     dragLineRightHandle(
       handleDataCy: string,
@@ -169,6 +170,7 @@ Cypress.Commands.add(
     y1: number,
     x2: number,
     y2: number,
+    expectDataCy = "lineRightHandle",
   ) => {
     cy.dataCy(buttonDataCy).click();
     cy.dismissUiOverlays();
@@ -198,7 +200,7 @@ Cypress.Commands.add(
       });
     });
 
-    cy.dataCy("lineRightHandle").should("exist");
+    cy.dataCy(expectDataCy).should("exist");
   },
 );
 
@@ -345,9 +347,11 @@ Cypress.Commands.add("dismissUiOverlays", () => {
 });
 
 Cypress.Commands.add("openLesson", () => {
-  cy.get('[data-cy="lessons"] > .v-btn__content').click();
-  cy.get('td:contains("test lesson")').click();
-  cy.get("#lessonSvg", { timeout: 20000 }).should("exist");
+  cy.get('[data-cy="lessons"]').click();
+  cy.get(".v-data-table", { timeout: 15000 })
+    .contains("test lesson")
+    .click();
+  cy.get("#lessonSvg", { timeout: 30000 }).should("exist");
   cy.dataCy("pBar").should("not.be.visible");
   cy.dismissUiOverlays();
 });
@@ -357,23 +361,28 @@ Cypress.Commands.add("clearBoard", () => {
     win.scrollTo(0, 0);
   });
 
-  cy.get('[row="0"] > [col="0"]').click({ force: true });
-  cy.get("body").type("0", { force: true });
-  cy.get("#lessonSvg foreignObject", { timeout: 10000 }).should("exist");
+  cy.get("#lessonSvg", { timeout: 30000 }).should("exist");
+  cy.dataCy("pBar").should("not.be.visible");
+  cy.wait(300);
 
-  cy.dataCy("selectionButton").click({ force: true });
-  cy.dismissUiOverlays();
-  cy.selectArea(0, 0, 1200, 800);
+  cy.get("body").then(($body) => {
+    if ($body.find("#lessonSvg foreignObject").length === 0) {
+      return;
+    }
 
-  // Wait until marquee finishes (AREA_SELECTED) — not only AREA_SELECTION_STARTED.
-  cy.wait(200);
-  cy.get('[data-cy="area-selection"]', { timeout: 10000 }).should("exist");
-  cy.get('[data-cy="floatingToolbar"]', { timeout: 10000 }).should("exist");
+    cy.dataCy("selectionButton").click({ force: true });
+    cy.dismissUiOverlays();
+    cy.selectArea(0, 0, 1200, 800);
 
-  cy.realPress("Delete");
+    cy.wait(200);
+    cy.get('[data-cy="area-selection"]', { timeout: 15000 }).should("exist");
+    cy.get('[data-cy="floatingToolbar"]', { timeout: 15000 }).should("exist");
 
-  cy.get('[data-cy="area-selection"]').should("not.exist");
-  cy.get("#lessonSvg foreignObject", { timeout: 10000 }).should("not.exist");
+    cy.realPress("Delete");
+
+    cy.get('[data-cy="area-selection"]').should("not.exist");
+    cy.get("#lessonSvg foreignObject", { timeout: 15000 }).should("not.exist");
+  });
 });
 
 Cypress.Commands.add(

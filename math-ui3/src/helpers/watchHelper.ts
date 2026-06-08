@@ -200,10 +200,19 @@ export default function () {
     });
   }
 
-  function watchLoadedEvent(props: any, handler: PropEventHandler) {
-    watch(props, (data: any) => {
-      if (data["loaded"]) handler(data["svgId"]);
-    });
+  function watchLoadedEvent(
+    props: { loaded: boolean; svgId: string },
+    handler: PropEventHandler,
+  ) {
+    watch(
+      () => props.loaded,
+      (loaded) => {
+        if (loaded) {
+          handler(props.svgId);
+        }
+      },
+      { immediate: true },
+    );
   }
 
   function watchNotationsEvent(svgId: string, handler: CustomEventHandler) {

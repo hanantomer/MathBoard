@@ -23,9 +23,9 @@ export function useBoardDocumentTitle() {
   });
 
   watch(
-    () => boardContext.documentTitle,
-    (title) => {
-      if (title) {
+    () => [boardContext.level, boardContext.documentTitle] as const,
+    ([level, title]) => {
+      if (level !== "none" && title) {
         document.title = title;
       }
     },

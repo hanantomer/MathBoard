@@ -2,6 +2,7 @@
   <v-btn
     v-if="isMobileBoard"
     class="special-symbols-fab"
+    data-cy="special-symbols-toolbar"
     icon
     color="primary"
     elevation="4"
@@ -40,6 +41,7 @@
   <SpecialSymbolPanels
     v-if="!isMobileBoard"
     class="special-symbols-expansion"
+    data-cy="special-symbols-toolbar"
   />
 </template>
 

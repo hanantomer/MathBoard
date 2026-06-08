@@ -8,6 +8,7 @@ import {
   StudentLessonAttributes,
   StudentLessonCreationAttributes,
 } from "common/userTypes";
+import useLessonTemplateHelper from "../../helpers/lessonTemplateHelper";
 
 export const PENDING_CREATED_LESSON_KEY = "pendingCreatedLessonUUId";
 
@@ -64,6 +65,24 @@ export const useLessonStore = defineStore("lesson", () => {
     currentLesson.value = lessons.value.get(lessonUUId);
   }
 
+  async function addLessonFromTemplate(
+    templateId: string,
+  ): Promise<LessonAttributes> {
+    const userStore = useUserStore();
+    const owner = userStore.getCurrentUser()!;
+    const templateHelper = useLessonTemplateHelper();
+    let createdLesson = await templateHelper.createLessonFromTemplate(
+      templateId,
+      owner,
+    );
+    if (!createdLesson.user?.uuid) {
+      createdLesson = { ...createdLesson, user: owner };
+    }
+    lessons.value.set(createdLesson.uuid, createdLesson);
+    currentLesson.value = createdLesson;
+    return createdLesson;
+  }
+
   async function addLesson(lessonName: string): Promise<LessonAttributes> {
     const userStore = useUserStore();
     const db = apiHelper();
@@ -93,9 +112,29 @@ export const useLessonStore = defineStore("lesson", () => {
   }
 
   function removeLesson(lessonUUId: string) {
-    lessons.value.forEach((l: LessonAttributes) => {
-      if (l.uuid === lessonUUId) lessons.value.delete(l.uuid);
-    });
+    lessons.value.delete(lessonUUId);
+    if (currentLesson.value?.uuid === lessonUUId) {
+      currentLesson.value = undefined;
+    }
+  }
+
+  async function updateLesson(
+    lessonUUId: string,
+    lessonName: string,
+  ): Promise<LessonAttributes> {
+    const db = apiHelper();
+    const updated = await db.updateLesson(lessonUUId, lessonName);
+    lessons.value.set(updated.uuid, updated);
+    if (currentLesson.value?.uuid === lessonUUId) {
+      currentLesson.value = updated;
+    }
+    return updated;
+  }
+
+  async function deleteLesson(lessonUUId: string): Promise<void> {
+    const db = apiHelper();
+    await db.deleteLesson(lessonUUId);
+    removeLesson(lessonUUId);
   }
 
   function clearLessons() {
@@ -130,8 +169,11 @@ export const useLessonStore = defineStore("lesson", () => {
     loadLessons,
     setCurrentLesson,
     addLesson,
+    addLessonFromTemplate,
     addLessonToSharedLessons,
     removeLesson,
+    updateLesson,
+    deleteLesson,
     clearLessons,
     beginOpeningLesson,
     finishOpeningLesson,

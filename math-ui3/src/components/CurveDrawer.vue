@@ -100,11 +100,15 @@ import {
 
 import { useCellStore } from "../store/pinia/cellStore";
 import { matrixSize } from "common/globals";
+import useScreenHelper from "../helpers/screenHelper";
 
 const cellStore = useCellStore();
+const screenHelper = useScreenHelper();
 
 const MIN_NUMBER_OF_POINTS = 6;
 const MOUSE_MOVE_THROTTELING_INTERVAL = 2;
+const MIN_VISITED_POINT_DISTANCE = 4;
+const DEGENERATE_CONTROL_DISTANCE = 3;
 
 const notationMutateHelper = useNotationMutateHelper();
 const watchHelper = useWatchHelper();
@@ -239,69 +243,99 @@ function getCurveType() {
   return curveType;
 }
 
-function initCurve() {
-  curveType = undefined;
-  visitedPoints = [];
-  curveAttributes.value = {
-    p1x: 0,
-    p1y: 0,
-    p2x: 0,
-    p2y: 0,
-    cpx: 0,
-    cpy: 0,
-  };
-}
-
-function roundPoint(point: DotCoordinates): DotCoordinates {
-  return {
-    x: Math.round(point.x),
-    y: Math.round(point.y),
-  };
+function snapPoint(point: DotCoordinates): DotCoordinates {
+  return screenHelper.snapCurvePoint(point);
 }
 
 function setCurveLeft(p: DotCoordinates) {
-  const point = roundPoint(p);
+  const point = snapPoint(p);
   curveAttributes.value.p1x = point.x;
   curveAttributes.value.p1y = point.y;
   setCurveElement();
 }
 
 function setCurveRight(p: DotCoordinates) {
-  const point = roundPoint(p);
+  const point = snapPoint(p);
   curveAttributes.value.p2x = point.x;
   curveAttributes.value.p2y = point.y;
   setCurveElement();
 }
 
 function startCurveDrawing(p: DotCoordinates) {
-  const point = roundPoint(p);
-  removeVisiblePoints();
-
-  initCurve();
-
-  visitedPoints = [];
-  mouseMoveCount = 0;
-  if (curveAttributes) {
-    curveAttributes.value.p1x =
-      curveAttributes.value.p2x =
-      curveAttributes.value.cpx =
-        point.x;
-    curveAttributes.value.p1y =
-      curveAttributes.value.p2y =
-      curveAttributes.value.cpy =
-        point.y;
-  }
+  startCurveFromPoint(p);
 }
 
-function selectCurve(curve: NotationAttributes) {
+function startCurveFromPoint(p: DotCoordinates) {
+  const point = snapPoint(p);
+  removeVisiblePoints();
+
+  visitedPoints = [{ x: point.x, y: point.y }];
+  mouseMoveCount = 0;
+  curveType = undefined;
+  curveAttributes.value.p1x =
+    curveAttributes.value.p2x =
+    curveAttributes.value.cpx =
+      point.x;
+  curveAttributes.value.p1y =
+    curveAttributes.value.p2y =
+    curveAttributes.value.cpy =
+      point.y;
+  setCurveElement();
+}
+
+function isDegenerateControl(attrs: CurveAttributes): boolean {
+  const { p1x, p1y, p2x, p2y, cpx, cpy } = attrs;
+  if (p1x === p2x && p1y === p2y) {
+    return true;
+  }
+  const nearStart = Math.hypot(cpx - p1x, cpy - p1y) <= DEGENERATE_CONTROL_DISTANCE;
+  const nearEnd = Math.hypot(cpx - p2x, cpy - p2y) <= DEGENERATE_CONTROL_DISTANCE;
+  return nearStart || nearEnd;
+}
+
+function defaultControlPoint(
+  p1x: number,
+  p1y: number,
+  p2x: number,
+  p2y: number,
+): { cpx: number; cpy: number } {
+  const mx = (p1x + p2x) / 2;
+  const my = (p1y + p2y) / 2;
+  const dx = p2x - p1x;
+  const dy = p2y - p1y;
+  const len = Math.hypot(dx, dy) || 1;
+  const offset = Math.max(30, len * 0.35);
+  return {
+    cpx: Math.round(mx - (dy / len) * offset),
+    cpy: Math.round(my + (dx / len) * offset),
+  };
+}
+
+function ensureCurveControlPoint(attrs: CurveAttributes): CurveAttributes {
+  if (!isDegenerateControl(attrs)) {
+    return attrs;
+  }
+  const cp = defaultControlPoint(attrs.p1x, attrs.p1y, attrs.p2x, attrs.p2y);
+  return { ...attrs, cpx: cp.cpx, cpy: cp.cpy };
+}
+
+async function selectCurve(curve: NotationAttributes) {
   const c = curve as CurveNotationAttributes;
   visitedPoints = [];
-  curveAttributes.value.p1x = c.p1x;
-  curveAttributes.value.p1y = c.p1y;
-  curveAttributes.value.p2x = c.p2x;
-  curveAttributes.value.p2y = c.p2y;
-  curveAttributes.value.cpx = c.cpx;
-  curveAttributes.value.cpy = c.cpy;
+  const loaded = ensureCurveControlPoint({
+    p1x: c.p1x,
+    p1y: c.p1y,
+    p2x: c.p2x,
+    p2y: c.p2y,
+    cpx: c.cpx,
+    cpy: c.cpy,
+  });
+  curveAttributes.value = { ...loaded };
+  await nextTick();
+  const id = cellStore.getSvgId();
+  if (id) {
+    cellStore.setSvgBoundingRect(id);
+  }
   setCurveElement();
   showControlPoint();
 }
@@ -319,10 +353,16 @@ function setCurve(p: DotCoordinates) {
     curveType = getCurveType();
   }
 
-  const point = roundPoint(p);
+  const point = snapPoint(p);
   updateCurve(curveType, point.x, point.y);
 
   if (!curveAttributes) return;
+
+  if (isDegenerateControl(curveAttributes.value)) {
+    const fixed = ensureCurveControlPoint(curveAttributes.value);
+    curveAttributes.value.cpx = fixed.cpx;
+    curveAttributes.value.cpy = fixed.cpy;
+  }
 
   setCurveElement();
 
@@ -340,6 +380,8 @@ function moveCurve(moveX: number, moveY: number) {
 
   curveAttributes.value.p2x += moveX;
   curveAttributes.value.p2y += moveY;
+  curveAttributes.value.cpx += moveX;
+  curveAttributes.value.cpy += moveY;
 
   setCurveElement();
 
@@ -372,34 +414,49 @@ function setCurveElement() {
 
 async function endDrawCurve(): Promise<string> {
   // drawing not started
-  if (curveAttributes.value.p1x === 0) {
+  if (curveAttributes.value.p1x === 0 && curveAttributes.value.p1y === 0) {
     return "";
   }
 
-  // drawing not finished
+  // tap without drag — end a continue chain or cancel a new stroke
   if (
     curveAttributes.value.p1x === curveAttributes.value.p2x &&
     curveAttributes.value.p1y === curveAttributes.value.p2y
   ) {
+    editModeStore.setEditMode("CURVE_STARTED");
     return "";
   }
 
-  curveAttributes.value.p1x = Math.round(curveAttributes.value.p1x);
-  curveAttributes.value.p1y = Math.round(curveAttributes.value.p1y);
-  curveAttributes.value.p2x = Math.round(curveAttributes.value.p2x);
-  curveAttributes.value.p2y = Math.round(curveAttributes.value.p2y);
-  curveAttributes.value.cpx = Math.round(curveAttributes.value.cpx);
-  curveAttributes.value.cpy = Math.round(curveAttributes.value.cpy);
-
-  const uuid = await saveCurve({
-    p1x: curveAttributes.value.p1x,
-    p2x: curveAttributes.value.p2x,
-    p1y: curveAttributes.value.p1y,
-    p2y: curveAttributes.value.p2y,
-    cpx: curveAttributes.value.cpx,
-    cpy: curveAttributes.value.cpy,
+  const start = snapPoint({
+    x: curveAttributes.value.p1x,
+    y: curveAttributes.value.p1y,
   });
+  const end = snapPoint({
+    x: curveAttributes.value.p2x,
+    y: curveAttributes.value.p2y,
+  });
+  const savedCurve = ensureCurveControlPoint({
+    p1x: start.x,
+    p1y: start.y,
+    p2x: end.x,
+    p2y: end.y,
+    cpx: Math.round(curveAttributes.value.cpx),
+    cpy: Math.round(curveAttributes.value.cpy),
+  });
+  curveAttributes.value.cpx = savedCurve.cpx;
+  curveAttributes.value.cpy = savedCurve.cpy;
 
+  const isUpdate = notationStore.getSelectedNotations().length > 0;
+  const uuid = await saveCurve(savedCurve);
+
+  if (!isUpdate && uuid) {
+    notationStore.resetSelectedNotations();
+    startCurveFromPoint(end);
+    editModeStore.setEditMode("CURVE_DRAWING");
+    return uuid;
+  }
+
+  editModeStore.setEditMode("CURVE_SELECTED");
   return uuid;
 }
 
@@ -482,9 +539,14 @@ function setSlopesMovingAverage(slopes: PointWithSlope[]) {
   }
 }
 
-function xIsGrowingOrEqual(xPos: number): boolean {
-  if (xPos > visitedPoints[visitedPoints.length - 1].x) return true;
-  return false;
+function shouldAddVisitedPoint(xPos: number, yPos: number): boolean {
+  if (visitedPoints.length === 0) {
+    return true;
+  }
+  const last = visitedPoints[visitedPoints.length - 1];
+  return (
+    Math.hypot(xPos - last.x, yPos - last.y) >= MIN_VISITED_POINT_DISTANCE
+  );
 }
 
 function setCurvePoints(xPos: number, yPos: number): boolean {
@@ -500,8 +562,7 @@ function setCurvePoints(xPos: number, yPos: number): boolean {
     return false; // throtteling mouse move events
   }
 
-  if (visitedPoints.length > 0 && !xIsGrowingOrEqual(xPos)) {
-    //      console.debug("x is not growing");
+  if (!shouldAddVisitedPoint(xPos, yPos)) {
     return false;
   }
 

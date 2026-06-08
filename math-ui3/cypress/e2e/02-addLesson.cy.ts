@@ -18,9 +18,10 @@ describe("e2e", () => {
     cy.location("pathname").should("eq", "/lessons");
 
     cy.wait("@loadLessons");
-    
+
+    cy.dataCy("add-lesson").click();
     cy.dataCy("new-board-item-dialog")
-      //.should("be.visible")
+      .should("be.visible")
       .within(() => {
         cy.dataCy("newItemName").find("input").clear().type(lessonName);
       });

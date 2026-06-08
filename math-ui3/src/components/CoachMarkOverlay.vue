@@ -22,10 +22,11 @@
         max-width="320"
       >
         <div
-          v-if="tipProgress"
+          v-if="walkthroughProgress"
           class="text-caption text-primary font-weight-medium mb-1"
         >
-          Quick tip {{ tipProgress.current }} of {{ tipProgress.total }}
+          {{ walkthroughLabel }} {{ walkthroughProgress.current }} of
+          {{ walkthroughProgress.total }}
         </div>
         <div class="text-subtitle-1 font-weight-bold mb-1">{{ mark.title }}</div>
         <p class="text-body-2 text-medium-emphasis mb-3">{{ mark.body }}</p>
@@ -57,9 +58,11 @@ let rafId = 0;
 
 const mark = computed(() => onboarding.activeCoachMark);
 
-const tipProgress = computed(() =>
+const walkthroughProgress = computed(() =>
   onboarding.quickTipsProgress(mark.value?.id),
 );
+
+const walkthroughLabel = "Quick tip";
 
 function measureTarget() {
   if (!mark.value) {

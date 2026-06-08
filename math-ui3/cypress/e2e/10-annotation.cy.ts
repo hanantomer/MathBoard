@@ -12,6 +12,7 @@ describe("e2e", () => {
 
     // draw annotation
     cy.dataCy("annotationButton").click();
+    cy.dismissUiOverlays();
     cy.clickSvg(300, 300);
 
     // verify annotation editor exists

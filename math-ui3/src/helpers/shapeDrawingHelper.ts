@@ -34,6 +34,7 @@ function isPointerDragActive(e: PointerEvent): boolean {
 
 export default function useShapeDrawingHelper() {
   let hiddenNotationUUID: string | null = null;
+  let pendingHideTimeout: ReturnType<typeof setTimeout> | null = null;
 
   function setLineInitialPosition(
     e: PointerEvent | TouchEvent,
@@ -170,11 +171,21 @@ export default function useShapeDrawingHelper() {
   async function saveDrawing(saveDrawingCallback: () => Promise<string>) {
     if (!canEditShapes()) return;
 
+    const modeBefore = editModeStore.getEditMode();
     await saveDrawingCallback();
 
     if (editModeStore.isPolygonDrawingMode()) return;
 
     const current = editModeStore.getEditMode();
+    if (
+      modeBefore === "CURVE_DRAWING" &&
+      (current === "CURVE_DRAWING" ||
+        current === "CURVE_STARTED" ||
+        current === "CURVE_SELECTED")
+    ) {
+      return;
+    }
+
     switch (current) {
       case "LINE_DRAWING":
         editModeStore.setEditMode("LINE_STARTED");
@@ -218,38 +229,44 @@ export default function useShapeDrawingHelper() {
   ) {
     if (!canEditShapes()) return;
 
+    showMatrixLine();
     notationStore.selectNotation(selectedNotation.uuid);
     selectLineCallback(selectedNotation);
     hideMatrixLine(selectedNotation.uuid);
   }
 
-  function hideMatrixLine(uuid: string) {
-    setTimeout(() => {
-      hiddenNotationUUID = uuid;
-      (document.getElementById(uuid) as HTMLElement).style.display = "none";
+  function setMatrixLineVisible(uuid: string, visible: boolean) {
+    const el = document.getElementById(uuid) as HTMLElement | null;
+    if (el) {
+      el.style.display = visible ? "block" : "none";
+    }
 
-      if (document.getElementById(uuid + sqrtSymbolSuffix)) {
-        (
-          document.getElementById(uuid + sqrtSymbolSuffix) as HTMLElement
-        ).style.display = "none"; // for sqrt symbol, see matrixHelper.ts
-      }
+    const sqrtEl = document.getElementById(
+      uuid + sqrtSymbolSuffix,
+    ) as HTMLElement | null;
+    if (sqrtEl) {
+      sqrtEl.style.display = visible ? "block" : "none";
+    }
+  }
+
+  function hideMatrixLine(uuid: string) {
+    if (pendingHideTimeout !== null) {
+      clearTimeout(pendingHideTimeout);
+    }
+    pendingHideTimeout = setTimeout(() => {
+      pendingHideTimeout = null;
+      hiddenNotationUUID = uuid;
+      setMatrixLineVisible(uuid, false);
     }, 100);
   }
 
   function showMatrixLine() {
+    if (pendingHideTimeout !== null) {
+      clearTimeout(pendingHideTimeout);
+      pendingHideTimeout = null;
+    }
     if (hiddenNotationUUID !== null) {
-      (
-        document.getElementById(hiddenNotationUUID) as HTMLElement
-      ).style.display = "block";
-
-      if (document.getElementById(hiddenNotationUUID + sqrtSymbolSuffix)) {
-        (
-          document.getElementById(
-            hiddenNotationUUID + sqrtSymbolSuffix,
-          ) as HTMLElement
-        ).style.display = "block"; // for sqrt symbol see matrixHelper.ts
-      }
-
+      setMatrixLineVisible(hiddenNotationUUID, true);
       hiddenNotationUUID = null;
     }
   }

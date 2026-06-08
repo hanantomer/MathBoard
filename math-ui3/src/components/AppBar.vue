@@ -1,4 +1,12 @@
 <template>
+  <NewBoardItemDialog
+    :dialog="renameDialog"
+    :title="renameDialogTitle"
+    :initial-name="renameInitialName"
+    @close="renameDialog = false"
+    @save="saveRename"
+  />
+
   <v-app-bar app color="primary" dark dense elevation="8" class="app-bar" >
     <v-img
       class="mx-2"
@@ -36,8 +44,19 @@
             v-for="(crumb, index) in boardContext.breadcrumbs"
             :key="`${crumb.text}-${index}`"
           >
+            <button
+              v-if="isRenameableCrumb(index)"
+              type="button"
+              class="app-bar__crumb-link app-bar__crumb-rename"
+              data-cy="app-bar-rename-crumb"
+              :aria-label="`Rename ${boardContext.level}`"
+              :title="`Rename ${boardContext.level}`"
+              @click="openRenameFromCrumb(index)"
+            >
+              {{ crumb.text }}
+            </button>
             <router-link
-              v-if="crumb.to"
+              v-else-if="crumb.to"
               :to="crumb.to"
               class="app-bar__crumb-link"
             >
@@ -250,9 +269,13 @@ import betaImg from "@/assets/beta.png";
 import logoImg from "@/assets/logo.png";
 import { useRouter, useRoute } from "vue-router";
 import { COLLABORATION } from "../constants/helpCopy";
-import { computed } from "vue";
+import { computed, ref } from "vue";
 import { useUserStore } from "../store/pinia/userStore";
 import { useBoardContextStore } from "../store/pinia/boardContextStore";
+import { useLessonStore } from "../store/pinia/lessonStore";
+import { useQuestionStore } from "../store/pinia/questionStore";
+import { useGlobalAlertStore } from "../store/pinia/globalAlertStore";
+import NewBoardItemDialog from "./NewBoardItemDialog.vue";
 import { useUiHintStore } from "../store/pinia/uiHintStore";
 import { storeToRefs } from "pinia";
 import { useEditModeStore } from "../store/pinia/editModeStore";
@@ -272,7 +295,15 @@ const route = useRoute();
 const userStore = useUserStore();
 const inviteTooltip = COLLABORATION.inviteTooltip;
 const boardContext = useBoardContextStore();
+const lessonStore = useLessonStore();
+const questionStore = useQuestionStore();
+const globalAlertStore = useGlobalAlertStore();
 const uiHintStore = useUiHintStore();
+const renameDialog = ref(false);
+const renameDialogTitle = ref("");
+const renameInitialName = ref("");
+const renameTargetUuid = ref("");
+const renameTargetType = ref<"lesson" | "question">("lesson");
 const { highlightOnlineStudentsBtn: highlightOnlineStudents } =
   storeToRefs(uiHintStore);
 const editModeStrore = useEditModeStore();
@@ -326,6 +357,7 @@ function showLoginDialog(userType?: string) {
 }
 
 function signOut() {
+  boardContext.clear();
   userStore.setCurrentUser(null);
   cookies.remove(ACCESS_TOKEN_NAME);
   router.push("/");
@@ -345,6 +377,85 @@ function navToQuestions() {
 
 function navToAnswers() {
   router.push("/answers");
+}
+
+function isRenameableCrumb(index: number): boolean {
+  if (!isTeacher.value) {
+    return false;
+  }
+  const last = boardContext.breadcrumbs.length - 1;
+  if (index !== last) {
+    return false;
+  }
+  return boardContext.level === "lesson" || boardContext.level === "question";
+}
+
+function openRenameFromCrumb(index: number) {
+  const crumb = boardContext.breadcrumbs[index];
+  if (!crumb || !isRenameableCrumb(index)) {
+    return;
+  }
+
+  if (boardContext.level === "lesson") {
+    const lessonUUId =
+      (route.params.lessonUUId as string | undefined) ??
+      crumb.to?.params?.lessonUUId;
+    if (!lessonUUId) {
+      return;
+    }
+    renameTargetType.value = "lesson";
+    renameTargetUuid.value = lessonUUId;
+    renameDialogTitle.value = "<span>Rename <strong>lesson</strong></span>";
+  } else {
+    const questionUUId =
+      (route.params.questionUUId as string | undefined) ??
+      crumb.to?.params?.questionUUId;
+    if (!questionUUId) {
+      return;
+    }
+    renameTargetType.value = "question";
+    renameTargetUuid.value = questionUUId;
+    renameDialogTitle.value = "<span>Rename <strong>question</strong></span>";
+  }
+
+  renameInitialName.value = crumb.text;
+  renameDialog.value = true;
+}
+
+async function saveRename(name: string) {
+  const trimmed = name?.trim();
+  if (!trimmed || !renameTargetUuid.value) {
+    return;
+  }
+  renameDialog.value = false;
+
+  try {
+    if (renameTargetType.value === "lesson") {
+      const updated = await lessonStore.updateLesson(
+        renameTargetUuid.value,
+        trimmed,
+      );
+      boardContext.setLesson(updated.name, updated.uuid);
+    } else {
+      const updated = await questionStore.updateQuestion(
+        renameTargetUuid.value,
+        trimmed,
+      );
+      boardContext.setQuestion(
+        updated.lesson.name,
+        updated.lesson.uuid,
+        updated.name,
+        updated.uuid,
+      );
+    }
+  } catch (error) {
+    globalAlertStore.open(
+      "Rename failed",
+      (error as Error).message,
+      "error",
+      () => {},
+    );
+  }
 }
 </script>
 
@@ -387,6 +498,14 @@ function navToAnswers() {
 
 .app-bar__crumb-link:hover {
   text-decoration: underline;
+}
+
+.app-bar__crumb-rename {
+  background: none;
+  border: none;
+  padding: 0;
+  font: inherit;
+  cursor: pointer;
 }
 
 .app-bar__crumb-text {

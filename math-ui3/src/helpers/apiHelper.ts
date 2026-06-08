@@ -134,6 +134,33 @@ export default function useApiHelper() {
     }
   }
 
+  async function updateLesson(
+    uuid: string,
+    name: string,
+  ): Promise<LessonAttributes> {
+    try {
+      const { data } = await axios.put<LessonAttributes>(baseURL + "/lessons", {
+        uuid,
+        name,
+      });
+      return data;
+    } catch (error) {
+      throw new Error(
+        `Failed to update lesson: ${(error as AxiosError).message}`,
+      );
+    }
+  }
+
+  async function deleteLesson(uuid: string): Promise<void> {
+    try {
+      await axios.delete(baseURL + "/lessons", { data: { uuid } });
+    } catch (error) {
+      throw new Error(
+        `Failed to delete lesson: ${(error as AxiosError).message}`,
+      );
+    }
+  }
+
   async function addQuestion(
     question: QuestionCreationAttributes,
   ): Promise<QuestionAttributes> {
@@ -146,6 +173,33 @@ export default function useApiHelper() {
     } catch (error) {
       throw new Error(
         `Failed to add question: ${(error as AxiosError).message}`,
+      );
+    }
+  }
+
+  async function updateQuestion(
+    uuid: string,
+    name: string,
+  ): Promise<QuestionAttributes> {
+    try {
+      const { data } = await axios.put<QuestionAttributes>(
+        baseURL + "/questions",
+        { uuid, name },
+      );
+      return data;
+    } catch (error) {
+      throw new Error(
+        `Failed to update question: ${(error as AxiosError).message}`,
+      );
+    }
+  }
+
+  async function deleteQuestion(uuid: string): Promise<void> {
+    try {
+      await axios.delete(baseURL + "/questions", { data: { uuid } });
+    } catch (error) {
+      throw new Error(
+        `Failed to delete question: ${(error as AxiosError).message}`,
       );
     }
   }
@@ -559,8 +613,12 @@ export default function useApiHelper() {
     authLocalUserByPassword,
     registerUser,
     addLesson,
+    updateLesson,
+    deleteLesson,
     addLessonToSharedLessons,
     addQuestion,
+    updateQuestion,
+    deleteQuestion,
     addAnswer,
     addNotation,
     updateSqrtNotationAttributes,

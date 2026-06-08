@@ -288,6 +288,53 @@ function isLessonNotationUrl(url: string): boolean {
     return /\/api\/lesson[a-z]+s(\/|$|\?)/.test(url);
 }
 
+function isBoardEntityUrl(url: string): boolean {
+    return /^\/api\/(lessons|questions)(\?|$|\/)/.test(url);
+}
+
+async function validateBoardEntityMutation(
+    req: Request,
+    res: Response,
+    next: NextFunction,
+): Promise<void> {
+    if (req.method !== "PUT" && req.method !== "DELETE") {
+        next();
+        return;
+    }
+
+    const userId = Number.parseInt(req.headers.userId as string);
+    if (!userId) {
+        res.status(401).json("unauthorized");
+        return;
+    }
+
+    const { uuid } = req.body as { uuid?: string };
+    if (!uuid) {
+        res.status(400).json("uuid is required");
+        return;
+    }
+
+    if (/^\/api\/lessons/.test(req.url)) {
+        if (await db.canUserManageLesson(userId, uuid)) {
+            next();
+            return;
+        }
+        res.status(403).json("not authorized to manage lesson");
+        return;
+    }
+
+    if (/^\/api\/questions/.test(req.url)) {
+        if (await db.canUserManageQuestion(userId, uuid)) {
+            next();
+            return;
+        }
+        res.status(403).json("not authorized to manage question");
+        return;
+    }
+
+    next();
+}
+
 async function validateLessonNotationMutation(
     req: Request,
     res: Response,
@@ -328,6 +375,11 @@ async function validateLessonNotationMutation(
 app.all("/*", async function (req: Request, res, next) {
     if (req.method !== "PUT" && req.method !== "DELETE" && req.method !== "POST") {
         next();
+        return;
+    }
+
+    if (isBoardEntityUrl(req.url)) {
+        await validateBoardEntityMutation(req, res, next);
         return;
     }
 
@@ -610,6 +662,63 @@ app.post(
     }
 );
 
+app.put(
+    "/api/lessons",
+    async (
+        req: Request,
+        res: Response,
+        next: NextFunction
+    ): Promise<Response | undefined> => {
+        try {
+            const userId = Number.parseInt(req.headers.userId as string);
+            const { uuid, name } = req.body as {
+                uuid?: string;
+                name?: string;
+            };
+            if (!uuid || !name?.trim()) {
+                return res.status(400).json("uuid and name are required");
+            }
+            if (!(await db.canUserManageLesson(userId, uuid))) {
+                return res.status(403).json("not authorized to update lesson");
+            }
+            const lesson = await db.updateLesson(uuid, name.trim());
+            if (!lesson) {
+                return res.status(404).json("lesson not found");
+            }
+            return res.status(200).json(lesson);
+        } catch (err) {
+            next(err);
+        }
+    }
+);
+
+app.delete(
+    "/api/lessons",
+    async (
+        req: Request,
+        res: Response,
+        next: NextFunction
+    ): Promise<Response | undefined> => {
+        try {
+            const userId = Number.parseInt(req.headers.userId as string);
+            const { uuid } = req.body as { uuid?: string };
+            if (!uuid) {
+                return res.status(400).json("uuid is required");
+            }
+            if (!(await db.canUserManageLesson(userId, uuid))) {
+                return res.status(403).json("not authorized to delete lesson");
+            }
+            const deleted = await db.deleteLesson(uuid);
+            if (!deleted) {
+                return res.status(404).json("lesson not found");
+            }
+            return res.status(200).json({ ok: true });
+        } catch (err) {
+            next(err);
+        }
+    }
+);
+
 // question
 
 app.get(
@@ -648,6 +757,67 @@ app.post(
     ): Promise<Response | undefined> => {
         try {
             return res.status(200).json(await db.createQuestion(req.body));
+        } catch (err) {
+            next(err);
+        }
+    }
+);
+
+app.put(
+    "/api/questions",
+    async (
+        req: Request,
+        res: Response,
+        next: NextFunction
+    ): Promise<Response | undefined> => {
+        try {
+            const userId = Number.parseInt(req.headers.userId as string);
+            const { uuid, name } = req.body as {
+                uuid?: string;
+                name?: string;
+            };
+            if (!uuid || !name?.trim()) {
+                return res.status(400).json("uuid and name are required");
+            }
+            if (!(await db.canUserManageQuestion(userId, uuid))) {
+                return res
+                    .status(403)
+                    .json("not authorized to update question");
+            }
+            const question = await db.updateQuestion(uuid, name.trim());
+            if (!question) {
+                return res.status(404).json("question not found");
+            }
+            return res.status(200).json(question);
+        } catch (err) {
+            next(err);
+        }
+    }
+);
+
+app.delete(
+    "/api/questions",
+    async (
+        req: Request,
+        res: Response,
+        next: NextFunction
+    ): Promise<Response | undefined> => {
+        try {
+            const userId = Number.parseInt(req.headers.userId as string);
+            const { uuid } = req.body as { uuid?: string };
+            if (!uuid) {
+                return res.status(400).json("uuid is required");
+            }
+            if (!(await db.canUserManageQuestion(userId, uuid))) {
+                return res
+                    .status(403)
+                    .json("not authorized to delete question");
+            }
+            const deleted = await db.deleteQuestion(uuid);
+            if (!deleted) {
+                return res.status(404).json("question not found");
+            }
+            return res.status(200).json({ ok: true });
         } catch (err) {
             next(err);
         }

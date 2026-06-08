@@ -36,7 +36,7 @@
     />
     <line-handle
       data-cy="lineLeftHandle"
-      v-show="editModeStore.isLineMode()"
+      v-show="showLeftHandle"
       drawing-mode="LINE_DRAWING"
       editing-mode="LINE_EDITING_LEFT"
       v-bind:style="{
@@ -46,7 +46,7 @@
     ></line-handle>
     <line-handle
       data-cy="lineRightHandle"
-      v-show="editModeStore.isLineMode()"
+      v-show="showRightHandle"
       drawing-mode="LINE_DRAWING"
       editing-mode="LINE_EDITING_RIGHT"
       v-bind:style="{
@@ -54,6 +54,17 @@
         top: handleBottom + 'px',
       }"
     ></line-handle>
+    <line-junction-handle
+      v-for="junction in lineJunctions"
+      :key="junctionKey(junction)"
+      editing-mode="LINE_EDITING_LEFT"
+      v-show="editModeStore.isLineMode()"
+      v-bind:style="{
+        left: junctionScreenLeft(junction) + 'px',
+        top: junctionScreenTop(junction) + 'px',
+      }"
+      @edit-start="startJunctionEdit(junction)"
+    />
 
     <svg
       :style="lineSvgScreenStyle"
@@ -93,8 +104,17 @@ import {
 import useEventBus from "../helpers/eventBusHelper";
 import lineWatcher from "./LineWatcher.vue";
 import lineHandle from "./LineHandle.vue";
-import useScreenHelper from "../helpers/screenHelper"; // Add this line
-import useNotationMutateHelper from "../helpers/notationMutateHelper"; // Add this line
+import lineJunctionHandle from "./LineJunctionHandle.vue";
+import useScreenHelper from "../helpers/screenHelper";
+import useNotationMutateHelper from "../helpers/notationMutateHelper";
+import {
+  applyJunctionPoint,
+  collectJunctionLineUuids,
+  findJunctionsForLine,
+  isEndpointInJunction,
+  junctionKey,
+  type LineJunction,
+} from "../helpers/lineJunctionHelper";
 import { matrixSize } from "common/globals";
 
 const eventBus = useEventBus();
@@ -111,6 +131,34 @@ let movementDirection: MovementDirection = "NONE";
 let slopeType: SlopeType = "NONE";
 
 const lineColor = ref<string | undefined>("black");
+
+const activeJunction = ref<LineJunction | null>(null);
+
+const selectedLineUuid = computed(
+  () => notationStore.getSelectedNotations()[0]?.uuid ?? "",
+);
+
+const lineJunctions = computed(() => {
+  if (!selectedLineUuid.value) {
+    return [];
+  }
+  return findJunctionsForLine(
+    notationStore.getNotations(),
+    selectedLineUuid.value,
+  );
+});
+
+const showLeftHandle = computed(
+  () =>
+    editModeStore.isLineMode() &&
+    !isEndpointInJunction(lineJunctions.value, selectedLineUuid.value, "p1"),
+);
+
+const showRightHandle = computed(
+  () =>
+    editModeStore.isLineMode() &&
+    !isEndpointInJunction(lineJunctions.value, selectedLineUuid.value, "p2"),
+);
 
 const lineAttributes = ref<LineAttributes>({
   p1x: 0,
@@ -234,6 +282,7 @@ function drawLine(p: DotCoordinates) {
 }
 
 function selectLine(notation: NotationAttributes) {
+  activeJunction.value = null;
   const n = notation as LineNotationAttributes;
 
   slopeType = getSlopeTypeForExistingLine(n);
@@ -248,7 +297,52 @@ function selectLine(notation: NotationAttributes) {
   lineColor.value = n.color?.value ?? "black";
 }
 
+function junctionScreenLeft(junction: LineJunction) {
+  return junction.x + (cellStore.getSvgBoundingRect().left ?? 0) - 5;
+}
+
+function junctionScreenTop(junction: LineJunction) {
+  return junction.y + (cellStore.getSvgBoundingRect().top ?? 0) - 5;
+}
+
+function startJunctionEdit(junction: LineJunction) {
+  activeJunction.value = junction;
+}
+
+function syncOverlayFromLine(line: LineNotationAttributes) {
+  lineAttributes.value.p1x = line.p1x;
+  lineAttributes.value.p2x = line.p2x;
+  lineAttributes.value.p1y = line.p1y;
+  lineAttributes.value.p2y = line.p2y;
+}
+
+function applyJunctionMove(junction: LineJunction, point: DotCoordinates) {
+  const rounded = applyJunctionPoint(
+    junction,
+    point,
+    (uuid) =>
+      notationStore.getNotation(uuid) as LineNotationAttributes | undefined,
+    (updatedLine) => {
+      notationStore.addNotation(updatedLine, true, true);
+      if (updatedLine.uuid === selectedLineUuid.value) {
+        syncOverlayFromLine(updatedLine);
+      }
+    },
+  );
+
+  activeJunction.value = {
+    ...junction,
+    x: rounded.x,
+    y: rounded.y,
+  };
+}
+
 function modifyLineLeft(p: DotCoordinates) {
+  if (activeJunction.value) {
+    applyJunctionMove(activeJunction.value, p);
+    return;
+  }
+
   const point = roundPoint(p);
   movementDirection = getMovementDirection(point.x);
 
@@ -257,6 +351,11 @@ function modifyLineLeft(p: DotCoordinates) {
 }
 
 function modifyLineRight(p: DotCoordinates) {
+  if (activeJunction.value) {
+    applyJunctionMove(activeJunction.value, p);
+    return;
+  }
+
   const point = roundPoint(p);
   movementDirection = getMovementDirection(point.y);
 
@@ -309,7 +408,44 @@ async function endDrawing(): Promise<string> {
   return await saveLine();
 }
 
+async function saveJunctionLines(
+  junction: LineJunction,
+  fixEdge: boolean,
+): Promise<string> {
+  let point: DotCoordinates = {
+    x: junction.x,
+    y: junction.y,
+  };
+
+  if (fixEdge) {
+    point = getAdjustedEdge(point);
+  }
+
+  applyJunctionMove(junction, point);
+
+  const lineUuids = collectJunctionLineUuids(junction);
+  let firstUuid = lineUuids[0] ?? "";
+
+  for (const lineUuid of lineUuids) {
+    const line = notationStore.getNotation(lineUuid) as
+      | LineNotationAttributes
+      | undefined;
+    if (!line) {
+      continue;
+    }
+    await notationMutateHelper.updateLineNotation(line);
+    firstUuid = lineUuid;
+  }
+
+  activeJunction.value = null;
+  return firstUuid;
+}
+
 async function saveLine(fixEdge: boolean = true): Promise<string> {
+  if (activeJunction.value) {
+    return saveJunctionLines(activeJunction.value, fixEdge);
+  }
+
   if (fixEdge) {
     lineAttributes.value.p1x = getAdjustedEdge({
       x: lineAttributes.value.p1x,
@@ -353,7 +489,7 @@ async function saveLine(fixEdge: boolean = true): Promise<string> {
       ...lineAttributes.value,
     };
 
-    notationMutateHelper.updateLineNotation(
+    await notationMutateHelper.updateLineNotation(
       updatedLine as LineNotationAttributes,
     );
     return updatedLine.uuid;

@@ -18,6 +18,6 @@ describe("e2e", () => {
     // verify free sketch editor exists
     //cy.dataCy("freeSketchEditor").should("exist");
 
-    cy.drawLine("freesketchButton", 300, 300, 200, 400);
+    cy.drawLine("freesketchButton", 300, 300, 200, 400, "freeSketchEditor");
   });
 });

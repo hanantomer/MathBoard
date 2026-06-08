@@ -28,7 +28,7 @@
 
   <leftToolbar></leftToolbar>
   <boardRoleBanner />
-  <boardEmptyLessonOverlay :loaded="loaded" />
+  <boardEmptyLessonOverlay :loaded="loaded" :notations-ready="notationsReady" />
   <!-- Video dock temporarily disabled (TURN not configured). -->
   <!-- <lessonVideoDock></lessonVideoDock> -->
 
@@ -150,6 +150,7 @@ const answerStore = useAnswerStore();
 const onboardingStore = useOnboardingStore();
 const userStore = useUserStore();
 const progressBar = ref(false);
+const notationsReady = ref(false);
 const boardScrollRef = ref<HTMLElement | null>(null);
 
 const props = defineProps({
@@ -175,9 +176,11 @@ function scheduleQuickTipsTour() {
 watch(
   () => props.loaded,
   (loaded) => {
-    if (loaded) {
-      scheduleQuickTipsTour();
+    if (!loaded) {
+      notationsReady.value = false;
+      return;
     }
+    scheduleQuickTipsTour();
   },
 );
 
@@ -319,6 +322,7 @@ watchHelper.watchLoadedEvent(props, load);
 watchHelper.watchNotationsEvent(props.svgId, matrixHelper.refreshScreen);
 
 async function load() {
+  notationsReady.value = false;
   cellStore.setSvgBoundingRect(props.svgId);
   eventHelper.registerPointerUp();
   eventHelper.registerSvgPointerDown();
@@ -359,6 +363,7 @@ async function load() {
     );
   } finally {
     progressBar.value = false;
+    notationsReady.value = true;
     await nextTick();
     refreshSvgBoundingRect();
   }

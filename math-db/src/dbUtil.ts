@@ -942,6 +942,176 @@ export default function dbUtil() {
         );
     }
 
+    const LESSON_NOTATION_SUFFIXES = [
+        "Circle",
+        "Curve",
+        "FreeSketch",
+        "DivisionLine",
+        "Line",
+        "Sqrt",
+        "Annotation",
+        "Exponent",
+        "LogBase",
+        "Sign",
+        "Symbol",
+        "Image",
+        "Text",
+        "Triangle",
+    ];
+
+    const ANSWER_NOTATION_SUFFIXES = [
+        "Circle",
+        "Curve",
+        "FreeSketch",
+        "DivisionLine",
+        "Line",
+        "Sqrt",
+        "Annotation",
+        "Exponent",
+        "LogBase",
+        "Sign",
+        "Symbol",
+        "Image",
+        "Text",
+    ];
+
+    async function deleteBoardNotations(
+        boardType: BoardType,
+        parentUUId: string,
+    ): Promise<void> {
+        const boardName = boardType.toString().toLowerCase();
+        const boardFieldIdFieldName = boardName + "Id";
+        const boardModelName = capitalize(boardName);
+        const parentId = await getIdByUUId(boardModelName, parentUUId);
+        if (!parentId) {
+            return;
+        }
+
+        const suffixes =
+            boardType === "ANSWER"
+                ? ANSWER_NOTATION_SUFFIXES
+                : LESSON_NOTATION_SUFFIXES;
+
+        for (const suffix of suffixes) {
+            const modelName = boardModelName + suffix;
+            const model = findModel(modelName);
+            if (!model) {
+                continue;
+            }
+            await model.destroy({
+                where: { [boardFieldIdFieldName]: parentId },
+            });
+        }
+    }
+
+    async function deleteAnswersForQuestion(
+        questionUUId: string,
+    ): Promise<void> {
+        const questionId = await getIdByUUId("Question", questionUUId);
+        if (!questionId) {
+            return;
+        }
+
+        const answers = await Answer.findAll({
+            where: { questionId } as any,
+        });
+        for (const answer of answers) {
+            await deleteBoardNotations("ANSWER", answer.uuid);
+            await Answer.destroy({ where: { id: answer.id } });
+        }
+    }
+
+    async function deleteQuestion(
+        questionUUId: string,
+    ): Promise<boolean> {
+        const questionId = await getIdByUUId("Question", questionUUId);
+        if (!questionId) {
+            return false;
+        }
+
+        await deleteAnswersForQuestion(questionUUId);
+        await deleteBoardNotations("QUESTION", questionUUId);
+        await Question.destroy({ where: { id: questionId } });
+        return true;
+    }
+
+    async function deleteLesson(lessonUUId: string): Promise<boolean> {
+        const lessonId = await getIdByUUId("Lesson", lessonUUId);
+        if (!lessonId) {
+            return false;
+        }
+
+        const questions = await Question.findAll({
+            where: { lessonId } as any,
+        });
+        for (const question of questions) {
+            await deleteQuestion(question.uuid);
+        }
+
+        await StudentLesson.destroy({ where: { lessonId } as any });
+        await deleteBoardNotations("LESSON", lessonUUId);
+        await Lesson.destroy({ where: { id: lessonId } });
+        return true;
+    }
+
+    async function updateLesson(
+        lessonUUId: string,
+        name: string,
+    ): Promise<Lesson | null> {
+        const lessonId = await getIdByUUId("Lesson", lessonUUId);
+        if (!lessonId) {
+            return null;
+        }
+
+        await Lesson.update({ name }, { where: { id: lessonId } });
+        return getLesson(lessonUUId);
+    }
+
+    async function updateQuestion(
+        questionUUId: string,
+        name: string,
+    ): Promise<Question | null> {
+        const questionId = await getIdByUUId("Question", questionUUId);
+        if (!questionId) {
+            return null;
+        }
+
+        await Question.update({ name }, { where: { id: questionId } });
+        return getQuestion(questionUUId);
+    }
+
+    async function canUserManageLesson(
+        userId: number,
+        lessonUUId: string,
+    ): Promise<boolean> {
+        const user = await getUserById(userId);
+        if (
+            !user ||
+            (user.userType !== "TEACHER" && user.userType !== "BOTH")
+        ) {
+            return false;
+        }
+
+        const lesson = await getLesson(lessonUUId);
+        return lesson?.userId === userId;
+    }
+
+    async function canUserManageQuestion(
+        userId: number,
+        questionUUId: string,
+    ): Promise<boolean> {
+        const user = await getUserById(userId);
+        if (
+            !user ||
+            (user.userType !== "TEACHER" && user.userType !== "BOTH")
+        ) {
+            return false;
+        }
+
+        const question = await getQuestion(questionUUId);
+        return question?.userId === userId;
+    }
+
     async function canUserEditLessonBoard(
         user: UserAttributes,
         lessonUUId: string,
@@ -976,9 +1146,15 @@ export default function dbUtil() {
         getLesson,
         getLessons,
         createLesson,
+        updateLesson,
+        deleteLesson,
+        canUserManageLesson,
         getQuestion,
         getQuestions,
         createQuestion,
+        updateQuestion,
+        deleteQuestion,
+        canUserManageQuestion,
         getAnswer,
         getAnswers,
         createAnswer,

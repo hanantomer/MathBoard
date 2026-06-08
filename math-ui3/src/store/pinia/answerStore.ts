@@ -59,8 +59,21 @@ export const useAnswerStore = defineStore("answer", () => {
     currentAnswer.value = answers.value.get(answerUUId);
   }
 
-  function removeAnswer(answer: AnswerAttributes) {
-    answers.value.delete(answer.uuid);
+  function removeAnswer(answerUUId: string) {
+    answers.value.delete(answerUUId);
+    if (currentAnswer.value?.uuid === answerUUId) {
+      currentAnswer.value = undefined;
+    }
+  }
+
+  function removeAnswersForQuestion(questionUUId: string) {
+    const removed: string[] = [];
+    answers.value.forEach((a, uuid) => {
+      if (a.question?.uuid === questionUUId) {
+        removed.push(String(uuid));
+      }
+    });
+    removed.forEach((uuid) => removeAnswer(uuid));
   }
 
   function getQuestionAnswer(questionUUId: string) {
@@ -77,6 +90,7 @@ export const useAnswerStore = defineStore("answer", () => {
     addAnswer,
     setCurrentAnswer,
     removeAnswer,
+    removeAnswersForQuestion,
     getQuestionAnswer,
   };
 });

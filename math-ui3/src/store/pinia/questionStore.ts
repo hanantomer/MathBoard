@@ -36,6 +36,14 @@ export const useQuestionStore = defineStore("question", () => {
     return question;
   }
 
+  function clearQuestionsForLesson(lessonUUId: string) {
+    questions.value.forEach((q, uuid) => {
+      if (q.lesson?.uuid === lessonUUId) {
+        questions.value.delete(uuid);
+      }
+    });
+  }
+
   async function loadQuestions() {
     const lessonStore = useLessonStore();
     const db = useApiHelper();
@@ -44,12 +52,17 @@ export const useQuestionStore = defineStore("question", () => {
       await lessonStore.loadLessons();
     }
 
-    let questionsFromDb = await db.getQuestions(
-      lessonStore.getCurrentLesson()!.uuid,
-    );
+    const lessonUUId = lessonStore.getCurrentLesson()!.uuid;
+    clearQuestionsForLesson(lessonUUId);
+
+    const questionsFromDb = await db.getQuestions(lessonUUId);
     questionsFromDb.forEach((q: QuestionAttributes) => {
       questions.value.set(q.uuid, q);
     });
+  }
+
+  async function reloadQuestions() {
+    await loadQuestions();
   }
 
   async function addQuestion(questionName: string) {
@@ -74,17 +87,54 @@ export const useQuestionStore = defineStore("question", () => {
     //lessonStore.setCurrentLesson(currentQuestion.value.lesson.uuid);
   }
 
-  function removeQuestion(question: QuestionAttributes) {
-    questions.value.delete(question.uuid);
+  function removeQuestion(questionUUId: string) {
+    questions.value.delete(questionUUId);
+    if (currentQuestion.value?.uuid === questionUUId) {
+      currentQuestion.value = undefined;
+    }
+  }
+
+  function removeQuestionsForLesson(lessonUUId: string): string[] {
+    const removed: string[] = [];
+    questions.value.forEach((q, uuid) => {
+      if (q.lesson?.uuid === lessonUUId) {
+        removed.push(String(uuid));
+      }
+    });
+    removed.forEach((uuid) => removeQuestion(uuid));
+    return removed;
+  }
+
+  async function updateQuestion(
+    questionUUId: string,
+    questionName: string,
+  ): Promise<QuestionAttributes> {
+    const db = useApiHelper();
+    const updated = await db.updateQuestion(questionUUId, questionName);
+    questions.value.set(updated.uuid, updated);
+    if (currentQuestion.value?.uuid === questionUUId) {
+      currentQuestion.value = updated;
+    }
+    return updated;
+  }
+
+  async function deleteQuestion(questionUUId: string): Promise<void> {
+    const db = useApiHelper();
+    await db.deleteQuestion(questionUUId);
+    removeQuestion(questionUUId);
   }
 
   return {
     getQuestions,
     getCurrentQuestion,
     loadQuestions,
+    reloadQuestions,
     loadQuestion,
     addQuestion,
     setCurrentQuestion,
     removeQuestion,
+    removeQuestionsForLesson,
+    updateQuestion,
+    deleteQuestion,
   };
 });

@@ -39,7 +39,6 @@ import {
   initLessonMediaSession,
   leaveLessonMedia,
 } from "../helpers/lessonWebRtcHelper";
-
 const selectionHelper = useSelectionHelper();
 const route = useRoute();
 const userStore = useUserStore();

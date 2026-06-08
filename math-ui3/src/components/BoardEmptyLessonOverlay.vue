@@ -39,6 +39,7 @@ import { COLLABORATION } from "../constants/helpCopy";
 
 const props = defineProps<{
   loaded?: boolean;
+  notationsReady?: boolean;
 }>();
 
 const route = useRoute();
@@ -61,6 +62,7 @@ watch(
 const visible = computed(
   () =>
     props.loaded &&
+    props.notationsReady &&
     !dismissedLocally.value &&
     !onboardingStore.emptyLessonOverlayDismissed &&
     route.name === "lesson" &&

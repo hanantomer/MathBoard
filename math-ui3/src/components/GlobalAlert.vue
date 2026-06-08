@@ -38,9 +38,9 @@
 import { useGlobalAlertStore } from "../store/pinia/globalAlertStore";
 const globalAlertStore = useGlobalAlertStore();
 
-function agree() {
+async function agree() {
   globalAlertStore.show = false;
-  globalAlertStore.callback();
+  await globalAlertStore.callback();
 }
 
 function cancel() {

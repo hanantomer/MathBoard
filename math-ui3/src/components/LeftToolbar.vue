@@ -11,27 +11,6 @@
     @close="closeUploadDialog"
   ></CrossDeviceUpload>
 
-  <div
-    style="
-      position: absolute;
-      top: 20%;
-      left: 20%;
-      max-width: 575px;
-      z-index: 1000;
-    "
-  >
-    <v-snackbar
-      close-delay="20000"
-      color="#C51162"
-      icon="mdi-image"
-      theme="dark"
-      v-model="showSelectionHelpMessage"
-      closable
-      title="Selection Instructions"
-      >{{ selectionHelpText }}
-    </v-snackbar>
-  </div>
-
   <aside class="vertical-toolbar">
     <span v-if="userStore.isTeacher()" class="toolbar-section-label">{{
       TOOLBAR_SECTIONS.import
@@ -56,40 +35,23 @@
     <span v-if="userStore.isTeacher()" class="toolbar-section-label">{{
       TOOLBAR_SECTIONS.select
     }}</span>
-    <div v-if="userStore.isTeacher()" class="toolbar-select-row">
-      <v-tooltip :text="selectionHelpText">
-        <template v-slot:activator="{ props }">
-          <v-btn
-            data-cy="selectionButton"
-            v-bind="props"
-            icon
-            @click.stop="startSelection"
-            x-small
-            fab
-            dark
-            color="white"
-            class="toolbar-mode-btn"
-            :class="{ 'toolbar-mode-btn--active': isAreaSelectionActive }"
-            ><v-icon color="white">mdi-selection</v-icon></v-btn
-          >
-        </template>
-      </v-tooltip>
-      <v-tooltip text="Selection help">
-        <template v-slot:activator="{ props }">
-          <v-btn
-            v-bind="props"
-            icon
-            x-small
-            variant="text"
-            class="toolbar-help-btn"
-            @click.stop="openSelectionHelpMessage"
-            aria-label="Selection help"
-          >
-            <v-icon color="white" size="small">mdi-help-circle-outline</v-icon>
-          </v-btn>
-        </template>
-      </v-tooltip>
-    </div>
+    <v-tooltip v-if="userStore.isTeacher()" :text="selectionHelpText">
+      <template v-slot:activator="{ props }">
+        <v-btn
+          data-cy="selectionButton"
+          v-bind="props"
+          icon
+          @click.stop="startSelection"
+          x-small
+          fab
+          dark
+          color="white"
+          class="toolbar-mode-btn"
+          :class="{ 'toolbar-mode-btn--active': isAreaSelectionActive }"
+          ><v-icon color="white">mdi-selection</v-icon></v-btn
+        >
+      </template>
+    </v-tooltip>
 
     <span class="toolbar-section-label">{{ TOOLBAR_SECTIONS.draw }}</span>
     <v-tooltip v-for="item in drawModeButtons" :key="item.name">
@@ -278,8 +240,6 @@ watch(
   },
   { immediate: true, deep: true },
 );
-
-const showSelectionHelpMessage = ref(false);
 
 const selectionHelpText = computed(() => getSelectionHelpText());
 
@@ -537,10 +497,6 @@ function startSelection() {
   onboardingStore.tryShowToolCoachMark("selection");
 }
 
-function openSelectionHelpMessage() {
-  showSelectionHelpMessage.value = true;
-}
-
 function closeAccessLinkDialog() {
   showAccessLinkDialog.value = false;
 }
@@ -787,16 +743,4 @@ span.v-btn__overlay {
   margin-top: 0;
 }
 
-.toolbar-select-row {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 2px;
-}
-
-.toolbar-help-btn {
-  min-width: 32px !important;
-  min-height: 28px !important;
-  opacity: 0.85;
-}
 </style>

@@ -3,7 +3,7 @@ import { isMobile } from "common/globals";
 
 export const LIST_INTROS = {
   lessonsTeacher:
-    "Create a lesson, open it, then use Invite in the app bar to share the access link with students.",
+    "Create a lesson or add a sample from the library (bookshelf icon), then use Invite in the app bar to share the access link with students.",
   lessonsStudent: "Open a lesson your teacher shared with you.",
   questions:
     "Questions are exercise templates on the board. Pick a lesson, then open or create a question.",
@@ -58,7 +58,8 @@ export const TOOL_TOOLTIPS: Record<string, string> = {
   Line: "Line — draw a segment",
   polyline: "Polyline — click vertices, close on the start point",
   DivisionLine: "Division line",
-  curve: "Curve — adjust with the control point",
+  curve:
+    "Curve — snaps to grid and endpoints; next segment continues from the end (Esc to finish)",
   circle: "Circle",
   sqrt: "Square root — draw the vinculum (Alt+S)",
   exponent: "Exponent — click a cell (Alt+X)",
@@ -201,7 +202,7 @@ export function getEditModeStatusText(
       "Draw a rectangle on screen to create a text box, click once to edit and twice to resize",
     SQRT_STARTED: "Draw a line on screen to create a square root",
     CURVE_STARTED:
-      "Draw a curve on screen, then use the control point to adjust the curve",
+      "Draw a curve; endpoints snap to the grid and axes. The next segment starts at the end — press Esc when finished",
     EXPONENT_STARTED: "Click on a cell to create an exponent",
     EXPONENT_WRITING: "Type exponent and then click outside or press enter",
     CIRCLE_STARTED: "Draw a circle on screen",
@@ -299,10 +300,11 @@ export type CoachMarkDef = {
   body: string;
 };
 
-/** Short first-visit tour on the lesson board (keyboard → selection → shortcuts). */
+/** Short first-visit tour on the lesson board (keyboard → selection → symbols → shortcuts). */
 export const QUICK_TIPS_COACH_MARK_IDS = [
   "quick-tip-keyboard",
   "quick-tip-selection",
+  "quick-tip-special-symbols",
   "quick-tip-shortcuts",
 ] as const;
 
@@ -318,6 +320,12 @@ export const COACH_MARKS: CoachMarkDef[] = [
     targetSelector: '[data-cy="selectionButton"]',
     title: "Move and copy",
     body: "Use Selection: drag a rectangle to select, drag to move, and hold Ctrl (Cmd on Mac) while dragging to duplicate.",
+  },
+  {
+    id: "quick-tip-special-symbols",
+    targetSelector: '[data-cy="special-symbols-toolbar"]',
+    title: "Special symbols",
+    body: "Use the panel on the right (or tap the Σ button on mobile) for Greek letters, √, °, ×, and more. They work in grid cells, text boxes, and annotations.",
   },
   {
     id: "quick-tip-shortcuts",

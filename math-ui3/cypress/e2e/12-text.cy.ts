@@ -10,11 +10,11 @@ describe("e2e", () => {
     cy.openLesson();
     cy.clearBoard();
     cy.dataCy("freetextButton").click();
+    cy.dismissUiOverlays();
 
     cy.selectArea(300, 200, 100, 100);
 
     cy.dataCy("freeTextEditor").type("Hello World");
-
 
     cy.dataCy("freeTextEditor")
       .invoke("val")
@@ -23,7 +23,7 @@ describe("e2e", () => {
       });
 
     // click outside to finish editing
-    cy.get("#lessonSvg").click(0, 0);
+    cy.clickSvg(50, 50);
 
     cy.get("textarea").invoke("val").then((value) => {
       expect(value).to.equal("Hello World");

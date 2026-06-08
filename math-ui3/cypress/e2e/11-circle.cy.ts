@@ -11,9 +11,9 @@ describe("e2e", () => {
     cy.clearBoard();
 
     // draw circle
-    cy.drawLine("circleButton", 300, 300, 400, 300);
+    cy.drawLine("circleButton", 300, 300, 400, 300, "circleRightHandle");
 
-    cy.get('[data-cy="circle"]').then(($el) => {
+    cy.get("#circle").then(($el) => {
       const circle = $el[0] as unknown as {
         r: { baseVal: { value: number } };
       };

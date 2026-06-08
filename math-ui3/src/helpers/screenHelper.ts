@@ -6,6 +6,7 @@ import {
   PointNotationAttributes,
   RectNotationAttributes,
   LineNotationAttributes,
+  CurveNotationAttributes,
   CircleNotationAttributes,
   RectAttributes,
   LineAttributes,
@@ -19,6 +20,7 @@ const cellStore = useCellStore();
 
 const maxNotationDistance = 8;
 const maxCellDistance = 4;
+const maxGridCornerDistance = 10;
 
 export default function screenHelper() {
   type NotationDistance = { notation: NotationAttributes; distance: number };
@@ -506,6 +508,84 @@ export default function screenHelper() {
     return Math.round(Math.sqrt(dx * dx + dy * dy));
   }
 
+  function getNearestCurveEndpoint(dot: DotCoordinates): DotCoordinates | null {
+    const notationStore = useNotationStore();
+    let nearPoint: DotCoordinates | null = null;
+    let minDistance = maxNotationDistance;
+
+    const selectedNotationUUId = notationStore.getSelectedNotations()?.at(0)
+      ?.uuid;
+
+    notationStore
+      .getNotations()
+      .filter((n: NotationAttributes) => n.uuid !== selectedNotationUUId)
+      .filter((n: NotationAttributes) => n.notationType === "CURVE")
+      .forEach((n: NotationAttributes) => {
+        const curve = n as CurveNotationAttributes;
+        for (const endpoint of [
+          { x: curve.p1x, y: curve.p1y },
+          { x: curve.p2x, y: curve.p2y },
+        ]) {
+          const distance = getPointsDistance(endpoint, dot);
+          if (distance < minDistance) {
+            minDistance = distance;
+            nearPoint = endpoint;
+          }
+        }
+      });
+
+    return nearPoint;
+  }
+
+  function getNearestGridCorner(dot: DotCoordinates): DotCoordinates | null {
+    const cellWidth = cellStore.getCellHorizontalWidth();
+    const cellHeight = cellStore.getCellVerticalHeight();
+    const x = Math.round(dot.x / cellWidth) * cellWidth;
+    const y = Math.round(dot.y / cellHeight) * cellHeight;
+    const distance = Math.hypot(dot.x - x, dot.y - y);
+    if (distance <= maxGridCornerDistance) {
+      return { x, y };
+    }
+    return null;
+  }
+
+  /** Snap curve endpoints to lines, other curves, and grid intersections. */
+  function snapCurvePoint(dot: DotCoordinates): DotCoordinates {
+    const nearLineAtPoint = getNearestLineEdge(dot);
+    if (nearLineAtPoint != null) {
+      return { x: nearLineAtPoint.x, y: nearLineAtPoint.y };
+    }
+
+    const nearCurveEndpoint = getNearestCurveEndpoint(dot);
+    if (nearCurveEndpoint != null) {
+      return { x: nearCurveEndpoint.x, y: nearCurveEndpoint.y };
+    }
+
+    const nearestIntersection = getNearestNotationPoint(dot);
+    if (nearestIntersection != null) {
+      return { x: nearestIntersection.x, y: nearestIntersection.y };
+    }
+
+    const nearestCorner = getNearestGridCorner(dot);
+    if (nearestCorner != null) {
+      return nearestCorner;
+    }
+
+    const nearCellXBorder = getNearestCellXBorder(dot);
+    const nearCellYBorder = getNearestCellYBorder(dot);
+    if (nearCellXBorder != null && nearCellYBorder != null) {
+      return { x: nearCellXBorder, y: nearCellYBorder };
+    }
+    if (nearCellXBorder != null) {
+      return { x: nearCellXBorder, y: Math.round(dot.y) };
+    }
+    if (nearCellYBorder != null) {
+      return { x: Math.round(dot.x), y: nearCellYBorder };
+    }
+
+    return { x: Math.round(dot.x), y: Math.round(dot.y) };
+  }
+
   function getNearestNotationPoint(dot: DotCoordinates): DotCoordinates | null {
     const notationStore = useNotationStore();
     let nearestPoint: DotCoordinates | null = null;
@@ -629,6 +709,9 @@ export default function screenHelper() {
     getNearestCellYBorder,
     getPointsDistance,
     getNearestNotationPoint,
+    getNearestCurveEndpoint,
+    getNearestGridCorner,
+    snapCurvePoint,
     getNotationTopLeft,
     getSelectedCellDotCoordinates,
   };
