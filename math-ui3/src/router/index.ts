@@ -1,6 +1,7 @@
 import { createRouter, createWebHistory, RouteRecordRaw } from "vue-router";
 import { restoreSessionFromCookie } from "../composables/restoreSession";
 import useSeo from "../composables/useSeo";
+import { trackMetaPixelPageView } from "../helpers/metaPixelHelper";
 
 /**
  * Extended meta interface to include SEO information
@@ -229,6 +230,11 @@ router.afterEach((to) => {
   if (breadcrumbs) {
     seo.setBreadcrumbs(breadcrumbs);
   }
+
+  trackMetaPixelPageView(
+    to.fullPath,
+    (to.meta.title as string | undefined) || undefined,
+  );
 });
 
 export default router;
