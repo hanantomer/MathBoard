@@ -1,3 +1,8 @@
+import dotenv from "dotenv";
+import path from "path";
+
+dotenv.config({ path: path.resolve(process.cwd(), ".env") });
+
 import winston from "winston";
 import express, { Request, Response, NextFunction } from "express";
 import cors from "cors";
@@ -6,6 +11,7 @@ import useAuthUtil from "../../math-auth/build/authUtil";
 import useDb from "../../math-db/build/dbUtil";
 import connection from "../../math-db/build/models/index";
 import multer from "multer";
+import { recognizeSketchFromImage, formatSketchOcrError, summarizeSketchOcrError } from "./services/sketchOcrService";
 
 import { exec } from "child_process";
 
@@ -14,7 +20,6 @@ import {
     NotationTypeValues,
 } from "../../math-common/build/unions";
 import { createTransport } from "nodemailer";
-import path from "path";
 import fs from "fs";
 
 
@@ -1109,6 +1114,32 @@ const errorHandler = (
         message: process.env.NODE_ENV === 'development' ? err.message : 'Internal server error'
     });
 };
+
+app.post(
+    "/api/ocr/sketch",
+    async (req: Request, res: Response, next: NextFunction) => {
+        try {
+            const { imageBase64 } = req.body ?? {};
+            if (!imageBase64 || typeof imageBase64 !== "string") {
+                return res.status(400).json({ error: "imageBase64 is required" });
+            }
+
+            const symbol = await recognizeSketchFromImage(imageBase64);
+            return res.status(200).json({ symbol });
+        } catch (err) {
+            const message = summarizeSketchOcrError(err);
+            serverLogger.error({
+                message: "Sketch OCR failed",
+                error: formatSketchOcrError(err),
+                path: "/api/ocr/sketch",
+            });
+            return res.status(502).json({
+                error: "Sketch OCR failed",
+                message,
+            });
+        }
+    },
+);
 
 app.use(errorHandler);
 

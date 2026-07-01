@@ -75,6 +75,9 @@ export default function useShapeDrawingHelper() {
       case "FREE_SKETCH_STARTED":
         editModeStore.setEditMode("FREE_SKETCH_DRAWING");
         break;
+      case "FREE_SKETCH_WITH_OCR_STARTED":
+        editModeStore.setEditMode("FREE_SKETCH_WITH_OCR_DRAWING");
+        break;
       default:
         editModeStore.setDefaultEditMode();
     }
@@ -217,6 +220,9 @@ export default function useShapeDrawingHelper() {
         break;
       case "FREE_SKETCH_DRAWING":
         editModeStore.setEditMode("FREE_SKETCH_STARTED");
+        break;
+      case "FREE_SKETCH_WITH_OCR_DRAWING":
+        editModeStore.setEditMode("FREE_SKETCH_WITH_OCR_STARTED");
         break;
       default:
         editModeStore.setDefaultEditMode();

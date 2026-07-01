@@ -18,6 +18,7 @@
           <ColorSelector></ColorSelector>
           <LinePropertiesSelector></LinePropertiesSelector>
           <RotationSelector></RotationSelector>
+          <FreeSketchOcrTool></FreeSketchOcrTool>
           <CropSelector></CropSelector>
           <DeleteTool></DeleteTool>
         </div>
@@ -32,6 +33,7 @@ import ColorSelector from "./ColorSelector.vue";
 import LinePropertiesSelector from "./LinePropertiesSelector.vue";
 import RotationSelector from "./RotationSelector.vue";
 import CropSelector from "./CropSelector.vue";
+import FreeSketchOcrTool from "./FreeSketchOcrTool.vue";
 import DeleteTool from "./DeleteTool.vue";
 import { useNotationStore } from "../store/pinia/notationStore";
 import { useEditModeStore } from "../store/pinia/editModeStore";

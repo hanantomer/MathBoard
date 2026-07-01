@@ -45,6 +45,7 @@ import useUserOutgoingOperations from "./userOutgoingOperationsHelper";
 import useMatrixCellHelper from "../helpers/matrixCellHelper";
 import useScreenHelper from "../helpers/screenHelper";
 import useNotationCellOccupationHelper from "../helpers/notationCellOccupationHelper";
+import { recognizeFreeSketchesForReplacement } from "./freeSketchOcrHelper";
 
 import {
   NotationAttributes,
@@ -1224,6 +1225,17 @@ export default function notationMutateHelper() {
     selectNotationByCell(cellStore.getSelectedCell()!);
   }
 
+  function addSymbolNotationAtCell(cell: CellAttributes, text: string) {
+    const value = text.trim();
+    if (!value) return;
+    notationStore.resetSelectedNotations();
+    selectionHelper.setSelectedCell(cell, true);
+    for (const char of [...value]) {
+      if (char === " ") continue;
+      addSymbolNotation(char);
+    }
+  }
+
   function isLogBaseSymbol(symbolCell: CellAttributes): boolean {
     // Guard: can't have previous cell if at leftmost column
     if (symbolCell.col <= 1) {
@@ -1478,6 +1490,52 @@ export default function notationMutateHelper() {
     }
   }
 
+  async function recognizeAndReplaceSelectedFreeSketches(): Promise<boolean> {
+    if (!authorizationHelper.canEdit()) return false;
+
+    const selected = notationStore
+      .getSelectedNotations()
+      .filter(
+        (n) => n.notationType === "FREESKETCH",
+      ) as FreeSketchNotationAttributes[];
+
+    if (selected.length === 0) return false;
+
+    const replacements = await recognizeFreeSketchesForReplacement(
+      selected,
+      async (imageBase64) => {
+        const { symbol } = await apiHelper.recognizeSketchOcr(imageBase64);
+        return symbol;
+      },
+    );
+
+    if (!replacements) return false;
+
+    notationStore.beginUndoGroup();
+    try {
+      const rect = cellStore.getSvgBoundingRect();
+      for (const { sketch, symbol, placementCenter } of replacements) {
+        await apiHelper.deleteNotation(sketch);
+        notationStore.deleteNotation(sketch.uuid);
+        if (notationStore.getParent().type === "LESSON") {
+          userOutgoingOperations.syncOutgoingRemoveNotation(
+            sketch.uuid,
+            notationStore.getParent().uuid,
+          );
+        }
+        const cell = screenHelper.getCellByDotCoordinates({
+          x: placementCenter.x + rect.left,
+          y: placementCenter.y + rect.top,
+        });
+        addSymbolNotationAtCell(cell, symbol);
+      }
+      editModeStore.setDefaultEditMode();
+      return true;
+    } finally {
+      notationStore.endUndoGroup();
+    }
+  }
+
   async function deleteSelectedNotations() {
     if (!authorizationHelper.canEdit()) return;
 
@@ -1689,6 +1747,7 @@ export default function notationMutateHelper() {
     addMarkNotation,
     addLineNotation,
     addSymbolNotation,
+    addSymbolNotationAtCell,
     addTextNotation,
     addAnnotationNotation,
     addSqrtNotation,
@@ -1715,6 +1774,7 @@ export default function notationMutateHelper() {
 
     pushNotationsFromSelectedCell,
     deleteSelectedNotations,
+    recognizeAndReplaceSelectedFreeSketches,
     pasteNotations,
     saveMovedNotations,
     collapseNotationsToSelectedCell,

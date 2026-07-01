@@ -46,6 +46,14 @@ export const useEditModeStore = defineStore("editMode", () => {
     return editMode.value === "FREE_SKETCH_STARTED";
   }
 
+  function isFreeSketchOcrDrawingMode() {
+    return editMode.value === "FREE_SKETCH_WITH_OCR_DRAWING";
+  }
+
+  function isFreeSketchOcrStartedMode() {
+    return editMode.value === "FREE_SKETCH_WITH_OCR_STARTED";
+  }
+
   function isResizeMode() {
     return editMode.value === "RESIZE_STARTED" || editMode.value === "RESIZING";
   }
@@ -307,6 +315,10 @@ export const useEditModeStore = defineStore("editMode", () => {
     return globalEditMode.value === "FREE_SKETCH";
   }
 
+  function isFreeSketchOcrGlobalMode() {
+    return globalEditMode.value === "FREE_SKETCH_WITH_OCR";
+  }
+
   function isInGlobalDrawingMode() {
     return globalEditMode.value !== "TEXT";
   }
@@ -324,6 +336,7 @@ export const useEditModeStore = defineStore("editMode", () => {
       isDivisionLineDrawingMode() ||
       isDivisionLineEditingMode() ||
       isFreeSketchStartedMode() ||
+      isFreeSketchOcrStartedMode() ||
       isPolygonDrawingMode() ||
       isCurveEditingControlPointMode() ||
       isCircleDrawingMode() ||
@@ -385,9 +398,12 @@ export const useEditModeStore = defineStore("editMode", () => {
     isFreeSketchDrawingMode,
     isFreeSketchSelectedMode,
     isFreeSketchStartedMode,
+    isFreeSketchOcrDrawingMode,
+    isFreeSketchOcrStartedMode,
     isLineGlobalMode,
     isAnnotationGlobalMode,
     isFreeSketchGlobalMode,
+    isFreeSketchOcrGlobalMode,
     isInGlobalDrawingMode,
     isDrawingOrSelectingMode,
     setEditMode,

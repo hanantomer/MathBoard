@@ -5,6 +5,7 @@
   <annotationEditor></annotationEditor>
   <freeTextEditor></freeTextEditor>
   <freeSketchDrawer></freeSketchDrawer>
+  <freeSketchOcrDrawer></freeSketchOcrDrawer>
   <textAreaSync></textAreaSync>
   <exponentEditor></exponentEditor>
   <cellSymbolInput></cellSymbolInput>
@@ -97,6 +98,9 @@ const freeTextEditor = defineAsyncComponent(
 );
 const freeSketchDrawer = defineAsyncComponent(
   () => import("./FreeSketchDrawer.vue"),
+);
+const freeSketchOcrDrawer = defineAsyncComponent(
+  () => import("./FreeSketchOcrDrawer.vue"),
 );
 const textAreaSync = defineAsyncComponent(() => import("./TextAreaSync.vue"));
 const InstructionBar = defineAsyncComponent(

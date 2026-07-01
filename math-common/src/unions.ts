@@ -76,6 +76,7 @@ export type CursorType =
 export type GlobalEditMode =
   | "TEXT"
   | "FREE_SKETCH"
+  | "FREE_SKETCH_WITH_OCR"
   | "LINE"
   | "ANNOTATION";
 
@@ -130,6 +131,8 @@ export type EditMode =
   | "FREE_SKETCH_STARTED" // free sketch button pressed
   | "FREE_SKETCH_DRAWING" // free sketch drawing started
   | "FREE_SKETCH_SELECTED" // free sketch selected
+  | "FREE_SKETCH_WITH_OCR_STARTED" // sketch-to-symbol OCR mode
+  | "FREE_SKETCH_WITH_OCR_DRAWING" // stroke in OCR sketch mode
   | "COLORIZING" // color selected
   | "DELETING" // mouse clicked following delete button pressed
   | "AREA_SELECTED" // user finished selecting area
@@ -190,6 +193,8 @@ export const EditModeNotationType = new Map<
   ["FREE_SKETCH_STARTED", "FREESKETCH"],
   ["FREE_SKETCH_DRAWING", "FREESKETCH"],
   ["FREE_SKETCH_SELECTED", "FREESKETCH"],
+  ["FREE_SKETCH_WITH_OCR_STARTED", "SYMBOL"],
+  ["FREE_SKETCH_WITH_OCR_DRAWING", "SYMBOL"],
   ["COLORIZING", "SYMBOL"],
   ["DELETING", "SYMBOL"],
   ["AREA_SELECTION_STARTED", "SYMBOL"],
@@ -233,6 +238,8 @@ export const EditModeCursorType = new Map<
   ["FREE_SKETCH_STARTED", "auto"],
   ["FREE_SKETCH_DRAWING", "auto"],
   ["FREE_SKETCH_SELECTED", "auto"],
+  ["FREE_SKETCH_WITH_OCR_STARTED", "crosshair"],
+  ["FREE_SKETCH_WITH_OCR_DRAWING", "crosshair"],
   ["COLORIZING", "auto"],
   ["DELETING", "auto"],
   ["AREA_SELECTION_STARTED", "auto"],

@@ -36,6 +36,27 @@ export default function useApiHelper() {
     }
   }
 
+  async function recognizeSketchOcr(
+    imageBase64: string,
+  ): Promise<{ symbol: string }> {
+    try {
+      const { data } = await axios.post<{ symbol: string }>(
+        baseURL + "/ocr/sketch",
+        { imageBase64 },
+      );
+      return data;
+    } catch (error) {
+      const axiosError = error as AxiosError<{ message?: string; error?: string }>;
+      const serverMessage =
+        axiosError.response?.data?.message ?? axiosError.response?.data?.error;
+      throw new Error(
+        serverMessage
+          ? `Sketch OCR failed: ${serverMessage}`
+          : `Sketch OCR failed: ${axiosError.message}`,
+      );
+    }
+  }
+
   async function authGoogleUser(idToken: string): Promise<LoginTicket | null> {
     try {
       const { data } = await axios.post<string>(baseURL + "/gauth", {
@@ -630,5 +651,6 @@ export default function useApiHelper() {
     updateNotation,
     deleteNotation,
     log,
+    recognizeSketchOcr,
   };
 }

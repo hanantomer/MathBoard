@@ -3,7 +3,6 @@
     "preserveConstEnums": true,
     "composite": true,
     "sourceMap": true,
-    "outDir": "./build",
     "target": "esnext",
     "useDefineForClassFields": true,
     "module": "esnext",
@@ -13,7 +12,15 @@
     "esModuleInterop": true,
     "lib": ["ESNext"],
     "skipLibCheck": true,
-    "noImplicitThis": false,
+    "noImplicitThis": false
   },
+  "files": [],
+  "references": [
+    { "path": "./math-common" },
+    { "path": "./math-db" },
+    { "path": "./math-auth" },
+    { "path": "./math-server" },
+    { "path": "./math-messages" }
+  ],
   "exclude": ["node_modules"]
 }

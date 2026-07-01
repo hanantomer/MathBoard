@@ -55,6 +55,8 @@ export const TOOL_TOOLTIPS: Record<string, string> = {
   FreeText: "Text box — drag a rectangle on the board",
   annotation: "Annotation — click to place short labels",
   freeSketch: "Free sketch — informal marks only; type math in grid cells with the keyboard",
+  freeSketchOcr:
+    "Draw a symbol; pause briefly to combine strokes (e.g. =), then it is recognized and placed on the grid",
   Line: "Line — draw a segment",
   polyline: "Polyline — click vertices, close on the start point",
   DivisionLine: "Division line",
@@ -80,6 +82,7 @@ export const TOOLBAR_SECTIONS = {
 
 export const DRAW_TOOL_NAMES = new Set([
   "freeSketch",
+  "freeSketchOcr",
   "Line",
   "polyline",
   "DivisionLine",
@@ -145,6 +148,8 @@ export const EDIT_MODE_STATUS: Partial<
   Record<EditMode | GlobalEditMode, string>
 > = {
   FREE_SKETCH_STARTED: "Free sketch",
+  FREE_SKETCH_WITH_OCR_STARTED: "Sketch → symbol",
+  FREE_SKETCH_WITH_OCR_DRAWING: "Sketch → symbol",
   TEXT_STARTED: "Text box",
   SQRT_STARTED: "Square root",
   CURVE_STARTED: "Curve",
@@ -172,6 +177,10 @@ const EDIT_MODE_HINTS: Partial<Record<EditMode | GlobalEditMode, string>> = {
   LINE_STARTED: "Drag to draw a line. Press Esc to exit.",
   ANNOTATION_STARTED: "Click to place text. Press Esc when done.",
   AREA_SELECTION_STARTED: getSelectionHelpText(),
+  FREE_SKETCH_WITH_OCR_STARTED:
+    "Draw strokes; a brief pause combines them, then OCR places the symbol on the grid.",
+  FREE_SKETCH_WITH_OCR_DRAWING:
+    "Release to finish stroke — draw another within a moment for multi-stroke symbols",
 };
 
 export function getActiveToolDisplay(
@@ -198,6 +207,10 @@ export function getEditModeStatusText(
 
   const longForm: Partial<Record<EditMode | GlobalEditMode, string>> = {
     FREE_SKETCH_STARTED: `Optional informal sketching — for equations, click a cell and type. ${exitText} free sketch mode`,
+    FREE_SKETCH_WITH_OCR_STARTED:
+      "Draw a handwritten symbol. Wait a moment after each stroke to combine multi-stroke symbols (e.g. =). The recognized symbol is placed on the nearest grid cell.",
+    FREE_SKETCH_WITH_OCR_DRAWING:
+      "Drawing for recognition — release to finish the stroke; draw another stroke within a moment if needed",
     TEXT_STARTED:
       "Draw a rectangle on screen to create a text box, click once to edit and twice to resize",
     SQRT_STARTED: "Draw a line on screen to create a square root",

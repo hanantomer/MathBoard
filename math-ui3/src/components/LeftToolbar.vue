@@ -302,6 +302,18 @@ const modeButtons: Array<{
     tabIndex: 3,
   },
   {
+    name: "freeSketchOcr",
+    show_condition: true,
+    editMode: "FREE_SKETCH_WITH_OCR_STARTED" as EditMode,
+    globalEditMode: "FREE_SKETCH_WITH_OCR" as GlobalEditMode,
+    tooltip: "Sketch → symbol (OCR)",
+    icon_class: "",
+    icon: "mdi-draw",
+    overlay_icon: "",
+    rotate: 0,
+    tabIndex: 3,
+  },
+  {
     name: "Line",
     show_condition: true,
     editMode: "LINE_STARTED" as EditMode,
@@ -490,9 +502,8 @@ function closeUploadDialog() {
 }
 
 function startSelection() {
-  if (editModeStore.getGlobalEditMode() !== "TEXT") {
-    return;
-  }
+  notationStore.resetSelectedNotations();
+  editModeStore.setGlobalEditMode("TEXT");
   editModeStore.setEditMode("AREA_SELECTION_STARTED");
   onboardingStore.tryShowToolCoachMark("selection");
 }
@@ -550,7 +561,7 @@ function startEditMode(item: {
 }
 
 function isModeActive(item: any) {
-  const globalModes = ["FREE_SKETCH", "LINE", "ANNOTATION"];
+  const globalModes = ["FREE_SKETCH", "FREE_SKETCH_WITH_OCR", "LINE", "ANNOTATION"];
 
   if (globalModes.includes(item.globalEditMode)) {
     return editModeStore.getGlobalEditMode() === item.globalEditMode;
@@ -559,7 +570,7 @@ function isModeActive(item: any) {
 }
 
 function getModeButtonClass(item: any) {
-  const globalModes = ["FREE_SKETCH", "LINE", "ANNOTATION"];
+  const globalModes = ["FREE_SKETCH", "FREE_SKETCH_WITH_OCR", "LINE", "ANNOTATION"];
   const parts: string[] = [];
   if (!editEnabled.value) {
     parts.push("toolbar-mode-btn--disabled");

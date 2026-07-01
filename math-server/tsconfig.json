@@ -20,15 +20,16 @@
         "resolveJsonModule": true
     },
     "ts-node": {
-        // Tell ts-node CLI to install the --loader automatically
         "esm": true
     },
-    "files": ["./src/app.ts"],
+    "files": [
+        "./src/app.ts",
+        "./src/services/sketchOcrService.ts"
+    ],
     "references": [
         { "path": "../math-db" },
         { "path": "../math-auth" },
         { "path": "../math-common" }
     ],
-
     "exclude": ["node_modules", "build/**/*"]
 }
