@@ -4,6 +4,7 @@ export const ONBOARDING_STORAGE_KEY = "mathboard-onboarding-v1";
 const COACH_MARK_IDS = [
   "quick-tip-keyboard",
   "quick-tip-selection",
+  "quick-tip-special-symbols",
   "quick-tip-shortcuts",
   "invite-app-bar",
   "online-students",

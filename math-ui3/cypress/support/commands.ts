@@ -1,4 +1,6 @@
 /// <reference types="cypress" />
+import { seedOnboardingStorage } from "./onboarding";
+
 // ***********************************************
 // This example commands.ts shows you how to
 // create various custom commands and overwrite
@@ -324,37 +326,39 @@ Cypress.Commands.add("login", () => {
       } catch {
         /* ignore */
       }
+      // Re-seed after clear: login is a full visit, then SPA nav keeps this storage.
+      // Without this, teacher checklist / coach marks block board clicks.
+      seedOnboardingStorage(win);
     },
   });
   cy.dataCy("login_email").should("be.visible").clear().type("hanantomer@gmail.com");
   cy.dataCy("login_password").clear().type("12345678");
   cy.get('[data-cy="login"] > .v-btn__content').click();
+  cy.url({ timeout: 20000 }).should("not.include", "/login");
 });
 
 Cypress.Commands.add("dismissUiOverlays", () => {
-  cy.get("body").then(($body) => {
-    if ($body.find('[data-cy="teacher-checklist-dont-show"]').length) {
-      cy.dataCy("teacher-checklist-dont-show").click({ force: true });
-    }
-  });
+  const dismissOnce = () => {
+    cy.get("body").then(($body) => {
+      if ($body.find('[data-cy="teacher-checklist-dont-show"]').length) {
+        cy.dataCy("teacher-checklist-dont-show").click({ force: true });
+      }
+      if ($body.find('[data-cy="empty-lesson-dismiss"]').length) {
+        cy.dataCy("empty-lesson-dismiss").click({ force: true });
+      }
+      if ($body.find('[data-cy="coach-mark-skip"]').length) {
+        cy.dataCy("coach-mark-skip").click({ force: true });
+      }
+      if ($body.find('[data-cy="help-drawer-close"]').length) {
+        cy.dataCy("help-drawer-close").click({ force: true });
+      }
+    });
+  };
 
-  cy.get("body").then(($body) => {
-    if ($body.find('[data-cy="empty-lesson-dismiss"]').length) {
-      cy.dataCy("empty-lesson-dismiss").click({ force: true });
-    }
-  });
-
-  cy.get("body").then(($body) => {
-    if ($body.find('[data-cy="coach-mark-skip"]').length) {
-      cy.dataCy("coach-mark-skip").click({ force: true });
-    }
-  });
-
-  cy.get("body").then(($body) => {
-    if ($body.find('[data-cy="help-drawer-close"]').length) {
-      cy.dataCy("help-drawer-close").click({ force: true });
-    }
-  });
+  // Overlays can appear shortly after lesson mount; dismiss twice with a short gap.
+  dismissOnce();
+  cy.wait(200);
+  dismissOnce();
 });
 
 Cypress.Commands.add("openLesson", () => {
