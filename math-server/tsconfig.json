@@ -24,7 +24,9 @@
     },
     "files": [
         "./src/app.ts",
-        "./src/services/sketchOcrService.ts"
+        "./src/services/sketchOcrService.ts",
+        "./src/services/practiceCheckService.ts",
+        "./src/services/guestPracticeRateLimit.ts"
     ],
     "references": [
         { "path": "../math-db" },

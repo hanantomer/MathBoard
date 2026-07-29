@@ -99,6 +99,41 @@ const routes: Array<RouteRecordRaw> = [
     },
   },
   {
+    path: "/practice",
+    component: () => import("@/components/PracticeQuestions.vue"),
+    name: "practice",
+    meta: {
+      requiresAuth: false,
+      title: "Practice Questions - MathBoard",
+      description:
+        "Browse practice questions by subject and work locally on the math board.",
+      keywords: "math practice, self-study, subjects, problem solving",
+    },
+  },
+  {
+    path: "/practice/blank",
+    component: () => import("@/components/Practice.vue"),
+    name: "practiceBlank",
+    meta: {
+      requiresAuth: false,
+      title: "Blank Practice Sheet - MathBoard",
+      description:
+        "Practice on a blank board with a pasted or uploaded worksheet image.",
+      keywords: "math practice, blank sheet, worksheet image, upload",
+    },
+  },
+  {
+    path: "/practice/:questionUUId",
+    component: () => import("@/components/Practice.vue"),
+    name: "practiceQuestion",
+    meta: {
+      requiresAuth: false,
+      title: "Practice - MathBoard",
+      description: "Work on a practice question with local scratch work.",
+      keywords: "math practice, problem solving",
+    },
+  },
+  {
     path: "/questions",
     component: () => import("@/components/Questions.vue"),
     name: "questions",

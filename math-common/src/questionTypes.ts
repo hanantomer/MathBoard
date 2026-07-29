@@ -1,4 +1,5 @@
 import { LessonAttributes } from "./lessonTypes";
+import { PracticeQuestionMeta } from "./practiceQuestionTypes";
 import {
   LineAttributes,
   CurveAttributes,
@@ -19,13 +20,17 @@ import {
 export type QuestionAttributes =
   EntityAttributes &
     BoardAttributes & {
-      lesson: LessonAttributes;
+      lesson?: LessonAttributes | null;
+      /** Present when this question stem is in the practice bank. */
+      practice?: PracticeQuestionMeta | null;
     };
 
 export type QuestionCreationAttributes = Omit<
   QuestionAttributes,
-  keyof EntityAttributes
->;
+  keyof EntityAttributes | "practice"
+> & {
+  lesson: LessonAttributes;
+};
 
 // every question notations has a lesson as parent
 

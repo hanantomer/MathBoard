@@ -46,6 +46,14 @@ import useMatrixCellHelper from "../helpers/matrixCellHelper";
 import useScreenHelper from "../helpers/screenHelper";
 import useNotationCellOccupationHelper from "../helpers/notationCellOccupationHelper";
 import { recognizeFreeSketchesForReplacement } from "./freeSketchOcrHelper";
+import {
+  createLocalPracticeNotation,
+  isPracticeBoard,
+  isPracticeLayer,
+  persistPracticeNotation,
+  removeLocalPracticeNotation,
+} from "./practiceBoardAdapter";
+import { getBoardUser } from "./boardUserHelper";
 
 import {
   NotationAttributes,
@@ -831,6 +839,9 @@ export default function notationMutateHelper() {
   ): Promise<string> {
     if (!authorizationHelper.canEdit()) return sqrtNotation.uuid;
     transposeSqrtCoordinatesIfNeeded(sqrtNotation);
+    if (persistLocalPracticeUpdate(sqrtNotation)) {
+      return sqrtNotation.uuid;
+    }
     await apiHelper.updateSqrtNotationAttributes(sqrtNotation);
     notationStore.addNotation(sqrtNotation, true, true);
     userOutgoingOperations.syncOutgoingUpdateNotation(sqrtNotation);
@@ -839,6 +850,7 @@ export default function notationMutateHelper() {
 
   async function updateLineNotation(lineNotation: LineNotationAttributes) {
     if (!authorizationHelper.canEdit()) return;
+    if (persistLocalPracticeUpdate(lineNotation)) return;
     await apiHelper.updateLineNotationAttributes(lineNotation);
     notationStore.addNotation(lineNotation, true, true);
     userOutgoingOperations.syncOutgoingUpdateNotation(lineNotation);
@@ -846,6 +858,7 @@ export default function notationMutateHelper() {
 
   async function updateCurveNotation(curveNotation: CurveNotationAttributes) {
     if (!authorizationHelper.canEdit()) return;
+    if (persistLocalPracticeUpdate(curveNotation)) return;
     await apiHelper.updateCurveNotationAttributes(curveNotation);
     notationStore.addNotation(curveNotation, true, true);
     userOutgoingOperations.syncOutgoingUpdateNotation(curveNotation);
@@ -853,6 +866,7 @@ export default function notationMutateHelper() {
 
   async function updateCircleNotation(circle: CircleNotationAttributes) {
     if (!authorizationHelper.canEdit()) return;
+    if (persistLocalPracticeUpdate(circle)) return;
     await apiHelper.updateCircleNotationAttributes(circle);
     notationStore.addNotation(circle, true, true);
     userOutgoingOperations.syncOutgoingUpdateNotation(circle);
@@ -862,9 +876,18 @@ export default function notationMutateHelper() {
     freeSketch: FreeSketchNotationAttributes,
   ) {
     if (!authorizationHelper.canEdit()) return;
+    if (persistLocalPracticeUpdate(freeSketch)) return;
     await apiHelper.updateFreeSketchNotationAttributes(freeSketch);
     notationStore.addNotation(freeSketch, true, true);
     userOutgoingOperations.syncOutgoingUpdateNotation(freeSketch);
+  }
+
+  /** Practice path: persist to sessionStorage and update local store; skip API/sync. */
+  function persistLocalPracticeUpdate(notation: NotationAttributes): boolean {
+    if (!isPracticeBoard()) return false;
+    persistPracticeNotation(notation);
+    notationStore.addNotation(notation, true, true);
+    return true;
   }
 
   function addCellNotation(notation: PointNotationCreationAttributes) {
@@ -923,7 +946,7 @@ export default function notationMutateHelper() {
       boardType: notationStore.getParent().type,
       parentUUId: notationStore.getParent().uuid,
       notationType: notationType,
-      user: userStore.getCurrentUser()!,
+      user: getBoardUser(),
       color: null,
     };
 
@@ -943,6 +966,12 @@ export default function notationMutateHelper() {
 
     setNotationAttributes(existingNotation, notation);
 
+    if (isPracticeBoard() && isPracticeLayer(existingNotation)) {
+      persistPracticeNotation(existingNotation);
+      notationStore.addNotation(existingNotation, true, true);
+      return;
+    }
+
     apiHelper.updateNotationValue(existingNotation);
 
     notationStore.addNotation(existingNotation, true, true);
@@ -955,6 +984,16 @@ export default function notationMutateHelper() {
   ): Promise<string> {
     if (notation.boardType === "LESSON" && !authorizationHelper.canEdit()) {
       return "";
+    }
+
+    if (isPracticeBoard()) {
+      const newNotation = createLocalPracticeNotation({
+        ...notation,
+        boardType: "PRACTICE",
+        parentUUId: notationStore.getParent().uuid,
+      });
+      notationStore.addNotation(newNotation, true, true);
+      return newNotation.uuid;
     }
 
     try {
@@ -1029,13 +1068,20 @@ export default function notationMutateHelper() {
   ): boolean {
     if (!notation) return false;
     switch (notation.notationType) {
-      case "EXPONENT":
       case "ANNOTATION":
+        // Annotations use pixel x/y, not col/row. Stem labels are boardType QUESTION
+        // and are filtered elsewhere; never block selection via this cell check.
+        return false;
+
+      case "EXPONENT":
       case "SQRTSYMBOL":
       case "SYMBOL": {
         let pointNotation = notation as PointNotationAttributes;
+        if (pointNotation.col == null || pointNotation.row == null) {
+          return false;
+        }
         return (
-          notation?.boardType === "ANSWER" &&
+          (notation?.boardType === "ANSWER" || isPracticeLayer(notation)) &&
           !userStore.isTeacher() &&
           notationStore
             .getNotationsAtCell({
@@ -1060,7 +1106,7 @@ export default function notationMutateHelper() {
             row++
           ) {
             if (
-              notation?.boardType === "ANSWER" &&
+              (notation?.boardType === "ANSWER" || isPracticeLayer(notation)) &&
               !userStore.isTeacher() &&
               notationStore
                 .getNotationsAtCell({
@@ -1082,7 +1128,7 @@ export default function notationMutateHelper() {
     pointAttributes: CellAttributes | null,
   ): boolean | null {
     return (
-      notationStore.getParent().type == "ANSWER" &&
+      (notationStore.getParent().type == "ANSWER" || isPracticeBoard()) &&
       !userStore.isTeacher() &&
       pointAttributes &&
       notationStore
@@ -1147,7 +1193,7 @@ export default function notationMutateHelper() {
       boardType: notationStore.getParent().type,
       parentUUId: notationStore.getParent().uuid,
       notationType: "IMAGE",
-      user: userStore.getCurrentUser()!,
+      user: getBoardUser(),
     };
 
     addNotation(notation);
@@ -1165,7 +1211,7 @@ export default function notationMutateHelper() {
       boardType: notationStore.getParent().type,
       parentUUId: notationStore.getParent().uuid,
       notationType: "TEXT",
-      user: userStore.getCurrentUser()!,
+      user: getBoardUser(),
     };
 
     addNotation(notation);
@@ -1179,7 +1225,7 @@ export default function notationMutateHelper() {
       boardType: notationStore.getParent().type,
       parentUUId: notationStore.getParent().uuid,
       notationType: "ANNOTATION",
-      user: userStore.getCurrentUser()!,
+      user: getBoardUser(),
     };
 
     return addNotation(notation); /// TODO: check if need to check cell occupation
@@ -1193,7 +1239,7 @@ export default function notationMutateHelper() {
       boardType: notationStore.getParent().type,
       parentUUId: notationStore.getParent().uuid,
       notationType: "EXPONENT",
-      user: userStore.getCurrentUser()!,
+      user: getBoardUser(),
     };
     addCellNotation(notation);
     if (!clickedCell) return;
@@ -1213,7 +1259,7 @@ export default function notationMutateHelper() {
       boardType: notationStore.getParent().type,
       parentUUId: notationStore.getParent().uuid,
       notationType: notationType,
-      user: userStore.getCurrentUser()!,
+      user: getBoardUser(),
     };
 
     addCellNotation(notation);
@@ -1275,7 +1321,7 @@ export default function notationMutateHelper() {
       boardType: notationStore.getParent().type,
       parentUUId: notationStore.getParent().uuid,
       notationType: "SQRT",
-      user: userStore.getCurrentUser()!,
+      user: getBoardUser(),
     };
 
     return addNotation(sqrtNotation);
@@ -1294,7 +1340,7 @@ export default function notationMutateHelper() {
       boardType: notationStore.getParent().type,
       parentUUId: notationStore.getParent().uuid,
       notationType: "CURVE",
-      user: userStore.getCurrentUser()!,
+      user: getBoardUser(),
     };
     return await addNotation(curveNotation);
   }
@@ -1309,7 +1355,7 @@ export default function notationMutateHelper() {
       boardType: notationStore.getParent().type,
       parentUUId: notationStore.getParent().uuid,
       notationType: "CIRCLE",
-      user: userStore.getCurrentUser()!,
+      user: getBoardUser(),
     };
     return addNotation(circleNotation);
   }
@@ -1322,7 +1368,7 @@ export default function notationMutateHelper() {
       boardType: notationStore.getParent().type,
       parentUUId: notationStore.getParent().uuid,
       notationType: "FREESKETCH",
-      user: userStore.getCurrentUser()!,
+      user: getBoardUser(),
     };
     return await addNotation(freeSketchNotation);
   }
@@ -1355,7 +1401,7 @@ export default function notationMutateHelper() {
   }
 
   function getUserUUId(): string {
-    return userStore.getCurrentUser()!.uuid;
+    return getBoardUser().uuid;
   }
 
   function transposeSqrtCoordinatesIfNeeded(notation: MultiCellAttributes) {
@@ -1371,6 +1417,10 @@ export default function notationMutateHelper() {
     if (!notationStore.getNotation(notation.uuid)) return;
 
     notationStore.addNotation(notation, true, true);
+    if (isPracticeBoard() && isPracticeLayer(notation)) {
+      persistPracticeNotation(notation);
+      return;
+    }
     apiHelper.updateNotation(notation);
     userOutgoingOperations.syncOutgoingUpdateNotation(notation);
   }
@@ -1463,6 +1513,11 @@ export default function notationMutateHelper() {
 
     for (const notation of notations) {
       if (!notationStore.getNotation(notation.uuid)) return;
+      if (isPracticeBoard() && isPracticeLayer(notation)) {
+        persistPracticeNotation(notation);
+        notationStore.addNotation(notation, true, true);
+        continue;
+      }
       notationStore.addNotation(notation, true, true);
       await userOutgoingOperations.syncOutgoingUpdateNotation(notation);
     }
@@ -1515,7 +1570,11 @@ export default function notationMutateHelper() {
     try {
       const rect = cellStore.getSvgBoundingRect();
       for (const { sketch, symbol, placementCenter } of replacements) {
-        await apiHelper.deleteNotation(sketch);
+        if (isPracticeLayer(sketch)) {
+          removeLocalPracticeNotation(sketch.uuid);
+        } else {
+          await apiHelper.deleteNotation(sketch);
+        }
         notationStore.deleteNotation(sketch.uuid);
         if (notationStore.getParent().type === "LESSON") {
           userOutgoingOperations.syncOutgoingRemoveNotation(
@@ -1550,12 +1609,14 @@ export default function notationMutateHelper() {
         deleteKeyLock = true;
 
         if (notationStore.getSelectedNotations().length) {
-          notationStore
-            .getSelectedNotations()
-            .forEach(async (n: NotationAttributes) => {
-              // from db
+          const toDelete = [...notationStore.getSelectedNotations()];
+          for (const n of toDelete) {
+            if (isPracticeLayer(n)) {
+              removeLocalPracticeNotation(n.uuid);
+            } else {
               await apiHelper.deleteNotation(n);
-            });
+            }
+          }
 
           notationStore
             .getSelectedNotations()

@@ -1,11 +1,11 @@
 import axios from "axios";
 import { useCookies } from "vue3-cookies";
-import { useRouter } from "vue-router";
 import {
   baseURL,
   imagesURL,
   ACCESS_TOKEN_NAME,
 } from "common/globals";
+import { getOrCreateGuestId } from "./guestPracticeHelper";
 
 const { cookies } = useCookies();
 
@@ -40,14 +40,9 @@ export default function axiosHelper() {
             ? cookies.get(ACCESS_TOKEN_NAME)
             : null;
 
-        if (!access_token && window.location.pathname != "/login") {
-          //cookies.remove(ACCESS_TOKEN_NAME);
-
-          //const router = useRouter();
-
-          // Redirect to login
-          //router.push("/login");
-          //return Promise.reject(new Error("No access token"));
+        if (!access_token) {
+          config.headers = config.headers ?? {};
+          config.headers["X-Guest-Id"] = getOrCreateGuestId();
           return config;
         }
 

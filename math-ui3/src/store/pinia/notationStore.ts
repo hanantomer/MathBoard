@@ -54,6 +54,10 @@ export const useNotationStore = defineStore("notation", () => {
 
   let copiedNotations = ref(<Map<String, NotationAttributes>>new Map());
 
+  const boardParent = ref<
+    { uuid: string; type: BoardType } | undefined
+  >(undefined);
+
   function getSelectedNotations(): NotationAttributes[] {
     return Array.from(notations.value.values()).filter(
       (n) => n.selected === true,
@@ -84,7 +88,7 @@ export const useNotationStore = defineStore("notation", () => {
   }
 
   function getParent() {
-    return parent.value;
+    return boardParent.value;
   }
 
   function getNotations(): NotationAttributes[] {
@@ -188,7 +192,14 @@ export const useNotationStore = defineStore("notation", () => {
     }
 
     saveState();
-    notation.boardType = parent.value.type;
+    if (!notation.boardType) {
+      const p = boardParent.value;
+      if (!p) {
+        console.error("addNotation: board parent is undefined");
+        return false;
+      }
+      notation.boardType = p.type;
+    }
     notations.value.delete(notation.uuid);
     notations.value.set(notation.uuid, notation);
     if (doUpdateOccupationMatrix) {
@@ -205,7 +216,10 @@ export const useNotationStore = defineStore("notation", () => {
   }
 
   function addCopiedNotation(notation: NotationAttributes) {
-    notation.boardType = parent.value.type;
+    const p = boardParent.value;
+    if (p) {
+      notation.boardType = p.type;
+    }
     copiedNotations.value.set(notation.uuid, notation);
   }
 
@@ -293,7 +307,7 @@ export const useNotationStore = defineStore("notation", () => {
   }
 
   function setParent(parentUUID: string, boardType: BoardType) {
-    parent.value = { uuid: parentUUID, type: boardType };
+    boardParent.value = { uuid: parentUUID, type: boardType };
   }
 
   function resetSelectedNotations() {

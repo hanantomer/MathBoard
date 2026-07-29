@@ -5,10 +5,12 @@ import {
     BelongsTo,
     ForeignKey,
     AllowNull,
+    HasOne,
 } from "sequelize-typescript";
 import BoardDecorator from "../boardDecorator";
 import User from "../user.model";
 import Lesson from "../lesson/lesson.model";
+import PracticeQuestion from "../practice/practiceQuestion.model";
 import {
     QuestionAttributes,
     QuestionCreationAttributes,
@@ -29,13 +31,15 @@ export default class Question extends Model<
     })
     user!: User;
 
+    @AllowNull(true)
     @ForeignKey(() => Lesson)
-    lessonId!: number;
+    @Column({ type: DataType.INTEGER })
+    lessonId!: number | null;
 
     @BelongsTo(() => Lesson, {
-        foreignKey: { name: "lessonId", field: "lessonId", allowNull: false },
+        foreignKey: { name: "lessonId", field: "lessonId", allowNull: true },
     })
-    lesson!: Lesson;
+    lesson!: Lesson | null;
 
     @AllowNull(false)
     @Column({
@@ -49,4 +53,10 @@ export default class Question extends Model<
         type: DataType.STRING,
     })
     name!: string;
+
+    @HasOne(() => PracticeQuestion, {
+        foreignKey: "questionId",
+        as: "practice",
+    })
+    practice!: PracticeQuestion | null;
 }

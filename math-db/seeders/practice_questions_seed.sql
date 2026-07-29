@@ -1,0 +1,3 @@
+-- Practice questions are seeded by seed.bat (not SQL).
+-- Content lives in math-common/src/practiceQuestionTemplates.ts
+-- and is written by: seeders/seedPracticeQuestions.bat

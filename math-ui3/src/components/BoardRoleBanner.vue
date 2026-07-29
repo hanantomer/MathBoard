@@ -52,6 +52,15 @@ const message = computed(() => {
       ? BOARD_ROLE_BANNERS.lessonCanEdit
       : BOARD_ROLE_BANNERS.lessonViewOnly;
   }
+  if (level === "practice") {
+    if (boardContext.breadcrumbs.some((b) => b.to?.name === "practiceBlank")) {
+      return BOARD_ROLE_BANNERS.practiceBlank;
+    }
+    if (!userStore.getCurrentUser()) {
+      return BOARD_ROLE_BANNERS.practiceGuest;
+    }
+    return BOARD_ROLE_BANNERS.practiceStudent;
+  }
   if (level === "question") {
     return isTeacher
       ? BOARD_ROLE_BANNERS.questionTeacher
@@ -66,6 +75,9 @@ const message = computed(() => {
 });
 
 const alertType = computed(() => {
+  if (boardContext.level === "practice") {
+    return "info";
+  }
   if (boardContext.level === "lesson" && !canEdit.value) {
     return "info";
   }
@@ -73,6 +85,9 @@ const alertType = computed(() => {
 });
 
 const icon = computed(() => {
+  if (boardContext.level === "practice") {
+    return "mdi-robot-outline";
+  }
   if (boardContext.level === "lesson" && userStore.isTeacher()) {
     return "mdi-information-outline";
   }

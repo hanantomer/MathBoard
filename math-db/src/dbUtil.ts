@@ -3,6 +3,7 @@ import "reflect-metadata";
 import Lesson  from "./models/lesson/lesson.model"
 import StudentLesson  from "./models/lesson/studentLesson.model";
 import Question  from "./models/question/question.model";
+import PracticeQuestion from "./models/practice/practiceQuestion.model";
 import Answer  from "./models/answer/answer.model";
 import User from "./models/user.model";
 import Color from "./models/color.model";
@@ -24,6 +25,11 @@ import {
 import { LessonCreationAttributes } from "../../math-common/build/lessonTypes";
 import { QuestionCreationAttributes } from "../../math-common/build/questionTypes";
 import {
+    PracticeQuestionCreationAttributes,
+    PracticeQuestionListItem,
+    PracticeQuestionUpdateAttributes,
+} from "../../math-common/build/practiceQuestionTypes";
+import {
     AnswerAttributes,
     AnswerCreationAttributes,
 } from "../../math-common/build/answerTypes";
@@ -33,6 +39,9 @@ import {
     BoardTypeValues,
     NotationTypeValues,
 } from "../../math-common/build/unions";
+import { PRACTICE_QUESTION_TEMPLATES } from "../../math-common/build/practiceQuestionTemplates";
+import type { PracticeQuestionTemplate } from "../../math-common/build/practiceQuestionTemplates";
+import { toQuestionStemNotation } from "./practiceQuestionTemplateUtil";
 import { Model, ModelCtor } from "sequelize";
 
 function capitalize(str: string): string {
@@ -289,13 +298,271 @@ export default function dbUtil() {
 
     // question
 
+    function toPracticeListItem(row: PracticeQuestion): PracticeQuestionListItem {
+        const question = row.question;
+        return {
+            uuid: question.uuid,
+            practiceUUId: row.uuid,
+            name: question.name,
+            subject: row.subject,
+            createdAt: question.createdAt,
+            user: question.user,
+        };
+    }
+
     async function getQuestion(questionUUId: string): Promise<Question | null> {
         let questionId = await getIdByUUId("Question", questionUUId);
         if (!questionId) return null;
 
         return await Question.findByPk(questionId, {
-            include: { all: true },
+            include: [
+                { model: User },
+                { model: Lesson, required: false },
+                {
+                    model: PracticeQuestion,
+                    as: "practice",
+                    required: false,
+                },
+            ],
         });
+    }
+
+    function formatQuestionForClient(question: Question) {
+        const plain = question.get({ plain: true }) as Record<string, unknown>;
+        const practice = plain.practice as PracticeQuestion | null | undefined;
+        if (practice) {
+            plain.practice = {
+                uuid: practice.uuid,
+                subject: practice.subject,
+            };
+            plain.lesson = null;
+        } else {
+            plain.practice = null;
+        }
+        if (!plain.lessonId) {
+            plain.lesson = null;
+        }
+        return plain;
+    }
+
+    async function getPracticeQuestion(
+        questionUUId: string
+    ): Promise<PracticeQuestionListItem | null> {
+        const questionId = await getIdByUUId("Question", questionUUId);
+        if (!questionId) return null;
+
+        const row = await PracticeQuestion.findOne({
+            where: { questionId },
+            include: [
+                {
+                    model: Question,
+                    as: "question",
+                    include: [User],
+                },
+            ],
+        });
+        if (!row) return null;
+        return toPracticeListItem(row);
+    }
+
+    async function getPracticeQuestions(
+        subject?: string
+    ): Promise<PracticeQuestionListItem[]> {
+        const where = subject ? { subject } : undefined;
+
+        const rows = await PracticeQuestion.findAll({
+            where,
+            include: [
+                {
+                    model: Question,
+                    as: "question",
+                    include: [User],
+                },
+            ],
+            order: [["createdAt", "ASC"]],
+        });
+
+        return rows.map(toPracticeListItem);
+    }
+
+    async function createPracticeQuestion(
+        body: PracticeQuestionCreationAttributes
+    ): Promise<PracticeQuestionListItem> {
+        const sequelize = db.sequelize;
+        const userId = (await getIdByUUId("User", body.user.uuid)) as number;
+
+        return await sequelize.transaction(async (transaction) => {
+            const question = await Question.create(
+                {
+                    name: body.name,
+                    lessonId: null,
+                    userId,
+                } as any,
+                { transaction }
+            );
+
+            const practice = await PracticeQuestion.create(
+                {
+                    questionId: question.id,
+                    subject: body.subject.trim(),
+                    userId,
+                },
+                { transaction }
+            );
+
+            const row = await PracticeQuestion.findByPk(practice.id, {
+                include: [
+                    {
+                        model: Question,
+                        as: "question",
+                        include: [User],
+                    },
+                ],
+                transaction,
+            });
+
+            return toPracticeListItem(row!);
+        });
+    }
+
+    async function updatePracticeQuestion(
+        questionUUId: string,
+        updates: PracticeQuestionUpdateAttributes
+    ): Promise<PracticeQuestionListItem | null> {
+        const questionId = await getIdByUUId("Question", questionUUId);
+        if (!questionId) return null;
+
+        const practice = await PracticeQuestion.findOne({
+            where: { questionId },
+        });
+        if (!practice) return null;
+
+        if (updates.name?.trim()) {
+            await Question.update(
+                { name: updates.name.trim() },
+                { where: { id: questionId } }
+            );
+        }
+        if (updates.subject?.trim()) {
+            await PracticeQuestion.update(
+                { subject: updates.subject.trim() },
+                { where: { id: practice.id } }
+            );
+        }
+
+        return getPracticeQuestion(questionUUId);
+    }
+
+    async function questionStemHasNotations(
+        questionUUId: string,
+    ): Promise<boolean> {
+        for (let i = 0; i < NotationTypeValues.length; i++) {
+            const notationType = NotationTypeValues[i];
+            const rows = await getNotations(
+                "QUESTION",
+                notationType,
+                questionUUId,
+            );
+            if (rows && rows.length > 0) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    async function syncPracticeQuestionTemplate(
+        template: PracticeQuestionTemplate,
+        owner: UserAttributes,
+    ): Promise<void> {
+        let questionId = await getIdByUUId("Question", template.uuid);
+        const userId = owner.id as number;
+
+        if (!questionId) {
+            const question = await Question.create({
+                uuid: template.uuid,
+                name: template.name,
+                lessonId: null,
+                userId,
+            } as any);
+            questionId = question.id as number;
+            await PracticeQuestion.create({
+                questionId,
+                subject: template.subject,
+                userId,
+            });
+            logger.info(`Created practice question ${template.id}`);
+        } else {
+            await Question.update(
+                { name: template.name, lessonId: null } as any,
+                { where: { id: questionId } },
+            );
+            const practice = await PracticeQuestion.findOne({
+                where: { questionId },
+            });
+            if (!practice) {
+                await PracticeQuestion.create({
+                    questionId,
+                    subject: template.subject,
+                    userId,
+                });
+            } else if (practice.subject !== template.subject) {
+                await PracticeQuestion.update(
+                    { subject: template.subject },
+                    { where: { id: practice.id } },
+                );
+            }
+        }
+
+        // Practice stems are system-managed: refresh from templates so position/content updates apply.
+        const kindsInTemplate = new Set(
+            template.notations.map((item) => item.kind),
+        );
+        const questionIdForStem = await getIdByUUId("Question", template.uuid);
+        if (questionIdForStem) {
+            for (const kind of kindsInTemplate) {
+                const modelName = getModelName("QUESTION", kind);
+                try {
+                    if (!findModel(modelName)) continue;
+                    await findModel(modelName).destroy({
+                        where: { questionId: questionIdForStem } as any,
+                    });
+                } catch (error) {
+                    logger.warn(
+                        `Could not clear ${kind} stem for ${template.id}: ${error}`,
+                    );
+                }
+            }
+        }
+
+        for (const item of template.notations) {
+            const notation = toQuestionStemNotation(
+                item,
+                template.uuid,
+                owner,
+            );
+            await createNotation(
+                "QUESTION",
+                item.kind,
+                notation as NotationAttributes,
+            );
+        }
+        logger.info(
+            `Seeded ${template.notations.length} stem notations for ${template.id}`,
+        );
+    }
+
+    async function syncPracticeQuestionBank(): Promise<void> {
+        const ownerRow = await User.findOne({ order: [["id", "ASC"]] });
+        if (!ownerRow) {
+            throw new Error(
+                "No user in database — run seeders/user.sql first",
+            );
+        }
+        const owner = ownerRow.get({ plain: true }) as UserAttributes;
+
+        for (const template of PRACTICE_QUESTION_TEMPLATES) {
+            await syncPracticeQuestionTemplate(template, owner);
+        }
     }
 
     async function getQuestions(
@@ -317,6 +584,9 @@ export default function dbUtil() {
     async function createQuestion(
         question: QuestionCreationAttributes
     ): Promise<Question> {
+        if (!question.lesson?.uuid) {
+            throw new Error("lesson is required for lesson questions");
+        }
         (question as any).lessonId = await getIdByUUId(
             "Lesson",
             question.lesson.uuid
@@ -336,7 +606,7 @@ export default function dbUtil() {
         let answerId = await getIdByUUId("Answer", answerUUId);
         if (!answerId) return null;
         const answer = (await Answer.findByPk(answerId, {
-            include: [{ model: Question, include: [{ model: Lesson }] },{ model: User }]
+            include: [{ model: Question, include: [{ model: Lesson, required: false }] },{ model: User }]
         })) as AnswerAttributes | null;
 
         return answer;
@@ -347,7 +617,7 @@ export default function dbUtil() {
         if (!questionId) return null;
         return await Answer.findAll({
             include: [
-                { model: Question, include: [{ model: Lesson }] },
+                { model: Question, include: [{ model: Lesson, required: false }] },
                 { model: User },
             ],
             where: {
@@ -1024,6 +1294,10 @@ export default function dbUtil() {
     async function deleteQuestion(
         questionUUId: string,
     ): Promise<boolean> {
+        if (await isPracticeQuestion(questionUUId)) {
+            return false;
+        }
+
         const questionId = await getIdByUUId("Question", questionUUId);
         if (!questionId) {
             return false;
@@ -1031,6 +1305,7 @@ export default function dbUtil() {
 
         await deleteAnswersForQuestion(questionUUId);
         await deleteBoardNotations("QUESTION", questionUUId);
+        await PracticeQuestion.destroy({ where: { questionId } as any });
         await Question.destroy({ where: { id: questionId } });
         return true;
     }
@@ -1067,10 +1342,27 @@ export default function dbUtil() {
         return getLesson(lessonUUId);
     }
 
+    async function isPracticeQuestion(
+        questionUUId: string,
+    ): Promise<boolean> {
+        const questionId = await getIdByUUId("Question", questionUUId);
+        if (!questionId) {
+            return false;
+        }
+        const row = await PracticeQuestion.findOne({
+            where: { questionId },
+        });
+        return row != null;
+    }
+
     async function updateQuestion(
         questionUUId: string,
         name: string,
     ): Promise<Question | null> {
+        if (await isPracticeQuestion(questionUUId)) {
+            return null;
+        }
+
         const questionId = await getIdByUUId("Question", questionUUId);
         if (!questionId) {
             return null;
@@ -1109,7 +1401,10 @@ export default function dbUtil() {
         }
 
         const question = await getQuestion(questionUUId);
-        return question?.userId === userId;
+        if (!question || (await isPracticeQuestion(questionUUId))) {
+            return false;
+        }
+        return question.userId === userId;
     }
 
     async function canUserEditLessonBoard(
@@ -1150,6 +1445,13 @@ export default function dbUtil() {
         deleteLesson,
         canUserManageLesson,
         getQuestion,
+        formatQuestionForClient,
+        getPracticeQuestion,
+        getPracticeQuestions,
+        isPracticeQuestion,
+        createPracticeQuestion,
+        updatePracticeQuestion,
+        syncPracticeQuestionBank,
         getQuestions,
         createQuestion,
         updateQuestion,

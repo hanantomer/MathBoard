@@ -25,6 +25,32 @@ export const WELCOME_TEACHER_HERO = {
   cta: "Go to Lessons",
 } as const;
 
+/** Welcome entry: classroom (teacher + students) vs solo AI practice. */
+export const WELCOME_PATHS = {
+  brandLine: "Math Whiteboard",
+  brandSub:
+    "Two ways to use the same board: live classroom, or solo AI tutor.",
+  classroom: {
+    title: "Classroom",
+    teacherBlurb: "Teachers and students together — run a live lesson in four steps:",
+    studentBlurb:
+      "Teachers and students together — join a shared lesson, then work on questions and answers.",
+    guestBlurb:
+      "Teachers and students together — live lessons, questions, and answers on a shared board.",
+    ctaTeacher: "Go to Lessons",
+    ctaStudent: "Go to Lessons",
+    ctaGuest: "Get started in class",
+  },
+  practice: {
+    title: "AI tutor",
+    blurb:
+      "Solo practice by subject — write on the board, check answers, and get voice coaching (work stays on this device).",
+    cta: "Practice by subject",
+    ctaGuest: "Practice by subject",
+    blankCta: "Blank sheet (paste or upload image)",
+  },
+} as const;
+
 export const COLLABORATION = {
   copyLink: "Copy access link",
   onlineStudents: "Online Students",
@@ -49,6 +75,12 @@ export const BOARD_ROLE_BANNERS = {
   answerTeacher:
     "Reviewing a student answer — use checkmarks in the toolbar to grade cells.",
   answerStudent: "Your answer board — write here. Your teacher will review when you submit.",
+  practiceStudent:
+    "Practicing with AI tutor — Check and voice coach use your daily AI quota. Work is saved only on this device.",
+  practiceBlank:
+    "Blank practice sheet — paste (Ctrl+V) or upload a worksheet image, then work on the board. Saved only on this device.",
+  practiceGuest:
+    "Guest practice — limited free Check/Coach uses per day. Sign in for a higher daily limit. Work stays on this device.",
 } as const;
 
 export const TOOL_TOOLTIPS: Record<string, string> = {

@@ -18,6 +18,7 @@ import useNotationMutateHelper from "./notationMutateHelper";
 import useUserOutgoingOperationsHelper from "./userOutgoingOperationsHelper";
 import useEventBus from "./eventBusHelper";
 import useAuthorizationHelper from "./authorizationHelper";
+import { handlePracticeClick } from "./practiceBoardAdapter";
 import { NotationType } from "common/unions";
 import { viewportPointerPosition } from "./pointerCoordinateHelper";
 
@@ -33,6 +34,23 @@ const userStore = useUserStore();
 const editModeStore = useEditModeStore();
 
 export default function selectionHelper() {
+  function notationUuidFromEventTarget(
+    target: EventTarget | null,
+  ): string | undefined {
+    let el = target as HTMLElement | null;
+    while (el && el.tagName !== "svg" && el.tagName !== "SVG") {
+      if (el.id && notationStore.getNotation(el.id)) {
+        return el.id;
+      }
+      const uuidAttr = el.getAttribute?.("uuid");
+      if (uuidAttr && notationStore.getNotation(uuidAttr)) {
+        return uuidAttr;
+      }
+      el = el.parentElement;
+    }
+    return undefined;
+  }
+
   function selectNotationsOfArea(rectCoordinates: RectCoordinates) {
     // must be initialized here to prevent circular refernce
     const notationStore = useNotationStore();
@@ -46,7 +64,7 @@ export default function selectionHelper() {
 
   function selectNotationAtPosition(dotCoordinates: DotCoordinates): boolean {
     if (
-      notationStore.getParent().type === "LESSON" &&
+      notationStore.getParent()?.type === "LESSON" &&
       !authorizationHelper.canEdit()
     ) {
       return false;
@@ -244,20 +262,18 @@ export default function selectionHelper() {
   async function setSelectedCell(cell: CellAttributes, setEditMode: boolean) {
     const notationStore = useNotationStore();
 
-    if (
-      cellStore.getSelectedCell()?.row === cell.row &&
-      cellStore.getSelectedCell()?.col === cell.col
-    ) {
+    if (!authorizationHelper.canEdit()) return;
+
+    const prev = cellStore.getSelectedCell();
+    cellStore.setSelectedCell(cell!, setEditMode);
+
+    if (prev?.row === cell.row && prev?.col === cell.col) {
       return;
     }
 
-    if (!authorizationHelper.canEdit()) return;
-
-    cellStore.setSelectedCell(cell!, setEditMode);
-
     if (
       lessonStore.getCurrentLesson() &&
-      notationStore.getParent().type == "LESSON"
+      notationStore.getParent()?.type == "LESSON"
     ) {
       await userOutgoingOperationsHelper.syncOutgoingSelectedCell(
         cell,
@@ -270,7 +286,7 @@ export default function selectionHelper() {
   /** Select an existing notation under the pointer (used while a draw tool is active). */
   function trySelectNotationAtPointer(e: PointerEvent): boolean {
     if (
-      notationStore.getParent().type === "LESSON" &&
+      notationStore.getParent()?.type === "LESSON" &&
       !authorizationHelper.canEdit()
     ) {
       return false;
@@ -280,15 +296,8 @@ export default function selectionHelper() {
 
     const position = viewportPointerPosition(e);
 
-    const target = e.target as HTMLElement | null;
-    const uuid = target?.id;
-    const notationClicked =
-      !!uuid &&
-      target?.tagName !== "svg" &&
-      target?.tagName !== "g" &&
-      !!notationStore.getNotation(uuid);
-
-    if (notationClicked) {
+    const uuid = notationUuidFromEventTarget(e.target);
+    if (uuid) {
       selectNotation(uuid);
       return true;
     }
@@ -297,8 +306,9 @@ export default function selectionHelper() {
   }
 
   function selectClickedPosition(e: PointerEvent) {
+    const boardParent = notationStore.getParent();
     if (
-      notationStore.getParent().type === "LESSON" &&
+      boardParent?.type === "LESSON" &&
       !authorizationHelper.canEdit()
     ) {
       return;
@@ -308,24 +318,32 @@ export default function selectionHelper() {
 
     const position = viewportPointerPosition(e);
 
-    let clickedCell = screenHelper.getCellByDotCoordinates(position);
+    const clickedCell = screenHelper.getCellByDotCoordinates(position);
     if (!clickedCell) return;
+
+    const uuid = notationUuidFromEventTarget(e.target);
+    const clickedNotation = uuid ? notationStore.getNotation(uuid) : null;
+
+    if (
+      handlePracticeClick(clickedNotation ?? null, clickedCell, {
+        selectNotation,
+        setSelectedCell,
+        resetSelectedNotations: () => notationStore.resetSelectedNotations(),
+      })
+    ) {
+      return;
+    }
 
     notationStore.resetSelectedNotations();
 
-    const uuid = (e.target as any).id;
     let notationFoundAtCell = false;
-    const notationClicked = uuid && (e.target as any).tagName !== "svg"
-    if (notationClicked) {
-      // select clicked element
-      selectNotation(uuid);
+    if (clickedNotation) {
+      selectNotation(clickedNotation.uuid);
     } else {
-      // select element in clicked cell
       notationFoundAtCell = selectNotationAtPosition(position);
     }
 
-    if (!notationClicked && !notationFoundAtCell) {
-      // if no notation found, reset selected notations
+    if (!clickedNotation && !notationFoundAtCell) {
       notationStore.resetSelectedNotations();
       setSelectedCell(clickedCell, true);
       return;
@@ -334,11 +352,18 @@ export default function selectionHelper() {
     const pointNotationSelected =
       (notationFoundAtCell &&
         isCellNotationType(notationStore.getNotations()[0].notationType)) ||
-      (notationClicked &&
-        isCellNotationType(notationStore.getNotation(uuid)!.notationType));
+      (clickedNotation &&
+        isCellNotationType(clickedNotation.notationType));
 
     if (pointNotationSelected) {
-      setSelectedCell(clickedCell, pointNotationSelected);
+      setSelectedCell(clickedCell, true);
+      return;
+    }
+
+    // Answer: TEXT/IMAGE stems don't set the active cell otherwise.
+    if (boardParent?.type === "ANSWER") {
+      notationStore.resetSelectedNotations();
+      setSelectedCell(clickedCell, true);
     }
   }
 

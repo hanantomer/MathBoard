@@ -54,15 +54,17 @@ async function loadAnswer(answerUUId: string) {
     const studentName =
       `${answer.user?.firstName ?? ""} ${answer.user?.lastName ?? ""}`.trim() ||
       "Student";
-    boardContext.setAnswerForTeacher(
-      lesson.name,
-      lesson.uuid,
-      question.name,
-      question.uuid,
-      studentName,
-      answer.uuid,
-    );
-  } else {
+    if (lesson) {
+      boardContext.setAnswerForTeacher(
+        lesson.name,
+        lesson.uuid,
+        question.name,
+        question.uuid,
+        studentName,
+        answer.uuid,
+      );
+    }
+  } else if (lesson) {
     boardContext.setAnswerForStudent(
       lesson.name,
       lesson.uuid,

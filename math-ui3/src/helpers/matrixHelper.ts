@@ -30,9 +30,6 @@ export default function useMatrixHelper() {
   let matrix: any[] = [];
 
   function setCellVerticalHeight(svgId: string) {
-    if (cellStore.getCellVerticalHeight() !== cellSpace /*not initial value*/)
-      return;
-
     let clientWidth: number | undefined =
       document.getElementById(svgId)?.clientWidth;
 
@@ -49,6 +46,8 @@ export default function useMatrixHelper() {
   function setMatrix(svgId: string) {
     const el = document.getElementById(svgId);
     if (!el) return;
+    matrix = [];
+    d3.select("#" + svgId).selectAll("g").remove();
     setCellVerticalHeight(svgId);
 
     // render rows

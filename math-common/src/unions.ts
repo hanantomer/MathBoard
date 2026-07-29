@@ -2,6 +2,7 @@ export const BoardTypeValues = [
   "LESSON",
   "QUESTION",
   "ANSWER",
+  "PRACTICE",
 ] as const;
 
 export type BoardType =

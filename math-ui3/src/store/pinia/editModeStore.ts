@@ -296,6 +296,7 @@ export const useEditModeStore = defineStore("editMode", () => {
   }
 
   function setDefaultEditMode() {
+    setGlobalEditMode("TEXT");
     setEditMode(defaultEditMode);
   }
 

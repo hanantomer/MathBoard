@@ -74,6 +74,7 @@
 import { defineAsyncComponent, nextTick, onUnmounted, ref, watch } from "vue";
 import { useEventListener, useThrottleFn } from "@vueuse/core";
 import useNotationLoadingHelper from "../helpers/notationLoadingHelper";
+import { loadPracticeBoard } from "../helpers/practiceBoardAdapter";
 import useMatrixHelper from "../helpers/matrixHelper";
 import useEventHelper from "../helpers/eventHelper";
 import useWatchHelper from "../helpers/watchHelper";
@@ -166,7 +167,7 @@ let cursor = ref<CursorType>("auto");
 let quickTipsTimer: ReturnType<typeof setTimeout> | undefined;
 
 function scheduleQuickTipsTour() {
-  if (notationStore.getParent().type !== "LESSON") return;
+  if (notationStore.getParent()?.type !== "LESSON") return;
   if (onboardingStore.isQuickTipsComplete()) return;
   if (userStore.isTeacher() && onboardingStore.shouldShowTeacherChecklist) {
     return;
@@ -195,6 +196,8 @@ onUnmounted(() => {
   eventHelper.unregisterSvgPointerDown();
   eventHelper.unregisterSvgPointerMove();
   eventHelper.unregisterSvgPointerUp();
+  eventHelper.unregisterKeyUp();
+  eventHelper.unregisterKeyDown();
   eventHelper.unregisterPaste();
   eventHelper.unregisterCopy();
   eventHelper.unregisterMobileEscape();
@@ -327,12 +330,25 @@ watchHelper.watchNotationsEvent(props.svgId, matrixHelper.refreshScreen);
 
 async function load() {
   notationsReady.value = false;
+
+  await nextTick();
+  cellStore.resetCellDimensions();
   cellStore.setSvgBoundingRect(props.svgId);
+
+  eventHelper.unregisterPointerUp();
+  eventHelper.unregisterSvgPointerDown();
+  eventHelper.unregisterSvgPointerMove();
+  eventHelper.unregisterSvgPointerUp();
+  eventHelper.unregisterKeyUp();
+  eventHelper.unregisterKeyDown();
+  eventHelper.unregisterPaste();
+  eventHelper.unregisterCopy();
+  eventHelper.unregisterMobileEscape();
+
   eventHelper.registerPointerUp();
   eventHelper.registerSvgPointerDown();
   eventHelper.registerSvgPointerMove();
   eventHelper.registerSvgPointerUp();
-
   eventHelper.registerKeyUp();
   eventHelper.registerKeyDown();
   eventHelper.registerPaste();
@@ -343,11 +359,16 @@ async function load() {
 
   try {
     notationStore.clearNotations();
-
+    cellStore.resetSelectedCell();
     matrixHelper.setMatrix(props.svgId);
 
-    // for answer load also question notations too
-    if (notationStore.getParent().type === "ANSWER") {
+    const boardParent = notationStore.getParent();
+    if (!boardParent) {
+      return;
+    }
+
+    // for answer or practice load also question notations
+    if (boardParent.type === "ANSWER") {
       await notationLoadingHelper.loadNotations(
         "QUESTION",
         answerStore.getCurrentAnswer()!.question.uuid!,
@@ -361,14 +382,20 @@ async function load() {
       return;
     }
 
+    if (boardParent.type === "PRACTICE") {
+      await loadPracticeBoard(boardParent.uuid);
+      return;
+    }
+
     await notationLoadingHelper.loadNotations(
-      notationStore.getParent().type,
-      notationStore.getParent().uuid,
+      boardParent.type,
+      boardParent.uuid,
     );
   } finally {
     progressBar.value = false;
     notationsReady.value = true;
     await nextTick();
+    matrixHelper.refreshScreen(props.svgId);
     refreshSvgBoundingRect();
   }
 }

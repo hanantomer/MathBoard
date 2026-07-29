@@ -166,6 +166,8 @@ function exp(col: number, row: number, value: string): LessonTemplateExponent {
   return { kind: "EXPONENT", col, row, value };
 }
 
+export { sym, text, line, ann, curve, sqrt, exp };
+
 /** Shipped sample lessons — cloned into the signed-in teacher's account. */
 export const LESSON_TEMPLATES: LessonTemplate[] = [
   {

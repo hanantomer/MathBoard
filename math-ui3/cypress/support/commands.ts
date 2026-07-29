@@ -314,9 +314,20 @@ Cypress.Commands.add("drawPolyline", (points: Array<[number, number]>) => {
 });
 
 Cypress.Commands.add("login", () => {
-  cy.dataCy("signin_teacher_btn").click();
-  cy.dataCy("login_email").type("hanantomer@gmail.com");
-  cy.dataCy("login_password").type("12345678");
+  // Direct login route is more reliable than Welcome auth links after redesign.
+  cy.clearCookies();
+  cy.visit("http://localhost:13035/login?userType=TEACHER", {
+    onBeforeLoad(win) {
+      try {
+        win.localStorage.clear();
+        win.sessionStorage.clear();
+      } catch {
+        /* ignore */
+      }
+    },
+  });
+  cy.dataCy("login_email").should("be.visible").clear().type("hanantomer@gmail.com");
+  cy.dataCy("login_password").clear().type("12345678");
   cy.get('[data-cy="login"] > .v-btn__content').click();
 });
 

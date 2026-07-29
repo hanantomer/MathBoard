@@ -1,5 +1,6 @@
 import { defineStore } from "pinia";
 import { ref, computed } from "vue";
+import { PRACTICE_BLANK_UUID } from "../../helpers/practiceBoardAdapter";
 
 const APP_NAME = "Math Whiteboard";
 
@@ -7,6 +8,8 @@ export type BoardContextLevel =
   | "lesson"
   | "question"
   | "answer"
+  | "practice"
+  | "practice-list"
   | "lessons-list"
   | "questions-list"
   | "answers-list"
@@ -30,6 +33,9 @@ export const useBoardContextStore = defineStore("boardContext", () => {
         return "teal-lighten-1";
       case "answer":
         return "amber-lighten-1";
+      case "practice":
+        return "light-green-lighten-1";
+      case "practice-list":
       case "lessons-list":
       case "questions-list":
       case "answers-list":
@@ -70,6 +76,57 @@ export const useBoardContextStore = defineStore("boardContext", () => {
     level.value = "answers-list";
     chipLabel.value = "Answers";
     breadcrumbs.value = [{ text: "Review student submissions" }];
+  }
+
+  function setPracticeList() {
+    level.value = "practice-list";
+    chipLabel.value = "Practice";
+    breadcrumbs.value = [{ text: "Pick a subject and question" }];
+  }
+
+  function setPracticeSession(
+    subject: string,
+    questionName: string,
+    questionUUId: string,
+  ) {
+    level.value = "practice";
+    chipLabel.value = "Practice";
+    breadcrumbs.value = [
+      {
+        text: subject,
+        to: { name: "practice" },
+      },
+      {
+        text: questionName,
+        to:
+          questionUUId === PRACTICE_BLANK_UUID
+            ? { name: "practiceBlank" }
+            : { name: "practiceQuestion", params: { questionUUId } },
+      },
+    ];
+  }
+
+  function setPracticeBlankSession() {
+    setPracticeSession("Blank sheet", "Paste or upload image", PRACTICE_BLANK_UUID);
+  }
+
+  function setPracticeQuestionEditor(
+    subject: string,
+    questionName: string,
+    questionUUId: string,
+  ) {
+    level.value = "question";
+    chipLabel.value = "Practice question";
+    breadcrumbs.value = [
+      {
+        text: subject,
+        to: { name: "practice" },
+      },
+      {
+        text: questionName,
+        to: { name: "question", params: { questionUUId } },
+      },
+    ];
   }
 
   function setLesson(lessonName: string, lessonUUId: string) {
@@ -164,6 +221,10 @@ export const useBoardContextStore = defineStore("boardContext", () => {
     setLessonsList,
     setQuestionsList,
     setAnswersList,
+    setPracticeList,
+    setPracticeSession,
+    setPracticeBlankSession,
+    setPracticeQuestionEditor,
     setLesson,
     setQuestion,
     setAnswerForTeacher,

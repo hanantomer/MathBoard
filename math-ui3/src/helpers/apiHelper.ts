@@ -20,10 +20,35 @@ import {
   QuestionAttributes,
   QuestionCreationAttributes,
 } from "common/questionTypes";
+import {
+  PracticeQuestionListItem,
+  PracticeCheckRequest,
+  PracticeCheckResult,
+  PracticeCoachRequest,
+  PracticeCoachResult,
+} from "common/practiceQuestionTypes";
 import { AnswerAttributes, AnswerCreationAttributes } from "common/answerTypes";
 import axios, { AxiosError } from "axios";
 import axiosHelper from "./axiosHelper";
+import {
+  isPracticeAiLimitError,
+  practiceAiLimitMessage,
+} from "./guestPracticeHelper";
 const { baseURL, imagesURL } = axiosHelper();
+
+export class PracticeAiLimitError extends Error {
+  readonly limit?: number;
+  readonly remaining?: number;
+  constructor(message: string, limit?: number, remaining?: number) {
+    super(message);
+    this.name = "PracticeAiLimitError";
+    this.limit = limit;
+    this.remaining = remaining;
+  }
+}
+
+/** @deprecated Use PracticeAiLimitError */
+export const GuestAiLimitError = PracticeAiLimitError;
 
 export default function useApiHelper() {
   async function log(message: string) {
@@ -53,6 +78,83 @@ export default function useApiHelper() {
         serverMessage
           ? `Sketch OCR failed: ${serverMessage}`
           : `Sketch OCR failed: ${axiosError.message}`,
+      );
+    }
+  }
+
+  async function checkPracticeWork(
+    questionUUId: string,
+    studentWork: string,
+  ): Promise<PracticeCheckResult> {
+    try {
+      const { data } = await axios.post<PracticeCheckResult>(
+        baseURL + "/practice-questions/" + questionUUId + "/check",
+        { questionUUId, studentWork } satisfies PracticeCheckRequest,
+      );
+      return data;
+    } catch (error) {
+      const axiosError = error as AxiosError<{
+        message?: string;
+        error?: string;
+        limit?: number;
+        remaining?: number;
+      }>;
+      if (
+        isPracticeAiLimitError(
+          axiosError.response?.status,
+          axiosError.response?.data,
+        )
+      ) {
+        throw new PracticeAiLimitError(
+          practiceAiLimitMessage(axiosError.response?.data),
+          axiosError.response?.data?.limit,
+          axiosError.response?.data?.remaining,
+        );
+      }
+      const serverMessage =
+        axiosError.response?.data?.message ?? axiosError.response?.data?.error;
+      throw new Error(
+        serverMessage
+          ? `Practice check failed: ${serverMessage}`
+          : `Practice check failed: ${(error as AxiosError).message}`,
+      );
+    }
+  }
+
+  async function coachPracticeWork(
+    questionUUId: string,
+    studentWork: string,
+  ): Promise<PracticeCoachResult> {
+    try {
+      const { data } = await axios.post<PracticeCoachResult>(
+        baseURL + "/practice-questions/" + questionUUId + "/coach",
+        { questionUUId, studentWork } satisfies PracticeCoachRequest,
+      );
+      return data;
+    } catch (error) {
+      const axiosError = error as AxiosError<{
+        message?: string;
+        error?: string;
+        limit?: number;
+        remaining?: number;
+      }>;
+      if (
+        isPracticeAiLimitError(
+          axiosError.response?.status,
+          axiosError.response?.data,
+        )
+      ) {
+        throw new PracticeAiLimitError(
+          practiceAiLimitMessage(axiosError.response?.data),
+          axiosError.response?.data?.limit,
+          axiosError.response?.data?.remaining,
+        );
+      }      const serverMessage =
+        axiosError.response?.data?.message ?? axiosError.response?.data?.error;
+      throw new Error(
+        serverMessage
+          ? `Practice coach failed: ${serverMessage}`
+          : `Practice coach failed: ${(error as AxiosError).message}`,
       );
     }
   }
@@ -538,6 +640,44 @@ export default function useApiHelper() {
     }
   }
 
+  async function getPracticeQuestions(
+    subject?: string,
+  ): Promise<PracticeQuestionListItem[]> {
+    try {
+      const query = subject
+        ? `?subject=${encodeURIComponent(subject)}`
+        : "";
+      const { data } = await axios.get<PracticeQuestionListItem[]>(
+        baseURL + "/practice-questions" + query,
+      );
+      return data;
+    } catch (error) {
+      throw new Error(
+        `Failed to get practice questions: ${(error as AxiosError).message}`,
+      );
+    }
+  }
+
+  async function getPracticeQuestion(
+    questionUUId: string,
+  ): Promise<PracticeQuestionListItem | null> {
+    try {
+      const { data } = await axios.get<PracticeQuestionListItem>(
+        baseURL + "/practice-questions/" + questionUUId,
+      );
+      return data;
+    } catch (error) {
+      if ((error as AxiosError).response?.status === 404) {
+        return null;
+      }
+      throw new Error(
+        `Failed to get practice question ${questionUUId}: ${
+          (error as AxiosError).message
+        }`,
+      );
+    }
+  }
+
   async function getAnswers(questionUUId: string): Promise<AnswerAttributes[]> {
     try {
       const { data } = await axios.get<AnswerAttributes[]>(
@@ -622,6 +762,8 @@ export default function useApiHelper() {
     getNotations,
     getAnswers,
     getQuestions,
+    getPracticeQuestions,
+    getPracticeQuestion,
     getStudentLessons,
     getTeacherLessons,
     getUser,
@@ -652,5 +794,7 @@ export default function useApiHelper() {
     deleteNotation,
     log,
     recognizeSketchOcr,
+    checkPracticeWork,
+    coachPracticeWork,
   };
 }

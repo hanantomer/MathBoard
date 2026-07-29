@@ -127,6 +127,24 @@ export const sqrtSymbolSuffix = "_sqs";
 
 export const ACCESS_TOKEN_NAME = "access_token";
 
+/** Cookie / localStorage key for anonymous practice guests. */
+export const GUEST_ID_COOKIE = "mathboard_guest_id";
+
+/** Max Check + Coach AI calls per guest per UTC day. */
+export const GUEST_AI_DAILY_LIMIT = 5;
+
+/**
+ * Max Check + Coach AI calls per registered user per UTC day
+ * (until paid plans exist).
+ */
+export const USER_AI_DAILY_LIMIT = 25;
+
+/** API error code when practice AI daily quota is exhausted. */
+export const PRACTICE_AI_LIMIT_ERROR = "practice_ai_limit";
+
+/** @deprecated Use PRACTICE_AI_LIMIT_ERROR */
+export const GUEST_AI_LIMIT_ERROR = PRACTICE_AI_LIMIT_ERROR;
+
 export type TextSyncUpdateData = {
   text: string;
   x: number;

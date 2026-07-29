@@ -233,9 +233,10 @@ export default function () {
         newSelectedCell: CellAttributes | undefined | null,
         oldSelectedCell: CellAttributes | undefined | null,
       ) => {
+        const activeSvgId = cellStore.getSvgId() || svgId;
         setTimeout(() => {
           matrixCellHelper.showSelectedCell(
-            svgId,
+            activeSvgId,
             newSelectedCell,
             oldSelectedCell,
           );

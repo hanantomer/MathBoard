@@ -236,12 +236,12 @@ const lessons = computed(() => {
 
 const questions = computed(() => {
   return Array.from(questionStore.getQuestions().values())
-    .filter((question) => question.lesson.uuid === selectedLesson.value)
+    .filter((question) => question.lesson?.uuid === selectedLesson.value)
     .map((question) => {
       return {
         uuid: question.uuid,
         name: question.name,
-        lessonName: question.lesson!.name,
+        lessonName: question.lesson?.name ?? "—",
         createdAt: question.createdAt,
       };
     });
@@ -318,12 +318,20 @@ async function saveQuestionRename(questionName: string) {
       route.name === "question" &&
       route.params.questionUUId === renameQuestionUUId.value
     ) {
-      boardContext.setQuestion(
-        updated.lesson.name,
-        updated.lesson.uuid,
-        updated.name,
-        updated.uuid,
-      );
+      if (updated.lesson) {
+        boardContext.setQuestion(
+          updated.lesson.name,
+          updated.lesson.uuid,
+          updated.name,
+          updated.uuid,
+        );
+      } else if (updated.practice) {
+        boardContext.setPracticeQuestionEditor(
+          updated.practice.subject,
+          updated.name,
+          updated.uuid,
+        );
+      }
     }
   } catch (error) {
     globalAlertStore.open(

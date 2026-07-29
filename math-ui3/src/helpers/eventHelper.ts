@@ -6,6 +6,8 @@ import useImageHelper from "./imageHelper";
 
 import useNotationMutationHelper from "./notationMutateHelper";
 import useEventBus from "../helpers/eventBusHelper";
+import useAuthorizationHelper from "./authorizationHelper";
+import { isPracticeBoard } from "./practiceBoardAdapter";
 
 import useSelectionHelper from "../helpers/selectionHelper";
 //import { isMobile } from "../../../math-common/src/globals";
@@ -18,6 +20,7 @@ const editModeStore = useEditModeStore();
 const notationMutationHelper = useNotationMutationHelper();
 const eventBus = useEventBus();
 const imageHelper = useImageHelper();
+const authorizationHelper = useAuthorizationHelper();
 
 export default function eventHelper() {
   async function copy() {
@@ -57,7 +60,7 @@ export default function eventHelper() {
     const clipboardItems = await navigator.clipboard.read();
     if (!clipboardItems.length) return;
     if (!cellStore.getSelectedCell()) return;
-    if (!userStore.isTeacher) return;
+    if (!userStore.isTeacher() && !isPracticeBoard()) return;
     if (clipboardItems[0].types.length === 0) return;
     if (clipboardItems[0].types[0] !== "text/plain") return;
 
@@ -92,8 +95,15 @@ export default function eventHelper() {
     });
   }
 
+  function ensurePasteAnchorCell() {
+    if (cellStore.getSelectedCell()) return;
+    selectionHelper.setSelectedCell({ col: 1, row: 1 }, true);
+  }
+
   async function pasteImage(e: ClipboardEvent): Promise<void> {
-    if (!userStore.isTeacher || !cellStore.getSelectedCell()) return;
+    if (!authorizationHelper.canEdit()) return;
+    ensurePasteAnchorCell();
+    if (!cellStore.getSelectedCell()) return;
 
     try {
       window.focus();

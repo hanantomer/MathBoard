@@ -93,6 +93,21 @@
       </template>
     </v-tooltip>
 
+    <!-- practice (question bank, no lesson) -->
+    <v-tooltip text="Practice" location="bottom">
+      <template v-slot:activator="{ props }">
+        <v-btn
+          data-cy="practice"
+          v-show="showPractice"
+          icon
+          v-on:click="navToPractice"
+          v-bind="props"
+        >
+          <v-icon>mdi-school-outline</v-icon>
+        </v-btn>
+      </template>
+    </v-tooltip>
+
     <!-- questions -->
     <v-tooltip text="Questions" location="bottom">
       <template v-slot:activator="{ props }">
@@ -326,6 +341,10 @@ const showQuestions = computed(() => {
   return userStore.getCurrentUser();
 });
 
+const showPractice = computed(() => {
+  return true;
+});
+
 const showAnswers = computed(() => {
   return isTeacher.value;
 });
@@ -373,6 +392,10 @@ function navToLessons() {
 
 function navToQuestions() {
   router.push("/questions");
+}
+
+function navToPractice() {
+  router.push("/practice");
 }
 
 function navToAnswers() {
@@ -441,12 +464,20 @@ async function saveRename(name: string) {
         renameTargetUuid.value,
         trimmed,
       );
-      boardContext.setQuestion(
-        updated.lesson.name,
-        updated.lesson.uuid,
-        updated.name,
-        updated.uuid,
-      );
+      if (updated.lesson) {
+        boardContext.setQuestion(
+          updated.lesson.name,
+          updated.lesson.uuid,
+          updated.name,
+          updated.uuid,
+        );
+      } else if (updated.practice) {
+        boardContext.setPracticeQuestionEditor(
+          updated.practice.subject,
+          updated.name,
+          updated.uuid,
+        );
+      }
     }
   } catch (error) {
     globalAlertStore.open(

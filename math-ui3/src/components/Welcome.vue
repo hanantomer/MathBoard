@@ -6,106 +6,190 @@
     <v-container class="welcome-container">
       <v-row no-gutters>
         <v-col class="text-center" cols="12">
-          <!-- Sign in/up card -->
-          <v-card
-            v-if="!userStore.getCurrentUser()"
-            class="auth-card"
-            elevation="0"
-            rounded="lg"
-          >
-            <v-card-text>
-              <span class="text-h6">
-                Already have an account?
+          <!-- Brand + auth on first row -->
+          <header class="welcome-brand">
+            <div class="welcome-brand__row">
+              <h1 class="welcome-brand__title">
+                {{ WELCOME_PATHS.brandLine }}
+              </h1>
+              <nav
+                v-if="!userStore.getCurrentUser()"
+                class="welcome-auth"
+                aria-label="Account"
+              >
                 <v-btn
                   data-cy="signin_teacher_btn"
                   variant="text"
                   color="primary"
-                  class="px-1 text-decoration-underline"
+                  density="comfortable"
+                  class="welcome-auth__btn text-decoration-underline"
                   @click="login('TEACHER', '')"
                 >
                   Sign in as Teacher
                 </v-btn>
-                or
+                <span class="welcome-auth__sep">·</span>
                 <v-btn
                   variant="text"
                   color="primary"
-                  class="px-1 text-decoration-underline"
+                  density="comfortable"
+                  class="welcome-auth__btn text-decoration-underline"
                   @click="login('STUDENT', '')"
                 >
                   Student
                 </v-btn>
-                or
+                <span class="welcome-auth__sep">·</span>
                 <v-btn
                   data-cy="signup_btn"
-                  size="x-large"
                   variant="text"
-                  color="primary"
-                  class="px-1 text-decoration-underline"
+                  color="orange"
+                  density="comfortable"
+                  class="welcome-auth__btn welcome-auth__btn--signup text-decoration-underline"
                   @click="register(false, '')"
                 >
                   Sign up
                 </v-btn>
-              </span>
-            </v-card-text>
-          </v-card>
+              </nav>
+            </div>
+            <p class="welcome-brand__sub">{{ WELCOME_PATHS.brandSub }}</p>
+          </header>
 
-          <!-- Hero: headline + (teacher steps) + single CTA -->
-          <v-card class="main-card" elevation="3" rounded="lg">
-            <v-card-title primary-title class="justify-center py-3 pb-1">
-              <h2 class="text-h4 font-weight-bold primary--text">
-                Teach MATH online with
-                <span class="text-orange">Math Whiteboard</span>
-              </h2>
-            </v-card-title>
-
-            <v-card-text
-              v-if="userStore.isTeacher()"
-              class="hero-teacher-body text-left"
+          <!-- Two product paths -->
+          <div class="path-grid">
+            <!-- Classroom: teacher + students -->
+            <v-card
+              class="path-card path-card--classroom"
+              elevation="3"
+              rounded="lg"
             >
-              <p class="hero-subtitle">{{ WELCOME_TEACHER_HERO.subtitle }}</p>
-              <ol class="hero-steps">
-                <li
-                  v-for="(step, index) in TEACHER_WORKFLOW_STEPS"
-                  :key="step"
-                  class="hero-step"
-                >
-                  <span class="hero-step__num" aria-hidden="true">{{
-                    index + 1
-                  }}</span>
-                  <span class="hero-step__text">{{ step }}</span>
-                </li>
-              </ol>
-            </v-card-text>
+              <v-card-title class="path-card__title justify-center py-3 pb-1">
+                <v-icon class="path-card__icon mr-2" size="28">
+                  mdi-account-group
+                </v-icon>
+                <h2>{{ WELCOME_PATHS.classroom.title }}</h2>
+              </v-card-title>
 
-            <v-card-actions class="hero-actions justify-center px-4 pb-4 pt-0">
-              <v-btn
-                v-if="!userStore.getCurrentUser()"
-                color="orange"
-                size="large"
-                elevation="2"
-                rounded
-                block
-                class="px-8 hero-cta"
-                v-on:click="register(false, '')"
-              >
-                Get Started
-                <v-icon end class="ml-2">mdi-arrow-right</v-icon>
-              </v-btn>
-              <v-btn
-                v-if="userStore.isTeacher()"
-                color="orange"
-                size="large"
-                elevation="2"
-                rounded
-                block
-                class="px-8 hero-cta"
-                v-on:click="navToLessons"
-              >
-                {{ WELCOME_TEACHER_HERO.cta }}
-                <v-icon end class="ml-2">mdi-arrow-right</v-icon>
-              </v-btn>
-            </v-card-actions>
-          </v-card>
+              <v-card-text class="path-card__body text-left">
+                <template v-if="userStore.isTeacher()">
+                  <p class="path-card__subtitle">
+                    {{ WELCOME_PATHS.classroom.teacherBlurb }}
+                  </p>
+                  <ol class="hero-steps">
+                    <li
+                      v-for="(step, index) in TEACHER_WORKFLOW_STEPS"
+                      :key="step"
+                      class="hero-step"
+                    >
+                      <span class="hero-step__num" aria-hidden="true">{{
+                        index + 1
+                      }}</span>
+                      <span class="hero-step__text">{{ step }}</span>
+                    </li>
+                  </ol>
+                </template>
+                <p
+                  v-else-if="userStore.getCurrentUser()"
+                  class="path-card__subtitle"
+                >
+                  {{ WELCOME_PATHS.classroom.studentBlurb }}
+                </p>
+                <p v-else class="path-card__subtitle">
+                  {{ WELCOME_PATHS.classroom.guestBlurb }}
+                </p>
+              </v-card-text>
+
+              <v-card-actions class="path-card__actions px-4 pb-4 pt-0">
+                <v-btn
+                  v-if="!userStore.getCurrentUser()"
+                  color="orange"
+                  size="large"
+                  elevation="2"
+                  rounded
+                  block
+                  class="path-cta"
+                  @click="register(false, '')"
+                >
+                  {{ WELCOME_PATHS.classroom.ctaGuest }}
+                  <v-icon end class="ml-2">mdi-arrow-right</v-icon>
+                </v-btn>
+                <v-btn
+                  v-else
+                  color="orange"
+                  size="large"
+                  elevation="2"
+                  rounded
+                  block
+                  class="path-cta"
+                  @click="navToLessons"
+                >
+                  {{
+                    userStore.isTeacher()
+                      ? WELCOME_PATHS.classroom.ctaTeacher
+                      : WELCOME_PATHS.classroom.ctaStudent
+                  }}
+                  <v-icon end class="ml-2">mdi-arrow-right</v-icon>
+                </v-btn>
+              </v-card-actions>
+            </v-card>
+
+            <!-- Practice: student + AI tutor -->
+            <v-card
+              class="path-card path-card--practice"
+              elevation="3"
+              rounded="lg"
+            >
+              <v-card-title class="path-card__title justify-center py-3 pb-1">
+                <v-icon class="path-card__icon mr-2" size="28">
+                  mdi-robot-outline
+                </v-icon>
+                <h2>{{ WELCOME_PATHS.practice.title }}</h2>
+              </v-card-title>
+
+              <v-card-text class="path-card__body text-left">
+                <p class="path-card__subtitle">
+                  {{ WELCOME_PATHS.practice.blurb }}
+                </p>
+              </v-card-text>
+
+              <v-card-actions class="path-card__actions px-4 pb-4 pt-0 flex-column">
+                <v-btn
+                  v-if="!userStore.getCurrentUser()"
+                  color="teal-darken-1"
+                  size="large"
+                  elevation="2"
+                  rounded
+                  block
+                  class="path-cta"
+                  @click="navToPractice"
+                >
+                  {{ WELCOME_PATHS.practice.ctaGuest }}
+                  <v-icon end class="ml-2">mdi-arrow-right</v-icon>
+                </v-btn>
+                <v-btn
+                  v-else
+                  color="teal-darken-1"
+                  size="large"
+                  elevation="2"
+                  rounded
+                  block
+                  class="path-cta"
+                  @click="navToPractice"
+                >
+                  {{ WELCOME_PATHS.practice.cta }}
+                  <v-icon end class="ml-2">mdi-arrow-right</v-icon>
+                </v-btn>
+                <v-btn
+                  color="teal-darken-1"
+                  variant="text"
+                  rounded
+                  block
+                  class="path-cta mt-1"
+                  @click="navToBlankPractice"
+                >
+                  {{ WELCOME_PATHS.practice.blankCta }}
+                </v-btn>
+              </v-card-actions>
+            </v-card>
+          </div>
 
           <!-- Features card -->
           <v-card class="features-card" elevation="2" rounded="lg">
@@ -160,7 +244,7 @@ import { useUserStore } from "../store/pinia/userStore";
 import { UserType } from "common/unions";
 import {
   TEACHER_WORKFLOW_STEPS,
-  WELCOME_TEACHER_HERO,
+  WELCOME_PATHS,
 } from "../constants/helpCopy";
 
 const LoginDialog = defineAsyncComponent(() => import("./Login.vue"));
@@ -198,12 +282,20 @@ function navToLessons() {
   router.push("/lessons");
 }
 
+function navToPractice() {
+  router.push("/practice");
+}
+
+function navToBlankPractice() {
+  router.push({ name: "practiceBlank" });
+}
+
 const bullets = [
   "Type math on the grid with your keyboard",
   "Select, move, and Ctrl+drag to duplicate work",
   "Lines, text boxes, and optional free sketch",
-  "Board sharing with students",
-  "Submit questions and review answers",
+  "Classroom: board sharing with your teacher and students",
+  "Practice: Check answers and AI voice coach by subject",
 ];
 </script>
 
@@ -211,13 +303,15 @@ const bullets = [
 .welcome-page {
   --app-bar-height: 64px;
   --footer-height: 56px;
+  --classroom-accent: #ea580c;
+  --practice-accent: #0f766e;
 
   background: linear-gradient(135deg, #f5f7fa 0%, #e4e9f2 100%);
   min-height: 100%;
-  margin-top: 50px;
+  margin-top: 0;
   margin-bottom: auto;
   max-width: 100vw;
-  padding-top: var(--app-bar-height);
+  padding-top: 100px;
   padding-bottom: 1.5rem;
   box-sizing: border-box;
   overflow-x: hidden;
@@ -230,44 +324,148 @@ const bullets = [
   box-sizing: border-box;
 }
 
-.main-card,
-.features-card {
-  background: white;
-  border: 1px solid rgba(0, 0, 0, 0.1);
-  max-width: 900px;
+.welcome-brand {
+  max-width: 960px;
+  margin: 0 auto 1.25rem;
+  padding: 0 0.5rem;
+}
+
+.welcome-brand__row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: center;
+  gap: 0.35rem 1rem;
+}
+
+.welcome-brand__title {
+  margin: 0;
+  font-size: 2.35rem;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  color: #1f2937;
+  line-height: 1.15;
+}
+
+.welcome-auth {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 0.1rem;
+}
+
+.welcome-auth__btn {
+  min-width: unset !important;
+  padding-inline: 4px !important;
+  font-size: 0.95rem !important;
+  font-weight: 600 !important;
+}
+
+.welcome-auth__btn--signup {
+  font-weight: 800 !important;
+}
+
+.welcome-auth__sep {
+  color: #94a3b8;
+  font-size: 0.9rem;
+  user-select: none;
+}
+
+.welcome-brand__sub {
+  margin: 0.5rem auto 0;
+  max-width: 42rem;
+  font-size: 1.05rem;
+  font-weight: 500;
+  color: #475569;
+  line-height: 1.4;
+  white-space: nowrap;
+}
+
+.path-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.25rem;
+  max-width: 960px;
   margin: 0 auto 1.5rem;
   width: 100%;
   box-sizing: border-box;
 }
 
-.auth-card {
-  background: transparent;
-  max-width: 600px;
-  margin: 0 auto 1rem;
+.path-card,
+.features-card {
+  background: white;
+  border: 1px solid rgba(0, 0, 0, 0.1);
   width: 100%;
   box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  text-align: left;
 }
 
-.auth-card .text-h6 {
-  display: flex;
+.features-card {
+  max-width: 960px;
+  margin: 0 auto 1.5rem;
+}
+
+.path-card--classroom {
+  border-top: 4px solid var(--classroom-accent);
+}
+
+.path-card--practice {
+  border-top: 4px solid var(--practice-accent);
+  background: linear-gradient(180deg, #f0fdfa 0%, #ffffff 42%);
+}
+
+.path-card__title {
   flex-wrap: wrap;
-  align-items: center;
-  justify-content: center;
   gap: 0.25rem;
 }
 
-.hero-teacher-body {
-  padding-top: 0 !important;
-  max-width: 640px;
-  margin: 0 auto;
+.path-card__title h2 {
+  margin: 0;
+  font-size: 1.45rem;
+  font-weight: 800;
+  letter-spacing: 0.01em;
+  color: #1f2937;
+  white-space: normal;
+  overflow-wrap: anywhere;
 }
 
-.hero-subtitle {
-  margin: 0 0 1rem;
-  font-size: 1.05rem;
+.path-card--classroom .path-card__icon {
+  color: var(--classroom-accent);
+}
+
+.path-card--practice .path-card__icon {
+  color: var(--practice-accent);
+}
+
+.path-card__body {
+  flex: 1;
+  padding-top: 0 !important;
+}
+
+.path-card__subtitle {
+  margin: 0 0 0.75rem;
+  font-size: 0.98rem;
   font-weight: 600;
   color: #475569;
-  text-align: center;
+  line-height: 1.4;
+}
+
+.path-card__lead {
+  margin: 0 0 0.75rem;
+  font-size: 0.92rem;
+  color: #334155;
+  line-height: 1.45;
+}
+
+.path-card__actions {
+  margin-top: auto;
+}
+
+.path-cta {
+  max-width: 100%;
 }
 
 .hero-steps {
@@ -275,8 +473,8 @@ const bullets = [
   margin: 0;
   padding: 0;
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 12px 16px;
+  grid-template-columns: 1fr;
+  gap: 10px;
 }
 
 .hero-step {
@@ -285,8 +483,8 @@ const bullets = [
   gap: 10px;
   margin: 0;
   padding: 10px 12px;
-  background: #f8fafc;
-  border: 1px solid #e2e8f0;
+  background: #fff7ed;
+  border: 1px solid #fed7aa;
   border-radius: 10px;
 }
 
@@ -295,7 +493,7 @@ const bullets = [
   width: 26px;
   height: 26px;
   border-radius: 50%;
-  background: rgb(var(--v-theme-primary));
+  background: var(--classroom-accent);
   color: #fff;
   font-size: 0.8125rem;
   font-weight: 700;
@@ -305,18 +503,9 @@ const bullets = [
 }
 
 .hero-step__text {
-  font-size: 0.9rem;
+  font-size: 0.88rem;
   line-height: 1.35;
   color: #334155;
-}
-
-.hero-actions {
-  max-width: 420px;
-  margin: 0 auto;
-}
-
-.hero-cta {
-  max-width: 100%;
 }
 
 .tutorial-btn {
@@ -332,48 +521,45 @@ const bullets = [
   white-space: normal;
 }
 
-.main-card h2 {
-  white-space: normal;
-  overflow-wrap: anywhere;
-  word-break: break-word;
-  font-size: 2.25rem;
-  font-weight: 800;
-  letter-spacing: 0.02em;
-  color: #1f2937;
-}
-
-.main-card .v-card-text,
-.auth-card .v-card-text,
 .features-card .v-card-title {
   color: #334155;
+}
+
+@media (max-width: 860px) {
+  .path-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .welcome-brand__title {
+    font-size: 1.85rem;
+  }
+
+  .welcome-brand__sub {
+    white-space: normal;
+  }
 }
 
 @media (max-width: 760px) {
   .welcome-page {
     padding: 0.5rem;
-    padding-top: calc(var(--app-bar-height) + 0.5rem);
+    padding-top: 100px;
     padding-bottom: 0.5rem;
   }
 
-  .main-card,
-  .features-card,
-  .auth-card {
-    margin: 0 0 1rem;
+  .path-card,
+  .features-card {
+    margin-left: 0;
+    margin-right: 0;
     width: 100%;
   }
 
-  .main-card h2 {
-    font-size: 1.8rem;
-    line-height: 1.2;
-  }
-
-  .hero-steps {
-    grid-template-columns: 1fr;
-  }
-
-  .tutorial-btn,
-  .auth-card .v-btn {
+  .tutorial-btn {
     width: 100%;
+  }
+
+  .welcome-brand__row {
+    flex-direction: column;
+    align-items: center;
   }
 
   .feature-list .v-list-item-title,

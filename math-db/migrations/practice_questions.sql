@@ -1,0 +1,2 @@
+-- Superseded by practice_questions_extension.sql (dedicated extension table).
+-- Kept for reference only; do not run if you use the extension migration.

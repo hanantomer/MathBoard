@@ -2,12 +2,12 @@ import axios from "axios";
 
 const OCR_PROMPT = `Handwritten math on white. Return ONLY the symbol or short expression as plain text (digits, +, -, =, ×, ÷, √, π, θ, <, >, ≤, ≥, (, ), ^, /). No quotes or explanation.`;
 
-const DEFAULT_MODELS = ["gemini-2.5-flash", "gemini-2.0-flash-lite"];
+const DEFAULT_MODELS = ["gemini-2.5-flash", "gemini-flash-lite-latest"];
 const GEMINI_API_BASE =
   "https://generativelanguage.googleapis.com/v1beta/models";
 
 const OCR_GENERATION_CONFIG = {
-  maxOutputTokens: 16,
+  maxOutputTokens: 64,
   temperature: 0,
   thinkingConfig: { thinkingBudget: 0 },
 };
@@ -166,8 +166,8 @@ function resolveModels(): string[] {
 
 function buildGenerationConfig(modelName: string) {
   const config: Record<string, unknown> = { ...OCR_GENERATION_CONFIG };
-  // 2.5 models spend hidden "thinking" tokens unless explicitly disabled.
-  if (!modelName.includes("2.5")) {
+  // Thinking tokens apply to Gemini 2.5+; older/lite aliases reject thinkingConfig.
+  if (!/gemini-2\.5|gemini-3/.test(modelName)) {
     delete config.thinkingConfig;
   }
   return config;

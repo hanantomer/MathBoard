@@ -185,13 +185,17 @@ async function processOcrBatch() {
   ocrInFlight = true;
   try {
     const { symbol } = await apiHelper.recognizeSketchOcr(rendered.imageBase64);
+    if (!symbol?.trim()) {
+      throw new Error("OCR returned an empty symbol");
+    }
     const rect = cellStore.getSvgBoundingRect();
     const cell = screenHelper.getCellByDotCoordinates({
       x: rendered.center.x + rect.left,
       y: rendered.center.y + rect.top,
     });
     notationMutateHelper.addSymbolNotationAtCell(cell, symbol);
-  } catch {
+  } catch (error) {
+    console.error("Sketch OCR failed:", error);
     await saveStrokesAsFreeSketches(strokes);
   } finally {
     ocrInFlight = false;

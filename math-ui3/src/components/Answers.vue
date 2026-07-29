@@ -114,7 +114,7 @@ const lessons = computed(() => {
 
 const questions = computed(() => {
   return Array.from(questionStore.getQuestions().values())
-    .filter((question) => question.lesson.uuid === selectedLesson.value)
+    .filter((question) => question.lesson?.uuid === selectedLesson.value)
     .map((question) => {
       return {
         value: question.uuid,

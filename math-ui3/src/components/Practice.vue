@@ -1,0 +1,450 @@
+<template>
+  <v-sheet class="practice-host">
+    <mathBoard v-show="loaded" :svgId="svgId" :loaded="loaded" />
+
+    <div v-if="loaded && isBlank" class="practice-check-bar">
+      <div class="practice-check-bar__actions">
+        <input
+          ref="imageFileInput"
+          type="file"
+          accept="image/*"
+          class="d-none"
+          @change="onImageFileChosen"
+        />
+        <v-btn
+          color="teal-darken-1"
+          variant="flat"
+          :loading="uploading"
+          :disabled="uploading"
+          prepend-icon="mdi-image-plus"
+          data-cy="practice-blank-upload"
+          @click="pickImageFile"
+        >
+          Upload image
+        </v-btn>
+      </div>
+      <v-alert
+        class="practice-check-bar__result"
+        density="compact"
+        variant="tonal"
+        type="info"
+        title="Blank sheet"
+      >
+        Paste a worksheet with Ctrl+V, or upload an image, then write on the
+        board. Work stays on this device.
+      </v-alert>
+      <v-alert
+        v-if="uploadError"
+        class="practice-check-bar__result"
+        density="compact"
+        variant="tonal"
+        type="error"
+        closable
+        @click:close="uploadError = ''"
+      >
+        {{ uploadError }}
+      </v-alert>
+    </div>
+
+    <div v-else-if="loaded" class="practice-check-bar">
+      <div class="practice-check-bar__actions">
+        <v-btn
+          :color="voiceMuted ? 'grey' : 'secondary'"
+          variant="tonal"
+          :prepend-icon="voiceMuted ? 'mdi-volume-off' : 'mdi-volume-high'"
+          data-cy="practice-voice-mute"
+          @click="toggleVoiceMute"
+        >
+          {{ voiceMuted ? "Voice off" : "Voice on" }}
+        </v-btn>
+        <v-btn
+          color="primary"
+          variant="flat"
+          :loading="checking"
+          :disabled="checking || !!aiLimitMessage"
+          prepend-icon="mdi-check-decagram"
+          data-cy="practice-check"
+          @click="runCheck"
+        >
+          Check answer
+        </v-btn>
+      </div>
+
+      <v-alert
+        v-if="!aiLimitMessage"
+        class="practice-check-bar__result"
+        density="compact"
+        variant="tonal"
+        type="info"
+      >
+        {{ aiQuotaHint }}
+      </v-alert>
+
+      <v-alert
+        v-if="coachTip && !voiceMuted"
+        class="practice-check-bar__result"
+        density="compact"
+        variant="tonal"
+        type="info"
+        title="Coach"
+        closable
+        @click:close="coachTip = ''"
+      >
+        {{ coachTip }}
+      </v-alert>
+
+      <v-alert
+        v-if="result"
+        class="practice-check-bar__result"
+        density="compact"
+        variant="tonal"
+        :type="result.correct ? 'success' : 'warning'"
+        :title="result.correct ? 'Correct' : 'Not quite'"
+        closable
+        @click:close="result = null"
+      >
+        <div>{{ result.feedback }}</div>
+        <div v-if="result.hint" class="text-medium-emphasis mt-1">
+          Hint: {{ result.hint }}
+        </div>
+      </v-alert>
+
+      <v-alert
+        v-else-if="aiLimitMessage"
+        class="practice-check-bar__result"
+        density="compact"
+        variant="tonal"
+        type="warning"
+        title="Daily AI limit reached"
+        closable
+        @click:close="aiLimitMessage = ''"
+      >
+        <div>{{ aiLimitMessage }}</div>
+        <v-btn
+          v-if="isGuest"
+          class="mt-2"
+          color="primary"
+          size="small"
+          variant="flat"
+          @click="goSignIn"
+        >
+          Sign in for a higher limit
+        </v-btn>
+      </v-alert>
+
+      <v-alert
+        v-else-if="checkError"
+        class="practice-check-bar__result"
+        density="compact"
+        variant="tonal"
+        type="error"
+        closable
+        @click:close="checkError = ''"
+      >
+        {{ checkError }}
+      </v-alert>
+    </div>
+  </v-sheet>
+</template>
+
+<script setup lang="ts">
+import { computed, onUnmounted, ref, watch } from "vue";
+import { useRoute, useRouter } from "vue-router";
+import mathBoard from "./MathBoard.vue";
+import { useQuestionStore } from "../store/pinia/questionStore";
+import { usePracticeQuestionStore } from "../store/pinia/practiceQuestionStore";
+import { useBoardContextStore } from "../store/pinia/boardContextStore";
+import { useNotationStore } from "../store/pinia/notationStore";
+import { useEditModeStore } from "../store/pinia/editModeStore";
+import useApiHelper, { PracticeAiLimitError } from "../helpers/apiHelper";
+import { useCellStore } from "../store/pinia/cellStore";
+import { useUserStore } from "../store/pinia/userStore";
+import { serializePracticeStudentWork } from "../helpers/practiceCheckHelper";
+import {
+  PRACTICE_BLANK_UUID,
+} from "../helpers/practiceBoardAdapter";
+import useImageHelper from "../helpers/imageHelper";
+import useNotationMutationHelper from "../helpers/notationMutateHelper";
+import useSelectionHelper from "../helpers/selectionHelper";
+import {
+  GUEST_AI_DAILY_LIMIT,
+  USER_AI_DAILY_LIMIT,
+} from "../helpers/guestPracticeHelper";
+import {
+  isPracticeVoiceMuted,
+  resetPracticeVoiceCoach,
+  schedulePracticeVoiceCoach,
+  setPracticeVoiceMuted,
+  speakPracticeTip,
+  stopPracticeVoice,
+} from "../helpers/practiceVoiceCoachHelper";
+import type { PracticeCheckResult } from "common/practiceQuestionTypes";
+
+const questionStore = useQuestionStore();
+const practiceQuestionStore = usePracticeQuestionStore();
+const boardContext = useBoardContextStore();
+const notationStore = useNotationStore();
+const editModeStore = useEditModeStore();
+const cellStore = useCellStore();
+const userStore = useUserStore();
+const api = useApiHelper();
+const imageHelper = useImageHelper();
+const notationMutateHelper = useNotationMutationHelper();
+const selectionHelper = useSelectionHelper();
+
+const route = useRoute();
+const router = useRouter();
+
+const svgId = "practiceSvg";
+const loaded = ref(false);
+const isBlank = ref(false);
+const checking = ref(false);
+const uploading = ref(false);
+const result = ref<PracticeCheckResult | null>(null);
+const checkError = ref("");
+const aiLimitMessage = ref("");
+const uploadError = ref("");
+const coachTip = ref("");
+const currentQuestionUUId = ref("");
+const voiceMuted = ref(isPracticeVoiceMuted());
+const imageFileInput = ref<HTMLInputElement | null>(null);
+
+const isGuest = computed(() => !userStore.getCurrentUser());
+const aiQuotaHint = computed(() =>
+  isGuest.value
+    ? `Guest mode: ${GUEST_AI_DAILY_LIMIT} free Check/Coach uses per day. Sign in for ${USER_AI_DAILY_LIMIT}/day.`
+    : `${USER_AI_DAILY_LIMIT} Check/Coach uses per day (shared Check + voice coach).`,
+);
+
+const practiceWorkSignature = computed(() =>
+  serializePracticeStudentWork(notationStore.getNotations()),
+);
+
+watch(
+  route,
+  (to) => {
+    if (to.name === "practiceBlank") {
+      void loadBlankPractice();
+      return;
+    }
+    void loadPractice(to.params.questionUUId as string);
+  },
+  { immediate: true },
+);
+
+watch(practiceWorkSignature, (work, prev) => {
+  if (!loaded.value || isBlank.value || !currentQuestionUUId.value) return;
+  if (work === prev) return;
+  if (!work.trim()) return;
+  if (voiceMuted.value || checking.value) return;
+  if (aiLimitMessage.value) return;
+
+  schedulePracticeVoiceCoach({
+    questionUUId: currentQuestionUUId.value,
+    getStudentWork: () =>
+      serializePracticeStudentWork(notationStore.getNotations()),
+    requestCoach: async (questionUUId, studentWork) => {
+      try {
+        return await api.coachPracticeWork(questionUUId, studentWork);
+      } catch (error) {
+        if (error instanceof PracticeAiLimitError) {
+          aiLimitMessage.value = error.message;
+          coachTip.value = "";
+          return { tip: "", speak: false };
+        }
+        throw error;
+      }
+    },
+    onTip: (tip) => {
+      coachTip.value = tip;
+    },
+  });
+});
+
+onUnmounted(() => {
+  resetPracticeVoiceCoach();
+});
+
+function prepareBoardShell(questionUUId: string) {
+  loaded.value = false;
+  result.value = null;
+  checkError.value = "";
+  aiLimitMessage.value = "";
+  uploadError.value = "";
+  coachTip.value = "";
+  currentQuestionUUId.value = questionUUId;
+  resetPracticeVoiceCoach();
+  editModeStore.setDefaultEditMode();
+  cellStore.resetCellDimensions();
+  cellStore.resetSelectedCell();
+  notationStore.setParent(questionUUId, "PRACTICE");
+  selectionHelper.setSelectedCell({ col: 1, row: 1 }, true);
+}
+
+async function loadBlankPractice() {
+  isBlank.value = true;
+  prepareBoardShell(PRACTICE_BLANK_UUID);
+  boardContext.setPracticeBlankSession();
+  loaded.value = true;
+}
+
+async function loadPractice(questionUUId: string) {
+  isBlank.value = false;
+  prepareBoardShell(questionUUId);
+
+  const listItem = practiceQuestionStore.getItem(questionUUId);
+  const question = await questionStore.loadQuestion(questionUUId);
+
+  if (!question) {
+    throw new Error(`practice question ${questionUUId} does not exist`);
+  }
+
+  let practice =
+    question.practice ??
+    (listItem
+      ? { uuid: listItem.practiceUUId, subject: listItem.subject }
+      : null);
+
+  if (!practice) {
+    const row = await api.getPracticeQuestion(questionUUId);
+    if (row) {
+      practice = { uuid: row.practiceUUId, subject: row.subject };
+    }
+  }
+
+  if (!practice) {
+    if (question.lesson?.uuid) {
+      throw new Error("this question belongs to a lesson; use the answer flow");
+    }
+    throw new Error("not a practice question");
+  }
+
+  const enriched = { ...question, practice, lesson: null };
+  questionStore.getQuestions().set(question.uuid, enriched);
+  questionStore.setCurrentQuestion(question.uuid);
+
+  boardContext.setPracticeSession(
+    practice.subject,
+    question.name,
+    question.uuid,
+  );
+
+  loaded.value = true;
+}
+
+function toggleVoiceMute() {
+  voiceMuted.value = !voiceMuted.value;
+  setPracticeVoiceMuted(voiceMuted.value);
+  if (voiceMuted.value) {
+    coachTip.value = "";
+  }
+}
+
+function pickImageFile() {
+  imageFileInput.value?.click();
+}
+
+async function onImageFileChosen(event: Event) {
+  const input = event.target as HTMLInputElement;
+  const file = input.files?.[0];
+  input.value = "";
+  if (!file) return;
+
+  uploading.value = true;
+  uploadError.value = "";
+  try {
+    selectionHelper.setSelectedCell(
+      cellStore.getSelectedCell() ?? { col: 1, row: 1 },
+      true,
+    );
+    const base64 = await imageHelper.prepareImageFileForUpload(file);
+    await notationMutateHelper.addImageNotation(base64);
+  } catch (error) {
+    uploadError.value =
+      error instanceof Error ? error.message : "Image upload failed";
+  } finally {
+    uploading.value = false;
+  }
+}
+
+function goSignIn() {
+  router.push({
+    name: "login",
+    query: { userType: "STUDENT", from: route.fullPath },
+  });
+}
+
+async function runCheck() {
+  if (!currentQuestionUUId.value || checking.value || isBlank.value) return;
+
+  checking.value = true;
+  result.value = null;
+  checkError.value = "";
+  aiLimitMessage.value = "";
+  stopPracticeVoice();
+
+  try {
+    const studentWork = serializePracticeStudentWork(
+      notationStore.getNotations(),
+    );
+    result.value = await api.checkPracticeWork(
+      currentQuestionUUId.value,
+      studentWork,
+    );
+    if (result.value.feedback && !voiceMuted.value) {
+      speakPracticeTip(
+        result.value.correct
+          ? result.value.feedback
+          : `${result.value.feedback}${result.value.hint ? ` ${result.value.hint}` : ""}`,
+      );
+    }
+  } catch (error) {
+    if (error instanceof PracticeAiLimitError) {
+      aiLimitMessage.value = error.message;
+    } else {
+      checkError.value =
+        error instanceof Error ? error.message : "Practice check failed";
+    }
+  } finally {
+    checking.value = false;
+  }
+}
+</script>
+
+<style scoped>
+.practice-host {
+  position: relative;
+  min-height: 100%;
+}
+
+.practice-check-bar {
+  position: fixed;
+  right: 230px;
+  bottom: 72px;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 8px;
+  max-width: min(420px, calc(100vw - 260px));
+}
+
+.practice-check-bar__actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.practice-check-bar__result {
+  width: 100%;
+}
+
+@media (max-width: 1023px) {
+  .practice-check-bar {
+    right: 12px;
+    bottom: max(72px, env(safe-area-inset-bottom));
+    max-width: calc(100vw - 72px);
+  }
+}
+</style>

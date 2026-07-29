@@ -1,124 +1,251 @@
 import {
+
   NotationAttributes,
+
   PointNotationAttributes,
+
   RectNotationAttributes,
+
   ImageNotationAttributes,
+
   CurveNotationAttributes,
+
   CircleNotationAttributes,
+
   LineNotationAttributes,
+
   FreeSketchNotationAttributes,
+
 } from "common/baseTypes";
 
+
+
 import useApiHelper from "./apiHelper";
+
 import { useNotationStore } from "../store/pinia/notationStore";
+
 import { BoardType, NotationType, NotationTypeValues } from "common/unions";
+
 const notationStore = useNotationStore();
+
 const apiHelper = useApiHelper();
 
+
+
 export default function notationLoadingHelper() {
+
   // e.g get lesson notations
+
   async function loadNotations(boardType: BoardType, parentUUId: string) {
+
     let notations: NotationAttributes[] = [];
 
+
+
     try {
+
       notationStore.haltSaveState(); // Prevent saving state during loading
 
+
+
       for (let i = 0; i < NotationTypeValues.length; i++) {
+
         const notationType = NotationTypeValues[i];
+
         try {
+
           const notationsFromDb = await loadNotationsByType(
+
             boardType,
+
             notationType as NotationType,
+
             parentUUId,
+
           );
+
           if (!notationsFromDb) continue;
+
           notationsFromDb.forEach((n) => {
+
             notations.push({
+
               ...n,
+
               notationType: notationType as NotationType,
+
+              boardType: boardType as BoardType,
+
             });
+
           });
+
         } catch (error) {
+
           console.warn(
+
             `Skipping ${boardType} ${notationType} notations for ${parentUUId}:`,
+
             error,
+
           );
+
         }
+
       }
 
+
+
       notationStore.setNotations(notations);
+
     } finally {
+
       notationStore.activateSaveState(); // Re-enable saving state after loading
+
     }
+
   }
+
+
 
   // e.g. load lesson symbols
+
   async function loadNotationsByType(
+
     boardType: BoardType,
+
     notationType: NotationType,
+
     parentUUId: string,
+
   ): Promise<NotationAttributes[]> {
-    if (!boardType) boardType = notationStore.getParent().type;
+
+    if (!boardType) boardType = notationStore.getParent()?.type ?? boardType;
+
+
 
     switch (notationType) {
+
       case "EXPONENT":
+
       case "LOGBASE":
+
       case "ANNOTATION":
+
       case "SYMBOL":
+
         return await apiHelper.getNotations<PointNotationAttributes>(
+
           notationType,
+
           boardType,
+
           parentUUId,
+
         );
+
       case "SQRT":
+
       case "DIVISIONLINE":
+
       case "LINE":
+
         return await apiHelper.getNotations<LineNotationAttributes>(
+
           notationType,
+
           boardType,
+
           parentUUId,
+
         );
+
       case "IMAGE":
+
         return await apiHelper.getNotations<ImageNotationAttributes>(
+
           notationType,
+
           boardType,
+
           parentUUId,
+
         );
+
       case "TEXT":
+
         return await apiHelper.getNotations<RectNotationAttributes>(
+
           notationType,
+
           boardType,
+
           parentUUId,
+
         );
+
       case "CURVE":
+
         return await apiHelper.getNotations<CurveNotationAttributes>(
+
           notationType,
+
           boardType,
+
           parentUUId,
+
         );
+
       case "CIRCLE":
+
         return await apiHelper.getNotations<CircleNotationAttributes>(
+
           notationType,
+
           boardType,
+
           parentUUId,
+
         );
+
       case "FREESKETCH":
+
         return await apiHelper.getNotations<FreeSketchNotationAttributes>(
+
           notationType,
+
           boardType,
+
           parentUUId,
+
         );
+
+
 
       case "POLYGON":
+
       case "SQRTSYMBOL":
+
         return [];
 
+
+
       default:
+
         throw new Error(`${notationType} :notation type is invalid`);
+
     }
+
   }
 
+
+
   return {
+
     loadNotations,
+
   };
+
 }
+
+

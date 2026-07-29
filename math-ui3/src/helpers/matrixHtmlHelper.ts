@@ -434,7 +434,7 @@ export default function useHtmlMatrixHelper() {
     function generateAnnotationHtml(n: NotationAttributes): string {
       const n1 = n as AnnotationNotationAttributes;
       return utils.wrapWithDiv(
-        `<p data-cy ='annotation' id=${n1.uuid} style='margin-block:15px; z-index:100;color:${color};font-weight:${fontWeight}; transform: rotate(${n1.rotation}deg); transformOrigin: "center center"; font-size:0.62em'>${n1.value}</p>`,
+        `<p data-cy='annotation' id='${n1.uuid}' style='margin-block:15px; z-index:100;color:${color};font-weight:${fontWeight}; transform: rotate(${n1.rotation}deg); transform-origin: center center; font-size:0.62em'>${n1.value}</p>`,
       );
     }
 

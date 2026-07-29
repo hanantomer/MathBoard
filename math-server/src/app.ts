@@ -1,6 +1,8 @@
 import dotenv from "dotenv";
 import path from "path";
 
+// Prefer math-server/.env regardless of process.cwd() (IDE tasks often start elsewhere).
+dotenv.config({ path: path.resolve(__dirname, "../.env") });
 dotenv.config({ path: path.resolve(process.cwd(), ".env") });
 
 import winston from "winston";
@@ -12,6 +14,19 @@ import useDb from "../../math-db/build/dbUtil";
 import connection from "../../math-db/build/models/index";
 import multer from "multer";
 import { recognizeSketchFromImage, formatSketchOcrError, summarizeSketchOcrError } from "./services/sketchOcrService";
+import { checkPracticeWork, coachPracticeWork } from "./services/practiceCheckService";
+import {
+    checkPracticeAiLimit,
+    consumePracticeAiLimit,
+    type PracticeAiSubjectKind,
+} from "./services/guestPracticeRateLimit";
+import type {
+  PracticeCheckRequest,
+  PracticeCoachRequest,
+} from "../../math-common/build/practiceQuestionTypes";
+import {
+    PRACTICE_AI_LIMIT_ERROR,
+} from "../../math-common/build/globals";
 
 import { exec } from "child_process";
 
@@ -19,6 +34,7 @@ import {
     BoardTypeValues,
     NotationTypeValues,
 } from "../../math-common/build/unions";
+import { QuestionCreationAttributes } from "../../math-common/build/questionTypes";
 import { createTransport } from "nodemailer";
 import fs from "fs";
 
@@ -242,12 +258,149 @@ async function validateAuth(req: Request, res: Response, next: NextFunction) {
         return next();
     }
 
-    // verify authorization
-    else if (!(await validateHeaderAuthentication(req, res, next))) {
-        return;
-    } else {
+    // Guest practice: public reads + rate-limited AI (check/coach)
+    const guestPractice = await tryAllowGuestPractice(req, res);
+    if (guestPractice === "allowed") {
         return next();
     }
+    if (guestPractice === "rejected") {
+        return;
+    }
+
+    // verify authorization (authenticated lesson/Q/A and other APIs)
+    if (!(await validateHeaderAuthentication(req, res, next))) {
+        return;
+    }
+    return next();
+}
+
+type GuestPracticeGate = "allowed" | "rejected" | "skip";
+
+/**
+ * Allow unauthenticated practice bank reads and rate-limited check/coach.
+ * Returns skip when the request is not a guest practice path (or has a token).
+ */
+async function tryAllowGuestPractice(
+    req: Request,
+    res: Response,
+): Promise<GuestPracticeGate> {
+    if (req.headers.authorization) {
+        return "skip";
+    }
+
+    const pathOnly = req.url.split("?")[0];
+
+    if (
+        req.method === "GET" &&
+        pathOnly.indexOf("/api/practice-questions") === 0
+    ) {
+        return "allowed";
+    }
+
+    if (req.method === "GET" && /^\/api\/question/i.test(pathOnly)) {
+        const uuid = req.query.uuid as string | undefined;
+        if (!uuid) {
+            return "skip";
+        }
+        try {
+            if (await db.isPracticeQuestion(uuid)) {
+                return "allowed";
+            }
+        } catch (err) {
+            serverLogger.error({
+                message: "isPracticeQuestion failed for guest read",
+                error: err instanceof Error ? err.message : String(err),
+            });
+        }
+        return "skip";
+    }
+
+    const aiMatch = pathOnly.match(
+        /^\/api\/practice-questions\/([^/]+)\/(check|coach)$/,
+    );
+    if (req.method === "POST" && aiMatch) {
+        const guestKey = resolveGuestKey(req);
+        const limit = checkPracticeAiLimit(guestKey, "guest");
+        if (!limit.allowed) {
+            res.status(429).json({
+                error: PRACTICE_AI_LIMIT_ERROR,
+                message: limit.message,
+                limit: limit.limit,
+                remaining: 0,
+            });
+            return "rejected";
+        }
+        const aiReq = req as PracticeAiRequest;
+        aiReq.practiceAiKey = guestKey;
+        aiReq.practiceAiKind = "guest";
+        return "allowed";
+    }
+
+    return "skip";
+}
+
+type PracticeAiRequest = Request & {
+  practiceAiKey?: string;
+  practiceAiKind?: PracticeAiSubjectKind;
+  guestAiKey?: string;
+};
+
+function resolveGuestKey(req: Request): string {
+    const headerId = req.headers["x-guest-id"];
+    if (typeof headerId === "string" && headerId.trim().length >= 8) {
+        return `guest:${headerId.trim()}`;
+    }
+    const ip =
+        (req.headers["x-forwarded-for"] as string)?.split(",")[0]?.trim() ||
+        req.socket.remoteAddress ||
+        "unknown";
+    return `ip:${ip}`;
+}
+
+/** Attach and enforce daily AI quota for guests or registered users. */
+function enforcePracticeAiQuota(
+    req: Request,
+    res: Response,
+): boolean {
+    const aiReq = req as PracticeAiRequest;
+    let key = aiReq.practiceAiKey;
+    let kind = aiReq.practiceAiKind;
+
+    if (!key) {
+        const userId = req.headers.userId as string | undefined;
+        if (userId) {
+            key = `user:${userId}`;
+            kind = "user";
+        } else {
+            key = resolveGuestKey(req);
+            kind = "guest";
+        }
+        aiReq.practiceAiKey = key;
+        aiReq.practiceAiKind = kind;
+    }
+
+    const limit = checkPracticeAiLimit(key, kind!);
+    if (!limit.allowed) {
+        res.status(429).json({
+            error: PRACTICE_AI_LIMIT_ERROR,
+            message: limit.message,
+            limit: limit.limit,
+            remaining: 0,
+        });
+        return false;
+    }
+    return true;
+}
+
+function recordPracticeAiUse(req: Request, res: Response) {
+    const aiReq = req as PracticeAiRequest;
+    if (!aiReq.practiceAiKey || !aiReq.practiceAiKind) return;
+    const used = consumePracticeAiLimit(
+        aiReq.practiceAiKey,
+        aiReq.practiceAiKind,
+    );
+    res.setHeader("X-Practice-AI-Remaining", String(used.remaining));
+    res.setHeader("X-Practice-AI-Limit", String(used.limit));
 }
 
 /*verifies that authenitication header exists and denotes a valid user
@@ -739,14 +892,15 @@ app.get(
                 return res
                     .status(200)
                     .json(await db.getQuestions(lessonUUId as string));
-            if (uuid)
-                return res
-                    .status(200)
-                    .json(await db.getQuestion(uuid as string));
+            if (uuid) {
+                const question = await db.getQuestion(uuid as string);
+                if (!question) {
+                    return res.status(404).json("question not found");
+                }
+                return res.status(200).json(db.formatQuestionForClient(question));
+            }
 
-            throw new Error(
-                "either lessonUUId or questionUUId must be supplied"
-            );
+            throw new Error("lessonUUId or question uuid must be supplied");
         } catch (err) {
             next(err);
         }
@@ -761,7 +915,13 @@ app.post(
         next: NextFunction
     ): Promise<Response | undefined> => {
         try {
-            return res.status(200).json(await db.createQuestion(req.body));
+            const body = req.body as QuestionCreationAttributes;
+            if (!body.lesson?.uuid) {
+                return res
+                    .status(400)
+                    .json("lesson is required for lesson questions");
+            }
+            return res.status(200).json(await db.createQuestion(body));
         } catch (err) {
             next(err);
         }
@@ -825,6 +985,166 @@ app.delete(
             return res.status(200).json({ ok: true });
         } catch (err) {
             next(err);
+        }
+    }
+);
+
+// practice question bank (extension table; stem on questions)
+
+app.get(
+    "/api/practice-questions",
+    async (
+        req: Request,
+        res: Response,
+        next: NextFunction
+    ): Promise<Response | undefined> => {
+        try {
+            const { subject } = req.query;
+            return res
+                .status(200)
+                .json(
+                    await db.getPracticeQuestions(
+                        subject ? (subject as string) : undefined
+                    )
+                );
+        } catch (err) {
+            next(err);
+        }
+    }
+);
+
+app.get(
+    "/api/practice-questions/:questionUUId",
+    async (
+        req: Request,
+        res: Response,
+        next: NextFunction
+    ): Promise<Response | undefined> => {
+        try {
+            const item = await db.getPracticeQuestion(
+                req.params.questionUUId
+            );
+            if (!item) {
+                return res.status(404).json("practice question not found");
+            }
+            return res.status(200).json(item);
+        } catch (err) {
+            next(err);
+        }
+    }
+);
+
+app.post(
+    "/api/practice-questions",
+    async (
+        _req: Request,
+        res: Response,
+    ): Promise<Response> => {
+        return res
+            .status(403)
+            .json("practice questions are system-managed");
+    }
+);
+
+app.put(
+    "/api/practice-questions/:questionUUId",
+    async (
+        _req: Request,
+        res: Response,
+    ): Promise<Response> => {
+        return res
+            .status(403)
+            .json("practice questions are system-managed");
+    }
+);
+
+app.delete(
+    "/api/practice-questions/:questionUUId",
+    async (
+        _req: Request,
+        res: Response,
+    ): Promise<Response> => {
+        return res
+            .status(403)
+            .json("practice questions are system-managed");
+    }
+);
+
+app.post(
+    "/api/practice-questions/:questionUUId/check",
+    async (
+        req: Request,
+        res: Response,
+        next: NextFunction
+    ): Promise<Response | undefined> => {
+        try {
+            if (!enforcePracticeAiQuota(req, res)) {
+                return;
+            }
+            const questionUUId = req.params.questionUUId;
+            const body = req.body as PracticeCheckRequest;
+            const studentWork =
+                typeof body?.studentWork === "string" ? body.studentWork : "";
+            if (!questionUUId) {
+                return res.status(400).json({ error: "questionUUId is required" });
+            }
+            const result = await checkPracticeWork(questionUUId, studentWork);
+            recordPracticeAiUse(req, res);
+            return res.status(200).json(result);
+        } catch (err) {
+            const message =
+                err instanceof Error ? err.message : "Practice check failed";
+            serverLogger.error({
+                message: "Practice check failed",
+                error: message,
+                path: "/api/practice-questions/:questionUUId/check",
+            });
+            if (message.includes("template not found")) {
+                return res.status(404).json({ error: message });
+            }
+            return res.status(502).json({
+                error: "Practice check failed",
+                message,
+            });
+        }
+    }
+);
+
+app.post(
+    "/api/practice-questions/:questionUUId/coach",
+    async (
+        req: Request,
+        res: Response,
+    ): Promise<Response | undefined> => {
+        try {
+            if (!enforcePracticeAiQuota(req, res)) {
+                return;
+            }
+            const questionUUId = req.params.questionUUId;
+            const body = req.body as PracticeCoachRequest;
+            const studentWork =
+                typeof body?.studentWork === "string" ? body.studentWork : "";
+            if (!questionUUId) {
+                return res.status(400).json({ error: "questionUUId is required" });
+            }
+            const result = await coachPracticeWork(questionUUId, studentWork);
+            recordPracticeAiUse(req, res);
+            return res.status(200).json(result);
+        } catch (err) {
+            const message =
+                err instanceof Error ? err.message : "Practice coach failed";
+            serverLogger.error({
+                message: "Practice coach failed",
+                error: message,
+                path: "/api/practice-questions/:questionUUId/coach",
+            });
+            if (message.includes("template not found")) {
+                return res.status(404).json({ error: message });
+            }
+            return res.status(502).json({
+                error: "Practice coach failed",
+                message,
+            });
         }
     }
 );

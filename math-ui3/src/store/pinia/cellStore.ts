@@ -55,6 +55,10 @@ export const useCellStore = defineStore("cell", () => {
     }
   }
 
+  function resetCellDimensions() {
+    cellVerticalHight.value = 0;
+  }
+
   function resetSelectedCell() {
     selectedCell.value = { col: 1, row: 1 };
   }
@@ -102,6 +106,7 @@ export const useCellStore = defineStore("cell", () => {
     getCellVerticalHeightNet,
     setSelectedCell,
     setCellVerticalHeight,
+    resetCellDimensions,
     resetSelectedCell,
   };
 });
