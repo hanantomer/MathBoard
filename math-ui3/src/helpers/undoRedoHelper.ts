@@ -21,7 +21,7 @@ export default function undoRedoHelper(apiHelper: any) {
     previousNotations: Map<String, NotationAttributes>,
   ) {
     if (
-      notationStore.getParent().type === "LESSON" &&
+      notationStore.getParent()?.type === "LESSON" &&
       !authorizationHelper.canEdit()
     ) {
       return;

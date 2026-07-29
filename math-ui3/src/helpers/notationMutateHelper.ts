@@ -85,6 +85,15 @@ const userOutgoingOperations = useUserOutgoingOperations();
 
 const MAX_IMAGE_WIDTH = 1000;
 
+/** Board parent is set when a lesson/question/answer/practice board is open. */
+function requireBoardParent() {
+  const parent = notationStore.getParent();
+  if (!parent) {
+    throw new Error("board parent is undefined");
+  }
+  return parent;
+}
+
 let deleteKeyLock = false; // Add lock variable at the top with other variables
 let spaceKeyLock = false;
 
@@ -943,8 +952,8 @@ export default function notationMutateHelper() {
 
     let lineNotation: LineNotationCreationAttributes = {
       ...lineAttributes,
-      boardType: notationStore.getParent().type,
-      parentUUId: notationStore.getParent().uuid,
+      boardType: requireBoardParent().type,
+      parentUUId: requireBoardParent().uuid,
       notationType: notationType,
       user: getBoardUser(),
       color: null,
@@ -990,7 +999,7 @@ export default function notationMutateHelper() {
       const newNotation = createLocalPracticeNotation({
         ...notation,
         boardType: "PRACTICE",
-        parentUUId: notationStore.getParent().uuid,
+        parentUUId: requireBoardParent().uuid,
       });
       notationStore.addNotation(newNotation, true, true);
       return newNotation.uuid;
@@ -1002,7 +1011,7 @@ export default function notationMutateHelper() {
       notationStore.addNotation(newNotation, true, true);
 
       // sync to other participants
-      if (notationStore.getParent().type === "LESSON") {
+      if (requireBoardParent().type === "LESSON") {
         userOutgoingOperations.syncOutgoingAddNotation(newNotation);
       }
       return newNotation.uuid;
@@ -1128,7 +1137,7 @@ export default function notationMutateHelper() {
     pointAttributes: CellAttributes | null,
   ): boolean | null {
     return (
-      (notationStore.getParent().type == "ANSWER" || isPracticeBoard()) &&
+      (requireBoardParent().type == "ANSWER" || isPracticeBoard()) &&
       !userStore.isTeacher() &&
       pointAttributes &&
       notationStore
@@ -1190,8 +1199,8 @@ export default function notationMutateHelper() {
       toRow: toRow,
       value: base64Value,
       rotation: 0,
-      boardType: notationStore.getParent().type,
-      parentUUId: notationStore.getParent().uuid,
+      boardType: requireBoardParent().type,
+      parentUUId: requireBoardParent().uuid,
       notationType: "IMAGE",
       user: getBoardUser(),
     };
@@ -1208,8 +1217,8 @@ export default function notationMutateHelper() {
       fromRow: textCells.fromRow,
       toRow: textCells.toRow,
       value: value,
-      boardType: notationStore.getParent().type,
-      parentUUId: notationStore.getParent().uuid,
+      boardType: requireBoardParent().type,
+      parentUUId: requireBoardParent().uuid,
       notationType: "TEXT",
       user: getBoardUser(),
     };
@@ -1222,8 +1231,8 @@ export default function notationMutateHelper() {
       x: point.x,
       y: point.y,
       value: value,
-      boardType: notationStore.getParent().type,
-      parentUUId: notationStore.getParent().uuid,
+      boardType: requireBoardParent().type,
+      parentUUId: requireBoardParent().uuid,
       notationType: "ANNOTATION",
       user: getBoardUser(),
     };
@@ -1236,8 +1245,8 @@ export default function notationMutateHelper() {
       col: clickedCell!.col,
       row: clickedCell!.row,
       value: exponent,
-      boardType: notationStore.getParent().type,
-      parentUUId: notationStore.getParent().uuid,
+      boardType: requireBoardParent().type,
+      parentUUId: requireBoardParent().uuid,
       notationType: "EXPONENT",
       user: getBoardUser(),
     };
@@ -1256,8 +1265,8 @@ export default function notationMutateHelper() {
       col: symbolCell.col,
       row: symbolCell.row,
       value: value,
-      boardType: notationStore.getParent().type,
-      parentUUId: notationStore.getParent().uuid,
+      boardType: requireBoardParent().type,
+      parentUUId: requireBoardParent().uuid,
       notationType: notationType,
       user: getBoardUser(),
     };
@@ -1318,8 +1327,8 @@ export default function notationMutateHelper() {
       fromCol: sqrtAttributes.fromCol,
       toCol: sqrtAttributes.toCol,
       row: sqrtAttributes.row,
-      boardType: notationStore.getParent().type,
-      parentUUId: notationStore.getParent().uuid,
+      boardType: requireBoardParent().type,
+      parentUUId: requireBoardParent().uuid,
       notationType: "SQRT",
       user: getBoardUser(),
     };
@@ -1337,8 +1346,8 @@ export default function notationMutateHelper() {
       p2y: curveAttributes.p2y,
       cpx: curveAttributes.cpx,
       cpy: curveAttributes.cpy,
-      boardType: notationStore.getParent().type,
-      parentUUId: notationStore.getParent().uuid,
+      boardType: requireBoardParent().type,
+      parentUUId: requireBoardParent().uuid,
       notationType: "CURVE",
       user: getBoardUser(),
     };
@@ -1352,8 +1361,8 @@ export default function notationMutateHelper() {
       cx: circleAttributes.cx,
       cy: circleAttributes.cy,
       r: circleAttributes.r,
-      boardType: notationStore.getParent().type,
-      parentUUId: notationStore.getParent().uuid,
+      boardType: requireBoardParent().type,
+      parentUUId: requireBoardParent().uuid,
       notationType: "CIRCLE",
       user: getBoardUser(),
     };
@@ -1365,8 +1374,8 @@ export default function notationMutateHelper() {
   ): Promise<string> {
     let freeSketchNotation: FreeSketchNotationCreationAttributes = {
       points: freeSketchAttributes.points,
-      boardType: notationStore.getParent().type,
-      parentUUId: notationStore.getParent().uuid,
+      boardType: requireBoardParent().type,
+      parentUUId: requireBoardParent().uuid,
       notationType: "FREESKETCH",
       user: getBoardUser(),
     };
@@ -1377,7 +1386,7 @@ export default function notationMutateHelper() {
     let clonedNotation = { ...notation } as any;
     clonedNotation.id = undefined;
     delete clonedNotation.uuid;
-    clonedNotation.parentUUId = notationStore.getParent().uuid; // in case you paste from lesson to question, parent will be taken from the target
+    clonedNotation.parentUUId = requireBoardParent().uuid; // in case you paste from lesson to question, parent will be taken from the target
 
     switch (notation.notationType) {
       case "SQRT":
@@ -1576,10 +1585,10 @@ export default function notationMutateHelper() {
           await apiHelper.deleteNotation(sketch);
         }
         notationStore.deleteNotation(sketch.uuid);
-        if (notationStore.getParent().type === "LESSON") {
+        if (requireBoardParent().type === "LESSON") {
           userOutgoingOperations.syncOutgoingRemoveNotation(
             sketch.uuid,
-            notationStore.getParent().uuid,
+            requireBoardParent().uuid,
           );
         }
         const cell = screenHelper.getCellByDotCoordinates({
@@ -1625,7 +1634,7 @@ export default function notationMutateHelper() {
               notationStore.deleteNotation(n.uuid);
 
               // publish
-              if (notationStore.getParent().type === "LESSON") {
+              if (requireBoardParent().type === "LESSON") {
                 userOutgoingOperations.syncOutgoingRemoveNotation(
                   n.uuid,
                   (n as LessonNotationAttributes).lesson.uuid,

@@ -24,7 +24,7 @@ export default function userIncomingOperations() {
   // check if in Lesson and not initiated by me
   function isRelevant(notation: NotationAttributes) {
     if (notation.user.uuid === userStore.getCurrentUser()!.uuid) return false;
-    if (notationStore.getParent().type !== "LESSON") return false;
+    if (notationStore.getParent()?.type !== "LESSON") return false;
     return true;
   }
 
@@ -84,7 +84,7 @@ export default function userIncomingOperations() {
     feathersClient
       .service("selectedCell")
       .on("updated", (selectedCell: SelectedCell) => {
-        if (notationStore.getParent().type !== "LESSON") return;
+        if (notationStore.getParent()?.type !== "LESSON") return;
         if (selectedCell.userUUId == userStore.getCurrentUser()!.uuid) return;
         cellStore.setSelectedCell(selectedCell, true);
       });
@@ -103,9 +103,10 @@ export default function userIncomingOperations() {
     // get heartbeat signals from students
     if (userStore.isTeacher()) {
       feathersClient.service("heartbeat").on("updated", (heartbeat: any) => {
+        const parent = notationStore.getParent();
         if (
           heartbeat.userUUId != userStore.getCurrentUser()!.uuid &&
-          notationStore.getParent().type === "LESSON"
+          parent?.type === "LESSON"
         ) {
           studentStore.setStudentHeartbeat(heartbeat.userUUId);
           // auto-authorize student if teacher has authorized him previously
@@ -117,7 +118,7 @@ export default function userIncomingOperations() {
             helper.syncOutgoingAuthorizeUser(
               heartbeat.userUUId,
               null,
-              notationStore.getParent().uuid,
+              parent.uuid,
             );
           }
         }
@@ -129,7 +130,7 @@ export default function userIncomingOperations() {
       .on("updated", (textSyncUpdateData: TextSyncUpdateData) => {
         if (textSyncUpdateData.userUUId === userStore.getCurrentUser()!.uuid)
           return;
-        if (notationStore.getParent().type !== "LESSON") return;
+        if (notationStore.getParent()?.type !== "LESSON") return;
         textSyncStore.setTextSyncUpdateData(textSyncUpdateData);
       });
 
@@ -138,15 +139,16 @@ export default function userIncomingOperations() {
       .on("removed", (textSyncEndData: TextSyncEndData) => {
         if (textSyncEndData.userUUId === userStore.getCurrentUser()!.uuid)
           return;
-        if (notationStore.getParent().type !== "LESSON") return;
+        if (notationStore.getParent()?.type !== "LESSON") return;
         textSyncStore.setTextSyncEndData(textSyncEndData);
       });
 
     feathersClient
       .service("lessonMediaSync")
       .on("updated", async (payload: LessonMediaPolicy) => {
-        if (notationStore.getParent().type !== "LESSON") return;
-        if (payload.lessonUUId !== notationStore.getParent().uuid) return;
+        const parent = notationStore.getParent();
+        if (parent?.type !== "LESSON") return;
+        if (payload.lessonUUId !== parent.uuid) return;
 
         lessonMediaStore.setPolicy(payload);
         await syncLessonMediaPolicy(

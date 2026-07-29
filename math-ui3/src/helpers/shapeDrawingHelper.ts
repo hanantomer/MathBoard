@@ -12,7 +12,7 @@ const cellStore = useCellStore();
 const notationStore = useNotationStore();
 
 function canEditShapes(): boolean {
-  if (notationStore.getParent().type !== "LESSON") {
+  if (notationStore.getParent()?.type !== "LESSON") {
     return true;
   }
   return useAuthorizationHelper().canEdit();

@@ -10,7 +10,7 @@ export default function userOutgoingOperations() {
 
   function canSyncLessonNotation(): boolean {
     const notationStore = useNotationStore();
-    if (notationStore.getParent().type !== "LESSON") {
+    if (notationStore.getParent()?.type !== "LESSON") {
       return true;
     }
     return authorizationHelper.canEdit();
