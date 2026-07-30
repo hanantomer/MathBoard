@@ -2,9 +2,9 @@
 REM Sync practice questions from math-common templates into the DB.
 REM Idempotent — safe to re-run; skips stems that already have notations.
 REM
-REM Dev: compiles math-common + math-db when tsconfig.json is present.
-REM Prod: skips tsc and runs the existing build\seedPracticeQuestions.js
-REM       (set NODE_ENV=prod and DATABASE_URL before running).
+REM Dev: compiles when tsconfig.json is present; loads DB URL from math-server/.env
+REM       (DEV_DATABASE_URL with NODE_ENV=development, default).
+REM Prod: skips tsc; set NODE_ENV=prod and DATABASE_URL (or put DATABASE_URL in .env).
 
 setlocal
 set "DB_ROOT=%~dp0.."
