@@ -26,6 +26,7 @@ import {
   PracticeCheckResult,
   PracticeCoachRequest,
   PracticeCoachResult,
+  PracticeAiQuota,
 } from "common/practiceQuestionTypes";
 import { AnswerAttributes, AnswerCreationAttributes } from "common/answerTypes";
 import axios, { AxiosError } from "axios";
@@ -33,6 +34,7 @@ import axiosHelper from "./axiosHelper";
 import {
   isPracticeAiLimitError,
   practiceAiLimitMessage,
+  formatPracticeAiFailureMessage,
 } from "./guestPracticeHelper";
 const { baseURL, imagesURL } = axiosHelper();
 
@@ -59,6 +61,13 @@ export default function useApiHelper() {
         `Failed to log message: ${(error as AxiosError).message}`,
       );
     }
+  }
+
+  async function getPracticeAiQuota(): Promise<PracticeAiQuota> {
+    const { data } = await axios.get<PracticeAiQuota>(
+      baseURL + "/practice-ai-quota",
+    );
+    return data;
   }
 
   async function recognizeSketchOcr(
@@ -111,12 +120,12 @@ export default function useApiHelper() {
           axiosError.response?.data?.remaining,
         );
       }
-      const serverMessage =
-        axiosError.response?.data?.message ?? axiosError.response?.data?.error;
       throw new Error(
-        serverMessage
-          ? `Practice check failed: ${serverMessage}`
-          : `Practice check failed: ${(error as AxiosError).message}`,
+        formatPracticeAiFailureMessage(
+          "check",
+          axiosError.response?.data?.message ?? axiosError.response?.data?.error,
+          axiosError.message,
+        ),
       );
     }
   }
@@ -149,12 +158,13 @@ export default function useApiHelper() {
           axiosError.response?.data?.limit,
           axiosError.response?.data?.remaining,
         );
-      }      const serverMessage =
-        axiosError.response?.data?.message ?? axiosError.response?.data?.error;
+      }
       throw new Error(
-        serverMessage
-          ? `Practice coach failed: ${serverMessage}`
-          : `Practice coach failed: ${(error as AxiosError).message}`,
+        formatPracticeAiFailureMessage(
+          "coach",
+          axiosError.response?.data?.message ?? axiosError.response?.data?.error,
+          axiosError.message,
+        ),
       );
     }
   }
@@ -794,6 +804,7 @@ export default function useApiHelper() {
     deleteNotation,
     log,
     recognizeSketchOcr,
+    getPracticeAiQuota,
     checkPracticeWork,
     coachPracticeWork,
   };

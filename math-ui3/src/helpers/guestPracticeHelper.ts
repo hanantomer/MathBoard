@@ -57,6 +57,44 @@ export function practiceAiLimitMessage(
     : `You've used your ${limit} free AI Check/Coach uses for today. Sign in for a higher daily limit.`;
 }
 
+/** Map server/AI failures to a short user-facing reason (not quota). */
+export function formatPracticeAiFailureMessage(
+  action: "check" | "coach",
+  serverMessage?: string,
+  fallback?: string,
+): string {
+  const raw = (serverMessage ?? fallback ?? "").trim();
+  const lower = raw.toLowerCase();
+  const label = action === "check" ? "Check answer" : "AI tutor";
+
+  if (
+    lower.includes("gemini_api_key") ||
+    lower.includes("google_api_key") ||
+    lower.includes("not configured")
+  ) {
+    return `${label} is unavailable: Gemini is not configured on the server.`;
+  }
+  if (
+    lower.includes("429") ||
+    lower.includes("resource_exhausted") ||
+    lower.includes("quota")
+  ) {
+    return `${label} is temporarily unavailable (Gemini quota/rate limit). Try again later.`;
+  }
+  if (
+    lower.includes("network") ||
+    lower.includes("timeout") ||
+    lower.includes("econnrefused") ||
+    lower.includes("failed to fetch")
+  ) {
+    return `${label} could not reach the server. Check your connection and try again.`;
+  }
+  if (raw) {
+    return `${label} failed: ${raw}`;
+  }
+  return `${label} failed. Please try again.`;
+}
+
 /** @deprecated Use practiceAiLimitMessage */
 export const guestAiLimitMessage = (data?: PracticeAiLimitErrorBody) =>
   practiceAiLimitMessage(data, false);

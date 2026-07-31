@@ -56,6 +56,8 @@ type CoachDeps = {
     studentWork: string,
   ) => Promise<PracticeCoachResult>;
   onTip?: (tip: string) => void;
+  onError?: (error: unknown) => void;
+  onQuota?: (remaining: number, limit: number) => void;
 };
 
 /**
@@ -98,6 +100,12 @@ async function runCoach(deps: CoachDeps, myRequest: number) {
   try {
     const result = await deps.requestCoach(deps.questionUUId, studentWork);
     if (myRequest !== requestId) return;
+    if (
+      typeof result.remaining === "number" &&
+      typeof result.limit === "number"
+    ) {
+      deps.onQuota?.(result.remaining, result.limit);
+    }
     if (!result.speak || !result.tip.trim()) {
       lastSpokenWork = studentWork;
       return;
@@ -113,6 +121,7 @@ async function runCoach(deps: CoachDeps, myRequest: number) {
     speakPracticeTip(result.tip);
   } catch (error) {
     console.warn("Practice voice coach failed:", error);
+    deps.onError?.(error);
   } finally {
     inFlight = false;
   }

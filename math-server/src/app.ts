@@ -72,7 +72,11 @@ const authUtil = useAuthUtil();
 const db = useDb();
 let app = express();
 app.use(validateAuth);
-app.use(cors());
+app.use(
+    cors({
+        exposedHeaders: ["X-Practice-AI-Remaining", "X-Practice-AI-Limit"],
+    }),
+);
 app.use(express.urlencoded({ extended: true, limit: "3mb" })); 
 app.use(express.json({ limit: "3mb" }));
 const staticDir = path.join(__dirname, "uploads");
@@ -292,7 +296,8 @@ async function tryAllowGuestPractice(
 
     if (
         req.method === "GET" &&
-        pathOnly.indexOf("/api/practice-questions") === 0
+        (pathOnly.indexOf("/api/practice-questions") === 0 ||
+            pathOnly === "/api/practice-ai-quota")
     ) {
         return "allowed";
     }
@@ -401,6 +406,22 @@ function recordPracticeAiUse(req: Request, res: Response) {
     );
     res.setHeader("X-Practice-AI-Remaining", String(used.remaining));
     res.setHeader("X-Practice-AI-Limit", String(used.limit));
+    return used;
+}
+
+function resolvePracticeAiSubject(req: Request): {
+    key: string;
+    kind: PracticeAiSubjectKind;
+} {
+    const aiReq = req as PracticeAiRequest;
+    if (aiReq.practiceAiKey && aiReq.practiceAiKind) {
+        return { key: aiReq.practiceAiKey, kind: aiReq.practiceAiKind };
+    }
+    const userId = req.headers.userId as string | undefined;
+    if (userId) {
+        return { key: `user:${userId}`, kind: "user" };
+    }
+    return { key: resolveGuestKey(req), kind: "guest" };
 }
 
 /*verifies that authenitication header exists and denotes a valid user
@@ -992,6 +1013,22 @@ app.delete(
 // practice question bank (extension table; stem on questions)
 
 app.get(
+    "/api/practice-ai-quota",
+    (
+        req: Request,
+        res: Response,
+    ): Response => {
+        const { key, kind } = resolvePracticeAiSubject(req);
+        const status = checkPracticeAiLimit(key, kind);
+        return res.status(200).json({
+            remaining: status.remaining,
+            limit: status.limit,
+            kind,
+        });
+    },
+);
+
+app.get(
     "/api/practice-questions",
     async (
         req: Request,
@@ -1089,8 +1126,12 @@ app.post(
                 return res.status(400).json({ error: "questionUUId is required" });
             }
             const result = await checkPracticeWork(questionUUId, studentWork);
-            recordPracticeAiUse(req, res);
-            return res.status(200).json(result);
+            const used = recordPracticeAiUse(req, res);
+            return res.status(200).json({
+                ...result,
+                remaining: used?.remaining,
+                limit: used?.limit,
+            });
         } catch (err) {
             const message =
                 err instanceof Error ? err.message : "Practice check failed";
@@ -1128,8 +1169,12 @@ app.post(
                 return res.status(400).json({ error: "questionUUId is required" });
             }
             const result = await coachPracticeWork(questionUUId, studentWork);
-            recordPracticeAiUse(req, res);
-            return res.status(200).json(result);
+            const used = recordPracticeAiUse(req, res);
+            return res.status(200).json({
+                ...result,
+                remaining: used?.remaining,
+                limit: used?.limit,
+            });
         } catch (err) {
             const message =
                 err instanceof Error ? err.message : "Practice coach failed";

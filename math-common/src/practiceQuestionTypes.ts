@@ -34,11 +34,21 @@ export type PracticeCheckRequest = {
   studentWork: string;
 };
 
+/** Daily Check/Coach quota snapshot (guests and signed-in users). */
+export type PracticeAiQuota = {
+  remaining: number;
+  limit: number;
+  kind: "guest" | "user";
+};
+
 /** Server → client: Gemini (or local) grading result. */
 export type PracticeCheckResult = {
   correct: boolean;
   feedback: string;
   hint?: string;
+  /** Present after a successful check that consumed quota. */
+  remaining?: number;
+  limit?: number;
 };
 
 /** Client → server: short spoken coaching tip after a work sequence. */
@@ -52,4 +62,7 @@ export type PracticeCoachResult = {
   tip: string;
   /** False when there is nothing useful to say yet. */
   speak: boolean;
+  /** Present after a successful coach call that consumed quota. */
+  remaining?: number;
+  limit?: number;
 };

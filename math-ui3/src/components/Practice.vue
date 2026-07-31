@@ -71,17 +71,69 @@
       </div>
 
       <v-alert
-        v-if="!aiLimitMessage"
+        v-if="!aiLimitMessage && !aiUnavailableMessage"
         class="practice-check-bar__result"
         density="compact"
         variant="tonal"
         type="info"
+        title="AI tutor quota"
       >
         {{ aiQuotaHint }}
       </v-alert>
 
       <v-alert
-        v-if="coachTip && !voiceMuted"
+        v-if="voiceMuted && !aiLimitMessage"
+        class="practice-check-bar__result"
+        density="compact"
+        variant="tonal"
+        type="info"
+        title="Voice coach off"
+      >
+        Turn Voice on to hear AI tutor tips while you write.
+      </v-alert>
+
+      <v-alert
+        v-if="aiLimitMessage"
+        class="practice-check-bar__result"
+        density="compact"
+        variant="tonal"
+        type="warning"
+        title="Daily AI limit reached"
+        closable
+        @click:close="aiLimitMessage = ''"
+      >
+        <div>{{ aiLimitMessage }}</div>
+        <div v-if="quotaLimit != null" class="text-medium-emphasis mt-1">
+          Used {{ quotaLimit }} of {{ quotaLimit }} Check/Coach uses today
+          (resets at midnight UTC).
+        </div>
+        <v-btn
+          v-if="isGuest"
+          class="mt-2"
+          color="primary"
+          size="small"
+          variant="flat"
+          @click="goSignIn"
+        >
+          Sign in for a higher limit
+        </v-btn>
+      </v-alert>
+
+      <v-alert
+        v-else-if="aiUnavailableMessage"
+        class="practice-check-bar__result"
+        density="compact"
+        variant="tonal"
+        type="error"
+        title="AI tutor unavailable"
+        closable
+        @click:close="aiUnavailableMessage = ''"
+      >
+        {{ aiUnavailableMessage }}
+      </v-alert>
+
+      <v-alert
+        v-if="coachTip && !voiceMuted && !aiLimitMessage"
         class="practice-check-bar__result"
         density="compact"
         variant="tonal"
@@ -110,34 +162,12 @@
       </v-alert>
 
       <v-alert
-        v-else-if="aiLimitMessage"
-        class="practice-check-bar__result"
-        density="compact"
-        variant="tonal"
-        type="warning"
-        title="Daily AI limit reached"
-        closable
-        @click:close="aiLimitMessage = ''"
-      >
-        <div>{{ aiLimitMessage }}</div>
-        <v-btn
-          v-if="isGuest"
-          class="mt-2"
-          color="primary"
-          size="small"
-          variant="flat"
-          @click="goSignIn"
-        >
-          Sign in for a higher limit
-        </v-btn>
-      </v-alert>
-
-      <v-alert
-        v-else-if="checkError"
+        v-if="checkError"
         class="practice-check-bar__result"
         density="compact"
         variant="tonal"
         type="error"
+        title="Check failed"
         closable
         @click:close="checkError = ''"
       >
@@ -203,18 +233,49 @@ const uploading = ref(false);
 const result = ref<PracticeCheckResult | null>(null);
 const checkError = ref("");
 const aiLimitMessage = ref("");
+const aiUnavailableMessage = ref("");
 const uploadError = ref("");
 const coachTip = ref("");
 const currentQuestionUUId = ref("");
 const voiceMuted = ref(isPracticeVoiceMuted());
 const imageFileInput = ref<HTMLInputElement | null>(null);
+const quotaRemaining = ref<number | null>(null);
+const quotaLimit = ref<number | null>(null);
 
 const isGuest = computed(() => !userStore.getCurrentUser());
-const aiQuotaHint = computed(() =>
-  isGuest.value
+const aiQuotaHint = computed(() => {
+  if (quotaRemaining.value != null && quotaLimit.value != null) {
+    const who = isGuest.value ? "Guest" : "Signed-in";
+    return `${who}: ${quotaRemaining.value} of ${quotaLimit.value} AI Check/Coach uses left today (shared; resets midnight UTC).`;
+  }
+  return isGuest.value
     ? `Guest mode: ${GUEST_AI_DAILY_LIMIT} free Check/Coach uses per day. Sign in for ${USER_AI_DAILY_LIMIT}/day.`
-    : `${USER_AI_DAILY_LIMIT} Check/Coach uses per day (shared Check + voice coach).`,
-);
+    : `${USER_AI_DAILY_LIMIT} Check/Coach uses per day (shared Check + voice coach).`;
+});
+
+function applyQuota(remaining?: number, limit?: number) {
+  if (typeof remaining === "number") quotaRemaining.value = remaining;
+  if (typeof limit === "number") quotaLimit.value = limit;
+  if (remaining === 0 && limit != null) {
+    aiLimitMessage.value = isGuest.value
+      ? `You've used your ${limit} free AI Check/Coach uses for today. Sign in for a higher daily limit.`
+      : `Daily AI limit reached (${limit} Check/Coach uses). Try again tomorrow.`;
+  }
+}
+
+async function refreshAiQuota() {
+  try {
+    const quota = await api.getPracticeAiQuota();
+    applyQuota(quota.remaining, quota.limit);
+    if (quota.remaining === 0) {
+      aiLimitMessage.value = isGuest.value
+        ? `You've used your ${quota.limit} free AI Check/Coach uses for today. Sign in for a higher daily limit.`
+        : `Daily AI limit reached (${quota.limit} Check/Coach uses). Try again tomorrow.`;
+    }
+  } catch {
+    /* ignore — hint falls back to static copy */
+  }
+}
 
 const practiceWorkSignature = computed(() =>
   serializePracticeStudentWork(notationStore.getNotations()),
@@ -244,19 +305,27 @@ watch(practiceWorkSignature, (work, prev) => {
     getStudentWork: () =>
       serializePracticeStudentWork(notationStore.getNotations()),
     requestCoach: async (questionUUId, studentWork) => {
-      try {
-        return await api.coachPracticeWork(questionUUId, studentWork);
-      } catch (error) {
-        if (error instanceof PracticeAiLimitError) {
-          aiLimitMessage.value = error.message;
-          coachTip.value = "";
-          return { tip: "", speak: false };
-        }
-        throw error;
-      }
+      return await api.coachPracticeWork(questionUUId, studentWork);
     },
     onTip: (tip) => {
       coachTip.value = tip;
+      aiUnavailableMessage.value = "";
+    },
+    onQuota: (remaining, limit) => {
+      applyQuota(remaining, limit);
+    },
+    onError: (error) => {
+      if (error instanceof PracticeAiLimitError) {
+        aiLimitMessage.value = error.message;
+        applyQuota(error.remaining ?? 0, error.limit);
+        coachTip.value = "";
+        return;
+      }
+      aiUnavailableMessage.value =
+        error instanceof Error
+          ? error.message
+          : "AI tutor failed. Please try again.";
+      coachTip.value = "";
     },
   });
 });
@@ -270,6 +339,7 @@ function prepareBoardShell(questionUUId: string) {
   result.value = null;
   checkError.value = "";
   aiLimitMessage.value = "";
+  aiUnavailableMessage.value = "";
   uploadError.value = "";
   coachTip.value = "";
   currentQuestionUUId.value = questionUUId;
@@ -279,6 +349,7 @@ function prepareBoardShell(questionUUId: string) {
   cellStore.resetSelectedCell();
   notationStore.setParent(questionUUId, "PRACTICE");
   selectionHelper.setSelectedCell({ col: 1, row: 1 }, true);
+  void refreshAiQuota();
 }
 
 async function loadBlankPractice() {
@@ -381,6 +452,7 @@ async function runCheck() {
   result.value = null;
   checkError.value = "";
   aiLimitMessage.value = "";
+  aiUnavailableMessage.value = "";
   stopPracticeVoice();
 
   try {
@@ -391,6 +463,7 @@ async function runCheck() {
       currentQuestionUUId.value,
       studentWork,
     );
+    applyQuota(result.value.remaining, result.value.limit);
     if (result.value.feedback && !voiceMuted.value) {
       speakPracticeTip(
         result.value.correct
@@ -401,6 +474,7 @@ async function runCheck() {
   } catch (error) {
     if (error instanceof PracticeAiLimitError) {
       aiLimitMessage.value = error.message;
+      applyQuota(error.remaining ?? 0, error.limit);
     } else {
       checkError.value =
         error instanceof Error ? error.message : "Practice check failed";
