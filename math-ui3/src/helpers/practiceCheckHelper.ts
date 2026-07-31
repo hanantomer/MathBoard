@@ -1,5 +1,6 @@
 import {
   AnnotationNotationAttributes,
+  ImageNotationAttributes,
   NotationAttributes,
   PointNotationAttributes,
   RectNotationAttributes,
@@ -51,4 +52,24 @@ export function serializePracticeStudentWork(
   }
 
   return lines.join("\n").trim();
+}
+
+/**
+ * Worksheet/problem image on a blank practice board (pasted or uploaded).
+ * Prefers the top-left IMAGE notation that has image data.
+ */
+export function getPracticeProblemImageBase64(
+  notations: NotationAttributes[],
+): string | null {
+  const images = notations
+    .filter((n) => n.notationType === "IMAGE")
+    .map((n) => n as ImageNotationAttributes)
+    .filter((n) => typeof n.value === "string" && n.value.length > 64)
+    .sort(
+      (a, b) =>
+        (a.fromRow ?? 0) - (b.fromRow ?? 0) ||
+        (a.fromCol ?? 0) - (b.fromCol ?? 0),
+    );
+
+  return images[0]?.value ?? null;
 }

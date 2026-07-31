@@ -77,8 +77,8 @@ app.use(
         exposedHeaders: ["X-Practice-AI-Remaining", "X-Practice-AI-Limit"],
     }),
 );
-app.use(express.urlencoded({ extended: true, limit: "3mb" })); 
-app.use(express.json({ limit: "3mb" }));
+app.use(express.urlencoded({ extended: true, limit: "8mb" })); 
+app.use(express.json({ limit: "8mb" }));
 const staticDir = path.join(__dirname, "uploads");
 app.use("/images",  express.static(staticDir)); // Serve static files from uploads directory
 
@@ -1122,10 +1122,18 @@ app.post(
             const body = req.body as PracticeCheckRequest;
             const studentWork =
                 typeof body?.studentWork === "string" ? body.studentWork : "";
+            const problemImageBase64 =
+                typeof body?.problemImageBase64 === "string"
+                    ? body.problemImageBase64
+                    : undefined;
             if (!questionUUId) {
                 return res.status(400).json({ error: "questionUUId is required" });
             }
-            const result = await checkPracticeWork(questionUUId, studentWork);
+            const result = await checkPracticeWork(
+                questionUUId,
+                studentWork,
+                problemImageBase64,
+            );
             const used = recordPracticeAiUse(req, res);
             return res.status(200).json({
                 ...result,
@@ -1165,10 +1173,18 @@ app.post(
             const body = req.body as PracticeCoachRequest;
             const studentWork =
                 typeof body?.studentWork === "string" ? body.studentWork : "";
+            const problemImageBase64 =
+                typeof body?.problemImageBase64 === "string"
+                    ? body.problemImageBase64
+                    : undefined;
             if (!questionUUId) {
                 return res.status(400).json({ error: "questionUUId is required" });
             }
-            const result = await coachPracticeWork(questionUUId, studentWork);
+            const result = await coachPracticeWork(
+                questionUUId,
+                studentWork,
+                problemImageBase64,
+            );
             const used = recordPracticeAiUse(req, res);
             return res.status(200).json({
                 ...result,

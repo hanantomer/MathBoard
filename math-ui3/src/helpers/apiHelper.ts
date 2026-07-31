@@ -94,11 +94,18 @@ export default function useApiHelper() {
   async function checkPracticeWork(
     questionUUId: string,
     studentWork: string,
+    problemImageBase64?: string,
   ): Promise<PracticeCheckResult> {
     try {
       const { data } = await axios.post<PracticeCheckResult>(
         baseURL + "/practice-questions/" + questionUUId + "/check",
-        { questionUUId, studentWork } satisfies PracticeCheckRequest,
+        {
+          questionUUId,
+          studentWork,
+          ...(problemImageBase64
+            ? { problemImageBase64 }
+            : {}),
+        } satisfies PracticeCheckRequest,
       );
       return data;
     } catch (error) {
@@ -133,11 +140,18 @@ export default function useApiHelper() {
   async function coachPracticeWork(
     questionUUId: string,
     studentWork: string,
+    problemImageBase64?: string,
   ): Promise<PracticeCoachResult> {
     try {
       const { data } = await axios.post<PracticeCoachResult>(
         baseURL + "/practice-questions/" + questionUUId + "/coach",
-        { questionUUId, studentWork } satisfies PracticeCoachRequest,
+        {
+          questionUUId,
+          studentWork,
+          ...(problemImageBase64
+            ? { problemImageBase64 }
+            : {}),
+        } satisfies PracticeCoachRequest,
       );
       return data;
     } catch (error) {

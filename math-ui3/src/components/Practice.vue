@@ -12,6 +12,26 @@
           @change="onImageFileChosen"
         />
         <v-btn
+          :color="voiceMuted ? 'grey' : 'secondary'"
+          variant="tonal"
+          :prepend-icon="voiceMuted ? 'mdi-volume-off' : 'mdi-volume-high'"
+          data-cy="practice-voice-mute"
+          @click="toggleVoiceMute"
+        >
+          {{ voiceMuted ? "Voice off" : "Voice on" }}
+        </v-btn>
+        <v-btn
+          color="primary"
+          variant="flat"
+          :loading="checking"
+          :disabled="checking || !!aiLimitMessage || !hasProblemImage"
+          prepend-icon="mdi-check-decagram"
+          data-cy="practice-blank-check"
+          @click="runCheck"
+        >
+          Check answer
+        </v-btn>
+        <v-btn
           color="teal-darken-1"
           variant="flat"
           :loading="uploading"
@@ -30,8 +50,104 @@
         type="info"
         title="Blank sheet"
       >
-        Paste a worksheet with Ctrl+V, or upload an image, then write on the
-        board. Work stays on this device.
+        {{
+          hasProblemImage
+            ? "Worksheet image is the problem. Write your solution on the board, then use Check or Voice coach."
+            : "Paste (Ctrl+V) or upload a worksheet image to use as the problem, then write your solution."
+        }}
+      </v-alert>
+      <v-alert
+        v-if="!aiLimitMessage && !aiUnavailableMessage"
+        class="practice-check-bar__result"
+        density="compact"
+        variant="tonal"
+        type="info"
+        title="AI tutor quota"
+      >
+        {{ aiQuotaHint }}
+      </v-alert>
+      <v-alert
+        v-if="voiceMuted && !aiLimitMessage"
+        class="practice-check-bar__result"
+        density="compact"
+        variant="tonal"
+        type="info"
+        title="Voice coach off"
+      >
+        Turn Voice on to hear AI tutor tips while you write.
+      </v-alert>
+      <v-alert
+        v-if="aiLimitMessage"
+        class="practice-check-bar__result"
+        density="compact"
+        variant="tonal"
+        type="warning"
+        title="Daily AI limit reached"
+        closable
+        @click:close="aiLimitMessage = ''"
+      >
+        <div>{{ aiLimitMessage }}</div>
+        <v-btn
+          v-if="isGuest"
+          class="mt-2"
+          color="primary"
+          size="small"
+          variant="flat"
+          @click="goSignIn"
+        >
+          Sign in for a higher limit
+        </v-btn>
+      </v-alert>
+      <v-alert
+        v-else-if="aiUnavailableMessage"
+        class="practice-check-bar__result"
+        density="compact"
+        variant="tonal"
+        type="error"
+        title="AI tutor unavailable"
+        closable
+        @click:close="aiUnavailableMessage = ''"
+      >
+        {{ aiUnavailableMessage }}
+      </v-alert>
+      <v-alert
+        v-if="coachTip && !voiceMuted && !aiLimitMessage"
+        class="practice-check-bar__result"
+        density="compact"
+        variant="tonal"
+        type="info"
+        title="Coach"
+        closable
+        @click:close="coachTip = ''"
+      >
+        {{ coachTip }}
+      </v-alert>
+      <v-alert
+        v-if="result"
+        class="practice-check-bar__result"
+        density="compact"
+        variant="tonal"
+        :type="result.correct ? 'success' : 'warning'"
+        :title="result.correct ? 'Correct' : 'Not quite'"
+        closable
+        @click:close="result = null"
+      >
+        <div>{{ result.feedback }}</div>
+        <div v-if="result.hint" class="text-medium-emphasis mt-1">
+          Hint: {{ result.hint }}
+        </div>
+      </v-alert>
+      <v-alert
+        v-if="checkError"
+        class="practice-check-bar__result"
+        density="compact"
+        variant="tonal"
+        type="error"
+        title="Check failed"
+        closable
+        @click:close="checkError = ''"
+      >
+        {{ checkError }}
       </v-alert>
       <v-alert
         v-if="uploadError"
@@ -189,7 +305,10 @@ import { useEditModeStore } from "../store/pinia/editModeStore";
 import useApiHelper, { PracticeAiLimitError } from "../helpers/apiHelper";
 import { useCellStore } from "../store/pinia/cellStore";
 import { useUserStore } from "../store/pinia/userStore";
-import { serializePracticeStudentWork } from "../helpers/practiceCheckHelper";
+import {
+  serializePracticeStudentWork,
+  getPracticeProblemImageBase64,
+} from "../helpers/practiceCheckHelper";
 import {
   PRACTICE_BLANK_UUID,
 } from "../helpers/practiceBoardAdapter";
@@ -281,6 +400,14 @@ const practiceWorkSignature = computed(() =>
   serializePracticeStudentWork(notationStore.getNotations()),
 );
 
+const hasProblemImage = computed(
+  () => !!getPracticeProblemImageBase64(notationStore.getNotations()),
+);
+
+function currentProblemImage(): string | undefined {
+  return getPracticeProblemImageBase64(notationStore.getNotations()) ?? undefined;
+}
+
 watch(
   route,
   (to) => {
@@ -294,7 +421,7 @@ watch(
 );
 
 watch(practiceWorkSignature, (work, prev) => {
-  if (!loaded.value || isBlank.value || !currentQuestionUUId.value) return;
+  if (!loaded.value || !currentQuestionUUId.value) return;
   if (work === prev) return;
   if (!work.trim()) return;
   if (voiceMuted.value || checking.value) return;
@@ -305,7 +432,11 @@ watch(practiceWorkSignature, (work, prev) => {
     getStudentWork: () =>
       serializePracticeStudentWork(notationStore.getNotations()),
     requestCoach: async (questionUUId, studentWork) => {
-      return await api.coachPracticeWork(questionUUId, studentWork);
+      return await api.coachPracticeWork(
+        questionUUId,
+        studentWork,
+        isBlank.value ? currentProblemImage() : undefined,
+      );
     },
     onTip: (tip) => {
       coachTip.value = tip;
@@ -446,7 +577,12 @@ function goSignIn() {
 }
 
 async function runCheck() {
-  if (!currentQuestionUUId.value || checking.value || isBlank.value) return;
+  if (!currentQuestionUUId.value || checking.value) return;
+  if (isBlank.value && !hasProblemImage.value) {
+    checkError.value =
+      "Paste or upload a worksheet image first, then check your answer.";
+    return;
+  }
 
   checking.value = true;
   result.value = null;
@@ -462,6 +598,7 @@ async function runCheck() {
     result.value = await api.checkPracticeWork(
       currentQuestionUUId.value,
       studentWork,
+      isBlank.value ? currentProblemImage() : undefined,
     );
     applyQuota(result.value.remaining, result.value.limit);
     if (result.value.feedback && !voiceMuted.value) {

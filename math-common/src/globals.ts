@@ -145,6 +145,9 @@ export const PRACTICE_AI_LIMIT_ERROR = "practice_ai_limit";
 /** @deprecated Use PRACTICE_AI_LIMIT_ERROR */
 export const GUEST_AI_LIMIT_ERROR = PRACTICE_AI_LIMIT_ERROR;
 
+/** Client-only blank practice sheet uuid (no curated stem / no Check answer). */
+export const PRACTICE_BLANK_UUID = "blank";
+
 export type TextSyncUpdateData = {
   text: string;
   x: number;

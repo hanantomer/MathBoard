@@ -32,6 +32,11 @@ export type PracticeCheckRequest = {
   questionUUId: string;
   /** Human-readable serialization of the student's PRACTICE-layer work. */
   studentWork: string;
+  /**
+   * Optional worksheet/problem image (blank-sheet practice).
+   * Data URL or raw base64; used as the problem instead of a curated stem.
+   */
+  problemImageBase64?: string;
 };
 
 /** Daily Check/Coach quota snapshot (guests and signed-in users). */
@@ -55,6 +60,8 @@ export type PracticeCheckResult = {
 export type PracticeCoachRequest = {
   questionUUId: string;
   studentWork: string;
+  /** Optional worksheet/problem image for blank-sheet coaching. */
+  problemImageBase64?: string;
 };
 
 /** Server → client: one short tip suitable for text-to-speech. */

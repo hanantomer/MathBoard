@@ -1,3 +1,4 @@
+import { PRACTICE_BLANK_UUID } from "common/globals";
 import {
   CellAttributes,
   isCellNotationType,
@@ -9,8 +10,7 @@ import useApiHelper from "./apiHelper";
 import { useNotationStore } from "../store/pinia/notationStore";
 import { usePracticeStore } from "../store/pinia/practiceStore";
 
-/** Client-only blank practice sheet (no curated question / no API stem). */
-export const PRACTICE_BLANK_UUID = "blank";
+export { PRACTICE_BLANK_UUID };
 
 /**
  * Practice / AI-tutor board boundary.

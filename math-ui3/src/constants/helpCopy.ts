@@ -78,7 +78,7 @@ export const BOARD_ROLE_BANNERS = {
   practiceStudent:
     "Practicing with AI tutor — Check and voice coach use your daily AI quota. Work is saved only on this device.",
   practiceBlank:
-    "Blank practice sheet — paste (Ctrl+V) or upload a worksheet image, then work on the board. Saved only on this device.",
+    "Blank practice sheet — paste (Ctrl+V) or upload a worksheet image as the problem, then write and use Check / voice coach. Saved only on this device.",
   practiceGuest:
     "Guest practice — limited free Check/Coach uses per day. Sign in for a higher daily limit. Work stays on this device.",
 } as const;

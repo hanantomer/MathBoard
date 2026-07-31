@@ -7,6 +7,7 @@ import type {
   PracticeCheckResult,
   PracticeCoachResult,
 } from "../../../math-common/build/practiceQuestionTypes";
+import { PRACTICE_BLANK_UUID } from "../../../math-common/build/globals";
 
 const DEFAULT_MODELS = ["gemini-2.5-flash", "gemini-flash-lite-latest"];
 const GEMINI_API_BASE =
@@ -151,14 +152,26 @@ async function generateWithModel(
   apiKey: string,
   modelName: string,
   prompt: string,
+  problemImageBase64?: string,
+  generationConfig?: Record<string, unknown>,
 ): Promise<string> {
   const url = `${GEMINI_API_BASE}/${modelName}:generateContent`;
+  const parts: Array<Record<string, unknown>> = [{ text: prompt }];
+  if (problemImageBase64?.trim()) {
+    const { data, mimeType } = normalizeImageBase64(problemImageBase64);
+    if (!data || data.length < 64) {
+      throw new Error("Problem image data is missing or too small");
+    }
+    parts.push({ inlineData: { mimeType, data } });
+  }
+
   const { data: payload, status, statusText } =
     await axios.post<GeminiGenerateResponse>(
       url,
       {
-        contents: [{ parts: [{ text: prompt }] }],
-        generationConfig: buildGenerationConfig(modelName),
+        contents: [{ parts }],
+        generationConfig:
+          generationConfig ?? buildGenerationConfig(modelName),
       },
       {
         params: { key: apiKey },
@@ -173,16 +186,125 @@ async function generateWithModel(
   return extractText(payload);
 }
 
+function normalizeImageBase64(imageBase64: string): {
+  data: string;
+  mimeType: string;
+} {
+  const dataUrl = imageBase64.match(/^data:(image\/[\w+.-]+);base64,(.+)$/s);
+  if (dataUrl) {
+    return { mimeType: dataUrl[1], data: dataUrl[2].trim() };
+  }
+  const data = imageBase64.replace(/^data:image\/\w+;base64,/, "").trim();
+  return { mimeType: "image/png", data };
+}
+
+function buildBlankImageCheckPrompt(studentWork: string): string {
+  return `You are grading a student's math practice work on a digital whiteboard.
+
+The attached image is the worksheet / problem the student is solving.
+Read the problem from the image. Do not invent a different problem.
+
+Student work (from their board notations; may include rough work):
+"""
+${studentWork || "(empty — student has not written anything yet)"}
+"""
+
+Decide if the student's final answer correctly solves the problem in the image.
+Ignore intermediate scratch work if a clear final answer is present.
+Be lenient with spacing, parentheses, and equivalent notations (e.g. x^2 vs x²).
+
+Respond with ONLY valid JSON (no markdown):
+{"correct":true|false,"feedback":"one short sentence","hint":"optional short hint if incorrect"}`;
+}
+
+function buildBlankImageCoachPrompt(studentWork: string): string {
+  return `You are a brief math voice coach for a student working on a whiteboard.
+
+The attached image is the worksheet / problem they are solving.
+Read the problem from the image. Do not invent a different problem.
+
+Student's current board work:
+"""
+${studentWork}
+"""
+
+Give ONE short spoken tip (max 18 words) about their next useful step or a quick encouragement if they are on track.
+Do not solve the whole problem. Do not use markdown or emoji.
+If there is nothing useful to say yet, respond with speak=false.
+
+Respond with ONLY valid JSON:
+{"speak":true|false,"tip":"short sentence"}`;
+}
+
+async function generateTextAcrossModels(
+  prompt: string,
+  problemImageBase64?: string,
+  generationConfigForModel?: (modelName: string) => Record<string, unknown>,
+  label = "practiceAI",
+): Promise<string> {
+  const apiKey = getApiKey();
+  let lastError: unknown;
+  for (const modelName of resolveModels()) {
+    try {
+      return await generateWithModel(
+        apiKey,
+        modelName,
+        prompt,
+        problemImageBase64,
+        generationConfigForModel?.(modelName),
+      );
+    } catch (err) {
+      lastError = err;
+      if (process.env.NODE_ENV === "development") {
+        console.debug(
+          `[${label}] ${modelName} failed:`,
+          err instanceof Error ? err.message : err,
+        );
+      }
+    }
+  }
+  throw lastError instanceof Error
+    ? lastError
+    : new Error(`${label} failed`);
+}
+
 export async function checkPracticeWork(
   questionUUId: string,
   studentWork: string,
+  problemImageBase64?: string,
 ): Promise<PracticeCheckResult> {
+  const work = (studentWork ?? "").trim();
+  const image = problemImageBase64?.trim();
+
+  if (questionUUId === PRACTICE_BLANK_UUID) {
+    if (!image) {
+      return {
+        correct: false,
+        feedback: "Paste or upload a worksheet image first, then check again.",
+        hint: "Use Ctrl+V or Upload image, write your answer, then press Check.",
+      };
+    }
+    if (!work) {
+      return {
+        correct: false,
+        feedback: "Add your answer on the board, then check again.",
+        hint: "Write below or beside the worksheet image, then press Check.",
+      };
+    }
+    const raw = await generateTextAcrossModels(
+      buildBlankImageCheckPrompt(work),
+      image,
+      undefined,
+      "practiceCheckBlank",
+    );
+    return parseCheckResult(raw);
+  }
+
   const template = getPracticeQuestionTemplateByUUId(questionUUId);
   if (!template) {
     throw new Error("practice question template not found");
   }
 
-  const work = (studentWork ?? "").trim();
   if (!work) {
     return {
       correct: false,
@@ -201,7 +323,6 @@ export async function checkPracticeWork(
     };
   }
 
-  const apiKey = getApiKey();
   const prompt = buildPrompt(
     formatPracticeProblemPrompt(template),
     template.expectedAnswer,
@@ -209,25 +330,29 @@ export async function checkPracticeWork(
     work,
   );
 
-  let lastError: unknown;
-  for (const modelName of resolveModels()) {
-    try {
-      const raw = await generateWithModel(apiKey, modelName, prompt);
-      return parseCheckResult(raw);
-    } catch (err) {
-      lastError = err;
-      if (process.env.NODE_ENV === "development") {
-        console.debug(
-          `[practiceCheck] ${modelName} failed:`,
-          err instanceof Error ? err.message : err,
-        );
-      }
-    }
-  }
+  const raw = await generateTextAcrossModels(
+    prompt,
+    undefined,
+    undefined,
+    "practiceCheck",
+  );
+  return parseCheckResult(raw);
+}
 
-  throw lastError instanceof Error
-    ? lastError
-    : new Error("Practice check failed");
+function buildBlankCoachPrompt(studentWork: string): string {
+  return `You are a brief math voice coach for a student working on a blank whiteboard (pasted worksheet or free work).
+
+Student's current board work:
+"""
+${studentWork}
+"""
+
+Give ONE short spoken tip (max 18 words) about their next useful step, a gentle correction, or quick encouragement if they are on track.
+Do not solve the whole problem. Do not use markdown or emoji.
+If there is nothing useful to say yet, respond with speak=false.
+
+Respond with ONLY valid JSON:
+{"speak":true|false,"tip":"short sentence"}`;
 }
 
 function buildCoachPrompt(
@@ -269,18 +394,53 @@ function parseCoachResult(raw: string): PracticeCoachResult {
   return { speak, tip: speak ? tip : "" };
 }
 
+function coachGenerationConfig(modelName: string): Record<string, unknown> {
+  const config: Record<string, unknown> = {
+    maxOutputTokens: 80,
+    temperature: 0.4,
+    thinkingConfig: { thinkingBudget: 0 },
+  };
+  if (!/gemini-2\.5|gemini-3/.test(modelName)) {
+    delete config.thinkingConfig;
+  }
+  return config;
+}
+
+async function generateCoachTip(
+  prompt: string,
+  problemImageBase64?: string,
+): Promise<PracticeCoachResult> {
+  const raw = await generateTextAcrossModels(
+    prompt,
+    problemImageBase64,
+    coachGenerationConfig,
+    "practiceCoach",
+  );
+  return parseCoachResult(raw);
+}
+
 export async function coachPracticeWork(
   questionUUId: string,
   studentWork: string,
+  problemImageBase64?: string,
 ): Promise<PracticeCoachResult> {
-  const template = getPracticeQuestionTemplateByUUId(questionUUId);
-  if (!template) {
-    throw new Error("practice question template not found");
-  }
-
   const work = (studentWork ?? "").trim();
   if (!work) {
     return { speak: false, tip: "" };
+  }
+
+  const image = problemImageBase64?.trim();
+
+  if (questionUUId === PRACTICE_BLANK_UUID) {
+    if (image) {
+      return generateCoachTip(buildBlankImageCoachPrompt(work), image);
+    }
+    return generateCoachTip(buildBlankCoachPrompt(work));
+  }
+
+  const template = getPracticeQuestionTemplateByUUId(questionUUId);
+  if (!template) {
+    throw new Error("practice question template not found");
   }
 
   // If they already have the answer on the board, celebrate briefly without another Gemini call.
@@ -293,58 +453,11 @@ export async function coachPracticeWork(
     };
   }
 
-  const apiKey = getApiKey();
-  const prompt = buildCoachPrompt(
-    formatPracticeProblemPrompt(template),
-    template.expectedAnswer,
-    work,
+  return generateCoachTip(
+    buildCoachPrompt(
+      formatPracticeProblemPrompt(template),
+      template.expectedAnswer,
+      work,
+    ),
   );
-
-  // Shorter generation for voice tips
-  const coachConfig = (modelName: string) => {
-    const config: Record<string, unknown> = {
-      maxOutputTokens: 80,
-      temperature: 0.4,
-      thinkingConfig: { thinkingBudget: 0 },
-    };
-    if (!/gemini-2\.5|gemini-3/.test(modelName)) {
-      delete config.thinkingConfig;
-    }
-    return config;
-  };
-
-  let lastError: unknown;
-  for (const modelName of resolveModels()) {
-    try {
-      const url = `${GEMINI_API_BASE}/${modelName}:generateContent`;
-      const { data: payload, status, statusText } =
-        await axios.post<GeminiGenerateResponse>(
-          url,
-          {
-            contents: [{ parts: [{ text: prompt }] }],
-            generationConfig: coachConfig(modelName),
-          },
-          {
-            params: { key: apiKey },
-            validateStatus: () => true,
-          },
-        );
-      if (status < 200 || status >= 300) {
-        throw new Error(payload.error?.message ?? statusText ?? `HTTP ${status}`);
-      }
-      return parseCoachResult(extractText(payload));
-    } catch (err) {
-      lastError = err;
-      if (process.env.NODE_ENV === "development") {
-        console.debug(
-          `[practiceCoach] ${modelName} failed:`,
-          err instanceof Error ? err.message : err,
-        );
-      }
-    }
-  }
-
-  throw lastError instanceof Error
-    ? lastError
-    : new Error("Practice coach failed");
 }
