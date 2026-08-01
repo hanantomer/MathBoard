@@ -53,8 +53,8 @@ export function practiceAiLimitMessage(
   if (data?.message) return data.message;
   const limit = data?.limit ?? (signedIn ? USER_AI_DAILY_LIMIT : GUEST_AI_DAILY_LIMIT);
   return signedIn
-    ? `Daily AI limit reached (${limit} Check/Coach uses). Try again tomorrow.`
-    : `You've used your ${limit} free AI Check/Coach uses for today. Sign in for a higher daily limit.`;
+    ? `Daily AI limit reached (${limit} Check uses). Try again tomorrow.`
+    : `You've used your ${limit} free AI Check uses for today. Sign in for a higher daily limit.`;
 }
 
 /** Map server/AI failures to a short user-facing reason (not quota). */

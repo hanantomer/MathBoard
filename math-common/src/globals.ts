@@ -131,13 +131,18 @@ export const ACCESS_TOKEN_NAME = "access_token";
 export const GUEST_ID_COOKIE = "mathboard_guest_id";
 
 /** Max Check + Coach AI calls per guest per UTC day. */
-export const GUEST_AI_DAILY_LIMIT = 5;
+export const GUEST_AI_DAILY_LIMIT = 50;
 
 /**
  * Max Check + Coach AI calls per registered user per UTC day
  * (until paid plans exist).
  */
-export const USER_AI_DAILY_LIMIT = 25;
+export const USER_AI_DAILY_LIMIT = 250;
+
+/**
+ * When false, voice coach TTS and /coach are off; Check still uses AI quota.
+ */
+export const PRACTICE_VOICE_COACH_ENABLED = false;
 
 /** API error code when practice AI daily quota is exhausted. */
 export const PRACTICE_AI_LIMIT_ERROR = "practice_ai_limit";

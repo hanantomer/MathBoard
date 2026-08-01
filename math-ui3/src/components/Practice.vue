@@ -12,6 +12,7 @@
           @change="onImageFileChosen"
         />
         <v-btn
+          v-if="voiceCoachEnabled"
           :color="voiceMuted ? 'grey' : 'secondary'"
           variant="tonal"
           :prepend-icon="voiceMuted ? 'mdi-volume-off' : 'mdi-volume-high'"
@@ -52,7 +53,7 @@
       >
         {{
           hasProblemImage
-            ? "Worksheet image is the problem. Write your solution on the board, then use Check or Voice coach."
+            ? "Worksheet image is the problem. Write your solution on the board, then use Check."
             : "Paste (Ctrl+V) or upload a worksheet image to use as the problem, then write your solution."
         }}
       </v-alert>
@@ -67,7 +68,7 @@
         {{ aiQuotaHint }}
       </v-alert>
       <v-alert
-        v-if="voiceMuted && !aiLimitMessage"
+        v-if="voiceCoachEnabled && voiceMuted && !aiLimitMessage"
         class="practice-check-bar__result"
         density="compact"
         variant="tonal"
@@ -111,7 +112,7 @@
         {{ aiUnavailableMessage }}
       </v-alert>
       <v-alert
-        v-if="coachTip && !voiceMuted && !aiLimitMessage"
+        v-if="voiceCoachEnabled && coachTip && !voiceMuted && !aiLimitMessage"
         class="practice-check-bar__result"
         density="compact"
         variant="tonal"
@@ -165,6 +166,7 @@
     <div v-else-if="loaded" class="practice-check-bar">
       <div class="practice-check-bar__actions">
         <v-btn
+          v-if="voiceCoachEnabled"
           :color="voiceMuted ? 'grey' : 'secondary'"
           variant="tonal"
           :prepend-icon="voiceMuted ? 'mdi-volume-off' : 'mdi-volume-high'"
@@ -198,7 +200,7 @@
       </v-alert>
 
       <v-alert
-        v-if="voiceMuted && !aiLimitMessage"
+        v-if="voiceCoachEnabled && voiceMuted && !aiLimitMessage"
         class="practice-check-bar__result"
         density="compact"
         variant="tonal"
@@ -220,7 +222,7 @@
       >
         <div>{{ aiLimitMessage }}</div>
         <div v-if="quotaLimit != null" class="text-medium-emphasis mt-1">
-          Used {{ quotaLimit }} of {{ quotaLimit }} Check/Coach uses today
+          Used {{ quotaLimit }} of {{ quotaLimit }} Check uses today
           (resets at midnight UTC).
         </div>
         <v-btn
@@ -249,7 +251,7 @@
       </v-alert>
 
       <v-alert
-        v-if="coachTip && !voiceMuted && !aiLimitMessage"
+        v-if="voiceCoachEnabled && coachTip && !voiceMuted && !aiLimitMessage"
         class="practice-check-bar__result"
         density="compact"
         variant="tonal"
@@ -319,6 +321,7 @@ import {
   GUEST_AI_DAILY_LIMIT,
   USER_AI_DAILY_LIMIT,
 } from "../helpers/guestPracticeHelper";
+import { PRACTICE_VOICE_COACH_ENABLED } from "common/globals";
 import {
   isPracticeVoiceMuted,
   resetPracticeVoiceCoach,
@@ -356,6 +359,7 @@ const aiUnavailableMessage = ref("");
 const uploadError = ref("");
 const coachTip = ref("");
 const currentQuestionUUId = ref("");
+const voiceCoachEnabled = PRACTICE_VOICE_COACH_ENABLED;
 const voiceMuted = ref(isPracticeVoiceMuted());
 const imageFileInput = ref<HTMLInputElement | null>(null);
 const quotaRemaining = ref<number | null>(null);
@@ -365,11 +369,11 @@ const isGuest = computed(() => !userStore.getCurrentUser());
 const aiQuotaHint = computed(() => {
   if (quotaRemaining.value != null && quotaLimit.value != null) {
     const who = isGuest.value ? "Guest" : "Signed-in";
-    return `${who}: ${quotaRemaining.value} of ${quotaLimit.value} AI Check/Coach uses left today (shared; resets midnight UTC).`;
+    return `${who}: ${quotaRemaining.value} of ${quotaLimit.value} AI Check uses left today (resets midnight UTC).`;
   }
   return isGuest.value
-    ? `Guest mode: ${GUEST_AI_DAILY_LIMIT} free Check/Coach uses per day. Sign in for ${USER_AI_DAILY_LIMIT}/day.`
-    : `${USER_AI_DAILY_LIMIT} Check/Coach uses per day (shared Check + voice coach).`;
+    ? `Guest mode: ${GUEST_AI_DAILY_LIMIT} free Check uses per day. Sign in for ${USER_AI_DAILY_LIMIT}/day.`
+    : `${USER_AI_DAILY_LIMIT} Check uses per day.`;
 });
 
 function applyQuota(remaining?: number, limit?: number) {
@@ -377,8 +381,8 @@ function applyQuota(remaining?: number, limit?: number) {
   if (typeof limit === "number") quotaLimit.value = limit;
   if (remaining === 0 && limit != null) {
     aiLimitMessage.value = isGuest.value
-      ? `You've used your ${limit} free AI Check/Coach uses for today. Sign in for a higher daily limit.`
-      : `Daily AI limit reached (${limit} Check/Coach uses). Try again tomorrow.`;
+      ? `You've used your ${limit} free AI Check uses for today. Sign in for a higher daily limit.`
+      : `Daily AI limit reached (${limit} Check uses). Try again tomorrow.`;
   }
 }
 
@@ -388,8 +392,8 @@ async function refreshAiQuota() {
     applyQuota(quota.remaining, quota.limit);
     if (quota.remaining === 0) {
       aiLimitMessage.value = isGuest.value
-        ? `You've used your ${quota.limit} free AI Check/Coach uses for today. Sign in for a higher daily limit.`
-        : `Daily AI limit reached (${quota.limit} Check/Coach uses). Try again tomorrow.`;
+        ? `You've used your ${quota.limit} free AI Check uses for today. Sign in for a higher daily limit.`
+        : `Daily AI limit reached (${quota.limit} Check uses). Try again tomorrow.`;
     }
   } catch {
     /* ignore — hint falls back to static copy */

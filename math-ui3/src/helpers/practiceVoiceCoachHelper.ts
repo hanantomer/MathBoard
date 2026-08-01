@@ -1,4 +1,5 @@
 import type { PracticeCoachResult } from "common/practiceQuestionTypes";
+import { PRACTICE_VOICE_COACH_ENABLED } from "common/globals";
 
 const MUTE_KEY = "mathboard-practice-voice-muted";
 const DEBOUNCE_MS = 1600;
@@ -12,6 +13,7 @@ let lastSpeakAt = 0;
 let requestId = 0;
 
 export function isPracticeVoiceMuted(): boolean {
+  if (!PRACTICE_VOICE_COACH_ENABLED) return true;
   try {
     return localStorage.getItem(MUTE_KEY) === "1";
   } catch {
@@ -20,6 +22,7 @@ export function isPracticeVoiceMuted(): boolean {
 }
 
 export function setPracticeVoiceMuted(muted: boolean) {
+  if (!PRACTICE_VOICE_COACH_ENABLED) return;
   try {
     localStorage.setItem(MUTE_KEY, muted ? "1" : "0");
   } catch {
@@ -37,6 +40,7 @@ export function stopPracticeVoice() {
 }
 
 export function speakPracticeTip(tip: string) {
+  if (!PRACTICE_VOICE_COACH_ENABLED) return;
   if (typeof window === "undefined" || !window.speechSynthesis) return;
   if (!tip.trim() || isPracticeVoiceMuted()) return;
 
@@ -65,6 +69,7 @@ type CoachDeps = {
  * Debounced + rate-limited so it does not talk after every symbol.
  */
 export function schedulePracticeVoiceCoach(deps: CoachDeps) {
+  if (!PRACTICE_VOICE_COACH_ENABLED) return;
   clearTimeout(debounceTimer);
   const myRequest = ++requestId;
 
@@ -85,6 +90,7 @@ export function resetPracticeVoiceCoach() {
 }
 
 async function runCoach(deps: CoachDeps, myRequest: number) {
+  if (!PRACTICE_VOICE_COACH_ENABLED) return;
   if (myRequest !== requestId) return;
   if (isPracticeVoiceMuted()) return;
   if (inFlight) return;

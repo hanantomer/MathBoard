@@ -26,6 +26,7 @@ import type {
 } from "../../math-common/build/practiceQuestionTypes";
 import {
     PRACTICE_AI_LIMIT_ERROR,
+    PRACTICE_VOICE_COACH_ENABLED,
 } from "../../math-common/build/globals";
 
 import { exec } from "child_process";
@@ -133,6 +134,19 @@ const boardClearLogger = winston.createLogger({
     transports: [
         new winston.transports.File({
             filename: path.join(apiLogsDir, "board-clear.log"),
+        }),
+    ],
+});
+
+const practiceAiUsageLogger = winston.createLogger({
+    level: "info",
+    format: winston.format.combine(
+        winston.format.timestamp(),
+        winston.format.json(),
+    ),
+    transports: [
+        new winston.transports.File({
+            filename: path.join(apiLogsDir, "practice-ai-usage.log"),
         }),
     ],
 });
@@ -366,6 +380,7 @@ function resolveGuestKey(req: Request): string {
 function enforcePracticeAiQuota(
     req: Request,
     res: Response,
+    action: "check" | "coach" = "check",
 ): boolean {
     const aiReq = req as PracticeAiRequest;
     let key = aiReq.practiceAiKey;
@@ -386,6 +401,17 @@ function enforcePracticeAiQuota(
 
     const limit = checkPracticeAiLimit(key, kind!);
     if (!limit.allowed) {
+        practiceAiUsageLogger.info({
+            event: "denied",
+            day: new Date().toISOString().slice(0, 10),
+            action,
+            kind,
+            subject: key,
+            questionUUId: req.params.questionUUId,
+            remaining: 0,
+            limit: limit.limit,
+            used: limit.limit,
+        });
         res.status(429).json({
             error: PRACTICE_AI_LIMIT_ERROR,
             message: limit.message,
@@ -397,7 +423,11 @@ function enforcePracticeAiQuota(
     return true;
 }
 
-function recordPracticeAiUse(req: Request, res: Response) {
+function recordPracticeAiUse(
+    req: Request,
+    res: Response,
+    action: "check" | "coach",
+) {
     const aiReq = req as PracticeAiRequest;
     if (!aiReq.practiceAiKey || !aiReq.practiceAiKind) return;
     const used = consumePracticeAiLimit(
@@ -406,6 +436,17 @@ function recordPracticeAiUse(req: Request, res: Response) {
     );
     res.setHeader("X-Practice-AI-Remaining", String(used.remaining));
     res.setHeader("X-Practice-AI-Limit", String(used.limit));
+    practiceAiUsageLogger.info({
+        event: "consume",
+        day: new Date().toISOString().slice(0, 10),
+        action,
+        kind: aiReq.practiceAiKind,
+        subject: aiReq.practiceAiKey,
+        questionUUId: req.params.questionUUId,
+        remaining: used.remaining,
+        limit: used.limit,
+        used: used.limit - used.remaining,
+    });
     return used;
 }
 
@@ -1115,7 +1156,7 @@ app.post(
         next: NextFunction
     ): Promise<Response | undefined> => {
         try {
-            if (!enforcePracticeAiQuota(req, res)) {
+            if (!enforcePracticeAiQuota(req, res, "check")) {
                 return;
             }
             const questionUUId = req.params.questionUUId;
@@ -1134,7 +1175,7 @@ app.post(
                 studentWork,
                 problemImageBase64,
             );
-            const used = recordPracticeAiUse(req, res);
+            const used = recordPracticeAiUse(req, res, "check");
             return res.status(200).json({
                 ...result,
                 remaining: used?.remaining,
@@ -1166,7 +1207,12 @@ app.post(
         res: Response,
     ): Promise<Response | undefined> => {
         try {
-            if (!enforcePracticeAiQuota(req, res)) {
+            if (!PRACTICE_VOICE_COACH_ENABLED) {
+                return res.status(404).json({
+                    error: "Voice coach is disabled",
+                });
+            }
+            if (!enforcePracticeAiQuota(req, res, "coach")) {
                 return;
             }
             const questionUUId = req.params.questionUUId;
@@ -1185,7 +1231,7 @@ app.post(
                 studentWork,
                 problemImageBase64,
             );
-            const used = recordPracticeAiUse(req, res);
+            const used = recordPracticeAiUse(req, res, "coach");
             return res.status(200).json({
                 ...result,
                 remaining: used?.remaining,

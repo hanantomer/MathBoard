@@ -31,9 +31,9 @@ function pruneIfNeeded(key: string, day: string): Bucket {
 
 function limitMessage(kind: PracticeAiSubjectKind, limit: number): string {
   if (kind === "guest") {
-    return `Guest AI limit reached (${limit} free Check/Coach uses per day). Sign in for a higher daily limit.`;
+    return `Guest AI limit reached (${limit} free Check uses per day). Sign in for a higher daily limit.`;
   }
-  return `Daily AI limit reached (${limit} Check/Coach uses). Try again tomorrow.`;
+  return `Daily AI limit reached (${limit} Check uses). Try again tomorrow.`;
 }
 
 export type PracticeAiLimitResult =
