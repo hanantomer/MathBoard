@@ -163,6 +163,8 @@ export type PracticeClickHandlers = {
 /**
  * Practice selection: QUESTION stem is display-only; PRACTICE layer is editable.
  * Returns true when the click was handled (caller should return).
+ * Returns false when there was no DOM hit so the caller can proximity-select
+ * thin shapes (lines, curves, etc.).
  */
 export function handlePracticeClick(
   clickedNotation: NotationAttributes | null,
@@ -180,6 +182,12 @@ export function handlePracticeClick(
     return true;
   }
 
+  // Missed the SVG element — let caller use distance-based selection.
+  if (!clickedNotation) {
+    return false;
+  }
+
+  // QUESTION stem (or other non-practice): select cell only.
   handlers.resetSelectedNotations();
   handlers.setSelectedCell(clickedCell, true);
   return true;

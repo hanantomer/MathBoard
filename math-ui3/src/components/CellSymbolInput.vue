@@ -15,6 +15,7 @@
     enterkeyhint="done"
     :style="inputStyle"
     @keydown="onKeydown"
+    @keyup.stop
     @input="onInput"
   />
 </template>
@@ -122,6 +123,7 @@ function onInput() {
 }
 
 async function onKeydown(e: KeyboardEvent) {
+  e.stopPropagation();
   if (e.key === "Enter") {
     e.preventDefault();
     inputRef.value?.blur();

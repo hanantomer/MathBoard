@@ -26,7 +26,6 @@ import type {
 } from "../../math-common/build/practiceQuestionTypes";
 import {
     PRACTICE_AI_LIMIT_ERROR,
-    PRACTICE_VOICE_COACH_ENABLED,
 } from "../../math-common/build/globals";
 
 import { exec } from "child_process";
@@ -1207,11 +1206,6 @@ app.post(
         res: Response,
     ): Promise<Response | undefined> => {
         try {
-            if (!PRACTICE_VOICE_COACH_ENABLED) {
-                return res.status(404).json({
-                    error: "Voice coach is disabled",
-                });
-            }
             if (!enforcePracticeAiQuota(req, res, "coach")) {
                 return;
             }

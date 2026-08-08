@@ -140,9 +140,15 @@ export const GUEST_AI_DAILY_LIMIT = 50;
 export const USER_AI_DAILY_LIMIT = 250;
 
 /**
- * When false, voice coach TTS and /coach are off; Check still uses AI quota.
+ * Practice assist modes (client preference):
+ * - check: Check answer only
+ * - text: live textual tips near the board
+ * - voice: live spoken tips
  */
-export const PRACTICE_VOICE_COACH_ENABLED = false;
+export type PracticeAssistMode = "check" | "text" | "voice";
+
+/** localStorage key for {@link PracticeAssistMode}. */
+export const PRACTICE_ASSIST_MODE_KEY = "mathboard-practice-assist-mode";
 
 /** API error code when practice AI daily quota is exhausted. */
 export const PRACTICE_AI_LIMIT_ERROR = "practice_ai_limit";

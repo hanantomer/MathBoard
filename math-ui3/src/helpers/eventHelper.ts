@@ -22,6 +22,45 @@ const eventBus = useEventBus();
 const imageHelper = useImageHelper();
 const authorizationHelper = useAuthorizationHelper();
 
+/** Stable window listeners — must be module-scoped so remounts do not stack duplicates. */
+function onWindowKeyUp(key: KeyboardEvent) {
+  if (key.altKey) {
+    eventBus.emit("EV_SHORTCUT_KEYUP", key);
+  } else {
+    eventBus.emit("EV_KEYUP", key);
+  }
+}
+
+function onWindowKeyDown(e: KeyboardEvent) {
+  if (e.key === " " || e.code === "Space") {
+    if (
+      e.target &&
+      (e.target as HTMLElement).tagName !== "INPUT" &&
+      (e.target as HTMLElement).tagName !== "TEXTAREA"
+    ) {
+      e.preventDefault();
+    }
+  }
+}
+
+function registerKeyUp() {
+  window.removeEventListener("keyup", onWindowKeyUp);
+  window.addEventListener("keyup", onWindowKeyUp);
+}
+
+function unregisterKeyUp() {
+  window.removeEventListener("keyup", onWindowKeyUp);
+}
+
+function registerKeyDown() {
+  window.removeEventListener("keydown", onWindowKeyDown);
+  window.addEventListener("keydown", onWindowKeyDown);
+}
+
+function unregisterKeyDown() {
+  window.removeEventListener("keydown", onWindowKeyDown);
+}
+
 export default function eventHelper() {
   async function copy() {
     notationStore.setCopiedNotations(
@@ -318,49 +357,12 @@ export default function eventHelper() {
     eventBus.emit("EV_POINTERUP", e);
   }
 
-  function emitKeyUp(key: KeyboardEvent) {
-    if (key.altKey) {
-      eventBus.emit("EV_SHORTCUT_KEYUP", key);
-    } else {
-      eventBus.emit("EV_KEYUP", key);
-    }
-  }
-
-  function emitKeyDown(e: KeyboardEvent) {
-    // Use e.key for modern browsers, fallback to e.keyCode for older ones
-    if (e.key === " " || e.code === "Space") {
-      // Check if the event target is NOT an input, textarea, or a type-able element
-      if (
-        e.target &&
-        (e.target as HTMLElement).tagName !== "INPUT" &&
-        (e.target as HTMLElement).tagName !== "TEXTAREA"
-      ) {
-        e.preventDefault(); // Prevent the default action (scrolling)
-      }
-    }
-  }
-
-  function registerKeyUp() {
-    window.addEventListener("keyup", emitKeyUp);
-  }
-
-  function unregisterKeyUp() {
-    window.removeEventListener("keyup", emitKeyUp);
-  }
-
-  function registerKeyDown() {
-    window.addEventListener("keydown", emitKeyDown);
-  }
-
-  function unregisterKeyDown() {
-    window.removeEventListener("keydown", emitKeyDown);
-  }
-
   function emitCopy() {
     eventBus.emit("EV_COPY", null);
   }
 
   function registerCopy() {
+    document.removeEventListener("copy", emitCopy);
     document.addEventListener("copy", emitCopy);
   }
 
@@ -373,6 +375,7 @@ export default function eventHelper() {
   }
 
   function registerPaste() {
+    document.removeEventListener("paste", emitPaste);
     document.addEventListener("paste", emitPaste);
   }
 
@@ -395,6 +398,7 @@ export default function eventHelper() {
 
   function registerMobileEscape() {
     //if (isMobile()) {
+    document.removeEventListener("touchstart", emitMobileEscape);
     document.addEventListener("touchstart", emitMobileEscape);
     //}
   }

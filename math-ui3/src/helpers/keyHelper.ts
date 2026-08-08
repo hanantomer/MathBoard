@@ -23,6 +23,8 @@ let shiftReleased = false;
 let altReleaseTime = 0;
 let altReleased = false;
 let isKeyUpHandlerRunning = false; // Prevent concurrent execution
+let lastKeyUpToken = "";
+let lastKeyUpAt = 0;
 let mobileEscapeTriggered = false;
 const delayedAltKeys = new Set<string>(["x", "l"]);
 const delayedShiftKeys = new Map<string, string>([
@@ -85,12 +87,23 @@ export default function () {
   }
 
   async function keyUpHandler(e: KeyboardEvent) {
-    // Prevent concurrent execution
+    // Prevent concurrent / duplicate delivery of the same keyup
     if (isKeyUpHandlerRunning) return;
+    const dedupeToken = `${e.timeStamp}:${e.code}:${e.key}`;
+    if (
+      dedupeToken === lastKeyUpToken &&
+      Date.now() - lastKeyUpAt < KEY_STROKE_INTERVAL
+    ) {
+      return;
+    }
+    lastKeyUpToken = dedupeToken;
+    lastKeyUpAt = Date.now();
     isKeyUpHandlerRunning = true;
 
     try {
-      if (e.target && (e.target as HTMLElement).tagName === "INPUT") return; // skip if focused on input box
+      const target = e.target as HTMLElement | null;
+      if (target?.tagName === "INPUT" || target?.tagName === "TEXTAREA") return;
+      if (target?.closest?.("[data-cy='cell-symbol-input']")) return;
 
       if (
         (e.ctrlKey && e.key === "y") ||

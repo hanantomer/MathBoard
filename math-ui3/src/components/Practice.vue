@@ -2,9 +2,35 @@
   <v-sheet class="practice-host">
     <mathBoard v-show="loaded" :svgId="svgId" :loaded="loaded" />
 
-    <div v-if="loaded && isBlank" class="practice-check-bar">
-      <div class="practice-check-bar__actions">
+    <div v-if="loaded" class="practice-assist-panel">
+      <div class="practice-assist-panel__modes">
+        <v-btn-toggle
+          v-model="assistMode"
+          mandatory
+          density="compact"
+          color="primary"
+          variant="outlined"
+          divided
+          data-cy="practice-assist-mode"
+        >
+          <v-btn value="check" data-cy="practice-assist-check">
+            <v-icon start icon="mdi-check-decagram" size="small" />
+            Check
+          </v-btn>
+          <v-btn value="text" data-cy="practice-assist-text">
+            <v-icon start icon="mdi-message-text-outline" size="small" />
+            Text
+          </v-btn>
+          <v-btn value="voice" data-cy="practice-assist-voice">
+            <v-icon start icon="mdi-volume-high" size="small" />
+            Voice
+          </v-btn>
+        </v-btn-toggle>
+      </div>
+
+      <div class="practice-assist-panel__actions">
         <input
+          v-if="isBlank"
           ref="imageFileInput"
           type="file"
           accept="image/*"
@@ -12,27 +38,19 @@
           @change="onImageFileChosen"
         />
         <v-btn
-          v-if="voiceCoachEnabled"
-          :color="voiceMuted ? 'grey' : 'secondary'"
-          variant="tonal"
-          :prepend-icon="voiceMuted ? 'mdi-volume-off' : 'mdi-volume-high'"
-          data-cy="practice-voice-mute"
-          @click="toggleVoiceMute"
-        >
-          {{ voiceMuted ? "Voice off" : "Voice on" }}
-        </v-btn>
-        <v-btn
+          v-if="assistMode === 'check'"
           color="primary"
           variant="flat"
           :loading="checking"
-          :disabled="checking || !!aiLimitMessage || !hasProblemImage"
+          :disabled="checking || !!aiLimitMessage || (isBlank && !hasProblemImage)"
           prepend-icon="mdi-check-decagram"
-          data-cy="practice-blank-check"
+          :data-cy="isBlank ? 'practice-blank-check' : 'practice-check'"
           @click="runCheck"
         >
           Check answer
         </v-btn>
         <v-btn
+          v-if="isBlank"
           color="teal-darken-1"
           variant="flat"
           :loading="uploading"
@@ -44,8 +62,10 @@
           Upload image
         </v-btn>
       </div>
+
       <v-alert
-        class="practice-check-bar__result"
+        v-if="isBlank"
+        class="practice-assist-panel__result"
         density="compact"
         variant="tonal"
         type="info"
@@ -53,79 +73,14 @@
       >
         {{
           hasProblemImage
-            ? "Worksheet image is the problem. Write your solution on the board, then use Check."
+            ? blankHelpWithImage
             : "Paste (Ctrl+V) or upload a worksheet image to use as the problem, then write your solution."
         }}
       </v-alert>
+
       <v-alert
-        v-if="!aiLimitMessage && !aiUnavailableMessage"
-        class="practice-check-bar__result"
-        density="compact"
-        variant="tonal"
-        type="info"
-        title="AI tutor quota"
-      >
-        {{ aiQuotaHint }}
-      </v-alert>
-      <v-alert
-        v-if="voiceCoachEnabled && voiceMuted && !aiLimitMessage"
-        class="practice-check-bar__result"
-        density="compact"
-        variant="tonal"
-        type="info"
-        title="Voice coach off"
-      >
-        Turn Voice on to hear AI tutor tips while you write.
-      </v-alert>
-      <v-alert
-        v-if="aiLimitMessage"
-        class="practice-check-bar__result"
-        density="compact"
-        variant="tonal"
-        type="warning"
-        title="Daily AI limit reached"
-        closable
-        @click:close="aiLimitMessage = ''"
-      >
-        <div>{{ aiLimitMessage }}</div>
-        <v-btn
-          v-if="isGuest"
-          class="mt-2"
-          color="primary"
-          size="small"
-          variant="flat"
-          @click="goSignIn"
-        >
-          Sign in for a higher limit
-        </v-btn>
-      </v-alert>
-      <v-alert
-        v-else-if="aiUnavailableMessage"
-        class="practice-check-bar__result"
-        density="compact"
-        variant="tonal"
-        type="error"
-        title="AI tutor unavailable"
-        closable
-        @click:close="aiUnavailableMessage = ''"
-      >
-        {{ aiUnavailableMessage }}
-      </v-alert>
-      <v-alert
-        v-if="voiceCoachEnabled && coachTip && !voiceMuted && !aiLimitMessage"
-        class="practice-check-bar__result"
-        density="compact"
-        variant="tonal"
-        type="info"
-        title="Coach"
-        closable
-        @click:close="coachTip = ''"
-      >
-        {{ coachTip }}
-      </v-alert>
-      <v-alert
-        v-if="result"
-        class="practice-check-bar__result"
+        v-if="result && assistMode === 'check'"
+        class="practice-assist-panel__result"
         density="compact"
         variant="tonal"
         :type="result.correct ? 'success' : 'warning'"
@@ -138,9 +93,10 @@
           Hint: {{ result.hint }}
         </div>
       </v-alert>
+
       <v-alert
         v-if="checkError"
-        class="practice-check-bar__result"
+        class="practice-assist-panel__result"
         density="compact"
         variant="tonal"
         type="error"
@@ -150,9 +106,10 @@
       >
         {{ checkError }}
       </v-alert>
+
       <v-alert
         v-if="uploadError"
-        class="practice-check-bar__result"
+        class="practice-assist-panel__result"
         density="compact"
         variant="tonal"
         type="error"
@@ -163,34 +120,10 @@
       </v-alert>
     </div>
 
-    <div v-else-if="loaded" class="practice-check-bar">
-      <div class="practice-check-bar__actions">
-        <v-btn
-          v-if="voiceCoachEnabled"
-          :color="voiceMuted ? 'grey' : 'secondary'"
-          variant="tonal"
-          :prepend-icon="voiceMuted ? 'mdi-volume-off' : 'mdi-volume-high'"
-          data-cy="practice-voice-mute"
-          @click="toggleVoiceMute"
-        >
-          {{ voiceMuted ? "Voice off" : "Voice on" }}
-        </v-btn>
-        <v-btn
-          color="primary"
-          variant="flat"
-          :loading="checking"
-          :disabled="checking || !!aiLimitMessage"
-          prepend-icon="mdi-check-decagram"
-          data-cy="practice-check"
-          @click="runCheck"
-        >
-          Check answer
-        </v-btn>
-      </div>
-
+    <div v-if="loaded" class="practice-quota-panel">
       <v-alert
         v-if="!aiLimitMessage && !aiUnavailableMessage"
-        class="practice-check-bar__result"
+        class="practice-quota-panel__result"
         density="compact"
         variant="tonal"
         type="info"
@@ -200,19 +133,8 @@
       </v-alert>
 
       <v-alert
-        v-if="voiceCoachEnabled && voiceMuted && !aiLimitMessage"
-        class="practice-check-bar__result"
-        density="compact"
-        variant="tonal"
-        type="info"
-        title="Voice coach off"
-      >
-        Turn Voice on to hear AI tutor tips while you write.
-      </v-alert>
-
-      <v-alert
         v-if="aiLimitMessage"
-        class="practice-check-bar__result"
+        class="practice-quota-panel__result"
         density="compact"
         variant="tonal"
         type="warning"
@@ -222,7 +144,7 @@
       >
         <div>{{ aiLimitMessage }}</div>
         <div v-if="quotaLimit != null" class="text-medium-emphasis mt-1">
-          Used {{ quotaLimit }} of {{ quotaLimit }} Check uses today
+          Used {{ quotaLimit }} of {{ quotaLimit }} AI uses today
           (resets at midnight UTC).
         </div>
         <v-btn
@@ -239,7 +161,7 @@
 
       <v-alert
         v-else-if="aiUnavailableMessage"
-        class="practice-check-bar__result"
+        class="practice-quota-panel__result"
         density="compact"
         variant="tonal"
         type="error"
@@ -249,49 +171,15 @@
       >
         {{ aiUnavailableMessage }}
       </v-alert>
-
-      <v-alert
-        v-if="voiceCoachEnabled && coachTip && !voiceMuted && !aiLimitMessage"
-        class="practice-check-bar__result"
-        density="compact"
-        variant="tonal"
-        type="info"
-        title="Coach"
-        closable
-        @click:close="coachTip = ''"
-      >
-        {{ coachTip }}
-      </v-alert>
-
-      <v-alert
-        v-if="result"
-        class="practice-check-bar__result"
-        density="compact"
-        variant="tonal"
-        :type="result.correct ? 'success' : 'warning'"
-        :title="result.correct ? 'Correct' : 'Not quite'"
-        closable
-        @click:close="result = null"
-      >
-        <div>{{ result.feedback }}</div>
-        <div v-if="result.hint" class="text-medium-emphasis mt-1">
-          Hint: {{ result.hint }}
-        </div>
-      </v-alert>
-
-      <v-alert
-        v-if="checkError"
-        class="practice-check-bar__result"
-        density="compact"
-        variant="tonal"
-        type="error"
-        title="Check failed"
-        closable
-        @click:close="checkError = ''"
-      >
-        {{ checkError }}
-      </v-alert>
     </div>
+
+    <PracticeCoachBalloon
+      v-if="assistMode === 'text' && coachTip && !aiLimitMessage"
+      :tip="coachTip"
+      :svg-id="svgId"
+      :notations="liveNotations"
+      @close="coachTip = ''"
+    />
   </v-sheet>
 </template>
 
@@ -299,6 +187,7 @@
 import { computed, onUnmounted, ref, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import mathBoard from "./MathBoard.vue";
+import PracticeCoachBalloon from "./PracticeCoachBalloon.vue";
 import { useQuestionStore } from "../store/pinia/questionStore";
 import { usePracticeQuestionStore } from "../store/pinia/practiceQuestionStore";
 import { useBoardContextStore } from "../store/pinia/boardContextStore";
@@ -311,9 +200,7 @@ import {
   serializePracticeStudentWork,
   getPracticeProblemImageBase64,
 } from "../helpers/practiceCheckHelper";
-import {
-  PRACTICE_BLANK_UUID,
-} from "../helpers/practiceBoardAdapter";
+import { PRACTICE_BLANK_UUID } from "../helpers/practiceBoardAdapter";
 import useImageHelper from "../helpers/imageHelper";
 import useNotationMutationHelper from "../helpers/notationMutateHelper";
 import useSelectionHelper from "../helpers/selectionHelper";
@@ -321,12 +208,13 @@ import {
   GUEST_AI_DAILY_LIMIT,
   USER_AI_DAILY_LIMIT,
 } from "../helpers/guestPracticeHelper";
-import { PRACTICE_VOICE_COACH_ENABLED } from "common/globals";
+import type { PracticeAssistMode } from "common/globals";
 import {
-  isPracticeVoiceMuted,
+  getPracticeAssistMode,
+  isLiveCoachMode,
   resetPracticeVoiceCoach,
   schedulePracticeVoiceCoach,
-  setPracticeVoiceMuted,
+  setPracticeAssistMode,
   speakPracticeTip,
   stopPracticeVoice,
 } from "../helpers/practiceVoiceCoachHelper";
@@ -359,21 +247,37 @@ const aiUnavailableMessage = ref("");
 const uploadError = ref("");
 const coachTip = ref("");
 const currentQuestionUUId = ref("");
-const voiceCoachEnabled = PRACTICE_VOICE_COACH_ENABLED;
-const voiceMuted = ref(isPracticeVoiceMuted());
+const assistMode = ref<PracticeAssistMode>(getPracticeAssistMode());
 const imageFileInput = ref<HTMLInputElement | null>(null);
 const quotaRemaining = ref<number | null>(null);
 const quotaLimit = ref<number | null>(null);
 
 const isGuest = computed(() => !userStore.getCurrentUser());
+
+const blankHelpWithImage = computed(() => {
+  if (assistMode.value === "check") {
+    return "Worksheet image is the problem. Write your solution on the board, then use Check.";
+  }
+  if (assistMode.value === "text") {
+    return "Worksheet image is the problem. Write on the board for live text tips.";
+  }
+  return "Worksheet image is the problem. Write on the board for spoken tips.";
+});
+
 const aiQuotaHint = computed(() => {
+  const action =
+    assistMode.value === "check"
+      ? "Check"
+      : assistMode.value === "text"
+        ? "Check/Text tip"
+        : "Check/Voice tip";
   if (quotaRemaining.value != null && quotaLimit.value != null) {
     const who = isGuest.value ? "Guest" : "Signed-in";
-    return `${who}: ${quotaRemaining.value} of ${quotaLimit.value} AI Check uses left today (resets midnight UTC).`;
+    return `${who}: ${quotaRemaining.value} of ${quotaLimit.value} AI ${action} uses left today (resets midnight UTC).`;
   }
   return isGuest.value
-    ? `Guest mode: ${GUEST_AI_DAILY_LIMIT} free Check uses per day. Sign in for ${USER_AI_DAILY_LIMIT}/day.`
-    : `${USER_AI_DAILY_LIMIT} Check uses per day.`;
+    ? `Guest mode: ${GUEST_AI_DAILY_LIMIT} free AI uses per day. Sign in for ${USER_AI_DAILY_LIMIT}/day.`
+    : `${USER_AI_DAILY_LIMIT} AI uses per day.`;
 });
 
 function applyQuota(remaining?: number, limit?: number) {
@@ -381,8 +285,8 @@ function applyQuota(remaining?: number, limit?: number) {
   if (typeof limit === "number") quotaLimit.value = limit;
   if (remaining === 0 && limit != null) {
     aiLimitMessage.value = isGuest.value
-      ? `You've used your ${limit} free AI Check uses for today. Sign in for a higher daily limit.`
-      : `Daily AI limit reached (${limit} Check uses). Try again tomorrow.`;
+      ? `You've used your ${limit} free AI uses for today. Sign in for a higher daily limit.`
+      : `Daily AI limit reached (${limit} uses). Try again tomorrow.`;
   }
 }
 
@@ -392,8 +296,8 @@ async function refreshAiQuota() {
     applyQuota(quota.remaining, quota.limit);
     if (quota.remaining === 0) {
       aiLimitMessage.value = isGuest.value
-        ? `You've used your ${quota.limit} free AI Check uses for today. Sign in for a higher daily limit.`
-        : `Daily AI limit reached (${quota.limit} Check uses). Try again tomorrow.`;
+        ? `You've used your ${quota.limit} free AI uses for today. Sign in for a higher daily limit.`
+        : `Daily AI limit reached (${quota.limit} uses). Try again tomorrow.`;
     }
   } catch {
     /* ignore — hint falls back to static copy */
@@ -404,6 +308,8 @@ const practiceWorkSignature = computed(() =>
   serializePracticeStudentWork(notationStore.getNotations()),
 );
 
+const liveNotations = computed(() => notationStore.getNotations());
+
 const hasProblemImage = computed(
   () => !!getPracticeProblemImageBase64(notationStore.getNotations()),
 );
@@ -411,6 +317,15 @@ const hasProblemImage = computed(
 function currentProblemImage(): string | undefined {
   return getPracticeProblemImageBase64(notationStore.getNotations()) ?? undefined;
 }
+
+watch(assistMode, (mode, prev) => {
+  setPracticeAssistMode(mode);
+  coachTip.value = "";
+  resetPracticeVoiceCoach();
+  if (prev === "check" && mode !== "check") {
+    result.value = null;
+  }
+});
 
 watch(
   route,
@@ -428,11 +343,12 @@ watch(practiceWorkSignature, (work, prev) => {
   if (!loaded.value || !currentQuestionUUId.value) return;
   if (work === prev) return;
   if (!work.trim()) return;
-  if (voiceMuted.value || checking.value) return;
+  if (!isLiveCoachMode(assistMode.value) || checking.value) return;
   if (aiLimitMessage.value) return;
 
   schedulePracticeVoiceCoach({
     questionUUId: currentQuestionUUId.value,
+    mode: assistMode.value,
     getStudentWork: () =>
       serializePracticeStudentWork(notationStore.getNotations()),
     requestCoach: async (questionUUId, studentWork) => {
@@ -519,9 +435,6 @@ async function loadPractice(questionUUId: string) {
   }
 
   if (!practice) {
-    if (question.lesson?.uuid) {
-      throw new Error("this question belongs to a lesson; use the answer flow");
-    }
     throw new Error("not a practice question");
   }
 
@@ -536,14 +449,6 @@ async function loadPractice(questionUUId: string) {
   );
 
   loaded.value = true;
-}
-
-function toggleVoiceMute() {
-  voiceMuted.value = !voiceMuted.value;
-  setPracticeVoiceMuted(voiceMuted.value);
-  if (voiceMuted.value) {
-    coachTip.value = "";
-  }
 }
 
 function pickImageFile() {
@@ -582,12 +487,6 @@ function goSignIn() {
 
 async function runCheck() {
   if (!currentQuestionUUId.value || checking.value) return;
-  if (isBlank.value && !hasProblemImage.value) {
-    checkError.value =
-      "Paste or upload a worksheet image first, then check your answer.";
-    return;
-  }
-
   checking.value = true;
   result.value = null;
   checkError.value = "";
@@ -605,7 +504,7 @@ async function runCheck() {
       isBlank.value ? currentProblemImage() : undefined,
     );
     applyQuota(result.value.remaining, result.value.limit);
-    if (result.value.feedback && !voiceMuted.value) {
+    if (result.value.feedback && assistMode.value === "voice") {
       speakPracticeTip(
         result.value.correct
           ? result.value.feedback
@@ -632,34 +531,75 @@ async function runCheck() {
   min-height: 100%;
 }
 
-.practice-check-bar {
+.practice-assist-panel {
   position: fixed;
-  right: 230px;
-  bottom: 72px;
+  top: 56px;
+  left: 216px;
   z-index: 1000;
   display: flex;
   flex-direction: column;
   align-items: flex-end;
   gap: 8px;
-  max-width: min(420px, calc(100vw - 260px));
+  max-width: min(420px, calc(100vw - 32px));
+  padding: 10px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.82);
+  backdrop-filter: blur(6px);
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.08);
+  /* Let clicks through empty panel chrome onto the board / lines beneath. */
+  pointer-events: none;
 }
 
-.practice-check-bar__actions {
+.practice-assist-panel > * {
+  pointer-events: auto;
+}
+
+.practice-assist-panel__modes,
+.practice-assist-panel__actions {
   display: flex;
   flex-wrap: wrap;
   justify-content: flex-end;
   gap: 8px;
 }
 
-.practice-check-bar__result {
+.practice-assist-panel__result {
   width: 100%;
+  opacity: 0.95;
+}
+
+.practice-quota-panel {
+  position: fixed;
+  right: 16px;
+  bottom: 72px;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 8px;
+  max-width: min(420px, calc(100vw - 32px));
+  pointer-events: none;
+}
+
+.practice-quota-panel > * {
+  pointer-events: auto;
+}
+
+.practice-quota-panel__result {
+  width: 100%;
+  opacity: 0.95;
 }
 
 @media (max-width: 1023px) {
-  .practice-check-bar {
+  .practice-assist-panel {
+    right: 112px;
+    top: max(56px, env(safe-area-inset-top));
+    max-width: calc(100vw - 124px);
+  }
+
+  .practice-quota-panel {
     right: 12px;
     bottom: max(72px, env(safe-area-inset-bottom));
-    max-width: calc(100vw - 72px);
+    max-width: calc(100vw - 24px);
   }
 }
 </style>

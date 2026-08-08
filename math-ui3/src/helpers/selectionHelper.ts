@@ -18,7 +18,7 @@ import useNotationMutateHelper from "./notationMutateHelper";
 import useUserOutgoingOperationsHelper from "./userOutgoingOperationsHelper";
 import useEventBus from "./eventBusHelper";
 import useAuthorizationHelper from "./authorizationHelper";
-import { handlePracticeClick } from "./practiceBoardAdapter";
+import { handlePracticeClick, isPracticeBoard, isPracticeLayer } from "./practiceBoardAdapter";
 import { NotationType } from "common/unions";
 import { viewportPointerPosition } from "./pointerCoordinateHelper";
 
@@ -76,6 +76,10 @@ export default function selectionHelper() {
     const notation = screenHelper.getNotationAtCoordinates(dotCoordinates);
     if (!notation) return false;
     if (notation.notationType === "SQRT") {
+      return false;
+    }
+    // Practice: never select the QUESTION stem via proximity.
+    if (isPracticeBoard() && !isPracticeLayer(notation)) {
       return false;
     }
 
@@ -370,6 +374,7 @@ export default function selectionHelper() {
   function selectNotation(uuid: string) {
     const n = notationStore.getNotation(uuid)!;
     if (!n) return;
+    if (isPracticeBoard() && !isPracticeLayer(n)) return;
     switch (n.notationType) {
       case "DIVISIONLINE":
         selectDivisionLineNotation(uuid);

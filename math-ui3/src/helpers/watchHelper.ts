@@ -78,6 +78,8 @@ export default function () {
         () => eventBus.get(editMode, eventType),
         (e: KeyboardEvent) => {
           if (!e) return;
+          // Ignore stale bus entries if edit mode has already changed.
+          if (editModeStore.getEditMode() !== editMode) return;
           handler(e);
           eventBus.remove(eventType, editMode);
         },

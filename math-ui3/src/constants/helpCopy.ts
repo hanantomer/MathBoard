@@ -44,7 +44,7 @@ export const WELCOME_PATHS = {
   practice: {
     title: "AI tutor",
     blurb:
-      "Solo practice by subject — write on the board and check answers (work stays on this device).",
+      "Solo practice by subject — write on the board, check answers, or get text/voice tips (work stays on this device).",
     cta: "Practice by subject",
     ctaGuest: "Practice by subject",
     blankCta: "Blank sheet (paste or upload image)",
@@ -76,11 +76,11 @@ export const BOARD_ROLE_BANNERS = {
     "Reviewing a student answer — use checkmarks in the toolbar to grade cells.",
   answerStudent: "Your answer board — write here. Your teacher will review when you submit.",
   practiceStudent:
-    "Practicing with AI tutor — Check uses your daily AI quota. Work is saved only on this device.",
+    "Practicing with AI tutor — choose Check, Text tips, or Voice tips. AI uses share your daily quota. Work is saved only on this device.",
   practiceBlank:
-    "Blank practice sheet — paste (Ctrl+V) or upload a worksheet image as the problem, then write and use Check. Saved only on this device.",
+    "Blank practice sheet — paste (Ctrl+V) or upload a worksheet image as the problem, then write and use Check / Text / Voice. Saved only on this device.",
   practiceGuest:
-    "Guest practice — limited free Check uses per day. Sign in for a higher daily limit. Work stays on this device.",
+    "Guest practice — limited free AI uses per day. Sign in for a higher daily limit. Work stays on this device.",
 } as const;
 
 export const TOOL_TOOLTIPS: Record<string, string> = {

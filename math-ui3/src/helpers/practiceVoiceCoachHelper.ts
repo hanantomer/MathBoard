@@ -1,36 +1,42 @@
 import type { PracticeCoachResult } from "common/practiceQuestionTypes";
-import { PRACTICE_VOICE_COACH_ENABLED } from "common/globals";
+import {
+  PRACTICE_ASSIST_MODE_KEY,
+  type PracticeAssistMode,
+} from "common/globals";
 
-const MUTE_KEY = "mathboard-practice-voice-muted";
 const DEBOUNCE_MS = 1600;
-const MIN_SPEAK_INTERVAL_MS = 5000;
+const MIN_COACH_INTERVAL_MS = 5000;
 
 let debounceTimer: ReturnType<typeof setTimeout> | undefined;
 let inFlight = false;
-let lastSpokenWork = "";
-let lastSpokenTip = "";
-let lastSpeakAt = 0;
+let lastCoachedWork = "";
+let lastCoachedTip = "";
+let lastCoachAt = 0;
 let requestId = 0;
 
-export function isPracticeVoiceMuted(): boolean {
-  if (!PRACTICE_VOICE_COACH_ENABLED) return true;
+export function getPracticeAssistMode(): PracticeAssistMode {
   try {
-    return localStorage.getItem(MUTE_KEY) === "1";
-  } catch {
-    return false;
-  }
-}
-
-export function setPracticeVoiceMuted(muted: boolean) {
-  if (!PRACTICE_VOICE_COACH_ENABLED) return;
-  try {
-    localStorage.setItem(MUTE_KEY, muted ? "1" : "0");
+    const raw = localStorage.getItem(PRACTICE_ASSIST_MODE_KEY);
+    if (raw === "text" || raw === "voice" || raw === "check") return raw;
   } catch {
     /* ignore */
   }
-  if (muted) {
+  return "check";
+}
+
+export function setPracticeAssistMode(mode: PracticeAssistMode) {
+  try {
+    localStorage.setItem(PRACTICE_ASSIST_MODE_KEY, mode);
+  } catch {
+    /* ignore */
+  }
+  if (mode !== "voice") {
     stopPracticeVoice();
   }
+}
+
+export function isLiveCoachMode(mode: PracticeAssistMode): boolean {
+  return mode === "text" || mode === "voice";
 }
 
 export function stopPracticeVoice() {
@@ -39,14 +45,73 @@ export function stopPracticeVoice() {
   }
 }
 
-export function speakPracticeTip(tip: string) {
-  if (!PRACTICE_VOICE_COACH_ENABLED) return;
-  if (typeof window === "undefined" || !window.speechSynthesis) return;
-  if (!tip.trim() || isPracticeVoiceMuted()) return;
+/** Prefer natural-sounding English voices when the OS/browser provides them. */
+function pickHumanVoice(): SpeechSynthesisVoice | null {
+  if (typeof window === "undefined" || !window.speechSynthesis) return null;
+  const voices = window.speechSynthesis.getVoices();
+  if (!voices.length) return null;
 
+  const english = voices.filter((v) =>
+    v.lang.toLowerCase().startsWith("en"),
+  );
+  const pool = english.length ? english : voices;
+
+  const preferredNamePatterns = [
+    /neural/i,
+    /natural/i,
+    /google.*english.*(female|male)/i,
+    /microsoft.*(aria|jenny|guy|sara|davis|tony|nancy)/i,
+    /\bsamantha\b/i,
+    /\ballison\b/i,
+    /\bava\b/i,
+    /\bsusan\b/i,
+    /\bzira\b/i,
+    /\bdavid\b/i,
+  ];
+
+  for (const pattern of preferredNamePatterns) {
+    const match = pool.find((v) => pattern.test(v.name));
+    if (match) return match;
+  }
+
+  // Chrome's remote Google voices usually sound less robotic than local ones.
+  const remote = pool.find((v) => !v.localService);
+  if (remote) return remote;
+
+  return pool.find((v) => v.default) ?? pool[0] ?? null;
+}
+
+let cachedVoice: SpeechSynthesisVoice | null | undefined;
+let voicesListenerAttached = false;
+
+function ensureVoicesLoaded() {
+  if (typeof window === "undefined" || !window.speechSynthesis) return;
+  if (voicesListenerAttached) return;
+  voicesListenerAttached = true;
+  window.speechSynthesis.addEventListener("voiceschanged", () => {
+    cachedVoice = undefined;
+  });
+}
+
+export function speakPracticeTip(tip: string) {
+  if (typeof window === "undefined" || !window.speechSynthesis) return;
+  if (!tip.trim()) return;
+
+  ensureVoicesLoaded();
   window.speechSynthesis.cancel();
+
   const utter = new SpeechSynthesisUtterance(tip.trim());
-  utter.rate = 1.05;
+  if (cachedVoice === undefined) {
+    cachedVoice = pickHumanVoice();
+  }
+  if (cachedVoice) {
+    utter.voice = cachedVoice;
+    utter.lang = cachedVoice.lang;
+  } else {
+    utter.lang = "en-US";
+  }
+  // Slightly slower + neutral pitch reads more naturally for tutoring.
+  utter.rate = 0.95;
   utter.pitch = 1;
   utter.volume = 1;
   window.speechSynthesis.speak(utter);
@@ -54,6 +119,7 @@ export function speakPracticeTip(tip: string) {
 
 type CoachDeps = {
   questionUUId: string;
+  mode: PracticeAssistMode;
   getStudentWork: () => string;
   requestCoach: (
     questionUUId: string,
@@ -65,11 +131,11 @@ type CoachDeps = {
 };
 
 /**
- * Schedule a voice tip after the student pauses writing (sequence end).
- * Debounced + rate-limited so it does not talk after every symbol.
+ * Schedule a coaching tip after the student pauses writing.
+ * Used for textual and vocal assist modes.
  */
 export function schedulePracticeVoiceCoach(deps: CoachDeps) {
-  if (!PRACTICE_VOICE_COACH_ENABLED) return;
+  if (!isLiveCoachMode(deps.mode)) return;
   clearTimeout(debounceTimer);
   const myRequest = ++requestId;
 
@@ -82,25 +148,24 @@ export function resetPracticeVoiceCoach() {
   clearTimeout(debounceTimer);
   debounceTimer = undefined;
   inFlight = false;
-  lastSpokenWork = "";
-  lastSpokenTip = "";
-  lastSpeakAt = 0;
+  lastCoachedWork = "";
+  lastCoachedTip = "";
+  lastCoachAt = 0;
   requestId += 1;
   stopPracticeVoice();
 }
 
 async function runCoach(deps: CoachDeps, myRequest: number) {
-  if (!PRACTICE_VOICE_COACH_ENABLED) return;
+  if (!isLiveCoachMode(deps.mode)) return;
   if (myRequest !== requestId) return;
-  if (isPracticeVoiceMuted()) return;
   if (inFlight) return;
 
   const studentWork = deps.getStudentWork().trim();
   if (!studentWork) return;
-  if (studentWork === lastSpokenWork) return;
+  if (studentWork === lastCoachedWork) return;
 
   const now = Date.now();
-  if (now - lastSpeakAt < MIN_SPEAK_INTERVAL_MS) return;
+  if (now - lastCoachAt < MIN_COACH_INTERVAL_MS) return;
 
   inFlight = true;
   try {
@@ -113,20 +178,22 @@ async function runCoach(deps: CoachDeps, myRequest: number) {
       deps.onQuota?.(result.remaining, result.limit);
     }
     if (!result.speak || !result.tip.trim()) {
-      lastSpokenWork = studentWork;
+      lastCoachedWork = studentWork;
       return;
     }
-    if (result.tip === lastSpokenTip && studentWork === lastSpokenWork) {
+    if (result.tip === lastCoachedTip && studentWork === lastCoachedWork) {
       return;
     }
 
-    lastSpokenWork = studentWork;
-    lastSpokenTip = result.tip;
-    lastSpeakAt = Date.now();
+    lastCoachedWork = studentWork;
+    lastCoachedTip = result.tip;
+    lastCoachAt = Date.now();
     deps.onTip?.(result.tip);
-    speakPracticeTip(result.tip);
+    if (deps.mode === "voice") {
+      speakPracticeTip(result.tip);
+    }
   } catch (error) {
-    console.warn("Practice voice coach failed:", error);
+    console.warn("Practice coach failed:", error);
     deps.onError?.(error);
   } finally {
     inFlight = false;
