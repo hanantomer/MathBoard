@@ -76,11 +76,11 @@ export const BOARD_ROLE_BANNERS = {
     "Reviewing a student answer — use checkmarks in the toolbar to grade cells.",
   answerStudent: "Your answer board — write here. Your teacher will review when you submit.",
   practiceStudent:
-    "Practicing with AI tutor — choose Check, Text tips, or Voice tips. AI uses share your daily quota. Work is saved only on this device.",
+    "Check grades your work when you ask. Text and Voice give live tips while you write — including in a text box after you pause. Work stays on this device.",
   practiceBlank:
-    "Blank practice sheet — paste (Ctrl+V) or upload a worksheet image as the problem, then write and use Check / Text / Voice. Saved only on this device.",
+    "Paste (Ctrl+V) or upload a worksheet image as the problem, then write your solution. Work stays on this device.",
   practiceGuest:
-    "Guest practice — limited free AI uses per day. Sign in for a higher daily limit. Work stays on this device.",
+    "Guest practice — limited free AI uses per day. Sign in for a higher limit. Work stays on this device.",
 } as const;
 
 export const TOOL_TOOLTIPS: Record<string, string> = {
@@ -183,6 +183,7 @@ export const EDIT_MODE_STATUS: Partial<
   FREE_SKETCH_WITH_OCR_STARTED: "Sketch → symbol",
   FREE_SKETCH_WITH_OCR_DRAWING: "Sketch → symbol",
   TEXT_STARTED: "Text box",
+  TEXT_WRITING: "Text box",
   SQRT_STARTED: "Square root",
   CURVE_STARTED: "Curve",
   EXPONENT_STARTED: "Exponent",
@@ -206,6 +207,8 @@ const EDIT_MODE_HINTS: Partial<Record<EditMode | GlobalEditMode, string>> = {
   FREE_SKETCH_STARTED:
     "Informal drawing only — for typed math, click a cell and use the keyboard. Press Esc to exit.",
   TEXT_STARTED: "Drag a rectangle, then type. Double-click to resize.",
+  TEXT_WRITING:
+    "Type in the box, then click outside. In practice, pause for a tip; Ctrl+Enter checks.",
   LINE_STARTED: "Drag to draw a line. Press Esc to exit.",
   ANNOTATION_STARTED: "Click to place text. Press Esc when done.",
   AREA_SELECTION_STARTED: getSelectionHelpText(),
@@ -245,6 +248,8 @@ export function getEditModeStatusText(
       "Drawing for recognition — release to finish the stroke; draw another stroke within a moment if needed",
     TEXT_STARTED:
       "Draw a rectangle on screen to create a text box, click once to edit and twice to resize",
+    TEXT_WRITING:
+      "Type in the box, then click outside when done. In practice, pause for a tip; Ctrl+Enter checks.",
     SQRT_STARTED: "Draw a line on screen to create a square root",
     CURVE_STARTED:
       "Draw a curve; endpoints snap to the grid and axes. The next segment starts at the end — press Esc when finished",
@@ -406,7 +411,13 @@ export const COACH_MARKS: CoachMarkDef[] = [
     id: "tool-text",
     targetSelector: '[data-cy="freetextButton"]',
     title: "Text box",
-    body: "Drag a rectangle on the board, then type your math.",
+    body: "Drag a rectangle on the board, then type. In practice, pause for a tip; Ctrl+Enter checks your answer.",
+  },
+  {
+    id: "practice-assist-modes",
+    targetSelector: '[data-cy="practice-assist-mode"]',
+    title: "How help works",
+    body: "Check grades you when you press Check answer (Ctrl+Enter, including inside a text box). Text shows a tip after you pause. Voice reads the tip aloud. Live tips use your daily AI quota.",
   },
 ];
 

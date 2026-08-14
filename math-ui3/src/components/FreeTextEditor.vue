@@ -11,13 +11,14 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from "vue";
+import { computed, ref, watch } from "vue";
 import { throttle } from "lodash";
 import { useCellStore } from "../store/pinia/cellStore";
 import { useEditModeStore } from "../store/pinia/editModeStore";
 import { useNotationStore } from "../store/pinia/notationStore";
 import { useUserStore } from "../store/pinia/userStore";
 import { useLessonStore } from "../store/pinia/lessonStore";
+import { usePracticeStore } from "../store/pinia/practiceStore";
 import { RectCoordinates, RectNotationAttributes } from "common/baseTypes";
 import { EditMode } from "common/unions";
 import useNotationMutateHelper from "../helpers/notationMutateHelper";
@@ -25,6 +26,7 @@ import usescreenHelper from "../helpers/screenHelper";
 import useWatchHelper from "../helpers/watchHelper";
 import useAuthorizationHelper from "../helpers/authorizationHelper";
 import useUserOutgoingOperationsHelper from "../helpers/userOutgoingOperationsHelper";
+import { isPracticeBoard } from "../helpers/practiceBoardAdapter";
 const notationMutateHelper = useNotationMutateHelper();
 const watchHelper = useWatchHelper();
 const authorizationHelper = useAuthorizationHelper();
@@ -35,6 +37,7 @@ const notationStore = useNotationStore();
 const editModeStore = useEditModeStore();
 const userStore = useUserStore();
 const lessonStore = useLessonStore();
+const practiceStore = usePracticeStore();
 const screenHelper = usescreenHelper();
 const userOutgoingOperations = useUserOutgoingOperationsHelper();
 
@@ -45,6 +48,27 @@ const selectedNotation = computed(() =>
     ? null
     : (notationStore.getSelectedNotations().at(0) as RectNotationAttributes),
 );
+
+function syncPracticeTextDraft() {
+  if (!isPracticeBoard()) return;
+  practiceStore.setTextDraft(
+    textValue.value,
+    selectedNotation.value?.notationType === "TEXT"
+      ? selectedNotation.value.uuid
+      : null,
+  );
+}
+
+watch(textValue, syncPracticeTextDraft);
+
+watch(show, (isWriting) => {
+  if (!isPracticeBoard()) return;
+  if (isWriting) {
+    syncPracticeTextDraft();
+    return;
+  }
+  practiceStore.clearTextDraft();
+});
 
 watchHelper.watchEveryEditModeChange(submitText);
 
@@ -149,11 +173,21 @@ function setInitialTextValue() {
   }
 }
 
+function lessonTextSyncIds(): { userUUId: string; lessonUUId: string } | null {
+  if (notationStore.getParent()?.type !== "LESSON") return null;
+  const userUUId = userStore.getCurrentUser()?.uuid;
+  const lessonUUId = lessonStore.getCurrentLesson()?.uuid;
+  if (!userUUId || !lessonUUId) return null;
+  return { userUUId, lessonUUId };
+}
+
 function SyncEndTextEdit() {
+  const ids = lessonTextSyncIds();
+  if (!ids) return;
   userOutgoingOperations.syncStopOutgoingTextSync(
     selectedNotation?.value?.uuid ?? null,
-    userStore.getCurrentUser()!.uuid,
-    lessonStore.getCurrentLesson()!.uuid,
+    ids.userUUId,
+    ids.lessonUUId,
   );
 }
 
@@ -162,56 +196,74 @@ function submitText(newEditMode: EditMode, oldEditMode: any) {
     return;
   }
 
+  const editingUuid =
+    selectedNotation.value?.notationType === "TEXT"
+      ? selectedNotation.value.uuid
+      : null;
+
   if (!authorizationHelper.canEdit()) {
+    if (editingUuid) showTextNotation(editingUuid);
     editModeStore.setDefaultEditMode();
     return;
   }
 
-  SyncEndTextEdit();
+  try {
+    SyncEndTextEdit();
+  } catch (error) {
+    console.warn("text live-sync stop failed", error);
+  }
 
   const textAreaEl = document.getElementById(
     "textAreaEl",
-  )! as HTMLTextAreaElement;
+  ) as HTMLTextAreaElement | null;
+  if (!textAreaEl) {
+    if (editingUuid) showTextNotation(editingUuid);
+    editModeStore.setDefaultEditMode();
+    return;
+  }
 
   editModeStore.setEditMode("CELL_SELECTED");
 
-  const rect = textAreaEl.getBoundingClientRect();
+  try {
+    const rect = textAreaEl.getBoundingClientRect();
 
-  const rectCoordinates = screenHelper.getRectAttributes({
-    topLeft: {
-      x: rect.left - cellStore.getSvgBoundingRect().x,
-      y: rect.top - cellStore.getSvgBoundingRect().y,
-    },
-    bottomRight: {
-      x: rect.right - cellStore.getSvgBoundingRect().x,
-      y: rect.bottom - cellStore.getSvgBoundingRect().y,
-    },
-  });
+    const rectCoordinates = screenHelper.getRectAttributes({
+      topLeft: {
+        x: rect.left - cellStore.getSvgBoundingRect().x,
+        y: rect.top - cellStore.getSvgBoundingRect().y,
+      },
+      bottomRight: {
+        x: rect.right - cellStore.getSvgBoundingRect().x,
+        y: rect.bottom - cellStore.getSvgBoundingRect().y,
+      },
+    });
 
-  if (selectedNotation.value && rectCoordinates) {
-    const updatedNotation = selectedNotation.value;
-    updatedNotation.value = textValue.value;
-    Object.assign(updatedNotation, rectCoordinates);
+    if (selectedNotation.value && rectCoordinates) {
+      const updatedNotation = selectedNotation.value;
+      updatedNotation.value = textValue.value;
+      Object.assign(updatedNotation, rectCoordinates);
 
-    notationMutateHelper.updateNotation(updatedNotation);
-    showTextNotation(updatedNotation.uuid);
-  } else {
-    notationMutateHelper.addTextNotation(textValue.value, rectCoordinates);
+      notationMutateHelper.updateNotation(updatedNotation);
+    } else {
+      notationMutateHelper.addTextNotation(textValue.value, rectCoordinates);
+    }
+  } finally {
+    if (editingUuid) showTextNotation(editingUuid);
+    editModeStore.setDefaultEditMode();
   }
-  editModeStore.setDefaultEditMode();
 }
 
 function hideTextNotation(uuid: string) {
-  document!
-    .querySelector<HTMLElement>(`foreignObject[uuid="${uuid}"]`)!
-    .classList.add("hidden");
+  document
+    .querySelector<HTMLElement>(`foreignObject[uuid="${uuid}"]`)
+    ?.classList.add("hidden");
 }
 
 // restore text notation which was hideen during editing
 function showTextNotation(uuid: string) {
-  document!
-    .querySelector<HTMLElement>(`foreignObject[uuid="${uuid}"]`)!
-    .classList.remove("hidden");
+  document
+    .querySelector<HTMLElement>(`foreignObject[uuid="${uuid}"]`)
+    ?.classList.remove("hidden");
 }
 
 function resetTextEditingIfClickedOusideTextArea(e: PointerEvent | TouchEvent) {
@@ -271,13 +323,16 @@ function startTextEditing(selectionCoordinates: RectCoordinates) {
 
 function syncOutgoingChanges() {
   if (!authorizationHelper.canEdit()) return;
+  const ids = lessonTextSyncIds();
+  if (!ids) return;
   const textAreaEl = document.getElementById(
     "textAreaEl",
-  )! as HTMLTextAreaElement;
+  ) as HTMLTextAreaElement | null;
+  if (!textAreaEl) return;
   userOutgoingOperations.syncOutgoingTextSync(
     selectedNotation?.value?.uuid ?? null,
-    userStore.getCurrentUser()!.uuid,
-    lessonStore.getCurrentLesson()!.uuid,
+    ids.userUUId,
+    ids.lessonUUId,
     textValue.value,
     parseInt(textAreaEl.style.left),
     parseInt(textAreaEl.style.top),

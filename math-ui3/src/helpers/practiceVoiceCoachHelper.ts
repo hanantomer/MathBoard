@@ -1,10 +1,13 @@
 import type { PracticeCoachResult } from "common/practiceQuestionTypes";
 import {
   PRACTICE_ASSIST_MODE_KEY,
+  PRACTICE_ASSIST_PAUSE_KEY,
   type PracticeAssistMode,
 } from "common/globals";
 
-const DEBOUNCE_MS = 1600;
+const BOARD_DEBOUNCE_MS = 1600;
+/** Longer pause so prose tips wait for a thought, not a mid-sentence keystroke. */
+const TEXT_DEBOUNCE_MS = 2800;
 const MIN_COACH_INTERVAL_MS = 5000;
 
 let debounceTimer: ReturnType<typeof setTimeout> | undefined;
@@ -37,6 +40,29 @@ export function setPracticeAssistMode(mode: PracticeAssistMode) {
 
 export function isLiveCoachMode(mode: PracticeAssistMode): boolean {
   return mode === "text" || mode === "voice";
+}
+
+export function isPracticeCoachPaused(): boolean {
+  try {
+    return localStorage.getItem(PRACTICE_ASSIST_PAUSE_KEY) === "1";
+  } catch {
+    return false;
+  }
+}
+
+export function setPracticeCoachPaused(paused: boolean) {
+  try {
+    localStorage.setItem(PRACTICE_ASSIST_PAUSE_KEY, paused ? "1" : "0");
+  } catch {
+    /* ignore */
+  }
+  if (paused) {
+    resetPracticeVoiceCoach();
+  }
+}
+
+export function wasPracticeTipSpokenRecently(withinMs = 8000): boolean {
+  return lastCoachAt > 0 && Date.now() - lastCoachAt < withinMs;
 }
 
 export function stopPracticeVoice() {
@@ -120,6 +146,8 @@ export function speakPracticeTip(tip: string) {
 type CoachDeps = {
   questionUUId: string;
   mode: PracticeAssistMode;
+  /** Live FreeText draft uses a longer debounce than grid/symbol work. */
+  source?: "board" | "text";
   getStudentWork: () => string;
   requestCoach: (
     questionUUId: string,
@@ -128,6 +156,7 @@ type CoachDeps = {
   onTip?: (tip: string) => void;
   onError?: (error: unknown) => void;
   onQuota?: (remaining: number, limit: number) => void;
+  onBusy?: (busy: boolean) => void;
 };
 
 /**
@@ -136,12 +165,15 @@ type CoachDeps = {
  */
 export function schedulePracticeVoiceCoach(deps: CoachDeps) {
   if (!isLiveCoachMode(deps.mode)) return;
+  if (isPracticeCoachPaused()) return;
   clearTimeout(debounceTimer);
   const myRequest = ++requestId;
+  const delay =
+    deps.source === "text" ? TEXT_DEBOUNCE_MS : BOARD_DEBOUNCE_MS;
 
   debounceTimer = setTimeout(() => {
     void runCoach(deps, myRequest);
-  }, DEBOUNCE_MS);
+  }, delay);
 }
 
 export function resetPracticeVoiceCoach() {
@@ -157,6 +189,7 @@ export function resetPracticeVoiceCoach() {
 
 async function runCoach(deps: CoachDeps, myRequest: number) {
   if (!isLiveCoachMode(deps.mode)) return;
+  if (isPracticeCoachPaused()) return;
   if (myRequest !== requestId) return;
   if (inFlight) return;
 
@@ -164,10 +197,16 @@ async function runCoach(deps: CoachDeps, myRequest: number) {
   if (!studentWork) return;
   if (studentWork === lastCoachedWork) return;
 
-  const now = Date.now();
-  if (now - lastCoachAt < MIN_COACH_INTERVAL_MS) return;
+  const wait = lastCoachAt > 0 ? MIN_COACH_INTERVAL_MS - (Date.now() - lastCoachAt) : 0;
+  if (wait > 0) {
+    debounceTimer = setTimeout(() => {
+      void runCoach(deps, myRequest);
+    }, wait);
+    return;
+  }
 
   inFlight = true;
+  deps.onBusy?.(true);
   try {
     const result = await deps.requestCoach(deps.questionUUId, studentWork);
     if (myRequest !== requestId) return;
@@ -197,5 +236,6 @@ async function runCoach(deps: CoachDeps, myRequest: number) {
     deps.onError?.(error);
   } finally {
     inFlight = false;
+    deps.onBusy?.(false);
   }
 }

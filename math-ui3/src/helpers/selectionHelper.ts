@@ -21,6 +21,7 @@ import useAuthorizationHelper from "./authorizationHelper";
 import { handlePracticeClick, isPracticeBoard, isPracticeLayer } from "./practiceBoardAdapter";
 import { NotationType } from "common/unions";
 import { viewportPointerPosition } from "./pointerCoordinateHelper";
+import { sqrtSymbolSuffix } from "common/globals";
 
 const eventBus = useEventBus();
 const cellStore = useCellStore();
@@ -34,21 +35,39 @@ const userStore = useUserStore();
 const editModeStore = useEditModeStore();
 
 export default function selectionHelper() {
+  function storedNotationUuid(id: string | undefined | null): string | undefined {
+    if (!id) return undefined;
+    if (notationStore.getNotation(id)) return id;
+    if (id.endsWith(sqrtSymbolSuffix)) {
+      const parentId = id.slice(0, -sqrtSymbolSuffix.length);
+      if (notationStore.getNotation(parentId)) return parentId;
+    }
+    return undefined;
+  }
+
   function notationUuidFromEventTarget(
     target: EventTarget | null,
   ): string | undefined {
     let el = target as HTMLElement | null;
     while (el && el.tagName !== "svg" && el.tagName !== "SVG") {
-      if (el.id && notationStore.getNotation(el.id)) {
-        return el.id;
-      }
-      const uuidAttr = el.getAttribute?.("uuid");
-      if (uuidAttr && notationStore.getNotation(uuidAttr)) {
-        return uuidAttr;
-      }
+      const fromId = storedNotationUuid(el.id);
+      if (fromId) return fromId;
+      const fromAttr = storedNotationUuid(el.getAttribute?.("uuid"));
+      if (fromAttr) return fromAttr;
       el = el.parentElement;
     }
     return undefined;
+  }
+
+  function isSqrtSymbolDomTarget(target: EventTarget | null): boolean {
+    let el = target as HTMLElement | null;
+    while (el && el.tagName !== "svg" && el.tagName !== "SVG") {
+      if (el.id?.endsWith(sqrtSymbolSuffix)) return true;
+      if (el.getAttribute?.("uuid")?.endsWith(sqrtSymbolSuffix)) return true;
+      if (el.getAttribute?.("notationType") === "SQRTSYMBOL") return true;
+      el = el.parentElement;
+    }
+    return false;
   }
 
   function selectNotationsOfArea(rectCoordinates: RectCoordinates) {
@@ -60,6 +79,39 @@ export default function selectionHelper() {
 
     notationStore.selectNotationsOfCells(areaCells);
     notationStore.selectNotationsOfRectCoordinates(rectCoordinates);
+  }
+
+  const SQRT_STROKE_SELECT_PX = 8;
+
+  function isNearSqrtStroke(
+    notation: NotationAttributes,
+    position: DotCoordinates,
+  ): boolean {
+    return (
+      screenHelper.getClickedPosDistanceFromSqrt(
+        position,
+        notation as unknown as MultiCellAttributes,
+      ) < SQRT_STROKE_SELECT_PX
+    );
+  }
+
+  /** SQRT line FO can still overlap radicand cells; keep the hit only on the bar or √ glyph. */
+  function notationFromPointerTarget(
+    target: EventTarget | null,
+    position: DotCoordinates,
+  ): NotationAttributes | null {
+    const uuid = notationUuidFromEventTarget(target);
+    const clickedNotation = uuid ? notationStore.getNotation(uuid) : null;
+    if (!clickedNotation) return null;
+    if (clickedNotation.notationType === "SQRT") {
+      if (
+        !isSqrtSymbolDomTarget(target) &&
+        !isNearSqrtStroke(clickedNotation, position)
+      ) {
+        return null;
+      }
+    }
+    return clickedNotation;
   }
 
   function selectNotationAtPosition(dotCoordinates: DotCoordinates): boolean {
@@ -75,9 +127,6 @@ export default function selectionHelper() {
 
     const notation = screenHelper.getNotationAtCoordinates(dotCoordinates);
     if (!notation) return false;
-    if (notation.notationType === "SQRT") {
-      return false;
-    }
     // Practice: never select the QUESTION stem via proximity.
     if (isPracticeBoard() && !isPracticeLayer(notation)) {
       return false;
@@ -86,7 +135,9 @@ export default function selectionHelper() {
     return handleNotationSelection(
       notation,
       dotCoordinates,
-      maxDistanceToSelect,
+      notation.notationType === "SQRT"
+        ? SQRT_STROKE_SELECT_PX
+        : maxDistanceToSelect,
     );
   }
 
@@ -300,9 +351,9 @@ export default function selectionHelper() {
 
     const position = viewportPointerPosition(e);
 
-    const uuid = notationUuidFromEventTarget(e.target);
-    if (uuid) {
-      selectNotation(uuid);
+    const clickedNotation = notationFromPointerTarget(e.target, position);
+    if (clickedNotation) {
+      selectNotation(clickedNotation.uuid);
       return true;
     }
 
@@ -325,8 +376,7 @@ export default function selectionHelper() {
     const clickedCell = screenHelper.getCellByDotCoordinates(position);
     if (!clickedCell) return;
 
-    const uuid = notationUuidFromEventTarget(e.target);
-    const clickedNotation = uuid ? notationStore.getNotation(uuid) : null;
+    const clickedNotation = notationFromPointerTarget(e.target, position);
 
     if (
       handlePracticeClick(clickedNotation ?? null, clickedCell, {

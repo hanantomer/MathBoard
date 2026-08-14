@@ -87,11 +87,22 @@ function fallbackCellRect(notation: NotationAttributes): DOMRect | null {
   return new DOMRect(svgRect.left + svgX, svgRect.top + svgY, w, h);
 }
 
+function liveFreeTextRect(): DOMRect | null {
+  const textArea = document.getElementById("textAreaEl");
+  if (!(textArea instanceof HTMLTextAreaElement)) return null;
+  if (textArea.offsetParent === null) return null;
+  const rect = textArea.getBoundingClientRect();
+  if (rect.width < 8 || rect.height < 8) return null;
+  return rect;
+}
+
 /** Viewport rect for anchoring a tip balloon near the last notation. */
 export function getPracticeCoachAnchorRect(
   svgId: string,
   notations: NotationAttributes[],
 ): DOMRect | null {
+  const writing = liveFreeTextRect();
+  if (writing) return writing;
   const last = getLastStudentNotation(notations);
   if (!last) return null;
   return notationDomRect(svgId, last) ?? fallbackCellRect(last);

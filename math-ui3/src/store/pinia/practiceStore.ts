@@ -21,6 +21,10 @@ export const usePracticeStore = defineStore("practice", () => {
   const notationsByQuestion = ref<Map<string, NotationAttributes[]>>(
     new Map(Object.entries(readStorage())),
   );
+  const textDraft = ref<{
+    value: string;
+    notationUUId: string | null;
+  } | null>(null);
 
   function getNotations(questionUUId: string): NotationAttributes[] {
     return notationsByQuestion.value.get(questionUUId) ?? [];
@@ -65,11 +69,22 @@ export const usePracticeStore = defineStore("practice", () => {
     persist(questionUUId);
   }
 
+  function setTextDraft(value: string, notationUUId: string | null) {
+    textDraft.value = { value, notationUUId };
+  }
+
+  function clearTextDraft() {
+    textDraft.value = null;
+  }
+
   return {
     getNotations,
     setNotations,
     upsertNotation,
     removeNotation,
     clearQuestion,
+    textDraft,
+    setTextDraft,
+    clearTextDraft,
   };
 });

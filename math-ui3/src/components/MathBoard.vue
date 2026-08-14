@@ -518,12 +518,21 @@ path:hover {
 .dashed {
   stroke-dasharray: 6, 6;
 }
+/* SQRT FO is only the vinculum; SQRTSYMBOL FO is the √ column. Inner markup takes clicks. */
+foreignObject[notationType="SQRT"],
+foreignObject[notationType="SQRTSYMBOL"],
+foreignObject[notationType="SQRT"] > div,
+foreignObject[notationType="SQRTSYMBOL"] > div {
+  pointer-events: none;
+}
+
 .sqrt {
   border-bottom: solid 1px;
   border-top: solid 1px;
   z-index: 999;
   display: block;
   position: absolute;
+  pointer-events: auto;
 }
 
 .sqrt:hover {
@@ -535,6 +544,9 @@ path:hover {
   position: absolute;
   z-index: 999;
   font-size: 1.2em;
+  pointer-events: auto;
+  display: inline;
+  width: auto;
 }
 
 .sqrtsymbol:hover {

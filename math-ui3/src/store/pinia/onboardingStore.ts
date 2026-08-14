@@ -324,6 +324,18 @@ export const useOnboardingStore = defineStore("onboarding", () => {
 
 
 
+  function tryStartPracticeTour() {
+
+    if (isHintDismissed("practice-assist-modes")) return;
+
+    if (activeCoachMark.value) return;
+
+    queueCoachMarks(["practice-assist-modes"]);
+
+  }
+
+
+
   function quickTipsProgress(
 
     markId: string | undefined,
@@ -391,6 +403,8 @@ export const useOnboardingStore = defineStore("onboarding", () => {
     startLessonTour,
 
     tryStartQuickTipsTour,
+
+    tryStartPracticeTour,
 
     isQuickTipsComplete,
 

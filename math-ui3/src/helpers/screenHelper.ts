@@ -178,6 +178,14 @@ export default function screenHelper() {
 
     if (!notationsAtCell?.length) return null;
 
+    // SQRT occupies the whole radicand row; prefer a symbol/exponent in the cell.
+    const contentAtCell = notationsAtCell.filter(
+      (n: NotationAttributes) => n.notationType !== "SQRT",
+    );
+    if (contentAtCell.length > 0) {
+      notationsAtCell = contentAtCell;
+    }
+
     return getClosestNotationToPoint(notationsAtCell, DotCoordinates);
   }
 

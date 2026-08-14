@@ -141,14 +141,17 @@ export const USER_AI_DAILY_LIMIT = 250;
 
 /**
  * Practice assist modes (client preference):
- * - check: Check answer only
+ * - check: grade on demand (no live tips)
  * - text: live textual tips near the board
- * - voice: live spoken tips
+ * - voice: live spoken tips (with on-screen balloon)
  */
 export type PracticeAssistMode = "check" | "text" | "voice";
 
 /** localStorage key for {@link PracticeAssistMode}. */
 export const PRACTICE_ASSIST_MODE_KEY = "mathboard-practice-assist-mode";
+
+/** localStorage key: pause live Text/Voice coaching without leaving the mode. */
+export const PRACTICE_ASSIST_PAUSE_KEY = "mathboard-practice-assist-paused";
 
 /** API error code when practice AI daily quota is exhausted. */
 export const PRACTICE_AI_LIMIT_ERROR = "practice_ai_limit";

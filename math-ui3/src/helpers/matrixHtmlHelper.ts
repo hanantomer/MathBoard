@@ -88,13 +88,23 @@ export default function useHtmlMatrixHelper() {
     }
   }
 
+  /** Vinculum only — a full-cell SQRT foreignObject steals clicks on radicand cells. */
+  const SQRT_VINCULUM_HIT_HEIGHT = 8;
+
+  function htmlOverflow(n: NotationAttributes): string | null {
+    return n.notationType === "IMAGE" || n.notationType === "SQRTSYMBOL"
+      ? "visible"
+      : null;
+  }
+
   function height(n: NotationAttributes): number | null {
     switch (n.notationType) {
+      case "SQRT":
+        return SQRT_VINCULUM_HIT_HEIGHT;
       case "ANNOTATION":
       case "EXPONENT":
       case "LOGBASE":
       case "SYMBOL":
-      case "SQRT":
       case "SQRTSYMBOL": {
         return pointNotationHeight(n as PointNotationAttributes);
       }
@@ -153,9 +163,7 @@ export default function useHtmlMatrixHelper() {
       .attr("height", (n: NotationAttributes) => {
         return height(n);
       })
-      .style("overflow", (n: NotationAttributes) =>
-        n.notationType === "IMAGE" ? "visible" : null,
-      )
+      .style("overflow", (n: NotationAttributes) => htmlOverflow(n))
       .style("font-size", (n: NotationAttributes) => {
         return fontSize(n as PointNotationAttributes, el);
       })
@@ -184,9 +192,7 @@ export default function useHtmlMatrixHelper() {
       .attr("height", (n: NotationAttributes) => {
         return height(n);
       })
-      .style("overflow", (n: NotationAttributes) =>
-        n.notationType === "IMAGE" ? "visible" : null,
-      )
+      .style("overflow", (n: NotationAttributes) => htmlOverflow(n))
       .html((n: NotationAttributes) => {
         return html(n);
       });
@@ -283,7 +289,7 @@ export default function useHtmlMatrixHelper() {
 
   function width(n: NotationAttributes): number {
     if (n.notationType === "SQRTSYMBOL") {
-      return cellStore.getCellHorizontalWidth() * 2;
+      return cellStore.getCellHorizontalWidth();
     }
 
     switch (n.notationType) {

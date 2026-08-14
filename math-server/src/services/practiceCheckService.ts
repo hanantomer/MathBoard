@@ -201,15 +201,15 @@ function normalizeImageBase64(imageBase64: string): {
 function buildBlankImageCheckPrompt(studentWork: string): string {
   return `You are grading a student's math practice work on a digital whiteboard.
 
-The attached image is the worksheet / problem the student is solving.
-Read the problem from the image. Do not invent a different problem.
+The attached image is the problem (or the cropped region of a worksheet) the student is currently working on, based on where they are writing.
+Read that problem from the image. Ignore other problems on the same page or nearby. Do not invent a different problem.
 
-Student work (from their board notations; may include rough work):
+Student work next to this problem (from their board notations; may include rough work):
 """
 ${studentWork || "(empty — student has not written anything yet)"}
 """
 
-Decide if the student's final answer correctly solves the problem in the image.
+Decide if the student's final answer correctly solves this problem.
 Ignore intermediate scratch work if a clear final answer is present.
 Be lenient with spacing, parentheses, and equivalent notations (e.g. x^2 vs x²).
 
@@ -217,23 +217,27 @@ Respond with ONLY valid JSON (no markdown):
 {"correct":true|false,"feedback":"one short sentence","hint":"optional short hint if incorrect"}`;
 }
 
+const COACH_TIP_RULES = `Give ONE short spoken tip (max 18 words) about their next useful step, a gentle correction of how they read the problem, or quick encouragement if they are on track.
+If they are writing in a text box, coach the math story: what is given, what is asked, or the next useful step.
+Do not rewrite their sentences, fix spelling, complete their answer, or reveal the final answer.
+Do not solve the whole problem. Do not use markdown or emoji.
+If the work is too incomplete to help, or there is nothing useful to say yet, respond with speak=false.
+
+Respond with ONLY valid JSON:
+{"speak":true|false,"tip":"short sentence"}`;
+
 function buildBlankImageCoachPrompt(studentWork: string): string {
   return `You are a brief math voice coach for a student working on a whiteboard.
 
-The attached image is the worksheet / problem they are solving.
-Read the problem from the image. Do not invent a different problem.
+The attached image is the problem (or the cropped region of a worksheet) they are currently working on, based on where they are writing.
+Read that problem from the image. Ignore other problems on the same page or nearby. Do not invent a different problem.
 
-Student's current board work:
+Student's current board work next to this problem (may be an in-progress text-box draft):
 """
 ${studentWork}
 """
 
-Give ONE short spoken tip (max 18 words) about their next useful step or a quick encouragement if they are on track.
-Do not solve the whole problem. Do not use markdown or emoji.
-If there is nothing useful to say yet, respond with speak=false.
-
-Respond with ONLY valid JSON:
-{"speak":true|false,"tip":"short sentence"}`;
+${COACH_TIP_RULES}`;
 }
 
 async function generateTextAcrossModels(
@@ -342,17 +346,12 @@ export async function checkPracticeWork(
 function buildBlankCoachPrompt(studentWork: string): string {
   return `You are a brief math voice coach for a student working on a blank whiteboard (pasted worksheet or free work).
 
-Student's current board work:
+Student's current board work (may be an in-progress text-box draft):
 """
 ${studentWork}
 """
 
-Give ONE short spoken tip (max 18 words) about their next useful step, a gentle correction, or quick encouragement if they are on track.
-Do not solve the whole problem. Do not use markdown or emoji.
-If there is nothing useful to say yet, respond with speak=false.
-
-Respond with ONLY valid JSON:
-{"speak":true|false,"tip":"short sentence"}`;
+${COACH_TIP_RULES}`;
 }
 
 function buildCoachPrompt(
@@ -366,17 +365,12 @@ ${problem}
 
 Expected final answer (do not reveal unless they already have it): ${expectedAnswer}
 
-Student's current board work:
+Student's current board work (may be an in-progress text-box draft):
 """
 ${studentWork}
 """
 
-Give ONE short spoken tip (max 18 words) about their next useful step or a quick encouragement if they are on track.
-Do not solve the whole problem. Do not use markdown or emoji.
-If there is nothing useful to say yet, respond with speak=false.
-
-Respond with ONLY valid JSON:
-{"speak":true|false,"tip":"short sentence"}`;
+${COACH_TIP_RULES}`;
 }
 
 function parseCoachResult(raw: string): PracticeCoachResult {
