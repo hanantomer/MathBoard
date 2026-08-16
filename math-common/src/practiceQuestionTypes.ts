@@ -37,6 +37,11 @@ export type PracticeCheckRequest = {
    * Data URL or raw base64; used as the problem instead of a curated stem.
    */
   problemImageBase64?: string;
+  /**
+   * Optional pasted problem statement (blank-sheet practice).
+   * Used as the problem when no worksheet image is provided.
+   */
+  problemText?: string;
 };
 
 /** Daily Check/Coach quota snapshot (guests and signed-in users). */
@@ -62,6 +67,8 @@ export type PracticeCoachRequest = {
   studentWork: string;
   /** Optional worksheet/problem image for blank-sheet coaching. */
   problemImageBase64?: string;
+  /** Optional pasted problem statement for blank-sheet coaching. */
+  problemText?: string;
 };
 
 /** Server → client: one short tip suitable for text-to-speech. */

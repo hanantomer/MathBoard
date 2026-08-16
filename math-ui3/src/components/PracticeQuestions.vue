@@ -2,8 +2,8 @@
   <v-container class="practice-page">
     <v-card class="mx-auto mt-4" max-width="800" min-height="600">
       <v-card-text class="text-body-2 text-medium-emphasis pb-0">
-        Curated practice questions by subject, or a blank sheet for a pasted /
-        uploaded worksheet. Work stays on this device.
+        Curated practice questions by subject, or a blank sheet for a pasted
+        question or worksheet. Work stays on this device.
       </v-card-text>
       <v-toolbar color="primary" dark>
         <v-toolbar-title>Practice</v-toolbar-title>
@@ -31,8 +31,8 @@
           Blank sheet
         </v-card-title>
         <v-card-text class="pt-0 text-body-2 text-medium-emphasis">
-          Paste (Ctrl+V) or upload a worksheet image, then solve on an empty
-          board.
+          Paste the question as text (Ctrl+V), or paste/upload a worksheet
+          image, then solve on an empty board.
         </v-card-text>
       </v-card>
 

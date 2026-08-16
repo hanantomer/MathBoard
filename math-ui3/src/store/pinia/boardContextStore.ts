@@ -107,7 +107,7 @@ export const useBoardContextStore = defineStore("boardContext", () => {
   }
 
   function setPracticeBlankSession() {
-    setPracticeSession("Blank sheet", "Paste or upload image", PRACTICE_BLANK_UUID);
+    setPracticeSession("Blank sheet", "Paste text or image", PRACTICE_BLANK_UUID);
   }
 
   function setPracticeQuestionEditor(

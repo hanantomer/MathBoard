@@ -11,6 +11,7 @@ import {
 import { useCellStore } from "../store/pinia/cellStore";
 import { useNotationStore } from "../store/pinia/notationStore";
 import { getLastStudentNotation } from "./practiceCoachAnchorHelper";
+import { isPracticeProblemNotation } from "./practiceBoardAdapter";
 import useImageHelper from "./imageHelper";
 
 type CellRect = {
@@ -276,6 +277,10 @@ function serializeFilteredWork(
   for (const n of practiceOnly) {
     if (n.notationType === "TEXT") {
       const t = n as RectNotationAttributes;
+      if (isPracticeProblemNotation(t)) {
+        if (draft?.notationUUId === t.uuid) draftApplied = true;
+        continue;
+      }
       const live =
         draft?.notationUUId && draft.notationUUId === t.uuid
           ? draft.value
@@ -328,6 +333,28 @@ export function getPracticeProblemImageBase64(
   notations: NotationAttributes[],
 ): string | null {
   return getFocusedPracticeImage(notations)?.value ?? null;
+}
+
+/** Pasted question text on a blank practice board (not student work). */
+export function getPracticeProblemText(
+  notations: NotationAttributes[],
+  draft?: PracticeTextDraft | null,
+): string | null {
+  const problems = notations
+    .filter(
+      (n) => n.notationType === "TEXT" && isPracticeProblemNotation(n),
+    )
+    .map((n) => n as RectNotationAttributes)
+    .sort(
+      (a, b) =>
+        (a.fromRow ?? 0) - (b.fromRow ?? 0) ||
+        (a.fromCol ?? 0) - (b.fromCol ?? 0),
+    );
+  if (problems.length === 0) return null;
+  const t = problems[0];
+  const live =
+    draft?.notationUUId && draft.notationUUId === t.uuid ? draft.value : t.value;
+  return live?.trim() || null;
 }
 
 function clamp(n: number, min: number, max: number): number {

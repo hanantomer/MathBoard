@@ -12,6 +12,22 @@ import { usePracticeStore } from "../store/pinia/practiceStore";
 
 export { PRACTICE_BLANK_UUID };
 
+/** Marks a local PRACTICE notation as the pasted/uploaded problem on a blank sheet. */
+export const PRACTICE_PROBLEM_ROLE = "problem" as const;
+
+export type PracticeNotationExtras = {
+  practiceRole?: typeof PRACTICE_PROBLEM_ROLE;
+};
+
+export function isPracticeProblemNotation(
+  notation: NotationAttributes | null | undefined,
+): boolean {
+  return (
+    (notation as (NotationAttributes & PracticeNotationExtras) | null)
+      ?.practiceRole === PRACTICE_PROBLEM_ROLE
+  );
+}
+
 /**
  * Practice / AI-tutor board boundary.
  * Owns local persistence, load of stem + practice layer, selection rules, and canEdit.
@@ -48,8 +64,8 @@ export function isPracticeLayer(
 }
 
 export function createLocalPracticeNotation(
-  notation: NotationCreationAttributes,
-): NotationAttributes {
+  notation: NotationCreationAttributes & PracticeNotationExtras,
+): NotationAttributes & PracticeNotationExtras {
   const questionUUId = getPracticeQuestionUUId();
   const uuid = crypto.randomUUID();
   const newNotation = {
@@ -57,7 +73,7 @@ export function createLocalPracticeNotation(
     uuid,
     boardType: "PRACTICE" as BoardType,
     parentUUId: questionUUId,
-  } as NotationAttributes;
+  } as NotationAttributes & PracticeNotationExtras;
 
   usePracticeStore().upsertNotation(questionUUId, newNotation);
   return newNotation;

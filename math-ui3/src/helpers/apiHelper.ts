@@ -95,6 +95,7 @@ export default function useApiHelper() {
     questionUUId: string,
     studentWork: string,
     problemImageBase64?: string,
+    problemText?: string,
   ): Promise<PracticeCheckResult> {
     try {
       const { data } = await axios.post<PracticeCheckResult>(
@@ -105,6 +106,7 @@ export default function useApiHelper() {
           ...(problemImageBase64
             ? { problemImageBase64 }
             : {}),
+          ...(problemText ? { problemText } : {}),
         } satisfies PracticeCheckRequest,
       );
       return data;
@@ -141,6 +143,7 @@ export default function useApiHelper() {
     questionUUId: string,
     studentWork: string,
     problemImageBase64?: string,
+    problemText?: string,
   ): Promise<PracticeCoachResult> {
     try {
       const { data } = await axios.post<PracticeCoachResult>(
@@ -151,6 +154,7 @@ export default function useApiHelper() {
           ...(problemImageBase64
             ? { problemImageBase64 }
             : {}),
+          ...(problemText ? { problemText } : {}),
         } satisfies PracticeCoachRequest,
       );
       return data;

@@ -198,6 +198,59 @@ function normalizeImageBase64(imageBase64: string): {
   return { mimeType: "image/png", data };
 }
 
+const COACH_TIP_RULES = `Give ONE short spoken tip (max 18 words) about their next useful step, a gentle correction of how they read the problem, or quick encouragement if they are on track.
+If they are writing in a text box, coach the math story: what is given, what is asked, or the next useful step.
+Do not rewrite their sentences, fix spelling, complete their answer, or reveal the final answer.
+Do not solve the whole problem. Do not use markdown or emoji.
+If the work is too incomplete to help, or there is nothing useful to say yet, respond with speak=false.
+
+Respond with ONLY valid JSON:
+{"speak":true|false,"tip":"short sentence"}`;
+
+function buildBlankTextCheckPrompt(
+  problemText: string,
+  studentWork: string,
+): string {
+  return `You are grading a student's math practice work on a digital whiteboard.
+
+The problem the student is solving (pasted as text) is:
+"""
+${problemText}
+"""
+
+Student work (from their board notations; may include rough work):
+"""
+${studentWork || "(empty — student has not written anything yet)"}
+"""
+
+Decide if the student's final answer correctly solves this problem.
+Ignore intermediate scratch work if a clear final answer is present.
+Be lenient with spacing, parentheses, and equivalent notations (e.g. x^2 vs x²).
+Do not treat the problem statement itself as the student's answer.
+
+Respond with ONLY valid JSON (no markdown):
+{"correct":true|false,"feedback":"one short sentence","hint":"optional short hint if incorrect"}`;
+}
+
+function buildBlankTextCoachPrompt(
+  problemText: string,
+  studentWork: string,
+): string {
+  return `You are a brief math voice coach for a student working on a whiteboard.
+
+The problem they are solving (pasted as text) is:
+"""
+${problemText}
+"""
+
+Student's current board work (may be an in-progress text-box draft):
+"""
+${studentWork}
+"""
+
+${COACH_TIP_RULES}`;
+}
+
 function buildBlankImageCheckPrompt(studentWork: string): string {
   return `You are grading a student's math practice work on a digital whiteboard.
 
@@ -216,15 +269,6 @@ Be lenient with spacing, parentheses, and equivalent notations (e.g. x^2 vs x²)
 Respond with ONLY valid JSON (no markdown):
 {"correct":true|false,"feedback":"one short sentence","hint":"optional short hint if incorrect"}`;
 }
-
-const COACH_TIP_RULES = `Give ONE short spoken tip (max 18 words) about their next useful step, a gentle correction of how they read the problem, or quick encouragement if they are on track.
-If they are writing in a text box, coach the math story: what is given, what is asked, or the next useful step.
-Do not rewrite their sentences, fix spelling, complete their answer, or reveal the final answer.
-Do not solve the whole problem. Do not use markdown or emoji.
-If the work is too incomplete to help, or there is nothing useful to say yet, respond with speak=false.
-
-Respond with ONLY valid JSON:
-{"speak":true|false,"tip":"short sentence"}`;
 
 function buildBlankImageCoachPrompt(studentWork: string): string {
   return `You are a brief math voice coach for a student working on a whiteboard.
@@ -276,31 +320,42 @@ export async function checkPracticeWork(
   questionUUId: string,
   studentWork: string,
   problemImageBase64?: string,
+  problemText?: string,
 ): Promise<PracticeCheckResult> {
   const work = (studentWork ?? "").trim();
   const image = problemImageBase64?.trim();
+  const textProblem = problemText?.trim();
 
   if (questionUUId === PRACTICE_BLANK_UUID) {
-    if (!image) {
+    if (!image && !textProblem) {
       return {
         correct: false,
-        feedback: "Paste or upload a worksheet image first, then check again.",
-        hint: "Use Ctrl+V or Upload image, write your answer, then press Check.",
+        feedback: "Paste the problem as text or a worksheet image first, then check again.",
+        hint: "Use Ctrl+V to paste the question, or upload an image, then write your answer.",
       };
     }
     if (!work) {
       return {
         correct: false,
         feedback: "Add your answer on the board, then check again.",
-        hint: "Write below or beside the worksheet image, then press Check.",
+        hint: image
+          ? "Write below or beside the worksheet image, then press Check."
+          : "Write your solution on the board (not in the problem text), then press Check.",
       };
     }
-    const raw = await generateTextAcrossModels(
-      buildBlankImageCheckPrompt(work),
-      image,
-      undefined,
-      "practiceCheckBlank",
-    );
+    const raw = image
+      ? await generateTextAcrossModels(
+          buildBlankImageCheckPrompt(work),
+          image,
+          undefined,
+          "practiceCheckBlank",
+        )
+      : await generateTextAcrossModels(
+          buildBlankTextCheckPrompt(textProblem!, work),
+          undefined,
+          undefined,
+          "practiceCheckBlank",
+        );
     return parseCheckResult(raw);
   }
 
@@ -417,6 +472,7 @@ export async function coachPracticeWork(
   questionUUId: string,
   studentWork: string,
   problemImageBase64?: string,
+  problemText?: string,
 ): Promise<PracticeCoachResult> {
   const work = (studentWork ?? "").trim();
   if (!work) {
@@ -424,10 +480,14 @@ export async function coachPracticeWork(
   }
 
   const image = problemImageBase64?.trim();
+  const textProblem = problemText?.trim();
 
   if (questionUUId === PRACTICE_BLANK_UUID) {
     if (image) {
       return generateCoachTip(buildBlankImageCoachPrompt(work), image);
+    }
+    if (textProblem) {
+      return generateCoachTip(buildBlankTextCoachPrompt(textProblem, work));
     }
     return generateCoachTip(buildBlankCoachPrompt(work));
   }

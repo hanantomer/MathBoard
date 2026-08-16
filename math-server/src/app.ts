@@ -1166,6 +1166,10 @@ app.post(
                 typeof body?.problemImageBase64 === "string"
                     ? body.problemImageBase64
                     : undefined;
+            const problemText =
+                typeof body?.problemText === "string"
+                    ? body.problemText
+                    : undefined;
             if (!questionUUId) {
                 return res.status(400).json({ error: "questionUUId is required" });
             }
@@ -1173,6 +1177,7 @@ app.post(
                 questionUUId,
                 studentWork,
                 problemImageBase64,
+                problemText,
             );
             const used = recordPracticeAiUse(req, res, "check");
             return res.status(200).json({
@@ -1217,6 +1222,10 @@ app.post(
                 typeof body?.problemImageBase64 === "string"
                     ? body.problemImageBase64
                     : undefined;
+            const problemText =
+                typeof body?.problemText === "string"
+                    ? body.problemText
+                    : undefined;
             if (!questionUUId) {
                 return res.status(400).json({ error: "questionUUId is required" });
             }
@@ -1224,6 +1233,7 @@ app.post(
                 questionUUId,
                 studentWork,
                 problemImageBase64,
+                problemText,
             );
             const used = recordPracticeAiUse(req, res, "coach");
             return res.status(200).json({

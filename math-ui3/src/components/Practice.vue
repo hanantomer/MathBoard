@@ -12,16 +12,16 @@
     </div>
 
     <div
-      v-if="loaded && isBlank && !hasProblemImage"
+      v-if="loaded && isBlank && !hasProblem"
       class="practice-empty"
       data-cy="practice-blank-empty"
     >
       <div class="practice-empty__card">
-        <v-icon size="36" color="teal-darken-1">mdi-file-image-outline</v-icon>
+        <v-icon size="36" color="teal-darken-1">mdi-file-document-edit-outline</v-icon>
         <div class="text-subtitle-1 mt-2">Add the problem</div>
         <div class="text-body-2 text-medium-emphasis mt-1">
-          Paste (Ctrl+V) or upload a worksheet image, then write your solution
-          on the board.
+          Paste the question as text (Ctrl+V), or paste/upload a worksheet
+          image, then write your solution on the board.
         </div>
         <v-btn
           class="mt-3"
@@ -280,6 +280,7 @@ import {
   serializePracticeStudentWork,
   getPracticeProblemImageBase64,
   getPracticeProblemImageForTutor,
+  getPracticeProblemText,
 } from "../helpers/practiceCheckHelper";
 import { PRACTICE_BLANK_UUID } from "../helpers/practiceBoardAdapter";
 import useImageHelper from "../helpers/imageHelper";
@@ -355,11 +356,23 @@ const hasProblemImage = computed(
   () => !!getPracticeProblemImageBase64(notationStore.getNotations()),
 );
 
+const hasProblemText = computed(
+  () =>
+    !!getPracticeProblemText(
+      notationStore.getNotations(),
+      practiceStore.textDraft,
+    ),
+);
+
+const hasProblem = computed(
+  () => hasProblemImage.value || hasProblemText.value,
+);
+
 const checkDisabledReason = computed(() => {
   if (checking.value) return "";
   if (aiLimitMessage.value) return "Daily AI limit reached";
-  if (isBlank.value && !hasProblemImage.value) {
-    return "Paste or upload the problem first";
+  if (isBlank.value && !hasProblem.value) {
+    return "Paste the problem as text or an image first";
   }
   return "";
 });
@@ -474,6 +487,16 @@ async function currentProblemImage(): Promise<string | undefined> {
   );
 }
 
+function currentProblemText(): string | undefined {
+  if (!isBlank.value) return undefined;
+  return (
+    getPracticeProblemText(
+      notationStore.getNotations(),
+      practiceStore.textDraft,
+    ) ?? undefined
+  );
+}
+
 function toggleCoachPause() {
   coachPaused.value = !coachPaused.value;
   setPracticeCoachPaused(coachPaused.value);
@@ -525,6 +548,7 @@ watch(practiceWorkSignature, (work, prev) => {
         questionUUId,
         studentWork,
         await currentProblemImage(),
+        currentProblemText(),
       );
     },
     onBusy: (busy) => {
@@ -774,6 +798,7 @@ async function runCheck() {
       currentQuestionUUId.value,
       studentWork,
       await currentProblemImage(),
+      currentProblemText(),
     );
     suppressBalloon.value = false;
     applyQuota(result.value.remaining, result.value.limit);

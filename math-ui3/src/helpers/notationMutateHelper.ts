@@ -1210,7 +1210,11 @@ export default function notationMutateHelper() {
     cellStore.resetSelectedCell();
   }
 
-  function addTextNotation(value: string, textCells: RectAttributes) {
+  function addTextNotation(
+    value: string,
+    textCells: RectAttributes,
+    extras?: { practiceRole?: "problem" },
+  ) {
     let notation: RectNotationCreationAttributes = {
       fromCol: textCells.fromCol,
       toCol: textCells.toCol,
@@ -1221,6 +1225,7 @@ export default function notationMutateHelper() {
       parentUUId: requireBoardParent().uuid,
       notationType: "TEXT",
       user: getBoardUser(),
+      ...extras,
     };
 
     addNotation(notation);

@@ -1,4 +1,5 @@
-import { useUserStore } from "../store/pinia/userStore";
+import { matrixDimensions } from "common/globals";
+import { RectAttributes } from "common/baseTypes";
 import { useNotationStore } from "../store/pinia/notationStore";
 import { useCellStore } from "../store/pinia/cellStore";
 import { useEditModeStore } from "../store/pinia/editModeStore";
@@ -7,13 +8,19 @@ import useImageHelper from "./imageHelper";
 import useNotationMutationHelper from "./notationMutateHelper";
 import useEventBus from "../helpers/eventBusHelper";
 import useAuthorizationHelper from "./authorizationHelper";
-import { isPracticeBoard } from "./practiceBoardAdapter";
+import {
+  isBlankPracticeBoard,
+  PRACTICE_PROBLEM_ROLE,
+} from "./practiceBoardAdapter";
+import {
+  getPracticeProblemImageBase64,
+  getPracticeProblemText,
+} from "./practiceCheckHelper";
 
 import useSelectionHelper from "../helpers/selectionHelper";
 //import { isMobile } from "../../../math-common/src/globals";
 const selectionHelper = useSelectionHelper();
 
-const userStore = useUserStore();
 const notationStore = useNotationStore();
 const cellStore = useCellStore();
 const editModeStore = useEditModeStore();
@@ -78,60 +85,80 @@ export default function eventHelper() {
       return notationMutationHelper.pasteNotations();
     }
 
-    if (
-      e.clipboardData?.items.length &&
-      e.clipboardData?.items[0].kind === "string" &&
-      e.clipboardData?.types[0].match("^text/plain")
-    ) {
-      return pasteText(e);
+    const target = e.target as HTMLElement | null;
+    if (target?.tagName === "INPUT" || target?.tagName === "TEXTAREA") {
+      return;
     }
 
-    // Support both Files and Google Docs images (which may come as text/html)
-    if (
-      e.clipboardData?.types.includes("Files") ||
-      e.clipboardData?.types.includes("text/html")
-    ) {
+    const types = e.clipboardData?.types;
+    const hasFiles = !!types?.includes("Files");
+    const plainText = e.clipboardData?.getData("text/plain") ?? "";
+
+    if (hasFiles) {
+      return pasteImage(e);
+    }
+
+    if (plainText.trim()) {
+      return pasteText(plainText, e);
+    }
+
+    // Support Google Docs / HTML-embedded images when there is no plain text.
+    if (types?.includes("text/html")) {
       return pasteImage(e);
     }
   }
 
-  async function pasteText(e: ClipboardEvent) {
-    const clipboardItems = await navigator.clipboard.read();
-    if (!clipboardItems.length) return;
-    if (!cellStore.getSelectedCell()) return;
-    if (!userStore.isTeacher() && !isPracticeBoard()) return;
-    if (clipboardItems[0].types.length === 0) return;
-    if (clipboardItems[0].types[0] !== "text/plain") return;
+  function textBoxRectForPastedText(
+    text: string,
+    fromCol: number,
+    fromRow: number,
+  ): RectAttributes {
+    const lines = text.replace(/\r\n/g, "\n").replace(/\r/g, "\n").split("\n");
+    const maxLineLen = Math.max(1, ...lines.map((line) => line.length));
+    const availableCols = Math.max(1, matrixDimensions.colsNum - fromCol);
+    const availableRows = Math.max(1, matrixDimensions.rowsNum - fromRow);
+    const colSpan = Math.min(Math.max(10, maxLineLen + 2), availableCols);
+    const wrappedRows = lines.reduce(
+      (sum, line) => sum + Math.max(1, Math.ceil(line.length / colSpan)),
+      0,
+    );
+    const rowSpan = Math.min(Math.max(3, wrappedRows + 1), availableRows);
 
-    const initialCell = cellStore.getSelectedCell()!;
-    let currentRow = initialCell.row;
-    let currentCol = initialCell.col;
+    return {
+      fromCol,
+      toCol: fromCol + colSpan - 1,
+      fromRow,
+      toRow: fromRow + rowSpan - 1,
+    };
+  }
 
-    let text = await navigator.clipboard.readText();
-    if (!text) return;
+  function pasteText(text: string, e: ClipboardEvent) {
+    if (!authorizationHelper.canEdit()) return;
+    ensurePasteAnchorCell();
+    const cell = cellStore.getSelectedCell();
+    if (!cell) return;
 
-    const maxtotalNotationsToPaet = 20;
-    let totalNotationsPasted = 0;
-    text.split("").forEach((c) => {
-      if (c === "\n") {
-        // Move to next row and reset column
-        currentRow++;
-        currentCol = initialCell.col;
+    e.preventDefault();
 
-        selectionHelper.setSelectedCell(
-          { row: currentRow, col: currentCol },
-          false,
-        );
-      } else if (c.trim().length !== 0) {
-        notationMutationHelper.addSymbolNotation(c);
-        totalNotationsPasted++;
-        if (totalNotationsPasted >= maxtotalNotationsToPaet) {
-          return;
-        }
-        // Move to next column
-        currentCol++;
-      }
-    });
+    const fromCol = Math.min(
+      Math.max(0, cell.col),
+      matrixDimensions.colsNum - 1,
+    );
+    const fromRow = Math.min(
+      Math.max(0, cell.row),
+      matrixDimensions.rowsNum - 1,
+    );
+    const notations = notationStore.getNotations();
+    const markAsProblem =
+      isBlankPracticeBoard() &&
+      !getPracticeProblemImageBase64(notations) &&
+      !getPracticeProblemText(notations);
+
+    notationMutationHelper.addTextNotation(
+      text,
+      textBoxRectForPastedText(text, fromCol, fromRow),
+      markAsProblem ? { practiceRole: PRACTICE_PROBLEM_ROLE } : undefined,
+    );
   }
 
   function ensurePasteAnchorCell() {

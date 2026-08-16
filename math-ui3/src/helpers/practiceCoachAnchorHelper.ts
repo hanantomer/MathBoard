@@ -1,5 +1,6 @@
 import type { NotationAttributes } from "common/baseTypes";
 import { useCellStore } from "../store/pinia/cellStore";
+import { isPracticeProblemNotation } from "./practiceBoardAdapter";
 
 /**
  * Prefer the latest student mark (not a pasted worksheet image).
@@ -8,9 +9,10 @@ export function getLastStudentNotation(
   notations: NotationAttributes[],
 ): NotationAttributes | undefined {
   for (let i = notations.length - 1; i >= 0; i--) {
-    if (notations[i].notationType !== "IMAGE") {
-      return notations[i];
-    }
+    const n = notations[i];
+    if (n.notationType === "IMAGE") continue;
+    if (isPracticeProblemNotation(n)) continue;
+    return n;
   }
   return notations.at(-1);
 }
