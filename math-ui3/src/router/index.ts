@@ -118,7 +118,7 @@ const routes: Array<RouteRecordRaw> = [
       requiresAuth: false,
       title: "Blank Practice Sheet - MathBoard",
       description:
-        "Practice on a blank board with a pasted question, worksheet image, or uploaded photo.",
+        "Practice on a blank board: write or paste a question, or upload a worksheet image.",
       keywords: "math practice, blank sheet, paste text, worksheet image, upload",
     },
   },

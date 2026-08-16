@@ -274,13 +274,10 @@ function serializeFilteredWork(
   if (rowBuf) lines.push(rowBuf);
 
   let draftApplied = false;
+  let hasDiagram = false;
   for (const n of practiceOnly) {
     if (n.notationType === "TEXT") {
       const t = n as RectNotationAttributes;
-      if (isPracticeProblemNotation(t)) {
-        if (draft?.notationUUId === t.uuid) draftApplied = true;
-        continue;
-      }
       const live =
         draft?.notationUUId && draft.notationUUId === t.uuid
           ? draft.value
@@ -292,14 +289,31 @@ function serializeFilteredWork(
       if (a.value?.trim()) lines.push(a.value.trim());
     } else if (n.notationType === "FREESKETCH") {
       lines.push("[freehand sketch]");
+    } else if (
+      n.notationType === "LINE" ||
+      n.notationType === "CURVE" ||
+      n.notationType === "CIRCLE" ||
+      n.notationType === "POLYGON"
+    ) {
+      hasDiagram = true;
     }
   }
 
   if (!draftApplied && draft?.value.trim()) {
     lines.push(draft.value.trim());
   }
+  if (hasDiagram) lines.push("[diagram]");
 
   return lines.join("\n").trim();
+}
+
+function draftAppliesTo(
+  notations: NotationAttributes[],
+  draft?: PracticeTextDraft | null,
+): PracticeTextDraft | null {
+  if (!draft?.value.trim()) return null;
+  if (!draft.notationUUId) return draft;
+  return notations.some((n) => n.uuid === draft.notationUUId) ? draft : null;
 }
 
 /** Serialize PRACTICE-layer notations into text for the grading API. */
@@ -307,9 +321,12 @@ export function serializePracticeStudentWork(
   notations: NotationAttributes[],
   draft?: PracticeTextDraft | null,
 ): string {
-  const practiceOnly = notations.filter((n) => n.boardType === "PRACTICE");
+  const practiceOnly = notations.filter(
+    (n) => n.boardType === "PRACTICE" && !isPracticeProblemNotation(n),
+  );
+  const studentDraft = draftAppliesTo(practiceOnly, draft);
   if (practiceOnly.length === 0) {
-    return (draft?.value ?? "").trim();
+    return (studentDraft?.value ?? "").trim();
   }
 
   const images = listPracticeImages(notations);
@@ -322,7 +339,7 @@ export function serializePracticeStudentWork(
         )
       : practiceOnly;
 
-  return serializeFilteredWork(scoped, draft);
+  return serializeFilteredWork(scoped, studentDraft);
 }
 
 /**
@@ -335,26 +352,24 @@ export function getPracticeProblemImageBase64(
   return getFocusedPracticeImage(notations)?.value ?? null;
 }
 
-/** Pasted question text on a blank practice board (not student work). */
+/** Crafted or pasted question on a blank practice board (not student work). */
 export function getPracticeProblemText(
   notations: NotationAttributes[],
   draft?: PracticeTextDraft | null,
 ): string | null {
-  const problems = notations
-    .filter(
-      (n) => n.notationType === "TEXT" && isPracticeProblemNotation(n),
-    )
-    .map((n) => n as RectNotationAttributes)
-    .sort(
-      (a, b) =>
-        (a.fromRow ?? 0) - (b.fromRow ?? 0) ||
-        (a.fromCol ?? 0) - (b.fromCol ?? 0),
-    );
+  const problems = notations.filter((n) => isPracticeProblemNotation(n));
   if (problems.length === 0) return null;
-  const t = problems[0];
-  const live =
-    draft?.notationUUId && draft.notationUUId === t.uuid ? draft.value : t.value;
-  return live?.trim() || null;
+  const text = serializeFilteredWork(
+    problems,
+    draftAppliesTo(problems, draft),
+  );
+  return text || "[board question]";
+}
+
+export function hasCraftedPracticeProblem(
+  notations: NotationAttributes[],
+): boolean {
+  return notations.some((n) => isPracticeProblemNotation(n));
 }
 
 function clamp(n: number, min: number, max: number): number {

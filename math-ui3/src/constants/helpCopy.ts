@@ -47,7 +47,7 @@ export const WELCOME_PATHS = {
       "Solo practice by subject — write on the board, check answers, or get text/voice tips (work stays on this device).",
     cta: "Practice by subject",
     ctaGuest: "Practice by subject",
-    blankCta: "Blank sheet (paste text or image)",
+    blankCta: "Blank sheet (write, paste, or upload)",
   },
 } as const;
 
@@ -78,7 +78,7 @@ export const BOARD_ROLE_BANNERS = {
   practiceStudent:
     "Check grades your work when you ask. Text and Voice give live tips while you write — including in a text box after you pause. Work stays on this device.",
   practiceBlank:
-    "Paste the question as text (Ctrl+V), or paste/upload a worksheet image, then write your solution. Work stays on this device.",
+    "Write or paste the question on the board, then solve. Work stays on this device.",
   practiceGuest:
     "Guest practice — limited free AI uses per day. Sign in for a higher limit. Work stays on this device.",
 } as const;

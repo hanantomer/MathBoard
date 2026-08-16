@@ -89,6 +89,28 @@ export function persistPracticeNotation(notation: NotationAttributes) {
   });
 }
 
+/** Lock current blank-sheet work as the question stem, then the student solves. */
+export function markCurrentPracticeNotationsAsProblem() {
+  if (!isPracticeBoard()) return;
+  const notationStore = useNotationStore();
+  const snapshot = [...notationStore.getNotations()];
+  notationStore.beginUndoGroup();
+  try {
+    for (const notation of snapshot) {
+      if (notation.boardType !== "PRACTICE") continue;
+      if (isPracticeProblemNotation(notation)) continue;
+      const marked = {
+        ...notation,
+        practiceRole: PRACTICE_PROBLEM_ROLE,
+      } as NotationAttributes & PracticeNotationExtras;
+      notationStore.addNotation(marked, true, false);
+      persistPracticeNotation(marked);
+    }
+  } finally {
+    notationStore.endUndoGroup();
+  }
+}
+
 export function removeLocalPracticeNotation(notationUUId: string) {
   if (!isPracticeBoard()) return;
   usePracticeStore().removeNotation(getPracticeQuestionUUId(), notationUUId);

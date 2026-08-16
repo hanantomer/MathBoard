@@ -12,7 +12,7 @@
     </div>
 
     <div
-      v-if="loaded && isBlank && !hasProblem"
+      v-if="loaded && isBlank && isCrafting && !hasBoardWork && !craftStarted"
       class="practice-empty"
       data-cy="practice-blank-empty"
     >
@@ -20,20 +20,30 @@
         <v-icon size="36" color="teal-darken-1">mdi-file-document-edit-outline</v-icon>
         <div class="text-subtitle-1 mt-2">Add the problem</div>
         <div class="text-body-2 text-medium-emphasis mt-1">
-          Paste the question as text (Ctrl+V), or paste/upload a worksheet
-          image, then write your solution on the board.
+          Write the question on the board, paste it as text (Ctrl+V), or
+          paste/upload a worksheet image. Then press Question ready and solve.
         </div>
-        <v-btn
-          class="mt-3"
-          color="teal-darken-1"
-          variant="flat"
-          :loading="uploading"
-          prepend-icon="mdi-image-plus"
-          data-cy="practice-blank-upload"
-          @click="pickImageFile"
-        >
-          Upload image
-        </v-btn>
+        <div class="d-flex flex-column ga-2 mt-3">
+          <v-btn
+            color="primary"
+            variant="flat"
+            prepend-icon="mdi-pencil"
+            data-cy="practice-blank-write"
+            @click="startCraftingOnBoard"
+          >
+            Write the question
+          </v-btn>
+          <v-btn
+            color="teal-darken-1"
+            variant="tonal"
+            :loading="uploading"
+            prepend-icon="mdi-image-plus"
+            data-cy="practice-blank-upload"
+            @click="pickImageFile"
+          >
+            Upload image
+          </v-btn>
+        </div>
       </div>
     </div>
 
@@ -93,6 +103,18 @@
           <template #activator="{ props: tipProps }">
             <div v-bind="tipProps" class="practice-assist-panel__check-wrap">
               <v-btn
+                v-if="isCrafting"
+                color="primary"
+                variant="flat"
+                :disabled="!canLockQuestion"
+                prepend-icon="mdi-flag-checkered"
+                data-cy="practice-blank-lock-question"
+                @click="lockCraftedQuestion"
+              >
+                Question ready
+              </v-btn>
+              <v-btn
+                v-else
                 color="primary"
                 variant="flat"
                 :loading="checking"
@@ -107,12 +129,12 @@
           </template>
         </v-tooltip>
         <v-btn
-          v-if="isBlank && hasProblemImage"
+          v-if="isBlank && (hasProblemImage || (isCrafting && (craftStarted || hasBoardWork)))"
           color="teal-darken-1"
           variant="tonal"
           :loading="uploading"
           icon="mdi-image-plus"
-          aria-label="Replace worksheet image"
+          aria-label="Upload worksheet image"
           data-cy="practice-blank-upload"
           @click="pickImageFile"
         />
@@ -129,7 +151,7 @@
       </div>
 
       <div
-        v-if="isLiveCoach && !aiLimitMessage"
+        v-if="(isLiveCoach || isCrafting) && !aiLimitMessage"
         class="practice-assist-panel__status"
         data-cy="practice-coach-status"
       >
@@ -281,8 +303,12 @@ import {
   getPracticeProblemImageBase64,
   getPracticeProblemImageForTutor,
   getPracticeProblemText,
+  hasCraftedPracticeProblem,
 } from "../helpers/practiceCheckHelper";
-import { PRACTICE_BLANK_UUID } from "../helpers/practiceBoardAdapter";
+import {
+  PRACTICE_BLANK_UUID,
+  markCurrentPracticeNotationsAsProblem,
+} from "../helpers/practiceBoardAdapter";
 import useImageHelper from "../helpers/imageHelper";
 import useNotationMutationHelper from "../helpers/notationMutateHelper";
 import useSelectionHelper from "../helpers/selectionHelper";
@@ -338,6 +364,7 @@ const coachTip = ref("");
 const currentQuestionUUId = ref("");
 const assistMode = ref<PracticeAssistMode>(getPracticeAssistMode());
 const coachPaused = ref(isPracticeCoachPaused());
+const craftStarted = ref(false);
 const imageFileInput = ref<HTMLInputElement | null>(null);
 const assistPanelEl = ref<HTMLElement | null>(null);
 const quotaRemaining = ref<number | null>(null);
@@ -365,14 +392,28 @@ const hasProblemText = computed(
 );
 
 const hasProblem = computed(
-  () => hasProblemImage.value || hasProblemText.value,
+  () =>
+    hasProblemImage.value ||
+    hasProblemText.value ||
+    hasCraftedPracticeProblem(notationStore.getNotations()),
 );
+
+const isCrafting = computed(() => isBlank.value && !hasProblem.value);
+
+const hasBoardWork = computed(() => {
+  if (practiceStore.textDraft?.value.trim()) return true;
+  return notationStore
+    .getNotations()
+    .some((n) => n.boardType === "PRACTICE");
+});
+
+const canLockQuestion = computed(() => isCrafting.value && hasBoardWork.value);
 
 const checkDisabledReason = computed(() => {
   if (checking.value) return "";
   if (aiLimitMessage.value) return "Daily AI limit reached";
-  if (isBlank.value && !hasProblem.value) {
-    return "Paste the problem as text or an image first";
+  if (isCrafting.value) {
+    return canLockQuestion.value ? "" : "Write or paste the question first";
   }
   return "";
 });
@@ -411,6 +452,7 @@ const coachStatusIcon = computed(() => {
 const coachStatusText = computed(() => {
   const left =
     quotaRemaining.value != null ? ` · ${quotaRemaining.value} left` : "";
+  if (isCrafting.value) return `Write the question${left}`;
   if (coachPaused.value) return `Tips paused${left}`;
   if (coachingBusy.value) return `Thinking…${left}`;
   return `Coach is watching${left}`;
@@ -535,6 +577,7 @@ watch(practiceWorkSignature, (work, prev) => {
     if (coachTip.value || result.value) suppressBalloon.value = false;
   }, 1800);
   if (!work.trim()) return;
+  if (isCrafting.value) return;
   if (!isLiveCoach.value || checking.value) return;
   if (aiLimitMessage.value || coachPaused.value) return;
 
@@ -662,6 +705,7 @@ function prepareBoardShell(questionUUId: string) {
   coachingBusy.value = false;
   currentQuestionUUId.value = questionUUId;
   practiceStore.clearTextDraft();
+  craftStarted.value = false;
   resetPracticeVoiceCoach();
   editModeStore.setDefaultEditMode();
   cellStore.resetCellDimensions();
@@ -763,6 +807,19 @@ function goSignIn() {
   });
 }
 
+function startCraftingOnBoard() {
+  craftStarted.value = true;
+}
+
+async function lockCraftedQuestion() {
+  if (!canLockQuestion.value) return;
+  if (editModeStore.getEditMode() === "TEXT_WRITING") {
+    editModeStore.setDefaultEditMode();
+    await nextTick();
+  }
+  markCurrentPracticeNotationsAsProblem();
+}
+
 function goPracticeList() {
   router.push({ name: "practice" });
 }
@@ -779,6 +836,10 @@ function goNextQuestion() {
 async function runCheck() {
   if (!currentQuestionUUId.value || checking.value) return;
   if (checkDisabledReason.value) return;
+  if (isCrafting.value) {
+    await lockCraftedQuestion();
+    return;
+  }
 
   if (editModeStore.getEditMode() === "TEXT_WRITING") {
     editModeStore.setDefaultEditMode();
