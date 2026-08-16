@@ -71,7 +71,7 @@ defineEmits<{ close: [] }>();
 const anchor = ref<DOMRect | null>(null);
 const tailOnRight = ref(false);
 let rafId = 0;
-let remasureTimer: ReturnType<typeof setTimeout> | undefined;
+let remeasureTimer: ReturnType<typeof setTimeout> | undefined;
 
 function measure() {
   const rect = getPracticeCoachAnchorRect(props.svgId, props.notations);
@@ -103,7 +103,7 @@ watch(
   () => {
     scheduleMeasure();
     clearTimeout(remeasureTimer);
-    remasureTimer = setTimeout(scheduleMeasure, 50);
+    remeasureTimer = setTimeout(scheduleMeasure, 50);
   },
   { immediate: true, deep: true },
 );
