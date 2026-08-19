@@ -226,12 +226,22 @@
       </template>
     </v-tooltip>
 
-    <!-- sign in / register -->
+    <v-btn
+      v-show="showClassroomHomeLink"
+      variant="text"
+      class="text-none"
+      data-cy="classroom_home_btn"
+      @click="navToHome"
+    >
+      Classroom
+    </v-btn>
+
+    <!-- sign in / register — hidden on practice so tutor guests are not pushed to class -->
     <v-tooltip text="Sign in as Teacher" location="bottom">
       <template v-slot:activator="{ props }">
         <v-btn
           v-bind="props"
-          v-show="!user"
+          v-show="showClassroomSignIn"
           icon
           v-on:click="showLoginDialog('TEACHER')"
         >
@@ -244,7 +254,7 @@
       <template v-slot:activator="{ props }">
         <v-btn
           v-bind="props"
-          v-show="!user"
+          v-show="showClassroomSignIn"
           icon
           v-on:click="showLoginDialog('STUDENT')"
         >
@@ -345,6 +355,23 @@ const showPractice = computed(() => {
   return true;
 });
 
+const isPracticeRoute = computed(() => {
+  const name = route.name;
+  return (
+    name === "practice" ||
+    name === "practiceBlank" ||
+    name === "practiceQuestion"
+  );
+});
+
+const showClassroomSignIn = computed(
+  () => !user.value && !isPracticeRoute.value,
+);
+
+const showClassroomHomeLink = computed(
+  () => !user.value && isPracticeRoute.value,
+);
+
 const showAnswers = computed(() => {
   return isTeacher.value;
 });
@@ -384,6 +411,10 @@ function signOut() {
 
 function showOnlineStudentsDialog() {
   editModeStrore.setEditMode("STUDENTS_MONITORING");
+}
+
+function navToHome() {
+  router.push({ name: "main" });
 }
 
 function navToLessons() {

@@ -23,12 +23,11 @@ const routes: Array<RouteRecordRaw> = [
     name: "main",
     meta: {
       requiresAuth: false,
-      title:
-        "Math Whiteboard - Online Collaborative Mathematics Learning Platform",
+      title: "Math Whiteboard — Live classroom and AI math tutor",
       description:
-        "Welcome to Math Whiteboard, an interactive online platform that enables teachers to create custom mathematics lessons and questions, while facilitating real-time collaboration between students and educators.",
+        "Two ways to use the same board: live lessons with teachers and students, or solo AI-tutor practice. Type math on a grid, check work, and collaborate in class.",
       keywords:
-        "mathematics, online learning, math platform, collaborative learning, interactive math, teacher tools, create lessons",
+        "math whiteboard, live classroom, AI math tutor, math practice, collaborative learning, teacher tools, interactive math",
     },
     props: true,
   },
@@ -104,10 +103,11 @@ const routes: Array<RouteRecordRaw> = [
     name: "practice",
     meta: {
       requiresAuth: false,
-      title: "Practice Questions - MathBoard",
+      title: "AI Math Tutor — Practice on Math Whiteboard",
       description:
-        "Browse practice questions by subject and work locally on the math board.",
-      keywords: "math practice, self-study, subjects, problem solving",
+        "Solo math practice on an interactive board. Pick a subject or start a blank sheet, check answers, and get text or voice tips. Work stays on this device. No account needed.",
+      keywords:
+        "AI math tutor, math practice, self-study, interactive math board, check answers, voice coach",
     },
   },
   {
@@ -116,10 +116,11 @@ const routes: Array<RouteRecordRaw> = [
     name: "practiceBlank",
     meta: {
       requiresAuth: false,
-      title: "Blank Practice Sheet - MathBoard",
+      title: "Blank Practice Sheet — AI Math Tutor",
       description:
-        "Practice on a blank board: write or paste a question, or upload a worksheet image.",
-      keywords: "math practice, blank sheet, paste text, worksheet image, upload",
+        "Practice on a blank board with an AI tutor: write or paste a question, or upload a worksheet image. Work stays on this device.",
+      keywords:
+        "AI math tutor, blank sheet, paste text, worksheet image, math practice",
     },
   },
   {
@@ -128,9 +129,9 @@ const routes: Array<RouteRecordRaw> = [
     name: "practiceQuestion",
     meta: {
       requiresAuth: false,
-      title: "Practice - MathBoard",
-      description: "Work on a practice question with local scratch work.",
-      keywords: "math practice, problem solving",
+      title: "Practice — AI Math Tutor",
+      description: "Work on a practice question with local scratch work and AI tutor tips.",
+      keywords: "AI math tutor, math practice, problem solving",
     },
   },
   {
@@ -238,7 +239,7 @@ router.afterEach((to) => {
   const title = (to.meta.title as string) || "MathBoard";
   const description =
     (to.meta.description as string) ||
-    "MathBoard - Online Collaborative Mathematics Learning Platform";
+    "Math Whiteboard is an interactive board for live classroom lessons and solo AI-tutor practice.";
   const keywords =
     (to.meta.keywords as string) || "mathematics, online learning";
 

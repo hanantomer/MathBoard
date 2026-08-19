@@ -40,6 +40,8 @@ export const WELCOME_PATHS = {
     ctaTeacher: "Go to Lessons",
     ctaStudent: "Go to Lessons",
     ctaGuest: "Get started in class",
+    signInTeacher: "Sign in as Teacher",
+    signInStudent: "Sign in as Student",
   },
   practice: {
     title: "AI tutor",
@@ -48,6 +50,9 @@ export const WELCOME_PATHS = {
     cta: "Practice by subject",
     ctaGuest: "Practice by subject",
     blankCta: "Blank sheet (write, paste, or upload)",
+    landingLead:
+      "Solo practice by subject — write on the board, check answers, or get text or voice tips. Work stays on this device. No account needed.",
+    classroomLink: "Looking for a live class?",
   },
 } as const;
 

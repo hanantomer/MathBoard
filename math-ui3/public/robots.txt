@@ -16,6 +16,7 @@ Disallow: /uploads/
 
 # Allow search engines to crawl specific important paths
 Allow: /
+Allow: /practice
 Allow: /lessons
 Allow: /questions
 Allow: /answers

@@ -1,10 +1,13 @@
 <template>
   <v-container class="practice-page">
     <v-card class="mx-auto mt-4" max-width="800" min-height="600">
-      <v-card-text class="text-body-2 text-medium-emphasis pb-0">
-        Curated practice questions by subject, or a blank sheet where you write,
-        paste, or upload a question. Work stays on this device.
-      </v-card-text>
+      <div class="practice-hero px-4 pt-4 pb-2">
+        <h1 class="practice-hero__title">{{ WELCOME_PATHS.practice.title }}</h1>
+        <p class="practice-hero__lead">{{ WELCOME_PATHS.practice.landingLead }}</p>
+        <router-link class="practice-hero__class" to="/">
+          {{ WELCOME_PATHS.practice.classroomLink }}
+        </router-link>
+      </div>
       <v-toolbar color="primary" dark>
         <v-toolbar-title>Practice</v-toolbar-title>
         <v-spacer />
@@ -74,6 +77,7 @@
 import { computed, ref, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { PRACTICE_SUBJECTS } from "common/practiceSubjects";
+import { WELCOME_PATHS } from "../constants/helpCopy";
 import { usePracticeQuestionStore } from "../store/pinia/practiceQuestionStore";
 import { useEditModeStore } from "../store/pinia/editModeStore";
 import { useBoardContextStore } from "../store/pinia/boardContextStore";
@@ -138,6 +142,37 @@ function openBlankSheet() {
 </script>
 
 <style scoped>
+.practice-page {
+  padding-top: 80px;
+}
+
+.practice-hero__title {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: #0f766e;
+  line-height: 1.2;
+}
+
+.practice-hero__lead {
+  margin: 0.5rem 0 0.35rem;
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: #475569;
+  line-height: 1.4;
+}
+
+.practice-hero__class {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #ea580c;
+  text-decoration: none;
+}
+
+.practice-hero__class:hover {
+  text-decoration: underline;
+}
+
 .blank-sheet-card {
   cursor: pointer;
   border-color: #99f6e4 !important;

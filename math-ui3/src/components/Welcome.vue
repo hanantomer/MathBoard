@@ -6,50 +6,10 @@
     <v-container class="welcome-container">
       <v-row no-gutters>
         <v-col class="text-center" cols="12">
-          <!-- Brand + auth on first row -->
           <header class="welcome-brand">
-            <div class="welcome-brand__row">
-              <h1 class="welcome-brand__title">
-                {{ WELCOME_PATHS.brandLine }}
-              </h1>
-              <nav
-                v-if="!userStore.getCurrentUser()"
-                class="welcome-auth"
-                aria-label="Account"
-              >
-                <v-btn
-                  data-cy="signin_teacher_btn"
-                  variant="text"
-                  color="primary"
-                  density="comfortable"
-                  class="welcome-auth__btn text-decoration-underline"
-                  @click="login('TEACHER', '')"
-                >
-                  Sign in as Teacher
-                </v-btn>
-                <span class="welcome-auth__sep">·</span>
-                <v-btn
-                  variant="text"
-                  color="primary"
-                  density="comfortable"
-                  class="welcome-auth__btn text-decoration-underline"
-                  @click="login('STUDENT', '')"
-                >
-                  Student
-                </v-btn>
-                <span class="welcome-auth__sep">·</span>
-                <v-btn
-                  data-cy="signup_btn"
-                  variant="text"
-                  color="orange"
-                  density="comfortable"
-                  class="welcome-auth__btn welcome-auth__btn--signup text-decoration-underline"
-                  @click="register(false, '')"
-                >
-                  Sign up
-                </v-btn>
-              </nav>
-            </div>
+            <h1 class="welcome-brand__title">
+              {{ WELCOME_PATHS.brandLine }}
+            </h1>
             <p class="welcome-brand__sub">{{ WELCOME_PATHS.brandSub }}</p>
           </header>
 
@@ -97,9 +57,10 @@
                 </p>
               </v-card-text>
 
-              <v-card-actions class="path-card__actions px-4 pb-4 pt-0">
+              <v-card-actions class="path-card__actions px-4 pb-4 pt-0 flex-column">
                 <v-btn
                   v-if="!userStore.getCurrentUser()"
+                  data-cy="signup_btn"
                   color="orange"
                   size="large"
                   elevation="2"
@@ -111,6 +72,32 @@
                   {{ WELCOME_PATHS.classroom.ctaGuest }}
                   <v-icon end class="ml-2">mdi-arrow-right</v-icon>
                 </v-btn>
+                <nav
+                  v-if="!userStore.getCurrentUser()"
+                  class="welcome-auth"
+                  aria-label="Classroom account"
+                >
+                  <v-btn
+                    data-cy="signin_teacher_btn"
+                    variant="text"
+                    color="primary"
+                    density="comfortable"
+                    class="welcome-auth__btn text-decoration-underline"
+                    @click="login('TEACHER', '')"
+                  >
+                    {{ WELCOME_PATHS.classroom.signInTeacher }}
+                  </v-btn>
+                  <span class="welcome-auth__sep">·</span>
+                  <v-btn
+                    variant="text"
+                    color="primary"
+                    density="comfortable"
+                    class="welcome-auth__btn text-decoration-underline"
+                    @click="login('STUDENT', '')"
+                  >
+                    {{ WELCOME_PATHS.classroom.signInStudent }}
+                  </v-btn>
+                </nav>
                 <v-btn
                   v-else
                   color="orange"
@@ -330,14 +317,6 @@ const bullets = [
   padding: 0 0.5rem;
 }
 
-.welcome-brand__row {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: baseline;
-  justify-content: center;
-  gap: 0.35rem 1rem;
-}
-
 .welcome-brand__title {
   margin: 0;
   font-size: 2.35rem;
@@ -353,17 +332,15 @@ const bullets = [
   align-items: center;
   justify-content: center;
   gap: 0.1rem;
+  width: 100%;
+  margin-top: 0.35rem;
 }
 
 .welcome-auth__btn {
   min-width: unset !important;
   padding-inline: 4px !important;
-  font-size: 0.95rem !important;
+  font-size: 0.9rem !important;
   font-weight: 600 !important;
-}
-
-.welcome-auth__btn--signup {
-  font-weight: 800 !important;
 }
 
 .welcome-auth__sep {
@@ -555,11 +532,6 @@ const bullets = [
 
   .tutorial-btn {
     width: 100%;
-  }
-
-  .welcome-brand__row {
-    flex-direction: column;
-    align-items: center;
   }
 
   .feature-list .v-list-item-title,

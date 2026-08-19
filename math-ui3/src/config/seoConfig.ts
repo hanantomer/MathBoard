@@ -9,19 +9,18 @@ export const seoConfig = {
     name: "Math Whiteboard",
     url: process.env.VITE_APP_URL || "https://themathboard.com",
     description:
-      "Interactive online platform enabling teachers to create custom mathematics lessons and questions, facilitating real-time collaboration between students and educators",
+      "Interactive board for live classroom lessons and solo AI-tutor math practice",
     author: "Math Whiteboard Team",
     email: "mathboard16@gmail.com",
   },
 
   // Default meta tags
   meta: {
-    title:
-      "Math Whiteboard - Online Collaborative Mathematics Learning Platform",
+    title: "Math Whiteboard — Live classroom and AI math tutor",
     description:
-      "Math Whiteboard is an interactive online platform that enables teachers to create custom mathematics lessons and questions, while facilitating real-time collaboration between students and educators.",
+      "Two ways to use the same board: live lessons with teachers and students, or solo AI-tutor practice. Type math on a grid, check work, and collaborate in class.",
     keywords:
-      "mathematics, online learning, collaborative learning, math lessons, interactive math, education platform, teacher tools, create lessons, math questions",
+      "math whiteboard, live classroom, AI math tutor, math practice, collaborative learning, teacher tools, interactive math",
     image: "/og-image.png",
     twitterHandle: "@mathboard",
   },
@@ -50,7 +49,7 @@ export const seoConfig = {
   // Robots
   robots: {
     userAgent: "*",
-    allow: ["/"],
+    allow: ["/", "/practice"],
     disallow: ["/admin", "/private", "/api/", "/dist/", "/build/"],
     crawlDelay: 1,
   },

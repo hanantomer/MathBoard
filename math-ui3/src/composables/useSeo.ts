@@ -180,12 +180,11 @@ export default function useSeo() {
    */
   const resetPageMeta = () => {
     setPageMeta({
-      title:
-        "Math Whiteboard - Online Collaborative Mathematics Learning Platform",
+      title: "Math Whiteboard — Live classroom and AI math tutor",
       description:
-        "Math Whiteboard is an interactive online platform that enables teachers to create custom mathematics lessons and questions, while facilitating real-time collaboration between students and educators.",
+        "Two ways to use the same board: live lessons with teachers and students, or solo AI-tutor practice. Type math on a grid, check work, and collaborate in class.",
       keywords:
-        "mathematics, online learning, collaborative learning, math lessons, interactive math, education platform, teacher tools, create lessons",
+        "math whiteboard, live classroom, AI math tutor, math practice, collaborative learning, teacher tools, interactive math",
       image: "https://themathboard.com/og-image.png",
       canonicalUrl: "https://mathboard.com/",
     });
