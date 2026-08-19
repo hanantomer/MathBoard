@@ -200,6 +200,8 @@ function normalizeImageBase64(imageBase64: string): {
 
 const COACH_TIP_RULES = `Give ONE short spoken tip (max 18 words) about their next useful step, a gentle correction of how they read the problem, or quick encouragement if they are on track.
 If they are writing in a text box, coach the math story: what is given, what is asked, or the next useful step.
+If student work already lists a diagram with labeled sides, vertices, or angles, do not ask them to label those again.
+Treat "inferred right angle" / "figure ~N°" as geometry of the drawing, not as a value the student wrote.
 Do not rewrite their sentences, fix spelling, complete their answer, or reveal the final answer.
 Do not solve the whole problem. Do not use markdown or emoji.
 If the work is too incomplete to help, or there is nothing useful to say yet, respond with speak=false.

@@ -12,6 +12,10 @@ import { useCellStore } from "../store/pinia/cellStore";
 import { useNotationStore } from "../store/pinia/notationStore";
 import { getLastStudentNotation } from "./practiceCoachAnchorHelper";
 import { isPracticeProblemNotation } from "./practiceBoardAdapter";
+import {
+  serializePracticeDiagram,
+  serializePracticeFractions,
+} from "./practiceDiagramSerializeHelper";
 import useImageHelper from "./imageHelper";
 
 type CellRect = {
@@ -245,36 +249,69 @@ export type PracticeTextDraft = {
   notationUUId: string | null;
 };
 
+function boardCellSize(): { cellW: number; cellH: number } {
+  try {
+    const cellStore = useCellStore();
+    const cellW = cellStore.getCellHorizontalWidth();
+    const cellH = cellStore.getCellVerticalHeight();
+    if (cellW > 0 && cellH > 0) return { cellW, cellH };
+  } catch {
+    /* pinia not ready */
+  }
+  return { cellW: 16.5, cellH: 33 };
+}
+
 function serializeFilteredWork(
   practiceOnly: NotationAttributes[],
   draft?: PracticeTextDraft | null,
 ): string {
   const lines: string[] = [];
+  const cellSize = boardCellSize();
+  const diagram = serializePracticeDiagram(practiceOnly, cellSize);
+  const fractions = serializePracticeFractions(practiceOnly, cellSize);
+  const consumed = new Set([
+    ...diagram.consumedUuids,
+    ...fractions.consumedUuids,
+  ]);
 
   const pointLike = practiceOnly.filter(
     (n) =>
-      n.notationType === "SYMBOL" ||
-      n.notationType === "EXPONENT" ||
-      n.notationType === "LOGBASE",
+      (n.notationType === "SYMBOL" ||
+        n.notationType === "EXPONENT" ||
+        n.notationType === "LOGBASE") &&
+      !consumed.has(n.uuid),
   ) as PointNotationAttributes[];
 
-  pointLike.sort((a, b) => a.row - b.row || a.col - b.col);
+  type RowItem = { col: number; text: string };
+  const itemsByRow = new Map<number, RowItem[]>();
+  const addItem = (row: number, col: number, text: string) => {
+    const items = itemsByRow.get(row) ?? [];
+    items.push({ col, text });
+    itemsByRow.set(row, items);
+  };
 
-  let currentRow = Number.NaN;
-  let rowBuf = "";
   for (const n of pointLike) {
-    if (n.row !== currentRow) {
-      if (rowBuf) lines.push(rowBuf);
-      currentRow = n.row;
-      rowBuf = n.value ?? "";
-    } else {
-      rowBuf += n.value ?? "";
-    }
+    const value =
+      n.notationType === "EXPONENT"
+        ? "^" + (n.value ?? "")
+        : n.notationType === "LOGBASE"
+          ? "_" + (n.value ?? "")
+          : (n.value ?? "");
+    addItem(n.row, n.col, value);
   }
-  if (rowBuf) lines.push(rowBuf);
+  for (const frac of fractions.inserts) {
+    addItem(frac.row, frac.col, frac.text);
+  }
+
+  const rows = Array.from(itemsByRow.keys()).sort((a, b) => a - b);
+  for (const row of rows) {
+    const items = itemsByRow.get(row)!;
+    items.sort((a, b) => a.col - b.col);
+    const buf = items.map((i) => i.text).join("");
+    if (buf) lines.push(buf);
+  }
 
   let draftApplied = false;
-  let hasDiagram = false;
   for (const n of practiceOnly) {
     if (n.notationType === "TEXT") {
       const t = n as RectNotationAttributes;
@@ -285,24 +322,16 @@ function serializeFilteredWork(
       if (draft?.notationUUId === t.uuid) draftApplied = true;
       if (live?.trim()) lines.push(live.trim());
     } else if (n.notationType === "ANNOTATION") {
+      if (consumed.has(n.uuid)) continue;
       const a = n as AnnotationNotationAttributes;
       if (a.value?.trim()) lines.push(a.value.trim());
-    } else if (n.notationType === "FREESKETCH") {
-      lines.push("[freehand sketch]");
-    } else if (
-      n.notationType === "LINE" ||
-      n.notationType === "CURVE" ||
-      n.notationType === "CIRCLE" ||
-      n.notationType === "POLYGON"
-    ) {
-      hasDiagram = true;
     }
   }
 
   if (!draftApplied && draft?.value.trim()) {
     lines.push(draft.value.trim());
   }
-  if (hasDiagram) lines.push("[diagram]");
+  lines.push(...diagram.lines);
 
   return lines.join("\n").trim();
 }

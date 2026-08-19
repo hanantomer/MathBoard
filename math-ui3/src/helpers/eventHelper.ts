@@ -117,7 +117,13 @@ export default function eventHelper() {
     const maxLineLen = Math.max(1, ...lines.map((line) => line.length));
     const availableCols = Math.max(1, matrixDimensions.colsNum - fromCol);
     const availableRows = Math.max(1, matrixDimensions.rowsNum - fromRow);
-    const colSpan = Math.min(Math.max(10, maxLineLen + 2), availableCols);
+    // Cap width so a one-line problem wraps instead of spanning the board.
+    const MAX_PASTE_COLS = 40;
+    const colSpan = Math.min(
+      Math.max(10, maxLineLen + 2),
+      availableCols,
+      MAX_PASTE_COLS,
+    );
     const wrappedRows = lines.reduce(
       (sum, line) => sum + Math.max(1, Math.ceil(line.length / colSpan)),
       0,

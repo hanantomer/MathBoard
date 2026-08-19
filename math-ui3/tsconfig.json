@@ -23,5 +23,5 @@
     { "path": "./tsconfig.node.json" },
     { "path": "../math-common" }
   ],
-  "exclude": ["node_modules", "build/**/*"]
+  "exclude": ["node_modules", "build/**/*", "src/**/*.test.ts"]
 }
