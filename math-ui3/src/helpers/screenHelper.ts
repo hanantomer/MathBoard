@@ -5,6 +5,8 @@ import {
   CellAttributes,
   PointNotationAttributes,
   RectNotationAttributes,
+  ImageNotationAttributes,
+  AnnotationNotationAttributes,
   LineNotationAttributes,
   CurveNotationAttributes,
   CircleNotationAttributes,
@@ -15,8 +17,10 @@ import {
 
 import { useNotationStore } from "../store/pinia/notationStore";
 import { useCellStore } from "../store/pinia/cellStore";
+import useNotationCellOccupationHelper from "./notationCellOccupationHelper";
 
 const cellStore = useCellStore();
+const cellOccupationHelper = useNotationCellOccupationHelper();
 
 const maxNotationDistance = 8;
 const maxCellDistance = 4;
@@ -152,6 +156,21 @@ export default function screenHelper() {
 
     let notationsAtCell = notationStore.getNotationsAtCell(clickedCell);
 
+    notationsAtCell = notationsAtCell.filter(
+      (n: NotationAttributes) =>
+        n.notationType !== "IMAGE" ||
+        isClickedPointInsideImage(DotCoordinates, n as ImageNotationAttributes),
+    );
+
+    notationsAtCell = notationsAtCell.filter(
+      (n: NotationAttributes) =>
+        n.notationType !== "ANNOTATION" ||
+        isClickedPointInsideAnnotation(
+          DotCoordinates,
+          n as AnnotationNotationAttributes,
+        ),
+    );
+
     // If there are multiple notations and a mixture of rect/circle and non-rect/circle, remove rects and circles for lower priority
     if (
       notationsAtCell?.length > 1 &&
@@ -279,6 +298,30 @@ export default function screenHelper() {
     return Math.sqrt(
       Math.pow(clickedPosYDistanceFromCellCenter, 2) +
         Math.pow(clickedPosXDistanceFromCellCenter, 2),
+    );
+  }
+
+  function isClickedPointInsideImage(
+    DotCoordinates: DotCoordinates,
+    image: ImageNotationAttributes,
+  ): boolean {
+    const svg = cellStore.getSvgBoundingRect();
+    return cellOccupationHelper.isSvgPointInsideImage(
+      image,
+      DotCoordinates.x - svg.left,
+      DotCoordinates.y - svg.top,
+    );
+  }
+
+  function isClickedPointInsideAnnotation(
+    DotCoordinates: DotCoordinates,
+    annotation: AnnotationNotationAttributes,
+  ): boolean {
+    const svg = cellStore.getSvgBoundingRect();
+    return cellOccupationHelper.isSvgPointInsideAnnotation(
+      annotation,
+      DotCoordinates.x - svg.left,
+      DotCoordinates.y - svg.top,
     );
   }
 
@@ -706,6 +749,8 @@ export default function screenHelper() {
     getClickedPosDistanceFromExponent,
     getClickedPosDistanceFromSqrt,
     getNotationAtCoordinates,
+    isClickedPointInsideImage,
+    isClickedPointInsideAnnotation,
     getCellByDotCoordinates,
     getRectCoordinatesOccupiedCells,
     getCellTopLeftCoordinates,

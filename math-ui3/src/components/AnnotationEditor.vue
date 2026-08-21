@@ -114,6 +114,11 @@ function startTextEditing(e: PointerEvent) {
     return;
   }
 
+  // Clicking an existing annotation should select it, not start a second one.
+  if (isExistingAnnotationTarget(e.target)) {
+    return;
+  }
+
   // Matrix cells use pointer-events: none, so the target is usually <svg>, <g>,
   // or notation markup — not <rect>. Accept any click inside the board SVG.
 
@@ -127,6 +132,15 @@ function startTextEditing(e: PointerEvent) {
   setTimeout(() => {
     document.getElementById("annotationEl")?.focus();
   }, 100);
+}
+
+function isExistingAnnotationTarget(target: EventTarget | null): boolean {
+  let el = target as HTMLElement | null;
+  while (el && el.tagName !== "svg" && el.tagName !== "SVG") {
+    if (el.getAttribute?.("data-cy") === "annotation") return true;
+    el = el.parentElement;
+  }
+  return false;
 }
 
 function editSelectedAnnotation() {

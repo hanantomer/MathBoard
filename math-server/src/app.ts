@@ -1226,6 +1226,8 @@ app.post(
                 typeof body?.problemText === "string"
                     ? body.problemText
                     : undefined;
+            const phase =
+                body?.phase === "preliminary" ? "preliminary" : undefined;
             if (!questionUUId) {
                 return res.status(400).json({ error: "questionUUId is required" });
             }
@@ -1234,6 +1236,7 @@ app.post(
                 studentWork,
                 problemImageBase64,
                 problemText,
+                phase,
             );
             const used = recordPracticeAiUse(req, res, "coach");
             return res.status(200).json({

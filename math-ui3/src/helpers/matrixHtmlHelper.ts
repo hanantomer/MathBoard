@@ -102,6 +102,9 @@ export default function useHtmlMatrixHelper() {
       case "SQRT":
         return SQRT_VINCULUM_HIT_HEIGHT;
       case "ANNOTATION":
+        return cellOccupationHelper.getAnnotationPixelBounds(
+          n as AnnotationNotationAttributes,
+        ).height;
       case "EXPONENT":
       case "LOGBASE":
       case "SYMBOL":
@@ -242,7 +245,9 @@ export default function useHtmlMatrixHelper() {
 
   function x(n: NotationAttributes): number | null {
     if (n.notationType === "ANNOTATION") {
-      return (n as AnnotationNotationAttributes).x;
+      return cellOccupationHelper.getAnnotationPixelBounds(
+        n as AnnotationNotationAttributes,
+      ).x;
     }
 
     if (n.notationType === "IMAGE") {
@@ -265,7 +270,9 @@ export default function useHtmlMatrixHelper() {
 
   function y(n: NotationAttributes) {
     if (n.notationType === "ANNOTATION") {
-      return (n as AnnotationNotationAttributes).y - 15; // TODO parametrize and use in html function as well
+      return cellOccupationHelper.getAnnotationPixelBounds(
+        n as AnnotationNotationAttributes,
+      ).y;
     }
 
     if (n.notationType === "IMAGE") {
@@ -294,7 +301,9 @@ export default function useHtmlMatrixHelper() {
 
     switch (n.notationType) {
       case "ANNOTATION": {
-        return cellStore.getCellHorizontalWidth() * 2 + 4; //+4 for border
+        return cellOccupationHelper.getAnnotationPixelBounds(
+          n as AnnotationNotationAttributes,
+        ).width;
       }
       case "SYMBOL": {
         return cellStore.getCellHorizontalWidth();
@@ -440,7 +449,7 @@ export default function useHtmlMatrixHelper() {
     function generateAnnotationHtml(n: NotationAttributes): string {
       const n1 = n as AnnotationNotationAttributes;
       return utils.wrapWithDiv(
-        `<p data-cy='annotation' id='${n1.uuid}' style='margin-block:15px; z-index:100;color:${color};font-weight:${fontWeight}; transform: rotate(${n1.rotation}deg); transform-origin: center center; font-size:0.62em'>${n1.value}</p>`,
+        `<p data-cy='annotation' id='${n1.uuid}' style='margin:0; z-index:100;color:${color};font-weight:${fontWeight}; transform: rotate(${n1.rotation}deg); transform-origin: center center; font-size:0.62em'>${n1.value}</p>`,
       );
     }
 

@@ -533,12 +533,17 @@ function extendBoundsFromNotation(
     }
     case "ANNOTATION": {
       const ann = notation as AnnotationNotationAttributes;
-      const left = svg.left + ann.x - 1;
-      const top = svg.top + ann.y;
-      bounds.x1 = Math.min(bounds.x1, left);
-      bounds.y1 = Math.min(bounds.y1, top);
-      bounds.x2 = Math.max(bounds.x2, left + ann.value.length * 5 + 3);
-      bounds.y2 = Math.max(bounds.y2, top + 15);
+      const pixelBounds = cellOccupationHelper.getAnnotationPixelBounds(ann);
+      bounds.x1 = Math.min(bounds.x1, svg.left + pixelBounds.x);
+      bounds.y1 = Math.min(bounds.y1, svg.top + pixelBounds.y);
+      bounds.x2 = Math.max(
+        bounds.x2,
+        svg.left + pixelBounds.x + pixelBounds.width,
+      );
+      bounds.y2 = Math.max(
+        bounds.y2,
+        svg.top + pixelBounds.y + pixelBounds.height,
+      );
       break;
     }
     default: {
@@ -799,15 +804,23 @@ function selectAnnotation(): void {
 function setSelectionPositionForAnnotation(
   selectedNotation: AnnotationNotationAttributes,
 ) {
-  selectionPosition.value.x1 =
-    cellStore.getSvgBoundingRect().left + selectedNotation.x - 1;
-  selectionPosition.value.x2 =
-    selectionPosition.value.x1 + selectedNotation.value.length * 5 + 3;
-  selectionPosition.value.y1 =
-    cellStore.getSvgBoundingRect().top + selectedNotation.y;
-  selectionPosition.value.y2 = selectionPosition.value.y1 + 15;
+  const el = document.getElementById(selectedNotation.uuid);
+  if (el) {
+    const r = el.getBoundingClientRect();
+    applyViewportBounds(r.left, r.top, r.right, r.bottom);
+    selectionRotation.value = 0;
+    return;
+  }
 
-  selectionRotation.value = (selectedNotation as any).rotation || 0;
+  const svg = cellStore.getSvgBoundingRect();
+  const bounds = cellOccupationHelper.getAnnotationPixelBounds(selectedNotation);
+  applyViewportBounds(
+    svg.left + bounds.x,
+    svg.top + bounds.y,
+    svg.left + bounds.x + bounds.width,
+    svg.top + bounds.y + bounds.height,
+  );
+  selectionRotation.value = selectedNotation.rotation || 0;
 }
 
 function setSelectionPositionForText(selectedNotation: RectNotationAttributes) {

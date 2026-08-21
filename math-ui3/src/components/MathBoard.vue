@@ -526,6 +526,24 @@ foreignObject[notationType="SQRTSYMBOL"] > div {
   pointer-events: none;
 }
 
+/* Image FO is the rotated AABB; only the <img> should steal clicks. */
+foreignObject[notationType="IMAGE"],
+foreignObject[notationType="IMAGE"] * {
+  pointer-events: none;
+}
+foreignObject[notationType="IMAGE"] .board-image {
+  pointer-events: auto;
+}
+
+/* Annotation FO is a full-cell box; only the label text should steal clicks. */
+foreignObject[notationType="ANNOTATION"],
+foreignObject[notationType="ANNOTATION"] * {
+  pointer-events: none;
+}
+foreignObject[notationType="ANNOTATION"] [data-cy="annotation"] {
+  pointer-events: auto;
+}
+
 .sqrt {
   border-bottom: solid 1px;
   border-top: solid 1px;

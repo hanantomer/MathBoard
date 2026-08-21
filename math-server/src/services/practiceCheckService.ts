@@ -5,6 +5,7 @@ import {
 } from "../../../math-common/build/practiceQuestionTemplates";
 import type {
   PracticeCheckResult,
+  PracticeCoachPhase,
   PracticeCoachResult,
 } from "../../../math-common/build/practiceQuestionTypes";
 import { PRACTICE_BLANK_UUID } from "../../../math-common/build/globals";
@@ -209,6 +210,30 @@ If the work is too incomplete to help, or there is nothing useful to say yet, re
 Respond with ONLY valid JSON:
 {"speak":true|false,"tip":"short sentence"}`;
 
+const COACH_PRELIMINARY_RULES = `The student just submitted this problem and has not started solving yet.
+Give ONE short spoken tip (max 22 words) that orients them: what kind of problem this is, what to identify first, or the first useful step.
+Do not solve the problem. Do not reveal the final answer or a full method.
+Do not use markdown or emoji.
+If you can read the problem, always respond with speak=true.
+
+Respond with ONLY valid JSON:
+{"speak":true|false,"tip":"short sentence"}`;
+
+function coachRules(phase?: PracticeCoachPhase): string {
+  return phase === "preliminary" ? COACH_PRELIMINARY_RULES : COACH_TIP_RULES;
+}
+
+function studentWorkForPrompt(
+  studentWork: string,
+  phase?: PracticeCoachPhase,
+): string {
+  if (studentWork.trim()) return studentWork;
+  if (phase === "preliminary") {
+    return "(none yet — they just submitted the problem)";
+  }
+  return studentWork;
+}
+
 function buildBlankTextCheckPrompt(
   problemText: string,
   studentWork: string,
@@ -237,6 +262,7 @@ Respond with ONLY valid JSON (no markdown):
 function buildBlankTextCoachPrompt(
   problemText: string,
   studentWork: string,
+  phase?: PracticeCoachPhase,
 ): string {
   return `You are a brief math voice coach for a student working on a whiteboard.
 
@@ -247,10 +273,10 @@ ${problemText}
 
 Student's current board work (may be an in-progress text-box draft):
 """
-${studentWork}
+${studentWorkForPrompt(studentWork, phase)}
 """
 
-${COACH_TIP_RULES}`;
+${coachRules(phase)}`;
 }
 
 function buildBlankImageCheckPrompt(studentWork: string): string {
@@ -272,7 +298,10 @@ Respond with ONLY valid JSON (no markdown):
 {"correct":true|false,"feedback":"one short sentence","hint":"optional short hint if incorrect"}`;
 }
 
-function buildBlankImageCoachPrompt(studentWork: string): string {
+function buildBlankImageCoachPrompt(
+  studentWork: string,
+  phase?: PracticeCoachPhase,
+): string {
   return `You are a brief math voice coach for a student working on a whiteboard.
 
 The attached image is the problem (or the cropped region of a worksheet) they are currently working on, based on where they are writing.
@@ -280,10 +309,10 @@ Read that problem from the image. Ignore other problems on the same page or near
 
 Student's current board work next to this problem (may be an in-progress text-box draft):
 """
-${studentWork}
+${studentWorkForPrompt(studentWork, phase)}
 """
 
-${COACH_TIP_RULES}`;
+${coachRules(phase)}`;
 }
 
 async function generateTextAcrossModels(
@@ -400,21 +429,25 @@ export async function checkPracticeWork(
   return parseCheckResult(raw);
 }
 
-function buildBlankCoachPrompt(studentWork: string): string {
+function buildBlankCoachPrompt(
+  studentWork: string,
+  phase?: PracticeCoachPhase,
+): string {
   return `You are a brief math voice coach for a student working on a blank whiteboard (pasted worksheet or free work).
 
 Student's current board work (may be an in-progress text-box draft):
 """
-${studentWork}
+${studentWorkForPrompt(studentWork, phase)}
 """
 
-${COACH_TIP_RULES}`;
+${coachRules(phase)}`;
 }
 
 function buildCoachPrompt(
   problem: string,
   expectedAnswer: string,
   studentWork: string,
+  phase?: PracticeCoachPhase,
 ): string {
   return `You are a brief math voice coach for a student working on a whiteboard.
 
@@ -424,10 +457,10 @@ Expected final answer (do not reveal unless they already have it): ${expectedAns
 
 Student's current board work (may be an in-progress text-box draft):
 """
-${studentWork}
+${studentWorkForPrompt(studentWork, phase)}
 """
 
-${COACH_TIP_RULES}`;
+${coachRules(phase)}`;
 }
 
 function parseCoachResult(raw: string): PracticeCoachResult {
@@ -475,9 +508,11 @@ export async function coachPracticeWork(
   studentWork: string,
   problemImageBase64?: string,
   problemText?: string,
+  phase?: PracticeCoachPhase,
 ): Promise<PracticeCoachResult> {
   const work = (studentWork ?? "").trim();
-  if (!work) {
+  const isPreliminary = phase === "preliminary";
+  if (!work && !isPreliminary) {
     return { speak: false, tip: "" };
   }
 
@@ -485,13 +520,18 @@ export async function coachPracticeWork(
   const textProblem = problemText?.trim();
 
   if (questionUUId === PRACTICE_BLANK_UUID) {
+    if (!work && !image && !textProblem) {
+      return { speak: false, tip: "" };
+    }
     if (image) {
-      return generateCoachTip(buildBlankImageCoachPrompt(work), image);
+      return generateCoachTip(buildBlankImageCoachPrompt(work, phase), image);
     }
     if (textProblem) {
-      return generateCoachTip(buildBlankTextCoachPrompt(textProblem, work));
+      return generateCoachTip(
+        buildBlankTextCoachPrompt(textProblem, work, phase),
+      );
     }
-    return generateCoachTip(buildBlankCoachPrompt(work));
+    return generateCoachTip(buildBlankCoachPrompt(work, phase));
   }
 
   const template = getPracticeQuestionTemplateByUUId(questionUUId);
@@ -501,6 +541,7 @@ export async function coachPracticeWork(
 
   // If they already have the answer on the board, celebrate briefly without another Gemini call.
   if (
+    work &&
     localQuickMatch(work, template.expectedAnswer, template.acceptedAnswers)
   ) {
     return {
@@ -514,6 +555,7 @@ export async function coachPracticeWork(
       formatPracticeProblemPrompt(template),
       template.expectedAnswer,
       work,
+      phase,
     ),
   );
 }

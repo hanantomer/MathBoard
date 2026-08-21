@@ -255,9 +255,9 @@
       :tip="coachTip"
       :svg-id="svgId"
       :notations="liveNotations"
-      title="Coach"
+      :title="coachBalloonTitle"
       :speaking="assistMode === 'voice'"
-      @close="coachTip = ''"
+      @close="dismissCoachTip"
     />
 
     <PracticeCoachBalloon
@@ -321,6 +321,7 @@ import {
   getPracticeAssistMode,
   isLiveCoachMode,
   isPracticeCoachPaused,
+  notePracticeCoachUtterance,
   resetPracticeVoiceCoach,
   schedulePracticeVoiceCoach,
   setPracticeAssistMode,
@@ -361,6 +362,7 @@ const aiUnavailableMessage = ref("");
 const uploadError = ref("");
 const loadError = ref("");
 const coachTip = ref("");
+const coachNoteKind = ref<"tip" | "preliminary">("tip");
 const currentQuestionUUId = ref("");
 const assistMode = ref<PracticeAssistMode>(getPracticeAssistMode());
 const coachPaused = ref(isPracticeCoachPaused());
@@ -371,8 +373,11 @@ const quotaRemaining = ref<number | null>(null);
 const quotaLimit = ref<number | null>(null);
 const quotaExpanded = ref(false);
 const suppressBalloon = ref(false);
+const preliminaryArmed = ref(false);
 let practiceTourTimer: ReturnType<typeof setTimeout> | undefined;
 let unsuppressBalloonTimer: ReturnType<typeof setTimeout> | undefined;
+let armPreliminaryTimer: ReturnType<typeof setTimeout> | undefined;
+let preliminaryInFlight = false;
 
 const isGuest = computed(() => !userStore.getCurrentUser());
 const isLiveCoach = computed(() => isLiveCoachMode(assistMode.value));
@@ -460,11 +465,15 @@ const coachStatusText = computed(() => {
 
 const showCoachBalloon = computed(
   () =>
-    isLiveCoach.value &&
     !!coachTip.value &&
     !aiLimitMessage.value &&
     !suppressBalloon.value &&
-    !result.value,
+    !result.value &&
+    (isLiveCoach.value || coachNoteKind.value === "preliminary"),
+);
+
+const coachBalloonTitle = computed(() =>
+  coachNoteKind.value === "preliminary" ? "Getting started" : "Coach",
 );
 
 const showResultBalloon = computed(
@@ -539,17 +548,80 @@ function currentProblemText(): string | undefined {
   );
 }
 
+function dismissCoachTip() {
+  coachTip.value = "";
+  coachNoteKind.value = "tip";
+}
+
+function handleCoachError(error: unknown) {
+  coachingBusy.value = false;
+  if (error instanceof PracticeAiLimitError) {
+    aiLimitMessage.value = error.message;
+    applyQuota(error.remaining ?? 0, error.limit);
+    coachTip.value = "";
+    return;
+  }
+  aiUnavailableMessage.value =
+    error instanceof Error
+      ? error.message
+      : "AI tutor failed. Please try again.";
+  coachTip.value = "";
+}
+
+async function raisePreliminaryCoachNote() {
+  if (!currentQuestionUUId.value || !loaded.value) return;
+  if (aiLimitMessage.value || coachPaused.value) return;
+  if (checking.value || preliminaryInFlight) return;
+
+  await nextTick();
+  preliminaryInFlight = true;
+  coachingBusy.value = true;
+  try {
+    const result = await api.coachPracticeWork(
+      currentQuestionUUId.value,
+      currentStudentWork(),
+      await currentProblemImage(),
+      currentProblemText(),
+      "preliminary",
+    );
+    applyQuota(result.remaining, result.limit);
+    if (!result.speak || !result.tip.trim()) return;
+    coachNoteKind.value = "preliminary";
+    coachTip.value = result.tip;
+    suppressBalloon.value = false;
+    aiUnavailableMessage.value = "";
+    checkError.value = "";
+    notePracticeCoachUtterance(result.tip);
+    if (assistMode.value === "voice") {
+      speakPracticeTip(result.tip);
+    }
+  } catch (error) {
+    handleCoachError(error);
+  } finally {
+    preliminaryInFlight = false;
+    coachingBusy.value = false;
+  }
+}
+
+watch(isCrafting, (crafting, wasCrafting) => {
+  if (!preliminaryArmed.value) return;
+  if (wasCrafting === true && crafting === false) {
+    void raisePreliminaryCoachNote();
+  }
+});
+
 function toggleCoachPause() {
   coachPaused.value = !coachPaused.value;
   setPracticeCoachPaused(coachPaused.value);
   if (coachPaused.value) {
-    coachTip.value = "";
+    dismissCoachTip();
   }
 }
 
 watch(assistMode, (mode, prev) => {
   setPracticeAssistMode(mode);
   coachTip.value = "";
+  coachNoteKind.value = "tip";
   resetPracticeVoiceCoach();
   if (prev === "check" && mode !== "check") {
     result.value = null;
@@ -598,6 +670,7 @@ watch(practiceWorkSignature, (work, prev) => {
       coachingBusy.value = busy;
     },
     onTip: (tip) => {
+      coachNoteKind.value = "tip";
       coachTip.value = tip;
       suppressBalloon.value = false;
       aiUnavailableMessage.value = "";
@@ -606,20 +679,7 @@ watch(practiceWorkSignature, (work, prev) => {
     onQuota: (remaining, limit) => {
       applyQuota(remaining, limit);
     },
-    onError: (error) => {
-      coachingBusy.value = false;
-      if (error instanceof PracticeAiLimitError) {
-        aiLimitMessage.value = error.message;
-        applyQuota(error.remaining ?? 0, error.limit);
-        coachTip.value = "";
-        return;
-      }
-      aiUnavailableMessage.value =
-        error instanceof Error
-          ? error.message
-          : "AI tutor failed. Please try again.";
-      coachTip.value = "";
-    },
+    onError: handleCoachError,
   });
 });
 
@@ -683,6 +743,7 @@ onUnmounted(() => {
   clearAssistRailOffset();
   clearTimeout(practiceTourTimer);
   clearTimeout(unsuppressBalloonTimer);
+  clearTimeout(armPreliminaryTimer);
   resetPracticeVoiceCoach();
 });
 
@@ -702,10 +763,13 @@ function prepareBoardShell(questionUUId: string) {
   aiUnavailableMessage.value = "";
   uploadError.value = "";
   coachTip.value = "";
+  coachNoteKind.value = "tip";
   coachingBusy.value = false;
   currentQuestionUUId.value = questionUUId;
   practiceStore.clearTextDraft();
   craftStarted.value = false;
+  preliminaryArmed.value = false;
+  clearTimeout(armPreliminaryTimer);
   resetPracticeVoiceCoach();
   editModeStore.setDefaultEditMode();
   cellStore.resetCellDimensions();
@@ -721,6 +785,10 @@ async function loadBlankPractice() {
   boardContext.setPracticeBlankSession();
   loaded.value = true;
   schedulePracticeTour();
+  clearTimeout(armPreliminaryTimer);
+  armPreliminaryTimer = setTimeout(() => {
+    preliminaryArmed.value = true;
+  }, 600);
 }
 
 async function loadPractice(questionUUId: string) {

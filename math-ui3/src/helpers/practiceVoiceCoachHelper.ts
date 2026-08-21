@@ -176,6 +176,11 @@ export function schedulePracticeVoiceCoach(deps: CoachDeps) {
   }, delay);
 }
 
+export function notePracticeCoachUtterance(tip: string) {
+  lastCoachedTip = tip.trim();
+  lastCoachAt = Date.now();
+}
+
 export function resetPracticeVoiceCoach() {
   clearTimeout(debounceTimer);
   debounceTimer = undefined;

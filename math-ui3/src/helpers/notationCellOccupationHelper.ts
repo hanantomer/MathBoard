@@ -142,11 +142,18 @@ export default function notationCellOccupationHelper() {
     doRemove: boolean,
   ) {
     if (!notation) return;
-    const col = Math.round(notation.x / cellStore.getCellHorizontalWidth());
-    const row = Math.round(notation.y / cellStore.getCellVerticalHeight());
-    if (!validateRowAndCol(col, row)) return;
     clearNotationFromMatrix(notation.uuid, matrix);
-    matrix[col][row] = doRemove ? null : notation.uuid;
+    const { x, y, width, height } = getAnnotationPixelBounds(notation);
+    const colW = cellStore.getCellHorizontalWidth();
+    const rowH = cellStore.getCellVerticalHeight();
+    const cols = occupiedIndexRange(x, width, colW, matrixDimensions.colsNum - 1);
+    const rows = occupiedIndexRange(y, height, rowH, matrixDimensions.rowsNum - 1);
+    for (let c = cols.min; c <= cols.max; c++) {
+      for (let r = rows.min; r <= rows.max; r++) {
+        if (!validateRowAndCol(c, r)) continue;
+        matrix[c][r] = doRemove ? null : notation.uuid;
+      }
+    }
   }
 
   function updateRectOccupationMatrix(
@@ -162,6 +169,26 @@ export default function notationCellOccupationHelper() {
         matrix[c][r] = doRemove ? null : notation.uuid;
       }
     }
+  }
+
+  function getAnnotationPixelBounds(notation: AnnotationNotationAttributes) {
+    const colW = cellStore.getCellHorizontalWidth();
+    const rowH = cellStore.getCellVerticalHeight();
+    return {
+      x: notation.x,
+      y: notation.y,
+      width: colW * 2 + 4,
+      height: rowH / 2 + 2,
+    };
+  }
+
+  function isSvgPointInsideAnnotation(
+    notation: AnnotationNotationAttributes,
+    svgX: number,
+    svgY: number,
+  ): boolean {
+    const { x, y, width, height } = getAnnotationPixelBounds(notation);
+    return svgX >= x && svgX <= x + width && svgY >= y && svgY <= y + height;
   }
 
   function getImageRotatedPixelBounds(notation: ImageNotationAttributes) {
@@ -219,23 +246,64 @@ export default function notationCellOccupationHelper() {
     };
   }
 
+  function occupiedIndexRange(
+    startPx: number,
+    sizePx: number,
+    cellSize: number,
+    maxIndex: number,
+  ) {
+    const min = Math.max(0, Math.floor(startPx / cellSize));
+    const max = Math.min(
+      maxIndex,
+      Math.max(min, Math.ceil((startPx + sizePx) / cellSize) - 1),
+    );
+    return { min, max };
+  }
+
   function getImageOccupiedCellRange(notation: ImageNotationAttributes) {
     const colW = cellStore.getCellHorizontalWidth();
     const rowH = cellStore.getCellVerticalHeight();
     const { x, y, width, height } = getImageRotatedPixelBounds(notation);
+    const cols = occupiedIndexRange(x, width, colW, matrixDimensions.colsNum - 1);
+    const rows = occupiedIndexRange(y, height, rowH, matrixDimensions.rowsNum - 1);
 
     return {
-      minCol: Math.max(0, Math.floor(x / colW)),
-      maxCol: Math.min(
-        matrixDimensions.colsNum - 1,
-        Math.floor((x + width) / colW),
-      ),
-      minRow: Math.max(0, Math.floor(y / rowH)),
-      maxRow: Math.min(
-        matrixDimensions.rowsNum - 1,
-        Math.floor((y + height) / rowH),
-      ),
+      minCol: cols.min,
+      maxCol: cols.max,
+      minRow: rows.min,
+      maxRow: rows.max,
     };
+  }
+
+  /** True when an SVG-space point is on the image rectangle (after rotation). */
+  function isSvgPointInsideImage(
+    notation: ImageNotationAttributes,
+    svgX: number,
+    svgY: number,
+  ): boolean {
+    const colW = cellStore.getCellHorizontalWidth();
+    const rowH = cellStore.getCellVerticalHeight();
+    const left = notation.fromCol * colW;
+    const top = notation.fromRow * rowH;
+    const right = (notation.toCol + 1) * colW;
+    const bottom = (notation.toRow + 1) * rowH;
+    const cx = (left + right) / 2;
+    const cy = (top + bottom) / 2;
+    const rotation = notation.rotation ?? 0;
+
+    let x = svgX;
+    let y = svgY;
+    if (rotation !== 0) {
+      const rad = (-rotation * Math.PI) / 180;
+      const cos = Math.cos(rad);
+      const sin = Math.sin(rad);
+      const dx = svgX - cx;
+      const dy = svgY - cy;
+      x = cx + dx * cos - dy * sin;
+      y = cy + dx * sin + dy * cos;
+    }
+
+    return x >= left && x < right && y >= top && y < bottom;
   }
 
   function updateImageOccupationMatrix(
@@ -483,7 +551,10 @@ export default function notationCellOccupationHelper() {
     updateRectOccupationMatrix,
     updateImageOccupationMatrix,
     getImageRotatedPixelBounds,
+    getAnnotationPixelBounds,
     getImageOccupiedCellRange,
+    isSvgPointInsideImage,
+    isSvgPointInsideAnnotation,
     updateCurveOccupationMatrix,
     updateSqrtOccupationMatrix,
     updateCircleOccupationMatrix,

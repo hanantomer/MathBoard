@@ -26,6 +26,7 @@ import {
   PracticeCheckResult,
   PracticeCoachRequest,
   PracticeCoachResult,
+  PracticeCoachPhase,
   PracticeAiQuota,
 } from "common/practiceQuestionTypes";
 import { AnswerAttributes, AnswerCreationAttributes } from "common/answerTypes";
@@ -144,6 +145,7 @@ export default function useApiHelper() {
     studentWork: string,
     problemImageBase64?: string,
     problemText?: string,
+    phase?: PracticeCoachPhase,
   ): Promise<PracticeCoachResult> {
     try {
       const { data } = await axios.post<PracticeCoachResult>(
@@ -155,6 +157,7 @@ export default function useApiHelper() {
             ? { problemImageBase64 }
             : {}),
           ...(problemText ? { problemText } : {}),
+          ...(phase ? { phase } : {}),
         } satisfies PracticeCoachRequest,
       );
       return data;

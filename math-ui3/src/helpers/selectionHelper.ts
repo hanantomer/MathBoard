@@ -3,6 +3,8 @@ import {
   RectCoordinates,
   DotCoordinates,
   LineNotationAttributes,
+  ImageNotationAttributes,
+  AnnotationNotationAttributes,
   MultiCellAttributes,
   CellAttributes,
   isCellNotationType,
@@ -70,6 +72,26 @@ export default function selectionHelper() {
     return false;
   }
 
+  function isBoardImageDomTarget(target: EventTarget | null): boolean {
+    let el = target as HTMLElement | null;
+    while (el && el.tagName !== "svg" && el.tagName !== "SVG") {
+      if (el.classList?.contains("board-image") || el.tagName === "IMG") {
+        return true;
+      }
+      el = el.parentElement;
+    }
+    return false;
+  }
+
+  function isAnnotationDomTarget(target: EventTarget | null): boolean {
+    let el = target as HTMLElement | null;
+    while (el && el.tagName !== "svg" && el.tagName !== "SVG") {
+      if (el.getAttribute?.("data-cy") === "annotation") return true;
+      el = el.parentElement;
+    }
+    return false;
+  }
+
   function selectNotationsOfArea(rectCoordinates: RectCoordinates) {
     // must be initialized here to prevent circular refernce
     const notationStore = useNotationStore();
@@ -108,6 +130,16 @@ export default function selectionHelper() {
         !isSqrtSymbolDomTarget(target) &&
         !isNearSqrtStroke(clickedNotation, position)
       ) {
+        return null;
+      }
+    }
+    if (clickedNotation.notationType === "IMAGE") {
+      if (!isBoardImageDomTarget(target)) {
+        return null;
+      }
+    }
+    if (clickedNotation.notationType === "ANNOTATION") {
+      if (!isAnnotationDomTarget(target)) {
         return null;
       }
     }
@@ -176,6 +208,14 @@ export default function selectionHelper() {
         return true;
       },
       IMAGE: () => {
+        if (
+          !screenHelper.isClickedPointInsideImage(
+            dotCoordinates,
+            notation as ImageNotationAttributes,
+          )
+        ) {
+          return false;
+        }
         selectNotation(notation.uuid);
         return true;
       },
@@ -184,6 +224,14 @@ export default function selectionHelper() {
         return true;
       },
       ANNOTATION: () => {
+        if (
+          !screenHelper.isClickedPointInsideAnnotation(
+            dotCoordinates,
+            notation as AnnotationNotationAttributes,
+          )
+        ) {
+          return false;
+        }
         selectNotation(notation.uuid);
         return true;
       },

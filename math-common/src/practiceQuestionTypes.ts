@@ -61,6 +61,9 @@ export type PracticeCheckResult = {
   limit?: number;
 };
 
+/** Opening tip after the problem is submitted, vs a tip while they work. */
+export type PracticeCoachPhase = "preliminary" | "progress";
+
 /** Client → server: short spoken coaching tip after a work sequence. */
 export type PracticeCoachRequest = {
   questionUUId: string;
@@ -69,6 +72,8 @@ export type PracticeCoachRequest = {
   problemImageBase64?: string;
   /** Optional pasted problem statement for blank-sheet coaching. */
   problemText?: string;
+  /** Opening orientation after the student submits the problem. */
+  phase?: PracticeCoachPhase;
 };
 
 /** Server → client: one short tip suitable for text-to-speech. */
