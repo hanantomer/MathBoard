@@ -81,7 +81,7 @@ import useWatchHelper from "../helpers/watchHelper";
 import useNotationMutationHelper from "../helpers/notationMutateHelper";
 import { useNotationStore } from "../store/pinia/notationStore";
 import { useCellStore } from "../store/pinia/cellStore";
-import { useEditModeStore } from "../store/pinia/editModeStore";
+import { useEditModeStore, ARMED_TOOL_EDIT_MODES } from "../store/pinia/editModeStore";
 import { useAnswerStore } from "../store/pinia/answerStore";
 import { useOnboardingStore } from "../store/pinia/onboardingStore";
 import { useUserStore } from "../store/pinia/userStore";
@@ -272,12 +272,7 @@ watchHelper.watchKeyEvent(
     "CIRCLE_SELECTED",
     "IMAGE_SELECTED",
     "FREE_SKETCH_SELECTED",
-    "ANNOTATION_STARTED",
-    "LINE_STARTED",
-    "DIVISIONLINE_STARTED",
-    "CURVE_STARTED",
-    "CIRCLE_STARTED",
-    "FREE_SKETCH_STARTED",
+    ...ARMED_TOOL_EDIT_MODES,
   ],
   "EV_KEYUP",
   async (e: KeyboardEvent) => {
@@ -295,6 +290,7 @@ watchHelper.watchKeyEvent(
     "TEXT_SELECTED",
     "EXPONENT_SELECTED",
     "CIRCLE_SELECTED",
+    ...ARMED_TOOL_EDIT_MODES,
   ],
   "EV_KEYDOWN",
   keyHelper.keyDownHandler,
@@ -518,10 +514,13 @@ path:hover {
 .dashed {
   stroke-dasharray: 6, 6;
 }
-/* SQRT FO is only the vinculum; SQRTSYMBOL FO is the √ column. Inner markup takes clicks. */
-foreignObject[notationType="SQRT"],
+/* SQRT FO is only the vinculum; clicking the bar selects the sqrt. */
+foreignObject[notationType="SQRT"] {
+  pointer-events: auto;
+}
+
+/* SQRTSYMBOL FO is the √ column. Inner glyph takes clicks. */
 foreignObject[notationType="SQRTSYMBOL"],
-foreignObject[notationType="SQRT"] > div,
 foreignObject[notationType="SQRTSYMBOL"] > div {
   pointer-events: none;
 }

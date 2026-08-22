@@ -9,16 +9,7 @@ describe("e2e", () => {
     cy.login();
     cy.openLesson();
     cy.clearBoard();
-
-    cy.clickSvg(350, 500);
-
-    cy.dataCy("sqrtButton").click();
-
-    cy.dragLineRightHandle("sqrtRightHandle", 992, 500);
-
-    cy.get('[row="1"] > [col="1"]').click({ force: true });
-    cy.get('[row="1"] > [col="1"]').click({ force: true });
-
+    cy.drawLine("sqrtButton", 350, 500, 992, 500, "sqrtRightHandle");
     cy.get(".sqrt").invoke("outerWidth").should("be.gt", 150);
   });
 });

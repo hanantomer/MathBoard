@@ -65,8 +65,10 @@ export default function () {
   });
 
   function handleEscapeAction() {
-    if (editModeStore.getGlobalEditMode() !== "TEXT") {
-      editModeStore.setGlobalEditMode("TEXT");
+    if (
+      editModeStore.isArmedToolMode() ||
+      editModeStore.getGlobalEditMode() !== "TEXT"
+    ) {
       editModeStore.setDefaultEditMode();
     }
   }
@@ -162,8 +164,18 @@ export default function () {
 
       if (editModeStore.getEditMode() === "ANNOTATION_WRITING") return;
 
+      if (editModeStore.getEditMode() === "EXPONENT_WRITING") return;
+
       if (ctrlKey || altKey) {
         return;
+      }
+
+      const keyKind = classifyKeyCode(code);
+      if (editModeStore.isArmedToolMode()) {
+        // Space keeps its push meaning only in cell/selection modes.
+        if (keyKind === "PUSH" || keyKind === null) return;
+        editModeStore.setDefaultEditMode();
+        if (keyKind !== "SYMBOL") return;
       }
 
       const noNotationsSelected =
@@ -173,7 +185,7 @@ export default function () {
         notationStore.getSelectedNotations().length === 1 &&
         notationStore.getSelectedNotations().at(0)?.notationType === "SYMBOL";
 
-      switch (classifyKeyCode(code)) {
+      switch (keyKind) {
         case "PUSH": {
           return handlePushKey();
         }

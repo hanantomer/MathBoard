@@ -197,6 +197,20 @@ export default function screenHelper() {
 
     if (!notationsAtCell?.length) return null;
 
+    const sqrtAtCell = notationsAtCell.filter(
+      (n: NotationAttributes) => n.notationType === "SQRT",
+    );
+    for (const sqrt of sqrtAtCell) {
+      if (
+        getClickedPosDistanceFromSqrt(
+          DotCoordinates,
+          sqrt as unknown as MultiCellAttributes,
+        ) <= 10
+      ) {
+        return sqrt;
+      }
+    }
+
     // SQRT occupies the whole radicand row; prefer a symbol/exponent in the cell.
     const contentAtCell = notationsAtCell.filter(
       (n: NotationAttributes) => n.notationType !== "SQRT",

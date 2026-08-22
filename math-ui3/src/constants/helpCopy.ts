@@ -123,6 +123,7 @@ export const DRAW_TOOL_NAMES = new Set([
   "Line",
   "polyline",
   "DivisionLine",
+  "sqrt",
   "curve",
   "circle",
   "cartesian system",
@@ -131,7 +132,6 @@ export const DRAW_TOOL_NAMES = new Set([
 export const TEXT_TOOL_NAMES = new Set([
   "FreeText",
   "annotation",
-  "sqrt",
   "exponent",
   "log",
 ]);

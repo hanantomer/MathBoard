@@ -72,6 +72,16 @@ export default function selectionHelper() {
     return false;
   }
 
+  function isSqrtLineDomTarget(target: EventTarget | null): boolean {
+    let el = target as HTMLElement | null;
+    while (el && el.tagName !== "svg" && el.tagName !== "SVG") {
+      if (el.classList?.contains("sqrt")) return true;
+      if (el.getAttribute?.("notationType") === "SQRT") return true;
+      el = el.parentElement;
+    }
+    return false;
+  }
+
   function isBoardImageDomTarget(target: EventTarget | null): boolean {
     let el = target as HTMLElement | null;
     while (el && el.tagName !== "svg" && el.tagName !== "SVG") {
@@ -103,7 +113,7 @@ export default function selectionHelper() {
     notationStore.selectNotationsOfRectCoordinates(rectCoordinates);
   }
 
-  const SQRT_STROKE_SELECT_PX = 8;
+  const SQRT_STROKE_SELECT_PX = 10;
 
   function isNearSqrtStroke(
     notation: NotationAttributes,
@@ -128,6 +138,7 @@ export default function selectionHelper() {
     if (clickedNotation.notationType === "SQRT") {
       if (
         !isSqrtSymbolDomTarget(target) &&
+        !isSqrtLineDomTarget(target) &&
         !isNearSqrtStroke(clickedNotation, position)
       ) {
         return null;

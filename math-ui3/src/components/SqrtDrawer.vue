@@ -1,8 +1,8 @@
 <template>
   <lineWatcher
     :startEntry="{
-      editMode: [],
-      func: () => {},
+      editMode: ['SQRT_STARTED'],
+      func: setInitialPosition,
     }"
     :drawEntry="{
       editMode: ['SQRT_DRAWING'],
@@ -74,8 +74,6 @@
 <script setup lang="ts">
 import { computed, nextTick, ref, watch } from "vue";
 import useNotationMutateHelper from "../helpers/notationMutateHelper";
-import useScreenHelper from "../helpers/screenHelper";
-import useSelectionHelper from "../helpers/selectionHelper";
 import { useNotationStore } from "../store/pinia/notationStore";
 import { useCellStore } from "../store/pinia/cellStore";
 import { useEditModeStore } from "../store/pinia/editModeStore";
@@ -87,11 +85,8 @@ import {
   LineAttributes,
 } from "common/baseTypes";
 
-import { EditMode } from "common/unions";
-
 import lineHandle from "./LineHandle.vue";
 import lineWatcher from "./LineWatcher.vue";
-import useWatchHelper from "../helpers/watchHelper";
 
 import { matrixSize } from "common/globals";
 
@@ -121,9 +116,6 @@ const notationStore = useNotationStore();
 const editModeStore = useEditModeStore();
 const cellStore = useCellStore();
 const notationMutateHelper = useNotationMutateHelper();
-const screenHelper = useScreenHelper();
-const watchHelper = useWatchHelper();
-const selectionHelper = useSelectionHelper();
 
 let linePosition = ref(<LineAttributes>{
   p1x: 0,
@@ -213,32 +205,16 @@ let handleY = computed(() => {
   return r.top + sqrtLine.value.y - HANDLE_HALF;
 });
 
-watchHelper.watchEveryEditModeChange(setInitialPosition);
+function setInitialPosition(p: DotCoordinates) {
+  const r = cellStore.getSvgBoundingRect();
+  const w = cellStore.getCellHorizontalWidth();
+  const h = cellStore.getCellVerticalHeight();
+  const cellY = Math.round(p.y / h) * h;
 
-async function setInitialPosition(editMode: EditMode) {
-  if (editMode !== "SQRT_STARTED") {
-    return;
-  }
-
-  if (cellStore.getSelectedCell() == null) {
-    return;
-  }
-
-  const selectedCell = cellStore.getSelectedCell();
-
-  const p = screenHelper.getCellTopLeftCoordinates(selectedCell);
-
-  const nearestRowY =
-    screenHelper.getCellByDotCoordinates(p).row *
-    cellStore.getCellVerticalHeight();
-
-  linePosition.value.p1x = p.x - 10;
-  linePosition.value.p2x = p.x + cellStore.getCellHorizontalWidth() * 4;
-  linePosition.value.p1y = nearestRowY;
-  linePosition.value.p2y = linePosition.value.p1y;
-
-  var sqrtNotation = await endDrawing();
-  selectionHelper.selectNotation(sqrtNotation);
+  linePosition.value.p1x = r.left + p.x;
+  linePosition.value.p2x = r.left + p.x + w;
+  linePosition.value.p1y = cellY;
+  linePosition.value.p2y = cellY;
 }
 
 function drawLine(p: DotCoordinates) {

@@ -7,6 +7,28 @@ import {
 } from "common/unions";
 import { ref } from "vue";
 
+/** Tools waiting for a click/drag. A printable key should drop the tool and type into the cell. */
+export const ARMED_TOOL_EDIT_MODES: EditMode[] = [
+  "EXPONENT_STARTED",
+  "AREA_SELECTION_STARTED",
+  "TEXT_STARTED",
+  "ANNOTATION_STARTED",
+  "POLYGON_STARTED",
+  "LINE_STARTED",
+  "DIVISIONLINE_STARTED",
+  "CURVE_STARTED",
+  "CIRCLE_STARTED",
+  "SQRT_STARTED",
+  "FREE_SKETCH_STARTED",
+  "FREE_SKETCH_WITH_OCR_STARTED",
+  "CHECKMARK_STARTED",
+  "SEMICHECKMARK_STARTED",
+  "XMARK_STARTED",
+  "CARTESIAN_SYSTEM_STARTED",
+  "COLORIZING",
+  "DELETING",
+];
+
 export const useEditModeStore = defineStore("editMode", () => {
   let editMode = ref<EditMode>("CELL_SELECTED");
   let globalEditMode = ref<GlobalEditMode>("TEXT");
@@ -279,6 +301,10 @@ export const useEditModeStore = defineStore("editMode", () => {
     return editMode.value === "COLORIZING";
   }
 
+  function isArmedToolMode() {
+    return ARMED_TOOL_EDIT_MODES.includes(editMode.value);
+  }
+
   function getEditMode(): EditMode {
     return editMode.value;
   }
@@ -381,6 +407,7 @@ export const useEditModeStore = defineStore("editMode", () => {
     isSqrtEditMode,
     isSqrtSelectedMode,
     isColorizingMode,
+    isArmedToolMode,
     isDefaultEditMode,
     isTextWritingMode,
     isTextStartedMode,
