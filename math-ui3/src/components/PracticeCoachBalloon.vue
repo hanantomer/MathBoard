@@ -212,6 +212,13 @@ watch(
   margin-top: 8px;
 }
 
+.practice-coach-balloon__actions :deep(.v-btn) {
+  min-width: 0;
+  padding-inline: 0;
+  text-transform: none;
+  letter-spacing: 0;
+}
+
 .practice-coach-balloon__close {
   position: absolute;
   top: 4px;

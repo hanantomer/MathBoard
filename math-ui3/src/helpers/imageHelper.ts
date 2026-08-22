@@ -1,3 +1,9 @@
+import {
+  computeTutorImageLayout,
+  invertRgba,
+  isMostlyDarkRgba,
+} from "./practiceImagePrep";
+
 function loadImage(url: string): Promise<HTMLImageElement> {
   return new Promise((resolve, reject) => {
     const image = new Image();
@@ -174,11 +180,58 @@ export default function imageHelper() {
     return canvas.toDataURL("image/jpeg", jpegQuality);
   }
 
+  /**
+   * Invert dark-mode screenshots, upscale tiny text, and pad thin strips
+   * before sending a worksheet image to Gemini.
+   */
+  async function prepareProblemImageForTutor(base64: string): Promise<string> {
+    try {
+      const image = await loadImage(base64);
+      const src = document.createElement("canvas");
+      src.width = Math.max(1, image.width);
+      src.height = Math.max(1, image.height);
+      const srcCtx = src.getContext("2d");
+      if (!srcCtx) return base64;
+      srcCtx.drawImage(image, 0, 0);
+      const pixels = srcCtx.getImageData(0, 0, src.width, src.height);
+      if (isMostlyDarkRgba(pixels.data)) {
+        invertRgba(pixels.data);
+        srcCtx.putImageData(pixels, 0, 0);
+      }
+
+      const layout = computeTutorImageLayout(src.width, src.height);
+      const out = document.createElement("canvas");
+      out.width = layout.canvasW;
+      out.height = layout.canvasH;
+      const outCtx = out.getContext("2d");
+      if (!outCtx) return base64;
+      outCtx.fillStyle = "#ffffff";
+      outCtx.fillRect(0, 0, out.width, out.height);
+      outCtx.imageSmoothingEnabled = true;
+      outCtx.imageSmoothingQuality = "high";
+      outCtx.drawImage(
+        src,
+        0,
+        0,
+        src.width,
+        src.height,
+        layout.offsetX,
+        layout.offsetY,
+        layout.drawW,
+        layout.drawH,
+      );
+      return out.toDataURL("image/jpeg", 0.92);
+    } catch {
+      return base64;
+    }
+  }
+
   return {
     getDimensionsFromBase64,
     convertBlobToBase64GrayScale,
     convertImageToBase64,
     prepareImageFileForUpload,
+    prepareProblemImageForTutor,
     cropBase64,
   };
 }

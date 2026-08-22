@@ -256,16 +256,28 @@
       :svg-id="svgId"
       :notations="liveNotations"
       :title="coachBalloonTitle"
+      :variant="coachBalloonVariant"
       :speaking="assistMode === 'voice'"
       @close="dismissCoachTip"
-    />
+    >
+      <v-btn
+        v-if="showCoachMisreadAction"
+        color="secondary"
+        size="small"
+        variant="text"
+        data-cy="practice-wrong-problem"
+        @click="reportMisreadImage"
+      >
+        Wrong problem?
+      </v-btn>
+    </PracticeCoachBalloon>
 
     <PracticeCoachBalloon
       v-if="showResultBalloon"
       :tip="resultBalloonText"
       :svg-id="svgId"
       :notations="liveNotations"
-      :title="result?.correct ? 'Correct' : 'Not quite'"
+      :title="resultBalloonTitle"
       :variant="result?.correct ? 'success' : 'warning'"
       @close="result = null"
     >
@@ -278,6 +290,16 @@
         @click="goNextQuestion"
       >
         Next question
+      </v-btn>
+      <v-btn
+        v-else-if="showResultMisreadAction"
+        color="secondary"
+        size="small"
+        variant="text"
+        data-cy="practice-wrong-problem"
+        @click="reportMisreadImage"
+      >
+        Wrong problem?
       </v-btn>
     </PracticeCoachBalloon>
   </v-sheet>
@@ -305,6 +327,11 @@ import {
   getPracticeProblemText,
   hasCraftedPracticeProblem,
 } from "../helpers/practiceCheckHelper";
+import {
+  PRACTICE_IMAGE_MISREAD_TIP,
+  PRACTICE_IMAGE_UNREADABLE_TIP,
+  isPracticeImageReadTip,
+} from "../helpers/practiceImagePrep";
 import {
   PRACTICE_BLANK_UUID,
   markCurrentPracticeNotationsAsProblem,
@@ -362,7 +389,7 @@ const aiUnavailableMessage = ref("");
 const uploadError = ref("");
 const loadError = ref("");
 const coachTip = ref("");
-const coachNoteKind = ref<"tip" | "preliminary">("tip");
+const coachNoteKind = ref<"tip" | "preliminary" | "image">("tip");
 const currentQuestionUUId = ref("");
 const assistMode = ref<PracticeAssistMode>(getPracticeAssistMode());
 const coachPaused = ref(isPracticeCoachPaused());
@@ -469,11 +496,33 @@ const showCoachBalloon = computed(
     !aiLimitMessage.value &&
     !suppressBalloon.value &&
     !result.value &&
-    (isLiveCoach.value || coachNoteKind.value === "preliminary"),
+    (isLiveCoach.value ||
+      coachNoteKind.value === "preliminary" ||
+      coachNoteKind.value === "image"),
 );
 
-const coachBalloonTitle = computed(() =>
-  coachNoteKind.value === "preliminary" ? "Getting started" : "Coach",
+const coachBalloonTitle = computed(() => {
+  if (coachNoteKind.value === "preliminary") return "Getting started";
+  if (coachNoteKind.value === "image") return "Worksheet image";
+  return "Coach";
+});
+
+const coachBalloonVariant = computed(() =>
+  coachNoteKind.value === "image" || isPracticeImageReadTip(coachTip.value)
+    ? "warning"
+    : "tip",
+);
+
+const showCoachMisreadAction = computed(
+  () => hasProblemImage.value && !isPracticeImageReadTip(coachTip.value),
+);
+
+const showResultMisreadAction = computed(
+  () =>
+    hasProblemImage.value &&
+    !!result.value &&
+    !result.value.correct &&
+    !isPracticeImageReadTip(result.value.feedback),
 );
 
 const showResultBalloon = computed(
@@ -484,6 +533,12 @@ const resultBalloonText = computed(() => {
   if (!result.value) return "";
   const hint = result.value.hint ? ` ${result.value.hint}` : "";
   return `${result.value.feedback}${result.value.correct ? "" : hint}`.trim();
+});
+
+const resultBalloonTitle = computed(() => {
+  if (!result.value) return "";
+  if (isPracticeImageReadTip(result.value.feedback)) return "Worksheet image";
+  return result.value.correct ? "Correct" : "Not quite";
 });
 
 const nextQuestionUUId = computed(() => {
@@ -553,6 +608,17 @@ function dismissCoachTip() {
   coachNoteKind.value = "tip";
 }
 
+function reportMisreadImage() {
+  result.value = null;
+  coachNoteKind.value = "image";
+  coachTip.value = PRACTICE_IMAGE_MISREAD_TIP;
+  suppressBalloon.value = false;
+  stopPracticeVoice();
+  if (assistMode.value === "voice") {
+    speakPracticeTip(PRACTICE_IMAGE_MISREAD_TIP);
+  }
+}
+
 function handleCoachError(error: unknown) {
   coachingBusy.value = false;
   if (error instanceof PracticeAiLimitError) {
@@ -577,23 +643,30 @@ async function raisePreliminaryCoachNote() {
   preliminaryInFlight = true;
   coachingBusy.value = true;
   try {
+    const image = await currentProblemImage();
     const result = await api.coachPracticeWork(
       currentQuestionUUId.value,
       currentStudentWork(),
-      await currentProblemImage(),
+      image,
       currentProblemText(),
       "preliminary",
     );
     applyQuota(result.remaining, result.limit);
-    if (!result.speak || !result.tip.trim()) return;
-    coachNoteKind.value = "preliminary";
-    coachTip.value = result.tip;
+    let tip = result.speak ? result.tip.trim() : "";
+    if (!tip && image) {
+      tip = PRACTICE_IMAGE_UNREADABLE_TIP;
+    }
+    if (!tip) return;
+    coachNoteKind.value = isPracticeImageReadTip(tip)
+      ? "image"
+      : "preliminary";
+    coachTip.value = tip;
     suppressBalloon.value = false;
     aiUnavailableMessage.value = "";
     checkError.value = "";
-    notePracticeCoachUtterance(result.tip);
+    notePracticeCoachUtterance(tip);
     if (assistMode.value === "voice") {
-      speakPracticeTip(result.tip);
+      speakPracticeTip(tip);
     }
   } catch (error) {
     handleCoachError(error);
@@ -670,7 +743,7 @@ watch(practiceWorkSignature, (work, prev) => {
       coachingBusy.value = busy;
     },
     onTip: (tip) => {
-      coachNoteKind.value = "tip";
+      coachNoteKind.value = isPracticeImageReadTip(tip) ? "image" : "tip";
       coachTip.value = tip;
       suppressBalloon.value = false;
       aiUnavailableMessage.value = "";

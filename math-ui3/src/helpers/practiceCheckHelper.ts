@@ -405,9 +405,18 @@ function clamp(n: number, min: number, max: number): number {
   return Math.min(max, Math.max(min, n));
 }
 
+async function preparedForTutor(value: string): Promise<string> {
+  try {
+    return await useImageHelper().prepareProblemImageForTutor(value);
+  } catch {
+    return value;
+  }
+}
+
 /**
  * Crop a dense worksheet to the band around where the student is writing.
  * Returns the full image when the page is small or crop is not useful.
+ * Always invert/upscale/pad before the tutor sees it.
  */
 export async function getPracticeProblemImageForTutor(
   notations: NotationAttributes[],
@@ -417,16 +426,16 @@ export async function getPracticeProblemImageForTutor(
 
   const rect = imageRect(focused);
   if (!isDenseWorksheet(rect) || (focused.rotation ?? 0) !== 0) {
-    return focused.value;
+    return preparedForTutor(focused.value);
   }
 
   const focusCell = getFocusCell(notations, listPracticeImages(notations));
-  if (!focusCell) return focused.value;
+  if (!focusCell) return preparedForTutor(focused.value);
 
   const cellStore = useCellStore();
   const cellW = cellStore.getCellHorizontalWidth();
   const cellH = cellStore.getCellVerticalHeight();
-  if (!cellW || !cellH) return focused.value;
+  if (!cellW || !cellH) return preparedForTutor(focused.value);
 
   const rows = imageRowSpan(rect);
   const cols = imageColSpan(rect);
@@ -453,7 +462,7 @@ export async function getPracticeProblemImageForTutor(
   const cropRows = toRow - fromRow + 1;
   const cropCols = toCol - fromCol + 1;
   if ((cropRows * cropCols) / (rows * cols) >= SKIP_CROP_AREA_RATIO) {
-    return focused.value;
+    return preparedForTutor(focused.value);
   }
 
   const innerWidth = cols * cellW;
@@ -466,13 +475,14 @@ export async function getPracticeProblemImageForTutor(
     const scaleX = srcW / innerWidth;
     const scaleY = srcH / innerHeight;
 
-    return await imageHelper.cropBase64(focused.value, {
+    const cropped = await imageHelper.cropBase64(focused.value, {
       x: (fromCol - rect.fromCol) * cellW * scaleX,
       y: (fromRow - rect.fromRow) * cellH * scaleY,
       width: cropCols * cellW * scaleX,
       height: cropRows * cellH * scaleY,
     });
+    return preparedForTutor(cropped);
   } catch {
-    return focused.value;
+    return preparedForTutor(focused.value);
   }
 }

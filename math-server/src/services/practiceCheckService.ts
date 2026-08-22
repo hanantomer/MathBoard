@@ -157,14 +157,16 @@ async function generateWithModel(
   generationConfig?: Record<string, unknown>,
 ): Promise<string> {
   const url = `${GEMINI_API_BASE}/${modelName}:generateContent`;
-  const parts: Array<Record<string, unknown>> = [{ text: prompt }];
+  const parts: Array<Record<string, unknown>> = [];
   if (problemImageBase64?.trim()) {
     const { data, mimeType } = normalizeImageBase64(problemImageBase64);
     if (!data || data.length < 64) {
       throw new Error("Problem image data is missing or too small");
     }
+    // Gemini attends better when a single image comes before the text prompt.
     parts.push({ inlineData: { mimeType, data } });
   }
+  parts.push({ text: prompt });
 
   const { data: payload, status, statusText } =
     await axios.post<GeminiGenerateResponse>(
@@ -198,6 +200,16 @@ function normalizeImageBase64(imageBase64: string): {
   const data = imageBase64.replace(/^data:image\/\w+;base64,/, "").trim();
   return { mimeType: "image/png", data };
 }
+
+const IMAGE_READ_RULES = `The attached image is the problem (or the cropped region of a worksheet) the student is currently working on, based on where they are writing.
+It may be a photo, a scan, or a screenshot — including dark mode (light text on a dark background).
+Read every line and all math symbols (triangles, lengths, units, altitudes). Ignore other problems on the same page or nearby. Do not invent a different problem.`;
+
+const IMAGE_UNREADABLE_CHECK =
+  '{"correct":false,"feedback":"I couldn\'t read the worksheet clearly.","hint":"Paste the question as text (Ctrl+V), or use a larger photo with dark writing on a light background."}';
+
+const IMAGE_UNREADABLE_COACH =
+  '{"speak":true,"tip":"I couldn\'t read that image clearly. Paste the question as text."}';
 
 const COACH_TIP_RULES = `Give ONE short spoken tip (max 18 words) about their next useful step, a gentle correction of how they read the problem, or quick encouragement if they are on track.
 If they are writing in a text box, coach the math story: what is given, what is asked, or the next useful step.
@@ -282,8 +294,7 @@ ${coachRules(phase)}`;
 function buildBlankImageCheckPrompt(studentWork: string): string {
   return `You are grading a student's math practice work on a digital whiteboard.
 
-The attached image is the problem (or the cropped region of a worksheet) the student is currently working on, based on where they are writing.
-Read that problem from the image. Ignore other problems on the same page or nearby. Do not invent a different problem.
+${IMAGE_READ_RULES}
 
 Student work next to this problem (from their board notations; may include rough work):
 """
@@ -293,6 +304,8 @@ ${studentWork || "(empty — student has not written anything yet)"}
 Decide if the student's final answer correctly solves this problem.
 Ignore intermediate scratch work if a clear final answer is present.
 Be lenient with spacing, parentheses, and equivalent notations (e.g. x^2 vs x²).
+If the image is too unclear to read the problem, respond with exactly:
+${IMAGE_UNREADABLE_CHECK}
 
 Respond with ONLY valid JSON (no markdown):
 {"correct":true|false,"feedback":"one short sentence","hint":"optional short hint if incorrect"}`;
@@ -304,13 +317,15 @@ function buildBlankImageCoachPrompt(
 ): string {
   return `You are a brief math voice coach for a student working on a whiteboard.
 
-The attached image is the problem (or the cropped region of a worksheet) they are currently working on, based on where they are writing.
-Read that problem from the image. Ignore other problems on the same page or nearby. Do not invent a different problem.
+${IMAGE_READ_RULES}
 
 Student's current board work next to this problem (may be an in-progress text-box draft):
 """
 ${studentWorkForPrompt(studentWork, phase)}
 """
+
+If the image is too unclear to read the problem, respond with exactly:
+${IMAGE_UNREADABLE_COACH}
 
 ${coachRules(phase)}`;
 }
