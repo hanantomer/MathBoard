@@ -18,6 +18,8 @@ const selectionHelper = useSelectionHelper();
 const eventBus = useEventBus();
 
 const KEY_STROKE_INTERVAL = 50; // ms
+const META_KEY_CODES = new Set(["MetaLeft", "MetaRight", "OSLeft", "OSRight"]);
+const META_SUPPRESS_MS = 400;
 let shiftReleaseTime = 0;
 let shiftReleased = false;
 let altReleaseTime = 0;
@@ -26,7 +28,89 @@ let isKeyUpHandlerRunning = false; // Prevent concurrent execution
 let lastKeyUpToken = "";
 let lastKeyUpAt = 0;
 let mobileEscapeTriggered = false;
+let metaHeld = false;
+let metaReleasedAt = 0;
+let lastMetaKeyDownAt = 0;
+let osShortcutListenersBound = false;
+const keysPressedWithMeta = new Set<string>();
 const delayedAltKeys = new Set<string>(["x", "l"]);
+
+function isMetaLikeKey(e: KeyboardEvent): boolean {
+  return META_KEY_CODES.has(e.code) || e.key === "Meta" || e.key === "OS";
+}
+
+function isMetaModifierActive(e: KeyboardEvent): boolean {
+  return (
+    e.metaKey || e.getModifierState("Meta") || e.getModifierState("OS")
+  );
+}
+
+function isWindowsPlatform(): boolean {
+  return (
+    typeof navigator !== "undefined" &&
+    /Win/i.test(navigator.platform || navigator.userAgent)
+  );
+}
+
+function onOsShortcutKeyDown(e: KeyboardEvent) {
+  if (isMetaLikeKey(e)) {
+    metaHeld = true;
+    lastMetaKeyDownAt = Date.now();
+    return;
+  }
+  if (isMetaModifierActive(e) || metaHeld) {
+    keysPressedWithMeta.add(e.code);
+    // Windows may swallow Win keyup (Win+V / Win+K); don't stay "held" forever.
+    if (!isMetaModifierActive(e)) {
+      metaHeld = false;
+      metaReleasedAt = Date.now();
+    }
+    return;
+  }
+  if (
+    isWindowsPlatform() &&
+    lastMetaKeyDownAt > 0 &&
+    Date.now() - lastMetaKeyDownAt < META_SUPPRESS_MS
+  ) {
+    keysPressedWithMeta.add(e.code);
+  }
+}
+
+function onOsShortcutKeyUp(e: KeyboardEvent) {
+  if (!isMetaLikeKey(e)) return;
+  metaHeld = false;
+  metaReleasedAt = Date.now();
+}
+
+function onOsShortcutBlur() {
+  if (metaHeld) {
+    metaReleasedAt = Date.now();
+  }
+  metaHeld = false;
+}
+
+function bindOsShortcutListeners() {
+  if (osShortcutListenersBound || typeof window === "undefined") return;
+  osShortcutListenersBound = true;
+  window.addEventListener("keydown", onOsShortcutKeyDown, true);
+  window.addEventListener("keyup", onOsShortcutKeyUp, true);
+  window.addEventListener("blur", onOsShortcutBlur);
+}
+
+function shouldIgnoreOsShortcutSymbol(e: KeyboardEvent): boolean {
+  if (isMetaLikeKey(e)) return true;
+  const chorded = keysPressedWithMeta.has(e.code);
+  keysPressedWithMeta.delete(e.code);
+  if (isMetaModifierActive(e) || metaHeld || chorded) return true;
+  if (typeof document !== "undefined" && !document.hasFocus()) return true;
+  // Windows often drops metaKey before Win+V / Win+K keyup, so "v" would be typed.
+  return (
+    isWindowsPlatform() &&
+    (Date.now() - metaReleasedAt < META_SUPPRESS_MS ||
+      Date.now() - lastMetaKeyDownAt < META_SUPPRESS_MS)
+  );
+}
+
 const delayedShiftKeys = new Map<string, string>([
   ["1", "!"],
   ["5", "%"],
@@ -56,6 +140,8 @@ const delayedShiftKeys = new Map<string, string>([
 ]);
 
 export default function () {
+  bindOsShortcutListeners();
+
   // Listen for mobile escape event
   eventBus.on("EV_MOBILE_ESCAPE", () => {
     mobileEscapeTriggered = true;
@@ -166,7 +252,7 @@ export default function () {
 
       if (editModeStore.getEditMode() === "EXPONENT_WRITING") return;
 
-      if (ctrlKey || altKey) {
+      if (ctrlKey || altKey || shouldIgnoreOsShortcutSymbol(e)) {
         return;
       }
 
