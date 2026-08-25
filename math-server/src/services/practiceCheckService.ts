@@ -89,6 +89,38 @@ function localQuickMatch(
   );
 }
 
+/** Letters assigned to a bare number: `x=3` or `y=2,x=3`, not `3y=12` or `x=1+y`. */
+function numericAssignments(work: string): Set<string> {
+  const found = new Set<string>();
+  const add = (letter: string | undefined) => {
+    if (letter) found.add(letter.toLowerCase());
+  };
+  const isolated =
+    /(?:^|[\s,;])([A-Za-z])\s*=\s*-?\d+(?:\.\d+)?(?![0-9./A-Za-z+\-*])/gm;
+  const glued = /=\s*-?\d+(?:\.\d+)?([A-Za-z])\s*=\s*-?\d+/g;
+  let m: RegExpExecArray | null;
+  while ((m = isolated.exec(work))) add(m[1]);
+  while ((m = glued.exec(work))) add(m[1]);
+  return found;
+}
+
+function looksLikeSolvedSystem(work: string, problemText?: string): boolean {
+  const assigned = numericAssignments(work);
+  if (assigned.size < 2) return false;
+  if (assigned.has("x") && assigned.has("y")) return true;
+  const problem = (problemText ?? "").trim();
+  if (!problem) return false;
+  let n = 0;
+  for (const v of assigned) {
+    if (new RegExp(`(?:^|[^A-Za-z])${v}(?:[^A-Za-z]|$)`, "i").test(problem)) {
+      n += 1;
+    }
+  }
+  return n >= 2;
+}
+
+const COACH_DONE_TIP = "Nice work. That solves it.";
+
 function parseCheckResult(raw: string): PracticeCheckResult {
   const jsonMatch = raw.match(/\{[\s\S]*\}/);
   if (!jsonMatch) {
@@ -141,9 +173,7 @@ Student work (from their board notations; may include rough work):
 ${studentWork || "(empty — student has not written anything yet)"}
 """
 
-Decide if the student's final answer is mathematically equivalent to the expected answer.
-Ignore intermediate scratch work if a clear final answer is present.
-Be lenient with spacing, parentheses order for products, and equivalent notations (e.g. x^2 vs x²).
+${CHECK_GRADE_RULES}
 
 Respond with ONLY valid JSON (no markdown):
 {"correct":true|false,"feedback":"one short sentence","hint":"optional short hint if incorrect"}`;
@@ -211,20 +241,51 @@ const IMAGE_UNREADABLE_CHECK =
 const IMAGE_UNREADABLE_COACH =
   '{"speak":true,"tip":"I couldn\'t read that image clearly. Paste the question as text."}';
 
-const COACH_TIP_RULES = `Give ONE short spoken tip (max 18 words) about their next useful step, a gentle correction of how they read the problem, or quick encouragement if they are on track.
-If they are writing in a text box, coach the math story: what is given, what is asked, or the next useful step.
-If student work already lists a diagram with labeled sides, vertices, or angles, do not ask them to label those again.
-Treat "inferred right angle" / "figure ~N°" as geometry of the drawing, not as a value the student wrote.
-Do not rewrite their sentences, fix spelling, complete their answer, or reveal the final answer.
-Do not solve the whole problem. Do not use markdown or emoji.
-If the work is too incomplete to help, or there is nothing useful to say yet, respond with speak=false.
+const CHECK_GRADE_RULES = `Decide if the student's final answer is mathematically equivalent to what the problem asks.
+Ignore intermediate scratch work if a clear final answer is present.
+Be lenient with spacing, parentheses, and equivalent notations (e.g. x^2 vs x²).
+Accept equivalent names (height vs length, width vs base) and omitted units when the numbers match.
+A system is solved if each unknown is found (x=3 and y=2 is equivalent to (3,2)); do not require an ordered pair or boxed pair.
+A discarded invalid extra root (e.g. negative length) is fine if the valid value is present.
+Do not mark wrong for a missing boxed answer, a full sentence, or copied diagram labels.
+Extra correct statements do not make the answer wrong.
+Board text is grid symbols and may omit spaces; do not treat missing spaces as errors.`;
+
+const STUDENT_WORK_LABEL =
+  "Student's current board work (grid symbols, diagrams, and text boxes):";
+
+const COACH_TIP_RULES = `First decide if they already answered the question. If yes: speak=false, or one short encouragement. Never ask for a next step.
+They are done when the board already has the asked-for result in any equivalent form, including:
+- each unknown found as a number, same line or different lines (y=2,x=3 or y=2 then x=3). That solves a system. Do not also require (3,2), a boxed pair, or a check. Do not say "now find x" if x=<number> is already on the board.
+- a named value, units, or a sentence in symbols or a text box
+If they discarded an invalid extra root (e.g. a negative length) and kept the valid value, they are done.
+
+Only if they are NOT done: give ONE short spoken tip (max 18 words) — a next useful step, a gentle correction, or brief encouragement.
+If a text box is an unfinished draft, coach the math story. If it already answers the question, do not ask for more.
+
+Do not nag about work that is already on the board:
+- restating, boxing, writing an ordered pair, or "clearly writing" a result already in symbols or a text box
+- relabeling a diagram that already has sides, vertices, or angles
+- drawing a figure, defining variables, or copying values onto a sketch after they solved it in algebra
+- adding units, a full sentence, or a boxed answer as ceremony
+- spelling, "square" vs rectangle, height vs length, or other equivalent names
+- plugging back in / "now check your work" when the asked-for result is already present
+Treat "inferred right angle" / "figure ~N°" as geometry of the drawing, not a value they wrote.
+Board text is grid symbols and may omit spaces; do not treat missing spaces as errors.
+
+Do not rewrite their sentences, complete their answer, or reveal the final answer.
+Never quote numbers from "Expected final answer" unless they already appear in the student work.
+Do not tell them to press Check. Do not solve the whole problem. Do not use markdown or emoji.
+If they are finished, or there is nothing useful to say, respond with speak=false.
 
 Respond with ONLY valid JSON:
 {"speak":true|false,"tip":"short sentence"}`;
 
 const COACH_PRELIMINARY_RULES = `The student just submitted this problem and has not started solving yet.
-Give ONE short spoken tip (max 22 words) that orients them: what kind of problem this is, what to identify first, or the first useful step.
-Do not solve the problem. Do not reveal the final answer or a full method.
+Give ONE short spoken tip (max 22 words) that orients them: what kind of problem this is, what they need to find, or the first useful step.
+Name the mathematical target (e.g. both x and y), not a notation format. Do not require an ordered pair, yellow box, boxed answer, or units sentence.
+Do not solve the problem. Do not reveal the final answer, a formula that finishes it, or a full method.
+Do not ask them to copy the problem onto the board.
 Do not use markdown or emoji.
 If you can read the problem, always respond with speak=true.
 
@@ -262,9 +323,7 @@ Student work (from their board notations; may include rough work):
 ${studentWork || "(empty — student has not written anything yet)"}
 """
 
-Decide if the student's final answer correctly solves this problem.
-Ignore intermediate scratch work if a clear final answer is present.
-Be lenient with spacing, parentheses, and equivalent notations (e.g. x^2 vs x²).
+${CHECK_GRADE_RULES}
 Do not treat the problem statement itself as the student's answer.
 
 Respond with ONLY valid JSON (no markdown):
@@ -283,7 +342,7 @@ The problem they are solving (pasted as text) is:
 ${problemText}
 """
 
-Student's current board work (may be an in-progress text-box draft):
+${STUDENT_WORK_LABEL}
 """
 ${studentWorkForPrompt(studentWork, phase)}
 """
@@ -301,9 +360,7 @@ Student work next to this problem (from their board notations; may include rough
 ${studentWork || "(empty — student has not written anything yet)"}
 """
 
-Decide if the student's final answer correctly solves this problem.
-Ignore intermediate scratch work if a clear final answer is present.
-Be lenient with spacing, parentheses, and equivalent notations (e.g. x^2 vs x²).
+${CHECK_GRADE_RULES}
 If the image is too unclear to read the problem, respond with exactly:
 ${IMAGE_UNREADABLE_CHECK}
 
@@ -319,7 +376,7 @@ function buildBlankImageCoachPrompt(
 
 ${IMAGE_READ_RULES}
 
-Student's current board work next to this problem (may be an in-progress text-box draft):
+Student's current board work next to this problem (grid symbols, diagrams, and text boxes):
 """
 ${studentWorkForPrompt(studentWork, phase)}
 """
@@ -450,7 +507,7 @@ function buildBlankCoachPrompt(
 ): string {
   return `You are a brief math voice coach for a student working on a blank whiteboard (pasted worksheet or free work).
 
-Student's current board work (may be an in-progress text-box draft):
+${STUDENT_WORK_LABEL}
 """
 ${studentWorkForPrompt(studentWork, phase)}
 """
@@ -470,7 +527,7 @@ ${problem}
 
 Expected final answer (do not reveal unless they already have it): ${expectedAnswer}
 
-Student's current board work (may be an in-progress text-box draft):
+${STUDENT_WORK_LABEL}
 """
 ${studentWorkForPrompt(studentWork, phase)}
 """
@@ -478,7 +535,7 @@ ${studentWorkForPrompt(studentWork, phase)}
 ${coachRules(phase)}`;
 }
 
-function parseCoachResult(raw: string): PracticeCoachResult {
+function parseCoachResult(raw: string, studentWork = ""): PracticeCoachResult {
   const jsonMatch = raw.match(/\{[\s\S]*\}/);
   if (!jsonMatch) {
     throw new Error("Could not parse practice coach response");
@@ -489,8 +546,38 @@ function parseCoachResult(raw: string): PracticeCoachResult {
   };
   const tip =
     typeof parsed.tip === "string" ? parsed.tip.trim().replace(/\s+/g, " ") : "";
+  if (
+    coachAsksToFindAlreadyAssigned(tip, studentWork) ||
+    coachAcknowledgedDoneThenAskedMore(tip)
+  ) {
+    return { speak: true, tip: COACH_DONE_TIP };
+  }
   const speak = parsed.speak !== false && tip.length > 0;
   return { speak, tip: speak ? tip : "" };
+}
+
+function coachAsksToFindAlreadyAssigned(tip: string, work: string): boolean {
+  const assigned = numericAssignments(work);
+  if (assigned.size === 0) return false;
+  const t = tip.toLowerCase();
+  for (const v of assigned) {
+    if (new RegExp(`\\b(?:find|solve\\s+for)\\s+${v}\\b`).test(t)) return true;
+  }
+  return false;
+}
+
+/** Model often admits they finished, then still asks for a boxed pair / check. */
+function coachAcknowledgedDoneThenAskedMore(tip: string): boolean {
+  const t = tip.toLowerCase();
+  const foundIt =
+    /you have found|you've found|you have solved|already (found|solved|have)|values for x and y|that (looks|is) (like )?(the )?(right|correct) answer/.test(
+      t,
+    );
+  const stillNagging =
+    /next step|what('s| is) (the )?next|now (write|state|box|check|verify|plug|use|find)|ordered pair|write it as|find x|find y/.test(
+      t,
+    );
+  return foundIt && stillNagging;
 }
 
 function coachGenerationConfig(modelName: string): Record<string, unknown> {
@@ -508,6 +595,7 @@ function coachGenerationConfig(modelName: string): Record<string, unknown> {
 async function generateCoachTip(
   prompt: string,
   problemImageBase64?: string,
+  studentWork = "",
 ): Promise<PracticeCoachResult> {
   const raw = await generateTextAcrossModels(
     prompt,
@@ -515,7 +603,7 @@ async function generateCoachTip(
     coachGenerationConfig,
     "practiceCoach",
   );
-  return parseCoachResult(raw);
+  return parseCoachResult(raw, studentWork);
 }
 
 export async function coachPracticeWork(
@@ -534,19 +622,29 @@ export async function coachPracticeWork(
   const image = problemImageBase64?.trim();
   const textProblem = problemText?.trim();
 
+  if (!isPreliminary && looksLikeSolvedSystem(work, textProblem)) {
+    return { speak: true, tip: COACH_DONE_TIP };
+  }
+
   if (questionUUId === PRACTICE_BLANK_UUID) {
     if (!work && !image && !textProblem) {
       return { speak: false, tip: "" };
     }
     if (image) {
-      return generateCoachTip(buildBlankImageCoachPrompt(work, phase), image);
+      return generateCoachTip(
+        buildBlankImageCoachPrompt(work, phase),
+        image,
+        work,
+      );
     }
     if (textProblem) {
       return generateCoachTip(
         buildBlankTextCoachPrompt(textProblem, work, phase),
+        undefined,
+        work,
       );
     }
-    return generateCoachTip(buildBlankCoachPrompt(work, phase));
+    return generateCoachTip(buildBlankCoachPrompt(work, phase), undefined, work);
   }
 
   const template = getPracticeQuestionTemplateByUUId(questionUUId);
@@ -572,5 +670,7 @@ export async function coachPracticeWork(
       work,
       phase,
     ),
+    undefined,
+    work,
   );
 }

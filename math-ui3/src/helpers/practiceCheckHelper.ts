@@ -307,7 +307,15 @@ function serializeFilteredWork(
   for (const row of rows) {
     const items = itemsByRow.get(row)!;
     items.sort((a, b) => a.col - b.col);
-    const buf = items.map((i) => i.text).join("");
+    let buf = "";
+    let lastCol = Number.NEGATIVE_INFINITY;
+    for (const i of items) {
+      if (lastCol > Number.NEGATIVE_INFINITY && i.col > lastCol + 1) {
+        buf += " ";
+      }
+      buf += i.text;
+      lastCol = i.col;
+    }
     if (buf) lines.push(buf);
   }
 

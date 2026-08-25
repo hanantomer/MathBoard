@@ -223,6 +223,8 @@ async function runCoach(deps: CoachDeps, myRequest: number) {
     }
     if (!result.speak || !result.tip.trim()) {
       lastCoachedWork = studentWork;
+      lastCoachedTip = "";
+      deps.onTip?.("");
       return;
     }
     if (result.tip === lastCoachedTip && studentWork === lastCoachedWork) {
