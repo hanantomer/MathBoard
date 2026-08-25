@@ -13,6 +13,7 @@ import {
 import { wrapVectorSymbol, vectorSymbolPrefix } from "common/globals";
 import { useCellStore } from "../store/pinia/cellStore";
 import useUtils from "./matrixHelperUtils";
+import { escapeTextForHtml } from "./pastedTextHelper";
 import useNotationCellOccupationHelper from "./notationCellOccupationHelper";
 import { useUserStore } from "../store/pinia/userStore";
 
@@ -99,8 +100,10 @@ export default function useHtmlMatrixHelper() {
 
   function height(n: NotationAttributes): number | null {
     switch (n.notationType) {
-      case "SQRT":
-        return SQRT_VINCULUM_HIT_HEIGHT;
+      case "SQRT": {
+        const n1 = n as unknown as MultiCellAttributes;
+        return n1.toCol - n1.fromCol > 1 ? SQRT_VINCULUM_HIT_HEIGHT : 0;
+      }
       case "ANNOTATION":
         return cellOccupationHelper.getAnnotationPixelBounds(
           n as AnnotationNotationAttributes,
@@ -319,7 +322,8 @@ export default function useHtmlMatrixHelper() {
 
       case "SQRT": {
         const n1 = n as unknown as MultiCellAttributes;
-        return (n1.toCol - n1.fromCol - 1) * cellStore.getCellHorizontalWidth();
+        const cols = Math.max(0, n1.toCol - n1.fromCol - 1);
+        return cols * cellStore.getCellHorizontalWidth();
       }
 
       case "IMAGE": {
@@ -417,10 +421,14 @@ export default function useHtmlMatrixHelper() {
     return generateDefaultHtml(n as PointNotationAttributes, color, fontWeight);
 
     function generateSqrtHtml(n: NotationAttributes): string {
+      const barWidth = width(n);
+      if (barWidth <= 0) {
+        return utils.wrapWithDiv(
+          `<span id='${n.uuid}' class='sqrt line' style='display:none'></span>`,
+        );
+      }
       return utils.wrapWithDiv(
-        `<span id='${n.uuid}' class='sqrt line' style='width:${width(
-          n,
-        )}px;margin-top:2px; color:${color}'></span>`,
+        `<span id='${n.uuid}' class='sqrt line' style='width:${barWidth}px;margin-top:2px; color:${color}'></span>`,
       );
     }
 
@@ -440,9 +448,9 @@ export default function useHtmlMatrixHelper() {
       return utils.wrapWithDiv(
         `<textarea id=${
           n1.uuid
-        } style='resize:none; overflow:hidden;width:${width}px; height:${height}px;background-color:${textBackgroundColor()}; border:groove 2px;border-color:${bColor};' dir='${dir}'>${
-          n1.value
-        }</textarea>`,
+        } readonly tabindex="-1" style='resize:none; overflow:hidden;width:${width}px; height:${height}px;background-color:${textBackgroundColor()}; border:groove 2px;border-color:${bColor};' dir='${dir}'>${escapeTextForHtml(
+          n1.value ?? "",
+        )}</textarea>`,
       );
     }
 

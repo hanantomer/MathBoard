@@ -18,6 +18,10 @@ import {
 } from "./practiceCheckHelper";
 
 import useSelectionHelper from "../helpers/selectionHelper";
+import {
+  isNativeTextFieldPaste,
+  normalizePastedBoardText,
+} from "./pastedTextHelper";
 //import { isMobile } from "../../../math-common/src/globals";
 const selectionHelper = useSelectionHelper();
 
@@ -68,6 +72,17 @@ function unregisterKeyDown() {
   window.removeEventListener("keydown", onWindowKeyDown);
 }
 
+function onDocumentCopy() {
+  eventBus.emit("EV_COPY", null);
+}
+
+function onDocumentPaste(e: ClipboardEvent) {
+  eventBus.emit("EV_PASTE", e);
+}
+
+let lastBoardPasteAt = 0;
+let lastBoardPasteText = "";
+
 export default function eventHelper() {
   async function copy() {
     notationStore.setCopiedNotations(
@@ -81,20 +96,24 @@ export default function eventHelper() {
   }
 
   async function paste(e: ClipboardEvent) {
-    if (notationStore.getCopiedNotations().length) {
-      return notationMutationHelper.pasteNotations();
+    if (isNativeTextFieldPaste(e.target)) {
+      return;
     }
 
-    const target = e.target as HTMLElement | null;
-    if (target?.tagName === "INPUT" || target?.tagName === "TEXTAREA") {
-      return;
+    if (notationStore.getCopiedNotations().length) {
+      e.preventDefault();
+      return notationMutationHelper.pasteNotations();
     }
 
     const types = e.clipboardData?.types;
     const hasFiles = !!types?.includes("Files");
-    const plainText = e.clipboardData?.getData("text/plain") ?? "";
+    const plainText = normalizePastedBoardText(
+      e.clipboardData?.getData("text/plain") ?? "",
+      e.clipboardData?.getData("text/html") ?? "",
+    );
 
-    if (hasFiles) {
+    if (hasFiles && !plainText.trim()) {
+      e.preventDefault();
       return pasteImage(e);
     }
 
@@ -104,6 +123,7 @@ export default function eventHelper() {
 
     // Support Google Docs / HTML-embedded images when there is no plain text.
     if (types?.includes("text/html")) {
+      e.preventDefault();
       return pasteImage(e);
     }
   }
@@ -145,6 +165,12 @@ export default function eventHelper() {
     if (!cell) return;
 
     e.preventDefault();
+    const now = Date.now();
+    if (text === lastBoardPasteText && now - lastBoardPasteAt < 400) {
+      return;
+    }
+    lastBoardPasteAt = now;
+    lastBoardPasteText = text;
 
     const fromCol = Math.min(
       Math.max(0, cell.col),
@@ -390,30 +416,22 @@ export default function eventHelper() {
     eventBus.emit("EV_POINTERUP", e);
   }
 
-  function emitCopy() {
-    eventBus.emit("EV_COPY", null);
-  }
-
   function registerCopy() {
-    document.removeEventListener("copy", emitCopy);
-    document.addEventListener("copy", emitCopy);
+    document.removeEventListener("copy", onDocumentCopy);
+    document.addEventListener("copy", onDocumentCopy);
   }
 
   function unregisterCopy() {
-    document.removeEventListener("copy", emitCopy);
-  }
-
-  function emitPaste(e: ClipboardEvent) {
-    eventBus.emit("EV_PASTE", e);
+    document.removeEventListener("copy", onDocumentCopy);
   }
 
   function registerPaste() {
-    document.removeEventListener("paste", emitPaste);
-    document.addEventListener("paste", emitPaste);
+    document.removeEventListener("paste", onDocumentPaste);
+    document.addEventListener("paste", onDocumentPaste);
   }
 
   function unregisterPaste() {
-    document.removeEventListener("paste", emitPaste);
+    document.removeEventListener("paste", onDocumentPaste);
   }
 
   // Mobile support

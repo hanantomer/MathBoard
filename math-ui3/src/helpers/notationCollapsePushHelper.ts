@@ -3,12 +3,14 @@ import {
   SqrtNotationAttributes,
 } from "common/baseTypes";
 
-import { NotationType } from "common/unions";
 import { matrixDimensions } from "common/globals";
 import { useNotationStore } from "../store/pinia/notationStore";
 import { useCellStore } from "../store/pinia/cellStore";
 import { NotationAttributes } from "common/baseTypes";
 import useNotationMutateHelper from "./notationMutateHelper";
+
+/** If this many cells to the right have no math, Space moves the cursor instead of pushing. */
+const SPACE_MOVE_EMPTY_RUN = 10;
 
 const notationStore = useNotationStore();
 const cellStore = useCellStore();
@@ -74,22 +76,48 @@ async function collapseNotationsToSelectedCell() {
   }
 }
 
+async function pushNotationsFromCell(cell: { col: number; row: number }) {
+  if (cell.col === matrixDimensions.colsNum - 1) return;
+
+  const nextSymbolBlock = findNextSymbolBlock(cell.col, cell.row);
+  if (nextSymbolBlock.firstCol === -1) return;
+
+  await moveNotationsRight(cell.row, nextSymbolBlock);
+}
+
 async function pushNotationsFromSelectedCell() {
   const cell = cellStore.getSelectedCell();
   if (!cell) return;
 
   notationStore.beginUndoGroup();
   try {
-    if (cell.col === matrixDimensions.colsNum - 1) return;
-
-    const nextSymbolBlock = findNextSymbolBlock(cell.col, cell.row);
-
-    await moveNotationsRight(cell.row, nextSymbolBlock);
-
+    await pushNotationsFromCell(cell);
     notationStore.resetSelectedNotations();
   } finally {
     notationStore.endUndoGroup();
   }
+}
+
+function cellHasPushableMath(col: number, row: number): boolean {
+  return notationStore.getNotationsAtCell({ col, row }).some(
+    (n) =>
+      n.notationType === "SYMBOL" ||
+      n.notationType === "EXPONENT" ||
+      n.notationType === "LOGBASE" ||
+      n.notationType === "SQRT",
+  );
+}
+
+/** True when the next `count` cells on this row have no symbols / sqrt to push. */
+function nextMathCellsAreEmpty(
+  cell: { col: number; row: number },
+  count = SPACE_MOVE_EMPTY_RUN,
+): boolean {
+  const last = Math.min(cell.col + count, matrixDimensions.colsNum - 1);
+  for (let col = cell.col + 1; col <= last; col++) {
+    if (cellHasPushableMath(col, cell.row)) return false;
+  }
+  return true;
 }
 
 function findNextSymbolBlock(
@@ -155,7 +183,7 @@ async function moveNotationsRight(
     });
 
     for (const notation of notations) {
-      if ((notation as PointNotationAttributes).col) {
+      if (typeof (notation as PointNotationAttributes).col === "number") {
         (notation as PointNotationAttributes).col++;
         await notationMutateHelper.updateNotation(notation);
       }
@@ -163,4 +191,9 @@ async function moveNotationsRight(
   }
 }
 
-export { collapseNotationsToSelectedCell, pushNotationsFromSelectedCell };
+export {
+  collapseNotationsToSelectedCell,
+  nextMathCellsAreEmpty,
+  pushNotationsFromSelectedCell,
+  pushNotationsFromCell,
+};

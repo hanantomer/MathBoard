@@ -95,6 +95,45 @@ export function formatPracticeAiFailureMessage(
   return `${label} failed. Please try again.`;
 }
 
+const LIMIT_ALERT_STORAGE_KEY = "mathboard-practice-ai-limit-alert";
+
+function utcDateStamp(): string {
+  return new Date().toISOString().slice(0, 10);
+}
+
+function limitAlertToken(limit: number, signedIn: boolean): string {
+  return `${utcDateStamp()}:${signedIn ? "user" : "guest"}:${limit}`;
+}
+
+/** True if the daily-limit popup was already shown this session for this cap. */
+export function wasPracticeAiLimitAlertShown(
+  limit: number,
+  signedIn: boolean,
+): boolean {
+  try {
+    return (
+      sessionStorage.getItem(LIMIT_ALERT_STORAGE_KEY) ===
+      limitAlertToken(limit, signedIn)
+    );
+  } catch {
+    return false;
+  }
+}
+
+export function markPracticeAiLimitAlertShown(
+  limit: number,
+  signedIn: boolean,
+): void {
+  try {
+    sessionStorage.setItem(
+      LIMIT_ALERT_STORAGE_KEY,
+      limitAlertToken(limit, signedIn),
+    );
+  } catch {
+    /* ignore quota / private-mode failures */
+  }
+}
+
 /** @deprecated Use practiceAiLimitMessage */
 export const guestAiLimitMessage = (data?: PracticeAiLimitErrorBody) =>
   practiceAiLimitMessage(data, false);

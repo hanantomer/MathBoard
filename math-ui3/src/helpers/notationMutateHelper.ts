@@ -66,6 +66,8 @@ import { viewportPointerPosition } from "./pointerCoordinateHelper";
 import useImageHelper from "./imageHelper";
 import {
   collapseNotationsToSelectedCell,
+  nextMathCellsAreEmpty,
+  pushNotationsFromCell,
   pushNotationsFromSelectedCell,
 } from "./notationCollapsePushHelper";
 const selectionHelper = useSelectionHelper();
@@ -1323,6 +1325,112 @@ export default function notationMutateHelper() {
     return cellStore.getSelectedCell();
   }
 
+  function isWrappableSqrtTarget(n: NotationAttributes): boolean {
+    return (
+      n.notationType === "SYMBOL" ||
+      n.notationType === "EXPONENT" ||
+      n.notationType === "LOGBASE"
+    );
+  }
+
+  function wrappableAtCell(col: number, row: number): NotationAttributes[] {
+    if (col < 0 || row < 0) return [];
+    return notationStore
+      .getNotationsAtCell({ col, row })
+      .filter(isWrappableSqrtTarget);
+  }
+
+  function leftCellIsFree(col: number, row: number): boolean {
+    if (col < 0) return false;
+    return notationStore.getNotationsAtCell({ col, row }).every(
+      (n) =>
+        n.notationType !== "SYMBOL" &&
+        n.notationType !== "EXPONENT" &&
+        n.notationType !== "LOGBASE" &&
+        n.notationType !== "SQRT",
+    );
+  }
+
+  async function wrapRowWithSqrt(
+    row: number,
+    minCol: number,
+    maxCol: number,
+  ): Promise<string> {
+    let glyphCol = minCol - 1;
+    let lastSymbolCol = maxCol;
+    if (!leftCellIsFree(glyphCol, row)) {
+      await pushNotationsFromCell({ col: minCol, row });
+      glyphCol = minCol;
+      lastSymbolCol = maxCol + 1;
+    }
+    return addSqrtNotation({
+      fromCol: glyphCol,
+      toCol: lastSymbolCol + 1,
+      row,
+    });
+  }
+
+  /**
+   * Insert √ at the selected cell (zero-width vinculum), or wrap selected
+   * symbols with a vinculum sized to the selection.
+   */
+  async function placeSqrtAtSelection(): Promise<void> {
+    if (!authorizationHelper.canEdit()) return;
+
+    const selected = notationStore
+      .getSelectedNotations()
+      .filter(isWrappableSqrtTarget) as PointNotationAttributes[];
+
+    const byRow = new Map<number, { minCol: number; maxCol: number }>();
+    const addRange = (row: number, col: number) => {
+      const cur = byRow.get(row);
+      if (!cur) {
+        byRow.set(row, { minCol: col, maxCol: col });
+        return;
+      }
+      cur.minCol = Math.min(cur.minCol, col);
+      cur.maxCol = Math.max(cur.maxCol, col);
+    };
+
+    for (const n of selected) {
+      if (typeof n.col !== "number" || typeof n.row !== "number") continue;
+      addRange(n.row, n.col);
+    }
+
+    if (byRow.size === 0) {
+      const cell = cellStore.getSelectedCell();
+      if (!cell) return;
+      const atCell = wrappableAtCell(cell.col, cell.row);
+      if (atCell.length) {
+        const col = (atCell[0] as PointNotationAttributes).col;
+        const uuid = await wrapRowWithSqrt(cell.row, col, col);
+        if (uuid) selectionHelper.selectNotation(uuid);
+        return;
+      }
+      await addSqrtNotation({
+        fromCol: cell.col,
+        toCol: cell.col + 1,
+        row: cell.row,
+      });
+      matrixCellHelper.setNextCell(1, 0);
+      return;
+    }
+
+    notationStore.beginUndoGroup();
+    let lastUuid = "";
+    try {
+      for (const [row, range] of Array.from(byRow.entries()).sort(
+        (a, b) => a[0] - b[0],
+      )) {
+        lastUuid = await wrapRowWithSqrt(row, range.minCol, range.maxCol);
+      }
+    } finally {
+      notationStore.endUndoGroup();
+    }
+    notationStore.resetSelectedNotations();
+    if (lastUuid) selectionHelper.selectNotation(lastUuid);
+  }
+
   function addSqrtNotation(
     sqrtAttributes: MultiCellAttributes,
   ): Promise<string> {
@@ -1537,24 +1645,24 @@ export default function notationMutateHelper() {
     }
   }
 
-  async function handlePushKey() {
+  async function handleSpaceOnSelectedCell() {
     if (!authorizationHelper.canEdit()) return;
+    if (spaceKeyLock) return;
+    if (editModeStore.getEditMode() === "AREA_SELECTED") return;
 
-    // Check if function is already running
-    if (spaceKeyLock) {
-      return;
-    }
+    const cell = cellStore.getSelectedCell();
+    if (!cell) return;
 
-    if (editModeStore.getEditMode() === "AREA_SELECTED") {
+    if (nextMathCellsAreEmpty(cell)) {
+      matrixCellHelper.setNextCell(1, 0);
       return;
     }
 
     try {
       spaceKeyLock = true;
-
       await pushNotationsFromSelectedCell();
+      matrixCellHelper.setNextCell(0, 0);
     } finally {
-      // Always release the lock
       spaceKeyLock = false;
     }
   }
@@ -1826,6 +1934,7 @@ export default function notationMutateHelper() {
     addTextNotation,
     addAnnotationNotation,
     addSqrtNotation,
+    placeSqrtAtSelection,
     addExponentNotation,
     addCartesianSystemAtClickedPoint,
     cloneNotation,
@@ -1847,6 +1956,7 @@ export default function notationMutateHelper() {
     selectNotation,
     selectNotationByCell,
 
+    handleSpaceOnSelectedCell,
     pushNotationsFromSelectedCell,
     deleteSelectedNotations,
     recognizeAndReplaceSelectedFreeSketches,

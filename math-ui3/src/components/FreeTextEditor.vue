@@ -79,19 +79,7 @@ watchHelper.watchPointerEvent(
   resetTextEditingIfClickedOusideTextArea,
 );
 
-watchHelper.watchPointerEvent(
-  ["TEXT_WRITING", "TEXT_SELECTED"],
-  ["EV_SVG_POINTERDOWN"],
-  resetTextEditingIfClickedOusideTextArea,
-);
-
 // user clicked inside text rect after text selection
-watchHelper.watchPointerEvent(
-  ["TEXT_SELECTED"],
-  ["EV_SVG_POINTERUP"],
-  editTextSelection,
-);
-
 watchHelper.watchPointerEvent(
   ["TEXT_SELECTED"],
   ["EV_SVG_POINTERUP"],

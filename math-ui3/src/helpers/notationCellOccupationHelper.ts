@@ -369,10 +369,11 @@ export default function notationCellOccupationHelper() {
     uuid: string,
     doRemove: boolean,
   ) {
-    // similar to multi-cell, but across fromCol..toCol at a single row
+    // Zero-width vinculum (toCol === fromCol + 1) occupies only the √ cell.
+    // Wider bars occupy fromCol .. toCol-1 (the glyph plus cells under the line).
     if (!notation) return;
     clearNotationFromMatrix(uuid, matrix);
-    for (let c = notation.fromCol; c <= notation.toCol; c++) {
+    for (let c = notation.fromCol; c < notation.toCol; c++) {
       if (!validateRowAndCol(c, notation.row)) continue;
       if (doRemove) {
         (matrix[c][notation.row] as Set<String>)?.delete(uuid);

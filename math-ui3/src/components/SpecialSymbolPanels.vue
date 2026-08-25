@@ -172,6 +172,61 @@
         </div>
 
         <div class="symbol-group" v-else>
+          <div
+            v-if="group.title === 'Geometric symbols'"
+            class="degree-insert"
+          >
+            <div class="degree-row">
+              <v-text-field
+                :model-value="degreeMeasure"
+                type="text"
+                inputmode="numeric"
+                density="compact"
+                variant="outlined"
+                hide-details
+                maxlength="3"
+                placeholder="90"
+                aria-label="Degree measure"
+                class="degree-measure"
+                :disabled="!editEnabled"
+                @update:model-value="onDegreeMeasureInput"
+                @keydown.enter.prevent="addDegreeLabel()"
+              />
+              <v-tooltip>
+                Degree label — places the measure as an annotation on the
+                selected cell
+                <template v-slot:activator="{ props }">
+                  <v-btn
+                    v-bind="props"
+                    class="special-symbol"
+                    icon
+                    :disabled="!editEnabled"
+                    tabindex="14"
+                    aria-label="Degrees"
+                    id="special-symbol-degrees"
+                    role="button"
+                    @click="() => addDegreeLabel()"
+                  >
+                    <p>°</p>
+                  </v-btn>
+                </template>
+              </v-tooltip>
+            </div>
+            <div class="degree-presets">
+              <v-btn
+                v-for="d in degreePresets"
+                :key="d"
+                size="x-small"
+                variant="tonal"
+                :disabled="!editEnabled"
+                :aria-label="`${d} degrees`"
+                class="degree-preset"
+                @click="() => addDegreeLabel(d)"
+              >
+                {{ d }}°
+              </v-btn>
+            </div>
+          </div>
           <v-tooltip v-for="symbol in group.symbols" :key="symbol.name">
             {{ symbol.tooltip }}
             {{ symbol.shortcut ? `(${symbol.shortcut})` : "" }}
@@ -264,7 +319,6 @@ const symbolGroups = [
         tabIndex: 12,
       },
       { name: "angle", value: "&ang;", tooltip: "Angle", tabIndex: 13 },
-      { name: "degrees", value: "&deg;", tooltip: "Degrees (°)", tabIndex: 14 },
       { name: "triangle", value: "&#9651;", tooltip: "Triangle", tabIndex: 15 },
       { name: "perimeter", value: "P", tooltip: "Perimeter", tabIndex: 16 },
       { name: "area", value: "A", tooltip: "Area", tabIndex: 17 },
@@ -466,6 +520,49 @@ const crossProductFirstSelectedLetter = ref("a");
 const crossProductSecondSelectedLetter = ref("b");
 const integralStart = ref("");
 const integralEnd = ref("");
+const degreeMeasure = ref("90");
+const degreePresets = [30, 45, 60, 90, 180];
+
+function onDegreeMeasureInput(value: string | number | null) {
+  degreeMeasure.value = String(value ?? "")
+    .replace(/\D/g, "")
+    .slice(0, 3);
+}
+
+function resolvedDegreeMeasure(explicit?: number): string {
+  if (explicit !== undefined) return String(explicit);
+  return degreeMeasure.value.replace(/\D/g, "").slice(0, 3) || "90";
+}
+
+function composedDegreeLabel(explicit?: number): string {
+  return `${resolvedDegreeMeasure(explicit)}${decodeSpecialSymbol("&deg;")}`;
+}
+
+async function addDegreeLabel(explicit?: number) {
+  if (explicit !== undefined) {
+    degreeMeasure.value = String(explicit);
+  }
+
+  setTimeout(async () => {
+    if (isTextOrAnnotationMode()) {
+      selectedSymbol.value =
+        explicit === undefined ? "&deg;" : composedDegreeLabel(explicit);
+      emitSpecialSymbolToEditors();
+      maybeCloseAfterInsert();
+      return;
+    }
+
+    const coords = screenHelper.getSelectedCellDotCoordinates();
+    if (!coords) return;
+
+    const uuid = await notationMutateHelper.addAnnotationNotation(
+      composedDegreeLabel(explicit),
+      coords,
+    );
+    if (uuid) selectionHelper.selectNotation(uuid);
+    maybeCloseAfterInsert();
+  }, 0);
+}
 
 async function addIntegral(start: string, end: string) {
   const value = start + " ∫ " + end;
@@ -568,7 +665,7 @@ function emitSpecialSymbolToEditors() {
 }
 
 function isNinetyDegreesSymbol(item: string) {
-  return item === "&#8735";
+  return item === "&#8735;" || item === "&#8735";
 }
 
 async function addNinetyDegreesAnnotation(item: string) {
@@ -657,5 +754,42 @@ function addEachCharAsSymbol(item: string) {
   --v-input-control-height: 28px !important;
   padding-inline-start: 2px !important;
   padding-inline-end: 2px !important;
+}
+
+.degree-insert {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  width: 100%;
+  margin-bottom: 6px;
+}
+
+.degree-row {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.degree-measure {
+  flex: 1;
+  min-width: 0;
+  background-color: rgb(221, 228, 228);
+  --v-field-padding-bottom: 2px !important;
+  --v-field-padding-top: 2px !important;
+  --v-field-padding-start: 4px !important;
+  --v-field-padding-end: 4px !important;
+  --v-input-control-height: 28px !important;
+}
+
+.degree-presets {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px;
+}
+
+.degree-preset {
+  min-width: 0;
+  font-size: 11px;
+  padding-inline: 4px;
 }
 </style>

@@ -234,9 +234,7 @@ export default function () {
   }
 
   async function handlePushKey() {
-    await notationMutateHelper.pushNotationsFromSelectedCell();
-
-    matrixCellHelper.setNextCell(0, 0);
+    await notationMutateHelper.handleSpaceOnSelectedCell();
   }
 
   function handleMovementKey(key: string) {

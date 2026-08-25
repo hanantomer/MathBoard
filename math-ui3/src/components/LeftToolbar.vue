@@ -427,7 +427,13 @@ const modeButtons: Array<{
 ).map((symbol) => ({
   ...symbol,
   tooltip: getToolTooltip(symbol.name),
-  action: () => editModeStore.setEditMode(symbol.editMode as EditMode),
+  action: () => {
+    if (symbol.name === "sqrt") {
+      void notationMutateHelper.placeSqrtAtSelection();
+      return;
+    }
+    editModeStore.setEditMode(symbol.editMode as EditMode);
+  },
 }));
 
 const answerChekButtons: Array<{
@@ -484,7 +490,7 @@ const textModeButtons = computed(() =>
 );
 
 watchHelper.watchKeyEvent(
-  ["CELL_SELECTED"],
+  ["CELL_SELECTED", "AREA_SELECTED"],
   "EV_SHORTCUT_KEYUP",
   (e: KeyboardEvent) => toolbarNavigation.handleShortcuts(e, modeButtons),
 );
@@ -552,6 +558,11 @@ function startEditMode(item: {
   globalEditMode?: GlobalEditMode;
   editMode: EditMode;
 }) {
+  if (item.name === "sqrt") {
+    editModeStore.setGlobalEditMode("TEXT");
+    void notationMutateHelper.placeSqrtAtSelection();
+    return;
+  }
   notationStore.resetSelectedNotations();
   editModeStore.setGlobalEditMode(item.globalEditMode ?? "TEXT");
   editModeStore.setEditMode(item.editMode);

@@ -100,7 +100,7 @@ export const TOOL_TOOLTIPS: Record<string, string> = {
   curve:
     "Curve — snaps to grid and endpoints; next segment continues from the end (Esc to finish)",
   circle: "Circle",
-  sqrt: "Square root — draw the vinculum (Alt+S)",
+  sqrt: "Square root — insert at the selected cell (Alt+S). Select symbols first to draw the bar over them",
   exponent: "Exponent — click a cell (Alt+X)",
   log: "Logarithm (Alt+L)",
   "cartesian system": "Cartesian axes",
@@ -123,7 +123,6 @@ export const DRAW_TOOL_NAMES = new Set([
   "Line",
   "polyline",
   "DivisionLine",
-  "sqrt",
   "curve",
   "circle",
   "cartesian system",
@@ -132,6 +131,7 @@ export const DRAW_TOOL_NAMES = new Set([
 export const TEXT_TOOL_NAMES = new Set([
   "FreeText",
   "annotation",
+  "sqrt",
   "exponent",
   "log",
 ]);
@@ -158,9 +158,9 @@ export const KEYBOARD_INPUT = {
       ]
     : [
         "Click a cell, then type letters, numbers, and operators.",
-        "Space pushes symbols in the current cell to the right.",
+        "Space moves right if the next cells are empty; otherwise it pushes symbols right.",
         "Backspace or Delete removes the symbol in the selected cell.",
-        "Alt+X exponent, Alt+L log — or use the Text tools on the left.",
+        "Alt+X exponent, Alt+L log, Alt+S square root — or use the Text tools on the left.",
         "Free sketch is optional for informal marks, not for main work.",
       ],
 } as const;
@@ -176,7 +176,8 @@ export const EDITING_TECHNIQUES = {
         "Selection tool: drag a rectangle to select, then drag to move.",
         "Hold Ctrl (Cmd on Mac) while dragging to duplicate the selection.",
         "Delete or Backspace removes selected notations.",
-        "With a cell selected: Space pushes content right; Backspace/Delete clears the cell.",
+        "With symbols selected, Square root (Alt+S) draws the bar over them.",
+        "With a cell selected: Space moves right if the next cells are empty, otherwise it pushes content right; Backspace/Delete clears the cell.",
         "Arrow keys move the selected cell; type to replace or add symbols.",
       ],
 } as const;
@@ -255,7 +256,7 @@ export function getEditModeStatusText(
       "Draw a rectangle on screen to create a text box, click once to edit and twice to resize",
     TEXT_WRITING:
       "Type in the box, then click outside when done. In practice, pause for a tip; Ctrl+Enter checks.",
-    SQRT_STARTED: "Draw a line on screen to create a square root",
+    SQRT_STARTED: "Square root is inserted at the selected cell, or wrapped over a selection",
     CURVE_STARTED:
       "Draw a curve; endpoints snap to the grid and axes. The next segment starts at the end — press Esc when finished",
     EXPONENT_STARTED: "Click on a cell to create an exponent",
@@ -317,7 +318,7 @@ export const TOOLS_HELP = {
       name: "Keyboard",
       tools: [
         "Click a cell and type — primary way to write math",
-        "Space — push cell content right",
+        "Space — move right if the next cells are empty, otherwise push symbols right",
         "Backspace / Delete — clear cell or remove selection",
       ],
     },
@@ -386,7 +387,7 @@ export const COACH_MARKS: CoachMarkDef[] = [
     id: "quick-tip-shortcuts",
     targetSelector: '[data-cy="instruction-bar"]',
     title: "Cell shortcuts",
-    body: "Space pushes symbols right in the selected cell. Backspace or Delete clears it. Delete also removes a selection.",
+    body: "Space moves to the next cell when the row is empty ahead, or pushes symbols right to make a gap. Backspace or Delete clears the cell. Delete also removes a selection.",
   },
   {
     id: "invite-app-bar",

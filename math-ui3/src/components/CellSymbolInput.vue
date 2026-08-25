@@ -16,6 +16,7 @@
     :style="inputStyle"
     @keydown="onKeydown"
     @keyup.stop
+    @paste.prevent
     @input="onInput"
   />
 </template>
@@ -134,8 +135,7 @@ async function onKeydown(e: KeyboardEvent) {
     e.preventDefault();
     draft.value = "";
     if (inputRef.value) inputRef.value.value = "";
-    await notationMutateHelper.pushNotationsFromSelectedCell();
-    matrixCellHelper.setNextCell(0, 0);
+    await notationMutateHelper.handleSpaceOnSelectedCell();
     nextTick(focusInput);
     return;
   }

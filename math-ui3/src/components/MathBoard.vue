@@ -312,7 +312,13 @@ watchHelper.watchCustomEvent(["CELL_SELECTED"], "EV_COPY", () => {
 });
 
 watchHelper.watchCustomEvent(
-  ["CELL_SELECTED"],
+  [
+    "CELL_SELECTED",
+    "TEXT_STARTED",
+    "TEXT_SELECTED",
+    "IMAGE_SELECTED",
+    ...ARMED_TOOL_EDIT_MODES,
+  ],
   "EV_PASTE",
   (e: ClipboardEvent) => {
     eventHelper.paste(e);
@@ -541,6 +547,11 @@ foreignObject[notationType="ANNOTATION"] * {
 }
 foreignObject[notationType="ANNOTATION"] [data-cy="annotation"] {
   pointer-events: auto;
+}
+
+/* Display-only; editing uses FreeTextEditor. Native paste here doubled the text. */
+foreignObject[notationType="TEXT"] textarea {
+  pointer-events: none;
 }
 
 .sqrt {
