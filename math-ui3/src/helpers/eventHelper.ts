@@ -9,13 +9,12 @@ import useNotationMutationHelper from "./notationMutateHelper";
 import useEventBus from "../helpers/eventBusHelper";
 import useAuthorizationHelper from "./authorizationHelper";
 import {
-  isBlankPracticeBoard,
-  PRACTICE_PROBLEM_ROLE,
+  shouldCapturePracticeProblemPaste,
 } from "./practiceBoardAdapter";
 import {
-  getPracticeProblemImageBase64,
-  getPracticeProblemText,
-} from "./practiceCheckHelper";
+  isPracticeLabelGutterActive,
+  practiceWorkFromCol,
+} from "./practicePartLabelHelper";
 
 import useSelectionHelper from "../helpers/selectionHelper";
 import {
@@ -112,6 +111,19 @@ export default function eventHelper() {
       e.clipboardData?.getData("text/html") ?? "",
     );
 
+    if (shouldCapturePracticeProblemPaste()) {
+      e.preventDefault();
+      if (plainText.trim()) {
+        eventBus.emit("EV_PRACTICE_PROBLEM_PASTE", { text: plainText });
+        return;
+      }
+      const imageBase64 = await resolveClipboardImageBase64(e);
+      if (imageBase64) {
+        eventBus.emit("EV_PRACTICE_PROBLEM_PASTE", { imageBase64 });
+      }
+      return;
+    }
+
     if (hasFiles && !plainText.trim()) {
       e.preventDefault();
       return pasteImage(e);
@@ -180,145 +192,92 @@ export default function eventHelper() {
       Math.max(0, cell.row),
       matrixDimensions.rowsNum - 1,
     );
-    const notations = notationStore.getNotations();
-    const markAsProblem =
-      isBlankPracticeBoard() &&
-      !getPracticeProblemImageBase64(notations) &&
-      !getPracticeProblemText(notations);
 
     notationMutationHelper.addTextNotation(
       text,
       textBoxRectForPastedText(text, fromCol, fromRow),
-      markAsProblem ? { practiceRole: PRACTICE_PROBLEM_ROLE } : undefined,
     );
   }
 
   function ensurePasteAnchorCell() {
     if (cellStore.getSelectedCell()) return;
-    selectionHelper.setSelectedCell({ col: 1, row: 1 }, true);
+    const col = isPracticeLabelGutterActive() ? practiceWorkFromCol() : 1;
+    selectionHelper.setSelectedCell({ col, row: 1 }, true);
+  }
+
+  async function resolveClipboardImageBase64(
+    e: ClipboardEvent,
+  ): Promise<string | null> {
+    try {
+      window.focus();
+      let htmlData: string | null = null;
+      if (e.clipboardData) {
+        htmlData = e.clipboardData.getData("text/html");
+      }
+
+      if (navigator.clipboard?.read) {
+        const clipboardItems = await navigator.clipboard.read();
+        for (const clipboardItem of clipboardItems) {
+          const imageType = clipboardItem.types.find((type: string) =>
+            type.startsWith("image/"),
+          );
+          if (imageType) {
+            const blob: Blob = await clipboardItem.getType(imageType);
+            if (!blob) continue;
+            return await imageHelper.convertBlobToBase64GrayScale(blob);
+          }
+          const htmlType = clipboardItem.types.find((type: string) =>
+            type.startsWith("text/html"),
+          );
+          if (htmlType && htmlData) {
+            const match: RegExpMatchArray | null = htmlData.match(
+              /<img[^>]+src=["']([^"']+)["']/i,
+            );
+            if (match?.[1]) {
+              const src: string = match[1];
+              return src.startsWith("data:image/")
+                ? src
+                : await imageHelper.convertImageToBase64(src);
+            }
+          }
+        }
+      }
+
+      if (e.clipboardData) {
+        const items: DataTransferItemList = e.clipboardData.items;
+        for (const item of Array.from(items)) {
+          if (item.type.startsWith("image/")) {
+            const blob: File | null = item.getAsFile();
+            if (blob) {
+              return await imageHelper.convertBlobToBase64GrayScale(blob);
+            }
+          }
+        }
+        const html = e.clipboardData.getData("text/html");
+        if (html) {
+          const match: RegExpMatchArray | null = html.match(
+            /<img[^>]+src=["']([^"']+)["']/i,
+          );
+          if (match?.[1]) {
+            const src: string = match[1];
+            return src.startsWith("data:image/")
+              ? src
+              : await imageHelper.convertImageToBase64(src);
+          }
+        }
+      }
+    } catch (err: unknown) {
+      console.error("Paste image error:", err);
+    }
+    return null;
   }
 
   async function pasteImage(e: ClipboardEvent): Promise<void> {
     if (!authorizationHelper.canEdit()) return;
     ensurePasteAnchorCell();
     if (!cellStore.getSelectedCell()) return;
-
-    try {
-      window.focus();
-      let htmlData: string | null = null;
-
-      // Log available clipboard MIME types for debugging
-      if (e.clipboardData) {
-        console.debug("Clipboard MIME types:", e.clipboardData.types);
-        htmlData = e.clipboardData.getData("text/html");
-      }
-
-      // First, try the Clipboard API
-      if (navigator.clipboard?.read) {
-        console.debug("Attempting Clipboard API read...");
-        const clipboardItems = await navigator.clipboard.read();
-        for (const clipboardItem of clipboardItems) {
-          console.debug("Clipboard item types:", clipboardItem.types);
-          const imageType = clipboardItem.types.find((type: string) =>
-            type.startsWith("image/"),
-          );
-          if (imageType) {
-            console.debug("Found image type:", imageType);
-            const blob: Blob = await clipboardItem.getType(imageType);
-            if (!blob) return;
-            const base64 = await imageHelper.convertBlobToBase64GrayScale(blob);
-            notationMutationHelper.addImageNotation(base64);
-            return;
-          }
-          const htmlType = clipboardItem.types.find((type: string) =>
-            type.startsWith("text/html"),
-          );
-          if (htmlType && e.clipboardData) {
-            console.debug("Found html type:", htmlType);
-            if (htmlData) {
-              console.debug("HTML Clipboard Data:", htmlData);
-              const match: RegExpMatchArray | null = htmlData.match(
-                /<img[^>]+src=["']([^"']+)["']/i,
-              );
-              if (match && match[1]) {
-                console.debug("Found image src in HTML:", match[1]);
-                const src: string = match[1];
-                const base64: string = src.startsWith("data:image/")
-                  ? src
-                  : await imageHelper.convertImageToBase64(src);
-                notationMutationHelper.addImageNotation(base64);
-                return;
-              } else {
-                console.warn("No image found in HTML clipboard data");
-              }
-            }
-          }
-        }
-        console.debug("No image found in Clipboard API");
-      } else {
-        console.debug("Clipboard API not available");
-      }
-
-      // Fallback: Handle clipboard data from event
-
-      if (e.clipboardData) {
-        // Check for binary image data
-        const items: DataTransferItemList = e.clipboardData.items;
-        for (const item of Array.from(items)) {
-          if (item.type.startsWith("image/")) {
-            console.debug("Found binary image in clipboard, type:", item.type);
-            const blob: File | null = item.getAsFile();
-            if (blob) {
-              const base64: string =
-                await imageHelper.convertBlobToBase64GrayScale(blob);
-              notationMutationHelper.addImageNotation(base64);
-              return;
-            }
-          }
-        }
-
-        // Check for base64 or URL in text/html
-        const htmlData: string = e.clipboardData.getData("text/html");
-
-        if (htmlData) {
-          console.debug("HTML Clipboard Data:", htmlData);
-          const match: RegExpMatchArray | null = htmlData.match(
-            /<img[^>]+src=["']([^"']+)["']/i,
-          );
-          if (match && match[1]) {
-            console.debug("Found image src in HTML:", match[1]);
-            const src: string = match[1];
-            const base64: string = src.startsWith("data:image/")
-              ? src
-              : await imageHelper.convertImageToBase64(src);
-            notationMutationHelper.addImageNotation(base64);
-            return;
-          } else {
-            console.warn("No image found in HTML clipboard data");
-          }
-        } else {
-          console.warn("No HTML clipboard data available");
-        }
-
-        // Additional debugging: Check other MIME types
-        for (const type of e.clipboardData.types) {
-          if (type !== "text/html" && !type.startsWith("image/")) {
-            console.debug(
-              `Clipboard data for type ${type}:`,
-              e.clipboardData.getData(type),
-            );
-          }
-        }
-      }
-    } catch (err: unknown) {
-      const error = err as Error;
-      console.error(
-        "Paste image error:",
-        error.name,
-        error.message,
-        error.stack,
-      );
-    }
+    const base64 = await resolveClipboardImageBase64(e);
+    if (base64) notationMutationHelper.addImageNotation(base64);
   }
 
   function registerSvgPointerDown() {

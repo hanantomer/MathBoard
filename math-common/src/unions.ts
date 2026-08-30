@@ -13,6 +13,7 @@ export type BusEventType =
   | "EV_QUESTION_SAVED"
   | "EV_COPY"
   | "EV_PASTE"
+  | "EV_PRACTICE_PROBLEM_PASTE"
   | "EV_SHORTCUT_KEYUP"
   | "EV_KEYUP"
   | "EV_KEYDOWN"

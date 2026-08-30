@@ -54,6 +54,13 @@ import {
   removeLocalPracticeNotation,
 } from "./practiceBoardAdapter";
 import { getBoardUser } from "./boardUserHelper";
+import {
+  ensureActivePartLabel,
+  isPracticeLabelGutterActive,
+  isPracticeLabelGutterCol,
+  practiceWorkFromCol,
+} from "./practicePartLabelHelper";
+import { isPracticePartLabelOnly } from "common/practiceParts";
 
 import {
   NotationAttributes,
@@ -904,6 +911,21 @@ export default function notationMutateHelper() {
   function addCellNotation(notation: PointNotationCreationAttributes) {
     if (!authorizationHelper.canEdit()) return;
 
+    if (isPracticeBoard() && typeof notation.row === "number") {
+      if (
+        isPracticeLabelGutterActive() &&
+        isPracticeLabelGutterCol(notation.col)
+      ) {
+        notation.col = practiceWorkFromCol();
+      }
+      ensureActivePartLabel(notation.row);
+      const selected = getSelectedCell();
+      if (selected) {
+        notation.col = selected.col;
+        notation.row = selected.row;
+      }
+    }
+
     if (isCellInQuestionArea(notation)) {
       return;
     }
@@ -1217,9 +1239,29 @@ export default function notationMutateHelper() {
     textCells: RectAttributes,
     extras?: { practiceRole?: "problem" },
   ) {
+    let fromCol = textCells.fromCol;
+    let toCol = textCells.toCol;
+    if (
+      isPracticeBoard() &&
+      !isPracticePartLabelOnly(value) &&
+      typeof textCells.fromRow === "number"
+    ) {
+      if (
+        isPracticeLabelGutterActive() &&
+        fromCol < practiceWorkFromCol()
+      ) {
+        const shift = practiceWorkFromCol() - fromCol;
+        fromCol += shift;
+        toCol += shift;
+      }
+      if (fromCol >= practiceWorkFromCol()) {
+        ensureActivePartLabel(textCells.fromRow);
+      }
+    }
+
     let notation: RectNotationCreationAttributes = {
-      fromCol: textCells.fromCol,
-      toCol: textCells.toCol,
+      fromCol,
+      toCol,
       fromRow: textCells.fromRow,
       toRow: textCells.toRow,
       value: value,
@@ -1645,6 +1687,36 @@ export default function notationMutateHelper() {
     }
   }
 
+  function isDotNotation(n: NotationAttributes): boolean {
+    return (
+      isCellNotationType(n.notationType) &&
+      (n as PointNotationAttributes).value === "."
+    );
+  }
+
+  /** Backspace on a lone `.` (cursor stays after typing it) deletes the dot instead of skipping left. */
+  async function handleBackspaceOnSelectedCell(): Promise<boolean> {
+    if (!authorizationHelper.canEdit()) return false;
+
+    const cell = cellStore.getSelectedCell();
+    if (!cell) return false;
+
+    const atCell = notationStore
+      .getNotationsAtCell(cell)
+      .filter((n) => isCellNotationType(n.notationType));
+    const dots = atCell.filter(isDotNotation);
+    const nonDots = atCell.filter((n) => !isDotNotation(n));
+    if (dots.length === 0 || nonDots.length > 0) return false;
+
+    notationStore.resetSelectedNotations();
+    dots.forEach((n) => notationStore.selectNotation(n.uuid));
+    await deleteSelectedNotations();
+    await collapseNotationsToSelectedCell();
+    matrixCellHelper.setNextCell(0, 0);
+    selectNotationByCell(cellStore.getSelectedCell()!);
+    return true;
+  }
+
   async function handleSpaceOnSelectedCell() {
     if (!authorizationHelper.canEdit()) return;
     if (spaceKeyLock) return;
@@ -1740,20 +1812,16 @@ export default function notationMutateHelper() {
             }
           }
 
-          notationStore
-            .getSelectedNotations()
-            .forEach(async (n: NotationAttributes) => {
-              //from store
-              notationStore.deleteNotation(n.uuid);
+          for (const n of toDelete) {
+            notationStore.deleteNotation(n.uuid);
 
-              // publish
-              if (requireBoardParent().type === "LESSON") {
-                userOutgoingOperations.syncOutgoingRemoveNotation(
-                  n.uuid,
-                  (n as LessonNotationAttributes).lesson.uuid,
-                );
-              }
-            });
+            if (requireBoardParent().type === "LESSON") {
+              userOutgoingOperations.syncOutgoingRemoveNotation(
+                n.uuid,
+                (n as LessonNotationAttributes).lesson.uuid,
+              );
+            }
+          }
           return;
         }
       } finally {
@@ -1957,6 +2025,7 @@ export default function notationMutateHelper() {
     selectNotationByCell,
 
     handleSpaceOnSelectedCell,
+    handleBackspaceOnSelectedCell,
     pushNotationsFromSelectedCell,
     deleteSelectedNotations,
     recognizeAndReplaceSelectedFreeSketches,

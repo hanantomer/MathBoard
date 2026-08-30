@@ -10,12 +10,27 @@ import {
 } from "common/baseTypes";
 import { useCellStore } from "../store/pinia/cellStore";
 import { useNotationStore } from "../store/pinia/notationStore";
+import { usePracticeStore } from "../store/pinia/practiceStore";
 import { getLastStudentNotation } from "./practiceCoachAnchorHelper";
-import { isPracticeProblemNotation } from "./practiceBoardAdapter";
+import {
+  getPracticeQuestionUUId,
+  isPracticeProblemNotation,
+} from "./practiceBoardAdapter";
 import {
   serializePracticeDiagram,
   serializePracticeFractions,
 } from "./practiceDiagramSerializeHelper";
+import {
+  formatPracticeStudentWorkLines,
+  formatStudentWorkByParts,
+  isPracticePartLabelOnly,
+  detectLinePartId,
+  partLabelText,
+} from "common/practiceParts";
+import {
+  isPracticeGutterNotation,
+  overlayGutterMarks,
+} from "./practicePartLabelHelper";
 import useImageHelper from "./imageHelper";
 
 type CellRect = {
@@ -261,11 +276,82 @@ function boardCellSize(): { cellW: number; cellH: number } {
   return { cellW: 16.5, cellH: 33 };
 }
 
+type WorkLine = {
+  text: string;
+  row?: number;
+  isDraft?: boolean;
+};
+
+function joinSameRowText(existing: string, incoming: string): string {
+  const a = existing.trim();
+  const b = incoming.trim();
+  if (!a) return b;
+  if (!b) return a;
+  if (a === b || a.includes(b)) return a;
+  if (b.includes(a)) return b;
+  if (isPracticePartLabelOnly(b)) {
+    return a.startsWith(b) ? a : `${b} ${a}`;
+  }
+  if (isPracticePartLabelOnly(a)) {
+    return b.startsWith(a) ? b : `${a} ${b}`;
+  }
+  return `${a} ${b}`;
+}
+
+/** Keep visual order so continuation rows stay with the last `(n)` above them. */
+function orderWorkLines(lines: WorkLine[]): WorkLine[] {
+  const ranked: WorkLine[] = [];
+  const rest: WorkLine[] = [];
+  for (const line of lines) {
+    if (typeof line.row === "number") {
+      ranked.push({ text: line.text, row: line.row, isDraft: line.isDraft });
+    } else {
+      rest.push(line);
+    }
+  }
+  ranked.sort((a, b) => (a.row ?? 0) - (b.row ?? 0));
+  const merged: WorkLine[] = [];
+  for (const line of ranked) {
+    const prev = merged[merged.length - 1];
+    if (prev && prev.row === line.row) {
+      prev.text = joinSameRowText(prev.text, line.text);
+      prev.isDraft = prev.isDraft || line.isDraft;
+    } else {
+      merged.push(line);
+    }
+  }
+  return [...merged, ...rest];
+}
+
+function gutterPartIdFromText(
+  t: RectNotationAttributes,
+  value: string,
+): string | null {
+  if (!isPracticeGutterNotation(t.fromCol, t.toCol)) return null;
+  const trimmed = value.trim();
+  if (!isPracticePartLabelOnly(trimmed)) return null;
+  return detectLinePartId(trimmed);
+}
+
+function prefixGutterLabel(body: string, partId: string): string {
+  const prefix = partLabelText(partId);
+  const trimmed = body.trim();
+  if (!trimmed) return prefix;
+  if (trimmed.startsWith(prefix)) return trimmed;
+  return `${prefix} ${trimmed}`;
+}
+
 function serializeFilteredWork(
   practiceOnly: NotationAttributes[],
   draft?: PracticeTextDraft | null,
+  activeCell?: CellAttributes | null,
+  markActive = false,
+  groupByParts?: {
+    activePartId: string | null;
+    partLabelRows?: Record<string, number>;
+  },
 ): string {
-  const lines: string[] = [];
+  const workLines: WorkLine[] = [];
   const cellSize = boardCellSize();
   const diagram = serializePracticeDiagram(practiceOnly, cellSize);
   const fractions = serializePracticeFractions(practiceOnly, cellSize);
@@ -303,6 +389,18 @@ function serializeFilteredWork(
     addItem(frac.row, frac.col, frac.text);
   }
 
+  const skipGutterMath = !!groupByParts;
+  const partByRow = new Map<number, string>();
+  if (groupByParts) {
+    for (const m of overlayGutterMarks(
+      practiceOnly,
+      groupByParts.activePartId,
+      groupByParts.partLabelRows,
+    )) {
+      partByRow.set(m.row, m.id);
+    }
+  }
+
   const rows = Array.from(itemsByRow.keys()).sort((a, b) => a - b);
   for (const row of rows) {
     const items = itemsByRow.get(row)!;
@@ -316,10 +414,15 @@ function serializeFilteredWork(
       buf += i.text;
       lastCol = i.col;
     }
-    if (buf) lines.push(buf);
+    if (buf) {
+      const overlayId = partByRow.get(row);
+      workLines.push({
+        text: overlayId ? prefixGutterLabel(buf, overlayId) : buf,
+        row,
+      });
+    }
   }
 
-  let draftApplied = false;
   for (const n of practiceOnly) {
     if (n.notationType === "TEXT") {
       const t = n as RectNotationAttributes;
@@ -327,21 +430,109 @@ function serializeFilteredWork(
         draft?.notationUUId && draft.notationUUId === t.uuid
           ? draft.value
           : t.value;
-      if (draft?.notationUUId === t.uuid) draftApplied = true;
-      if (live?.trim()) lines.push(live.trim());
+      if (!live?.trim()) continue;
+      const trimmed = live.trim();
+      const isDraft = draft?.notationUUId === t.uuid;
+      const gutterId = skipGutterMath
+        ? gutterPartIdFromText(t, trimmed)
+        : null;
+      const incoming = gutterId ? partLabelText(gutterId) : trimmed;
+      const existing = workLines.find((l) => l.row === t.fromRow);
+      if (existing) {
+        existing.text = gutterId
+          ? prefixGutterLabel(existing.text, gutterId)
+          : joinSameRowText(existing.text, incoming);
+        existing.isDraft = existing.isDraft || isDraft;
+      } else {
+        workLines.push({
+          text: incoming,
+          row: t.fromRow,
+          isDraft,
+        });
+      }
     } else if (n.notationType === "ANNOTATION") {
       if (consumed.has(n.uuid)) continue;
       const a = n as AnnotationNotationAttributes;
-      if (a.value?.trim()) lines.push(a.value.trim());
+      if (a.value?.trim()) {
+        const cell = pixelToCell(a.x, a.y);
+        const existing =
+          typeof cell?.row === "number"
+            ? workLines.find((l) => l.row === cell.row)
+            : undefined;
+        if (existing) {
+          existing.text = joinSameRowText(existing.text, a.value.trim());
+        } else {
+          workLines.push({
+            text: a.value.trim(),
+            row: cell?.row,
+          });
+        }
+      }
     }
   }
 
-  if (!draftApplied && draft?.value.trim()) {
-    lines.push(draft.value.trim());
+  if (draft?.value.trim() && !workLines.some((l) => l.isDraft)) {
+    const existing =
+      typeof activeCell?.row === "number"
+        ? workLines.find((l) => l.row === activeCell.row)
+        : undefined;
+    if (existing) {
+      existing.text = joinSameRowText(existing.text, draft.value.trim());
+      existing.isDraft = true;
+    } else {
+      workLines.push({
+        text: draft.value.trim(),
+        row: activeCell?.row,
+        isDraft: true,
+      });
+    }
   }
-  lines.push(...diagram.lines);
+  for (const line of diagram.lines) {
+    workLines.push({ text: line });
+  }
 
-  return lines.join("\n").trim();
+  const ordered = orderWorkLines(workLines);
+  const texts = ordered.map((l) => l.text);
+  if (groupByParts) {
+    return formatStudentWorkByParts(texts, groupByParts.activePartId);
+  }
+  if (!markActive) {
+    return texts.join("\n").trim();
+  }
+  const draftLineIndex = ordered.findIndex((l) => l.isDraft);
+  return formatPracticeStudentWorkLines(
+    texts,
+    pickActiveLineIndex(
+      ordered,
+      activeCell,
+      draftLineIndex >= 0 ? draftLineIndex : null,
+    ),
+  );
+}
+
+function pickActiveLineIndex(
+  lines: WorkLine[],
+  activeCell: CellAttributes | null | undefined,
+  draftLineIndex: number | null,
+): number | null {
+  if (lines.length === 0) return null;
+  if (draftLineIndex != null && draftLineIndex >= 0 && draftLineIndex < lines.length) {
+    return draftLineIndex;
+  }
+  if (activeCell && typeof activeCell.row === "number") {
+    let best = -1;
+    let bestDist = Number.POSITIVE_INFINITY;
+    for (let i = 0; i < lines.length; i++) {
+      if (typeof lines[i].row !== "number") continue;
+      const dist = Math.abs(lines[i].row! - activeCell.row);
+      if (dist < bestDist) {
+        bestDist = dist;
+        best = i;
+      }
+    }
+    if (best >= 0) return best;
+  }
+  return lines.length - 1;
 }
 
 function draftAppliesTo(
@@ -357,18 +548,38 @@ function draftAppliesTo(
 export function serializePracticeStudentWork(
   notations: NotationAttributes[],
   draft?: PracticeTextDraft | null,
+  options?: { activePartId?: string | null; groupByParts?: boolean },
 ): string {
   const practiceOnly = notations.filter(
     (n) => n.boardType === "PRACTICE" && !isPracticeProblemNotation(n),
   );
   const studentDraft = draftAppliesTo(practiceOnly, draft);
+  const images = listPracticeImages(notations);
+  const focusCell = getFocusCell(notations, images);
+  const groupByParts =
+    options?.groupByParts === true
+      ? {
+          activePartId: options.activePartId ?? null,
+          partLabelRows: (() => {
+            try {
+              return usePracticeStore().getSession(
+                getPracticeQuestionUUId(),
+              ).partLabelRows;
+            } catch {
+              return undefined;
+            }
+          })(),
+        }
+      : undefined;
   if (practiceOnly.length === 0) {
-    return (studentDraft?.value ?? "").trim();
+    const draftText = (studentDraft?.value ?? "").trim();
+    if (!draftText) return "";
+    return groupByParts
+      ? formatStudentWorkByParts([draftText], groupByParts.activePartId)
+      : formatPracticeStudentWorkLines([draftText], 0);
   }
 
-  const images = listPracticeImages(notations);
   const focused = getFocusedPracticeImage(notations);
-  const focusCell = getFocusCell(notations, images);
   const scoped =
     images.length > 0 && focused
       ? practiceOnly.filter((n) =>
@@ -376,7 +587,13 @@ export function serializePracticeStudentWork(
         )
       : practiceOnly;
 
-  return serializeFilteredWork(scoped, studentDraft);
+  return serializeFilteredWork(
+    scoped,
+    studentDraft,
+    focusCell,
+    !groupByParts,
+    groupByParts,
+  );
 }
 
 /**

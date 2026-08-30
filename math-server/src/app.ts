@@ -14,7 +14,7 @@ import useDb from "../../math-db/build/dbUtil";
 import connection from "../../math-db/build/models/index";
 import multer from "multer";
 import { recognizeSketchFromImage, formatSketchOcrError, summarizeSketchOcrError } from "./services/sketchOcrService";
-import { checkPracticeWork, coachPracticeWork } from "./services/practiceCheckService";
+import { checkPracticeWork, coachPracticeWork, extractPracticeParts } from "./services/practiceCheckService";
 import {
     checkPracticeAiLimit,
     consumePracticeAiLimit,
@@ -23,6 +23,8 @@ import {
 import type {
   PracticeCheckRequest,
   PracticeCoachRequest,
+  PracticePartsExtractRequest,
+  PracticeProblemPart,
 } from "../../math-common/build/practiceQuestionTypes";
 import {
     PRACTICE_AI_LIMIT_ERROR,
@@ -334,7 +336,7 @@ async function tryAllowGuestPractice(
     }
 
     const aiMatch = pathOnly.match(
-        /^\/api\/practice-questions\/([^/]+)\/(check|coach)$/,
+        /^\/api\/practice-questions\/([^/]+)\/(check|coach|parts)$/,
     );
     if (req.method === "POST" && aiMatch) {
         const guestKey = resolveGuestKey(req);
@@ -373,6 +375,21 @@ function resolveGuestKey(req: Request): string {
         req.socket.remoteAddress ||
         "unknown";
     return `ip:${ip}`;
+}
+
+function parseClientParts(raw: unknown): PracticeProblemPart[] | undefined {
+    if (!Array.isArray(raw) || raw.length === 0) return undefined;
+    const parts = raw
+        .map((item) => {
+            const row = item as { id?: unknown; text?: unknown };
+            return {
+                id: String(row?.id ?? "").trim(),
+                text: String(row?.text ?? "").trim(),
+            };
+        })
+        .filter((p) => p.id && p.text)
+        .slice(0, 12);
+    return parts.length ? parts : undefined;
 }
 
 /** Attach and enforce daily AI quota for guests or registered users. */
@@ -1170,6 +1187,11 @@ app.post(
                 typeof body?.problemText === "string"
                     ? body.problemText
                     : undefined;
+            const parts = parseClientParts(body?.parts);
+            const activePartId =
+                typeof body?.activePartId === "string"
+                    ? body.activePartId
+                    : undefined;
             if (!questionUUId) {
                 return res.status(400).json({ error: "questionUUId is required" });
             }
@@ -1178,6 +1200,8 @@ app.post(
                 studentWork,
                 problemImageBase64,
                 problemText,
+                parts,
+                activePartId,
             );
             const used = recordPracticeAiUse(req, res, "check");
             return res.status(200).json({
@@ -1228,6 +1252,11 @@ app.post(
                     : undefined;
             const phase =
                 body?.phase === "preliminary" ? "preliminary" : undefined;
+            const parts = parseClientParts(body?.parts);
+            const activePartId =
+                typeof body?.activePartId === "string"
+                    ? body.activePartId
+                    : undefined;
             if (!questionUUId) {
                 return res.status(400).json({ error: "questionUUId is required" });
             }
@@ -1237,6 +1266,8 @@ app.post(
                 problemImageBase64,
                 problemText,
                 phase,
+                parts,
+                activePartId,
             );
             const used = recordPracticeAiUse(req, res, "coach");
             return res.status(200).json({
@@ -1258,6 +1289,50 @@ app.post(
             return res.status(502).json({
                 error: "Practice coach failed",
                 message,
+            });
+        }
+    }
+);
+
+app.post(
+    "/api/practice-questions/:questionUUId/parts",
+    async (
+        req: Request,
+        res: Response,
+    ): Promise<Response | undefined> => {
+        try {
+            if (!enforcePracticeAiQuota(req, res, "coach")) {
+                return;
+            }
+            const body = req.body as PracticePartsExtractRequest;
+            const problemImageBase64 =
+                typeof body?.problemImageBase64 === "string"
+                    ? body.problemImageBase64
+                    : undefined;
+            const problemText =
+                typeof body?.problemText === "string"
+                    ? body.problemText
+                    : undefined;
+            const result = await extractPracticeParts(
+                problemImageBase64,
+                problemText,
+            );
+            const used = recordPracticeAiUse(req, res, "coach");
+            return res.status(200).json({
+                ...result,
+                remaining: used?.remaining,
+                limit: used?.limit,
+            });
+        } catch (err) {
+            const message =
+                err instanceof Error ? err.message : "Practice parts extract failed";
+            serverLogger.error({
+                message: "Practice parts extract failed",
+                error: message,
+                path: "/api/practice-questions/:questionUUId/parts",
+            });
+            return res.status(200).json({
+                parts: [{ id: "1", text: "Whole problem" }],
             });
         }
     }

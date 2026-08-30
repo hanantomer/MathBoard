@@ -41,23 +41,18 @@
   <SpecialSymbolPanels
     v-if="!isMobileBoard"
     class="special-symbols-expansion"
-    :class="{ 'special-symbols-expansion--below-assist': practiceDesktop }"
     data-cy="special-symbols-toolbar"
   />
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from "vue";
+import { ref } from "vue";
 import { useMediaQuery } from "@vueuse/core";
 import { MOBILE_BOARD_MEDIA_QUERY } from "../composables/useBoardLayout";
 import SpecialSymbolPanels from "./SpecialSymbolPanels.vue";
-import { isPracticeBoard } from "../helpers/practiceBoardAdapter";
 
 const isMobileBoard = useMediaQuery(MOBILE_BOARD_MEDIA_QUERY);
 const mobileSheetOpen = ref(false);
-const practiceDesktop = computed(
-  () => !isMobileBoard.value && isPracticeBoard(),
-);
 </script>
 
 <style scoped>
@@ -73,7 +68,7 @@ const practiceDesktop = computed(
 @media (max-width: 1023px) {
   .special-symbols-fab {
     right: max(12px, env(safe-area-inset-right));
-    bottom: max(72px, calc(12px + env(safe-area-inset-bottom)));
+    bottom: max(16px, env(safe-area-inset-bottom));
   }
 }
 
@@ -98,12 +93,5 @@ const practiceDesktop = computed(
   max-height: calc(100vh - 64px - 56px);
   position: fixed;
   overflow-y: auto;
-}
-
-.special-symbols-expansion--below-assist {
-  top: calc(64px + var(--practice-assist-rail-height, 0px));
-  max-height: calc(
-    100vh - 64px - 56px - var(--practice-assist-rail-height, 0px)
-  );
 }
 </style>

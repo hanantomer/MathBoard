@@ -21,6 +21,7 @@ import useUserOutgoingOperationsHelper from "./userOutgoingOperationsHelper";
 import useEventBus from "./eventBusHelper";
 import useAuthorizationHelper from "./authorizationHelper";
 import { handlePracticeClick, isPracticeBoard, isPracticeLayer } from "./practiceBoardAdapter";
+import { snapPracticeWorkCell } from "./practicePartLabelHelper";
 import { NotationType } from "common/unions";
 import { viewportPointerPosition } from "./pointerCoordinateHelper";
 import { sqrtSymbolSuffix } from "common/globals";
@@ -377,6 +378,8 @@ export default function selectionHelper() {
     const notationStore = useNotationStore();
 
     if (!authorizationHelper.canEdit()) return;
+
+    cell = snapPracticeWorkCell(cell);
 
     const prev = cellStore.getSelectedCell();
     cellStore.setSelectedCell(cell!, setEditMode);

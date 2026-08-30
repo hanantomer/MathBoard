@@ -11,6 +11,7 @@ import {
 } from "common/baseTypes";
 
 import { wrapVectorSymbol, vectorSymbolPrefix } from "common/globals";
+import { isPracticePartLabelOnly } from "common/practiceParts";
 import { useCellStore } from "../store/pinia/cellStore";
 import useUtils from "./matrixHelperUtils";
 import { escapeTextForHtml } from "./pastedTextHelper";
@@ -93,9 +94,15 @@ export default function useHtmlMatrixHelper() {
   const SQRT_VINCULUM_HIT_HEIGHT = 8;
 
   function htmlOverflow(n: NotationAttributes): string | null {
+    if (isPracticePartLabelFo(n)) return "visible";
     return n.notationType === "IMAGE" || n.notationType === "SQRTSYMBOL"
       ? "visible"
       : null;
+  }
+
+  function isPracticePartLabelFo(n: NotationAttributes): boolean {
+    if (n.notationType !== "TEXT") return false;
+    return isPracticePartLabelOnly((n as RectNotationAttributes).value ?? "");
   }
 
   function height(n: NotationAttributes): number | null {
@@ -169,6 +176,10 @@ export default function useHtmlMatrixHelper() {
       .attr("height", (n: NotationAttributes) => {
         return height(n);
       })
+      .classed("practice-part-label-fo", isPracticePartLabelFo)
+      .attr("fill", (n: NotationAttributes) =>
+        isPracticePartLabelFo(n) ? "none" : null,
+      )
       .style("overflow", (n: NotationAttributes) => htmlOverflow(n))
       .style("font-size", (n: NotationAttributes) => {
         return fontSize(n as PointNotationAttributes, el);
@@ -198,6 +209,10 @@ export default function useHtmlMatrixHelper() {
       .attr("height", (n: NotationAttributes) => {
         return height(n);
       })
+      .classed("practice-part-label-fo", isPracticePartLabelFo)
+      .attr("fill", (n: NotationAttributes) =>
+        isPracticePartLabelFo(n) ? "none" : null,
+      )
       .style("overflow", (n: NotationAttributes) => htmlOverflow(n))
       .html((n: NotationAttributes) => {
         return html(n);
@@ -285,7 +300,7 @@ export default function useHtmlMatrixHelper() {
     }
 
     let rowIdx = row(n);
-    if (!rowIdx) return null;
+    if (rowIdx == null || rowIdx < 0) return null;
 
     let y = utils.getNotationYposByRow(rowIdx);
 
@@ -332,7 +347,12 @@ export default function useHtmlMatrixHelper() {
         ).width;
       }
       case "TEXT": {
-        return rectNotationWidth(n as RectNotationAttributes);
+        const rect = n as RectNotationAttributes;
+        const w = rectNotationWidth(rect);
+        if (isPracticePartLabelOnly(rect.value ?? "")) {
+          return Math.max(w, cellStore.getCellHorizontalWidth() * 1.8);
+        }
+        return w;
       }
     }
     throw new Error("invalid width");
@@ -441,9 +461,16 @@ export default function useHtmlMatrixHelper() {
 
     function generateTextHtml(n: NotationAttributes): string {
       const n1 = n as RectNotationAttributes;
-      const bColor = rectBorderColor(n ?? false);
       const height = rectNotationHeight(n1);
       const width = rectNotationWidth(n1);
+      if (isPracticePartLabelOnly(n1.value ?? "")) {
+        return utils.wrapWithDiv(
+          `<p id="${n1.uuid}" class="practice-part-label">${escapeTextForHtml(
+            n1.value ?? "",
+          )}</p>`,
+        );
+      }
+      const bColor = rectBorderColor(n ?? false);
       const dir = /[\u0590-\u05FF\u0600-\u06FF]/.test(n1.value) ? "rtl" : "ltr";
       return utils.wrapWithDiv(
         `<textarea id=${

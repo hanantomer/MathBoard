@@ -49,15 +49,21 @@ async function collapseNotationsToSelectedCell() {
         }
       }
 
-      notations.forEach(async (notation: NotationAttributes) => {
+      for (const notation of notations) {
         if (
           notation.notationType === "EXPONENT" ||
           notation.notationType === "LOGBASE" ||
           notation.notationType === "SYMBOL"
         ) {
           notationFound = true;
-          (notation as PointNotationAttributes).col--;
-
+          const point = notation as PointNotationAttributes;
+          // A leftover `.` at the deleted cell stays put so the next digit
+          // can collapse onto it (3.14 minus 1 → 3.4), instead of sliding
+          // left onto the previous digit.
+          if (point.value === "." && col === cell.col) {
+            continue;
+          }
+          point.col--;
           await notationMutateHelper.updateNotation(notation);
         } else if (notation.notationType === "SQRT") {
           if ((notation as SqrtNotationAttributes).fromCol === col) {
@@ -69,7 +75,7 @@ async function collapseNotationsToSelectedCell() {
           }
           sqrtNotationFound = true;
         }
-      });
+      }
     }
   } finally {
     notationStore.endUndoGroup();
@@ -177,10 +183,17 @@ async function moveNotationsRight(
       );
     }
 
-    const notations = notationStore.getNotationsAtCell({
-      row: row,
-      col: currentCol,
-    });
+    const notations = notationStore
+      .getNotationsAtCell({
+        row: row,
+        col: currentCol,
+      })
+      .slice()
+      .sort((a, b) => {
+        const aDot = (a as PointNotationAttributes).value === "." ? 1 : 0;
+        const bDot = (b as PointNotationAttributes).value === "." ? 1 : 0;
+        return aDot - bDot;
+      });
 
     for (const notation of notations) {
       if (typeof (notation as PointNotationAttributes).col === "number") {

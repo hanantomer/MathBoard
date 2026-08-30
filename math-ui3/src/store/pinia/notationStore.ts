@@ -81,6 +81,34 @@ export const useNotationStore = defineStore("notation", () => {
     });
   }
 
+  /** A cell may hold one digit/symbol and one decimal point, but not two of either. */
+  function isDotValue(value: string | undefined): boolean {
+    return value === ".";
+  }
+
+  function cellAllowsIncomingPoint(
+    incoming: PointNotationAttributes,
+    occupants: NotationAttributes[],
+  ): boolean {
+    const others = occupants.filter(
+      (nt) => isCellNotationType(nt.notationType) && nt.uuid !== incoming.uuid,
+    );
+    if (others.length === 0) return true;
+
+    const incomingIsDot = isDotValue(incoming.value);
+    const otherDots = others.filter((nt) =>
+      isDotValue((nt as PointNotationAttributes).value),
+    );
+    const otherNonDots = others.filter(
+      (nt) => !isDotValue((nt as PointNotationAttributes).value),
+    );
+
+    if (incomingIsDot) {
+      return otherDots.length === 0 && otherNonDots.length <= 1;
+    }
+    return otherNonDots.length === 0 && otherDots.length <= 1;
+  }
+
   function clearNotationFromMatrices(uuid: string) {
     for (let i in matrices()) {
       cellOccupationHelper.clearNotationFromMatrix(uuid, matrices()[i]);
@@ -178,14 +206,9 @@ export const useNotationStore = defineStore("notation", () => {
       const existingNotations = getNotationsAtCell({
         col: n.col,
         row: n.row,
-      }).filter((nt) => isCellNotationType(nt.notationType));
+      });
 
-      const symbolOverDot =
-        n.value !== "." &&
-        existingNotations.length === 1 &&
-        (existingNotations[0] as PointNotationAttributes).value === ".";
-
-      if (existingNotations.length > 0 && !symbolOverDot) {
+      if (!cellAllowsIncomingPoint(n, existingNotations)) {
         console.warn("addNotation: Cell already has a point notation", n);
         return false;
       }

@@ -34,6 +34,7 @@ import useWatchHelper from "../helpers/watchHelper";
 import useAuthorizationHelper from "../helpers/authorizationHelper";
 
 import { MOBILE_BOARD_MEDIA_QUERY } from "../composables/useBoardLayout";
+import { PointNotationAttributes } from "common/baseTypes";
 
 const isMobileBoard = useMediaQuery(MOBILE_BOARD_MEDIA_QUERY);
 const cellStore = useCellStore();
@@ -146,13 +147,25 @@ async function onKeydown(e: KeyboardEvent) {
     if (inputRef.value) inputRef.value.value = "";
     const cell = cellStore.getSelectedCell();
     const atCell = notationStore.getNotationsAtCell(cell);
-    const pointNotation = atCell.find(
-      (n) => n.notationType === "SYMBOL" || n.notationType === "LOGBASE",
+    const pointNotations = atCell.filter(
+      (n) =>
+        n.notationType === "SYMBOL" ||
+        n.notationType === "LOGBASE" ||
+        n.notationType === "EXPONENT",
     );
-    if (pointNotation) {
+    const nonDot = pointNotations.find(
+      (n) => (n as PointNotationAttributes).value !== ".",
+    );
+    const toDelete = nonDot ?? pointNotations[0];
+    if (toDelete) {
       notationStore.resetSelectedNotations();
-      notationStore.selectNotation(pointNotation.uuid);
+      notationStore.selectNotation(toDelete.uuid);
       await notationMutateHelper.deleteSelectedNotations();
+      if ((toDelete as PointNotationAttributes).value === ".") {
+        await notationMutateHelper.collapseNotationsToSelectedCell();
+        nextTick(focusInput);
+        return;
+      }
     }
     matrixCellHelper.setNextCell(-1, 0);
     nextTick(focusInput);

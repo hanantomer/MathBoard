@@ -6,6 +6,13 @@ import {
   NotationCreationAttributes,
 } from "common/baseTypes";
 import { BoardType, NotationType, NotationTypeValues } from "common/unions";
+import {
+  ensureNumberedParts,
+} from "common/practiceParts";
+import {
+  formatPracticeProblemPrompt,
+  getPracticeQuestionTemplateByUUId,
+} from "common/practiceQuestionTemplates";
 import useApiHelper from "./apiHelper";
 import { useNotationStore } from "../store/pinia/notationStore";
 import { usePracticeStore } from "../store/pinia/practiceStore";
@@ -42,6 +49,16 @@ export function isBlankPracticeBoard(): boolean {
     isPracticeBoard() &&
     useNotationStore().getParent()?.uuid === PRACTICE_BLANK_UUID
   );
+}
+
+/** Unsubmitted blank (or catalog before stem load): paste goes to the problem pane. */
+export function shouldCapturePracticeProblemPaste(): boolean {
+  if (!isPracticeBoard()) return false;
+  try {
+    return !usePracticeStore().getSession(getPracticeQuestionUUId()).submitted;
+  } catch {
+    return false;
+  }
 }
 
 export function getPracticeQuestionUUId(): string {
@@ -116,30 +133,68 @@ export function removeLocalPracticeNotation(notationUUId: string) {
   usePracticeStore().removeNotation(getPracticeQuestionUUId(), notationUUId);
 }
 
+function joinStemNotations(notations: NotationAttributes[]): string {
+  const lines: string[] = [];
+  for (const n of notations) {
+    if (n.notationType === "TEXT" || n.notationType === "ANNOTATION") {
+      const value = String(
+        (n as NotationAttributes & { value?: string }).value ?? "",
+      ).trim();
+      if (value) lines.push(value);
+    }
+  }
+  if (lines.length) return lines.join("\n");
+  const symbols = notations
+    .filter(
+      (n) =>
+        n.notationType === "SYMBOL" ||
+        n.notationType === "EXPONENT" ||
+        n.notationType === "LOGBASE",
+    )
+    .map((n) =>
+      String((n as NotationAttributes & { value?: string }).value ?? "").trim(),
+    )
+    .filter(Boolean);
+  return symbols.join("");
+}
+
+function submitStemIfNeeded(questionUUId: string, stemText: string) {
+  const practiceStore = usePracticeStore();
+  if (practiceStore.getSession(questionUUId).submitted) return;
+  const text = stemText.trim();
+  if (!text) return;
+  practiceStore.submitProblem(questionUUId, {
+    problemText: text,
+    parts: ensureNumberedParts(text),
+  });
+}
+
 /**
- * Load QUESTION stem from the API + PRACTICE student layer from sessionStorage.
- * Blank sheet: local PRACTICE layer only (no stem).
+ * Load PRACTICE student layer from sessionStorage.
+ * Catalog QUESTION stem is submitted into the problem pane, not drawn on the board.
+ * Blank sheet: local PRACTICE layer only; leftover `practiceRole` stems migrate to the pane.
  */
 export async function loadPracticeBoard(questionUUId: string) {
   const notationStore = useNotationStore();
   const apiHelper = useApiHelper();
-  const notations: NotationAttributes[] = [];
+  const practiceStore = usePracticeStore();
 
   try {
     notationStore.haltSaveState();
 
     if (questionUUId !== PRACTICE_BLANK_UUID) {
+      const stemNotations: NotationAttributes[] = [];
       for (let i = 0; i < NotationTypeValues.length; i++) {
         const notationType = NotationTypeValues[i] as NotationType;
         try {
-          const stemNotations = await loadStemNotationsByType(
+          const fetched = await loadStemNotationsByType(
             apiHelper,
             notationType,
             questionUUId,
           );
-          if (!stemNotations) continue;
-          stemNotations.forEach((n) => {
-            notations.push({
+          if (!fetched) continue;
+          fetched.forEach((n) => {
+            stemNotations.push({
               ...n,
               notationType,
               boardType: "QUESTION",
@@ -152,14 +207,29 @@ export async function loadPracticeBoard(questionUUId: string) {
           );
         }
       }
+
+      const template = getPracticeQuestionTemplateByUUId(questionUUId);
+      const stemText = template
+        ? formatPracticeProblemPrompt(template)
+        : joinStemNotations(stemNotations);
+      submitStemIfNeeded(questionUUId, stemText || "Practice question");
     }
 
-    const practiceNotations = usePracticeStore()
+    let practiceNotations = practiceStore
       .getNotations(questionUUId)
       .map((n) => ({ ...n, boardType: "PRACTICE" as BoardType }));
-    notations.push(...practiceNotations);
 
-    notationStore.setNotations(notations);
+    if (questionUUId === PRACTICE_BLANK_UUID) {
+      const problems = practiceNotations.filter(isPracticeProblemNotation);
+      const work = practiceNotations.filter((n) => !isPracticeProblemNotation(n));
+      if (problems.length && !practiceStore.getSession(questionUUId).submitted) {
+        const stemText = joinStemNotations(problems);
+        if (stemText) submitStemIfNeeded(questionUUId, stemText);
+      }
+      practiceNotations = work;
+    }
+
+    notationStore.setNotations(practiceNotations);
   } finally {
     notationStore.activateSaveState();
   }

@@ -5,10 +5,10 @@ import {
   type PracticeAssistMode,
 } from "common/globals";
 
-const BOARD_DEBOUNCE_MS = 1600;
+const BOARD_DEBOUNCE_MS = 4500;
 /** Longer pause so prose tips wait for a thought, not a mid-sentence keystroke. */
-const TEXT_DEBOUNCE_MS = 2800;
-const MIN_COACH_INTERVAL_MS = 5000;
+const TEXT_DEBOUNCE_MS = 6500;
+const MIN_COACH_INTERVAL_MS = 22000;
 
 let debounceTimer: ReturnType<typeof setTimeout> | undefined;
 let inFlight = false;

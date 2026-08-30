@@ -28,6 +28,9 @@ import {
   PracticeCoachResult,
   PracticeCoachPhase,
   PracticeAiQuota,
+  PracticePartsExtractRequest,
+  PracticePartsExtractResult,
+  PracticeProblemPart,
 } from "common/practiceQuestionTypes";
 import { AnswerAttributes, AnswerCreationAttributes } from "common/answerTypes";
 import axios, { AxiosError } from "axios";
@@ -97,6 +100,8 @@ export default function useApiHelper() {
     studentWork: string,
     problemImageBase64?: string,
     problemText?: string,
+    parts?: PracticeProblemPart[],
+    activePartId?: string,
   ): Promise<PracticeCheckResult> {
     try {
       const { data } = await axios.post<PracticeCheckResult>(
@@ -108,6 +113,8 @@ export default function useApiHelper() {
             ? { problemImageBase64 }
             : {}),
           ...(problemText ? { problemText } : {}),
+          ...(parts?.length ? { parts } : {}),
+          ...(activePartId ? { activePartId } : {}),
         } satisfies PracticeCheckRequest,
       );
       return data;
@@ -146,6 +153,8 @@ export default function useApiHelper() {
     problemImageBase64?: string,
     problemText?: string,
     phase?: PracticeCoachPhase,
+    parts?: PracticeProblemPart[],
+    activePartId?: string,
   ): Promise<PracticeCoachResult> {
     try {
       const { data } = await axios.post<PracticeCoachResult>(
@@ -158,6 +167,8 @@ export default function useApiHelper() {
             : {}),
           ...(problemText ? { problemText } : {}),
           ...(phase ? { phase } : {}),
+          ...(parts?.length ? { parts } : {}),
+          ...(activePartId ? { activePartId } : {}),
         } satisfies PracticeCoachRequest,
       );
       return data;
@@ -167,6 +178,50 @@ export default function useApiHelper() {
         error?: string;
         limit?: number;
         remaining?: number;
+      }>;
+      if (
+        isPracticeAiLimitError(
+          axiosError.response?.status,
+          axiosError.response?.data,
+        )
+      ) {
+        throw new PracticeAiLimitError(
+          practiceAiLimitMessage(axiosError.response?.data),
+          axiosError.response?.data?.limit,
+          axiosError.response?.data?.remaining,
+        );
+      }
+      throw new Error(
+        formatPracticeAiFailureMessage(
+          "coach",
+          axiosError.response?.data?.message ?? axiosError.response?.data?.error,
+          axiosError.message,
+        ),
+      );
+    }
+  }
+
+  async function extractPracticeParts(
+    questionUUId: string,
+    problemImageBase64?: string,
+    problemText?: string,
+  ): Promise<PracticePartsExtractResult> {
+    try {
+      const { data } = await axios.post<PracticePartsExtractResult>(
+        baseURL + "/practice-questions/" + questionUUId + "/parts",
+        {
+          ...(problemImageBase64 ? { problemImageBase64 } : {}),
+          ...(problemText ? { problemText } : {}),
+        } satisfies PracticePartsExtractRequest,
+      );
+      return data;
+    } catch (error) {
+      const axiosError = error as AxiosError<{
+        message?: string;
+        error?: string;
+        limit?: number;
+        remaining?: number;
+        parts?: PracticePartsExtractResult["parts"];
       }>;
       if (
         isPracticeAiLimitError(
@@ -828,5 +883,6 @@ export default function useApiHelper() {
     getPracticeAiQuota,
     checkPracticeWork,
     coachPracticeWork,
+    extractPracticeParts,
   };
 }

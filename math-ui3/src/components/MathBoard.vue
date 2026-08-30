@@ -34,12 +34,30 @@
   <!-- <lessonVideoDock></lessonVideoDock> -->
 
   <div ref="boardScrollRef" class="mathboard-scroll">
-    <svg
-      class="mathboard"
-      :id="svgId"
-      data-cy="mathboard"
-      xmlns="http://www.w3.org/2000/svg"
+    <div
+      class="mathboard-stack"
+      :class="{ 'mathboard-stack--practice-gutter': showPracticeGutter }"
     >
+      <div
+        v-if="showPracticeGutter"
+        class="practice-number-strip"
+        data-cy="practice-gutter-layer"
+      >
+        <div
+          v-for="m in practiceGutterMarks"
+          :key="`${m.id}-${m.row}`"
+          class="practice-number-strip__mark"
+          :style="{ top: `calc(${m.row} * 100% / ${rowsNum})` }"
+        >
+          {{ m.label }}
+        </div>
+      </div>
+      <svg
+        class="mathboard"
+        :id="svgId"
+        data-cy="mathboard"
+        xmlns="http://www.w3.org/2000/svg"
+      >
       <defs>
         <marker
           id="arrowleft"
@@ -65,16 +83,20 @@
         </marker>
       </defs>
     </svg>
+    </div>
   </div>
 
   <specialSymbolsToolbar></specialSymbolsToolbar>
 </template>
 
 <script setup lang="ts">
-import { defineAsyncComponent, nextTick, onUnmounted, ref, watch } from "vue";
+import { computed, defineAsyncComponent, nextTick, onUnmounted, ref, watch } from "vue";
 import { useEventListener, useThrottleFn } from "@vueuse/core";
 import useNotationLoadingHelper from "../helpers/notationLoadingHelper";
 import { loadPracticeBoard } from "../helpers/practiceBoardAdapter";
+import { ensurePartRow, overlayGutterMarks } from "../helpers/practicePartLabelHelper";
+import { partLabelText } from "common/practiceParts";
+import { usePracticeStore } from "../store/pinia/practiceStore";
 import useMatrixHelper from "../helpers/matrixHelper";
 import useEventHelper from "../helpers/eventHelper";
 import useWatchHelper from "../helpers/watchHelper";
@@ -86,6 +108,7 @@ import { useAnswerStore } from "../store/pinia/answerStore";
 import { useOnboardingStore } from "../store/pinia/onboardingStore";
 import { useUserStore } from "../store/pinia/userStore";
 import { CursorType, EditModeCursorType } from "common/unions";
+import { matrixDimensions } from "common/globals";
 import useSelectionHelper from "../helpers/selectionHelper";
 import useKeyHelper from "../helpers/keyHelper";
 import leftToolbar from "./LeftToolbar.vue";
@@ -143,7 +166,9 @@ const lessonStudents = defineAsyncComponent(
 
 const notationLoadingHelper = useNotationLoadingHelper();
 const notationStore = useNotationStore();
+const practiceStore = usePracticeStore();
 const cellStore = useCellStore();
+
 const editModeStore = useEditModeStore();
 const matrixHelper = useMatrixHelper();
 const selectionHelper = useSelectionHelper();
@@ -161,6 +186,33 @@ const boardScrollRef = ref<HTMLElement | null>(null);
 const props = defineProps({
   svgId: { type: String, default: "" },
   loaded: { type: Boolean, default: false },
+});
+
+const rowsNum = matrixDimensions.rowsNum;
+
+const showPracticeGutter = computed(() => {
+  if (!props.loaded) return false;
+  const parent = notationStore.getParent();
+  if (parent?.type !== "PRACTICE" || !parent.uuid) return false;
+  void practiceStore.sessions;
+  return practiceStore.getSession(parent.uuid).submitted;
+});
+
+const practiceGutterMarks = computed(() => {
+  if (!showPracticeGutter.value) return [];
+  const parent = notationStore.getParent();
+  if (!parent?.uuid) return [];
+  void practiceStore.sessions;
+  void notationStore.getNotations();
+  const session = practiceStore.getSession(parent.uuid);
+  return overlayGutterMarks(
+    notationStore.getNotations(),
+    session.activePartId,
+    session.partLabelRows,
+  ).map((m) => ({
+    ...m,
+    label: partLabelText(m.id),
+  }));
 });
 
 let cursor = ref<CursorType>("auto");
@@ -386,6 +438,10 @@ async function load() {
 
     if (boardParent.type === "PRACTICE") {
       await loadPracticeBoard(boardParent.uuid);
+      const session = practiceStore.getSession(boardParent.uuid);
+      if (session.submitted && session.activePartId) {
+        ensurePartRow(session.activePartId);
+      }
       return;
     }
 
@@ -397,8 +453,18 @@ async function load() {
     progressBar.value = false;
     notationsReady.value = true;
     await nextTick();
+    matrixHelper.setMatrix(props.svgId);
     matrixHelper.refreshScreen(props.svgId);
     refreshSvgBoundingRect();
+    requestAnimationFrame(() => {
+      matrixHelper.setMatrix(props.svgId);
+      matrixHelper.refreshScreen(props.svgId);
+      refreshSvgBoundingRect();
+      requestAnimationFrame(() => {
+        matrixHelper.refreshScreen(props.svgId);
+        refreshSvgBoundingRect();
+      });
+    });
   }
 }
 </script>
@@ -406,11 +472,12 @@ async function load() {
 <style>
 /* Fixed side toolbars; scroll viewport fits the window, full matrix height inside. */
 .mathboard-scroll {
-  --board-inset-left: 80px;
+  --board-inset-left: calc(80px + var(--practice-problem-pane-width, 0px));
   --board-inset-right: 210px;
   --board-inset-top: 110px;
   --board-inset-bottom: 56px;
   --board-matrix-height: 1650px;
+  --practice-number-strip-width: 40px;
   box-sizing: border-box;
   margin-top: var(--board-inset-top);
   margin-left: var(--board-inset-left);
@@ -427,14 +494,57 @@ async function load() {
   -webkit-overflow-scrolling: touch;
 }
 
+.mathboard-stack {
+  position: relative;
+  width: 100%;
+  min-width: 0;
+  height: var(--board-matrix-height);
+}
+
+.mathboard-stack--practice-gutter {
+  display: flex;
+  flex-direction: row;
+  align-items: stretch;
+}
+
+.practice-number-strip {
+  position: relative;
+  flex: 0 0 var(--practice-number-strip-width);
+  width: var(--practice-number-strip-width);
+  height: var(--board-matrix-height);
+  pointer-events: none;
+  user-select: none;
+}
+
+.practice-number-strip__mark {
+  position: absolute;
+  left: 0;
+  width: 100%;
+  padding-top: 0.2em;
+  font-weight: 600;
+  line-height: 1;
+  color: #1565c0;
+  background: transparent;
+  text-align: center;
+}
+
+.mathboard-stack--practice-gutter .mathboard {
+  flex: 1 1 auto;
+  width: auto;
+  min-width: 0;
+}
+
 /* Desktop: SVG fills the viewport; cell layout is driven by SVG client size. */
 .mathboard {
   box-sizing: border-box;
   display: block;
+  position: relative;
+  z-index: 0;
   width: 100%;
   min-width: 0;
   max-width: 100%;
   height: var(--board-matrix-height);
+  overflow: visible;
 }
 
 /* Mobile: full matrix width for horizontal pan (matches matrixSize in globals). */
@@ -443,7 +553,7 @@ async function load() {
     --board-matrix-width: 1650px;
     --board-inset-left: 56px;
     --board-inset-right: 0px;
-    --board-inset-top: 64px;
+    --board-inset-top: calc(64px + var(--practice-problem-pane-top, 0px));
     --board-inset-bottom: max(16px, env(safe-area-inset-bottom));
     margin-left: var(--board-inset-left);
     margin-right: 0;
@@ -461,6 +571,24 @@ async function load() {
     width: var(--board-matrix-width);
     min-width: var(--board-matrix-width);
     max-width: none;
+  }
+
+  .mathboard-stack {
+    width: var(--board-matrix-width);
+    min-width: var(--board-matrix-width);
+  }
+
+  .mathboard-stack--practice-gutter {
+    width: calc(var(--practice-number-strip-width) + var(--board-matrix-width));
+    min-width: calc(
+      var(--practice-number-strip-width) + var(--board-matrix-width)
+    );
+  }
+
+  .mathboard-stack--practice-gutter .mathboard {
+    width: var(--board-matrix-width);
+    min-width: var(--board-matrix-width);
+    flex: 0 0 var(--board-matrix-width);
   }
 }
 
@@ -552,6 +680,31 @@ foreignObject[notationType="ANNOTATION"] [data-cy="annotation"] {
 /* Display-only; editing uses FreeTextEditor. Native paste here doubled the text. */
 foreignObject[notationType="TEXT"] textarea {
   pointer-events: none;
+}
+
+foreignObject.practice-part-label-fo,
+foreignObject.practice-part-label-fo * {
+  fill: none;
+  background: transparent !important;
+  border: none;
+  box-shadow: none;
+  overflow: visible;
+  pointer-events: none;
+}
+
+.practice-part-label {
+  margin: 0;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  font-weight: 600;
+  font-size: 0.9em;
+  line-height: 1;
+  color: #1565c0;
+  background: transparent;
+  pointer-events: none;
+  user-select: none;
+  white-space: nowrap;
 }
 
 .sqrt {

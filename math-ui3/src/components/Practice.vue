@@ -1,5 +1,176 @@
 <template>
   <v-sheet class="practice-host">
+    <PracticeProblemPane
+      v-if="loaded && !loadError"
+      :session="session"
+      :is-blank="isBlank"
+      :extracting="extractingParts"
+      :uploading="uploading"
+      @submit-text="submitProblemText"
+      @submit-image="submitProblemImageFile"
+      @select-part="onSelectPart"
+      @change-problem="onChangeProblem"
+    >
+      <template #assist>
+        <div class="practice-pane-assist">
+          <v-btn-toggle
+            v-model="assistMode"
+            mandatory
+            density="compact"
+            color="primary"
+            variant="outlined"
+            divided
+            data-cy="practice-assist-mode"
+          >
+            <v-btn
+              value="check"
+              title="Grade when you ask"
+              data-cy="practice-assist-check"
+            >
+              Check
+            </v-btn>
+            <v-btn
+              value="text"
+              title="Tips while you write"
+              data-cy="practice-assist-text"
+            >
+              Text
+            </v-btn>
+            <v-btn
+              value="voice"
+              title="Spoken tips while you write"
+              data-cy="practice-assist-voice"
+            >
+              Voice
+            </v-btn>
+          </v-btn-toggle>
+
+          <v-tooltip
+            :text="checkDisabledReason"
+            :disabled="!checkDisabledReason"
+            location="bottom"
+          >
+            <template #activator="{ props: tipProps }">
+              <div v-bind="tipProps" class="practice-pane-assist__check-wrap">
+                <v-btn
+                  color="primary"
+                  variant="flat"
+                  :loading="checking"
+                  :disabled="!!checkDisabledReason"
+                  prepend-icon="mdi-check-decagram"
+                  :data-cy="isBlank ? 'practice-blank-check' : 'practice-check'"
+                  @click="runCheck"
+                >
+                  Check answer
+                </v-btn>
+              </div>
+            </template>
+          </v-tooltip>
+
+          <v-btn
+            v-if="isLiveCoach && !aiQuotaExhausted"
+            :color="coachPaused ? 'grey' : 'secondary'"
+            variant="tonal"
+            :prepend-icon="coachPaused ? 'mdi-play' : 'mdi-pause'"
+            data-cy="practice-coach-pause"
+            @click="toggleCoachPause"
+          >
+            {{ coachPaused ? "Resume tips" : "Pause tips" }}
+          </v-btn>
+
+          <div
+            v-if="isLiveCoach && !aiQuotaExhausted"
+            class="practice-pane-assist__status"
+            data-cy="practice-coach-status"
+          >
+            <v-icon size="16" :icon="coachStatusIcon" />
+            <span>{{ coachStatusText }}</span>
+          </div>
+
+          <v-btn
+            v-if="showGuestLowQuotaCta"
+            color="primary"
+            size="small"
+            variant="flat"
+            data-cy="practice-guest-signin"
+            @click="goSignIn"
+          >
+            Sign in for a higher limit
+          </v-btn>
+
+          <button
+            type="button"
+            class="practice-quota-chip"
+            data-cy="practice-quota-chip"
+            @click="quotaExpanded = !quotaExpanded"
+          >
+            {{ quotaChipText }}
+          </button>
+
+          <v-alert
+            v-if="uploadError"
+            density="compact"
+            variant="tonal"
+            type="error"
+            closable
+            @click:close="uploadError = ''"
+          >
+            {{ uploadError }}
+          </v-alert>
+
+          <v-alert
+            v-if="quotaExpanded && !aiLimitMessage && !aiUnavailableMessage"
+            density="compact"
+            variant="tonal"
+            type="info"
+            title="AI tutor quota"
+            closable
+            @click:close="quotaExpanded = false"
+          >
+            {{ quotaDetailText }}
+          </v-alert>
+
+          <v-alert
+            v-if="aiLimitMessage"
+            density="compact"
+            variant="tonal"
+            type="warning"
+            title="Daily AI limit reached"
+            closable
+            @click:close="dismissAiLimitMessage"
+          >
+            <div>{{ aiLimitMessage }}</div>
+            <div v-if="quotaLimit != null" class="text-medium-emphasis mt-1">
+              Used {{ quotaLimit }} of {{ quotaLimit }} AI uses today (resets at
+              midnight UTC).
+            </div>
+            <v-btn
+              v-if="isGuest"
+              class="mt-2"
+              color="primary"
+              size="small"
+              variant="flat"
+              @click="goSignIn"
+            >
+              Sign in for a higher limit
+            </v-btn>
+          </v-alert>
+
+          <v-alert
+            v-else-if="aiUnavailableMessage"
+            density="compact"
+            variant="tonal"
+            type="error"
+            title="AI tutor unavailable"
+            closable
+            @click:close="aiUnavailableMessage = ''"
+          >
+            {{ aiUnavailableMessage }}
+          </v-alert>
+        </div>
+      </template>
+    </PracticeProblemPane>
+
     <mathBoard v-show="loaded && !loadError" :svgId="svgId" :loaded="loaded" />
 
     <div v-if="loadError" class="practice-load-error">
@@ -8,245 +179,6 @@
         <v-btn class="mt-3" color="primary" variant="flat" @click="goPracticeList">
           Back to practice
         </v-btn>
-      </v-alert>
-    </div>
-
-    <div
-      v-if="loaded && isBlank && isCrafting && !hasBoardWork && !craftStarted"
-      class="practice-empty"
-      data-cy="practice-blank-empty"
-    >
-      <div class="practice-empty__card">
-        <v-icon size="36" color="teal-darken-1">mdi-file-document-edit-outline</v-icon>
-        <div class="text-subtitle-1 mt-2">Add the problem</div>
-        <div class="text-body-2 text-medium-emphasis mt-1">
-          Write the question on the board, paste it as text (Ctrl+V), or
-          paste/upload a worksheet image. Then press Question ready and solve.
-        </div>
-        <div class="d-flex flex-column ga-2 mt-3">
-          <v-btn
-            color="primary"
-            variant="flat"
-            prepend-icon="mdi-pencil"
-            data-cy="practice-blank-write"
-            @click="startCraftingOnBoard"
-          >
-            Write the question
-          </v-btn>
-          <v-btn
-            color="teal-darken-1"
-            variant="tonal"
-            :loading="uploading"
-            prepend-icon="mdi-image-plus"
-            data-cy="practice-blank-upload"
-            @click="pickImageFile"
-          >
-            Upload image
-          </v-btn>
-        </div>
-      </div>
-    </div>
-
-    <div
-      v-if="loaded"
-      ref="assistPanelEl"
-      class="practice-assist-panel"
-    >
-      <div class="practice-assist-panel__modes">
-        <v-btn-toggle
-          v-model="assistMode"
-          mandatory
-          density="compact"
-          color="primary"
-          variant="outlined"
-          divided
-          data-cy="practice-assist-mode"
-        >
-          <v-btn
-            value="check"
-            title="Grade when you ask"
-            data-cy="practice-assist-check"
-          >
-            Check
-          </v-btn>
-          <v-btn
-            value="text"
-            title="Tips while you write"
-            data-cy="practice-assist-text"
-          >
-            Text
-          </v-btn>
-          <v-btn
-            value="voice"
-            title="Spoken tips while you write"
-            data-cy="practice-assist-voice"
-          >
-            Voice
-          </v-btn>
-        </v-btn-toggle>
-      </div>
-
-      <div class="practice-assist-panel__actions">
-        <input
-          v-if="isBlank"
-          ref="imageFileInput"
-          type="file"
-          accept="image/*"
-          class="d-none"
-          @change="onImageFileChosen"
-        />
-        <v-tooltip
-          :text="checkDisabledReason"
-          :disabled="!checkDisabledReason"
-          location="bottom"
-        >
-          <template #activator="{ props: tipProps }">
-            <div v-bind="tipProps" class="practice-assist-panel__check-wrap">
-              <v-btn
-                v-if="isCrafting"
-                color="primary"
-                variant="flat"
-                :disabled="!canLockQuestion"
-                prepend-icon="mdi-flag-checkered"
-                data-cy="practice-blank-lock-question"
-                @click="lockCraftedQuestion"
-              >
-                Question ready
-              </v-btn>
-              <v-btn
-                v-else
-                color="primary"
-                variant="flat"
-                :loading="checking"
-                :disabled="!!checkDisabledReason"
-                prepend-icon="mdi-check-decagram"
-                :data-cy="isBlank ? 'practice-blank-check' : 'practice-check'"
-                @click="runCheck"
-              >
-                Check answer
-              </v-btn>
-            </div>
-          </template>
-        </v-tooltip>
-        <v-btn
-          v-if="isBlank && (hasProblemImage || (isCrafting && (craftStarted || hasBoardWork)))"
-          color="teal-darken-1"
-          variant="tonal"
-          :loading="uploading"
-          icon="mdi-image-plus"
-          aria-label="Upload worksheet image"
-          data-cy="practice-blank-upload"
-          @click="pickImageFile"
-        />
-        <v-btn
-          v-if="isLiveCoach && !aiQuotaExhausted"
-          :color="coachPaused ? 'grey' : 'secondary'"
-          variant="tonal"
-          :prepend-icon="coachPaused ? 'mdi-play' : 'mdi-pause'"
-          data-cy="practice-coach-pause"
-          @click="toggleCoachPause"
-        >
-          {{ coachPaused ? "Resume tips" : "Pause tips" }}
-        </v-btn>
-      </div>
-
-      <div
-        v-if="(isLiveCoach || isCrafting) && !aiQuotaExhausted"
-        class="practice-assist-panel__status"
-        data-cy="practice-coach-status"
-      >
-        <v-icon size="16" :icon="coachStatusIcon" />
-        <span>{{ coachStatusText }}</span>
-      </div>
-
-      <v-btn
-        v-if="showGuestLowQuotaCta"
-        color="primary"
-        size="small"
-        variant="flat"
-        data-cy="practice-guest-signin"
-        @click="goSignIn"
-      >
-        Sign in for a higher limit
-      </v-btn>
-
-      <button
-        type="button"
-        class="practice-quota-chip"
-        data-cy="practice-quota-chip"
-        @click="quotaExpanded = !quotaExpanded"
-      >
-        {{ quotaChipText }}
-      </button>
-
-      <v-alert
-        v-if="uploadError"
-        class="practice-assist-panel__result"
-        density="compact"
-        variant="tonal"
-        type="error"
-        closable
-        @click:close="uploadError = ''"
-      >
-        {{ uploadError }}
-      </v-alert>
-    </div>
-
-    <div
-      v-if="loaded && (quotaExpanded || aiLimitMessage || aiUnavailableMessage)"
-      class="practice-quota-panel"
-    >
-      <v-alert
-        v-if="quotaExpanded && !aiLimitMessage && !aiUnavailableMessage"
-        class="practice-quota-panel__result"
-        density="compact"
-        variant="tonal"
-        type="info"
-        title="AI tutor quota"
-        closable
-        @click:close="quotaExpanded = false"
-      >
-        {{ quotaDetailText }}
-      </v-alert>
-
-      <v-alert
-        v-if="aiLimitMessage"
-        class="practice-quota-panel__result"
-        density="compact"
-        variant="tonal"
-        type="warning"
-        title="Daily AI limit reached"
-        closable
-        @click:close="dismissAiLimitMessage"
-      >
-        <div>{{ aiLimitMessage }}</div>
-        <div v-if="quotaLimit != null" class="text-medium-emphasis mt-1">
-          Used {{ quotaLimit }} of {{ quotaLimit }} AI uses today (resets at
-          midnight UTC).
-        </div>
-        <v-btn
-          v-if="isGuest"
-          class="mt-2"
-          color="primary"
-          size="small"
-          variant="flat"
-          @click="goSignIn"
-        >
-          Sign in for a higher limit
-        </v-btn>
-      </v-alert>
-
-      <v-alert
-        v-else-if="aiUnavailableMessage"
-        class="practice-quota-panel__result"
-        density="compact"
-        variant="tonal"
-        type="error"
-        title="AI tutor unavailable"
-        closable
-        @click:close="aiUnavailableMessage = ''"
-      >
-        {{ aiUnavailableMessage }}
       </v-alert>
     </div>
 
@@ -278,11 +210,11 @@
       :svg-id="svgId"
       :notations="liveNotations"
       :title="resultBalloonTitle"
-      :variant="result?.correct ? 'success' : 'warning'"
+      :variant="resultBalloonVariant"
       @close="result = null"
     >
       <v-btn
-        v-if="result?.correct && nextQuestionUUId"
+        v-if="result?.correct && nextQuestionUUId && allPartsComplete"
         color="primary"
         size="small"
         variant="flat"
@@ -302,6 +234,39 @@
         Wrong problem?
       </v-btn>
     </PracticeCoachBalloon>
+
+    <v-dialog
+      v-model="showClearProblemDialog"
+      max-width="400"
+      persistent
+    >
+      <v-card rounded="lg">
+        <v-card-title class="pt-4 px-4 text-wrap">
+          Clear this problem?
+        </v-card-title>
+        <v-card-text class="px-4">
+          The question and your writing on the board will be removed. You can paste a new problem after that.
+        </v-card-text>
+        <v-card-actions class="px-4 pb-4">
+          <v-spacer />
+          <v-btn
+            variant="text"
+            data-cy="practice-clear-problem-cancel"
+            @click="showClearProblemDialog = false"
+          >
+            Keep problem
+          </v-btn>
+          <v-btn
+            color="error"
+            variant="flat"
+            data-cy="practice-clear-problem-confirm"
+            @click="confirmClearProblem"
+          >
+            Clear problem
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
   </v-sheet>
 </template>
 
@@ -310,6 +275,7 @@ import { computed, nextTick, onMounted, onUnmounted, ref, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import mathBoard from "./MathBoard.vue";
 import PracticeCoachBalloon from "./PracticeCoachBalloon.vue";
+import PracticeProblemPane from "./PracticeProblemPane.vue";
 import { useQuestionStore } from "../store/pinia/questionStore";
 import { usePracticeQuestionStore } from "../store/pinia/practiceQuestionStore";
 import { useBoardContextStore } from "../store/pinia/boardContextStore";
@@ -322,23 +288,18 @@ import { useUserStore } from "../store/pinia/userStore";
 import { usePracticeStore } from "../store/pinia/practiceStore";
 import {
   serializePracticeStudentWork,
-  getPracticeProblemImageBase64,
-  getPracticeProblemImageForTutor,
-  getPracticeProblemText,
-  hasCraftedPracticeProblem,
 } from "../helpers/practiceCheckHelper";
 import {
   PRACTICE_IMAGE_MISREAD_TIP,
   PRACTICE_IMAGE_UNREADABLE_TIP,
   isPracticeImageReadTip,
 } from "../helpers/practiceImagePrep";
-import {
-  PRACTICE_BLANK_UUID,
-  markCurrentPracticeNotationsAsProblem,
-} from "../helpers/practiceBoardAdapter";
+import { PRACTICE_BLANK_UUID } from "../helpers/practiceBoardAdapter";
+import { practiceWorkFromCol, ensurePartRow } from "../helpers/practicePartLabelHelper";
 import useImageHelper from "../helpers/imageHelper";
-import useNotationMutationHelper from "../helpers/notationMutateHelper";
+import useEventBus from "../helpers/eventBusHelper";
 import useSelectionHelper from "../helpers/selectionHelper";
+import { ensureNumberedParts } from "common/practiceParts";
 import {
   GUEST_AI_DAILY_LIMIT,
   USER_AI_DAILY_LIMIT,
@@ -372,7 +333,7 @@ const userStore = useUserStore();
 const practiceStore = usePracticeStore();
 const api = useApiHelper();
 const imageHelper = useImageHelper();
-const notationMutateHelper = useNotationMutationHelper();
+const eventBus = useEventBus();
 const selectionHelper = useSelectionHelper();
 
 const route = useRoute();
@@ -383,6 +344,7 @@ const loaded = ref(false);
 const isBlank = ref(false);
 const checking = ref(false);
 const uploading = ref(false);
+const extractingParts = ref(false);
 const coachingBusy = ref(false);
 const result = ref<PracticeCheckResult | null>(null);
 const checkError = ref("");
@@ -395,14 +357,12 @@ const coachNoteKind = ref<"tip" | "preliminary" | "image">("tip");
 const currentQuestionUUId = ref("");
 const assistMode = ref<PracticeAssistMode>(getPracticeAssistMode());
 const coachPaused = ref(isPracticeCoachPaused());
-const craftStarted = ref(false);
-const imageFileInput = ref<HTMLInputElement | null>(null);
-const assistPanelEl = ref<HTMLElement | null>(null);
 const quotaRemaining = ref<number | null>(null);
 const quotaLimit = ref<number | null>(null);
 const quotaExpanded = ref(false);
 const suppressBalloon = ref(false);
 const preliminaryArmed = ref(false);
+const showClearProblemDialog = ref(false);
 let practiceTourTimer: ReturnType<typeof setTimeout> | undefined;
 let unsuppressBalloonTimer: ReturnType<typeof setTimeout> | undefined;
 let armPreliminaryTimer: ReturnType<typeof setTimeout> | undefined;
@@ -413,42 +373,19 @@ const isLiveCoach = computed(() => isLiveCoachMode(assistMode.value));
 
 const liveNotations = computed(() => notationStore.getNotations());
 
-const hasProblemImage = computed(
-  () => !!getPracticeProblemImageBase64(notationStore.getNotations()),
-);
-
-const hasProblemText = computed(
-  () =>
-    !!getPracticeProblemText(
-      notationStore.getNotations(),
-      practiceStore.textDraft,
-    ),
-);
-
-const hasProblem = computed(
-  () =>
-    hasProblemImage.value ||
-    hasProblemText.value ||
-    hasCraftedPracticeProblem(notationStore.getNotations()),
-);
-
-const isCrafting = computed(() => isBlank.value && !hasProblem.value);
-
-const hasBoardWork = computed(() => {
-  if (practiceStore.textDraft?.value.trim()) return true;
-  return notationStore
-    .getNotations()
-    .some((n) => n.boardType === "PRACTICE");
+const session = computed(() => {
+  void practiceStore.sessions;
+  return practiceStore.getSession(
+    currentQuestionUUId.value || PRACTICE_BLANK_UUID,
+  );
 });
 
-const canLockQuestion = computed(() => isCrafting.value && hasBoardWork.value);
+const hasProblemImage = computed(() => !!session.value.problemImageBase64);
 
 const checkDisabledReason = computed(() => {
   if (checking.value) return "";
   if (aiQuotaExhausted.value) return "Daily AI limit reached";
-  if (isCrafting.value) {
-    return canLockQuestion.value ? "" : "Write or paste the question first";
-  }
+  if (!session.value.submitted) return "Paste the problem first";
   return "";
 });
 
@@ -486,7 +423,7 @@ const coachStatusIcon = computed(() => {
 const coachStatusText = computed(() => {
   const left =
     quotaRemaining.value != null ? ` · ${quotaRemaining.value} left` : "";
-  if (isCrafting.value) return `Write the question${left}`;
+  if (!session.value.submitted) return `Paste the problem${left}`;
   if (coachPaused.value) return `Tips paused${left}`;
   if (coachingBusy.value) return `Thinking…${left}`;
   return `Coach is watching${left}`;
@@ -533,15 +470,26 @@ const showResultBalloon = computed(
 
 const resultBalloonText = computed(() => {
   if (!result.value) return "";
-  const hint = result.value.hint ? ` ${result.value.hint}` : "";
-  return `${result.value.feedback}${result.value.correct ? "" : hint}`.trim();
+  const extra = result.value.correct
+    ? result.value.warning
+    : result.value.hint;
+  return extra
+    ? `${result.value.feedback} ${extra}`.trim()
+    : result.value.feedback;
 });
 
 const resultBalloonTitle = computed(() => {
   if (!result.value) return "";
   if (isPracticeImageReadTip(result.value.feedback)) return "Worksheet image";
+  if (result.value.correct && result.value.warning) {
+    return "Correct, with a note";
+  }
   return result.value.correct ? "Correct" : "Not quite";
 });
+
+const resultBalloonVariant = computed(() =>
+  result.value?.correct && !result.value.warning ? "success" : "warning",
+);
 
 const nextQuestionUUId = computed(() => {
   if (isBlank.value) return "";
@@ -550,6 +498,12 @@ const nextQuestionUUId = computed(() => {
   const idx = items.findIndex((q) => q.uuid === currentQuestionUUId.value);
   if (idx < 0) return items[0]?.uuid ?? "";
   return items[idx + 1]?.uuid ?? "";
+});
+
+const allPartsComplete = computed(() => {
+  const s = session.value;
+  if (!s.submitted || s.parts.length === 0) return false;
+  return s.parts.every((p) => s.completedPartIds.includes(p.id));
 });
 
 const aiQuotaExhausted = computed(() => quotaRemaining.value === 0);
@@ -582,30 +536,32 @@ async function refreshAiQuota() {
 }
 
 function currentStudentWork() {
+  const s = session.value;
   return serializePracticeStudentWork(
     notationStore.getNotations(),
     practiceStore.textDraft,
+    s.submitted
+      ? { groupByParts: true, activePartId: s.activePartId }
+      : undefined,
   );
 }
 
 const practiceWorkSignature = computed(() => currentStudentWork());
 
-async function currentProblemImage(): Promise<string | undefined> {
-  if (!isBlank.value) return undefined;
-  return (
-    (await getPracticeProblemImageForTutor(notationStore.getNotations())) ??
-    undefined
-  );
+function currentProblemImage(): string | undefined {
+  return session.value.problemImageBase64 ?? undefined;
 }
 
 function currentProblemText(): string | undefined {
-  if (!isBlank.value) return undefined;
-  return (
-    getPracticeProblemText(
-      notationStore.getNotations(),
-      practiceStore.textDraft,
-    ) ?? undefined
-  );
+  return session.value.problemText ?? undefined;
+}
+
+function currentParts() {
+  return session.value.submitted ? session.value.parts : undefined;
+}
+
+function currentActivePartId() {
+  return session.value.activePartId ?? undefined;
 }
 
 function dismissCoachTip() {
@@ -647,13 +603,15 @@ async function raisePreliminaryCoachNote() {
   preliminaryInFlight = true;
   coachingBusy.value = true;
   try {
-    const image = await currentProblemImage();
+    const image = currentProblemImage();
     const result = await api.coachPracticeWork(
       currentQuestionUUId.value,
       currentStudentWork(),
       image,
       currentProblemText(),
       "preliminary",
+      currentParts(),
+      currentActivePartId(),
     );
     applyQuota(result.remaining, result.limit);
     let tip = result.speak ? result.tip.trim() : "";
@@ -680,12 +638,15 @@ async function raisePreliminaryCoachNote() {
   }
 }
 
-watch(isCrafting, (crafting, wasCrafting) => {
-  if (!preliminaryArmed.value) return;
-  if (wasCrafting === true && crafting === false) {
-    void raisePreliminaryCoachNote();
-  }
-});
+watch(
+  () => session.value.submitted,
+  (submitted, wasSubmitted) => {
+    if (!preliminaryArmed.value) return;
+    if (submitted && !wasSubmitted) {
+      void raisePreliminaryCoachNote();
+    }
+  },
+);
 
 function toggleCoachPause() {
   coachPaused.value = !coachPaused.value;
@@ -726,7 +687,7 @@ watch(practiceWorkSignature, (work, prev) => {
     if (coachTip.value || result.value) suppressBalloon.value = false;
   }, 1800);
   if (!work.trim()) return;
-  if (isCrafting.value) return;
+  if (!session.value.submitted) return;
   if (!isLiveCoach.value || checking.value) return;
   if (aiQuotaExhausted.value || coachPaused.value) return;
 
@@ -739,8 +700,11 @@ watch(practiceWorkSignature, (work, prev) => {
       return await api.coachPracticeWork(
         questionUUId,
         studentWork,
-        await currentProblemImage(),
+        currentProblemImage(),
         currentProblemText(),
+        undefined,
+        currentParts(),
+        currentActivePartId(),
       );
     },
     onBusy: (busy) => {
@@ -777,47 +741,82 @@ function onCheckShortcut(e: KeyboardEvent) {
   void runCheck();
 }
 
-const ASSIST_RAIL_VAR = "--practice-assist-rail-height";
-let assistPanelObserver: ResizeObserver | undefined;
+const PROBLEM_PANE_WIDTH_VAR = "--practice-problem-pane-width";
+const PROBLEM_PANE_TOP_VAR = "--practice-problem-pane-top";
+let problemPaneObserver: ResizeObserver | undefined;
 
-function clearAssistRailOffset() {
-  document.documentElement.style.removeProperty(ASSIST_RAIL_VAR);
+function clearProblemPaneOffset() {
+  document.documentElement.style.removeProperty(PROBLEM_PANE_WIDTH_VAR);
+  document.documentElement.style.removeProperty(PROBLEM_PANE_TOP_VAR);
 }
 
-function syncAssistRailOffset() {
-  const el = assistPanelEl.value;
-  if (!el || window.matchMedia("(max-width: 1023px)").matches) {
-    clearAssistRailOffset();
-    return;
-  }
-  document.documentElement.style.setProperty(
-    ASSIST_RAIL_VAR,
-    `${Math.ceil(el.getBoundingClientRect().height)}px`,
-  );
-}
-
-watch(assistPanelEl, (el) => {
-  assistPanelObserver?.disconnect();
-  assistPanelObserver = undefined;
+function syncProblemPaneOffset() {
+  const el = document.querySelector(
+    "[data-cy=practice-problem-pane]",
+  ) as HTMLElement | null;
   if (!el) {
-    clearAssistRailOffset();
+    clearProblemPaneOffset();
     return;
   }
-  assistPanelObserver = new ResizeObserver(() => syncAssistRailOffset());
-  assistPanelObserver.observe(el);
-  void nextTick(syncAssistRailOffset);
+  const narrow = window.matchMedia("(max-width: 1023px)").matches;
+  if (narrow) {
+    document.documentElement.style.setProperty(PROBLEM_PANE_WIDTH_VAR, "0px");
+    document.documentElement.style.setProperty(
+      PROBLEM_PANE_TOP_VAR,
+      `${Math.ceil(el.getBoundingClientRect().height)}px`,
+    );
+  } else {
+    document.documentElement.style.setProperty(PROBLEM_PANE_WIDTH_VAR, "320px");
+    document.documentElement.style.setProperty(PROBLEM_PANE_TOP_VAR, "0px");
+  }
+}
+
+function observeProblemPane() {
+  problemPaneObserver?.disconnect();
+  problemPaneObserver = undefined;
+  const el = document.querySelector(
+    "[data-cy=practice-problem-pane]",
+  ) as HTMLElement | null;
+  if (!el) {
+    clearProblemPaneOffset();
+    return;
+  }
+  problemPaneObserver = new ResizeObserver(() => syncProblemPaneOffset());
+  problemPaneObserver.observe(el);
+  syncProblemPaneOffset();
+}
+
+watch(loaded, (isLoaded) => {
+  if (isLoaded) void nextTick(observeProblemPane);
 });
+
+watch(
+  () => session.value.submitted,
+  () => void nextTick(observeProblemPane),
+);
+
+function onProblemPaste(payload: { text?: string; imageBase64?: string }) {
+  if (payload?.text) {
+    submitProblemText(payload.text);
+    return;
+  }
+  if (payload?.imageBase64) {
+    void submitProblemImageBase64(payload.imageBase64);
+  }
+}
 
 onMounted(() => {
   window.addEventListener("keydown", onCheckShortcut);
-  window.addEventListener("resize", syncAssistRailOffset);
+  window.addEventListener("resize", syncProblemPaneOffset);
+  eventBus.on("EV_PRACTICE_PROBLEM_PASTE", onProblemPaste);
 });
 
 onUnmounted(() => {
   window.removeEventListener("keydown", onCheckShortcut);
-  window.removeEventListener("resize", syncAssistRailOffset);
-  assistPanelObserver?.disconnect();
-  clearAssistRailOffset();
+  window.removeEventListener("resize", syncProblemPaneOffset);
+  eventBus.off("EV_PRACTICE_PROBLEM_PASTE", onProblemPaste);
+  problemPaneObserver?.disconnect();
+  clearProblemPaneOffset();
   clearTimeout(practiceTourTimer);
   clearTimeout(unsuppressBalloonTimer);
   clearTimeout(armPreliminaryTimer);
@@ -843,7 +842,6 @@ function prepareBoardShell(questionUUId: string) {
   coachingBusy.value = false;
   currentQuestionUUId.value = questionUUId;
   practiceStore.clearTextDraft();
-  craftStarted.value = false;
   preliminaryArmed.value = false;
   clearTimeout(armPreliminaryTimer);
   resetPracticeVoiceCoach();
@@ -851,8 +849,18 @@ function prepareBoardShell(questionUUId: string) {
   cellStore.resetCellDimensions();
   cellStore.resetSelectedCell();
   notationStore.setParent(questionUUId, "PRACTICE");
-  selectionHelper.setSelectedCell({ col: 1, row: 1 }, true);
+  selectionHelper.setSelectedCell({ col: practiceWorkFromCol(), row: 1 }, true);
   void refreshAiQuota();
+}
+
+function armPreliminaryCoach() {
+  clearTimeout(armPreliminaryTimer);
+  armPreliminaryTimer = setTimeout(() => {
+    preliminaryArmed.value = true;
+    if (practiceStore.getSession(currentQuestionUUId.value).submitted) {
+      void raisePreliminaryCoachNote();
+    }
+  }, 600);
 }
 
 async function loadBlankPractice() {
@@ -861,10 +869,7 @@ async function loadBlankPractice() {
   boardContext.setPracticeBlankSession();
   loaded.value = true;
   schedulePracticeTour();
-  clearTimeout(armPreliminaryTimer);
-  armPreliminaryTimer = setTimeout(() => {
-    preliminaryArmed.value = true;
-  }, 600);
+  armPreliminaryCoach();
 }
 
 async function loadPractice(questionUUId: string) {
@@ -908,6 +913,7 @@ async function loadPractice(questionUUId: string) {
 
     loaded.value = true;
     schedulePracticeTour();
+    armPreliminaryCoach();
   } catch (error) {
     loaded.value = false;
     loadError.value =
@@ -917,31 +923,84 @@ async function loadPractice(questionUUId: string) {
   }
 }
 
-function pickImageFile() {
-  imageFileInput.value?.click();
+function submitProblemText(text: string) {
+  const trimmed = text.trim();
+  if (!trimmed || session.value.submitted) return;
+  const uuid = currentQuestionUUId.value || PRACTICE_BLANK_UUID;
+  practiceStore.submitProblem(uuid, {
+    problemText: trimmed,
+    parts: ensureNumberedParts(trimmed),
+  });
 }
 
-async function onImageFileChosen(event: Event) {
-  const input = event.target as HTMLInputElement;
-  const file = input.files?.[0];
-  input.value = "";
-  if (!file) return;
-
+async function submitProblemImageFile(file: File) {
   uploading.value = true;
   uploadError.value = "";
   try {
-    selectionHelper.setSelectedCell(
-      cellStore.getSelectedCell() ?? { col: 1, row: 1 },
-      true,
-    );
     const base64 = await imageHelper.prepareImageFileForUpload(file);
-    await notationMutateHelper.addImageNotation(base64);
+    await submitProblemImageBase64(base64);
   } catch (error) {
     uploadError.value =
       error instanceof Error ? error.message : "Image upload failed";
-  } finally {
     uploading.value = false;
   }
+}
+
+async function submitProblemImageBase64(imageBase64: string) {
+  if (session.value.submitted) return;
+  extractingParts.value = true;
+  uploadError.value = "";
+  let parts = ensureNumberedParts("");
+  try {
+    if (!aiQuotaExhausted.value) {
+      const extracted = await api.extractPracticeParts(
+        currentQuestionUUId.value || PRACTICE_BLANK_UUID,
+        imageBase64,
+      );
+      applyQuota(extracted.remaining, extracted.limit);
+      if (extracted.parts?.length) parts = extracted.parts;
+    }
+  } catch (error) {
+    if (error instanceof PracticeAiLimitError) {
+      applyQuota(error.remaining ?? 0, error.limit);
+    }
+  } finally {
+    extractingParts.value = false;
+    uploading.value = false;
+  }
+  const uuid = currentQuestionUUId.value || PRACTICE_BLANK_UUID;
+  practiceStore.submitProblem(uuid, {
+    problemImageBase64: imageBase64,
+    parts,
+  });
+}
+
+function onSelectPart(id: string) {
+  practiceStore.setActivePart(currentQuestionUUId.value, id);
+  ensurePartRow(id);
+}
+
+function onChangeProblem() {
+  showClearProblemDialog.value = true;
+}
+
+function confirmClearProblem() {
+  showClearProblemDialog.value = false;
+  const uuid = currentQuestionUUId.value || PRACTICE_BLANK_UUID;
+  practiceStore.resetSession(uuid);
+  notationStore.clearNotations();
+  practiceStore.clearTextDraft();
+  result.value = null;
+  checkError.value = "";
+  aiUnavailableMessage.value = "";
+  uploadError.value = "";
+  coachTip.value = "";
+  coachNoteKind.value = "tip";
+  preliminaryArmed.value = false;
+  clearTimeout(armPreliminaryTimer);
+  resetPracticeVoiceCoach();
+  cellStore.resetSelectedCell();
+  editModeStore.setDefaultEditMode();
 }
 
 function goSignIn() {
@@ -949,19 +1008,6 @@ function goSignIn() {
     name: "login",
     query: { userType: "STUDENT", from: route.fullPath },
   });
-}
-
-function startCraftingOnBoard() {
-  craftStarted.value = true;
-}
-
-async function lockCraftedQuestion() {
-  if (!canLockQuestion.value) return;
-  if (editModeStore.getEditMode() === "TEXT_WRITING") {
-    editModeStore.setDefaultEditMode();
-    await nextTick();
-  }
-  markCurrentPracticeNotationsAsProblem();
 }
 
 function goPracticeList() {
@@ -977,13 +1023,34 @@ function goNextQuestion() {
   });
 }
 
+function advanceAfterCorrectCheck() {
+  const uuid = currentQuestionUUId.value;
+  const active = practiceStore.getSession(uuid).activePartId;
+  if (active) practiceStore.markPartComplete(uuid, active);
+  const nextId = practiceStore.nextUnansweredPartId(uuid);
+  if (!nextId || !result.value) {
+    if (result.value) {
+      result.value = { ...result.value, partComplete: true };
+    }
+    return;
+  }
+  const nextPart = practiceStore
+    .getSession(uuid)
+    .parts.find((p) => p.id === nextId);
+  practiceStore.setActivePart(uuid, nextId);
+  ensurePartRow(nextId);
+  if (!nextPart) return;
+  result.value = {
+    ...result.value,
+    partComplete: true,
+    feedback:
+      `${result.value.feedback} Next: (${nextPart.id}) ${nextPart.text}`.trim(),
+  };
+}
+
 async function runCheck() {
   if (!currentQuestionUUId.value || checking.value) return;
   if (checkDisabledReason.value) return;
-  if (isCrafting.value) {
-    await lockCraftedQuestion();
-    return;
-  }
 
   if (editModeStore.getEditMode() === "TEXT_WRITING") {
     editModeStore.setDefaultEditMode();
@@ -1001,11 +1068,16 @@ async function runCheck() {
     result.value = await api.checkPracticeWork(
       currentQuestionUUId.value,
       studentWork,
-      await currentProblemImage(),
+      currentProblemImage(),
       currentProblemText(),
+      currentParts(),
+      currentActivePartId(),
     );
     suppressBalloon.value = false;
     applyQuota(result.value.remaining, result.value.limit);
+    if (result.value.correct) {
+      advanceAfterCorrectCheck();
+    }
     const shouldSpeak =
       assistMode.value === "voice" &&
       !!result.value.feedback &&
@@ -1046,106 +1118,53 @@ async function runCheck() {
   width: min(480px, calc(100vw - 32px));
 }
 
-.practice-empty {
-  position: fixed;
-  inset: 110px 210px 56px 80px;
-  z-index: 900;
-  display: flex;
-  align-items: flex-start;
-  justify-content: center;
-  padding-top: 48px;
-  pointer-events: none;
-}
-
-.practice-empty__card {
-  pointer-events: auto;
-  max-width: 360px;
-  padding: 20px 22px;
-  border-radius: 16px;
-  background: rgba(255, 255, 255, 0.94);
-  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.12);
-  text-align: center;
-}
-
-.practice-assist-panel {
-  position: fixed;
-  top: 64px;
-  right: 0;
-  z-index: 1001;
+.practice-pane-assist {
   display: flex;
   flex-direction: column;
   align-items: stretch;
   gap: 8px;
-  width: 210px;
-  max-width: 210px;
-  padding: 10px;
-  border-radius: 0 0 12px 12px;
-  background: rgba(255, 255, 255, 0.94);
-  backdrop-filter: blur(6px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-  pointer-events: none;
-}
-
-.practice-assist-panel > * {
-  pointer-events: auto;
-}
-
-.practice-assist-panel__modes,
-.practice-assist-panel__actions {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: stretch;
-  gap: 8px;
   width: 100%;
 }
 
-.practice-assist-panel__modes {
-  overflow: hidden;
-}
-
-.practice-assist-panel__modes :deep(.v-btn-toggle) {
+.practice-pane-assist :deep(.v-btn-toggle) {
   width: 100%;
   overflow: hidden;
 }
 
-.practice-assist-panel__modes :deep(.v-slide-group__prev),
-.practice-assist-panel__modes :deep(.v-slide-group__next) {
+.practice-pane-assist :deep(.v-slide-group__prev),
+.practice-pane-assist :deep(.v-slide-group__next) {
   display: none !important;
 }
 
-.practice-assist-panel__modes :deep(.v-slide-group__container) {
+.practice-pane-assist :deep(.v-slide-group__container) {
   overflow: hidden !important;
 }
 
-.practice-assist-panel__modes :deep(.v-slide-group__content) {
+.practice-pane-assist :deep(.v-slide-group__content) {
   display: flex !important;
   width: 100% !important;
   transform: none !important;
 }
 
-.practice-assist-panel__actions :deep(.v-btn),
-.practice-assist-panel__check-wrap,
-.practice-assist-panel__check-wrap :deep(.v-btn) {
-  width: 100%;
-}
-
-.practice-assist-panel__modes :deep(.v-btn-toggle .v-btn) {
+.practice-pane-assist :deep(.v-btn-toggle .v-btn) {
   flex: 1 1 0;
   min-width: 0;
   padding-inline: 2px;
   font-size: 0.75rem;
 }
 
-.practice-assist-panel__status {
+.practice-pane-assist__check-wrap,
+.practice-pane-assist__check-wrap :deep(.v-btn),
+.practice-pane-assist > :deep(.v-btn) {
+  width: 100%;
+}
+
+.practice-pane-assist__status {
   display: flex;
   align-items: center;
   gap: 6px;
   font-size: 0.75rem;
   color: rgba(0, 0, 0, 0.65);
-}
-
-.practice-assist-panel__result {
-  width: 100%;
 }
 
 .practice-quota-chip {
@@ -1157,56 +1176,5 @@ async function runCheck() {
   font-size: 0.75rem;
   color: rgba(0, 0, 0, 0.7);
   cursor: pointer;
-}
-
-.practice-quota-panel {
-  position: fixed;
-  right: 8px;
-  bottom: 72px;
-  z-index: 1000;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  gap: 8px;
-  max-width: min(320px, calc(100vw - 24px));
-  pointer-events: none;
-}
-
-.practice-quota-panel > * {
-  pointer-events: auto;
-}
-
-.practice-quota-panel__result {
-  width: 100%;
-  opacity: 0.95;
-}
-
-@media (max-width: 1023px) {
-  .practice-empty {
-    inset: 64px 8px 96px 56px;
-  }
-
-  .practice-assist-panel {
-    top: auto;
-    right: 8px;
-    left: 56px;
-    bottom: max(12px, env(safe-area-inset-bottom));
-    width: auto;
-    max-width: none;
-    flex-direction: row;
-    flex-wrap: wrap;
-    align-items: center;
-  }
-
-  .practice-assist-panel__modes,
-  .practice-assist-panel__actions {
-    width: auto;
-    flex: 1 1 auto;
-  }
-
-  .practice-quota-panel {
-    right: 12px;
-    bottom: max(96px, env(safe-area-inset-bottom));
-  }
 }
 </style>

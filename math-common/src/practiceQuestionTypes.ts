@@ -1,5 +1,8 @@
 import { EntityAttributes } from "./baseTypes";
 import { UserAttributes } from "./userTypes";
+import type { PracticeProblemPart } from "./practiceParts";
+
+export type { PracticeProblemPart };
 
 /** Metadata row in practiceQuestion (stem lives on question). */
 export type PracticeQuestionMeta = EntityAttributes & {
@@ -42,6 +45,10 @@ export type PracticeCheckRequest = {
    * Used as the problem when no worksheet image is provided.
    */
   problemText?: string;
+  /** Numbered sections after submit (client session). */
+  parts?: PracticeProblemPart[];
+  /** Section Check/Coach should grade; not inferred from the cursor. */
+  activePartId?: string;
 };
 
 /** Daily Check/Coach quota snapshot (guests and signed-in users). */
@@ -56,9 +63,13 @@ export type PracticeCheckResult = {
   correct: boolean;
   feedback: string;
   hint?: string;
+  /** Messy earlier steps when the final answer is still accepted. */
+  warning?: string;
   /** Present after a successful check that consumed quota. */
   remaining?: number;
   limit?: number;
+  /** Same as `correct` for now: the active part (not the whole worksheet). */
+  partComplete?: boolean;
 };
 
 /** Opening tip after the problem is submitted, vs a tip while they work. */
@@ -74,6 +85,22 @@ export type PracticeCoachRequest = {
   problemText?: string;
   /** Opening orientation after the student submits the problem. */
   phase?: PracticeCoachPhase;
+  /** Numbered sections after submit (client session). */
+  parts?: PracticeProblemPart[];
+  /** Section the coach should talk about. */
+  activePartId?: string;
+};
+
+/** Client → server: split a worksheet image (or text) into numbered parts. */
+export type PracticePartsExtractRequest = {
+  problemImageBase64?: string;
+  problemText?: string;
+};
+
+export type PracticePartsExtractResult = {
+  parts: PracticeProblemPart[];
+  remaining?: number;
+  limit?: number;
 };
 
 /** Server → client: one short tip suitable for text-to-speech. */

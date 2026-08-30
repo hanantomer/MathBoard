@@ -4,11 +4,11 @@ import {
   defaultdCellStroke,
   sqrtSymbolSuffix,
 } from "common/globals";
-import { SqrtNotationAttributes } from "common/baseTypes";
+import { NotationAttributes, RectNotationAttributes, SqrtNotationAttributes } from "common/baseTypes";
 import { useCellStore } from "../store/pinia/cellStore";
 import { useNotationStore } from "../store/pinia/notationStore";
-import { cellSpace } from "common/globals";
-import { NotationAttributes } from "common/baseTypes";
+import { isPracticeBoard } from "./practiceBoardAdapter";
+import { isPracticePartLabelOnly } from "common/practiceParts";
 import useLineHelper from "./matrixLineHelper";
 import useCurveHelper from "./matrixCurveHelper";
 import useCircleHelper from "./matrixCircleHelper";
@@ -127,6 +127,9 @@ export default function useMatrixHelper() {
 
     try {
       notations = enrichNotations(notationStore.getNotations());
+      if (isPracticeBoard()) {
+        notations = notations.filter((n) => n.boardType !== "QUESTION");
+      }
     } catch {} // can't check if observer has properties
 
     circleHelper.mergeCircleNotations(
@@ -144,21 +147,26 @@ export default function useMatrixHelper() {
       notations.filter((n) => n.notationType === "CURVE"),
     );
 
-    htmlHelper.mergeHtmlNotations(
-      svgId,
-      notations.filter(
-        (n) =>
-          n.notationType === "ANNOTATION" ||
-          n.notationType === "EXPONENT" ||
-          n.notationType === "LOGBASE" ||
-          n.notationType === "SQRT" ||
-          n.notationType === "TEXT" ||
-          n.notationType === "IMAGE" ||
-          n.notationType === "SQRTSYMBOL" ||
-          n.notationType === "SYMBOL",
-      ),
-      svgElement!,
-    );
+    const htmlNotations = notations.filter((n) => {
+      if (
+        n.notationType === "TEXT" &&
+        isPracticePartLabelOnly((n as RectNotationAttributes).value ?? "")
+      ) {
+        return false;
+      }
+      return (
+        n.notationType === "ANNOTATION" ||
+        n.notationType === "EXPONENT" ||
+        n.notationType === "LOGBASE" ||
+        n.notationType === "SQRT" ||
+        n.notationType === "TEXT" ||
+        n.notationType === "IMAGE" ||
+        n.notationType === "SQRTSYMBOL" ||
+        n.notationType === "SYMBOL"
+      );
+    });
+
+    htmlHelper.mergeHtmlNotations(svgId, htmlNotations, svgElement!);
 
     lineHelper.mergeLineNotations(
       svgId,

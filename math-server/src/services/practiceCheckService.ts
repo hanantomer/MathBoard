@@ -7,8 +7,16 @@ import type {
   PracticeCheckResult,
   PracticeCoachPhase,
   PracticeCoachResult,
+  PracticeProblemPart,
 } from "../../../math-common/build/practiceQuestionTypes";
 import { PRACTICE_BLANK_UUID } from "../../../math-common/build/globals";
+import { reviewVertexRewrite } from "../../../math-common/build/practiceAlgebra";
+import {
+  formatPracticeActiveContext,
+  normalizeExtractedParts,
+  parsePracticeProblemParts,
+  stripPracticeTutorMarkup,
+} from "../../../math-common/build/practiceParts";
 
 const DEFAULT_MODELS = ["gemini-2.5-flash", "gemini-flash-lite-latest"];
 const GEMINI_API_BASE =
@@ -66,12 +74,34 @@ function extractText(payload: GeminiGenerateResponse): string {
   );
 }
 
+type PracticePartsCtx = {
+  parts?: PracticeProblemPart[];
+  activePartId?: string;
+};
+
+function resolveParts(
+  problemText?: string,
+  parts?: PracticeProblemPart[],
+): PracticeProblemPart[] {
+  if (parts && parts.length > 0) return parts;
+  return parsePracticeProblemParts(problemText);
+}
+
+function partsSection(problemText?: string, ctx?: PracticePartsCtx): string {
+  const block = formatPracticeActiveContext(
+    resolveParts(problemText, ctx?.parts),
+    ctx?.activePartId,
+  );
+  return block ? `${block}\n\n` : "";
+}
+
 function normalizeLoose(value: string): string {
-  return value
+  return stripPracticeTutorMarkup(value)
     .toLowerCase()
     .replace(/\s+/g, "")
     .replace(/×/g, "*")
     .replace(/÷/g, "/")
+    .replace(/−/g, "-")
     .replace(/²/g, "^2")
     .replace(/³/g, "^3");
 }
@@ -120,6 +150,44 @@ function looksLikeSolvedSystem(work: string, problemText?: string): boolean {
 }
 
 const COACH_DONE_TIP = "Nice work. That solves it.";
+const COACH_REWRITE_WARNING_TIP =
+  "Last line is right. An earlier completing-the-square step doesn't follow.";
+const COACH_REWRITE_PROGRESS_TIP =
+  "That rewrite still matches the original. Next, write the squared part as a binomial squared.";
+
+function checkResultForRewrite(
+  problemText: string | undefined,
+  work: string,
+  ctx?: PracticePartsCtx,
+): PracticeCheckResult | null {
+  if (resolveParts(problemText, ctx?.parts).length >= 2) return null;
+  const review = reviewVertexRewrite(problemText, work);
+  if (!review.equivalent) return null;
+  return {
+    correct: true,
+    feedback: review.warning
+      ? "Correct — the last line matches the original function."
+      : "Correct — that rewritten form matches the original function.",
+    warning: review.warning ?? undefined,
+  };
+}
+
+function coachTipForRewrite(
+  problemText: string | undefined,
+  work: string,
+  ctx?: PracticePartsCtx,
+): string | null {
+  const review = reviewVertexRewrite(problemText, work);
+  const multiPart = resolveParts(problemText, ctx?.parts).length >= 2;
+  if (review.equivalent) {
+    if (multiPart) return null;
+    return review.warning ? COACH_REWRITE_WARNING_TIP : COACH_DONE_TIP;
+  }
+  if (review.rewriteMatches) {
+    return COACH_REWRITE_PROGRESS_TIP;
+  }
+  return null;
+}
 
 function parseCheckResult(raw: string): PracticeCheckResult {
   const jsonMatch = raw.match(/\{[\s\S]*\}/);
@@ -130,6 +198,7 @@ function parseCheckResult(raw: string): PracticeCheckResult {
     correct?: boolean;
     feedback?: string;
     hint?: string;
+    warning?: string;
   };
   if (typeof parsed.correct !== "boolean") {
     throw new Error("Practice check response missing correct flag");
@@ -146,6 +215,10 @@ function parseCheckResult(raw: string): PracticeCheckResult {
       typeof parsed.hint === "string" && parsed.hint.trim()
         ? parsed.hint.trim()
         : undefined,
+    warning:
+      typeof parsed.warning === "string" && parsed.warning.trim()
+        ? parsed.warning.trim()
+        : undefined,
   };
 }
 
@@ -154,6 +227,7 @@ function buildPrompt(
   expectedAnswer: string,
   acceptedAnswers: string[],
   studentWork: string,
+  ctx?: PracticePartsCtx,
 ): string {
   const accepted =
     acceptedAnswers.length > 0
@@ -164,7 +238,7 @@ function buildPrompt(
 
 ${problem}
 
-Expected answer: ${expectedAnswer}
+${partsSection(problem, ctx)}Expected answer: ${expectedAnswer}
 Also accept these equivalent forms:
 ${accepted}
 
@@ -176,7 +250,7 @@ ${studentWork || "(empty — student has not written anything yet)"}
 ${CHECK_GRADE_RULES}
 
 Respond with ONLY valid JSON (no markdown):
-{"correct":true|false,"feedback":"one short sentence","hint":"optional short hint if incorrect"}`;
+{"correct":true|false,"feedback":"one short sentence","hint":"optional if incorrect","warning":"optional outline of messy earlier steps if still correct"}`;
 }
 
 async function generateWithModel(
@@ -233,7 +307,8 @@ function normalizeImageBase64(imageBase64: string): {
 
 const IMAGE_READ_RULES = `The attached image is the problem (or the cropped region of a worksheet) the student is currently working on, based on where they are writing.
 It may be a photo, a scan, or a screenshot — including dark mode (light text on a dark background).
-Read every line and all math symbols (triangles, lengths, units, altitudes). Ignore other problems on the same page or nearby. Do not invent a different problem.`;
+Read every line and all math symbols (triangles, lengths, units, altitudes). Ignore other problems on the same page or nearby. Do not invent a different problem.
+If the worksheet has multiple parts (numbered or one task per row), list them internally. The student is on the part nearest their writing (the line marked <<active>>).`;
 
 const IMAGE_UNREADABLE_CHECK =
   '{"correct":false,"feedback":"I couldn\'t read the worksheet clearly.","hint":"Paste the question as text (Ctrl+V), or use a larger photo with dark writing on a light background."}';
@@ -242,6 +317,13 @@ const IMAGE_UNREADABLE_COACH =
   '{"speak":true,"tip":"I couldn\'t read that image clearly. Paste the question as text."}';
 
 const CHECK_GRADE_RULES = `Decide if the student's final answer is mathematically equivalent to what the problem asks.
+When they rewrite an expression over several lines, grade the LATEST simplified line only. Earlier slips they later corrected are scratch — not the answer.
+If a later line is equivalent to the given function (expanded, vertex, or factored form), mark correct=true even if earlier completing-the-square or distribution lines were wrong.
+If those earlier slips exist, still approve the result and put a short outline of them in "warning" (not in feedback). Example warning: "Earlier steps don't follow: 2(x-4)² used (x-4) instead of (x-2)."
+Copying the original function alone is not an answer.
+Do not fail them for a missing sketch, boxed answer, labels, or later multi-part items they have not started.
+<<active>> marks the line they are writing now; [Part N] is a student section label. Ignore that markup as math.
+When Active part: is given, grade only that part's [Part] block. Work under a different [Part] is a different sub-question.
 Ignore intermediate scratch work if a clear final answer is present.
 Be lenient with spacing, parentheses, and equivalent notations (e.g. x^2 vs x²).
 Accept equivalent names (height vs length, width vs base) and omitted units when the numbers match.
@@ -255,10 +337,29 @@ const STUDENT_WORK_LABEL =
   "Student's current board work (grid symbols, diagrams, and text boxes):";
 
 const COACH_TIP_RULES = `First decide if they already answered the question. If yes: speak=false, or one short encouragement. Never ask for a next step.
-They are done when the board already has the asked-for result in any equivalent form, including:
+
+If the problem has multiple parts:
+- A line starting with <<active>> is where they are writing now. Coach that part only.
+- [Part N] is the student's work for part N. Every line under that header belongs to N until the next [Part]. Trust that grouping; do not reassign a line to a different part.
+- Do not tell them to move work that is already under the Active part's [Part] block.
+- The constant term in f(x)=… (e.g. +5) or in vertex form is not the y-intercept. The y-intercept is y= or (0, …) under the y-intercept part.
+- An axis of symmetry is x=… . Do not call that a y-intercept.
+- Parts may be numbered in the stem, or just one task per row — use the listed parts in order.
+- They are done with the WHOLE problem only when every part has an answer on the board.
+- If the active part is unfinished, do not mention later parts.
+- If the active part is finished and later parts remain, give one short tip for the next unanswered part.
+- Unstarted later parts are not mistakes.
+- Do not nag them to write 1. 2. 3. if the math already matches a part (a rewritten f(x)= is vertex form, a point is the vertex, x= is the axis).
+- When "Active part:" is given, do not infer a different part from the math.
+
+If the problem has no listed parts, they are done when the board already has the asked-for result in any equivalent form, including:
 - each unknown found as a number, same line or different lines (y=2,x=3 or y=2 then x=3). That solves a system. Do not also require (3,2), a boxed pair, or a check. Do not say "now find x" if x=<number> is already on the board.
 - a named value, units, or a sentence in symbols or a text box
+- a later rewritten line that is equivalent to the original function (vertex or factored form). Earlier algebra slips they corrected are scratch. Do not lecture about completing the square if the last line expands to the original.
+- a completing-the-square line that still expands to the original, such as 2(x^2-4x+4)-8+5 or 2(x^2-4x+4-4)+5. Adding the square inside and compensating outside (or adding and subtracting the same value inside) is valid. Do not say they forgot to add and subtract the same value. Hint only the next step: write the perfect square as a binomial squared.
 If they discarded an invalid extra root (e.g. a negative length) and kept the valid value, they are done.
+
+On a multi-part problem, those rewrite/completing-the-square rules apply to the active part only — not as "the whole question is finished."
 
 Only if they are NOT done: give ONE short spoken tip (max 18 words) — a next useful step, a gentle correction, or brief encouragement.
 If a text box is an unfinished draft, coach the math story. If it already answers the question, do not ask for more.
@@ -270,6 +371,7 @@ Do not nag about work that is already on the board:
 - adding units, a full sentence, or a boxed answer as ceremony
 - spelling, "square" vs rectangle, height vs length, or other equivalent names
 - plugging back in / "now check your work" when the asked-for result is already present
+- completing-the-square or distribution mistakes on earlier lines after a later line is already equivalent
 Treat "inferred right angle" / "figure ~N°" as geometry of the drawing, not a value they wrote.
 Board text is grid symbols and may omit spaces; do not treat missing spaces as errors.
 
@@ -284,6 +386,7 @@ Respond with ONLY valid JSON:
 const COACH_PRELIMINARY_RULES = `The student just submitted this problem and has not started solving yet.
 Give ONE short spoken tip (max 22 words) that orients them: what kind of problem this is, what they need to find, or the first useful step.
 Name the mathematical target (e.g. both x and y), not a notation format. Do not require an ordered pair, yellow box, boxed answer, or units sentence.
+If the problem has 3 or more parts, you may mention once that numbering answers (1, 2, 3) to match the question helps. Do not make labeling the main instruction.
 Do not solve the problem. Do not reveal the final answer, a formula that finishes it, or a full method.
 Do not ask them to copy the problem onto the board.
 Do not use markdown or emoji.
@@ -310,6 +413,7 @@ function studentWorkForPrompt(
 function buildBlankTextCheckPrompt(
   problemText: string,
   studentWork: string,
+  ctx?: PracticePartsCtx,
 ): string {
   return `You are grading a student's math practice work on a digital whiteboard.
 
@@ -318,7 +422,7 @@ The problem the student is solving (pasted as text) is:
 ${problemText}
 """
 
-Student work (from their board notations; may include rough work):
+${partsSection(problemText, ctx)}Student work (from their board notations; may include rough work):
 """
 ${studentWork || "(empty — student has not written anything yet)"}
 """
@@ -327,13 +431,14 @@ ${CHECK_GRADE_RULES}
 Do not treat the problem statement itself as the student's answer.
 
 Respond with ONLY valid JSON (no markdown):
-{"correct":true|false,"feedback":"one short sentence","hint":"optional short hint if incorrect"}`;
+{"correct":true|false,"feedback":"one short sentence","hint":"optional if incorrect","warning":"optional outline of messy earlier steps if still correct"}`;
 }
 
 function buildBlankTextCoachPrompt(
   problemText: string,
   studentWork: string,
   phase?: PracticeCoachPhase,
+  ctx?: PracticePartsCtx,
 ): string {
   return `You are a brief math voice coach for a student working on a whiteboard.
 
@@ -342,7 +447,7 @@ The problem they are solving (pasted as text) is:
 ${problemText}
 """
 
-${STUDENT_WORK_LABEL}
+${partsSection(problemText, ctx)}${STUDENT_WORK_LABEL}
 """
 ${studentWorkForPrompt(studentWork, phase)}
 """
@@ -350,12 +455,16 @@ ${studentWorkForPrompt(studentWork, phase)}
 ${coachRules(phase)}`;
 }
 
-function buildBlankImageCheckPrompt(studentWork: string): string {
+function buildBlankImageCheckPrompt(
+  studentWork: string,
+  problemText?: string,
+  ctx?: PracticePartsCtx,
+): string {
   return `You are grading a student's math practice work on a digital whiteboard.
 
 ${IMAGE_READ_RULES}
 
-Student work next to this problem (from their board notations; may include rough work):
+${partsSection(problemText, ctx)}Student work next to this problem (from their board notations; may include rough work):
 """
 ${studentWork || "(empty — student has not written anything yet)"}
 """
@@ -365,18 +474,20 @@ If the image is too unclear to read the problem, respond with exactly:
 ${IMAGE_UNREADABLE_CHECK}
 
 Respond with ONLY valid JSON (no markdown):
-{"correct":true|false,"feedback":"one short sentence","hint":"optional short hint if incorrect"}`;
+{"correct":true|false,"feedback":"one short sentence","hint":"optional if incorrect","warning":"optional outline of messy earlier steps if still correct"}`;
 }
 
 function buildBlankImageCoachPrompt(
   studentWork: string,
   phase?: PracticeCoachPhase,
+  problemText?: string,
+  ctx?: PracticePartsCtx,
 ): string {
   return `You are a brief math voice coach for a student working on a whiteboard.
 
 ${IMAGE_READ_RULES}
 
-Student's current board work next to this problem (grid symbols, diagrams, and text boxes):
+${partsSection(problemText, ctx)}Student's current board work next to this problem (grid symbols, diagrams, and text boxes):
 """
 ${studentWorkForPrompt(studentWork, phase)}
 """
@@ -424,10 +535,14 @@ export async function checkPracticeWork(
   studentWork: string,
   problemImageBase64?: string,
   problemText?: string,
+  parts?: PracticeProblemPart[],
+  activePartId?: string,
 ): Promise<PracticeCheckResult> {
   const work = (studentWork ?? "").trim();
   const image = problemImageBase64?.trim();
   const textProblem = problemText?.trim();
+  const ctx: PracticePartsCtx = { parts, activePartId };
+  const multiPart = resolveParts(textProblem, parts).length >= 2;
 
   if (questionUUId === PRACTICE_BLANK_UUID) {
     if (!image && !textProblem) {
@@ -446,20 +561,23 @@ export async function checkPracticeWork(
           : "Write your solution on the board (not in the problem text), then press Check.",
       };
     }
+    const rewrite = checkResultForRewrite(textProblem, work, ctx);
+    if (rewrite) return { ...rewrite, partComplete: rewrite.correct };
     const raw = image
       ? await generateTextAcrossModels(
-          buildBlankImageCheckPrompt(work),
+          buildBlankImageCheckPrompt(work, textProblem, ctx),
           image,
           undefined,
           "practiceCheckBlank",
         )
       : await generateTextAcrossModels(
-          buildBlankTextCheckPrompt(textProblem!, work),
+          buildBlankTextCheckPrompt(textProblem!, work, ctx),
           undefined,
           undefined,
           "practiceCheckBlank",
         );
-    return parseCheckResult(raw);
+    const parsed = parseCheckResult(raw);
+    return { ...parsed, partComplete: parsed.correct };
   }
 
   const template = getPracticeQuestionTemplateByUUId(questionUUId);
@@ -475,21 +593,26 @@ export async function checkPracticeWork(
     };
   }
 
-  // Fast path when the board clearly contains an accepted answer form.
+  const templateProblem = formatPracticeProblemPrompt(template);
+  const rewrite = checkResultForRewrite(templateProblem, work, ctx);
+  if (rewrite) return { ...rewrite, partComplete: rewrite.correct };
   if (
+    !multiPart &&
     localQuickMatch(work, template.expectedAnswer, template.acceptedAnswers)
   ) {
     return {
       correct: true,
       feedback: "Correct — that matches the expected answer.",
+      partComplete: true,
     };
   }
 
   const prompt = buildPrompt(
-    formatPracticeProblemPrompt(template),
+    templateProblem,
     template.expectedAnswer,
     template.acceptedAnswers ?? [],
     work,
+    ctx,
   );
 
   const raw = await generateTextAcrossModels(
@@ -498,7 +621,8 @@ export async function checkPracticeWork(
     undefined,
     "practiceCheck",
   );
-  return parseCheckResult(raw);
+  const parsed = parseCheckResult(raw);
+  return { ...parsed, partComplete: parsed.correct };
 }
 
 function buildBlankCoachPrompt(
@@ -520,12 +644,13 @@ function buildCoachPrompt(
   expectedAnswer: string,
   studentWork: string,
   phase?: PracticeCoachPhase,
+  ctx?: PracticePartsCtx,
 ): string {
   return `You are a brief math voice coach for a student working on a whiteboard.
 
 ${problem}
 
-Expected final answer (do not reveal unless they already have it): ${expectedAnswer}
+${partsSection(problem, ctx)}Expected final answer (do not reveal unless they already have it): ${expectedAnswer}
 
 ${STUDENT_WORK_LABEL}
 """
@@ -535,7 +660,12 @@ ${studentWorkForPrompt(studentWork, phase)}
 ${coachRules(phase)}`;
 }
 
-function parseCoachResult(raw: string, studentWork = ""): PracticeCoachResult {
+function parseCoachResult(
+  raw: string,
+  studentWork = "",
+  problemText = "",
+  ctx?: PracticePartsCtx,
+): PracticeCoachResult {
   const jsonMatch = raw.match(/\{[\s\S]*\}/);
   if (!jsonMatch) {
     throw new Error("Could not parse practice coach response");
@@ -546,9 +676,15 @@ function parseCoachResult(raw: string, studentWork = ""): PracticeCoachResult {
   };
   const tip =
     typeof parsed.tip === "string" ? parsed.tip.trim().replace(/\s+/g, " ") : "";
+  const rewriteTip = coachTipForRewrite(problemText, studentWork, ctx);
+  if (rewriteTip) {
+    return { speak: true, tip: rewriteTip };
+  }
+  const multiPart = resolveParts(problemText, ctx?.parts).length >= 2;
   if (
-    coachAsksToFindAlreadyAssigned(tip, studentWork) ||
-    coachAcknowledgedDoneThenAskedMore(tip)
+    !multiPart &&
+    (coachAsksToFindAlreadyAssigned(tip, studentWork) ||
+      coachAcknowledgedDoneThenAskedMore(tip))
   ) {
     return { speak: true, tip: COACH_DONE_TIP };
   }
@@ -596,6 +732,8 @@ async function generateCoachTip(
   prompt: string,
   problemImageBase64?: string,
   studentWork = "",
+  problemText = "",
+  ctx?: PracticePartsCtx,
 ): Promise<PracticeCoachResult> {
   const raw = await generateTextAcrossModels(
     prompt,
@@ -603,7 +741,7 @@ async function generateCoachTip(
     coachGenerationConfig,
     "practiceCoach",
   );
-  return parseCoachResult(raw, studentWork);
+  return parseCoachResult(raw, studentWork, problemText, ctx);
 }
 
 export async function coachPracticeWork(
@@ -612,6 +750,8 @@ export async function coachPracticeWork(
   problemImageBase64?: string,
   problemText?: string,
   phase?: PracticeCoachPhase,
+  parts?: PracticeProblemPart[],
+  activePartId?: string,
 ): Promise<PracticeCoachResult> {
   const work = (studentWork ?? "").trim();
   const isPreliminary = phase === "preliminary";
@@ -621,9 +761,20 @@ export async function coachPracticeWork(
 
   const image = problemImageBase64?.trim();
   const textProblem = problemText?.trim();
+  const ctx: PracticePartsCtx = { parts, activePartId };
+  const multiPart = resolveParts(textProblem, parts).length >= 2;
 
-  if (!isPreliminary && looksLikeSolvedSystem(work, textProblem)) {
+  if (
+    !isPreliminary &&
+    !multiPart &&
+    looksLikeSolvedSystem(work, textProblem)
+  ) {
     return { speak: true, tip: COACH_DONE_TIP };
+  }
+
+  if (!isPreliminary) {
+    const rewriteTip = coachTipForRewrite(textProblem, work, ctx);
+    if (rewriteTip) return { speak: true, tip: rewriteTip };
   }
 
   if (questionUUId === PRACTICE_BLANK_UUID) {
@@ -632,19 +783,29 @@ export async function coachPracticeWork(
     }
     if (image) {
       return generateCoachTip(
-        buildBlankImageCoachPrompt(work, phase),
+        buildBlankImageCoachPrompt(work, phase, textProblem, ctx),
         image,
         work,
+        textProblem,
+        ctx,
       );
     }
     if (textProblem) {
       return generateCoachTip(
-        buildBlankTextCoachPrompt(textProblem, work, phase),
+        buildBlankTextCoachPrompt(textProblem, work, phase, ctx),
         undefined,
         work,
+        textProblem,
+        ctx,
       );
     }
-    return generateCoachTip(buildBlankCoachPrompt(work, phase), undefined, work);
+    return generateCoachTip(
+      buildBlankCoachPrompt(work, phase),
+      undefined,
+      work,
+      "",
+      ctx,
+    );
   }
 
   const template = getPracticeQuestionTemplateByUUId(questionUUId);
@@ -652,8 +813,13 @@ export async function coachPracticeWork(
     throw new Error("practice question template not found");
   }
 
-  // If they already have the answer on the board, celebrate briefly without another Gemini call.
+  const templateProblem = formatPracticeProblemPrompt(template);
+  const rewriteTip = work
+    ? coachTipForRewrite(templateProblem, work, ctx)
+    : null;
+  if (rewriteTip) return { speak: true, tip: rewriteTip };
   if (
+    !multiPart &&
     work &&
     localQuickMatch(work, template.expectedAnswer, template.acceptedAnswers)
   ) {
@@ -665,12 +831,54 @@ export async function coachPracticeWork(
 
   return generateCoachTip(
     buildCoachPrompt(
-      formatPracticeProblemPrompt(template),
+      templateProblem,
       template.expectedAnswer,
       work,
       phase,
+      ctx,
     ),
     undefined,
     work,
+    templateProblem,
+    ctx,
   );
+}
+
+const WHOLE_PROBLEM = [{ id: "1", text: "Whole problem" }];
+
+export async function extractPracticeParts(
+  problemImageBase64?: string,
+  problemText?: string,
+): Promise<{ parts: PracticeProblemPart[] }> {
+  const image = problemImageBase64?.trim();
+  const text = problemText?.trim();
+  if (!image && !text) {
+    return { parts: WHOLE_PROBLEM };
+  }
+
+  const prompt = `List the distinct tasks in this math worksheet as JSON.
+Use ids 1, 2, 3 even if the worksheet used a/b or one task per row.
+Ignore given equations, titles, and setup as parts.
+Max 12 parts.
+If you cannot read it or there is only one task, return one part with text "Whole problem".
+${text ? `\nOptional accompanying text:\n"""\n${text}\n"""\n` : ""}
+Respond with ONLY valid JSON (no markdown):
+{"parts":[{"id":"1","text":"short task"}]}`;
+
+  try {
+    const raw = await generateTextAcrossModels(
+      prompt,
+      image,
+      undefined,
+      "practiceParts",
+    );
+    const jsonMatch = raw.match(/\{[\s\S]*\}/);
+    if (!jsonMatch) return { parts: WHOLE_PROBLEM };
+    const parsed = JSON.parse(jsonMatch[0]) as {
+      parts?: PracticeProblemPart[];
+    };
+    return { parts: normalizeExtractedParts(parsed.parts) };
+  } catch {
+    return { parts: WHOLE_PROBLEM };
+  }
 }

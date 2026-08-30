@@ -339,6 +339,7 @@ const symbolGroups = [
   {
     title: "Algebra",
     symbols: [
+      { name: "fxAlgebra", value: "f(x)", tooltip: "Function f(x)", tabIndex: 20 },
       { name: "sqrt", value: "&#x221A;", tooltip: "Square root (√)", tabIndex: 20 },
       { name: "cbrt", value: "&#x221B;", tooltip: "Cube root (∛)", tabIndex: 21 },
       { name: "sup2", value: "&sup2;", tooltip: "Superscript 2 (²)", tabIndex: 22 },
@@ -433,7 +434,7 @@ const symbolGroups = [
     ],
   },
   {
-    title: "Derivatives",
+    title: "Functions / calculus",
     symbols: [
       { name: "f(x)", value: "f(x)", tooltip: "Function f(x)", tabIndex: 32 },
       {

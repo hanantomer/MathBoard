@@ -292,6 +292,9 @@ export default function () {
         }
 
         case "MOVEANDDELETE": {
+          if (await notationMutateHelper.handleBackspaceOnSelectedCell()) {
+            return;
+          }
           handleMovementKey(code);
           await notationMutateHelper.deleteSelectedNotations();
           return;
