@@ -109,3 +109,91 @@ export function getPracticeCoachAnchorRect(
   if (!last) return null;
   return notationDomRect(svgId, last) ?? fallbackCellRect(last);
 }
+
+/** Clear space between the writing and the coach balloon. */
+export const PRACTICE_COACH_BALLOON_GAP = 96;
+
+export type PracticeCoachBalloonBounds = {
+  minLeft: number;
+  minTop: number;
+  maxRight: number;
+  maxBottom: number;
+};
+
+function clamp(n: number, min: number, max: number) {
+  return Math.min(Math.max(n, min), Math.max(min, max));
+}
+
+export function clampBalloonToBounds(
+  left: number,
+  top: number,
+  width: number,
+  height: number,
+  b: PracticeCoachBalloonBounds,
+): { left: number; top: number } {
+  return {
+    left: clamp(left, b.minLeft, b.maxRight - width),
+    top: clamp(top, b.minTop, b.maxBottom - height),
+  };
+}
+
+function overlapsKeepOut(
+  box: { left: number; top: number; width: number; height: number },
+  keepOut: { left: number; top: number; right: number; bottom: number },
+): boolean {
+  const right = box.left + box.width;
+  const bottom = box.top + box.height;
+  return !(
+    right <= keepOut.left ||
+    box.left >= keepOut.right ||
+    bottom <= keepOut.top ||
+    box.top >= keepOut.bottom
+  );
+}
+
+/**
+ * Place the balloon near the last mark without covering it.
+ * Prefers below, then to the right; never clamps back onto the writing.
+ */
+export function placePracticeCoachBalloon(
+  anchor: { left: number; top: number; right: number; bottom: number },
+  width: number,
+  height: number,
+  bounds: PracticeCoachBalloonBounds,
+): { left: number; top: number } {
+  const gap = PRACTICE_COACH_BALLOON_GAP;
+  const keepOut = {
+    left: anchor.left - 16,
+    top: anchor.top - 16,
+    right: anchor.right + 16,
+    bottom: anchor.bottom + gap,
+  };
+
+  const candidates = [
+    { left: anchor.left, top: anchor.bottom + gap },
+    {
+      left: Math.max(anchor.left, anchor.right - width),
+      top: anchor.bottom + gap,
+    },
+    { left: anchor.right + gap, top: anchor.top },
+    { left: anchor.right + gap, top: Math.max(bounds.minTop, anchor.bottom - height) },
+    { left: anchor.left - width - gap, top: anchor.top },
+    { left: anchor.left, top: anchor.top - height - gap },
+    { left: bounds.maxRight - width, top: bounds.maxBottom - height },
+  ];
+
+  for (const c of candidates) {
+    const pos = clampBalloonToBounds(c.left, c.top, width, height, bounds);
+    if (!overlapsKeepOut({ ...pos, width, height }, keepOut)) {
+      return pos;
+    }
+  }
+
+  return clampBalloonToBounds(
+    bounds.maxRight - width,
+    bounds.maxBottom - height,
+    width,
+    height,
+    bounds,
+  );
+}

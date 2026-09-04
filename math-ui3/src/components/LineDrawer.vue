@@ -58,7 +58,7 @@
       v-for="junction in lineJunctions"
       :key="junctionKey(junction)"
       editing-mode="LINE_EDITING_LEFT"
-      v-show="editModeStore.isLineMode()"
+      v-show="handlesInteractive"
       v-bind:style="{
         left: junctionScreenLeft(junction) + 'px',
         top: junctionScreenTop(junction) + 'px',
@@ -68,6 +68,8 @@
 
     <svg
       :style="lineSvgScreenStyle"
+      :viewBox="overlayViewBox"
+      preserveAspectRatio="none"
       xmlns="http://www.w3.org/2000/svg"
       class="line-svg"
     >
@@ -103,10 +105,14 @@ import {
 } from "common/baseTypes";
 import useEventBus from "../helpers/eventBusHelper";
 import lineWatcher from "./LineWatcher.vue";
-import lineHandle from "./LineHandle.vue";
+import lineHandle, { LINE_HANDLE_HALF } from "./LineHandle.vue";
 import lineJunctionHandle from "./LineJunctionHandle.vue";
 import useScreenHelper from "../helpers/screenHelper";
 import useNotationMutateHelper from "../helpers/notationMutateHelper";
+import {
+  getBoardSvgUserExtent,
+  svgUserToViewport,
+} from "../helpers/pointerCoordinateHelper";
 import {
   applyJunctionPoint,
   collectJunctionLineUuids,
@@ -148,15 +154,20 @@ const lineJunctions = computed(() => {
   );
 });
 
+const handlesInteractive = computed(
+  () =>
+    editModeStore.isLineSelectedMode() || editModeStore.isLineEditingMode(),
+);
+
 const showLeftHandle = computed(
   () =>
-    editModeStore.isLineMode() &&
+    handlesInteractive.value &&
     !isEndpointInJunction(lineJunctions.value, selectedLineUuid.value, "p1"),
 );
 
 const showRightHandle = computed(
   () =>
-    editModeStore.isLineMode() &&
+    handlesInteractive.value &&
     !isEndpointInJunction(lineJunctions.value, selectedLineUuid.value, "p2"),
 );
 
@@ -169,6 +180,26 @@ const lineAttributes = ref<LineAttributes>({
   arrowLeft: false,
   arrowRight: false,
 });
+
+watch(
+  () => ({
+    mode: editModeStore.getEditMode(),
+    selected: notationStore.getSelectedNotations()[0],
+  }),
+  ({ mode, selected }) => {
+    if (
+      selected?.notationType !== "LINE" ||
+      (mode !== "LINE_SELECTED" &&
+        mode !== "LINE_EDITING_LEFT" &&
+        mode !== "LINE_EDITING_RIGHT")
+    ) {
+      return;
+    }
+    if (mode === "LINE_SELECTED") {
+      selectLine(selected);
+    }
+  },
+);
 
 const modifyRight = computed(
   () =>
@@ -212,33 +243,51 @@ watch(show, async (visible) => {
   }
 });
 
-/** Same viewport origin as pointer math and handles; avoids margin/layout drift from `.mathboard` on an `absolute` overlay. */
+/** Same viewport box as the board SVG; viewBox maps overlay user units onto that box. */
+const overlayViewBox = computed(() => {
+  cellStore.getSvgBoundingRect();
+  const e = getBoardSvgUserExtent();
+  if (!e.width || !e.height) {
+    return undefined;
+  }
+  return `${e.x} ${e.y} ${e.width} ${e.height}`;
+});
+
 const lineSvgScreenStyle = computed(() => {
   const r = cellStore.getSvgBoundingRect();
   return {
     position: "fixed" as const,
     top: `${r.top}px`,
     left: `${r.left}px`,
-    width: matrixSize.width,
-    height: matrixSize.height,
+    width: r.width ? `${r.width}px` : matrixSize.width,
+    height: r.height ? `${r.height}px` : matrixSize.height,
     margin: "0",
+    overflow: "visible",
+    zIndex: 998,
+    pointerEvents: "none" as const,
   };
 });
 
+const HANDLE_HALF = LINE_HANDLE_HALF;
+
 let handleLeft = computed(() => {
-  return lineAttributes.value.p1x + (cellStore.getSvgBoundingRect().left ?? 0);
+  cellStore.getSvgBoundingRect();
+  return svgUserToViewport(lineAttributes.value.p1x, lineAttributes.value.p1y).x - HANDLE_HALF;
 });
 
 let handleRight = computed(() => {
-  return lineAttributes.value.p2x + (cellStore.getSvgBoundingRect().left ?? 0);
+  cellStore.getSvgBoundingRect();
+  return svgUserToViewport(lineAttributes.value.p2x, lineAttributes.value.p2y).x - HANDLE_HALF;
 });
 
 let handleTop = computed(() => {
-  return lineAttributes.value.p1y + (cellStore.getSvgBoundingRect().top ?? 0);
+  cellStore.getSvgBoundingRect();
+  return svgUserToViewport(lineAttributes.value.p1x, lineAttributes.value.p1y).y - HANDLE_HALF;
 });
 
 let handleBottom = computed(() => {
-  return lineAttributes.value.p2y + (cellStore.getSvgBoundingRect().top ?? 0);
+  cellStore.getSvgBoundingRect();
+  return svgUserToViewport(lineAttributes.value.p2x, lineAttributes.value.p2y).y - HANDLE_HALF;
 });
 
 function setInitialPosition(p: DotCoordinates) {
@@ -272,12 +321,19 @@ function drawLine(p: DotCoordinates) {
   // 3. upper right to lower left. direction is DOWN and slopeType is POSITIVE
   // 4. lower left to upper right. direction is UP and slopeType is POSITIVE
 
+  const aligned = alignToAxis(
+    point,
+    modifyRight.value
+      ? { x: lineAttributes.value.p1x, y: lineAttributes.value.p1y }
+      : { x: lineAttributes.value.p2x, y: lineAttributes.value.p2y },
+  );
+
   if (modifyRight.value) {
-    lineAttributes.value.p2x = point.x;
-    lineAttributes.value.p2y = point.y;
+    lineAttributes.value.p2x = aligned.x;
+    lineAttributes.value.p2y = aligned.y;
   } else {
-    lineAttributes.value.p1x = point.x;
-    lineAttributes.value.p1y = point.y;
+    lineAttributes.value.p1x = aligned.x;
+    lineAttributes.value.p1y = aligned.y;
   }
 }
 
@@ -298,11 +354,13 @@ function selectLine(notation: NotationAttributes) {
 }
 
 function junctionScreenLeft(junction: LineJunction) {
-  return junction.x + (cellStore.getSvgBoundingRect().left ?? 0) - 5;
+  cellStore.getSvgBoundingRect();
+  return svgUserToViewport(junction.x, junction.y).x - HANDLE_HALF;
 }
 
 function junctionScreenTop(junction: LineJunction) {
-  return junction.y + (cellStore.getSvgBoundingRect().top ?? 0) - 5;
+  cellStore.getSvgBoundingRect();
+  return svgUserToViewport(junction.x, junction.y).y - HANDLE_HALF;
 }
 
 function startJunctionEdit(junction: LineJunction) {
@@ -447,30 +505,21 @@ async function saveLine(fixEdge: boolean = true): Promise<string> {
   }
 
   if (fixEdge) {
-    lineAttributes.value.p1x = getAdjustedEdge({
+    straightenIfAxisAligned();
+    const p1 = getAdjustedEdge({
       x: lineAttributes.value.p1x,
       y: lineAttributes.value.p1y,
-    }).x;
-
-    lineAttributes.value.p1y = getAdjustedEdge({
-      x: lineAttributes.value.p1x,
-      y: lineAttributes.value.p1y,
-    }).y;
-
-    lineAttributes.value.p2x = getAdjustedEdge({
+    });
+    lineAttributes.value.p1x = Math.round(p1.x);
+    lineAttributes.value.p1y = Math.round(p1.y);
+    straightenIfAxisAligned();
+    const p2 = getAdjustedEdge({
       x: lineAttributes.value.p2x,
       y: lineAttributes.value.p2y,
-    }).x;
-
-    lineAttributes.value.p2y = getAdjustedEdge({
-      x: lineAttributes.value.p2x,
-      y: lineAttributes.value.p2y,
-    }).y;
-
-    lineAttributes.value.p1x = Math.round(lineAttributes.value.p1x);
-    lineAttributes.value.p1y = Math.round(lineAttributes.value.p1y);
-    lineAttributes.value.p2x = Math.round(lineAttributes.value.p2x);
-    lineAttributes.value.p2y = Math.round(lineAttributes.value.p2y);
+    });
+    lineAttributes.value.p2x = Math.round(p2.x);
+    lineAttributes.value.p2y = Math.round(p2.y);
+    straightenIfAxisAligned();
   }
 
   // flip p1x and p2x if p1x > p2x
@@ -498,6 +547,34 @@ async function saveLine(fixEdge: boolean = true): Promise<string> {
   }
 }
 
+function straightenIfAxisAligned() {
+  const aligned = alignToAxis(
+    { x: lineAttributes.value.p2x, y: lineAttributes.value.p2y },
+    { x: lineAttributes.value.p1x, y: lineAttributes.value.p1y },
+  );
+  lineAttributes.value.p2x = aligned.x;
+  lineAttributes.value.p2y = aligned.y;
+}
+
+function alignToAxis(
+  point: DotCoordinates,
+  anchor: DotCoordinates,
+): DotCoordinates {
+  const dx = Math.abs(point.x - anchor.x);
+  const dy = Math.abs(point.y - anchor.y);
+  const cellW = cellStore.getCellHorizontalWidth();
+  const cellH = cellStore.getCellVerticalHeight();
+  const yThreshold = Math.max(cellH * 0.5, 12);
+  const xThreshold = Math.max(cellW * 0.5, 8);
+  if (dx >= dy && dy <= yThreshold) {
+    return { x: point.x, y: anchor.y };
+  }
+  if (dy >= dx && dx <= xThreshold) {
+    return { x: anchor.x, y: point.y };
+  }
+  return point;
+}
+
 function getAdjustedEdge(point: DotCoordinates): DotCoordinates {
   // line edge at point
   const nearLineAtPoint = screenHelper.getNearestLineEdge(point);
@@ -520,21 +597,25 @@ function getAdjustedEdge(point: DotCoordinates): DotCoordinates {
     return { x: nearestIntersection.x, y: nearestIntersection.y };
   }
 
-  // cell X edge
-  const nearCellXBorder = screenHelper.getNearestCellXBorder(point);
-
-  if (nearCellXBorder != null) {
-    return { x: nearCellXBorder, y: point.y };
+  const nearestCorner = screenHelper.getNearestGridCorner(point);
+  if (nearestCorner != null) {
+    return nearestCorner;
   }
 
-  // cell Y edge at right
-  const nearCellYBorder = screenHelper.getNearestCellYBorder(point);
-
-  if (nearCellYBorder != null) {
-    return { x: point.x, y: nearCellYBorder };
-  }
-
-  return point;
+  const cellW = cellStore.getCellHorizontalWidth();
+  const cellH = cellStore.getCellVerticalHeight();
+  const gx = Math.round(point.x / cellW) * cellW;
+  const gy = Math.round(point.y / cellH) * cellH;
+  return {
+    x:
+      Math.abs(gx - point.x) <= Math.max(8, cellW * 0.45)
+        ? gx
+        : Math.round(point.x),
+    y:
+      Math.abs(gy - point.y) <= Math.max(8, cellH * 0.45)
+        ? gy
+        : Math.round(point.y),
+  };
 }
 
 function applyMoveToLine(dx: number, dy: number) {
@@ -553,7 +634,6 @@ function moveLine(moveX: number, moveY: number) {
 <style scoped>
 .line {
   stroke-width: 2px;
-  position: absolute;
 }
 
 .dashed {

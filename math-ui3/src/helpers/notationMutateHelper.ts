@@ -11,12 +11,15 @@ import {
   LineNotationAttributes,
   CurveAttributes,
   CircleAttributes,
+  ConicAttributes,
   LineAttributes,
   CurveNotationAttributes,
   CircleNotationAttributes,
+  ConicNotationAttributes,
   LineNotationCreationAttributes,
   CurveNotationCreationAttributes,
   CircleNotationCreationAttributes,
+  ConicNotationCreationAttributes,
   AnnotationNotationCreationAttributes,
   SqrtNotationCreationAttributes,
   isCellNotationType,
@@ -74,6 +77,8 @@ import useImageHelper from "./imageHelper";
 import {
   collapseNotationsToSelectedCell,
   nextMathCellsAreEmpty,
+  nextMathRowsAreEmpty,
+  pushNotationsDownFromSelectedCell,
   pushNotationsFromCell,
   pushNotationsFromSelectedCell,
 } from "./notationCollapsePushHelper";
@@ -105,6 +110,7 @@ function requireBoardParent() {
 
 let deleteKeyLock = false; // Add lock variable at the top with other variables
 let spaceKeyLock = false;
+let enterKeyLock = false;
 
 function cellRectCoordinates(cell: CellAttributes): RectCoordinates {
   const cellStore = useCellStore();
@@ -445,6 +451,11 @@ export default function notationMutateHelper() {
           (n as CircleNotationAttributes).cy += deltaY;
           break;
         }
+        case "CONIC": {
+          (n as ConicNotationAttributes).hx += deltaX;
+          (n as ConicNotationAttributes).hy += deltaY;
+          break;
+        }
 
         case "FREESKETCH": {
           (n as FreeSketchNotationAttributes).points = (
@@ -509,6 +520,11 @@ export default function notationMutateHelper() {
         case "CIRCLE":
           (n as unknown as CircleAttributes).cx += deltaX;
           (n as unknown as CircleAttributes).cy += deltaY;
+          break;
+
+        case "CONIC":
+          (n as unknown as ConicAttributes).hx += deltaX;
+          (n as unknown as ConicAttributes).hy += deltaY;
           break;
 
         case "ANNOTATION":
@@ -888,6 +904,14 @@ export default function notationMutateHelper() {
     await apiHelper.updateCircleNotationAttributes(circle);
     notationStore.addNotation(circle, true, true);
     userOutgoingOperations.syncOutgoingUpdateNotation(circle);
+  }
+
+  async function updateConicNotation(conic: ConicNotationAttributes) {
+    if (!authorizationHelper.canEdit()) return;
+    if (persistLocalPracticeUpdate(conic)) return;
+    await apiHelper.updateConicNotationAttributes(conic);
+    notationStore.addNotation(conic, true, true);
+    userOutgoingOperations.syncOutgoingUpdateNotation(conic);
   }
 
   async function updateFreeSketchNotation(
@@ -1524,6 +1548,24 @@ export default function notationMutateHelper() {
     return addNotation(circleNotation);
   }
 
+  async function addConicNotation(
+    conicAttributes: ConicAttributes,
+  ): Promise<string> {
+    let conicNotation: ConicNotationCreationAttributes = {
+      kind: conicAttributes.kind,
+      hx: conicAttributes.hx,
+      hy: conicAttributes.hy,
+      axis: conicAttributes.axis,
+      a: conicAttributes.a,
+      b: conicAttributes.b,
+      boardType: requireBoardParent().type,
+      parentUUId: requireBoardParent().uuid,
+      notationType: "CONIC",
+      user: getBoardUser(),
+    };
+    return addNotation(conicNotation);
+  }
+
   async function addFreeSketchNotation(
     freeSketchAttributes: FreeSketchAttributes,
   ): Promise<string> {
@@ -1552,6 +1594,8 @@ export default function notationMutateHelper() {
         return addCurveNotation(clonedNotation);
       case "CIRCLE":
         return addCircleNotation(clonedNotation);
+      case "CONIC":
+        return addConicNotation(clonedNotation);
       case "FREESKETCH":
         return addFreeSketchNotation(clonedNotation);
       case "ANNOTATION":
@@ -1739,6 +1783,43 @@ export default function notationMutateHelper() {
     }
   }
 
+  function scrollSelectedCellIntoView() {
+    const svgId = cellStore.getSvgId();
+    if (!svgId) return;
+    const { row, col } = cellStore.getSelectedCell();
+    const rowGroup = document.querySelector(
+      `svg#${CSS.escape(svgId)} g[row="${row}"]`,
+    );
+    const cellRect = rowGroup?.querySelector(`rect[col="${col}"]`);
+    (cellRect ?? rowGroup)?.scrollIntoView({
+      block: "nearest",
+      inline: "nearest",
+    });
+  }
+
+  async function handleEnterOnSelectedCell() {
+    if (!authorizationHelper.canEdit()) return;
+    if (enterKeyLock) return;
+    if (editModeStore.getEditMode() === "AREA_SELECTED") return;
+
+    const cell = cellStore.getSelectedCell();
+    if (!cell) return;
+
+    if (nextMathRowsAreEmpty(cell)) {
+      matrixCellHelper.setNextCell(0, 1);
+      scrollSelectedCellIntoView();
+      return;
+    }
+
+    try {
+      enterKeyLock = true;
+      await pushNotationsDownFromSelectedCell();
+      matrixCellHelper.setNextCell(0, 0);
+    } finally {
+      enterKeyLock = false;
+    }
+  }
+
   async function recognizeAndReplaceSelectedFreeSketches(): Promise<boolean> {
     if (!authorizationHelper.canEdit()) return false;
 
@@ -1856,7 +1937,7 @@ export default function notationMutateHelper() {
     addImageNotationByColAndRow(fromCol, toCol, fromRow, toRow, base64);
   }
 
-  function addCartesianSystemAtClickedPoint(e: PointerEvent) {
+  async function addCartesianSystemAtClickedPoint(e: PointerEvent) {
     if (!authorizationHelper.canEdit()) return;
     let clickedCell = screenHelper.getCellByDotCoordinates(
       viewportPointerPosition(e),
@@ -1869,7 +1950,7 @@ export default function notationMutateHelper() {
       y: Math.round(clickedCell.row * cellStore.getCellVerticalHeight()),
     };
 
-    addLineNotation(
+    const horizontalUuid = await addLineNotation(
       {
         p1x: horizontalLinecellCoordinates.x - 200,
         p1y: horizontalLinecellCoordinates.y,
@@ -1882,7 +1963,7 @@ export default function notationMutateHelper() {
       "LINE",
     );
 
-    addLineNotation(
+    const verticalUuid = await addLineNotation(
       {
         p1x: horizontalLinecellCoordinates.x,
         p1y: horizontalLinecellCoordinates.y - 200,
@@ -1896,7 +1977,10 @@ export default function notationMutateHelper() {
     );
 
     cellStore.resetSelectedCell();
-    editModeStore.setDefaultEditMode();
+    editModeStore.setGlobalEditMode("TEXT");
+    notationStore.resetSelectedNotations();
+    if (horizontalUuid) selectionHelper.selectNotation(horizontalUuid);
+    if (verticalUuid) selectionHelper.selectNotation(verticalUuid);
   }
 
   async function pasteNotations() {
@@ -1992,6 +2076,7 @@ export default function notationMutateHelper() {
   return {
     addNotation,
     addCircleNotation,
+    addConicNotation,
     addCurveNotation,
     addFreeSketchNotation,
     addImageNotation,
@@ -2016,6 +2101,7 @@ export default function notationMutateHelper() {
     updateLineNotation,
     updateCurveNotation,
     updateCircleNotation,
+    updateConicNotation,
     updateFreeSketchNotation,
     updateNotation,
     rotateImageNotation,
@@ -2025,6 +2111,7 @@ export default function notationMutateHelper() {
     selectNotationByCell,
 
     handleSpaceOnSelectedCell,
+    handleEnterOnSelectedCell,
     handleBackspaceOnSelectedCell,
     pushNotationsFromSelectedCell,
     deleteSelectedNotations,

@@ -10,6 +10,7 @@ import {
   LineNotationAttributes,
   CurveNotationAttributes,
   CircleNotationAttributes,
+  ConicNotationAttributes,
   RectAttributes,
   LineAttributes,
   MultiCellAttributes,
@@ -18,6 +19,7 @@ import {
 import { useNotationStore } from "../store/pinia/notationStore";
 import { useCellStore } from "../store/pinia/cellStore";
 import useNotationCellOccupationHelper from "./notationCellOccupationHelper";
+import { distanceToConic } from "common/conicGeometry";
 
 const cellStore = useCellStore();
 const cellOccupationHelper = useNotationCellOccupationHelper();
@@ -46,9 +48,28 @@ export default function screenHelper() {
     return { col: clickedCellCol, row: clickedCellRow };
   }
 
+  function getCellElement(cell: CellAttributes): Element | null {
+    const svgId = cellStore.getSvgId();
+    if (!svgId || cell?.col == null || cell?.row == null) return null;
+    const svg = document.getElementById(svgId);
+    if (!svg) return null;
+    return (
+      svg.querySelector(`g[row="${cell.row}"] rect[col="${cell.col}"]`) ?? null
+    );
+  }
+
+  /**
+   * Viewport top-left of a matrix cell. Prefers the live cell rect so overlays
+   * stay aligned after layout shifts (practice gutter, problem pane, scroll).
+   */
   function getCellTopLeftCoordinates(
     clickedCell: CellAttributes,
   ): DotCoordinates {
+    const live = getCellElement(clickedCell)?.getBoundingClientRect();
+    if (live && (live.width > 0 || live.height > 0)) {
+      return { x: Math.round(live.left), y: Math.round(live.top) };
+    }
+
     const cellWidth = cellStore.getCellHorizontalWidth();
     const cellHeight = cellStore.getCellVerticalHeight();
     return {
@@ -178,20 +199,23 @@ export default function screenHelper() {
         (n: NotationAttributes) =>
           n.notationType === "IMAGE" ||
           n.notationType === "TEXT" ||
-          n.notationType === "CIRCLE",
+          n.notationType === "CIRCLE" ||
+          n.notationType === "CONIC",
       ) &&
       notationsAtCell.some(
         (n: NotationAttributes) =>
           n.notationType !== "IMAGE" &&
           n.notationType !== "TEXT" &&
-          n.notationType !== "CIRCLE",
+          n.notationType !== "CIRCLE" &&
+          n.notationType !== "CONIC",
       )
     ) {
       notationsAtCell = notationsAtCell.filter(
         (n: NotationAttributes) =>
           n.notationType !== "IMAGE" &&
           n.notationType !== "TEXT" &&
-          n.notationType !== "CIRCLE",
+          n.notationType !== "CIRCLE" &&
+          n.notationType !== "CONIC",
       );
     }
 
@@ -264,6 +288,20 @@ export default function screenHelper() {
               DotCoordinates,
               getMultiCellLineAttributes(n1),
             ),
+          });
+          break;
+        }
+        case "CONIC": {
+          const svgX =
+            DotCoordinates.x - cellStore.getSvgBoundingRect().left;
+          const svgY =
+            DotCoordinates.y - cellStore.getSvgBoundingRect().top;
+          notationDistanceList.push({
+            notation: n,
+            distance: distanceToConic(n as ConicNotationAttributes, {
+              x: svgX,
+              y: svgY,
+            }),
           });
           break;
         }
@@ -724,6 +762,13 @@ export default function screenHelper() {
         return {
           x: circle.cx - circle.r + cellStore.getSvgBoundingRect().left,
           y: circle.cy - circle.r + cellStore.getSvgBoundingRect().top,
+        };
+      }
+      case "CONIC": {
+        const conic = notation as ConicNotationAttributes;
+        return {
+          x: conic.hx + cellStore.getSvgBoundingRect().left,
+          y: conic.hy + cellStore.getSvgBoundingRect().top,
         };
       }
       case "DIVISIONLINE":

@@ -71,6 +71,7 @@ const isMobileBoard = useMediaQuery(MOBILE_BOARD_MEDIA_QUERY);
 let lineTypes: Array<NotationType> = [
   "CURVE",
   "CIRCLE",
+  "CONIC",
   "LINE",
   "ANNOTATION",
   "FREESKETCH",

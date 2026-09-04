@@ -1,11 +1,11 @@
 <template>
-  <v-card
+  <div
     class="lineJunctionHandle"
     data-cy="line-junction-handle"
     @pointerup="endEdit"
     @pointercancel="endEdit"
     @pointerdown="startEdit"
-  ></v-card>
+  ></div>
 </template>
 
 <script setup lang="ts">
@@ -52,16 +52,34 @@ function endEdit(e: PointerEvent) {
 
 <style scoped>
 .lineJunctionHandle {
-  background-color: #1976d2;
-  border: 2px solid white;
-  cursor: move;
+  cursor: grab;
   touch-action: none;
-  position: absolute;
+  position: fixed;
   display: block;
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  box-sizing: border-box;
   z-index: 1000;
-  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.25);
+  background: transparent;
+}
+
+.lineJunctionHandle:active {
+  cursor: grabbing;
+}
+
+.lineJunctionHandle::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 12px;
+  height: 12px;
+  box-sizing: border-box;
+  border-radius: 50%;
+  background: #1976d2;
+  border: 2px solid #fff;
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.35);
+  transform: translate(-50%, -50%);
+  pointer-events: none;
 }
 </style>

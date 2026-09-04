@@ -1,12 +1,14 @@
 export const baseURL = "/api";
 export const imagesURL = "/images";
+/** Pixel size of one matrix cell. Width is half of height so symbols stay square-ish. */
+export const matrixCellSize = { width: 16.5, height: 33 };
 export const matrixDimensions = {
-  rowsNum: 50,
+  rowsNum: 80,
   colsNum: 100,
 };
 export const matrixSize = {
-  width: "1650px",
-  height: "1650px",
+  width: `${matrixDimensions.colsNum * matrixCellSize.width}px`,
+  height: `${matrixDimensions.rowsNum * matrixCellSize.height}px`,
 };
 
 export const clonedNotationUUIdPrefix = "cloned_";

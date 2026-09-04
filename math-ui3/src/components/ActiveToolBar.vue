@@ -2,7 +2,7 @@
   <div v-if="activeTool" class="active-tool-bar" role="status" aria-live="polite">
     <v-icon size="small" class="mr-2">mdi-gesture-tap</v-icon>
     <span class="active-tool-bar__label">{{ activeTool.label }}</span>
-    <span v-if="activeTool.hint" class="active-tool-bar__hint d-none d-md-inline">
+    <span v-if="activeTool.hint" class="active-tool-bar__hint">
       — {{ activeTool.hint }}
     </span>
   </div>

@@ -9,7 +9,8 @@ describe("e2e", () => {
     cy.login();
     cy.openLesson();
     cy.clearBoard();
-    cy.drawLine("lineButton", 300, 300, 200, 400);
+    cy.drawLine("lineButton", 300, 300, 200, 400, "line");
+    cy.dataCy("lineRightHandle").should("be.visible");
     cy.dragLineRightHandle("lineRightHandle", 100, 500);
     cy.dragLineRightHandle("lineRightHandle", 250, 350);
     cy.dataCy("line").invoke("outerWidth").should("be.gt", 99);

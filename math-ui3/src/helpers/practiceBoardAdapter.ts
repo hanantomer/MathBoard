@@ -160,9 +160,10 @@ function joinStemNotations(notations: NotationAttributes[]): string {
 
 function submitStemIfNeeded(questionUUId: string, stemText: string) {
   const practiceStore = usePracticeStore();
-  if (practiceStore.getSession(questionUUId).submitted) return;
   const text = stemText.trim();
   if (!text) return;
+  const session = practiceStore.getSession(questionUUId);
+  if (session.submitted && session.problemText === text) return;
   practiceStore.submitProblem(questionUUId, {
     problemText: text,
     parts: ensureNumberedParts(text),
@@ -230,6 +231,14 @@ export async function loadPracticeBoard(questionUUId: string) {
     }
 
     notationStore.setNotations(practiceNotations);
+
+    const session = practiceStore.getSession(questionUUId);
+    if (session.submitted && !session.activePartId) {
+      practiceStore.setActivePart(
+        questionUUId,
+        session.parts[0]?.id ?? "1",
+      );
+    }
   } finally {
     notationStore.activateSaveState();
   }
@@ -252,6 +261,7 @@ async function loadStemNotationsByType(
     case "TEXT":
     case "CURVE":
     case "CIRCLE":
+    case "CONIC":
     case "FREESKETCH":
       return await apiHelper.getNotations(notationType, "QUESTION", parentUUId);
     case "POLYGON":

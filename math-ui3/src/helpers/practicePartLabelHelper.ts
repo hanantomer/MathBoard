@@ -16,6 +16,10 @@ import {
   isPracticeBoard,
   isPracticeProblemNotation,
 } from "./practiceBoardAdapter";
+import {
+  partIdForRow,
+  startedPartIdsFromSession,
+} from "./practicePartOrderHelper";
 
 export const PRACTICE_LABEL_FROM_COL = 0;
 export const PRACTICE_LABEL_SPAN = 0;
@@ -143,34 +147,6 @@ function rowHasStudentMarks(
   );
 }
 
-function rowHasRealStudentWork(
-  notations: NotationAttributes[],
-  row: number,
-): boolean {
-  return notationsOnRow(notations, row).some((n) => {
-    if (isPracticeProblemNotation(n)) return false;
-    if (n.notationType === "TEXT") {
-      const t = n as RectNotationAttributes;
-      if (
-        isPracticeGutterNotation(t.fromCol, t.toCol) &&
-        isPracticePartLabelOnly(t.value ?? "")
-      ) {
-        return false;
-      }
-    }
-    return true;
-  });
-}
-
-function firstRealWorkRow(notations: NotationAttributes[]): number | null {
-  let min: number | null = null;
-  for (let row = 0; row < matrixDimensions.rowsNum; row++) {
-    if (!rowHasRealStudentWork(notations, row)) continue;
-    if (min == null || row < min) min = row;
-  }
-  return min;
-}
-
 function gutterFreeOnRow(
   notations: NotationAttributes[],
   row: number,
@@ -221,16 +197,26 @@ export function rowForNewPartLabel(
   return firstWorkRowWithFreeGutter(notations) ?? nextFreePartRow(notations);
 }
 
-/** Next empty row below existing work (row 0 if the board is empty). */
+/** Next empty row below existing work and `(n)` marks (row 0 if empty). */
 export function nextFreePartRow(
   notations: NotationAttributes[],
+  partLabelRows?: Record<string, number> | null,
 ): number | null {
+  const taken = new Set(
+    Object.values(partLabelRows ?? {}).filter(
+      (row): row is number => typeof row === "number" && row >= 0,
+    ),
+  );
   let lastOccupied = -1;
   for (let row = 0; row < matrixDimensions.rowsNum; row++) {
     if (rowHasStudentMarks(notations, row)) lastOccupied = row;
   }
+  for (const row of taken) {
+    if (row > lastOccupied) lastOccupied = row;
+  }
   const start = lastOccupied + 1;
   for (let row = start; row < matrixDimensions.rowsNum; row++) {
+    if (taken.has(row)) continue;
     if (rowHasStudentMarks(notations, row)) continue;
     if (rowHasPartLabel(notations, row)) continue;
     return row;
@@ -240,8 +226,7 @@ export function nextFreePartRow(
 
 /**
  * Rows that should show `(n)` next to student work.
- * The selected task owns the first work row when it was only parked on an
- * empty row (Start used to bind `(1)` to row 0, then the student picked `(3)`).
+ * Bound marks stay put: the active task never replaces another `(n)`.
  */
 export function overlayGutterMarks(
   notations: NotationAttributes[],
@@ -249,16 +234,18 @@ export function overlayGutterMarks(
   partLabelRows?: Record<string, number> | null,
 ): { row: number; id: string }[] {
   const idByRow = new Map<number, string>();
+  const rowOfId = new Map<string, number>();
 
   const assign = (row: number, id: string) => {
     const trimmed = id.trim();
     if (typeof row !== "number" || row < 0 || !trimmed) return;
-    for (const [existingRow, existingId] of Array.from(idByRow.entries())) {
-      if (existingId === trimmed && existingRow !== row) {
-        idByRow.delete(existingRow);
-      }
+    if (idByRow.has(row) && idByRow.get(row) !== trimmed) return;
+    const prev = rowOfId.get(trimmed);
+    if (prev != null && prev !== row) {
+      idByRow.delete(prev);
     }
     idByRow.set(row, trimmed);
+    rowOfId.set(trimmed, row);
   };
 
   for (const [id, row] of Object.entries(partLabelRows ?? {})) {
@@ -270,28 +257,10 @@ export function overlayGutterMarks(
   }
 
   const active = (activePartId ?? "").trim();
-  if (active) {
-    const boundActive =
-      lastRowWithGutterPartId(notations, active) ??
-      (typeof partLabelRows?.[active] === "number"
-        ? partLabelRows[active]
-        : null);
-    const activeHasWork =
-      boundActive != null && rowHasRealStudentWork(notations, boundActive);
-    const workRow = firstRealWorkRow(notations);
-
-    if (activeHasWork && boundActive != null) {
-      assign(boundActive, active);
-    } else if (workRow != null) {
-      const occupant = idByRow.get(workRow);
-      if (!occupant || occupant === active) {
-        assign(workRow, active);
-      } else if (boundActive != null && boundActive !== workRow) {
-        assign(workRow, active);
-      }
-    } else {
-      assign(boundActive ?? 0, active);
-    }
+  if (active && !rowOfId.has(active)) {
+    let row = 0;
+    while (row < matrixDimensions.rowsNum && idByRow.has(row)) row++;
+    if (row < matrixDimensions.rowsNum) assign(row, active);
   }
 
   return Array.from(idByRow.entries())
@@ -324,7 +293,16 @@ export function ensureActivePartLabel(row: number) {
   if (!session.submitted || !session.activePartId) return;
 
   snapSelectedCellOutOfGutter(row);
-  practiceStore.bindPartRow(questionUUId, session.activePartId, row);
+  const started = startedPartIdsFromSession(session);
+  const bandId = partIdForRow(row, session.partLabelRows);
+  if (bandId && started.includes(bandId) && bandId !== session.activePartId) {
+    practiceStore.setActivePart(questionUUId, bandId);
+    return;
+  }
+  const activeId = session.activePartId;
+  if (!activeId) return;
+  if (session.partLabelRows?.[activeId] != null) return;
+  practiceStore.bindPartRow(questionUUId, activeId, row);
 }
 
 /**
@@ -341,10 +319,14 @@ export function ensurePartRow(partId: string) {
   const session = practiceStore.getSession(questionUUId);
   if (!session.submitted) return;
 
+  const existing = session.partLabelRows?.[id];
+  if (typeof existing === "number" && existing >= 0) {
+    focusWorkCell(existing);
+    return;
+  }
+
   const notations = useNotationStore().getNotations();
-  const marks = overlayGutterMarks(notations, id, session.partLabelRows);
-  const mine = marks.find((m) => m.id === id);
-  const row = mine?.row ?? rowForNewPartLabel(notations);
+  const row = nextFreePartRow(notations, session.partLabelRows);
   if (row == null) return;
   practiceStore.bindPartRow(questionUUId, id, row);
   focusWorkCell(row);

@@ -8,7 +8,8 @@ import {
 const BOARD_DEBOUNCE_MS = 4500;
 /** Longer pause so prose tips wait for a thought, not a mid-sentence keystroke. */
 const TEXT_DEBOUNCE_MS = 6500;
-const MIN_COACH_INTERVAL_MS = 22000;
+/** Retry soon if a previous coach call is still in flight when work changes. */
+const IN_FLIGHT_RETRY_MS = 400;
 
 let debounceTimer: ReturnType<typeof setTimeout> | undefined;
 let inFlight = false;
@@ -181,32 +182,35 @@ export function notePracticeCoachUtterance(tip: string) {
   lastCoachAt = Date.now();
 }
 
-export function resetPracticeVoiceCoach() {
+/** Drop an in-flight or scheduled tip without forgetting what was last coached. */
+export function invalidatePracticeVoiceCoach() {
   clearTimeout(debounceTimer);
   debounceTimer = undefined;
+  requestId += 1;
+  stopPracticeVoice();
+}
+
+export function resetPracticeVoiceCoach() {
+  invalidatePracticeVoiceCoach();
   inFlight = false;
   lastCoachedWork = "";
   lastCoachedTip = "";
   lastCoachAt = 0;
-  requestId += 1;
-  stopPracticeVoice();
 }
 
 async function runCoach(deps: CoachDeps, myRequest: number) {
   if (!isLiveCoachMode(deps.mode)) return;
   if (isPracticeCoachPaused()) return;
   if (myRequest !== requestId) return;
-  if (inFlight) return;
 
   const studentWork = deps.getStudentWork().trim();
   if (!studentWork) return;
   if (studentWork === lastCoachedWork) return;
 
-  const wait = lastCoachAt > 0 ? MIN_COACH_INTERVAL_MS - (Date.now() - lastCoachAt) : 0;
-  if (wait > 0) {
+  if (inFlight) {
     debounceTimer = setTimeout(() => {
       void runCoach(deps, myRequest);
-    }, wait);
+    }, IN_FLIGHT_RETRY_MS);
     return;
   }
 

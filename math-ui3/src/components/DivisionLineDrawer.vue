@@ -40,7 +40,7 @@
     />
     <line-handle
       data-cy="divisionLineLeftHandle"
-      v-show="editModeStore.isDivisionLineMode()"
+      v-show="handlesInteractive"
       drawing-mode="DIVISIONLINE_DRAWING"
       editing-mode="DIVISIONLINE_EDITING_LEFT"
       v-bind:style="{
@@ -50,7 +50,7 @@
     ></line-handle>
     <line-handle
       data-cy="divisionLineRightHandle"
-      v-show="editModeStore.isDivisionLineMode()"
+      v-show="handlesInteractive"
       drawing-mode="DIVISIONLINE_DRAWING"
       editing-mode="DIVISIONLINE_EDITING_RIGHT"
       v-bind:style="{
@@ -61,6 +61,8 @@
 
     <svg
       :style="lineSvgScreenStyle"
+      :viewBox="overlayViewBox"
+      preserveAspectRatio="none"
       xmlns="http://www.w3.org/2000/svg"
       class="line-svg"
     >
@@ -88,9 +90,13 @@ import {
 } from "common/baseTypes";
 import useEventBus from "../helpers/eventBusHelper";
 import lineWatcher from "./LineWatcher.vue";
-import lineHandle from "./LineHandle.vue";
+import lineHandle, { LINE_HANDLE_HALF } from "./LineHandle.vue";
 import useNotationMutateHelper from "../helpers/notationMutateHelper";
 import { matrixSize } from "common/globals";
+import {
+  getBoardSvgUserExtent,
+  svgUserToViewport,
+} from "../helpers/pointerCoordinateHelper";
 
 const eventBus = useEventBus();
 const editModeStore = useEditModeStore();
@@ -109,6 +115,19 @@ const lineAttributes = ref<LineAttributes>({
   arrowLeft: false,
   arrowRight: false,
 });
+
+watch(
+  () => ({
+    mode: editModeStore.getEditMode(),
+    selected: notationStore.getSelectedNotations()[0],
+  }),
+  ({ mode, selected }) => {
+    if (selected?.notationType !== "DIVISIONLINE" || mode !== "DIVISIONLINE_SELECTED") {
+      return;
+    }
+    selectLine(selected);
+  },
+);
 
 // Modify the drawLine function to ensure horizontal lines
 function drawLine(p: DotCoordinates) {
@@ -153,6 +172,12 @@ watch(
 
 // computed
 
+const handlesInteractive = computed(
+  () =>
+    editModeStore.isDivisionLineSelectedMode() ||
+    editModeStore.isDivisionLineEditingMode(),
+);
+
 const show = computed(() => {
   return editModeStore.isDivisionLineMode();
 });
@@ -167,33 +192,51 @@ watch(show, async (visible) => {
   }
 });
 
-/** Same viewport origin as pointer math and handles; avoids margin/layout drift from `.mathboard` on an `absolute` overlay. */
+/** Same viewport box as the board SVG; viewBox maps overlay user units onto that box. */
+const overlayViewBox = computed(() => {
+  cellStore.getSvgBoundingRect();
+  const e = getBoardSvgUserExtent();
+  if (!e.width || !e.height) {
+    return undefined;
+  }
+  return `${e.x} ${e.y} ${e.width} ${e.height}`;
+});
+
 const lineSvgScreenStyle = computed(() => {
   const r = cellStore.getSvgBoundingRect();
   return {
     position: "fixed" as const,
     top: `${r.top}px`,
     left: `${r.left}px`,
-    width: matrixSize.width,
-    height: matrixSize.height,
+    width: r.width ? `${r.width}px` : matrixSize.width,
+    height: r.height ? `${r.height}px` : matrixSize.height,
     margin: "0",
+    overflow: "visible",
+    zIndex: 998,
+    pointerEvents: "none" as const,
   };
 });
 
+const HANDLE_HALF = LINE_HANDLE_HALF;
+
 let handleLeft = computed(() => {
-  return lineAttributes.value.p1x + (cellStore.getSvgBoundingRect().left ?? 0);
+  cellStore.getSvgBoundingRect();
+  return svgUserToViewport(lineAttributes.value.p1x, lineAttributes.value.p1y).x - HANDLE_HALF;
 });
 
 let handleRight = computed(() => {
-  return lineAttributes.value.p2x + (cellStore.getSvgBoundingRect().left ?? 0);
+  cellStore.getSvgBoundingRect();
+  return svgUserToViewport(lineAttributes.value.p2x, lineAttributes.value.p1y).x - HANDLE_HALF;
 });
 
 let handleTop = computed(() => {
-  return lineAttributes.value.p1y + (cellStore.getSvgBoundingRect().top ?? 0);
+  cellStore.getSvgBoundingRect();
+  return svgUserToViewport(lineAttributes.value.p1x, lineAttributes.value.p1y).y - HANDLE_HALF;
 });
 
 let handleBottom = computed(() => {
-  return lineAttributes.value.p2y + (cellStore.getSvgBoundingRect().top ?? 0);
+  cellStore.getSvgBoundingRect();
+  return svgUserToViewport(lineAttributes.value.p2x, lineAttributes.value.p1y).y - HANDLE_HALF;
 });
 
 function setInitialPosition(p: DotCoordinates) {
@@ -228,46 +271,34 @@ function selectLine(notation: NotationAttributes) {
   lineAttributes.value.p1x = n.p1x;
   lineAttributes.value.p2x = n.p2x;
   lineAttributes.value.p1y = n.p1y;
-  lineAttributes.value.p2y = n.p2y;
+  lineAttributes.value.p2y = n.p1y;
 }
 
 function modifyLineLeft(p: DotCoordinates) {
   const point = roundPoint(p);
   lineAttributes.value.p1x = point.x;
-  lineAttributes.value.p1y = point.y;
+  lineAttributes.value.p1y = lineAttributes.value.p2y;
 }
 
 function modifyLineRight(p: DotCoordinates) {
   const point = roundPoint(p);
   lineAttributes.value.p2x = point.x;
-  lineAttributes.value.p2y = point.y;
+  lineAttributes.value.p2y = lineAttributes.value.p1y;
 }
 
 async function saveLine(): Promise<string> {
-  lineAttributes.value.p1x = getAdjustedEdge({
+  const p1 = getAdjustedEdge({
     x: lineAttributes.value.p1x,
     y: lineAttributes.value.p1y,
-  }).x;
-
-  lineAttributes.value.p1y = getAdjustedEdge({
-    x: lineAttributes.value.p1x,
+  });
+  const p2 = getAdjustedEdge({
+    x: lineAttributes.value.p2x,
     y: lineAttributes.value.p1y,
-  }).y;
-
-  lineAttributes.value.p2x = getAdjustedEdge({
-    x: lineAttributes.value.p2x,
-    y: lineAttributes.value.p2y,
-  }).x;
-
-  lineAttributes.value.p2y = getAdjustedEdge({
-    x: lineAttributes.value.p2x,
-    y: lineAttributes.value.p2y,
-  }).y;
-
-  lineAttributes.value.p1x = Math.round(lineAttributes.value.p1x);
-  lineAttributes.value.p1y = Math.round(lineAttributes.value.p1y);
-  lineAttributes.value.p2x = Math.round(lineAttributes.value.p2x);
-  lineAttributes.value.p2y = Math.round(lineAttributes.value.p2y);
+  });
+  lineAttributes.value.p1x = Math.round(p1.x);
+  lineAttributes.value.p1y = Math.round(p1.y);
+  lineAttributes.value.p2x = Math.round(p2.x);
+  lineAttributes.value.p2y = lineAttributes.value.p1y;
 
   if (notationStore.getSelectedNotations().length > 0) {
     let updatedLine = {

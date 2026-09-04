@@ -18,6 +18,8 @@ export const ARMED_TOOL_EDIT_MODES: EditMode[] = [
   "DIVISIONLINE_STARTED",
   "CURVE_STARTED",
   "CIRCLE_STARTED",
+  "PARABOLA_STARTED",
+  "HYPERBOLA_STARTED",
   "SQRT_STARTED",
   "FREE_SKETCH_STARTED",
   "FREE_SKETCH_WITH_OCR_STARTED",
@@ -98,6 +100,7 @@ export const useEditModeStore = defineStore("editMode", () => {
   function isSelectedMode() {
     return (
       editMode.value === "CIRCLE_SELECTED" ||
+      editMode.value === "CONIC_SELECTED" ||
       editMode.value === "AREA_SELECTED" ||
       editMode.value === "LINE_SELECTED" ||
       editMode.value === "DIVISIONLINE_SELECTED" ||
@@ -237,6 +240,18 @@ export const useEditModeStore = defineStore("editMode", () => {
     return editMode.value === "CIRCLE_SELECTED";
   }
 
+  function isConicDrawingMode() {
+    return (
+      editMode.value === "CONIC_DRAWING" ||
+      editMode.value === "CONIC_EDITING_VERTEX" ||
+      editMode.value === "CONIC_EDITING_SCALE"
+    );
+  }
+
+  function isConicSelectedMode() {
+    return editMode.value === "CONIC_SELECTED";
+  }
+
   function isTextStartedMode() {
     return editMode.value === "TEXT_STARTED";
   }
@@ -368,6 +383,8 @@ export const useEditModeStore = defineStore("editMode", () => {
       isCurveEditingControlPointMode() ||
       isCircleDrawingMode() ||
       isCircleSelectedMode() ||
+      isConicDrawingMode() ||
+      isConicSelectedMode() ||
       isTextStartedMode() ||
       isAreaSelectingMode()
     );
@@ -402,6 +419,8 @@ export const useEditModeStore = defineStore("editMode", () => {
     isCurveDrawingMode,
     isCircleDrawingMode,
     isCircleSelectedMode,
+    isConicDrawingMode,
+    isConicSelectedMode,
     isSelectedMode,
     isSqrtMode,
     isSqrtEditMode,

@@ -10,12 +10,23 @@ import type {
   PracticeProblemPart,
 } from "../../../math-common/build/practiceQuestionTypes";
 import { PRACTICE_BLANK_UUID } from "../../../math-common/build/globals";
-import { reviewVertexRewrite } from "../../../math-common/build/practiceAlgebra";
+import {
+  reviewVertexRewrite,
+  SIMPLIFY_VERTEX_CONSTANTS_TIP,
+  checkQuadraticFollowUpPart,
+  quadraticPartKind,
+  workHasVertexCoordinates,
+  workHasAxisOfSymmetry,
+  workHasYIntercept,
+  workHasMaxOrMin,
+  workHasParabolaGraph,
+} from "../../../math-common/build/practiceAlgebra";
 import {
   formatPracticeActiveContext,
   normalizeExtractedParts,
   parsePracticeProblemParts,
   stripPracticeTutorMarkup,
+  workForActivePartReview,
 } from "../../../math-common/build/practiceParts";
 
 const DEFAULT_MODELS = ["gemini-2.5-flash", "gemini-flash-lite-latest"];
@@ -149,44 +160,132 @@ function looksLikeSolvedSystem(work: string, problemText?: string): boolean {
   return n >= 2;
 }
 
-const COACH_DONE_TIP = "Nice work. That solves it.";
-const COACH_REWRITE_WARNING_TIP =
-  "Last line is right. An earlier completing-the-square step doesn't follow.";
-const COACH_REWRITE_PROGRESS_TIP =
-  "That rewrite still matches the original. Next, write the squared part as a binomial squared.";
+function workForRewriteReview(
+  work: string,
+  ctx?: PracticePartsCtx,
+): string {
+  if (ctx?.activePartId) {
+    return workForActivePartReview(work, ctx.activePartId);
+  }
+  return work;
+}
+
+function activePartText(
+  problemText?: string,
+  ctx?: PracticePartsCtx,
+): string | undefined {
+  const parts = resolveParts(problemText, ctx?.parts);
+  const id = (ctx?.activePartId ?? "").trim().toLowerCase();
+  return (parts.find((p) => p.id.toLowerCase() === id) ?? parts[0])?.text;
+}
+
+function checkResultForActivePart(
+  problemText: string | undefined,
+  work: string,
+  ctx?: PracticePartsCtx,
+): PracticeCheckResult | null {
+  const partText = activePartText(problemText, ctx);
+  const kind = quadraticPartKind(partText);
+  const slice = workForRewriteReview(work, ctx);
+  if (kind === "vertexForm" || kind === "other") {
+    return checkResultForRewrite(problemText, work, ctx);
+  }
+  const follow = checkQuadraticFollowUpPart(problemText, slice, partText);
+  if (!follow) return null;
+  return { correct: true, feedback: follow.feedback };
+}
 
 function checkResultForRewrite(
   problemText: string | undefined,
   work: string,
   ctx?: PracticePartsCtx,
 ): PracticeCheckResult | null {
-  if (resolveParts(problemText, ctx?.parts).length >= 2) return null;
-  const review = reviewVertexRewrite(problemText, work);
+  const review = reviewVertexRewrite(
+    problemText,
+    workForRewriteReview(work, ctx),
+  );
   if (!review.equivalent) return null;
+  if (!review.simplified) {
+    const notes = [
+      SIMPLIFY_VERTEX_CONSTANTS_TIP,
+      review.warning,
+    ].filter(Boolean);
+    return {
+      correct: true,
+      feedback:
+        "Correct — that matches the original. Combine the leftover constants next.",
+      warning: notes.join(" "),
+    };
+  }
   return {
     correct: true,
-    feedback: review.warning
-      ? "Correct — the last line matches the original function."
-      : "Correct — that rewritten form matches the original function.",
+    feedback: "Correct — the last line matches the original function.",
     warning: review.warning ?? undefined,
   };
 }
 
-function coachTipForRewrite(
+/**
+ * Live coach must not wrap up or congratulate. Check is what approves.
+ * Simplified vertex form → stay quiet. Leftover constants like -8+5 still need a nudge.
+ */
+function rewriteCoachOverride(
   problemText: string | undefined,
   work: string,
   ctx?: PracticePartsCtx,
-): string | null {
-  const review = reviewVertexRewrite(problemText, work);
-  const multiPart = resolveParts(problemText, ctx?.parts).length >= 2;
-  if (review.equivalent) {
-    if (multiPart) return null;
-    return review.warning ? COACH_REWRITE_WARNING_TIP : COACH_DONE_TIP;
+): PracticeCoachResult | null {
+  const partText = activePartText(problemText, ctx);
+  const kind = quadraticPartKind(partText);
+  const slice = workForRewriteReview(work, ctx);
+
+  if (kind === "vertexCoordinates") {
+    if (workHasVertexCoordinates(problemText, slice)) {
+      return { speak: false, tip: "" };
+    }
+    return null;
   }
-  if (review.rewriteMatches) {
-    return COACH_REWRITE_PROGRESS_TIP;
+  if (kind === "axis") {
+    if (workHasAxisOfSymmetry(problemText, slice)) {
+      return { speak: false, tip: "" };
+    }
+    return null;
+  }
+  if (kind === "yIntercept") {
+    if (workHasYIntercept(problemText, slice)) {
+      return { speak: false, tip: "" };
+    }
+    return null;
+  }
+  if (kind === "maxMin") {
+    if (workHasMaxOrMin(problemText, slice)) {
+      return { speak: false, tip: "" };
+    }
+    return null;
+  }
+  if (kind === "graph") {
+    if (
+      workHasParabolaGraph(problemText, slice) ||
+      workHasParabolaGraph(problemText, work)
+    ) {
+      return { speak: false, tip: "" };
+    }
+    return null;
+  }
+
+  const review = reviewVertexRewrite(problemText, slice);
+  if (review.equivalent && review.simplified) {
+    return { speak: false, tip: "" };
+  }
+  if (review.equivalent && !review.simplified) {
+    return { speak: true, tip: SIMPLIFY_VERTEX_CONSTANTS_TIP };
   }
   return null;
+}
+
+function tipSoundsLikeFinished(tip: string): boolean {
+  const t = tip.toLowerCase();
+  return /solves it|got it|nice work|well done|that's (it|right|correct)|the right answer|you('re| are) done|you have (the )?answer|part is (done|finished)|now (state|find|write|do) (the )?(vertex|coordinates|axis|y-intercept|next part)/i.test(
+    t,
+  );
 }
 
 function parseCheckResult(raw: string): PracticeCheckResult {
@@ -319,6 +418,7 @@ const IMAGE_UNREADABLE_COACH =
 const CHECK_GRADE_RULES = `Decide if the student's final answer is mathematically equivalent to what the problem asks.
 When they rewrite an expression over several lines, grade the LATEST simplified line only. Earlier slips they later corrected are scratch — not the answer.
 If a later line is equivalent to the given function (expanded, vertex, or factored form), mark correct=true even if earlier completing-the-square or distribution lines were wrong.
+If vertex form still has leftover constants (e.g. 2(x-2)^2-8+5), still mark correct=true and put "Combine the constants outside the square into one number." in warning.
 If those earlier slips exist, still approve the result and put a short outline of them in "warning" (not in feedback). Example warning: "Earlier steps don't follow: 2(x-4)² used (x-4) instead of (x-2)."
 Copying the original function alone is not an answer.
 Do not fail them for a missing sketch, boxed answer, labels, or later multi-part items they have not started.
@@ -336,33 +436,45 @@ Board text is grid symbols and may omit spaces; do not treat missing spaces as e
 const STUDENT_WORK_LABEL =
   "Student's current board work (grid symbols, diagrams, and text boxes):";
 
-const COACH_TIP_RULES = `First decide if they already answered the question. If yes: speak=false, or one short encouragement. Never ask for a next step.
+const COACH_TIP_RULES = `You give next-step hints only. You do not grade and you do not approve work. Never say the answer is correct, that they solved it, or "nice work." Checking is a separate button.
+
+First decide if they already wrote the result this active part asks for — not an intermediate rewrite. Read EVERY line under the active [Part] and under unlabeled: (scratch before a (n) mark). Use the LATEST math line.
+Vertex form means a binomial square such as a(x-h)^2+k. These are NOT vertex form and the part is NOT finished:
+- factoring out a, e.g. 2(x^2-4x)+5
+- completing the square while the inside is still expanded, e.g. 2(x^2-4x+4)-8+5
+- a messy (x-2+4-4)^2 line
+If a LATER line is already a(x-h)^2+k with a single constant (for example 2(x-2)^2-3), the part is done: speak=false. Do not quote an earlier 2(x^2-4x)+5 line. Do not say "now complete the square" after they already wrote simplified vertex form.
+a(x-h)^2 plus leftover constants such as 2(x-2)^2-8+5 is NOT finished. Ask them to combine those constants into one number. Do not speak=false. Do not start the next part.
+Do not congratulate unfinished lines. Do not say they match the original. Do not start the next part. Give one next step toward a(x-h)^2+k only when no later line is already simplified vertex form.
+
+If they already have simplified a(x-h)^2+k (one constant, e.g. 2(x-2)^2-3) for a vertex-form part: speak=false. Do not wrap up, do not tip the next part.
 
 If the problem has multiple parts:
-- A line starting with <<active>> is where they are writing now. Coach that part only.
+- A line starting with <<active>> is where they are writing now. Coach that part only. Still read the earlier lines in the same [Part] block; do not ignore them.
+- unlabeled: lines belong with the first part. Do not treat them as missing work.
 - [Part N] is the student's work for part N. Every line under that header belongs to N until the next [Part]. Trust that grouping; do not reassign a line to a different part.
 - Do not tell them to move work that is already under the Active part's [Part] block.
 - The constant term in f(x)=… (e.g. +5) or in vertex form is not the y-intercept. The y-intercept is y= or (0, …) under the y-intercept part.
 - An axis of symmetry is x=… . Do not call that a y-intercept.
 - Parts may be numbered in the stem, or just one task per row — use the listed parts in order.
-- They are done with the WHOLE problem only when every part has an answer on the board.
+- Never treat the whole worksheet as finished from live coaching.
 - If the active part is unfinished, do not mention later parts.
-- If the active part is finished and later parts remain, give one short tip for the next unanswered part.
 - Unstarted later parts are not mistakes.
-- Do not nag them to write 1. 2. 3. if the math already matches a part (a rewritten f(x)= is vertex form, a point is the vertex, x= is the axis).
+- Do not nag them to write 1. 2. 3. on the board.
 - When "Active part:" is given, do not infer a different part from the math.
 
-If the problem has no listed parts, they are done when the board already has the asked-for result in any equivalent form, including:
-- each unknown found as a number, same line or different lines (y=2,x=3 or y=2 then x=3). That solves a system. Do not also require (3,2), a boxed pair, or a check. Do not say "now find x" if x=<number> is already on the board.
+If the problem has no listed parts, they have the asked-for result only when the board shows that result in its final form, including:
+- each unknown found as a number, same line or different lines (y=2,x=3 or y=2 then x=3). That is enough to stop coaching (speak=false). Do not also require (3,2), a boxed pair, or a check. Do not say "now find x" if x=<number> is already on the board.
 - a named value, units, or a sentence in symbols or a text box
-- a later rewritten line that is equivalent to the original function (vertex or factored form). Earlier algebra slips they corrected are scratch. Do not lecture about completing the square if the last line expands to the original.
-- a completing-the-square line that still expands to the original, such as 2(x^2-4x+4)-8+5 or 2(x^2-4x+4-4)+5. Adding the square inside and compensating outside (or adding and subtracting the same value inside) is valid. Do not say they forgot to add and subtract the same value. Hint only the next step: write the perfect square as a binomial squared.
-If they discarded an invalid extra root (e.g. a negative length) and kept the valid value, they are done.
+- a later rewritten line that is already simplified a(x-h)^2+k (one constant). Earlier algebra slips they corrected are scratch.
+- a(x-h)^2 with leftover constants like 2(x-2)^2-8+5 is NOT finished. Hint: combine those constants. Do not say that line solves it.
+- a completing-the-square line that still expands to the original is NOT finished. Hint only the next step: write the perfect square as a binomial squared. Do not say that line solves it.
+If they discarded an invalid extra root (e.g. a negative length) and kept the valid value, stop coaching (speak=false).
 
-On a multi-part problem, those rewrite/completing-the-square rules apply to the active part only — not as "the whole question is finished."
+On a multi-part problem, those rewrite/completing-the-square rules apply to the active part only.
 
-Only if they are NOT done: give ONE short spoken tip (max 18 words) — a next useful step, a gentle correction, or brief encouragement.
-If a text box is an unfinished draft, coach the math story. If it already answers the question, do not ask for more.
+Only if they are NOT done: give ONE short spoken tip (max 18 words) — a next useful step or a gentle correction. No praise that sounds like a grade.
+If a text box is an unfinished draft, coach the math story.
 
 Do not nag about work that is already on the board:
 - restating, boxing, writing an ordered pair, or "clearly writing" a result already in symbols or a text box
@@ -371,14 +483,14 @@ Do not nag about work that is already on the board:
 - adding units, a full sentence, or a boxed answer as ceremony
 - spelling, "square" vs rectangle, height vs length, or other equivalent names
 - plugging back in / "now check your work" when the asked-for result is already present
-- completing-the-square or distribution mistakes on earlier lines after a later line is already equivalent
+- completing-the-square or distribution mistakes on earlier lines after a later line is already simplified a(x-h)^2+k
 Treat "inferred right angle" / "figure ~N°" as geometry of the drawing, not a value they wrote.
 Board text is grid symbols and may omit spaces; do not treat missing spaces as errors.
 
 Do not rewrite their sentences, complete their answer, or reveal the final answer.
 Never quote numbers from "Expected final answer" unless they already appear in the student work.
 Do not tell them to press Check. Do not solve the whole problem. Do not use markdown or emoji.
-If they are finished, or there is nothing useful to say, respond with speak=false.
+If they already have the asked-for result, or there is nothing useful to say, respond with speak=false.
 
 Respond with ONLY valid JSON:
 {"speak":true|false,"tip":"short sentence"}`;
@@ -561,7 +673,7 @@ export async function checkPracticeWork(
           : "Write your solution on the board (not in the problem text), then press Check.",
       };
     }
-    const rewrite = checkResultForRewrite(textProblem, work, ctx);
+    const rewrite = checkResultForActivePart(textProblem, work, ctx);
     if (rewrite) return { ...rewrite, partComplete: rewrite.correct };
     const raw = image
       ? await generateTextAcrossModels(
@@ -594,7 +706,7 @@ export async function checkPracticeWork(
   }
 
   const templateProblem = formatPracticeProblemPrompt(template);
-  const rewrite = checkResultForRewrite(templateProblem, work, ctx);
+  const rewrite = checkResultForActivePart(templateProblem, work, ctx);
   if (rewrite) return { ...rewrite, partComplete: rewrite.correct };
   if (
     !multiPart &&
@@ -676,17 +788,16 @@ function parseCoachResult(
   };
   const tip =
     typeof parsed.tip === "string" ? parsed.tip.trim().replace(/\s+/g, " ") : "";
-  const rewriteTip = coachTipForRewrite(problemText, studentWork, ctx);
-  if (rewriteTip) {
-    return { speak: true, tip: rewriteTip };
+  const rewrite = rewriteCoachOverride(problemText, studentWork, ctx);
+  if (rewrite) return rewrite;
+  if (tipSoundsLikeFinished(tip)) {
+    return { speak: false, tip: "" };
   }
-  const multiPart = resolveParts(problemText, ctx?.parts).length >= 2;
   if (
-    !multiPart &&
-    (coachAsksToFindAlreadyAssigned(tip, studentWork) ||
-      coachAcknowledgedDoneThenAskedMore(tip))
+    coachAsksToFindAlreadyAssigned(tip, studentWork) ||
+    coachAcknowledgedDoneThenAskedMore(tip)
   ) {
-    return { speak: true, tip: COACH_DONE_TIP };
+    return { speak: false, tip: "" };
   }
   const speak = parsed.speak !== false && tip.length > 0;
   return { speak, tip: speak ? tip : "" };
@@ -769,12 +880,12 @@ export async function coachPracticeWork(
     !multiPart &&
     looksLikeSolvedSystem(work, textProblem)
   ) {
-    return { speak: true, tip: COACH_DONE_TIP };
+    return { speak: false, tip: "" };
   }
 
   if (!isPreliminary) {
-    const rewriteTip = coachTipForRewrite(textProblem, work, ctx);
-    if (rewriteTip) return { speak: true, tip: rewriteTip };
+    const rewrite = rewriteCoachOverride(textProblem, work, ctx);
+    if (rewrite) return rewrite;
   }
 
   if (questionUUId === PRACTICE_BLANK_UUID) {
@@ -814,19 +925,16 @@ export async function coachPracticeWork(
   }
 
   const templateProblem = formatPracticeProblemPrompt(template);
-  const rewriteTip = work
-    ? coachTipForRewrite(templateProblem, work, ctx)
+  const rewrite = work
+    ? rewriteCoachOverride(templateProblem, work, ctx)
     : null;
-  if (rewriteTip) return { speak: true, tip: rewriteTip };
+  if (rewrite) return rewrite;
   if (
     !multiPart &&
     work &&
     localQuickMatch(work, template.expectedAnswer, template.acceptedAnswers)
   ) {
-    return {
-      speak: true,
-      tip: "Nice work. That looks like the right answer.",
-    };
+    return { speak: false, tip: "" };
   }
 
   return generateCoachTip(

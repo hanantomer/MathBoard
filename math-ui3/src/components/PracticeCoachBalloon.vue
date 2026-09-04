@@ -66,7 +66,11 @@ import {
   type CSSProperties,
 } from "vue";
 import type { NotationAttributes } from "common/baseTypes";
-import { getPracticeCoachAnchorRect } from "../helpers/practiceCoachAnchorHelper";
+import {
+  clampBalloonToBounds,
+  getPracticeCoachAnchorRect,
+  placePracticeCoachBalloon,
+} from "../helpers/practiceCoachAnchorHelper";
 
 const props = withDefaults(
   defineProps<{
@@ -95,10 +99,6 @@ const size = ref({ width: 260, height: 140 });
 let rafId = 0;
 let remeasureTimer: ReturnType<typeof setTimeout> | undefined;
 let sizeObserver: ResizeObserver | undefined;
-
-function clamp(n: number, min: number, max: number) {
-  return Math.min(Math.max(min, n), Math.max(min, max));
-}
 
 function exerciseBounds() {
   const pad = 12;
@@ -138,11 +138,7 @@ function exerciseBounds() {
 }
 
 function clampToBoard(left: number, top: number, width: number, height: number) {
-  const b = exerciseBounds();
-  return {
-    left: clamp(left, b.minLeft, b.maxRight - width),
-    top: clamp(top, b.minTop, b.maxBottom - height),
-  };
+  return clampBalloonToBounds(left, top, width, height, exerciseBounds());
 }
 
 function measureSize() {
@@ -286,21 +282,7 @@ const balloonStyle = computed((): CSSProperties => {
     };
   }
 
-  const gap = 56;
-  let left = r.left;
-  let top = r.bottom + gap;
-  if (top + height > b.maxBottom) {
-    top = r.top;
-    left = r.right + gap;
-  }
-  if (left + width > b.maxRight) {
-    left = r.left - width - gap;
-  }
-  if (left < b.minLeft) {
-    left = b.minLeft;
-  }
-
-  const pos = clampToBoard(left, top, width, height);
+  const pos = placePracticeCoachBalloon(r, width, height, b);
   return {
     position: "fixed",
     top: `${pos.top}px`,

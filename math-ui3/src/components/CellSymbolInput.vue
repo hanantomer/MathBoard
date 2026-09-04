@@ -125,10 +125,23 @@ function onInput() {
 }
 
 async function onKeydown(e: KeyboardEvent) {
+  if (
+    (e.ctrlKey || e.metaKey) &&
+    (e.key === "Enter" || e.code === "NumpadEnter")
+  ) {
+    return;
+  }
+
   e.stopPropagation();
-  if (e.key === "Enter") {
+  if (e.key === "Enter" || e.code === "NumpadEnter") {
     e.preventDefault();
-    inputRef.value?.blur();
+    draft.value = "";
+    if (inputRef.value) inputRef.value.value = "";
+    await notationMutateHelper.handleEnterOnSelectedCell();
+    nextTick(() => {
+      scrollSelectedCellIntoView();
+      focusInput();
+    });
     return;
   }
 

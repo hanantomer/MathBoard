@@ -6,6 +6,8 @@ import { useEditModeStore } from "../store/pinia/editModeStore";
 import { useCellStore } from "../store/pinia/cellStore";
 import { useNotationStore } from "../store/pinia/notationStore";
 import useAuthorizationHelper from "./authorizationHelper";
+import { clientPointToSvgUser } from "./pointerCoordinateHelper";
+import useSelectionHelper from "./selectionHelper";
 
 const editModeStore = useEditModeStore();
 const cellStore = useCellStore();
@@ -69,6 +71,10 @@ export default function useShapeDrawingHelper() {
       case "CIRCLE_STARTED":
         editModeStore.setEditMode("CIRCLE_DRAWING");
         break;
+      case "PARABOLA_STARTED":
+      case "HYPERBOLA_STARTED":
+        editModeStore.setEditMode("CONIC_DRAWING");
+        break;
       case "SQRT_STARTED":
         editModeStore.setEditMode("SQRT_DRAWING");
         break;
@@ -82,11 +88,16 @@ export default function useShapeDrawingHelper() {
         editModeStore.setDefaultEditMode();
     }
 
-    const rect = cellStore.getSvgBoundingRect();
-    const position = {
-      x: clientX - rect.left,
-      y: clientY - rect.top,
-    };
+    const position = clientPointToSvgUser(clientX, clientY);
+
+    if ("pointerId" in e && e.pointerId != null) {
+      const svg = document.getElementById(cellStore.getSvgId() ?? "");
+      try {
+        svg?.setPointerCapture(e.pointerId);
+      } catch {
+        /* detached or capture not allowed */
+      }
+    }
 
     setLinePositionCallback(position);
   }
@@ -114,13 +125,7 @@ export default function useShapeDrawingHelper() {
       clientY = e.clientY;
     }
 
-    const rect = cellStore.getSvgBoundingRect();
-    const position = {
-      x: clientX - rect.left,
-      y: clientY - rect.top,
-    };
-
-    drawLineCallback(position);
+    drawLineCallback(clientPointToSvgUser(clientX, clientY));
   }
 
   function modifyLine(
@@ -133,13 +138,7 @@ export default function useShapeDrawingHelper() {
       return;
     }
 
-    const rect = cellStore.getSvgBoundingRect();
-    const position = {
-      x: e.clientX - rect.left,
-      y: e.clientY - rect.top,
-    };
-
-    modifyLineCallback(position);
+    modifyLineCallback(clientPointToSvgUser(e.clientX, e.clientY));
   }
 
   function moveLine(
@@ -171,58 +170,77 @@ export default function useShapeDrawingHelper() {
     }
   }
 
+  function isOneShotDrawingMode(mode: string): boolean {
+    return (
+      mode === "LINE_DRAWING" ||
+      mode === "DIVISIONLINE_DRAWING" ||
+      mode === "CIRCLE_DRAWING" ||
+      mode === "CONIC_DRAWING" ||
+      mode === "CURVE_DRAWING" ||
+      mode === "SQRT_DRAWING"
+    );
+  }
+
+  function selectSavedShape(uuid: string) {
+    editModeStore.setGlobalEditMode("TEXT");
+    useSelectionHelper().selectNotation(uuid);
+  }
+
   async function saveDrawing(saveDrawingCallback: () => Promise<string>) {
     if (!canEditShapes()) return;
 
-    const modeBefore = editModeStore.getEditMode();
-    await saveDrawingCallback();
-
-    if (editModeStore.isPolygonDrawingMode()) return;
-
     const current = editModeStore.getEditMode();
-    if (
-      modeBefore === "CURVE_DRAWING" &&
-      (current === "CURVE_DRAWING" ||
-        current === "CURVE_STARTED" ||
-        current === "CURVE_SELECTED")
-    ) {
+    const uuid = await saveDrawingCallback();
+
+    if (current === "POLYGON_DRAWING") return;
+
+    if (current === "FREE_SKETCH_DRAWING") {
+      editModeStore.setEditMode("FREE_SKETCH_STARTED");
+      return;
+    }
+    if (current === "FREE_SKETCH_WITH_OCR_DRAWING") {
+      editModeStore.setEditMode("FREE_SKETCH_WITH_OCR_STARTED");
+      return;
+    }
+
+    if (uuid) {
+      if (isOneShotDrawingMode(current)) {
+        notationStore.resetSelectedNotations();
+        selectSavedShape(uuid);
+        return;
+      }
+      useSelectionHelper().selectNotation(uuid);
+      return;
+    }
+
+    if (isOneShotDrawingMode(current)) {
+      editModeStore.setDefaultEditMode();
       return;
     }
 
     switch (current) {
-      case "LINE_DRAWING":
-        editModeStore.setEditMode("LINE_STARTED");
-        break;
       case "LINE_EDITING_LEFT":
       case "LINE_EDITING_RIGHT":
         editModeStore.setEditMode("LINE_SELECTED");
-        break;
-      case "DIVISIONLINE_DRAWING":
-        editModeStore.setEditMode("DIVISIONLINE_SELECTED");
         break;
       case "DIVISIONLINE_EDITING_LEFT":
       case "DIVISIONLINE_EDITING_RIGHT":
         editModeStore.setEditMode("DIVISIONLINE_SELECTED");
         break;
-      case "CURVE_DRAWING":
       case "CURVE_EDITING_LEFT":
       case "CURVE_EDITING_RIGHT":
       case "CURVE_EDITING_CONTROLֹ_POINT":
         editModeStore.setEditMode("CURVE_SELECTED");
         break;
-      case "CIRCLE_DRAWING":
       case "CIRCLE_EDITING":
         editModeStore.setEditMode("CIRCLE_SELECTED");
         break;
-      case "SQRT_DRAWING":
+      case "CONIC_EDITING_VERTEX":
+      case "CONIC_EDITING_SCALE":
+        editModeStore.setEditMode("CONIC_SELECTED");
+        break;
       case "SQRT_EDITING":
         editModeStore.setEditMode("SQRT_SELECTED");
-        break;
-      case "FREE_SKETCH_DRAWING":
-        editModeStore.setEditMode("FREE_SKETCH_STARTED");
-        break;
-      case "FREE_SKETCH_WITH_OCR_DRAWING":
-        editModeStore.setEditMode("FREE_SKETCH_WITH_OCR_STARTED");
         break;
       default:
         editModeStore.setDefaultEditMode();
@@ -235,6 +253,7 @@ export default function useShapeDrawingHelper() {
   ) {
     if (!canEditShapes()) return;
 
+    cellStore.refreshSvgBoundingRect();
     showMatrixLine();
     notationStore.selectNotation(selectedNotation.uuid);
     selectLineCallback(selectedNotation);

@@ -12,6 +12,7 @@ import { isPracticePartLabelOnly } from "common/practiceParts";
 import useLineHelper from "./matrixLineHelper";
 import useCurveHelper from "./matrixCurveHelper";
 import useCircleHelper from "./matrixCircleHelper";
+import useConicHelper from "./matrixConicHelper";
 import useFreeSketchHelper from "./matrixFreeSketchHelper";
 import useMatrixCellHelper from "./matrixCellHelper";
 
@@ -21,6 +22,7 @@ const matrixCellHelper = useMatrixCellHelper();
 const lineHelper = useLineHelper();
 const curveHelper = useCurveHelper();
 const circleHelper = useCircleHelper();
+const conicHelper = useConicHelper();
 const freeSketchHelper = useFreeSketchHelper();
 const cellStore = useCellStore();
 const notationStore = useNotationStore();
@@ -135,6 +137,11 @@ export default function useMatrixHelper() {
     circleHelper.mergeCircleNotations(
       svgId,
       notations.filter((n) => n.notationType === "CIRCLE"),
+    );
+
+    conicHelper.mergeConicNotations(
+      svgId,
+      notations.filter((n) => n.notationType === "CONIC"),
     );
 
     freeSketchHelper.mergeFreeSketchNotations(

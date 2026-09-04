@@ -249,9 +249,10 @@ export function formatPracticeActiveContext(
 Active part: (${active.id}) ${active.text}
 Grade/coach ONLY the work under [Part ${active.id}] or marked <<active>>.
 Work under [Part N] is part N — including lines after that header until the next [Part].
+Lines under unlabeled: are work written before a (n) mark. If the active part is the first part, treat unlabeled lines as that part — do not ignore them.
+Always use the LATEST math line in that part. Do not restart from an earlier rewrite.
 Do not say they put an answer in the wrong part if it is already under the matching [Part] block.
 The constant term of the given function (e.g. +5) is not the y-intercept unless they wrote y= or (0, …) for that part.
-Lines under unlabeled: are scratch before any part label. Do not treat them as the answer for the active part.
 Do not mark the whole question correct because an earlier part is done.
 correct means the Active part is answered, not the whole worksheet.`;
 }
@@ -349,6 +350,64 @@ export function workForActivePart(
     if (collecting) chunks.push(line);
   }
   return chunks.join("\n").trim();
+}
+
+/** Scratch written before a `(n)` mark — still the student's work. */
+export function unlabeledWorkLines(studentWork: string): string {
+  const lines = studentWork.split(/\r?\n/);
+  const chunks: string[] = [];
+  let collecting = false;
+  for (const line of lines) {
+    if (/^unlabeled:\s*$/i.test(line)) {
+      collecting = true;
+      continue;
+    }
+    if (/^\[Part\s+[^\]]+\]\s*$/i.test(line)) {
+      collecting = false;
+      continue;
+    }
+    if (collecting) chunks.push(line);
+  }
+  return chunks.join("\n").trim();
+}
+
+function firstPartIdInWork(studentWork: string): string | null {
+  const m = studentWork.match(/^\[Part\s+([^\]]+)\]/m);
+  return m ? m[1].trim().toLowerCase() : null;
+}
+
+function realPartLines(block: string): string {
+  return block
+    .split(/\r?\n/)
+    .filter((line) => {
+      const t = line.trim();
+      if (!t) return false;
+      if (/\(none yet for part /i.test(t)) return false;
+      return true;
+    })
+    .join("\n")
+    .trim();
+}
+
+/**
+ * Active-part math for Check/Coach, including unlabeled scratch when that
+ * scratch belongs with the first part (continuation rows above the `(1)` mark).
+ */
+export function workForActivePartReview(
+  studentWork: string,
+  activePartId?: string,
+): string {
+  const wanted = (activePartId ?? "").trim().toLowerCase();
+  if (!wanted) {
+    return realPartLines(studentWork) || studentWork;
+  }
+  const slice = realPartLines(workForActivePart(studentWork, wanted));
+  const unlabeled = unlabeledWorkLines(studentWork);
+  const firstId = firstPartIdInWork(studentWork);
+  if (unlabeled && (!firstId || wanted === firstId)) {
+    return [slice, unlabeled].filter(Boolean).join("\n").trim();
+  }
+  return slice;
 }
 
 export function promotePracticePartHeader(line: string): string {

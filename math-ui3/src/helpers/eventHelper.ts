@@ -42,14 +42,22 @@ function onWindowKeyUp(key: KeyboardEvent) {
 }
 
 function onWindowKeyDown(e: KeyboardEvent) {
+  const target = e.target as HTMLElement | undefined;
+  const inField =
+    target &&
+    (target.tagName === "INPUT" || target.tagName === "TEXTAREA");
   if (e.key === " " || e.code === "Space") {
-    if (
-      e.target &&
-      (e.target as HTMLElement).tagName !== "INPUT" &&
-      (e.target as HTMLElement).tagName !== "TEXTAREA"
-    ) {
+    if (!inField) {
       e.preventDefault();
     }
+  }
+  if (
+    (e.key === "Enter" || e.code === "NumpadEnter") &&
+    !e.ctrlKey &&
+    !e.metaKey &&
+    !inField
+  ) {
+    e.preventDefault();
   }
 }
 

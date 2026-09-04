@@ -10,6 +10,7 @@ import {
   EntityAttributes,
   NotationAttributes,
   CircleAttributes,
+  ConicAttributes,
   PointNotationAttributes,
   FreeSketchAttributes,
 } from "./baseTypes";
@@ -121,6 +122,17 @@ export type LessonCircleAttributes =
 
 export type LessonCircleCreationAttributes = Omit<
   LessonCircleAttributes,
+  keyof EntityAttributes
+>;
+
+export type LessonConicAttributes =
+  EntityAttributes &
+    NotationAttributes &
+    ConicAttributes &
+    LessonNotationAttributes;
+
+export type LessonConicCreationAttributes = Omit<
+  LessonConicAttributes,
   keyof EntityAttributes
 >;
 

@@ -3,6 +3,12 @@ import { ref } from "vue";
 import { NotationAttributes } from "common/baseTypes";
 import type { PracticeProblemPart } from "common/practiceParts";
 import { normalizeExtractedParts } from "common/practiceParts";
+import {
+  canActivatePart,
+  orderPartLabelRowsByList,
+  startedPartIdsFromSession,
+  withSeededFirstPartRow,
+} from "../../helpers/practicePartOrderHelper";
 
 const STORAGE_KEY = "mathboard-practice-notations";
 const SESSION_STORAGE_KEY = "mathboard-practice-sessions";
@@ -14,6 +20,8 @@ export type PracticeSession = {
   parts: PracticeProblemPart[];
   activePartId: string | null;
   completedPartIds: string[];
+  /** Parts the student has opened, in list order. */
+  startedPartIds?: string[];
   /** Last board row for each `(n)`, kept after reload when the gutter is full. */
   partLabelRows?: Record<string, number>;
 };
@@ -26,6 +34,7 @@ function emptySession(): PracticeSession {
     parts: [],
     activePartId: null,
     completedPartIds: [],
+    startedPartIds: [],
   };
 }
 
@@ -49,14 +58,28 @@ function readSessions(): Record<string, PracticeSession> {
     const parsed = JSON.parse(raw) as Record<string, Partial<PracticeSession>>;
     const out: Record<string, PracticeSession> = {};
     for (const [key, value] of Object.entries(parsed)) {
-      out[key] = {
+      const session: PracticeSession = {
         ...emptySession(),
         ...value,
         parts: Array.isArray(value.parts) ? value.parts : [],
         completedPartIds: Array.isArray(value.completedPartIds)
           ? value.completedPartIds
           : [],
+        startedPartIds: Array.isArray(value.startedPartIds)
+          ? value.startedPartIds
+          : [],
       };
+      if (session.submitted && !session.activePartId) {
+        session.activePartId = session.parts[0]?.id ?? "1";
+      }
+      if (session.submitted) {
+        session.startedPartIds = startedPartIdsFromSession(session);
+        session.partLabelRows = withSeededFirstPartRow(
+          session.parts,
+          session.partLabelRows,
+        );
+      }
+      out[key] = session;
     }
     return out;
   } catch {
@@ -157,6 +180,19 @@ export const usePracticeStore = defineStore("practice", () => {
       current.submitted &&
       current.activePartId &&
       parts.some((p) => p.id === current.activePartId);
+    const activePartId = keepActive
+      ? current.activePartId
+      : (parts[0]?.id ?? "1");
+    const completedPartIds = current.submitted ? current.completedPartIds : [];
+    const partLabelRows = withSeededFirstPartRow(parts, current.partLabelRows);
+    const startedPartIds = startedPartIdsFromSession({
+      submitted: true,
+      parts,
+      startedPartIds: current.submitted ? current.startedPartIds : [],
+      completedPartIds,
+      activePartId,
+      partLabelRows,
+    });
     setSession(questionUUId, {
       submitted: true,
       problemText: input.problemText?.trim() ? input.problemText : null,
@@ -164,17 +200,32 @@ export const usePracticeStore = defineStore("practice", () => {
         ? input.problemImageBase64
         : null,
       parts,
-      activePartId: keepActive ? current.activePartId : (parts[0]?.id ?? "1"),
-      completedPartIds: current.submitted ? current.completedPartIds : [],
-      partLabelRows: current.partLabelRows,
+      activePartId,
+      completedPartIds,
+      startedPartIds,
+      partLabelRows,
     });
   }
 
-  function setActivePart(questionUUId: string, partId: string) {
+  function setActivePart(questionUUId: string, partId: string): boolean {
     const current = getSession(questionUUId);
-    if (!current.submitted) return;
-    if (!current.parts.some((p) => p.id === partId)) return;
-    setSession(questionUUId, { ...current, activePartId: partId });
+    if (!current.submitted) return false;
+    if (!current.parts.some((p) => p.id === partId)) return false;
+    const started = startedPartIdsFromSession(current);
+    if (!canActivatePart(current.parts, started, partId)) return false;
+    const startedPartIds = started.includes(partId)
+      ? started
+      : [...started, partId];
+    setSession(questionUUId, {
+      ...current,
+      activePartId: partId,
+      startedPartIds,
+      partLabelRows: withSeededFirstPartRow(
+        current.parts,
+        current.partLabelRows,
+      ),
+    });
+    return true;
   }
 
   function bindPartRow(questionUUId: string, partId: string, row: number) {
@@ -183,18 +234,20 @@ export const usePracticeStore = defineStore("practice", () => {
     const current = getSession(questionUUId);
     if (!current.submitted) return;
     const rows: Record<string, number> = { ...(current.partLabelRows ?? {}) };
-    for (const [otherId, otherRow] of Object.entries(rows)) {
-      if (otherId !== id && otherRow === row) delete rows[otherId];
-    }
+    const occupant = Object.entries(rows).find(
+      ([otherId, otherRow]) => otherId !== id && otherRow === row,
+    );
+    if (occupant) return;
     rows[id] = row;
+    const ordered = orderPartLabelRowsByList(current.parts, rows);
     const prev = current.partLabelRows ?? {};
     const same =
-      Object.keys(prev).length === Object.keys(rows).length &&
-      Object.entries(rows).every(([key, value]) => prev[key] === value);
+      Object.keys(prev).length === Object.keys(ordered).length &&
+      Object.entries(ordered).every(([key, value]) => prev[key] === value);
     if (same) return;
     setSession(questionUUId, {
       ...current,
-      partLabelRows: rows,
+      partLabelRows: ordered,
     });
   }
 
@@ -202,9 +255,14 @@ export const usePracticeStore = defineStore("practice", () => {
     const current = getSession(questionUUId);
     if (!current.submitted) return;
     if (current.completedPartIds.includes(partId)) return;
+    const started = startedPartIdsFromSession(current);
+    const startedPartIds = started.includes(partId)
+      ? started
+      : [...started, partId];
     setSession(questionUUId, {
       ...current,
       completedPartIds: [...current.completedPartIds, partId],
+      startedPartIds,
     });
   }
 

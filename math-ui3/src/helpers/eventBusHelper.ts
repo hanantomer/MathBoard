@@ -1,4 +1,4 @@
-import { ref } from "vue";
+import { ref, triggerRef } from "vue";
 import { BusEventType, EditMode } from "common/unions";
 import { useEditModeStore } from "../store/pinia/editModeStore";
 
@@ -12,6 +12,7 @@ export default function () {
     const key = editModeStore.getEditMode() + "_" + event;
     try {
       bus.value.set(key, e);
+      triggerRef(bus);
       // Notify listeners
       const listenerKey = event;
       const funcs = listeners.value.get(listenerKey);
@@ -53,6 +54,7 @@ export default function () {
 
   function remove(eventType: BusEventType, editMode: EditMode) {
     bus.value.delete(editMode + "_" + eventType);
+    triggerRef(bus);
   }
 
   return {

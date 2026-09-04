@@ -1,6 +1,7 @@
 import {
   AnnotationNotationAttributes,
   CellAttributes,
+  ConicNotationAttributes,
   FreeSketchNotationAttributes,
   ImageNotationAttributes,
   NotationAttributes,
@@ -31,6 +32,7 @@ import {
   isPracticeGutterNotation,
   overlayGutterMarks,
 } from "./practicePartLabelHelper";
+import { partIdForRow } from "./practicePartOrderHelper";
 import useImageHelper from "./imageHelper";
 
 type CellRect = {
@@ -323,6 +325,21 @@ function orderWorkLines(lines: WorkLine[]): WorkLine[] {
   return [...merged, ...rest];
 }
 
+/** Superscripts stored on the row above the base belong with the line below. */
+function mergeExponentOnlyRows(itemsByRow: Map<number, { col: number; text: string }[]>) {
+  const rows = Array.from(itemsByRow.keys()).sort((a, b) => a - b);
+  for (const row of rows) {
+    const items = itemsByRow.get(row);
+    if (!items?.length) continue;
+    if (!items.every((i) => i.text.startsWith("^"))) continue;
+    const below = rows.find((r) => r > row && itemsByRow.has(r));
+    if (below == null) continue;
+    const dest = itemsByRow.get(below)!;
+    dest.push(...items);
+    itemsByRow.delete(row);
+  }
+}
+
 function gutterPartIdFromText(
   t: RectNotationAttributes,
   value: string,
@@ -388,6 +405,7 @@ function serializeFilteredWork(
   for (const frac of fractions.inserts) {
     addItem(frac.row, frac.col, frac.text);
   }
+  mergeExponentOnlyRows(itemsByRow);
 
   const skipGutterMath = !!groupByParts;
   const partByRow = new Map<number, string>();
@@ -400,6 +418,15 @@ function serializeFilteredWork(
       partByRow.set(m.row, m.id);
     }
   }
+
+  const partIdOnRow = (row: number): string | null => {
+    if (!groupByParts) return partByRow.get(row) ?? null;
+    return (
+      partByRow.get(row) ??
+      partIdForRow(row, groupByParts.partLabelRows) ??
+      null
+    );
+  };
 
   const rows = Array.from(itemsByRow.keys()).sort((a, b) => a - b);
   for (const row of rows) {
@@ -415,7 +442,7 @@ function serializeFilteredWork(
       lastCol = i.col;
     }
     if (buf) {
-      const overlayId = partByRow.get(row);
+      const overlayId = partIdOnRow(row);
       workLines.push({
         text: overlayId ? prefixGutterLabel(buf, overlayId) : buf,
         row,
@@ -436,11 +463,12 @@ function serializeFilteredWork(
       const gutterId = skipGutterMath
         ? gutterPartIdFromText(t, trimmed)
         : null;
-      const incoming = gutterId ? partLabelText(gutterId) : trimmed;
+      const bandId = gutterId ?? partIdOnRow(t.fromRow);
+      const incoming = bandId ? prefixGutterLabel(trimmed, bandId) : trimmed;
       const existing = workLines.find((l) => l.row === t.fromRow);
       if (existing) {
-        existing.text = gutterId
-          ? prefixGutterLabel(existing.text, gutterId)
+        existing.text = bandId
+          ? prefixGutterLabel(existing.text, bandId)
           : joinSameRowText(existing.text, incoming);
         existing.isDraft = existing.isDraft || isDraft;
       } else {
@@ -487,8 +515,18 @@ function serializeFilteredWork(
       });
     }
   }
+  const conicRows = practiceOnly
+    .filter((n) => n.notationType === "CONIC")
+    .map((n) =>
+      Math.floor((n as ConicNotationAttributes).hy / cellSize.cellH),
+    );
+  let conicRowIdx = 0;
   for (const line of diagram.lines) {
-    workLines.push({ text: line });
+    if (/^diagram: (?:parabola|hyperbola)/.test(line)) {
+      workLines.push({ text: line, row: conicRows[conicRowIdx++] });
+    } else {
+      workLines.push({ text: line });
+    }
   }
 
   const ordered = orderWorkLines(workLines);

@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import type {
   AnnotationNotationAttributes,
+  ConicNotationAttributes,
   LineNotationAttributes,
   PointNotationAttributes,
 } from "common/baseTypes";
@@ -151,6 +152,38 @@ describe("serializePracticeDiagram", () => {
     const { consumedUuids, lines } = serializePracticeDiagram(notations, cell);
     expect(consumedUuids.has("eq1")).toBe(false);
     expect(lines.join("\n")).toMatch(/closed (right )?triangle/);
+  });
+
+  it("serializes a parabola against cartesian axes", () => {
+    const originX = 100;
+    const originY = 200;
+    const notations = [
+      {
+        ...line("xaxis", originX - 200, originY, originX + 200, originY),
+        arrowRight: true,
+      },
+      {
+        ...line("yaxis", originX, originY - 200, originX, originY + 200),
+        arrowLeft: true,
+      },
+      {
+        uuid: "parab",
+        parentUUId: "p",
+        boardType: "PRACTICE",
+        notationType: "CONIC",
+        user: { uuid: "u" } as ConicNotationAttributes["user"],
+        kind: "parabola",
+        hx: originX + 2 * cell.cellW,
+        hy: originY - -3 * cell.cellH,
+        axis: "vertical",
+        a: -0.01,
+      } as ConicNotationAttributes,
+    ];
+    const { lines, consumedUuids } = serializePracticeDiagram(notations, cell);
+    expect(consumedUuids.has("parab")).toBe(true);
+    expect(lines.join("\n")).toMatch(
+      /diagram: parabola vertex≈\(2\.0,-3\.0\) opens=up/,
+    );
   });
 });
 

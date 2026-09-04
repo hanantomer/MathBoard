@@ -7,11 +7,13 @@ import {
   NotationAttributes,
   MultiCellAttributes,
   CircleNotationAttributes,
+  ConicNotationAttributes,
   AnnotationNotationAttributes,
   SqrtNotationAttributes,
 } from "common/baseTypes";
 
 // ...existing code...
+import { conicBoundingBox } from "common/conicGeometry";
 import { matrixDimensions, clonedNotationUUIdPrefix } from "common/globals";
 import { useCellStore } from "../store/pinia/cellStore";
 
@@ -420,6 +422,36 @@ export default function notationCellOccupationHelper() {
     }
   }
 
+  function updateConicOccupationMatrix(
+    matrix: any,
+    notation: ConicNotationAttributes,
+    doRemove: boolean,
+  ) {
+    const colWidth = cellStore.getCellHorizontalWidth();
+    const rowHeight = cellStore.getCellVerticalHeight();
+    const box = conicBoundingBox(notation);
+
+    const minCol = Math.max(0, Math.floor(box.minX / colWidth));
+    const maxCol = Math.min(
+      matrixDimensions.colsNum - 1,
+      Math.floor(box.maxX / colWidth),
+    );
+    const minRow = Math.max(0, Math.floor(box.minY / rowHeight));
+    const maxRow = Math.min(
+      matrixDimensions.rowsNum - 1,
+      Math.floor(box.maxY / rowHeight),
+    );
+
+    clearNotationFromMatrix(notation.uuid, matrix);
+
+    for (let c = minCol; c <= maxCol; c++) {
+      for (let r = minRow; r <= maxRow; r++) {
+        if (!validateRowAndCol(c, r)) continue;
+        matrix[c][r] = doRemove ? null : notation.uuid;
+      }
+    }
+  }
+
   function updateOccupationMatrix(
     notation: NotationAttributes,
     dotMatrix: (String | null)[][],
@@ -499,6 +531,13 @@ export default function notationCellOccupationHelper() {
           doRemove,
         );
         break;
+      case "CONIC":
+        updateConicOccupationMatrix(
+          rectMatrix,
+          notation as ConicNotationAttributes,
+          doRemove,
+        );
+        break;
     }
   }
 
@@ -559,6 +598,7 @@ export default function notationCellOccupationHelper() {
     updateCurveOccupationMatrix,
     updateSqrtOccupationMatrix,
     updateCircleOccupationMatrix,
+    updateConicOccupationMatrix,
     updateOccupationMatrix,
     clearNotationFromMatrix,
   };

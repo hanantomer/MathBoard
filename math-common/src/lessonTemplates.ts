@@ -1,3 +1,5 @@
+import { matrixCellSize } from "./globals";
+
 /** Notation payload for cloning a template lesson onto a teacher's board. */
 export type LessonTemplateSymbol = {
   kind: "SYMBOL";
@@ -87,9 +89,12 @@ function text(
   return { kind: "TEXT", fromCol, toCol, fromRow, toRow, value };
 }
 
-/** Grid cell → SVG pixel coords (1650×1650 board, 100×50 cells). */
+/** Grid cell → SVG pixel coords (cell size from globals; 100×80 board). */
 function px(col: number, row: number): { x: number; y: number } {
-  return { x: Math.round(col * 16.5), y: Math.round(row * 33) };
+  return {
+    x: Math.round(col * matrixCellSize.width),
+    y: Math.round(row * matrixCellSize.height),
+  };
 }
 
 function line(

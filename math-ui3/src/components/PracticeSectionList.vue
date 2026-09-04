@@ -7,18 +7,28 @@
       class="practice-section-list__item"
       :class="{
         'practice-section-list__item--active': part.id === activePartId,
-        'practice-section-list__item--done': completedPartIds.includes(part.id),
+        'practice-section-list__item--done': statusOf(part.id) === 'completed',
+        'practice-section-list__item--started': statusOf(part.id) === 'started',
+        'practice-section-list__item--locked': statusOf(part.id) === 'locked',
       }"
       :aria-current="part.id === activePartId ? 'true' : undefined"
+      :aria-disabled="statusOf(part.id) === 'locked' ? 'true' : undefined"
       :data-cy="`practice-section-${part.id}`"
       @click="$emit('select', part.id)"
     >
       <v-icon
-        v-if="completedPartIds.includes(part.id)"
+        v-if="statusOf(part.id) === 'completed'"
         size="16"
         class="practice-section-list__check"
       >
         mdi-check-circle
+      </v-icon>
+      <v-icon
+        v-else-if="statusOf(part.id) === 'locked'"
+        size="16"
+        class="practice-section-list__lock"
+      >
+        mdi-lock-outline
       </v-icon>
       <span v-else class="practice-section-list__num">({{ part.id }})</span>
       <span class="practice-section-list__text">{{ part.text }}</span>
@@ -28,16 +38,22 @@
 
 <script setup lang="ts">
 import type { PracticeProblemPart } from "common/practiceParts";
+import { partStatus } from "../helpers/practicePartOrderHelper";
 
-defineProps<{
+const props = defineProps<{
   parts: PracticeProblemPart[];
   activePartId: string | null;
   completedPartIds: string[];
+  startedPartIds: string[];
 }>();
 
 defineEmits<{
   select: [id: string];
 }>();
+
+function statusOf(id: string) {
+  return partStatus(id, props.startedPartIds, props.completedPartIds);
+}
 </script>
 
 <style scoped>
@@ -75,8 +91,17 @@ defineEmits<{
   color: rgba(0, 0, 0, 0.55);
 }
 
+.practice-section-list__item--started .practice-section-list__num {
+  font-weight: 700;
+}
+
+.practice-section-list__item--locked:hover {
+  background: transparent;
+}
+
 .practice-section-list__num,
-.practice-section-list__check {
+.practice-section-list__check,
+.practice-section-list__lock {
   flex: 0 0 auto;
   margin-top: 1px;
   color: rgba(25, 118, 210, 0.9);
@@ -84,6 +109,10 @@ defineEmits<{
 
 .practice-section-list__check {
   color: #2e7d32;
+}
+
+.practice-section-list__lock {
+  color: rgba(0, 0, 0, 0.45);
 }
 
 .practice-section-list__text {

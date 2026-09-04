@@ -1,4 +1,8 @@
-import { stripPracticeTutorMarkup } from "./practiceParts";
+import {
+  parsePracticeProblemParts,
+  stripPracticeTutorMarkup,
+  workForActivePartReview,
+} from "./practiceParts";
 
 /** Quadratic ax^2 + bx + c. */
 export type QuadraticCoeffs = { a: number; b: number; c: number };
@@ -277,8 +281,10 @@ function looksLikeQuadraticRewrite(expr: string): boolean {
 }
 
 export type VertexRewriteReview = {
-  /** Last line is vertex form and expands to the original. */
+  /** Latest line is vertex form (strict or with leftover constants) and matches. */
   equivalent: boolean;
+  /** Equivalent and k is a single number, e.g. 2(x-2)^2-3 not 2(x-2)^2-8+5. */
+  simplified: boolean;
   /**
    * Last line is a grouped rewrite (completing the square, factoring a, etc.)
    * that still expands to the original — not yet necessarily vertex form.
@@ -290,9 +296,14 @@ export type VertexRewriteReview = {
 
 const EMPTY_REVIEW: VertexRewriteReview = {
   equivalent: false,
+  simplified: false,
   rewriteMatches: false,
   warning: null,
 };
+
+/** Next-step tip when vertex form still has leftover constants like -8+5. */
+export const SIMPLIFY_VERTEX_CONSTANTS_TIP =
+  "Combine the constants outside the square into one number.";
 
 function lastQuadraticLine(
   text: string,
@@ -303,6 +314,14 @@ function lastQuadraticLine(
     if (q) return { expr: exprs[i], coeffs: q };
   }
   return null;
+}
+
+function isSimplifiedVertexExpr(
+  expr: string,
+  original: QuadraticCoeffs,
+): boolean {
+  const strict = parseVertexQuadratic(expr);
+  return !!(strict && coeffsEqual(strict, original));
 }
 
 function isVertexFormExpr(
@@ -347,9 +366,10 @@ function earlierRewriteNotes(
 }
 
 /**
- * Latest quadratic rewrite vs the given function. `equivalent` means vertex
- * form is done. `rewriteMatches` means a completing-the-square (or similar)
- * line still expands to the original.
+ * Latest quadratic rewrite vs the given function. `equivalent` means a matching
+ * binomial square (including leftover constants like -8+5). `simplified` means
+ * a single k, e.g. 2(x-2)^2-3. `rewriteMatches` is a grouped rewrite that
+ * still expands to the original — not yet necessarily vertex form.
  */
 export function reviewVertexRewrite(
   problemText: string | undefined,
@@ -360,21 +380,39 @@ export function reviewVertexRewrite(
 
   const original =
     firstStandardQuadratic(problemText ?? "") ?? firstStandardQuadratic(work);
+  if (!original) return EMPTY_REVIEW;
+
+  const lastVertexExpr = (() => {
+    const exprs = rhsExpressions(work);
+    for (let i = exprs.length - 1; i >= 0; i--) {
+      if (isVertexFormExpr(exprs[i], original)) return exprs[i];
+    }
+    return null;
+  })();
   const last = lastQuadraticLine(work);
-  if (!original || !last || !coeffsEqual(original, last.coeffs)) {
-    return EMPTY_REVIEW;
+
+  if (lastVertexExpr) {
+    const notes = earlierRewriteNotes(work, original);
+    const simplified = isSimplifiedVertexExpr(lastVertexExpr, original);
+    return {
+      equivalent: true,
+      simplified,
+      rewriteMatches: true,
+      warning:
+        notes.length > 0
+          ? `Earlier steps don't follow: ${notes.join("; ")}.`
+          : null,
+    };
   }
 
-  const grouped = last.expr.includes("(");
-  const vertexForm = isVertexFormExpr(last.expr, original);
-  const notes = vertexForm ? earlierRewriteNotes(work, original) : [];
+  if (!last || !coeffsEqual(original, last.coeffs)) {
+    return EMPTY_REVIEW;
+  }
   return {
-    equivalent: vertexForm,
-    rewriteMatches: grouped,
-    warning:
-      vertexForm && notes.length > 0
-        ? `Earlier steps don't follow: ${notes.join("; ")}.`
-        : null,
+    equivalent: false,
+    simplified: false,
+    rewriteMatches: last.expr.includes("("),
+    warning: null,
   };
 }
 
@@ -387,4 +425,278 @@ export function workHasEquivalentVertexForm(
   studentWork: string,
 ): boolean {
   return reviewVertexRewrite(problemText, studentWork).equivalent;
+}
+
+export function vertexOfQuadratic(q: QuadraticCoeffs): { h: number; k: number } {
+  const h = -q.b / (2 * q.a);
+  const k = q.c - q.a * h * h;
+  return { h, k };
+}
+
+export type QuadraticPartKind =
+  | "vertexForm"
+  | "vertexCoordinates"
+  | "axis"
+  | "yIntercept"
+  | "graph"
+  | "maxMin"
+  | "other";
+
+export function quadraticPartKind(
+  partText: string | undefined,
+): QuadraticPartKind {
+  const t = (partText ?? "").toLowerCase();
+  if (!t.trim()) return "other";
+  if (/vertex form|completing the square|complete the square/.test(t)) {
+    return "vertexForm";
+  }
+  if (/y-?intercept/.test(t)) return "yIntercept";
+  if (/axis/.test(t)) return "axis";
+  if (/sketch|graph|parabola/.test(t)) return "graph";
+  if (/maximum|minimum/.test(t)) return "maxMin";
+  if (/coordinate|\bvertex\b/.test(t)) return "vertexCoordinates";
+  return "other";
+}
+
+function kindForActivePart(
+  problemText: string | undefined,
+  activePartId?: string | null,
+): QuadraticPartKind {
+  const parts = parsePracticeProblemParts(problemText);
+  if (parts.length === 0) return "other";
+  const id = (activePartId ?? "").trim().toLowerCase();
+  const part =
+    (id && parts.find((p) => p.id.toLowerCase() === id)) || parts[0];
+  return quadraticPartKind(part?.text);
+}
+
+function originalQuadratic(
+  problemText: string | undefined,
+  studentWork?: string,
+): QuadraticCoeffs | null {
+  return (
+    firstStandardQuadratic(problemText ?? "") ??
+    firstStandardQuadratic(studentWork ?? "")
+  );
+}
+
+function namedNumber(text: string, letter: string): number | null {
+  const s = normalizeAlgebra(text);
+  const re = new RegExp(`(?:^|[^a-z])${letter}=([+-]?\\d+(?:\\.\\d+)?)`);
+  const m = s.match(re);
+  if (!m) return null;
+  const n = Number(m[1]);
+  return Number.isFinite(n) ? n : null;
+}
+
+function coordinatePairs(text: string): Array<{ x: number; y: number }> {
+  const s = normalizeAlgebra(text);
+  const out: Array<{ x: number; y: number }> = [];
+  const re = /[\(\[]([+-]?\d+(?:\.\d+)?),([+-]?\d+(?:\.\d+)?)[\)\]]/g;
+  let m: RegExpExecArray | null;
+  while ((m = re.exec(s))) {
+    const x = Number(m[1]);
+    const y = Number(m[2]);
+    if (Number.isFinite(x) && Number.isFinite(y)) out.push({ x, y });
+  }
+  return out;
+}
+
+function workStatesPoint(text: string, x: number, y: number): boolean {
+  if (
+    coordinatePairs(text).some(
+      (p) => Math.abs(p.x - x) < EPS && Math.abs(p.y - y) < EPS,
+    )
+  ) {
+    return true;
+  }
+  const h = namedNumber(text, "h");
+  const k = namedNumber(text, "k");
+  if (
+    h != null &&
+    k != null &&
+    Math.abs(h - x) < EPS &&
+    Math.abs(k - y) < EPS
+  ) {
+    return true;
+  }
+  const xv = namedNumber(text, "x");
+  const yv = namedNumber(text, "y");
+  return (
+    xv != null &&
+    yv != null &&
+    Math.abs(xv - x) < EPS &&
+    Math.abs(yv - y) < EPS
+  );
+}
+
+export function workHasVertexCoordinates(
+  problemText: string | undefined,
+  studentWork: string,
+): boolean {
+  const q = originalQuadratic(problemText, studentWork);
+  if (!q) return false;
+  const v = vertexOfQuadratic(q);
+  return workStatesPoint(studentWork, v.h, v.k);
+}
+
+export function workHasAxisOfSymmetry(
+  problemText: string | undefined,
+  studentWork: string,
+): boolean {
+  const q = originalQuadratic(problemText, studentWork);
+  if (!q) return false;
+  const { h } = vertexOfQuadratic(q);
+  const x = namedNumber(studentWork, "x");
+  return x != null && Math.abs(x - h) < EPS;
+}
+
+export function workHasYIntercept(
+  problemText: string | undefined,
+  studentWork: string,
+): boolean {
+  const q = originalQuadratic(problemText, studentWork);
+  if (!q) return false;
+  if (workStatesPoint(studentWork, 0, q.c)) return true;
+  const f0 = studentWork.match(/f\s*\(\s*0\s*\)\s*=\s*([+-]?\d+(?:\.\d+)?)/i);
+  if (f0 && Math.abs(Number(f0[1]) - q.c) < EPS) return true;
+  const y = namedNumber(studentWork, "y");
+  return y != null && Math.abs(y - q.c) < EPS;
+}
+
+export function workHasMaxOrMin(
+  problemText: string | undefined,
+  studentWork: string,
+): boolean {
+  const q = originalQuadratic(problemText, studentWork);
+  if (!q) return false;
+  const t = studentWork.toLowerCase();
+  if (q.a > 0) {
+    return /minimum|\bmin\b|opens up/.test(t) && !/maximum|\bmax\b/.test(t);
+  }
+  return /maximum|\bmax\b|opens down/.test(t) && !/minimum|\bmin\b/.test(t);
+}
+
+const GRAPH_VERTEX_TOL = 1.5;
+
+export function parseConicDiagramLines(studentWork: string): Array<{
+  kind: string;
+  h?: number;
+  k?: number;
+  opens?: string;
+}> {
+  const out: Array<{
+    kind: string;
+    h?: number;
+    k?: number;
+    opens?: string;
+  }> = [];
+  const re =
+    /diagram:\s*(parabola|hyperbola)(?:\s+vertex≈\(([+-]?\d+(?:\.\d+)?),([+-]?\d+(?:\.\d+)?)\))?(?:\s+opens=([a-z-]+))?/gi;
+  let m: RegExpExecArray | null;
+  while ((m = re.exec(studentWork))) {
+    const h = m[2] != null ? Number(m[2]) : undefined;
+    const k = m[3] != null ? Number(m[3]) : undefined;
+    out.push({
+      kind: m[1].toLowerCase(),
+      h: h != null && Number.isFinite(h) ? h : undefined,
+      k: k != null && Number.isFinite(k) ? k : undefined,
+      opens: m[4]?.toLowerCase(),
+    });
+  }
+  return out;
+}
+
+/** Lenient sketch check: opening matches sign of a, vertex near (h,k) when given. */
+export function workHasParabolaGraph(
+  problemText: string | undefined,
+  studentWork: string,
+): boolean {
+  const q = originalQuadratic(problemText, studentWork);
+  if (!q) return false;
+  const v = vertexOfQuadratic(q);
+  const expectUp = q.a > 0;
+  return parseConicDiagramLines(studentWork).some((d) => {
+    if (d.kind !== "parabola") return false;
+    if (d.opens === "up" && !expectUp) return false;
+    if (d.opens === "down" && expectUp) return false;
+    if (d.h == null || d.k == null) {
+      return d.opens === "up" || d.opens === "down";
+    }
+    return (
+      Math.abs(d.h - v.h) <= GRAPH_VERTEX_TOL &&
+      Math.abs(d.k - v.k) <= GRAPH_VERTEX_TOL
+    );
+  });
+}
+
+export function checkQuadraticFollowUpPart(
+  problemText: string | undefined,
+  studentWork: string,
+  partText: string | undefined,
+): { correct: true; feedback: string } | null {
+  const kind = quadraticPartKind(partText);
+  if (
+    kind === "vertexCoordinates" &&
+    workHasVertexCoordinates(problemText, studentWork)
+  ) {
+    return {
+      correct: true,
+      feedback: "Correct — those are the coordinates of the vertex.",
+    };
+  }
+  if (kind === "axis" && workHasAxisOfSymmetry(problemText, studentWork)) {
+    return {
+      correct: true,
+      feedback: "Correct — that is the axis of symmetry.",
+    };
+  }
+  if (kind === "yIntercept" && workHasYIntercept(problemText, studentWork)) {
+    return {
+      correct: true,
+      feedback: "Correct — that is the y-intercept.",
+    };
+  }
+  if (kind === "maxMin" && workHasMaxOrMin(problemText, studentWork)) {
+    return {
+      correct: true,
+      feedback: "Correct — that names the extreme value.",
+    };
+  }
+  if (kind === "graph" && workHasParabolaGraph(problemText, studentWork)) {
+    return {
+      correct: true,
+      feedback: "Correct — that sketch matches the parabola.",
+    };
+  }
+  return null;
+}
+
+/** True when the active part already has the result that part asks for. */
+export function activePartLooksComplete(
+  problemText: string | undefined,
+  studentWork: string,
+  activePartId?: string | null,
+): boolean {
+  const slice = workForActivePartReview(studentWork, activePartId ?? undefined);
+  const kind = kindForActivePart(problemText, activePartId);
+  if (kind === "vertexCoordinates") {
+    return workHasVertexCoordinates(problemText, slice);
+  }
+  if (kind === "axis") {
+    return workHasAxisOfSymmetry(problemText, slice);
+  }
+  if (kind === "yIntercept") {
+    return workHasYIntercept(problemText, slice);
+  }
+  if (kind === "maxMin") {
+    return workHasMaxOrMin(problemText, slice);
+  }
+  if (kind === "graph") {
+    return (
+      workHasParabolaGraph(problemText, slice) ||
+      workHasParabolaGraph(problemText, studentWork)
+    );
+  }
+  return reviewVertexRewrite(problemText, slice).simplified;
 }

@@ -7,6 +7,7 @@ import {
   CurveNotationAttributes,
   SqrtNotationAttributes,
   CircleNotationAttributes,
+  ConicNotationAttributes,
   FreeSketchNotationAttributes,
 } from "common/baseTypes";
 import {
@@ -574,6 +575,32 @@ export default function useApiHelper() {
     }
   }
 
+  async function updateConicNotationAttributes(
+    conic: ConicNotationAttributes,
+  ) {
+    try {
+      return axios.put(
+        baseURL +
+          `/${conic.boardType.toLowerCase()}${conic.notationType.toLowerCase()}s`,
+        {
+          uuid: conic.uuid,
+          kind: conic.kind,
+          hx: conic.hx,
+          hy: conic.hy,
+          axis: conic.axis,
+          a: conic.a,
+          b: conic.b,
+        },
+      );
+    } catch (error) {
+      throw new Error(
+        `Failed to update conic notation attributes: ${
+          (error as AxiosError).message
+        }`,
+      );
+    }
+  }
+
   async function updateFreeSketchNotationAttributes(
     freeSketch: FreeSketchNotationAttributes,
   ) {
@@ -874,6 +901,7 @@ export default function useApiHelper() {
     updateLineNotationAttributes,
     updateCurveNotationAttributes,
     updateCircleNotationAttributes,
+    updateConicNotationAttributes,
     updateFreeSketchNotationAttributes,
     updateNotationValue,
     updateNotation,

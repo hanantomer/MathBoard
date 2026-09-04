@@ -13,18 +13,21 @@ import {
   CurveNotationAttributes,
   FreeSketchNotationAttributes,
   CircleNotationAttributes,
+  ConicNotationAttributes,
   isRect,
   isLine,
   isCurve,
+  isConic,
   isCellNotationType,
   SqrtNotationAttributes,
 } from "common/baseTypes";
 import { BoardType } from "common/unions";
-import { ref } from "vue";
+import { ref, triggerRef } from "vue";
 import { useCellStore } from "./cellStore";
 import useNotationCellOccupationHelper from "../../helpers/notationCellOccupationHelper";
 import useUndoRedoHelper from "../../helpers/undoRedoHelper";
 import useApiHelper from "../../helpers/apiHelper";
+import { conicBoundingBox } from "common/conicGeometry";
 
 export const useNotationStore = defineStore("notation", () => {
   const cellOccupationHelper = useNotationCellOccupationHelper();
@@ -153,6 +156,12 @@ export const useNotationStore = defineStore("notation", () => {
       .map((n) => n as FreeSketchNotationAttributes);
   }
 
+  function getConicNotations(): ConicNotationAttributes[] {
+    return Array.from(notations.value.values())
+      .filter((n) => isConic(n.notationType))
+      .map((n) => n as ConicNotationAttributes);
+  }
+
   function getCopiedNotations(): NotationAttributes[] {
     return Array.from(copiedNotations.value.values());
   }
@@ -225,6 +234,7 @@ export const useNotationStore = defineStore("notation", () => {
     }
     notations.value.delete(notation.uuid);
     notations.value.set(notation.uuid, notation);
+    triggerRef(notations);
     if (doUpdateOccupationMatrix) {
       cellOccupationHelper.updateOccupationMatrix(
         notation,
@@ -282,6 +292,14 @@ export const useNotationStore = defineStore("notation", () => {
           notations.value.get(uuid)! as CircleNotationAttributes,
           true,
         );
+        break;
+      case "CONIC":
+        cellOccupationHelper.updateConicOccupationMatrix(
+          cellRectNotationOccupationMatrix,
+          notations.value.get(uuid)! as ConicNotationAttributes,
+          true,
+        );
+        break;
 
       case "TEXT":
         cellOccupationHelper.updateRectOccupationMatrix(
@@ -413,7 +431,7 @@ export const useNotationStore = defineStore("notation", () => {
 
   function selectNotationsOfRectCoordinates(rect: RectCoordinates) {
     getLinetNotations()
-      .concat(getCurveNotations(), getFreeSketchNotations())
+      .concat(getCurveNotations(), getFreeSketchNotations(), getConicNotations())
       .forEach((l) => {
         let doIntersects = true;
         switch (l.notationType) {
@@ -442,6 +460,12 @@ export const useNotationStore = defineStore("notation", () => {
               rect,
             );
             break;
+          case "CONIC":
+            doIntersects = checkConicIntersection(
+              l as ConicNotationAttributes,
+              rect,
+            );
+            break;
         }
         if (doIntersects) {
           selectNotation(l.uuid);
@@ -463,6 +487,18 @@ export const useNotationStore = defineStore("notation", () => {
     if (Math.min(x1, x2) > rect.bottomRight.x) return false;
     if (Math.max(y1, y2) < rect.topLeft.y) return false;
     if (Math.min(y1, y2) > rect.bottomRight.y) return false;
+    return true;
+  }
+
+  function checkConicIntersection(
+    conic: ConicNotationAttributes,
+    rect: RectCoordinates,
+  ): boolean {
+    const box = conicBoundingBox(conic);
+    if (box.maxX < rect.topLeft.x) return false;
+    if (box.minX > rect.bottomRight.x) return false;
+    if (box.maxY < rect.topLeft.y) return false;
+    if (box.minY > rect.bottomRight.y) return false;
     return true;
   }
 
@@ -746,6 +782,7 @@ export const useNotationStore = defineStore("notation", () => {
     getLinetNotations,
     getCurveNotations,
     getFreeSketchNotations,
+    getConicNotations,
     getSelectedNotations,
     hasSelectedNotations,
     isSymbolAdjecentToLine,

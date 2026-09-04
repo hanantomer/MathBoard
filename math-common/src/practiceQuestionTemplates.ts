@@ -237,20 +237,45 @@ export function getPracticeQuestionTemplateByUUId(
 export function formatPracticeProblemPrompt(
   template: PracticeQuestionTemplate,
 ): string {
-  const parts: string[] = [`Problem: ${template.name}`];
+  const lines: string[] = [];
+  const pushLine = (raw: string) => {
+    const line = raw.trim();
+    if (!line) return;
+    const compact = line.replace(/\s+/g, "");
+    if (lines.some((existing) => existing.replace(/\s+/g, "") === compact)) {
+      return;
+    }
+    lines.push(line);
+  };
+
+  pushLine(template.name);
+
+  const symbolsByRow = new Map<number, Array<{ col: number; text: string }>>();
   for (const item of template.notations) {
     switch (item.kind) {
       case "TEXT":
       case "ANNOTATION":
-        parts.push(item.value);
+        pushLine(item.value);
         break;
       case "SYMBOL":
-      case "EXPONENT":
-        parts.push(item.value);
+      case "EXPONENT": {
+        const text =
+          item.kind === "EXPONENT" ? "^" + item.value : item.value;
+        const list = symbolsByRow.get(item.row) ?? [];
+        list.push({ col: item.col, text });
+        symbolsByRow.set(item.row, list);
         break;
+      }
       default:
         break;
     }
   }
-  return parts.join("\n");
+
+  const rows = [...symbolsByRow.keys()].sort((a, b) => a - b);
+  for (const row of rows) {
+    const cells = (symbolsByRow.get(row) ?? []).sort((a, b) => a.col - b.col);
+    pushLine(cells.map((c) => c.text).join(""));
+  }
+
+  return lines.join("\n");
 }

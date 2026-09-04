@@ -78,6 +78,8 @@ describe("practice label gutter", () => {
     expect(lastRowWithGutterPartId(notations, "2")).toBe(4);
     expect(lastRowWithGutterPartId(notations, "3")).toBeNull();
     expect(nextFreePartRow(notations)).toBe(5);
+    expect(nextFreePartRow([], { "1": 0 })).toBe(1);
+    expect(nextFreePartRow([symbolOn(1, 5, "2")], { "1": 0 })).toBe(2);
   });
 
   it("draws (n) on unlabeled work after reload", () => {
@@ -88,12 +90,24 @@ describe("practice label gutter", () => {
     expect(
       overlayGutterMarks(work, "3", { "3": 0 }),
     ).toEqual([{ row: 0, id: "3" }]);
-    expect(
-      overlayGutterMarks(work, "4", { "3": 0 }),
-    ).toEqual([{ row: 0, id: "3" }]);
+    expect(overlayGutterMarks(work, "4", { "3": 0 })).toEqual([
+      { row: 0, id: "3" },
+      { row: 1, id: "4" },
+    ]);
     expect(
       overlayGutterMarks(work, "3", { "1": 0, "3": 1 }),
-    ).toEqual([{ row: 0, id: "3" }]);
+    ).toEqual([
+      { row: 0, id: "1" },
+      { row: 1, id: "3" },
+    ]);
+  });
+
+  it("does not let a later task replace (1) on row 0", () => {
+    expect(overlayGutterMarks([], "2", { "1": 0 })).toEqual([
+      { row: 0, id: "1" },
+      { row: 1, id: "2" },
+    ]);
+    expect(nextFreePartRow([], { "1": 0 })).toBe(1);
   });
 
   it("still shows (n) when a TEXT chip is already on the work row", () => {

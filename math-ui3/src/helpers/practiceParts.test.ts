@@ -11,7 +11,12 @@ import {
   promotePracticePartHeader,
   stripPracticeTutorMarkup,
   workForActivePart,
+  workForActivePartReview,
 } from "common/practiceParts";
+import {
+  formatPracticeProblemPrompt,
+  PRACTICE_QUESTION_TEMPLATES,
+} from "common/practiceQuestionTemplates";
 
 const QUADRATIC = [
   "A quadratic function is given by f(x) = 2x^2 - 8x + 5",
@@ -281,5 +286,49 @@ describe("workForActivePart", () => {
     );
     expect(workForActivePart(blob, "2")).toContain("(2,-3)");
     expect(workForActivePart(blob, "2")).not.toContain("vertex");
+  });
+});
+
+describe("workForActivePartReview", () => {
+  it("includes unlabeled scratch with the first part", () => {
+    const blob = [
+      "[Part 1]",
+      "<<active>> (none yet for part 1)",
+      "unlabeled:",
+      "f(x)=2(x^2-4x)+5",
+      "f(x)=2(x-2)^2-3",
+    ].join("\n");
+    const review = workForActivePartReview(blob, "1");
+    expect(review).toContain("2(x-2)^2-3");
+    expect(review).not.toMatch(/none yet/i);
+  });
+
+  it("does not mix unlabeled scratch into a later part", () => {
+    const blob = [
+      "[Part 1]",
+      "f(x)=2(x-2)^2-3",
+      "[Part 2]",
+      "<<active>> (none yet for part 2)",
+      "unlabeled:",
+      "scratch 2(x^2-4x)+5",
+    ].join("\n");
+    expect(workForActivePartReview(blob, "2")).not.toContain("2(x^2-4x)");
+    expect(workForActivePartReview(blob, "1")).toContain("2(x^2-4x)+5");
+  });
+});
+
+describe("formatPracticeProblemPrompt", () => {
+  it("keeps a linear equation on one line instead of one character per row", () => {
+    const template = PRACTICE_QUESTION_TEMPLATES.find(
+      (t) => t.id === "algebra-linear-2x-plus-3",
+    )!;
+    const prompt = formatPracticeProblemPrompt(template);
+    expect(prompt).toContain("Solve 2x + 3 = 11");
+    expect(prompt).toContain("Solve for x:");
+    expect(prompt).toMatch(/2x\+3=11/);
+    expect(prompt.split("\n")).not.toContain("2");
+    expect(ensureNumberedParts(prompt)).toEqual([
+      { id: "1", text: "Whole problem" },
+    ]);
   });
 });

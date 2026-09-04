@@ -123,6 +123,7 @@ export default function useMatrixHelperUtils() {
       case "IMAGE":
       case "TEXT":
       case "CIRCLE":
+      case "CONIC":
       case "SQRT":
       case "SQRTSYMBOL":
       case "FREESKETCH":

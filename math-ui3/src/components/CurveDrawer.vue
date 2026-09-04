@@ -43,6 +43,7 @@
     <line-handle
       drawing-mode="CURVE_DRAWING"
       editing-mode="CURVE_EDITING_LEFT"
+      v-show="handlesInteractive"
       v-bind:style="{
         left: handleX1 + 'px',
         top: handleY1 + 'px',
@@ -51,15 +52,28 @@
     <line-handle
       drawing-mode="CURVE_DRAWING"
       editing-mode="CURVE_EDITING_RIGHT"
+      v-show="handlesInteractive"
       v-bind:style="{
         left: handleX2 + 'px',
         top: handleY2 + 'px',
+      }"
+    ></line-handle>
+    <line-handle
+      data-cy="curveControlHandle"
+      drawing-mode="CURVE_DRAWING"
+      editing-mode="CURVE_EDITING_CONTROLֹ_POINT"
+      v-show="handlesInteractive"
+      v-bind:style="{
+        left: handleCpX + 'px',
+        top: handleCpY + 'px',
       }"
     ></line-handle>
 
     <svg
       id="curveSvgId"
       :style="lineSvgScreenStyle"
+      :viewBox="overlayViewBox"
+      preserveAspectRatio="none"
       class="line-svg"
       xmlns="http://www.w3.org/2000/svg"
     >
@@ -71,24 +85,20 @@
         fill="transparent"
         stroke="black"
       ></path>
-      <circle
-        id="controlPoint"
-        cx="0"
-        cy="0"
-        r="8"
-        style="position: absolute; pointer-events: painted"
-      ></circle>
     </svg>
   </div>
 </template>
 <script setup lang="ts">
-import lineHandle from "./LineHandle.vue";
+import lineHandle, { LINE_HANDLE_HALF } from "./LineHandle.vue";
 import lineWatcher from "./LineWatcher.vue";
 import useNotationMutateHelper from "../helpers/notationMutateHelper";
 import useWatchHelper from "../helpers/watchHelper";
-import { svgPointerPosition } from "../helpers/pointerCoordinateHelper";
-import useEventBus from "../helpers/eventBusHelper";
-import { computed, nextTick, onMounted, ref, watch } from "vue";
+import {
+  getBoardSvgUserExtent,
+  svgPointerPosition,
+  svgUserToViewport,
+} from "../helpers/pointerCoordinateHelper";
+import { computed, nextTick, ref, watch } from "vue";
 import { useNotationStore } from "../store/pinia/notationStore";
 import { useEditModeStore } from "../store/pinia/editModeStore";
 import {
@@ -112,7 +122,6 @@ const DEGENERATE_CONTROL_DISTANCE = 3;
 
 const notationMutateHelper = useNotationMutateHelper();
 const watchHelper = useWatchHelper();
-const eventBus = useEventBus();
 const notationStore = useNotationStore();
 const editModeStore = useEditModeStore();
 const visitedPointPrefix = "visitedPoint";
@@ -145,49 +154,69 @@ const curveAttributes = ref<CurveAttributes>({
   cpy: 0,
 });
 
-onMounted(() => {
-  setTimeout(() => {
-    const controlPoint = document.getElementById("controlPoint");
-    if (controlPoint) {
-      const startControl = (e: PointerEvent) => {
-        e.preventDefault();
-        if (!editModeStore.isCurveEditingControlPointMode()) {
-          editModeStore.setEditMode("CURVE_EDITING_CONTROLֹ_POINT");
-        }
-        const id = cellStore.getSvgId();
-        const svg = id ? document.getElementById(id) : null;
-        if (svg && e.pointerId != null) {
-          try {
-            svg.setPointerCapture(e.pointerId);
-          } catch {
-            /* ignore */
-          }
-        }
-      };
-      const endControl = (e: PointerEvent) => {
-        eventBus.emit("EV_SVG_POINTERUP", e);
-      };
-      controlPoint.addEventListener("pointerdown", startControl);
-      controlPoint.addEventListener("pointerup", endControl);
-      controlPoint.addEventListener("pointercancel", endControl);
-    }
-  });
+const handlesInteractive = computed(() => {
+  const mode = editModeStore.getEditMode();
+  return (
+    mode === "CURVE_SELECTED" ||
+    mode === "CURVE_EDITING_LEFT" ||
+    mode === "CURVE_EDITING_RIGHT" ||
+    mode === "CURVE_EDITING_CONTROLֹ_POINT"
+  );
+});
+
+const overlayViewBox = computed(() => {
+  cellStore.getSvgBoundingRect();
+  const e = getBoardSvgUserExtent();
+  if (!e.width || !e.height) return undefined;
+  return `${e.x} ${e.y} ${e.width} ${e.height}`;
 });
 
 const handleX1 = computed(() => {
-  return curveAttributes.value.p1x + cellStore.getSvgBoundingRect().left;
+  cellStore.getSvgBoundingRect();
+  return (
+    svgUserToViewport(curveAttributes.value.p1x, curveAttributes.value.p1y).x -
+    LINE_HANDLE_HALF
+  );
 });
 
 const handleY1 = computed(() => {
-  return curveAttributes.value.p1y + cellStore.getSvgBoundingRect().top;
+  cellStore.getSvgBoundingRect();
+  return (
+    svgUserToViewport(curveAttributes.value.p1x, curveAttributes.value.p1y).y -
+    LINE_HANDLE_HALF
+  );
 });
 
 const handleX2 = computed(() => {
-  return curveAttributes.value.p2x + cellStore.getSvgBoundingRect().left;
+  cellStore.getSvgBoundingRect();
+  return (
+    svgUserToViewport(curveAttributes.value.p2x, curveAttributes.value.p2y).x -
+    LINE_HANDLE_HALF
+  );
 });
 
 const handleY2 = computed(() => {
-  return curveAttributes.value.p2y + cellStore.getSvgBoundingRect().top;
+  cellStore.getSvgBoundingRect();
+  return (
+    svgUserToViewport(curveAttributes.value.p2x, curveAttributes.value.p2y).y -
+    LINE_HANDLE_HALF
+  );
+});
+
+const handleCpX = computed(() => {
+  cellStore.getSvgBoundingRect();
+  return (
+    svgUserToViewport(curveAttributes.value.cpx, curveAttributes.value.cpy).x -
+    LINE_HANDLE_HALF
+  );
+});
+
+const handleCpY = computed(() => {
+  cellStore.getSvgBoundingRect();
+  return (
+    svgUserToViewport(curveAttributes.value.cpx, curveAttributes.value.cpy).y -
+    LINE_HANDLE_HALF
+  );
 });
 
 const show = computed(() => {
@@ -213,10 +242,12 @@ const lineSvgScreenStyle = computed(() => {
     position: "fixed" as const,
     top: `${r.top}px`,
     left: `${r.left}px`,
-    width: matrixSize.width,
-    height: matrixSize.height,
+    width: r.width ? `${r.width}px` : matrixSize.width,
+    height: r.height ? `${r.height}px` : matrixSize.height,
     margin: "0",
     pointerEvents: "none" as const,
+    overflow: "visible",
+    zIndex: 998,
   };
 });
 
@@ -337,7 +368,6 @@ async function selectCurve(curve: NotationAttributes) {
     cellStore.setSvgBoundingRect(id);
   }
   setCurveElement();
-  showControlPoint();
 }
 
 function setControlPoint(e: PointerEvent) {
@@ -345,7 +375,6 @@ function setControlPoint(e: PointerEvent) {
   curveAttributes.value.cpx = Math.round(p.x);
   curveAttributes.value.cpy = Math.round(p.y);
   setCurveElement();
-  showControlPoint();
 }
 
 function setCurve(p: DotCoordinates) {
@@ -365,9 +394,6 @@ function setCurve(p: DotCoordinates) {
   }
 
   setCurveElement();
-
-  // temporarly show control point
-  showControlPoint();
 }
 
 function moveCurve(moveX: number, moveY: number) {
@@ -386,12 +412,6 @@ function moveCurve(moveX: number, moveY: number) {
   setCurveElement();
 
   saveCurve(curveAttributes.value);
-}
-
-function showControlPoint() {
-  var c1 = document.getElementById("controlPoint");
-  c1!.setAttribute("cx", curveAttributes.value.cpx.toString());
-  c1!.setAttribute("cy", curveAttributes.value.cpy.toString());
 }
 
 function setCurveElement() {
@@ -418,12 +438,11 @@ async function endDrawCurve(): Promise<string> {
     return "";
   }
 
-  // tap without drag — end a continue chain or cancel a new stroke
+  // tap without drag — cancel
   if (
     curveAttributes.value.p1x === curveAttributes.value.p2x &&
     curveAttributes.value.p1y === curveAttributes.value.p2y
   ) {
-    editModeStore.setEditMode("CURVE_STARTED");
     return "";
   }
 
@@ -446,18 +465,7 @@ async function endDrawCurve(): Promise<string> {
   curveAttributes.value.cpx = savedCurve.cpx;
   curveAttributes.value.cpy = savedCurve.cpy;
 
-  const isUpdate = notationStore.getSelectedNotations().length > 0;
-  const uuid = await saveCurve(savedCurve);
-
-  if (!isUpdate && uuid) {
-    notationStore.resetSelectedNotations();
-    startCurveFromPoint(end);
-    editModeStore.setEditMode("CURVE_DRAWING");
-    return uuid;
-  }
-
-  editModeStore.setEditMode("CURVE_SELECTED");
-  return uuid;
+  return await saveCurve(savedCurve);
 }
 
 async function saveCurve(curevAttributes: CurveAttributes): Promise<string> {
@@ -659,12 +667,3 @@ function addVisiblePoint(xPos: number, yPos: number) {
 }
 </script>
 
-<style>
-.curveControlPoint {
-  fill: aqua;
-}
-
-.elipsisControlPoint {
-  fill: yellow;
-}
-</style>

@@ -6,6 +6,7 @@
       :is-blank="isBlank"
       :extracting="extractingParts"
       :uploading="uploading"
+      :order-hint="partOrderHint"
       @submit-text="submitProblemText"
       @submit-image="submitProblemImageFile"
       @select-part="onSelectPart"
@@ -171,7 +172,14 @@
       </template>
     </PracticeProblemPane>
 
-    <mathBoard v-show="loaded && !loadError" :svgId="svgId" :loaded="loaded" />
+    <mathBoard
+      v-show="loaded && !loadError"
+      :svgId="svgId"
+      :loaded="loaded"
+      :practice-gutter="session.submitted"
+      :practice-gutter-marks="practiceGutterMarks"
+      @select-practice-part="onSelectPart"
+    />
 
     <div v-if="loadError" class="practice-load-error">
       <v-alert type="error" variant="tonal" title="Couldn't load this practice question">
@@ -295,11 +303,27 @@ import {
   isPracticeImageReadTip,
 } from "../helpers/practiceImagePrep";
 import { PRACTICE_BLANK_UUID } from "../helpers/practiceBoardAdapter";
-import { practiceWorkFromCol, ensurePartRow } from "../helpers/practicePartLabelHelper";
+import {
+  practiceWorkFromCol,
+  ensurePartRow,
+  overlayGutterMarks,
+} from "../helpers/practicePartLabelHelper";
+import {
+  canActivatePart,
+  lockedPartHint,
+  partIdForRow,
+  partStatus,
+  startedPartIdsFromSession,
+} from "../helpers/practicePartOrderHelper";
+import { activePartLooksComplete } from "common/practiceAlgebra";
 import useImageHelper from "../helpers/imageHelper";
 import useEventBus from "../helpers/eventBusHelper";
 import useSelectionHelper from "../helpers/selectionHelper";
-import { ensureNumberedParts } from "common/practiceParts";
+import {
+  ensureNumberedParts,
+  partLabelText,
+  workForActivePartReview,
+} from "common/practiceParts";
 import {
   GUEST_AI_DAILY_LIMIT,
   USER_AI_DAILY_LIMIT,
@@ -312,6 +336,7 @@ import {
   isLiveCoachMode,
   isPracticeCoachPaused,
   notePracticeCoachUtterance,
+  invalidatePracticeVoiceCoach,
   resetPracticeVoiceCoach,
   schedulePracticeVoiceCoach,
   setPracticeAssistMode,
@@ -352,6 +377,7 @@ const aiLimitMessage = ref("");
 const aiUnavailableMessage = ref("");
 const uploadError = ref("");
 const loadError = ref("");
+const partOrderHint = ref("");
 const coachTip = ref("");
 const coachNoteKind = ref<"tip" | "preliminary" | "image">("tip");
 const currentQuestionUUId = ref("");
@@ -365,6 +391,7 @@ const preliminaryArmed = ref(false);
 const showClearProblemDialog = ref(false);
 let practiceTourTimer: ReturnType<typeof setTimeout> | undefined;
 let unsuppressBalloonTimer: ReturnType<typeof setTimeout> | undefined;
+let autoCheckTimer: ReturnType<typeof setTimeout> | undefined;
 let armPreliminaryTimer: ReturnType<typeof setTimeout> | undefined;
 let preliminaryInFlight = false;
 
@@ -378,6 +405,32 @@ const session = computed(() => {
   return practiceStore.getSession(
     currentQuestionUUId.value || PRACTICE_BLANK_UUID,
   );
+});
+
+const practiceGutterMarks = computed(() => {
+  const s = session.value;
+  if (!s.submitted) return [];
+  const notations = liveNotations.value;
+  const started = startedPartIdsFromSession(s);
+  const active = (s.activePartId || s.parts[0]?.id || "1").trim();
+  const marks = overlayGutterMarks(notations, active, s.partLabelRows).filter(
+    (m) => started.includes(m.id),
+  );
+  const withMeta = marks.map((m) => ({
+    ...m,
+    label: partLabelText(m.id),
+    status: partStatus(m.id, started, s.completedPartIds),
+  }));
+  if (withMeta.length) return withMeta;
+  if (!started.includes(active)) return [];
+  return [
+    {
+      row: 0,
+      id: active,
+      label: partLabelText(active),
+      status: partStatus(active, started, s.completedPartIds),
+    },
+  ];
 });
 
 const hasProblemImage = computed(() => !!session.value.problemImageBase64);
@@ -488,7 +541,7 @@ const resultBalloonTitle = computed(() => {
 });
 
 const resultBalloonVariant = computed(() =>
-  result.value?.correct && !result.value.warning ? "success" : "warning",
+  result.value?.correct ? "success" : "warning",
 );
 
 const nextQuestionUUId = computed(() => {
@@ -648,6 +701,22 @@ watch(
   },
 );
 
+watch(
+  () => cellStore.getSelectedCell()?.row,
+  (row) => {
+    const s = session.value;
+    if (!s.submitted || typeof row !== "number") return;
+    const bandId = partIdForRow(row, s.partLabelRows);
+    if (!bandId || bandId === s.activePartId) return;
+    const started = startedPartIdsFromSession(s);
+    if (!started.includes(bandId)) return;
+    practiceStore.setActivePart(
+      currentQuestionUUId.value || PRACTICE_BLANK_UUID,
+      bandId,
+    );
+  },
+);
+
 function toggleCoachPause() {
   coachPaused.value = !coachPaused.value;
   setPracticeCoachPaused(coachPaused.value);
@@ -681,14 +750,37 @@ watch(
 watch(practiceWorkSignature, (work, prev) => {
   if (!loaded.value || !currentQuestionUUId.value) return;
   if (work === prev) return;
+  const active = currentActivePartId();
+  const slice = workForActivePartReview(work, active);
+  const prevSlice = workForActivePartReview(prev ?? "", active);
+  if (result.value && slice !== prevSlice && slice.trim()) {
+    result.value = null;
+  }
+  invalidatePracticeVoiceCoach();
+  dismissCoachTip();
   suppressBalloon.value = true;
   clearTimeout(unsuppressBalloonTimer);
   unsuppressBalloonTimer = setTimeout(() => {
-    if (coachTip.value || result.value) suppressBalloon.value = false;
+    if (result.value) suppressBalloon.value = false;
   }, 1800);
+  clearTimeout(autoCheckTimer);
   if (!work.trim()) return;
   if (!session.value.submitted) return;
-  if (!isLiveCoach.value || checking.value) return;
+  if (checking.value) return;
+
+  const looksDone = activePartLooksComplete(
+    currentProblemText(),
+    work,
+    currentActivePartId(),
+  );
+  if (looksDone) {
+    autoCheckTimer = setTimeout(() => {
+      void maybeAutoCheckPart();
+    }, 1800);
+    return;
+  }
+
+  if (!isLiveCoach.value) return;
   if (aiQuotaExhausted.value || coachPaused.value) return;
 
   schedulePracticeVoiceCoach({
@@ -711,6 +803,7 @@ watch(practiceWorkSignature, (work, prev) => {
       coachingBusy.value = busy;
     },
     onTip: (tip) => {
+      if (checking.value || result.value) return;
       coachNoteKind.value = isPracticeImageReadTip(tip) ? "image" : "tip";
       coachTip.value = tip;
       suppressBalloon.value = false;
@@ -746,28 +839,39 @@ const PROBLEM_PANE_TOP_VAR = "--practice-problem-pane-top";
 let problemPaneObserver: ResizeObserver | undefined;
 
 function clearProblemPaneOffset() {
+  const host = document.querySelector(".practice-host") as HTMLElement | null;
+  host?.style.removeProperty(PROBLEM_PANE_WIDTH_VAR);
+  host?.style.removeProperty(PROBLEM_PANE_TOP_VAR);
   document.documentElement.style.removeProperty(PROBLEM_PANE_WIDTH_VAR);
   document.documentElement.style.removeProperty(PROBLEM_PANE_TOP_VAR);
+}
+
+function paneOffsetTarget(): HTMLElement {
+  return (
+    (document.querySelector(".practice-host") as HTMLElement | null) ??
+    document.documentElement
+  );
 }
 
 function syncProblemPaneOffset() {
   const el = document.querySelector(
     "[data-cy=practice-problem-pane]",
   ) as HTMLElement | null;
+  const target = paneOffsetTarget();
   if (!el) {
     clearProblemPaneOffset();
     return;
   }
   const narrow = window.matchMedia("(max-width: 1023px)").matches;
   if (narrow) {
-    document.documentElement.style.setProperty(PROBLEM_PANE_WIDTH_VAR, "0px");
-    document.documentElement.style.setProperty(
+    target.style.setProperty(PROBLEM_PANE_WIDTH_VAR, "0px");
+    target.style.setProperty(
       PROBLEM_PANE_TOP_VAR,
       `${Math.ceil(el.getBoundingClientRect().height)}px`,
     );
   } else {
-    document.documentElement.style.setProperty(PROBLEM_PANE_WIDTH_VAR, "320px");
-    document.documentElement.style.setProperty(PROBLEM_PANE_TOP_VAR, "0px");
+    target.style.setProperty(PROBLEM_PANE_WIDTH_VAR, "320px");
+    target.style.setProperty(PROBLEM_PANE_TOP_VAR, "0px");
   }
 }
 
@@ -786,13 +890,18 @@ function observeProblemPane() {
   syncProblemPaneOffset();
 }
 
-watch(loaded, (isLoaded) => {
-  if (isLoaded) void nextTick(observeProblemPane);
-});
+watch(
+  loaded,
+  (isLoaded) => {
+    if (isLoaded) void nextTick(observeProblemPane);
+  },
+  { immediate: true },
+);
 
 watch(
   () => session.value.submitted,
   () => void nextTick(observeProblemPane),
+  { immediate: true },
 );
 
 function onProblemPaste(payload: { text?: string; imageBase64?: string }) {
@@ -809,6 +918,7 @@ onMounted(() => {
   window.addEventListener("keydown", onCheckShortcut);
   window.addEventListener("resize", syncProblemPaneOffset);
   eventBus.on("EV_PRACTICE_PROBLEM_PASTE", onProblemPaste);
+  void nextTick(observeProblemPane);
 });
 
 onUnmounted(() => {
@@ -820,6 +930,7 @@ onUnmounted(() => {
   clearTimeout(practiceTourTimer);
   clearTimeout(unsuppressBalloonTimer);
   clearTimeout(armPreliminaryTimer);
+  clearTimeout(autoCheckTimer);
   resetPracticeVoiceCoach();
 });
 
@@ -931,6 +1042,7 @@ function submitProblemText(text: string) {
     problemText: trimmed,
     parts: ensureNumberedParts(trimmed),
   });
+  pinActivePartRow();
 }
 
 async function submitProblemImageFile(file: File) {
@@ -973,10 +1085,25 @@ async function submitProblemImageBase64(imageBase64: string) {
     problemImageBase64: imageBase64,
     parts,
   });
+  pinActivePartRow();
+}
+
+function pinActivePartRow() {
+  const uuid = currentQuestionUUId.value || PRACTICE_BLANK_UUID;
+  const id = practiceStore.getSession(uuid).activePartId;
+  if (id) ensurePartRow(id);
 }
 
 function onSelectPart(id: string) {
-  practiceStore.setActivePart(currentQuestionUUId.value, id);
+  const uuid = currentQuestionUUId.value || PRACTICE_BLANK_UUID;
+  const s = practiceStore.getSession(uuid);
+  const started = startedPartIdsFromSession(s);
+  if (!canActivatePart(s.parts, started, id)) {
+    partOrderHint.value = lockedPartHint(s.parts, started, id) ?? "";
+    return;
+  }
+  partOrderHint.value = "";
+  if (!practiceStore.setActivePart(uuid, id)) return;
   ensurePartRow(id);
 }
 
@@ -994,8 +1121,10 @@ function confirmClearProblem() {
   checkError.value = "";
   aiUnavailableMessage.value = "";
   uploadError.value = "";
+  partOrderHint.value = "";
   coachTip.value = "";
   coachNoteKind.value = "tip";
+  clearTimeout(autoCheckTimer);
   preliminaryArmed.value = false;
   clearTimeout(armPreliminaryTimer);
   resetPracticeVoiceCoach();
@@ -1024,7 +1153,7 @@ function goNextQuestion() {
 }
 
 function advanceAfterCorrectCheck() {
-  const uuid = currentQuestionUUId.value;
+  const uuid = currentQuestionUUId.value || PRACTICE_BLANK_UUID;
   const active = practiceStore.getSession(uuid).activePartId;
   if (active) practiceStore.markPartComplete(uuid, active);
   const nextId = practiceStore.nextUnansweredPartId(uuid);
@@ -1048,6 +1177,23 @@ function advanceAfterCorrectCheck() {
   };
 }
 
+function maybeAutoCheckPart() {
+  if (checking.value || checkDisabledReason.value) return;
+  const s = session.value;
+  const active = s.activePartId;
+  if (!active || s.completedPartIds.includes(active)) return;
+  if (
+    !activePartLooksComplete(
+      currentProblemText(),
+      currentStudentWork(),
+      active,
+    )
+  ) {
+    return;
+  }
+  void runCheck();
+}
+
 async function runCheck() {
   if (!currentQuestionUUId.value || checking.value) return;
   if (checkDisabledReason.value) return;
@@ -1057,6 +1203,8 @@ async function runCheck() {
     await nextTick();
   }
 
+  resetPracticeVoiceCoach();
+  dismissCoachTip();
   checking.value = true;
   result.value = null;
   checkError.value = "";
@@ -1105,8 +1253,16 @@ async function runCheck() {
 
 <style scoped>
 .practice-host {
+  --practice-problem-pane-width: 320px;
+  --practice-problem-pane-top: 0px;
   position: relative;
   min-height: 100%;
+}
+
+@media (max-width: 1023px) {
+  .practice-host {
+    --practice-problem-pane-width: 0px;
+  }
 }
 
 .practice-load-error {

@@ -12,6 +12,8 @@ import {
 
   CircleNotationAttributes,
 
+  ConicNotationAttributes,
+
   LineNotationAttributes,
 
   FreeSketchNotationAttributes,
@@ -199,6 +201,18 @@ export default function notationLoadingHelper() {
       case "CIRCLE":
 
         return await apiHelper.getNotations<CircleNotationAttributes>(
+
+          notationType,
+
+          boardType,
+
+          parentUUId,
+
+        );
+
+      case "CONIC":
+
+        return await apiHelper.getNotations<ConicNotationAttributes>(
 
           notationType,
 

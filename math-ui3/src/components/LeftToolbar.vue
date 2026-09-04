@@ -387,6 +387,30 @@ const modeButtons: Array<{
     tabIndex: 8,
   },
   {
+    name: "parabola",
+    show_condition: true,
+    editMode: "PARABOLA_STARTED" as EditMode,
+    globalEditMode: "TEXT" as GlobalEditMode,
+    tooltip: "parabola",
+    icon_class: "",
+    icon: "mdi-chart-bell-curve-cumulative",
+    overlay_icon: "",
+    rotate: 0,
+    tabIndex: 9,
+  },
+  {
+    name: "hyperbola",
+    show_condition: true,
+    editMode: "HYPERBOLA_STARTED" as EditMode,
+    globalEditMode: "TEXT" as GlobalEditMode,
+    tooltip: "hyperbola",
+    icon_class: "",
+    icon: "mdi-chart-bell-curve",
+    overlay_icon: "",
+    rotate: 0,
+    tabIndex: 10,
+  },
+  {
     name: "cartesian system",
     show_condition: true,
     editMode: "CARTESIAN_SYSTEM_STARTED" as EditMode,
@@ -396,7 +420,7 @@ const modeButtons: Array<{
     icon: "mdi-chart-line",
     overlay_icon: "",
     rotate: 0,
-    tabIndex: 9,
+    tabIndex: 11,
   },
   {
     name: "exponent",
@@ -508,6 +532,11 @@ function closeUploadDialog() {
 }
 
 function startSelection() {
+  if (isAreaSelectionActive.value) {
+    notationStore.resetSelectedNotations();
+    editModeStore.setDefaultEditMode();
+    return;
+  }
   notationStore.resetSelectedNotations();
   editModeStore.setGlobalEditMode("TEXT");
   editModeStore.setEditMode("AREA_SELECTION_STARTED");
@@ -563,6 +592,11 @@ function startEditMode(item: {
     void notationMutateHelper.placeSqrtAtSelection();
     return;
   }
+  if (isModeActive(item)) {
+    notationStore.resetSelectedNotations();
+    editModeStore.setDefaultEditMode();
+    return;
+  }
   notationStore.resetSelectedNotations();
   editModeStore.setGlobalEditMode(item.globalEditMode ?? "TEXT");
   editModeStore.setEditMode(item.editMode);
@@ -571,11 +605,19 @@ function startEditMode(item: {
   }
 }
 
+const STICKY_DRAW_MODES: Record<string, EditMode[]> = {
+  polyline: ["POLYGON_STARTED", "POLYGON_DRAWING"],
+};
+
 function isModeActive(item: any) {
   const globalModes = ["FREE_SKETCH", "FREE_SKETCH_WITH_OCR", "LINE", "ANNOTATION"];
 
   if (globalModes.includes(item.globalEditMode)) {
     return editModeStore.getGlobalEditMode() === item.globalEditMode;
+  }
+  const stickyModes = STICKY_DRAW_MODES[item.name];
+  if (stickyModes) {
+    return stickyModes.includes(editModeStore.getEditMode());
   }
   return item.editMode === editModeStore.getEditMode();
 }

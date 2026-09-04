@@ -37,6 +37,7 @@
     <line-handle
       drawing-mode="CIRCLE_DRAWING"
       editing-mode="CIRCLE_EDITING"
+      v-show="handlesInteractive"
       v-bind:style="{
         left: handleX1 + 'px',
         top: handleY1 + 'px',
@@ -46,6 +47,7 @@
       data-cy="circleRightHandle"
       drawing-mode="CIRCLE_DRAWING"
       editing-mode="CIRCLE_EDITING"
+      v-show="handlesInteractive"
       v-bind:style="{
         left: handleX2 + 'px',
         top: handleY2 + 'px',
@@ -55,6 +57,8 @@
     <svg
       id="circleDrawerSvg"
       :style="lineSvgScreenStyle"
+      :viewBox="overlayViewBox"
+      preserveAspectRatio="none"
       class="line-svg"
       xmlns="http://www.w3.org/2000/svg"
     >
@@ -72,7 +76,7 @@
   </div>
 </template>
 <script setup lang="ts">
-import lineHandle from "./LineHandle.vue";
+import lineHandle, { LINE_HANDLE_HALF } from "./LineHandle.vue";
 import lineWatcher from "./LineWatcher.vue";
 import useNotationMutateHelper from "../helpers/notationMutateHelper";
 import { computed, nextTick, ref, watch } from "vue";
@@ -86,6 +90,10 @@ import {
   CircleNotationAttributes,
 } from "common/baseTypes";
 import { matrixSize } from "common/globals";
+import {
+  getBoardSvgUserExtent,
+  svgUserToViewport,
+} from "../helpers/pointerCoordinateHelper";
 
 const notationMutateHelper = useNotationMutateHelper();
 const notationStore = useNotationStore();
@@ -105,40 +113,57 @@ function roundPoint(point: DotCoordinates): DotCoordinates {
   };
 }
 
-const HANDLE_SIZE = 8;
-const HANDLE_HALF = HANDLE_SIZE / 2;
+const HANDLE_HALF = LINE_HANDLE_HALF;
+
+const handlesInteractive = computed(() => {
+  const mode = editModeStore.getEditMode();
+  return mode === "CIRCLE_SELECTED" || mode === "CIRCLE_EDITING";
+});
+
+const overlayViewBox = computed(() => {
+  cellStore.getSvgBoundingRect();
+  const e = getBoardSvgUserExtent();
+  if (!e.width || !e.height) return undefined;
+  return `${e.x} ${e.y} ${e.width} ${e.height}`;
+});
 
 const handleX1 = computed(() => {
+  cellStore.getSvgBoundingRect();
   return (
-    circleAttributes.value.cx -
-    circleAttributes.value.r +
-    cellStore.getSvgBoundingRect().left -
-    HANDLE_HALF
+    svgUserToViewport(
+      circleAttributes.value.cx - circleAttributes.value.r,
+      circleAttributes.value.cy,
+    ).x - HANDLE_HALF
   );
 });
 
 const handleY1 = computed(() => {
+  cellStore.getSvgBoundingRect();
   return (
-    circleAttributes.value.cy +
-    (cellStore.getSvgBoundingRect().top ?? 0) -
-    HANDLE_HALF
+    svgUserToViewport(
+      circleAttributes.value.cx - circleAttributes.value.r,
+      circleAttributes.value.cy,
+    ).y - HANDLE_HALF
   );
 });
 
 const handleX2 = computed(() => {
+  cellStore.getSvgBoundingRect();
   return (
-    circleAttributes.value.cx +
-    circleAttributes.value.r +
-    cellStore.getSvgBoundingRect().left -
-    HANDLE_HALF
+    svgUserToViewport(
+      circleAttributes.value.cx + circleAttributes.value.r,
+      circleAttributes.value.cy,
+    ).x - HANDLE_HALF
   );
 });
 
 const handleY2 = computed(() => {
+  cellStore.getSvgBoundingRect();
   return (
-    circleAttributes.value.cy +
-    (cellStore.getSvgBoundingRect().top ?? 0) -
-    HANDLE_HALF
+    svgUserToViewport(
+      circleAttributes.value.cx + circleAttributes.value.r,
+      circleAttributes.value.cy,
+    ).y - HANDLE_HALF
   );
 });
 
@@ -165,10 +190,12 @@ const lineSvgScreenStyle = computed(() => {
     position: "fixed" as const,
     top: `${r.top}px`,
     left: `${r.left}px`,
-    width: matrixSize.width,
-    height: matrixSize.height,
+    width: r.width ? `${r.width}px` : matrixSize.width,
+    height: r.height ? `${r.height}px` : matrixSize.height,
     margin: "0",
     pointerEvents: "none" as const,
+    overflow: "visible",
+    zIndex: 998,
   };
 });
 

@@ -6,7 +6,7 @@ import useAuthorizationHelper from "../helpers/authorizationHelper";
 import useNotationMutateHelper from "../helpers/notationMutateHelper";
 import useSelectionHelper from "../helpers/selectionHelper";
 import useEventBus from "../helpers/eventBusHelper";
-type keyType = "SYMBOL" | "MOVEMENT" | "DELETION" | "MOVEANDDELETE" | "PUSH";
+type keyType = "SYMBOL" | "MOVEMENT" | "DELETION" | "MOVEANDDELETE" | "PUSH" | "PUSH_VERTICAL";
 
 const editModeStore = useEditModeStore();
 const cellStore = useCellStore();
@@ -258,8 +258,8 @@ export default function () {
 
       const keyKind = classifyKeyCode(code);
       if (editModeStore.isArmedToolMode()) {
-        // Space keeps its push meaning only in cell/selection modes.
-        if (keyKind === "PUSH" || keyKind === null) return;
+        // Space/Enter keep their push meaning only in cell/selection modes.
+        if (keyKind === "PUSH" || keyKind === "PUSH_VERTICAL" || keyKind === null) return;
         editModeStore.setDefaultEditMode();
         if (keyKind !== "SYMBOL") return;
       }
@@ -274,6 +274,10 @@ export default function () {
       switch (keyKind) {
         case "PUSH": {
           return handlePushKey();
+        }
+
+        case "PUSH_VERTICAL": {
+          return handleEnterKey();
         }
 
         case "DELETION": {
@@ -326,6 +330,10 @@ export default function () {
     await notationMutateHelper.handleSpaceOnSelectedCell();
   }
 
+  async function handleEnterKey() {
+    await notationMutateHelper.handleEnterOnSelectedCell();
+  }
+
   function handleMovementKey(key: string) {
     if (!editModeStore.getEditMode().endsWith("SELECTED")) {
       return;
@@ -347,10 +355,6 @@ export default function () {
       matrixCellHelper.setNextCell(0, 1);
     }
 
-    if (key === "Enter") {
-      matrixCellHelper.setNextCell(0, -1);
-    }
-
     selectCurrentCellNotation();
   }
 
@@ -368,6 +372,7 @@ export default function () {
 
   function classifyKeyCode(code: string): keyType | null {
     if (code === "Space") return "PUSH";
+    if (code === "Enter" || code === "NumpadEnter") return "PUSH_VERTICAL";
 
     if (
       code === "ArrowLeft" ||

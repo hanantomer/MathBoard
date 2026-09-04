@@ -26,6 +26,7 @@ export type BusEventType =
   | "EV_AREA_SELECTION_DONE"
   | "EV_CURVE_SELECTED"
   | "EV_CIRCLE_SELECTED"
+  | "EV_CONIC_SELECTED"
   | "EV_IMAGE_SELECTED"
   | "EV_TEXT_SELECTED"
   | "EV_TEXT_EDITING"
@@ -49,6 +50,7 @@ export const NotationTypeValues = [
   "DIVISIONLINE",
   "CURVE",
   "CIRCLE",
+  "CONIC",
   "SQRT",
   "SQRTSYMBOL",
   "TEXT",
@@ -126,6 +128,12 @@ export type EditMode =
   | "CIRCLE_DRAWING" // circle drawing started
   | "CIRCLE_SELECTED" // circle selected
   | "CIRCLE_EDITING" // circle left handle clicked
+  | "PARABOLA_STARTED" // parabola button pressed
+  | "HYPERBOLA_STARTED" // hyperbola button pressed
+  | "CONIC_DRAWING" // conic drawing started
+  | "CONIC_SELECTED" // conic selected
+  | "CONIC_EDITING_VERTEX" // vertex/center handle
+  | "CONIC_EDITING_SCALE" // through-point / vertex handle
   | "SQRT_STARTED" // sqrt button pressed
   | "SQRT_DRAWING" // sqrt drawing started
   | "SQRT_EDITING" // sqrt line handle clicked
@@ -178,6 +186,12 @@ export const EditModeNotationType = new Map<
   ["CIRCLE_DRAWING", "CIRCLE"],
   ["CIRCLE_SELECTED", "CIRCLE"],
   ["CIRCLE_EDITING", "CIRCLE"],
+  ["PARABOLA_STARTED", "CONIC"],
+  ["HYPERBOLA_STARTED", "CONIC"],
+  ["CONIC_DRAWING", "CONIC"],
+  ["CONIC_SELECTED", "CONIC"],
+  ["CONIC_EDITING_VERTEX", "CONIC"],
+  ["CONIC_EDITING_SCALE", "CONIC"],
   ["CURVE_EDITING_CONTROLֹ_POINT", "CURVE"],
   ["TEXT_WRITING", "TEXT"],
   ["TEXT_SELECTED", "TEXT"],
@@ -233,6 +247,16 @@ export const EditModeCursorType = new Map<
   ["DIVISIONLINE_EDITING_RIGHT", "auto"],
   ["CURVE_STARTED", "auto"],
   ["CURVE_DRAWING", "auto"],
+  ["CIRCLE_STARTED", "auto"],
+  ["CIRCLE_DRAWING", "auto"],
+  ["CIRCLE_SELECTED", "auto"],
+  ["CIRCLE_EDITING", "auto"],
+  ["PARABOLA_STARTED", "crosshair"],
+  ["HYPERBOLA_STARTED", "crosshair"],
+  ["CONIC_DRAWING", "crosshair"],
+  ["CONIC_SELECTED", "auto"],
+  ["CONIC_EDITING_VERTEX", "auto"],
+  ["CONIC_EDITING_SCALE", "auto"],
   ["SQRT_STARTED", "auto"],
   ["SQRT_DRAWING", "auto"],
   ["SQRT_SELECTED", "auto"],

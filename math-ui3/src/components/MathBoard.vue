@@ -25,6 +25,7 @@
   <polygonDrawer></polygonDrawer>
   <curveDrawer></curveDrawer>
   <circleDrawer></circleDrawer>
+  <conicDrawer></conicDrawer>
   <areaSelector></areaSelector>
 
   <leftToolbar></leftToolbar>
@@ -33,7 +34,14 @@
   <!-- Video dock temporarily disabled (TURN not configured). -->
   <!-- <lessonVideoDock></lessonVideoDock> -->
 
-  <div ref="boardScrollRef" class="mathboard-scroll">
+  <div
+    ref="boardScrollRef"
+    class="mathboard-scroll"
+    :style="{
+      '--board-matrix-height': matrixSize.height,
+      '--board-matrix-width': matrixSize.width,
+    }"
+  >
     <div
       class="mathboard-stack"
       :class="{ 'mathboard-stack--practice-gutter': showPracticeGutter }"
@@ -44,10 +52,20 @@
         data-cy="practice-gutter-layer"
       >
         <div
-          v-for="m in practiceGutterMarks"
+          v-for="m in gutterMarks"
           :key="`${m.id}-${m.row}`"
           class="practice-number-strip__mark"
-          :style="{ top: `calc(${m.row} * 100% / ${rowsNum})` }"
+          :class="{
+            'practice-number-strip__mark--clickable':
+              m.status === 'started' || m.status === 'completed',
+            'practice-number-strip__mark--done': m.status === 'completed',
+            'practice-number-strip__mark--active': m.id === activeGutterPartId,
+          }"
+          :style="{
+            top: `calc(${m.row} * 100% / ${rowsNum})`,
+            height: `calc(100% / ${rowsNum})`,
+          }"
+          @click="onGutterMarkClick(m)"
         >
           {{ m.label }}
         </div>
@@ -94,8 +112,7 @@ import { computed, defineAsyncComponent, nextTick, onUnmounted, ref, watch } fro
 import { useEventListener, useThrottleFn } from "@vueuse/core";
 import useNotationLoadingHelper from "../helpers/notationLoadingHelper";
 import { loadPracticeBoard } from "../helpers/practiceBoardAdapter";
-import { ensurePartRow, overlayGutterMarks } from "../helpers/practicePartLabelHelper";
-import { partLabelText } from "common/practiceParts";
+import { ensurePartRow } from "../helpers/practicePartLabelHelper";
 import { usePracticeStore } from "../store/pinia/practiceStore";
 import useMatrixHelper from "../helpers/matrixHelper";
 import useEventHelper from "../helpers/eventHelper";
@@ -108,7 +125,7 @@ import { useAnswerStore } from "../store/pinia/answerStore";
 import { useOnboardingStore } from "../store/pinia/onboardingStore";
 import { useUserStore } from "../store/pinia/userStore";
 import { CursorType, EditModeCursorType } from "common/unions";
-import { matrixDimensions } from "common/globals";
+import { matrixDimensions, matrixSize } from "common/globals";
 import useSelectionHelper from "../helpers/selectionHelper";
 import useKeyHelper from "../helpers/keyHelper";
 import leftToolbar from "./LeftToolbar.vue";
@@ -151,6 +168,7 @@ const divisionLineDrawer = defineAsyncComponent(
 const polygonDrawer = defineAsyncComponent(() => import("./PolygonDrawer.vue"));
 const curveDrawer = defineAsyncComponent(() => import("./CurveDrawer.vue"));
 const circleDrawer = defineAsyncComponent(() => import("./CircleDrawer.vue"));
+const conicDrawer = defineAsyncComponent(() => import("./ConicDrawer.vue"));
 const cartesianSystemDrawer = defineAsyncComponent(
   () => import("./CartesianSystemDrawer.vue"),
 );
@@ -186,34 +204,53 @@ const boardScrollRef = ref<HTMLElement | null>(null);
 const props = defineProps({
   svgId: { type: String, default: "" },
   loaded: { type: Boolean, default: false },
+  practiceGutter: { type: Boolean, default: false },
+  practiceGutterMarks: {
+    type: Array as () => {
+      row: number;
+      id: string;
+      label: string;
+      status?: "locked" | "started" | "completed";
+    }[],
+    default: () => [],
+  },
 });
+
+const emit = defineEmits<{
+  "select-practice-part": [id: string];
+}>();
 
 const rowsNum = matrixDimensions.rowsNum;
 
 const showPracticeGutter = computed(() => {
   if (!props.loaded) return false;
+  if (props.practiceGutter) return true;
   const parent = notationStore.getParent();
   if (parent?.type !== "PRACTICE" || !parent.uuid) return false;
   void practiceStore.sessions;
   return practiceStore.getSession(parent.uuid).submitted;
 });
 
-const practiceGutterMarks = computed(() => {
+const gutterMarks = computed(() => {
   if (!showPracticeGutter.value) return [];
-  const parent = notationStore.getParent();
-  if (!parent?.uuid) return [];
-  void practiceStore.sessions;
-  void notationStore.getNotations();
-  const session = practiceStore.getSession(parent.uuid);
-  return overlayGutterMarks(
-    notationStore.getNotations(),
-    session.activePartId,
-    session.partLabelRows,
-  ).map((m) => ({
-    ...m,
-    label: partLabelText(m.id),
-  }));
+  if (props.practiceGutterMarks.length) return props.practiceGutterMarks;
+  return [];
 });
+
+const activeGutterPartId = computed(() => {
+  const parent = notationStore.getParent();
+  if (parent?.type !== "PRACTICE" || !parent.uuid) return "";
+  void practiceStore.sessions;
+  return practiceStore.getSession(parent.uuid).activePartId ?? "";
+});
+
+function onGutterMarkClick(m: {
+  id: string;
+  status?: "locked" | "started" | "completed";
+}) {
+  if (m.status === "locked") return;
+  emit("select-practice-part", m.id);
+}
 
 let cursor = ref<CursorType>("auto");
 let quickTipsTimer: ReturnType<typeof setTimeout> | undefined;
@@ -241,7 +278,21 @@ watch(
   },
 );
 
+let svgResizeObserver: ResizeObserver | undefined;
+
+function observeSvgBoundingRect() {
+  svgResizeObserver?.disconnect();
+  svgResizeObserver = undefined;
+  const el = document.getElementById(props.svgId);
+  if (!el) return;
+  svgResizeObserver = new ResizeObserver(() => {
+    refreshSvgBoundingRect();
+  });
+  svgResizeObserver.observe(el);
+}
+
 onUnmounted(() => {
+  svgResizeObserver?.disconnect();
   clearTimeout(quickTipsTimer);
   eventHelper.unregisterSvgPointerUp();
   eventHelper.unregisterPointerUp();
@@ -277,6 +328,16 @@ useEventListener(boardScrollRef, "scroll", refreshSvgBoundingRect, {
   passive: true,
 });
 
+watch(
+  () => [props.svgId, props.loaded, showPracticeGutter.value] as const,
+  async () => {
+    await nextTick();
+    observeSvgBoundingRect();
+    refreshSvgBoundingRect();
+    requestAnimationFrame(() => refreshSvgBoundingRect());
+  },
+);
+
 watchHelper.watchPointerEvent(
   [
     "CELL_SELECTED",
@@ -294,6 +355,9 @@ watchHelper.watchPointerEvent(
     "EXPONENT_SELECTED",
     "CIRCLE_SELECTED",
     "CIRCLE_STARTED",
+    "CONIC_SELECTED",
+    "PARABOLA_STARTED",
+    "HYPERBOLA_STARTED",
     "IMAGE_SELECTED",
     "POLYGON_STARTED",
     "FREE_SKETCH_STARTED",
@@ -322,6 +386,7 @@ watchHelper.watchKeyEvent(
     "TEXT_SELECTED",
     "EXPONENT_SELECTED",
     "CIRCLE_SELECTED",
+    "CONIC_SELECTED",
     "IMAGE_SELECTED",
     "FREE_SKETCH_SELECTED",
     ...ARMED_TOOL_EDIT_MODES,
@@ -342,6 +407,7 @@ watchHelper.watchKeyEvent(
     "TEXT_SELECTED",
     "EXPONENT_SELECTED",
     "CIRCLE_SELECTED",
+    "CONIC_SELECTED",
     ...ARMED_TOOL_EDIT_MODES,
   ],
   "EV_KEYDOWN",
@@ -476,7 +542,6 @@ async function load() {
   --board-inset-right: 210px;
   --board-inset-top: 110px;
   --board-inset-bottom: 56px;
-  --board-matrix-height: 1650px;
   --practice-number-strip-width: 40px;
   box-sizing: border-box;
   margin-top: var(--board-inset-top);
@@ -505,33 +570,55 @@ async function load() {
   display: flex;
   flex-direction: row;
   align-items: stretch;
+  isolation: isolate;
 }
 
 .practice-number-strip {
-  position: relative;
+  position: sticky;
+  left: 0;
+  z-index: 2;
   flex: 0 0 var(--practice-number-strip-width);
   width: var(--practice-number-strip-width);
   height: var(--board-matrix-height);
   pointer-events: none;
   user-select: none;
+  background: #f4f7fb;
 }
 
 .practice-number-strip__mark {
   position: absolute;
   left: 0;
   width: 100%;
-  padding-top: 0.2em;
-  font-weight: 600;
-  line-height: 1;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding-top: 0.15em;
+  font-size: 15px;
+  font-weight: 700;
+  line-height: 1.1;
   color: #1565c0;
   background: transparent;
   text-align: center;
 }
 
+.practice-number-strip__mark--clickable {
+  pointer-events: auto;
+  cursor: pointer;
+}
+
+.practice-number-strip__mark--done {
+  color: #2e7d32;
+}
+
+.practice-number-strip__mark--active {
+  font-weight: 800;
+}
+
 .mathboard-stack--practice-gutter .mathboard {
-  flex: 1 1 auto;
-  width: auto;
+  flex: 1 1 0;
+  width: 0;
   min-width: 0;
+  z-index: 0;
 }
 
 /* Desktop: SVG fills the viewport; cell layout is driven by SVG client size. */
@@ -550,7 +637,6 @@ async function load() {
 /* Mobile: full matrix width for horizontal pan (matches matrixSize in globals). */
 @media (max-width: 1023px) {
   .mathboard-scroll {
-    --board-matrix-width: 1650px;
     --board-inset-left: 56px;
     --board-inset-right: 0px;
     --board-inset-top: calc(64px + var(--practice-problem-pane-top, 0px));
@@ -622,17 +708,19 @@ async function load() {
   }
 }
 
-.line {
-  position: absolute;
-  display: block;
-  border-bottom: solid 1px;
-  border-top: solid 1px;
-  z-index: 999;
+/* Overlay strokes are SVG geometry. HTML box styles here hid the stroke
+   on select (only endpoint handles remained). */
+.line-svg .line {
+  position: static;
+  display: inline;
+  border: none;
 }
 
 .line-svg {
-  position: absolute;
+  position: fixed;
   pointer-events: none;
+  overflow: visible;
+  z-index: 998;
 }
 
 line:hover,

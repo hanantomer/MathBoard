@@ -7,7 +7,7 @@ const matrixHelperUtils = useMatrixHelperUtils();
 export default function useLineMatrixHelper() {
   function mergeLineNotations(svgId: string, notations: NotationAttributes[]) {
     d3.select("#" + svgId)
-      .selectAll("line")
+      .selectAll("line.notation-line")
       .data(notations, (u: any) => {
         return (u as NotationAttributes).uuid;
       })
@@ -43,7 +43,7 @@ export default function useLineMatrixHelper() {
         return n.p1y;
       })
       .attr("y2", (n: LineNotationAttributes) => {
-        return n.p2y;
+        return n.notationType === "DIVISIONLINE" ? n.p1y : n.p2y;
       })
       .attr("stroke-width", (n: LineNotationAttributes) => {
         return "2";
@@ -52,11 +52,7 @@ export default function useLineMatrixHelper() {
         return matrixHelperUtils.getColor(n);
       })
       .attr("class", (n: LineNotationAttributes) => {
-        if (n.dashed) {
-          return "dashed";
-        } else {
-          return "solid";
-        }
+        return `${n.dashed ? "dashed" : "solid"} notation-line`;
       })
       .attr("marker-end", (n: LineNotationAttributes) => {
         return n.arrowRight ? "url(#arrowright)" : null;
@@ -81,7 +77,7 @@ export default function useLineMatrixHelper() {
         return n.p1y;
       })
       .attr("y2", (n: LineNotationAttributes) => {
-        return n.p2y;
+        return n.notationType === "DIVISIONLINE" ? n.p1y : n.p2y;
       })
       .attr("stroke-width", () => {
         return 2;
@@ -90,11 +86,7 @@ export default function useLineMatrixHelper() {
         return matrixHelperUtils.getColor(n);
       })
       .attr("class", (n: LineNotationAttributes) => {
-        if (n.dashed) {
-          return "dashed";
-        } else {
-          return "solid";
-        }
+        return `${n.dashed ? "dashed" : "solid"} notation-line`;
       })
       .attr("marker-end", (n: LineNotationAttributes) => {
         return n.arrowRight ? "url(#arrowright)" : null;

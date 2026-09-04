@@ -12,6 +12,7 @@ import {
   EntityAttributes,
   NotationAttributes,
   CircleAttributes,
+  ConicAttributes,
   FreeSketchAttributes,
 } from "./baseTypes";
 
@@ -140,6 +141,18 @@ export type QuestionCircleAttributes =
 export type QuestionCircleCreationAttributes =
   Omit<
     QuestionCircleAttributes,
+    keyof EntityAttributes
+  >;
+
+export type QuestionConicAttributes =
+  EntityAttributes &
+    NotationAttributes &
+    ConicAttributes &
+    QuestionNotationAttributes;
+
+export type QuestionConicCreationAttributes =
+  Omit<
+    QuestionConicAttributes,
     keyof EntityAttributes
   >;
 

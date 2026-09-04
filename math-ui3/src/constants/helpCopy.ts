@@ -88,22 +88,31 @@ export const BOARD_ROLE_BANNERS = {
     "Guest practice — limited free AI uses per day. Sign in for a higher limit. Work stays on this device.",
 } as const;
 
+function stickyExitHint(toolName: string): string {
+  return isMobile()
+    ? `Double-tap or tap ${toolName} again to exit`
+    : `Press Esc or click ${toolName} again to exit`;
+}
+
 export const TOOL_TOOLTIPS: Record<string, string> = {
   FreeText: "Text box — drag a rectangle on the board",
   annotation: "Annotation — click to place short labels",
-  freeSketch: "Free sketch — informal marks only; type math in grid cells with the keyboard",
+  freeSketch: `Free sketch — informal marks only. ${stickyExitHint("Free sketch")}.`,
   freeSketchOcr:
     "Draw a symbol; pause briefly to combine strokes (e.g. =), then it is recognized and placed on the grid",
-  Line: "Line — draw a segment",
-  polyline: "Polyline — click vertices, close on the start point",
-  DivisionLine: "Division line",
-  curve:
-    "Curve — snaps to grid and endpoints; next segment continues from the end (Esc to finish)",
-  circle: "Circle",
+  Line: "Line — draw a segment; it stays selected after you release",
+  polyline: `Polyline — drag each segment; close on the start. ${stickyExitHint("Polyline")}.`,
+  DivisionLine: "Division line — it stays selected after you release",
+  curve: "Curve — drag a segment; it stays selected after you release",
+  circle: "Circle — it stays selected after you release",
+  parabola:
+    "Parabola — click the vertex, then drag through a point; the shape stays selected so you can stretch it",
+  hyperbola:
+    "Hyperbola — click the center, then drag to a vertex; the shape stays selected so you can stretch it",
   sqrt: "Square root — insert at the selected cell (Alt+S). Select symbols first to draw the bar over them",
   exponent: "Exponent — click a cell (Alt+X)",
   log: "Logarithm (Alt+L)",
-  "cartesian system": "Cartesian axes",
+  "cartesian system": "Cartesian axes — click to place; both axes stay selected",
   checkmark: "Mark cell correct",
   xmark: "Mark cell incorrect",
   semicheckmark: "Mark cell partially correct",
@@ -125,6 +134,8 @@ export const DRAW_TOOL_NAMES = new Set([
   "DivisionLine",
   "curve",
   "circle",
+  "parabola",
+  "hyperbola",
   "cartesian system",
 ]);
 
@@ -158,7 +169,7 @@ export const KEYBOARD_INPUT = {
       ]
     : [
         "Click a cell, then type letters, numbers, and operators.",
-        "Space moves right if the next cells are empty; otherwise it pushes symbols right.",
+        "Space moves right if the next cells are empty; otherwise it pushes symbols right. Enter moves down if the next rows are empty; otherwise it pushes work down.",
         "Backspace or Delete removes the symbol in the selected cell.",
         "Alt+X exponent, Alt+L log, Alt+S square root — or use the Text tools on the left.",
         "Free sketch is optional for informal marks, not for main work.",
@@ -177,7 +188,7 @@ export const EDITING_TECHNIQUES = {
         "Hold Ctrl (Cmd on Mac) while dragging to duplicate the selection.",
         "Delete or Backspace removes selected notations.",
         "With symbols selected, Square root (Alt+S) draws the bar over them.",
-        "With a cell selected: Space moves right if the next cells are empty, otherwise it pushes content right; Backspace/Delete clears the cell.",
+        "With a cell selected: Space moves right if the next cells are empty, otherwise it pushes content right; Enter moves down if the next rows are empty, otherwise it pushes work down; Backspace/Delete clears the cell.",
         "Arrow keys move the selected cell; type to replace or add symbols.",
       ],
 } as const;
@@ -186,20 +197,29 @@ export const EDIT_MODE_STATUS: Partial<
   Record<EditMode | GlobalEditMode, string>
 > = {
   FREE_SKETCH_STARTED: "Free sketch",
+  FREE_SKETCH_DRAWING: "Free sketch",
   FREE_SKETCH_WITH_OCR_STARTED: "Sketch → symbol",
   FREE_SKETCH_WITH_OCR_DRAWING: "Sketch → symbol",
   TEXT_STARTED: "Text box",
   TEXT_WRITING: "Text box",
   SQRT_STARTED: "Square root",
   CURVE_STARTED: "Curve",
+  CURVE_DRAWING: "Curve",
   EXPONENT_STARTED: "Exponent",
   EXPONENT_WRITING: "Exponent",
+  LINE_STARTED: "Line",
+  LINE_DRAWING: "Line",
+  DIVISIONLINE_STARTED: "Division line",
+  DIVISIONLINE_DRAWING: "Division line",
   CIRCLE_STARTED: "Circle",
+  CIRCLE_DRAWING: "Circle",
+  PARABOLA_STARTED: "Parabola",
+  HYPERBOLA_STARTED: "Hyperbola",
+  CONIC_DRAWING: "Conic",
   ANNOTATION_STARTED: "Annotation",
   ANNOTATION_WRITING: "Annotation",
   POLYGON_STARTED: "Polyline",
-  LINE_STARTED: "Line",
-  DIVISIONLINE_STARTED: "Division line",
+  POLYGON_DRAWING: "Polyline",
   CHECKMARK_STARTED: "Checkmark",
   SEMICHECKMARK_STARTED: "Semi checkmark",
   XMARK_STARTED: "X mark",
@@ -210,14 +230,30 @@ export const EDIT_MODE_STATUS: Partial<
 };
 
 const EDIT_MODE_HINTS: Partial<Record<EditMode | GlobalEditMode, string>> = {
-  FREE_SKETCH_STARTED:
-    "Informal drawing only — for typed math, click a cell and use the keyboard. Press Esc to exit.",
+  FREE_SKETCH_STARTED: `Informal drawing only — for typed math, use the keyboard. ${stickyExitHint("Free sketch")}.`,
+  FREE_SKETCH_DRAWING: stickyExitHint("Free sketch") + ".",
   TEXT_STARTED: "Drag a rectangle, then type. Double-click to resize.",
   TEXT_WRITING:
     "Type in the box, then click outside. In practice, pause for a tip; Ctrl+Enter checks.",
-  LINE_STARTED: "Drag to draw a line. Press Esc to exit.",
-  ANNOTATION_STARTED: "Click to place text. Press Esc when done.",
+  LINE_STARTED: "Drag to draw a line. The line stays selected when you release.",
+  LINE_DRAWING: "Release to place. The line stays selected.",
+  CIRCLE_STARTED: "Drag to draw a circle. The circle stays selected when you release.",
+  CIRCLE_DRAWING: "Release to place. The circle stays selected.",
+  DIVISIONLINE_STARTED:
+    "Drag a horizontal division line. It stays selected when you release.",
+  DIVISIONLINE_DRAWING: "Release to place. The line stays selected.",
+  CONIC_DRAWING: "Release to place. The shape stays selected.",
+  PARABOLA_STARTED:
+    "Click the vertex, then drag through a point. The parabola stays selected so you can drag a handle to stretch it.",
+  HYPERBOLA_STARTED:
+    "Click the center, then drag to a vertex. The hyperbola stays selected so you can drag a handle to stretch it.",
+  ANNOTATION_STARTED: `Click to place text. ${stickyExitHint("Annotation")}.`,
   AREA_SELECTION_STARTED: getSelectionHelpText(),
+  CURVE_STARTED: "Drag to draw a curve. The curve stays selected when you release.",
+  CURVE_DRAWING: "Release to place. The curve stays selected.",
+  POLYGON_STARTED: `Drag each segment; close on the start. ${stickyExitHint("Polyline")}.`,
+  POLYGON_DRAWING: `Drag the next segment, or close on the start. ${stickyExitHint("Polyline")}.`,
+  CARTESIAN_SYSTEM_STARTED: "Click to place x and y axes. Both axes stay selected.",
   FREE_SKETCH_WITH_OCR_STARTED:
     "Draw strokes; a brief pause combines them, then OCR places the symbol on the grid.",
   FREE_SKETCH_WITH_OCR_DRAWING:
@@ -242,12 +278,9 @@ export function getActiveToolDisplay(
 export function getEditModeStatusText(
   editMode: EditMode | GlobalEditMode,
 ): string | undefined {
-  const mobile = isMobile();
-  const exitText = mobile ? "double-tap to exit" : "press ESC to exit";
-  const escText = mobile ? "double-tap" : "press ESC";
-
   const longForm: Partial<Record<EditMode | GlobalEditMode, string>> = {
-    FREE_SKETCH_STARTED: `Optional informal sketching — for equations, click a cell and type. ${exitText} free sketch mode`,
+    FREE_SKETCH_STARTED: `Optional informal sketching — for equations, click a cell and type. ${stickyExitHint("Free sketch")}.`,
+    FREE_SKETCH_DRAWING: stickyExitHint("Free sketch") + ".",
     FREE_SKETCH_WITH_OCR_STARTED:
       "Draw a handwritten symbol. Wait a moment after each stroke to combine multi-stroke symbols (e.g. =). The recognized symbol is placed on the nearest grid cell.",
     FREE_SKETCH_WITH_OCR_DRAWING:
@@ -258,23 +291,31 @@ export function getEditModeStatusText(
       "Type in the box, then click outside when done. In practice, pause for a tip; Ctrl+Enter checks.",
     SQRT_STARTED: "Square root is inserted at the selected cell, or wrapped over a selection",
     CURVE_STARTED:
-      "Draw a curve; endpoints snap to the grid and axes. The next segment starts at the end — press Esc when finished",
+      "Drag to draw a curve. The curve stays selected — click Curve again to draw another.",
+    CURVE_DRAWING: "Release to place. The curve stays selected.",
     EXPONENT_STARTED: "Click on a cell to create an exponent",
     EXPONENT_WRITING: "Type exponent and then click outside or press enter",
-    CIRCLE_STARTED: "Draw a circle on screen",
-    ANNOTATION_STARTED: `Click everywhere to add annotation text, ${escText} annotation mode`,
+    CIRCLE_STARTED: "Drag to draw a circle. The circle stays selected when you release.",
+    PARABOLA_STARTED:
+      "Click the vertex, then drag through a point. The parabola stays selected so you can drag a handle to stretch it.",
+    HYPERBOLA_STARTED:
+      "Click the center, then drag to a vertex. The hyperbola stays selected so you can drag a handle to stretch it.",
+    ANNOTATION_STARTED: `Click everywhere to add annotation text. ${stickyExitHint("Annotation")}.`,
     ANNOTATION_WRITING:
       "Type annotation text and then click outside or press enter",
-    POLYGON_STARTED:
-      "Click and drag for each segment. Connect the last vertex to the first to close the shape.",
-    LINE_STARTED: `Draw a line on screen, ${exitText} line drawing mode`,
-    DIVISIONLINE_STARTED: "Draw a horizontal division line on the board",
+    POLYGON_STARTED: `Click and drag for each segment. Close on the start. ${stickyExitHint("Polyline")}.`,
+    POLYGON_DRAWING: `Drag the next segment, or close on the start. ${stickyExitHint("Polyline")}.`,
+    LINE_STARTED:
+      "Drag to draw a line. The line stays selected — click Line again to draw another.",
+    DIVISIONLINE_STARTED:
+      "Drag a horizontal division line. It stays selected when you release.",
     CHECKMARK_STARTED: "Click on a cell to create a checkmark",
     SEMICHECKMARK_STARTED: "Click on a cell to create a semi checkmark",
     XMARK_STARTED: "Click on a cell to create an xmark",
     COLORIZING:
       "Click on a notation to colorize it or drag slowly to colorize multiple notations",
-    CARTESIAN_SYSTEM_STARTED: "Click on the board to place x and y axes",
+    CARTESIAN_SYSTEM_STARTED:
+      "Click on the board to place x and y axes. Both axes stay selected.",
     AREA_SELECTION_STARTED: getSelectionHelpText(),
   };
 
@@ -284,8 +325,10 @@ export function getEditModeStatusText(
 export const EDITING_BASICS = {
   idle: isMobile()
     ? "Tap a cell and type. Selection moves work; free sketch is optional."
-    : "Click a cell and type (keyboard). Selection: drag to select, move, or Ctrl+drag to copy. Space/Delete edit the current cell. Esc exits a tool.",
-  exitHint: isMobile() ? "Double-tap to exit a tool." : "Press Esc to exit a tool.",
+    : "Click a cell and type (keyboard). Selection: drag to select, move, or Ctrl+drag to copy. Space/Delete edit the current cell. Line, circle, curve, and axes exit after one shape; polyline and sketch stay on until Esc or you click the tool again.",
+  exitHint: isMobile()
+    ? "Double-tap or tap the active tool again to exit."
+    : "Press Esc or click the active tool again to exit.",
 } as const;
 
 export const COLLAB_HELP = {
@@ -312,13 +355,15 @@ export const COLLAB_HELP = {
 
 export const TOOLS_HELP = {
   title: "Board tools",
-  intro: "Tools stay active until you press Esc or pick another tool.",
+  intro:
+    "Line, circle, curve, conics, and axes place one shape and leave it selected. Polyline and sketch stay on until you press Esc or click the same tool again.",
   groups: [
     {
       name: "Keyboard",
       tools: [
         "Click a cell and type — primary way to write math",
         "Space — move right if the next cells are empty, otherwise push symbols right",
+        "Enter — move down if the next rows are empty, otherwise push work down",
         "Backspace / Delete — clear cell or remove selection",
       ],
     },
@@ -334,12 +379,12 @@ export const TOOLS_HELP = {
     {
       name: "Draw",
       tools: [
-        "Free sketch — informal marks only",
-        "Line",
-        "Polyline",
-        "Curve",
-        "Circle",
-        "Cartesian axes",
+        "Free sketch — informal marks; Esc or click the tool again to exit",
+        "Line — one segment, then the line stays selected",
+        "Polyline — stays on until you close it, press Esc, or click the tool again",
+        "Curve — one curve, then it stays selected",
+        "Circle — one circle, then it stays selected",
+        "Cartesian axes — both axes stay selected after placing",
       ],
     },
     {
@@ -387,7 +432,7 @@ export const COACH_MARKS: CoachMarkDef[] = [
     id: "quick-tip-shortcuts",
     targetSelector: '[data-cy="instruction-bar"]',
     title: "Cell shortcuts",
-    body: "Space moves to the next cell when the row is empty ahead, or pushes symbols right to make a gap. Backspace or Delete clears the cell. Delete also removes a selection.",
+    body: "Space moves to the next cell when the row is empty ahead, or pushes symbols right to make a gap. Enter moves down when the next rows are empty, or pushes work down to make a gap. Backspace or Delete clears the cell. Delete also removes a selection.",
   },
   {
     id: "invite-app-bar",
@@ -411,7 +456,7 @@ export const COACH_MARKS: CoachMarkDef[] = [
     id: "tool-line",
     targetSelector: '[data-cy="lineButton"]',
     title: "Line tool",
-    body: "Draw straight lines on the grid. Press Esc when finished.",
+    body: "Draw a straight line on the grid. It stays selected when you release — click Line again to draw another.",
   },
   {
     id: "tool-text",

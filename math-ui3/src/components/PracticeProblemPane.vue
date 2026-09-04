@@ -106,10 +106,21 @@
           :parts="session.parts"
           :active-part-id="session.activePartId"
           :completed-part-ids="session.completedPartIds"
+          :started-part-ids="startedPartIds"
           @select="$emit('select-part', $event)"
         />
+        <v-alert
+          v-if="orderHint"
+          class="mt-2"
+          density="compact"
+          variant="tonal"
+          type="info"
+          data-cy="practice-section-order-hint"
+        >
+          {{ orderHint }}
+        </v-alert>
         <p class="practice-problem-pane__label-hint">
-          Click a task, then write. The number is added for you.
+          Start tasks in order. Enter adds space in the current task.
         </p>
         <v-btn
           v-if="isBlank"
@@ -137,6 +148,7 @@
 import { computed, onMounted, onUnmounted, ref, watch } from "vue";
 import type { PracticeSession } from "../store/pinia/practiceStore";
 import { practiceProblemPreamble } from "common/practiceParts";
+import { startedPartIdsFromSession } from "../helpers/practicePartOrderHelper";
 import PracticeSectionList from "./PracticeSectionList.vue";
 
 const props = defineProps<{
@@ -144,6 +156,7 @@ const props = defineProps<{
   isBlank: boolean;
   extracting: boolean;
   uploading: boolean;
+  orderHint?: string;
 }>();
 
 const emit = defineEmits<{
@@ -172,6 +185,10 @@ const showParsedParts = computed(() => {
     parts[0].text.trim().toLowerCase() !== "whole problem"
   );
 });
+
+const startedPartIds = computed(() =>
+  startedPartIdsFromSession(props.session),
+);
 
 const stemPreamble = computed(() => {
   const text = props.session.problemText ?? "";

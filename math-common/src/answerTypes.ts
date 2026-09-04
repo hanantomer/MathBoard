@@ -7,6 +7,7 @@ import {
   RectAttributes,
   ImageAttributes,
   CircleAttributes,
+  ConicAttributes,
   SingleValueAttributes,
   BoardAttributes,
   EntityAttributes,
@@ -115,6 +116,17 @@ export type AnswerCircleAttributes =
 
 export type AnswerCircleCreationAttributes = Omit<
   AnswerCircleAttributes,
+  keyof EntityAttributes
+>;
+
+export type AnswerConicAttributes =
+  EntityAttributes &
+    NotationAttributes &
+    ConicAttributes &
+    AnswerNotationAttributes;
+
+export type AnswerConicCreationAttributes = Omit<
+  AnswerConicAttributes,
   keyof EntityAttributes
 >;
 

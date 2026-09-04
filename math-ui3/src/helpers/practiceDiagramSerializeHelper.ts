@@ -1,12 +1,14 @@
 import type {
   AnnotationNotationAttributes,
   CircleNotationAttributes,
+  ConicNotationAttributes,
   CurveNotationAttributes,
   FreeSketchNotationAttributes,
   LineNotationAttributes,
   NotationAttributes,
   PointNotationAttributes,
 } from "common/baseTypes";
+import { formatConicDiagramLine } from "common/conicGeometry";
 
 export type DiagramSerializeOptions = {
   cellW: number;
@@ -572,6 +574,43 @@ function describeFreehand(
   return out;
 }
 
+function isHorizontalAxis(line: LineNotationAttributes): boolean {
+  return line.p1y === line.p2y && line.arrowRight === true;
+}
+
+function isVerticalAxis(line: LineNotationAttributes): boolean {
+  return line.p1x === line.p2x && line.arrowLeft === true;
+}
+
+function cartesianOrigins(notations: NotationAttributes[]): Pt[] {
+  const lines = notations.filter(
+    (n) => n.notationType === "LINE",
+  ) as LineNotationAttributes[];
+  const horizontals = lines.filter(isHorizontalAxis);
+  const verticals = lines.filter(isVerticalAxis);
+  const origins: Pt[] = [];
+  for (const h of horizontals) {
+    for (const v of verticals) {
+      origins.push({ x: v.p1x, y: h.p1y });
+    }
+  }
+  return origins;
+}
+
+function nearestOrigin(point: Pt, origins: Pt[]): Pt | null {
+  if (!origins.length) return null;
+  let best = origins[0];
+  let bestD = dist(point, best);
+  for (let i = 1; i < origins.length; i++) {
+    const d = dist(point, origins[i]);
+    if (d < bestD) {
+      best = origins[i];
+      bestD = d;
+    }
+  }
+  return best;
+}
+
 /**
  * Turn LINE/CIRCLE/CURVE/FREESKETCH notations into tutor-facing tokens
  * (shape, side labels, inferred/labeled angles) instead of "[diagram]".
@@ -632,6 +671,15 @@ export function serializePracticeDiagram(
     lines.push(`diagram: ${circles.length} circles`);
   }
 
+  const origins = cartesianOrigins(notations);
+  const conics = notations.filter((n) => n.notationType === "CONIC");
+  for (const n of conics) {
+    const c = n as ConicNotationAttributes;
+    const origin = nearestOrigin({ x: c.hx, y: c.hy }, origins);
+    lines.push(formatConicDiagramLine(c, origin, cellW, cellH));
+    if (n.uuid) consumed.add(n.uuid);
+  }
+
   const curveBits = attachCurveArcs(notations, vertices, cellSize);
   if (curveBits.length === 1 && curveBits[0] === "curve") {
     lines.push("diagram: curve");
@@ -653,6 +701,7 @@ export function serializePracticeDiagram(
         n.notationType === "LINE" ||
         n.notationType === "CURVE" ||
         n.notationType === "CIRCLE" ||
+        n.notationType === "CONIC" ||
         n.notationType === "POLYGON",
     )
   ) {

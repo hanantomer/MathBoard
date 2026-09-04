@@ -207,6 +207,10 @@ export default function selectionHelper() {
         selectCircleNotation(notation.uuid);
         return true;
       },
+      CONIC: () => {
+        selectConicNotation(notation.uuid);
+        return true;
+      },
       FREESKETCH: () => {
         selectFreeSketchNotation(notation.uuid);
         return true;
@@ -362,6 +366,12 @@ export default function selectionHelper() {
     eventBus.emit("EV_CIRCLE_SELECTED", notation);
   }
 
+  function selectConicNotation(uuid: String) {
+    const notation = notationStore.getNotation(uuid)!;
+    editModeStore.setEditMode("CONIC_SELECTED");
+    eventBus.emit("EV_CONIC_SELECTED", notation);
+  }
+
   function selectLineNotation(uuid: String) {
     const notation = notationStore.getNotation(uuid)!;
     editModeStore.setEditMode("LINE_SELECTED");
@@ -506,6 +516,9 @@ export default function selectionHelper() {
       case "CIRCLE":
         selectCircleNotation(uuid);
         break;
+      case "CONIC":
+        selectConicNotation(uuid);
+        break;
       case "EXPONENT":
       case "LOGBASE":
       case "IMAGE":
@@ -528,6 +541,7 @@ export default function selectionHelper() {
     setSelectedCell,
     selectCurveNotation,
     selectCircleNotation,
+    selectConicNotation,
     selectLineNotation,
     selectDivisionLineNotation,
   };

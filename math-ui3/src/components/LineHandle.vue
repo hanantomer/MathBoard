@@ -1,11 +1,16 @@
 <template>
-  <v-card
+  <div
     class="lineHandle"
     @pointerup="endEdit"
     @pointercancel="endEdit"
     @pointerdown="startEdit"
-  ></v-card>
+  ></div>
 </template>
+<script lang="ts">
+/** Invisible hit box. Visual knob is smaller (see ::after). */
+export const LINE_HANDLE_HIT_SIZE = 24;
+export const LINE_HANDLE_HALF = LINE_HANDLE_HIT_SIZE / 2;
+</script>
 <script setup lang="ts">
 import { PropType } from "vue";
 import { useEditModeStore } from "../store/pinia/editModeStore";
@@ -29,6 +34,15 @@ const props = defineProps({
 });
 
 function startEdit(e: PointerEvent) {
+  const current = editModeStore.getEditMode();
+  const selectedMode = props.editingMode.replace(/_EDITING.*$/, "_SELECTED");
+  if (
+    current !== props.drawingMode &&
+    current !== props.editingMode &&
+    current !== selectedMode
+  ) {
+    return;
+  }
   e.preventDefault();
   editModeStore.setEditMode(props.editingMode);
   // Route subsequent pointermove/up to the board SVG so editing works while
@@ -50,14 +64,33 @@ function endEdit(e: PointerEvent) {
 </script>
 <style>
 .lineHandle {
-  background-color: lightgray;
-  cursor: col-resize;
+  cursor: grab;
   touch-action: none;
-  position: absolute;
+  position: fixed;
   display: block;
-  width: 8px;
-  height: 8px;
-  border: 2, 2, 2, 2;
+  width: 24px;
+  height: 24px;
+  box-sizing: border-box;
   z-index: 999;
+  background: transparent;
+}
+
+.lineHandle:active {
+  cursor: grabbing;
+}
+
+.lineHandle::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 12px;
+  height: 12px;
+  box-sizing: border-box;
+  border-radius: 50%;
+  background: #f5f5f5;
+  border: 2px solid #333;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
 }
 </style>

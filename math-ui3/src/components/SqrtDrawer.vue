@@ -38,6 +38,7 @@
       data-cy="sqrtRightHandle"
       drawing-mode="SQRT_DRAWING"
       editing-mode="SQRT_EDITING"
+      v-show="handlesInteractive"
       v-bind:style="{
         left: handleX + 'px',
         top: handleY + 'px',
@@ -47,6 +48,8 @@
 
     <svg
       :style="lineSvgScreenStyle"
+      :viewBox="overlayViewBox"
+      preserveAspectRatio="none"
       xmlns="http://www.w3.org/2000/svg"
       class="line-svg"
     >
@@ -85,8 +88,12 @@ import {
   LineAttributes,
 } from "common/baseTypes";
 
-import lineHandle from "./LineHandle.vue";
+import lineHandle, { LINE_HANDLE_HALF } from "./LineHandle.vue";
 import lineWatcher from "./LineWatcher.vue";
+import {
+  getBoardSvgUserExtent,
+  svgUserToViewport,
+} from "../helpers/pointerCoordinateHelper";
 
 import { matrixSize } from "common/globals";
 
@@ -109,13 +116,17 @@ const SQRT_SYMBOL_EDITOR_Y_NUDGE = 0;
 /** Vertical center of the 1px border band on the matrix .sqrt span (margin-top + ~1px). */
 const SQRT_LINE_VINCULUM_CENTER_OFFSET = SQRT_LINE_HTML_MARGIN_TOP + 1;
 
-const HANDLE_SIZE = 8;
-const HANDLE_HALF = HANDLE_SIZE / 2;
-
 const notationStore = useNotationStore();
 const editModeStore = useEditModeStore();
 const cellStore = useCellStore();
 const notationMutateHelper = useNotationMutateHelper();
+
+const HANDLE_HALF = LINE_HANDLE_HALF;
+
+const handlesInteractive = computed(() => {
+  const mode = editModeStore.getEditMode();
+  return mode === "SQRT_SELECTED" || mode === "SQRT_EDITING";
+});
 
 let linePosition = ref(<LineAttributes>{
   p1x: 0,
@@ -143,15 +154,24 @@ watch(show, async (visible) => {
   }
 });
 
+const overlayViewBox = computed(() => {
+  cellStore.getSvgBoundingRect();
+  const e = getBoardSvgUserExtent();
+  if (!e.width || !e.height) return undefined;
+  return `${e.x} ${e.y} ${e.width} ${e.height}`;
+});
+
 const lineSvgScreenStyle = computed(() => {
   const r = cellStore.getSvgBoundingRect();
   return {
     position: "fixed" as const,
     top: `${r.top}px`,
     left: `${r.left}px`,
-    width: matrixSize.width,
-    height: matrixSize.height,
+    width: r.width ? `${r.width}px` : matrixSize.width,
+    height: r.height ? `${r.height}px` : matrixSize.height,
     margin: "0",
+    overflow: "visible",
+    zIndex: 998,
     pointerEvents: "none" as const,
   };
 });
@@ -197,12 +217,13 @@ const sqrtSymbolScreen = computed(() => {
 });
 
 let handleX = computed(() => {
-  return linePosition.value.p2x - HANDLE_HALF;
+  cellStore.getSvgBoundingRect();
+  return svgUserToViewport(sqrtLine.value.x2, sqrtLine.value.y).x - HANDLE_HALF;
 });
 
 let handleY = computed(() => {
-  const r = cellStore.getSvgBoundingRect();
-  return r.top + sqrtLine.value.y - HANDLE_HALF;
+  cellStore.getSvgBoundingRect();
+  return svgUserToViewport(sqrtLine.value.x2, sqrtLine.value.y).y - HANDLE_HALF;
 });
 
 function setInitialPosition(p: DotCoordinates) {

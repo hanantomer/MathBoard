@@ -19,7 +19,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from "vue";
+import { computed, ref, watch } from "vue";
 import { useEditModeStore } from "../store/pinia/editModeStore";
 import { useCellStore } from "../store/pinia/cellStore";
 import { useNotationStore } from "../store/pinia/notationStore";
@@ -131,49 +131,54 @@ function startNewExponentAtSelectedCellPosition() {
 }
 
 function startNewExponentAtMousePosition(e: PointerEvent) {
-  // transition from EXPONENT_STARTED -> EXPONENT_WRITING
-  editModeStore.setEditMode("EXPONENT_WRITING");
-
+  cellStore.refreshSvgBoundingRect();
   clickedCell = screenHelper.getCellByDotCoordinates(
     viewportPointerPosition(e),
   );
 
   setInitialExponentValue();
-
   setExponentPosition();
+  editModeStore.setEditMode("EXPONENT_WRITING");
 
   setTimeout(`document.getElementById("exponent")?.focus();`, 0);
 }
 
-function setExponentPosition() {
-  const clickedCoordinates = screenHelper.getCellTopLeftCoordinates(
-    clickedCell!,
-  );
-
-  leftPosition.value = clickedCoordinates.x;
-  topPosition.value = clickedCoordinates.y;
-
-  width.value = cellStore.getCellHorizontalWidth() - 1;
-  height.value = cellStore.getCellVerticalHeight() / 2;
+function exponentCell(): CellAttributes | undefined {
+  const selected = selectedNotation.value;
+  if (selected?.notationType === "EXPONENT") {
+    return { col: selected.col, row: selected.row };
+  }
+  return clickedCell;
 }
 
-function setSelectedExponentPosition() {
-  if (!selectedNotation.value) return;
+function setExponentPosition() {
+  const cell = exponentCell();
+  if (!cell) return;
 
-  leftPosition.value =
-    cellStore.getSvgBoundingRect().x +
-    selectedNotation.value.col * cellStore.getCellHorizontalWidth();
-
-  topPosition.value =
-    cellStore.getSvgBoundingRect().y +
-    selectedNotation.value.row * cellStore.getCellVerticalHeight();
+  cellStore.refreshSvgBoundingRect();
+  const { x, y } = screenHelper.getCellTopLeftCoordinates(cell);
+  leftPosition.value = x;
+  topPosition.value = y;
+  width.value = Math.max(cellStore.getCellHorizontalWidth() - 1, 8);
+  height.value = Math.max(cellStore.getCellVerticalHeight() / 2, 8);
 }
 
 function editSelectedExponentNotation() {
+  clickedCell = exponentCell() ?? cellStore.getSelectedCell();
+  setExponentPosition();
   editModeStore.setEditMode("EXPONENT_WRITING");
-
-  setSelectedExponentPosition();
 }
+
+watch(
+  () => [
+    show.value,
+    cellStore.getSvgBoundingRect().left,
+    cellStore.getSvgBoundingRect().top,
+  ],
+  () => {
+    if (show.value) setExponentPosition();
+  },
+);
 
 function setInitialExponentValue() {
   exponent.value = "";
@@ -199,7 +204,7 @@ async function submitExponent() {
 
 <style>
 .exponentInput {
-  position: absolute;
+  position: fixed;
   z-index: 99;
   font-size: 9px;
   outline: none;

@@ -99,26 +99,6 @@ watchHelper.watchPointerEvent(
   () => shapeDrawingHelper.resetDrawing(),
 );
 
-watchHelper.watchPointerEvent(
-  props.startEntry.editMode,
-  ["EV_SVG_POINTERDOWN"],
-  (e: PointerEvent) => {
-    shapeDrawingHelper.setLineInitialPosition(e, props.startEntry.func);
-  },
-);
-
-watchHelper.watchPointerEvent(
-  props.drawEntry.editMode,
-  ["EV_SVG_POINTERMOVE"],
-  (e: PointerEvent) => shapeDrawingHelper.drawNewLine(e, props.drawEntry.func),
-);
-
-watchHelper.watchPointerEvent(
-  props.saveEntry.editMode,
-  ["EV_SVG_POINTERUP"],
-  (e: PointerEvent) => shapeDrawingHelper.saveDrawing(props.saveEntry.func),
-);
-
 watchHelper.watchEndOfEditMode(
   ["LINE_SELECTED"],
   ["LINE_EDITING_LEFT", "LINE_EDITING_RIGHT"],
@@ -133,6 +113,12 @@ watchHelper.watchEndOfEditMode(
 
 watchHelper.watchEndOfEditMode(["CIRCLE_SELECTED"], ["CIRCLE_EDITING"], () =>
   shapeDrawingHelper.showMatrixLine(),
+);
+
+watchHelper.watchEndOfEditMode(
+  ["CONIC_SELECTED"],
+  ["CONIC_EDITING_VERTEX", "CONIC_EDITING_SCALE"],
+  () => shapeDrawingHelper.showMatrixLine(),
 );
 
 watchHelper.watchNotationSelection(

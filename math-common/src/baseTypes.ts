@@ -113,6 +113,18 @@ export type CircleAttributes = {
   r: number; // radius
 };
 
+export type ConicKind = "parabola" | "hyperbola";
+export type ConicAxis = "vertical" | "horizontal";
+
+export type ConicAttributes = {
+  kind: ConicKind;
+  hx: number; // vertex (parabola) or center (hyperbola)
+  hy: number;
+  axis: ConicAxis;
+  a: number; // pixel-space scale; sign is opening / branch side
+  b?: number; // hyperbola conjugate scale; omit or |a| for rectangular
+};
+
 export type RectAttributes = {
   fromCol: number;
   toCol: number;
@@ -157,6 +169,11 @@ export type CircleNotationAttributes =
   EntityAttributes &
     NotationAttributes &
     CircleAttributes;
+
+export type ConicNotationAttributes =
+  EntityAttributes &
+    NotationAttributes &
+    ConicAttributes;
 
 export type FreeSketchNotationAttributes =
   EntityAttributes &
@@ -225,6 +242,12 @@ export type CircleNotationCreationAttributes =
     "uuid"
   >;
 
+export type ConicNotationCreationAttributes =
+  Omit<
+    NotationAttributes & ConicAttributes,
+    "uuid"
+  >;
+
 export type FreeSketchNotationCreationAttributes =
   Omit<
     NotationAttributes & FreeSketchAttributes,
@@ -268,6 +291,12 @@ export function isCurve(
   n: NotationType,
 ): boolean {
   return n === "CURVE";
+}
+
+export function isConic(
+  n: NotationType,
+): boolean {
+  return n === "CONIC";
 }
 
 export function isCellNotationType(
