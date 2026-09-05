@@ -7,6 +7,10 @@ import {
   workHasEquivalentVertexForm,
   workHasVertexCoordinates,
   workHasParabolaGraph,
+  workHasYIntercept,
+  workHasYInterceptValueOnly,
+  yInterceptCoachOverride,
+  Y_INTERCEPT_AS_POINT_TIP,
 } from "common/practiceAlgebra";
 
 const ORIGINAL = { a: 2, b: -8, c: 5 };
@@ -252,5 +256,59 @@ describe("workHasParabolaGraph", () => {
         "diagram: parabola vertex≈(0.0,0.0) opens=up",
       ),
     ).toBe(false);
+  });
+});
+
+describe("workHasYIntercept", () => {
+  const problem = [
+    "A quadratic function is given by f(x) = 2x^2 - 8x + 5",
+    "1. Write the function in vertex form.",
+    "2. State the coordinates of the vertex.",
+    "3. Find the axis of symmetry.",
+    "4. Find the y-intercept.",
+  ].join("\n");
+
+  const partWork = (body: string) =>
+    ["[Part 4]", "<<active>> " + body].join("\n");
+
+  it("does not treat a lone y=5 as the intercept", () => {
+    expect(workHasYIntercept(problem, "y=5")).toBe(false);
+    expect(workHasYInterceptValueOnly(problem, "y=5")).toBe(true);
+    expect(yInterceptCoachOverride(problem, "y=5")).toEqual({
+      speak: true,
+      tip: Y_INTERCEPT_AS_POINT_TIP,
+    });
+    expect(activePartLooksComplete(problem, partWork("y=5"), "4")).toBe(
+      false,
+    );
+  });
+
+  it("nudges after evaluating f(0) to y=5 without the point", () => {
+    const work = "y=2(0^2-4*0)+5 y=5";
+    expect(workHasYIntercept(problem, work)).toBe(false);
+    expect(workHasYInterceptValueOnly(problem, work)).toBe(true);
+    expect(yInterceptCoachOverride(problem, work)?.speak).toBe(true);
+  });
+
+  it("accepts the point, f(0)=, or x=0 with y=5", () => {
+    expect(workHasYIntercept(problem, "(0,5)")).toBe(true);
+    expect(workHasYIntercept(problem, "[0,5]")).toBe(true);
+    expect(workHasYIntercept(problem, "f(0)=5")).toBe(true);
+    expect(workHasYIntercept(problem, "x=0 y=5")).toBe(true);
+    expect(workHasYInterceptValueOnly(problem, "(0,5)")).toBe(false);
+    expect(yInterceptCoachOverride(problem, "(0,5)")).toEqual({
+      speak: false,
+      tip: "",
+    });
+    expect(activePartLooksComplete(problem, partWork("(0,5)"), "4")).toBe(
+      true,
+    );
+  });
+
+  it("does not treat y=2(...) as a finished y-value", () => {
+    const work = "y=2(0^2-4*0)+5";
+    expect(workHasYIntercept(problem, work)).toBe(false);
+    expect(workHasYInterceptValueOnly(problem, work)).toBe(false);
+    expect(yInterceptCoachOverride(problem, work)).toBeNull();
   });
 });

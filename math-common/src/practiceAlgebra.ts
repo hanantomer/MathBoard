@@ -305,6 +305,10 @@ const EMPTY_REVIEW: VertexRewriteReview = {
 export const SIMPLIFY_VERTEX_CONSTANTS_TIP =
   "Combine the constants outside the square into one number.";
 
+/** Next-step tip when they found y but not the intercept as a point. */
+export const Y_INTERCEPT_AS_POINT_TIP =
+  "Write the y-intercept as a point (0, …), not only y =.";
+
 function lastQuadraticLine(
   text: string,
 ): { expr: string; coeffs: QuadraticCoeffs } | null {
@@ -489,6 +493,25 @@ function namedNumber(text: string, letter: string): number | null {
   return Number.isFinite(n) ? n : null;
 }
 
+/**
+ * Last `y=5` / `x=0` that is a finished assignment, not the start of
+ * `y=2(0^2-4*0)+5`.
+ */
+function lastStandaloneNumber(text: string, letter: string): number | null {
+  const s = normalizeAlgebra(stripPracticeTutorMarkup(text));
+  const re = new RegExp(
+    `(?:^|[^a-z])${letter}=([+-]?\\d+(?:\\.\\d+)?)(?![0-9.(*/^x])`,
+    "g",
+  );
+  let last: number | null = null;
+  let m: RegExpExecArray | null;
+  while ((m = re.exec(s))) {
+    const n = Number(m[1]);
+    if (Number.isFinite(n)) last = n;
+  }
+  return last;
+}
+
 function coordinatePairs(text: string): Array<{ x: number; y: number }> {
   const s = normalizeAlgebra(text);
   const out: Array<{ x: number; y: number }> = [];
@@ -560,8 +583,39 @@ export function workHasYIntercept(
   if (workStatesPoint(studentWork, 0, q.c)) return true;
   const f0 = studentWork.match(/f\s*\(\s*0\s*\)\s*=\s*([+-]?\d+(?:\.\d+)?)/i);
   if (f0 && Math.abs(Number(f0[1]) - q.c) < EPS) return true;
-  const y = namedNumber(studentWork, "y");
+  const x = lastStandaloneNumber(studentWork, "x");
+  const y = lastStandaloneNumber(studentWork, "y");
+  return (
+    x != null &&
+    Math.abs(x) < EPS &&
+    y != null &&
+    Math.abs(y - q.c) < EPS
+  );
+}
+
+/** True when they evaluated f(0) to y=c but did not state the point (0, c). */
+export function workHasYInterceptValueOnly(
+  problemText: string | undefined,
+  studentWork: string,
+): boolean {
+  if (workHasYIntercept(problemText, studentWork)) return false;
+  const q = originalQuadratic(problemText, studentWork);
+  if (!q) return false;
+  const y = lastStandaloneNumber(studentWork, "y");
   return y != null && Math.abs(y - q.c) < EPS;
+}
+
+export function yInterceptCoachOverride(
+  problemText: string | undefined,
+  studentWork: string,
+): { speak: boolean; tip: string } | null {
+  if (workHasYIntercept(problemText, studentWork)) {
+    return { speak: false, tip: "" };
+  }
+  if (workHasYInterceptValueOnly(problemText, studentWork)) {
+    return { speak: true, tip: Y_INTERCEPT_AS_POINT_TIP };
+  }
+  return null;
 }
 
 export function workHasMaxOrMin(

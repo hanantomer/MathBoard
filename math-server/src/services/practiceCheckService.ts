@@ -17,7 +17,7 @@ import {
   quadraticPartKind,
   workHasVertexCoordinates,
   workHasAxisOfSymmetry,
-  workHasYIntercept,
+  yInterceptCoachOverride,
   workHasMaxOrMin,
   workHasParabolaGraph,
 } from "../../../math-common/build/practiceAlgebra";
@@ -250,10 +250,7 @@ function rewriteCoachOverride(
     return null;
   }
   if (kind === "yIntercept") {
-    if (workHasYIntercept(problemText, slice)) {
-      return { speak: false, tip: "" };
-    }
-    return null;
+    return yInterceptCoachOverride(problemText, slice);
   }
   if (kind === "maxMin") {
     if (workHasMaxOrMin(problemText, slice)) {
@@ -421,6 +418,7 @@ If a later line is equivalent to the given function (expanded, vertex, or factor
 If vertex form still has leftover constants (e.g. 2(x-2)^2-8+5), still mark correct=true and put "Combine the constants outside the square into one number." in warning.
 If those earlier slips exist, still approve the result and put a short outline of them in "warning" (not in feedback). Example warning: "Earlier steps don't follow: 2(x-4)² used (x-4) instead of (x-2)."
 Copying the original function alone is not an answer.
+A y-intercept is the point (0, y) or f(0)=y. A lone y= number is not the finished intercept.
 Do not fail them for a missing sketch, boxed answer, labels, or later multi-part items they have not started.
 <<active>> marks the line they are writing now; [Part N] is a student section label. Ignore that markup as math.
 When Active part: is given, grade only that part's [Part] block. Work under a different [Part] is a different sub-question.
@@ -454,7 +452,8 @@ If the problem has multiple parts:
 - unlabeled: lines belong with the first part. Do not treat them as missing work.
 - [Part N] is the student's work for part N. Every line under that header belongs to N until the next [Part]. Trust that grouping; do not reassign a line to a different part.
 - Do not tell them to move work that is already under the Active part's [Part] block.
-- The constant term in f(x)=… (e.g. +5) or in vertex form is not the y-intercept. The y-intercept is y= or (0, …) under the y-intercept part.
+- The constant term in f(x)=… (e.g. +5) or in vertex form is not the y-intercept.
+- A lone y= number is not a finished y-intercept. Ask them to write the point (0, …) or f(0)=. Do not speak=false.
 - An axis of symmetry is x=… . Do not call that a y-intercept.
 - Parts may be numbered in the stem, or just one task per row — use the listed parts in order.
 - Never treat the whole worksheet as finished from live coaching.

@@ -252,7 +252,7 @@ Work under [Part N] is part N — including lines after that header until the ne
 Lines under unlabeled: are work written before a (n) mark. If the active part is the first part, treat unlabeled lines as that part — do not ignore them.
 Always use the LATEST math line in that part. Do not restart from an earlier rewrite.
 Do not say they put an answer in the wrong part if it is already under the matching [Part] block.
-The constant term of the given function (e.g. +5) is not the y-intercept unless they wrote y= or (0, …) for that part.
+The constant term of the given function (e.g. +5) is not the y-intercept. A lone y= number is not finished — the y-intercept is the point (0, …) or f(0)=.
 Do not mark the whole question correct because an earlier part is done.
 correct means the Active part is answered, not the whole worksheet.`;
 }
