@@ -237,6 +237,7 @@ export default function useShapeDrawingHelper() {
         break;
       case "CONIC_EDITING_VERTEX":
       case "CONIC_EDITING_SCALE":
+      case "CONIC_EDITING_OPENING":
         editModeStore.setEditMode("CONIC_SELECTED");
         break;
       case "SQRT_EDITING":

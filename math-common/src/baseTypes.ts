@@ -121,8 +121,8 @@ export type ConicAttributes = {
   hx: number; // vertex (parabola) or center (hyperbola)
   hy: number;
   axis: ConicAxis;
-  a: number; // pixel-space scale; sign is opening / branch side
-  b?: number; // hyperbola conjugate scale; omit or |a| for rectangular
+  a: number; // pixel-space curvature / vertex scale; sign is opening / branch side
+  b?: number; // parabola: drawn half-width (size). hyperbola: conjugate scale (opening)
 };
 
 export type RectAttributes = {

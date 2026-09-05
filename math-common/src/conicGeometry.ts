@@ -11,6 +11,9 @@ export const CONIC_SAMPLE_STEPS = 56;
 /** Pixels of each hyperbola branch past the vertex. Kept small; stretch with handles. */
 export const HYPERBOLA_BRANCH_EXTENSION = 24;
 const EPS = 1e-6;
+const MIN_ARM = 8;
+const MIN_SPAN = 24;
+const MAX_SPAN = 360;
 
 function roundPoint(x: number, y: number): DotCoordinates {
   return { x: Math.round(x), y: Math.round(y) };
@@ -34,6 +37,36 @@ export function conicFromVertexAndPoint(
   return parabolaFromVertexAndPoint(hx, hy, px, py);
 }
 
+/** Compact vertical parabola at (hx, hy), opening toward the top of the board. */
+export function defaultParabolaAt(hx: number, hy: number): ConicAttributes {
+  return parabolaFromVertexAndPoint(
+    hx,
+    hy,
+    hx + MIN_SPAN + 12,
+    hy - 2 * DEFAULT_PARABOLA_HALF_WIDTH,
+  );
+}
+
+/** Compact horizontal hyperbola centered at (hx, hy). */
+export function defaultHyperbolaAt(hx: number, hy: number): ConicAttributes {
+  return hyperbolaFromCenterAndVertex(
+    hx,
+    hy,
+    hx + 2 * DEFAULT_PARABOLA_HALF_WIDTH,
+    hy,
+  );
+}
+
+export function defaultConicAt(
+  kind: ConicKind,
+  hx: number,
+  hy: number,
+): ConicAttributes {
+  return kind === "hyperbola"
+    ? defaultHyperbolaAt(hx, hy)
+    : defaultParabolaAt(hx, hy);
+}
+
 export function parabolaFromVertexAndPoint(
   hx: number,
   hy: number,
@@ -52,6 +85,7 @@ export function parabolaFromVertexAndPoint(
       hy,
       axis: "vertical",
       a: finiteOr(a, 0),
+      b: Math.abs(w),
     };
   }
   const h = Math.abs(dy) < 8 ? DEFAULT_PARABOLA_HALF_WIDTH : dy;
@@ -62,6 +96,7 @@ export function parabolaFromVertexAndPoint(
     hy,
     axis: "horizontal",
     a: finiteOr(a, 0),
+    b: Math.abs(h),
   };
 }
 
@@ -123,6 +158,139 @@ export function hyperbolaBFromPoint(
   return Math.max(Math.abs(dx) / Math.sqrt(inner), 8);
 }
 
+export function parabolaDrawnHalfSpan(conic: ConicAttributes): number {
+  if (conic.kind === "parabola") {
+    const stored = conic.b;
+    if (stored != null && Number.isFinite(stored) && Math.abs(stored) >= MIN_ARM) {
+      return Math.min(MAX_SPAN, Math.abs(stored));
+    }
+  }
+  return parabolaSampleHalfSpan(conic.a);
+}
+
+export function conicMoveBy(
+  conic: ConicAttributes,
+  dx: number,
+  dy: number,
+): ConicAttributes {
+  return { ...conic, hx: conic.hx + dx, hy: conic.hy + dy };
+}
+
+/** Change parabola width only; keep the arm height so the open handle stays put. */
+export function parabolaScaleSizeFromPoint(
+  conic: ConicAttributes,
+  px: number,
+  py: number,
+): ConicAttributes {
+  if (conic.kind !== "parabola") return conic;
+  const oldSpan = Math.max(parabolaDrawnHalfSpan(conic), MIN_SPAN);
+  let span =
+    conic.axis === "vertical"
+      ? Math.abs(px - conic.hx)
+      : Math.abs(py - conic.hy);
+  span = Math.min(MAX_SPAN, Math.max(MIN_SPAN, span));
+  const rise = conic.a * oldSpan * oldSpan;
+  return {
+    ...conic,
+    b: span,
+    a: finiteOr(rise / (span * span), conic.a),
+  };
+}
+
+/** Change parabola curvature `a` only; keep drawn width. */
+export function parabolaOpenFromPoint(
+  conic: ConicAttributes,
+  px: number,
+  py: number,
+): ConicAttributes {
+  if (conic.kind !== "parabola") return conic;
+  const span = Math.max(parabolaDrawnHalfSpan(conic), MIN_SPAN);
+  if (conic.axis === "vertical") {
+    return {
+      ...conic,
+      a: finiteOr((py - conic.hy) / (span * span), conic.a),
+    };
+  }
+  return {
+    ...conic,
+    a: finiteOr((px - conic.hx) / (span * span), conic.a),
+  };
+}
+
+/**
+ * Stretch a parabola through (px, py). When `lockAxis` is set, keep the
+ * current orientation so the curve does not flip while sizing.
+ */
+export function parabolaScaleThroughPoint(
+  conic: ConicAttributes,
+  px: number,
+  py: number,
+  lockAxis: boolean,
+): ConicAttributes {
+  if (!lockAxis || conic.kind !== "parabola") {
+    return parabolaFromVertexAndPoint(conic.hx, conic.hy, px, py);
+  }
+  if (conic.axis === "vertical") {
+    let w = px - conic.hx;
+    if (Math.abs(w) < MIN_ARM) {
+      w = Math.sign(w || 1) * DEFAULT_PARABOLA_HALF_WIDTH;
+    }
+    return {
+      ...conic,
+      a: finiteOr((py - conic.hy) / (w * w), conic.a),
+    };
+  }
+  let h = py - conic.hy;
+  if (Math.abs(h) < MIN_ARM) {
+    h = Math.sign(h || 1) * DEFAULT_PARABOLA_HALF_WIDTH;
+  }
+  return {
+    ...conic,
+    a: finiteOr((px - conic.hx) / (h * h), conic.a),
+  };
+}
+
+/** Move a hyperbola's vertex; keep the opening `b`. */
+export function hyperbolaScaleAFromPoint(
+  conic: ConicAttributes,
+  px: number,
+  py: number,
+): ConicAttributes {
+  if (conic.axis === "horizontal") {
+    let a = px - conic.hx;
+    if (Math.abs(a) < MIN_ARM) {
+      a = Math.sign(conic.a || 1) * MIN_ARM;
+    }
+    return { ...conic, a };
+  }
+  let a = py - conic.hy;
+  if (Math.abs(a) < MIN_ARM) {
+    a = Math.sign(conic.a || 1) * MIN_ARM;
+  }
+  return { ...conic, a };
+}
+
+/** Axis-height handle for a parabola; branch handle for a hyperbola. */
+export function conicOpeningHandlePoint(conic: ConicAttributes): DotCoordinates {
+  if (conic.kind === "parabola") {
+    const span = parabolaDrawnHalfSpan(conic);
+    const rise = conic.a * span * span;
+    if (conic.axis === "vertical") {
+      return roundPoint(conic.hx, conic.hy + rise);
+    }
+    return roundPoint(conic.hx + rise, conic.hy);
+  }
+  const { aAbs, bAbs } = hyperbolaParams(conic);
+  const t = aAbs + HYPERBOLA_BRANCH_EXTENSION * 0.85;
+  const inner = (t * t) / (aAbs * aAbs) - 1;
+  const s = inner > 0 ? Math.sqrt(inner) : 0;
+  const signA = conic.a >= 0 ? 1 : -1;
+  if (conic.axis === "horizontal") {
+    return roundPoint(conic.hx + signA * t, conic.hy + bAbs * s);
+  }
+  return roundPoint(conic.hx + bAbs * s, conic.hy + signA * t);
+}
+
 /** SVG y grows downward: vertical a < 0 opens toward the top of the board (math +y). */
 export function parabolaOpensUp(conic: ConicAttributes): boolean {
   if (conic.kind !== "parabola") return false;
@@ -137,11 +305,11 @@ export function conicScaleHandlePoint(conic: ConicAttributes): DotCoordinates {
     }
     return roundPoint(conic.hx, conic.hy + conic.a);
   }
-  const w = DEFAULT_PARABOLA_HALF_WIDTH;
+  const span = parabolaDrawnHalfSpan(conic);
   if (conic.axis === "vertical") {
-    return roundPoint(conic.hx + w, conic.hy + conic.a * w * w);
+    return roundPoint(conic.hx + span, conic.hy);
   }
-  return roundPoint(conic.hx + conic.a * w * w, conic.hy + w);
+  return roundPoint(conic.hx, conic.hy + span);
 }
 
 export function sampleConic(conic: ConicAttributes): DotCoordinates[] {
@@ -162,7 +330,7 @@ function parabolaSampleHalfSpan(a: number): number {
 
 function sampleParabola(conic: ConicAttributes): DotCoordinates[] {
   const points: DotCoordinates[] = [];
-  const span = parabolaSampleHalfSpan(conic.a);
+  const span = parabolaDrawnHalfSpan(conic);
   const steps = CONIC_SAMPLE_STEPS;
   for (let i = 0; i <= steps; i++) {
     const t = -span + (2 * span * i) / steps;

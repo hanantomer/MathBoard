@@ -106,9 +106,9 @@ export const TOOL_TOOLTIPS: Record<string, string> = {
   curve: "Curve — drag a segment; it stays selected after you release",
   circle: "Circle — it stays selected after you release",
   parabola:
-    "Parabola — click the vertex, then drag through a point; the shape stays selected so you can stretch it",
+    "Parabola — click the vertex, then drag to size. Round handle moves; side handle sizes; top handle opens",
   hyperbola:
-    "Hyperbola — click the center, then drag to a vertex; the shape stays selected so you can stretch it",
+    "Hyperbola — click the center, then drag to a vertex. Round handle moves; square handles size and open",
   sqrt: "Square root — insert at the selected cell (Alt+S). Select symbols first to draw the bar over them",
   exponent: "Exponent — click a cell (Alt+X)",
   log: "Logarithm (Alt+L)",
@@ -243,10 +243,12 @@ const EDIT_MODE_HINTS: Partial<Record<EditMode | GlobalEditMode, string>> = {
     "Drag a horizontal division line. It stays selected when you release.",
   DIVISIONLINE_DRAWING: "Release to place. The line stays selected.",
   CONIC_DRAWING: "Release to place. The shape stays selected.",
+  CONIC_SELECTED:
+    "Round handle moves. Side square handle changes size. Axis square handle changes how open the curve is.",
   PARABOLA_STARTED:
-    "Click the vertex, then drag through a point. The parabola stays selected so you can drag a handle to stretch it.",
+    "Click the vertex, then drag to set the width. Use the axis handle to open or flatten the parabola.",
   HYPERBOLA_STARTED:
-    "Click the center, then drag to a vertex. The hyperbola stays selected so you can drag a handle to stretch it.",
+    "Click the center, then drag to a vertex. Round handle moves; square handles size and open the branches.",
   ANNOTATION_STARTED: `Click to place text. ${stickyExitHint("Annotation")}.`,
   AREA_SELECTION_STARTED: getSelectionHelpText(),
   CURVE_STARTED: "Drag to draw a curve. The curve stays selected when you release.",
@@ -297,9 +299,11 @@ export function getEditModeStatusText(
     EXPONENT_WRITING: "Type exponent and then click outside or press enter",
     CIRCLE_STARTED: "Drag to draw a circle. The circle stays selected when you release.",
     PARABOLA_STARTED:
-      "Click the vertex, then drag through a point. The parabola stays selected so you can drag a handle to stretch it.",
+      "Click the vertex, then drag to set the width. The axis handle opens or flattens; the side handle sizes.",
     HYPERBOLA_STARTED:
-      "Click the center, then drag to a vertex. The hyperbola stays selected so you can drag a handle to stretch it.",
+      "Click the center, then drag to a vertex. Round handle moves; square handles size and open.",
+    CONIC_SELECTED:
+      "Round handle moves. Side handle sizes. Axis handle opens or flattens.",
     ANNOTATION_STARTED: `Click everywhere to add annotation text. ${stickyExitHint("Annotation")}.`,
     ANNOTATION_WRITING:
       "Type annotation text and then click outside or press enter",

@@ -1,9 +1,15 @@
 <template>
   <div
     class="lineHandle"
+    :class="{
+      'lineHandle--move': role === 'move',
+      'lineHandle--resize': role === 'resize',
+      'lineHandle--resize-x': role === 'resize-x',
+      'lineHandle--resize-y': role === 'resize-y',
+    }"
     @pointerup="endEdit"
     @pointercancel="endEdit"
-    @pointerdown="startEdit"
+    @pointerdown.stop="startEdit"
   ></div>
 </template>
 <script lang="ts">
@@ -30,6 +36,10 @@ const props = defineProps({
   editingMode: {
     required: true,
     type: String as PropType<EditMode>,
+  },
+  role: {
+    type: String as PropType<"move" | "resize" | "resize-x" | "resize-y">,
+    default: undefined,
   },
 });
 
@@ -79,6 +89,39 @@ function endEdit(e: PointerEvent) {
   cursor: grabbing;
 }
 
+.lineHandle--move {
+  cursor: move;
+}
+
+.lineHandle--move::after {
+  background: #e8f0fe;
+  border-color: #1a73e8;
+}
+
+.lineHandle--resize {
+  cursor: nwse-resize;
+}
+
+.lineHandle--resize:active {
+  cursor: nwse-resize;
+}
+
+.lineHandle--resize-x {
+  cursor: ew-resize;
+}
+
+.lineHandle--resize-x:active {
+  cursor: ew-resize;
+}
+
+.lineHandle--resize-y {
+  cursor: ns-resize;
+}
+
+.lineHandle--resize-y:active {
+  cursor: ns-resize;
+}
+
 .lineHandle::after {
   content: "";
   position: absolute;
@@ -92,5 +135,21 @@ function endEdit(e: PointerEvent) {
   border: 2px solid #333;
   transform: translate(-50%, -50%);
   pointer-events: none;
+}
+
+.lineHandle--resize::after {
+  border-radius: 2px;
+}
+
+.lineHandle--resize-x::after {
+  border-radius: 2px;
+  width: 16px;
+  height: 8px;
+}
+
+.lineHandle--resize-y::after {
+  border-radius: 2px;
+  width: 8px;
+  height: 16px;
 }
 </style>

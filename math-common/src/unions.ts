@@ -70,8 +70,10 @@ export type CursorType =
   | "grabbing"
   | "help"
   | "move"
+  | "nesw-resize"
   | "none"
   | "not-allowed"
+  | "nwse-resize"
   | "pointer"
   | "progress"
   | "text"
@@ -132,8 +134,9 @@ export type EditMode =
   | "HYPERBOLA_STARTED" // hyperbola button pressed
   | "CONIC_DRAWING" // conic drawing started
   | "CONIC_SELECTED" // conic selected
-  | "CONIC_EDITING_VERTEX" // vertex/center handle
-  | "CONIC_EDITING_SCALE" // through-point / vertex handle
+  | "CONIC_EDITING_VERTEX" // vertex/center handle — move the whole shape
+  | "CONIC_EDITING_SCALE" // size handle (parabola width / hyperbola a)
+  | "CONIC_EDITING_OPENING" // shape handle (parabola curvature / hyperbola b)
   | "SQRT_STARTED" // sqrt button pressed
   | "SQRT_DRAWING" // sqrt drawing started
   | "SQRT_EDITING" // sqrt line handle clicked
@@ -192,6 +195,7 @@ export const EditModeNotationType = new Map<
   ["CONIC_SELECTED", "CONIC"],
   ["CONIC_EDITING_VERTEX", "CONIC"],
   ["CONIC_EDITING_SCALE", "CONIC"],
+  ["CONIC_EDITING_OPENING", "CONIC"],
   ["CURVE_EDITING_CONTROLֹ_POINT", "CURVE"],
   ["TEXT_WRITING", "TEXT"],
   ["TEXT_SELECTED", "TEXT"],
@@ -254,9 +258,10 @@ export const EditModeCursorType = new Map<
   ["PARABOLA_STARTED", "crosshair"],
   ["HYPERBOLA_STARTED", "crosshair"],
   ["CONIC_DRAWING", "crosshair"],
-  ["CONIC_SELECTED", "auto"],
-  ["CONIC_EDITING_VERTEX", "auto"],
-  ["CONIC_EDITING_SCALE", "auto"],
+  ["CONIC_SELECTED", "move"],
+  ["CONIC_EDITING_VERTEX", "move"],
+  ["CONIC_EDITING_SCALE", "nwse-resize"],
+  ["CONIC_EDITING_OPENING", "nesw-resize"],
   ["SQRT_STARTED", "auto"],
   ["SQRT_DRAWING", "auto"],
   ["SQRT_SELECTED", "auto"],
