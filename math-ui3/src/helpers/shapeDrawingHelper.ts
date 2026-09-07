@@ -213,6 +213,11 @@ export default function useShapeDrawingHelper() {
       return;
     }
 
+    // Incomplete parabola: three-click place re-arms PARABOLA_STARTED.
+    if (current === "CONIC_DRAWING") {
+      return;
+    }
+
     if (isOneShotDrawingMode(current)) {
       editModeStore.setDefaultEditMode();
       return;
@@ -238,6 +243,7 @@ export default function useShapeDrawingHelper() {
       case "CONIC_EDITING_VERTEX":
       case "CONIC_EDITING_SCALE":
       case "CONIC_EDITING_OPENING":
+      case "CONIC_EDITING_THROUGH":
         editModeStore.setEditMode("CONIC_SELECTED");
         break;
       case "SQRT_EDITING":

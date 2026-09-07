@@ -117,7 +117,7 @@ watchHelper.watchEndOfEditMode(["CIRCLE_SELECTED"], ["CIRCLE_EDITING"], () =>
 
 watchHelper.watchEndOfEditMode(
   ["CONIC_SELECTED"],
-  ["CONIC_EDITING_VERTEX", "CONIC_EDITING_SCALE", "CONIC_EDITING_OPENING"],
+  ["CONIC_EDITING_VERTEX", "CONIC_EDITING_SCALE", "CONIC_EDITING_OPENING", "CONIC_EDITING_THROUGH"],
   () => shapeDrawingHelper.showMatrixLine(),
 );
 

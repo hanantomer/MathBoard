@@ -6,6 +6,7 @@ import useAuthorizationHelper from "../helpers/authorizationHelper";
 import useNotationMutateHelper from "../helpers/notationMutateHelper";
 import useSelectionHelper from "../helpers/selectionHelper";
 import useEventBus from "../helpers/eventBusHelper";
+import { useParabolaPlacement } from "../composables/useParabolaPlacement";
 type keyType = "SYMBOL" | "MOVEMENT" | "DELETION" | "MOVEANDDELETE" | "PUSH" | "PUSH_VERTICAL";
 
 const editModeStore = useEditModeStore();
@@ -16,6 +17,7 @@ const authorizationHelper = useAuthorizationHelper();
 const notationMutateHelper = useNotationMutateHelper();
 const selectionHelper = useSelectionHelper();
 const eventBus = useEventBus();
+const parabolaPlace = useParabolaPlacement();
 
 const KEY_STROKE_INTERVAL = 50; // ms
 const META_KEY_CODES = new Set(["MetaLeft", "MetaRight", "OSLeft", "OSRight"]);
@@ -242,8 +244,17 @@ export default function () {
       }
 
       if (code === "Escape") {
+        if (parabolaPlace.undoLast()) return;
         handleEscapeAction();
         return;
+      }
+
+      const mode = editModeStore.getEditMode();
+      if (
+        (mode === "PARABOLA_STARTED" || mode === "CONIC_DRAWING") &&
+        (code === "Backspace" || code === "Delete")
+      ) {
+        if (parabolaPlace.undoLast()) return;
       }
 
       if (editModeStore.getEditMode() === "TEXT_WRITING") return;
@@ -353,6 +364,15 @@ export default function () {
 
     if (key === "ArrowDown") {
       matrixCellHelper.setNextCell(0, 1);
+    }
+
+    if (
+      key === "ArrowLeft" ||
+      key === "ArrowRight" ||
+      key === "ArrowUp" ||
+      key === "ArrowDown"
+    ) {
+      notationMutateHelper.scrollSelectedCellIntoView();
     }
 
     selectCurrentCellNotation();

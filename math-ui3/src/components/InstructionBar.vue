@@ -11,6 +11,30 @@
         mdi-gesture-tap
       </v-icon>
       <span class="instruction-bar__text">{{ persistentText }}</span>
+      <span
+        v-if="parabolaPlacing"
+        class="instruction-bar__actions"
+      >
+        <button
+          v-if="canUndoParabola"
+          type="button"
+          class="instruction-bar__btn"
+          data-cy="parabolaUndoPoint"
+          @pointerdown.stop
+          @click.stop="onUndoParabolaPoint"
+        >
+          Undo last point
+        </button>
+        <button
+          type="button"
+          class="instruction-bar__btn instruction-bar__btn--ghost"
+          data-cy="parabolaCancelPlace"
+          @pointerdown.stop
+          @click.stop="onCancelParabola"
+        >
+          Cancel
+        </button>
+      </span>
     </div>
 
     <v-snackbar
@@ -35,19 +59,30 @@ import {
   getActiveToolDisplay,
   getEditModeStatusText,
 } from "../constants/helpCopy";
+import { useParabolaPlacement } from "../composables/useParabolaPlacement";
 
 const watchHelper = useWatchHelper();
 const editModeStore = useEditModeStore();
+const parabolaPlace = useParabolaPlacement();
 const transientOpen = ref(false);
 const transientText = ref("");
 
 const currentMode = computed(() => editModeStore.getEditMode());
+
+const parabolaPlacing = computed(() => parabolaPlace.placingActive.value);
+
+const canUndoParabola = computed(
+  () => parabolaPlacing.value && parabolaPlace.count.value > 0,
+);
 
 const isToolActive = computed(
   () => currentMode.value && currentMode.value !== "CELL_SELECTED",
 );
 
 const persistentText = computed(() => {
+  if (parabolaPlacing.value) {
+    return `${parabolaPlace.stepLabel.value} — ${parabolaPlace.hint.value}`;
+  }
   const mode = currentMode.value;
   if (!mode || mode === "CELL_SELECTED") {
     return EDITING_BASICS.idle;
@@ -58,6 +93,15 @@ const persistentText = computed(() => {
   }
   return getEditModeStatusText(mode) ?? "";
 });
+
+function onUndoParabolaPoint() {
+  parabolaPlace.undoLast();
+}
+
+function onCancelParabola() {
+  parabolaPlace.setActive(false);
+  editModeStore.setDefaultEditMode();
+}
 
 watchHelper.watchEveryEditModeChange(onEditModeChange);
 watchHelper.watchGlobalEditModeChange(onEditModeChange);
@@ -118,6 +162,31 @@ function onEditModeChange(_editMode: EditMode | GlobalEditMode) {
 .instruction-bar__text {
   flex: 1;
   min-width: 0;
+}
+
+.instruction-bar__actions {
+  display: flex;
+  flex-shrink: 0;
+  gap: 6px;
+  margin-left: 12px;
+}
+
+.instruction-bar__btn {
+  pointer-events: auto;
+  border: 1px solid rgba(227, 242, 253, 0.55);
+  background: #1565c0;
+  color: #fff;
+  font-size: 0.75rem;
+  font-weight: 600;
+  line-height: 1.2;
+  padding: 4px 8px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.instruction-bar__btn--ghost {
+  background: transparent;
+  color: #e3f2fd;
 }
 
 .instruction-bar-host :deep(.instruction-transient) {

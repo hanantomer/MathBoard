@@ -14,6 +14,7 @@
     }"
     id="annotationEl"
     v-model="annotaionValue"
+    @keydown="onEditorKeydown"
   />
 </template>
 
@@ -26,6 +27,10 @@ import { AnnotationNotationAttributes } from "common/baseTypes";
 import { decodeSpecialSymbol } from "common/globals";
 import useNotationMutateHelper from "../helpers/notationMutateHelper";
 import useWatchHelper from "../helpers/watchHelper";
+import {
+  clientPointToSvgUser,
+  svgUserToViewport,
+} from "../helpers/pointerCoordinateHelper";
 
 const notationMutateHelper = useNotationMutateHelper();
 const watchHelper = useWatchHelper();
@@ -60,25 +65,26 @@ const annotationHeight = computed(
 );
 
 const annotationPoint = ref({ x: -1, y: -1 });
+let discardOnSave = false;
 
 watchHelper.watchEndOfEditMode(["ANNOTATION_WRITING"], [], save);
 
 watchHelper.watchPointerEvent(
   ["ANNOTATION_STARTED", "ANNOTATION_SELECTED"],
-["EV_SVG_POINTERDOWN"],
+  ["EV_SVG_POINTERDOWN"],
   startTextEditing,
 );
 
 watchHelper.watchKeyEvent(
   ["ANNOTATION_WRITING"],
   "EV_KEYUP",
-  endEditingByEnterKey,
+  onWritingKey,
 );
 
 watchHelper.watchPointerEvent(
   ["ANNOTATION_WRITING"],
   ["EV_SVG_POINTERDOWN"],
-  editModeStore.setDefaultEditMode,
+  finishWriting,
 );
 
 watchHelper.watchPointerEvent(
@@ -129,9 +135,7 @@ function startTextEditing(e: PointerEvent) {
 
   editModeStore.setEditMode("ANNOTATION_WRITING");
   setInitialTextValue();
-  setTimeout(() => {
-    document.getElementById("annotationEl")?.focus();
-  }, 100);
+  focusEditor(100);
 }
 
 function isExistingAnnotationTarget(target: EventTarget | null): boolean {
@@ -144,17 +148,42 @@ function isExistingAnnotationTarget(target: EventTarget | null): boolean {
 }
 
 function editSelectedAnnotation() {
+  const notation = selectedNotation.value;
+  if (notation) {
+    const vp = svgUserToViewport(notation.x, notation.y);
+    annotationPoint.value = { x: vp.x, y: vp.y };
+  }
+
   editModeStore.setEditMode("ANNOTATION_WRITING");
-
   setInitialTextValue();
+  focusEditor(0);
+}
 
-  const textEl = document.getElementById(
-    "annotationEl",
-  )! as HTMLTextAreaElement;
-
+function focusEditor(delayMs: number) {
   setTimeout(() => {
-    textEl.focus();
-  }, 0);
+    document.getElementById("annotationEl")?.focus();
+  }, delayMs);
+}
+
+function finishWriting() {
+  if (editModeStore.getGlobalEditMode() === "ANNOTATION") {
+    editModeStore.setEditMode("ANNOTATION_STARTED");
+    return;
+  }
+  editModeStore.setDefaultEditMode();
+}
+
+function cancelWriting() {
+  discardOnSave = true;
+  annotaionValue.value = "";
+  editModeStore.setDefaultEditMode();
+}
+
+function onEditorKeydown(e: KeyboardEvent) {
+  if (e.key !== "Escape") return;
+  e.preventDefault();
+  e.stopPropagation();
+  cancelWriting();
 }
 
 function setInitialTextValue() {
@@ -165,26 +194,30 @@ function setInitialTextValue() {
 }
 
 async function save() {
+  if (discardOnSave) {
+    discardOnSave = false;
+    annotaionValue.value = "";
+    if (selectedNotation.value) {
+      restoreTextNotation(selectedNotation.value.uuid);
+    }
+    return;
+  }
+
   if (editModeStore.getGlobalEditMode() === "ANNOTATION") {
     editModeStore.setEditMode("ANNOTATION_STARTED");
   }
-  //else {
-  //  editModeStore.setDefaultEditMode();
-  //}
 
+  const value = annotaionValue.value.trim();
   if (selectedNotation.value) {
     selectedNotation.value.value = annotaionValue.value;
     await notationMutateHelper.updateNotation(selectedNotation.value);
     restoreTextNotation(selectedNotation.value.uuid);
-  } else {
-    const r = cellStore.getSvgBoundingRect();
-    notationMutateHelper.addAnnotationNotation(annotaionValue.value, {
-      x: annotationPoint.value.x - r.left,
-      y: annotationPoint.value.y - r.top + 7,
-    });
-    //.then((uuid) => {
-    //  selectCreatedAnnotation(uuid);
-    //});
+  } else if (value) {
+    const point = clientPointToSvgUser(
+      annotationPoint.value.x,
+      annotationPoint.value.y + 7,
+    );
+    notationMutateHelper.addAnnotationNotation(annotaionValue.value, point);
   }
   annotaionValue.value = "";
 }
@@ -197,15 +230,19 @@ function hideTextNotation(uuid: string) {
 
 // restore text notation that was hideen during editing
 function restoreTextNotation(uuid: string) {
-  document!
-    .querySelector<HTMLElement>(`foreignObject[uuid="${uuid}"]`)!
-    .classList.remove("hidden");
+  document
+    .querySelector<HTMLElement>(`foreignObject[uuid="${uuid}"]`)
+    ?.classList.remove("hidden");
 }
 
-function endEditingByEnterKey(e: KeyboardEvent) {
+function onWritingKey(e: KeyboardEvent) {
   const { code } = e;
-  if (code === "Enter") {
-    editModeStore.setDefaultEditMode();
+  if (code === "Enter" || code === "NumpadEnter") {
+    finishWriting();
+    return;
+  }
+  if (code === "Escape") {
+    cancelWriting();
   }
 }
 
@@ -247,6 +284,7 @@ function addSpecialSymbol(symbol: string): void {
   outline: none;
   background-color: rgb(216, 216, 79);
   position: fixed;
+  z-index: 1100;
   padding: 0px;
   font-size: 0.5em;
 }

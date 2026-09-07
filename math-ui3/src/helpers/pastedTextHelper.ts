@@ -1,5 +1,8 @@
 /** Collapse clipboard quirks that show up as repeated chunks in a pasted problem. */
 
+const MIN_REPEAT_CHUNK = 16;
+const MAX_REPEAT_CHUNK = 240;
+
 function normalizeNewlines(raw: string): string {
   return raw.replace(/\r\n/g, "\n").replace(/\r/g, "\n");
 }
@@ -18,12 +21,12 @@ function htmlToPlainText(html: string): string {
     .trim();
 }
 
-/** If the payload is the same block twice, keep one copy. */
+/** If the payload is the same block two or more times, keep one copy. */
 function collapseDoubledBlock(text: string): string {
   const trimmed = text.trim();
   if (trimmed.length < 16) return text;
 
-  const mirrored = trimmed.match(/^([\s\S]+?)\n+\1$/);
+  const mirrored = trimmed.match(/^([\s\S]+?)(?:\n+\1)+$/);
   if (mirrored) return mirrored[1].trimEnd();
 
   const lines = trimmed.split("\n");
@@ -49,15 +52,48 @@ function collapseDuplicateParagraphs(text: string): string {
 }
 
 /**
+ * Word / Docs / PDF copies often glue the stem to itself on one line:
+ * "In △ABC… In △ABC… In △ABC… (D) is a point…". Keep one stem.
+ */
+function collapseRepeatedPrefixOnLine(line: string): string {
+  if (line.length < MIN_REPEAT_CHUNK * 2) return line;
+  const maxLen = Math.min(MAX_REPEAT_CHUNK, Math.floor(line.length / 2));
+  for (let len = maxLen; len >= MIN_REPEAT_CHUNK; len--) {
+    const chunk = line.slice(0, len);
+    let count = 1;
+    let pos = len;
+    while (pos < line.length) {
+      let next = pos;
+      if (line[next] === " ") next += 1;
+      if (!line.startsWith(chunk, next)) break;
+      count += 1;
+      pos = next + len;
+    }
+    if (count >= 2) {
+      return chunk + line.slice(pos);
+    }
+  }
+  return line;
+}
+
+function collapseRepeatedLineStarts(text: string): string {
+  return text
+    .split("\n")
+    .map((line) => collapseRepeatedPrefixOnLine(line))
+    .join("\n");
+}
+
+/**
  * Some copies emit growing prefixes ("AB = 13" then "AB = 13 cm, BC = 14").
- * Keep the longest line in each prefix run.
+ * Keep the longest line in each prefix run. Drop identical consecutive lines.
  */
 function collapseCumulativeLines(text: string): string {
   const lines = text.split("\n");
   const out: string[] = [];
   for (const line of lines) {
     const prev = out[out.length - 1];
-    if (prev !== undefined && line && prev && line !== prev) {
+    if (prev !== undefined && line && prev) {
+      if (line === prev) continue;
       if (line.startsWith(prev)) {
         out[out.length - 1] = line;
         continue;
@@ -89,6 +125,7 @@ export function normalizePastedBoardText(
   text = collapseDoubledBlock(text);
   text = collapseDuplicateParagraphs(text);
   text = collapseCumulativeLines(text);
+  text = collapseRepeatedLineStarts(text);
   return text.replace(/\n{3,}/g, "\n\n").trimEnd();
 }
 

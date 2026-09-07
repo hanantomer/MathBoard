@@ -137,6 +137,7 @@ export type EditMode =
   | "CONIC_EDITING_VERTEX" // vertex/center handle — move the whole shape
   | "CONIC_EDITING_SCALE" // size handle (parabola width / hyperbola a)
   | "CONIC_EDITING_OPENING" // shape handle (parabola curvature / hyperbola b)
+  | "CONIC_EDITING_THROUGH" // drag a numbered through-point to refit a parabola
   | "SQRT_STARTED" // sqrt button pressed
   | "SQRT_DRAWING" // sqrt drawing started
   | "SQRT_EDITING" // sqrt line handle clicked
@@ -196,6 +197,7 @@ export const EditModeNotationType = new Map<
   ["CONIC_EDITING_VERTEX", "CONIC"],
   ["CONIC_EDITING_SCALE", "CONIC"],
   ["CONIC_EDITING_OPENING", "CONIC"],
+  ["CONIC_EDITING_THROUGH", "CONIC"],
   ["CURVE_EDITING_CONTROLֹ_POINT", "CURVE"],
   ["TEXT_WRITING", "TEXT"],
   ["TEXT_SELECTED", "TEXT"],
@@ -262,6 +264,7 @@ export const EditModeCursorType = new Map<
   ["CONIC_EDITING_VERTEX", "move"],
   ["CONIC_EDITING_SCALE", "nwse-resize"],
   ["CONIC_EDITING_OPENING", "nesw-resize"],
+  ["CONIC_EDITING_THROUGH", "grab"],
   ["SQRT_STARTED", "auto"],
   ["SQRT_DRAWING", "auto"],
   ["SQRT_SELECTED", "auto"],

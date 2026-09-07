@@ -14,6 +14,7 @@ import {
   formatConicDiagramLine,
   hyperbolaFromCenterAndVertex,
   hyperbolaScaleAFromPoint,
+  parabolaFromThreePoints,
   parabolaFromVertexAndPoint,
   parabolaOpenFromPoint,
   parabolaOpensUp,
@@ -41,6 +42,54 @@ describe("parabolaFromVertexAndPoint", () => {
       conicBoundingBox(stretched).maxY - conicBoundingBox(stretched).minY;
     expect(compactH).toBeLessThanOrEqual(CONIC_SAMPLE_SPAN + 1);
     expect(stretchedH).toBeGreaterThan(compactH);
+  });
+});
+
+describe("parabolaFromThreePoints", () => {
+  const cellW = 16.5;
+  const cellH = 33;
+  const origin = { x: 100, y: 400 };
+
+  function mathToPx(x: number, y: number) {
+    return { x: origin.x + x * cellW, y: origin.y - y * cellH };
+  }
+
+  it("fits y = -2x² + x + 6 from its intercepts", () => {
+    const p0 = mathToPx(0, 6);
+    const pNeg = mathToPx(-1.5, 0);
+    const pPos = mathToPx(2, 0);
+    const conic = parabolaFromThreePoints(p0, pNeg, pPos);
+    expect(conic).not.toBeNull();
+    expect(conic!.axis).toBe("vertical");
+    expect((conic!.hx - origin.x) / cellW).toBeCloseTo(0.25);
+    expect((origin.y - conic!.hy) / cellH).toBeCloseTo(6.125);
+    expect(conic!.a).toBeCloseTo((2 * cellH) / (cellW * cellW));
+    expect(parabolaOpensUp(conic!)).toBe(false);
+
+    const yAt = (x: number) => conic!.hy + conic!.a * (x - conic!.hx) ** 2;
+    expect(yAt(p0.x)).toBeCloseTo(p0.y);
+    expect(yAt(pNeg.x)).toBeCloseTo(pNeg.y);
+    expect(yAt(pPos.x)).toBeCloseTo(pPos.y);
+  });
+
+  it("returns null for collinear points", () => {
+    expect(
+      parabolaFromThreePoints(
+        { x: 0, y: 0 },
+        { x: 10, y: 10 },
+        { x: 20, y: 20 },
+      ),
+    ).toBeNull();
+  });
+
+  it("returns null when two points share an x", () => {
+    expect(
+      parabolaFromThreePoints(
+        { x: 0, y: 0 },
+        { x: 0, y: 10 },
+        { x: 8, y: 4 },
+      ),
+    ).toBeNull();
   });
 });
 

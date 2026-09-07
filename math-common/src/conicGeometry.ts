@@ -67,6 +67,75 @@ export function defaultConicAt(
     : defaultParabolaAt(hx, hy);
 }
 
+/**
+ * Unique vertical parabola through three points: y = A x² + B x + C,
+ * stored as vertex form y = hy + a (x - hx)². Null if x’s repeat or points
+ * are collinear (a line, not a parabola).
+ */
+export function parabolaFromThreePoints(
+  p1: DotCoordinates,
+  p2: DotCoordinates,
+  p3: DotCoordinates,
+): ConicAttributes | null {
+  const { x: x1, y: y1 } = p1;
+  const { x: x2, y: y2 } = p2;
+  const { x: x3, y: y3 } = p3;
+  if (
+    Math.abs(x1 - x2) < EPS ||
+    Math.abs(x1 - x3) < EPS ||
+    Math.abs(x2 - x3) < EPS
+  ) {
+    return null;
+  }
+
+  const det =
+    x1 * x1 * (x2 - x3) - x2 * x2 * (x1 - x3) + x3 * x3 * (x1 - x2);
+  if (Math.abs(det) < EPS) return null;
+
+  const detA = y1 * (x2 - x3) - y2 * (x1 - x3) + y3 * (x1 - x2);
+  const detB =
+    x1 * x1 * (y2 - y3) - x2 * x2 * (y1 - y3) + x3 * x3 * (y1 - y2);
+  const detC =
+    x1 * x1 * (x2 * y3 - x3 * y2) -
+    x2 * x2 * (x1 * y3 - x3 * y1) +
+    x3 * x3 * (x1 * y2 - x2 * y1);
+
+  const A = detA / det;
+  const B = detB / det;
+  const C = detC / det;
+  if (
+    !Number.isFinite(A) ||
+    !Number.isFinite(B) ||
+    !Number.isFinite(C) ||
+    Math.abs(A) < EPS
+  ) {
+    return null;
+  }
+
+  const hx = -B / (2 * A);
+  const hy = A * hx * hx + B * hx + C;
+  if (!Number.isFinite(hx) || !Number.isFinite(hy)) return null;
+
+  const b = Math.min(
+    MAX_SPAN,
+    Math.max(
+      MIN_SPAN,
+      Math.abs(x1 - hx),
+      Math.abs(x2 - hx),
+      Math.abs(x3 - hx),
+    ),
+  );
+  return {
+    kind: "parabola",
+    hx,
+    hy,
+    axis: "vertical",
+    a: A,
+    b,
+    through: [p1, p2, p3],
+  };
+}
+
 export function parabolaFromVertexAndPoint(
   hx: number,
   hy: number,
@@ -173,7 +242,12 @@ export function conicMoveBy(
   dx: number,
   dy: number,
 ): ConicAttributes {
-  return { ...conic, hx: conic.hx + dx, hy: conic.hy + dy };
+  return {
+    ...conic,
+    hx: conic.hx + dx,
+    hy: conic.hy + dy,
+    through: conic.through?.map((p) => ({ x: p.x + dx, y: p.y + dy })),
+  };
 }
 
 /** Change parabola width only; keep the arm height so the open handle stays put. */

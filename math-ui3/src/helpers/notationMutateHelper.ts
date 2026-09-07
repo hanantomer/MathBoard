@@ -522,10 +522,18 @@ export default function notationMutateHelper() {
           (n as unknown as CircleAttributes).cy += deltaY;
           break;
 
-        case "CONIC":
-          (n as unknown as ConicAttributes).hx += deltaX;
-          (n as unknown as ConicAttributes).hy += deltaY;
+        case "CONIC": {
+          const conic = n as unknown as ConicAttributes;
+          conic.hx += deltaX;
+          conic.hy += deltaY;
+          if (conic.through) {
+            conic.through = conic.through.map((p) => ({
+              x: p.x + deltaX,
+              y: p.y + deltaY,
+            }));
+          }
           break;
+        }
 
         case "ANNOTATION":
           (n as unknown as AnnotationNotationAttributes).x += deltaX;
@@ -1558,6 +1566,7 @@ export default function notationMutateHelper() {
       axis: conicAttributes.axis,
       a: conicAttributes.a,
       b: conicAttributes.b,
+      through: conicAttributes.through,
       boardType: requireBoardParent().type,
       parentUUId: requireBoardParent().uuid,
       notationType: "CONIC",
@@ -1945,17 +1954,21 @@ export default function notationMutateHelper() {
     if (!clickedCell) return;
     selectionHelper.setSelectedCell(clickedCell, false);
 
-    const horizontalLinecellCoordinates = {
-      x: Math.round(clickedCell.col * cellStore.getCellHorizontalWidth()),
-      y: Math.round(clickedCell.row * cellStore.getCellVerticalHeight()),
-    };
+    const originX = Math.round(
+      clickedCell.col * cellStore.getCellHorizontalWidth(),
+    );
+    const originY = Math.round(
+      clickedCell.row * cellStore.getCellVerticalHeight(),
+    );
+    const halfX = Math.max(200, 10 * cellStore.getCellHorizontalWidth());
+    const halfY = Math.max(200, 10 * cellStore.getCellVerticalHeight());
 
     const horizontalUuid = await addLineNotation(
       {
-        p1x: horizontalLinecellCoordinates.x - 200,
-        p1y: horizontalLinecellCoordinates.y,
-        p2x: horizontalLinecellCoordinates.x + 200,
-        p2y: horizontalLinecellCoordinates.y,
+        p1x: originX - halfX,
+        p1y: originY,
+        p2x: originX + halfX,
+        p2y: originY,
         dashed: false,
         arrowLeft: false,
         arrowRight: true,
@@ -1965,10 +1978,10 @@ export default function notationMutateHelper() {
 
     const verticalUuid = await addLineNotation(
       {
-        p1x: horizontalLinecellCoordinates.x,
-        p1y: horizontalLinecellCoordinates.y - 200,
-        p2x: horizontalLinecellCoordinates.x,
-        p2y: horizontalLinecellCoordinates.y + 200,
+        p1x: originX,
+        p1y: originY - halfY,
+        p2x: originX,
+        p2y: originY + halfY,
         dashed: false,
         arrowLeft: true,
         arrowRight: false,
@@ -2112,6 +2125,7 @@ export default function notationMutateHelper() {
 
     handleSpaceOnSelectedCell,
     handleEnterOnSelectedCell,
+    scrollSelectedCellIntoView,
     handleBackspaceOnSelectedCell,
     pushNotationsFromSelectedCell,
     deleteSelectedNotations,

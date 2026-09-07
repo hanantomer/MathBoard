@@ -40,6 +40,38 @@ describe("normalizePastedBoardText", () => {
       normalizePastedBoardText("", "<p>Find AD</p><p>Hence find the area</p>"),
     ).toBe("Find AD\nHence find the area");
   });
+
+  it("collapses a stem repeated three times on one line", () => {
+    const stem = "In △ABC, AB = 13 cm, BC = 14 cm and AC = 15 cm.";
+    const rest = "(D) is a point on (BC) such that (AD) is the altitude to (BC).";
+    expect(normalizePastedBoardText(`${stem} ${stem} ${stem} ${rest}`)).toBe(
+      `${stem} ${rest}`,
+    );
+  });
+
+  it("collapses a stem glued three times without spaces", () => {
+    const stem = "Calculate the length of (AD).";
+    expect(normalizePastedBoardText(`${stem}${stem}${stem} Hence find the area.`)).toBe(
+      `${stem} Hence find the area.`,
+    );
+  });
+
+  it("collapses identical consecutive lines", () => {
+    const stem = "In △ABC, AB = 13 cm, BC = 14 cm and AC = 15 cm.";
+    expect(normalizePastedBoardText([stem, stem, stem, "1. Find AD."].join("\n"))).toBe(
+      `${stem}\n1. Find AD.`,
+    );
+  });
+
+  it("collapses a payload copied three times", () => {
+    const once = "In △ABC, AB = 13 cm, BC = 14 cm and AC = 15 cm.";
+    expect(normalizePastedBoardText(`${once}\n\n${once}\n\n${once}`)).toBe(once);
+  });
+
+  it("does not collapse short repeated words", () => {
+    const line = "A very very very small angle is given.";
+    expect(normalizePastedBoardText(line)).toBe(line);
+  });
 });
 
 describe("escapeTextForHtml", () => {

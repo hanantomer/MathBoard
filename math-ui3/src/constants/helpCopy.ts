@@ -106,7 +106,7 @@ export const TOOL_TOOLTIPS: Record<string, string> = {
   curve: "Curve — drag a segment; it stays selected after you release",
   circle: "Circle — it stays selected after you release",
   parabola:
-    "Parabola — click the vertex, then drag to size. Round handle moves; side handle sizes; top handle opens",
+    "Parabola — click 3 points the curve must pass through (intercepts work well). Undo last point to go back. Then drag a numbered point to refit.",
   hyperbola:
     "Hyperbola — click the center, then drag to a vertex. Round handle moves; square handles size and open",
   sqrt: "Square root — insert at the selected cell (Alt+S). Select symbols first to draw the bar over them",
@@ -242,14 +242,17 @@ const EDIT_MODE_HINTS: Partial<Record<EditMode | GlobalEditMode, string>> = {
   DIVISIONLINE_STARTED:
     "Drag a horizontal division line. It stays selected when you release.",
   DIVISIONLINE_DRAWING: "Release to place. The line stays selected.",
-  CONIC_DRAWING: "Release to place. The shape stays selected.",
+  CONIC_DRAWING:
+    "Click the next numbered point, or Undo last point to go back.",
   CONIC_SELECTED:
-    "Round handle moves. Side square handle changes size. Axis square handle changes how open the curve is.",
+    "Numbered points are on the curve — drag one to refit. Round handle moves the shape. Side handle changes drawn width.",
   PARABOLA_STARTED:
-    "Click the vertex, then drag to set the width. Use the axis handle to open or flatten the parabola.",
+    "Click 3 points the curve must pass through (intercepts work well). Undo last point to go back.",
   HYPERBOLA_STARTED:
     "Click the center, then drag to a vertex. Round handle moves; square handles size and open the branches.",
   ANNOTATION_STARTED: `Click to place text. ${stickyExitHint("Annotation")}.`,
+  ANNOTATION_WRITING:
+    "Type a short label, then Enter or click outside. Esc cancels.",
   AREA_SELECTION_STARTED: getSelectionHelpText(),
   CURVE_STARTED: "Drag to draw a curve. The curve stays selected when you release.",
   CURVE_DRAWING: "Release to place. The curve stays selected.",
@@ -269,11 +272,7 @@ export function getActiveToolDisplay(
   if (!label) {
     return null;
   }
-  const hint =
-    EDIT_MODE_HINTS[editMode] ??
-    (editMode in EDIT_MODE_STATUS
-      ? "See the status message at the bottom for details."
-      : "");
+  const hint = EDIT_MODE_HINTS[editMode] ?? getEditModeStatusText(editMode) ?? "";
   return { label, hint };
 }
 
@@ -299,14 +298,14 @@ export function getEditModeStatusText(
     EXPONENT_WRITING: "Type exponent and then click outside or press enter",
     CIRCLE_STARTED: "Drag to draw a circle. The circle stays selected when you release.",
     PARABOLA_STARTED:
-      "Click the vertex, then drag to set the width. The axis handle opens or flattens; the side handle sizes.",
+      "Click 3 points the curve must pass through (intercepts work well). Undo last point to go back.",
     HYPERBOLA_STARTED:
       "Click the center, then drag to a vertex. Round handle moves; square handles size and open.",
     CONIC_SELECTED:
-      "Round handle moves. Side handle sizes. Axis handle opens or flattens.",
+      "Drag a numbered point to refit the curve. Round handle moves the shape. Side handle changes drawn width.",
     ANNOTATION_STARTED: `Click everywhere to add annotation text. ${stickyExitHint("Annotation")}.`,
     ANNOTATION_WRITING:
-      "Type annotation text and then click outside or press enter",
+      "Type a short label, then Enter or click outside. Esc cancels.",
     POLYGON_STARTED: `Click and drag for each segment. Close on the start. ${stickyExitHint("Polyline")}.`,
     POLYGON_DRAWING: `Drag the next segment, or close on the start. ${stickyExitHint("Polyline")}.`,
     LINE_STARTED:

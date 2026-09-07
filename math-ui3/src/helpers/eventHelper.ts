@@ -59,6 +59,17 @@ function onWindowKeyDown(e: KeyboardEvent) {
   ) {
     e.preventDefault();
   }
+  if (
+    !inField &&
+    authorizationHelper.canEdit() &&
+    (e.key === "ArrowUp" ||
+      e.key === "ArrowDown" ||
+      e.key === "ArrowLeft" ||
+      e.key === "ArrowRight") &&
+    editModeStore.getEditMode().endsWith("SELECTED")
+  ) {
+    e.preventDefault();
+  }
 }
 
 function registerKeyUp() {
@@ -330,7 +341,12 @@ export default function eventHelper() {
     const isTouch = e.pointerType === "touch";
     const isActivePointer = isTouch ? e.isPrimary : (e.buttons & 1) !== 0;
 
-    if (!isActivePointer) return;
+    if (
+      !isActivePointer &&
+      editModeStore.getEditMode() !== "PARABOLA_STARTED"
+    ) {
+      return;
+    }
 
     eventBus.emit("EV_SVG_POINTERMOVE", e);
   }

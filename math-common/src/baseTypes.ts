@@ -123,6 +123,8 @@ export type ConicAttributes = {
   axis: ConicAxis;
   a: number; // pixel-space curvature / vertex scale; sign is opening / branch side
   b?: number; // parabola: drawn half-width (size). hyperbola: conjugate scale (opening)
+  /** Points the parabola was fit through; dragging one refits. */
+  through?: DotCoordinates[];
 };
 
 export type RectAttributes = {

@@ -245,7 +245,8 @@ export const useEditModeStore = defineStore("editMode", () => {
       editMode.value === "CONIC_DRAWING" ||
       editMode.value === "CONIC_EDITING_VERTEX" ||
       editMode.value === "CONIC_EDITING_SCALE" ||
-      editMode.value === "CONIC_EDITING_OPENING"
+      editMode.value === "CONIC_EDITING_OPENING" ||
+      editMode.value === "CONIC_EDITING_THROUGH"
     );
   }
 
