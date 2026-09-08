@@ -1960,8 +1960,9 @@ export default function notationMutateHelper() {
     const originY = Math.round(
       clickedCell.row * cellStore.getCellVerticalHeight(),
     );
-    const halfX = Math.max(200, 10 * cellStore.getCellHorizontalWidth());
-    const halfY = Math.max(200, 10 * cellStore.getCellVerticalHeight());
+    // Cells are twice as tall as wide (16.5×33), so ±6 cols and ±3 rows is square.
+    const halfX = 6 * cellStore.getCellHorizontalWidth();
+    const halfY = 3 * cellStore.getCellVerticalHeight();
 
     const horizontalUuid = await addLineNotation(
       {

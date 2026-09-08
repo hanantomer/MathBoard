@@ -73,6 +73,36 @@
             role="button"
             class="toolbar-mode-btn"
           >
+          <svg
+            v-if="item.icon === 'cartesian-axes'"
+            class="toolbar-cartesian-icon"
+            viewBox="0 0 24 24"
+            width="22"
+            height="22"
+            aria-hidden="true"
+            focusable="false"
+          >
+            <line
+              x1="3"
+              y1="12"
+              x2="17.2"
+              y2="12"
+              stroke="currentColor"
+              stroke-width="1.8"
+              stroke-linecap="round"
+            />
+            <polygon points="21,12 16,9.1 16,14.9" fill="currentColor" />
+            <line
+              x1="12"
+              y1="21"
+              x2="12"
+              y2="6.8"
+              stroke="currentColor"
+              stroke-width="1.8"
+              stroke-linecap="round"
+            />
+            <polygon points="12,3 9.1,8 14.9,8" fill="currentColor" />
+          </svg>
           <v-icon
             color="white"
             v-if="item.icon_class"
@@ -89,7 +119,7 @@
 
           <v-icon
             color="white"
-            v-if="!item.icon_class"
+            v-if="!item.icon_class && item.icon !== 'cartesian-axes'"
             :style="{ transform: 'rotate(' + item.rotate + 'deg)' }"
             :icon="item.icon"
           >
@@ -417,7 +447,7 @@ const modeButtons: Array<{
     globalEditMode: "TEXT" as GlobalEditMode,
     tooltip: "cartesian system",
     icon_class: "",
-    icon: "mdi-chart-line",
+    icon: "cartesian-axes",
     overlay_icon: "",
     rotate: 0,
     tabIndex: 11,
@@ -750,6 +780,19 @@ function getAnswerCheckButtonClass(item: { editMode: EditMode }) {
   color: rgba(255, 255, 255, 0.45) !important;
 }
 
+.toolbar-cartesian-icon {
+  display: block;
+  width: 22px;
+  height: 22px;
+  flex-shrink: 0;
+  color: #fff;
+}
+
+.vertical-toolbar :deep(button.v-btn.toolbar-mode-btn--disabled .toolbar-cartesian-icon),
+.vertical-toolbar :deep(button.v-btn:disabled .toolbar-cartesian-icon) {
+  color: rgba(255, 255, 255, 0.45) !important;
+}
+
 .vertical-toolbar :deep(button.v-btn.toolbar-mode-btn--disabled .material-symbols-outlined),
 .vertical-toolbar :deep(button.v-btn:disabled .material-symbols-outlined) {
   color: rgba(255, 255, 255, 0.45) !important;
@@ -787,6 +830,10 @@ span.v-btn__overlay {
 }
 
 .vertical-toolbar :deep(.toolbar-mode-btn--active .v-icon) {
+  color: #e3f2fd !important;
+}
+
+.vertical-toolbar :deep(.toolbar-mode-btn--active .toolbar-cartesian-icon) {
   color: #e3f2fd !important;
 }
 
