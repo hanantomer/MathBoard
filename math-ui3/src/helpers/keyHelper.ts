@@ -7,6 +7,11 @@ import useNotationMutateHelper from "../helpers/notationMutateHelper";
 import useSelectionHelper from "../helpers/selectionHelper";
 import useEventBus from "../helpers/eventBusHelper";
 import { useParabolaPlacement } from "../composables/useParabolaPlacement";
+import {
+  firstOccupiedCell,
+  lastOccupiedCell,
+  lastOccupiedColOnRow,
+} from "./cellJumpLogic";
 type keyType = "SYMBOL" | "MOVEMENT" | "DELETION" | "MOVEANDDELETE" | "PUSH" | "PUSH_VERTICAL";
 
 const editModeStore = useEditModeStore();
@@ -263,6 +268,13 @@ export default function () {
 
       if (editModeStore.getEditMode() === "EXPONENT_WRITING") return;
 
+      if (code === "Home" || code === "End") {
+        if (editModeStore.getEditMode().endsWith("SELECTED")) {
+          handleMovementKey(code, e);
+        }
+        return;
+      }
+
       if (ctrlKey || altKey || shouldIgnoreOsShortcutSymbol(e)) {
         return;
       }
@@ -303,7 +315,7 @@ export default function () {
         }
 
         case "MOVEMENT": {
-          return handleMovementKey(code);
+          return handleMovementKey(code, e);
         }
 
         case "MOVEANDDELETE": {
@@ -345,8 +357,15 @@ export default function () {
     await notationMutateHelper.handleEnterOnSelectedCell();
   }
 
-  function handleMovementKey(key: string) {
+  function handleMovementKey(key: string, e?: KeyboardEvent) {
     if (!editModeStore.getEditMode().endsWith("SELECTED")) {
+      return;
+    }
+
+    if (key === "Home" || key === "End") {
+      jumpHomeEnd(key === "End", !!(e?.ctrlKey || e?.metaKey));
+      notationMutateHelper.scrollSelectedCellIntoView();
+      selectCurrentCellNotation();
       return;
     }
 
@@ -376,6 +395,29 @@ export default function () {
     }
 
     selectCurrentCellNotation();
+  }
+
+  function jumpHomeEnd(toEnd: boolean, wholeBoard: boolean) {
+    const notations = notationStore.getNotations();
+    if (wholeBoard) {
+      const cell = toEnd
+        ? lastOccupiedCell(notations)
+        : firstOccupiedCell(notations);
+      if (cell) matrixCellHelper.setCell(cell.col, cell.row);
+      return;
+    }
+
+    const current = cellStore.getSelectedCell();
+    if (!current || current.row == null) return;
+
+    if (!toEnd) {
+      matrixCellHelper.setCell(0, current.row);
+      return;
+    }
+
+    const lastCol = lastOccupiedColOnRow(notations, current.row);
+    if (lastCol == null) return;
+    matrixCellHelper.setCell(lastCol, current.row);
   }
 
   // select a notation occupied by selected cell

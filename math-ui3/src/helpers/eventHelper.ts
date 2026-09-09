@@ -70,6 +70,24 @@ function onWindowKeyDown(e: KeyboardEvent) {
   ) {
     e.preventDefault();
   }
+  if (!inField && (e.key === "Home" || e.key === "End")) {
+    e.preventDefault();
+    const jumpCaret =
+      authorizationHelper.canEdit() &&
+      editModeStore.getEditMode().endsWith("SELECTED");
+    if (!jumpCaret) {
+      scrollMathboardHomeEnd(e.key === "End");
+    }
+  }
+}
+
+function scrollMathboardHomeEnd(toEnd: boolean) {
+  const el = document.querySelector(".mathboard-scroll");
+  if (!(el instanceof HTMLElement)) return;
+  el.scrollTo({
+    top: toEnd ? el.scrollHeight : 0,
+    behavior: "auto",
+  });
 }
 
 function registerKeyUp() {

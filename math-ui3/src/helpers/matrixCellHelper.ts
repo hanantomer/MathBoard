@@ -73,6 +73,16 @@ export default function useMatrixCellHelper() {
     }
   }
 
+  function setCell(col: number, row: number) {
+    selectionHelper.setSelectedCell(
+      {
+        col: Math.max(0, Math.min(col, matrixDimensions.colsNum - 1)),
+        row: Math.max(0, Math.min(row, matrixDimensions.rowsNum - 1)),
+      },
+      true,
+    );
+  }
+
   function getCellElement(svgId: string, cell: CellAttributes): HTMLElement | null {
     return document
       ?.querySelector<HTMLElement>(
@@ -136,6 +146,7 @@ export default function useMatrixCellHelper() {
   return {
     colorizeCell,
     resetAllCellColors,
+    setCell,
     setNextCell,
     showSelectedCell,
   };
