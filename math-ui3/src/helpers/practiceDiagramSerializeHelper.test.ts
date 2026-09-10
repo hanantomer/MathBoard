@@ -47,8 +47,16 @@ function sym(
     col,
     row,
     value,
-    followsFraction: false,
   };
+}
+
+function exp(
+  uuid: string,
+  col: number,
+  row: number,
+  value: string,
+): PointNotationAttributes {
+  return { ...sym(uuid, col, row, value), notationType: "EXPONENT" };
 }
 
 function ann(
@@ -212,6 +220,31 @@ describe("serializePracticeFractions", () => {
     expect(inserts.map((i) => i.text)).toEqual(["(a)/(b)"]);
     expect(consumedUuids.has("a")).toBe(true);
     expect(consumedUuids.has("b")).toBe(true);
+  });
+
+  it("keeps ∫xdx = x²/2 + C on one line when the algebra is on the numerator row", () => {
+    const y = 6 * cell.cellH;
+    const notations = [
+      sym("int", 2, 5, "∫"),
+      sym("x1", 3, 5, "x"),
+      sym("d", 4, 5, "d"),
+      sym("x2", 5, 5, "x"),
+      sym("eq", 6, 5, "="),
+      sym("xnum", 7, 5, "x"),
+      exp("pow", 8, 5, "2"),
+      divisionLine("bar", 7 * cell.cellW, y, 9 * cell.cellW, y),
+      sym("two", 7, 6, "2"),
+      sym("plus", 10, 5, "+"),
+      sym("c", 11, 5, "C"),
+    ];
+    const { inserts, consumedUuids } = serializePracticeFractions(
+      notations,
+      cell,
+    );
+    expect(inserts[0]?.text).toBe("(x^2)/(2)");
+    expect(inserts[0]?.row).toBe(5);
+    expect(consumedUuids.has("plus")).toBe(false);
+    expect(consumedUuids.has("c")).toBe(false);
   });
 
   it("keeps neighboring algebra on the baseline", () => {

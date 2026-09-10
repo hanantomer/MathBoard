@@ -337,11 +337,13 @@ export default function () {
             }
           }
           if (usePreviousShift && delayedShiftKeys.has(key)) {
-            return notationMutateHelper.addSymbolNotation(
+            await notationMutateHelper.addSymbolNotation(
               delayedShiftKeys.get(key)!,
             );
+            return;
           }
-          return notationMutateHelper.addSymbolNotation(key);
+          await notationMutateHelper.addSymbolNotation(key);
+          return;
         }
       }
     } finally {

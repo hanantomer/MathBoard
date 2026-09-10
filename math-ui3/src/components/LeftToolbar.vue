@@ -549,9 +549,9 @@ watchHelper.watchKeyEvent(
   (e: KeyboardEvent) => toolbarNavigation.handleShortcuts(e, modeButtons),
 );
 
-watchHelper.watchEditModeTransition(["CELL_SELECTED"], "LOG_STARTED", () =>
-  notationMutateHelper.addSymbolNotation("log"),
-);
+watchHelper.watchEditModeTransition(["CELL_SELECTED"], "LOG_STARTED", () => {
+  void notationMutateHelper.addSymbolNotation("log");
+});
 
 function doShowUploadDialog() {
   showUploadDialog.value = true;
@@ -693,8 +693,10 @@ function getAnswerCheckButtonClass(item: { editMode: EditMode }) {
 
 .vertical-toolbar {
   --app-bar-height: 64px;
-  --toolbar-gap: 10px;
+  --toolbar-gap: 8px;
+  --app-footer-height: 56px;
   --toolbar-top: calc(var(--app-bar-height) + var(--toolbar-gap));
+  --toolbar-bottom: var(--app-footer-height);
 
   position: fixed;
   top: var(--toolbar-top);
@@ -704,40 +706,25 @@ function getAnswerCheckButtonClass(item: { editMode: EditMode }) {
   align-items: center;
   width: 70px !important;
   max-width: 140px !important;
-  max-height: calc(100dvh - 84px) !important;
-  height: fit-content !important;
-  padding: 8px 6px !important;
+  height: calc(100dvh - var(--toolbar-top) - var(--toolbar-bottom)) !important;
+  max-height: calc(100dvh - var(--toolbar-top) - var(--toolbar-bottom)) !important;
+  padding: 4px 6px 6px !important;
   background: #202750;
   border-right: 1px solid rgba(255, 255, 255, 0.08);
   box-shadow: 2px 0 14px rgba(0, 0, 0, 0.18);
-  overflow-x: hidden;
-  overflow-y: auto;
-  overscroll-behavior: contain;
-  -webkit-overflow-scrolling: touch;
+  overflow: hidden;
+  overscroll-behavior: none;
   z-index: 1000;
 }
 
 /* Mobile styles */
 @media (max-width: 1023px) {
   .vertical-toolbar {
+    --toolbar-bottom: max(8px, env(safe-area-inset-bottom));
     width: 56px !important;
     max-width: 56px !important;
-    height: calc(
-      100svh - var(--toolbar-top) - max(10px, env(safe-area-inset-bottom))
-    ) !important;
-    max-height: calc(
-      100svh - var(--toolbar-top) - max(10px, env(safe-area-inset-bottom))
-    ) !important;
-    padding: 6px 4px !important;
-    overflow-x: hidden;
-    overflow-y: auto;
+    padding: 4px 2px 6px !important;
     box-shadow: 4px 0 16px rgba(0, 0, 0, 0.28);
-  }
-
-  .vertical-toolbar :deep(button.v-btn.toolbar-mode-btn),
-  .vertical-toolbar :deep(button.v-btn) {
-    min-width: 44px !important;
-    min-height: 44px !important;
   }
 }
 
@@ -761,11 +748,29 @@ function getAnswerCheckButtonClass(item: { editMode: EditMode }) {
 } */
 
 .toolbar-btn-wrap {
-  display: inline-flex;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 1 1 0;
+  min-height: 0;
+  width: 100%;
+}
+
+.vertical-toolbar > :not(.toolbar-section-label) {
+  flex: 1 1 0;
+  min-height: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
 }
 
 .vertical-toolbar :deep(button.v-btn) {
   background-color: transparent !important;
+  width: min(40px, 100%) !important;
+  height: min(40px, 100%) !important;
+  min-width: 28px !important;
+  min-height: 28px !important;
 }
 
 .vertical-toolbar :deep(button.v-btn.toolbar-mode-btn--disabled),
@@ -839,8 +844,9 @@ span.v-btn__overlay {
 
 .toolbar-section-label {
   display: block;
+  flex: 0 0 auto;
   width: 100%;
-  margin: 10px 0 4px;
+  margin: 6px 0 2px;
   font-size: 0.625rem;
   font-weight: 700;
   letter-spacing: 0.06em;

@@ -282,7 +282,7 @@ const bullets = [
   "Select, move, and Ctrl+drag to duplicate work",
   "Lines, text boxes, and optional free sketch",
   "Classroom: board sharing with your teacher and students",
-  "Practice: Check, text tips, or voice coach by subject",
+  "Practice: Check answer, tips, or spoken help by subject",
 ];
 </script>
 

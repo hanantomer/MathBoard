@@ -567,7 +567,7 @@ async function addDegreeLabel(explicit?: number) {
 
 async function addIntegral(start: string, end: string) {
   const value = start + " ∫ " + end;
-  notationMutateHelper.addSymbolNotation(value);
+  await notationMutateHelper.addSymbolNotation(value);
   maybeCloseAfterInsert();
 }
 
@@ -600,28 +600,28 @@ async function addVectorSymbol(symbolName: string, symbolValue: string) {
 }
 
 async function addVector(letter: string) {
-  notationMutateHelper.addSymbolNotation(vectorSymbolPrefix + letter);
+  await notationMutateHelper.addSymbolNotation(vectorSymbolPrefix + letter);
 }
 
 async function addVectorMagnitute(letter: string) {
-  notationMutateHelper.addSymbolNotation("||");
-  notationMutateHelper.addSymbolNotation(letter);
-  notationMutateHelper.addSymbolNotation("||");
+  await notationMutateHelper.addSymbolNotation("||");
+  await notationMutateHelper.addSymbolNotation(letter);
+  await notationMutateHelper.addSymbolNotation("||");
 }
 
 async function addVectorDotProduct(firstLetter: string, secondLetter: string) {
-  notationMutateHelper.addSymbolNotation(firstLetter);
-  notationMutateHelper.addSymbolNotation("·");
-  notationMutateHelper.addSymbolNotation(secondLetter);
+  await notationMutateHelper.addSymbolNotation(firstLetter);
+  await notationMutateHelper.addSymbolNotation("·");
+  await notationMutateHelper.addSymbolNotation(secondLetter);
 }
 
 async function addVectorCrossProduct(
   firstLetter: string,
   secondLetter: string,
 ) {
-  notationMutateHelper.addSymbolNotation(firstLetter);
-  notationMutateHelper.addSymbolNotation("×");
-  notationMutateHelper.addSymbolNotation(secondLetter);
+  await notationMutateHelper.addSymbolNotation(firstLetter);
+  await notationMutateHelper.addSymbolNotation("×");
+  await notationMutateHelper.addSymbolNotation(secondLetter);
 }
 
 async function addSpecialSymbol(symbolValue: string) {
@@ -642,13 +642,13 @@ async function addSpecialSymbol(symbolValue: string) {
     }
 
     if (isMultiCharLiteral(symbolValue)) {
-      addEachCharAsSymbol(symbolValue);
+      await addEachCharAsSymbol(symbolValue);
       maybeCloseAfterInsert();
       return;
     }
 
     // Default: add the symbol as-is (covers entities like &pi; and <math>…)
-    notationMutateHelper.addSymbolNotation(symbolValue);
+    await notationMutateHelper.addSymbolNotation(symbolValue);
     maybeCloseAfterInsert();
   }, 0);
 }
@@ -694,7 +694,7 @@ function isMultiCharLiteral(item: string) {
   );
 }
 
-function addEachCharAsSymbol(item: string) {
+async function addEachCharAsSymbol(item: string) {
   const chars = item.match(/[^(]|\([^)]*\)/g);
   if (!chars) return;
   let accumulatedSingleQuotes = "";
@@ -705,10 +705,10 @@ function addEachCharAsSymbol(item: string) {
       continue;
     }
     if (char != "'" && accumulatedSingleQuotes) {
-      notationMutateHelper.addSymbolNotation(accumulatedSingleQuotes);
+      await notationMutateHelper.addSymbolNotation(accumulatedSingleQuotes);
       accumulatedSingleQuotes = "";
     }
-    notationMutateHelper.addSymbolNotation(char);
+    await notationMutateHelper.addSymbolNotation(char);
   }
 }
 </script>

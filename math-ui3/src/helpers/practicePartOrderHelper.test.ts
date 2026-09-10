@@ -74,6 +74,14 @@ describe("withSeededFirstPartRow", () => {
       "2": 1,
     });
   });
+
+  it("does not seed a (1) mark when there are no sections", () => {
+    expect(
+      withSeededFirstPartRow([{ id: "1", text: "Whole problem" }], {
+        "1": 0,
+      }),
+    ).toEqual({});
+  });
 });
 
 describe("orderPartLabelRowsByList", () => {

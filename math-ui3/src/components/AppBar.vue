@@ -236,13 +236,14 @@
       Classroom
     </v-btn>
 
-    <!-- sign in / register — hidden on practice so tutor guests are not pushed to class -->
+    <!-- sign in / register -->
     <v-tooltip text="Sign in as Teacher" location="bottom">
       <template v-slot:activator="{ props }">
         <v-btn
           v-bind="props"
           v-show="showClassroomSignIn"
           icon
+          data-cy="app-bar-signin-teacher"
           v-on:click="showLoginDialog('TEACHER')"
         >
           <v-icon>mdi-account-tie</v-icon>
@@ -256,6 +257,7 @@
           v-bind="props"
           v-show="showClassroomSignIn"
           icon
+          data-cy="app-bar-signin-student"
           v-on:click="showLoginDialog('STUDENT')"
         >
           <v-icon>mdi-account-school-outline</v-icon>
@@ -364,9 +366,7 @@ const isPracticeRoute = computed(() => {
   );
 });
 
-const showClassroomSignIn = computed(
-  () => !user.value && !isPracticeRoute.value,
-);
+const showClassroomSignIn = computed(() => !user.value);
 
 const showClassroomHomeLink = computed(
   () => !user.value && isPracticeRoute.value,
@@ -395,11 +395,10 @@ function openHelp() {
 }
 
 function showLoginDialog(userType?: string) {
-  if (userType) {
-    router.push({ name: "login", query: { userType } });
-  } else {
-    router.push("/login");
-  }
+  const query: Record<string, string> = {};
+  if (userType) query.userType = userType;
+  if (isPracticeRoute.value) query.from = route.fullPath;
+  router.push({ name: "login", query });
 }
 
 function signOut() {

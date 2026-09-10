@@ -8,6 +8,7 @@ import {
 import { BoardType, NotationType, NotationTypeValues } from "common/unions";
 import {
   ensureNumberedParts,
+  hasPracticeSections,
 } from "common/practiceParts";
 import {
   formatPracticeProblemPrompt,
@@ -158,15 +159,34 @@ function joinStemNotations(notations: NotationAttributes[]): string {
   return symbols.join("");
 }
 
+function partsMatch(
+  a: { id: string; text: string }[],
+  b: { id: string; text: string }[],
+): boolean {
+  if (a.length !== b.length) return false;
+  return a.every((part, i) => part.id === b[i].id && part.text === b[i].text);
+}
+
 function submitStemIfNeeded(questionUUId: string, stemText: string) {
   const practiceStore = usePracticeStore();
   const text = stemText.trim();
   if (!text) return;
   const session = practiceStore.getSession(questionUUId);
-  if (session.submitted && session.problemText === text) return;
+  const parts = ensureNumberedParts(text);
+  const leftoverNumbers =
+    !hasPracticeSections(parts) &&
+    Object.keys(session.partLabelRows ?? {}).length > 0;
+  if (
+    session.submitted &&
+    session.problemText === text &&
+    partsMatch(session.parts, parts) &&
+    !leftoverNumbers
+  ) {
+    return;
+  }
   practiceStore.submitProblem(questionUUId, {
     problemText: text,
-    parts: ensureNumberedParts(text),
+    parts,
   });
 }
 

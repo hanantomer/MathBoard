@@ -5,10 +5,12 @@ import {
   formatPracticePartsBlock,
   formatPracticeStudentWorkLines,
   formatStudentWorkByParts,
+  hasPracticeSections,
   normalizeExtractedParts,
   parsePracticeProblemParts,
   practiceProblemPreamble,
   promotePracticePartHeader,
+  splitPracticeProblemHeading,
   stripPracticeTutorMarkup,
   workForActivePart,
   workForActivePartReview,
@@ -97,6 +99,35 @@ describe("parsePracticeProblemParts", () => {
       ),
     ).toEqual([]);
   });
+
+  it("does not split a title plus one setup and one question", () => {
+    expect(
+      parsePracticeProblemParts(
+        [
+          "Probability of two independent events",
+          "A fair coin is tossed twice, then a fair die is rolled.",
+          "Events are independent. Find P(heads, heads, even).",
+        ].join("\n"),
+      ),
+    ).toEqual([]);
+    expect(
+      parsePracticeProblemParts(
+        [
+          "Percent increase and decrease",
+          "A store price increases from $40 to $50.",
+          "What is the percent increase?",
+        ].join("\n"),
+      ),
+    ).toEqual([]);
+  });
+
+  it("does not split a title and a single Find prompt", () => {
+    expect(
+      parsePracticeProblemParts(
+        ["Area of a triangle", "Find the area of the triangle."].join("\n"),
+      ),
+    ).toEqual([]);
+  });
 });
 
 describe("formatPracticePartsBlock", () => {
@@ -171,6 +202,37 @@ describe("ensureNumberedParts", () => {
     expect(ensureNumberedParts("")).toEqual([
       { id: "1", text: "Whole problem" },
     ]);
+    expect(
+      hasPracticeSections(ensureNumberedParts("Solve 2x + 3 = 11")),
+    ).toBe(false);
+    expect(hasPracticeSections(ensureNumberedParts(QUADRATIC))).toBe(true);
+  });
+});
+
+describe("splitPracticeProblemHeading", () => {
+  it("bolds a catalog title and keeps the question as the body", () => {
+    expect(
+      splitPracticeProblemHeading(
+        [
+          "Probability of two independent events",
+          "A fair coin is tossed twice, then a fair die is rolled.",
+          "Events are independent. Find P(heads, heads, even).",
+        ].join("\n"),
+      ),
+    ).toEqual({
+      title: "Probability of two independent events",
+      body: [
+        "A fair coin is tossed twice, then a fair die is rolled.",
+        "Events are independent. Find P(heads, heads, even).",
+      ].join("\n"),
+    });
+  });
+
+  it("does not treat a single-line question as a title", () => {
+    expect(splitPracticeProblemHeading("Solve 2x + 3 = 11")).toEqual({
+      title: "",
+      body: "Solve 2x + 3 = 11",
+    });
   });
 });
 
@@ -330,5 +392,34 @@ describe("formatPracticeProblemPrompt", () => {
     expect(ensureNumberedParts(prompt)).toEqual([
       { id: "1", text: "Whole problem" },
     ]);
+  });
+
+  it("lists givens without dumping triangle vertex labels", () => {
+    const template = PRACTICE_QUESTION_TEMPLATES.find(
+      (t) => t.id === "geometry-pythagorean-hypotenuse",
+    )!;
+    const prompt = formatPracticeProblemPrompt(template);
+    expect(prompt).toContain("Pythagorean theorem — find the hypotenuse");
+    expect(prompt).toContain("In △ABC, find the length of hypotenuse c.");
+    expect(prompt).toContain("Given:");
+    expect(prompt).toContain("∠C = 90°");
+    expect(prompt).toContain("a = 3");
+    expect(prompt).toContain("b = 4");
+    expect(prompt).toContain("c = ?");
+    expect(prompt).not.toMatch(/^90°$/m);
+    expect(prompt.split("\n")).not.toContain("A");
+    expect(prompt.split("\n")).not.toContain("CB");
+    expect(prompt.split("\n")).not.toContain("C");
+    expect(prompt.split("\n")).not.toContain("B");
+  });
+
+  it("keeps catalog stems as one problem when they are only a head and question", () => {
+    for (const template of PRACTICE_QUESTION_TEMPLATES) {
+      const prompt = formatPracticeProblemPrompt(template);
+      expect(
+        ensureNumberedParts(prompt),
+        `${template.id} should stay one problem`,
+      ).toEqual([{ id: "1", text: "Whole problem" }]);
+    }
   });
 });

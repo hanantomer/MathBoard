@@ -22,6 +22,7 @@ export function withSeededFirstPartRow(
   parts: PracticeProblemPart[],
   partLabelRows?: Record<string, number> | null,
 ): Record<string, number> {
+  if (parts.length < 2) return {};
   const rows: Record<string, number> = {};
   for (const [id, row] of Object.entries(partLabelRows ?? {})) {
     if (typeof row === "number" && row >= 0) rows[id] = row;

@@ -193,7 +193,7 @@ async function processOcrBatch() {
       x: rendered.center.x + rect.left,
       y: rendered.center.y + rect.top,
     });
-    notationMutateHelper.addSymbolNotationAtCell(cell, symbol);
+    await notationMutateHelper.addSymbolNotationAtCell(cell, symbol);
   } catch (error) {
     console.error("Sketch OCR failed:", error);
     await saveStrokesAsFreeSketches(strokes);

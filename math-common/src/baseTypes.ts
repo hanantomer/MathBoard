@@ -36,10 +36,6 @@ export type SingleValueAttributes = {
   value: string;
 };
 
-export type SymbolAttributes = {
-  followsFraction: boolean;
-};
-
 export type ColorAttributes = {
   id?: number;
   value: string;
@@ -154,8 +150,7 @@ export type PointNotationAttributes =
   EntityAttributes &
     NotationAttributes &
     CellAttributes &
-    SingleValueAttributes &
-    SymbolAttributes;
+    SingleValueAttributes;
 
 export type LineNotationAttributes =
   EntityAttributes &

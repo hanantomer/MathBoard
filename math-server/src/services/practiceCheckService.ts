@@ -20,12 +20,14 @@ import {
   yInterceptCoachOverride,
   workHasMaxOrMin,
   workHasParabolaGraph,
+  normalizePracticeMatch,
+  coachNagsAboutPresentIntegrationConstant,
+  workMatchesExpectedAnswer,
 } from "../../../math-common/build/practiceAlgebra";
 import {
   formatPracticeActiveContext,
   normalizeExtractedParts,
   parsePracticeProblemParts,
-  stripPracticeTutorMarkup,
   workForActivePartReview,
 } from "../../../math-common/build/practiceParts";
 
@@ -107,14 +109,7 @@ function partsSection(problemText?: string, ctx?: PracticePartsCtx): string {
 }
 
 function normalizeLoose(value: string): string {
-  return stripPracticeTutorMarkup(value)
-    .toLowerCase()
-    .replace(/\s+/g, "")
-    .replace(/×/g, "*")
-    .replace(/÷/g, "/")
-    .replace(/−/g, "-")
-    .replace(/²/g, "^2")
-    .replace(/³/g, "^3");
+  return normalizePracticeMatch(value);
 }
 
 function localQuickMatch(
@@ -483,6 +478,8 @@ Do not nag about work that is already on the board:
 - spelling, "square" vs rectangle, height vs length, or other equivalent names
 - plugging back in / "now check your work" when the asked-for result is already present
 - completing-the-square or distribution mistakes on earlier lines after a later line is already simplified a(x-h)^2+k
+- moving +C onto "the same line" when +C is already in the work. Stacked fractions occupy several grid rows; they are one math line.
+- mentioning the constant of integration at all if +C or +c is already present
 Treat "inferred right angle" / "figure ~N°" as geometry of the drawing, not a value they wrote.
 Board text is grid symbols and may omit spaces; do not treat missing spaces as errors.
 
@@ -709,7 +706,12 @@ export async function checkPracticeWork(
   if (rewrite) return { ...rewrite, partComplete: rewrite.correct };
   if (
     !multiPart &&
-    localQuickMatch(work, template.expectedAnswer, template.acceptedAnswers)
+    (localQuickMatch(work, template.expectedAnswer, template.acceptedAnswers) ||
+      workMatchesExpectedAnswer(
+        work,
+        template.expectedAnswer,
+        template.acceptedAnswers,
+      ))
   ) {
     return {
       correct: true,
@@ -794,7 +796,8 @@ function parseCoachResult(
   }
   if (
     coachAsksToFindAlreadyAssigned(tip, studentWork) ||
-    coachAcknowledgedDoneThenAskedMore(tip)
+    coachAcknowledgedDoneThenAskedMore(tip) ||
+    coachNagsAboutPresentIntegrationConstant(tip, studentWork)
   ) {
     return { speak: false, tip: "" };
   }
@@ -931,7 +934,12 @@ export async function coachPracticeWork(
   if (
     !multiPart &&
     work &&
-    localQuickMatch(work, template.expectedAnswer, template.acceptedAnswers)
+    (localQuickMatch(work, template.expectedAnswer, template.acceptedAnswers) ||
+      workMatchesExpectedAnswer(
+        work,
+        template.expectedAnswer,
+        template.acceptedAnswers,
+      ))
   ) {
     return { speak: false, tip: "" };
   }

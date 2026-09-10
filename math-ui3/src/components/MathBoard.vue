@@ -114,6 +114,7 @@ import useNotationLoadingHelper from "../helpers/notationLoadingHelper";
 import { loadPracticeBoard } from "../helpers/practiceBoardAdapter";
 import { ensurePartRow } from "../helpers/practicePartLabelHelper";
 import { usePracticeStore } from "../store/pinia/practiceStore";
+import { hasPracticeSections } from "common/practiceParts";
 import useMatrixHelper from "../helpers/matrixHelper";
 import useEventHelper from "../helpers/eventHelper";
 import useWatchHelper from "../helpers/watchHelper";
@@ -224,11 +225,11 @@ const rowsNum = matrixDimensions.rowsNum;
 
 const showPracticeGutter = computed(() => {
   if (!props.loaded) return false;
-  if (props.practiceGutter) return true;
   const parent = notationStore.getParent();
   if (parent?.type !== "PRACTICE" || !parent.uuid) return false;
   void practiceStore.sessions;
-  return practiceStore.getSession(parent.uuid).submitted;
+  const session = practiceStore.getSession(parent.uuid);
+  return session.submitted && hasPracticeSections(session.parts);
 });
 
 const gutterMarks = computed(() => {

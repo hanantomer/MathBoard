@@ -6,6 +6,7 @@ import {
 } from "common/baseTypes";
 import {
   detectLinePartId,
+  hasPracticeSections,
   isPracticePartLabelOnly,
 } from "common/practiceParts";
 import { useCellStore } from "../store/pinia/cellStore";
@@ -291,6 +292,7 @@ export function ensureActivePartLabel(row: number) {
   const questionUUId = getPracticeQuestionUUId();
   const session = practiceStore.getSession(questionUUId);
   if (!session.submitted || !session.activePartId) return;
+  if (!hasPracticeSections(session.parts)) return;
 
   snapSelectedCellOutOfGutter(row);
   const started = startedPartIdsFromSession(session);
@@ -318,6 +320,7 @@ export function ensurePartRow(partId: string) {
   const questionUUId = getPracticeQuestionUUId();
   const session = practiceStore.getSession(questionUUId);
   if (!session.submitted) return;
+  if (!hasPracticeSections(session.parts)) return;
 
   const existing = session.partLabelRows?.[id];
   if (typeof existing === "number" && existing >= 0) {

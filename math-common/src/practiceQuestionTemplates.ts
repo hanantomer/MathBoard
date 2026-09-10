@@ -84,14 +84,14 @@ export const PRACTICE_QUESTION_TEMPLATES: PracticeQuestionTemplate[] = [
     expectedAnswer: "5",
     acceptedAnswers: ["c = 5", "c=5"],
     notations: [
-      text(2, 40, 1, 2, "Find the length of the hypotenuse."),
+      text(2, 44, 1, 2, "In △ABC, find the length of hypotenuse c."),
       line(8, 22, 32, 22),
       line(8, 22, 8, 8),
       line(8, 8, 32, 22),
       sym(6, 22, "C"),
       sym(33, 22, "B"),
       sym(6, 7, "A"),
-      ann(9, 22, "90°"),
+      ann(9, 22, "∠C = 90°"),
       ann(6, 15, "a = 3"),
       ann(19, 23, "b = 4"),
       ann(21, 14, "c = ?"),
@@ -157,7 +157,13 @@ export const PRACTICE_QUESTION_TEMPLATES: PracticeQuestionTemplate[] = [
     subject: "Calculus",
     name: "Evaluate ∫ x dx",
     expectedAnswer: "(1/2)x² + C",
-    acceptedAnswers: ["x²/2 + C", "x^2/2 + C", "(1/2)x^2 + C"],
+    acceptedAnswers: [
+      "x²/2 + C",
+      "x^2/2 + C",
+      "(1/2)x^2 + C",
+      "(x^2)/(2) + C",
+      "(x²)/(2) + C",
+    ],
     notations: [
       text(2, 32, 1, 2, "Evaluate the indefinite integral:"),
       sym(2, 5, "∫"),
@@ -233,29 +239,44 @@ export function getPracticeQuestionTemplateByUUId(
   return PRACTICE_QUESTION_TEMPLATES.find((t) => t.uuid === uuid);
 }
 
-/** Flatten stem text/symbols into a short problem description for grading. */
+function isDiagramPointLabel(value: string): boolean {
+  return /^[A-Za-z]{1,3}$/.test(value.trim());
+}
+
+function isMathSymbolRow(value: string): boolean {
+  const t = value.trim();
+  if (!t || isDiagramPointLabel(t)) return false;
+  return /[\d=+\-×÷*/^()∫]/.test(t);
+}
+
+/** Flatten stem text into a problem statement: title, question, givens. */
 export function formatPracticeProblemPrompt(
   template: PracticeQuestionTemplate,
 ): string {
-  const lines: string[] = [];
-  const pushLine = (raw: string) => {
+  const seen = new Set<string>();
+  const take = (bucket: string[], raw: string) => {
     const line = raw.trim();
     if (!line) return;
-    const compact = line.replace(/\s+/g, "");
-    if (lines.some((existing) => existing.replace(/\s+/g, "") === compact)) {
-      return;
-    }
-    lines.push(line);
+    const key = line.replace(/\s+/g, "");
+    if (seen.has(key)) return;
+    seen.add(key);
+    bucket.push(line);
   };
 
-  pushLine(template.name);
+  const title: string[] = [];
+  const questions: string[] = [];
+  const givens: string[] = [];
+  const expressions: string[] = [];
+  take(title, template.name);
 
   const symbolsByRow = new Map<number, Array<{ col: number; text: string }>>();
   for (const item of template.notations) {
     switch (item.kind) {
       case "TEXT":
+        take(questions, item.value);
+        break;
       case "ANNOTATION":
-        pushLine(item.value);
+        if (!isDiagramPointLabel(item.value)) take(givens, item.value);
         break;
       case "SYMBOL":
       case "EXPONENT": {
@@ -274,8 +295,14 @@ export function formatPracticeProblemPrompt(
   const rows = [...symbolsByRow.keys()].sort((a, b) => a - b);
   for (const row of rows) {
     const cells = (symbolsByRow.get(row) ?? []).sort((a, b) => a.col - b.col);
-    pushLine(cells.map((c) => c.text).join(""));
+    const joined = cells.map((c) => c.text).join("");
+    if (isMathSymbolRow(joined)) take(expressions, joined);
   }
 
+  const lines = [...title, ...questions, ...expressions];
+  if (givens.length) {
+    if (questions.length || expressions.length) lines.push("Given:");
+    lines.push(...givens);
+  }
   return lines.join("\n");
 }

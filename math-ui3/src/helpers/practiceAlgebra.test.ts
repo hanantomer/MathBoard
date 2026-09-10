@@ -9,8 +9,11 @@ import {
   workHasParabolaGraph,
   workHasYIntercept,
   workHasYInterceptValueOnly,
+  workMatchesExpectedAnswer,
   yInterceptCoachOverride,
   Y_INTERCEPT_AS_POINT_TIP,
+  coachNagsAboutPresentIntegrationConstant,
+  workHasIntegrationConstant,
 } from "common/practiceAlgebra";
 
 const ORIGINAL = { a: 2, b: -8, c: 5 };
@@ -310,5 +313,128 @@ describe("workHasYIntercept", () => {
     expect(workHasYIntercept(problem, work)).toBe(false);
     expect(workHasYInterceptValueOnly(problem, work)).toBe(false);
     expect(yInterceptCoachOverride(problem, work)).toBeNull();
+  });
+});
+
+describe("catalog expected-answer auto-check", () => {
+  const problem =
+    "Pythagorean theorem — find the hypotenuse\nIn △ABC, find the length of hypotenuse c.\nGiven:\n∠C = 90°\na = 3\nb = 4\nc = ?";
+  const expected = { expectedAnswer: "5", acceptedAnswers: ["c = 5", "c=5"] };
+
+  function groupedWork(body: string): string {
+    return `[Part 1]\n<<active>> (none yet for part 1)\nunlabeled:\n${body}`;
+  }
+
+  it("treats C=5 as complete so Check runs without a click", () => {
+    const work = groupedWork("3^2+4^2=C^2\n25=C^2\nC=5");
+    expect(workMatchesExpectedAnswer(work, "5", ["c = 5", "c=5"])).toBe(true);
+    expect(activePartLooksComplete(problem, work, "1", expected)).toBe(true);
+  });
+
+  it("treats a board C=5 line with superscripts as complete", () => {
+    const work = groupedWork("3²+4²=C²\n25=C²\nC=5");
+    expect(activePartLooksComplete(problem, work, "1", expected)).toBe(true);
+  });
+
+  it("still matches when diagram tokens follow the answer", () => {
+    const work = groupedWork(
+      "3^2+4^2=C^2\n25=C^2\nC=5\ndiagram: right triangle\nsides: a; b; c\nvertices: A; B; C",
+    );
+    expect(activePartLooksComplete(problem, work, "1", expected)).toBe(true);
+  });
+
+  it("does not treat 25=C^2 as the final answer", () => {
+    const work = groupedWork("3^2+4^2=C^2\n25=C^2");
+    expect(workMatchesExpectedAnswer(work, "5", ["c = 5", "c=5"])).toBe(false);
+    expect(activePartLooksComplete(problem, work, "1", expected)).toBe(false);
+  });
+
+  it("ignores a trailing diagram label C after C=5", () => {
+    const work = groupedWork("C=5\nC");
+    expect(workMatchesExpectedAnswer(work, "5", ["c = 5", "c=5"])).toBe(true);
+  });
+});
+
+describe("indefinite integral catalog match", () => {
+  const expected = "(1/2)x² + C";
+  const accepted = [
+    "x²/2 + C",
+    "x^2/2 + C",
+    "(1/2)x^2 + C",
+    "(x^2)/(2) + C",
+    "(x²)/(2) + C",
+  ];
+  const sameLineNag =
+    "Remember to write the constant of integration, C, on the same line as the integral.";
+
+  it("matches a stacked-fraction board serialization", () => {
+    expect(
+      workMatchesExpectedAnswer("∫xdx=(x^2)/(2)+C", expected, accepted),
+    ).toBe(true);
+  });
+
+  it("matches the spacing the board serializer emits around a fraction", () => {
+    expect(
+      workMatchesExpectedAnswer("∫xdx=(x^2)/(2) +C", expected, accepted),
+    ).toBe(true);
+  });
+
+  it("matches unicode x² in a stacked fraction", () => {
+    expect(
+      workMatchesExpectedAnswer("∫xdx=(x²)/(2)+C", expected, accepted),
+    ).toBe(true);
+  });
+
+  it("matches +C on the next grid row", () => {
+    expect(
+      workMatchesExpectedAnswer("∫xdx=(x^2)/(2)+\nC", expected, accepted),
+    ).toBe(true);
+    expect(
+      workMatchesExpectedAnswer("∫xdx=(x^2)/(2)\n+C", expected, accepted),
+    ).toBe(true);
+  });
+
+  it("matches stacked work grouped under a practice part", () => {
+    const work = [
+      "[Part 1]",
+      "<<active>> (none yet for part 1)",
+      "unlabeled:",
+      "∫xdx=(x^2)/(2)+C",
+    ].join("\n");
+    expect(workMatchesExpectedAnswer(work, expected, accepted)).toBe(true);
+    expect(
+      activePartLooksComplete(
+        "Evaluate ∫ x dx\nEvaluate the indefinite integral:\n∫xdx",
+        work,
+        "1",
+        { expectedAnswer: expected, acceptedAnswers: accepted },
+      ),
+    ).toBe(true);
+  });
+
+  it("does not match a missing +C", () => {
+    expect(
+      workMatchesExpectedAnswer("∫xdx=(x^2)/(2)", expected, accepted),
+    ).toBe(false);
+    expect(workHasIntegrationConstant("∫xdx=(x^2)/(2)")).toBe(false);
+  });
+
+  it("silences a same-line C nag when +C is already present", () => {
+    expect(workHasIntegrationConstant("∫xdx=(x^2)/(2)+C")).toBe(true);
+    expect(
+      coachNagsAboutPresentIntegrationConstant(
+        sameLineNag,
+        "∫xdx=(x^2)/(2)+C",
+      ),
+    ).toBe(true);
+  });
+
+  it("still allows a missing-C reminder", () => {
+    expect(
+      coachNagsAboutPresentIntegrationConstant(
+        sameLineNag,
+        "∫xdx=(x^2)/(2)",
+      ),
+    ).toBe(false);
   });
 });

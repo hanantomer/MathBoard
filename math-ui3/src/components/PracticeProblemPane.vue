@@ -95,10 +95,21 @@
           alt="Worksheet"
         />
         <div
-          v-if="stemPreamble"
+          v-if="stemTitle || stemBody"
           class="practice-problem-pane__stem"
         >
-          {{ stemPreamble }}
+          <div
+            v-if="stemTitle"
+            class="practice-problem-pane__stem-title"
+          >
+            {{ stemTitle }}
+          </div>
+          <div
+            v-if="stemBody"
+            class="practice-problem-pane__stem-body"
+          >
+            {{ stemBody }}
+          </div>
         </div>
         <PracticeSectionList
           v-if="showParsedParts"
@@ -119,7 +130,10 @@
         >
           {{ orderHint }}
         </v-alert>
-        <p class="practice-problem-pane__label-hint">
+        <p
+          v-if="showParsedParts"
+          class="practice-problem-pane__label-hint"
+        >
           Start tasks in order. Enter adds space in the current task.
         </p>
         <v-btn
@@ -147,7 +161,7 @@
 <script setup lang="ts">
 import { computed, onMounted, onUnmounted, ref, watch } from "vue";
 import type { PracticeSession } from "../store/pinia/practiceStore";
-import { practiceProblemPreamble } from "common/practiceParts";
+import { practiceProblemPreamble, hasPracticeSections, splitPracticeProblemHeading } from "common/practiceParts";
 import { startedPartIdsFromSession } from "../helpers/practicePartOrderHelper";
 import PracticeSectionList from "./PracticeSectionList.vue";
 
@@ -177,14 +191,9 @@ const imageSrc = computed(() => {
   return raw.startsWith("data:") ? raw : `data:image/png;base64,${raw}`;
 });
 
-const showParsedParts = computed(() => {
-  const parts = props.session.parts;
-  if (parts.length >= 2) return true;
-  return (
-    parts.length === 1 &&
-    parts[0].text.trim().toLowerCase() !== "whole problem"
-  );
-});
+const showParsedParts = computed(() =>
+  hasPracticeSections(props.session.parts),
+);
 
 const startedPartIds = computed(() =>
   startedPartIdsFromSession(props.session),
@@ -196,7 +205,16 @@ const stemPreamble = computed(() => {
   return practiceProblemPreamble(text, props.session.parts);
 });
 
+const stemHeading = computed(() =>
+  splitPracticeProblemHeading(stemPreamble.value),
+);
+const stemTitle = computed(() => stemHeading.value.title);
+const stemBody = computed(() => stemHeading.value.body);
+
 const activeTitle = computed(() => {
+  if (!showParsedParts.value) {
+    return stemTitle.value || "Problem";
+  }
   const id = props.session.activePartId;
   const part = props.session.parts.find((p) => p.id === id);
   if (part) return `(${part.id}) ${part.text}`;
@@ -310,9 +328,17 @@ onUnmounted(() => {
 }
 
 .practice-problem-pane__stem {
-  white-space: pre-wrap;
   font-size: 0.88rem;
   line-height: 1.45;
+}
+
+.practice-problem-pane__stem-title {
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+
+.practice-problem-pane__stem-body {
+  white-space: pre-wrap;
 }
 
 .practice-problem-pane__image {

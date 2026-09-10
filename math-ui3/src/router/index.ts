@@ -105,7 +105,7 @@ const routes: Array<RouteRecordRaw> = [
       requiresAuth: false,
       title: "AI Math Tutor — Practice on Math Whiteboard",
       description:
-        "Solo math practice on an interactive board. Pick a subject or start a blank sheet, check answers, and get text or voice tips. Work stays on this device. No account needed.",
+        "Solo math practice on an interactive board. Pick a subject or start a blank sheet, check answers, and get tips or spoken help. Work stays on this device. No account needed.",
       keywords:
         "AI math tutor, math practice, self-study, interactive math board, check answers, voice coach",
     },

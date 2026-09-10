@@ -41,7 +41,6 @@ function symbolOn(
     col,
     row,
     value,
-    followsFraction: false,
   } as NotationAttributes;
 }
 

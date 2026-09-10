@@ -940,7 +940,7 @@ export default function notationMutateHelper() {
     return true;
   }
 
-  function addCellNotation(notation: PointNotationCreationAttributes) {
+  async function addCellNotation(notation: PointNotationCreationAttributes) {
     if (!authorizationHelper.canEdit()) return;
 
     if (isPracticeBoard() && typeof notation.row === "number") {
@@ -978,7 +978,26 @@ export default function notationMutateHelper() {
       return;
     }
 
-    // update
+    // Insert mode (like a document): occupied cells shift right instead of
+    // overwriting. Last column still replaces because there is nowhere to push.
+    if (
+      nonDotOvelappedNotation &&
+      nonDotOvelappedNotation.length > 0 &&
+      notation.col < matrixDimensions.colsNum - 1
+    ) {
+      notationStore.beginUndoGroup();
+      try {
+        await pushNotationsFromCell({
+          col: notation.col,
+          row: notation.row,
+        });
+        addNotation(notation);
+      } finally {
+        notationStore.endUndoGroup();
+      }
+      return;
+    }
+
     if (
       !noationIsDot &&
       nonDotOvelappedNotation &&
@@ -1205,7 +1224,7 @@ export default function notationMutateHelper() {
     );
   }
 
-  function addMarkNotation(e: PointerEvent) {
+  async function addMarkNotation(e: PointerEvent) {
     if (!authorizationHelper.canEdit()) return;
 
     let clickedCell = screenHelper.getCellByDotCoordinates(
@@ -1217,17 +1236,17 @@ export default function notationMutateHelper() {
     selectionHelper.setSelectedCell(clickedCell, false);
 
     if (editModeStore.getEditMode() == "CHECKMARK_STARTED") {
-      addSymbolNotation("&#x2714");
+      await addSymbolNotation("&#x2714");
       return;
     }
 
     if (editModeStore.getEditMode() == "SEMICHECKMARK_STARTED") {
-      addSymbolNotation("&#x237B");
+      await addSymbolNotation("&#x237B");
       return;
     }
 
     if (editModeStore.getEditMode() == "XMARK_STARTED") {
-      addSymbolNotation("&#x2718");
+      await addSymbolNotation("&#x2718");
       return;
     }
   }
@@ -1321,7 +1340,7 @@ export default function notationMutateHelper() {
     return addNotation(notation); /// TODO: check if need to check cell occupation
   }
 
-  function addExponentNotation(exponent: string, clickedCell: CellAttributes) {
+  async function addExponentNotation(exponent: string, clickedCell: CellAttributes) {
     let notation: PointNotationCreationAttributes = {
       col: clickedCell!.col,
       row: clickedCell!.row,
@@ -1331,12 +1350,12 @@ export default function notationMutateHelper() {
       notationType: "EXPONENT",
       user: getBoardUser(),
     };
-    addCellNotation(notation);
+    await addCellNotation(notation);
     if (!clickedCell) return;
     matrixCellHelper.setNextCell(1, 0);
   }
 
-  function addSymbolNotation(value: string) {
+  async function addSymbolNotation(value: string) {
     const symbolCell = getSelectedCell();
     if (!symbolCell) return;
 
@@ -1352,7 +1371,7 @@ export default function notationMutateHelper() {
       user: getBoardUser(),
     };
 
-    addCellNotation(notation);
+    await addCellNotation(notation);
 
     if (notation.value !== ".") {
       matrixCellHelper.setNextCell(1, 0);
@@ -1361,14 +1380,14 @@ export default function notationMutateHelper() {
     selectNotationByCell(cellStore.getSelectedCell()!);
   }
 
-  function addSymbolNotationAtCell(cell: CellAttributes, text: string) {
+  async function addSymbolNotationAtCell(cell: CellAttributes, text: string) {
     const value = text.trim();
     if (!value) return;
     notationStore.resetSelectedNotations();
     selectionHelper.setSelectedCell(cell, true);
     for (const char of [...value]) {
       if (char === " ") continue;
-      addSymbolNotation(char);
+      await addSymbolNotation(char);
     }
   }
 
@@ -1870,7 +1889,7 @@ export default function notationMutateHelper() {
           x: placementCenter.x + rect.left,
           y: placementCenter.y + rect.top,
         });
-        addSymbolNotationAtCell(cell, symbol);
+        await addSymbolNotationAtCell(cell, symbol);
       }
       editModeStore.setDefaultEditMode();
       return true;

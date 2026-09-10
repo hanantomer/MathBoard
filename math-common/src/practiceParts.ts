@@ -13,7 +13,9 @@ const INLINE_PART_RE =
 const HEADER_ONLY_RE =
   /^\s*(?:\((\d{1,2}|[a-d])\)|(\d{1,2}|[a-d])[.)])\s*$/i;
 const TASK_START_RE =
-  /^(write|state|find|determine|sketch|calculate|compute|solve|show|prove|evaluate|simplify|factor|expand|graph|label|give|name|identify|express|rewrite|complete|convert|round|estimate|compare|explain|list|draw|plot|describe|obtain|derive|verify|check|work out|find out)\b/i;
+  /^(write|state|find|determine|sketch|calculate|compute|solve|show|prove|evaluate|simplify|factor|expand|graph|label|give|name|identify|express|rewrite|complete|convert|round|estimate|compare|explain|list|draw|plot|describe|obtain|derive|verify|check|work out|find out|differentiate|integrate)\b/i;
+const TASK_INLINE_RE =
+  /\b(find|determine|calculate|compute|evaluate|simplify|solve)\b/i;
 const QUESTION_START_RE = /^(what|which|how|why|where|when)\b/i;
 const SETUP_START_RE =
   /^(given|let |consider|using)\b/i;
@@ -93,12 +95,18 @@ function isSetupLine(line: string): boolean {
 
 function isTaskLine(line: string): boolean {
   if (/\?\s*$/.test(line) || QUESTION_START_RE.test(line)) return true;
-  return TASK_START_RE.test(line);
+  return TASK_START_RE.test(line) || TASK_INLINE_RE.test(line);
 }
 
-function isPromptLine(line: string): boolean {
-  if (isSetupLine(line)) return false;
-  if (isTaskLine(line)) return true;
+/** Catalog/problem title: "Factor x² − 5x + 6", not "Factor completely:". */
+export function isPracticeProblemHeading(line: string): boolean {
+  return !/[.?:!]\s*$/.test(line) && line.length >= 3 && line.length <= 80;
+}
+
+/** Worksheet labels like "Vertex form" — not a full setup/question sentence. */
+function isShortLabelLine(line: string): boolean {
+  if (isSetupLine(line) || isTaskLine(line)) return false;
+  if (/[.!?]\s*$/.test(line) || /\.\s+\S/.test(line)) return false;
   return line.length >= 3 && line.length <= 160;
 }
 
@@ -109,14 +117,20 @@ function numberParts(texts: string[]): PracticeProblemPart[] {
   }));
 }
 
-/** Unnumbered stem: each task/prompt row is a part; given/setup rows are skipped. */
+/**
+ * Unnumbered stem: two or more imperative/question rows become parts.
+ * A title + setup + one ask stays a single problem. Short labels with no
+ * sentence punctuation are parts only when there is no task verb at all.
+ */
 function rowParts(text: string): PracticeProblemPart[] {
   const rows = coalesceRows(text);
   if (rows.length < 2) return [];
-  const tasks = rows.filter((r) => isTaskLine(r) && !isSetupLine(r));
+  const body = isPracticeProblemHeading(rows[0]) ? rows.slice(1) : rows;
+  const tasks = body.filter((r) => isTaskLine(r) && !isSetupLine(r));
   if (tasks.length >= 2) return numberParts(tasks);
-  const prompts = rows.filter(isPromptLine);
-  return prompts.length >= 2 ? numberParts(prompts) : [];
+  if (tasks.length === 1) return [];
+  const labels = rows.filter(isShortLabelLine);
+  return labels.length >= 2 ? numberParts(labels) : [];
 }
 
 /**
@@ -137,6 +151,23 @@ export function parsePracticeProblemParts(
 
 const INLINE_CUT_RE =
   /(?:^|\s)(?:\((\d{1,2}|[a-d])\)|(\d{1,2})\.)\s+(?=[A-Z])/i;
+
+/** First heading line vs the rest of the stem (title + question). */
+export function splitPracticeProblemHeading(
+  text: string | undefined,
+): { title: string; body: string } {
+  const raw = (text ?? "").trim();
+  if (!raw) return { title: "", body: "" };
+  const lines = raw.split(/\r?\n/);
+  const firstIdx = lines.findIndex((line) => line.trim());
+  if (firstIdx < 0) return { title: "", body: "" };
+  const first = lines[firstIdx].trim();
+  const rest = lines.slice(firstIdx + 1).join("\n").trim();
+  if (rest && isPracticeProblemHeading(first)) {
+    return { title: first, body: rest };
+  }
+  return { title: "", body: raw };
+}
 
 /**
  * Setup / given lines only. Numbered tasks belong in the parsed part list,
@@ -194,6 +225,13 @@ export function ensureNumberedParts(
   const parsed = parsePracticeProblemParts(text);
   if (parsed.length >= 2) return parsed;
   return [{ id: "1", text: parsed[0]?.text || "Whole problem" }];
+}
+
+/** True when the stem has two or more tasks that should be numbered. */
+export function hasPracticeSections(
+  parts: PracticeProblemPart[] | null | undefined,
+): boolean {
+  return (parts?.length ?? 0) >= 2;
 }
 
 /** Force ids `"1".."n"` (image OCR must not mix `a` with stamped `(1)`). */

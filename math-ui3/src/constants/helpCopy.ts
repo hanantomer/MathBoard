@@ -46,12 +46,12 @@ export const WELCOME_PATHS = {
   practice: {
     title: "AI tutor",
     blurb:
-      "Solo practice by subject — write on the board, check answers, or get text/voice tips (work stays on this device).",
+      "Solo practice by subject — write on the board, check answers, or get tips or spoken help (work stays on this device).",
     cta: "Practice by subject",
     ctaGuest: "Practice by subject",
     blankCta: "Blank sheet (write, paste, or upload)",
     landingLead:
-      "Solo practice by subject — write on the board, check answers, or get text or voice tips. Work stays on this device. No account needed.",
+      "Solo practice by subject — write on the board, check answers, or get tips or spoken help. Work stays on this device. No account needed.",
     classroomLink: "Looking for a live class?",
   },
 } as const;
@@ -81,11 +81,11 @@ export const BOARD_ROLE_BANNERS = {
     "Reviewing a student answer — use checkmarks in the toolbar to grade cells.",
   answerStudent: "Your answer board — write here. Your teacher will review when you submit.",
   practiceStudent:
-    "Check grades your work when you ask. Text and Voice give live tips while you write — including in a text box after you pause. Work stays on this device.",
+    "Check answer grades your work when you ask. Tips and Speak give live help while you write — including in a text box after you pause. Work stays on this device.",
   practiceBlank:
-    "Write or paste the question on the board, then solve. Work stays on this device.",
+    "Write or paste the question, then solve. Check answer grades when you ask; Tips and Speak add live help. Work stays on this device.",
   practiceGuest:
-    "Guest practice — limited free AI uses per day. Sign in for a higher limit. Work stays on this device.",
+    "Guest practice — Check answer grades when you ask; Tips and Speak add live help. Limited free AI uses per day; sign in for a higher limit. Work stays on this device.",
 } as const;
 
 function stickyExitHint(toolName: string): string {
@@ -163,12 +163,12 @@ export const KEYBOARD_INPUT = {
     "Most math is typed directly into grid cells — faster and clearer than free sketch.",
   tips: isMobile()
     ? [
-        "Tap a cell, then type letters, numbers, and operators.",
+        "Tap a cell, then type letters, numbers, and operators. Typing inserts like a document — existing symbols shift right.",
         "Use toolbar Text tools for exponents, logs, and text boxes.",
         "Free sketch is optional for rough diagrams only.",
       ]
     : [
-        "Click a cell, then type letters, numbers, and operators.",
+        "Click a cell, then type letters, numbers, and operators. Typing inserts like a document — existing symbols shift right.",
         "Space moves right if the next cells are empty; otherwise it pushes symbols right. Enter moves down if the next rows are empty; otherwise it pushes work down.",
         "Backspace or Delete removes the symbol in the selected cell.",
         "Alt+X exponent, Alt+L log, Alt+S square root — or use the Text tools on the left.",
@@ -189,7 +189,7 @@ export const EDITING_TECHNIQUES = {
         "Delete or Backspace removes selected notations.",
         "With symbols selected, Square root (Alt+S) draws the bar over them.",
         "With a cell selected: Space moves right if the next cells are empty, otherwise it pushes content right; Enter moves down if the next rows are empty, otherwise it pushes work down; Backspace/Delete clears the cell.",
-        "Arrow keys move the selected cell; type to replace or add symbols.",
+        "Arrow keys move the selected cell; type to insert (existing symbols shift right). Delete or Backspace removes a symbol.",
       ],
 } as const;
 
@@ -364,7 +364,7 @@ export const TOOLS_HELP = {
     {
       name: "Keyboard",
       tools: [
-        "Click a cell and type — primary way to write math",
+        "Click a cell and type — inserts like a document, shifting existing symbols right",
         "Space — move right if the next cells are empty, otherwise push symbols right",
         "Enter — move down if the next rows are empty, otherwise push work down",
         "Backspace / Delete — clear cell or remove selection",
@@ -471,7 +471,7 @@ export const COACH_MARKS: CoachMarkDef[] = [
     id: "practice-assist-modes",
     targetSelector: '[data-cy="practice-assist-mode"]',
     title: "How help works",
-    body: "Check grades you when you press Check answer (Ctrl+Enter, including inside a text box). Text shows a tip after you pause. Voice reads the tip aloud. Live tips use your daily AI quota.",
+    body: "On demand grades you when you press Check answer (Ctrl+Enter, including inside a text box). Tips gives a written tip after you pause. Speak reads the tip aloud. Live tips use your daily AI quota.",
   },
 ];
 

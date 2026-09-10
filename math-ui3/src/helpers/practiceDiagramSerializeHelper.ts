@@ -761,6 +761,17 @@ export function serializePracticeFractions(
         p.col <= toCol,
     );
 
+  /** Algebra left of / right of the bar, e.g. the `∫xdx=` and `+C` around x²/2. */
+  const hasAlgebraBesideBar = (row: number, fromCol: number, toCol: number) =>
+    points.some(
+      (p) =>
+        !consumed.has(p.uuid) &&
+        typeof p.row === "number" &&
+        typeof p.col === "number" &&
+        p.row === row &&
+        (p.col < fromCol || p.col > toCol),
+    );
+
   for (const n of notations) {
     if (n.notationType !== "DIVISIONLINE") continue;
     const line = n as LineNotationAttributes;
@@ -776,16 +787,32 @@ export function serializePracticeFractions(
 
     let num = inBand(numRow, fromCol, toCol);
     let den = inBand(denRow, fromCol, toCol);
-    if (num.length === 0) num = inBand(numRow - 1, fromCol, toCol);
-    if (den.length === 0) den = inBand(denRow + 1, fromCol, toCol);
+    let usedNumRow = numRow;
+    let usedDenRow = denRow;
+    if (num.length === 0) {
+      usedNumRow = numRow - 1;
+      num = inBand(usedNumRow, fromCol, toCol);
+    }
+    if (den.length === 0) {
+      usedDenRow = denRow + 1;
+      den = inBand(usedDenRow, fromCol, toCol);
+    }
 
     const numText = concatPoints(num);
     const denText = concatPoints(den);
     for (const p of num) consumed.add(p.uuid);
     for (const p of den) consumed.add(p.uuid);
 
+    // The rest of the equation sits on one of the two rows; keep the fraction
+    // with it so `∫xdx = x²/2 + C` stays a single line for the tutor.
+    const denRowBaseline = den.length ? den[0].row : denRow;
+    const numRowBaseline = num.length ? usedNumRow : numRow;
     inserts.push({
-      row: den.length ? den[0].row : denRow,
+      row:
+        hasAlgebraBesideBar(numRowBaseline, fromCol, toCol) &&
+        !hasAlgebraBesideBar(denRowBaseline, fromCol, toCol)
+          ? numRowBaseline
+          : denRowBaseline,
       col: fromCol,
       text: `(${numText || "?"})/(${denText || "?"})`,
     });

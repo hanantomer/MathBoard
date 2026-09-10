@@ -99,12 +99,12 @@ function scrollSelectedCellIntoView() {
   });
 }
 
-function commitCharacter(char: string) {
+async function commitCharacter(char: string) {
   if (!char || char.length !== 1) return;
-  notationMutateHelper.addSymbolNotation(char);
+  await notationMutateHelper.addSymbolNotation(char);
 }
 
-function onInput() {
+async function onInput() {
   const value = draft.value;
   if (!value) return;
 
@@ -115,7 +115,7 @@ function onInput() {
 
   for (const char of value) {
     if (char.length !== 1) continue;
-    commitCharacter(char);
+    await commitCharacter(char);
   }
 
   nextTick(() => {

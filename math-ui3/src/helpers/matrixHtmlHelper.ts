@@ -93,8 +93,21 @@ export default function useHtmlMatrixHelper() {
   /** Vinculum only — a full-cell SQRT foreignObject steals clicks on radicand cells. */
   const SQRT_VINCULUM_HIT_HEIGHT = 8;
 
+  /** ∫ spans two rows; sizes stay proportional so limits survive a zoom change. */
+  const INTEGRAL_SIGN_SIZE_RATIO = 1.1;
+  const INTEGRAL_SIGN_WITH_LIMITS_RATIO = 0.95;
+  const INTEGRAL_LIMIT_SIZE_RATIO = 0.36;
+  /** Extra breathing room between the upper limit and the glyph below it. */
+  const INTEGRAL_UPPER_LIMIT_GAP = 2;
+
+  function isIntegralSymbol(n: NotationAttributes): boolean {
+    return (n as PointNotationAttributes).value?.includes("∫") ?? false;
+  }
+
   function htmlOverflow(n: NotationAttributes): string | null {
     if (isPracticePartLabelFo(n)) return "visible";
+    // A one-cell-wide box would clip the glyph and any multi-digit limit.
+    if (n.notationType === "SYMBOL" && isIntegralSymbol(n)) return "visible";
     return n.notationType === "IMAGE" || n.notationType === "SQRTSYMBOL"
       ? "visible"
       : null;
@@ -433,7 +446,7 @@ export default function useHtmlMatrixHelper() {
     }
 
     // Check for special cases like integrals
-    if ((n as PointNotationAttributes).value?.indexOf("∫") !== -1) {
+    if (isIntegralSymbol(n)) {
       return generateIntegralHtml(n as PointNotationAttributes, color);
     }
 
@@ -521,20 +534,44 @@ export default function useHtmlMatrixHelper() {
       return utils.wrapWithDiv(logbaseHtml);
     }
 
+    /**
+     * Limits are stored as `<upper> ∫ <lower>` and either side may be blank.
+     * Stacking the three in a column gives each limit its own band, instead of
+     * pinning them to fixed offsets that overlap the tall glyph.
+     */
     function generateIntegralHtml(
       n1: PointNotationAttributes,
       color: string,
     ): string {
-      const integralParts = n1.value
-        .split(/\s+/)
-        .filter((part) => part.length > 0);
-      const htmlContent =
-        integralParts.length === 1
-          ? `<p style='color:${color};font-size:36px'>${integralParts[0]}</p>`
-          : integralParts.length === 2
-            ? `<p style='color:${color};font-size:12px;position:absolute;top:-2px'>${integralParts[0]}</p><p style='font-size:36px'>${integralParts[1]}</p><p style='color:${color};position:absolute;top:43px;font-size:12px'>${integralParts[0]}</p>`
-            : `<p style='color:${color};font-size:12px;position:absolute;top:-2px'>${integralParts[0]}</p><p style='font-size:36px'>${integralParts[1]}</p><p style='color:${color};position:absolute;top:43px;font-size:12px'>${integralParts[2]}</p>`;
-      return utils.wrapWithDiv(htmlContent);
+      const parts = n1.value.split(/\s+/).filter((part) => part.length > 0);
+      const signIndex = parts.findIndex((part) => part.includes("∫"));
+      const sign = signIndex >= 0 ? parts[signIndex] : "∫";
+      const upper = signIndex > 0 ? parts[signIndex - 1] : "";
+      const lower = signIndex >= 0 ? (parts[signIndex + 1] ?? "") : "";
+
+      const cellHeight = cellStore.getCellVerticalHeight();
+      const limitSize = Math.round(cellHeight * INTEGRAL_LIMIT_SIZE_RATIO);
+      const signSize = Math.round(
+        cellHeight *
+          (upper || lower
+            ? INTEGRAL_SIGN_WITH_LIMITS_RATIO
+            : INTEGRAL_SIGN_SIZE_RATIO),
+      );
+
+      const limit = (value: string, marginBottom = 0) =>
+        value
+          ? `<span style='font-size:${limitSize}px;margin-bottom:${marginBottom}px'>${value}</span>`
+          : "";
+
+      return utils.wrapWithDiv(
+        `<div style='display:flex;flex-direction:column;align-items:center;justify-content:center;height:${
+          2 * cellHeight
+        }px;line-height:1;color:${color}'>` +
+          limit(upper, INTEGRAL_UPPER_LIMIT_GAP) +
+          `<span style='font-size:${signSize}px'>${sign}</span>` +
+          limit(lower) +
+          `</div>`,
+      );
     }
 
     function generateDefaultHtml(
@@ -552,7 +589,7 @@ export default function useHtmlMatrixHelper() {
       // Calculate margins and font size
       const leftMargin = getLeftMargin(n1.value);
       const fSize = getFontSize(n1.value);
-      const topMargin = getTopMargin(n1.value, n1.followsFraction);
+      const topMargin = getTopMargin(n1.value);
       const translateY = n1.value === "..." ? "90%" : "0%";
 
       return utils.wrapWithDiv(
@@ -591,8 +628,7 @@ export default function useHtmlMatrixHelper() {
       return "0.75em";
     }
 
-    function getTopMargin(value: string, followsFraction: boolean): string {
-      if (followsFraction) return "10px";
+    function getTopMargin(value: string): string {
       if (value === ".") return "-5px";
       if (
         ["cos", "sin", "tan", "cot", "log"].some(

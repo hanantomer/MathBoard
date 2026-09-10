@@ -14,37 +14,49 @@
     >
       <template #assist>
         <div class="practice-pane-assist">
-          <v-btn-toggle
-            v-model="assistMode"
-            mandatory
-            density="compact"
-            color="primary"
-            variant="outlined"
-            divided
-            data-cy="practice-assist-mode"
-          >
-            <v-btn
-              value="check"
-              title="Grade when you ask"
-              data-cy="practice-assist-check"
+          <div class="practice-pane-assist__modes">
+            <div
+              id="practice-assist-caption"
+              class="practice-pane-assist__caption"
             >
-              Check
-            </v-btn>
-            <v-btn
-              value="text"
-              title="Tips while you write"
-              data-cy="practice-assist-text"
+              AI help
+            </div>
+            <v-btn-toggle
+              v-model="assistMode"
+              mandatory
+              density="compact"
+              color="primary"
+              variant="outlined"
+              divided
+              aria-labelledby="practice-assist-caption"
+              data-cy="practice-assist-mode"
             >
-              Text
-            </v-btn>
-            <v-btn
-              value="voice"
-              title="Spoken tips while you write"
-              data-cy="practice-assist-voice"
-            >
-              Voice
-            </v-btn>
-          </v-btn-toggle>
+              <v-btn
+                value="check"
+                title="Grade when you ask"
+                aria-label="On demand — grade when you ask"
+                data-cy="practice-assist-check"
+              >
+                On demand
+              </v-btn>
+              <v-btn
+                value="text"
+                title="Tips while you write"
+                aria-label="Tips — written tips while you write"
+                data-cy="practice-assist-text"
+              >
+                Tips
+              </v-btn>
+              <v-btn
+                value="voice"
+                title="Spoken tips while you write"
+                aria-label="Speak — spoken tips while you write"
+                data-cy="practice-assist-voice"
+              >
+                Speak
+              </v-btn>
+            </v-btn-toggle>
+          </div>
 
           <v-tooltip
             :text="checkDisabledReason"
@@ -55,15 +67,22 @@
               <div v-bind="tipProps" class="practice-pane-assist__check-wrap">
                 <v-btn
                   color="primary"
-                  variant="flat"
+                  :variant="assistMode === 'check' ? 'flat' : 'tonal'"
                   :loading="checking"
                   :disabled="!!checkDisabledReason"
                   prepend-icon="mdi-check-decagram"
+                  :aria-label="checkAnswerAriaLabel"
                   :data-cy="isBlank ? 'practice-blank-check' : 'practice-check'"
                   @click="runCheck"
                 >
                   Check answer
                 </v-btn>
+                <div
+                  v-if="checkShortcutHint"
+                  class="practice-pane-assist__shortcut"
+                >
+                  {{ checkShortcutHint }}
+                </div>
               </div>
             </template>
           </v-tooltip>
@@ -176,7 +195,7 @@
       v-show="loaded && !loadError"
       :svgId="svgId"
       :loaded="loaded"
-      :practice-gutter="session.submitted"
+      :practice-gutter="session.submitted && hasPracticeSections(session.parts)"
       :practice-gutter-marks="practiceGutterMarks"
       @select-practice-part="onSelectPart"
     />
@@ -316,11 +335,13 @@ import {
   startedPartIdsFromSession,
 } from "../helpers/practicePartOrderHelper";
 import { activePartLooksComplete } from "common/practiceAlgebra";
+import { getPracticeQuestionTemplateByUUId } from "common/practiceQuestionTemplates";
 import useImageHelper from "../helpers/imageHelper";
 import useEventBus from "../helpers/eventBusHelper";
 import useSelectionHelper from "../helpers/selectionHelper";
 import {
   ensureNumberedParts,
+  hasPracticeSections,
   partLabelText,
   workForActivePartReview,
 } from "common/practiceParts";
@@ -330,7 +351,7 @@ import {
   markPracticeAiLimitAlertShown,
   wasPracticeAiLimitAlertShown,
 } from "../helpers/guestPracticeHelper";
-import type { PracticeAssistMode } from "common/globals";
+import { isMobile, type PracticeAssistMode } from "common/globals";
 import {
   getPracticeAssistMode,
   isLiveCoachMode,
@@ -409,7 +430,7 @@ const session = computed(() => {
 
 const practiceGutterMarks = computed(() => {
   const s = session.value;
-  if (!s.submitted) return [];
+  if (!s.submitted || !hasPracticeSections(s.parts)) return [];
   const notations = liveNotations.value;
   const started = startedPartIdsFromSession(s);
   const active = (s.activePartId || s.parts[0]?.id || "1").trim();
@@ -444,12 +465,21 @@ const checkDisabledReason = computed(() => {
 
 const quotaChipText = computed(() => {
   if (quotaRemaining.value != null) {
-    return `${quotaRemaining.value} left`;
+    const n = quotaRemaining.value;
+    return n === 1 ? "1 AI use left" : `${n} AI uses left`;
   }
   return isGuest.value
-    ? `${GUEST_AI_DAILY_LIMIT} guest uses / day`
-    : `${USER_AI_DAILY_LIMIT} uses / day`;
+    ? `${GUEST_AI_DAILY_LIMIT} guest AI uses / day`
+    : `${USER_AI_DAILY_LIMIT} AI uses / day`;
 });
+
+const checkShortcutHint = computed(() => (isMobile() ? "" : "Ctrl+Enter"));
+
+const checkAnswerAriaLabel = computed(() =>
+  checkShortcutHint.value
+    ? "Check answer, Control Enter"
+    : "Check answer",
+);
 
 const quotaDetailText = computed(() => {
   const who = isGuest.value ? "Guest" : "Signed-in";
@@ -470,16 +500,18 @@ const showGuestLowQuotaCta = computed(() => {
 const coachStatusIcon = computed(() => {
   if (coachPaused.value) return "mdi-pause-circle-outline";
   if (coachingBusy.value) return "mdi-progress-clock";
-  return "mdi-eye-outline";
+  return assistMode.value === "voice"
+    ? "mdi-volume-high"
+    : "mdi-message-text-outline";
 });
 
 const coachStatusText = computed(() => {
-  const left =
-    quotaRemaining.value != null ? ` · ${quotaRemaining.value} left` : "";
-  if (!session.value.submitted) return `Paste the problem${left}`;
-  if (coachPaused.value) return `Tips paused${left}`;
-  if (coachingBusy.value) return `Thinking…${left}`;
-  return `Coach is watching${left}`;
+  if (!session.value.submitted) return "Paste the problem";
+  if (coachPaused.value) return "Tips paused";
+  if (coachingBusy.value) return "Thinking…";
+  return assistMode.value === "voice"
+    ? "Speaking tips after you pause"
+    : "Tips after you pause";
 });
 
 const showCoachBalloon = computed(
@@ -613,6 +645,17 @@ function currentParts() {
   return session.value.submitted ? session.value.parts : undefined;
 }
 
+function currentExpectedAnswers() {
+  const template = getPracticeQuestionTemplateByUUId(
+    currentQuestionUUId.value,
+  );
+  if (!template) return null;
+  return {
+    expectedAnswer: template.expectedAnswer,
+    acceptedAnswers: template.acceptedAnswers,
+  };
+}
+
 function currentActivePartId() {
   return session.value.activePartId ?? undefined;
 }
@@ -702,6 +745,14 @@ watch(
 );
 
 watch(
+  () => [loaded.value, session.value.submitted] as const,
+  ([isLoaded, submitted]) => {
+    if (!isLoaded || !submitted) return;
+    schedulePracticeTour();
+  },
+);
+
+watch(
   () => cellStore.getSelectedCell()?.row,
   (row) => {
     const s = session.value;
@@ -772,6 +823,7 @@ watch(practiceWorkSignature, (work, prev) => {
     currentProblemText(),
     work,
     currentActivePartId(),
+    currentExpectedAnswers(),
   );
   if (looksDone) {
     autoCheckTimer = setTimeout(() => {
@@ -936,13 +988,23 @@ onUnmounted(() => {
 
 function schedulePracticeTour() {
   clearTimeout(practiceTourTimer);
-  practiceTourTimer = setTimeout(() => {
-    onboardingStore.tryStartPracticeTour();
-  }, 900);
+  const tryShow = (remaining: number) => {
+    practiceTourTimer = setTimeout(() => {
+      const el = document.querySelector('[data-cy="practice-assist-mode"]');
+      const rect = el?.getBoundingClientRect();
+      if (rect && rect.width > 0 && rect.height > 0) {
+        onboardingStore.tryStartPracticeTour();
+        return;
+      }
+      if (remaining > 0) tryShow(remaining - 1);
+    }, remaining === 3 ? 900 : 400);
+  };
+  tryShow(3);
 }
 
 function prepareBoardShell(questionUUId: string) {
   loaded.value = false;
+  clearTimeout(practiceTourTimer);
   loadError.value = "";
   result.value = null;
   checkError.value = "";
@@ -979,7 +1041,6 @@ async function loadBlankPractice() {
   prepareBoardShell(PRACTICE_BLANK_UUID);
   boardContext.setPracticeBlankSession();
   loaded.value = true;
-  schedulePracticeTour();
   armPreliminaryCoach();
 }
 
@@ -1023,7 +1084,6 @@ async function loadPractice(questionUUId: string) {
     );
 
     loaded.value = true;
-    schedulePracticeTour();
     armPreliminaryCoach();
   } catch (error) {
     loaded.value = false;
@@ -1090,7 +1150,9 @@ async function submitProblemImageBase64(imageBase64: string) {
 
 function pinActivePartRow() {
   const uuid = currentQuestionUUId.value || PRACTICE_BLANK_UUID;
-  const id = practiceStore.getSession(uuid).activePartId;
+  const s = practiceStore.getSession(uuid);
+  if (!hasPracticeSections(s.parts)) return;
+  const id = s.activePartId;
   if (id) ensurePartRow(id);
 }
 
@@ -1181,12 +1243,13 @@ function maybeAutoCheckPart() {
   if (checking.value || checkDisabledReason.value) return;
   const s = session.value;
   const active = s.activePartId;
-  if (!active || s.completedPartIds.includes(active)) return;
+  if (active && s.completedPartIds.includes(active)) return;
   if (
     !activePartLooksComplete(
       currentProblemText(),
       currentStudentWork(),
       active,
+      currentExpectedAnswers(),
     )
   ) {
     return;
@@ -1282,6 +1345,20 @@ async function runCheck() {
   width: 100%;
 }
 
+.practice-pane-assist__modes {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.practice-pane-assist__caption {
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: rgba(0, 0, 0, 0.55);
+}
+
 .practice-pane-assist :deep(.v-btn-toggle) {
   width: 100%;
   overflow: hidden;
@@ -1306,13 +1383,26 @@ async function runCheck() {
   flex: 1 1 0;
   min-width: 0;
   padding-inline: 2px;
-  font-size: 0.75rem;
+  font-size: 0.7rem;
+  line-height: 1.15;
+}
+
+.practice-pane-assist :deep(.v-btn-toggle .v-btn .v-btn__content) {
+  white-space: normal;
+  text-align: center;
 }
 
 .practice-pane-assist__check-wrap,
 .practice-pane-assist__check-wrap :deep(.v-btn),
 .practice-pane-assist > :deep(.v-btn) {
   width: 100%;
+}
+
+.practice-pane-assist__shortcut {
+  margin-top: 2px;
+  text-align: center;
+  font-size: 0.7rem;
+  color: rgba(0, 0, 0, 0.5);
 }
 
 .practice-pane-assist__status {

@@ -20,6 +20,28 @@ export function normalizeAlgebra(text: string): string {
     .replace(/³/g, "^3");
 }
 
+/**
+ * Board stacked fractions serialize as (num)/(den). Unwrap monomials so
+ * (x^2)/(2)+C matches the catalog form x^2/2+C.
+ */
+export function unwrapBoardFractions(text: string): string {
+  const monomial =
+    "[+-]?(?:\\d+(?:\\.\\d+)?(?:[a-z](?:\\^\\d+)*)*|[a-z](?:\\^\\d+)*(?:[a-z](?:\\^\\d+)*)*)";
+  return text
+    .replace(
+      new RegExp(`\\((${monomial})\\)\\/\\((${monomial})\\)`, "g"),
+      "$1/$2",
+    )
+    .replace(/\((\d+(?:\.\d+)?\/\d+(?:\.\d+)?)\)(?!\^)/g, "$1");
+}
+
+/** Normalize student work / catalog answers for equality checks. */
+export function normalizePracticeMatch(text: string): string {
+  return unwrapBoardFractions(
+    normalizeAlgebra(stripPracticeTutorMarkup(text ?? "")),
+  );
+}
+
 function coeffsEqual(p: QuadraticCoeffs, q: QuadraticCoeffs): boolean {
   return (
     Math.abs(p.a - q.a) < EPS &&
@@ -726,13 +748,132 @@ export function checkQuadraticFollowUpPart(
   return null;
 }
 
+/** True when the latest student line is the catalog answer (not an earlier step). */
+export function workMatchesExpectedAnswer(
+  studentWork: string,
+  expectedAnswer: string,
+  acceptedAnswers: string[] = [],
+): boolean {
+  const last = lastStudentMathLine(studentWork);
+  if (!last) return false;
+  const candidates = [expectedAnswer, ...acceptedAnswers]
+    .map(normalizePracticeMatch)
+    .filter(Boolean);
+  if (candidates.includes(last)) return true;
+  const rhs = last.includes("=") ? last.slice(last.lastIndexOf("=") + 1) : last;
+  if (!rhs) return false;
+  if (candidates.includes(rhs)) return true;
+  return candidates.some((answer) => {
+    if (!answer.includes("=")) return false;
+    return answer.slice(answer.lastIndexOf("=") + 1) === rhs;
+  });
+}
+
+/** True when +C (constant of integration) is already in the work. */
+export function workHasIntegrationConstant(studentWork: string): boolean {
+  const n = normalizePracticeMatch(studentWork);
+  if (/(?:^|[^a-z])(?:\+|plus)c(?:$|[^a-z])/.test(n)) return true;
+  const hasC = /(?:^|[^a-z])c(?:$|[^a-z])/.test(n);
+  return hasC && (/[∫]/.test(n) || (/x\^2/.test(n) && /\//.test(n)));
+}
+
+/** Live coach often nags to “put C on the same line” after C is already written. */
+export function coachNagsAboutPresentIntegrationConstant(
+  tip: string,
+  studentWork: string,
+): boolean {
+  if (!workHasIntegrationConstant(studentWork)) return false;
+  const t = tip.toLowerCase();
+  return (
+    /constant of integration/.test(t) ||
+    /same line as the integral/.test(t) ||
+    (/\bon the same line\b/.test(t) &&
+      /\b(integral|constant|\+\s*c)\b/.test(t)) ||
+    /write (?:the )?(?:constant|\+\s*c)\b/.test(t) ||
+    /add (?:the )?(?:constant|\+\s*c)\b/.test(t) ||
+    /don'?t forget.{0,24}(?:constant|\+\s*c)/.test(t) ||
+    /remember to.{0,24}(?:constant|\+\s*c)/.test(t)
+  );
+}
+
+function isIgnorableStudentWorkLine(line: string): boolean {
+  if (!line) return true;
+  if (/^\[Part\s/i.test(line)) return true;
+  if (/^unlabeled:/i.test(line)) return true;
+  if (/\(none yet for part /i.test(line)) return true;
+  if (/^diagram:/i.test(line)) return true;
+  if (/^sides:/i.test(line)) return true;
+  if (/^vertices:/i.test(line)) return true;
+  if (/^angles:/i.test(line)) return true;
+  if (/^[A-Za-z]{1,3}$/.test(line)) return true;
+  return false;
+}
+
+const INTEGRATION_CONSTANT_LINE = /^(?:\+|plus)?c$/;
+
+function joinPlus(base: string, suffix: string): string {
+  if (!suffix) return base;
+  if (!base) return suffix;
+  if (base.endsWith("+") && suffix.startsWith("+")) {
+    return base + suffix.slice(1);
+  }
+  if (!/[+\-*/=]$/.test(base) && !suffix.startsWith("+")) {
+    return `${base}+${suffix}`;
+  }
+  return base + suffix;
+}
+
+function shouldAttachIntegrationConstant(base: string): boolean {
+  if (/[+\-]$/.test(base)) return true;
+  if (/[∫]/.test(base) || /dx/.test(base)) return true;
+  return /x\^2/.test(base) && /\//.test(base);
+}
+
+function lastStudentMathLine(studentWork: string): string {
+  const cleaned = stripPracticeTutorMarkup(studentWork ?? "");
+  const lines = cleaned.split(/\r?\n/).map((line) => line.trim());
+  let suffix = "";
+  for (let i = lines.length - 1; i >= 0; i--) {
+    const line = lines[i];
+    if (!line) continue;
+    const n = normalizeAlgebra(line);
+    if (INTEGRATION_CONSTANT_LINE.test(n) && !suffix) {
+      suffix =
+        n.startsWith("+") || n.startsWith("plus")
+          ? n.replace(/^plus/, "+")
+          : `+${n}`;
+      continue;
+    }
+    if (isIgnorableStudentWorkLine(line)) continue;
+    if (suffix && shouldAttachIntegrationConstant(n)) {
+      return unwrapBoardFractions(joinPlus(n, suffix));
+    }
+    return unwrapBoardFractions(n);
+  }
+  return unwrapBoardFractions(suffix);
+}
+
 /** True when the active part already has the result that part asks for. */
 export function activePartLooksComplete(
   problemText: string | undefined,
   studentWork: string,
   activePartId?: string | null,
+  expected?: {
+    expectedAnswer: string;
+    acceptedAnswers?: string[];
+  } | null,
 ): boolean {
   const slice = workForActivePartReview(studentWork, activePartId ?? undefined);
+  if (
+    expected?.expectedAnswer &&
+    workMatchesExpectedAnswer(
+      slice,
+      expected.expectedAnswer,
+      expected.acceptedAnswers,
+    )
+  ) {
+    return true;
+  }
   const kind = kindForActivePart(problemText, activePartId);
   if (kind === "vertexCoordinates") {
     return workHasVertexCoordinates(problemText, slice);
