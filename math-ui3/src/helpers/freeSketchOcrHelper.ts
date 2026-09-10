@@ -64,6 +64,35 @@ export function getStrokesBoundingCenter(strokes: Point[][]): DotCoordinates {
   };
 }
 
+export function strokesLookLikeFreehand(
+  strokes: Point[][],
+  cellWidth: number,
+  cellHeight: number,
+  minCellSpan = 3.5,
+): boolean {
+  const validStrokes = strokes.filter((s) => s.length >= 2);
+  if (validStrokes.length === 0) return false;
+  if (!cellWidth || !cellHeight) return false;
+
+  let minX = Infinity;
+  let minY = Infinity;
+  let maxX = -Infinity;
+  let maxY = -Infinity;
+
+  for (const stroke of validStrokes) {
+    for (const p of stroke) {
+      minX = Math.min(minX, p.x);
+      minY = Math.min(minY, p.y);
+      maxX = Math.max(maxX, p.x);
+      maxY = Math.max(maxY, p.y);
+    }
+  }
+
+  const colSpan = (maxX - minX) / cellWidth;
+  const rowSpan = (maxY - minY) / cellHeight;
+  return colSpan > minCellSpan || rowSpan > minCellSpan;
+}
+
 /** Rasterize one or more sketch strokes to a PNG data URL for OCR. */
 export function renderStrokesToImageBase64(strokes: Point[][]): {
   imageBase64: string;

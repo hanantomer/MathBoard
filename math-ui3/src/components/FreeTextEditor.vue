@@ -367,9 +367,12 @@ textarea {
 .freeText {
   background-color: rgb(232, 232, 215);
   position: fixed;
+  z-index: 1100;
   padding: 5px;
   box-sizing: border-box;
   resize: both;
+  border: groove 2px;
+  pointer-events: auto;
 }
 .hidden {
   display: none;

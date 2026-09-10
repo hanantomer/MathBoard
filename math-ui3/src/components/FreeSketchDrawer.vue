@@ -37,6 +37,8 @@
   <div v-show="show">
     <svg
       :style="lineSvgScreenStyle"
+      :viewBox="overlayViewBox"
+      preserveAspectRatio="none"
       class="line-svg"
       xmlns="http://www.w3.org/2000/svg"
     >
@@ -46,8 +48,9 @@
         data-cy="freeSketchEditor"
         d="M0 0"
         stroke-linecap="round"
-        fill="transparent"
-        stroke="black"
+        stroke-linejoin="round"
+        fill="black"
+        stroke="none"
       ></path>
     </svg>
   </div>
@@ -70,6 +73,9 @@ import {
 } from "common/baseTypes";
 
 import { matrixSize } from "common/globals";
+import {
+  getBoardSvgUserExtent,
+} from "../helpers/pointerCoordinateHelper";
 
 const notationMutateHelper = useNotationMutateHelper();
 const notationStore = useNotationStore();
@@ -86,6 +92,7 @@ let sketchPoints: Point[] = [];
 
 const show = computed(() => {
   return (
+    editModeStore.isFreeSketchStartedMode() ||
     editModeStore.isFreeSketchDrawingMode() ||
     (editModeStore.isFreeSketchSelectedMode() && sketchPoints.length > 0)
   );
@@ -101,16 +108,28 @@ watch(show, async (visible) => {
   }
 });
 
-/** Same viewport origin as pointer math; avoids margin/layout drift from `.mathboard` on an `absolute` overlay. */
+/** Same viewport box as the board SVG; viewBox maps overlay user units onto that box. */
+const overlayViewBox = computed(() => {
+  cellStore.getSvgBoundingRect();
+  const e = getBoardSvgUserExtent();
+  if (!e.width || !e.height) {
+    return undefined;
+  }
+  return `${e.x} ${e.y} ${e.width} ${e.height}`;
+});
+
 const lineSvgScreenStyle = computed(() => {
   const r = cellStore.getSvgBoundingRect();
   return {
     position: "fixed" as const,
     top: `${r.top}px`,
     left: `${r.left}px`,
-    width: matrixSize.width,
-    height: matrixSize.height,
+    width: r.width ? `${r.width}px` : matrixSize.width,
+    height: r.height ? `${r.height}px` : matrixSize.height,
     margin: "0",
+    overflow: "visible",
+    zIndex: 998,
+    pointerEvents: "none" as const,
   };
 });
 

@@ -268,6 +268,17 @@ export default function () {
 
       if (editModeStore.getEditMode() === "EXPONENT_WRITING") return;
 
+      // Sketch tools are sticky: printable keys (and Windows handwriting
+      // injecting "<", ",", etc.) must not drop the tool and type symbols.
+      if (
+        editModeStore.isFreeSketchStartedMode() ||
+        editModeStore.isFreeSketchDrawingMode() ||
+        editModeStore.isFreeSketchOcrStartedMode() ||
+        editModeStore.isFreeSketchOcrDrawingMode()
+      ) {
+        return;
+      }
+
       if (code === "Home" || code === "End") {
         if (editModeStore.getEditMode().endsWith("SELECTED")) {
           handleMovementKey(code, e);

@@ -45,6 +45,7 @@ export default function () {
             handler(e, params);
             eventBus.remove(eventType, editMode); // clear event from bus to allow reselction
           },
+          { flush: "sync" },
         ),
       ),
     );

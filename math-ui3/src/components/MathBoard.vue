@@ -824,8 +824,9 @@ foreignObject.practice-part-label-fo * {
 }
 
 .free-sketch {
-  max-width: 50px;
-  max-height: 50px;
+  fill: none;
+  stroke-linecap: round;
+  stroke-linejoin: round;
 }
 
 .touch-drawing {

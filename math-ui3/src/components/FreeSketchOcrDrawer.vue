@@ -37,6 +37,8 @@
   <div v-show="show">
     <svg
       :style="lineSvgScreenStyle"
+      :viewBox="overlayViewBox"
+      preserveAspectRatio="none"
       class="line-svg"
       xmlns="http://www.w3.org/2000/svg"
     >
@@ -46,8 +48,9 @@
         data-cy="freeSketchOcrEditor"
         d="M0 0"
         stroke-linecap="round"
-        fill="transparent"
-        stroke="black"
+        stroke-linejoin="round"
+        fill="black"
+        stroke="none"
       />
     </svg>
   </div>
@@ -61,6 +64,7 @@ import useScreenHelper from "../helpers/screenHelper";
 import {
   OCR_STROKE_DEBOUNCE_MS,
   renderStrokesToImageBase64,
+  strokesLookLikeFreehand,
 } from "../helpers/freeSketchOcrHelper";
 import { computed, nextTick, onUnmounted, watch } from "vue";
 import { useEditModeStore } from "../store/pinia/editModeStore";
@@ -69,6 +73,7 @@ import useWatchHelper from "../helpers/watchHelper";
 import { getStroke } from "perfect-freehand";
 import { DotCoordinates } from "common/baseTypes";
 import { matrixSize } from "common/globals";
+import { getBoardSvgUserExtent } from "../helpers/pointerCoordinateHelper";
 
 const notationMutateHelper = useNotationMutateHelper();
 const apiHelper = useApiHelper();
@@ -101,15 +106,26 @@ watch(show, async (visible) => {
   }
 });
 
+const overlayViewBox = computed(() => {
+  cellStore.getSvgBoundingRect();
+  const e = getBoardSvgUserExtent();
+  if (!e.width || !e.height) {
+    return undefined;
+  }
+  return `${e.x} ${e.y} ${e.width} ${e.height}`;
+});
+
 const lineSvgScreenStyle = computed(() => {
   const r = cellStore.getSvgBoundingRect();
   return {
     position: "fixed" as const,
     top: `${r.top}px`,
     left: `${r.left}px`,
-    width: matrixSize.width,
-    height: matrixSize.height,
+    width: r.width ? `${r.width}px` : matrixSize.width,
+    height: r.height ? `${r.height}px` : matrixSize.height,
     margin: "0",
+    overflow: "visible",
+    zIndex: 998,
     pointerEvents: "none" as const,
   };
 });
@@ -184,6 +200,17 @@ async function processOcrBatch() {
 
   ocrInFlight = true;
   try {
+    if (
+      strokesLookLikeFreehand(
+        strokes,
+        cellStore.getCellHorizontalWidth(),
+        cellStore.getCellVerticalHeight(),
+      )
+    ) {
+      await saveStrokesAsFreeSketches(strokes);
+      return;
+    }
+
     const { symbol } = await apiHelper.recognizeSketchOcr(rendered.imageBase64);
     if (!symbol?.trim()) {
       throw new Error("OCR returned an empty symbol");

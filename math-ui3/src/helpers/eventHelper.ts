@@ -317,10 +317,20 @@ export default function eventHelper() {
     if (base64) notationMutationHelper.addImageNotation(base64);
   }
 
+  function shouldPreventSketchPointerDefault(): boolean {
+    const global = editModeStore.getGlobalEditMode();
+    return (
+      global === "FREE_SKETCH" ||
+      global === "FREE_SKETCH_WITH_OCR" ||
+      editModeStore.isFreeSketchDrawingMode() ||
+      editModeStore.isFreeSketchOcrDrawingMode()
+    );
+  }
+
   function registerSvgPointerDown() {
     document
       ?.getElementById(cellStore.getSvgId()!)
-      ?.addEventListener("pointerdown", emitSvgPointerDown, { passive: true });
+      ?.addEventListener("pointerdown", emitSvgPointerDown, { passive: false });
   }
 
   function unregisterSvgPointerDown() {
@@ -340,13 +350,17 @@ export default function eventHelper() {
       cellStore.refreshSvgBoundingRect();
     }
 
+    if (shouldPreventSketchPointerDefault()) {
+      e.preventDefault();
+    }
+
     eventBus.emit("EV_SVG_POINTERDOWN", e);
   }
 
   function registerSvgPointerMove() {
     document
       ?.getElementById(cellStore.getSvgId()!)
-      ?.addEventListener("pointermove", emitSvgPointerMove, { passive: true });
+      ?.addEventListener("pointermove", emitSvgPointerMove, { passive: false });
   }
 
   function unregisterSvgPointerMove() {
@@ -367,6 +381,9 @@ export default function eventHelper() {
     }
 
     eventBus.emit("EV_SVG_POINTERMOVE", e);
+    if (shouldPreventSketchPointerDefault()) {
+      e.preventDefault();
+    }
   }
 
   function registerSvgPointerUp() {
