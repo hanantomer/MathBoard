@@ -18,6 +18,12 @@ import {
 import {
   formatPracticeProblemPrompt,
   PRACTICE_QUESTION_TEMPLATES,
+  getPracticeQuestionTemplate,
+  isPracticeDiagramStemNotation,
+  nextHintsRevealed,
+  practiceTemplateAnswers,
+  practiceTemplateStemParts,
+  revealedPracticeHint,
 } from "common/practiceQuestionTemplates";
 
 const QUADRATIC = [
@@ -415,11 +421,68 @@ describe("formatPracticeProblemPrompt", () => {
 
   it("keeps catalog stems as one problem when they are only a head and question", () => {
     for (const template of PRACTICE_QUESTION_TEMPLATES) {
+      if ((template.parts?.length ?? 0) >= 2) continue;
       const prompt = formatPracticeProblemPrompt(template);
       expect(
         ensureNumberedParts(prompt),
         `${template.id} should stay one problem`,
       ).toEqual([{ id: "1", text: "Whole problem" }]);
     }
+  });
+
+  it("authors difficulty, hints, and a prompt on every catalog item", () => {
+    expect(PRACTICE_QUESTION_TEMPLATES).toHaveLength(45);
+    for (const template of PRACTICE_QUESTION_TEMPLATES) {
+      expect(template.prompt?.trim(), template.id).toBeTruthy();
+      expect(template.difficulty, template.id).toBeTruthy();
+      expect(template.hints?.length, template.id).toBeGreaterThan(0);
+      expect(template.explanation?.trim(), template.id).toBeTruthy();
+    }
+  });
+
+  it("uses an authored prompt when present", () => {
+    const template = PRACTICE_QUESTION_TEMPLATES.find(
+      (t) => t.id === "algebra-linear-2x-plus-3",
+    )!;
+    expect(formatPracticeProblemPrompt(template)).toBe(template.prompt);
+  });
+
+  it("uses explicit parts for the quadratic worksheet", () => {
+    const template = getPracticeQuestionTemplate(
+      "algebra-quadratic-vertex-form",
+    )!;
+    const parts = practiceTemplateStemParts(template);
+    expect(parts?.map((p) => p.id)).toEqual(["1", "2", "3", "4", "5"]);
+    expect(practiceTemplateAnswers(template, "2").expectedAnswer).toBe(
+      "(2, -3)",
+    );
+    expect(ensureNumberedParts(formatPracticeProblemPrompt(template))).toHaveLength(
+      5,
+    );
+  });
+});
+
+describe("practice catalog hints", () => {
+  it("cycles through curated hints without wrapping past the last", () => {
+    const hints = ["a", "b", "c"];
+    expect(nextHintsRevealed(hints.length, 0)).toBe(1);
+    expect(revealedPracticeHint(hints, 1)).toBe("a");
+    expect(nextHintsRevealed(hints.length, 2)).toBe(3);
+    expect(revealedPracticeHint(hints, 3)).toBe("c");
+    expect(nextHintsRevealed(hints.length, 3)).toBe(3);
+  });
+
+  it("treats lines, vertex letters, and annotations as diagram overlay", () => {
+    expect(isPracticeDiagramStemNotation({ kind: "LINE" })).toBe(true);
+    expect(isPracticeDiagramStemNotation({ kind: "CIRCLE" })).toBe(true);
+    expect(
+      isPracticeDiagramStemNotation({ kind: "SYMBOL", value: "A" }),
+    ).toBe(true);
+    expect(
+      isPracticeDiagramStemNotation({ kind: "SYMBOL", value: "2" }),
+    ).toBe(false);
+    expect(
+      isPracticeDiagramStemNotation({ kind: "TEXT", value: "Solve for x:" }),
+    ).toBe(false);
   });
 });

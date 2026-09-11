@@ -59,6 +59,13 @@ export type LessonTemplateExponent = {
   value: string;
 };
 
+export type LessonTemplateCircle = {
+  kind: "CIRCLE";
+  cx: number;
+  cy: number;
+  r: number;
+};
+
 export type LessonTemplateNotation =
   | LessonTemplateSymbol
   | LessonTemplateText
@@ -66,7 +73,8 @@ export type LessonTemplateNotation =
   | LessonTemplateAnnotation
   | LessonTemplateCurve
   | LessonTemplateSqrt
-  | LessonTemplateExponent;
+  | LessonTemplateExponent
+  | LessonTemplateCircle;
 
 export type LessonTemplate = {
   id: string;
@@ -171,7 +179,21 @@ function exp(col: number, row: number, value: string): LessonTemplateExponent {
   return { kind: "EXPONENT", col, row, value };
 }
 
-export { sym, text, line, ann, curve, sqrt, exp };
+function circle(
+  col: number,
+  row: number,
+  radiusCols: number,
+): LessonTemplateCircle {
+  const p = px(col, row);
+  return {
+    kind: "CIRCLE",
+    cx: p.x,
+    cy: p.y,
+    r: Math.round(radiusCols * matrixCellSize.width),
+  };
+}
+
+export { sym, text, line, ann, curve, sqrt, exp, circle };
 
 /** Shipped sample lessons — cloned into the signed-in teacher's account. */
 export const LESSON_TEMPLATES: LessonTemplate[] = [

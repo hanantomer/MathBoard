@@ -136,6 +136,26 @@
         >
           Start tasks in order. Enter adds space in the current task.
         </p>
+        <v-alert
+          v-if="curatedHint"
+          class="mt-2"
+          density="compact"
+          variant="tonal"
+          type="info"
+          data-cy="practice-catalog-hint"
+        >
+          {{ curatedHint }}
+        </v-alert>
+        <v-alert
+          v-if="showExplanation && explanation"
+          class="mt-2"
+          density="compact"
+          variant="tonal"
+          type="success"
+          data-cy="practice-catalog-explanation"
+        >
+          {{ explanation }}
+        </v-alert>
         <v-btn
           v-if="isBlank"
           class="mt-3"
@@ -171,6 +191,9 @@ const props = defineProps<{
   extracting: boolean;
   uploading: boolean;
   orderHint?: string;
+  curatedHint?: string;
+  explanation?: string;
+  showExplanation?: boolean;
 }>();
 
 const emit = defineEmits<{

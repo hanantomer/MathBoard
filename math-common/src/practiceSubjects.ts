@@ -4,6 +4,8 @@ export const PRACTICE_SUBJECTS = [
   "Trigonometry",
   "Calculus",
   "Statistics",
+  "Vectors",
+  "Complex",
   "General",
 ] as const;
 

@@ -2,6 +2,7 @@ import axios from "axios";
 import {
   getPracticeQuestionTemplateByUUId,
   formatPracticeProblemPrompt,
+  practiceTemplateAnswers,
 } from "../../../math-common/build/practiceQuestionTemplates";
 import type {
   PracticeCheckResult,
@@ -122,6 +123,30 @@ function localQuickMatch(
   const candidates = [expectedAnswer, ...acceptedAnswers].map(normalizeLoose);
   return candidates.some(
     (answer) => answer.length > 0 && work.includes(answer),
+  );
+}
+
+function scaffoldingHintsSection(hints?: string[]): string {
+  if (!hints?.length) return "";
+  const listed = hints.map((hint, i) => `${i + 1}. ${hint}`).join("\n");
+  return `Curated next-step hints (paraphrase at most one as a nudge; never quote the final answer; do not dump this list):\n${listed}\n\n`;
+}
+
+function workForLocalMatch(work: string, ctx?: PracticePartsCtx): string {
+  const slice = workForRewriteReview(work, ctx);
+  if (slice.trim()) return slice;
+  if (/\[Part\s+/i.test(work)) return slice;
+  return work;
+}
+
+function localMatchExpected(
+  studentWork: string,
+  expectedAnswer: string,
+  acceptedAnswers: string[] = [],
+): boolean {
+  return (
+    localQuickMatch(studentWork, expectedAnswer, acceptedAnswers) ||
+    workMatchesExpectedAnswer(studentWork, expectedAnswer, acceptedAnswers)
   );
 }
 
@@ -319,6 +344,7 @@ function buildPrompt(
   acceptedAnswers: string[],
   studentWork: string,
   ctx?: PracticePartsCtx,
+  hints?: string[],
 ): string {
   const accepted =
     acceptedAnswers.length > 0
@@ -329,7 +355,7 @@ function buildPrompt(
 
 ${problem}
 
-${partsSection(problem, ctx)}Expected answer: ${expectedAnswer}
+${partsSection(problem, ctx)}${scaffoldingHintsSection(hints)}Expected answer: ${expectedAnswer}
 Also accept these equivalent forms:
 ${accepted}
 
@@ -339,6 +365,7 @@ ${studentWork || "(empty — student has not written anything yet)"}
 """
 
 ${CHECK_GRADE_RULES}
+Never reveal the expected answer when the student is incorrect. A hint may paraphrase one curated next-step hint.
 
 Respond with ONLY valid JSON (no markdown):
 {"correct":true|false,"feedback":"one short sentence","hint":"optional if incorrect","warning":"optional outline of messy earlier steps if still correct"}`;
@@ -650,7 +677,6 @@ export async function checkPracticeWork(
   const image = problemImageBase64?.trim();
   const textProblem = problemText?.trim();
   const ctx: PracticePartsCtx = { parts, activePartId };
-  const multiPart = resolveParts(textProblem, parts).length >= 2;
 
   if (questionUUId === PRACTICE_BLANK_UUID) {
     if (!image && !textProblem) {
@@ -702,16 +728,15 @@ export async function checkPracticeWork(
   }
 
   const templateProblem = formatPracticeProblemPrompt(template);
+  const answers = practiceTemplateAnswers(template, activePartId);
   const rewrite = checkResultForActivePart(templateProblem, work, ctx);
   if (rewrite) return { ...rewrite, partComplete: rewrite.correct };
   if (
-    !multiPart &&
-    (localQuickMatch(work, template.expectedAnswer, template.acceptedAnswers) ||
-      workMatchesExpectedAnswer(
-        work,
-        template.expectedAnswer,
-        template.acceptedAnswers,
-      ))
+    localMatchExpected(
+      workForLocalMatch(work, ctx),
+      answers.expectedAnswer,
+      answers.acceptedAnswers,
+    )
   ) {
     return {
       correct: true,
@@ -722,10 +747,11 @@ export async function checkPracticeWork(
 
   const prompt = buildPrompt(
     templateProblem,
-    template.expectedAnswer,
-    template.acceptedAnswers ?? [],
+    answers.expectedAnswer,
+    answers.acceptedAnswers ?? [],
     work,
     ctx,
+    template.hints,
   );
 
   const raw = await generateTextAcrossModels(
@@ -758,12 +784,13 @@ function buildCoachPrompt(
   studentWork: string,
   phase?: PracticeCoachPhase,
   ctx?: PracticePartsCtx,
+  hints?: string[],
 ): string {
   return `You are a brief math voice coach for a student working on a whiteboard.
 
 ${problem}
 
-${partsSection(problem, ctx)}Expected final answer (do not reveal unless they already have it): ${expectedAnswer}
+${partsSection(problem, ctx)}${scaffoldingHintsSection(hints)}Expected final answer (do not reveal unless they already have it): ${expectedAnswer}
 
 ${STUDENT_WORK_LABEL}
 """
@@ -927,19 +954,18 @@ export async function coachPracticeWork(
   }
 
   const templateProblem = formatPracticeProblemPrompt(template);
+  const answers = practiceTemplateAnswers(template, activePartId);
   const rewrite = work
     ? rewriteCoachOverride(templateProblem, work, ctx)
     : null;
   if (rewrite) return rewrite;
   if (
-    !multiPart &&
     work &&
-    (localQuickMatch(work, template.expectedAnswer, template.acceptedAnswers) ||
-      workMatchesExpectedAnswer(
-        work,
-        template.expectedAnswer,
-        template.acceptedAnswers,
-      ))
+    localMatchExpected(
+      workForLocalMatch(work, ctx),
+      answers.expectedAnswer,
+      answers.acceptedAnswers,
+    )
   ) {
     return { speak: false, tip: "" };
   }
@@ -947,10 +973,11 @@ export async function coachPracticeWork(
   return generateCoachTip(
     buildCoachPrompt(
       templateProblem,
-      template.expectedAnswer,
+      answers.expectedAnswer,
       work,
       phase,
       ctx,
+      template.hints,
     ),
     undefined,
     work,

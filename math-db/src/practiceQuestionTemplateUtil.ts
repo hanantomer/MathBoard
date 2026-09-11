@@ -5,6 +5,7 @@ import {
   LineNotationCreationAttributes,
   AnnotationNotationCreationAttributes,
   CurveNotationCreationAttributes,
+  CircleNotationCreationAttributes,
   SqrtNotationCreationAttributes,
   ExponentNotationCreationAttributes,
 } from "../../math-common/build/baseTypes";
@@ -101,6 +102,16 @@ export function toQuestionStemNotation(
         col: item.col,
         row: item.row,
         value: item.value,
+      };
+      return notation;
+    }
+    case "CIRCLE": {
+      const notation: CircleNotationCreationAttributes = {
+        ...base,
+        notationType: "CIRCLE",
+        cx: item.cx,
+        cy: item.cy,
+        r: item.r,
       };
       return notation;
     }

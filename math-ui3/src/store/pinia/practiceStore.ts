@@ -9,6 +9,7 @@ import {
   startedPartIdsFromSession,
   withSeededFirstPartRow,
 } from "../../helpers/practicePartOrderHelper";
+import { nextHintsRevealed } from "common/practiceQuestionTemplates";
 
 const STORAGE_KEY = "mathboard-practice-notations";
 const SESSION_STORAGE_KEY = "mathboard-practice-sessions";
@@ -24,6 +25,10 @@ export type PracticeSession = {
   startedPartIds?: string[];
   /** Last board row for each `(n)`, kept after reload when the gutter is full. */
   partLabelRows?: Record<string, number>;
+  /** How many curated catalog hints the student has opened (quota-free). */
+  hintsRevealed?: number;
+  /** True after a correct check (all parts, if multi-part). */
+  explanationUnlocked?: boolean;
 };
 
 function emptySession(): PracticeSession {
@@ -35,6 +40,8 @@ function emptySession(): PracticeSession {
     activePartId: null,
     completedPartIds: [],
     startedPartIds: [],
+    hintsRevealed: 0,
+    explanationUnlocked: false,
   };
 }
 
@@ -204,6 +211,8 @@ export const usePracticeStore = defineStore("practice", () => {
       completedPartIds,
       startedPartIds,
       partLabelRows,
+      hintsRevealed: current.hintsRevealed ?? 0,
+      explanationUnlocked: current.explanationUnlocked ?? false,
     });
   }
 
@@ -274,6 +283,24 @@ export const usePracticeStore = defineStore("practice", () => {
     return next?.id ?? null;
   }
 
+  function revealNextHint(questionUUId: string, hintCount: number): number {
+    const current = getSession(questionUUId);
+    if (!current.submitted) return current.hintsRevealed ?? 0;
+    const hintsRevealed = nextHintsRevealed(
+      hintCount,
+      current.hintsRevealed ?? 0,
+    );
+    if (hintsRevealed === (current.hintsRevealed ?? 0)) return hintsRevealed;
+    setSession(questionUUId, { ...current, hintsRevealed });
+    return hintsRevealed;
+  }
+
+  function unlockExplanation(questionUUId: string) {
+    const current = getSession(questionUUId);
+    if (!current.submitted || current.explanationUnlocked) return;
+    setSession(questionUUId, { ...current, explanationUnlocked: true });
+  }
+
   function resetSession(questionUUId: string) {
     const next = { ...sessions.value };
     delete next[questionUUId];
@@ -299,6 +326,8 @@ export const usePracticeStore = defineStore("practice", () => {
     bindPartRow,
     markPartComplete,
     nextUnansweredPartId,
+    revealNextHint,
+    unlockExplanation,
     resetSession,
   };
 });

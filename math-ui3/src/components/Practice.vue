@@ -7,6 +7,9 @@
       :extracting="extractingParts"
       :uploading="uploading"
       :order-hint="partOrderHint"
+      :curated-hint="visibleCatalogHint"
+      :explanation="catalogExplanation"
+      :show-explanation="showCatalogExplanation"
       @submit-text="submitProblemText"
       @submit-image="submitProblemImageFile"
       @select-part="onSelectPart"
@@ -86,6 +89,18 @@
               </div>
             </template>
           </v-tooltip>
+
+          <v-btn
+            v-if="catalogHints.length && session.submitted"
+            color="secondary"
+            variant="tonal"
+            :disabled="catalogHintsExhausted"
+            prepend-icon="mdi-lightbulb-on-outline"
+            data-cy="practice-catalog-hint-btn"
+            @click="revealCatalogHint"
+          >
+            {{ catalogHintButtonLabel }}
+          </v-btn>
 
           <v-btn
             v-if="isLiveCoach && !aiQuotaExhausted"
@@ -335,7 +350,11 @@ import {
   startedPartIdsFromSession,
 } from "../helpers/practicePartOrderHelper";
 import { activePartLooksComplete } from "common/practiceAlgebra";
-import { getPracticeQuestionTemplateByUUId } from "common/practiceQuestionTemplates";
+import {
+  getPracticeQuestionTemplateByUUId,
+  practiceTemplateAnswers,
+  revealedPracticeHint,
+} from "common/practiceQuestionTemplates";
 import useImageHelper from "../helpers/imageHelper";
 import useEventBus from "../helpers/eventBusHelper";
 import useSelectionHelper from "../helpers/selectionHelper";
@@ -591,6 +610,49 @@ const allPartsComplete = computed(() => {
   return s.parts.every((p) => s.completedPartIds.includes(p.id));
 });
 
+const catalogTemplate = computed(() =>
+  currentQuestionUUId.value
+    ? getPracticeQuestionTemplateByUUId(currentQuestionUUId.value)
+    : undefined,
+);
+
+const catalogHints = computed(() => catalogTemplate.value?.hints ?? []);
+
+const catalogHintsExhausted = computed(() => {
+  const n = catalogHints.value.length;
+  if (!n) return true;
+  return (session.value.hintsRevealed ?? 0) >= n;
+});
+
+const catalogHintButtonLabel = computed(() => {
+  const revealed = session.value.hintsRevealed ?? 0;
+  if (revealed <= 0) return "Hint";
+  if (catalogHintsExhausted.value) return "Hints used";
+  return "Next hint";
+});
+
+const visibleCatalogHint = computed(() =>
+  revealedPracticeHint(catalogHints.value, session.value.hintsRevealed ?? 0) ??
+  "",
+);
+
+const catalogExplanation = computed(
+  () => catalogTemplate.value?.explanation ?? "",
+);
+
+const showCatalogExplanation = computed(
+  () =>
+    !!catalogExplanation.value && !!session.value.explanationUnlocked,
+);
+
+function revealCatalogHint() {
+  if (!currentQuestionUUId.value || catalogHintsExhausted.value) return;
+  practiceStore.revealNextHint(
+    currentQuestionUUId.value,
+    catalogHints.value.length,
+  );
+}
+
 const aiQuotaExhausted = computed(() => quotaRemaining.value === 0);
 
 function dismissAiLimitMessage() {
@@ -650,10 +712,7 @@ function currentExpectedAnswers() {
     currentQuestionUUId.value,
   );
   if (!template) return null;
-  return {
-    expectedAnswer: template.expectedAnswer,
-    acceptedAnswers: template.acceptedAnswers,
-  };
+  return practiceTemplateAnswers(template, currentActivePartId());
 }
 
 function currentActivePartId() {
@@ -1288,6 +1347,12 @@ async function runCheck() {
     applyQuota(result.value.remaining, result.value.limit);
     if (result.value.correct) {
       advanceAfterCorrectCheck();
+      const uuid = currentQuestionUUId.value || PRACTICE_BLANK_UUID;
+      const s = practiceStore.getSession(uuid);
+      const done =
+        !hasPracticeSections(s.parts) ||
+        s.parts.every((p) => s.completedPartIds.includes(p.id));
+      if (done) practiceStore.unlockExplanation(uuid);
     }
     const shouldSpeak =
       assistMode.value === "voice" &&

@@ -63,6 +63,23 @@
         :hover="true"
         @click:row="openQuestion"
       >
+        <template #item.name="{ item }">
+          <div class="practice-q-name">{{ rowItem(item).name }}</div>
+          <div
+            v-if="rowItem(item).tags.length"
+            class="practice-q-tags"
+          >
+            <v-chip
+              v-for="tag in rowItem(item).tags"
+              :key="tag"
+              size="x-small"
+              variant="tonal"
+              class="mr-1"
+            >
+              {{ tag }}
+            </v-chip>
+          </div>
+        </template>
         <template #no-data>
           <div class="text-center pa-8 text-medium-emphasis">
             No practice questions in this subject yet.
@@ -77,6 +94,12 @@
 import { computed, ref, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { PRACTICE_SUBJECTS } from "common/practiceSubjects";
+import {
+  PRACTICE_DIFFICULTY_LABEL,
+  PRACTICE_DIFFICULTY_ORDER,
+  getPracticeQuestionTemplateByUUId,
+} from "common/practiceQuestionTemplates";
+import type { PracticeDifficulty } from "common/practiceQuestionTemplates";
 import { WELCOME_PATHS } from "../constants/helpCopy";
 import { usePracticeQuestionStore } from "../store/pinia/practiceQuestionStore";
 import { useEditModeStore } from "../store/pinia/editModeStore";
@@ -110,25 +133,51 @@ watch(
 );
 
 const headers = [
-  { title: "Subject", key: "subject", sortable: false },
   { title: "Question", key: "name", sortable: false },
-  { title: "Created", key: "createdAt", sortable: false },
+  { title: "Difficulty", key: "difficultyLabel", sortable: false },
 ];
 
+const DIFFICULTY_RANK = new Map(
+  PRACTICE_DIFFICULTY_ORDER.map((d, i) => [d, i]),
+);
+
 const practiceQuestions = computed(() => {
-  return Array.from(practiceQuestionStore.getItems().values()).map((q) => ({
-    uuid: q.uuid,
-    name: q.name,
-    subject: q.subject,
-    createdAt: q.createdAt,
-  }));
+  return Array.from(practiceQuestionStore.getItems().values())
+    .map((q) => {
+      const template = getPracticeQuestionTemplateByUUId(q.uuid);
+      const difficulty = template?.difficulty;
+      return {
+        uuid: q.uuid,
+        name: q.name,
+        subject: q.subject,
+        tags: template?.tags ?? [],
+        difficulty,
+        difficultyLabel: difficulty
+          ? PRACTICE_DIFFICULTY_LABEL[difficulty]
+          : "",
+      };
+    })
+    .sort((a, b) => {
+      const ra = DIFFICULTY_RANK.get(a.difficulty as PracticeDifficulty) ?? 99;
+      const rb = DIFFICULTY_RANK.get(b.difficulty as PracticeDifficulty) ?? 99;
+      if (ra !== rb) return ra - rb;
+      return a.name.localeCompare(b.name);
+    });
 });
 
-type ListRow = { uuid: string; name: string; subject: string };
+type ListRow = {
+  uuid: string;
+  name: string;
+  subject: string;
+  tags: string[];
+  difficulty?: PracticeDifficulty;
+  difficultyLabel: string;
+};
 
 function rowItem(item: unknown): ListRow {
   const row = item as ListRow & { raw?: ListRow };
-  return row.raw ?? row;
+  const resolved = row.raw ?? row;
+  return { ...resolved, tags: resolved.tags ?? [] };
 }
 
 function openQuestion(_: unknown, row: { item: ListRow }) {
@@ -181,5 +230,13 @@ function openBlankSheet() {
 
 .blank-sheet-card:hover {
   border-color: #0f766e !important;
+}
+
+.practice-q-name {
+  font-weight: 600;
+}
+
+.practice-q-tags {
+  margin-top: 4px;
 }
 </style>

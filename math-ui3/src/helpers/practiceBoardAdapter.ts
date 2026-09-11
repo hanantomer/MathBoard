@@ -13,6 +13,8 @@ import {
 import {
   formatPracticeProblemPrompt,
   getPracticeQuestionTemplateByUUId,
+  isPracticeDiagramStemNotation,
+  practiceTemplateStemParts,
 } from "common/practiceQuestionTemplates";
 import useApiHelper from "./apiHelper";
 import { useNotationStore } from "../store/pinia/notationStore";
@@ -167,32 +169,36 @@ function partsMatch(
   return a.every((part, i) => part.id === b[i].id && part.text === b[i].text);
 }
 
-function submitStemIfNeeded(questionUUId: string, stemText: string) {
+function submitStemIfNeeded(
+  questionUUId: string,
+  stemText: string,
+  parts?: { id: string; text: string }[],
+) {
   const practiceStore = usePracticeStore();
   const text = stemText.trim();
   if (!text) return;
   const session = practiceStore.getSession(questionUUId);
-  const parts = ensureNumberedParts(text);
+  const resolved = parts ?? ensureNumberedParts(text);
   const leftoverNumbers =
-    !hasPracticeSections(parts) &&
+    !hasPracticeSections(resolved) &&
     Object.keys(session.partLabelRows ?? {}).length > 0;
   if (
     session.submitted &&
     session.problemText === text &&
-    partsMatch(session.parts, parts) &&
+    partsMatch(session.parts, resolved) &&
     !leftoverNumbers
   ) {
     return;
   }
   practiceStore.submitProblem(questionUUId, {
     problemText: text,
-    parts,
+    parts: resolved,
   });
 }
 
 /**
  * Load PRACTICE student layer from sessionStorage.
- * Catalog QUESTION stem is submitted into the problem pane, not drawn on the board.
+ * Catalog QUESTION diagrams overlay the board; stem text goes in the problem pane.
  * Blank sheet: local PRACTICE layer only; leftover `practiceRole` stems migrate to the pane.
  */
 export async function loadPracticeBoard(questionUUId: string) {
@@ -203,6 +209,7 @@ export async function loadPracticeBoard(questionUUId: string) {
   try {
     notationStore.haltSaveState();
 
+    let diagramOverlay: NotationAttributes[] = [];
     if (questionUUId !== PRACTICE_BLANK_UUID) {
       const stemNotations: NotationAttributes[] = [];
       for (let i = 0; i < NotationTypeValues.length; i++) {
@@ -229,11 +236,27 @@ export async function loadPracticeBoard(questionUUId: string) {
         }
       }
 
+      diagramOverlay = stemNotations.filter((n) =>
+        isPracticeDiagramStemNotation({
+          notationType: n.notationType,
+          value: String(
+            (n as NotationAttributes & { value?: string }).value ?? "",
+          ),
+        }),
+      );
+
       const template = getPracticeQuestionTemplateByUUId(questionUUId);
       const stemText = template
         ? formatPracticeProblemPrompt(template)
         : joinStemNotations(stemNotations);
-      submitStemIfNeeded(questionUUId, stemText || "Practice question");
+      const catalogParts = template
+        ? practiceTemplateStemParts(template)
+        : null;
+      submitStemIfNeeded(
+        questionUUId,
+        stemText || "Practice question",
+        catalogParts ?? undefined,
+      );
     }
 
     let practiceNotations = practiceStore
@@ -250,7 +273,7 @@ export async function loadPracticeBoard(questionUUId: string) {
       practiceNotations = work;
     }
 
-    notationStore.setNotations(practiceNotations);
+    notationStore.setNotations([...diagramOverlay, ...practiceNotations]);
 
     const session = practiceStore.getSession(questionUUId);
     if (session.submitted && !session.activePartId) {
