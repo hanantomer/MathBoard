@@ -3,6 +3,7 @@
     v-if="show"
     variant="outlined"
     class="selection"
+    :class="{ 'selection--text': showTextResizeHandles }"
     id="selection"
     data-cy="area-selection"
     v-on:mouseup="onSelectionMouseUp"
@@ -17,6 +18,11 @@
       transformOrigin: 'center center',
     }"
   >
+    <text-resize-handles
+      v-if="showTextResizeHandles"
+      @start="startSelectionResize"
+      @end="endSelectionResize"
+    />
   </v-card>
 </template>
 
@@ -27,6 +33,16 @@ import { useEditModeStore } from "../store/pinia/editModeStore";
 import { useCellStore } from "../store/pinia/cellStore";
 import { useNotationStore } from "../store/pinia/notationStore";
 import { NotationType, SelectionMoveDirection } from "common/unions";
+import {
+  clientPointToSvgUser,
+  svgUserToViewport,
+} from "../helpers/pointerCoordinateHelper";
+import textResizeHandles from "./TextResizeHandles.vue";
+import {
+  applyTextResizeHandle,
+  type TextResizeHandle,
+  type ViewportBox,
+} from "../helpers/textResizeHelper";
 import {
   RectCoordinates,
   DotCoordinates,
@@ -109,6 +125,125 @@ const show = computed(() => {
 const backgroundColor = computed(() => {
   return editModeStore.isTextSelectionMode() ? "lightyellow" : "transparent";
 });
+
+const showTextResizeHandles = computed(
+  () =>
+    editModeStore.isTextSelectedMode() && authorizationHelper.canEdit(),
+);
+
+let selectionResizeHandle: TextResizeHandle | null = null;
+let selectionResizeStartBox: ViewportBox | null = null;
+let selectionResizePointerId: number | null = null;
+let selectionResizeCaptureEl: HTMLElement | null = null;
+const selectionResizeStartPointer = { x: 0, y: 0 };
+
+function startSelectionResize(e: PointerEvent, handle: TextResizeHandle) {
+  if (!authorizationHelper.canEdit()) return;
+  const captureEl = e.currentTarget as HTMLElement | null;
+  try {
+    captureEl?.setPointerCapture?.(e.pointerId);
+    selectionResizeCaptureEl = captureEl;
+    selectionResizePointerId = e.pointerId;
+  } catch {
+    selectionResizeCaptureEl = null;
+    selectionResizePointerId = null;
+  }
+  selectionResizeHandle = handle;
+  selectionResizeStartBox = {
+    left: selectionRectLeft.value,
+    top: selectionRectTop.value,
+    width: selectionRectWidth.value,
+    height: selectionRectHeight.value,
+  };
+  selectionResizeStartPointer.x = e.clientX;
+  selectionResizeStartPointer.y = e.clientY;
+  attachSelectionResizeListeners();
+}
+
+function onSelectionResizeMove(e: PointerEvent) {
+  if (!selectionResizeHandle || !selectionResizeStartBox) return;
+  if (e.buttons === 0) {
+    endSelectionResize();
+    return;
+  }
+  const box = applyTextResizeHandle(
+    selectionResizeStartBox,
+    selectionResizeHandle,
+    e.clientX,
+    e.clientY,
+    selectionResizeStartPointer.x,
+    selectionResizeStartPointer.y,
+    cellStore.getCellHorizontalWidth(),
+    cellStore.getCellVerticalHeight(),
+  );
+  selectionPosition.value.x1 = box.left;
+  selectionPosition.value.y1 = box.top;
+  selectionPosition.value.x2 = box.left + box.width;
+  selectionPosition.value.y2 = box.top + box.height;
+}
+
+function persistTextResize() {
+  const selected = getSelectedRect();
+  if (!selected || selected.notationType !== "TEXT") return;
+  const topLeft = clientPointToSvgUser(
+    selectionRectLeft.value,
+    selectionRectTop.value,
+  );
+  const bottomRight = clientPointToSvgUser(
+    selectionRectLeft.value + selectionRectWidth.value,
+    selectionRectTop.value + selectionRectHeight.value,
+  );
+  const cells = screenHelper.getRectAttributes({ topLeft, bottomRight });
+  Object.assign(selected, cells);
+  notationMutationHelper.updateNotation(selected);
+  const colW = cellStore.getCellHorizontalWidth();
+  const rowH = cellStore.getCellVerticalHeight();
+  const tl = svgUserToViewport(selected.fromCol * colW, selected.fromRow * rowH);
+  const br = svgUserToViewport(
+    (selected.toCol + 1) * colW,
+    (selected.toRow + 1) * rowH,
+  );
+  applyViewportBounds(tl.x, tl.y, br.x, br.y);
+}
+
+function endSelectionResize() {
+  detachSelectionResizeListeners();
+  if (!selectionResizeHandle) return;
+  if (
+    selectionResizeCaptureEl &&
+    selectionResizePointerId != null &&
+    selectionResizeCaptureEl.hasPointerCapture?.(selectionResizePointerId)
+  ) {
+    try {
+      selectionResizeCaptureEl.releasePointerCapture(selectionResizePointerId);
+    } catch {
+      /* already released */
+    }
+  }
+  selectionResizeHandle = null;
+  selectionResizeStartBox = null;
+  selectionResizeCaptureEl = null;
+  selectionResizePointerId = null;
+  persistTextResize();
+}
+
+let selectionResizeListening = false;
+
+function attachSelectionResizeListeners() {
+  if (selectionResizeListening) return;
+  selectionResizeListening = true;
+  window.addEventListener("pointermove", onSelectionResizeMove, true);
+  window.addEventListener("pointerup", endSelectionResize, true);
+  window.addEventListener("pointercancel", endSelectionResize, true);
+}
+
+function detachSelectionResizeListeners() {
+  if (!selectionResizeListening) return;
+  selectionResizeListening = false;
+  window.removeEventListener("pointermove", onSelectionResizeMove, true);
+  window.removeEventListener("pointerup", endSelectionResize, true);
+  window.removeEventListener("pointercancel", endSelectionResize, true);
+}
 
 const selectionRectLeft = computed(() => {
   return Math.min(selectionPosition.value.x1, selectionPosition.value.x2);
@@ -228,6 +363,7 @@ watchHelper.watchNotationSelection(
 function startMmoveSelectedNotations(e: PointerEvent) {
   if (!authorizationHelper.canEdit()) return;
   if (!e.buttons) return;
+  if (selectionResizeHandle) return;
   editModeStore.setEditMode("AREA_MOVING");
 }
 
@@ -825,18 +961,8 @@ function setSelectionPositionForAnnotation(
 }
 
 function setSelectionPositionForText(selectedNotation: RectNotationAttributes) {
-  selectionPosition.value.x1 =
-    cellStore.getSvgBoundingRect().left +
-    selectedNotation.fromCol * cellStore.getCellHorizontalWidth();
-  selectionPosition.value.x2 =
-    cellStore.getSvgBoundingRect().left +
-    (selectedNotation.toCol + 1) * cellStore.getCellHorizontalWidth();
-  selectionPosition.value.y1 =
-    cellStore.getSvgBoundingRect().top +
-    selectedNotation.fromRow * cellStore.getCellVerticalHeight();
-  selectionPosition.value.y2 =
-    cellStore.getSvgBoundingRect().top +
-    (selectedNotation.toRow + 1) * cellStore.getCellVerticalHeight();
+  const box = screenHelper.getTextNotationViewportBounds(selectedNotation);
+  applyViewportBounds(box.left, box.top, box.right, box.bottom);
 }
 
 function setSelectionPositionForImage() {
@@ -895,5 +1021,21 @@ watch(
   position: fixed;
   z-index: 99;
   touch-action: none;
+  overflow: visible !important;
+  box-sizing: border-box !important;
+}
+.selection--text {
+  padding: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  border: none !important;
+  border-radius: 0 !important;
+  min-width: 0 !important;
+  min-height: 0 !important;
+}
+.selection--text .v-card__overlay,
+.selection--text .v-card__underlay,
+.selection--text .v-card__loader {
+  display: none !important;
 }
 </style>

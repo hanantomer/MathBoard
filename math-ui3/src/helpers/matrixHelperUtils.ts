@@ -146,7 +146,7 @@ export default function useMatrixHelperUtils() {
   }
 
   function wrapWithDiv(innerHtml: string): string {
-    return `<div xmlns="http://www.w3.org/1999/xhtml"> ${innerHtml} </div>`;
+    return `<div xmlns="http://www.w3.org/1999/xhtml">${innerHtml}</div>`;
   }
 
   return {

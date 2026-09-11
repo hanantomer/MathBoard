@@ -20,6 +20,7 @@ import { useNotationStore } from "../store/pinia/notationStore";
 import { useCellStore } from "../store/pinia/cellStore";
 import useNotationCellOccupationHelper from "./notationCellOccupationHelper";
 import { distanceToConic } from "common/conicGeometry";
+import { svgUserToViewport } from "./pointerCoordinateHelper";
 
 const cellStore = useCellStore();
 const cellOccupationHelper = useNotationCellOccupationHelper();
@@ -83,23 +84,29 @@ export default function screenHelper() {
   }
 
   function getRectAttributes(rectCoordinates: RectCoordinates): RectAttributes {
-    const rectFromCol = Math.round(
-      rectCoordinates.topLeft.x / cellStore.getCellHorizontalWidth(),
+    const colW = cellStore.getCellHorizontalWidth();
+    const rowH = cellStore.getCellVerticalHeight();
+    const left = Math.min(
+      rectCoordinates.topLeft.x,
+      rectCoordinates.bottomRight.x,
+    );
+    const right = Math.max(
+      rectCoordinates.topLeft.x,
+      rectCoordinates.bottomRight.x,
+    );
+    const top = Math.min(
+      rectCoordinates.topLeft.y,
+      rectCoordinates.bottomRight.y,
+    );
+    const bottom = Math.max(
+      rectCoordinates.topLeft.y,
+      rectCoordinates.bottomRight.y,
     );
 
-    const rectToCol =
-      Math.round(
-        rectCoordinates.bottomRight.x / cellStore.getCellHorizontalWidth(),
-      ) - 1;
-
-    const rectFromRow = Math.round(
-      rectCoordinates.topLeft.y / cellStore.getCellVerticalHeight(),
-    );
-
-    const rectToRow =
-      Math.round(
-        rectCoordinates.bottomRight.y / cellStore.getCellVerticalHeight(),
-      ) - 1;
+    const rectFromCol = Math.round(left / colW);
+    const rectToCol = Math.max(rectFromCol, Math.round(right / colW) - 1);
+    const rectFromRow = Math.round(top / rowH);
+    const rectToRow = Math.max(rectFromRow, Math.round(bottom / rowH) - 1);
 
     return {
       fromCol: rectFromCol,
@@ -189,6 +196,15 @@ export default function screenHelper() {
         isClickedPointInsideAnnotation(
           DotCoordinates,
           n as AnnotationNotationAttributes,
+        ),
+    );
+
+    notationsAtCell = notationsAtCell.filter(
+      (n: NotationAttributes) =>
+        n.notationType !== "TEXT" ||
+        isClickedPointInsideText(
+          DotCoordinates,
+          n as RectNotationAttributes,
         ),
     );
 
@@ -377,22 +393,37 @@ export default function screenHelper() {
     );
   }
 
+  function isClickedPointInsideText(
+    DotCoordinates: DotCoordinates,
+    text: RectNotationAttributes,
+  ): boolean {
+    const svg = cellStore.getSvgBoundingRect();
+    return cellOccupationHelper.isSvgPointInsideText(
+      text,
+      DotCoordinates.x - svg.left,
+      DotCoordinates.y - svg.top,
+    );
+  }
+
   function getClickedPosDistanceFromRectCenter(
     DotCoordinates: DotCoordinates,
     n1: RectNotationAttributes,
   ): number {
+    const svg = cellStore.getSvgBoundingRect();
+    const colW = cellStore.getCellHorizontalWidth();
+    const rowH = cellStore.getCellVerticalHeight();
     const clickedPosYDistanceFromRectCenter = Math.abs(
       DotCoordinates.y -
-        cellStore.getSvgBoundingRect().top -
-        n1.fromRow * cellStore.getCellVerticalHeight() -
-        ((n1.toRow - n1.fromRow) * cellStore.getCellVerticalHeight()) / 2,
+        svg.top -
+        n1.fromRow * rowH -
+        ((n1.toRow - n1.fromRow + 1) * rowH) / 2,
     );
 
     const clickedPosXDistanceFromRectCenter = Math.abs(
       DotCoordinates.x -
-        cellStore.getSvgBoundingRect().top -
-        n1.fromCol * cellStore.getCellHorizontalWidth() -
-        ((n1.toCol - n1.fromCol) * cellStore.getCellHorizontalWidth()) / 2,
+        svg.left -
+        n1.fromCol * colW -
+        ((n1.toCol - n1.fromCol + 1) * colW) / 2,
     );
 
     return Math.log(
@@ -803,6 +834,34 @@ export default function screenHelper() {
     };
   }
 
+  function getTextNotationViewportBounds(n: RectNotationAttributes): {
+    left: number;
+    top: number;
+    right: number;
+    bottom: number;
+  } {
+    const painted =
+      document.getElementById(n.uuid) ??
+      document.querySelector(`foreignObject[uuid="${n.uuid}"]`);
+    if (painted instanceof Element) {
+      const r = painted.getBoundingClientRect();
+      if (r.width > 2 && r.height > 2) {
+        return {
+          left: r.left,
+          top: r.top,
+          right: r.right,
+          bottom: r.bottom,
+        };
+      }
+    }
+
+    const colW = cellStore.getCellHorizontalWidth();
+    const rowH = cellStore.getCellVerticalHeight();
+    const tl = svgUserToViewport(n.fromCol * colW, n.fromRow * rowH);
+    const br = svgUserToViewport((n.toCol + 1) * colW, (n.toRow + 1) * rowH);
+    return { left: tl.x, top: tl.y, right: br.x, bottom: br.y };
+  }
+
   return {
     getClickedPosDistanceFromLine,
     getClickedPosDistanceFromExponent,
@@ -810,6 +869,7 @@ export default function screenHelper() {
     getNotationAtCoordinates,
     isClickedPointInsideImage,
     isClickedPointInsideAnnotation,
+    isClickedPointInsideText,
     getCellByDotCoordinates,
     getRectCoordinatesOccupiedCells,
     getCellTopLeftCoordinates,
@@ -826,5 +886,6 @@ export default function screenHelper() {
     snapCurvePoint,
     getNotationTopLeft,
     getSelectedCellDotCoordinates,
+    getTextNotationViewportBounds,
   };
 }

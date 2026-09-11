@@ -363,6 +363,7 @@ watchHelper.watchPointerEvent(
     "FREE_SKETCH_STARTED",
     "FREE_SKETCH_SELECTED",
     "TEXT_STARTED",
+    "TEXT_SELECTED",
   ],
   ["EV_SVG_POINTERUP", "EV_SVG_POINTERCANCEL"],
   selectionHelper.selectClickedPosition,
@@ -767,7 +768,12 @@ foreignObject[notationType="ANNOTATION"] [data-cy="annotation"] {
 }
 
 /* Display-only; editing uses FreeTextEditor. Native paste here doubled the text. */
-foreignObject[notationType="TEXT"] textarea {
+foreignObject[notationType="TEXT"] {
+  overflow: hidden;
+  pointer-events: auto;
+}
+foreignObject[notationType="TEXT"] .board-text-box,
+foreignObject[notationType="TEXT"] .board-text-box * {
   pointer-events: none;
 }
 

@@ -5,6 +5,7 @@ import {
   LineNotationAttributes,
   ImageNotationAttributes,
   AnnotationNotationAttributes,
+  RectNotationAttributes,
   MultiCellAttributes,
   CellAttributes,
   isCellNotationType,
@@ -155,6 +156,16 @@ export default function selectionHelper() {
         return null;
       }
     }
+    if (clickedNotation.notationType === "TEXT") {
+      if (
+        !screenHelper.isClickedPointInsideText(
+          position,
+          clickedNotation as RectNotationAttributes,
+        )
+      ) {
+        return null;
+      }
+    }
     return clickedNotation;
   }
 
@@ -236,6 +247,14 @@ export default function selectionHelper() {
         return true;
       },
       TEXT: () => {
+        if (
+          !screenHelper.isClickedPointInsideText(
+            dotCoordinates,
+            notation as RectNotationAttributes,
+          )
+        ) {
+          return false;
+        }
         selectNotation(notation.uuid);
         return true;
       },
@@ -315,8 +334,8 @@ export default function selectionHelper() {
       return;
 
     if (activeNotation.notationType === "TEXT") {
-      // toggle between TEXT_SELECTED and TEXT_WRITING
-      if (editModeStore.getEditMode() == "TEXT_SELECTED") {
+      const mode = editModeStore.getEditMode();
+      if (mode === "TEXT_SELECTED" || mode === "TEXT_WRITING") {
         editModeStore.setEditMode("TEXT_WRITING");
         eventBus.emit("EV_TEXT_EDITING", activeNotation);
       } else {

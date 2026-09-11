@@ -232,9 +232,9 @@ export const EDIT_MODE_STATUS: Partial<
 const EDIT_MODE_HINTS: Partial<Record<EditMode | GlobalEditMode, string>> = {
   FREE_SKETCH_STARTED: `Informal drawing only — for typed math, use the keyboard. ${stickyExitHint("Free sketch")}.`,
   FREE_SKETCH_DRAWING: stickyExitHint("Free sketch") + ".",
-  TEXT_STARTED: "Drag a rectangle, then type. Double-click to resize.",
+  TEXT_STARTED: "Drag a rectangle, then type. Drag a corner to resize.",
   TEXT_WRITING:
-    "Type in the box, then click outside. In practice, pause for a tip; Ctrl+Enter checks.",
+    "Type in the box. Drag a corner to resize, then click outside. In practice, pause for a tip; Ctrl+Enter checks.",
   LINE_STARTED: "Drag to draw a line. The line stays selected when you release.",
   LINE_DRAWING: "Release to place. The line stays selected.",
   CIRCLE_STARTED: "Drag to draw a circle. The circle stays selected when you release.",
@@ -287,9 +287,9 @@ export function getEditModeStatusText(
     FREE_SKETCH_WITH_OCR_DRAWING:
       "Drawing for recognition — release to finish the stroke; draw another stroke within a moment if needed",
     TEXT_STARTED:
-      "Draw a rectangle on screen to create a text box, click once to edit and twice to resize",
+      "Draw a rectangle on screen to create a text box, then type. Drag a corner to resize. Click once to edit.",
     TEXT_WRITING:
-      "Type in the box, then click outside when done. In practice, pause for a tip; Ctrl+Enter checks.",
+      "Type in the box. Drag a corner to resize, then click outside when done. In practice, pause for a tip; Ctrl+Enter checks.",
     SQRT_STARTED: "Square root is inserted at the selected cell, or wrapped over a selection",
     CURVE_STARTED:
       "Drag to draw a curve. The curve stays selected — click Curve again to draw another.",

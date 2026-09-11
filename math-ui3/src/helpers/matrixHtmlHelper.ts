@@ -108,6 +108,7 @@ export default function useHtmlMatrixHelper() {
     if (isPracticePartLabelFo(n)) return "visible";
     // A one-cell-wide box would clip the glyph and any multi-digit limit.
     if (n.notationType === "SYMBOL" && isIntegralSymbol(n)) return "visible";
+    if (n.notationType === "TEXT") return "hidden";
     return n.notationType === "IMAGE" || n.notationType === "SQRTSYMBOL"
       ? "visible"
       : null;
@@ -485,13 +486,11 @@ export default function useHtmlMatrixHelper() {
       }
       const bColor = rectBorderColor(n ?? false);
       const dir = /[\u0590-\u05FF\u0600-\u06FF]/.test(n1.value) ? "rtl" : "ltr";
-      return utils.wrapWithDiv(
-        `<textarea id=${
-          n1.uuid
-        } readonly tabindex="-1" style='resize:none; overflow:hidden;width:${width}px; height:${height}px;background-color:${textBackgroundColor()}; border:groove 2px;border-color:${bColor};' dir='${dir}'>${escapeTextForHtml(
-          n1.value ?? "",
-        )}</textarea>`,
-      );
+      return `<div xmlns="http://www.w3.org/1999/xhtml" class="board-text-box" style="width:${width}px;height:${height}px;overflow:hidden;margin:0;padding:0;box-sizing:border-box"><textarea id="${
+        n1.uuid
+      }" class="board-text" data-cy="board-text" readonly tabindex="-1" style="resize:none;overflow:hidden;display:block;box-sizing:border-box;width:100%;height:100%;margin:0;padding:4px;background-color:${textBackgroundColor()};border:groove 2px;border-color:${bColor};" dir="${dir}">${escapeTextForHtml(
+        n1.value ?? "",
+      )}</textarea></div>`;
     }
 
     function generateAnnotationHtml(n: NotationAttributes): string {

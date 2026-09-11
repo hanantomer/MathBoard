@@ -64,6 +64,29 @@ declare namespace Cypress {
       y: number,
     ): Chainable<void>;
     clickSvg(x: number, y: number): Chainable<void>;
+    /**
+     * Click the lesson SVG at a point derived from a painted element's
+     * bounding box. TEXT inner nodes use pointer-events:none, so Cypress
+     * must hit the SVG listeners — not the textarea itself.
+     */
+    clickSvgAtElement(
+      selector: string,
+      options?: {
+        dx?: number;
+        dy?: number;
+        extraX?: number;
+        extraY?: number;
+      },
+    ): Chainable<void>;
+    /**
+     * Pointer-drag a visible overlay/editor handle in viewport pixels.
+     * Text resize listens on window, not on SVG move events.
+     */
+    dragViewportHandle(
+      handleDataCy: string,
+      dx: number,
+      dy: number,
+    ): Chainable<void>;
     drawPolyline(points: Array<[number, number]>): Chainable<void>;
     selectArea(x: number, y: number, width: number, height: number): any;
   }
@@ -263,6 +286,89 @@ Cypress.Commands.add("clickSvg", (x: number, y: number) => {
     });
   });
 });
+
+Cypress.Commands.add(
+  "clickSvgAtElement",
+  (
+    selector: string,
+    options?: {
+      dx?: number;
+      dy?: number;
+      extraX?: number;
+      extraY?: number;
+    },
+  ) => {
+    const dx = options?.dx ?? 0.5;
+    const dy = options?.dy ?? 0.5;
+    const extraX = options?.extraX ?? 0;
+    const extraY = options?.extraY ?? 0;
+
+    cy.get("#lessonSvg").then(($svg) => {
+      const svgRect = $svg[0].getBoundingClientRect();
+      cy.get(selector).then(($el) => {
+        const r = $el[0].getBoundingClientRect();
+        const x = r.left + r.width * dx - svgRect.left + extraX;
+        const y = r.top + r.height * dy - svgRect.top + extraY;
+        cy.clickSvg(x, y);
+      });
+    });
+  },
+);
+
+function dispatchViewportPointer(
+  win: Window,
+  target: EventTarget,
+  type: "pointerdown" | "pointermove" | "pointerup",
+  clientX: number,
+  clientY: number,
+  pressed: boolean,
+) {
+  const event = new win.PointerEvent(type, {
+    bubbles: true,
+    cancelable: true,
+    composed: true,
+    pointerId: SVG_POINTER_ID,
+    pointerType: "mouse",
+    isPrimary: true,
+    clientX,
+    clientY,
+    button: 0,
+    buttons: pressed ? 1 : 0,
+  });
+  target.dispatchEvent(event);
+}
+
+Cypress.Commands.add(
+  "dragViewportHandle",
+  (handleDataCy: string, dx: number, dy: number) => {
+    let endX = 0;
+    let endY = 0;
+
+    cy.get(`[data-cy="${handleDataCy}"]:visible`).then(($handle) => {
+      const handle = $handle[0];
+      const r = handle.getBoundingClientRect();
+      const startX = r.left + r.width / 2;
+      const startY = r.top + r.height / 2;
+      endX = startX + dx;
+      endY = startY + dy;
+      cy.window().then((win) => {
+        dispatchViewportPointer(win, handle, "pointerdown", startX, startY, true);
+      });
+    });
+
+    cy.wait(0);
+
+    cy.window().then((win) => {
+      dispatchViewportPointer(win, win, "pointermove", endX, endY, true);
+    });
+
+    cy.wait(0);
+
+    cy.window().then((win) => {
+      dispatchViewportPointer(win, win, "pointerup", endX, endY, false);
+    });
+  },
+);
 
 Cypress.Commands.add("drawPolyline", (points: Array<[number, number]>) => {
   if (points.length < 2) {

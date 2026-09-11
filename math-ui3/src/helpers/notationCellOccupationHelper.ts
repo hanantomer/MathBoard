@@ -193,6 +193,26 @@ export default function notationCellOccupationHelper() {
     return svgX >= x && svgX <= x + width && svgY >= y && svgY <= y + height;
   }
 
+  function getTextPixelBounds(notation: RectNotationAttributes) {
+    const colW = cellStore.getCellHorizontalWidth();
+    const rowH = cellStore.getCellVerticalHeight();
+    return {
+      x: notation.fromCol * colW,
+      y: notation.fromRow * rowH,
+      width: (notation.toCol - notation.fromCol + 1) * colW,
+      height: (notation.toRow - notation.fromRow + 1) * rowH,
+    };
+  }
+
+  function isSvgPointInsideText(
+    notation: RectNotationAttributes,
+    svgX: number,
+    svgY: number,
+  ): boolean {
+    const { x, y, width, height } = getTextPixelBounds(notation);
+    return svgX >= x && svgX <= x + width && svgY >= y && svgY <= y + height;
+  }
+
   function getImageRotatedPixelBounds(notation: ImageNotationAttributes) {
     const colW = cellStore.getCellHorizontalWidth();
     const rowH = cellStore.getCellVerticalHeight();
@@ -592,9 +612,11 @@ export default function notationCellOccupationHelper() {
     updateImageOccupationMatrix,
     getImageRotatedPixelBounds,
     getAnnotationPixelBounds,
+    getTextPixelBounds,
     getImageOccupiedCellRange,
     isSvgPointInsideImage,
     isSvgPointInsideAnnotation,
+    isSvgPointInsideText,
     updateCurveOccupationMatrix,
     updateSqrtOccupationMatrix,
     updateCircleOccupationMatrix,
