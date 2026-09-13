@@ -23,22 +23,6 @@
         </v-btn>
       </v-toolbar>
 
-      <v-card
-        class="ma-4 blank-sheet-card"
-        variant="outlined"
-        rounded="lg"
-        @click="openBlankSheet"
-      >
-        <v-card-title class="text-subtitle-1 d-flex align-center">
-          <v-icon class="mr-2" color="teal-darken-1">mdi-file-image-outline</v-icon>
-          Blank sheet
-        </v-card-title>
-        <v-card-text class="pt-0 text-body-2 text-medium-emphasis">
-          Write the question on the board, paste it as text (Ctrl+V), or
-          paste/upload a worksheet image, then solve.
-        </v-card-text>
-      </v-card>
-
       <v-chip-group
         v-model="selectedSubject"
         class="px-4 pt-1"
@@ -61,6 +45,8 @@
         item-value="uuid"
         class="elevation-1"
         :hover="true"
+        :loading="practiceQuestionStore.loading"
+        loading-text="Loading questions…"
         @click:row="openQuestion"
       >
         <template #item.name="{ item }">
@@ -82,10 +68,30 @@
         </template>
         <template #no-data>
           <div class="text-center pa-8 text-medium-emphasis">
-            No practice questions in this subject yet.
+            {{
+              practiceQuestionStore.loading
+                ? "Loading questions…"
+                : "No practice questions in this subject yet."
+            }}
           </div>
         </template>
       </v-data-table>
+
+      <v-card
+        class="ma-4 blank-sheet-card"
+        variant="outlined"
+        rounded="lg"
+        @click="openBlankSheet"
+      >
+        <v-card-title class="text-subtitle-1 d-flex align-center">
+          <v-icon class="mr-2" color="teal-darken-1">mdi-file-image-outline</v-icon>
+          Blank sheet
+        </v-card-title>
+        <v-card-text class="pt-0 text-body-2 text-medium-emphasis">
+          Write the question on the board, paste it as text (Ctrl+V), or
+          paste/upload a worksheet image, then solve.
+        </v-card-text>
+      </v-card>
     </v-card>
   </v-container>
 </template>

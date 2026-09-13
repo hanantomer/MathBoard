@@ -169,6 +169,18 @@ function partsMatch(
   return a.every((part, i) => part.id === b[i].id && part.text === b[i].text);
 }
 
+/** Catalog stem from the local template so the paste-problem UI never flashes. */
+export function applyCatalogStem(questionUUId: string) {
+  if (!questionUUId || questionUUId === PRACTICE_BLANK_UUID) return;
+  const template = getPracticeQuestionTemplateByUUId(questionUUId);
+  if (!template) return;
+  submitStemIfNeeded(
+    questionUUId,
+    formatPracticeProblemPrompt(template),
+    practiceTemplateStemParts(template) ?? undefined,
+  );
+}
+
 function submitStemIfNeeded(
   questionUUId: string,
   stemText: string,

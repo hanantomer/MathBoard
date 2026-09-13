@@ -23,8 +23,10 @@ import {
   nextHintsRevealed,
   practiceTemplateAnswers,
   practiceTemplateStemParts,
+  practiceHintsForPart,
   revealedPracticeHint,
 } from "common/practiceQuestionTemplates";
+import { revealedHintCountForPart } from "../store/pinia/practiceStore";
 
 const QUADRATIC = [
   "A quadratic function is given by f(x) = 2x^2 - 8x + 5",
@@ -459,6 +461,11 @@ describe("formatPracticeProblemPrompt", () => {
     expect(ensureNumberedParts(formatPracticeProblemPrompt(template))).toHaveLength(
       5,
     );
+    expect(practiceHintsForPart(template, "1")[0]).toMatch(/completing the square/i);
+    expect(practiceHintsForPart(template, "4")[0]).toMatch(/y-intercept/i);
+    expect(practiceHintsForPart(template, "4")[0]).not.toMatch(
+      /completing the square/i,
+    );
   });
 });
 
@@ -470,6 +477,41 @@ describe("practice catalog hints", () => {
     expect(nextHintsRevealed(hints.length, 2)).toBe(3);
     expect(revealedPracticeHint(hints, 3)).toBe("c");
     expect(nextHintsRevealed(hints.length, 3)).toBe(3);
+  });
+
+  it("does not show another task's tips on a multi-part worksheet", () => {
+    const template = getPracticeQuestionTemplate(
+      "algebra-quadratic-vertex-form",
+    )!;
+    expect(practiceHintsForPart(template, "4")[0]).toMatch(/y-intercept/i);
+    expect(practiceHintsForPart(template, "4").join(" ")).not.toMatch(
+      /completing the square/i,
+    );
+    expect(practiceHintsForPart(template, undefined)).toEqual([]);
+    expect(practiceHintsForPart(template, "1")[0]).toMatch(
+      /completing the square/i,
+    );
+  });
+
+  it("keeps a visible hint on the pending section after an earlier tip was opened", () => {
+    const session = {
+      submitted: true,
+      problemText: null,
+      problemImageBase64: null,
+      parts: [],
+      activePartId: "4",
+      completedPartIds: ["1", "2", "3"],
+      hintsRevealed: 1,
+      partHintsRevealed: { "1": 1 },
+    };
+    expect(revealedHintCountForPart(session, "4")).toBe(1);
+    expect(revealedHintCountForPart(session, "1")).toBe(1);
+    expect(
+      revealedHintCountForPart(
+        { ...session, hintsRevealed: 0, partHintsRevealed: {} },
+        "4",
+      ),
+    ).toBe(0);
   });
 
   it("treats lines, vertex letters, and annotations as diagram overlay", () => {

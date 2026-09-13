@@ -24,7 +24,7 @@
       v-show="!session.submitted || !collapsed"
       class="practice-problem-pane__body"
     >
-      <template v-if="!session.submitted">
+      <template v-if="!session.submitted && isBlank">
         <div
           class="practice-problem-pane__dropzone"
           data-cy="practice-problem-dropzone"
@@ -87,6 +87,14 @@
         </div>
       </template>
 
+      <template v-else-if="!session.submitted">
+        <div
+          class="practice-problem-pane__loading text-body-2 text-medium-emphasis pa-4"
+        >
+          Loading question…
+        </div>
+      </template>
+
       <template v-else>
         <img
           v-if="session.problemImageBase64"
@@ -144,6 +152,9 @@
           type="info"
           data-cy="practice-catalog-hint"
         >
+          <div v-if="curatedHintTitle" class="text-subtitle-2 mb-1">
+            {{ curatedHintTitle }}
+          </div>
           {{ curatedHint }}
         </v-alert>
         <v-alert
@@ -192,6 +203,7 @@ const props = defineProps<{
   uploading: boolean;
   orderHint?: string;
   curatedHint?: string;
+  curatedHintTitle?: string;
   explanation?: string;
   showExplanation?: boolean;
 }>();

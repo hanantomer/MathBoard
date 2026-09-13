@@ -29,6 +29,8 @@ export type PracticeTemplatePart = {
   text: string;
   expectedAnswer: string;
   acceptedAnswers?: string[];
+  /** Progressive hints for this task only; never state the answer. */
+  hints?: string[];
 };
 
 export type PracticeQuestionTemplate = {
@@ -172,30 +174,41 @@ export const PRACTICE_QUESTION_TEMPLATES: PracticeQuestionTemplate[] = [
         text: "Write the function in vertex form.",
         expectedAnswer: "2(x-2)^2-3",
         acceptedAnswers: ["2(x - 2)^2 - 3", "f(x)=2(x-2)^2-3"],
+        hints: [
+          "Factor 2 out of the x terms before completing the square.",
+        ],
       },
       {
         id: "2",
         text: "State the coordinates of the vertex.",
         expectedAnswer: "(2, -3)",
         acceptedAnswers: ["(2,-3)", "vertex (2, -3)"],
+        hints: ["The vertex is (h, k) from a(x − h)² + k."],
       },
       {
         id: "3",
         text: "Determine the axis of symmetry.",
         expectedAnswer: "x = 2",
         acceptedAnswers: ["x=2"],
+        hints: ["The axis of symmetry is the vertical line through the vertex."],
       },
       {
         id: "4",
         text: "Find the y-intercept.",
         expectedAnswer: "(0, 5)",
         acceptedAnswers: ["(0,5)", "f(0)=5", "f(0) = 5"],
+        hints: [
+          "The y-intercept is f(0). Write it as a point on the y-axis, not only y = a number.",
+        ],
       },
       {
         id: "5",
         text: "Sketch a rough graph of the parabola.",
         expectedAnswer: "parabola opens up",
         acceptedAnswers: ["opens up", "minimum at (2, -3)"],
+        hints: [
+          "Plot the vertex, axis, and y-intercept. The parabola opens the same way as the sign of a.",
+        ],
       },
     ],
     notations: [
@@ -1188,6 +1201,23 @@ export function practiceTemplateAnswers(
     expectedAnswer: template.expectedAnswer,
     acceptedAnswers: template.acceptedAnswers,
   };
+}
+
+/** Hints for the active task. Multi-part worksheets do not reuse another task's tips. */
+export function practiceHintsForPart(
+  template: PracticeQuestionTemplate | undefined,
+  activePartId?: string | null,
+): string[] {
+  if (!template) return [];
+  const parts = template.parts;
+  if (parts && parts.length >= 2) {
+    const id = (activePartId ?? "").trim();
+    const part = id
+      ? parts.find((p) => String(p.id) === id)
+      : undefined;
+    return part?.hints?.length ? part.hints : [];
+  }
+  return template.hints ?? [];
 }
 
 export function nextHintsRevealed(

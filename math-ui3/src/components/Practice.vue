@@ -8,6 +8,7 @@
       :uploading="uploading"
       :order-hint="partOrderHint"
       :curated-hint="visibleCatalogHint"
+      :curated-hint-title="catalogHintTitle"
       :explanation="catalogExplanation"
       :show-explanation="showCatalogExplanation"
       @submit-text="submitProblemText"
@@ -327,7 +328,7 @@ import { useOnboardingStore } from "../store/pinia/onboardingStore";
 import useApiHelper, { PracticeAiLimitError } from "../helpers/apiHelper";
 import { useCellStore } from "../store/pinia/cellStore";
 import { useUserStore } from "../store/pinia/userStore";
-import { usePracticeStore } from "../store/pinia/practiceStore";
+import { usePracticeStore, revealedHintCountForPart } from "../store/pinia/practiceStore";
 import {
   serializePracticeStudentWork,
 } from "../helpers/practiceCheckHelper";
@@ -336,7 +337,7 @@ import {
   PRACTICE_IMAGE_UNREADABLE_TIP,
   isPracticeImageReadTip,
 } from "../helpers/practiceImagePrep";
-import { PRACTICE_BLANK_UUID } from "../helpers/practiceBoardAdapter";
+import { PRACTICE_BLANK_UUID, applyCatalogStem } from "../helpers/practiceBoardAdapter";
 import {
   practiceWorkFromCol,
   ensurePartRow,
@@ -352,6 +353,7 @@ import {
 import { activePartLooksComplete } from "common/practiceAlgebra";
 import {
   getPracticeQuestionTemplateByUUId,
+  practiceHintsForPart,
   practiceTemplateAnswers,
   revealedPracticeHint,
 } from "common/practiceQuestionTemplates";
@@ -407,6 +409,7 @@ const router = useRouter();
 const svgId = "practiceSvg";
 const loaded = ref(false);
 const isBlank = ref(false);
+let practiceLoadGen = 0;
 const checking = ref(false);
 const uploading = ref(false);
 const extractingParts = ref(false);
@@ -478,7 +481,9 @@ const hasProblemImage = computed(() => !!session.value.problemImageBase64);
 const checkDisabledReason = computed(() => {
   if (checking.value) return "";
   if (aiQuotaExhausted.value) return "Daily AI limit reached";
-  if (!session.value.submitted) return "Paste the problem first";
+  if (!session.value.submitted) {
+    return isBlank.value ? "Paste the problem first" : "Loading question";
+  }
   return "";
 });
 
@@ -525,7 +530,9 @@ const coachStatusIcon = computed(() => {
 });
 
 const coachStatusText = computed(() => {
-  if (!session.value.submitted) return "Paste the problem";
+  if (!session.value.submitted) {
+    return isBlank.value ? "Paste the problem" : "Loading question";
+  }
   if (coachPaused.value) return "Tips paused";
   if (coachingBusy.value) return "Thinking…";
   return assistMode.value === "voice"
@@ -616,25 +623,45 @@ const catalogTemplate = computed(() =>
     : undefined,
 );
 
-const catalogHints = computed(() => catalogTemplate.value?.hints ?? []);
+const catalogHints = computed(() =>
+  practiceHintsForPart(catalogTemplate.value, session.value.activePartId),
+);
+
+const catalogHintRevealedCount = computed(() => {
+  const partId = session.value.activePartId?.trim();
+  if (partId && (catalogTemplate.value?.parts?.length ?? 0) >= 2) {
+    return revealedHintCountForPart(session.value, partId);
+  }
+  return session.value.hintsRevealed ?? 0;
+});
 
 const catalogHintsExhausted = computed(() => {
   const n = catalogHints.value.length;
   if (!n) return true;
-  return (session.value.hintsRevealed ?? 0) >= n;
+  return catalogHintRevealedCount.value >= n;
 });
 
 const catalogHintButtonLabel = computed(() => {
-  const revealed = session.value.hintsRevealed ?? 0;
+  const revealed = catalogHintRevealedCount.value;
   if (revealed <= 0) return "Hint";
   if (catalogHintsExhausted.value) return "Hints used";
   return "Next hint";
 });
 
-const visibleCatalogHint = computed(() =>
-  revealedPracticeHint(catalogHints.value, session.value.hintsRevealed ?? 0) ??
-  "",
+const visibleCatalogHint = computed(
+  () =>
+    revealedPracticeHint(
+      catalogHints.value,
+      catalogHintRevealedCount.value,
+    ) ?? "",
 );
+
+const catalogHintTitle = computed(() => {
+  if (!visibleCatalogHint.value) return "";
+  const partId = session.value.activePartId?.trim();
+  if (!partId || (catalogTemplate.value?.parts?.length ?? 0) < 2) return "";
+  return `Hint for ${partLabelText(partId)}`;
+});
 
 const catalogExplanation = computed(
   () => catalogTemplate.value?.explanation ?? "",
@@ -647,9 +674,14 @@ const showCatalogExplanation = computed(
 
 function revealCatalogHint() {
   if (!currentQuestionUUId.value || catalogHintsExhausted.value) return;
+  const partId =
+    (catalogTemplate.value?.parts?.length ?? 0) >= 2
+      ? session.value.activePartId
+      : undefined;
   practiceStore.revealNextHint(
     currentQuestionUUId.value,
     catalogHints.value.length,
+    partId,
   );
 }
 
@@ -852,7 +884,10 @@ watch(
       void loadBlankPractice();
       return;
     }
-    void loadPractice(to.params.questionUUId as string);
+    if (to.name === "practiceQuestion") {
+      const uuid = to.params.questionUUId as string;
+      if (uuid) void loadPractice(uuid);
+    }
   },
   { immediate: true },
 );
@@ -1078,7 +1113,6 @@ function prepareBoardShell(questionUUId: string) {
   clearTimeout(armPreliminaryTimer);
   resetPracticeVoiceCoach();
   editModeStore.setDefaultEditMode();
-  cellStore.resetCellDimensions();
   cellStore.resetSelectedCell();
   notationStore.setParent(questionUUId, "PRACTICE");
   selectionHelper.setSelectedCell({ col: practiceWorkFromCol(), row: 1 }, true);
@@ -1096,20 +1130,36 @@ function armPreliminaryCoach() {
 }
 
 async function loadBlankPractice() {
+  practiceLoadGen += 1;
   isBlank.value = true;
   prepareBoardShell(PRACTICE_BLANK_UUID);
   boardContext.setPracticeBlankSession();
+  await nextTick();
   loaded.value = true;
   armPreliminaryCoach();
 }
 
 async function loadPractice(questionUUId: string) {
+  const gen = ++practiceLoadGen;
   isBlank.value = false;
   try {
     prepareBoardShell(questionUUId);
 
+    const template = getPracticeQuestionTemplateByUUId(questionUUId);
     const listItem = practiceQuestionStore.getItem(questionUUId);
+    boardContext.setPracticeSession(
+      template?.subject ?? listItem?.subject ?? "Practice",
+      template?.name ?? listItem?.name ?? "Question",
+      questionUUId,
+    );
+    applyCatalogStem(questionUUId);
+    await nextTick();
+    if (gen !== practiceLoadGen) return;
+    loaded.value = true;
+    armPreliminaryCoach();
+
     const question = await questionStore.loadQuestion(questionUUId);
+    if (gen !== practiceLoadGen) return;
 
     if (!question) {
       throw new Error("This practice question does not exist.");
@@ -1123,6 +1173,7 @@ async function loadPractice(questionUUId: string) {
 
     if (!practice) {
       const row = await api.getPracticeQuestion(questionUUId);
+      if (gen !== practiceLoadGen) return;
       if (row) {
         practice = { uuid: row.practiceUUId, subject: row.subject };
       }
@@ -1142,9 +1193,14 @@ async function loadPractice(questionUUId: string) {
       question.uuid,
     );
 
+    if (!practiceStore.getSession(questionUUId).submitted) {
+      applyCatalogStem(questionUUId);
+    }
+
     loaded.value = true;
     armPreliminaryCoach();
   } catch (error) {
+    if (gen !== practiceLoadGen) return;
     loaded.value = false;
     loadError.value =
       error instanceof Error

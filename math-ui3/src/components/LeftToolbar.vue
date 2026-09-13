@@ -588,6 +588,8 @@ function highlightOnlineStudentsFromAccessLink() {
 }
 
 const editEnabled = computed(() => {
+  const parent = notationStore.getParent();
+  if (parent?.type === "PRACTICE") return true;
   return authorizationHelper.canEdit();
 });
 

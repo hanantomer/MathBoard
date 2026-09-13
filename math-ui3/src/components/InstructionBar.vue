@@ -1,7 +1,7 @@
 <template>
   <div class="instruction-bar-host">
     <div
-      v-if="persistentText"
+      v-if="persistentText || mathCoords"
       class="instruction-bar"
       data-cy="instruction-bar"
       role="status"
@@ -35,6 +35,14 @@
           Cancel
         </button>
       </span>
+      <span
+        v-if="mathCoords"
+        class="instruction-bar__coords"
+        data-cy="board-math-coords"
+        aria-hidden="true"
+      >
+        {{ mathCoords }}
+      </span>
     </div>
 
     <v-snackbar
@@ -60,10 +68,12 @@ import {
   getEditModeStatusText,
 } from "../constants/helpCopy";
 import { useParabolaPlacement } from "../composables/useParabolaPlacement";
+import { useCartesianPointerReadout } from "../composables/useCartesianPointerReadout";
 
 const watchHelper = useWatchHelper();
 const editModeStore = useEditModeStore();
 const parabolaPlace = useParabolaPlacement();
+const { mathCoords } = useCartesianPointerReadout();
 const transientOpen = ref(false);
 const transientText = ref("");
 
@@ -169,6 +179,17 @@ function onEditModeChange(_editMode: EditMode | GlobalEditMode) {
   flex-shrink: 0;
   gap: 6px;
   margin-left: 12px;
+}
+
+.instruction-bar__coords {
+  flex-shrink: 0;
+  margin-left: auto;
+  padding-left: 12px;
+  font-family: ui-monospace, "Cascadia Mono", "Segoe UI Mono", monospace;
+  font-variant-numeric: tabular-nums;
+  font-size: 0.9375rem;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
 }
 
 .instruction-bar__btn {

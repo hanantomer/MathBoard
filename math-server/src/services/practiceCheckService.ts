@@ -2,6 +2,7 @@ import axios from "axios";
 import {
   getPracticeQuestionTemplateByUUId,
   formatPracticeProblemPrompt,
+  practiceHintsForPart,
   practiceTemplateAnswers,
 } from "../../../math-common/build/practiceQuestionTemplates";
 import type {
@@ -751,7 +752,7 @@ export async function checkPracticeWork(
     answers.acceptedAnswers ?? [],
     work,
     ctx,
-    template.hints,
+    practiceHintsForPart(template, ctx?.activePartId),
   );
 
   const raw = await generateTextAcrossModels(
@@ -977,7 +978,7 @@ export async function coachPracticeWork(
       work,
       phase,
       ctx,
-      template.hints,
+      practiceHintsForPart(template, ctx?.activePartId),
     ),
     undefined,
     work,

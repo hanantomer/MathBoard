@@ -1,5 +1,6 @@
 import * as d3 from "d3";
 import {
+  matrixCellSize,
   matrixDimensions,
   defaultdCellStroke,
   sqrtSymbolSuffix,
@@ -32,17 +33,19 @@ export default function useMatrixHelper() {
   let matrix: any[] = [];
 
   function setCellVerticalHeight(svgId: string) {
-    let clientWidth: number | undefined =
-      document.getElementById(svgId)?.clientWidth;
+    const el = document.getElementById(svgId);
+    const clientWidth = el?.clientWidth ?? 0;
+    const clientHeight = el?.clientHeight ?? 0;
 
-    let clientHeight: number | undefined =
-      document.getElementById(svgId)?.clientHeight;
+    if (clientWidth > 1 && clientHeight > 1) {
+      cellStore.setCellVerticalHeight(
+        Math.floor(clientHeight / matrixDimensions.rowsNum) - 1,
+      );
+      return;
+    }
 
-    if (!clientWidth || !clientHeight) return;
-
-    cellStore.setCellVerticalHeight(
-      Math.floor(clientHeight / matrixDimensions.rowsNum) - 1,
-    );
+    if (cellStore.getCellVerticalHeightNet() > 0) return;
+    cellStore.setCellVerticalHeight(matrixCellSize.height);
   }
 
   function setMatrix(svgId: string) {
@@ -88,8 +91,8 @@ export default function useMatrixHelper() {
       .attr("x", (d, i) => {
         return i == 0 ? 0 : i * cellStore.getCellHorizontalWidth();
       })
-      .attr("width", cellStore.getCellHorizontalWidthNet())
-      .attr("height", cellStore.getCellVerticalHeightNet());
+      .attr("width", () => Math.max(1, cellStore.getCellHorizontalWidthNet()))
+      .attr("height", () => Math.max(1, cellStore.getCellVerticalHeightNet()));
   }
 
   function enrichNotations(notations: NotationAttributes[]) {

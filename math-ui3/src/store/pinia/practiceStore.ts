@@ -27,9 +27,28 @@ export type PracticeSession = {
   partLabelRows?: Record<string, number>;
   /** How many curated catalog hints the student has opened (quota-free). */
   hintsRevealed?: number;
+  /** Per-task hint progress for multi-part worksheets. */
+  partHintsRevealed?: Record<string, number>;
   /** True after a correct check (all parts, if multi-part). */
   explanationUnlocked?: boolean;
 };
+
+/** How many curated hints are visible for this task. A hint already opened on
+ *  another task still shows the first tip for the pending section. */
+export function revealedHintCountForPart(
+  session: PracticeSession,
+  partId?: string | null,
+): number {
+  const key = (partId ?? "").trim();
+  if (!key) return session.hintsRevealed ?? 0;
+  const own = session.partHintsRevealed?.[key] ?? 0;
+  if (own > 0) return own;
+  if ((session.hintsRevealed ?? 0) > 0) return 1;
+  const others = Object.values(session.partHintsRevealed ?? {}).some(
+    (n) => (n ?? 0) > 0,
+  );
+  return others ? 1 : 0;
+}
 
 function emptySession(): PracticeSession {
   return {
@@ -41,6 +60,7 @@ function emptySession(): PracticeSession {
     completedPartIds: [],
     startedPartIds: [],
     hintsRevealed: 0,
+    partHintsRevealed: {},
     explanationUnlocked: false,
   };
 }
@@ -75,6 +95,11 @@ function readSessions(): Record<string, PracticeSession> {
         startedPartIds: Array.isArray(value.startedPartIds)
           ? value.startedPartIds
           : [],
+        partHintsRevealed:
+          value.partHintsRevealed &&
+          typeof value.partHintsRevealed === "object"
+            ? value.partHintsRevealed
+            : {},
       };
       if (session.submitted && !session.activePartId) {
         session.activePartId = session.parts[0]?.id ?? "1";
@@ -212,6 +237,7 @@ export const usePracticeStore = defineStore("practice", () => {
       startedPartIds,
       partLabelRows,
       hintsRevealed: current.hintsRevealed ?? 0,
+      partHintsRevealed: current.partHintsRevealed ?? {},
       explanationUnlocked: current.explanationUnlocked ?? false,
     });
   }
@@ -283,9 +309,29 @@ export const usePracticeStore = defineStore("practice", () => {
     return next?.id ?? null;
   }
 
-  function revealNextHint(questionUUId: string, hintCount: number): number {
+  function revealNextHint(
+    questionUUId: string,
+    hintCount: number,
+    partId?: string | null,
+  ): number {
     const current = getSession(questionUUId);
-    if (!current.submitted) return current.hintsRevealed ?? 0;
+    if (!current.submitted) {
+      return hintCountForPart(current, partId);
+    }
+    const key = (partId ?? "").trim();
+    if (key) {
+      const prev = revealedHintCountForPart(current, key);
+      const hintsRevealed = nextHintsRevealed(hintCount, prev);
+      if (hintsRevealed === prev) return hintsRevealed;
+      setSession(questionUUId, {
+        ...current,
+        partHintsRevealed: {
+          ...(current.partHintsRevealed ?? {}),
+          [key]: hintsRevealed,
+        },
+      });
+      return hintsRevealed;
+    }
     const hintsRevealed = nextHintsRevealed(
       hintCount,
       current.hintsRevealed ?? 0,
@@ -293,6 +339,13 @@ export const usePracticeStore = defineStore("practice", () => {
     if (hintsRevealed === (current.hintsRevealed ?? 0)) return hintsRevealed;
     setSession(questionUUId, { ...current, hintsRevealed });
     return hintsRevealed;
+  }
+
+  function hintCountForPart(
+    session: PracticeSession,
+    partId?: string | null,
+  ): number {
+    return revealedHintCountForPart(session, partId);
   }
 
   function unlockExplanation(questionUUId: string) {

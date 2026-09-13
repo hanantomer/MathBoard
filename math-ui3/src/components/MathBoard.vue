@@ -224,7 +224,7 @@ const emit = defineEmits<{
 const rowsNum = matrixDimensions.rowsNum;
 
 const showPracticeGutter = computed(() => {
-  if (!props.loaded) return false;
+  if (!props.loaded || !notationsReady.value) return false;
   const parent = notationStore.getParent();
   if (parent?.type !== "PRACTICE" || !parent.uuid) return false;
   void practiceStore.sessions;
@@ -332,10 +332,17 @@ useEventListener(boardScrollRef, "scroll", refreshSvgBoundingRect, {
 watch(
   () => [props.svgId, props.loaded, showPracticeGutter.value] as const,
   async () => {
+    if (!props.loaded) return;
     await nextTick();
     observeSvgBoundingRect();
     refreshSvgBoundingRect();
-    requestAnimationFrame(() => refreshSvgBoundingRect());
+    matrixHelper.setMatrix(props.svgId);
+    matrixHelper.refreshScreen(props.svgId);
+    requestAnimationFrame(() => {
+      matrixHelper.setMatrix(props.svgId);
+      matrixHelper.refreshScreen(props.svgId);
+      refreshSvgBoundingRect();
+    });
   },
 );
 
@@ -454,7 +461,6 @@ async function load() {
   notationsReady.value = false;
 
   await nextTick();
-  cellStore.resetCellDimensions();
   cellStore.setSvgBoundingRect(props.svgId);
 
   eventHelper.unregisterPointerUp();
