@@ -4,8 +4,18 @@ import type {
   ConicNotationAttributes,
   LineNotationAttributes,
   PointNotationAttributes,
+  SqrtNotationAttributes,
 } from "common/baseTypes";
-import { serializePracticeDiagram, serializePracticeFractions } from "./practiceDiagramSerializeHelper";
+import {
+  serializePracticeDiagram,
+  serializePracticeFractions,
+  serializePracticeSqrts,
+} from "./practiceDiagramSerializeHelper";
+import {
+  formatBoardSymbolForTutor,
+  vectorArrowAbove,
+  vectorSymbolPrefix,
+} from "common/globals";
 
 const cell = { cellW: 16.5, cellH: 33 };
 
@@ -57,6 +67,24 @@ function exp(
   value: string,
 ): PointNotationAttributes {
   return { ...sym(uuid, col, row, value), notationType: "EXPONENT" };
+}
+
+function sqrt(
+  uuid: string,
+  fromCol: number,
+  toCol: number,
+  row: number,
+): SqrtNotationAttributes {
+  return {
+    uuid,
+    parentUUId: "p",
+    boardType: "PRACTICE",
+    notationType: "SQRT",
+    user: { uuid: "u" } as SqrtNotationAttributes["user"],
+    fromCol,
+    toCol,
+    row,
+  };
 }
 
 function ann(
@@ -190,7 +218,7 @@ describe("serializePracticeDiagram", () => {
     const { lines, consumedUuids } = serializePracticeDiagram(notations, cell);
     expect(consumedUuids.has("parab")).toBe(true);
     expect(lines.join("\n")).toMatch(
-      /diagram: parabola vertex≈\(2\.0,-3\.0\) opens=up/,
+      /diagram: parabola vertex≈\(2\.0,-6\.0\) opens=up/,
     );
   });
 });
@@ -267,5 +295,62 @@ describe("serializePracticeFractions", () => {
     expect(inserts[0]?.text).toBe("(a)/(b)");
     expect(consumedUuids.has("one")).toBe(false);
     expect(consumedUuids.has("eq")).toBe(false);
+  });
+});
+
+describe("serializePracticeSqrts", () => {
+  it("wraps the radicand so √-1 is not sent as a bare -1", () => {
+    const notations = [
+      sqrt("s", 4, 7, 3),
+      sym("m", 5, 3, "-"),
+      sym("one", 6, 3, "1"),
+    ];
+    const { inserts, consumedUuids } = serializePracticeSqrts(notations);
+    expect(inserts.map((i) => i.text)).toEqual(["√(-1)"]);
+    expect(inserts[0]?.col).toBe(4);
+    expect(consumedUuids.has("m")).toBe(true);
+    expect(consumedUuids.has("one")).toBe(true);
+  });
+
+  it("keeps neighboring algebra outside the radical", () => {
+    const notations = [
+      sym("i", 1, 3, "i"),
+      exp("p", 2, 3, "2"),
+      sym("eq", 3, 3, "="),
+      sqrt("s", 4, 7, 3),
+      sym("m", 5, 3, "-"),
+      sym("one", 6, 3, "1"),
+    ];
+    const { inserts, consumedUuids } = serializePracticeSqrts(notations);
+    expect(inserts[0]?.text).toBe("√(-1)");
+    expect(consumedUuids.has("i")).toBe(false);
+    expect(consumedUuids.has("eq")).toBe(false);
+    expect(consumedUuids.has("p")).toBe(false);
+  });
+
+  it("emits a lone √ when the vinculum has no radicand", () => {
+    const { inserts } = serializePracticeSqrts([sqrt("s", 4, 5, 3)]);
+    expect(inserts.map((i) => i.text)).toEqual(["√"]);
+  });
+
+  it("encodes a board vector prefix as a letter with an arrow", () => {
+    const notations = [
+      sqrt("s", 4, 6, 3),
+      sym("v", 5, 3, `${vectorSymbolPrefix}v`),
+    ];
+    const { inserts } = serializePracticeSqrts(notations);
+    expect(inserts[0]?.text).toBe(`√(v${vectorArrowAbove})`);
+  });
+});
+
+describe("formatBoardSymbolForTutor", () => {
+  it("turns vec_v into v⃗", () => {
+    expect(formatBoardSymbolForTutor("vec_v")).toBe(`v${vectorArrowAbove}`);
+    expect(formatBoardSymbolForTutor("vec_a")).toBe(`a${vectorArrowAbove}`);
+  });
+
+  it("leaves ordinary symbols unchanged", () => {
+    expect(formatBoardSymbolForTutor("x")).toBe("x");
+    expect(formatBoardSymbolForTutor("∫")).toBe("∫");
   });
 });

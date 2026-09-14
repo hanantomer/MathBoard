@@ -731,6 +731,11 @@ async function load() {
   z-index: 998;
 }
 
+.graph-paper,
+.graph-paper * {
+  pointer-events: none;
+}
+
 line:hover,
 circle:hover,
 polygon:hover,

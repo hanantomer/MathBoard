@@ -74,6 +74,36 @@
       class="line-svg"
     >
       <line
+        v-if="borderGuide.x != null"
+        :x1="borderGuide.x"
+        y1="0"
+        :x2="borderGuide.x"
+        :y2="boardUserHeight"
+        class="cell-border-guide"
+        :class="{ landed: borderGuide.snappedX }"
+        vector-effect="non-scaling-stroke"
+        data-cy="cell-border-guide-x"
+      />
+      <line
+        v-if="borderGuide.y != null"
+        x1="0"
+        :y1="borderGuide.y"
+        :x2="boardUserWidth"
+        :y2="borderGuide.y"
+        class="cell-border-guide"
+        :class="{ landed: borderGuide.snappedY }"
+        vector-effect="non-scaling-stroke"
+        data-cy="cell-border-guide-y"
+      />
+      <circle
+        v-if="borderGuide.x != null && borderGuide.y != null"
+        :cx="borderGuide.x"
+        :cy="borderGuide.y"
+        r="3.5"
+        class="cell-border-guide-dot"
+        data-cy="cell-border-guide-corner"
+      />
+      <line
         :x1="lineAttributes.p1x"
         :y1="lineAttributes.p1y"
         :x2="lineAttributes.p2x"
@@ -121,7 +151,12 @@ import {
   junctionKey,
   type LineJunction,
 } from "../helpers/lineJunctionHelper";
-import { matrixSize } from "common/globals";
+import { matrixDimensions, matrixSize } from "common/globals";
+import {
+  EMPTY_CELL_BORDER_GUIDE,
+  landOnCellBorder,
+  type CellBorderGuide,
+} from "../helpers/cellBorderGuideHelper";
 
 const eventBus = useEventBus();
 const editModeStore = useEditModeStore();
@@ -181,6 +216,34 @@ const lineAttributes = ref<LineAttributes>({
   arrowRight: false,
 });
 
+const borderGuide = ref<CellBorderGuide>({ ...EMPTY_CELL_BORDER_GUIDE });
+
+const boardUserWidth = computed(
+  () => matrixDimensions.colsNum * cellStore.getCellHorizontalWidth(),
+);
+const boardUserHeight = computed(
+  () => matrixDimensions.rowsNum * cellStore.getCellVerticalHeight(),
+);
+
+function clearBorderGuide() {
+  borderGuide.value = { ...EMPTY_CELL_BORDER_GUIDE };
+}
+
+function applyPointWithGuide(p: DotCoordinates): DotCoordinates {
+  const { point, guide } = landOnCellBorder(
+    p,
+    cellStore.getCellHorizontalWidth(),
+    cellStore.getCellVerticalHeight(),
+    matrixDimensions.colsNum,
+    matrixDimensions.rowsNum,
+  );
+  borderGuide.value = guide;
+  return {
+    x: guide.snappedX ? point.x : Math.round(point.x),
+    y: guide.snappedY ? point.y : Math.round(point.y),
+  };
+}
+
 watch(
   () => ({
     mode: editModeStore.getEditMode(),
@@ -234,12 +297,14 @@ const show = computed(() => {
 });
 
 watch(show, async (visible) => {
-  if (visible) {
-    await nextTick();
-    const id = cellStore.getSvgId();
-    if (id) {
-      cellStore.setSvgBoundingRect(id);
-    }
+  if (!visible) {
+    clearBorderGuide();
+    return;
+  }
+  await nextTick();
+  const id = cellStore.getSvgId();
+  if (id) {
+    cellStore.setSvgBoundingRect(id);
   }
 });
 
@@ -291,7 +356,7 @@ let handleBottom = computed(() => {
 });
 
 function setInitialPosition(p: DotCoordinates) {
-  const point = roundPoint(p);
+  const point = applyPointWithGuide(p);
   lineAttributes.value.p1x = point.x;
   lineAttributes.value.p2x = point.x;
   lineAttributes.value.p1y = point.y;
@@ -305,14 +370,14 @@ function setInitialPosition(p: DotCoordinates) {
 }
 
 function drawLine(p: DotCoordinates) {
-  const point = roundPoint(p);
+  const raw = roundPoint(p);
 
   if (slopeType === "NONE") {
-    slopeType = getSlopeTypeForNewLine(point.x, point.y);
+    slopeType = getSlopeTypeForNewLine(raw.x, raw.y);
   }
 
   if (movementDirection === "NONE") {
-    movementDirection = getMovementDirection(point.y);
+    movementDirection = getMovementDirection(raw.y);
   }
 
   // 4 options for drawing sloped line:
@@ -322,22 +387,24 @@ function drawLine(p: DotCoordinates) {
   // 4. lower left to upper right. direction is UP and slopeType is POSITIVE
 
   const aligned = alignToAxis(
-    point,
+    p,
     modifyRight.value
       ? { x: lineAttributes.value.p1x, y: lineAttributes.value.p1y }
       : { x: lineAttributes.value.p2x, y: lineAttributes.value.p2y },
   );
+  const landed = applyPointWithGuide(aligned);
 
   if (modifyRight.value) {
-    lineAttributes.value.p2x = aligned.x;
-    lineAttributes.value.p2y = aligned.y;
+    lineAttributes.value.p2x = landed.x;
+    lineAttributes.value.p2y = landed.y;
   } else {
-    lineAttributes.value.p1x = aligned.x;
-    lineAttributes.value.p1y = aligned.y;
+    lineAttributes.value.p1x = landed.x;
+    lineAttributes.value.p1y = landed.y;
   }
 }
 
 function selectLine(notation: NotationAttributes) {
+  clearBorderGuide();
   activeJunction.value = null;
   const n = notation as LineNotationAttributes;
 
@@ -377,7 +444,7 @@ function syncOverlayFromLine(line: LineNotationAttributes) {
 function applyJunctionMove(junction: LineJunction, point: DotCoordinates) {
   const rounded = applyJunctionPoint(
     junction,
-    point,
+    applyPointWithGuide(point),
     (uuid) =>
       notationStore.getNotation(uuid) as LineNotationAttributes | undefined,
     (updatedLine) => {
@@ -401,7 +468,7 @@ function modifyLineLeft(p: DotCoordinates) {
     return;
   }
 
-  const point = roundPoint(p);
+  const point = applyPointWithGuide(p);
   movementDirection = getMovementDirection(point.x);
 
   lineAttributes.value.p1x = point.x;
@@ -414,7 +481,7 @@ function modifyLineRight(p: DotCoordinates) {
     return;
   }
 
-  const point = roundPoint(p);
+  const point = applyPointWithGuide(p);
   movementDirection = getMovementDirection(point.y);
 
   lineAttributes.value.p2x = point.x;
@@ -460,6 +527,7 @@ function editNotStarted(): boolean {
 }
 
 async function endDrawing(): Promise<string> {
+  clearBorderGuide();
   if (editNotStarted()) {
     return "";
   }
@@ -597,25 +665,7 @@ function getAdjustedEdge(point: DotCoordinates): DotCoordinates {
     return { x: nearestIntersection.x, y: nearestIntersection.y };
   }
 
-  const nearestCorner = screenHelper.getNearestGridCorner(point);
-  if (nearestCorner != null) {
-    return nearestCorner;
-  }
-
-  const cellW = cellStore.getCellHorizontalWidth();
-  const cellH = cellStore.getCellVerticalHeight();
-  const gx = Math.round(point.x / cellW) * cellW;
-  const gy = Math.round(point.y / cellH) * cellH;
-  return {
-    x:
-      Math.abs(gx - point.x) <= Math.max(8, cellW * 0.45)
-        ? gx
-        : Math.round(point.x),
-    y:
-      Math.abs(gy - point.y) <= Math.max(8, cellH * 0.45)
-        ? gy
-        : Math.round(point.y),
-  };
+  return { x: Math.round(point.x), y: Math.round(point.y) };
 }
 
 function applyMoveToLine(dx: number, dy: number) {
@@ -638,6 +688,25 @@ function moveLine(moveX: number, moveY: number) {
 
 .dashed {
   stroke-dasharray: 5, 5;
+}
+
+.cell-border-guide {
+  stroke: #0288d1;
+  stroke-width: 1.5px;
+  stroke-dasharray: 5 4;
+  pointer-events: none;
+}
+
+.cell-border-guide.landed {
+  stroke-dasharray: none;
+  stroke-width: 2px;
+}
+
+.cell-border-guide-dot {
+  fill: #0288d1;
+  stroke: #fff;
+  stroke-width: 1px;
+  pointer-events: none;
 }
 
 /* Ensure markers scale properly with the line */

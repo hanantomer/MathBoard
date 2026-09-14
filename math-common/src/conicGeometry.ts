@@ -581,6 +581,6 @@ export function formatConicDiagramLine(
     return `diagram: ${conic.kind} opens=${opens}`;
   }
   const h = (conic.hx - origin.x) / cellW;
-  const k = (origin.y - conic.hy) / cellH;
+  const k = (origin.y - conic.hy) / (cellH / 2);
   return `diagram: ${conic.kind} vertex≈(${h.toFixed(1)},${k.toFixed(1)}) opens=${opens}`;
 }

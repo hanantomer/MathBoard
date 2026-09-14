@@ -22,8 +22,8 @@ import {
   yInterceptCoachOverride,
   workHasMaxOrMin,
   workHasParabolaGraph,
-  normalizePracticeMatch,
   coachNagsAboutPresentIntegrationConstant,
+  workHasStandaloneExpectedAnswer,
   workMatchesExpectedAnswer,
 } from "../../../math-common/build/practiceAlgebra";
 import {
@@ -110,20 +110,15 @@ function partsSection(problemText?: string, ctx?: PracticePartsCtx): string {
   return block ? `${block}\n\n` : "";
 }
 
-function normalizeLoose(value: string): string {
-  return normalizePracticeMatch(value);
-}
-
 function localQuickMatch(
   studentWork: string,
   expectedAnswer: string,
   acceptedAnswers: string[] = [],
 ): boolean {
-  const work = normalizeLoose(studentWork);
-  if (!work) return false;
-  const candidates = [expectedAnswer, ...acceptedAnswers].map(normalizeLoose);
-  return candidates.some(
-    (answer) => answer.length > 0 && work.includes(answer),
+  return workHasStandaloneExpectedAnswer(
+    studentWork,
+    expectedAnswer,
+    acceptedAnswers,
   );
 }
 
@@ -452,7 +447,9 @@ A system is solved if each unknown is found (x=3 and y=2 is equivalent to (3,2))
 A discarded invalid extra root (e.g. negative length) is fine if the valid value is present.
 Do not mark wrong for a missing boxed answer, a full sentence, or copied diagram labels.
 Extra correct statements do not make the answer wrong.
-Board text is grid symbols and may omit spaces; do not treat missing spaces as errors.`;
+Board text is grid symbols and may omit spaces; do not treat missing spaces as errors.
+Board square roots serialize as √(...) immediately before the radicand (e.g. √(-1)). Do not ignore √. Grade the last simplified line: √(-1) is not -1. A leftover radical on the result is incorrect even if an earlier (√(-1))^2 would equal -1.
+Board vectors serialize as a letter with an arrow (v⃗), not as vec_v.`
 
 const STUDENT_WORK_LABEL =
   "Student's current board work (grid symbols, diagrams, and text boxes):";
@@ -491,6 +488,7 @@ If the problem has no listed parts, they have the asked-for result only when the
 - a later rewritten line that is already simplified a(x-h)^2+k (one constant). Earlier algebra slips they corrected are scratch.
 - a(x-h)^2 with leftover constants like 2(x-2)^2-8+5 is NOT finished. Hint: combine those constants. Do not say that line solves it.
 - a completing-the-square line that still expands to the original is NOT finished. Hint only the next step: write the perfect square as a binomial squared. Do not say that line solves it.
+- a leftover square root such as √(-1) is NOT the same as -1. Do not speak=false.
 If they discarded an invalid extra root (e.g. a negative length) and kept the valid value, stop coaching (speak=false).
 
 On a multi-part problem, those rewrite/completing-the-square rules apply to the active part only.

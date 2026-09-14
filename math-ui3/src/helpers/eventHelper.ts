@@ -46,6 +46,15 @@ function onWindowKeyDown(e: KeyboardEvent) {
   const inField =
     target &&
     (target.tagName === "INPUT" || target.tagName === "TEXTAREA");
+  if (
+    e.altKey &&
+    !e.ctrlKey &&
+    !e.metaKey &&
+    !inField &&
+    (e.code === "KeyX" || e.code === "KeyS" || e.code === "KeyL")
+  ) {
+    e.preventDefault();
+  }
   if (e.key === " " || e.code === "Space") {
     if (!inField) {
       e.preventDefault();

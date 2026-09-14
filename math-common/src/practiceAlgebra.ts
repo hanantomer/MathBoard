@@ -13,6 +13,8 @@ export function normalizeAlgebra(text: string): string {
   return text
     .toLowerCase()
     .replace(/\s+/g, "")
+    .replace(/vec_([a-z])/g, "$1\u20D7")
+    .replace(/\\vec\{([a-z])\}/g, "$1\u20D7")
     .replace(/×/g, "*")
     .replace(/÷/g, "/")
     .replace(/−/g, "-")
@@ -767,6 +769,65 @@ export function workMatchesExpectedAnswer(
     if (!answer.includes("=")) return false;
     return answer.slice(answer.lastIndexOf("=") + 1) === rhs;
   });
+}
+
+function isUnderRadical(haystack: string, index: number): boolean {
+  const before = haystack[index - 1] ?? "";
+  if (before === "√") return true;
+  if (
+    before === "(" &&
+    (haystack[index - 2] === "√" || /sqrt$/i.test(haystack.slice(0, index - 1)))
+  ) {
+    return true;
+  }
+  return /sqrt$/i.test(haystack.slice(0, index));
+}
+
+function isStandaloneTokenAt(
+  haystack: string,
+  index: number,
+  tokenLength: number,
+): boolean {
+  if (isUnderRadical(haystack, index)) return false;
+  const before = haystack[index - 1] ?? "";
+  const after = haystack[index + tokenLength] ?? "";
+  if (/[0-9a-z.^]/i.test(before)) return false;
+  if (/[0-9a-z.]/i.test(after)) return false;
+  return true;
+}
+
+function containsStandaloneToken(haystack: string, token: string): boolean {
+  if (!token || !haystack) return false;
+  let from = 0;
+  while (from <= haystack.length - token.length) {
+    const i = haystack.indexOf(token, from);
+    if (i < 0) return false;
+    if (isStandaloneTokenAt(haystack, i, token.length)) return true;
+    from = i + 1;
+  }
+  return false;
+}
+
+/**
+ * Last math line contains the catalog answer as its own token — not glued to
+ * digits and not sitting under a leftover square root (√-1 is not -1).
+ */
+export function workHasStandaloneExpectedAnswer(
+  studentWork: string,
+  expectedAnswer: string,
+  acceptedAnswers: string[] = [],
+): boolean {
+  const last = lastStudentMathLine(studentWork);
+  if (!last) return false;
+  const haystacks = last.includes("=")
+    ? [last, last.slice(last.lastIndexOf("=") + 1)]
+    : [last];
+  const candidates = [expectedAnswer, ...acceptedAnswers]
+    .map(normalizePracticeMatch)
+    .filter(Boolean);
+  return candidates.some((answer) =>
+    haystacks.some((h) => containsStandaloneToken(h, answer)),
+  );
 }
 
 /** True when +C (constant of integration) is already in the work. */

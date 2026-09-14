@@ -6,6 +6,14 @@ export interface ToolbarButton {
   action: () => void;
 }
 
+/** Prefer `code` so Alt+X still matches when `key` is a special char. */
+function shortcutLetterFromEvent(e: KeyboardEvent): string {
+  if (e.code.startsWith("Key") && e.code.length === 4) {
+    return e.code.slice(3).toLowerCase();
+  }
+  return e.key.toLowerCase();
+}
+
 export function useToolbarNavigation() {
 
   // function handleKeyboardNavigation(e: KeyboardEvent, toolbarClass: string) {
@@ -30,9 +38,10 @@ export function useToolbarNavigation() {
   function handleShortcuts(e: KeyboardEvent, buttons: ToolbarButton[]) {
     if (!e.altKey) return;
 
+    const pressed = shortcutLetterFromEvent(e);
     const button = buttons.find((btn) => {
-      const key = btn.shortcut?.split("+")[1].toLowerCase();
-      return key === e.key.toLowerCase();
+      const key = btn.shortcut?.split("+").at(-1)?.toLowerCase();
+      return key === pressed;
     });
 
     if (button) {

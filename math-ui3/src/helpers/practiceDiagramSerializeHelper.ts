@@ -7,8 +7,10 @@ import type {
   LineNotationAttributes,
   NotationAttributes,
   PointNotationAttributes,
+  SqrtNotationAttributes,
 } from "common/baseTypes";
 import { formatConicDiagramLine } from "common/conicGeometry";
+import { formatBoardSymbolForTutor } from "common/globals";
 import {
   cartesianOrigins,
   nearestCartesianOrigin,
@@ -126,7 +128,7 @@ function collectLabels(
   const labels: Label[] = [];
 
   for (const s of symbols) {
-    const text = s.value?.trim() ?? "";
+    const text = formatBoardSymbolForTutor(s.value?.trim() ?? "");
     if (!text || !isolated.has(s.uuid)) continue;
     if (typeof s.col !== "number" || typeof s.row !== "number") continue;
     labels.push({
@@ -685,7 +687,7 @@ export type FractionInsert = {
 };
 
 function pointToken(n: PointNotationAttributes): string {
-  const value = n.value ?? "";
+  const value = formatBoardSymbolForTutor(n.value ?? "");
   if (n.notationType === "EXPONENT") return "^" + value;
   if (n.notationType === "LOGBASE") return "_" + value;
   return value;
@@ -782,6 +784,78 @@ export function serializePracticeFractions(
           : denRowBaseline,
       col: fromCol,
       text: `(${numText || "?"})/(${denText || "?"})`,
+    });
+  }
+
+  return { consumedUuids: consumed, inserts };
+}
+
+/**
+ * Turn SQRT + radicand symbols into √(...) tokens so the tutor sees the radical.
+ * fromCol is the √ glyph; the vinculum covers fromCol+1 .. toCol-1.
+ */
+export function serializePracticeSqrts(
+  notations: NotationAttributes[],
+): { consumedUuids: Set<string>; inserts: FractionInsert[] } {
+  const consumed = new Set<string>();
+  const inserts: FractionInsert[] = [];
+
+  const points = notations.filter(
+    (n) =>
+      n.notationType === "SYMBOL" ||
+      n.notationType === "EXPONENT" ||
+      n.notationType === "LOGBASE",
+  ) as PointNotationAttributes[];
+
+  const sqrts = notations
+    .filter((n) => n.notationType === "SQRT")
+    .map((n) => n as SqrtNotationAttributes)
+    .filter(
+      (s) =>
+        typeof s.fromCol === "number" &&
+        typeof s.toCol === "number" &&
+        typeof s.row === "number",
+    )
+    .sort((a, b) => {
+      const spanA = Math.abs(a.toCol - a.fromCol);
+      const spanB = Math.abs(b.toCol - b.fromCol);
+      return spanA - spanB || a.fromCol - b.fromCol;
+    });
+
+  for (const s of sqrts) {
+    const glyphCol = Math.min(s.fromCol, s.toCol);
+    const endCol = Math.max(s.fromCol, s.toCol);
+    const radFrom = glyphCol + 1;
+    const radTo = endCol - 1;
+
+    const covered = points.filter(
+      (p) =>
+        !consumed.has(p.uuid) &&
+        p.row === s.row &&
+        typeof p.col === "number" &&
+        p.col >= radFrom &&
+        p.col <= radTo,
+    );
+    const nested = inserts.filter(
+      (i) => i.row === s.row && i.col >= radFrom && i.col <= radTo,
+    );
+
+    const pieces = [
+      ...covered.map((p) => ({ col: p.col, text: pointToken(p) })),
+      ...nested.map((i) => ({ col: i.col, text: i.text })),
+    ].sort((a, b) => a.col - b.col);
+
+    for (const p of covered) consumed.add(p.uuid);
+    for (const inner of nested) {
+      const idx = inserts.indexOf(inner);
+      if (idx >= 0) inserts.splice(idx, 1);
+    }
+
+    const radicand = pieces.map((p) => p.text).join("");
+    inserts.push({
+      row: s.row,
+      col: glyphCol,
+      text: radicand ? `√(${radicand})` : "√",
     });
   }
 

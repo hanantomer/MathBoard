@@ -4,8 +4,10 @@ import type {
   NotationAttributes,
 } from "common/baseTypes";
 import {
+  cartesianAxisTickLabels,
   cartesianMathReadout,
   cartesianOrigins,
+  formatAxisTick,
   formatMathPoint,
   snapSvgToHalfCell,
   svgPointToMath,
@@ -55,7 +57,7 @@ describe("cartesianMathHelper", () => {
     expect(origins).toEqual([{ x: originX, y: originY }]);
   });
 
-  it("reads (2.0, 3.0) two cells right and three cells up from the origin", () => {
+  it("reads (2.0, 6.0) two columns right and three rows up from the origin", () => {
     const px = originX + 2 * cellW;
     const py = originY - 3 * cellH;
     const math = svgPointToMath(
@@ -65,11 +67,11 @@ describe("cartesianMathHelper", () => {
       cellW,
       cellH,
     );
-    expect(math).toEqual({ x: 2, y: 3 });
-    expect(formatMathPoint(math!.x, math!.y)).toBe("(2.0, 3.0)");
+    expect(math).toEqual({ x: 2, y: 6 });
+    expect(formatMathPoint(math!.x, math!.y)).toBe("(2.0, 6.0)");
     expect(
       cartesianMathReadout({ x: px, y: py }, axisPair(), cellW, cellH),
-    ).toBe("(2.0, 3.0)");
+    ).toBe("(2.0, 6.0)");
   });
 
   it("uses a unicode minus for negative y", () => {
@@ -82,10 +84,10 @@ describe("cartesianMathHelper", () => {
     const snapped = snapSvgToHalfCell({ x: px, y: py }, cellW, cellH);
     expect(
       cartesianMathReadout(snapped, axisPair(), cellW, cellH),
-    ).toBe("(2.0, 3.0)");
+    ).toBe("(2.0, 6.0)");
     expect(
       cartesianMathReadout({ x: px, y: py }, axisPair(), cellW, cellH),
-    ).toBe("(2.0, 3.0)");
+    ).toBe("(2.0, 6.0)");
   });
 
   it("returns no label when there are no axes", () => {
@@ -98,5 +100,33 @@ describe("cartesianMathHelper", () => {
       ),
     ).toBe("");
     expect(cartesianOrigins([])).toEqual([]);
+  });
+
+  it("numbers x and y from −6..6 on the same pixel scale", () => {
+    const labels = cartesianAxisTickLabels(
+      { x: originX, y: originY },
+      cellW,
+      cellH,
+    );
+    const values = labels.map((l) => l.value);
+    expect(values).not.toContain("x");
+    expect(values).not.toContain("y");
+    expect(values).toContain("0");
+    expect(values).toContain("6");
+    expect(values).toContain(formatAxisTick(-6));
+    expect(values.filter((v) => v === "6")).toHaveLength(2);
+
+    const x2 = labels.find(
+      (l) => l.value === "2" && Math.abs(l.x - (originX + 2 * cellW)) < cellW,
+    );
+    expect(x2).toBeTruthy();
+    expect(x2!.y).toBeGreaterThan(originY);
+
+    const y2 = labels.find(
+      (l) =>
+        l.value === "2" && Math.abs(l.y - (originY - cellH)) < cellH / 3,
+    );
+    expect(y2).toBeTruthy();
+    expect(y2!.x).toBeLessThan(originX);
   });
 });

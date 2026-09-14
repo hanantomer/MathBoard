@@ -30,6 +30,8 @@ export const signList = [
 ];
 export const selectedCellStroke = "red";
 export const defaultdCellStroke = "lightgray";
+/** Interior midline on white; lighter than cell stroke so 2:1 cells hint as stacked squares. */
+export const graphPaperStroke = "#e4e4e4";
 export const heartBeatInterval = 3000;
 
 export function validateCookiesEnabled(): boolean {
@@ -120,6 +122,20 @@ export function isMobile() {
 }
 
 export const vectorSymbolPrefix = "vec_";
+
+/** Combining right arrow above: board `vec_v` → `v⃗` for the tutor. */
+export const vectorArrowAbove = "\u20D7";
+
+/** Board symbol value → text the checker/coach should read. */
+export function formatBoardSymbolForTutor(value: string): string {
+  if (!value) return value;
+  if (value.startsWith(vectorSymbolPrefix)) {
+    const letter = value.slice(vectorSymbolPrefix.length);
+    if (!letter) return value;
+    return `${letter}${vectorArrowAbove}`;
+  }
+  return value;
+}
 
 const vectorArrowSpan = `<span style="position:absolute;margin-left:-12px;margin-top:-12px">&rarr;</span>`;
 

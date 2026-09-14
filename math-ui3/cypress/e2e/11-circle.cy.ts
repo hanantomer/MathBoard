@@ -20,5 +20,24 @@ describe("e2e", () => {
       const radius = circle.r.baseVal.value;
       expect(radius).to.be.greaterThan(50);
     });
+
+    // Circle stays selected. Alt+X must still arm exponent (not only CELL_SELECTED).
+    cy.dataCy("circleButton").should("have.class", "toolbar-mode-btn--active");
+    cy.window().then((win) => {
+      const opts: KeyboardEventInit = {
+        key: "x",
+        code: "KeyX",
+        altKey: true,
+        bubbles: true,
+        cancelable: true,
+      };
+      win.dispatchEvent(new win.KeyboardEvent("keydown", opts));
+      win.dispatchEvent(new win.KeyboardEvent("keyup", opts));
+    });
+    cy.dataCy("exponentButton").should("have.class", "toolbar-mode-btn--active");
+    cy.dataCy("instruction-bar").should(
+      "contain",
+      "Click on a cell to create an exponent",
+    );
   });
 });

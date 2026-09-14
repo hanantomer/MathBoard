@@ -73,6 +73,11 @@ import {
 
 import useSelectionHelper from "./selectionHelper";
 import { viewportPointerPosition } from "./pointerCoordinateHelper";
+import {
+  CARTESIAN_AXIS_HALF_COLS,
+  CARTESIAN_AXIS_HALF_ROWS,
+  cartesianAxisTickLabels,
+} from "./cartesianMathHelper";
 import useImageHelper from "./imageHelper";
 import {
   collapseNotationsToSelectedCell,
@@ -1973,47 +1978,60 @@ export default function notationMutateHelper() {
     if (!clickedCell) return;
     selectionHelper.setSelectedCell(clickedCell, false);
 
-    const originX = Math.round(
-      clickedCell.col * cellStore.getCellHorizontalWidth(),
-    );
-    const originY = Math.round(
-      clickedCell.row * cellStore.getCellVerticalHeight(),
-    );
-    // Cells are twice as tall as wide (16.5×33), so ±6 cols and ±3 rows is square.
-    const halfX = 6 * cellStore.getCellHorizontalWidth();
-    const halfY = 3 * cellStore.getCellVerticalHeight();
+    const cellW = cellStore.getCellHorizontalWidth();
+    const cellH = cellStore.getCellVerticalHeight();
+    const originX = Math.round(clickedCell.col * cellW);
+    const originY = Math.round(clickedCell.row * cellH);
+    const halfX = CARTESIAN_AXIS_HALF_COLS * cellW;
+    const halfY = CARTESIAN_AXIS_HALF_ROWS * cellH;
 
-    const horizontalUuid = await addLineNotation(
-      {
-        p1x: originX - halfX,
-        p1y: originY,
-        p2x: originX + halfX,
-        p2y: originY,
-        dashed: false,
-        arrowLeft: false,
-        arrowRight: true,
-      },
-      "LINE",
-    );
+    notationStore.beginUndoGroup();
+    try {
+      const horizontalUuid = await addLineNotation(
+        {
+          p1x: originX - halfX,
+          p1y: originY,
+          p2x: originX + halfX,
+          p2y: originY,
+          dashed: false,
+          arrowLeft: false,
+          arrowRight: true,
+        },
+        "LINE",
+      );
 
-    const verticalUuid = await addLineNotation(
-      {
-        p1x: originX,
-        p1y: originY - halfY,
-        p2x: originX,
-        p2y: originY + halfY,
-        dashed: false,
-        arrowLeft: true,
-        arrowRight: false,
-      },
-      "LINE",
-    );
+      const verticalUuid = await addLineNotation(
+        {
+          p1x: originX,
+          p1y: originY - halfY,
+          p2x: originX,
+          p2y: originY + halfY,
+          dashed: false,
+          arrowLeft: true,
+          arrowRight: false,
+        },
+        "LINE",
+      );
 
-    cellStore.resetSelectedCell();
-    editModeStore.setGlobalEditMode("TEXT");
-    notationStore.resetSelectedNotations();
-    if (horizontalUuid) selectionHelper.selectNotation(horizontalUuid);
-    if (verticalUuid) selectionHelper.selectNotation(verticalUuid);
+      const labels = cartesianAxisTickLabels(
+        { x: originX, y: originY },
+        cellW,
+        cellH,
+      );
+      await Promise.all(
+        labels.map((label) =>
+          addAnnotationNotation(label.value, { x: label.x, y: label.y }),
+        ),
+      );
+
+      cellStore.resetSelectedCell();
+      editModeStore.setGlobalEditMode("TEXT");
+      notationStore.resetSelectedNotations();
+      if (horizontalUuid) selectionHelper.selectNotation(horizontalUuid);
+      if (verticalUuid) selectionHelper.selectNotation(verticalUuid);
+    } finally {
+      notationStore.endUndoGroup();
+    }
   }
 
   async function pasteNotations() {

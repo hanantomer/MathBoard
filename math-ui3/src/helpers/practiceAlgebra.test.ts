@@ -10,10 +10,12 @@ import {
   workHasYIntercept,
   workHasYInterceptValueOnly,
   workMatchesExpectedAnswer,
+  workHasStandaloneExpectedAnswer,
   yInterceptCoachOverride,
   Y_INTERCEPT_AS_POINT_TIP,
   coachNagsAboutPresentIntegrationConstant,
   workHasIntegrationConstant,
+  normalizePracticeMatch,
 } from "common/practiceAlgebra";
 
 const ORIGINAL = { a: 2, b: -8, c: 5 };
@@ -355,6 +357,35 @@ describe("catalog expected-answer auto-check", () => {
   });
 });
 
+describe("leftover square root is not the simplified answer", () => {
+  const expected = "-1";
+  const accepted = ["i^2 = -1", "i² = −1", "−1"];
+
+  it("rejects √(-1) as a match for -1", () => {
+    const work = "i^2=(√(-1))^2=√(-1)";
+    expect(workMatchesExpectedAnswer(work, expected, accepted)).toBe(false);
+    expect(workHasStandaloneExpectedAnswer(work, expected, accepted)).toBe(
+      false,
+    );
+  });
+
+  it("rejects a board-style leftover radical √-1", () => {
+    const work = "i^2=(√-1)^2=√-1";
+    expect(workMatchesExpectedAnswer(work, expected, accepted)).toBe(false);
+    expect(workHasStandaloneExpectedAnswer(work, expected, accepted)).toBe(
+      false,
+    );
+  });
+
+  it("still accepts the simplified last line -1", () => {
+    const work = "i^2=(√(-1))^2=-1";
+    expect(workMatchesExpectedAnswer(work, expected, accepted)).toBe(true);
+    expect(workHasStandaloneExpectedAnswer(work, expected, accepted)).toBe(
+      true,
+    );
+  });
+});
+
 describe("indefinite integral catalog match", () => {
   const expected = "(1/2)x² + C";
   const accepted = [
@@ -436,5 +467,14 @@ describe("indefinite integral catalog match", () => {
         "∫xdx=(x^2)/(2)",
       ),
     ).toBe(false);
+  });
+});
+
+describe("board vector prefix", () => {
+  it("treats vec_v and v⃗ as the same token", () => {
+    expect(normalizePracticeMatch("vec_v")).toBe(normalizePracticeMatch("v⃗"));
+    expect(normalizePracticeMatch("\\vec{v}")).toBe(
+      normalizePracticeMatch("v⃗"),
+    );
   });
 });

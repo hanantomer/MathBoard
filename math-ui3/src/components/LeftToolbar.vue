@@ -233,7 +233,10 @@ import { watch, ref, computed } from "vue";
 import accessLinkDialog from "./AccessLinkDialog.vue";
 
 import { useNotationStore } from "../store/pinia/notationStore";
-import { useEditModeStore } from "../store/pinia/editModeStore";
+import {
+  ARMED_TOOL_EDIT_MODES,
+  useEditModeStore,
+} from "../store/pinia/editModeStore";
 import { useUserStore } from "../store/pinia/userStore";
 import { EditMode, GlobalEditMode } from "common/unions";
 import { useToolbarNavigation } from "../helpers/ToolbarNavigationHelper";
@@ -544,7 +547,23 @@ const textModeButtons = computed(() =>
 );
 
 watchHelper.watchKeyEvent(
-  ["CELL_SELECTED", "AREA_SELECTED"],
+  [
+    "CELL_SELECTED",
+    "AREA_SELECTED",
+    "LINE_SELECTED",
+    "DIVISIONLINE_SELECTED",
+    "CURVE_SELECTED",
+    "SQRT_SELECTED",
+    "ANNOTATION_SELECTED",
+    "TEXT_SELECTED",
+    "EXPONENT_SELECTED",
+    "CIRCLE_SELECTED",
+    "CONIC_SELECTED",
+    "CONIC_DRAWING",
+    "IMAGE_SELECTED",
+    "FREE_SKETCH_SELECTED",
+    ...ARMED_TOOL_EDIT_MODES,
+  ],
   "EV_SHORTCUT_KEYUP",
   (e: KeyboardEvent) => toolbarNavigation.handleShortcuts(e, modeButtons),
 );

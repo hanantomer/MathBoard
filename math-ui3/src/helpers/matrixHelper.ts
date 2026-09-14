@@ -3,6 +3,7 @@ import {
   matrixCellSize,
   matrixDimensions,
   defaultdCellStroke,
+  graphPaperStroke,
   sqrtSymbolSuffix,
 } from "common/globals";
 import { NotationAttributes, RectNotationAttributes, SqrtNotationAttributes } from "common/baseTypes";
@@ -93,6 +94,33 @@ export default function useMatrixHelper() {
       })
       .attr("width", () => Math.max(1, cellStore.getCellHorizontalWidthNet()))
       .attr("height", () => Math.max(1, cellStore.getCellVerticalHeightNet()));
+
+    appendGraphPaper(svgId);
+  }
+
+  /** Mid-cell horizontals: each 2:1 cell reads as two stacked squares. */
+  function appendGraphPaper(svgId: string) {
+    const cellH = cellStore.getCellVerticalHeight();
+    const midY = cellStore.getCellVerticalHeightNet() / 2;
+    const boardW =
+      matrixDimensions.colsNum * cellStore.getCellHorizontalWidth();
+    const paper = d3
+      .select("#" + svgId)
+      .append("g")
+      .attr("class", "graph-paper")
+      .attr("pointer-events", "none");
+
+    for (let row = 0; row < matrixDimensions.rowsNum; row++) {
+      const y = row * cellH + midY;
+      paper
+        .append("rect")
+        .attr("x", 0)
+        .attr("y", y - 0.5)
+        .attr("width", boardW)
+        .attr("height", 1)
+        .attr("fill", graphPaperStroke)
+        .attr("pointer-events", "none");
+    }
   }
 
   function enrichNotations(notations: NotationAttributes[]) {

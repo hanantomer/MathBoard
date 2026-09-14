@@ -220,6 +220,6 @@ describe("formatConicDiagramLine", () => {
       16.5,
       33,
     );
-    expect(line).toMatch(/^diagram: parabola vertex≈\(2\.0,-3\.0\) opens=up$/);
+    expect(line).toMatch(/^diagram: parabola vertex≈\(2\.0,-6\.0\) opens=up$/);
   });
 });

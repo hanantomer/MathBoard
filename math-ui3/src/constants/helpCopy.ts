@@ -112,7 +112,7 @@ export const TOOL_TOOLTIPS: Record<string, string> = {
   sqrt: "Square root — insert at the selected cell (Alt+S). Select symbols first to draw the bar over them",
   exponent: "Exponent — click a cell (Alt+X)",
   log: "Logarithm (Alt+L)",
-  "cartesian system": "Cartesian axes — click to place; both axes stay selected",
+  "cartesian system": "Cartesian axes — click to place numbered x and y axes",
   checkmark: "Mark cell correct",
   xmark: "Mark cell incorrect",
   semicheckmark: "Mark cell partially correct",
@@ -258,7 +258,7 @@ const EDIT_MODE_HINTS: Partial<Record<EditMode | GlobalEditMode, string>> = {
   CURVE_DRAWING: "Release to place. The curve stays selected.",
   POLYGON_STARTED: `Drag each segment; close on the start. ${stickyExitHint("Polyline")}.`,
   POLYGON_DRAWING: `Drag the next segment, or close on the start. ${stickyExitHint("Polyline")}.`,
-  CARTESIAN_SYSTEM_STARTED: "Click to place x and y axes. Both axes stay selected.",
+  CARTESIAN_SYSTEM_STARTED: "Click to place numbered x and y axes. Both axes stay selected.",
   FREE_SKETCH_WITH_OCR_STARTED:
     "Draw strokes; a brief pause combines them, then OCR places the symbol on the grid.",
   FREE_SKETCH_WITH_OCR_DRAWING:
@@ -318,7 +318,7 @@ export function getEditModeStatusText(
     COLORIZING:
       "Click on a notation to colorize it or drag slowly to colorize multiple notations",
     CARTESIAN_SYSTEM_STARTED:
-      "Click on the board to place x and y axes. Both axes stay selected.",
+      "Click on the board to place numbered x and y axes. Both axes stay selected.",
     AREA_SELECTION_STARTED: getSelectionHelpText(),
   };
 
@@ -387,7 +387,7 @@ export const TOOLS_HELP = {
         "Polyline — stays on until you close it, press Esc, or click the tool again",
         "Curve — one curve, then it stays selected",
         "Circle — one circle, then it stays selected",
-        "Cartesian axes — both axes stay selected after placing",
+        "Cartesian axes — numbered ticks; both axes stay selected after placing",
       ],
     },
     {

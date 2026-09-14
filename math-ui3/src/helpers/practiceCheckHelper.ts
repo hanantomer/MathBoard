@@ -17,9 +17,11 @@ import {
   getPracticeQuestionUUId,
   isPracticeProblemNotation,
 } from "./practiceBoardAdapter";
+import { formatBoardSymbolForTutor } from "common/globals";
 import {
   serializePracticeDiagram,
   serializePracticeFractions,
+  serializePracticeSqrts,
 } from "./practiceDiagramSerializeHelper";
 import {
   formatPracticeStudentWorkLines,
@@ -372,9 +374,11 @@ function serializeFilteredWork(
   const cellSize = boardCellSize();
   const diagram = serializePracticeDiagram(practiceOnly, cellSize);
   const fractions = serializePracticeFractions(practiceOnly, cellSize);
+  const sqrts = serializePracticeSqrts(practiceOnly);
   const consumed = new Set([
     ...diagram.consumedUuids,
     ...fractions.consumedUuids,
+    ...sqrts.consumedUuids,
   ]);
 
   const pointLike = practiceOnly.filter(
@@ -394,16 +398,20 @@ function serializeFilteredWork(
   };
 
   for (const n of pointLike) {
+    const raw = formatBoardSymbolForTutor(n.value ?? "");
     const value =
       n.notationType === "EXPONENT"
-        ? "^" + (n.value ?? "")
+        ? "^" + raw
         : n.notationType === "LOGBASE"
-          ? "_" + (n.value ?? "")
-          : (n.value ?? "");
+          ? "_" + raw
+          : raw;
     addItem(n.row, n.col, value);
   }
   for (const frac of fractions.inserts) {
     addItem(frac.row, frac.col, frac.text);
+  }
+  for (const sqrt of sqrts.inserts) {
+    addItem(sqrt.row, sqrt.col, sqrt.text);
   }
   mergeExponentOnlyRows(itemsByRow);
 
@@ -431,7 +439,9 @@ function serializeFilteredWork(
   const rows = Array.from(itemsByRow.keys()).sort((a, b) => a - b);
   for (const row of rows) {
     const items = itemsByRow.get(row)!;
-    items.sort((a, b) => a.col - b.col);
+    items.sort(
+      (a, b) => a.col - b.col || (a.text.startsWith("√") ? -1 : b.text.startsWith("√") ? 1 : 0),
+    );
     let buf = "";
     let lastCol = Number.NEGATIVE_INFINITY;
     for (const i of items) {
