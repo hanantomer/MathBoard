@@ -3,28 +3,18 @@ import { seoConfig } from "../config/seoConfig";
 export const ADS_TAG_ID =
   import.meta.env.VITE_AW_ID?.trim() || seoConfig.analytics.conversionTrackingId;
 
-/** Subscribe conversion from Google Ads — same event for teacher and student sign-up. */
+/** Subscribe conversion from Google Ads — teacher/student sign-up and first practice visit. */
 const SUBSCRIBE_LABEL =
   import.meta.env.VITE_AW_CONV_SUBSCRIBE?.trim() || "wRJ4COLFnPscEPvTqYpD";
 const SUBSCRIBE_VALUE = 1;
 const SUBSCRIBE_CURRENCY = "ILS";
 
-/** Dummy values for GA4 until paid plans exist. */
-export const ADS_CONVERSION_VALUES = {
-  start_practice: 1,
-  teacher_signup: 10,
-  student_signup: 3,
-} as const;
-
-export type AdsConversionKind = keyof typeof ADS_CONVERSION_VALUES;
+export type AdsConversionKind =
+  | "start_practice"
+  | "teacher_signup"
+  | "student_signup";
 
 const PRACTICE_SESSION_KEY = "mathboard_start_practice_tracked";
-
-const LABELS: Record<AdsConversionKind, string | undefined> = {
-  start_practice: import.meta.env.VITE_AW_CONV_START_PRACTICE?.trim(),
-  teacher_signup: SUBSCRIBE_LABEL,
-  student_signup: SUBSCRIBE_LABEL,
-};
 
 function gtag(...args: unknown[]): void {
   if (typeof window === "undefined" || typeof window.gtag !== "function") {
@@ -33,28 +23,9 @@ function gtag(...args: unknown[]): void {
   window.gtag(...args);
 }
 
-function adsConversionPayload(
-  kind: AdsConversionKind,
-): { send_to: string; value: number; currency: string } | null {
-  if (kind === "start_practice") {
-    const label = LABELS.start_practice;
-    if (!label) return null;
-    return {
-      send_to: `${ADS_TAG_ID}/${label}`,
-      value: ADS_CONVERSION_VALUES.start_practice,
-      currency: "USD",
-    };
-  }
-  return {
-    send_to: `${ADS_TAG_ID}/${SUBSCRIBE_LABEL}`,
-    value: SUBSCRIBE_VALUE,
-    currency: SUBSCRIBE_CURRENCY,
-  };
-}
-
 /**
- * GA4 event plus an Ads conversion. Sign-up uses the Subscribe snippet
- * (AW-18006829563/wRJ4COLFnPscEPvTqYpD, 1 ILS) for teacher and student.
+ * GA4 event plus an Ads conversion. Subscribe snippet
+ * (AW-18006829563/wRJ4COLFnPscEPvTqYpD, 1 ILS) for sign-up and practice.
  */
 export function trackAdsConversion(
   kind: AdsConversionKind,
@@ -62,8 +33,8 @@ export function trackAdsConversion(
 ): void {
   if (kind === "start_practice") {
     gtag("event", "start_practice", {
-      value: ADS_CONVERSION_VALUES.start_practice,
-      currency: "USD",
+      value: SUBSCRIBE_VALUE,
+      currency: SUBSCRIBE_CURRENCY,
       ...extra,
     });
   } else {
@@ -75,8 +46,11 @@ export function trackAdsConversion(
     });
   }
 
-  const payload = adsConversionPayload(kind);
-  if (payload) gtag("event", "conversion", payload);
+  gtag("event", "conversion", {
+    send_to: `${ADS_TAG_ID}/${SUBSCRIBE_LABEL}`,
+    value: SUBSCRIBE_VALUE,
+    currency: SUBSCRIBE_CURRENCY,
+  });
 }
 
 /** First practice visit this tab only — catalog then blank sheet should not count twice. */
