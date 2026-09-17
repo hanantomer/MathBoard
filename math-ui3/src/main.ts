@@ -16,15 +16,9 @@ import { registerPlugins } from "./plugins";
 // Components
 import App from "./App.vue";
 
-import { configure } from "vue-gtag";
-
 const apiHelper = useApiHelper();
 
 const app = createApp(App);
-
-configure({
-  tagId: "AW-18006829563",
-});
 
 app.use(vue3GoogleLogin, {
   clientId:

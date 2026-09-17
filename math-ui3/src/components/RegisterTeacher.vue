@@ -266,6 +266,7 @@ import useRegistration from "../composables/registration";
 import useContactUs from "../helpers/contactUsHelper";
 import { useUserStore } from "../store/pinia/userStore";
 import useAuthenticationHelper from "../helpers/authenticationHelper";
+import { trackAdsConversion } from "../helpers/adsConversionHelper";
 
 const authenticationHelper = useAuthenticationHelper();
 
@@ -328,6 +329,7 @@ async function register() {
       );
     }
     show.value = false;
+    trackAdsConversion("teacher_signup", { method: "email" });
     emit("registered", "TEACHER", redirectAfterLogin);
   }
 }
@@ -340,6 +342,7 @@ async function handleGoogleUserRegistration(response: any) {
   if (user) {
     userStore.setCurrentUser(user);
     show.value = false;
+    trackAdsConversion("teacher_signup", { method: "google" });
     router.push({ name: "lessons" });
   }
 }

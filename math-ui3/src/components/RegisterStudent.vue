@@ -91,6 +91,7 @@
 import { ref, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import useRegistration from "../composables/registration";
+import { trackAdsConversion } from "../helpers/adsConversionHelper";
 
 const route = useRoute();
 const router = useRouter();
@@ -140,6 +141,7 @@ async function register() {
   const success = await performRegister();
   if (success) {
     show.value = false;
+    trackAdsConversion("student_signup", { method: "email" });
     emit("registered", "STUDENT", redirectAfterLogin);
   }
 }

@@ -2,6 +2,7 @@ import { createRouter, createWebHistory, RouteRecordRaw } from "vue-router";
 import { restoreSessionFromCookie } from "../composables/restoreSession";
 import useSeo from "../composables/useSeo";
 import { trackMetaPixelPageView } from "../helpers/metaPixelHelper";
+import { trackStartPracticeOnce } from "../helpers/adsConversionHelper";
 
 /**
  * Extended meta interface to include SEO information
@@ -271,6 +272,14 @@ router.afterEach((to) => {
     to.fullPath,
     (to.meta.title as string | undefined) || undefined,
   );
+
+  if (
+    to.name === "practice" ||
+    to.name === "practiceBlank" ||
+    to.name === "practiceQuestion"
+  ) {
+    trackStartPracticeOnce(String(to.name));
+  }
 });
 
 export default router;
