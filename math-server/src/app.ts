@@ -20,6 +20,13 @@ import {
     consumePracticeAiLimit,
     type PracticeAiSubjectKind,
 } from "./services/guestPracticeRateLimit";
+import {
+    logPracticeAiEvent,
+    snapshotPracticeUser,
+    type PracticeAiAction,
+    type PracticeAiLogDetails,
+    type PracticeAiRequest,
+} from "./services/practiceAiUsageLog";
 import type {
   PracticeCheckRequest,
   PracticeCoachRequest,
@@ -135,19 +142,6 @@ const boardClearLogger = winston.createLogger({
     transports: [
         new winston.transports.File({
             filename: path.join(apiLogsDir, "board-clear.log"),
-        }),
-    ],
-});
-
-const practiceAiUsageLogger = winston.createLogger({
-    level: "info",
-    format: winston.format.combine(
-        winston.format.timestamp(),
-        winston.format.json(),
-    ),
-    transports: [
-        new winston.transports.File({
-            filename: path.join(apiLogsDir, "practice-ai-usage.log"),
         }),
     ],
 });
@@ -340,8 +334,22 @@ async function tryAllowGuestPractice(
     );
     if (req.method === "POST" && aiMatch) {
         const guestKey = resolveGuestKey(req);
+        const action = aiMatch[2] as PracticeAiAction;
+        const aiReq = req as PracticeAiRequest;
+        aiReq.practiceAiKey = guestKey;
+        aiReq.practiceAiKind = "guest";
         const limit = checkPracticeAiLimit(guestKey, "guest");
         if (!limit.allowed) {
+            logPracticeAiEvent({
+                event: "denied",
+                action,
+                req,
+                quota: {
+                    remaining: 0,
+                    limit: limit.limit,
+                    used: limit.limit,
+                },
+            });
             res.status(429).json({
                 error: PRACTICE_AI_LIMIT_ERROR,
                 message: limit.message,
@@ -350,20 +358,11 @@ async function tryAllowGuestPractice(
             });
             return "rejected";
         }
-        const aiReq = req as PracticeAiRequest;
-        aiReq.practiceAiKey = guestKey;
-        aiReq.practiceAiKind = "guest";
         return "allowed";
     }
 
     return "skip";
 }
-
-type PracticeAiRequest = Request & {
-  practiceAiKey?: string;
-  practiceAiKind?: PracticeAiSubjectKind;
-  guestAiKey?: string;
-};
 
 function resolveGuestKey(req: Request): string {
     const headerId = req.headers["x-guest-id"];
@@ -396,7 +395,7 @@ function parseClientParts(raw: unknown): PracticeProblemPart[] | undefined {
 function enforcePracticeAiQuota(
     req: Request,
     res: Response,
-    action: "check" | "coach" = "check",
+    action: PracticeAiAction = "check",
 ): boolean {
     const aiReq = req as PracticeAiRequest;
     let key = aiReq.practiceAiKey;
@@ -417,16 +416,15 @@ function enforcePracticeAiQuota(
 
     const limit = checkPracticeAiLimit(key, kind!);
     if (!limit.allowed) {
-        practiceAiUsageLogger.info({
+        logPracticeAiEvent({
             event: "denied",
-            day: new Date().toISOString().slice(0, 10),
             action,
-            kind,
-            subject: key,
-            questionUUId: req.params.questionUUId,
-            remaining: 0,
-            limit: limit.limit,
-            used: limit.limit,
+            req,
+            quota: {
+                remaining: 0,
+                limit: limit.limit,
+                used: limit.limit,
+            },
         });
         res.status(429).json({
             error: PRACTICE_AI_LIMIT_ERROR,
@@ -442,7 +440,8 @@ function enforcePracticeAiQuota(
 function recordPracticeAiUse(
     req: Request,
     res: Response,
-    action: "check" | "coach",
+    action: PracticeAiAction,
+    details?: PracticeAiLogDetails,
 ) {
     const aiReq = req as PracticeAiRequest;
     if (!aiReq.practiceAiKey || !aiReq.practiceAiKind) return;
@@ -452,16 +451,16 @@ function recordPracticeAiUse(
     );
     res.setHeader("X-Practice-AI-Remaining", String(used.remaining));
     res.setHeader("X-Practice-AI-Limit", String(used.limit));
-    practiceAiUsageLogger.info({
+    logPracticeAiEvent({
         event: "consume",
-        day: new Date().toISOString().slice(0, 10),
         action,
-        kind: aiReq.practiceAiKind,
-        subject: aiReq.practiceAiKey,
-        questionUUId: req.params.questionUUId,
-        remaining: used.remaining,
-        limit: used.limit,
-        used: used.limit - used.remaining,
+        req,
+        quota: {
+            remaining: used.remaining,
+            limit: used.limit,
+            used: used.limit - used.remaining,
+        },
+        details,
     });
     return used;
 }
@@ -516,6 +515,7 @@ async function validateHeaderAuthentication(
      }
 
     req.headers.userId = user?.id?.toString();
+    (req as PracticeAiRequest).practiceUser = snapshotPracticeUser(user);
 
     return true;
 }
@@ -1195,6 +1195,7 @@ app.post(
             if (!questionUUId) {
                 return res.status(400).json({ error: "questionUUId is required" });
             }
+            const started = Date.now();
             const result = await checkPracticeWork(
                 questionUUId,
                 studentWork,
@@ -1203,7 +1204,20 @@ app.post(
                 parts,
                 activePartId,
             );
-            const used = recordPracticeAiUse(req, res, "check");
+            const used = recordPracticeAiUse(req, res, "check", {
+                questionUUId,
+                studentWork,
+                problemText,
+                problemImageBase64,
+                parts,
+                activePartId,
+                durationMs: Date.now() - started,
+                correct: result.correct,
+                feedback: result.feedback,
+                hint: result.hint,
+                warning: result.warning,
+                partComplete: result.partComplete,
+            });
             return res.status(200).json({
                 ...result,
                 remaining: used?.remaining,
@@ -1212,6 +1226,12 @@ app.post(
         } catch (err) {
             const message =
                 err instanceof Error ? err.message : "Practice check failed";
+            logPracticeAiEvent({
+                event: "error",
+                action: "check",
+                req,
+                details: { error: message },
+            });
             serverLogger.error({
                 message: "Practice check failed",
                 error: message,
@@ -1260,6 +1280,7 @@ app.post(
             if (!questionUUId) {
                 return res.status(400).json({ error: "questionUUId is required" });
             }
+            const started = Date.now();
             const result = await coachPracticeWork(
                 questionUUId,
                 studentWork,
@@ -1269,7 +1290,18 @@ app.post(
                 parts,
                 activePartId,
             );
-            const used = recordPracticeAiUse(req, res, "coach");
+            const used = recordPracticeAiUse(req, res, "coach", {
+                questionUUId,
+                studentWork,
+                problemText,
+                problemImageBase64,
+                parts,
+                activePartId,
+                phase,
+                durationMs: Date.now() - started,
+                tip: result.tip,
+                speak: result.speak,
+            });
             return res.status(200).json({
                 ...result,
                 remaining: used?.remaining,
@@ -1278,6 +1310,12 @@ app.post(
         } catch (err) {
             const message =
                 err instanceof Error ? err.message : "Practice coach failed";
+            logPracticeAiEvent({
+                event: "error",
+                action: "coach",
+                req,
+                details: { error: message },
+            });
             serverLogger.error({
                 message: "Practice coach failed",
                 error: message,
@@ -1301,9 +1339,10 @@ app.post(
         res: Response,
     ): Promise<Response | undefined> => {
         try {
-            if (!enforcePracticeAiQuota(req, res, "coach")) {
+            if (!enforcePracticeAiQuota(req, res, "parts")) {
                 return;
             }
+            const questionUUId = req.params.questionUUId;
             const body = req.body as PracticePartsExtractRequest;
             const problemImageBase64 =
                 typeof body?.problemImageBase64 === "string"
@@ -1313,11 +1352,19 @@ app.post(
                 typeof body?.problemText === "string"
                     ? body.problemText
                     : undefined;
+            const started = Date.now();
             const result = await extractPracticeParts(
                 problemImageBase64,
                 problemText,
             );
-            const used = recordPracticeAiUse(req, res, "coach");
+            const used = recordPracticeAiUse(req, res, "parts", {
+                questionUUId,
+                problemText,
+                problemImageBase64,
+                parts: result.parts,
+                extractedPartCount: result.parts?.length,
+                durationMs: Date.now() - started,
+            });
             return res.status(200).json({
                 ...result,
                 remaining: used?.remaining,
@@ -1326,6 +1373,12 @@ app.post(
         } catch (err) {
             const message =
                 err instanceof Error ? err.message : "Practice parts extract failed";
+            logPracticeAiEvent({
+                event: "error",
+                action: "parts",
+                req,
+                details: { error: message },
+            });
             serverLogger.error({
                 message: "Practice parts extract failed",
                 error: message,
