@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>MathBoard — Google Ads configuration</title>
+  <style>
+    @page { size: A4; margin: 18mm 16mm 20mm 16mm; }
+    * { box-sizing: border-box; }
+    body {
+      font-family: "Segoe UI", Calibri, Arial, sans-serif;
+      font-size: 11pt;
+      line-height: 1.45;
+      color: #1a1a1a;
+      max-width: 800px;
+      margin: 0 auto;
+    }
+    h1 { font-size: 20pt; margin: 0 0 6px; letter-spacing: -0.02em; }
+    h2 { font-size: 14pt; margin: 22px 0 8px; border-bottom: 1px solid #ccc; padding-bottom: 4px; page-break-after: avoid; }
+    h3 { font-size: 12pt; margin: 16px 0 6px; page-break-after: avoid; }
+    p, li { margin: 0 0 8px; }
+    ul, ol { margin: 0 0 10px; padding-left: 1.3em; }
+    .meta { color: #444; font-size: 10pt; margin-bottom: 18px; }
+    .callout {
+      background: #f3f5f8;
+      border-left: 4px solid #2b5a8c;
+      padding: 8px 12px;
+      margin: 14px 0 12px;
+      page-break-inside: avoid;
+    }
+    .warn {
+      background: #f8f3e8;
+      border-left: 4px solid #a06720;
+      padding: 8px 12px;
+      margin: 14px 0 12px;
+      page-break-inside: avoid;
+    }
+    table { width: 100%; border-collapse: collapse; margin: 8px 0 14px; font-size: 10pt; }
+    th, td { border: 1px solid #ccc; padding: 6px 8px; vertical-align: top; text-align: left; }
+    th { background: #eef2f6; }
+    code { font-family: Consolas, "Courier New", monospace; font-size: 10pt; background: #f0f0f0; padding: 0 3px; }
+    a { color: #1a4f8b; }
+    footer { margin-top: 28px; font-size: 9pt; color: #666; border-top: 1px solid #ddd; padding-top: 8px; }
+  </style>
+</head>
+<body>
+  <h1>Google Ads configuration for MathBoard</h1>
+  <p class="meta">
+    Saved from a Cursor chat on 16 September 2026.<br />
+    Site: <a href="https://themathboard.com">themathboard.com</a> — live classroom lessons and guest AI-tutor practice on the same board.
+  </p>
+
+  <div class="callout">
+    You already have a Google Ads conversion ID (<code>AW-18006829563</code>) and GA4 (<code>G-5TXR2KXWS2</code>).
+    The gap is that <strong>Ads is not actually measuring conversions yet</strong>: <code>index.html</code> only loads GA4, and nothing fires a <code>conversion</code> event on sign-up or practice start. Fix that before spending.
+  </div>
+
+  <p>
+    <strong>Google Ads</strong> is paid traffic (Search, YouTube, Display). That is different from <strong>AdSense</strong> (ads on the page). Use Ads to buy visits; do not put AdSense on the board itself.
+  </p>
+
+  <h2>Audience and policy</h2>
+  <p>
+    Practice is used by students, including minors. Do not target under-18, do not say “for kids,” and turn off remarketing lists that could include children. Bid on <strong>teachers, parents, homeschoolers, and college students</strong>.
+  </p>
+
+  <h2>Tracking (do this first)</h2>
+  <ol>
+    <li>In Google Ads, link the Ads account to GA4 <code>G-5TXR2KXWS2</code>, and turn on auto-tagging.</li>
+    <li>Load the Ads tag next to GA4 (<code>gtag('config', 'AW-18006829563')</code>), not only the ID in <code>vue-gtag</code>.</li>
+    <li>Create 3 conversions in Ads, then fire them from the app:
+      <ul>
+        <li><strong>Start practice</strong> (guest opens <code>/practice</code> or <code>/practice/blank</code>) — volume, good for Smart Bidding</li>
+        <li><strong>Teacher sign-up</strong> — highest value</li>
+        <li><strong>Student sign-up</strong> — secondary</li>
+      </ul>
+    </li>
+    <li>Confirm with Google Tag Assistant: click the CTA, see the conversion hit. Until that works, Smart Bidding has nothing to learn.</li>
+  </ol>
+  <p>
+    Until you have paid plans, give those conversions dummy values (for example practice = 1, teacher = 10) so bidding has a signal.
+  </p>
+
+  <h2>Campaigns to start (Search only)</h2>
+  <p>Keep classroom and practice <strong>separate</strong>. Match the ad to the landing page.</p>
+  <table>
+    <thead>
+      <tr>
+        <th>Campaign</th>
+        <th>Intent</th>
+        <th>Land on</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Practice / AI tutor</td>
+        <td>“AI math tutor”, “online math whiteboard practice”, “check my math work”</td>
+        <td><code>/practice</code> or <code>/practice/blank</code> (no account)</td>
+      </tr>
+      <tr>
+        <td>Teachers</td>
+        <td>“math whiteboard for teachers”, “collaborative math board”, “virtual math classroom”</td>
+        <td><code>/</code> or <code>/registerTeacher</code></td>
+      </tr>
+      <tr>
+        <td>Brand</td>
+        <td>“themathboard”, “math whiteboard”</td>
+        <td><code>/</code></td>
+      </tr>
+    </tbody>
+  </table>
+  <p>
+    Skip generic “math” / “calculator” — expensive and the wrong people. Add negatives: jobs, salary, PDF worksheets, cheat, answer key, kids games.
+  </p>
+
+  <h2>Budget and bidding</h2>
+  <ul>
+    <li>Start with <strong>manual CPC or Maximize clicks</strong> with a low cap until you have about 30 conversions in 30 days.</li>
+    <li>Then switch to <strong>Maximize conversions</strong> on the practice campaign (it will convert first).</li>
+    <li>Prefer <strong>desktop/tablet</strong> bid adjustments; the board is weak as a phone-first product.</li>
+    <li>Stay off Performance Max / Display until Search conversions are stable.</li>
+  </ul>
+
+  <h2>Sitelink assets (Google Ads)</h2>
+  <p>
+    Sitelinks are extra links under a Search ad. Create them in Google Ads:
+    <strong>Campaigns → Assets → + → Sitelink</strong>.
+    Add them at account level, use <strong>Create new</strong>, and save at least these six
+    (unique URLs; both description lines filled).
+  </p>
+  <table>
+    <thead>
+      <tr>
+        <th>Sitelink text</th>
+        <th>Final URL</th>
+        <th>Description 1</th>
+        <th>Description 2</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>AI Math Tutor</td>
+        <td><a href="https://themathboard.com/practice">https://themathboard.com/practice</a></td>
+        <td>Practice on the board. No account.</td>
+        <td>Check work and get AI tips.</td>
+      </tr>
+      <tr>
+        <td>Blank Practice</td>
+        <td><a href="https://themathboard.com/practice/blank">https://themathboard.com/practice/blank</a></td>
+        <td>Start a blank math sheet.</td>
+        <td>Paste a problem or upload one.</td>
+      </tr>
+      <tr>
+        <td>For Teachers</td>
+        <td><a href="https://themathboard.com/registerTeacher">https://themathboard.com/registerTeacher</a></td>
+        <td>Live lessons on one board.</td>
+        <td>Students join and work together.</td>
+      </tr>
+      <tr>
+        <td>Student Signup</td>
+        <td><a href="https://themathboard.com/registerStudent">https://themathboard.com/registerStudent</a></td>
+        <td>Join a class on the board.</td>
+        <td>Work live with your teacher.</td>
+      </tr>
+      <tr>
+        <td>How It Works</td>
+        <td><a href="https://themathboard.com/">https://themathboard.com/</a></td>
+        <td>Live class and AI practice.</td>
+        <td>Same board, two ways to use it.</td>
+      </tr>
+      <tr>
+        <td>Sign In</td>
+        <td><a href="https://themathboard.com/login">https://themathboard.com/login</a></td>
+        <td>Open your MathBoard account.</td>
+        <td>Teachers and students sign in here.</td>
+      </tr>
+    </tbody>
+  </table>
+  <ul>
+    <li>Practice campaign: AI Math Tutor, Blank Practice, How It Works, For Teachers.</li>
+    <li>Teachers campaign: For Teachers, Student Signup, AI Math Tutor, How It Works.</li>
+    <li>Do not sitelink <code>/lessons</code>, <code>/questions</code>, or <code>/answers</code> — those require login.</li>
+  </ul>
+
+  <h2>Landing pages</h2>
+  <ul>
+    <li>Practice ads must promise check-answer / AI tips and send people to <code>/practice</code>, not teacher signup.</li>
+    <li>Classroom ads should say live lesson + students, and send people to <code>/</code>.</li>
+    <li>Keep HTTPS, fast load, and the first CTA visible without a login wall for practice.</li>
+  </ul>
+
+  <div class="warn">
+    <strong>Do not do yet.</strong> YouTube/Display, remarketing of students, optimizing for “page view.” Those burn budget and can conflict with child-safety rules.
+  </div>
+
+  <h2>What is already in the codebase</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>Item</th>
+        <th>Where</th>
+        <th>Status</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>GA4 <code>G-5TXR2KXWS2</code></td>
+        <td><code>math-ui3/index.html</code></td>
+        <td>Loaded</td>
+      </tr>
+      <tr>
+        <td>Ads <code>AW-18006829563</code></td>
+        <td><code>math-ui3/src/main.ts</code> (<code>vue-gtag</code> configure) and <code>seoConfig.ts</code></td>
+        <td>ID present; no <code>gtag('config', 'AW-…')</code> in <code>index.html</code></td>
+      </tr>
+      <tr>
+        <td>Conversion events</td>
+        <td>App (sign-up / practice start)</td>
+        <td>Not fired</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h2>Suggested first test</h2>
+  <p>
+    Once Tag Assistant shows conversions, a small Search test ($10–20/day) on the practice campaign is enough to see if <code>/practice</code> traffic is cheaper than classroom sign-ups. Wire the Ads tag and the three conversion events in the app before that spend.
+  </p>
+
+  <footer>
+    MathBoard / themathboard.com — Google Ads setup notes. Not a substitute for Google Ads policy or legal review.
+  </footer>
+</body>
+</html>

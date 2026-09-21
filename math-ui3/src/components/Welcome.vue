@@ -218,6 +218,21 @@
               </v-col>
             </v-row>
           </v-card>
+
+          <nav
+            v-if="!userStore.getCurrentUser()"
+            class="welcome-sitelinks"
+            aria-label="Site links"
+          >
+            <router-link
+              v-for="link in SITE_LINKS"
+              :key="link.path"
+              :to="link.path"
+              class="welcome-sitelinks__link"
+            >
+              {{ link.text }}
+            </router-link>
+          </nav>
         </v-col>
       </v-row>
     </v-container>
@@ -233,6 +248,7 @@ import {
   TEACHER_WORKFLOW_STEPS,
   WELCOME_PATHS,
 } from "../constants/helpCopy";
+import { SITE_LINKS } from "../config/siteLinks";
 
 const LoginDialog = defineAsyncComponent(() => import("./Login.vue"));
 const RegisterStudentDialog = defineAsyncComponent(
@@ -538,6 +554,29 @@ const bullets = [
   .feature-list__text {
     font-size: 0.92rem;
   }
+}
+
+.welcome-sitelinks {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.35rem 1.1rem;
+  margin: 1.25rem auto 0;
+  max-width: 720px;
+  padding: 0 0.5rem;
+}
+
+.welcome-sitelinks__link {
+  color: #1a4f8b;
+  font-size: 0.92rem;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.welcome-sitelinks__link.router-link-exact-active {
+  color: #334155;
+  font-weight: 600;
+  text-decoration: none;
 }
 
 .tutorial-btn:hover {
